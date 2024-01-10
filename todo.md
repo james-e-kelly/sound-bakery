@@ -1,0 +1,3 @@
+- [ ] Copy sounds upon play
+- [ ] Add soundbanks
+- [ ] Add node groups and abstract DSP over nodes

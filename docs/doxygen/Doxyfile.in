@@ -1,0 +1,49 @@
+PROJECT_NAME            = Sound Bakery
+
+PROJECT_BRIEF           = Open-source audio middleware for games
+
+PROJECT_NUMBER          = v0.1.0
+
+PROJECT_LOGO            = @CMAKE_SOURCE_DIR@/docs/img/sound-bakery-logo.png
+
+OUTPUT_DIRECTORY        = @CMAKE_SOURCE_DIR@/doxygen/
+
+INPUT                   = @CMAKE_SOURCE_DIR@/README.md \
+                          @CMAKE_SOURCE_DIR@/docs \
+                          @CMAKE_SOURCE_DIR@/src/sound_bakery \
+                          @CMAKE_SOURCE_DIR@/src/sound_chef \
+                          @CMAKE_SOURCE_DIR@/apps/editor
+
+FILE_PATTERNS           = *.h *.hpp *.c *.cpp *.md
+
+USE_MDFILE_AS_MAINPAGE  = README.md
+
+RECURSIVE               = YES
+
+GENERATE_LATEX          = NO
+
+IMAGE_PATH              = @CMAKE_SOURCE_DIR@/docs/img
+
+# Doxygen Awesome Theme Setup
+HTML_HEADER             = @CMAKE_SOURCE_DIR@/docs/doxygen/header.html
+
+GENERATE_TREEVIEW       = YES
+
+DISABLE_INDEX           = NO
+
+FULL_SIDEBAR            = NO
+
+HTML_EXTRA_FILES        = @doxygenawesome_SOURCE_DIR@/doxygen-awesome-darkmode-toggle.js
+
+HTML_EXTRA_STYLESHEET   = @doxygenawesome_SOURCE_DIR@/doxygen-awesome.css \
+                          @doxygenawesome_SOURCE_DIR@/doxygen-awesome-sidebar-only.css \
+                          @doxygenawesome_SOURCE_DIR@/doxygen-awesome-sidebar-only-darkmode-toggle.css \
+                          @CMAKE_SOURCE_DIR@/docs/doxygen/custom-css.css
+
+HTML_COLORSTYLE         = LIGHT # required with Doxygen >= 1.9.5
+
+HTML_COLORSTYLE_HUE    = 209
+
+HTML_COLORSTYLE_SAT    = 255
+
+HTML_COLORSTYLE_GAMMA  = 113

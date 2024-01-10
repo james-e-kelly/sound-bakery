@@ -1,0 +1,3 @@
+SET(IMAGE_DESTINATION_FOLDER ${CMAKE_BINARY_DIR}/images)
+
+configure_file(SplashImage02.png ${IMAGE_DESTINATION_FOLDER}/SplashImage.png COPYONLY)

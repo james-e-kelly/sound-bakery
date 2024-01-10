@@ -1,0 +1,6 @@
+[submodule "resources/fonts/Font-Awesome"]
+	path = resources/fonts/Font-Awesome
+	url = git@github.com:FortAwesome/Font-Awesome.git
+[submodule "resources/fonts/fontaudio"]
+	path = resources/fonts/fontaudio
+	url = git@github.com:fefanto/fontaudio.git
