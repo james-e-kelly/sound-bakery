@@ -3,6 +3,7 @@
 #include "sound_bakery/core/object/object.h"
 #include "sound_bakery/editor/editor_defines.h"
 #include "sound_bakery/node/node.h"
+#include "sound_bakery/util/type_helper.h"
 
 #include "imgui.h"
 
@@ -42,9 +43,9 @@ bool PropertyDrawer::DrawProperty(rttr::property property, rttr::instance instan
 	{
 		DrawReadonlyVariant(propertyValue);
 	}
-	else if (const rttr::variant payloadString = property.get_metadata(SB::Editor::METADATA_KEY::Payload))
+	else if (const rttr::variant payloadString = property.get_metadata(SB::Editor::METADATA_KEY::Payload); payloadString.is_valid())
 	{
-		edited = DrawPayloadDrop(property, instance, payloadString);
+		edited = DrawPayloadDrop(propertyValue, payloadString);
 	}
 	else if (DrawVariant(propertyValue, property.get_name(), property.get_metadata(SB::Editor::METADATA_KEY::MinMax)))
 	{
@@ -123,20 +124,11 @@ bool PropertyDrawer::DrawVariant(rttr::variant& variant, rttr::string_view name,
 		SB_ID id = variant.extract_wrapped_value().convert<SB_ID>();
 		rttr::type templateType = *type.get_template_arguments().begin();
 
+		std::string payloadString = std::string(SB::Util::TypeHelper::getPayloadFromType(templateType));
+
 		SB::Core::DatabasePtr<SB::Core::Object> objectPtr(id);
 
-		if (objectPtr.lookup())
-		{
-			DrawObject(objectPtr->getType(), rttr::instance(objectPtr.raw()));
-		}
-		else if (objectPtr.hasId())
-		{
-			ImGui::TextUnformatted("Object Unloaded");
-		}
-		else
-		{
-			ImGui::TextUnformatted("NULL");
-		}
+		edited = DrawPayloadDrop(variant, payloadString);
 	}
 	else if (type.is_pointer())
 	{
@@ -415,44 +407,52 @@ bool PropertyDrawer::DrawAssociateContainer(rttr::variant_associative_view& view
 		{
 			int index = 0;
 
-			for (const rttr::variant& item : view)
+			if (ImGui::BeginTable(name.data(), 2, ImGuiTableFlags_Resizable))
 			{
-				ImGui::PushID(index++);
-
-				const std::pair<rttr::variant, rttr::variant> keyValuePair = item.convert<std::pair<rttr::variant, rttr::variant>>();
-
-				rttr::variant key = keyValuePair.first;
-				rttr::variant value = view.is_key_only_type() ? keyValuePair.first : keyValuePair.second;
-
-				if (view.is_key_only_type())
+				for (rttr::variant_associative_view::const_iterator iter = view.begin(); iter != view.end(); ++iter)
 				{
-					ImGui::Bullet();
+					ImGui::PushID(index++);
 
-					edited = DrawVariant(value, std::to_string(index).c_str());
-				}
-				else
-				{
-					key = key.extract_wrapped_value();
-					value = value.extract_wrapped_value();
+					rttr::variant key = iter.get_key();
+					rttr::variant value = iter.get_value();
 
-					if (ImGui::BeginTable(name.data(), 2))
+					if (view.is_key_only_type())
 					{
+						ImGui::TableNextColumn();	// enter column 1
+						ImGui::TableNextColumn();	// enter column 2
+
+						edited = DrawVariant(value, std::to_string(index).c_str());
+					}
+					else
+					{
+						key = key.extract_wrapped_value();
+						value = value.extract_wrapped_value();
+
+
 						ImGui::TableNextColumn();
 						bool keyEdited = DrawVariant(key, std::to_string(index).c_str());
 						ImGui::TableNextColumn();
 						bool valueEdited = DrawVariant(value, "Value");
-						ImGui::EndTable();
+
 
 						if (keyEdited || valueEdited)
 						{
 							edited = true;
-							auto iter = view.insert(key, value);
-							assert(iter.second);
+
+							view.erase(key);
+							std::pair<rttr::variant_associative_view::const_iterator, bool> insertedIter = view.insert(key, value);
+
+							if (insertedIter.second)
+							{
+								iter = insertedIter.first;
+							}
 						}
 					}
+
+					ImGui::PopID();
 				}
 
-				ImGui::PopID();
+				ImGui::EndTable();
 			}
 		}
 	}
@@ -475,6 +475,50 @@ static void HelpMarker(const char* desc)
 		ImGui::PopTextWrapPos();
 		ImGui::EndTooltip();
 	}
+}
+
+bool PropertyDrawer::DrawPayloadDrop(rttr::variant& value, const rttr::variant& payloadString)
+{
+	bool edited = false;
+
+	ImGui::BeginGroup();
+
+	DrawReadonlyVariant(value, false);
+
+	if (ImGui::BeginDragDropTarget())
+	{
+		const rttr::type valueType = value.get_type();
+
+		if (const ImGuiPayload* const payload = ImGui::AcceptDragDropPayload(payloadString.to_string().c_str()))
+		{
+			rttr::variant data;
+
+			if (valueType == rttr::type::get<std::string>())
+			{
+				char* payloadCharString = static_cast<char*>(payload->Data);
+				data = std::string(payloadCharString);
+			}
+			else if (valueType == rttr::type::get<SB_ID>() || (valueType.is_wrapper() && valueType.get_wrapped_type() == rttr::type::get<SB_ID>()))
+			{
+				SB_ID* payloadID = static_cast<SB_ID*>(payload->Data);
+				data = *payloadID;
+
+				if (valueType.is_wrapper())
+				{
+					data.convert(valueType);
+				}
+			}
+
+			value = data;
+			edited = true;
+		}
+
+		ImGui::EndDragDropTarget();
+	}
+
+	ImGui::EndGroup();
+
+	return edited;
 }
 
 bool PropertyDrawer::DrawPayloadDrop(rttr::property property, rttr::instance object, const rttr::variant& payloadString)

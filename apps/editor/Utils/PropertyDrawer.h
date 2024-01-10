@@ -24,6 +24,7 @@ public:
 	static bool DrawAssociateContainer(rttr::variant_associative_view& view, rttr::string_view name);
 
 private:
+	static bool DrawPayloadDrop(rttr::variant& value, const rttr::variant& payloadString);
 	static bool DrawPayloadDrop(rttr::property property, rttr::instance object, const rttr::variant& payloadString);
 };
 
