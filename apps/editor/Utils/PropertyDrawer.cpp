@@ -64,6 +64,12 @@ bool PropertyDrawer::DrawProperty(rttr::property property, rttr::instance instan
 
 bool PropertyDrawer::DrawVariant(rttr::variant& variant, rttr::string_view name, rttr::variant minMax)
 {
+	if (!variant.is_valid())
+	{
+		ImGui::TextUnformatted("Variant is invalid");
+		return false;
+	}
+
 	const rttr::type type = variant.get_type();
 	bool edited = false;
 
@@ -204,7 +210,7 @@ bool PropertyDrawer::DrawVariant(rttr::variant& variant, rttr::string_view name,
 	}
 	else
 	{
-		ImGui::Text("Could not variant of type {%s}", variant.get_type().get_name().data());
+		ImGui::Text("Could not draw variant of type {%s}", variant.get_type().get_name().data());
 	}
 
 	return edited;
@@ -418,22 +424,18 @@ bool PropertyDrawer::DrawAssociateContainer(rttr::variant_associative_view& view
 				{
 					ImGui::PushID(index++);
 
-					rttr::variant key = iter.get_key();
-					rttr::variant value = iter.get_value();
+					rttr::variant key = iter.get_key().extract_wrapped_value();
+					rttr::variant value = iter.get_value().extract_wrapped_value();
 
 					if (view.is_key_only_type())
 					{
 						ImGui::TableNextColumn();	// enter column 1
 						ImGui::TableNextColumn();	// enter column 2
 
-						edited = DrawVariant(value, std::to_string(index).c_str());
+						edited = DrawVariant(key, std::to_string(index).c_str());
 					}
 					else
 					{
-						key = key.extract_wrapped_value();
-						value = value.extract_wrapped_value();
-
-
 						ImGui::TableNextColumn();
 						bool keyEdited = DrawVariant(key, std::to_string(index).c_str());
 						ImGui::TableNextColumn();
