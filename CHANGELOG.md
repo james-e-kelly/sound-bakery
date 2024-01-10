@@ -5,6 +5,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Sound Bakery - Add switches/int parameters
+- Sound Bakery - Switch containers choose child containers based on switches
+- Docs - Fix Roadmap title in doxygen
+
 ## [0.1.0] - 2023-01-10
 
 ### Added
