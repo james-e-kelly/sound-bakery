@@ -47,7 +47,12 @@ bool PropertyDrawer::DrawProperty(rttr::property property, rttr::instance instan
 	{
 		edited = DrawPayloadDrop(propertyValue, payloadString);
 	}
-	else if (DrawVariant(propertyValue, property.get_name(), property.get_metadata(SB::Editor::METADATA_KEY::MinMax)))
+	else
+	{
+		edited = DrawVariant(propertyValue, property.get_name(), property.get_metadata(SB::Editor::METADATA_KEY::MinMax));
+	}
+
+	if (edited)
 	{
 		edited = property.set_value(instance, propertyValue);
 	}
