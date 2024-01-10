@@ -14,6 +14,7 @@ namespace SB::Editor
     };
 
     inline std::string PayloadObject = "OBJECT";
+    inline std::string PayloadContainer = "CONTAINER";
     inline std::string PayloadSound = "SOUND";
     inline std::string PayloadBus = "BUS";
     inline std::string PayloadIntParam = "INT_PARAM";

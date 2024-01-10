@@ -205,15 +205,19 @@ std::string_view TypeHelper::getFileExtensionOfObjectCategory(SB_OBJECT_CATEGORY
 
 std::string_view TypeHelper::getPayloadFromType(rttr::type type)
 {
-	std::string_view result;
+	std::string_view result = "OBJECT";
 
 	if (type == rttr::type::get<SB::Engine::Sound>())
 	{
 		result = SB::Editor::PayloadSound;
 	}
-	else if (type == rttr::type::get<SB::Engine::Bus>())
+	else if (type.is_derived_from<SB::Engine::Bus>())
 	{
 		result = SB::Editor::PayloadBus;
+	}
+	else if (type.is_derived_from<SB::Engine::Container>())
+	{
+		result = SB::Editor::PayloadContainer;
 	}
 	else if (type == rttr::type::get<SB::Engine::FloatParameter>())
 	{
