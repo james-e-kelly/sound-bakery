@@ -47,5 +47,6 @@ namespace SB::Core
     };
 
     using IntProperty = Property<int32_t>;
+    using IdProperty = Property<SB_ID>;
     using FloatProperty = Property<float>;
 }
