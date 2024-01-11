@@ -26,18 +26,6 @@ RTTR_REGISTRATION
             value("Delay", SC_DSP_TYPE_DELAY)
         );
 
-    registration::class_<FloatProperty>("SB::Core::FloatProperty")
-        .property("Value", &FloatProperty::get, &FloatProperty::set)
-        ;    
-    
-    registration::class_<IdProperty>("SB::Core::IdProperty")
-        .property("Value", &IdProperty::get, &IdProperty::set)
-        ;
-
-    registration::class_<IntProperty>("SB::Core::IntProperty")
-        .property("Value", &IdProperty::get, &IdProperty::set)
-        ;
-
     registration::enumeration<SB_OBJECT_CATEGORY>("SB_OBJECT_CATEGORY")
         (
             value("Sound", SB_CATEGORY_SOUND),
