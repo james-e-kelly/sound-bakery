@@ -195,7 +195,7 @@ void NodeInstance::setPitch(float oldPitch, float newPitch)
 
 void NodeInstance::setLowpass(float oldLowpass, float newLowpass)
 {
-	const double percentage = SB::Maths::easeOutCubic(newLowpass);
+	const double percentage = SB::Maths::easeOutCubic(newLowpass / 100.0);
 	const double lowpassCutoff = (19980 - (19980.0 * percentage)) + 20.0;
 	assert(lowpassCutoff >= 20.0);
 
@@ -204,7 +204,7 @@ void NodeInstance::setLowpass(float oldLowpass, float newLowpass)
 
 void NodeInstance::setHighpass(float oldHighpass, float newHighpass)
 {
-	const double percentage = SB::Maths::easeInCubic(newHighpass);
+	const double percentage = SB::Maths::easeInCubic(newHighpass / 100.0);
 	const double highpassCutoff = (19980.0 * percentage) + 20.0;
 	assert(highpassCutoff >= 20.0);
 
