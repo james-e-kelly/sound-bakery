@@ -219,7 +219,7 @@ RTTR_REGISTRATION
         (
             policy::ctor::as_raw_ptr
         )
-        .property("Value", &IntParameter::m_property)
+        .property("ParameterValue", &IntParameter::getSelectedValue, &IntParameter::setSelectedValue)
         .property("Values", &IntParameter::m_values)
         (
             metadata(SB::Editor::METADATA_KEY::Readonly, true)
@@ -234,6 +234,6 @@ RTTR_REGISTRATION
         .property("Parent", &IntParameterValue::m_parentParameter)
         (
             metadata(SB::Editor::METADATA_KEY::Readonly, true)
-            )
+        )
         ;
 }

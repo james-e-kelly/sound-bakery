@@ -58,13 +58,13 @@ namespace SB::Engine
 	 * 
 	 * Int parameters are what Wwise would call Switches and States. Sound Bakery makes uses the same type for both but _how_ they're used changes.
 	*/
-	class IntParameter : public Parameter<SB_ID>
+	class IntParameter : public SB::Core::DatabaseObject
 	{
 	public:
 		/**
-		 * @brief Adds a new value to the 
-		 * @param name 
-		 * @return 
+		 * @brief Adds a new value to the parameter.
+		 * @param name Name of the parameter value
+		 * @return The newly created parameter value that's in the database
 		*/
 		SB::Core::DatabasePtr<IntParameterValue> addNewValue(const std::string_view name)
 		{
@@ -90,16 +90,30 @@ namespace SB::Engine
 		{
 			if (m_values.empty())
 			{
-				set(addNewValue("None").id());
+				setSelectedValue(addNewValue("None"));
 			}
 
 			return m_values;
 		}
 
+		void setSelectedValue(SB::Core::DatabasePtr<IntParameterValue> value)
+		{
+			if (m_values.contains(value))
+			{
+				m_selectedValue = value;
+			}
+		}
+
+		SB::Core::DatabasePtr<IntParameterValue> getSelectedValue() const
+		{
+			return m_selectedValue;
+		}
+
 	private:
+		SB::Core::DatabasePtr<IntParameterValue> m_selectedValue;
 		std::unordered_set<SB::Core::DatabasePtr<IntParameterValue>> m_values;
 
-		RTTR_ENABLE(Parameter)
+		RTTR_ENABLE(DatabaseObject)
 		RTTR_REGISTRATION_FRIEND
 	};
 }
