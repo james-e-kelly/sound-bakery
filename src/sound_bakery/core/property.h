@@ -29,6 +29,45 @@ namespace SB::Core
             assert(min < max);
         }
 
+        /**
+         * @brief Copy constructor.
+         * 
+         * Copies the min, max and value but not the delegate.
+         * The newly created property will have a fresh delegate.
+        */
+        Property(const Property& other)
+            : m_property(other.m_property), m_min(other.m_min), m_max(other.m_max), m_delegate()
+        {}
+
+        /**
+         * @brief Move constructor.
+         * @param other 
+        */
+        Property(Property&& other) = default;
+
+    public:
+        /**
+         * @brief Assignment operator.
+         * 
+         * Copys all values from other to this Property, including the delegate.
+         * @param other Property to copy from.
+         * @return 
+        */
+        Property& operator =(const Property& other)
+        {
+            if (this != &other)
+            {
+                m_property = other.m_property;
+                m_min = other.m_min;
+                m_max = other.m_max;
+                m_delegate = other.m_delegate;
+            }
+
+            return *this;
+        }
+
+        Property& operator =(Property&& other) = default;
+
     public:
         void set(T value)
         {

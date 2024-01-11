@@ -24,7 +24,7 @@ void SB::Engine::Voice::playContainer(Container* container) noexcept
 	else
 	{
 		containersToPlay.reserve(3);
-		container->gatherSounds(containersToPlay);
+		container->gatherSounds(containersToPlay, SB::Engine::Container::RuntimeFloatParameterMap(), SB::Engine::Container::RuntimeIntParameterMap());
 	}
 
 	for (Container* const containerToPlay : containersToPlay)

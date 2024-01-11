@@ -219,11 +219,11 @@ RTTR_REGISTRATION
         (
             policy::ctor::as_raw_ptr
         )
-        .property("ParameterValue", &IntParameter::getSelectedValue, &IntParameter::setSelectedValue)
         .property("Values", &IntParameter::m_values)
         (
             metadata(SB::Editor::METADATA_KEY::Readonly, true)
         )
+        .property("ParameterValue", &IntParameter::getSelectedValue, &IntParameter::setSelectedValue)
         ;
 
     registration::class_<IntParameterValue>("SB::Engine::IntParameterValue")

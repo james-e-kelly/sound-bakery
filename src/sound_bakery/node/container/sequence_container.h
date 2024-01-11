@@ -8,7 +8,7 @@ namespace SB::Engine
     {
     public:
 
-        virtual void gatherSounds(std::vector<Container*>& soundContainers) override
+        virtual void gatherSounds(std::vector<Container*>& soundContainers, const RuntimeFloatParameterMap& runtimeFloatParameters, const RuntimeIntParameterMap& runtimeIntParameters) override
         {
 
         }

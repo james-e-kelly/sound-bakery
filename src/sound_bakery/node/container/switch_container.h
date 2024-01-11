@@ -10,9 +10,30 @@ namespace SB::Engine
     class SwitchContainer : public Container
     {
     public:
-        virtual void gatherSounds(std::vector<Container*>& soundContainers) override
+        virtual void gatherSounds(std::vector<Container*>& soundContainers, const RuntimeFloatParameterMap& runtimeFloatParameters, const RuntimeIntParameterMap& runtimeIntParameters) override
         {
+            if (runtimeIntParameters.contains(m_switchParameter.id()))
+            {
 
+            }
+            else
+            {
+                if (IntParameter* switchParameter = m_switchParameter.raw())
+                {
+                    if (SB::Core::DatabasePtr<IntParameterValue> selectedValue = switchParameter->getSelectedValue(); selectedValue.lookup())
+                    {
+                        auto foundIter = m_switchToChild.find(selectedValue);
+
+                        if (foundIter != m_switchToChild.end())
+                        {
+                            if (foundIter->second.lookup())
+                            {
+                                foundIter->second->gatherSounds(soundContainers, runtimeFloatParameters, runtimeIntParameters);
+                            }
+                        }
+                    }
+                }
+            }
         }
 
     public:

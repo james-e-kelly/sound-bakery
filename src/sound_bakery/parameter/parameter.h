@@ -11,15 +11,38 @@ namespace SB::Engine
 	/**
 	 * @brief Defines a database object with a changeable property.
 	 *
-	 * Used for changing effect parameters, choosing sounds and anything
+	 * Used for changing effect parameters, choosing sounds and anything else.
 	*/
 	template<typename T>
 	class Parameter : public SB::Core::DatabaseObject
 	{
 	public:
-		virtual T get() const											{ return m_property.get(); }
-		virtual void set(T value)										{ m_property.set(value); }
+		/**
+		 * @brief Defines the type used for passing runtime versions/variations of this parameter.
+		*/
+		using RuntimeParameter = std::pair<SB_ID, SB::Core::Property<T>>;
+
+		using RuntimeProperty = SB::Core::Property<T>;
+
+		Parameter() = default;
+
+		Parameter(T min, T max)
+			: m_property(T(), min, max), SB::Core::DatabaseObject()
+		{}
+
+	public:
+		T get() const											{ return m_property.get(); }
+		void set(T value)										{ m_property.set(value); }
 		SB::Core::Property<T>::PropertyChangedDelegate& getDelegate()	{ return m_property.getDelegate(); }
+
+		/**
+		 * @brief Copies this Parameter to a runtime version, suitable for handling unique variations per game object etc.
+		 * @return The runtime version of this Parameter.
+		*/
+		[[nodiscard]] RuntimeParameter createRuntimeParameterFromThis() const
+		{
+			return RuntimeParameter(getDatabaseID(), m_property);
+		}
 
 	protected:	// made protected so child classes can add it to reflection
 		SB::Core::Property<T> m_property;
@@ -41,7 +64,7 @@ namespace SB::Engine
 	 * @brief Represents a discrete value for an IntParameter.
 	 * 
 	 * The object inherits from SB::Core::DatabaseObject to be universally referencable and have a display name.
-	 * The object knows its parameter IntParameter.
+	 * The object knows its parent IntParameter.
 	 * 
 	 * The object's ID is its parameter value.
 	*/
@@ -56,11 +79,15 @@ namespace SB::Engine
 	/**
 	 * @brief Holds discrete named integer values.
 	 * 
-	 * Int parameters are what Wwise would call Switches and States. Sound Bakery makes uses the same type for both but _how_ they're used changes.
+	 * Int parameters are what Wwise would call Switches and States. Sound Bakery uses the same type for both but _how_ they're used changes.
 	*/
-	class IntParameter : public SB::Core::DatabaseObject
+	class IntParameter : public Parameter<SB_ID>
 	{
 	public:
+		IntParameter()
+			: m_values(), Parameter(SB_ID(), 18'446'744'073'709'551'615llu)
+		{}
+
 		/**
 		 * @brief Adds a new value to the parameter.
 		 * @param name Name of the parameter value
@@ -100,17 +127,17 @@ namespace SB::Engine
 		{
 			if (m_values.contains(value))
 			{
-				m_selectedValue = value;
+				set(value.id());
 			}
 		}
 
 		SB::Core::DatabasePtr<IntParameterValue> getSelectedValue() const
 		{
-			return m_selectedValue;
+			int value = get();
+			return SB::Core::DatabasePtr<IntParameterValue>(get());
 		}
 
 	private:
-		SB::Core::DatabasePtr<IntParameterValue> m_selectedValue;
 		std::unordered_set<SB::Core::DatabasePtr<IntParameterValue>> m_values;
 
 		RTTR_ENABLE(DatabaseObject)
