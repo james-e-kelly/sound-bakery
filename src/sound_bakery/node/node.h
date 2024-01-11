@@ -144,10 +144,10 @@ namespace SB::Engine
 	class Node : public NodeBase
 	{
     public:
-        SB::Core::FloatProperty m_volume = 1.0f;
-        SB::Core::FloatProperty m_pitch = 1.0f;
-        SB::Core::FloatProperty m_lowpass = 0.0f;
-        SB::Core::FloatProperty m_highpass = 0.0f;
+        SB::Core::FloatProperty m_volume = SB::Core::FloatProperty(1.0f, 0.0f, 1.0f);
+        SB::Core::FloatProperty m_pitch = SB::Core::FloatProperty(1.0f, 0.0f, 1.0f);
+        SB::Core::FloatProperty m_lowpass = SB::Core::FloatProperty(1.0f, 0.0f, 100.0f);
+        SB::Core::FloatProperty m_highpass = SB::Core::FloatProperty(1.0f, 0.0f, 100.0f);
 
         std::vector<SB::Core::DatabasePtr<EffectDescription>> m_effectDescriptions;
 
