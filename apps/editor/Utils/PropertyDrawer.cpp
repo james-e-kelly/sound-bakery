@@ -172,6 +172,24 @@ bool PropertyDrawer::DrawVariant(rttr::variant& variant, rttr::string_view name,
 				variant = effectParamterDescription;
 			}
 		}
+		else if (type == rttr::type::get<SB::Core::FloatProperty>())
+		{
+			SB::Core::FloatProperty floatProperty = variant.convert<SB::Core::FloatProperty>();
+			float floatValue = floatProperty.get();
+
+			std::pair<float, float> floatMinMax = floatProperty.getMinMaxPair();
+
+			if (DrawFloat(floatValue, name, floatMinMax))
+			{
+				floatProperty.set(floatValue);
+				variant = floatProperty;
+				edited = true;
+			}
+		}
+		else if (type == rttr::type::get<SB::Core::IntProperty>())
+		{
+
+		}
 		else
 		{
 			if (type.get_properties().size())
@@ -302,7 +320,7 @@ bool PropertyDrawer::DrawMemberObject(rttr::variant& value, rttr::string_view na
 	for (rttr::property childProperty : value.get_type().get_properties())
 	{
 		ImGui::PushID(index++);
-		if (DrawProperty(childProperty, value))
+		if (DrawProperty(childProperty, rttr::instance(value)))
 		{
 			edited = true;
 		}
