@@ -141,7 +141,7 @@ FetchContent_MakeAvailable(fonts)
 if(UNIX AND NOT APPLE)
   set(NFD_SOURCES 
   ${nfd_SOURCE_DIR}/src/nfd_common.c
-  ${nfd_SOURCE_DIR}/src/nfd_gtk.cpp
+  ${nfd_SOURCE_DIR}/src/nfd_gtk.c
   ${nfd_SOURCE_DIR}/src/nfd_zenity.c
   )
 

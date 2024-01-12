@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Sound Bakery - Properties have min/max values to clamp set values
 - Docs - Fix Roadmap title in doxygen
 
+### Fixed
+
+- Fixed nfd compilation on Linux where source file was incorrectly set to .cpp when it should have been .c
+
 ## [0.1.0] - 2023-01-10
 
 ### Added
