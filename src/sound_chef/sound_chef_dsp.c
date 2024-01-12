@@ -61,9 +61,11 @@ static SC_RESULT SC_DSP_LOWPASS_SET_PARAM_FLOAT(SC_DSP_STATE* state, int index, 
 	switch (index)
 	{
 	case SC_DSP_LOWPASS_CUTOFF:
+	{
 		ma_lpf_config lpfConfig = ma_lpf_config_init(format, channels, sampleRate, value, SC_DSP_DEFAULT_FILTER_ORDER);
 		result = ma_lpf_node_reinit(&lpfConfig, state->m_userData);
 		break;
+	}
 	}
 
 	return result;
@@ -139,9 +141,11 @@ static SC_RESULT SC_DSP_HIGHPASS_SET_PARAM_FLOAT(SC_DSP_STATE* state, int index,
 	switch (index)
 	{
 	case SC_DSP_HIGHPASS_CUTOFF:
+	{
 		ma_hpf_config hpfConfig = ma_hpf_config_init(format, channels, sampleRate, value, SC_DSP_DEFAULT_FILTER_ORDER);
 		result = ma_hpf_node_reinit(&hpfConfig, state->m_userData);
 		break;
+	}
 	}
 
 	return result;
