@@ -1,4 +1,4 @@
-name: CMake on multiple platforms
+name: Build All Platforms
 
 on:
   workflow_dispatch:
