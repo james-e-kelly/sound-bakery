@@ -148,8 +148,6 @@ FetchContent_Declare(
 message(STATUS "Fetching rttr")
 FetchContent_MakeAvailable(rttr)
 
-set(YAML_CPP_BUILD_CONTRIB OFF CACHE BOOL "" FORCE)
-
 message(STATUS "Fetching yaml-cpp")
 FetchContent_MakeAvailable(yaml)
 
