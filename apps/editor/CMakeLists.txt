@@ -150,9 +150,6 @@ elseif(APPLE)
   ${nfd_SOURCE_DIR}/src/nfd_common.c
   ${nfd_SOURCE_DIR}/src/nfd_cocoa.m
   )
-
-  find_library(APPKIT_FRAMEWORK AppKit)
-  target_link_libraries(nfd ${APPKIT_FRAMEWORK})
 elseif(WIN32)
   set(NFD_SOURCES 
   ${nfd_SOURCE_DIR}/src/nfd_common.c
@@ -161,6 +158,11 @@ elseif(WIN32)
 endif()
 
 add_library(nfd STATIC ${NFD_SOURCES})
+
+if(APPLE)
+  find_library(APPKIT_FRAMEWORK AppKit)
+  target_link_libraries(nfd ${APPKIT_FRAMEWORK})
+endif()
 
 target_include_directories(nfd
   PUBLIC ${nfd_SOURCE_DIR}/src/include
