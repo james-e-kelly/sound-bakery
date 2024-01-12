@@ -54,6 +54,7 @@ jobs:
 
     - name: Download Dependencies
       if: matrix.os == 'ubuntu-latest'
+      shell: bash
       run: |
         sudo apt update
         sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev wayland-protocols libwayland-dev libxkbcommon-dev freeglut3-dev
@@ -67,7 +68,7 @@ jobs:
         -S ${{ github.workspace }}
 
     - name: Build
-      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
+      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} --verbose
 
     - name: Test
       working-directory: ${{ steps.strings.outputs.build-output-dir }}
