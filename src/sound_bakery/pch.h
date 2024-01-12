@@ -3,7 +3,6 @@
 #include <atomic>
 #include <cassert>
 #include <concepts>
-#include <expected>
 #include <memory>
 #include <optional>
 #include <random>
