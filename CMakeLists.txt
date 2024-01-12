@@ -17,8 +17,8 @@ option(SOUND_BAKERY_TESTS "Build test library" OFF)
 # Only do these if this is the main project, and not if it is included through add_subdirectory
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 
-  set(CMAKE_C_STANDARD 23)
-  set (CMAKE_CXX_STANDARD 23)
+  set(CMAKE_C_STANDARD 17)
+  set (CMAKE_CXX_STANDARD 20)
 
   set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE)
 

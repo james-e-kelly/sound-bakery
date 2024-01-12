@@ -1,5 +1,6 @@
 #pragma once
 
+#include "sound_bakery/sound_bakery.h"
 #include "Delegates.h"
 
 namespace SB::Core

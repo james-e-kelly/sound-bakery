@@ -82,7 +82,10 @@ void SB::Engine::NodeInstance::init()
 
 void NodeInstance::createChannelGroup()
 {
-	SC_System_CreateNodeGroup(getChef(), std::out_ptr(m_nodeGroup));
+	SC_NODE_GROUP* nodeGroup = nullptr;
+	SC_System_CreateNodeGroup(getChef(), &nodeGroup);
+
+	m_nodeGroup.reset(nodeGroup);
 }
 
 void SB::Engine::NodeInstance::createParent()

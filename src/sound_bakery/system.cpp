@@ -26,8 +26,15 @@ System::System()
     assert(s_system == nullptr);
     s_system = this;
 
-    SC_RESULT createResult = SC_System_Create(std::out_ptr(m_chefSystem));
+    SC_SYSTEM* chefSystem = nullptr;
+
+    SC_RESULT createResult = SC_System_Create(&chefSystem);
     assert(createResult == MA_SUCCESS);   
+
+    if (createResult == MA_SUCCESS)
+    {
+        m_chefSystem.reset(chefSystem);
+    }
 }
 
 System* System::get()
