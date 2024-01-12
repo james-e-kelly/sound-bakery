@@ -54,6 +54,7 @@ jobs:
 
     - name: Download Dependencies
       if: matrix.os == 'ubuntu-latest'
+      shell: bash
       run: |
         sudo apt update
         sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev wayland-protocols libwayland-dev libxkbcommon-dev freeglut3-dev
