@@ -25,25 +25,5 @@ set_property(TARGET delegates PROPERTY CXX_STANDARD 20)
 
 add_library(SoundBakery::Delegates ALIAS delegates)
 
-set(SOUND_BAKERY_CLANG_TIDY 
-    "clang-tidy;
-    -header-filter=.;
-    -checks=*;
-    -warnings-as-errors=*;"
-)
-
-if(SOUND_BAKERY_TIDY)
-    set(CMAKE_CXX_CLANG_TIDY ${SOUND_BAKERY_CLANG_TIDY})
-    set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-    message(STATUS "Enabled clang-tidy for Sound Chef")
-endif()
-
 add_subdirectory(sound_chef)
-
-if(SOUND_BAKERY_TIDY)
-    set(CMAKE_CXX_CLANG_TIDY ${SOUND_BAKERY_CLANG_TIDY})
-    set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-    message(STATUS "Enabled clang-tidy for Sound Bakery")
-endif()
-
 add_subdirectory(sound_bakery)
