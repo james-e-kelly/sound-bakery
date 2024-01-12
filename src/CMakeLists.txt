@@ -5,8 +5,8 @@ message(STATUS "Fetching CppDelegates")
 
 FetchContent_Declare(
   cppdelegates
-  GIT_REPOSITORY https://github.com/simco50/CppDelegates.git
-  GIT_TAG        1.0.0
+  GIT_REPOSITORY https://github.com/KarateKidzz/CppDelegates.git
+  GIT_TAG        master
   GIT_SHALLOW    TRUE
   GIT_PROGRESS TRUE
   OVERRIDE_FIND_PACKAGE
@@ -20,6 +20,8 @@ add_library(delegates STATIC
 target_include_directories(delegates
     PUBLIC ${cppdelegates_SOURCE_DIR}
 )
+
+set_property(TARGET delegates PROPERTY CXX_STANDARD 20)
 
 add_library(SoundBakery::Delegates ALIAS delegates)
 
