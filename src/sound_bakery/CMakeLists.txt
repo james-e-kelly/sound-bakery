@@ -119,6 +119,7 @@ target_include_directories(sound_bakery
 target_precompile_headers(sound_bakery PRIVATE ${PCH_HEADER})
 
 set(BUILD_STATIC ON CACHE BOOL "" FORCE)
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 set(BUILD_WITH_STATIC_RUNTIME_LIBS ON CACHE BOOL "" FORCE)
 set(BUILD_UNIT_TESTS OFF CACHE BOOL "" FORCE)
 set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
@@ -152,6 +153,7 @@ FetchContent_GetProperties(yaml)
 
 if(NOT yaml_POPULATED)
   message(STATUS "Fetching yaml-cpp...")
+  set(YAML_CPP_FORMAT_SOURCE OFF CACHE BOOL "" FORCE)
   FetchContent_Populate(yaml)
   add_subdirectory(${yaml_SOURCE_DIR} ${yaml_BINARY_DIR})
 endif()
