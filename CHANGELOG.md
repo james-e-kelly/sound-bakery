@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fixed nfd compilation on Linux where source file was incorrectly set to .cpp when it should have been .c
+- Fixed nfd linking on MacOS where linking the APPKIT_FRAMEWORK happened before the nfd library was defined
 
 ## [0.1.0] - 2023-01-10
 
