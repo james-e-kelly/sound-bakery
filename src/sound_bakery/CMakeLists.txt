@@ -145,11 +145,16 @@ FetchContent_Declare(
   OVERRIDE_FIND_PACKAGE
 )
 
-message(STATUS "Fetching rttr")
+message(STATUS "Fetching rttr...")
 FetchContent_MakeAvailable(rttr)
 
-message(STATUS "Fetching yaml-cpp")
-FetchContent_MakeAvailable(yaml)
+FetchContent_GetProperties(yaml)
+
+if(NOT yaml_POPULATED)
+  message(STATUS "Fetching yaml-cpp...")
+  FetchContent_Populate(yaml)
+  add_subdirectory(${yaml_SOURCE_DIR} ${yaml_BINARY_DIR})
+endif()
 
 target_link_libraries(sound_bakery PUBLIC 
   SoundBakery::Delegates 
