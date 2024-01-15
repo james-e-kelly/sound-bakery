@@ -1,4 +1,5 @@
 #include "sound_chef.h"
+#include "sound_chef_dsp.h"
 
 #include <string.h>  // for memset
 
@@ -59,6 +60,8 @@ static SC_RESULT SC_DSP_LOWPASS_SET_PARAM_FLOAT(SC_DSP_STATE* state,
                                                 int index,
                                                 float value)
 {
+    (void)value;
+
     SC_RESULT result = MA_ERROR;
 
     ma_format format   = ma_format_f32;
@@ -68,6 +71,8 @@ static SC_RESULT SC_DSP_LOWPASS_SET_PARAM_FLOAT(SC_DSP_STATE* state,
 
     switch (index)
     {
+        default:
+            break;
         case SC_DSP_LOWPASS_CUTOFF:
         {
             ma_lpf_config lpfConfig =
@@ -81,9 +86,9 @@ static SC_RESULT SC_DSP_LOWPASS_SET_PARAM_FLOAT(SC_DSP_STATE* state,
     return result;
 }
 
-static SC_RESULT SC_DSP_LOWPASS_GET_PARAM_FLOAT(SC_DSP_STATE* state,
+static SC_RESULT SC_DSP_LOWPASS_GET_PARAM_FLOAT(SC_DSP_STATE* const state,
                                                 int index,
-                                                float* value)
+                                                const float* const value)
 {
     (void)state;
     (void)value;
@@ -92,6 +97,7 @@ static SC_RESULT SC_DSP_LOWPASS_GET_PARAM_FLOAT(SC_DSP_STATE* state,
 
     switch (index)
     {
+        default:
         case SC_DSP_LOWPASS_CUTOFF:
             break;
     }
@@ -141,6 +147,8 @@ static SC_RESULT SC_DSP_HIGHPASS_SET_PARAM_FLOAT(SC_DSP_STATE* state,
                                                  int index,
                                                  float value)
 {
+    (void)value;
+
     SC_RESULT result = MA_ERROR;
 
     ma_format format   = ma_format_f32;
@@ -150,6 +158,8 @@ static SC_RESULT SC_DSP_HIGHPASS_SET_PARAM_FLOAT(SC_DSP_STATE* state,
 
     switch (index)
     {
+        default:
+            break;
         case SC_DSP_HIGHPASS_CUTOFF:
         {
             ma_hpf_config hpfConfig =
@@ -165,7 +175,7 @@ static SC_RESULT SC_DSP_HIGHPASS_SET_PARAM_FLOAT(SC_DSP_STATE* state,
 
 static SC_RESULT SC_DSP_HIGHPASS_GET_PARAM_FLOAT(SC_DSP_STATE* state,
                                                  int index,
-                                                 float* value)
+                                                 const float* const value)
 {
     (void)state;
     (void)value;
@@ -174,6 +184,7 @@ static SC_RESULT SC_DSP_HIGHPASS_GET_PARAM_FLOAT(SC_DSP_STATE* state,
 
     switch (index)
     {
+        default:
         case SC_DSP_HIGHPASS_CUTOFF:
             break;
     }
@@ -208,6 +219,7 @@ SC_DSP_CONFIG SC_DSP_Config_Init(SC_DSP_TYPE type)
 
     switch (type)
     {
+        default:
         case SC_DSP_TYPE_UNKOWN:
             break;
         case SC_DSP_TYPE_FADER:
@@ -220,8 +232,6 @@ SC_DSP_CONFIG SC_DSP_Config_Init(SC_DSP_TYPE type)
             result.m_vtable = &s_highpassVtable;
             break;
         case SC_DSP_TYPE_DELAY:
-            break;
-        default:
             break;
     }
 

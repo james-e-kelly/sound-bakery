@@ -42,6 +42,7 @@ if(SOUND_BAKERY_MAIN_PROJECT)
   endif()
 
   if(SOUND_BAKERY_TIDY_SOURCE)
+    set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
     find_program(SOUND_BAKERY_CLANG_TIDY_EXE NAMES clang-tidy)
   endif()
 

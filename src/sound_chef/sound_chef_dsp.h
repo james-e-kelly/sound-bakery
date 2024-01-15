@@ -8,6 +8,8 @@
 #ifndef SOUND_CHEF_DSP
 #define SOUND_CHEF_DSP
 
+#define SC_STRING_NAME_LENGTH   16
+
 /**
  * @brief Holds instance data for a single SC_DSP.
  *
@@ -33,10 +35,10 @@ typedef SC_RESULT(SC_CALL* SC_DSP_GET_PARAM_FLOAT_CALLBACK)(
 
 typedef struct
 {
-    SC_DSP_CREATE_CALLBACK create;
-    SC_DSP_RELEASE_CALLBACK release;
-    SC_DSP_SET_PARAM_FLOAT_CALLBACK setFloat;
-    SC_DSP_GET_PARAM_FLOAT_CALLBACK getFloat;
+    SC_DSP_CREATE_CALLBACK m_create;
+    SC_DSP_RELEASE_CALLBACK m_release;
+    SC_DSP_SET_PARAM_FLOAT_CALLBACK m_setFloat;
+    SC_DSP_GET_PARAM_FLOAT_CALLBACK m_getFloat;
 
     SC_DSP_PARAMETER** m_params;
     int m_numParams;
@@ -83,7 +85,7 @@ typedef struct SC_DSP_PARAMETER_FLOAT
 struct SC_DSP_PARAMETER
 {
     SC_DSP_PARAMETER_TYPE m_type;
-    char m_name[16];
+    char m_name[SC_STRING_NAME_LENGTH];
 
     union
     {

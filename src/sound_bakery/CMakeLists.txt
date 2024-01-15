@@ -110,6 +110,10 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Header Files" FILES ${ATLA
 set(PCH_HEADER pch.h)
 set(PCH_SOURCE pch.cpp)
 
+if (SOUND_BAKERY_TIDY_SOURCE AND SOUND_BAKERY_CLANG_TIDY_EXE)
+  set(CMAKE_CXX_CLANG_TIDY clang-tidy)
+endif()
+
 add_library(sound_bakery STATIC ${ATLAS_SOURCES} ${ATLAS_HEADERS} ${PCH_SOURCE})
 add_library(SoundBakery::SoundBakery ALIAS sound_bakery)
 target_include_directories(sound_bakery
