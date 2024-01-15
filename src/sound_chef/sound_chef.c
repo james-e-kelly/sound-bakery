@@ -4,9 +4,9 @@
 #include "miniaudio.h"
 
 #ifndef NDEBUG
-#define DEBUG_ASSERT(condition) MA_ASSERT(condition)
+    #define DEBUG_ASSERT(condition) MA_ASSERT(condition)
 #else
-#define DEBUG_ASSERT(condition)
+    #define DEBUG_ASSERT(condition)
 #endif  // NDEBUG
 
 #define SC_CHECK(condition, result) \
