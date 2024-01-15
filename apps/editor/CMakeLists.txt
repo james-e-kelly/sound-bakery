@@ -215,3 +215,18 @@ if(MSVC)
 else()
   target_compile_options(editor PRIVATE -Wall -Wextra -Wpedantic)
 endif()
+
+if (SOUND_BAKERY_FORMAT_SOURCE AND SOUND_BAKERY_CLANG_FORMAT_EXE)
+  get_target_property(SOUND_BAKERY_EDITOR_ALL_FILES editor SOURCES)
+
+  foreach(source IN LISTS EDITOR_SOURCES EDITOR_HEADERS PCH_HEADER PCH_SOURCE)
+    list(APPEND SOUND_BAKERY_EDITOR_FORMAT_FILES "${CMAKE_CURRENT_SOURCE_DIR}/${source}")
+  endforeach()
+
+  add_custom_target(format_editor
+  COMMAND clang-format --style=file -i ${SOUND_BAKERY_EDITOR_FORMAT_FILES}
+  COMMAND_EXPAND_LISTS
+  COMMENT "Running clang-format"
+  VERBATIM
+  )
+endif()
