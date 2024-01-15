@@ -57,6 +57,7 @@ IncludeCategories:
 SortUsingDeclarations: Lexicographic
 SpaceAfterCStyleCast: false
 BreakBeforeBraces: Allman
+IndentPPDirectives: BeforeHash
 IndentFunctionDeclarationAfterType: true
 SpacesInParentheses: false
 SpacesInAngles:  false
