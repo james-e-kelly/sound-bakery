@@ -6,5 +6,5 @@
 class MethodDrawer final
 {
 public:
-	static void DrawObject(rttr::type type, rttr::instance instance);
+    static void DrawObject(rttr::type type, rttr::instance instance);
 };
