@@ -7,7 +7,7 @@ namespace SB::Core
 {
     /**
      * @brief Runtime lookup of objects, using their ID or name
-    */
+     */
     class Database : public Singleton<Database>
     {
     public:
@@ -18,14 +18,18 @@ namespace SB::Core
             if (newID == SB_INVALID_ID)
             {
                 newID = createNewID();
-                object->m_objectID = newID; // privately set the ID without recursion
+                object->m_objectID =
+                    newID;  // privately set the ID without recursion
             }
 
             assert(newID != 0 && "New ID cannot be 0!");
 
-            if (auto iter = m_idToPointerMap.find(oldID); iter != m_idToPointerMap.end())
+            if (auto iter = m_idToPointerMap.find(oldID);
+                iter != m_idToPointerMap.end())
             {
-                assert(iter->second.get() == object && "Provided object does not match the one in the database");
+                assert(
+                    iter->second.get() == object &&
+                    "Provided object does not match the one in the database");
 
                 m_idToPointerMap.erase(iter);
             }
@@ -33,13 +37,16 @@ namespace SB::Core
             m_idToPointerMap[newID].reset(object);
         }
 
-        void addOrUpdateName(std::string_view oldName, std::string_view newName, DatabaseObject* object)
+        void addOrUpdateName(std::string_view oldName,
+                             std::string_view newName,
+                             DatabaseObject* object)
         {
             assert(object != nullptr && "Object was nullptr");
 
             if (!oldName.empty())
             {
-                if (auto iter = m_nameToIdMap.find(oldName.data()); iter != m_nameToIdMap.end())
+                if (auto iter = m_nameToIdMap.find(oldName.data());
+                    iter != m_nameToIdMap.end())
                 {
                     m_nameToIdMap.erase(iter);
                 }
@@ -75,8 +82,8 @@ namespace SB::Core
 
         /**
          * @brief Removes the entry and gives ownership to the caller
-         * @param object 
-        */
+         * @param object
+         */
         std::shared_ptr<DatabaseObject> removeUnsafe(DatabaseObject* object)
         {
             assert(object != nullptr);
@@ -94,7 +101,8 @@ namespace SB::Core
         {
             DatabaseObject* result = nullptr;
 
-            if (auto iter = m_idToPointerMap.find(id); iter != m_idToPointerMap.end())
+            if (auto iter = m_idToPointerMap.find(id);
+                iter != m_idToPointerMap.end())
             {
                 result = iter->second.get();
             }
@@ -106,7 +114,8 @@ namespace SB::Core
         {
             DatabaseObject* result = nullptr;
 
-            if (auto iter = m_nameToIdMap.find(name.data()); iter != m_nameToIdMap.end())
+            if (auto iter = m_nameToIdMap.find(name.data());
+                iter != m_nameToIdMap.end())
             {
                 result = tryFind(iter->second);
             }
@@ -118,11 +127,12 @@ namespace SB::Core
         {
             std::weak_ptr<DatabaseObject> result;
 
-            if (auto iter = m_idToPointerMap.find(id); iter != m_idToPointerMap.end())
+            if (auto iter = m_idToPointerMap.find(id);
+                iter != m_idToPointerMap.end())
             {
                 result = iter->second;
             }
-            
+
             return result;
         }
 
@@ -130,7 +140,8 @@ namespace SB::Core
         {
             std::weak_ptr<DatabaseObject> result;
 
-            if (auto iter = m_nameToIdMap.find(name.data()); iter != m_nameToIdMap.end())
+            if (auto iter = m_nameToIdMap.find(name.data());
+                iter != m_nameToIdMap.end())
             {
                 result = tryFindWeak(iter->second);
             }
@@ -161,7 +172,8 @@ namespace SB::Core
         SB_ID createNewID();
 
     private:
-        std::unordered_map<SB_ID, std::shared_ptr<DatabaseObject>> m_idToPointerMap;
+        std::unordered_map<SB_ID, std::shared_ptr<DatabaseObject>>
+            m_idToPointerMap;
         std::unordered_map<std::string, SB_ID> m_nameToIdMap;
     };
-}
+}  // namespace SB::Core

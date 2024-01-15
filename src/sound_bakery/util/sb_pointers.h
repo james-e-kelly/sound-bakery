@@ -8,7 +8,7 @@ namespace SB
     {
         class Object;
         class DatabaseObject;
-    }
+    }  // namespace Core
 
     using LObjectPtr = SB::Core::DatabasePtr<SB::Core::DatabaseObject>;
-}
+}  // namespace SB

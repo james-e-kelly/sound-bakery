@@ -26,4 +26,4 @@ namespace SB::Engine
         RTTR_ENABLE(SB::Core::DatabaseObject)
         RTTR_REGISTRATION_FRIEND
     };
-}
+}  // namespace SB::Engine

@@ -1,18 +1,15 @@
 #include "sound_bakery/core/object/object.h"
 
-#include "sound_bakery/system.h"
 #include "sound_bakery/core/object/object_tracker.h"
+#include "sound_bakery/system.h"
 
 using namespace SB::Core;
 
-Object::~Object()
-{
-    ObjectTracker::get()->untrackObject(this, m_type);
-}
+Object::~Object() { ObjectTracker::get()->untrackObject(this, m_type); }
 
-SB::Engine::System* ObjectUtilities::getSystem() const 
-{ 
-    return SB::Engine::System::get(); 
+SB::Engine::System* ObjectUtilities::getSystem() const
+{
+    return SB::Engine::System::get();
 }
 
 SC_SYSTEM* ObjectUtilities::getChef() const

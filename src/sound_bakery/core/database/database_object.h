@@ -15,8 +15,9 @@ namespace SB::Core
     };
 
     /**
-     * @brief Base object type for any object that can exist in the editor/database. Holds an ID and name
-    */
+     * @brief Base object type for any object that can exist in the
+     * editor/database. Holds an ID and name
+     */
     class DatabaseObject : public Object, public DatabaseObjectUtilities
     {
     public:
@@ -41,4 +42,4 @@ namespace SB::Core
 
         RTTR_ENABLE(Object, DatabaseObjectUtilities)
     };
-}
+}  // namespace SB::Core

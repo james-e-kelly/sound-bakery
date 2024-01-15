@@ -1,11 +1,11 @@
 #pragma once
 
-#include "sound_bakery/sound_bakery.h"
 #include "Delegates.h"
+#include "sound_bakery/sound_bakery.h"
 
 namespace SB::Core
 {
-    template<typename T>
+    template <typename T>
     class Property
     {
         static_assert(std::is_arithmetic<T>::value);
@@ -14,13 +14,9 @@ namespace SB::Core
         using PropertyChangedDelegate = MulticastDelegate<T, T>;
 
     public:
-        Property()
-            : m_property(T()), m_min(0), m_max(1)
-        {}
+        Property() : m_property(T()), m_min(0), m_max(1) {}
 
-        Property(T value)
-            : m_property(value), m_min(value), m_max(value + 1)
-        {}
+        Property(T value) : m_property(value), m_min(value), m_max(value + 1) {}
 
         Property(T value, T min, T max)
             : m_property(value), m_min(min), m_max(max)
@@ -32,42 +28,46 @@ namespace SB::Core
 
         /**
          * @brief Copy constructor.
-         * 
+         *
          * Copies the min, max and value but not the delegate.
          * The newly created property will have a fresh delegate.
-        */
+         */
         Property(const Property& other)
-            : m_property(other.m_property), m_min(other.m_min), m_max(other.m_max), m_delegate()
-        {}
+            : m_property(other.m_property),
+              m_min(other.m_min),
+              m_max(other.m_max),
+              m_delegate()
+        {
+        }
 
         /**
          * @brief Move constructor.
-         * @param other 
-        */
+         * @param other
+         */
         Property(Property&& other) = default;
 
     public:
         /**
          * @brief Assignment operator.
-         * 
+         *
          * Copys all values from other to this Property, including the delegate.
          * @param other Property to copy from.
-         * @return 
-        */
-        Property& operator =(const Property& other)
+         * @return
+         */
+        Property& operator=(const Property& other)
         {
             if (this != &other)
             {
                 m_property = other.m_property;
-                m_min = other.m_min;
-                m_max = other.m_max;
+                m_min      = other.m_min;
+                m_max      = other.m_max;
                 m_delegate = other.m_delegate;
             }
 
             return *this;
         }
 
-        Property& operator =(Property&& other) = default;
+        Property& operator=(Property&& other) = default;
 
     public:
         void set(T value)
@@ -82,27 +82,15 @@ namespace SB::Core
             }
         }
 
-        [[nodiscard]] T get() const
-        {
-            return m_property;
-        }
+        [[nodiscard]] T get() const { return m_property; }
 
-        PropertyChangedDelegate& getDelegate()
-        {
-            return m_delegate;
-        }
+        PropertyChangedDelegate& getDelegate() { return m_delegate; }
 
-        [[nodiscard]] T getMin() const
-        {
-            return m_min;
-        }
+        [[nodiscard]] T getMin() const { return m_min; }
 
-        [[nodiscard]] T getMax() const
-        {
-            return m_max;
-        }
+        [[nodiscard]] T getMax() const { return m_max; }
 
-        [[nodiscard]] std::pair<T,T> getMinMaxPair() const
+        [[nodiscard]] std::pair<T, T> getMinMaxPair() const
         {
             return std::pair<T, T>(m_min, m_max);
         }
@@ -114,7 +102,7 @@ namespace SB::Core
         PropertyChangedDelegate m_delegate;
     };
 
-    using IntProperty = Property<int32_t>;
-    using IdProperty = Property<SB_ID>;
+    using IntProperty   = Property<int32_t>;
+    using IdProperty    = Property<SB_ID>;
     using FloatProperty = Property<float>;
-}
+}  // namespace SB::Core

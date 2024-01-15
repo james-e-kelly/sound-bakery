@@ -2,14 +2,17 @@
 
 #include "sound_bakery/parameter/parameter.h"
 
-void SB::Engine::SwitchContainer::setSwitchParameter(SB::Core::DatabasePtr<IntParameter> parameter)
+void SB::Engine::SwitchContainer::setSwitchParameter(
+    SB::Core::DatabasePtr<IntParameter> parameter)
 {
     m_switchParameter = parameter;
 
     populateChildKeys();
 }
 
-void SB::Engine::SwitchContainer::setSwitchToChild(std::unordered_map<SB::Core::DatabasePtr<IntParameterValue>, SB::Core::DatabasePtr<Container>> map)
+void SB::Engine::SwitchContainer::setSwitchToChild(
+    std::unordered_map<SB::Core::DatabasePtr<IntParameterValue>,
+                       SB::Core::DatabasePtr<Container>> map)
 {
     if (map.empty())
     {
@@ -27,9 +30,10 @@ void SB::Engine::SwitchContainer::populateChildKeys()
 
     if (m_switchParameter.lookup())
     {
-        for (const SB::Core::DatabasePtr<IntParameterValue>& value : m_switchParameter->getValues())
+        for (const SB::Core::DatabasePtr<IntParameterValue>& value :
+             m_switchParameter->getValues())
         {
-            m_switchToChild.insert({ value, SB::Core::DatabasePtr<Container>() });
+            m_switchToChild.insert({value, SB::Core::DatabasePtr<Container>()});
         }
     }
 }

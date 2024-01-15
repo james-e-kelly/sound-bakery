@@ -6,13 +6,10 @@ using namespace SB::Core;
 
 DatabaseObject::~DatabaseObject()
 {
-	//Database::get()->remove(this);
+    // Database::get()->remove(this);
 }
 
-SB_ID SB::Core::DatabaseObject::getDatabaseID() const
-{
-    return m_objectID;
-}
+SB_ID SB::Core::DatabaseObject::getDatabaseID() const { return m_objectID; }
 
 std::string_view SB::Core::DatabaseObject::getDatabaseName() const
 {

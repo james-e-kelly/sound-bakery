@@ -21,7 +21,8 @@ namespace SB::Engine
         ~NodeBase();
 
     public:
-        virtual void setParentNode(const SB::Core::DatabasePtr<NodeBase>& parent)
+        virtual void setParentNode(
+            const SB::Core::DatabasePtr<NodeBase>& parent)
         {
             m_parentNode = parent;
         }
@@ -73,7 +74,8 @@ namespace SB::Engine
         }
 
     public:
-        virtual bool canAddChild(const SB::Core::DatabasePtr<NodeBase>& child) const
+        virtual bool canAddChild(
+            const SB::Core::DatabasePtr<NodeBase>& child) const
         {
             if (m_childNodes.contains(child))
             {
@@ -124,10 +126,7 @@ namespace SB::Engine
             return children;
         }
 
-        std::size_t getChildCount() const
-        {
-            return m_childNodes.size();
-        }
+        std::size_t getChildCount() const { return m_childNodes.size(); }
 
     protected:
         SB::Core::DatabasePtr<NodeBase> m_parentNode;
@@ -138,22 +137,27 @@ namespace SB::Engine
         RTTR_REGISTRATION_FRIEND
     };
 
-	/**
-	 * @brief Root node that builds the core graph of sounds and busses.
-	*/
-	class Node : public NodeBase
-	{
+    /**
+     * @brief Root node that builds the core graph of sounds and busses.
+     */
+    class Node : public NodeBase
+    {
     public:
-        SB::Core::FloatProperty m_volume = SB::Core::FloatProperty(1.0f, 0.0f, 1.0f);
-        SB::Core::FloatProperty m_pitch = SB::Core::FloatProperty(1.0f, 0.0f, 1.0f);
-        SB::Core::FloatProperty m_lowpass = SB::Core::FloatProperty(1.0f, 0.0f, 100.0f);
-        SB::Core::FloatProperty m_highpass = SB::Core::FloatProperty(1.0f, 0.0f, 100.0f);
+        SB::Core::FloatProperty m_volume =
+            SB::Core::FloatProperty(1.0f, 0.0f, 1.0f);
+        SB::Core::FloatProperty m_pitch =
+            SB::Core::FloatProperty(1.0f, 0.0f, 1.0f);
+        SB::Core::FloatProperty m_lowpass =
+            SB::Core::FloatProperty(1.0f, 0.0f, 100.0f);
+        SB::Core::FloatProperty m_highpass =
+            SB::Core::FloatProperty(1.0f, 0.0f, 100.0f);
 
-        std::vector<SB::Core::DatabasePtr<EffectDescription>> m_effectDescriptions;
+        std::vector<SB::Core::DatabasePtr<EffectDescription>>
+            m_effectDescriptions;
 
         void addEffect(SC_DSP_TYPE type);
-        
+
         RTTR_ENABLE(NodeBase)
         RTTR_REGISTRATION_FRIEND
-	};
-}
+    };
+}  // namespace SB::Engine

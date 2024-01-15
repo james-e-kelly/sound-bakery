@@ -13,11 +13,11 @@ namespace SB::Editor
         Readonly
     };
 
-    inline std::string PayloadObject = "OBJECT";
-    inline std::string PayloadContainer = "CONTAINER";
-    inline std::string PayloadSound = "SOUND";
-    inline std::string PayloadBus = "BUS";
-    inline std::string PayloadIntParam = "INT_PARAM";
+    inline std::string PayloadObject        = "OBJECT";
+    inline std::string PayloadContainer     = "CONTAINER";
+    inline std::string PayloadSound         = "SOUND";
+    inline std::string PayloadBus           = "BUS";
+    inline std::string PayloadIntParam      = "INT_PARAM";
     inline std::string PayloadIntParamValue = "INT_PARAM_VALUE";
-    inline std::string PayloadFloatParam = "FLOAT_PARAM";
-}
+    inline std::string PayloadFloatParam    = "FLOAT_PARAM";
+}  // namespace SB::Editor

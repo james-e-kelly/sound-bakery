@@ -12,7 +12,7 @@ namespace SB::Core
 {
     /**
      * @brief Provides basic helper functions. Not meant to be used directly
-    */
+     */
     class ObjectUtilities
     {
     public:
@@ -24,10 +24,11 @@ namespace SB::Core
         RTTR_ENABLE()
     };
 
-	/**
-	 * @brief Simple base Object that all Sound Bakery objects should inherit from
-	*/
-	class Object : public ObjectUtilities
+    /**
+     * @brief Simple base Object that all Sound Bakery objects should inherit
+     * from
+     */
+    class Object : public ObjectUtilities
     {
     public:
         Object() = default;
@@ -37,13 +38,14 @@ namespace SB::Core
 
         /**
          * @brief Gets the most derived type of this object and upcasts it to T
-         * @tparam T 
-         * @return 
-        */
-        template<typename T>
+         * @tparam T
+         * @return
+         */
+        template <typename T>
         T* tryConvertObject() noexcept
         {
-            if (getType().is_derived_from<T>() || getType() == rttr::type::get<T>())
+            if (getType().is_derived_from<T>() ||
+                getType() == rttr::type::get<T>())
             {
                 return rttr::rttr_cast<T*, Object*>(this);
             }
@@ -62,10 +64,11 @@ namespace SB::Core
 
     private:
         /**
-         * @brief Cache of this object's type so it can be grabbed during destruction
-        */
+         * @brief Cache of this object's type so it can be grabbed during
+         * destruction
+         */
         mutable rttr::type m_type = rttr::type::get<void>();
 
         RTTR_ENABLE(ObjectUtilities)
-	};
-}
+    };
+}  // namespace SB::Core

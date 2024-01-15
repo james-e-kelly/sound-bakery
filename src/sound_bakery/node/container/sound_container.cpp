@@ -2,7 +2,10 @@
 
 #include "sound_bakery/sound/sound.h"
 
-void SB::Engine::SoundContainer::gatherSounds(std::vector<Container*>& soundContainers, const RuntimeFloatParameterMap& runtimeFloatParameters, const RuntimeIntParameterMap& runtimeIntParameters)
+void SB::Engine::SoundContainer::gatherSounds(
+    std::vector<Container*>& soundContainers,
+    const RuntimeFloatParameterMap& runtimeFloatParameters,
+    const RuntimeIntParameterMap& runtimeIntParameters)
 {
     soundContainers.push_back(this);
 }
@@ -19,7 +22,8 @@ SB::Engine::Sound* SB::Engine::SoundContainer::getSound()
     }
 }
 
-void SB::Engine::SoundContainer::setSound(const SB::Core::DatabasePtr<SB::Engine::Sound>& sound)
+void SB::Engine::SoundContainer::setSound(
+    const SB::Core::DatabasePtr<SB::Engine::Sound>& sound)
 {
     m_sound = sound;
 }

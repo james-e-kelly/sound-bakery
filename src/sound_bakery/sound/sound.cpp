@@ -2,23 +2,16 @@
 
 using namespace SB::Engine;
 
-Sound::Sound()
-    : m_soundName(),
-    m_sound(),
-    m_streaming(false)
-{   
-}
+Sound::Sound() : m_soundName(), m_sound(), m_streaming(false) {}
 
-Sound::~Sound()
-{
-    ma_sound_uninit(&m_sound);
-}
+Sound::~Sound() { ma_sound_uninit(&m_sound); }
 
 void Sound::loadSynchronous()
 {
     if (m_soundName.size())
     {
-        ma_result result = ma_sound_init_from_file(getMini(), m_soundName.c_str(), 0, nullptr, nullptr, &m_sound);
+        ma_result result = ma_sound_init_from_file(
+            getMini(), m_soundName.c_str(), 0, nullptr, nullptr, &m_sound);
         assert(result == MA_SUCCESS);
     }
 }
@@ -37,7 +30,4 @@ void Sound::setSoundName(const std::string& soundName)
     loadSynchronous();
 }
 
-const std::string& Sound::getSoundName() const
-{
-    return m_soundName;
-}
+const std::string& Sound::getSoundName() const { return m_soundName; }

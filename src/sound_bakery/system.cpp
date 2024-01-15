@@ -1,7 +1,7 @@
 #include "system.h"
 
-#include "sound_bakery/factory.h"
 #include "sound_bakery/core/object/object_global.h"
+#include "sound_bakery/factory.h"
 #include "sound_bakery/gameobject/gameobject.h"
 #include "sound_bakery/node/bus/bus.h"
 #include "sound_bakery/profiling/voice_tracker.h"
@@ -10,26 +10,37 @@ using namespace SB::Engine;
 
 static System* s_system = nullptr;
 
-void* operator new[](size_t size, const char* pName, int flags, unsigned debugFlags, const char* file, int line)
+void* operator new[](size_t size,
+                     const char* pName,
+                     int flags,
+                     unsigned debugFlags,
+                     const char* file,
+                     int line)
 {
     return std::malloc(size);
 }
 
-void* operator new[](size_t size, size_t alignment, size_t alignmentOffset, const char* pName, int flags, unsigned debugFlags, const char* file, int line)
+void* operator new[](size_t size,
+                     size_t alignment,
+                     size_t alignmentOffset,
+                     const char* pName,
+                     int flags,
+                     unsigned debugFlags,
+                     const char* file,
+                     int line)
 {
     return std::malloc(size);
 }
 
-System::System()
-    : m_listenerGameObject(nullptr)
-{   
+System::System() : m_listenerGameObject(nullptr)
+{
     assert(s_system == nullptr);
     s_system = this;
 
     SC_SYSTEM* chefSystem = nullptr;
 
     SC_RESULT createResult = SC_System_Create(&chefSystem);
-    assert(createResult == MA_SUCCESS);   
+    assert(createResult == MA_SUCCESS);
 
     if (createResult == MA_SUCCESS)
     {
@@ -37,10 +48,7 @@ System::System()
     }
 }
 
-System* System::get()
-{
-    return s_system;
-}
+System* System::get() { return s_system; }
 
 System* System::create()
 {
@@ -95,15 +103,16 @@ void SB::Engine::System::onLoaded()
         createMasterBus();
     }
 
-    //for (auto& object : m_objects)
+    // for (auto& object : m_objects)
     //{
-    //    //object.second->onProjectLoaded();
-    //}
+    //     //object.second->onProjectLoaded();
+    // }
 }
 
 void SB::Engine::System::createMasterBus()
 {
-    assert(m_masterBus.null() && "Shouldn't create a master bus when one exists");
+    assert(m_masterBus.null() &&
+           "Shouldn't create a master bus when one exists");
 
     m_masterBus = newDatabaseObject<Bus>();
     m_masterBus->setDatabaseName("Master Bus");
