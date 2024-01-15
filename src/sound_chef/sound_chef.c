@@ -241,7 +241,7 @@ SC_RESULT SC_NodeGroup_AddDSP(SC_NODE_GROUP* nodeGroup,
 
     SC_RESULT result = MA_ERROR;
 
-    switch (index)
+    switch ((int)index)
     {
         case SC_DSP_INDEX_HEAD:
         {
