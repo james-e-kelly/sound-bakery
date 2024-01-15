@@ -42,3 +42,18 @@ if(MSVC)
 else()
   target_compile_options(sound_chef PRIVATE -Wall -Wextra -Wpedantic)
 endif()
+
+if (SOUND_BAKERY_FORMAT_SOURCE AND SOUND_BAKERY_CLANG_FORMAT_EXE)
+  get_target_property(SOUND_CHEF_ALL_FILES sound_chef SOURCES)
+
+  foreach(source IN LISTS SOUND_CHEF_ALL_FILES)
+    list(APPEND SOUND_CHEF_FORMAT_FILES "${CMAKE_CURRENT_SOURCE_DIR}/${source}")
+  endforeach()
+
+  add_custom_target(format_sound_chef
+  COMMAND clang-format --style=file -i ${SOUND_CHEF_FORMAT_FILES}
+  COMMAND_EXPAND_LISTS
+  COMMENT "Running clang-format"
+  VERBATIM
+  )
+endif()
