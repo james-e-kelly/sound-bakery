@@ -140,8 +140,8 @@ SC_RESULT SC_System_CreateDSP(SC_SYSTEM* system,
     SC_CHECK_ARG(system != NULL);
     SC_CHECK_ARG(config != NULL);
     SC_CHECK_ARG(config->m_vtable != NULL);
-    SC_CHECK_ARG(config->m_vtable->create != NULL);
-    SC_CHECK_ARG(config->m_vtable->release != NULL);
+    SC_CHECK_ARG(config->m_vtable->m_create != NULL);
+    SC_CHECK_ARG(config->m_vtable->m_release != NULL);
     SC_CHECK_ARG(dsp != NULL);
 
     SC_RESULT result = MA_ERROR;
@@ -160,7 +160,7 @@ SC_RESULT SC_System_CreateDSP(SC_SYSTEM* system,
     (*dsp)->m_type   = config->m_type;
     (*dsp)->m_vtable = config->m_vtable;
 
-    result = (*dsp)->m_vtable->create((*dsp)->m_state);
+    result = (*dsp)->m_vtable->m_create((*dsp)->m_state);
 
     if (result != MA_SUCCESS)
     {
@@ -186,33 +186,33 @@ SC_RESULT SC_DSP_GetParameterFloat(SC_DSP* dsp, int index, float* value)
 {
     SC_CHECK_ARG(dsp != NULL);
     SC_CHECK_ARG(dsp->m_vtable != NULL);
-    SC_CHECK_ARG(dsp->m_vtable->getFloat != NULL);
+    SC_CHECK_ARG(dsp->m_vtable->m_getFloat != NULL);
     SC_CHECK_ARG(dsp->m_state != NULL);
     SC_CHECK_ARG(value != NULL);
     SC_CHECK_ARG(index >= 0);
 
-    return dsp->m_vtable->getFloat(dsp->m_state, index, value);
+    return dsp->m_vtable->m_getFloat(dsp->m_state, index, value);
 }
 
 SC_RESULT SC_DSP_SetParameterFloat(SC_DSP* dsp, int index, float value)
 {
     SC_CHECK_ARG(dsp != NULL);
     SC_CHECK_ARG(dsp->m_vtable != NULL);
-    SC_CHECK_ARG(dsp->m_vtable->setFloat != NULL);
+    SC_CHECK_ARG(dsp->m_vtable->m_setFloat != NULL);
     SC_CHECK_ARG(dsp->m_state != NULL);
     SC_CHECK_ARG(index >= 0);
 
-    return dsp->m_vtable->setFloat(dsp->m_state, index, value);
+    return dsp->m_vtable->m_setFloat(dsp->m_state, index, value);
 }
 
 SC_RESULT SC_DSP_Release(SC_DSP* dsp)
 {
     SC_CHECK_ARG(dsp != NULL);
     SC_CHECK_ARG(dsp->m_vtable != NULL);
-    SC_CHECK_ARG(dsp->m_vtable->release != NULL);
+    SC_CHECK_ARG(dsp->m_vtable->m_release != NULL);
     SC_CHECK_ARG(dsp->m_state != NULL);
 
-    SC_RESULT result = dsp->m_vtable->release(dsp->m_state);
+    SC_RESULT result = dsp->m_vtable->m_release(dsp->m_state);
     ma_free(dsp->m_state, NULL);
     ma_free(dsp, NULL);
 
