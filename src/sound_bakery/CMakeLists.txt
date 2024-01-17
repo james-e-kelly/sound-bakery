@@ -132,8 +132,8 @@ set(CUSTOM_DOXYGEN_STYLE OFF CACHE BOOL "" FORCE)
 
 FetchContent_Declare(
   rttr
-  GIT_REPOSITORY https://github.com/rttrorg/rttr.git
-  GIT_TAG        7edbd580cfad509a3253c733e70144e36f02ecd4
+  GIT_REPOSITORY https://github.com/KarateKidzz/rttr.git
+  GIT_TAG        21041653f9515143222552ea7b37c3ea35259eea
   GIT_SHALLOW    TRUE
   GIT_PROGRESS TRUE
   OVERRIDE_FIND_PACKAGE
