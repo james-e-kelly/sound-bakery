@@ -201,6 +201,11 @@ namespace SB::Core
         operator bool() const { return valid(); }
 
         /**
+         * @brief Returns true if this LazyPtr is invalid
+         */
+        bool operator!() const { return !valid(); }
+
+        /**
          * @brief Access the raw object
          * @return raw object
          */

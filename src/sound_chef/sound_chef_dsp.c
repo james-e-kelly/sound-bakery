@@ -88,7 +88,7 @@ static SC_RESULT SC_DSP_LOWPASS_SET_PARAM_FLOAT(SC_DSP_STATE* state,
 
 static SC_RESULT SC_DSP_LOWPASS_GET_PARAM_FLOAT(SC_DSP_STATE* const state,
                                                 int index,
-                                                const float* const value)
+                                                float* const value)
 {
     (void)state;
     (void)value;

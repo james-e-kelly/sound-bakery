@@ -130,19 +130,19 @@ void SB::Engine::NodeInstance::bindDelegates()
     m_referencingNode->m_highpass.getDelegate().AddRaw(
         this, &NodeInstance::setHighpass);
 
-    setVolume(0.0f, m_referencingNode->m_volume.get());
-    setPitch(0.0f, m_referencingNode->m_pitch.get());
-    setLowpass(0.0, m_referencingNode->m_lowpass.get());
-    setHighpass(0.0, m_referencingNode->m_highpass.get());
+    setVolume(0.0F, m_referencingNode->m_volume.get());
+    setPitch(0.0F, m_referencingNode->m_pitch.get());
+    setLowpass(0.0F, m_referencingNode->m_lowpass.get());
+    setHighpass(0.0F, m_referencingNode->m_highpass.get());
 }
 
 void SB::Engine::NodeInstance::createDSP()
 {
-    SC_DSP_CONFIG lpfConfig = SC_DSP_Config_Init(SC_DSP_TYPE_LOWPASS);
+    const SC_DSP_CONFIG lpfConfig = SC_DSP_Config_Init(SC_DSP_TYPE_LOWPASS);
     SC_System_CreateDSP(getChef(), &lpfConfig, &m_lowpass);
     SC_NodeGroup_AddDSP(m_nodeGroup.get(), m_lowpass, SC_DSP_INDEX_HEAD);
 
-    SC_DSP_CONFIG hpfConfig = SC_DSP_Config_Init(SC_DSP_TYPE_HIGHPASS);
+    const SC_DSP_CONFIG hpfConfig = SC_DSP_Config_Init(SC_DSP_TYPE_HIGHPASS);
     SC_System_CreateDSP(getChef(), &hpfConfig, &m_highpass);
     SC_NodeGroup_AddDSP(m_nodeGroup.get(), m_highpass, SC_DSP_INDEX_HEAD);
 
@@ -191,7 +191,7 @@ bool SB::Engine::NodeInstance::isPlaying() const
     if (SB::Engine::SoundContainer* const soundContainer =
             m_referencingNode->tryConvertObject<SB::Engine::SoundContainer>())
     {
-        return ma_sound_is_playing(soundContainer->getSound()->getSound());
+        return static_cast<bool>(ma_sound_is_playing(soundContainer->getSound()->getSound()));
     }
     return false;
 }
@@ -218,6 +218,8 @@ void NodeInstance::setPitch(float oldPitch, float newPitch)
 
 void NodeInstance::setLowpass(float oldLowpass, float newLowpass)
 {
+    (void)oldLowpass;
+
     const double percentage    = SB::Maths::easeOutCubic(newLowpass / 100.0);
     const double lowpassCutoff = (19980 - (19980.0 * percentage)) + 20.0;
     assert(lowpassCutoff >= 20.0);
@@ -228,6 +230,8 @@ void NodeInstance::setLowpass(float oldLowpass, float newLowpass)
 
 void NodeInstance::setHighpass(float oldHighpass, float newHighpass)
 {
+    (void)oldHighpass;
+
     const double percentage     = SB::Maths::easeInCubic(newHighpass / 100.0);
     const double highpassCutoff = (19980.0 * percentage) + 20.0;
     assert(highpassCutoff >= 20.0);

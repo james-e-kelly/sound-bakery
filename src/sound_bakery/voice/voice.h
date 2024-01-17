@@ -18,7 +18,7 @@ namespace SB::Engine
         ~Voice();
 
     public:
-        void playContainer(Container* container) noexcept;
+        void playContainer(Container* container);
         void update();
 
     public:

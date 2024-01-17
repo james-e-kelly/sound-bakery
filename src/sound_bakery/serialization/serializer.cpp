@@ -271,7 +271,7 @@ void loadProperty(YAML::Node& node,
                 }
                 else if (seq.IsSequence())
                 {
-                    for (YAML::Node childSeq : seq)
+                    for (const YAML::Node childSeq : seq)
                     {
                         if (childSeq.IsScalar())
                         {
@@ -299,7 +299,7 @@ void loadProperty(YAML::Node& node,
                 }
                 else if (seq.IsMap())
                 {
-                    int currentIndex = index++;
+                    const std::size_t currentIndex = index++;
 
                     assert(valueType.is_class());
 
@@ -315,7 +315,7 @@ void loadProperty(YAML::Node& node,
 
                     assert(variant.is_valid());
 
-                    for (rttr::property childProperty :
+                    for (const rttr::property childProperty :
                          valueType.get_properties())
                     {
                         if (YAML::Node prop =
@@ -325,15 +325,12 @@ void loadProperty(YAML::Node& node,
                         }
                     }
 
-                    rttr::type variantType = variant.get_type();
-                    rttr::type castToType  = valueType;
-
-                    bool convert = variant.convert(valueType);
+                    const bool convert = variant.convert(valueType);
                     assert(convert);
 
                     if (needToCreate)
                     {
-                        rttr::variant_sequential_view::const_iterator iterator =
+                        const rttr::variant_sequential_view::const_iterator iterator =
                             sequentialView.insert(
                                 sequentialView.begin() + currentIndex, variant);
 
@@ -341,7 +338,7 @@ void loadProperty(YAML::Node& node,
                     }
                     else
                     {
-                        bool set =
+                        const bool set =
                             sequentialView.set_value(currentIndex, variant);
                         assert(set);
                     }
@@ -357,7 +354,7 @@ void loadProperty(YAML::Node& node,
         {
             rttr::variant classVariant = property.get_value(instance);
 
-            for (rttr::property classProperty :
+            for (const rttr::property classProperty :
                  classVariant.get_type().get_properties())
             {
                 YAML::Node classNode = node[classProperty.get_name().data()];
@@ -381,7 +378,7 @@ void loadProperty(YAML::Node& node,
 
 void Serializer::saveObject(SB::Core::Object* object, YAML::Emitter& emitter)
 {
-    if (object)
+    if (object != nullptr)
     {
         Doc doc(emitter);
 
@@ -391,7 +388,7 @@ void Serializer::saveObject(SB::Core::Object* object, YAML::Emitter& emitter)
 
 void Serializer::saveSystem(SB::Engine::System* system, YAML::Emitter& emitter)
 {
-    if (system)
+    if (system != nullptr)
     {
         Doc doc(emitter);
 
@@ -401,7 +398,7 @@ void Serializer::saveSystem(SB::Engine::System* system, YAML::Emitter& emitter)
 
 void Serializer::loadSystem(SB::Engine::System* system, YAML::Node& node)
 {
-    if (system)
+    if (system != nullptr)
     {
         loadProperties(node, system, system->get_type().get_method("onLoaded"));
     }
@@ -410,10 +407,10 @@ void Serializer::loadSystem(SB::Engine::System* system, YAML::Node& node)
 rttr::instance SB::Core::Serialization::Serializer::createAndLoadObject(
     YAML::Node& node, std::optional<rttr::method> onLoadedMethod)
 {
-    rttr::type type =
+    const rttr::type type =
         rttr::type::get_by_name(node[s_ObjectTypeKey].as<std::string>());
 
-    rttr::instance created = type.create();
+    const rttr::instance created = type.create();
 
     assert(created);
 
@@ -454,9 +451,9 @@ bool SB::Core::Serialization::Serializer::loadProperties(
 
         if (onLoadedMethod && onLoadedMethod.value().is_valid())
         {
-            if (rttr::method& method = onLoadedMethod.value())
+            if (const rttr::method& method = onLoadedMethod.value())
             {
-                if (method.get_parameter_infos().size() == 0)
+                if (method.get_parameter_infos().empty())
                 {
                     method.invoke(instance);
                 }

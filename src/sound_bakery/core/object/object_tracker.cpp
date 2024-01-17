@@ -8,10 +8,10 @@ using namespace SB::Core;
 
 void ObjectTracker::trackObject(RawObjectPtr object)
 {
-    if (object)
+    if (object != nullptr)
     {
-        rttr::type type = object->getType();
-        SB_OBJECT_CATEGORY category =
+        const rttr::type type = object->getType();
+        const SB_OBJECT_CATEGORY category =
             SB::Util::TypeHelper::getCategoryFromType(type);
 
         m_typeToObjects[type].emplace(object);
@@ -22,12 +22,12 @@ void ObjectTracker::trackObject(RawObjectPtr object)
 void ObjectTracker::untrackObject(RawObjectPtr object,
                                   const rttr::type& typeOverride)
 {
-    if (object)
+    if (object != nullptr)
     {
-        rttr::type type = typeOverride != rttr::type::get<void>()
+        const rttr::type type = typeOverride != rttr::type::get<void>()
                               ? typeOverride
                               : object->getType();
-        SB_OBJECT_CATEGORY category =
+        const SB_OBJECT_CATEGORY category =
             SB::Util::TypeHelper::getCategoryFromType(type);
 
         m_typeToObjects[type].erase(object);

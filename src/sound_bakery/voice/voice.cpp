@@ -9,7 +9,7 @@ using namespace SB::Engine;
 Voice::Voice()  = default;
 Voice::~Voice() = default;
 
-void SB::Engine::Voice::playContainer(Container* container) noexcept
+void SB::Engine::Voice::playContainer(Container* container)
 {
     m_voiceInstances.clear();
 
@@ -31,17 +31,17 @@ void SB::Engine::Voice::playContainer(Container* container) noexcept
 
     for (Container* const containerToPlay : containersToPlay)
     {
-        if (!containerToPlay)
+        if (containerToPlay == nullptr)
         {
             continue;
         }
 
-        if (SoundContainer* const soundContainer =
+        if (auto* const soundContainer =
                 containerToPlay->tryConvertObject<SoundContainer>())
         {
             if (Sound* const sound = soundContainer->getSound())
             {
-                std::unique_ptr<NodeInstance>& voiceInstance =
+                const std::unique_ptr<NodeInstance>& voiceInstance =
                     m_voiceInstances.emplace_back(
                         std::make_unique<NodeInstance>());
                 voiceInstance->setSoundInstance(soundContainer, sound);
@@ -56,7 +56,7 @@ void SB::Engine::Voice::playContainer(Container* container) noexcept
 
 void Voice::update()
 {
-    if (m_voiceInstances.size())
+    if (!m_voiceInstances.empty())
     {
         std::vector<std::unique_ptr<NodeInstance>>::iterator iter;
         for (iter = m_voiceInstances.begin(); iter != m_voiceInstances.end();)
@@ -75,7 +75,7 @@ void Voice::update()
 
 bool SB::Engine::Voice::playingContainer(Container* container) const noexcept
 {
-    if (!container)
+    if (container == nullptr)
     {
         return false;
     }
@@ -136,4 +136,4 @@ NodeInstance* SB::Engine::Voice::voice(std::size_t index) const
     return m_voiceInstances[index].get();
 }
 
-bool SB::Engine::Voice::isPlaying() const { return m_voiceInstances.size(); }
+bool SB::Engine::Voice::isPlaying() const { return !m_voiceInstances.empty(); }

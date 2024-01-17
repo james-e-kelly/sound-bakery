@@ -144,7 +144,6 @@ namespace SB::Engine
 
         SB::Core::DatabasePtr<IntParameterValue> getSelectedValue() const
         {
-            int value = get();
             return SB::Core::DatabasePtr<IntParameterValue>(get());
         }
 

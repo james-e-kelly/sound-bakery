@@ -8,7 +8,10 @@
 
 using namespace SB::Engine;
 
-static System* s_system = nullptr;
+namespace
+{
+    static System* s_system = nullptr;
+}
 
 void* operator new[](size_t size,
                      const char* pName,
@@ -17,6 +20,12 @@ void* operator new[](size_t size,
                      const char* file,
                      int line)
 {
+    (void)pName;
+    (void)flags;
+    (void)debugFlags;
+    (void)file;
+    (void)line;
+
     return std::malloc(size);
 }
 
@@ -29,6 +38,14 @@ void* operator new[](size_t size,
                      const char* file,
                      int line)
 {
+    (void)alignment;
+    (void)alignmentOffset;
+    (void)pName;
+    (void)flags;
+    (void)debugFlags;
+    (void)file;
+    (void)line;
+
     return std::malloc(size);
 }
 
@@ -52,7 +69,7 @@ System* System::get() { return s_system; }
 
 System* System::create()
 {
-    if (!s_system)
+    if (s_system == nullptr)
     {
         s_system = new System();
     }
@@ -62,7 +79,7 @@ System* System::create()
 
 void System::destroy()
 {
-    if (s_system)
+    if (s_system != nullptr)
     {
         s_system->m_listenerGameObject->stopAll();
         SB::Core::Database::get()->clear();

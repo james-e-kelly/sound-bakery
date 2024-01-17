@@ -1,3 +1,5 @@
+message(STATUS "Adding editor")
+
 set(BUILD_FOLDER ${CMAKE_BINARY_DIR})
 
 set(FONT_FILES
@@ -58,7 +60,6 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Header Files" FILES ${EDIT
 set(PCH_HEADER pch.h)
 set(PCH_SOURCE pch.cpp)
 
-# Add application executable
 add_executable(editor 
   ${PCH_SOURCE}
   ${EDITOR_SOURCES}
@@ -73,7 +74,6 @@ target_include_directories(editor
 
 target_precompile_headers(editor PRIVATE ${PCH_HEADER})
 
-# Set name
 set_target_properties(editor PROPERTIES
   OUTPUT_NAME "Sound Bakery"
 )
@@ -138,9 +138,16 @@ FetchContent_Declare(
   OVERRIDE_FIND_PACKAGE
 )
 
+message(STATUS "Fetching glfw")
 FetchContent_MakeAvailable(glfw)
+
+message(STATUS "Fetching imgui")
 FetchContent_MakeAvailable(imgui)
+
+message(STATUS "Fetching native file dialog")
 FetchContent_MakeAvailable(nfd)
+
+message(STATUS "Fetching audio fonts")
 FetchContent_MakeAvailable(fonts)
 
 if(UNIX AND NOT APPLE)

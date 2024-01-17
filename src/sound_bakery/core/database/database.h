@@ -169,7 +169,7 @@ namespace SB::Core
         }
 
     private:
-        SB_ID createNewID();
+        static SB_ID createNewID();
 
     private:
         std::unordered_map<SB_ID, std::shared_ptr<DatabaseObject>>
