@@ -191,7 +191,8 @@ bool SB::Engine::NodeInstance::isPlaying() const
     if (SB::Engine::SoundContainer* const soundContainer =
             m_referencingNode->tryConvertObject<SB::Engine::SoundContainer>())
     {
-        return static_cast<bool>(ma_sound_is_playing(soundContainer->getSound()->getSound()));
+        return static_cast<bool>(
+            ma_sound_is_playing(soundContainer->getSound()->getSound()));
     }
     return false;
 }

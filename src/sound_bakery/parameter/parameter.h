@@ -35,7 +35,8 @@ namespace SB::Engine
     public:
         T get() const { return m_property.get(); }
         void set(T value) { m_property.set(value); }
-        SB::Core::Property<T>::PropertyChangedDelegate& getDelegate()
+
+        typename SB::Core::Property<T>::PropertyChangedDelegate& getDelegate()
         {
             return m_property.getDelegate();
         }

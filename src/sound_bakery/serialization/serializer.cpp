@@ -330,8 +330,8 @@ void loadProperty(YAML::Node& node,
 
                     if (needToCreate)
                     {
-                        const rttr::variant_sequential_view::const_iterator iterator =
-                            sequentialView.insert(
+                        const rttr::variant_sequential_view::const_iterator
+                            iterator = sequentialView.insert(
                                 sequentialView.begin() + currentIndex, variant);
 
                         assert(iterator != sequentialView.end());

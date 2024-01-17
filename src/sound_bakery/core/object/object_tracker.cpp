@@ -25,8 +25,8 @@ void ObjectTracker::untrackObject(RawObjectPtr object,
     if (object != nullptr)
     {
         const rttr::type type = typeOverride != rttr::type::get<void>()
-                              ? typeOverride
-                              : object->getType();
+                                    ? typeOverride
+                                    : object->getType();
         const SB_OBJECT_CATEGORY category =
             SB::Util::TypeHelper::getCategoryFromType(type);
 
