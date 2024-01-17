@@ -118,7 +118,7 @@ namespace SB::Core
          * been destroyed
          * @return
          */
-        bool stale() const { return !m_null && !m_objectPtr; }
+        bool stale() const { return !m_null && m_objectPtr.expired(); }
 
         /**
          * @brief Returns true if we hold an ID and a valid pointer to the
