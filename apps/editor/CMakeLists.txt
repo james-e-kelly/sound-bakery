@@ -99,8 +99,6 @@ set_source_files_properties(
 # Set output directory for executable
 set_target_properties(editor PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${BUILD_FOLDER})
 
-set(CMAKE_CXX_STANDARD 17) # no need to manually adjust the CXXFLAGS
-
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
