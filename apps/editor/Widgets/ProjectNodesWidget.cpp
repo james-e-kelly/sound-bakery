@@ -117,7 +117,7 @@ void ProjectNodesWidget::RenderSingleNode(rttr::type type,
             }
 
             const bool opened = ImGui::TreeNodeEx(
-                std::format("##{}", object->getDatabaseName()).c_str(), flags);
+                fmt::format("##{}", object->getDatabaseName()).c_str(), flags);
 
             if (std::string_view payloadString =
                     SB::Util::TypeHelper::getPayloadFromType(object->getType());
@@ -332,7 +332,7 @@ void ProjectNodesWidget::RenderCreateParentOrChildMenu(
                 SB::Core::DatabaseObject* const newObject =
                     SB::Engine::Factory::createDatabaseObjectFromType(type);
                 newObject->setDatabaseName(
-                    std::format("New {} Node", typeIndexName.data()));
+                    fmt::format("New {} Node", typeIndexName.data()));
                 newObject->onLoaded();
 
                 assert(newObject);

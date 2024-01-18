@@ -136,6 +136,15 @@ FetchContent_Declare(
   OVERRIDE_FIND_PACKAGE
 )
 
+# Need fmt library for better cross compiler support
+FetchContent_Declare(
+  fmt
+  GIT_REPOSITORY https://github.com/fmtlib/fmt.git
+  GIT_TAG        10.2.1
+  GIT_SHALLOW    TRUE
+  OVERRIDE_FIND_PACKAGE
+)
+
 message(STATUS "Fetching glfw")
 FetchContent_MakeAvailable(glfw)
 
@@ -147,6 +156,9 @@ FetchContent_MakeAvailable(nfd)
 
 message(STATUS "Fetching audio fonts")
 FetchContent_MakeAvailable(fonts)
+
+message(STATUS "Fetching fmt")
+FetchContent_MakeAvailable(fmt)
 
 if(UNIX AND NOT APPLE)
   set(NFD_SOURCES 
@@ -221,6 +233,7 @@ target_link_libraries(editor
     nfd
     glfw
     imgui
+    fmt::fmt
 )
 
 if(MSVC)
