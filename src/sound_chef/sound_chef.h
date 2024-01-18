@@ -4,6 +4,21 @@
  * similarly to an FMOD ChannelGroup.
  */
 
+/**
+ * @page ChefProgrammerGuide Sound Chef Programmer's Guide
+ * 
+ * Welcome to Sound Chef's programmer's guide. This guide aims to explain the codebase and help integrate it into a game engine.
+ * Check out the UserGuide for help on using the editor.
+ * 
+ * ## Creating The System Object
+ * 
+ * How to create the system and why it is important.
+ * 
+ * ## Playing A Sound
+ * 
+ * Here is an easy way to create and play a sound.
+ */
+
 #ifndef SOUND_CHEF_H
 #define SOUND_CHEF_H
 
