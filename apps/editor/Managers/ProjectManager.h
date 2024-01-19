@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Manager.h"
-
 #include "sound_bakery/core/database/database_object.h"
 
 #include "yaml-cpp/yaml.h"
@@ -15,10 +14,7 @@ struct Selection
 {
     Selection() = default;
 
-    void SelectObject(SB::Core::Object* object)
-    {
-        m_selected = object;
-    }
+    void SelectObject(SB::Core::Object* object) { m_selected = object; }
 
     rttr::type SelectedType() const
     {
@@ -38,8 +34,7 @@ private:
 class ProjectManager : public Manager
 {
 public:
-    ProjectManager(App* appOwner)
-    : Manager(appOwner) { }
+    ProjectManager(App* appOwner) : Manager(appOwner) {}
 
 public:
     void Init(const ProjectConfiguration&& projectConfig);
@@ -52,14 +47,21 @@ public:
 
 public:
     Selection& GetSelection() { return m_selection; }
-    SB::Engine::SoundContainer* GetPreviewSoundContainer() const { return m_previewSoundContainer; }
-    
+    SB::Engine::SoundContainer* GetPreviewSoundContainer() const
+    {
+        return m_previewSoundContainer;
+    }
+
 private:
-    void SaveYAMLToFile(YAML::Emitter& yaml, std::ofstream& stream, std::filesystem::path file) const;
-    void SaveObjectToFile(YAML::Emitter& yaml, std::ofstream& stream, SB_ID objectID, std::filesystem::path file, std::string_view fileExtension) const;
+    void SaveYAMLToFile(YAML::Emitter& yaml,
+                        std::ofstream& stream,
+                        std::filesystem::path file) const;
+    void SaveObjectToFile(YAML::Emitter& yaml,
+                          std::ofstream& stream,
+                          SB_ID objectID,
+                          std::filesystem::path file,
+                          std::string_view fileExtension) const;
 
-
-    
 private:
     ProjectConfiguration m_projectConfiguration;
 

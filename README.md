@@ -1,32 +1,32 @@
 # Sound Bakery
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+[![linux](https://github.com/KarateKidzz/sound-bakery/actions/workflows/linux.yaml/badge.svg?branch=dev)](https://github.com/KarateKidzz/sound-bakery/actions/workflows/linux.yaml)
+[![macos](https://github.com/KarateKidzz/sound-bakery/actions/workflows/macos.yaml/badge.svg?branch=dev)](https://github.com/KarateKidzz/sound-bakery/actions/workflows/macos.yaml)
+[![windows](https://github.com/KarateKidzz/sound-bakery/actions/workflows/windows.yaml/badge.svg?branch=dev)](https://github.com/KarateKidzz/sound-bakery/actions/workflows/windows.yaml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 ![WIP](https://img.shields.io/badge/Status-WIP-yellow)
-
-![Editor Screenshot](docs/img/sound-bakery-wip.png)
 
 *Sound Bakery is currently under development!*
 
-Sound Bakery is an open-source audio middleware tool with an editing workflow like Wwise and an API like FMOD.
+Sound Bakery is an open-source audio middleware tool with an editing workflow like Wwise and an API like FMOD. It aims to be a free alternative to the industry standards without sacrificing quality. It is also highly customisable and easy to edit.
 
-It is built on [miniaudio](https://miniaud.io/index.html) for audio playback and ImGui for editing.
+It is built on [miniaudio](https://miniaud.io/index.html) for audio playback and [Dear ImGui](https://github.com/ocornut/imgui) for editing.
 
-The library ships with a cross-platform editor application and a `Sound Bakery` library for integration with engines.
-
-It aims to be highly customisable and editable, making it suitable for many games and scenarios.
+The library comes in three parts:
+- A cross-platform editor
+- An adaptive audio library called `Sound Bakery`
+- An audio playback library called `Sound Chef` with features like virtual voices
 
 # Features
 - Cross-platform authoring application
-- C, C++ and C# API
-- Convert and package audio in SoundBanks
+- Compiles on Windows, MacOS, Linux GCC and Linux Clang
+- Built with C++20
+- Public C API
+- Adaptive audio support with container types mirroring Wwise
+- Soundbanks
 
-# Building
+# License
 
-Sound Bakery requires [Git](https://git-scm.com) for fetching dependencies and [CMake](https://cmake.org).
+Sound Bakery is distributed under the MIT [license](https://github.com/KarateKidzz/sound-bakery/blob/master/LICENSE).
 
-- Create a build directory: `mkdir build && cd build`
-- Generate the build files using CMake: `cmake ..`
-- Build the project: `make`
-
-# Running The Authoring Application
-Run the executable.
+The library and application are free to use in personal and commercial applications.

@@ -6,11 +6,11 @@ namespace SB
     {
         class Object;
         class DatabaseObject;
-        
-        template<typename T>
+
+        template <typename T>
         class DatabasePtr;
 
-        template<typename T>
+        template <typename T>
         class Property;
-    }
-}
+    }  // namespace Core
+}  // namespace SB

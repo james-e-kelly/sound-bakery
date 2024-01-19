@@ -23,13 +23,11 @@ namespace SB::Engine
 
     /**
      * @brief Wraps a SC_DSP_CONFIG
-    */
+     */
     class EffectDescription final : public SB::Core::DatabaseObject
     {
     public:
-        EffectDescription()
-            : SB::Core::DatabaseObject(),
-            m_config()
+        EffectDescription() : SB::Core::DatabaseObject(), m_config()
         {
             setDSPType(SC_DSP_TYPE_LOWPASS);
         }
@@ -42,13 +40,17 @@ namespace SB::Engine
 
             for (int i = 0; i < m_config.m_vtable->m_numParams; ++i)
             {
-                m_parameterDescriptions.emplace_back(m_config.m_vtable->m_params[i]);
+                m_parameterDescriptions.emplace_back(
+                    m_config.m_vtable->m_params[i]);
             }
         }
 
-        const std::vector<EffectParameterDescription> getParameters() const { return m_parameterDescriptions; }
-        const SC_DSP_CONFIG* getConfig() const                              { return &m_config; }
-        SC_DSP_TYPE getDSPType() const                                      { return m_config.m_type; }
+        const std::vector<EffectParameterDescription> getParameters() const
+        {
+            return m_parameterDescriptions;
+        }
+        const SC_DSP_CONFIG* getConfig() const { return &m_config; }
+        SC_DSP_TYPE getDSPType() const { return m_config.m_type; }
 
     private:
         SC_DSP_CONFIG m_config;
@@ -57,4 +59,4 @@ namespace SB::Engine
         RTTR_ENABLE(DatabaseObject)
         RTTR_REGISTRATION_FRIEND
     };
-}
+}  // namespace SB::Engine

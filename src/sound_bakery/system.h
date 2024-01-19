@@ -2,7 +2,6 @@
 
 #include "sound_bakery/core/core_fwd.h"
 #include "sound_bakery/core/database/database_ptr.h"
-
 #include "sound_bakery/util/fmod_pointers.h"
 
 namespace SB::Engine
@@ -15,11 +14,11 @@ namespace SB::Engine
         class VoiceTracker;
     }
 
-	/**
-	 * @brief Manager of the whole Sound Bakery.
-	*/
-	class System final
-	{
+    /**
+     * @brief Manager of the whole Sound Bakery.
+     */
+    class System final
+    {
     public:
         System();
 
@@ -37,10 +36,7 @@ namespace SB::Engine
         void createMasterBus();
 
     public:
-        SC_SYSTEM* getChef() const
-        {
-            return m_chefSystem.get();
-        }
+        SC_SYSTEM* getChef() const { return m_chefSystem.get(); }
 
         const SB::Core::DatabasePtr<Bus>& getMasterBus() const
         {
@@ -57,10 +53,11 @@ namespace SB::Engine
         SB::Core::DatabasePtr<Bus> m_masterBus;
 
         // Profiling
+
     private:
         std::unique_ptr<Profiling::VoiceTracker> m_voiceTracker;
 
         RTTR_ENABLE()
         RTTR_REGISTRATION_FRIEND
-	};
-}
+    };
+}  // namespace SB::Engine

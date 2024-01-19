@@ -1,10 +1,9 @@
-#include "app.h"
-
-#include "Subsystems/RendererSubsystem.h"
-#include "Subsystems/WidgetSubsystem.h"
+#include "App.h"
 
 #include "Managers/AppManager.h"
 #include "Managers/ProjectManager.h"
+#include "Subsystems/RendererSubsystem.h"
+#include "Subsystems/WidgetSubsystem.h"
 
 namespace PathHelpers
 {
@@ -14,7 +13,7 @@ namespace PathHelpers
 int App::Run(int argc, char** argv)
 {
     m_executableLocation = std::string(argv[0]);
-    
+
     AddSubsystemClass<RendererSubsystem>();
     AddSubsystemClass<WidgetSubsystem>();
 
@@ -37,7 +36,7 @@ int App::Run(int argc, char** argv)
     }
 
     m_hasInit = true;
-    
+
     m_appManager = std::make_unique<AppManager>(this);
     m_appManager->Init(m_executableLocation);
 
@@ -69,7 +68,7 @@ int App::Run(int argc, char** argv)
         {
             m_projectManager->Tick(deltaTime);
         }
-        
+
         // Rendering
         for (std::unique_ptr<Subsystem>& subsystem : m_subsystems)
         {
@@ -91,25 +90,25 @@ int App::Run(int argc, char** argv)
     return 0;
 }
 
-void App::RequestExit()
-{
-    m_isRequestingExit = true;
-}
+void App::RequestExit() { m_isRequestingExit = true; }
 
 std::string App::GetResourceFilePath(const char* filename) const
 {
-    std::filesystem::path executablePath (std::filesystem::path(m_executableLocation).parent_path());
+    std::filesystem::path executablePath(
+        std::filesystem::path(m_executableLocation).parent_path());
     assert(std::filesystem::exists(executablePath));
 
-    std::filesystem::path resourcePath = executablePath;    // by default, the exe sits next to its resources
+    std::filesystem::path resourcePath =
+        executablePath;  // by default, the exe sits next to its resources
 
     // We're in a MacOS App
     if (executablePath.filename().string() == std::string("MacOS"))
     {
-        resourcePath = executablePath.parent_path() / PathHelpers::ResourcesFolder;
+        resourcePath =
+            executablePath.parent_path() / PathHelpers::ResourcesFolder;
         assert(std::filesystem::exists(resourcePath));
     }
-    
+
     // We're possibly in a debug folder
     if (!std::filesystem::exists(resourcePath / "fonts"))
     {
@@ -126,7 +125,7 @@ void App::OpenProject(const ProjectConfiguration& projectConfiguration)
         m_projectManager->Exit();
         m_projectManager.reset();
     }
-    
+
     m_projectManager = std::make_unique<ProjectManager>(this);
     m_projectManager->Init(std::move(projectConfiguration));
 }

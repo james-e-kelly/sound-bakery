@@ -4,28 +4,28 @@
 
 #include "Delegates.h"
 
-#include <memory>
-#include <string>
-#include <vector>
-#include <filesystem>
-#include <chrono>
-#include <iostream>
-#include <unordered_set>
-#include <unordered_map>
-#include <format>
-#include <fstream>
-#include <variant>
-
 #include <stdio.h>
 #include <stdlib.h>
 
-using int8 = signed char;
-using uint8 = unsigned char;
-using int16 = signed short;
+#include <chrono>
+#include <filesystem>
+#include <fmt/core.h>
+#include <fstream>
+#include <iostream>
+#include <memory>
+#include <string>
+#include <unordered_map>
+#include <unordered_set>
+#include <variant>
+#include <vector>
+
+using int8   = signed char;
+using uint8  = unsigned char;
+using int16  = signed short;
 using uint16 = unsigned short;
-using int32 = signed int;
+using int32  = signed int;
 using uint32 = unsigned int;
-using int64 = long long;
+using int64  = long long;
 using uint64 = unsigned long long;
 
 struct ProjectConfiguration

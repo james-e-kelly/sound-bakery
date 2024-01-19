@@ -10,7 +10,7 @@ namespace SB::Engine
     {
         /**
          * @brief Tracks every active voice with helper functions
-        */
+         */
         class VoiceTracker final
         {
         public:
@@ -28,5 +28,5 @@ namespace SB::Engine
             std::unordered_set<SB_ID> m_playingNodeIDs;
             std::unordered_map<SB_ID, unsigned int> m_nodePlayingCount;
         };
-    }
-}
+    }  // namespace Profiling
+}  // namespace SB::Engine

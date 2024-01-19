@@ -3,7 +3,7 @@
 #include "sound_bakery/core/object/object.h"
 #include "sound_bakery/core/object/object_tracker.h"
 
- template<typename T>
+template <typename T>
 T* newObject()
 {
     static_assert(std::is_base_of<SB::Core::Object, T>::value);
@@ -22,7 +22,7 @@ T* newObject()
     return obj;
 }
 
-template<typename T>
+template <typename T>
 T* newDatabaseObject(SB_ID id = 0)
 {
     static_assert(std::is_base_of<SB::Core::DatabaseObject, T>::value);

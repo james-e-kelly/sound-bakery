@@ -6,17 +6,14 @@ using namespace SB::Core;
 
 DatabaseObject::~DatabaseObject()
 {
-	//Database::get()->remove(this);
+    // Database::get()->remove(this);
 }
 
-SB_ID SB::Core::DatabaseObject::getDatabaseID() const
-{
-    return m_objectID;
-}
+SB_ID SB::Core::DatabaseObject::getDatabaseID() const { return m_objectID; }
 
 std::string_view SB::Core::DatabaseObject::getDatabaseName() const
 {
-    return m_objectName.data();
+    return m_objectName;
 }
 
 void SB::Core::DatabaseObject::setDatabaseID(SB_ID id)
@@ -25,7 +22,7 @@ void SB::Core::DatabaseObject::setDatabaseID(SB_ID id)
 
     Database::get()->addOrUpdateID(m_objectID, id, this);
 
-    if (id)
+    if (id != 0)
     {
         m_objectID = id;
     }

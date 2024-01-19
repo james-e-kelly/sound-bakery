@@ -5,9 +5,8 @@
 class RootWidget : public Widget
 {
 public:
-    RootWidget(WidgetSubsystem* parentSubsystem)
-    : Widget(parentSubsystem) {}
-    
+    RootWidget(WidgetSubsystem* parentSubsystem) : Widget(parentSubsystem) {}
+
 public:
     virtual void Render() override;
 };

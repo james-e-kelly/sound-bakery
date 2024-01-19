@@ -9,7 +9,7 @@ namespace SB::Engine
 
     /**
      * @brief A runtime graph of nodes and busses, playing a sound or many.
-     * 
+     *
      */
     class Voice : public SB::Core::Object
     {
@@ -18,13 +18,14 @@ namespace SB::Engine
         ~Voice();
 
     public:
-        void playContainer(Container* container) noexcept;
+        void playContainer(Container* container);
         void update();
 
     public:
         bool playingContainer(Container* container) const noexcept;
 
-        const std::vector<std::unique_ptr<NodeInstance>>& getVoices() const noexcept;
+        const std::vector<std::unique_ptr<NodeInstance>>& getVoices()
+            const noexcept;
 
         std::size_t voices() const;
 
@@ -37,4 +38,4 @@ namespace SB::Engine
 
         std::vector<std::unique_ptr<NodeInstance>> m_voiceInstances;
     };
-}
+}  // namespace SB::Engine

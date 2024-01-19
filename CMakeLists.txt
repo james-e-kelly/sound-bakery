@@ -1,43 +1,65 @@
-# Disable in-source builds to prevent source tree corruption.
-if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
-  message(FATAL_ERROR "FATAL: In-source builds are not allowed. You should create a separate directory for build files.")
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
+  message(FATAL_ERROR "In-source builds are not allowed. You should create a separate directory for build files.")
 endif()
 
 cmake_minimum_required(VERSION 3.23)
 
-project(
-  SoundBakery 
-  VERSION 0.1.0
-  DESCRIPTION "An audio middleware solution that takes the best parts of Wwise and FMOD"
-)
+project(SoundBakery VERSION 0.1.0 DESCRIPTION "An open-source audio middleware tool with an authoring application and programmer's API")
+
+set(SOUND_BAKERY_MAIN_PROJECT OFF)
+if(CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
+  set(SOUND_BAKERY_MAIN_PROJECT ON)
+endif()
 
 option(SOUND_BAKERY_DOCS "Build doxygen docs" OFF)
 option(SOUND_BAKERY_TESTS "Build test library" OFF)
+option(SOUND_BAKERY_FORMAT_SOURCE "Format source" ${SOUND_BAKERY_MAIN_PROJECT})
+option(SOUND_BAKERY_TIDY_SOURCE "Run clang-tidy on source files" OFF)
 
-# Only do these if this is the main project, and not if it is included through add_subdirectory
-if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+message(STATUS "SOUND_BAKERY_MAIN_PROJECT=${SOUND_BAKERY_MAIN_PROJECT}")
+message(STATUS "SOUND_BAKERY_DOCS=${SOUND_BAKERY_DOCS}")
+message(STATUS "SOUND_BAKERY_TESTS=${SOUND_BAKERY_TESTS}")
+message(STATUS "SOUND_BAKERY_FORMAT_SOURCE=${SOUND_BAKERY_FORMAT_SOURCE}")
+message(STATUS "SOUND_BAKERY_TIDY_SOURCE=${SOUND_BAKERY_TIDY_SOURCE}")
 
-  set(CMAKE_C_STANDARD 23)
-  set (CMAKE_CXX_STANDARD 23)
+if(SOUND_BAKERY_MAIN_PROJECT)
+  set(CMAKE_C_STANDARD 17)
+  set(CMAKE_CXX_STANDARD 20)
+  set(CMAKE_CXX_EXTENSIONS OFF)
+
+  if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND UNIX AND NOT APPLE)
+    # Clang on Linux needs to use its own standard library headers and not the system default (gcc)
+    # https://stackoverflow.com/questions/76859275/error-compiling-a-cpp-containing-stdchrono-errorstatic-constexpr-unsigned-fra
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+  endif()
 
   set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE)
 
-  # Let's nicely support folders in IDEs
   set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-  set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
-
   set (CPACK_RESOURCE_FILE_LICENSE  
-    "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+    "${CMAKE_SOURCE_DIR}/LICENSE")
 
-  # Testing only available if this is the main app
-  # Note this needs to be done in the main CMakeLists
-  # since it calls enable_testing, which must be in the
-  # main CMakeLists.
+  if (${SOUND_BAKERY_FORMAT_SOURCE})
+    find_program(SOUND_BAKERY_CLANG_FORMAT_EXE NAMES clang-format)
+  endif()
+
+  if(DEFINED SOUND_BAKERY_CLANG_FORMAT_EXE)
+    message(STATUS "Found clang-format exe")
+  endif()
+
+  if(SOUND_BAKERY_TIDY_SOURCE)
+    set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+    find_program(SOUND_BAKERY_CLANG_TIDY_EXE NAMES clang-tidy)
+  endif()
+
+  if(DEFINED SOUND_BAKERY_TIDY_SOURCE)
+    message(STATUS "Found clang-tidy exe")
+  endif()
+
   include(CTest)
 
   if(SOUND_BAKERY_DOCS)
-    # Docs only available if this is the main app
     find_package(Doxygen)
     if(Doxygen_FOUND)
       add_subdirectory(docs)
@@ -58,10 +80,7 @@ set(CMAKE_FOLDER apps)
 add_subdirectory(apps)
 
 if(SOUND_BAKERY_TESTS)
-  # Testing only available if this is the main app
-  # Emergency override MODERN_CMAKE_BUILD_TESTING provided as well
-  if((CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME OR MODERN_CMAKE_BUILD_TESTING)
-    AND BUILD_TESTING)
+  if((CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME OR MODERN_CMAKE_BUILD_TESTING) AND BUILD_TESTING)
     add_subdirectory(tests)
   endif()
   else()

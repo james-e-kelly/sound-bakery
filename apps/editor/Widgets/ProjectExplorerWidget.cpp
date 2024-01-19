@@ -4,14 +4,13 @@
 #include "Managers/ProjectManager.h"
 #include "Widgets/FileBrowserWidget.h"
 #include "Widgets/ProjectNodesWidget.h"
-
 #include "imgui.h"
 
 void ProjectExplorerWidget::Start()
 {
     Widget::Start();
 
-    m_fileBrowserWidget = AddChildWidget<FileBrowserWidget>();
+    m_fileBrowserWidget  = AddChildWidget<FileBrowserWidget>();
     m_projectNodesWidget = AddChildWidget<ProjectNodesWidget>();
 }
 
@@ -29,7 +28,7 @@ void ProjectExplorerWidget::Render()
                 }*/
                 if (m_projectNodesWidget)
                 {
-                    m_projectNodesWidget->RenderPage({ SB_CATEGORY_SOUND });
+                    m_projectNodesWidget->RenderPage({SB_CATEGORY_SOUND});
                 }
                 ImGui::EndTabItem();
             }

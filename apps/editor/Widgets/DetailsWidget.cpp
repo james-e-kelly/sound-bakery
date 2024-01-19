@@ -2,12 +2,11 @@
 
 #include "App/App.h"
 #include "Managers/ProjectManager.h"
-#include "Utils/PropertyDrawer.h"
 #include "Utils/MethodDrawer.h"
-
-#include "sound_bakery/node/node.h"
-#include "sound_bakery/node/container/sound_container.h"
+#include "Utils/PropertyDrawer.h"
 #include "imgui.h"
+#include "sound_bakery/node/container/sound_container.h"
+#include "sound_bakery/node/node.h"
 
 void DetailsWidget::Render()
 {
@@ -15,7 +14,8 @@ void DetailsWidget::Render()
 
     if (ImGui::Begin("Details", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
     {
-        if (ProjectManager* const projectManager = GetApp()->GetProjectManager())
+        if (ProjectManager* const projectManager =
+                GetApp()->GetProjectManager())
         {
             Selection& selection = projectManager->GetSelection();
             if (SB::Core::Object* selected = selection.GetSelected())
@@ -27,7 +27,7 @@ void DetailsWidget::Render()
             else
             {
                 ImGui::TextUnformatted("Nothing Selected");
-            }        
+            }
         }
     }
 

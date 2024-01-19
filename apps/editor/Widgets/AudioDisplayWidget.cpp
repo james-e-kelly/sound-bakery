@@ -1,22 +1,23 @@
 #include "AudioDisplayWidget.h"
 
-#include "sound_bakery/system.h"
+#include "App/App.h"
+#include "Managers/ProjectManager.h"
+#include "imgui.h"
 #include "sound_bakery/gameobject/gameobject.h"
 #include "sound_bakery/node/container/sound_container.h"
 #include "sound_bakery/sound/sound.h"
+#include "sound_bakery/system.h"
 #include "sound_bakery/voice/node_instance.h"
 
-#include "imgui.h"
-
-#include "App/App.h"
-#include "Managers/ProjectManager.h"
-
-int littleEndian24Bit (const void* bytes)
+int littleEndian24Bit(const void* bytes)
 {
-    return (int32) ((((uint32) static_cast<const int8*> (bytes)[2]) << 16) | (((uint32) static_cast<const uint8*> (bytes)[1]) << 8) | ((uint32) static_cast<const uint8*> (bytes)[0]));
+    return (int32)((((uint32) static_cast<const int8*>(bytes)[2]) << 16) |
+                   (((uint32) static_cast<const uint8*>(bytes)[1]) << 8) |
+                   ((uint32) static_cast<const uint8*>(bytes)[0]));
 }
 //
-//float getAverageValueFromSampleRange(FMOD_SOUND* sound, unsigned int startIndex, unsigned int endIndex, unsigned int channelIndex)
+// float getAverageValueFromSampleRange(FMOD_SOUND* sound, unsigned int
+// startIndex, unsigned int endIndex, unsigned int channelIndex)
 //{
 //    if (endIndex <= startIndex)
 //    {
@@ -36,7 +37,8 @@ int littleEndian24Bit (const void* bytes)
 //    void* samples = nullptr;
 //    unsigned int samplesLength;
 //
-//    FMOD_RESULT lockResult = FMOD_Sound_Lock(sound, byteOffsetForSample, samplesToCover * bytesPerSample, &samples, 0, &samplesLength, 0);
+//    FMOD_RESULT lockResult = FMOD_Sound_Lock(sound, byteOffsetForSample,
+//    samplesToCover * bytesPerSample, &samples, 0, &samplesLength, 0);
 //
 //    if (lockResult != FMOD_OK)
 //    {
@@ -119,7 +121,9 @@ void AudioDisplayWidget::Render()
                 {
                     m_drawWidth = ImGui::GetWindowWidth();
 
-                    const bool hasResized = static_cast<int>(m_drawWidth) != static_cast<int>(m_previousDrawWidth);
+                    const bool hasResized =
+                        static_cast<int>(m_drawWidth) !=
+                        static_cast<int>(m_previousDrawWidth);
 
                     m_previousDrawWidth = m_drawWidth;
 
@@ -127,29 +131,41 @@ void AudioDisplayWidget::Render()
 
                     if (isPlaying)
                     {
-                        SB::Engine::SoundContainer* previewSound = GetApp()->GetProjectManager()->GetPreviewSoundContainer();
-                        /*FMOD_SOUND* sound = previewSound ? previewSound->getFSound() : nullptr;
+                        SB::Engine::SoundContainer* previewSound =
+                            GetApp()
+                                ->GetProjectManager()
+                                ->GetPreviewSoundContainer();
+                        /*FMOD_SOUND* sound = previewSound ?
+                        previewSound->getFSound() : nullptr;
 
                         unsigned int currentPostion = 0;
                         unsigned int soundLength = 0;
 
-                        if (SB::Engine::GameObject* listener = SB::Engine::System::get()->get()->getListenerGameObject())
+                        if (SB::Engine::GameObject* listener =
+                        SB::Engine::System::get()->get()->getListenerGameObject())
                         {
-                            if (SB::Engine::Voice* voice = listener->voiceCount() ? listener->getVoice(0) : nullptr)
+                            if (SB::Engine::Voice* voice =
+                        listener->voiceCount() ? listener->getVoice(0) :
+                        nullptr)
                             {
-                                if (SB::Engine::NodeInstance* nodeInstance = voice->voices() ? voice->voice(0) : nullptr)
+                                if (SB::Engine::NodeInstance* nodeInstance =
+                        voice->voices() ? voice->voice(0) : nullptr)
                                 {
-                                    if (FMOD_CHANNEL* channel = nodeInstance->getChannel())
+                                    if (FMOD_CHANNEL* channel =
+                        nodeInstance->getChannel())
                                     {
-                                        FMOD_Channel_GetPosition(channel, &currentPostion, FMOD_TIMEUNIT_PCM);
+                                        FMOD_Channel_GetPosition(channel,
+                        &currentPostion, FMOD_TIMEUNIT_PCM);
                                     }
                                 }
                             }
                         }
 
-                        FMOD_Sound_GetLength(sound, &soundLength, FMOD_TIMEUNIT_PCM);
+                        FMOD_Sound_GetLength(sound, &soundLength,
+                        FMOD_TIMEUNIT_PCM);
 
-                        m_playPixel = (int)(m_drawWidth * ((float)currentPostion / (float)soundLength));*/
+                        m_playPixel = (int)(m_drawWidth * ((float)currentPostion
+                        / (float)soundLength));*/
                     }
 
                     if (HasCache() && !hasResized)
@@ -158,33 +174,51 @@ void AudioDisplayWidget::Render()
 
                         const ImVec2 cursorPos = ImGui::GetCursorScreenPos();
 
-                        const float windowWidth = ImGui::GetWindowWidth();
+                        const float windowWidth  = ImGui::GetWindowWidth();
                         const float windowHeight = ImGui::GetWindowHeight();
 
                         const float windowPosX = cursorPos.x;
                         const float windowPosY = cursorPos.y;
 
-                        for (int channel = 0; channel < m_cachedSamples.size(); channel++)
+                        for (int channel = 0; channel < m_cachedSamples.size();
+                             channel++)
                         {
-                            const float channelLaneHeight = windowHeight / m_cachedSamples.size();
-                            const float channelLaneHalfHeight = channelLaneHeight / 2;
-                            const float channelStartHeight = windowPosY + (channel + (channelLaneHeight * channel) + channelLaneHalfHeight);
+                            const float channelLaneHeight =
+                                windowHeight / m_cachedSamples.size();
+                            const float channelLaneHalfHeight =
+                                channelLaneHeight / 2;
+                            const float channelStartHeight =
+                                windowPosY +
+                                (channel + (channelLaneHeight * channel) +
+                                 channelLaneHalfHeight);
 
-                            for (int sample = 0; sample < m_cachedSamples[channel].size(); sample++)
+                            for (int sample = 0;
+                                 sample < m_cachedSamples[channel].size();
+                                 sample++)
                             {
-                                float sampleValue = m_cachedSamples[channel][sample] * channelLaneHeight * 0.5f * scale;
+                                float sampleValue =
+                                    m_cachedSamples[channel][sample] *
+                                    channelLaneHeight * 0.5f * scale;
 
-                                ImVec2 bottomPoint{ cursorPos.x + static_cast<float>(sample), channelStartHeight + -sampleValue };
-                                ImVec2 topPoint{ cursorPos.x + static_cast<float>(sample), channelStartHeight + sampleValue };
+                                ImVec2 bottomPoint{
+                                    cursorPos.x + static_cast<float>(sample),
+                                    channelStartHeight + -sampleValue};
+                                ImVec2 topPoint{
+                                    cursorPos.x + static_cast<float>(sample),
+                                    channelStartHeight + sampleValue};
 
-                                drawList->AddLine(bottomPoint, topPoint, IM_COL32_WHITE);
+                                drawList->AddLine(bottomPoint, topPoint,
+                                                  IM_COL32_WHITE);
                             }
                         }
 
-                        ImVec2 bottomPlayHead{ cursorPos.x + m_playPixel, cursorPos.y + windowHeight };
-                        ImVec2 topPlayHead{ cursorPos.x + m_playPixel, cursorPos.y };
+                        ImVec2 bottomPlayHead{cursorPos.x + m_playPixel,
+                                              cursorPos.y + windowHeight};
+                        ImVec2 topPlayHead{cursorPos.x + m_playPixel,
+                                           cursorPos.y};
 
-                        drawList->AddLine(bottomPlayHead, topPlayHead, IM_COL32(255, 0, 0, 255));
+                        drawList->AddLine(bottomPlayHead, topPlayHead,
+                                          IM_COL32(255, 0, 0, 255));
                     }
                     else
                     {
@@ -205,7 +239,8 @@ void AudioDisplayWidget::Render()
 
 bool AudioDisplayWidget::HasCache()
 {
-    SB::Engine::SoundContainer* currentNode = GetApp()->GetProjectManager()->GetPreviewSoundContainer();
+    SB::Engine::SoundContainer* currentNode =
+        GetApp()->GetProjectManager()->GetPreviewSoundContainer();
 
     if (currentNode)
     {
@@ -224,22 +259,25 @@ void AudioDisplayWidget::GenerateCache()
 {
     m_cachedSamples.clear();
 
-    //SB::Engine::SoundContainer* preview = GetApp()->GetProjectManager()->GetPreviewSoundContainer();
-    //FMOD_SOUND* sound = preview ? preview->getFSound() : nullptr;
+    // SB::Engine::SoundContainer* preview =
+    // GetApp()->GetProjectManager()->GetPreviewSoundContainer(); FMOD_SOUND*
+    // sound = preview ? preview->getFSound() : nullptr;
 
-    //if (sound)
+    // if (sound)
     //{
-    //    int soundChannels;
-    //    unsigned int soundLength;
+    //     int soundChannels;
+    //     unsigned int soundLength;
 
     //    FMOD_Sound_GetFormat(sound, 0, 0, &soundChannels, 0);
     //    FMOD_Sound_GetLength(sound, &soundLength, FMOD_TIMEUNIT_PCM);
 
     //    const int width = static_cast<int>(ImGui::GetWindowWidth());
 
-    //    auto getSampleIndexFromPixel = [](int pixelIndex, int widgetWidth, int samplesInSound)
+    //    auto getSampleIndexFromPixel = [](int pixelIndex, int widgetWidth, int
+    //    samplesInSound)
     //    {
-    //        return (int)((float)samplesInSound * ((float)pixelIndex / (float)(widgetWidth)));
+    //        return (int)((float)samplesInSound * ((float)pixelIndex /
+    //        (float)(widgetWidth)));
     //    };
 
     //    for (int channel = 0; channel < soundChannels; channel++)
@@ -247,10 +285,12 @@ void AudioDisplayWidget::GenerateCache()
     //        std::vector<float> channelVector;
     //        for (int pixel = 0; pixel < width - 1; pixel++)
     //        {
-    //            const int sampleOneIndex = getSampleIndexFromPixel(pixel, width, soundLength);
-    //            const int sampleTwoIndex = getSampleIndexFromPixel(pixel + 1, width, soundLength);
+    //            const int sampleOneIndex = getSampleIndexFromPixel(pixel,
+    //            width, soundLength); const int sampleTwoIndex =
+    //            getSampleIndexFromPixel(pixel + 1, width, soundLength);
 
-    //            const float average = getAverageValueFromSampleRange(sound, sampleOneIndex, sampleTwoIndex, channel);
+    //            const float average = getAverageValueFromSampleRange(sound,
+    //            sampleOneIndex, sampleTwoIndex, channel);
 
     //            channelVector.push_back(average);
     //        }

@@ -14,4 +14,4 @@ namespace SB
     };
 
     using SystemPtr = std::unique_ptr<SC_SYSTEM, SC_SYSTEM_DELETER>;
-}
+}  // namespace SB

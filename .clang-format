@@ -1,0 +1,69 @@
+---
+AccessModifierOffset: -4
+AlignAfterOpenBracket: Align
+AlignConsecutiveAssignments: Consecutive
+AlignConsecutiveBitFields: Consecutive
+AlignConsecutiveMacros: Consecutive
+AlignEscapedNewlinesLeft: true
+AlignTrailingComments: true
+ConstructorInitializerIndentWidth: 4
+AllowAllParametersOfDeclarationOnNextLine: true
+AllowShortBlocksOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+AlwaysBreakTemplateDeclarations: true
+AlwaysBreakBeforeMultilineStrings: false
+BreakBeforeBinaryOperators: false
+BreakBeforeTernaryOperators: true
+BreakConstructorInitializers: BeforeColon
+EmptyLineAfterAccessModifier: Never
+EmptyLineBeforeAccessModifier: Always
+PointerAlignment: Left
+ReferenceAlignment: Pointer
+BinPackParameters: false
+ColumnLimit:     80
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+DerivePointerBinding: true
+ExperimentalAutoDetectBinPacking: false
+IndentCaseLabels: true
+MaxEmptyLinesToKeep: 1
+NamespaceIndentation: All
+ObjCSpaceBeforeProtocolList: false
+PenaltyBreakBeforeFirstCallParameter: 1
+PenaltyBreakComment: 60
+PenaltyBreakString: 1000
+PenaltyBreakFirstLessLess: 120
+PenaltyExcessCharacter: 1000000
+PenaltyReturnTypeOnItsOwnLine: 200
+PointerBindsToType: true
+SpacesBeforeTrailingComments: 2
+Cpp11BracedListStyle: true
+Standard:        c++20
+IndentWidth:     4
+TabWidth:        8
+UseTab:          Never
+SortIncludes: CaseSensitive
+IncludeBlocks: Regroup
+IncludeCategories:
+  # Headers in <> without extension.
+  - Regex:           '<([A-Za-z0-9\Q/-_\E])+>'
+    Priority:        4
+  # Headers in <> with extension.
+  - Regex:           '<([A-Za-z0-9.\Q/-_\E])+>'
+    Priority:        2
+  # Headers in "" with extension.
+  - Regex:           '"([A-Za-z0-9.\Q/-_\E])+"'
+    Priority:        1
+SortUsingDeclarations: Lexicographic
+SpaceAfterCStyleCast: false
+BreakBeforeBraces: Allman
+IndentPPDirectives: BeforeHash
+IndentFunctionDeclarationAfterType: true
+SpacesInParentheses: false
+SpacesInAngles:  false
+SpaceInEmptyParentheses: false
+SpacesInCStyleCastParentheses: false
+SpaceAfterControlStatementKeyword: true
+SpaceBeforeAssignmentOperators: true
+ContinuationIndentWidth: 4
+...

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "miniaudio.h"
-
 #include "sound_bakery/core/core_include.h"
 
 namespace SB::Engine
@@ -21,10 +20,7 @@ namespace SB::Engine
         const std::string& getSoundName() const;
         bool getIsStreaming() const { return m_streaming; }
 
-        ma_sound* getSound()
-        {
-            return &m_sound;
-        }
+        ma_sound* getSound() { return &m_sound; }
 
     private:
         ma_sound m_sound;
@@ -36,4 +32,4 @@ namespace SB::Engine
         RTTR_ENABLE(SB::Core::DatabaseObject)
         RTTR_REGISTRATION_FRIEND
     };
-}
+}  // namespace SB::Engine

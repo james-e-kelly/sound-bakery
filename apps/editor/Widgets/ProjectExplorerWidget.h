@@ -8,11 +8,12 @@ class ProjectExplorerWidget : public Widget
 {
 public:
     ProjectExplorerWidget(WidgetSubsystem* parentSubsystem)
-    : Widget(parentSubsystem) {}
-    
-    ProjectExplorerWidget(Widget* parentWidget)
-    : Widget(parentWidget) {}
-    
+        : Widget(parentSubsystem)
+    {
+    }
+
+    ProjectExplorerWidget(Widget* parentWidget) : Widget(parentWidget) {}
+
 public:
     virtual void Start() override;
     virtual void Render() override;

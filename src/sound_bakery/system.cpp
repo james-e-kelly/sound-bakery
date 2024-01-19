@@ -1,43 +1,75 @@
 #include "system.h"
 
-#include "sound_bakery/factory.h"
 #include "sound_bakery/core/object/object_global.h"
+#include "sound_bakery/factory.h"
 #include "sound_bakery/gameobject/gameobject.h"
 #include "sound_bakery/node/bus/bus.h"
 #include "sound_bakery/profiling/voice_tracker.h"
 
 using namespace SB::Engine;
 
-static System* s_system = nullptr;
-
-void* operator new[](size_t size, const char* pName, int flags, unsigned debugFlags, const char* file, int line)
+namespace
 {
+    static System* s_system = nullptr;
+}
+
+void* operator new[](size_t size,
+                     const char* pName,
+                     int flags,
+                     unsigned debugFlags,
+                     const char* file,
+                     int line)
+{
+    (void)pName;
+    (void)flags;
+    (void)debugFlags;
+    (void)file;
+    (void)line;
+
     return std::malloc(size);
 }
 
-void* operator new[](size_t size, size_t alignment, size_t alignmentOffset, const char* pName, int flags, unsigned debugFlags, const char* file, int line)
+void* operator new[](size_t size,
+                     size_t alignment,
+                     size_t alignmentOffset,
+                     const char* pName,
+                     int flags,
+                     unsigned debugFlags,
+                     const char* file,
+                     int line)
 {
+    (void)alignment;
+    (void)alignmentOffset;
+    (void)pName;
+    (void)flags;
+    (void)debugFlags;
+    (void)file;
+    (void)line;
+
     return std::malloc(size);
 }
 
-System::System()
-    : m_listenerGameObject(nullptr)
-{   
+System::System() : m_listenerGameObject(nullptr)
+{
     assert(s_system == nullptr);
     s_system = this;
 
-    SC_RESULT createResult = SC_System_Create(std::out_ptr(m_chefSystem));
-    assert(createResult == MA_SUCCESS);   
+    SC_SYSTEM* chefSystem = nullptr;
+
+    SC_RESULT createResult = SC_System_Create(&chefSystem);
+    assert(createResult == MA_SUCCESS);
+
+    if (createResult == MA_SUCCESS)
+    {
+        m_chefSystem.reset(chefSystem);
+    }
 }
 
-System* System::get()
-{
-    return s_system;
-}
+System* System::get() { return s_system; }
 
 System* System::create()
 {
-    if (!s_system)
+    if (s_system == nullptr)
     {
         s_system = new System();
     }
@@ -47,7 +79,7 @@ System* System::create()
 
 void System::destroy()
 {
-    if (s_system)
+    if (s_system != nullptr)
     {
         s_system->m_listenerGameObject->stopAll();
         SB::Core::Database::get()->clear();
@@ -88,15 +120,16 @@ void SB::Engine::System::onLoaded()
         createMasterBus();
     }
 
-    //for (auto& object : m_objects)
+    // for (auto& object : m_objects)
     //{
-    //    //object.second->onProjectLoaded();
-    //}
+    //     //object.second->onProjectLoaded();
+    // }
 }
 
 void SB::Engine::System::createMasterBus()
 {
-    assert(m_masterBus.null() && "Shouldn't create a master bus when one exists");
+    assert(m_masterBus.null() &&
+           "Shouldn't create a master bus when one exists");
 
     m_masterBus = newDatabaseObject<Bus>();
     m_masterBus->setDatabaseName("Master Bus");

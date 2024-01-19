@@ -1,3 +1,5 @@
+message(STATUS "Adding editor")
+
 set(BUILD_FOLDER ${CMAKE_BINARY_DIR})
 
 set(FONT_FILES
@@ -58,7 +60,6 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Header Files" FILES ${EDIT
 set(PCH_HEADER pch.h)
 set(PCH_SOURCE pch.cpp)
 
-# Add application executable
 add_executable(editor 
   ${PCH_SOURCE}
   ${EDITOR_SOURCES}
@@ -73,7 +74,6 @@ target_include_directories(editor
 
 target_precompile_headers(editor PRIVATE ${PCH_HEADER})
 
-# Set name
 set_target_properties(editor PROPERTIES
   OUTPUT_NAME "Sound Bakery"
 )
@@ -99,7 +99,10 @@ set_source_files_properties(
 # Set output directory for executable
 set_target_properties(editor PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${BUILD_FOLDER})
 
-set(CMAKE_CXX_STANDARD 17) # no need to manually adjust the CXXFLAGS
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
 
 FetchContent_Declare(
   glfw
@@ -133,26 +136,46 @@ FetchContent_Declare(
   OVERRIDE_FIND_PACKAGE
 )
 
+# Need fmt library for better cross compiler support
+FetchContent_Declare(
+  fmt
+  GIT_REPOSITORY https://github.com/fmtlib/fmt.git
+  GIT_TAG        10.2.1
+  GIT_SHALLOW    TRUE
+  OVERRIDE_FIND_PACKAGE
+)
+
+message(STATUS "Fetching glfw")
 FetchContent_MakeAvailable(glfw)
+
+message(STATUS "Fetching imgui")
 FetchContent_MakeAvailable(imgui)
+
+message(STATUS "Fetching native file dialog")
 FetchContent_MakeAvailable(nfd)
+
+message(STATUS "Fetching audio fonts")
 FetchContent_MakeAvailable(fonts)
+
+message(STATUS "Fetching fmt")
+FetchContent_MakeAvailable(fmt)
 
 if(UNIX AND NOT APPLE)
   set(NFD_SOURCES 
   ${nfd_SOURCE_DIR}/src/nfd_common.c
-  ${nfd_SOURCE_DIR}/src/nfd_gtk.cpp
+  ${nfd_SOURCE_DIR}/src/nfd_gtk.c
   ${nfd_SOURCE_DIR}/src/nfd_zenity.c
   )
+
+  find_package(PkgConfig REQUIRED)
+  pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
+  message("Using GTK version: ${GTK3_VERSION}")
 
 elseif(APPLE)
   set(NFD_SOURCES 
   ${nfd_SOURCE_DIR}/src/nfd_common.c
   ${nfd_SOURCE_DIR}/src/nfd_cocoa.m
   )
-
-  find_library(APPKIT_FRAMEWORK AppKit)
-  target_link_libraries(nfd ${APPKIT_FRAMEWORK})
 elseif(WIN32)
   set(NFD_SOURCES 
   ${nfd_SOURCE_DIR}/src/nfd_common.c
@@ -161,6 +184,16 @@ elseif(WIN32)
 endif()
 
 add_library(nfd STATIC ${NFD_SOURCES})
+
+if(APPLE)
+  find_library(APPKIT_FRAMEWORK AppKit)
+  target_link_libraries(nfd ${APPKIT_FRAMEWORK})
+endif()
+
+if (UNIX AND NOT APPLE)
+  target_include_directories(nfd PRIVATE ${GTK3_INCLUDE_DIRS})
+  target_link_libraries(nfd PRIVATE ${GTK3_LINK_LIBRARIES})
+endif()
 
 target_include_directories(nfd
   PUBLIC ${nfd_SOURCE_DIR}/src/include
@@ -200,6 +233,7 @@ target_link_libraries(editor
     nfd
     glfw
     imgui
+    fmt::fmt
 )
 
 if(MSVC)
@@ -207,4 +241,19 @@ if(MSVC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
 else()
   target_compile_options(editor PRIVATE -Wall -Wextra -Wpedantic)
+endif()
+
+if (SOUND_BAKERY_FORMAT_SOURCE AND SOUND_BAKERY_CLANG_FORMAT_EXE)
+  get_target_property(SOUND_BAKERY_EDITOR_ALL_FILES editor SOURCES)
+
+  foreach(source IN LISTS EDITOR_SOURCES EDITOR_HEADERS PCH_HEADER PCH_SOURCE)
+    list(APPEND SOUND_BAKERY_EDITOR_FORMAT_FILES "${CMAKE_CURRENT_SOURCE_DIR}/${source}")
+  endforeach()
+
+  add_custom_target(format_editor
+  COMMAND clang-format --style=file -i ${SOUND_BAKERY_EDITOR_FORMAT_FILES}
+  COMMAND_EXPAND_LISTS
+  COMMENT "Running clang-format"
+  VERBATIM
+  )
 endif()

@@ -4,102 +4,154 @@
 
 namespace SB::Engine
 {
-	class IntParameter;
-	class FloatParameter;
-	class IntParameterValue;
+    class IntParameter;
+    class FloatParameter;
+    class IntParameterValue;
 
-	/**
-	 * @brief Defines a database object with a changeable property.
-	 *
-	 * Used for changing effect parameters, choosing sounds and anything
-	*/
-	template<typename T>
-	class Parameter : public SB::Core::DatabaseObject
-	{
-	public:
-		virtual T get() const											{ return m_property.get(); }
-		virtual void set(T value)										{ m_property.set(value); }
-		SB::Core::Property<T>::PropertyChangedDelegate& getDelegate()	{ return m_property.getDelegate(); }
+    /**
+     * @brief Defines a database object with a changeable property.
+     *
+     * Used for changing effect parameters, choosing sounds and anything else.
+     */
+    template <typename T>
+    class Parameter : public SB::Core::DatabaseObject
+    {
+    public:
+        /**
+         * @brief Defines the type used for passing runtime versions/variations
+         * of this parameter.
+         */
+        using RuntimeParameter = std::pair<SB_ID, SB::Core::Property<T>>;
 
-	protected:	// made protected so child classes can add it to reflection
-		SB::Core::Property<T> m_property;
+        using RuntimeProperty = SB::Core::Property<T>;
 
-		RTTR_ENABLE(DatabaseObject)
-	};
+        Parameter() = default;
 
-	class FloatParameter : public Parameter<float>
-	{
-	public:
-		float m_min;
-		float m_max;
-		float m_default;
+        Parameter(T min, T max)
+            : m_property(T(), min, max), SB::Core::DatabaseObject()
+        {
+        }
 
-		RTTR_ENABLE(Parameter)
-	};
+    public:
+        T get() const { return m_property.get(); }
+        void set(T value) { m_property.set(value); }
 
-	/**
-	 * @brief Represents a discrete value for an IntParameter.
-	 * 
-	 * The object inherits from SB::Core::DatabaseObject to be universally referencable and have a display name.
-	 * The object knows its parameter IntParameter.
-	 * 
-	 * The object's ID is its parameter value.
-	*/
-	class IntParameterValue : public SB::Core::DatabaseObject
-	{
-	public:
-		SB::Core::DatabasePtr<IntParameter> m_parentParameter;
+        typename SB::Core::Property<T>::PropertyChangedDelegate& getDelegate()
+        {
+            return m_property.getDelegate();
+        }
 
-		RTTR_ENABLE(DatabaseObject)
-	};
+        /**
+         * @brief Copies this Parameter to a runtime version, suitable for
+         * handling unique variations per game object etc.
+         * @return The runtime version of this Parameter.
+         */
+        [[nodiscard]] RuntimeParameter createRuntimeParameterFromThis() const
+        {
+            return RuntimeParameter(getDatabaseID(), m_property);
+        }
 
-	/**
-	 * @brief Holds discrete named integer values.
-	 * 
-	 * Int parameters are what Wwise would call Switches and States. Sound Bakery makes uses the same type for both but _how_ they're used changes.
-	*/
-	class IntParameter : public Parameter<SB_ID>
-	{
-	public:
-		/**
-		 * @brief Adds a new value to the 
-		 * @param name 
-		 * @return 
-		*/
-		SB::Core::DatabasePtr<IntParameterValue> addNewValue(const std::string_view name)
-		{
-			SB::Core::DatabasePtr<IntParameterValue> result;
+    protected:  // made protected so child classes can add it to reflection
+        SB::Core::Property<T> m_property;
 
-			if (!name.empty())
-			{
-				if (IntParameterValue* parameterValue = newDatabaseObject<IntParameterValue>())
-				{
-					parameterValue->setDatabaseName(name);
-					parameterValue->m_parentParameter = this;
+        RTTR_ENABLE(DatabaseObject)
+    };
 
-					result = parameterValue;
+    class FloatParameter : public Parameter<float>
+    {
+    public:
+        float m_min;
+        float m_max;
+        float m_default;
 
-					m_values.emplace(parameterValue);
-				}
-			}
+        RTTR_ENABLE(Parameter)
+    };
 
-			return result;
-		}
+    /**
+     * @brief Represents a discrete value for an IntParameter.
+     *
+     * The object inherits from SB::Core::DatabaseObject to be universally
+     * referencable and have a display name. The object knows its parent
+     * IntParameter.
+     *
+     * The object's ID is its parameter value.
+     */
+    class IntParameterValue : public SB::Core::DatabaseObject
+    {
+    public:
+        SB::Core::DatabasePtr<IntParameter> m_parentParameter;
 
-		std::unordered_set<SB::Core::DatabasePtr<IntParameterValue>> getValues()
-		{
-			if (m_values.empty())
-			{
-				set(addNewValue("None").id());
-			}
+        RTTR_ENABLE(DatabaseObject)
+    };
 
-			return m_values;
-		}
+    /**
+     * @brief Holds discrete named integer values.
+     *
+     * Int parameters are what Wwise would call Switches and States. Sound
+     * Bakery uses the same type for both but _how_ they're used changes.
+     */
+    class IntParameter : public Parameter<SB_ID>
+    {
+    public:
+        IntParameter()
+            : m_values(), Parameter(SB_ID(), 18'446'744'073'709'551'615llu)
+        {
+        }
 
-	private:
-		std::unordered_set<SB::Core::DatabasePtr<IntParameterValue>> m_values;
+        /**
+         * @brief Adds a new value to the parameter.
+         * @param name Name of the parameter value
+         * @return The newly created parameter value that's in the database
+         */
+        SB::Core::DatabasePtr<IntParameterValue> addNewValue(
+            const std::string_view name)
+        {
+            SB::Core::DatabasePtr<IntParameterValue> result;
 
-		RTTR_ENABLE(Parameter)
-		RTTR_REGISTRATION_FRIEND
-	};
-}
+            if (!name.empty())
+            {
+                if (IntParameterValue* parameterValue =
+                        newDatabaseObject<IntParameterValue>())
+                {
+                    parameterValue->setDatabaseName(name);
+                    parameterValue->m_parentParameter = this;
+
+                    result = parameterValue;
+
+                    m_values.emplace(parameterValue);
+                }
+            }
+
+            return result;
+        }
+
+        std::unordered_set<SB::Core::DatabasePtr<IntParameterValue>> getValues()
+        {
+            if (m_values.empty())
+            {
+                setSelectedValue(addNewValue("None"));
+            }
+
+            return m_values;
+        }
+
+        void setSelectedValue(SB::Core::DatabasePtr<IntParameterValue> value)
+        {
+            if (m_values.contains(value))
+            {
+                set(value.id());
+            }
+        }
+
+        SB::Core::DatabasePtr<IntParameterValue> getSelectedValue() const
+        {
+            return SB::Core::DatabasePtr<IntParameterValue>(get());
+        }
+
+    private:
+        std::unordered_set<SB::Core::DatabasePtr<IntParameterValue>> m_values;
+
+        RTTR_ENABLE(DatabaseObject)
+        RTTR_REGISTRATION_FRIEND
+    };
+}  // namespace SB::Engine

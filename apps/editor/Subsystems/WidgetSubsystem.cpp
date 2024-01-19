@@ -1,8 +1,7 @@
 #include "WidgetSubsystem.h"
 
-#include "imgui.h"
-
 #include "Widgets/RootWidget.h"
+#include "imgui.h"
 
 int WidgetSubsystem::Init()
 {
@@ -13,7 +12,7 @@ int WidgetSubsystem::Init()
 void WidgetSubsystem::Tick(double deltaTime)
 {
     assert(m_widgets.size() > 0);
-    
+
     for (int index = m_widgets.size() - 1; index >= 0; index--)
     {
         std::unique_ptr<Widget>& widget = m_widgets[index];
@@ -22,7 +21,7 @@ void WidgetSubsystem::Tick(double deltaTime)
         {
             widget->Start();
         }
-        
+
         widget->Tick(deltaTime);
 
         // We destroy before rendering

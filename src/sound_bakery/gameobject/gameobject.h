@@ -35,4 +35,4 @@ namespace SB::Engine
     private:
         std::vector<std::unique_ptr<Voice>> m_voices;
     };
-}
+}  // namespace SB::Engine
