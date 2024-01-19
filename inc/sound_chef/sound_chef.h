@@ -10,7 +10,7 @@
 /**
  * @page UserManual User Manual
  * 
- * - @subpage Inspiration
+ * - @subpage Design
  * - @subpage Roadmap
  * - @subpage Guides
  */

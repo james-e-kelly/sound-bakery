@@ -1,29 +1,15 @@
-# Inspiration {#Inspiration}
-Game audio is dominated by Wwise and FMOD. Both are amazing tools and cater to different markets. Having learnt on FMOD and used Wwise professionaly in the AAA industry, I can see both their strengths and weaknesses. With this in mind, I feel there is a gap in the market for an open-source alternative.
+# Design Philosophy {#Design}
 
-It's near impossible for Sound Bakery to add more features than Wwise or FMOD but I do believe it can lay a better foundation for future development. For example, FMOD has the best API and is emulated in Sound Bakery but if you want to modify the code, you need a development budget over $1.5 and an extra $15k to gain access to the source. With Sound Bakery, if you want a new feature in the program, you can write it yourself. Even visuals and widgets can be tweaked easily without the need for something like WAAPI or a Javascript interface.
+When writing a new audio middleware tool, it is almost impossible not to mention [Wwise](https://www.audiokinetic.com/en/products/wwise/) and [FMOD](https://fmod.com). They dominate the industry and have established well-designed patterns for adaptive audio. Sound Bakery takes heavy inspiration from both. While there are alternatives like [SoLoud](https://solhsa.com/soloud/) and in-engine tools like [Unreal's](https://docs.unrealengine.com/5.2/en-US/working-with-audio-in-unreal-engine/), there are downsides to their approaches that Sound Bakery hopes to avoid.
 
-# Philosophy
-Given the above, it's possible to see how powerful an engine would be if it combined the best parts of Wwise and FMOD.
+At its simplest, adaptive audio solves the problem of 'what sound(s) should I play for this game event?'. This question means an engine must track variable parameters from the game and use them to select one or more sounds. Sound Bakery creates this selection logic with a tree of nodes where each node can either be a sound or hold some logic for choosing a child node. Users can stack nodes to create more and more complex behavior. 
 
-Sound Bakery aims to be that engine. To explain how, it's easiest to break up the library into three parts: features, editor, and integration.
+This design doesn't abstract away from the problem too much. For example, FMOD uses timelines and moves the play cursor based on conditions to play a different sound. This approach is acceptable but slightly cumbersome, adding an extra layer of abstraction that isn't needed. FMOD chose this approach to make the tool approachable for users from a DAW. Sound Bakery's approach (inherited from Wwise) might alienate a sound designer at first glance but becomes intuitive once learned.
 
-## Features
-At the most basic, an adaptive audio engine needs an abstraction over audio files so it can play one or many based on parameters from the game.
+Once sound selection is solved, an adaptive audio engine must package its audio for efficient performance at runtime. Uncompressed audio files can be incredibly large and bloat any install size. Moreover, audio is usually reserved only a small portion of the platform's memory, requiring audio to stay compressed in memory. Sound Bakery solves this problem with Soundbanks. The standard approach is to compress many audio files into one file to limit the number of calls to the storage device. Wwise has started to pack each event into a unique soundbank, ensuring only the audio required for the scene is loaded. Sound Bakery will explore this approach, but it will not be a priority.
 
-Sound Bakery takes inspiration from Wwise and its database approach. While less approachable than linear tracks with audio placed upon them, it is far more powerful. Moreover, game audio is inherently non-linear and tools should reflect this.
+With selection logic and Soundbanks, the core of Sound Bakery is complete.
 
-However, while Wwise's database approach is powerful, limitations have been placed on it. For example, aux sends and effects number limits. This is not copied in Sound Bakery.
+## Low-Level Audio Playback
 
-## Editor
-
-## Integrations
-An audio engine is only as good as its integration with a game engine. Wwise is a poor example for integrating with an engine.
-
-To integrate Wwise with Unreal, for example, a custom launcher must be used that downloads and adds thousands of files (mainly plugins) to the engine.
-
-Secondly, the Wwise integration has a bloated interface with a million-and-one ways to post an event. Modifying Wwise to suit a game's needs can be very cumbersome.
-
-Conversely, FMOD has great integrations and has generally been ahead of Wwise for many years. I vividly remember my confusion when Wwise didn't auto-import events to Unreal like FMOD did.
-
-Sound Bakery aims to emulate FMOD's success in this regard and provide an easy to use API and minimal files for linking to the engine.
+How an audio engine sends its audio to the user is essential. Sound Bakery uses the well-regarded node graph approach, where an output node iterates over its inputs to create output. Check out miniaudio for the library that implements Sound Bakery's node graph.
