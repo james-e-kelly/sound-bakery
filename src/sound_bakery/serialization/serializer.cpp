@@ -310,7 +310,7 @@ void loadProperty(YAML::Node& node,
                     }
 
                     rttr::variant variant =
-                        needToCreate ? valueType.create()
+                        needToCreate ? valueType.create_default()
                                      : sequentialView.get_value(currentIndex);
 
                     assert(variant.is_valid());
@@ -410,7 +410,7 @@ rttr::instance SB::Core::Serialization::Serializer::createAndLoadObject(
     const rttr::type type =
         rttr::type::get_by_name(node[s_ObjectTypeKey].as<std::string>());
 
-    const rttr::instance created = type.create();
+    const rttr::instance created = type.create_default();
 
     assert(created);
 

@@ -376,7 +376,7 @@ bool PropertyDrawer::DrawSequentialContainer(
         const rttr::type type = view.get_value_type();
 
         rttr::variant_sequential_view::const_iterator insertedIterator =
-            view.insert(view.begin() + view.get_size(), type.create());
+            view.insert(view.begin() + view.get_size(), type.create_default());
 
         edited = insertedIterator != view.end();
     }
@@ -428,7 +428,7 @@ bool PropertyDrawer::DrawAssociateContainer(
         if (view.is_key_only_type())
         {
             std::pair<rttr::variant_associative_view::const_iterator, bool>
-                insertedIterator = view.insert(keyType.create());
+                insertedIterator = view.insert(keyType.create_default());
             edited               = insertedIterator.second;
         }
         else
