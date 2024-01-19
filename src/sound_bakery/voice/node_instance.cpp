@@ -30,13 +30,12 @@ void SB::Engine::NodeInstance::setSoundInstance(SoundContainer* soundContainer,
 
     init();
 
-    ma_result attach = ma_node_attach_output_bus(
-        sound->getSound(), 0, m_nodeGroup.get()->m_tail->m_state->m_userData,
-        0);
-    assert(attach == MA_SUCCESS);
+    SC_SOUND_INSTANCE* soundInstance = nullptr;
+    SC_RESULT playResult = SC_System_PlaySound(getChef(), sound->getSound(), &soundInstance,
+                        m_nodeGroup.get(), false);
+    m_soundInstance.reset(soundInstance);
 
-    ma_result start = ma_sound_start(sound->getSound());
-    assert(start == MA_SUCCESS);
+    assert(playResult == MA_SUCCESS);
 }
 
 void SB::Engine::NodeInstance::setNodeInstance(Container* container) noexcept
@@ -188,13 +187,9 @@ void SB::Engine::NodeInstance::attachToParent()
 
 bool SB::Engine::NodeInstance::isPlaying() const
 {
-    if (SB::Engine::SoundContainer* const soundContainer =
-            m_referencingNode->tryConvertObject<SB::Engine::SoundContainer>())
-    {
-        return static_cast<bool>(
-            ma_sound_is_playing(soundContainer->getSound()->getSound()));
-    }
-    return false;
+    SC_BOOL playing = false;
+    SC_SoundInstance_IsPlaying(m_soundInstance.get(), &playing);
+    return playing;
 }
 
 void NodeInstance::setVolume(float oldVolume, float newVolume)

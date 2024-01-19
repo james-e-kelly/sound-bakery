@@ -1,5 +1,4 @@
-#include "sound_chef.h"
-#include "sound_chef_dsp.h"
+#include "sound_chef/sound_chef.h"
 
 #include <string.h>  // for memset
 
@@ -175,7 +174,7 @@ static SC_RESULT SC_DSP_HIGHPASS_SET_PARAM_FLOAT(SC_DSP_STATE* state,
 
 static SC_RESULT SC_DSP_HIGHPASS_GET_PARAM_FLOAT(SC_DSP_STATE* state,
                                                  int index,
-                                                 const float* const value)
+                                                 float* const value)
 {
     (void)state;
     (void)value;

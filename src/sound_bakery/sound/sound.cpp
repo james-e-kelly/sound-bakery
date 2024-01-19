@@ -4,15 +4,16 @@ using namespace SB::Engine;
 
 Sound::Sound() : m_soundName(), m_sound(), m_streaming(false) {}
 
-Sound::~Sound() { ma_sound_uninit(&m_sound); }
-
 void Sound::loadSynchronous()
 {
     if (m_soundName.size())
     {
-        ma_result result = ma_sound_init_from_file(
-            getMini(), m_soundName.c_str(), 0, nullptr, nullptr, &m_sound);
+        SC_SOUND* loadedSound = nullptr;
+
+        SC_RESULT result = SC_System_CreateSound(getChef(), m_soundName.c_str(), SC_SOUND_MODE_DEFAULT, &loadedSound);
         assert(result == MA_SUCCESS);
+
+        m_sound.reset(loadedSound); 
     }
 }
 

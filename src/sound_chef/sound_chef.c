@@ -1,4 +1,4 @@
-#include "sound_chef.h"
+#include "sound_chef/sound_chef.h"
 
 #define MINIAUDIO_IMPLEMENTATION
 #include "miniaudio.h"
@@ -29,12 +29,15 @@
     }
 
 /**
- * System
- * Init
+ * @def mallocs an object, sets it to 0 and checks for errors and potentially
+ * returns.
  *
- *
- *
+ * Convinience macro for allocating memory _and_ doing checks on it.
  */
+#define SC_CREATE(ptr, t)               \
+    (ptr) = ma_malloc(sizeof(t), NULL); \
+    SC_CHECK_MEM((ptr));                \
+    MA_ZERO_OBJECT((ptr))
 
 SC_RESULT SC_System_Create(SC_SYSTEM** outSystem)
 {
@@ -103,10 +106,79 @@ SC_RESULT SC_System_Close(SC_SYSTEM* system)
     return result;
 }
 
-/**
- * System
- * Create
- */
+static ma_uint32 GetFlagsFromMode(SC_SOUND_MODE mode)
+{
+    ma_uint32 flags = 0;
+
+    if (mode & SC_SOUND_MODE_DECODE)
+    {
+        flags |= MA_SOUND_FLAG_DECODE;
+    }
+
+    if (mode & SC_SOUND_MODE_ASYNC)
+    {
+        flags |= MA_SOUND_FLAG_ASYNC;
+    }
+
+    if (mode & SC_SOUND_MODE_STREAM)
+    {
+        flags |= MA_SOUND_FLAG_STREAM;
+    }
+
+    return flags;
+}
+
+SC_RESULT SC_System_CreateSound(SC_SYSTEM* system,
+                                const char* fileName,
+                                SC_SOUND_MODE mode,
+                                SC_SOUND** sound)
+{
+    SC_CHECK_ARG(system != NULL);
+    SC_CHECK_ARG(fileName != NULL);
+    SC_CHECK_ARG(sound != NULL);
+
+    SC_CREATE(*sound, SC_SOUND);
+
+    (*sound)->m_mode = mode;
+
+    return ma_sound_init_from_file((ma_engine*)system, fileName,
+                                   GetFlagsFromMode(mode), NULL, NULL,
+                                   &(*sound)->m_sound);
+}
+
+SC_RESULT SC_System_PlaySound(SC_SYSTEM* system,
+                              SC_SOUND* sound,
+                              SC_SOUND_INSTANCE** instance,
+                              SC_NODE_GROUP* parent,
+                              SC_BOOL paused)
+{
+    SC_CHECK_ARG(system != NULL);
+    SC_CHECK_ARG(sound != NULL);
+    SC_CHECK_ARG(instance != NULL);
+
+    SC_CREATE(*instance, SC_SOUND_INSTANCE);
+    (*instance)->m_mode = sound->m_mode;
+
+    ma_result copyResult =
+        ma_sound_init_copy((ma_engine*)system, &sound->m_sound, sound->m_mode,
+                           NULL, &(*instance)->m_sound);
+    SC_CHECK_RESULT(copyResult);
+
+    if (parent != NULL)
+    {
+        ma_result attachResult = ma_node_attach_output_bus(
+            *instance, 0, parent->m_tail->m_state->m_userData, 0);
+        SC_CHECK_RESULT(attachResult);
+    }
+
+    if (paused == MA_FALSE)
+    {
+        ma_result startResult = ma_sound_start(&(*instance)->m_sound);
+        SC_CHECK_RESULT(startResult);
+    }
+
+    return MA_SUCCESS;
+}
 
 SC_RESULT SC_System_CreateNodeGroup(SC_SYSTEM* system,
                                     SC_NODE_GROUP** nodeGroup)
@@ -173,14 +245,32 @@ SC_RESULT SC_System_CreateDSP(SC_SYSTEM* system,
     return result;
 }
 
-/**
- * DSP
- *
- *
- *
- *
- *
- */
+SC_RESULT SC_Sound_Release(SC_SOUND* sound)
+{
+    SC_CHECK_ARG(sound != NULL);
+    ma_sound_uninit(&sound->m_sound);
+    ma_free(sound, NULL);
+    return MA_SUCCESS;
+}
+
+SC_RESULT SC_API SC_SoundInstance_IsPlaying(SC_SOUND_INSTANCE* instance,
+                                            SC_BOOL* isPlaying)
+{
+    SC_CHECK_ARG(instance != NULL);
+    SC_CHECK_ARG(isPlaying != NULL);
+
+    *isPlaying = ma_sound_is_playing(&instance->m_sound);
+
+    return MA_SUCCESS;
+}
+
+SC_RESULT SC_SoundInstance_Release(SC_SOUND_INSTANCE* instance)
+{
+    SC_CHECK_ARG(instance != NULL);
+    ma_sound_uninit(&instance->m_sound);
+    ma_free(instance, NULL);
+    return MA_SUCCESS;
+}
 
 SC_RESULT SC_DSP_GetParameterFloat(SC_DSP* dsp, int index, float* value)
 {
@@ -218,14 +308,6 @@ SC_RESULT SC_DSP_Release(SC_DSP* dsp)
 
     return result;
 }
-
-/**
- * NodeGroup
- *
- *
- *
- *
- */
 
 SC_RESULT SC_NodeGroup_AddDSP(SC_NODE_GROUP* nodeGroup,
                               SC_DSP* dsp,

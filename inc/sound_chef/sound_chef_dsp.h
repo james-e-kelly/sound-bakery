@@ -8,7 +8,7 @@
 #ifndef SOUND_CHEF_DSP
 #define SOUND_CHEF_DSP
 
-#define SC_STRING_NAME_LENGTH   16
+#define SC_STRING_NAME_LENGTH 16
 
 /**
  * @brief Holds instance data for a single SC_DSP.
