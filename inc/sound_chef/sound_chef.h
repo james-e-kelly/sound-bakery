@@ -8,12 +8,18 @@
  */
 
 /**
+ * @page UserManual User Manual
+ * 
+ * - @subpage Inspiration
+ * - @subpage Roadmap
+ * - @subpage Guides
+ */
+
+/**
  * @page Guides Guides
  * 
- * Read these pages for helpful guides on using Sound Bakery.
- * 
- * If you're a sound designer, the @subpage UserGuide "User Guide" will be useful to you.
- * If you're a programmer, the @subpage ProgrammerGuide "Programmer's Guide" will be useful to you.
+ * - @subpage UserGuide "User Guide"
+ * - @subpage ProgrammerGuide "Programmer's Guide"
  */
 
 /**
