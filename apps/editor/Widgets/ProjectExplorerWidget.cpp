@@ -20,17 +20,18 @@ void ProjectExplorerWidget::Render()
     {
         if (ImGui::BeginTabBar("Project Explorer Tabs", ImGuiTabBarFlags_None))
         {
+
             if (ImGui::BeginTabItem("Audio"))
             {
-                /*if (m_fileBrowserWidget)
-                {
-                    m_fileBrowserWidget->Render();
-                }*/
+                ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(1, 1, 1, 1));
+                
                 if (m_projectNodesWidget)
                 {
                     m_projectNodesWidget->RenderPage({SB_CATEGORY_SOUND});
                 }
                 ImGui::EndTabItem();
+
+                ImGui::PopStyleColor();
             }
             if (ImGui::BeginTabItem("Nodes"))
             {
@@ -54,7 +55,9 @@ void ProjectExplorerWidget::Render()
                 ImGui::EndTabItem();
             }
             ImGui::EndTabBar();
+
         }
+
     }
 
     ImGui::End();
