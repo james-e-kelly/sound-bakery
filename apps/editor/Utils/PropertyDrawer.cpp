@@ -12,9 +12,18 @@ void PropertyDrawer::DrawObject(rttr::type type, rttr::instance instance)
 
     int index = 0;
 
-    for (rttr::property property : type.get_properties())
+    if (ImGui::BeginTable(
+            "Properties", 2,
+                          ImGuiTableFlags_Resizable |
+                              ImGuiTableFlags_BordersInnerH |
+                              ImGuiTableFlags_SizingStretchProp))
     {
-        DrawProperty(property, instance);
+        for (rttr::property property : type.get_properties())
+        {
+            DrawProperty(property, instance);
+        }
+
+        ImGui::EndTable();
     }
 
     ImGui::PopID();
@@ -37,8 +46,11 @@ bool PropertyDrawer::DrawProperty(rttr::property property,
 
     rttr::variant propertyValue = property.get_value(instance);
 
+    ImGui::TableNextColumn();
+
     ImGui::Text("%s: ", property.get_name().data());
-    ImGui::SameLine();
+
+    ImGui::TableNextColumn();
 
     if (readonly)
     {

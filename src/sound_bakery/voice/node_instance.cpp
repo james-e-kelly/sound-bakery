@@ -28,6 +28,8 @@ void SB::Engine::NodeInstance::setSoundInstance(SoundContainer* soundContainer,
     m_referencingNode      = soundContainer;
     m_referencingSoundNode = soundContainer;
 
+    m_referencingNode.lookup();
+
     init();
 
     SC_SOUND_INSTANCE* soundInstance = nullptr;
@@ -41,6 +43,7 @@ void SB::Engine::NodeInstance::setSoundInstance(SoundContainer* soundContainer,
 void SB::Engine::NodeInstance::setNodeInstance(Container* container) noexcept
 {
     m_referencingNode = container;
+    m_referencingNode.lookup();
 
     init();
 }
