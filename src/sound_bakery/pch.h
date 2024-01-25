@@ -5,7 +5,6 @@
 
 #include <atomic>
 #include <cassert>
-#include <concepts>
 #include <iostream>
 #include <memory>
 #include <optional>
