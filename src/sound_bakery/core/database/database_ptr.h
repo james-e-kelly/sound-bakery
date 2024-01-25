@@ -9,6 +9,7 @@ namespace SB::Core
     class DatabaseObject;
 
     std::weak_ptr<DatabaseObject> findObject(SB_ID id);
+    bool objectIdIsChildOfParent(SB_ID childToCheck, SB_ID parent);
 
     /** Lazy Pointer
      * Lazy pointers store an Indentifier to an object and use it to find the
@@ -213,7 +214,7 @@ namespace SB::Core
          */
         TObjectPtr operator->() const { return raw(); }
 
-    private:
+    protected:
         SB_ID m_objectID;
         mutable TPtrType m_objectPtr = TPtrType();
         mutable bool m_null;
@@ -269,9 +270,12 @@ namespace SB::Core
      * @brief Syntactic type to define a pointer that must be a child of the
      * owning object.
      */
-    template <typename T>
-    class ChildPtr final : public DatabasePtr<T>
+    template <typename TObject>
+    class ChildPtr final : public DatabasePtr<TObject>
     {
+    public:
+        using TThisType       = ChildPtr<TObject>;
+
     public:
         /**
          * @brief Default constructor is exposed for RTTR but not for the user.
@@ -279,7 +283,10 @@ namespace SB::Core
          * @warning Child Ptr objects must belong to a @ref DatabaseObject at
          * construction time.
          */
-        ChildPtr() = default;
+        ChildPtr()                          = default;
+        ChildPtr(const TThisType& other)    = default;
+        ChildPtr(TThisType&& other)         = default;
+        ~ChildPtr()                         = default;
 
         /**
          * @brief Construct a new Child Ptr object with an owner.
@@ -287,20 +294,97 @@ namespace SB::Core
          * Child Ptr types must have an owner so it can check whether an
          * assigned ptr is a child or not.
          *
-         * @param owner
+         * @param owner to check for child objects on
          */
         ChildPtr(const DatabaseObject& owner)
-            : m_ownerID(owner.getDatabaseID())
+            : DatabasePtr<TObject>(), m_ownerID(owner.getDatabaseID())
         {
         }
 
         ChildPtr(SB_ID id)
-            : DatabasePtr<T>(id) 
+            : DatabasePtr<TObject>(id) 
         { 
         }
 
+        TThisType& operator=(DatabasePtr<TObject>::TIdentifierType id)
+        {
+            if (DatabasePtr<TObject>::id() != id)
+            {
+                if (id != 0)
+                {
+                    if (objectIdIsChildOfParent(id, m_ownerID))
+                    {
+                        DatabasePtr<TObject>::m_id = id;
+                        DatabasePtr<TObject>::lookup();
+                    }
+                }
+                else
+                {
+                    reset();
+                }
+            }
+            return *this;
+        }
+
+        TThisType& operator=(DatabasePtr<TObject>::TObjectPtr object)
+        {
+            if (DatabasePtr<TObject>::raw() != object)
+            {
+                reset(object);
+            }
+            return *this;
+        }
+
+        TThisType& operator=(const TThisType& other)
+        {
+            if (DatabasePtr<TObject>::id() != other.id())
+            {
+                DatabasePtr<TObject>::m_objectID  = other.id();
+                DatabasePtr<TObject>::m_objectPtr = other.weak();
+                DatabasePtr<TObject>::m_null      = other.null();
+            }
+
+            return *this;
+        }
+
+        TThisType& operator=(const TThisType&& other)
+        {
+            if (DatabasePtr<TObject>::id() != other.id())
+            {
+                DatabasePtr<TObject>::m_objectID  = other.id();
+                DatabasePtr<TObject>::m_objectPtr = other.weak();
+                DatabasePtr<TObject>::m_null      = other.null();
+            }
+
+            return *this;
+        }
+
+        void reset(DatabasePtr<TObject>::TObjectPtr object = nullptr)
+        {
+            if (object == nullptr)
+            {
+                DatabasePtr<TObject>::m_objectID = 0;
+                DatabasePtr<TObject>::m_objectPtr.reset();
+                DatabasePtr<TObject>::m_null = true;
+            }
+            else if (objectIdIsChildOfParent(
+                         static_cast<DatabasePtr<TObject>::TIdentifierType>(
+                             *object),
+                         m_ownerID))
+            {
+                DatabasePtr<TObject>::m_objectID =
+                    object ? static_cast<DatabasePtr<TObject>::TIdentifierType>(
+                                 *object)
+                           : DatabasePtr<TObject>::TIdentifierType();
+                DatabasePtr<TObject>::m_objectPtr.reset();
+                DatabasePtr<TObject>::m_null = true;
+
+                DatabasePtr<TObject>::lookup();
+            }
+        }
+
     private:
-        DatabasePtr<T>::TIdentifierType m_ownerID = 0;
+        DatabasePtr<TObject>::TIdentifierType m_ownerID = 0;
     };
 }  // namespace SB::Core
 

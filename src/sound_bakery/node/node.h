@@ -128,6 +128,11 @@ namespace SB::Engine
 
         std::size_t getChildCount() const { return m_childNodes.size(); }
 
+        bool hasChild(const SB::Core::DatabasePtr<NodeBase>& test) const
+        {
+            return m_childNodes.contains(test);
+        }
+
     protected:
         SB::Core::DatabasePtr<NodeBase> m_parentNode;
         SB::Core::DatabasePtr<NodeBase> m_outputBus;
