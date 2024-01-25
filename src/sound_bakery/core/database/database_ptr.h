@@ -306,7 +306,7 @@ namespace SB::Core
         { 
         }
 
-        TThisType& operator=(DatabasePtr<TObject>::TIdentifierType id)
+        TThisType& operator=(typename DatabasePtr<TObject>::TIdentifierType id)
         {
             if (DatabasePtr<TObject>::id() != id)
             {
@@ -326,7 +326,7 @@ namespace SB::Core
             return *this;
         }
 
-        TThisType& operator=(DatabasePtr<TObject>::TObjectPtr object)
+        TThisType& operator=(typename DatabasePtr<TObject>::TObjectPtr object)
         {
             if (DatabasePtr<TObject>::raw() != object)
             {
@@ -359,7 +359,7 @@ namespace SB::Core
             return *this;
         }
 
-        void reset(DatabasePtr<TObject>::TObjectPtr object = nullptr)
+        void reset(typename DatabasePtr<TObject>::TObjectPtr object = nullptr)
         {
             if (object == nullptr)
             {
@@ -368,12 +368,12 @@ namespace SB::Core
                 DatabasePtr<TObject>::m_null = true;
             }
             else if (objectIdIsChildOfParent(
-                         static_cast<DatabasePtr<TObject>::TIdentifierType>(
+                         static_cast<typename DatabasePtr<TObject>::TIdentifierType>(
                              *object),
                          m_ownerID))
             {
                 DatabasePtr<TObject>::m_objectID =
-                    object ? static_cast<DatabasePtr<TObject>::TIdentifierType>(
+                    object ? static_cast<typename DatabasePtr<TObject>::TIdentifierType>(
                                  *object)
                            : DatabasePtr<TObject>::TIdentifierType();
                 DatabasePtr<TObject>::m_objectPtr.reset();
@@ -384,7 +384,7 @@ namespace SB::Core
         }
 
     private:
-        DatabasePtr<TObject>::TIdentifierType m_ownerID = 0;
+        typename DatabasePtr<TObject>::TIdentifierType m_ownerID = 0;
     };
 }  // namespace SB::Core
 
@@ -434,7 +434,6 @@ namespace rttr
                                                            bool& ok)
         {
             SB::Core::ChildPtr<T2> convertedLazyPtr(source.id());
-            SB_ID id = source.id();
 
             ok = source.hasId() == convertedLazyPtr.hasId();
 
