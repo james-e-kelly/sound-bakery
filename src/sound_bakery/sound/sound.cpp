@@ -10,10 +10,12 @@ void Sound::loadSynchronous()
     {
         SC_SOUND* loadedSound = nullptr;
 
-        SC_RESULT result = SC_System_CreateSound(getChef(), m_soundName.c_str(), SC_SOUND_MODE_DEFAULT, &loadedSound);
+        SC_RESULT result =
+            SC_System_CreateSound(getChef(), m_soundName.c_str(),
+                                  SC_SOUND_MODE_DEFAULT, &loadedSound);
         assert(result == MA_SUCCESS);
 
-        m_sound.reset(loadedSound); 
+        m_sound.reset(loadedSound);
     }
 }
 

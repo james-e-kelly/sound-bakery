@@ -31,8 +31,8 @@ void SB::Engine::NodeInstance::setSoundInstance(SoundContainer* soundContainer,
     init();
 
     SC_SOUND_INSTANCE* soundInstance = nullptr;
-    SC_RESULT playResult = SC_System_PlaySound(getChef(), sound->getSound(), &soundInstance,
-                        m_nodeGroup.get(), false);
+    SC_RESULT playResult             = SC_System_PlaySound(
+        getChef(), sound->getSound(), &soundInstance, m_nodeGroup.get(), false);
     m_soundInstance.reset(soundInstance);
 
     assert(playResult == MA_SUCCESS);

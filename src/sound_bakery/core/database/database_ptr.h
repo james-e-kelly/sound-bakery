@@ -2,6 +2,8 @@
 
 #include "sound_bakery/pch.h"
 
+#include "sound_bakery/core/database/database_object.h"
+
 namespace SB::Core
 {
     class DatabaseObject;
@@ -16,7 +18,7 @@ namespace SB::Core
      * accessing the object
      */
     template <typename TObject>
-    class DatabasePtr final
+    class DatabasePtr
     {
     public:
         using TThisType       = DatabasePtr<TObject>;
@@ -262,6 +264,44 @@ namespace SB::Core
     {
         return lhs.id() < rhs.id();
     }
+
+    /**
+     * @brief Syntactic type to define a pointer that must be a child of the
+     * owning object.
+     */
+    template <typename T>
+    class ChildPtr final : public DatabasePtr<T>
+    {
+    public:
+        /**
+         * @brief Default constructor is exposed for RTTR but not for the user.
+         * 
+         * @warning Child Ptr objects must belong to a @ref DatabaseObject at
+         * construction time.
+         */
+        ChildPtr() = default;
+
+        /**
+         * @brief Construct a new Child Ptr object with an owner.
+         *
+         * Child Ptr types must have an owner so it can check whether an
+         * assigned ptr is a child or not.
+         *
+         * @param owner
+         */
+        ChildPtr(const DatabaseObject& owner)
+            : m_ownerID(owner.getDatabaseID())
+        {
+        }
+
+        ChildPtr(SB_ID id)
+            : DatabasePtr<T>(id) 
+        { 
+        }
+
+    private:
+        DatabasePtr<T>::TIdentifierType m_ownerID = 0;
+    };
 }  // namespace SB::Core
 
 namespace std
@@ -274,12 +314,50 @@ namespace std
             return hash<SB_ID>{}(k.id());
         }
     };
+
+    template <typename T>
+    struct hash<SB::Core::ChildPtr<T>>
+    {
+        size_t operator()(const SB::Core::ChildPtr<T>& k) const
+        {
+            return hash<SB_ID>{}(k.id());
+        }
+    };
 }  // namespace std
 
 #include <rttr/wrapper_mapper.h>
 
 namespace rttr
 {
+    template <typename T>
+    struct wrapper_mapper<SB::Core::ChildPtr<T>>
+    {
+        using wrapped_type = decltype(SB::Core::ChildPtr<T>(0).id());
+        using type         = SB::Core::ChildPtr<T>;
+
+        inline static wrapped_type get(const type& obj) 
+        { 
+            return obj.id(); 
+        }
+
+        inline static type create(const wrapped_type& t) 
+        {
+            return type(t); 
+        }
+
+        template <typename T2>
+        inline static SB::Core::ChildPtr<T2> tryConvert(const type& source,
+                                                           bool& ok)
+        {
+            SB::Core::ChildPtr<T2> convertedLazyPtr(source.id());
+            SB_ID id = source.id();
+
+            ok = source.hasId() == convertedLazyPtr.hasId();
+
+            return convertedLazyPtr;
+        }
+    };
+
     template <typename T>
     struct wrapper_mapper<SB::Core::DatabasePtr<T>>
     {
@@ -288,7 +366,10 @@ namespace rttr
 
         inline static wrapped_type get(const type& obj) { return obj.id(); }
 
-        inline static type create(const wrapped_type& t) { return type(t); }
+        inline static type create(const wrapped_type& t) 
+        { 
+            return type(t); 
+        }
 
         template <typename T2>
         inline static SB::Core::DatabasePtr<T2> tryConvert(const type& source,
@@ -296,9 +377,10 @@ namespace rttr
         {
             SB::Core::DatabasePtr<T2> convertedLazyPtr(source.id());
 
-            ok = convertedLazyPtr.hasId();
+            ok = source.hasId() == convertedLazyPtr.hasId();
 
             return convertedLazyPtr;
         }
     };
+
 }  // namespace rttr

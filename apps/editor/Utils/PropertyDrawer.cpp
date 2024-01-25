@@ -506,15 +506,24 @@ bool PropertyDrawer::DrawAssociateContainer(
                         {
                             edited = true;
 
-                            view.erase(key);
-                            std::pair<
-                                rttr::variant_associative_view::const_iterator,
-                                bool>
-                                insertedIter = view.insert(key, value);
+                            const size_t removed = view.erase(key);
 
-                            if (insertedIter.second)
+                            if (removed > 0)
                             {
-                                iter = insertedIter.first;
+                                std::pair<rttr::variant_associative_view::
+                                              const_iterator,
+                                          bool>
+                                    insertedIter = view.insert(key, value);
+
+                                if (insertedIter.second)
+                                {
+                                    iter = insertedIter.first;
+                                }
+                                else
+                                {
+                                    ImGui::PopID();
+                                    break;
+                                }
                             }
                         }
                     }

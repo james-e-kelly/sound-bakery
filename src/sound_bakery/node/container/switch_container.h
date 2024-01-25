@@ -51,7 +51,7 @@ namespace SB::Engine
         }
 
         std::unordered_map<SB::Core::DatabasePtr<IntParameterValue>,
-                           SB::Core::DatabasePtr<Container>>
+                           SB::Core::ChildPtr<Container>>
             getSwitchToChildMap() const
         {
             return m_switchToChild;
@@ -60,7 +60,7 @@ namespace SB::Engine
     private:
         void setSwitchToChild(
             std::unordered_map<SB::Core::DatabasePtr<IntParameterValue>,
-                               SB::Core::DatabasePtr<Container>> map);
+                               SB::Core::ChildPtr<Container>> map);
 
     private:
         void populateChildKeys();
@@ -74,7 +74,7 @@ namespace SB::Engine
          * @brief Holds the map for which switch value maps to which child.
          */
         std::unordered_map<SB::Core::DatabasePtr<IntParameterValue>,
-                           SB::Core::DatabasePtr<Container>>
+                           SB::Core::ChildPtr<Container>>
             m_switchToChild;
 
         RTTR_ENABLE(Container)

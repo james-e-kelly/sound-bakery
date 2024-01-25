@@ -3,9 +3,6 @@
 #include "sound_bakery.h"
 #include "sound_bakery/core/core_fwd.h"
 
-#include <rttr/registration_friend>
-#include <rttr/type>
-
 #include <atomic>
 #include <cassert>
 #include <concepts>
@@ -13,6 +10,8 @@
 #include <memory>
 #include <optional>
 #include <random>
+#include <rttr/registration_friend>
+#include <rttr/type>
 #include <set>
 #include <shared_mutex>
 #include <string>

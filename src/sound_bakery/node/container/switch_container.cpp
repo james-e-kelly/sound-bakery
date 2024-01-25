@@ -12,7 +12,7 @@ void SB::Engine::SwitchContainer::setSwitchParameter(
 
 void SB::Engine::SwitchContainer::setSwitchToChild(
     std::unordered_map<SB::Core::DatabasePtr<IntParameterValue>,
-                       SB::Core::DatabasePtr<Container>> map)
+                       SB::Core::ChildPtr<Container>> map)
 {
     if (map.empty())
     {
@@ -33,7 +33,7 @@ void SB::Engine::SwitchContainer::populateChildKeys()
         for (const SB::Core::DatabasePtr<IntParameterValue>& value :
              m_switchParameter->getValues())
         {
-            m_switchToChild.insert({value, SB::Core::DatabasePtr<Container>()});
+            m_switchToChild.insert({value, SB::Core::ChildPtr<Container>(*this)});
         }
     }
 }

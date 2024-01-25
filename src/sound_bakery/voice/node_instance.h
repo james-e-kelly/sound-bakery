@@ -67,7 +67,8 @@ namespace SB::Engine
         SC_DSP* m_highpass = nullptr;
 
     private:
-        std::unique_ptr<SC_SOUND_INSTANCE, SC_SOUND_INSTANCE_DELETER> m_soundInstance;
+        std::unique_ptr<SC_SOUND_INSTANCE, SC_SOUND_INSTANCE_DELETER>
+            m_soundInstance;
         std::unique_ptr<SC_NODE_GROUP, SC_NODE_GROUP_DELETER> m_nodeGroup;
         std::shared_ptr<NodeInstance> m_parent;
 
