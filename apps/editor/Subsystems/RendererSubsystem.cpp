@@ -105,9 +105,13 @@ void RendererSubsystem::SetDefaultWindowHints()
 static ImVec4 hexToRGB(ImU32 hex) 
 {
     float s = 1.0f / 255.0f;
-    return ImVec4(((hex >> IM_COL32_R_SHIFT) & 0xFF) * s,
+
+    // The RGB order is backwards here -> BGR
+    // It was noted the "correct" order made blues look orange
+    // Swapping created the correct colours
+    return ImVec4(((hex >> IM_COL32_B_SHIFT) & 0xFF) * s,
                   ((hex >> IM_COL32_G_SHIFT) & 0xFF) * s,
-                  ((hex >> IM_COL32_B_SHIFT) & 0xFF) * s,
+                  ((hex >> IM_COL32_R_SHIFT) & 0xFF) * s,
                   ((hex >> IM_COL32_A_SHIFT) & 0xFF) * s);
 }
 
@@ -165,7 +169,7 @@ int RendererSubsystem::InitImGui()
     style->Alpha                    = 1.0f;                   
     style->DisabledAlpha            = 0.5f;   
 
-    style->WindowPadding            = noPadding;
+    style->WindowPadding            = ImVec2(padding, padding / 2);
     style->FramePadding             = paddingVec;
 
     style->WindowRounding           = rounding;
@@ -657,6 +661,7 @@ int RendererSubsystem::InitImGui()
     style->Colors[ImGuiCol_ScrollbarBg]             = layer03;
     style->Colors[ImGuiCol_DockingEmptyBg]          = layer03;
     style->Colors[ImGuiCol_TableRowBg]              = layer03;
+    style->Colors[ImGuiCol_TableRowBgAlt]           = layerAccent03;
     style->Colors[ImGuiCol_TextSelectedBg]          = layer03;
     style->Colors[ImGuiCol_TableHeaderBg]           = layer03;
     style->Colors[ImGuiCol_TextSelectedBg]          = layer03;
@@ -666,34 +671,40 @@ int RendererSubsystem::InitImGui()
     style->Colors[ImGuiCol_FrameBgHovered]          = backgroundHover;
     style->Colors[ImGuiCol_FrameBgActive]           = backgroundActive;
 
-    style->Colors[ImGuiCol_TableRowBgAlt]           = missingColorColor;
-    style->Colors[ImGuiCol_NavWindowingDimBg]       = missingColorColor;
-    style->Colors[ImGuiCol_ModalWindowDimBg]        = missingColorColor;
+    style->Colors[ImGuiCol_NavWindowingDimBg]       = background;
+    style->Colors[ImGuiCol_ModalWindowDimBg]        = background;
 
     style->Colors[ImGuiCol_Border]                  = background;
     style->Colors[ImGuiCol_BorderShadow]            = shadow;
-    style->Colors[ImGuiCol_ScrollbarGrab]           = missingColorColor;
-    style->Colors[ImGuiCol_ScrollbarGrabHovered]    = missingColorColor;
-    style->Colors[ImGuiCol_ScrollbarGrabActive]     = missingColorColor;
-    style->Colors[ImGuiCol_CheckMark]               = missingColorColor;
-    style->Colors[ImGuiCol_SliderGrab]              = missingColorColor;
-    style->Colors[ImGuiCol_SliderGrabActive]        = missingColorColor;
-    style->Colors[ImGuiCol_Button]                  = missingColorColor;
-    style->Colors[ImGuiCol_ButtonHovered]           = missingColorColor;
-    style->Colors[ImGuiCol_ButtonActive]            = textPrimary;
-    style->Colors[ImGuiCol_Header]                  = missingColorColor;
-    style->Colors[ImGuiCol_HeaderHovered]           = missingColorColor;
-    style->Colors[ImGuiCol_HeaderActive]            = missingColorColor;
-    style->Colors[ImGuiCol_ResizeGrip]              = missingColorColor;
-    style->Colors[ImGuiCol_ResizeGripHovered]       = missingColorColor;
-    style->Colors[ImGuiCol_ResizeGripActive]        = missingColorColor;
+
+    style->Colors[ImGuiCol_ScrollbarGrab]           = interactive;
+    style->Colors[ImGuiCol_ScrollbarGrabHovered]    = layerHover03;
+    style->Colors[ImGuiCol_ScrollbarGrabActive]     = layerSelected03;
+
+    style->Colors[ImGuiCol_CheckMark]               = interactive;
+    style->Colors[ImGuiCol_SliderGrab]              = interactive;
+    style->Colors[ImGuiCol_SliderGrabActive]        = focus;
+
+    style->Colors[ImGuiCol_Button]                  = interactive;
+    style->Colors[ImGuiCol_ButtonHovered]           = highlight;
+    style->Colors[ImGuiCol_ButtonActive]            = focusInverse;
+
+    style->Colors[ImGuiCol_Header]                  = background;
+    style->Colors[ImGuiCol_HeaderHovered]           = backgroundHover;
+    style->Colors[ImGuiCol_HeaderActive]            = backgroundActive;
+
+    style->Colors[ImGuiCol_ResizeGrip]              = background;
+    style->Colors[ImGuiCol_ResizeGripHovered]       = backgroundHover;
+    style->Colors[ImGuiCol_ResizeGripActive]        = backgroundActive;
+
     style->Colors[ImGuiCol_PlotLines]               = missingColorColor;
     style->Colors[ImGuiCol_PlotLinesHovered]        = missingColorColor;
     style->Colors[ImGuiCol_PlotHistogram]           = missingColorColor;
     style->Colors[ImGuiCol_PlotHistogramHovered]    = missingColorColor;
-    style->Colors[ImGuiCol_Separator]               = missingColorColor;
-    style->Colors[ImGuiCol_SeparatorHovered]        = missingColorColor;
-    style->Colors[ImGuiCol_SeparatorActive]         = missingColorColor;
+
+    style->Colors[ImGuiCol_Separator]               = background;
+    style->Colors[ImGuiCol_SeparatorHovered]        = backgroundHover;
+    style->Colors[ImGuiCol_SeparatorActive]         = backgroundActive;
 
     style->Colors[ImGuiCol_Tab]                     = layer01;
     style->Colors[ImGuiCol_TabHovered]              = layerHover01;
@@ -706,10 +717,11 @@ int RendererSubsystem::InitImGui()
     style->Colors[ImGuiCol_TableBorderStrong]       = layerAccent02;
     style->Colors[ImGuiCol_TableBorderLight]        = layerAccent01;
 
-    style->Colors[ImGuiCol_DockingPreview]          = missingColorColor;
-    style->Colors[ImGuiCol_DragDropTarget]          = missingColorColor;
-    style->Colors[ImGuiCol_NavHighlight]            = missingColorColor;
-    style->Colors[ImGuiCol_NavWindowingHighlight]   = missingColorColor;
+    style->Colors[ImGuiCol_DockingPreview]          = interactive;
+    style->Colors[ImGuiCol_DragDropTarget]          = interactive;
+
+    style->Colors[ImGuiCol_NavHighlight]            = highlight;
+    style->Colors[ImGuiCol_NavWindowingHighlight]   = highlight;
 
     // Load Fonts
     const float baseFontSize = 18.0f;
