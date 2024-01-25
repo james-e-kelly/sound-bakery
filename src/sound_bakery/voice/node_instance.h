@@ -59,7 +59,7 @@ namespace SB::Engine
         SC_NODE_GROUP* getBus() const noexcept { return m_nodeGroup.get(); }
 
     private:
-        SB::Core::DatabasePtr<Node> m_referencingNode;
+        Node* m_referencingNode;
         SB::Core::DatabasePtr<SoundContainer> m_referencingSoundNode;
         SB::Core::DatabasePtr<Bus> m_referencingBus;
 

@@ -13,7 +13,7 @@ NodeInstance::NodeInstance() = default;
 
 NodeInstance::~NodeInstance()
 {
-    if (m_referencingNode.valid())
+    if (m_referencingNode != nullptr)
     {
         m_referencingNode->m_volume.getDelegate().RemoveObject(this);
         m_referencingNode->m_pitch.getDelegate().RemoveObject(this);
@@ -28,8 +28,6 @@ void SB::Engine::NodeInstance::setSoundInstance(SoundContainer* soundContainer,
     m_referencingNode      = soundContainer;
     m_referencingSoundNode = soundContainer;
 
-    m_referencingNode.lookup();
-
     init();
 
     SC_SOUND_INSTANCE* soundInstance = nullptr;
@@ -43,7 +41,6 @@ void SB::Engine::NodeInstance::setSoundInstance(SoundContainer* soundContainer,
 void SB::Engine::NodeInstance::setNodeInstance(Container* container) noexcept
 {
     m_referencingNode = container;
-    m_referencingNode.lookup();
 
     init();
 }
@@ -115,7 +112,7 @@ void SB::Engine::NodeInstance::createMasterBusParent()
     const SB::Core::DatabasePtr<Bus>& masterBus =
         SB::Engine::System::get()->getMasterBus();
 
-    if (masterBus.lookup() && masterBus.id() != m_referencingNode.id())
+    if (masterBus.lookup() && masterBus.id() != m_referencingNode->getDatabaseID())
     {
         m_parent = masterBus->lockAndCopy();
     }
