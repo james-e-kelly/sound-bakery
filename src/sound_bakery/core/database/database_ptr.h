@@ -449,7 +449,7 @@ namespace rttr
         inline static type create(const wrapped_type& t) { return type(t); }
 
         template <typename T2>
-        inline static SB::Core::ChildPtr<T2> tryConvert(const type& source, bool& ok)
+        inline static SB::Core::ChildPtr<T2> convert(const type& source, bool& ok)
         {
             SB::Core::ChildPtr<T2> convertedLazyPtr(source.id());
 
@@ -470,7 +470,7 @@ namespace rttr
         inline static type create(const wrapped_type& t) { return type(t); }
 
         template <typename T2>
-        inline static SB::Core::DatabasePtr<T2> tryConvert(const type& source, bool& ok)
+        inline static SB::Core::DatabasePtr<T2> convert(const type& source, bool& ok)
         {
             SB::Core::DatabasePtr<T2> convertedLazyPtr(source.id());
 
