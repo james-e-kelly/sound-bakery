@@ -28,3 +28,24 @@ bool SB::Core::objectIdIsChildOfParent(SB_ID childToCheck, SB_ID parent)
 
     return false;
 }
+
+SB_ID SB::Core::getParentIdFromId(SB_ID id)
+{
+    if (id != 0)
+    {
+        SB::Core::DatabasePtr<DatabaseObject> databasePtr(id);
+
+        if (databasePtr.lookup())
+        {
+            if (SB::Engine::NodeBase* nodeBase = databasePtr->tryConvertObject<SB::Engine::NodeBase>())
+            {
+                if (SB::Engine::NodeBase* parent = nodeBase->parent())
+                {
+                    return parent->getDatabaseID();
+                }
+            }
+        }
+    }
+
+    return 0;
+}

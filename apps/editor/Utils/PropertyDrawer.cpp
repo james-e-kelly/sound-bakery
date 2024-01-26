@@ -605,8 +605,47 @@ bool PropertyDrawer::DrawPayloadDrop(rttr::variant& value,
                 }
             }
 
-            value  = data;
-            edited = true;
+            // Hack for child pointers
+            // When setting variants, the value is completely overriden.
+            // There is no chance for child pointers to retain its parent value and check the child.
+            // Therefore, we have to do this ourselves here.
+            if (valueType.is_wrapper())
+            {
+                std::string wrapperTypeName = valueType.get_name().data();
+
+                // Quick hack to differentiate between DatabasePtr and ChildPtr
+                // @todo Is there a way to get the raw wrapper type without a template?
+                if (wrapperTypeName.find("ChildPtr") != std::string::npos)
+                {
+                    bool convertSuccess = false;
+                    SB::Core::ChildPtr<SB::Core::DatabaseObject> dataAsChildPtr = data.convert<SB::Core::ChildPtr<SB::Core::DatabaseObject>>(&convertSuccess);
+
+                    if (convertSuccess)
+                    {
+                        SB::Core::ChildPtr<SB::Core::DatabaseObject> valueAsChildPtr = value.convert<SB::Core::ChildPtr<SB::Core::DatabaseObject>>(&convertSuccess);
+
+                        if (convertSuccess)
+                        {
+                            SB_ID currentID = valueAsChildPtr.id();
+
+                            valueAsChildPtr = dataAsChildPtr;
+
+                            if (currentID != valueAsChildPtr.id())
+                            {
+                                value = valueAsChildPtr;
+                                value.convert(valueType);
+                                assert(value.is_valid());
+                                edited = value.is_valid();
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                value.swap(data);
+                edited = true;
+            }
         }
 
         ImGui::EndDragDropTarget();

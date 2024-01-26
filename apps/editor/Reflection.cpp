@@ -142,4 +142,7 @@ RTTR_REGISTRATION
         .constructor<>()(policy::ctor::as_raw_ptr)
         .property("Parent", &IntParameterValue::m_parentParameter)(
             metadata(SB::Editor::METADATA_KEY::Readonly, true));
+
+    type::register_converter_func(rttr::wrapper_mapper<SB::Core::ChildPtr<DatabaseObject>>::tryConvert<Container>);
+    type::register_converter_func(rttr::wrapper_mapper<SB::Core::ChildPtr<Container>>::tryConvert<DatabaseObject>);
 }
