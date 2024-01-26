@@ -14,10 +14,8 @@ namespace SB::Engine
          * @return the created object represented as the base SB::Core::Object
          * type
          */
-        static SB::Core::Object* createObjectFromType(rttr::type objectType,
-                                                      SB_ID id = 0);
+        static SB::Core::Object* createObjectFromType(rttr::type objectType, SB_ID id = 0);
 
-        static SB::Core::DatabaseObject* createDatabaseObjectFromType(
-            rttr::type objectType, SB_ID id = 0);
+        static SB::Core::DatabaseObject* createDatabaseObjectFromType(rttr::type objectType, SB_ID id = 0);
     };
 }  // namespace SB::Engine

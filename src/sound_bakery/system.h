@@ -38,10 +38,7 @@ namespace SB::Engine
     public:
         SC_SYSTEM* getChef() const { return m_chefSystem.get(); }
 
-        const SB::Core::DatabasePtr<Bus>& getMasterBus() const
-        {
-            return m_masterBus;
-        }
+        const SB::Core::DatabasePtr<Bus>& getMasterBus() const { return m_masterBus; }
 
         void setMasterBus(const SB::Core::DatabasePtr<Bus>& bus);
 

@@ -21,20 +21,18 @@
         return FMOD_ERR_INVALID_PARAM; \
     }
 
-#define SB_CHECK_GOBJ(gameObject)                                        \
-    {                                                                    \
-        if (!gameObject)                                                 \
-        {                                                                \
-            ATLAS_SYSTEM* system = Atlas_System_GetInstance();           \
-            std::optional<ATLAS_GAMEOBJECT*> defaultGameObject =         \
-                system->GetListenerGameObject();                         \
-            gameObject =                                                 \
-                defaultGameObject ? defaultGameObject.value() : nullptr; \
-            if (!gameObject)                                             \
-            {                                                            \
-                return FMOD_ERR_INTERNAL;                                \
-            }                                                            \
-        }                                                                \
+#define SB_CHECK_GOBJ(gameObject)                                                                 \
+    {                                                                                             \
+        if (!gameObject)                                                                          \
+        {                                                                                         \
+            ATLAS_SYSTEM* system                               = Atlas_System_GetInstance();      \
+            std::optional<ATLAS_GAMEOBJECT*> defaultGameObject = system->GetListenerGameObject(); \
+            gameObject = defaultGameObject ? defaultGameObject.value() : nullptr;                 \
+            if (!gameObject)                                                                      \
+            {                                                                                     \
+                return FMOD_ERR_INTERNAL;                                                         \
+            }                                                                                     \
+        }                                                                                         \
     }
 
 #define SB_CHECK(x, err) \

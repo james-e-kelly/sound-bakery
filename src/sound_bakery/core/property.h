@@ -18,8 +18,7 @@ namespace SB::Core
 
         Property(T value) : m_property(value), m_min(value), m_max(value + 1) {}
 
-        Property(T value, T min, T max)
-            : m_property(value), m_min(min), m_max(max)
+        Property(T value, T min, T max) : m_property(value), m_min(min), m_max(max)
         {
             assert(value >= min);
             assert(value <= max);
@@ -33,10 +32,7 @@ namespace SB::Core
          * The newly created property will have a fresh delegate.
          */
         Property(const Property& other)
-            : m_property(other.m_property),
-              m_min(other.m_min),
-              m_max(other.m_max),
-              m_delegate()
+            : m_property(other.m_property), m_min(other.m_min), m_max(other.m_max), m_delegate()
         {
         }
 
@@ -90,10 +86,7 @@ namespace SB::Core
 
         [[nodiscard]] T getMax() const { return m_max; }
 
-        [[nodiscard]] std::pair<T, T> getMinMaxPair() const
-        {
-            return std::pair<T, T>(m_min, m_max);
-        }
+        [[nodiscard]] std::pair<T, T> getMinMaxPair() const { return std::pair<T, T>(m_min, m_max); }
 
     protected:
         T m_property;

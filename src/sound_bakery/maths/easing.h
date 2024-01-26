@@ -10,28 +10,19 @@ namespace SB::Maths
 
     double easeOutSine(double t) { return 1 + sin(1.5707963 * (--t)); }
 
-    double easeInOutSine(double t)
-    {
-        return 0.5 * (1 + sin(3.1415926 * (t - 0.5)));
-    }
+    double easeInOutSine(double t) { return 0.5 * (1 + sin(3.1415926 * (t - 0.5))); }
 
     double easeInQuad(double t) { return t * t; }
 
     double easeOutQuad(double t) { return t * (2 - t); }
 
-    double easeInOutQuad(double t)
-    {
-        return t < 0.5 ? 2 * t * t : t * (4 - 2 * t) - 1;
-    }
+    double easeInOutQuad(double t) { return t < 0.5 ? 2 * t * t : t * (4 - 2 * t) - 1; }
 
     double easeInCubic(double t) { return t * t * t; }
 
     double easeOutCubic(double t) { return 1 + (--t) * t * t; }
 
-    double easeInOutCubic(double t)
-    {
-        return t < 0.5 ? 4 * t * t * t : 1 + (--t) * (2 * (--t)) * (2 * t);
-    }
+    double easeInOutCubic(double t) { return t < 0.5 ? 4 * t * t * t : 1 + (--t) * (2 * (--t)) * (2 * t); }
 
     double easeInQuart(double t)
     {
@@ -120,10 +111,7 @@ namespace SB::Maths
 
     double easeInBack(double t) { return t * t * (2.70158 * t - 1.70158); }
 
-    double easeOutBack(double t)
-    {
-        return 1 + (--t) * t * (2.70158 * t + 1.70158);
-    }
+    double easeOutBack(double t) { return 1 + (--t) * t * (2.70158 * t + 1.70158); }
 
     double easeInOutBack(double t)
     {
@@ -168,15 +156,9 @@ namespace SB::Maths
         }
     }
 
-    double easeInBounce(double t)
-    {
-        return pow(2, 6 * (t - 1)) * abs(sin(t * PI * 3.5));
-    }
+    double easeInBounce(double t) { return pow(2, 6 * (t - 1)) * abs(sin(t * PI * 3.5)); }
 
-    double easeOutBounce(double t)
-    {
-        return 1 - pow(2, -6 * t) * abs(cos(t * PI * 3.5));
-    }
+    double easeOutBounce(double t) { return 1 - pow(2, -6 * t) * abs(cos(t * PI * 3.5)); }
 
     double easeInOutBounce(double t)
     {

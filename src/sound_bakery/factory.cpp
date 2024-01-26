@@ -13,22 +13,18 @@
 #include "sound_bakery/sound/sound.h"
 #include "sound_bakery/system.h"
 
-SB::Core::Object* SB::Engine::Factory::createObjectFromType(
-    rttr::type objectType, SB_ID id)
+SB::Core::Object* SB::Engine::Factory::createObjectFromType(rttr::type objectType, SB_ID id)
 {
     rttr::constructor constructor = objectType.get_constructor();
-    assert(constructor.is_valid() &&
-           "Object in Sound Bakery must be constructable. Define this in the "
-           "Reflection file");
+    assert(constructor.is_valid() && "Object in Sound Bakery must be constructable. Define this in the "
+                                     "Reflection file");
 
     rttr::variant variant = constructor.invoke();
     assert(variant.is_valid());
-    assert(variant.get_type().is_pointer() &&
-           "Database Objects must be constructed as raw ptrs. Raw objects or "
-           "shared ptrs is disallowed");
+    assert(variant.get_type().is_pointer() && "Database Objects must be constructed as raw ptrs. Raw objects or "
+                                              "shared ptrs is disallowed");
 
-    SB::Core::DatabaseObject* converted =
-        variant.convert<SB::Core::DatabaseObject*>();
+    SB::Core::DatabaseObject* converted = variant.convert<SB::Core::DatabaseObject*>();
     assert(converted != nullptr);
 
     SB::Core::ObjectTracker::get()->trackObject((SB::Core::Object*)converted);
@@ -37,11 +33,9 @@ SB::Core::Object* SB::Engine::Factory::createObjectFromType(
     return converted;
 }
 
-SB::Core::DatabaseObject* SB::Engine::Factory::createDatabaseObjectFromType(
-    rttr::type objectType, SB_ID id)
+SB::Core::DatabaseObject* SB::Engine::Factory::createDatabaseObjectFromType(rttr::type objectType, SB_ID id)
 {
     assert(objectType.is_derived_from<SB::Core::DatabaseObject>());
 
-    return createObjectFromType(objectType, id)
-        ->tryConvertObject<SB::Core::DatabaseObject>();
+    return createObjectFromType(objectType, id)->tryConvertObject<SB::Core::DatabaseObject>();
 }

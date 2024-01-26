@@ -44,8 +44,7 @@ namespace SB::Core
         template <typename T>
         T* tryConvertObject() noexcept
         {
-            if (getType().is_derived_from<T>() ||
-                getType() == rttr::type::get<T>())
+            if (getType().is_derived_from<T>() || getType() == rttr::type::get<T>())
             {
                 return rttr::rttr_cast<T*, Object*>(this);
             }

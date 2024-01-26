@@ -13,12 +13,7 @@ namespace
     static System* s_system = nullptr;
 }
 
-void* operator new[](size_t size,
-                     const char* pName,
-                     int flags,
-                     unsigned debugFlags,
-                     const char* file,
-                     int line)
+void* operator new[](size_t size, const char* pName, int flags, unsigned debugFlags, const char* file, int line)
 {
     (void)pName;
     (void)flags;
@@ -128,8 +123,7 @@ void SB::Engine::System::onLoaded()
 
 void SB::Engine::System::createMasterBus()
 {
-    assert(m_masterBus.null() &&
-           "Shouldn't create a master bus when one exists");
+    assert(m_masterBus.null() && "Shouldn't create a master bus when one exists");
 
     m_masterBus = newDatabaseObject<Bus>();
     m_masterBus->setDatabaseName("Master Bus");
@@ -151,7 +145,4 @@ void System::setMasterBus(const SB::Core::DatabasePtr<Bus>& bus)
     }
 }
 
-GameObject* System::getListenerGameObject() const
-{
-    return m_listenerGameObject.get();
-}
+GameObject* System::getListenerGameObject() const { return m_listenerGameObject.get(); }

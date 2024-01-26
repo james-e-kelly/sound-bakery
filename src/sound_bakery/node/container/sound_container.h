@@ -9,10 +9,9 @@ namespace SB::Engine
     class SoundContainer : public Container
     {
     public:
-        virtual void gatherSounds(
-            std::vector<Container*>& soundContainers,
-            const RuntimeFloatParameterMap& runtimeFloatParameters,
-            const RuntimeIntParameterMap& runtimeIntParameters) override;
+        virtual void gatherSounds(std::vector<Container*>& soundContainers,
+                                  const RuntimeFloatParameterMap& runtimeFloatParameters,
+                                  const RuntimeIntParameterMap& runtimeIntParameters) override;
 
         Sound* getSound();
 

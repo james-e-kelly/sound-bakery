@@ -13,21 +13,16 @@ namespace SB::Engine
     class Container : public Node
     {
     public:
-        using RuntimeFloatParameterMap =
-            std::unordered_map<SB_ID,
-                               SB::Engine::FloatParameter::RuntimeProperty>;
-        using RuntimeIntParameterMap =
-            std::unordered_map<SB_ID,
-                               SB::Engine::IntParameter::RuntimeProperty>;
+        using RuntimeFloatParameterMap = std::unordered_map<SB_ID, SB::Engine::FloatParameter::RuntimeProperty>;
+        using RuntimeIntParameterMap   = std::unordered_map<SB_ID, SB::Engine::IntParameter::RuntimeProperty>;
 
     public:
         Container() : Node() {}
 
         virtual void onLoaded() override;
-        virtual void gatherSounds(
-            std::vector<Container*>& soundContainers,
-            const RuntimeFloatParameterMap& runtimeFloatParameters,
-            const RuntimeIntParameterMap& runtimeIntParameters)
+        virtual void gatherSounds(std::vector<Container*>& soundContainers,
+                                  const RuntimeFloatParameterMap& runtimeFloatParameters,
+                                  const RuntimeIntParameterMap& runtimeIntParameters)
         {
         }
 

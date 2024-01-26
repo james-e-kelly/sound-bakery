@@ -9,10 +9,7 @@ namespace SB::Engine
     public:
         EffectParameterDescription() = default;
 
-        EffectParameterDescription(const SC_DSP_PARAMETER* parameter)
-        {
-            m_parameter = *parameter;
-        }
+        EffectParameterDescription(const SC_DSP_PARAMETER* parameter) { m_parameter = *parameter; }
 
         SC_DSP_PARAMETER m_parameter;
 
@@ -27,10 +24,7 @@ namespace SB::Engine
     class EffectDescription final : public SB::Core::DatabaseObject
     {
     public:
-        EffectDescription() : SB::Core::DatabaseObject(), m_config()
-        {
-            setDSPType(SC_DSP_TYPE_LOWPASS);
-        }
+        EffectDescription() : SB::Core::DatabaseObject(), m_config() { setDSPType(SC_DSP_TYPE_LOWPASS); }
 
         void setDSPType(SC_DSP_TYPE type)
         {
@@ -40,15 +34,11 @@ namespace SB::Engine
 
             for (int i = 0; i < m_config.m_vtable->m_numParams; ++i)
             {
-                m_parameterDescriptions.emplace_back(
-                    m_config.m_vtable->m_params[i]);
+                m_parameterDescriptions.emplace_back(m_config.m_vtable->m_params[i]);
             }
         }
 
-        const std::vector<EffectParameterDescription> getParameters() const
-        {
-            return m_parameterDescriptions;
-        }
+        const std::vector<EffectParameterDescription> getParameters() const { return m_parameterDescriptions; }
         const SC_DSP_CONFIG* getConfig() const { return &m_config; }
         SC_DSP_TYPE getDSPType() const { return m_config.m_type; }
 

@@ -24,8 +24,7 @@ namespace SB::Engine
     public:
         bool playingContainer(Container* container) const noexcept;
 
-        const std::vector<std::unique_ptr<NodeInstance>>& getVoices()
-            const noexcept;
+        const std::vector<std::unique_ptr<NodeInstance>>& getVoices() const noexcept;
 
         std::size_t voices() const;
 

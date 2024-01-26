@@ -24,10 +24,7 @@ protected:
 
 struct Doc : public YAMLBase
 {
-    Doc(YAML::Emitter& emitter) : YAMLBase(emitter)
-    {
-        emitter << YAML::BeginDoc;
-    }
+    Doc(YAML::Emitter& emitter) : YAMLBase(emitter) { emitter << YAML::BeginDoc; }
 
     ~Doc() { m_emitter << YAML::EndDoc; }
 };
@@ -35,8 +32,7 @@ struct Doc : public YAMLBase
 template <typename T>
 struct KeyValue : YAMLBase
 {
-    KeyValue(YAML::Emitter& emitter, rttr::string_view key, T value)
-        : YAMLBase(emitter)
+    KeyValue(YAML::Emitter& emitter, rttr::string_view key, T value) : YAMLBase(emitter)
     {
         if (key.size())
         {
@@ -51,10 +47,7 @@ struct KeyValue : YAMLBase
 
 struct Map : YAMLBase
 {
-    Map(YAML::Emitter& emitter) : YAMLBase(emitter)
-    {
-        emitter << YAML::BeginMap;
-    }
+    Map(YAML::Emitter& emitter) : YAMLBase(emitter) { emitter << YAML::BeginMap; }
 
     ~Map() { m_emitter << YAML::EndMap; }
 };
@@ -71,8 +64,7 @@ struct ChildMap : YAMLBase
 
 struct ChildSequence : YAMLBase
 {
-    ChildSequence(YAML::Emitter& emitter, rttr::string_view key)
-        : YAMLBase(emitter)
+    ChildSequence(YAML::Emitter& emitter, rttr::string_view key) : YAMLBase(emitter)
     {
         emitter << YAML::Key << key.data() << YAML::Value << YAML::BeginSeq;
     }
@@ -137,9 +129,7 @@ void loadSimpleProperty(YAML::Node& node,
     // assert(success);
 }
 
-void loadProperty(YAML::Node& node,
-                  rttr::property property,
-                  rttr::instance instance)
+void loadProperty(YAML::Node& node, rttr::property property, rttr::instance instance)
 {
     if (property.is_readonly())
     {
@@ -156,24 +146,19 @@ void loadProperty(YAML::Node& node,
         loadSimpleProperty(node, propertyType, property, instance);
     }
     else if (propertyType.is_arithmetic() || propertyType.is_wrapper() ||
-             propertyType == rttr::type::get<std::string>() ||
-             propertyType == rttr::type::get<std::string_view>())
+             propertyType == rttr::type::get<std::string>() || propertyType == rttr::type::get<std::string_view>())
     {
         loadSimpleProperty(node, propertyType, property, instance);
     }
     else if (propertyType.is_enumeration())
     {
-        if (std::string loadedEnumString = node.as<std::string>();
-            loadedEnumString.size())
+        if (std::string loadedEnumString = node.as<std::string>(); loadedEnumString.size())
         {
-            if (rttr::enumeration enumeration = property.get_enumeration();
-                enumeration.is_valid())
+            if (rttr::enumeration enumeration = property.get_enumeration(); enumeration.is_valid())
             {
-                if (rttr::variant enumValue =
-                        enumeration.name_to_value(loadedEnumString);
-                    enumValue.is_valid())
+                if (rttr::variant enumValue = enumeration.name_to_value(loadedEnumString); enumValue.is_valid())
                 {
-                    bool success = property.set_value(instance, enumValue);
+                    bool success            = property.set_value(instance, enumValue);
                     rttr::type instanceType = instance.get_type();
                     rttr::type derivedType  = instance.get_derived_type();
                     assert(success);
@@ -189,13 +174,11 @@ void loadProperty(YAML::Node& node,
     {
         if (node.IsSequence())
         {
-            rttr::variant containerVariant = property.get_value(instance);
-            rttr::variant_associative_view associativeView =
-                containerVariant.create_associative_view();
-            const rttr::type keyType   = associativeView.get_key_type();
-            const rttr::type valueType = associativeView.is_key_only_type()
-                                             ? associativeView.get_key_type()
-                                             : associativeView.get_value_type();
+            rttr::variant containerVariant                 = property.get_value(instance);
+            rttr::variant_associative_view associativeView = containerVariant.create_associative_view();
+            const rttr::type keyType                       = associativeView.get_key_type();
+            const rttr::type valueType =
+                associativeView.is_key_only_type() ? associativeView.get_key_type() : associativeView.get_value_type();
 
             associativeView.clear();
 
@@ -240,10 +223,9 @@ void loadProperty(YAML::Node& node,
     {
         if (node.IsSequence())
         {
-            rttr::variant sequenceVariant = property.get_value(instance);
-            rttr::variant_sequential_view sequentialView =
-                sequenceVariant.create_sequential_view();
-            const rttr::type valueType = sequentialView.get_value_type();
+            rttr::variant sequenceVariant                = property.get_value(instance);
+            rttr::variant_sequential_view sequentialView = sequenceVariant.create_sequential_view();
+            const rttr::type valueType                   = sequentialView.get_value_type();
 
             const bool needToCreate = sequentialView.get_size() == 0;
             int index               = 0;
@@ -263,10 +245,8 @@ void loadProperty(YAML::Node& node,
 
                     if (loadedVariant.is_valid())
                     {
-                        sequentialView.insert(
-                            sequentialView.begin() +
-                                static_cast<int>(sequentialView.get_size()),
-                            loadedVariant);
+                        sequentialView.insert(sequentialView.begin() + static_cast<int>(sequentialView.get_size()),
+                                              loadedVariant);
                     }
                 }
                 else if (seq.IsSequence())
@@ -275,13 +255,11 @@ void loadProperty(YAML::Node& node,
                     {
                         if (childSeq.IsScalar())
                         {
-                            rttr::variant loadedVariant =
-                                childSeq.as<std::string>();
+                            rttr::variant loadedVariant = childSeq.as<std::string>();
 
                             if (valueType.is_wrapper())
                             {
-                                loadedVariant.convert(
-                                    valueType.get_wrapped_type());
+                                loadedVariant.convert(valueType.get_wrapped_type());
                             }
 
                             loadedVariant.convert(valueType);
@@ -289,9 +267,7 @@ void loadProperty(YAML::Node& node,
                             if (loadedVariant.is_valid())
                             {
                                 sequentialView.insert(
-                                    sequentialView.begin() +
-                                        static_cast<int>(
-                                            sequentialView.get_size()),
+                                    sequentialView.begin() + static_cast<int>(sequentialView.get_size()),
                                     loadedVariant);
                             }
                         }
@@ -303,23 +279,19 @@ void loadProperty(YAML::Node& node,
 
                     assert(valueType.is_class());
 
-                    if (currentIndex >= sequentialView.get_size() &&
-                        !needToCreate)
+                    if (currentIndex >= sequentialView.get_size() && !needToCreate)
                     {
                         continue;
                     }
 
                     rttr::variant variant =
-                        needToCreate ? valueType.create_default()
-                                     : sequentialView.get_value(currentIndex);
+                        needToCreate ? valueType.create_default() : sequentialView.get_value(currentIndex);
 
                     assert(variant.is_valid());
 
-                    for (const rttr::property childProperty :
-                         valueType.get_properties())
+                    for (const rttr::property childProperty : valueType.get_properties())
                     {
-                        if (YAML::Node prop =
-                                seq[childProperty.get_name().data()])
+                        if (YAML::Node prop = seq[childProperty.get_name().data()])
                         {
                             loadProperty(prop, childProperty, variant);
                         }
@@ -330,16 +302,14 @@ void loadProperty(YAML::Node& node,
 
                     if (needToCreate)
                     {
-                        const rttr::variant_sequential_view::const_iterator
-                            iterator = sequentialView.insert(
-                                sequentialView.begin() + currentIndex, variant);
+                        const rttr::variant_sequential_view::const_iterator iterator =
+                            sequentialView.insert(sequentialView.begin() + currentIndex, variant);
 
                         assert(iterator != sequentialView.end());
                     }
                     else
                     {
-                        const bool set =
-                            sequentialView.set_value(currentIndex, variant);
+                        const bool set = sequentialView.set_value(currentIndex, variant);
                         assert(set);
                     }
                 }
@@ -354,8 +324,7 @@ void loadProperty(YAML::Node& node,
         {
             rttr::variant classVariant = property.get_value(instance);
 
-            for (const rttr::property classProperty :
-                 classVariant.get_type().get_properties())
+            for (const rttr::property classProperty : classVariant.get_type().get_properties())
             {
                 YAML::Node classNode = node[classProperty.get_name().data()];
                 loadProperty(classNode, classProperty, classVariant);
@@ -404,11 +373,10 @@ void Serializer::loadSystem(SB::Engine::System* system, YAML::Node& node)
     }
 }
 
-rttr::instance SB::Core::Serialization::Serializer::createAndLoadObject(
-    YAML::Node& node, std::optional<rttr::method> onLoadedMethod)
+rttr::instance SB::Core::Serialization::Serializer::createAndLoadObject(YAML::Node& node,
+                                                                        std::optional<rttr::method> onLoadedMethod)
 {
-    const rttr::type type =
-        rttr::type::get_by_name(node[s_ObjectTypeKey].as<std::string>());
+    const rttr::type type = rttr::type::get_by_name(node[s_ObjectTypeKey].as<std::string>());
 
     const rttr::instance created = type.create_default();
 
@@ -418,8 +386,7 @@ rttr::instance SB::Core::Serialization::Serializer::createAndLoadObject(
     {
         if (created.get_derived_type().is_derived_from<SB::Core::Object>())
         {
-            SB::Core::ObjectTracker::get()->trackObject(
-                created.try_convert<SB::Core::Object>());
+            SB::Core::ObjectTracker::get()->trackObject(created.try_convert<SB::Core::Object>());
         }
 
         loadProperties(node, created, onLoadedMethod);
@@ -428,17 +395,15 @@ rttr::instance SB::Core::Serialization::Serializer::createAndLoadObject(
     return created;
 }
 
-bool SB::Core::Serialization::Serializer::loadProperties(
-    YAML::Node& node,
-    rttr::instance instance,
-    std::optional<rttr::method> onLoadedMethod)
+bool SB::Core::Serialization::Serializer::loadProperties(YAML::Node& node,
+                                                         rttr::instance instance,
+                                                         std::optional<rttr::method> onLoadedMethod)
 {
     bool result = false;
 
     if (instance)
     {
-        for (rttr::property property :
-             instance.get_derived_type().get_properties())
+        for (rttr::property property : instance.get_derived_type().get_properties())
         {
             if (!property.is_readonly())
             {
@@ -466,8 +431,7 @@ bool SB::Core::Serialization::Serializer::loadProperties(
 
 #pragma region Save
 
-bool SB::Core::Serialization::Serializer::saveInstance(YAML::Emitter& emitter,
-                                                       rttr::instance instance)
+bool SB::Core::Serialization::Serializer::saveInstance(YAML::Emitter& emitter, rttr::instance instance)
 {
     bool result = false;
 
@@ -475,14 +439,11 @@ bool SB::Core::Serialization::Serializer::saveInstance(YAML::Emitter& emitter,
     {
         Map map(emitter);
 
-        KeyValue<const char*> objectTypeValue(
-            emitter, s_ObjectTypeKey,
-            instance.get_derived_type().get_name().data());
+        KeyValue<const char*> objectTypeValue(emitter, s_ObjectTypeKey, instance.get_derived_type().get_name().data());
 
         result = true;
 
-        for (const rttr::property& property :
-             instance.get_derived_type().get_properties())
+        for (const rttr::property& property : instance.get_derived_type().get_properties())
         {
             rttr::variant propertyValue = property.get_value(instance);
 
@@ -495,9 +456,7 @@ bool SB::Core::Serialization::Serializer::saveInstance(YAML::Emitter& emitter,
     return result;
 }
 
-bool Serializer::saveVariant(YAML::Emitter& emitter,
-                             rttr::string_view name,
-                             rttr::variant& variant)
+bool Serializer::saveVariant(YAML::Emitter& emitter, rttr::string_view name, rttr::variant& variant)
 {
     bool result = false;
 
@@ -505,8 +464,7 @@ bool Serializer::saveVariant(YAML::Emitter& emitter,
     {
         const rttr::type type = variant.get_type();
 
-        if (type.is_arithmetic() || type.is_wrapper() ||
-            type == rttr::type::get<std::string>() ||
+        if (type.is_arithmetic() || type.is_wrapper() || type == rttr::type::get<std::string>() ||
             type == rttr::type::get<std::string_view>())
         {
             result = saveStringVariant(emitter, name, variant);
@@ -536,8 +494,9 @@ bool Serializer::saveVariant(YAML::Emitter& emitter,
     return result;
 }
 
-bool SB::Core::Serialization::Serializer::saveStringVariant(
-    YAML::Emitter& emitter, rttr::string_view name, rttr::variant variant)
+bool SB::Core::Serialization::Serializer::saveStringVariant(YAML::Emitter& emitter,
+                                                            rttr::string_view name,
+                                                            rttr::variant variant)
 {
     bool result = false;
 
@@ -581,17 +540,16 @@ bool SB::Core::Serialization::Serializer::saveStringVariant(
     return result;
 }
 
-bool SB::Core::Serialization::Serializer::saveEnumVariant(
-    YAML::Emitter& emitter, rttr::string_view name, rttr::variant variant)
+bool SB::Core::Serialization::Serializer::saveEnumVariant(YAML::Emitter& emitter,
+                                                          rttr::string_view name,
+                                                          rttr::variant variant)
 {
     bool result = false;
 
     if (emitter.good() && name.size() && variant.is_valid())
     {
-        const rttr::enumeration enumeration =
-            variant.get_type().get_enumeration();
-        const rttr::string_view enumValueName =
-            enumeration.value_to_name(variant);
+        const rttr::enumeration enumeration   = variant.get_type().get_enumeration();
+        const rttr::string_view enumValueName = enumeration.value_to_name(variant);
 
         if (!enumValueName.empty())
         {
@@ -604,19 +562,17 @@ bool SB::Core::Serialization::Serializer::saveEnumVariant(
     return result;
 }
 
-bool SB::Core::Serialization::Serializer::saveAssociateContainerVariant(
-    YAML::Emitter& emitter, rttr::string_view name, rttr::variant variant)
+bool SB::Core::Serialization::Serializer::saveAssociateContainerVariant(YAML::Emitter& emitter,
+                                                                        rttr::string_view name,
+                                                                        rttr::variant variant)
 {
     bool result = false;
 
     if (emitter.good() && name.size() && variant.is_valid())
     {
-        const rttr::variant_associative_view view =
-            variant.create_associative_view();
-        const rttr::type keyType   = view.get_key_type();
-        const rttr::type valueType = view.is_key_only_type()
-                                         ? view.get_key_type()
-                                         : view.get_value_type();
+        const rttr::variant_associative_view view = variant.create_associative_view();
+        const rttr::type keyType                  = view.get_key_type();
+        const rttr::type valueType = view.is_key_only_type() ? view.get_key_type() : view.get_value_type();
 
         if (!view.is_empty() && valueType.is_valid())
         {
@@ -629,11 +585,9 @@ bool SB::Core::Serialization::Serializer::saveAssociateContainerVariant(
                 const std::pair<rttr::variant, rttr::variant> valuePair =
                     item.convert<std::pair<rttr::variant, rttr::variant>>();
 
-                rttr::variant key = valuePair.first.extract_wrapped_value();
-                rttr::variant value =
-                    view.is_key_only_type()
-                        ? valuePair.first.extract_wrapped_value()
-                        : valuePair.second.extract_wrapped_value();
+                rttr::variant key   = valuePair.first.extract_wrapped_value();
+                rttr::variant value = view.is_key_only_type() ? valuePair.first.extract_wrapped_value()
+                                                              : valuePair.second.extract_wrapped_value();
 
                 if (keyType.is_wrapper())
                 {
@@ -659,16 +613,16 @@ bool SB::Core::Serialization::Serializer::saveAssociateContainerVariant(
     return result;
 }
 
-bool SB::Core::Serialization::Serializer::saveSequentialContainerVariant(
-    YAML::Emitter& emitter, rttr::string_view name, rttr::variant variant)
+bool SB::Core::Serialization::Serializer::saveSequentialContainerVariant(YAML::Emitter& emitter,
+                                                                         rttr::string_view name,
+                                                                         rttr::variant variant)
 {
     bool result = false;
 
     if (emitter.good() && name.size() && variant.is_valid())
     {
-        const rttr::variant_sequential_view view =
-            variant.create_sequential_view();
-        const rttr::type valueType = view.get_value_type();
+        const rttr::variant_sequential_view view = variant.create_sequential_view();
+        const rttr::type valueType               = view.get_value_type();
 
         ChildSequence childSeq(emitter, name);
 
@@ -693,20 +647,19 @@ bool SB::Core::Serialization::Serializer::saveSequentialContainerVariant(
     return result;
 }
 
-bool SB::Core::Serialization::Serializer::saveClassVariant(
-    YAML::Emitter& emitter, rttr::string_view name, rttr::variant variant)
+bool SB::Core::Serialization::Serializer::saveClassVariant(YAML::Emitter& emitter,
+                                                           rttr::string_view name,
+                                                           rttr::variant variant)
 {
     bool result = false;
 
     if (emitter.good() && variant.is_valid())
     {
-        ChildMap childMap(emitter,
-                          name.size() ? name : variant.get_type().get_name());
+        ChildMap childMap(emitter, name.size() ? name : variant.get_type().get_name());
 
         result = true;
 
-        for (const rttr::property& property :
-             variant.get_type().get_properties())
+        for (const rttr::property& property : variant.get_type().get_properties())
         {
             rttr::variant propertyValue = property.get_value(variant);
 

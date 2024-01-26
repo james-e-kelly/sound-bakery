@@ -10,10 +10,9 @@ namespace SB::Engine
     class SwitchContainer : public Container
     {
     public:
-        virtual void gatherSounds(
-            std::vector<Container*>& soundContainers,
-            const RuntimeFloatParameterMap& runtimeFloatParameters,
-            const RuntimeIntParameterMap& runtimeIntParameters) override
+        virtual void gatherSounds(std::vector<Container*>& soundContainers,
+                                  const RuntimeFloatParameterMap& runtimeFloatParameters,
+                                  const RuntimeIntParameterMap& runtimeIntParameters) override
         {
             if (runtimeIntParameters.contains(m_switchParameter.id()))
             {
@@ -22,8 +21,7 @@ namespace SB::Engine
             {
                 if (IntParameter* switchParameter = m_switchParameter.raw())
                 {
-                    if (SB::Core::DatabasePtr<IntParameterValue> selectedValue =
-                            switchParameter->getSelectedValue();
+                    if (SB::Core::DatabasePtr<IntParameterValue> selectedValue = switchParameter->getSelectedValue();
                         selectedValue.lookup())
                     {
                         auto foundIter = m_switchToChild.find(selectedValue);
@@ -32,9 +30,8 @@ namespace SB::Engine
                         {
                             if (foundIter->second.lookup())
                             {
-                                foundIter->second->gatherSounds(
-                                    soundContainers, runtimeFloatParameters,
-                                    runtimeIntParameters);
+                                foundIter->second->gatherSounds(soundContainers, runtimeFloatParameters,
+                                                                runtimeIntParameters);
                             }
                         }
                     }
@@ -45,13 +42,9 @@ namespace SB::Engine
     public:
         void setSwitchParameter(SB::Core::DatabasePtr<IntParameter> parameter);
 
-        SB::Core::DatabasePtr<IntParameter> getSwitchParameter() const
-        {
-            return m_switchParameter;
-        }
+        SB::Core::DatabasePtr<IntParameter> getSwitchParameter() const { return m_switchParameter; }
 
-        std::unordered_map<SB::Core::DatabasePtr<IntParameterValue>,
-                           SB::Core::ChildPtr<Container>>
+        std::unordered_map<SB::Core::DatabasePtr<IntParameterValue>, SB::Core::ChildPtr<Container>>
             getSwitchToChildMap() const
         {
             return m_switchToChild;
@@ -59,8 +52,7 @@ namespace SB::Engine
 
     private:
         void setSwitchToChild(
-            std::unordered_map<SB::Core::DatabasePtr<IntParameterValue>,
-                               SB::Core::ChildPtr<Container>> map);
+            std::unordered_map<SB::Core::DatabasePtr<IntParameterValue>, SB::Core::ChildPtr<Container>> map);
 
     private:
         void populateChildKeys();
@@ -73,9 +65,7 @@ namespace SB::Engine
         /**
          * @brief Holds the map for which switch value maps to which child.
          */
-        std::unordered_map<SB::Core::DatabasePtr<IntParameterValue>,
-                           SB::Core::ChildPtr<Container>>
-            m_switchToChild;
+        std::unordered_map<SB::Core::DatabasePtr<IntParameterValue>, SB::Core::ChildPtr<Container>> m_switchToChild;
 
         RTTR_ENABLE(Container)
         RTTR_REGISTRATION_FRIEND

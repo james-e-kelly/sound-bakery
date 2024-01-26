@@ -27,19 +27,13 @@ namespace SB::Engine
 
         Parameter() = default;
 
-        Parameter(T min, T max)
-            : m_property(T(), min, max), SB::Core::DatabaseObject()
-        {
-        }
+        Parameter(T min, T max) : m_property(T(), min, max), SB::Core::DatabaseObject() {}
 
     public:
         T get() const { return m_property.get(); }
         void set(T value) { m_property.set(value); }
 
-        typename SB::Core::Property<T>::PropertyChangedDelegate& getDelegate()
-        {
-            return m_property.getDelegate();
-        }
+        typename SB::Core::Property<T>::PropertyChangedDelegate& getDelegate() { return m_property.getDelegate(); }
 
         /**
          * @brief Copies this Parameter to a runtime version, suitable for
@@ -93,25 +87,20 @@ namespace SB::Engine
     class IntParameter : public Parameter<SB_ID>
     {
     public:
-        IntParameter()
-            : m_values(), Parameter(SB_ID(), 18'446'744'073'709'551'615llu)
-        {
-        }
+        IntParameter() : m_values(), Parameter(SB_ID(), 18'446'744'073'709'551'615llu) {}
 
         /**
          * @brief Adds a new value to the parameter.
          * @param name Name of the parameter value
          * @return The newly created parameter value that's in the database
          */
-        SB::Core::DatabasePtr<IntParameterValue> addNewValue(
-            const std::string_view name)
+        SB::Core::DatabasePtr<IntParameterValue> addNewValue(const std::string_view name)
         {
             SB::Core::DatabasePtr<IntParameterValue> result;
 
             if (!name.empty())
             {
-                if (IntParameterValue* parameterValue =
-                        newDatabaseObject<IntParameterValue>())
+                if (IntParameterValue* parameterValue = newDatabaseObject<IntParameterValue>())
                 {
                     parameterValue->setDatabaseName(name);
                     parameterValue->m_parentParameter = this;

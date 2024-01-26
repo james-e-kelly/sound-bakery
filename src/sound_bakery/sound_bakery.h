@@ -71,10 +71,7 @@ struct SC_SOUND_DELETER
 
 struct SC_SOUND_INSTANCE_DELETER
 {
-    void operator()(SC_SOUND_INSTANCE* instance)
-    {
-        SC_SoundInstance_Release(instance);
-    }
+    void operator()(SC_SOUND_INSTANCE* instance) { SC_SoundInstance_Release(instance); }
 };
 
 struct SC_NODE_GROUP_DELETER

@@ -10,39 +10,32 @@ void ObjectTracker::trackObject(RawObjectPtr object)
 {
     if (object != nullptr)
     {
-        const rttr::type type = object->getType();
-        const SB_OBJECT_CATEGORY category =
-            SB::Util::TypeHelper::getCategoryFromType(type);
+        const rttr::type type             = object->getType();
+        const SB_OBJECT_CATEGORY category = SB::Util::TypeHelper::getCategoryFromType(type);
 
         m_typeToObjects[type].emplace(object);
         m_categoryToObjects[category].emplace(object);
     }
 }
 
-void ObjectTracker::untrackObject(RawObjectPtr object,
-                                  const rttr::type& typeOverride)
+void ObjectTracker::untrackObject(RawObjectPtr object, const rttr::type& typeOverride)
 {
     if (object != nullptr)
     {
-        const rttr::type type = typeOverride != rttr::type::get<void>()
-                                    ? typeOverride
-                                    : object->getType();
-        const SB_OBJECT_CATEGORY category =
-            SB::Util::TypeHelper::getCategoryFromType(type);
+        const rttr::type type             = typeOverride != rttr::type::get<void>() ? typeOverride : object->getType();
+        const SB_OBJECT_CATEGORY category = SB::Util::TypeHelper::getCategoryFromType(type);
 
         m_typeToObjects[type].erase(object);
         m_categoryToObjects[category].erase(object);
     }
 }
 
-std::unordered_set<ObjectTracker::RawObjectPtr>
-    ObjectTracker::getObjectsOfCategory(SB_OBJECT_CATEGORY category)
+std::unordered_set<ObjectTracker::RawObjectPtr> ObjectTracker::getObjectsOfCategory(SB_OBJECT_CATEGORY category)
 {
     return m_categoryToObjects[category];
 }
 
-std::unordered_set<ObjectTracker::RawObjectPtr> ObjectTracker::getObjectsOfType(
-    rttr::type type)
+std::unordered_set<ObjectTracker::RawObjectPtr> ObjectTracker::getObjectsOfType(rttr::type type)
 {
     return m_typeToObjects[type];
 }

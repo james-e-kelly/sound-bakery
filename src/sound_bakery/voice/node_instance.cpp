@@ -22,8 +22,7 @@ NodeInstance::~NodeInstance()
     }
 }
 
-void SB::Engine::NodeInstance::setSoundInstance(SoundContainer* soundContainer,
-                                                Sound* sound) noexcept
+void SB::Engine::NodeInstance::setSoundInstance(SoundContainer* soundContainer, Sound* sound) noexcept
 {
     m_referencingNode      = soundContainer;
     m_referencingSoundNode = soundContainer;
@@ -31,8 +30,7 @@ void SB::Engine::NodeInstance::setSoundInstance(SoundContainer* soundContainer,
     init();
 
     SC_SOUND_INSTANCE* soundInstance = nullptr;
-    SC_RESULT playResult             = SC_System_PlaySound(
-        getChef(), sound->getSound(), &soundInstance, m_nodeGroup.get(), false);
+    SC_RESULT playResult = SC_System_PlaySound(getChef(), sound->getSound(), &soundInstance, m_nodeGroup.get(), false);
     m_soundInstance.reset(soundInstance);
 
     assert(playResult == MA_SUCCESS);
@@ -67,8 +65,7 @@ void SB::Engine::NodeInstance::createParentBusInstance()
 
 void SB::Engine::NodeInstance::createParentInstance()
 {
-    Container* const parent =
-        m_referencingNode->parent()->tryConvertObject<Container>();
+    Container* const parent = m_referencingNode->parent()->tryConvertObject<Container>();
 
     m_parent = std::make_shared<NodeInstance>();
     m_parent->setNodeInstance(parent);
@@ -109,8 +106,7 @@ void SB::Engine::NodeInstance::createParent()
 
 void SB::Engine::NodeInstance::createMasterBusParent()
 {
-    const SB::Core::DatabasePtr<Bus>& masterBus =
-        SB::Engine::System::get()->getMasterBus();
+    const SB::Core::DatabasePtr<Bus>& masterBus = SB::Engine::System::get()->getMasterBus();
 
     if (masterBus.lookup() && masterBus.id() != m_referencingNode->getDatabaseID())
     {
@@ -120,14 +116,10 @@ void SB::Engine::NodeInstance::createMasterBusParent()
 
 void SB::Engine::NodeInstance::bindDelegates()
 {
-    m_referencingNode->m_volume.getDelegate().AddRaw(this,
-                                                     &NodeInstance::setVolume);
-    m_referencingNode->m_pitch.getDelegate().AddRaw(this,
-                                                    &NodeInstance::setPitch);
-    m_referencingNode->m_lowpass.getDelegate().AddRaw(
-        this, &NodeInstance::setLowpass);
-    m_referencingNode->m_highpass.getDelegate().AddRaw(
-        this, &NodeInstance::setHighpass);
+    m_referencingNode->m_volume.getDelegate().AddRaw(this, &NodeInstance::setVolume);
+    m_referencingNode->m_pitch.getDelegate().AddRaw(this, &NodeInstance::setPitch);
+    m_referencingNode->m_lowpass.getDelegate().AddRaw(this, &NodeInstance::setLowpass);
+    m_referencingNode->m_highpass.getDelegate().AddRaw(this, &NodeInstance::setHighpass);
 
     setVolume(0.0F, m_referencingNode->m_volume.get());
     setPitch(0.0F, m_referencingNode->m_pitch.get());
@@ -145,31 +137,25 @@ void SB::Engine::NodeInstance::createDSP()
     SC_System_CreateDSP(getChef(), &hpfConfig, &m_highpass);
     SC_NodeGroup_AddDSP(m_nodeGroup.get(), m_highpass, SC_DSP_INDEX_HEAD);
 
-    for (const SB::Core::DatabasePtr<SB::Engine::EffectDescription>& desc :
-         m_referencingNode->m_effectDescriptions)
+    for (const SB::Core::DatabasePtr<SB::Engine::EffectDescription>& desc : m_referencingNode->m_effectDescriptions)
     {
         if (desc.lookup())
         {
             SC_DSP* dsp = nullptr;
 
-            SC_RESULT create =
-                SC_System_CreateDSP(getChef(), desc->getConfig(), &dsp);
+            SC_RESULT create = SC_System_CreateDSP(getChef(), desc->getConfig(), &dsp);
             assert(create == MA_SUCCESS);
 
-            SC_RESULT add =
-                SC_NodeGroup_AddDSP(m_nodeGroup.get(), dsp, SC_DSP_INDEX_HEAD);
+            SC_RESULT add = SC_NodeGroup_AddDSP(m_nodeGroup.get(), dsp, SC_DSP_INDEX_HEAD);
             assert(add == MA_SUCCESS);
 
             int index = 0;
-            for (const SB::Engine::EffectParameterDescription& parameter :
-                 desc->getParameters())
+            for (const SB::Engine::EffectParameterDescription& parameter : desc->getParameters())
             {
                 switch (parameter.m_parameter.m_type)
                 {
                     case SC_DSP_PARAMETER_TYPE_FLOAT:
-                        SC_DSP_SetParameterFloat(
-                            dsp, index++,
-                            parameter.m_parameter.m_float.m_value);
+                        SC_DSP_SetParameterFloat(dsp, index++, parameter.m_parameter.m_float.m_value);
                         break;
                 }
             }
@@ -196,9 +182,7 @@ void NodeInstance::setVolume(float oldVolume, float newVolume)
 {
     if (m_nodeGroup)
     {
-        ma_sound_group_set_volume(
-            (ma_sound_group*)m_nodeGroup->m_fader->m_state->m_userData,
-            newVolume);
+        ma_sound_group_set_volume((ma_sound_group*)m_nodeGroup->m_fader->m_state->m_userData, newVolume);
     }
 }
 
@@ -206,9 +190,7 @@ void NodeInstance::setPitch(float oldPitch, float newPitch)
 {
     if (m_nodeGroup)
     {
-        ma_sound_group_set_pitch(
-            (ma_sound_group*)m_nodeGroup->m_fader->m_state->m_userData,
-            newPitch);
+        ma_sound_group_set_pitch((ma_sound_group*)m_nodeGroup->m_fader->m_state->m_userData, newPitch);
     }
 }
 
@@ -220,8 +202,7 @@ void NodeInstance::setLowpass(float oldLowpass, float newLowpass)
     const double lowpassCutoff = (19980 - (19980.0 * percentage)) + 20.0;
     assert(lowpassCutoff >= 20.0);
 
-    SC_DSP_SetParameterFloat(m_lowpass, SC_DSP_LOWPASS_CUTOFF,
-                             static_cast<float>(lowpassCutoff));
+    SC_DSP_SetParameterFloat(m_lowpass, SC_DSP_LOWPASS_CUTOFF, static_cast<float>(lowpassCutoff));
 }
 
 void NodeInstance::setHighpass(float oldHighpass, float newHighpass)
@@ -232,6 +213,5 @@ void NodeInstance::setHighpass(float oldHighpass, float newHighpass)
     const double highpassCutoff = (19980.0 * percentage) + 20.0;
     assert(highpassCutoff >= 20.0);
 
-    SC_DSP_SetParameterFloat(m_highpass, SC_DSP_HIGHPASS_CUTOFF,
-                             static_cast<float>(highpassCutoff));
+    SC_DSP_SetParameterFloat(m_highpass, SC_DSP_HIGHPASS_CUTOFF, static_cast<float>(highpassCutoff));
 }

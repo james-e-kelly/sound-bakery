@@ -9,8 +9,7 @@ void Container::onLoaded()
 {
     if (!m_parentNode.hasId())
     {
-        const SB::Core::DatabasePtr<Bus>& masterBus =
-            SB::Engine::System::get()->getMasterBus();
+        const SB::Core::DatabasePtr<Bus>& masterBus = SB::Engine::System::get()->getMasterBus();
         if (!m_outputBus.hasId())
         {
             setOutputBus(SB::Core::DatabasePtr<NodeBase>(masterBus));

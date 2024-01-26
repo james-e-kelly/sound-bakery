@@ -22,8 +22,7 @@ namespace SB::Engine
         ~NodeInstance();
 
     public:
-        void setSoundInstance(SoundContainer* soundContainer,
-                              Sound* sound) noexcept;
+        void setSoundInstance(SoundContainer* soundContainer, Sound* sound) noexcept;
         void setNodeInstance(Container* container) noexcept;
         void setBusInstance(Bus* bus) noexcept;
 
@@ -48,14 +47,8 @@ namespace SB::Engine
         void setHighpass(float oldHighpass, float newHighpass);
 
     public:
-        SB::Core::DatabasePtr<Node> getReferencingNode() const noexcept
-        {
-            return m_referencingNode;
-        }
-        std::weak_ptr<NodeInstance> getParent() const noexcept
-        {
-            return m_parent;
-        }
+        SB::Core::DatabasePtr<Node> getReferencingNode() const noexcept { return m_referencingNode; }
+        std::weak_ptr<NodeInstance> getParent() const noexcept { return m_parent; }
         SC_NODE_GROUP* getBus() const noexcept { return m_nodeGroup.get(); }
 
     private:
@@ -67,8 +60,7 @@ namespace SB::Engine
         SC_DSP* m_highpass = nullptr;
 
     private:
-        std::unique_ptr<SC_SOUND_INSTANCE, SC_SOUND_INSTANCE_DELETER>
-            m_soundInstance;
+        std::unique_ptr<SC_SOUND_INSTANCE, SC_SOUND_INSTANCE_DELETER> m_soundInstance;
         std::unique_ptr<SC_NODE_GROUP, SC_NODE_GROUP_DELETER> m_nodeGroup;
         std::shared_ptr<NodeInstance> m_parent;
 

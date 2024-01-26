@@ -11,10 +11,7 @@ DatabaseObject::~DatabaseObject()
 
 SB_ID SB::Core::DatabaseObject::getDatabaseID() const { return m_objectID; }
 
-std::string_view SB::Core::DatabaseObject::getDatabaseName() const
-{
-    return m_objectName;
-}
+std::string_view SB::Core::DatabaseObject::getDatabaseName() const { return m_objectName; }
 
 void SB::Core::DatabaseObject::setDatabaseID(SB_ID id)
 {

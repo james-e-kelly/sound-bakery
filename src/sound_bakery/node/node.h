@@ -21,11 +21,7 @@ namespace SB::Engine
         ~NodeBase();
 
     public:
-        virtual void setParentNode(
-            const SB::Core::DatabasePtr<NodeBase>& parent)
-        {
-            m_parentNode = parent;
-        }
+        virtual void setParentNode(const SB::Core::DatabasePtr<NodeBase>& parent) { m_parentNode = parent; }
 
     public:
         SB_NODE_STATUS getNodeStatus() const noexcept
@@ -56,10 +52,7 @@ namespace SB::Engine
             }
         }
 
-        virtual void setOutputBus(const SB::Core::DatabasePtr<NodeBase>& bus)
-        {
-            m_outputBus = bus;
-        }
+        virtual void setOutputBus(const SB::Core::DatabasePtr<NodeBase>& bus) { m_outputBus = bus; }
 
         NodeBase* outputBus() const
         {
@@ -74,8 +67,7 @@ namespace SB::Engine
         }
 
     public:
-        virtual bool canAddChild(
-            const SB::Core::DatabasePtr<NodeBase>& child) const
+        virtual bool canAddChild(const SB::Core::DatabasePtr<NodeBase>& child) const
         {
             if (m_childNodes.contains(child))
             {
@@ -128,10 +120,7 @@ namespace SB::Engine
 
         std::size_t getChildCount() const { return m_childNodes.size(); }
 
-        bool hasChild(const SB::Core::DatabasePtr<NodeBase>& test) const
-        {
-            return m_childNodes.contains(test);
-        }
+        bool hasChild(const SB::Core::DatabasePtr<NodeBase>& test) const { return m_childNodes.contains(test); }
 
     protected:
         SB::Core::DatabasePtr<NodeBase> m_parentNode;
@@ -148,17 +137,12 @@ namespace SB::Engine
     class Node : public NodeBase
     {
     public:
-        SB::Core::FloatProperty m_volume =
-            SB::Core::FloatProperty(1.0f, 0.0f, 1.0f);
-        SB::Core::FloatProperty m_pitch =
-            SB::Core::FloatProperty(1.0f, 0.0f, 1.0f);
-        SB::Core::FloatProperty m_lowpass =
-            SB::Core::FloatProperty(1.0f, 0.0f, 100.0f);
-        SB::Core::FloatProperty m_highpass =
-            SB::Core::FloatProperty(1.0f, 0.0f, 100.0f);
+        SB::Core::FloatProperty m_volume   = SB::Core::FloatProperty(1.0f, 0.0f, 1.0f);
+        SB::Core::FloatProperty m_pitch    = SB::Core::FloatProperty(1.0f, 0.0f, 1.0f);
+        SB::Core::FloatProperty m_lowpass  = SB::Core::FloatProperty(1.0f, 0.0f, 100.0f);
+        SB::Core::FloatProperty m_highpass = SB::Core::FloatProperty(1.0f, 0.0f, 100.0f);
 
-        std::vector<SB::Core::DatabasePtr<EffectDescription>>
-            m_effectDescriptions;
+        std::vector<SB::Core::DatabasePtr<EffectDescription>> m_effectDescriptions;
 
         void addEffect(SC_DSP_TYPE type);
 

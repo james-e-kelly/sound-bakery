@@ -55,8 +55,7 @@ SB_OBJECT_CATEGORY TypeHelper::getCategoryFromType(rttr::type type)
     return category;
 }
 
-std::unordered_set<rttr::type> TypeHelper::getTypesFromCategory(
-    SB_OBJECT_CATEGORY category)
+std::unordered_set<rttr::type> TypeHelper::getTypesFromCategory(SB_OBJECT_CATEGORY category)
 {
     std::unordered_set<rttr::type> result;
 
@@ -96,8 +95,7 @@ std::unordered_set<rttr::type> TypeHelper::getTypesFromCategory(
 
 std::string_view TypeHelper::getDisplayNameFromType(rttr::type type)
 {
-    std::string_view result =
-        "Invalid. Cannot get display name for type. type_helper.cpp";
+    std::string_view result = "Invalid. Cannot get display name for type. type_helper.cpp";
 
     if (type == rttr::type::get<SB::Engine::SoundContainer>())
     {
@@ -161,11 +159,9 @@ std::string SB::Util::TypeHelper::getFolderNameForObjectType(rttr::type type)
 
     std::string typeNameString = typeName.to_string();
 
-    const std::size_t lastColonCharacterPos =
-        typeNameString.find_last_of(':') + 1;
+    const std::size_t lastColonCharacterPos = typeNameString.find_last_of(':') + 1;
 
-    if (lastColonCharacterPos == std::string::npos ||
-        lastColonCharacterPos >= typeNameString.size())
+    if (lastColonCharacterPos == std::string::npos || lastColonCharacterPos >= typeNameString.size())
     {
         return typeNameString;
     }
@@ -173,8 +169,7 @@ std::string SB::Util::TypeHelper::getFolderNameForObjectType(rttr::type type)
     return typeNameString.substr(lastColonCharacterPos, std::string::npos);
 }
 
-std::string_view TypeHelper::getFileExtensionOfObjectCategory(
-    SB_OBJECT_CATEGORY category)
+std::string_view TypeHelper::getFileExtensionOfObjectCategory(SB_OBJECT_CATEGORY category)
 {
     std::string_view result = ".object";
 

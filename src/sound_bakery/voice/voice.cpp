@@ -24,9 +24,8 @@ void SB::Engine::Voice::playContainer(Container* container)
     else
     {
         containersToPlay.reserve(3);
-        container->gatherSounds(
-            containersToPlay, SB::Engine::Container::RuntimeFloatParameterMap(),
-            SB::Engine::Container::RuntimeIntParameterMap());
+        container->gatherSounds(containersToPlay, SB::Engine::Container::RuntimeFloatParameterMap(),
+                                SB::Engine::Container::RuntimeIntParameterMap());
     }
 
     for (Container* const containerToPlay : containersToPlay)
@@ -36,14 +35,12 @@ void SB::Engine::Voice::playContainer(Container* container)
             continue;
         }
 
-        if (auto* const soundContainer =
-                containerToPlay->tryConvertObject<SoundContainer>())
+        if (auto* const soundContainer = containerToPlay->tryConvertObject<SoundContainer>())
         {
             if (Sound* const sound = soundContainer->getSound())
             {
                 const std::unique_ptr<NodeInstance>& voiceInstance =
-                    m_voiceInstances.emplace_back(
-                        std::make_unique<NodeInstance>());
+                    m_voiceInstances.emplace_back(std::make_unique<NodeInstance>());
                 voiceInstance->setSoundInstance(soundContainer, sound);
             }
         }
@@ -85,8 +82,7 @@ bool SB::Engine::Voice::playingContainer(Container* container) const noexcept
         return true;
     }
 
-    auto containerEqual = [id = container->getDatabaseID()](
-                              const std::unique_ptr<NodeInstance>& node)
+    auto containerEqual = [id = container->getDatabaseID()](const std::unique_ptr<NodeInstance>& node)
     {
         if (!node)
         {
@@ -100,8 +96,7 @@ bool SB::Engine::Voice::playingContainer(Container* container) const noexcept
             return true;
         }
 
-        std::shared_ptr<NodeInstance> sharedNodeInstance =
-            nodeInstance->getParent().lock();
+        std::shared_ptr<NodeInstance> sharedNodeInstance = nodeInstance->getParent().lock();
 
         while (sharedNodeInstance)
         {
@@ -116,24 +111,16 @@ bool SB::Engine::Voice::playingContainer(Container* container) const noexcept
         return false;
     };
 
-    return std::find_if(m_voiceInstances.begin(), m_voiceInstances.end(),
-                        containerEqual) != m_voiceInstances.end();
+    return std::find_if(m_voiceInstances.begin(), m_voiceInstances.end(), containerEqual) != m_voiceInstances.end();
 }
 
-const std::vector<std::unique_ptr<NodeInstance>>& SB::Engine::Voice::getVoices()
-    const noexcept
+const std::vector<std::unique_ptr<NodeInstance>>& SB::Engine::Voice::getVoices() const noexcept
 {
     return m_voiceInstances;
 }
 
-std::size_t SB::Engine::Voice::voices() const
-{
-    return m_voiceInstances.size();
-}
+std::size_t SB::Engine::Voice::voices() const { return m_voiceInstances.size(); }
 
-NodeInstance* SB::Engine::Voice::voice(std::size_t index) const
-{
-    return m_voiceInstances[index].get();
-}
+NodeInstance* SB::Engine::Voice::voice(std::size_t index) const { return m_voiceInstances[index].get(); }
 
 bool SB::Engine::Voice::isPlaying() const { return !m_voiceInstances.empty(); }
