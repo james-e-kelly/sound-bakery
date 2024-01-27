@@ -38,6 +38,12 @@ void PlayerWidget::Render()
 
     if (isPlayable)
     {
+        // Stop playing previous if we're selecting something new that is playable
+        if (selection.GetSelected() != s_lastPlayableSelection)
+        {
+            SB::Engine::System::get()->getListenerGameObject()->stopAll();
+        }
+        
         s_lastPlayableSelection = selection.GetSelected();
     }
     else if (!isSelected)
@@ -101,9 +107,9 @@ void PlayerWidget::Render()
     {
         if (std::size_t voicesSize = listener->voiceCount())
         {
-            ImGui::Text("Number of playing voices {%d}", voicesSize);
+            ImGui::Text("Number of playing voices {%lu}", voicesSize);
 
-            for (int index = 0; index < voicesSize; ++index)
+            for (std::size_t index = 0; index < voicesSize; ++index)
             {
                 SB::Engine::Voice* voice = listener->getVoice(index);
 
@@ -112,7 +118,7 @@ void PlayerWidget::Render()
                     continue;
                 }
 
-                for (int instanceIndex = 0; instanceIndex < voice->voices();
+                for (std::size_t instanceIndex = 0; instanceIndex < voice->voices();
                      ++instanceIndex)
                 {
                     SB::Engine::NodeInstance* nodeInstance =
