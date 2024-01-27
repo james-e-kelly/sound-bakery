@@ -4,6 +4,7 @@
 #include "sound_bakery/node/bus/bus.h"
 #include "sound_bakery/node/container/blend_container.h"
 #include "sound_bakery/node/container/random_container.h"
+#include "sound_bakery/node/container/sequence_container.h"
 #include "sound_bakery/node/container/sound_container.h"
 #include "sound_bakery/node/container/switch_container.h"
 #include "sound_bakery/parameter/parameter.h"
@@ -11,6 +12,81 @@
 #include "sound_bakery/system.h"
 
 #include <rttr/registration>
+#include "rttr/detail/misc/register_wrapper_mapper_conversion.h"
+#include "rttr/detail/type/base_classes.h"
+
+namespace SB::Reflection
+{
+    /**
+     * @brief Creates wrapper_mapper conversions for the Dervived class and all its base classes.
+     *
+     * Implementation is taken from rttr's basic conversion tempates but adapts it to our use case.
+     *
+     * Once large difference is rttr assumes wrappers to wrap object types. However, our pointers wrap the SB_ID type.
+     * This means it cannot automatically find the base_class_list.
+     * In our custom version, we remove the auto deduction of wrapper types and just use our DatabasePtr and ChildPtr wrappers.
+     */
+    template <typename DerivedClass, typename ... T>
+    struct CreatePointerConversion;
+
+    /**
+     * @brief Once the top-most base class is reached, make an explicit conversion between the base type and DatabaseObject.
+     *
+     * UI code assume wrapped types can be converted to DatabaseObject wrappers.
+     */
+    template <typename DerivedClass>
+    struct CreatePointerConversion<DerivedClass>
+    {
+        static void perform()
+        {
+            rttr::type::register_converter_func(rttr::wrapper_mapper<SB::Core::ChildPtr<DerivedClass>>::template convert<SB::Core::DatabaseObject>);
+            rttr::type::register_converter_func(rttr::wrapper_mapper<SB::Core::ChildPtr<SB::Core::DatabaseObject>>::template convert<DerivedClass>);
+            
+            rttr::type::register_converter_func(rttr::wrapper_mapper<SB::Core::DatabasePtr<DerivedClass>>::template convert<SB::Core::DatabaseObject>);
+            rttr::type::register_converter_func(rttr::wrapper_mapper<SB::Core::DatabasePtr<SB::Core::DatabaseObject>>::template convert<DerivedClass>);
+        }
+    };
+
+    /**
+     * @brief Registers conversions between the derived type and base class, then does the same for the base class's base class list.
+     */
+    template <typename DerivedClass, typename BaseClass, typename ... U>
+    struct CreatePointerConversion<DerivedClass, BaseClass, U...>
+    {
+        static void perform() 
+        { 
+            static_assert(rttr::detail::has_base_class_list<BaseClass>::value);
+            
+            rttr::type::register_converter_func(rttr::wrapper_mapper<SB::Core::ChildPtr<DerivedClass>>::template convert<BaseClass>);
+            rttr::type::register_converter_func(rttr::wrapper_mapper<SB::Core::ChildPtr<BaseClass>>::template convert<DerivedClass>);
+            
+            rttr::type::register_converter_func(rttr::wrapper_mapper<SB::Core::DatabasePtr<DerivedClass>>::template convert<BaseClass>);
+            rttr::type::register_converter_func(rttr::wrapper_mapper<SB::Core::DatabasePtr<BaseClass>>::template convert<DerivedClass>);
+            
+            CreatePointerConversion<DerivedClass, typename BaseClass::base_class_list>::perform();
+            CreatePointerConversion<DerivedClass, U...>::perform();
+        }
+    };
+
+    /**
+     * @brief Specialisation for wrapping the rttr::type_list type and extracting its template arguments.
+     */
+    template<typename DerivedClass, class... BaseClassList>
+    struct CreatePointerConversion<DerivedClass, rttr::type_list<BaseClassList...>> : CreatePointerConversion<DerivedClass, BaseClassList...> { };
+
+    /**
+     * @brief Auto-registers wrapper conversions for the type and its base classes.
+     */
+    template<typename T>
+    struct RegisterPointerConversionsForBaseClasses
+    {
+        RegisterPointerConversionsForBaseClasses()
+        {
+            CreatePointerConversion<T, typename T::base_class_list>::perform();
+        }
+    };
+
+}  // namespace SB::Reflection
 
 RTTR_REGISTRATION
 {
@@ -143,6 +219,21 @@ RTTR_REGISTRATION
         .property("Parent", &IntParameterValue::m_parentParameter)(
             metadata(SB::Editor::METADATA_KEY::Readonly, true));
 
-    type::register_converter_func(rttr::wrapper_mapper<SB::Core::ChildPtr<DatabaseObject>>::tryConvert<Container>);
-    type::register_converter_func(rttr::wrapper_mapper<SB::Core::ChildPtr<Container>>::tryConvert<DatabaseObject>);
+    SB::Reflection::RegisterPointerConversionsForBaseClasses<AuxBus>();
+    
+    SB::Reflection::RegisterPointerConversionsForBaseClasses<BlendContainer>();
+    SB::Reflection::RegisterPointerConversionsForBaseClasses<RandomContainer>();
+    SB::Reflection::RegisterPointerConversionsForBaseClasses<SequenceContainer>();
+    SB::Reflection::RegisterPointerConversionsForBaseClasses<SoundContainer>();
+    SB::Reflection::RegisterPointerConversionsForBaseClasses<SwitchContainer>();
+    
+    SB::Reflection::RegisterPointerConversionsForBaseClasses<Container>();  // makes sure we have a direct conversion between Container and DatabaseObject
+    
+    SB::Reflection::RegisterPointerConversionsForBaseClasses<Sound>();
+    
+    rttr::variant test = SB::Core::ChildPtr<SoundContainer>(200);
+    assert(test.convert(rttr::type::get<SB::Core::ChildPtr<Container>>()));
+    assert(test.convert(rttr::type::get<SB::Core::ChildPtr<Node>>()));
+    assert(test.convert(rttr::type::get<SB::Core::ChildPtr<SoundContainer>>()));
+    assert(test.convert(rttr::type::get<SB::Core::ChildPtr<DatabaseObject>>()));
 }

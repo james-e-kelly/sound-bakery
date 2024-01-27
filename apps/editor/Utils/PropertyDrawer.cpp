@@ -10,8 +10,6 @@ void PropertyDrawer::DrawObject(rttr::type type, rttr::instance instance)
 {
     ImGui::PushID(type.get_name().data());
 
-    int index = 0;
-
     if (ImGui::BeginTable(
             "Properties", 2,
                           ImGuiTableFlags_Resizable |
@@ -609,34 +607,27 @@ bool PropertyDrawer::DrawPayloadDrop(rttr::variant& value,
             // When setting variants, the value is completely overriden.
             // There is no chance for child pointers to retain its parent value and check the child.
             // Therefore, we have to do this ourselves here.
-            if (valueType.is_wrapper())
+            if (valueType.is_wrapper() && std::string(valueType.get_name().data()).find("ChildPtr") != std::string::npos)
             {
-                std::string wrapperTypeName = valueType.get_name().data();
+                bool convertSuccess = false;
+                SB::Core::ChildPtr<SB::Core::DatabaseObject> dataAsChildPtr = data.convert<SB::Core::ChildPtr<SB::Core::DatabaseObject>>(&convertSuccess);
 
-                // Quick hack to differentiate between DatabasePtr and ChildPtr
-                // @todo Is there a way to get the raw wrapper type without a template?
-                if (wrapperTypeName.find("ChildPtr") != std::string::npos)
+                if (convertSuccess)
                 {
-                    bool convertSuccess = false;
-                    SB::Core::ChildPtr<SB::Core::DatabaseObject> dataAsChildPtr = data.convert<SB::Core::ChildPtr<SB::Core::DatabaseObject>>(&convertSuccess);
+                    SB::Core::ChildPtr<SB::Core::DatabaseObject> valueAsChildPtr = value.convert<SB::Core::ChildPtr<SB::Core::DatabaseObject>>(&convertSuccess);
 
                     if (convertSuccess)
                     {
-                        SB::Core::ChildPtr<SB::Core::DatabaseObject> valueAsChildPtr = value.convert<SB::Core::ChildPtr<SB::Core::DatabaseObject>>(&convertSuccess);
+                        SB_ID currentID = valueAsChildPtr.id();
 
-                        if (convertSuccess)
+                        valueAsChildPtr = dataAsChildPtr;
+
+                        if (currentID != valueAsChildPtr.id())
                         {
-                            SB_ID currentID = valueAsChildPtr.id();
-
-                            valueAsChildPtr = dataAsChildPtr;
-
-                            if (currentID != valueAsChildPtr.id())
-                            {
-                                value = valueAsChildPtr;
-                                value.convert(valueType);
-                                assert(value.is_valid());
-                                edited = value.is_valid();
-                            }
+                            value = valueAsChildPtr;
+                            value.convert(valueType);
+                            assert(value.is_valid());
+                            edited = value.is_valid();
                         }
                     }
                 }
