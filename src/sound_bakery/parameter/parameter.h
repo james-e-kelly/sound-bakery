@@ -29,7 +29,7 @@ namespace SB::Engine
          *
          * Uses a @ref SB_ID for the parameter ID instead of DatabasePtr<T> to help when used in child classes.
          */
-        using LocalParameter = std::pair<SB_ID, typename ParameterProperty>;
+        using LocalParameter = std::pair<SB_ID, ParameterProperty>;
 
         /**
          * @brief Defines an ID to a parameter and a value for that parameter.
