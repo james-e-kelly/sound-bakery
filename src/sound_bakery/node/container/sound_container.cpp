@@ -2,10 +2,7 @@
 
 #include "sound_bakery/sound/sound.h"
 
-void SB::Engine::SoundContainer::gatherSounds(GatherSoundsContext& context) 
-{
-    context.sounds.push_back(this);
-}
+void SB::Engine::SoundContainer::gatherSounds(GatherSoundsContext& context) { context.sounds.push_back(this); }
 
 SB::Engine::Sound* SB::Engine::SoundContainer::getSound()
 {

@@ -7,9 +7,7 @@ namespace SB::Engine
     class SequenceContainer : public Container
     {
     public:
-        virtual void gatherSounds(GatherSoundsContext& context) override
-        {
-        }
+        virtual void gatherSounds(GatherSoundsContext& context) override {}
 
         RTTR_ENABLE(Container)
         RTTR_REGISTRATION_FRIEND

@@ -1,12 +1,11 @@
 #include "voice.h"
 
-#include "sound_bakery/node/container/sound_container.h"
 #include "sound_bakery/gameobject/gameobject.h"
+#include "sound_bakery/node/container/sound_container.h"
 #include "sound_bakery/sound/sound.h"
 #include "sound_bakery/voice/node_instance.h"
 
 using namespace SB::Engine;
-
 
 void SB::Engine::Voice::playContainer(Container* container)
 {

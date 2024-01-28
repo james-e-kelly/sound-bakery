@@ -306,9 +306,9 @@ namespace SB::Core
 
         /**
          * @brief Construct a new ChildPtr that points to the ID.
-         * 
+         *
          * Tries to find the owner from the ID.
-        */
+         */
         ChildPtr(SB_ID id) : DatabasePtr<TObject>(id), m_ownerID(getParentIdFromId(id)) {}
 
         TThisType& operator=(typename DatabasePtr<TObject>::TIdentifierType id)

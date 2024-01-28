@@ -151,8 +151,8 @@ namespace SB::Engine
 
         /**
          * @brief Gathers all parameters on this and child nodes that can effect the runtime output.
-        */
-        virtual void gatherParameters(GlobalParameterList& parameters) 
+         */
+        virtual void gatherParameters(GlobalParameterList& parameters)
         {
             parameters.floatParameters.reserve(m_childNodes.size() + 1);
             parameters.intParameters.reserve(m_childNodes.size() + 1);
@@ -176,14 +176,11 @@ namespace SB::Engine
     protected:
         /**
          * @brief Appends parameters from this node that are relevant to the runtime output.
-         * 
+         *
          * Called from gatherParameters.
          * @param parameters to append to.
-        */
-        virtual void gatherParametersFromThis(GlobalParameterList& parameters) 
-        { 
-            (void)parameters;
-        }
+         */
+        virtual void gatherParametersFromThis(GlobalParameterList& parameters) { (void)parameters; }
 
         RTTR_ENABLE(NodeBase)
         RTTR_REGISTRATION_FRIEND

@@ -29,11 +29,11 @@ namespace SB::Engine
 
         /**
          * @brief Finds the parameter value on this gameobject.
-         * 
+         *
          * If there is no local value, the global parameter value is used.
          * @param parameter to get the value for.
          * @return value of the parameter.
-        */
+         */
         float getFloatParameterValue(const SB::Core::DatabasePtr<FloatParameter>& parameter) const
         {
             float result = 0.0F;
@@ -57,13 +57,13 @@ namespace SB::Engine
 
         /**
          * @brief Finds the parameter value on this gameobject.
-         * 
+         *
          * If there is no local value, the global parameter value is used.
          * @param parameter to get the value for.
          * @return value of the parameter.
-        */
+         */
         SB_ID getIntParameterValue(const SB::Core::DatabasePtr<NamedParameter>& parameter) const
-        { 
+        {
             SB_ID result = 0;
 
             auto found = m_parameters.intParameters.find(parameter);
@@ -104,10 +104,7 @@ namespace SB::Engine
             assert(m_parameters.intParameters[parameterValue.first].get() == parameterValue.second);
         }
 
-        LocalParameterList getLocalParameters() const
-        { 
-            return m_parameters;
-        }
+        LocalParameterList getLocalParameters() const { return m_parameters; }
 
     private:
         std::vector<std::unique_ptr<Voice>> m_voices;

@@ -12,7 +12,8 @@ namespace SB::Engine
             if (context.parameters.intParameters.contains(m_switchParameter))
             {
                 if (SB::Core::DatabasePtr<NamedParameterValue> selectedValue(
-                        context.parameters.intParameters[m_switchParameter].get()); selectedValue.lookup())
+                        context.parameters.intParameters[m_switchParameter].get());
+                    selectedValue.lookup())
                 {
                     auto foundIter = m_switchToChild.find(selectedValue);
 
@@ -29,7 +30,8 @@ namespace SB::Engine
             {
                 if (const NamedParameter* const switchParameter = m_switchParameter.raw())
                 {
-                    if (const SB::Core::DatabasePtr<NamedParameterValue> selectedValue = switchParameter->getSelectedValue();
+                    if (const SB::Core::DatabasePtr<NamedParameterValue> selectedValue =
+                            switchParameter->getSelectedValue();
                         selectedValue.lookup())
                     {
                         auto foundIter = m_switchToChild.find(selectedValue);

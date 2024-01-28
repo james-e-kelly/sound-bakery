@@ -17,10 +17,7 @@ namespace SB::Engine
     {
     public:
         Voice() = delete;
-        Voice(GameObject* owningObject) : m_owningGameObject(owningObject)
-        {
-
-        }
+        Voice(GameObject* owningObject) : m_owningGameObject(owningObject) {}
 
     public:
         void playContainer(Container* container);
