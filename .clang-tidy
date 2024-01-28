@@ -16,8 +16,6 @@ CheckOptions:
     value:           camelBack
   - key:             readability-identifier-naming.PrivateMemberPrefix
     value:           m_
-  - key:             readability-identifier-naming.PublicMemberPrefix
-    value:           m_
   - key:             readability-identifier-naming.StaticVariableCase
     value:           camelBack
   - key:             readability-identifier-naming.StaticVariablePrefix
