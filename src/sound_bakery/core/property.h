@@ -88,7 +88,7 @@ namespace SB::Core
 
         [[nodiscard]] std::pair<T, T> getMinMaxPair() const { return std::pair<T, T>(m_min, m_max); }
 
-    protected:
+    private:
         T m_property;
         T m_min;
         T m_max;
