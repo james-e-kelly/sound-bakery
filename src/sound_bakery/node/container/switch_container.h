@@ -11,7 +11,8 @@ namespace SB::Engine
         {
             SB::Core::DatabasePtr<NamedParameterValue> selectedValue;
 
-            if (auto findLocalValue = context.parameters.intParameters.find(m_switchParameter); findLocalValue != context.parameters.intParameters.cend())
+            if (auto findLocalValue = context.parameters.intParameters.find(m_switchParameter);
+                findLocalValue != context.parameters.intParameters.cend())
             {
                 selectedValue = SB::Core::DatabasePtr<NamedParameterValue>(findLocalValue->second.get());
             }

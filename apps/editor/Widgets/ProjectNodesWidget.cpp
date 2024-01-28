@@ -135,6 +135,28 @@ void ProjectNodesWidget::RenderSingleNode(rttr::type type,
 
                     ImGui::EndDragDropSource();
                 }
+
+                if (ImGui::BeginDragDropTarget())
+                {
+                    if (node != nullptr)
+                    {
+                        if (const ImGuiPayload* const currentPayload = ImGui::GetDragDropPayload())
+                        {
+                            SB_ID payloadID = *static_cast<SB_ID*>(currentPayload->Data);
+                            SB::Core::DatabasePtr<SB::Engine::NodeBase> potentialChild(payloadID);
+
+                            if (node->canAddChild(potentialChild))
+                            {
+                                if (const ImGuiPayload* const payload =
+                                        ImGui::AcceptDragDropPayload(currentPayload->DataType))
+                                {
+                                    node->addChild(potentialChild);
+                                }
+                            }
+                        }
+                    }
+                    ImGui::EndDragDropTarget();
+                }
             }
 
             if (ImGui::IsItemHovered() &&

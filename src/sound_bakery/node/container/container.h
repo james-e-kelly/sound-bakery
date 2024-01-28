@@ -41,7 +41,19 @@ namespace SB::Engine
     public:
         Container() : Node() {}
 
-        virtual void onLoaded() override;
+        void onLoaded() override;
+
+        bool canAddChild(const SB::Core::DatabasePtr<NodeBase>& child) const override
+        {
+            if (child.lookup() && child->getType().is_derived_from<Container>())
+            {
+                return NodeBase::canAddChild(child);
+            }
+            else
+            {
+                return false;
+            }
+        }
 
         /**
          * @brief Collects and gathers sounds on this node and its children for play.

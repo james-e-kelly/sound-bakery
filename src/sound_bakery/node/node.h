@@ -74,11 +74,7 @@ namespace SB::Engine
     public:
         virtual bool canAddChild(const SB::Core::DatabasePtr<NodeBase>& child) const
         {
-            if (m_childNodes.contains(child))
-            {
-                return false;
-            }
-            if (child && child->parent())
+            if (m_childNodes.contains(child) || child.id() == getDatabaseID())
             {
                 return false;
             }
@@ -89,6 +85,11 @@ namespace SB::Engine
         {
             if (canAddChild(child))
             {
+                if (child.lookup() && child->parent())
+                {
+                    child->parent()->removeChild(child);
+                }
+
                 m_childNodes.insert(child);
 
                 if (child.lookup())
