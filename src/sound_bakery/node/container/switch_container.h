@@ -9,41 +9,25 @@ namespace SB::Engine
     public:
         void gatherSounds(GatherSoundsContext& context) override
         {
-            if (context.parameters.intParameters.contains(m_switchParameter))
-            {
-                if (SB::Core::DatabasePtr<NamedParameterValue> selectedValue(
-                        context.parameters.intParameters[m_switchParameter].get());
-                    selectedValue.lookup())
-                {
-                    auto foundIter = m_switchToChild.find(selectedValue);
+            SB::Core::DatabasePtr<NamedParameterValue> selectedValue;
 
-                    if (foundIter != m_switchToChild.end())
-                    {
-                        if (foundIter->second.lookup())
-                        {
-                            foundIter->second->gatherSounds(context);
-                        }
-                    }
-                }
+            if (auto findLocalValue = context.parameters.intParameters.find(m_switchParameter); findLocalValue != context.parameters.intParameters.cend())
+            {
+                selectedValue = SB::Core::DatabasePtr<NamedParameterValue>(findLocalValue->second.get());
             }
-            else
+            else if (m_switchParameter.lookup())
             {
-                if (const NamedParameter* const switchParameter = m_switchParameter.raw())
-                {
-                    if (const SB::Core::DatabasePtr<NamedParameterValue> selectedValue =
-                            switchParameter->getSelectedValue();
-                        selectedValue.lookup())
-                    {
-                        auto foundIter = m_switchToChild.find(selectedValue);
+                selectedValue = m_switchParameter->getSelectedValue();
+            }
 
-                        if (foundIter != m_switchToChild.end())
-                        {
-                            if (foundIter->second.lookup())
-                            {
-                                foundIter->second->gatherSounds(context);
-                            }
-                        }
-                    }
+            if (auto foundIter = m_switchToChild.find(selectedValue); foundIter != m_switchToChild.end())
+            {
+                SB::Core::ChildPtr<Container> selectedChild(*this);
+                selectedChild = foundIter->second;
+
+                if (selectedChild.lookup())
+                {
+                    selectedChild->gatherSounds(context);
                 }
             }
         }
