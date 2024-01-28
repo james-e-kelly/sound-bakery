@@ -1,10 +1,12 @@
 #pragma once
 
 #include "sound_bakery/core/core_include.h"
+#include "sound_bakery/voice/node_instance.h"
 
 namespace SB::Engine
 {
     class Container;
+    class GameObject;
     class NodeInstance;
 
     /**
@@ -14,8 +16,11 @@ namespace SB::Engine
     class Voice : public SB::Core::Object
     {
     public:
-        Voice();
-        ~Voice();
+        Voice() = delete;
+        Voice(GameObject* owningObject) : m_owningGameObject(owningObject)
+        {
+
+        }
 
     public:
         void playContainer(Container* container);
@@ -33,6 +38,7 @@ namespace SB::Engine
         bool isPlaying() const;
 
     private:
+        GameObject* m_owningGameObject = nullptr;
         SB::Core::DatabasePtr<Container> m_playingContainer;
 
         std::vector<std::unique_ptr<NodeInstance>> m_voiceInstances;

@@ -1,13 +1,12 @@
 #include "voice.h"
 
 #include "sound_bakery/node/container/sound_container.h"
+#include "sound_bakery/gameobject/gameobject.h"
 #include "sound_bakery/sound/sound.h"
 #include "sound_bakery/voice/node_instance.h"
 
 using namespace SB::Engine;
 
-Voice::Voice()  = default;
-Voice::~Voice() = default;
 
 void SB::Engine::Voice::playContainer(Container* container)
 {
@@ -15,20 +14,19 @@ void SB::Engine::Voice::playContainer(Container* container)
 
     m_playingContainer = container;
 
-    std::vector<Container*> containersToPlay;
+    GatherSoundsContext gatherSoundsContext;
+    gatherSoundsContext.parameters = m_owningGameObject->getLocalParameters();
 
     if (container->getType() == rttr::type::get<SoundContainer>())
     {
-        containersToPlay.push_back(container);
+        gatherSoundsContext.sounds.push_back(container);
     }
     else
     {
-        containersToPlay.reserve(3);
-        container->gatherSounds(containersToPlay, SB::Engine::Container::RuntimeFloatParameterMap(),
-                                SB::Engine::Container::RuntimeIntParameterMap());
+        container->gatherSounds(gatherSoundsContext);
     }
 
-    for (Container* const containerToPlay : containersToPlay)
+    for (Container* const containerToPlay : gatherSoundsContext.sounds)
     {
         if (containerToPlay == nullptr)
         {

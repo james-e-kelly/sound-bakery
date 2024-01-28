@@ -7,9 +7,7 @@ namespace SB::Engine
     class BlendContainer : public Container
     {
     public:
-        virtual void gatherSounds(std::vector<Container*>& soundContainers,
-                                  const RuntimeFloatParameterMap& runtimeFloatParameters,
-                                  const RuntimeIntParameterMap& runtimeIntParameters) override;
+        virtual void gatherSounds(GatherSoundsContext& context) override;
 
         RTTR_ENABLE(Container)
         RTTR_REGISTRATION_FRIEND

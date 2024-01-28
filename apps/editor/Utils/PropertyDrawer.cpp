@@ -70,6 +70,7 @@ bool PropertyDrawer::DrawProperty(rttr::property property,
     if (edited)
     {
         edited = property.set_value(instance, propertyValue);
+        assert(edited);
     }
 
     ImGui::PopID();
@@ -287,7 +288,7 @@ void PropertyDrawer::DrawReadonlyVariant(rttr::variant variant, bool disabled)
         }
         else if (object.hasId())
         {
-            ImGui::TextUnformatted("Object Unloaded");
+            ImGui::Text("Object Unloaded {%s}", rttr::variant(object.id()).to_string().c_str());
         }
         else
         {

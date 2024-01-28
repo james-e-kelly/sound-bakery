@@ -6,14 +6,11 @@
 
 using namespace SB::Engine;
 
-GameObject::GameObject()  = default;
-GameObject::~GameObject() = default;
-
 Voice* GameObject::playContainer(Container* container)
 {
     if (container)
     {
-        std::unique_ptr<Voice>& voice = m_voices.emplace_back(std::make_unique<Voice>());
+        std::unique_ptr<Voice>& voice = m_voices.emplace_back(std::make_unique<Voice>(this));
         voice->playContainer(container);
         return voice.get();
     }

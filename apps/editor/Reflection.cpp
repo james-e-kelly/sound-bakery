@@ -189,7 +189,7 @@ RTTR_REGISTRATION
         .constructor<>()(policy::ctor::as_raw_ptr)
         .property("Switch", &SwitchContainer::getSwitchParameter,
                   &SwitchContainer::setSwitchParameter)(metadata(
-            SB::Editor::METADATA_KEY::Payload, SB::Editor::PayloadIntParam))
+            SB::Editor::METADATA_KEY::Payload, SB::Editor::PayloadNamedParam))
         .property("Mappings", &SwitchContainer::getSwitchToChildMap,
                   &SwitchContainer::setSwitchToChild);
 
@@ -208,15 +208,18 @@ RTTR_REGISTRATION
         .constructor<>()(policy::ctor::as_raw_ptr);
 
     registration::class_<IntParameter>("SB::Engine::IntParameter")
-        .constructor<>()(policy::ctor::as_raw_ptr)
-        .property("Values", &IntParameter::m_values)(
-            metadata(SB::Editor::METADATA_KEY::Readonly, true))
-        .property("ParameterValue", &IntParameter::getSelectedValue,
-                  &IntParameter::setSelectedValue);
+        .constructor<>()(policy::ctor::as_raw_ptr);
 
-    registration::class_<IntParameterValue>("SB::Engine::IntParameterValue")
+    registration::class_<NamedParameter>("SB::Engine::NamedParameter")
         .constructor<>()(policy::ctor::as_raw_ptr)
-        .property("Parent", &IntParameterValue::m_parentParameter)(
+        .property("Values", &NamedParameter::m_values)(
+            metadata(SB::Editor::METADATA_KEY::Readonly, true))
+        .property("ParameterValue", &NamedParameter::getSelectedValue,
+                  &NamedParameter::setSelectedValue);
+
+    registration::class_<NamedParameterValue>("SB::Engine::NamedParameterValue")
+        .constructor<>()(policy::ctor::as_raw_ptr)
+        .property("Parent", &NamedParameterValue::parentParameter)(
             metadata(SB::Editor::METADATA_KEY::Readonly, true));
 
     SB::Reflection::RegisterPointerConversionsForBaseClasses<AuxBus>();
@@ -230,10 +233,4 @@ RTTR_REGISTRATION
     SB::Reflection::RegisterPointerConversionsForBaseClasses<Container>();  // makes sure we have a direct conversion between Container and DatabaseObject
     
     SB::Reflection::RegisterPointerConversionsForBaseClasses<Sound>();
-    
-    rttr::variant test = SB::Core::ChildPtr<SoundContainer>(200);
-    assert(test.convert(rttr::type::get<SB::Core::ChildPtr<Container>>()));
-    assert(test.convert(rttr::type::get<SB::Core::ChildPtr<Node>>()));
-    assert(test.convert(rttr::type::get<SB::Core::ChildPtr<SoundContainer>>()));
-    assert(test.convert(rttr::type::get<SB::Core::ChildPtr<DatabaseObject>>()));
 }

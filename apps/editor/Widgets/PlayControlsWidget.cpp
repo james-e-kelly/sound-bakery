@@ -100,40 +100,77 @@ void PlayerWidget::Render()
         SB::Engine::System::get()->getListenerGameObject()->stopAll();
     }
 
-    ImGui::EndDisabled();
+    SB::Engine::Node* const nodeSelection =
+        s_lastPlayableSelection ? s_lastPlayableSelection->tryConvertObject<SB::Engine::Node>() : nullptr;
 
-    if (SB::Engine::GameObject* listener =
-            SB::Engine::System::get()->getListenerGameObject())
+    SB::Engine::GlobalParameterList parameterList;
+
+    if (nodeSelection)
     {
-        if (std::size_t voicesSize = listener->voiceCount())
+        nodeSelection->gatherParameters(parameterList);
+    }
+
+    SB::Engine::GameObject* const listenerGameObject = SB::Engine::System::get()->getListenerGameObject();
+
+    if (ImGui::BeginTabBar("Runtime Parameters"))
+    {
+        if (ImGui::BeginTabItem("Switches"))
         {
-            ImGui::Text("Number of playing voices {%lu}", voicesSize);
-
-            for (std::size_t index = 0; index < voicesSize; ++index)
+            if (ImGui::BeginTable("Table", 2))
             {
-                SB::Engine::Voice* voice = listener->getVoice(index);
-
-                if (voice == nullptr)
+                for (const SB::Core::DatabasePtr<SB::Engine::NamedParameter>& intParameter :
+                     parameterList.intParameters)
                 {
-                    continue;
-                }
-
-                for (std::size_t instanceIndex = 0; instanceIndex < voice->voices();
-                     ++instanceIndex)
-                {
-                    SB::Engine::NodeInstance* nodeInstance =
-                        voice->voice(instanceIndex);
-
-                    if (nodeInstance)
+                    if (intParameter.lookup() == false)
                     {
-                        bool playing = nodeInstance->isPlaying();
-                        ImGui::Text("Channel is %s",
-                                    playing ? "playing" : "not playing");
+                        continue;
+                    }
+
+                    SB::Core::DatabasePtr<SB::Engine::NamedParameterValue> selectedIntParameterValue =
+                        listenerGameObject->getIntParameterValue(intParameter);
+
+                    if (selectedIntParameterValue.lookup() == false)
+                    {
+                        continue;
+                    }
+
+                    ImGui::TableNextColumn();
+                    ImGui::TextUnformatted(intParameter->getDatabaseName().data());
+
+                    ImGui::TableNextColumn();
+
+                    if (ImGui::BeginCombo("Selected", selectedIntParameterValue->getDatabaseName().data()))
+                    {
+                        for (SB::Core::DatabasePtr<SB::Engine::NamedParameterValue> parameterValue : intParameter->getValues())
+                        {
+                            if (parameterValue.lookup() == false)
+                            {
+                                continue;
+                            }
+
+                            bool selected = parameterValue == selectedIntParameterValue;
+                            if (ImGui::Selectable(parameterValue->getDatabaseName().data(), &selected))
+                            {
+                                listenerGameObject->setIntParameterValue(
+                                    {intParameter.id(), parameterValue->getDatabaseID()});
+                            }
+                        }
+
+                        ImGui::EndCombo();
                     }
                 }
+
+                ImGui::EndTable();
             }
+            
+            
+            ImGui::EndTabItem();
         }
+
+        ImGui::EndTabBar();
     }
+
+    ImGui::EndDisabled();
 
     RenderChildren();
 

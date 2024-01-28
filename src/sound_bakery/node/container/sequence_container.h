@@ -7,9 +7,7 @@ namespace SB::Engine
     class SequenceContainer : public Container
     {
     public:
-        virtual void gatherSounds(std::vector<Container*>& soundContainers,
-                                  const RuntimeFloatParameterMap& runtimeFloatParameters,
-                                  const RuntimeIntParameterMap& runtimeIntParameters) override
+        virtual void gatherSounds(GatherSoundsContext& context) override
         {
         }
 

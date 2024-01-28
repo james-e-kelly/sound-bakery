@@ -1,16 +1,14 @@
 #include "blend_container.h"
 
-void SB::Engine::BlendContainer::gatherSounds(std::vector<Container*>& soundContainers,
-                                              const RuntimeFloatParameterMap& runtimeFloatParameters,
-                                              const RuntimeIntParameterMap& runtimeIntParameters)
+void SB::Engine::BlendContainer::gatherSounds(GatherSoundsContext& context)
 {
     for (NodeBase* const child : getChildren())
     {
-        if (child)
+        if (child != nullptr)
         {
-            if (Container* const childContainer = rttr::rttr_cast<Container*, NodeBase*>(child))
+            if (Container* const childContainer = child->tryConvertObject<Container>())
             {
-                childContainer->gatherSounds(soundContainers, runtimeFloatParameters, runtimeIntParameters);
+                childContainer->gatherSounds(context);
             }
         }
     }

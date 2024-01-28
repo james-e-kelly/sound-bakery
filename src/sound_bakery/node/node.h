@@ -2,9 +2,14 @@
 
 #include "sound_bakery/core/core_include.h"
 #include "sound_bakery/effect/effect.h"
+#include "sound_bakery/parameter/parameter.h"
 
 namespace SB::Engine
 {
+    class FloatParameter;
+    class NamedParameter;
+    class NamedParameterValue;
+
     enum SB_NODE_STATUS
     {
         // Has no parent and no bus
@@ -144,7 +149,41 @@ namespace SB::Engine
 
         std::vector<SB::Core::DatabasePtr<EffectDescription>> m_effectDescriptions;
 
+        /**
+         * @brief Gathers all parameters on this and child nodes that can effect the runtime output.
+        */
+        virtual void gatherParameters(GlobalParameterList& parameters) 
+        {
+            parameters.floatParameters.reserve(m_childNodes.size() + 1);
+            parameters.intParameters.reserve(m_childNodes.size() + 1);
+
+            gatherParametersFromThis(parameters);
+
+            for (NodeBase* const child : getChildren())
+            {
+                if (child != nullptr)
+                {
+                    if (Node* const childNode = child->tryConvertObject<Node>())
+                    {
+                        childNode->gatherParameters(parameters);
+                    }
+                }
+            }
+        }
+
         void addEffect(SC_DSP_TYPE type);
+
+    protected:
+        /**
+         * @brief Appends parameters from this node that are relevant to the runtime output.
+         * 
+         * Called from gatherParameters.
+         * @param parameters to append to.
+        */
+        virtual void gatherParametersFromThis(GlobalParameterList& parameters) 
+        { 
+            (void)parameters;
+        }
 
         RTTR_ENABLE(NodeBase)
         RTTR_REGISTRATION_FRIEND
