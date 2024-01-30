@@ -196,6 +196,11 @@ RTTR_REGISTRATION
     registration::class_<RandomContainer>("SB::Engine::RandomContainer")
         .constructor<>()(policy::ctor::as_raw_ptr);
 
+    registration::class_<SequenceContainer>("SB::Engine::SequenceContainer")
+        .constructor<>()(policy::ctor::as_raw_ptr)
+        .property("Sequence", &SequenceContainer::m_sequence)
+        ;
+
     registration::class_<Bus>("SB::Engine::Bus")
         .constructor<>()(policy::ctor::as_raw_ptr)
         .property_readonly("IsMasterBus", &Bus::m_masterBus);

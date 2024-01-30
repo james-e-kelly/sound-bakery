@@ -9,6 +9,9 @@ namespace SB::Engine
     public:
         virtual void gatherSounds(GatherSoundsContext& context) override {}
 
+    private:
+        std::vector<SB::Core::ChildPtr<Container>> m_sequence;
+
         RTTR_ENABLE(Container)
         RTTR_REGISTRATION_FRIEND
     };

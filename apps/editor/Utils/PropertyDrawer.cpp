@@ -386,10 +386,28 @@ bool PropertyDrawer::DrawSequentialContainer(
     {
         const rttr::type type = view.get_value_type();
 
+        rttr::variant createdDefault;
+
+        if (type.is_wrapper())
+        {
+            assert(type.get_wrapped_type() == rttr::type::get<SB_ID>());
+            createdDefault = (SB_ID)0;
+            const bool converted = createdDefault.convert(type);
+            assert(converted);
+        }
+        else
+        {
+            assert(type.is_class());
+            createdDefault = type.create_default();
+        }
+
+        assert(createdDefault.is_valid());
+
         rttr::variant_sequential_view::const_iterator insertedIterator =
-            view.insert(view.begin() + view.get_size(), type.create_default());
+            view.insert(view.begin() + view.get_size(), createdDefault);
 
         edited = insertedIterator != view.end();
+        assert(edited);
     }
 
     if (view.get_size())
