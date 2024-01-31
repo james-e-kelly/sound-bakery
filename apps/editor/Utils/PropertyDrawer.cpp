@@ -436,14 +436,18 @@ bool PropertyDrawer::DrawSequentialContainer(
 
             if (ImGui::Button("X"))
             {
-                view.erase(iterator);
+                iterator = view.erase(iterator);
                 edited = true;
-                break;
             }
 
             ImGui::PopID();
 
             ++index;
+
+            if (iterator == view.end())
+            {
+                break;
+            }
         }
     }
 
