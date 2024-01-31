@@ -382,6 +382,10 @@ bool PropertyDrawer::DrawSequentialContainer(
 
     ImGui::SameLine();
 
+    ImGui::Text("%lu elements", view.get_size());
+
+    ImGui::SameLine();
+
     if (ImGui::Button("+"))
     {
         const rttr::type type = view.get_value_type();
@@ -422,17 +426,19 @@ bool PropertyDrawer::DrawSequentialContainer(
 
             rttr::variant value = iterator.get_data().extract_wrapped_value();
 
+            if (DrawVariant(value, std::to_string(index).data()))
+            {
+                view.set_value(index, value);
+                edited = true;
+            }
+
+            ImGui::SameLine();
+
             if (ImGui::Button("X"))
             {
                 view.erase(iterator);
                 edited = true;
                 break;
-            }
-
-            if (DrawVariant(value, std::to_string(index).data()))
-            {
-                view.set_value(index, value);
-                edited = true;
             }
 
             ImGui::PopID();
