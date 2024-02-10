@@ -38,7 +38,15 @@ void SB::Engine::Voice::playContainer(Container* container)
             {
                 const std::unique_ptr<NodeInstance>& voiceInstance =
                     m_voiceInstances.emplace_back(std::make_unique<NodeInstance>());
-                voiceInstance->setSoundInstance(soundContainer, sound);
+                
+                if (voiceInstance->init(container->tryConvertObject<NodeBase>(), SB::Engine::NodeInstanceType::MAIN))
+                {
+                    voiceInstance->play();
+                }
+                else
+                {
+                    m_voiceInstances.clear();
+                }
             }
         }
         else
@@ -93,7 +101,7 @@ bool SB::Engine::Voice::playingContainer(Container* container) const noexcept
             return true;
         }
 
-        std::shared_ptr<NodeInstance> sharedNodeInstance = nodeInstance->getParent().lock();
+        NodeInstance* sharedNodeInstance = nodeInstance->getParent();
 
         while (sharedNodeInstance)
         {
@@ -102,7 +110,7 @@ bool SB::Engine::Voice::playingContainer(Container* container) const noexcept
                 return true;
             }
 
-            sharedNodeInstance = sharedNodeInstance->getParent().lock();
+            sharedNodeInstance = sharedNodeInstance->getParent();
         }
 
         return false;

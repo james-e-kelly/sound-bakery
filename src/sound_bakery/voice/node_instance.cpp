@@ -79,8 +79,7 @@ bool SB::Engine::NodeInstance::init(const SB::Core::DatabasePtr<NodeBase>& refNo
 
 bool NodeInstance::play() 
 {
-    if (m_state == NodeInstanceState::PLAYING ||
-        m_state == NodeInstanceState::STOPPING)
+    if (isPlaying())
     {
         return true;
     }

@@ -65,6 +65,8 @@ namespace SB::Engine
          */
         virtual void gatherSounds(GatherSoundsContext& context) {}
 
+        virtual void gatherChildren(GatherSoundsContext& context) const {}
+
         RTTR_ENABLE(Node)
         RTTR_REGISTRATION_FRIEND
     };

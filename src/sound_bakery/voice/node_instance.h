@@ -77,6 +77,10 @@ namespace SB::Engine
         bool init(const SB::Core::DatabasePtr<NodeBase>& refNode, NodeInstanceType type);
         bool play();
 
+        bool isPlaying() const
+        {
+            return m_state == NodeInstanceState::PLAYING || m_state == NodeInstanceState::STOPPING;
+        }
 
         SB::Core::DatabasePtr<Node> getReferencingNode() const noexcept { return m_referencingNode; }
         NodeInstance* getParent() const noexcept { return m_parent.parent.get(); }

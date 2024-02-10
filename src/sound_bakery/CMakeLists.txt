@@ -43,6 +43,7 @@ set(ATLAS_SOURCES
 
     voice/voice.cpp
     voice/node_instance.cpp
+    voice/node_instance_impl.cpp
 )
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Source Files" FILES ${ATLAS_SOURCES})

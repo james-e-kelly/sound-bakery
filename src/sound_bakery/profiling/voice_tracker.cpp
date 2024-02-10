@@ -46,7 +46,7 @@ void VoiceTracker::update(System* system)
                                 m_nodePlayingCount[node->getDatabaseID()]++;
                             }
 
-                            const NodeInstance* parent = nodeInstance->getParent().lock().get();
+                            const NodeInstance* parent = nodeInstance->getParent();
 
                             if (!trackedNodes.contains(parent))
                             {
@@ -60,16 +60,7 @@ void VoiceTracker::update(System* system)
                                         m_nodePlayingCount[node->getDatabaseID()]++;
                                     }
 
-                                    std::weak_ptr<NodeInstance> parentParent = parent->getParent();
-
-                                    if (parentParent.expired())
-                                    {
-                                        parent = nullptr;
-                                    }
-                                    else
-                                    {
-                                        parent = parentParent.lock().get();
-                                    }
+                                    parent = parent->getParent();
                                 }
                             }
                         }
