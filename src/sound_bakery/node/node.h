@@ -47,28 +47,14 @@ namespace SB::Engine
 
         NodeBase* parent() const
         {
-            if (m_parentNode.lookup())
-            {
-                return m_parentNode.raw();
-            }
-            else
-            {
-                return nullptr;
-            }
+            return m_parentNode.lookupRaw();
         }
 
         virtual void setOutputBus(const SB::Core::DatabasePtr<NodeBase>& bus) { m_outputBus = bus; }
 
         NodeBase* outputBus() const
         {
-            if (m_outputBus.lookup())
-            {
-                return m_outputBus.raw();
-            }
-            else
-            {
-                return nullptr;
-            }
+            return m_outputBus.lookupRaw();
         }
 
     public:
