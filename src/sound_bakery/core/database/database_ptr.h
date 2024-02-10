@@ -92,6 +92,12 @@ namespace SB::Core
          */
         TObjectPtr raw() const noexcept { return shared().get(); }
 
+        TObjectPtr lookupRaw() const noexcept
+        {
+            lookup();
+            return raw();
+        }
+
         /**
          * @brief Returns true if we hold a valid ID and can search for an
          * object at runtime
