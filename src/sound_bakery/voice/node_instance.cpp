@@ -9,8 +9,6 @@
 
 using namespace SB::Engine;
 
-NodeInstance::NodeInstance() = default;
-
 NodeInstance::~NodeInstance()
 {
     if (m_referencingNode != nullptr)
@@ -22,100 +20,23 @@ NodeInstance::~NodeInstance()
     }
 }
 
-void SB::Engine::NodeInstance::setSoundInstance(SoundContainer* soundContainer, Sound* sound) noexcept
-{
-    m_referencingNode      = soundContainer;
-    m_referencingSoundNode = soundContainer;
-
-    init();
-
-    SC_SOUND_INSTANCE* soundInstance = nullptr;
-    SC_RESULT playResult = SC_System_PlaySound(getChef(), sound->getSound(), &soundInstance, m_nodeGroup.get(), false);
-    m_soundInstance.reset(soundInstance);
-
-    assert(playResult == MA_SUCCESS);
-}
-
-void SB::Engine::NodeInstance::setNodeInstance(Container* container) noexcept
-{
-    m_referencingNode = container;
-
-    init();
-}
-
-void SB::Engine::NodeInstance::setBusInstance(Bus* bus) noexcept
-{
-    m_referencingNode = bus;
-    m_referencingBus  = bus;
-
-    init();
-}
-
-void SB::Engine::NodeInstance::createParentBusInstance()
-{
-    if (NodeBase* outputBusNode = m_referencingNode->outputBus())
+bool SB::Engine::NodeInstance::init(const SB::Core::DatabasePtr<NodeBase>& refNode, const NodeInstanceType type)
+{ 
+    if (m_state != NodeInstanceState::UNINIT)
     {
-        m_parent = outputBusNode->tryConvertObject<Bus>()->lockAndCopy();
+        return true;
     }
-    else
+
+    if (!refNode.lookup())
     {
-        createMasterBusParent();
+        return false;
     }
-}
 
-void SB::Engine::NodeInstance::createParentInstance()
-{
-    Container* const parent = m_referencingNode->parent()->tryConvertObject<Container>();
-
-    m_parent = std::make_shared<NodeInstance>();
-    m_parent->setNodeInstance(parent);
-}
-
-void SB::Engine::NodeInstance::init()
-{
-    createChannelGroup();
-    createDSP();
-    bindDelegates();
-    createParent();
-    attachToParent();
-}
-
-void NodeInstance::createChannelGroup()
-{
-    SC_NODE_GROUP* nodeGroup = nullptr;
-    SC_System_CreateNodeGroup(getChef(), &nodeGroup);
-
-    m_nodeGroup.reset(nodeGroup);
-}
-
-void SB::Engine::NodeInstance::createParent()
-{
-    switch (m_referencingNode->getNodeStatus())
+    if (!m_nodeGroup.initNodeGroup(*refNode.raw()))
     {
-        case SB_NODE_NULL:
-            createMasterBusParent();
-            break;
-        case SB_NODE_MIDDLE:
-            createParentInstance();
-            break;
-        case SB_NODE_TOP:
-            createParentBusInstance();
-            break;
+        return false;
     }
-}
 
-void SB::Engine::NodeInstance::createMasterBusParent()
-{
-    const SB::Core::DatabasePtr<Bus>& masterBus = SB::Engine::System::get()->getMasterBus();
-
-    if (masterBus.lookup() && masterBus.id() != m_referencingNode->getDatabaseID())
-    {
-        m_parent = masterBus->lockAndCopy();
-    }
-}
-
-void SB::Engine::NodeInstance::bindDelegates()
-{
     m_referencingNode->m_volume.getDelegate().AddRaw(this, &NodeInstance::setVolume);
     m_referencingNode->m_pitch.getDelegate().AddRaw(this, &NodeInstance::setPitch);
     m_referencingNode->m_lowpass.getDelegate().AddRaw(this, &NodeInstance::setLowpass);
@@ -125,72 +46,86 @@ void SB::Engine::NodeInstance::bindDelegates()
     setPitch(0.0F, m_referencingNode->m_pitch.get());
     setLowpass(0.0F, m_referencingNode->m_lowpass.get());
     setHighpass(0.0F, m_referencingNode->m_highpass.get());
-}
 
-void SB::Engine::NodeInstance::createDSP()
-{
-    const SC_DSP_CONFIG lpfConfig = SC_DSP_Config_Init(SC_DSP_TYPE_LOWPASS);
-    SC_System_CreateDSP(getChef(), &lpfConfig, &m_lowpass);
-    SC_NodeGroup_AddDSP(m_nodeGroup.get(), m_lowpass, SC_DSP_INDEX_HEAD);
+    bool success = false;
 
-    const SC_DSP_CONFIG hpfConfig = SC_DSP_Config_Init(SC_DSP_TYPE_HIGHPASS);
-    SC_System_CreateDSP(getChef(), &hpfConfig, &m_highpass);
-    SC_NodeGroup_AddDSP(m_nodeGroup.get(), m_highpass, SC_DSP_INDEX_HEAD);
-
-    for (const SB::Core::DatabasePtr<SB::Engine::EffectDescription>& desc : m_referencingNode->m_effectDescriptions)
+    switch (type)
     {
-        if (desc.lookup())
+        case NodeInstanceType::CHILD:
         {
-            SC_DSP* dsp = nullptr;
-
-            SC_RESULT create = SC_System_CreateDSP(getChef(), desc->getConfig(), &dsp);
-            assert(create == MA_SUCCESS);
-
-            SC_RESULT add = SC_NodeGroup_AddDSP(m_nodeGroup.get(), dsp, SC_DSP_INDEX_HEAD);
-            assert(add == MA_SUCCESS);
-
-            int index = 0;
-            for (const SB::Engine::EffectParameterDescription& parameter : desc->getParameters())
-            {
-                switch (parameter.m_parameter.m_type)
-                {
-                    case SC_DSP_PARAMETER_TYPE_FLOAT:
-                        SC_DSP_SetParameterFloat(dsp, index++, parameter.m_parameter.m_float.m_value);
-                        break;
-                }
-            }
+            success = m_children.createChildren(*refNode.raw());
+            break;
+        }
+        case NodeInstanceType::BUS:
+        case NodeInstanceType::MAIN:
+        {
+            success = m_parent.createParent(*refNode.raw());
+            break;
         }
     }
-}
 
-void SB::Engine::NodeInstance::attachToParent()
-{
-    if (m_parent)
+    if (success)
     {
-        SC_NodeGroup_SetParent(m_nodeGroup.get(), m_parent->getBus());
+        if (m_parent.parent)
+        {
+            SC_NodeGroup_SetParent(m_nodeGroup.nodeGroup.get(), m_parent.parent->getBus());
+        }
+
+        m_state = NodeInstanceState::STOPPED;
     }
+
+    return success;
 }
 
-bool SB::Engine::NodeInstance::isPlaying() const
+bool NodeInstance::play() 
 {
-    SC_BOOL playing = false;
-    SC_SoundInstance_IsPlaying(m_soundInstance.get(), &playing);
-    return playing;
+    if (m_state == NodeInstanceState::PLAYING ||
+        m_state == NodeInstanceState::STOPPING)
+    {
+        return true;
+    }
+
+    if (m_referencingNode->getType() == rttr::type::get<SoundContainer>())
+    {
+        SoundContainer* soundContainer = m_referencingNode->tryConvertObject<SoundContainer>();
+        Sound* engineSound = soundContainer->getSound();
+        SC_SOUND* sound = engineSound ? engineSound->getSound() : nullptr;
+        SC_SOUND_INSTANCE* soundInstance = nullptr;
+
+        SC_System_PlaySound(getChef(), sound, &soundInstance, m_nodeGroup.nodeGroup.get(), MA_FALSE);
+    }
+    else
+    {
+        m_children.createChildren(*m_referencingNode->tryConvertObject<NodeBase>());
+
+        for (const auto& child : m_children.childrenNodes)
+        {
+            child->play();
+        }
+    }
+
+    return false;
 }
+
+//////////////////////////////////////////////////////////////////////////////////
 
 void NodeInstance::setVolume(float oldVolume, float newVolume)
 {
-    if (m_nodeGroup)
+    (void)oldVolume;
+
+    if (m_nodeGroup.nodeGroup)
     {
-        ma_sound_group_set_volume((ma_sound_group*)m_nodeGroup->m_fader->m_state->m_userData, newVolume);
+        ma_sound_group_set_volume((ma_sound_group*)m_nodeGroup.nodeGroup->m_fader->m_state->m_userData, newVolume);
     }
 }
 
 void NodeInstance::setPitch(float oldPitch, float newPitch)
 {
-    if (m_nodeGroup)
+    (void)oldPitch;
+
+    if (m_nodeGroup.nodeGroup)
     {
-        ma_sound_group_set_pitch((ma_sound_group*)m_nodeGroup->m_fader->m_state->m_userData, newPitch);
+        ma_sound_group_set_pitch((ma_sound_group*)m_nodeGroup.nodeGroup->m_fader->m_state->m_userData, newPitch);
     }
 }
 
@@ -202,7 +137,7 @@ void NodeInstance::setLowpass(float oldLowpass, float newLowpass)
     const double lowpassCutoff = (19980 - (19980.0 * percentage)) + 20.0;
     assert(lowpassCutoff >= 20.0);
 
-    SC_DSP_SetParameterFloat(m_lowpass, SC_DSP_LOWPASS_CUTOFF, static_cast<float>(lowpassCutoff));
+    SC_DSP_SetParameterFloat(m_nodeGroup.lowpass, SC_DSP_LOWPASS_CUTOFF, static_cast<float>(lowpassCutoff));
 }
 
 void NodeInstance::setHighpass(float oldHighpass, float newHighpass)
@@ -213,5 +148,5 @@ void NodeInstance::setHighpass(float oldHighpass, float newHighpass)
     const double highpassCutoff = (19980.0 * percentage) + 20.0;
     assert(highpassCutoff >= 20.0);
 
-    SC_DSP_SetParameterFloat(m_highpass, SC_DSP_HIGHPASS_CUTOFF, static_cast<float>(highpassCutoff));
+    SC_DSP_SetParameterFloat(m_nodeGroup.highpass, SC_DSP_HIGHPASS_CUTOFF, static_cast<float>(highpassCutoff));
 }
