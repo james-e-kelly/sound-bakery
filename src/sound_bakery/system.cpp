@@ -62,6 +62,12 @@ System::System() : m_listenerGameObject(nullptr)
 
 System* System::get() { return s_system; }
 
+SC_SYSTEM* System::getChef()
+{
+    System* system = get();
+    return system ? system->m_chefSystem.get() : nullptr;
+}
+
 System* System::create()
 {
     if (s_system == nullptr)
