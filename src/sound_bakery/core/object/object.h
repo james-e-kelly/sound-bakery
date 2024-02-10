@@ -51,6 +51,16 @@ namespace SB::Core
             return nullptr;
         }
 
+        template <typename T>
+        const T* tryConvertObject() const noexcept
+        {
+            if (getType().is_derived_from<T>() || getType() == rttr::type::get<T>())
+            {
+                return rttr::rttr_cast<const T*, const Object*>(this);
+            }
+            return nullptr;
+        }
+
         rttr::type getType() const
         {
             if (m_type == rttr::type::get<void>())
