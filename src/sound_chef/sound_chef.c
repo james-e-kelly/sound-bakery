@@ -128,10 +128,7 @@ static ma_uint32 GetFlagsFromMode(SC_SOUND_MODE mode)
     return flags;
 }
 
-SC_RESULT SC_System_CreateSound(SC_SYSTEM* system,
-                                const char* fileName,
-                                SC_SOUND_MODE mode,
-                                SC_SOUND** sound)
+SC_RESULT SC_System_CreateSound(SC_SYSTEM* system, const char* fileName, SC_SOUND_MODE mode, SC_SOUND** sound)
 {
     SC_CHECK_ARG(system != NULL);
     SC_CHECK_ARG(fileName != NULL);
@@ -141,16 +138,12 @@ SC_RESULT SC_System_CreateSound(SC_SYSTEM* system,
 
     (*sound)->m_mode = mode;
 
-    return ma_sound_init_from_file((ma_engine*)system, fileName,
-                                   GetFlagsFromMode(mode), NULL, NULL,
+    return ma_sound_init_from_file((ma_engine*)system, fileName, GetFlagsFromMode(mode), NULL, NULL,
                                    &(*sound)->m_sound);
 }
 
-SC_RESULT SC_System_PlaySound(SC_SYSTEM* system,
-                              SC_SOUND* sound,
-                              SC_SOUND_INSTANCE** instance,
-                              SC_NODE_GROUP* parent,
-                              SC_BOOL paused)
+SC_RESULT SC_System_PlaySound(
+    SC_SYSTEM* system, SC_SOUND* sound, SC_SOUND_INSTANCE** instance, SC_NODE_GROUP* parent, SC_BOOL paused)
 {
     SC_CHECK_ARG(system != NULL);
     SC_CHECK_ARG(sound != NULL);
@@ -160,14 +153,12 @@ SC_RESULT SC_System_PlaySound(SC_SYSTEM* system,
     (*instance)->m_mode = sound->m_mode;
 
     ma_result copyResult =
-        ma_sound_init_copy((ma_engine*)system, &sound->m_sound, sound->m_mode,
-                           NULL, &(*instance)->m_sound);
+        ma_sound_init_copy((ma_engine*)system, &sound->m_sound, sound->m_mode, NULL, &(*instance)->m_sound);
     SC_CHECK_RESULT(copyResult);
 
     if (parent != NULL)
     {
-        ma_result attachResult = ma_node_attach_output_bus(
-            *instance, 0, parent->m_tail->m_state->m_userData, 0);
+        ma_result attachResult = ma_node_attach_output_bus(*instance, 0, parent->m_tail->m_state->m_userData, 0);
         SC_CHECK_RESULT(attachResult);
     }
 
@@ -180,34 +171,33 @@ SC_RESULT SC_System_PlaySound(SC_SYSTEM* system,
     return MA_SUCCESS;
 }
 
-SC_RESULT SC_System_CreateNodeGroup(SC_SYSTEM* system,
-                                    SC_NODE_GROUP** nodeGroup)
+SC_RESULT SC_System_CreateNodeGroup(SC_SYSTEM* system, SC_NODE_GROUP** nodeGroup)
 {
+    SC_CHECK_ARG(system != NULL);
+    SC_CHECK_ARG(nodeGroup != NULL);
+
     SC_RESULT result = MA_ERROR;
 
-    if (system && nodeGroup)
-    {
-        *nodeGroup = (SC_NODE_GROUP*)ma_malloc(sizeof(SC_NODE_GROUP), NULL);
-        SC_CHECK_MEM(*nodeGroup);
-        MA_ZERO_OBJECT(*nodeGroup);
+    /**
+     * @todo Check for memory allocation failure
+     */
+    *nodeGroup = (SC_NODE_GROUP*)ma_malloc(sizeof(SC_NODE_GROUP), NULL);
+    SC_CHECK_MEM(*nodeGroup);
+    MA_ZERO_OBJECT(*nodeGroup);
 
-        // Always create a fader/sound_group by default
-        SC_DSP_CONFIG faderConfig = SC_DSP_Config_Init(SC_DSP_TYPE_FADER);
-        result =
-            SC_System_CreateDSP(system, &faderConfig, &(*nodeGroup)->m_fader);
+    // Always create a fader/sound_group by default
+    SC_DSP_CONFIG faderConfig = SC_DSP_Config_Init(SC_DSP_TYPE_FADER);
+    result                    = SC_System_CreateDSP(system, &faderConfig, &(*nodeGroup)->m_fader);
 
-        (*nodeGroup)->m_head = (*nodeGroup)->m_fader;
-        (*nodeGroup)->m_tail = (*nodeGroup)->m_fader;
-    }
+    (*nodeGroup)->m_head = (*nodeGroup)->m_fader;
+    (*nodeGroup)->m_tail = (*nodeGroup)->m_fader;
 
     DEBUG_ASSERT(result == MA_SUCCESS);
 
     return result;
 }
 
-SC_RESULT SC_System_CreateDSP(SC_SYSTEM* system,
-                              const SC_DSP_CONFIG* config,
-                              SC_DSP** dsp)
+SC_RESULT SC_System_CreateDSP(SC_SYSTEM* system, const SC_DSP_CONFIG* config, SC_DSP** dsp)
 {
     SC_CHECK_ARG(system != NULL);
     SC_CHECK_ARG(config != NULL);
@@ -253,8 +243,7 @@ SC_RESULT SC_Sound_Release(SC_SOUND* sound)
     return MA_SUCCESS;
 }
 
-SC_RESULT SC_API SC_SoundInstance_IsPlaying(SC_SOUND_INSTANCE* instance,
-                                            SC_BOOL* isPlaying)
+SC_RESULT SC_API SC_SoundInstance_IsPlaying(SC_SOUND_INSTANCE* instance, SC_BOOL* isPlaying)
 {
     SC_CHECK_ARG(instance != NULL);
     SC_CHECK_ARG(isPlaying != NULL);
@@ -309,9 +298,7 @@ SC_RESULT SC_DSP_Release(SC_DSP* dsp)
     return result;
 }
 
-SC_RESULT SC_NodeGroup_AddDSP(SC_NODE_GROUP* nodeGroup,
-                              SC_DSP* dsp,
-                              SC_DSP_INDEX index)
+SC_RESULT SC_NodeGroup_AddDSP(SC_NODE_GROUP* nodeGroup, SC_DSP* dsp, SC_DSP_INDEX index)
 {
     SC_CHECK(index == SC_DSP_INDEX_HEAD, MA_NOT_IMPLEMENTED);
     SC_CHECK_ARG(nodeGroup != NULL);
@@ -330,10 +317,7 @@ SC_RESULT SC_NodeGroup_AddDSP(SC_NODE_GROUP* nodeGroup,
             SC_DSP* currentHead = nodeGroup->m_head;
             DEBUG_ASSERT(currentHead->m_next == NULL);  // head nodes can't have
                                                         // something after them
-            ma_node_base* currentParent =
-                ((ma_node_base*)currentHead->m_state->m_userData)
-                    ->pOutputBuses[0]
-                    .pInputNode;
+            ma_node_base* currentParent = ((ma_node_base*)currentHead->m_state->m_userData)->pOutputBuses[0].pInputNode;
             DEBUG_ASSERT(currentParent != NULL);  // must be attached to
                                                   // something, even if it's the
                                                   // endpoint
@@ -341,15 +325,12 @@ SC_RESULT SC_NodeGroup_AddDSP(SC_NODE_GROUP* nodeGroup,
             if (currentParent)
             {
                 // Attach the dsp to the parent output
-                result = ma_node_attach_output_bus(dsp->m_state->m_userData, 0,
-                                                   currentParent, 0);
+                result = ma_node_attach_output_bus(dsp->m_state->m_userData, 0, currentParent, 0);
                 SC_CHECK_RESULT(result);
 
                 // Make the current head attach to the DSP (which is now the
                 // head)
-                result =
-                    ma_node_attach_output_bus(currentHead->m_state->m_userData,
-                                              0, dsp->m_state->m_userData, 0);
+                result = ma_node_attach_output_bus(currentHead->m_state->m_userData, 0, dsp->m_state->m_userData, 0);
                 SC_CHECK_RESULT(result);
 
                 nodeGroup->m_head->m_next = dsp;
@@ -366,9 +347,7 @@ SC_RESULT SC_NodeGroup_AddDSP(SC_NODE_GROUP* nodeGroup,
         {
             SC_DSP* currentTail = nodeGroup->m_tail;
 
-            result =
-                ma_node_attach_output_bus(dsp->m_state->m_userData, 0,
-                                          currentTail->m_state->m_userData, 0);
+            result = ma_node_attach_output_bus(dsp->m_state->m_userData, 0, currentTail->m_state->m_userData, 0);
             SC_CHECK_RESULT(result);
 
             break;
@@ -382,14 +361,12 @@ SC_RESULT SC_NodeGroup_AddDSP(SC_NODE_GROUP* nodeGroup,
     return result;
 }
 
-SC_RESULT SC_NodeGroup_SetParent(SC_NODE_GROUP* nodeGroup,
-                                 SC_NODE_GROUP* parent)
+SC_RESULT SC_NodeGroup_SetParent(SC_NODE_GROUP* nodeGroup, SC_NODE_GROUP* parent)
 {
     SC_CHECK_ARG(nodeGroup != NULL);
     SC_CHECK_ARG(parent != NULL);
 
-    return ma_node_attach_output_bus(nodeGroup->m_head->m_state->m_userData, 0,
-                                     parent->m_tail->m_state->m_userData, 0);
+    return ma_node_attach_output_bus(nodeGroup->m_head->m_state->m_userData, 0, parent->m_tail->m_state->m_userData, 0);
 }
 
 SC_RESULT SC_NodeGroup_Release(SC_NODE_GROUP* nodeGroup)
