@@ -16,7 +16,7 @@ void SB::Engine::Voice::playContainer(Container* container)
      const std::unique_ptr<NodeInstance>& voiceInstance =
         m_voiceInstances.emplace_back(std::make_unique<NodeInstance>());
 
-    if (voiceInstance->init(container->tryConvertObject<NodeBase>(), SB::Engine::NodeInstanceType::MAIN))
+    if (voiceInstance->init(container->tryConvertObject<NodeBase>(), SB::Engine::NodeInstanceType::MAIN, this))
     {
         voiceInstance->play();
     }

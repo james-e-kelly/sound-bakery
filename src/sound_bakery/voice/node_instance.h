@@ -31,7 +31,7 @@ namespace SB::Engine
      */
     struct ParentNodeOwner
     {
-        bool createParent(const NodeBase& thisNode);
+        bool createParent(const NodeBase& thisNode, Voice* owningVoice);
 
         std::shared_ptr<NodeInstance> parent;
     };
@@ -41,7 +41,7 @@ namespace SB::Engine
      */
     struct ChildrenNodeOwner
     {
-        bool createChildren(const NodeBase& thisNode);
+        bool createChildren(const NodeBase& thisNode, Voice* owningVoice);
 
         std::vector<std::shared_ptr<NodeInstance>> childrenNodes;
     };
@@ -74,7 +74,7 @@ namespace SB::Engine
     public:
         ~NodeInstance();
 
-        bool init(const SB::Core::DatabasePtr<NodeBase>& refNode, NodeInstanceType type);
+        bool init(const SB::Core::DatabasePtr<NodeBase>& refNode, NodeInstanceType type, Voice* owningVoice);
         bool play();
 
         void update();
@@ -95,6 +95,7 @@ namespace SB::Engine
         void setHighpass(float oldHighpass, float newHighpass);
 
         Node* m_referencingNode   = nullptr;
+        Voice* m_owningVoice      = nullptr;
         NodeInstanceState m_state = NodeInstanceState::UNINIT;
         NodeGroupInstance m_nodeGroup;
         ParentNodeOwner m_parent;

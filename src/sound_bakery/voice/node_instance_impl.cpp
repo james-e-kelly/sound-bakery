@@ -1,6 +1,8 @@
+#include "sound_bakery/gameobject/gameobject.h"
 #include "sound_bakery/node/bus/bus.h"
 #include "sound_bakery/node/container/container.h"
 #include "sound_bakery/voice/node_instance.h"
+#include "sound_bakery/voice/voice.h"
 
 using namespace SB::Engine;
 
@@ -60,7 +62,7 @@ bool NodeGroupInstance::initNodeGroup(const NodeBase& node)
 
 ////////////////////////////////////////////////////////////////////////////
 
-bool ParentNodeOwner::createParent(const NodeBase& thisNode)
+bool ParentNodeOwner::createParent(const NodeBase& thisNode, Voice* owningVoice)
 {
     bool createdParent = false;
 
@@ -73,7 +75,7 @@ bool ParentNodeOwner::createParent(const NodeBase& thisNode)
             if (masterBus.lookup() && masterBus.id() != thisNode.getDatabaseID())
             {
                 parent        = masterBus->lockAndCopy();
-                createdParent = parent->init(masterBus->tryConvertObject<NodeBase>(), NodeInstanceType::BUS);
+                createdParent = parent->init(masterBus->tryConvertObject<NodeBase>(), NodeInstanceType::BUS, owningVoice);
             }
             break;
         }
@@ -82,7 +84,7 @@ bool ParentNodeOwner::createParent(const NodeBase& thisNode)
             if (SB::Engine::NodeBase* parentNode = thisNode.parent())
             {
                 parent        = std::make_shared<NodeInstance>();
-                createdParent = parent->init(parentNode->tryConvertObject<NodeBase>(), NodeInstanceType::BUS);
+                createdParent = parent->init(parentNode->tryConvertObject<NodeBase>(), NodeInstanceType::BUS, owningVoice);
             }
             break;
         }
@@ -93,7 +95,7 @@ bool ParentNodeOwner::createParent(const NodeBase& thisNode)
                 if (SB::Engine::Bus* bus = output->tryConvertObject<Bus>())
                 {
                     parent        = bus->lockAndCopy();
-                    createdParent = parent->init(bus->tryConvertObject<NodeBase>(), NodeInstanceType::BUS);
+                    createdParent = parent->init(bus->tryConvertObject<NodeBase>(), NodeInstanceType::BUS, owningVoice);
                 }
             }
             break;
@@ -105,13 +107,15 @@ bool ParentNodeOwner::createParent(const NodeBase& thisNode)
 
 ////////////////////////////////////////////////////////////////////////////
 
-bool ChildrenNodeOwner::createChildren(const NodeBase& thisNode)
+bool ChildrenNodeOwner::createChildren(const NodeBase& thisNode, Voice* owningVoice)
 {
     bool success = false;
 
-    if (const Container* container = thisNode.tryConvertObject<Container>())
+    if (const Container* container = thisNode.tryConvertObject<Container>(); container != nullptr && owningVoice != nullptr)
     {
         GatherChildrenContext context;
+        context.parameters = owningVoice->getOwningGameObject()->getLocalParameters();
+
         container->gatherChildrenForPlay(context);
 
         childrenNodes.reserve(context.sounds.size());
@@ -124,7 +128,7 @@ bool ChildrenNodeOwner::createChildren(const NodeBase& thisNode)
             }
 
             childrenNodes.push_back(std::make_shared<NodeInstance>());
-            childrenNodes.back()->init(SB::Core::DatabasePtr<NodeBase>(child->getDatabaseID()), NodeInstanceType::CHILD);
+            childrenNodes.back()->init(SB::Core::DatabasePtr<NodeBase>(child->getDatabaseID()), NodeInstanceType::CHILD, owningVoice);
         }
 
         success = true;

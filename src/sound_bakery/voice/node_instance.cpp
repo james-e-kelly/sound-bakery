@@ -20,7 +20,7 @@ NodeInstance::~NodeInstance()
     }
 }
 
-bool SB::Engine::NodeInstance::init(const SB::Core::DatabasePtr<NodeBase>& refNode, const NodeInstanceType type)
+bool SB::Engine::NodeInstance::init(const SB::Core::DatabasePtr<NodeBase>& refNode, const NodeInstanceType type, Voice* owningVoice)
 {
     if (m_state != NodeInstanceState::UNINIT)
     {
@@ -38,6 +38,8 @@ bool SB::Engine::NodeInstance::init(const SB::Core::DatabasePtr<NodeBase>& refNo
     {
         return false;
     }
+
+    m_owningVoice = owningVoice;
 
     m_referencingNode->m_volume.getDelegate().AddRaw(this, &NodeInstance::setVolume);
     m_referencingNode->m_pitch.getDelegate().AddRaw(this, &NodeInstance::setPitch);
@@ -61,7 +63,7 @@ bool SB::Engine::NodeInstance::init(const SB::Core::DatabasePtr<NodeBase>& refNo
             }
             else
             {
-                success = m_children.createChildren(*refNode.raw());
+                success = m_children.createChildren(*refNode.raw(), m_owningVoice);
             }
             break;
         }
@@ -79,7 +81,7 @@ bool SB::Engine::NodeInstance::init(const SB::Core::DatabasePtr<NodeBase>& refNo
         }
         case NodeInstanceType::MAIN:
         {
-            success = m_parent.createParent(*refNode.raw());
+            success = m_parent.createParent(*refNode.raw(), m_owningVoice);
             break;
         }
     }
@@ -122,7 +124,7 @@ bool NodeInstance::play()
     }
     else
     {
-        if (m_children.createChildren(*m_referencingNode->tryConvertObject<NodeBase>()))
+        if (m_children.createChildren(*m_referencingNode->tryConvertObject<NodeBase>(), m_owningVoice))
         {
             unsigned int playingCount = 0;
 

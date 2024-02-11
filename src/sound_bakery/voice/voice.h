@@ -34,6 +34,8 @@ namespace SB::Engine
 
         bool isPlaying() const;
 
+        GameObject* getOwningGameObject() const { return m_owningGameObject; }
+
     private:
         GameObject* m_owningGameObject = nullptr;
         SB::Core::DatabasePtr<Container> m_playingContainer;

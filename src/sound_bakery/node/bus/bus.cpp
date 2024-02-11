@@ -23,7 +23,7 @@ void Bus::lock()
     if (!m_busInstance)
     {
         m_busInstance = std::make_shared<NodeInstance>();
-        m_busInstance->init(tryConvertObject<NodeBase>(), NodeInstanceType::BUS);
+        m_busInstance->init(tryConvertObject<NodeBase>(), NodeInstanceType::BUS, nullptr);
     }
 }
 
