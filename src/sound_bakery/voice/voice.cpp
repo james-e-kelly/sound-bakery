@@ -33,6 +33,8 @@ void Voice::update()
         std::vector<std::unique_ptr<NodeInstance>>::iterator iter;
         for (iter = m_voiceInstances.begin(); iter != m_voiceInstances.end();)
         {
+            iter->get()->update();
+
             if (!iter->get()->isPlaying())
             {
                 iter = m_voiceInstances.erase(iter);

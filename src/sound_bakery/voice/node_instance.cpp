@@ -109,7 +109,7 @@ bool NodeInstance::play()
     {
         SoundContainer* soundContainer   = m_referencingNode->tryConvertObject<SoundContainer>();
         Sound* engineSound               = soundContainer->getSound();
-        SC_SOUND* sound                  = engineSound ? engineSound->getSound() : nullptr;
+        SC_SOUND* sound                  = engineSound != nullptr ? engineSound->getSound() : nullptr;
         SC_SOUND_INSTANCE* soundInstance = nullptr;
 
         SC_RESULT playSoundResult = SC_System_PlaySound(getChef(), sound, &soundInstance, m_nodeGroup.nodeGroup.get(), MA_FALSE);
@@ -117,6 +117,7 @@ bool NodeInstance::play()
         if (playSoundResult == MA_SUCCESS)
         {
             m_state = NodeInstanceState::PLAYING;
+            m_soundInstance.reset(soundInstance);
         }
     }
     else
@@ -141,6 +142,37 @@ bool NodeInstance::play()
     }
 
     return isPlaying();
+}
+
+void NodeInstance::update() 
+{ 
+    if (m_soundInstance)
+    {
+        if (ma_sound_at_end(&m_soundInstance->m_sound) == MA_TRUE)
+        {
+            m_state = NodeInstanceState::STOPPED;
+            m_soundInstance.release();
+        }
+    }
+    else if (!m_children.childrenNodes.empty())
+    {
+        unsigned int stoppedChildren = 0;
+
+        for (const auto& child : m_children.childrenNodes)
+        {
+            child->update();
+
+            if (!child->isPlaying())
+            {
+                ++stoppedChildren;
+            }
+        }
+
+        if (stoppedChildren == m_children.childrenNodes.size())
+        {
+            m_state = NodeInstanceState::STOPPED;
+        }
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////

@@ -77,6 +77,8 @@ namespace SB::Engine
         bool init(const SB::Core::DatabasePtr<NodeBase>& refNode, NodeInstanceType type);
         bool play();
 
+        void update();
+
         bool isPlaying() const
         {
             return m_state == NodeInstanceState::PLAYING || m_state == NodeInstanceState::STOPPING;
