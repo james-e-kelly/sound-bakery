@@ -1,6 +1,6 @@
 #include "blend_container.h"
 
-void SB::Engine::BlendContainer::gatherSounds(GatherSoundsContext& context)
+void SB::Engine::BlendContainer::gatherChildrenForPlay(GatherChildrenContext& context) const
 {
     for (NodeBase* const child : getChildren())
     {
@@ -8,7 +8,7 @@ void SB::Engine::BlendContainer::gatherSounds(GatherSoundsContext& context)
         {
             if (Container* const childContainer = child->tryConvertObject<Container>())
             {
-                childContainer->gatherSounds(context);
+                context.sounds.push_back(childContainer);
             }
         }
     }

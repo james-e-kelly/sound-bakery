@@ -9,11 +9,11 @@ namespace SB::Engine
     class SoundContainer : public Container
     {
     public:
-        void gatherSounds(GatherSoundsContext& context) override;
+        void gatherChildrenForPlay(GatherChildrenContext& context) const override;
 
         bool canAddChild(const SB::Core::DatabasePtr<NodeBase>& child) const override { return false; }
 
-        Sound* getSound();
+        Sound* getSound() const;
 
         void setSound(const SB::Core::DatabasePtr<SB::Engine::Sound>& sound);
 

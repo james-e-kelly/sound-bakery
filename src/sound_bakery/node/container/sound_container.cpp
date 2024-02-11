@@ -2,9 +2,12 @@
 
 #include "sound_bakery/sound/sound.h"
 
-void SB::Engine::SoundContainer::gatherSounds(GatherSoundsContext& context) { context.sounds.push_back(this); }
+void SB::Engine::SoundContainer::gatherChildrenForPlay(GatherChildrenContext& context) const
+{
+    context.sounds.push_back(this);
+}
 
-SB::Engine::Sound* SB::Engine::SoundContainer::getSound()
+SB::Engine::Sound* SB::Engine::SoundContainer::getSound() const
 {
     if (m_sound.lookup())
     {

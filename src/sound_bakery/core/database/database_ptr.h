@@ -52,7 +52,7 @@ namespace SB::Core
          * @brief Create a valid LazyPtr
          * @param object
          */
-        DatabasePtr(TObjectPtr object)
+        DatabasePtr(const TObjectPtr& object)
             : m_objectID(static_cast<TIdentifierType>(*object)), m_objectPtr(findObject(id())), m_null(false)
         {
         }

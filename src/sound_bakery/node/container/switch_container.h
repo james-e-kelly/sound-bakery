@@ -7,7 +7,7 @@ namespace SB::Engine
     class SwitchContainer : public Container
     {
     public:
-        void gatherSounds(GatherSoundsContext& context) override
+        void gatherChildrenForPlay(GatherChildrenContext& context) const override
         {
             SB::Core::DatabasePtr<NamedParameterValue> selectedValue;
 
@@ -28,7 +28,7 @@ namespace SB::Engine
 
                 if (selectedChild.lookup())
                 {
-                    selectedChild->gatherSounds(context);
+                    context.sounds.push_back(selectedChild.lookupRaw());
                 }
             }
         }

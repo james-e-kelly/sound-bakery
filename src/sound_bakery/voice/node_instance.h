@@ -16,7 +16,7 @@ namespace SB::Engine
 
     /**
      * @brief Owns a node group and applies DSP effects to it.
-    */
+     */
     struct NodeGroupInstance
     {
         bool initNodeGroup(const NodeBase& node);
@@ -28,7 +28,7 @@ namespace SB::Engine
 
     /**
      * @brief Owns a parent node instance.
-    */
+     */
     struct ParentNodeOwner
     {
         bool createParent(const NodeBase& thisNode);
@@ -38,7 +38,7 @@ namespace SB::Engine
 
     /**
      * @brief Owns a list of child node instances.
-    */
+     */
     struct ChildrenNodeOwner
     {
         bool createChildren(const NodeBase& thisNode);

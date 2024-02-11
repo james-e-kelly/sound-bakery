@@ -1,6 +1,6 @@
-#include "sound_bakery/voice/node_instance.h"
-#include "sound_bakery/node/container/container.h"
 #include "sound_bakery/node/bus/bus.h"
+#include "sound_bakery/node/container/container.h"
+#include "sound_bakery/voice/node_instance.h"
 
 using namespace SB::Engine;
 
@@ -54,6 +54,8 @@ bool NodeGroupInstance::initNodeGroup(const NodeBase& node)
             }
         }
     }
+
+    return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -109,12 +111,12 @@ bool ChildrenNodeOwner::createChildren(const NodeBase& thisNode)
 
     if (const Container* container = thisNode.tryConvertObject<Container>())
     {
-        GatherSoundsContext context;
-        container->gatherChildren(context);
+        GatherChildrenContext context;
+        container->gatherChildrenForPlay(context);
 
         childrenNodes.reserve(context.sounds.size());
 
-        for (auto* child : context.sounds)
+        for (const auto* const child : context.sounds)
         {
             if (child == nullptr)
             {
@@ -122,7 +124,7 @@ bool ChildrenNodeOwner::createChildren(const NodeBase& thisNode)
             }
 
             childrenNodes.push_back(std::make_shared<NodeInstance>());
-            childrenNodes.back()->init(child, NodeInstanceType::CHILD);
+            childrenNodes.back()->init(SB::Core::DatabasePtr<NodeBase>(child->getDatabaseID()), NodeInstanceType::CHILD);
         }
 
         success = true;

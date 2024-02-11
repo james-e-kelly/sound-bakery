@@ -45,17 +45,11 @@ namespace SB::Engine
             return status;
         }
 
-        NodeBase* parent() const
-        {
-            return m_parentNode.lookupRaw();
-        }
+        NodeBase* parent() const { return m_parentNode.lookupRaw(); }
 
         virtual void setOutputBus(const SB::Core::DatabasePtr<NodeBase>& bus) { m_outputBus = bus; }
 
-        NodeBase* outputBus() const
-        {
-            return m_outputBus.lookupRaw();
-        }
+        NodeBase* outputBus() const { return m_outputBus.lookupRaw(); }
 
     public:
         virtual bool canAddChild(const SB::Core::DatabasePtr<NodeBase>& child) const

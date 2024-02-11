@@ -21,7 +21,7 @@ NodeInstance::~NodeInstance()
 }
 
 bool SB::Engine::NodeInstance::init(const SB::Core::DatabasePtr<NodeBase>& refNode, const NodeInstanceType type)
-{ 
+{
     if (m_state != NodeInstanceState::UNINIT)
     {
         return true;
@@ -31,6 +31,8 @@ bool SB::Engine::NodeInstance::init(const SB::Core::DatabasePtr<NodeBase>& refNo
     {
         return false;
     }
+
+    m_referencingNode = refNode.raw()->tryConvertObject<Node>();
 
     if (!m_nodeGroup.initNodeGroup(*refNode.raw()))
     {
@@ -53,10 +55,28 @@ bool SB::Engine::NodeInstance::init(const SB::Core::DatabasePtr<NodeBase>& refNo
     {
         case NodeInstanceType::CHILD:
         {
-            success = m_children.createChildren(*refNode.raw());
+            if (refNode->getChildCount() == 0)
+            {
+                success = true;
+            }
+            else
+            {
+                success = m_children.createChildren(*refNode.raw());
+            }
             break;
         }
         case NodeInstanceType::BUS:
+        {
+            if (const Bus* const bus = refNode->tryConvertObject<Bus>())
+            {
+                // Checks nullptr as master busses are technically busses without an output, even if they're not marked as masters
+                if (bus->isMasterBus() || bus->parent() == nullptr)
+                {
+                    success = true;
+                    break;
+                }
+            }
+        }
         case NodeInstanceType::MAIN:
         {
             success = m_parent.createParent(*refNode.raw());
@@ -64,20 +84,21 @@ bool SB::Engine::NodeInstance::init(const SB::Core::DatabasePtr<NodeBase>& refNo
         }
     }
 
+    if (m_parent.parent)
+    {
+        SC_NodeGroup_SetParent(m_nodeGroup.nodeGroup.get(), m_parent.parent->getBus());
+    }
+    // else, should be connected to master bus by default
+
     if (success)
     {
-        if (m_parent.parent)
-        {
-            SC_NodeGroup_SetParent(m_nodeGroup.nodeGroup.get(), m_parent.parent->getBus());
-        }
-
         m_state = NodeInstanceState::STOPPED;
     }
 
     return success;
 }
 
-bool NodeInstance::play() 
+bool NodeInstance::play()
 {
     if (isPlaying())
     {
@@ -86,24 +107,40 @@ bool NodeInstance::play()
 
     if (m_referencingNode->getType() == rttr::type::get<SoundContainer>())
     {
-        SoundContainer* soundContainer = m_referencingNode->tryConvertObject<SoundContainer>();
-        Sound* engineSound = soundContainer->getSound();
-        SC_SOUND* sound = engineSound ? engineSound->getSound() : nullptr;
+        SoundContainer* soundContainer   = m_referencingNode->tryConvertObject<SoundContainer>();
+        Sound* engineSound               = soundContainer->getSound();
+        SC_SOUND* sound                  = engineSound ? engineSound->getSound() : nullptr;
         SC_SOUND_INSTANCE* soundInstance = nullptr;
 
-        SC_System_PlaySound(getChef(), sound, &soundInstance, m_nodeGroup.nodeGroup.get(), MA_FALSE);
+        SC_RESULT playSoundResult = SC_System_PlaySound(getChef(), sound, &soundInstance, m_nodeGroup.nodeGroup.get(), MA_FALSE);
+
+        if (playSoundResult == MA_SUCCESS)
+        {
+            m_state = NodeInstanceState::PLAYING;
+        }
     }
     else
     {
-        m_children.createChildren(*m_referencingNode->tryConvertObject<NodeBase>());
-
-        for (const auto& child : m_children.childrenNodes)
+        if (m_children.createChildren(*m_referencingNode->tryConvertObject<NodeBase>()))
         {
-            child->play();
+            unsigned int playingCount = 0;
+
+            for (const auto& child : m_children.childrenNodes)
+            {
+                if (child->play())
+                {
+                    ++playingCount;
+                }
+            }
+
+            if (playingCount > 0)
+            {
+                m_state = NodeInstanceState::PLAYING;
+            }
         }
     }
 
-    return false;
+    return isPlaying();
 }
 
 //////////////////////////////////////////////////////////////////////////////////

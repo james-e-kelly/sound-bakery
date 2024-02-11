@@ -13,46 +13,16 @@ void SB::Engine::Voice::playContainer(Container* container)
 
     m_playingContainer = container;
 
-    GatherSoundsContext gatherSoundsContext;
-    gatherSoundsContext.parameters = m_owningGameObject->getLocalParameters();
+     const std::unique_ptr<NodeInstance>& voiceInstance =
+        m_voiceInstances.emplace_back(std::make_unique<NodeInstance>());
 
-    if (container->getType() == rttr::type::get<SoundContainer>())
+    if (voiceInstance->init(container->tryConvertObject<NodeBase>(), SB::Engine::NodeInstanceType::MAIN))
     {
-        gatherSoundsContext.sounds.push_back(container);
+        voiceInstance->play();
     }
     else
     {
-        container->gatherSounds(gatherSoundsContext);
-    }
-
-    for (Container* const containerToPlay : gatherSoundsContext.sounds)
-    {
-        if (containerToPlay == nullptr)
-        {
-            continue;
-        }
-
-        if (auto* const soundContainer = containerToPlay->tryConvertObject<SoundContainer>())
-        {
-            if (Sound* const sound = soundContainer->getSound())
-            {
-                const std::unique_ptr<NodeInstance>& voiceInstance =
-                    m_voiceInstances.emplace_back(std::make_unique<NodeInstance>());
-                
-                if (voiceInstance->init(container->tryConvertObject<NodeBase>(), SB::Engine::NodeInstanceType::MAIN))
-                {
-                    voiceInstance->play();
-                }
-                else
-                {
-                    m_voiceInstances.clear();
-                }
-            }
-        }
-        else
-        {
-            // error
-        }
+        m_voiceInstances.clear();
     }
 }
 

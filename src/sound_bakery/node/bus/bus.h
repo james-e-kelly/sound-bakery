@@ -33,6 +33,11 @@ namespace SB::Engine
             }
         }
 
+        bool isMasterBus() const
+        { 
+            return m_masterBus;
+        }
+
     public:
         void lock();
         void unlock();

@@ -9,11 +9,11 @@ namespace SB::Engine
     /**
      * @brief Contains all information required for gathering sounds for runtime playing and selection.
      */
-    struct GatherSoundsContext
+    struct GatherChildrenContext
     {
-        GatherSoundsContext()
+        GatherChildrenContext()
         {
-            // We're making the rough assumption that each call to gatherSounds
+            // We're making the rough assumption that each call to gatherChildrenForPlay
             // will gather, on average, 3 or less sounds.
             // This should hopefully save some allocation time in most cases.
             sounds.reserve(3);
@@ -22,7 +22,7 @@ namespace SB::Engine
         /**
          * @brief Vector of containers that should play this iteration.
          */
-        std::vector<Container*> sounds;
+        std::vector<const Container*> sounds;
 
         /**
          * @brief List of parameters that are local to this gathering.
@@ -63,9 +63,7 @@ namespace SB::Engine
          *
          * @param context for this gather sounds call.
          */
-        virtual void gatherSounds(GatherSoundsContext& context) {}
-
-        virtual void gatherChildren(GatherSoundsContext& context) const {}
+        virtual void gatherChildrenForPlay(GatherChildrenContext& context) const = 0;
 
         RTTR_ENABLE(Node)
         RTTR_REGISTRATION_FRIEND
