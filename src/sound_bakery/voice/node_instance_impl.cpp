@@ -107,13 +107,14 @@ bool ParentNodeOwner::createParent(const NodeBase& thisNode, Voice* owningVoice)
 
 ////////////////////////////////////////////////////////////////////////////
 
-bool ChildrenNodeOwner::createChildren(const NodeBase& thisNode, Voice* owningVoice)
+bool ChildrenNodeOwner::createChildren(const NodeBase& thisNode, Voice* owningVoice, unsigned int numTimesPlayed)
 {
     bool success = false;
 
     if (const Container* container = thisNode.tryConvertObject<Container>(); container != nullptr && owningVoice != nullptr)
     {
         GatherChildrenContext context;
+        context.numTimesPlayed = numTimesPlayed;
         context.parameters = owningVoice->getOwningGameObject()->getLocalParameters();
 
         container->gatherChildrenForPlay(context);

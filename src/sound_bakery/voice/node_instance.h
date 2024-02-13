@@ -41,7 +41,7 @@ namespace SB::Engine
      */
     struct ChildrenNodeOwner
     {
-        bool createChildren(const NodeBase& thisNode, Voice* owningVoice);
+        bool createChildren(const NodeBase& thisNode, Voice* owningVoice, unsigned int numTimesPlayed);
 
         std::vector<std::shared_ptr<NodeInstance>> childrenNodes;
     };
@@ -101,6 +101,7 @@ namespace SB::Engine
         ParentNodeOwner m_parent;
         ChildrenNodeOwner m_children;
         std::unique_ptr<SC_SOUND_INSTANCE, SC_SOUND_INSTANCE_DELETER> m_soundInstance;
+        unsigned int m_numTimesPlayed = 0;
 
         RTTR_ENABLE(SB::Core::Object)
     };

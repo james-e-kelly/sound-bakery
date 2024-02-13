@@ -2,6 +2,7 @@
 
 #include "sound_bakery/maths/easing.h"
 #include "sound_bakery/node/bus/bus.h"
+#include "sound_bakery/node/container/sequence_container.h"
 #include "sound_bakery/node/container/sound_container.h"
 #include "sound_bakery/sound/sound.h"
 #include "sound_bakery/system.h"
@@ -63,7 +64,7 @@ bool SB::Engine::NodeInstance::init(const SB::Core::DatabasePtr<NodeBase>& refNo
             }
             else
             {
-                success = m_children.createChildren(*refNode.raw(), m_owningVoice);
+                success = m_children.createChildren(*refNode.raw(), m_owningVoice, ++m_numTimesPlayed);
             }
             break;
         }
@@ -78,10 +79,14 @@ bool SB::Engine::NodeInstance::init(const SB::Core::DatabasePtr<NodeBase>& refNo
                     break;
                 }
             }
+
+            success = m_parent.createParent(*refNode.raw(), m_owningVoice);
+            break;
         }
         case NodeInstanceType::MAIN:
         {
             success = m_parent.createParent(*refNode.raw(), m_owningVoice);
+            success &= m_children.createChildren(*refNode.raw(), m_owningVoice, ++m_numTimesPlayed);
             break;
         }
     }
@@ -124,22 +129,19 @@ bool NodeInstance::play()
     }
     else
     {
-        if (m_children.createChildren(*m_referencingNode->tryConvertObject<NodeBase>(), m_owningVoice))
+        unsigned int playingCount = 0;
+
+        for (const auto& child : m_children.childrenNodes)
         {
-            unsigned int playingCount = 0;
-
-            for (const auto& child : m_children.childrenNodes)
+            if (child->play())
             {
-                if (child->play())
-                {
-                    ++playingCount;
-                }
+                ++playingCount;
             }
+        }
 
-            if (playingCount > 0)
-            {
-                m_state = NodeInstanceState::PLAYING;
-            }
+        if (playingCount > 0)
+        {
+            m_state = NodeInstanceState::PLAYING;
         }
     }
 
@@ -173,6 +175,15 @@ void NodeInstance::update()
         if (stoppedChildren == m_children.childrenNodes.size())
         {
             m_state = NodeInstanceState::STOPPED;
+            m_children.childrenNodes.clear();
+
+            // Sequence nodes retrigger when the current sound stops
+            if (m_referencingNode->getType() == rttr::type::get<SequenceContainer>())
+            {
+                m_children.createChildren(*m_referencingNode->tryConvertObject<NodeBase>(), m_owningVoice,
+                                          ++m_numTimesPlayed);
+                play();
+            }
         }
     }
 }

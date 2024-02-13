@@ -7,7 +7,7 @@ namespace SB::Engine
     class SequenceContainer : public Container
     {
     public:
-        virtual void gatherChildrenForPlay(GatherChildrenContext& context) const override {}
+        virtual void gatherChildrenForPlay(GatherChildrenContext& context) const override;
 
     private:
         std::vector<SB::Core::ChildPtr<Container>> m_sequence;
