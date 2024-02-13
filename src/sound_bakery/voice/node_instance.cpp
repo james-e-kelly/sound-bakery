@@ -21,26 +21,26 @@ NodeInstance::~NodeInstance()
     }
 }
 
-bool SB::Engine::NodeInstance::init(const SB::Core::DatabasePtr<NodeBase>& refNode, const NodeInstanceType type, Voice* owningVoice)
+bool SB::Engine::NodeInstance::init(const InitNodeInstance& initData)
 {
     if (m_state != NodeInstanceState::UNINIT)
     {
         return true;
     }
 
-    if (!refNode.lookup())
+    if (!initData.refNode.lookup())
     {
         return false;
     }
 
-    m_referencingNode = refNode.raw()->tryConvertObject<Node>();
+    m_referencingNode = initData.refNode.raw()->tryConvertObject<Node>();
 
-    if (!m_nodeGroup.initNodeGroup(*refNode.raw()))
+    if (!m_nodeGroup.initNodeGroup(*initData.refNode.raw()))
     {
         return false;
     }
 
-    m_owningVoice = owningVoice;
+    m_owningVoice = initData.owningVoice;
 
     m_referencingNode->m_volume.getDelegate().AddRaw(this, &NodeInstance::setVolume);
     m_referencingNode->m_pitch.getDelegate().AddRaw(this, &NodeInstance::setPitch);
@@ -54,23 +54,24 @@ bool SB::Engine::NodeInstance::init(const SB::Core::DatabasePtr<NodeBase>& refNo
 
     bool success = false;
 
-    switch (type)
+    switch (initData.type)
     {
         case NodeInstanceType::CHILD:
         {
-            if (refNode->getChildCount() == 0)
+            if (initData.refNode->getChildCount() == 0)
             {
                 success = true;
             }
             else
             {
-                success = m_children.createChildren(*refNode.raw(), m_owningVoice, ++m_numTimesPlayed);
+                success = m_children.createChildren(*initData.refNode.raw(), m_owningVoice, this, ++m_numTimesPlayed);
             }
+
             break;
         }
         case NodeInstanceType::BUS:
         {
-            if (const Bus* const bus = refNode->tryConvertObject<Bus>())
+            if (const Bus* const bus = initData.refNode->tryConvertObject<Bus>())
             {
                 // Checks nullptr as master busses are technically busses without an output, even if they're not marked as masters
                 if (bus->isMasterBus() || bus->parent() == nullptr)
@@ -80,13 +81,13 @@ bool SB::Engine::NodeInstance::init(const SB::Core::DatabasePtr<NodeBase>& refNo
                 }
             }
 
-            success = m_parent.createParent(*refNode.raw(), m_owningVoice);
+            success = m_parent.createParent(*initData.refNode.raw(), m_owningVoice);
             break;
         }
         case NodeInstanceType::MAIN:
         {
-            success = m_parent.createParent(*refNode.raw(), m_owningVoice);
-            success &= m_children.createChildren(*refNode.raw(), m_owningVoice, ++m_numTimesPlayed);
+            success = m_parent.createParent(*initData.refNode.raw(), m_owningVoice);
+            success &= m_children.createChildren(*initData.refNode.raw(), m_owningVoice, this, ++m_numTimesPlayed);
             break;
         }
     }
@@ -94,6 +95,10 @@ bool SB::Engine::NodeInstance::init(const SB::Core::DatabasePtr<NodeBase>& refNo
     if (m_parent.parent)
     {
         SC_NodeGroup_SetParent(m_nodeGroup.nodeGroup.get(), m_parent.parent->getBus());
+    }
+    else if (initData.parentForChildren)
+    {
+        SC_NodeGroup_SetParent(m_nodeGroup.nodeGroup.get(), initData.parentForChildren->getBus());
     }
     // else, should be connected to master bus by default
 
@@ -180,7 +185,7 @@ void NodeInstance::update()
             // Sequence nodes retrigger when the current sound stops
             if (m_referencingNode->getType() == rttr::type::get<SequenceContainer>())
             {
-                m_children.createChildren(*m_referencingNode->tryConvertObject<NodeBase>(), m_owningVoice,
+                m_children.createChildren(*m_referencingNode->tryConvertObject<NodeBase>(), m_owningVoice, this,
                                           ++m_numTimesPlayed);
                 play();
             }

@@ -41,7 +41,7 @@ namespace SB::Engine
      */
     struct ChildrenNodeOwner
     {
-        bool createChildren(const NodeBase& thisNode, Voice* owningVoice, unsigned int numTimesPlayed);
+        bool createChildren(const NodeBase& thisNode, Voice* owningVoice, NodeInstance* thisNodeInstance, unsigned int numTimesPlayed);
 
         std::vector<std::shared_ptr<NodeInstance>> childrenNodes;
     };
@@ -65,6 +65,34 @@ namespace SB::Engine
         PLAYING
     };
 
+    struct InitNodeInstance
+    {
+        /**
+         * @brief Node to reference
+        */
+        SB::Core::DatabasePtr<NodeBase> refNode;
+
+        /**
+         * @brief Type of node to create.
+         * 
+         * Different types of nodes initialize differently. For example, parent nodes only create more parents.
+         * Children create more children.
+        */
+        NodeInstanceType type = NodeInstanceType::MAIN;
+
+        /**
+         * @brief Voice owner.
+        */
+        Voice* owningVoice = nullptr;
+
+        /**
+         * @brief Parent node instance for this node instance.
+         * 
+         * Used when initializing children so it can join the DSP graph correctly.
+        */
+        NodeInstance* parentForChildren = nullptr;
+    };
+
     /**
      * @brief NodeInstances represent runtime versions of Nodes, either
      * containers or busses
@@ -74,7 +102,7 @@ namespace SB::Engine
     public:
         ~NodeInstance();
 
-        bool init(const SB::Core::DatabasePtr<NodeBase>& refNode, NodeInstanceType type, Voice* owningVoice);
+        bool init(const InitNodeInstance& initData);
         bool play();
 
         void update();

@@ -75,7 +75,13 @@ bool ParentNodeOwner::createParent(const NodeBase& thisNode, Voice* owningVoice)
             if (masterBus.lookup() && masterBus.id() != thisNode.getDatabaseID())
             {
                 parent        = masterBus->lockAndCopy();
-                createdParent = parent->init(masterBus->tryConvertObject<NodeBase>(), NodeInstanceType::BUS, owningVoice);
+
+                InitNodeInstance initData;
+                initData.refNode = masterBus->tryConvertObject<NodeBase>();
+                initData.type    = NodeInstanceType::BUS;
+                initData.owningVoice = owningVoice;
+
+                createdParent = parent->init(initData);
             }
             break;
         }
@@ -84,7 +90,13 @@ bool ParentNodeOwner::createParent(const NodeBase& thisNode, Voice* owningVoice)
             if (SB::Engine::NodeBase* parentNode = thisNode.parent())
             {
                 parent        = std::make_shared<NodeInstance>();
-                createdParent = parent->init(parentNode->tryConvertObject<NodeBase>(), NodeInstanceType::BUS, owningVoice);
+
+                InitNodeInstance initData;
+                initData.refNode     = parentNode->tryConvertObject<NodeBase>();
+                initData.type        = NodeInstanceType::BUS;
+                initData.owningVoice = owningVoice;
+
+                createdParent = parent->init(initData);
             }
             break;
         }
@@ -95,7 +107,13 @@ bool ParentNodeOwner::createParent(const NodeBase& thisNode, Voice* owningVoice)
                 if (SB::Engine::Bus* bus = output->tryConvertObject<Bus>())
                 {
                     parent        = bus->lockAndCopy();
-                    createdParent = parent->init(bus->tryConvertObject<NodeBase>(), NodeInstanceType::BUS, owningVoice);
+
+                    InitNodeInstance initData;
+                    initData.refNode     = bus->tryConvertObject<NodeBase>();
+                    initData.type        = NodeInstanceType::BUS;
+                    initData.owningVoice = owningVoice;
+
+                    createdParent = parent->init(initData);
                 }
             }
             break;
@@ -107,7 +125,10 @@ bool ParentNodeOwner::createParent(const NodeBase& thisNode, Voice* owningVoice)
 
 ////////////////////////////////////////////////////////////////////////////
 
-bool ChildrenNodeOwner::createChildren(const NodeBase& thisNode, Voice* owningVoice, unsigned int numTimesPlayed)
+bool ChildrenNodeOwner::createChildren(const NodeBase& thisNode,
+                                       Voice* owningVoice,
+                                       NodeInstance* thisNodeInstance,
+                                       unsigned int numTimesPlayed)
 {
     bool success = false;
 
@@ -129,7 +150,14 @@ bool ChildrenNodeOwner::createChildren(const NodeBase& thisNode, Voice* owningVo
             }
 
             childrenNodes.push_back(std::make_shared<NodeInstance>());
-            childrenNodes.back()->init(SB::Core::DatabasePtr<NodeBase>(child->getDatabaseID()), NodeInstanceType::CHILD, owningVoice);
+
+            InitNodeInstance initData;
+            initData.refNode           = SB::Core::DatabasePtr<NodeBase>(child->getDatabaseID());
+            initData.type              = NodeInstanceType::CHILD;
+            initData.owningVoice       = owningVoice;
+            initData.parentForChildren = thisNodeInstance;
+
+            childrenNodes.back()->init(initData);
         }
 
         success = true;
