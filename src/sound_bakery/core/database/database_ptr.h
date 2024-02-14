@@ -74,6 +74,8 @@ namespace SB::Core
 
         TObjectShared shared() const noexcept
         {
+            lookup();
+
             if (m_objectPtr.expired())
             {
                 return std::shared_ptr<TObject>();

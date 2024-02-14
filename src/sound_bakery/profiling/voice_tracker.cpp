@@ -40,7 +40,7 @@ void VoiceTracker::update(System* system)
                         {
                             trackedNodes.insert(nodeInstance);
 
-                            if (const SB::Core::DatabasePtr<Node>& node = nodeInstance->getReferencingNode())
+                            if (const std::shared_ptr<Node> node = nodeInstance->getReferencingNode())
                             {
                                 m_playingNodeIDs.insert(node->getDatabaseID());
                                 m_nodePlayingCount[node->getDatabaseID()]++;
@@ -54,7 +54,7 @@ void VoiceTracker::update(System* system)
 
                                 while (parent)
                                 {
-                                    if (const SB::Core::DatabasePtr<Node>& node = parent->getReferencingNode())
+                                    if (const std::shared_ptr<Node> node = parent->getReferencingNode())
                                     {
                                         m_playingNodeIDs.insert(node->getDatabaseID());
                                         m_nodePlayingCount[node->getDatabaseID()]++;

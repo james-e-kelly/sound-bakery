@@ -112,7 +112,7 @@ namespace SB::Engine
             return m_state == NodeInstanceState::PLAYING || m_state == NodeInstanceState::STOPPING;
         }
 
-        SB::Core::DatabasePtr<Node> getReferencingNode() const noexcept { return m_referencingNode; }
+        std::shared_ptr<Node> getReferencingNode() const noexcept { return m_referencingNode; }
         NodeInstance* getParent() const noexcept { return m_parent.parent.get(); }
         SC_NODE_GROUP* getBus() const noexcept { return m_nodeGroup.nodeGroup.get(); }
 
@@ -122,7 +122,7 @@ namespace SB::Engine
         void setLowpass(float oldLowpass, float newLowpass);
         void setHighpass(float oldHighpass, float newHighpass);
 
-        Node* m_referencingNode   = nullptr;
+        std::shared_ptr<Node> m_referencingNode   = nullptr;
         Voice* m_owningVoice      = nullptr;
         NodeInstanceState m_state = NodeInstanceState::UNINIT;
         NodeGroupInstance m_nodeGroup;

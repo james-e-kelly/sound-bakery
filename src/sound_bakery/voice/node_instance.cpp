@@ -33,7 +33,8 @@ bool SB::Engine::NodeInstance::init(const InitNodeInstance& initData)
         return false;
     }
 
-    m_referencingNode = initData.refNode.raw()->tryConvertObject<Node>();
+    bool converted    = false;
+    m_referencingNode = rttr::wrapper_mapper<SB::Core::DatabasePtr<NodeBase>>::convert<Node>(initData.refNode, converted).shared();
 
     if (!m_nodeGroup.initNodeGroup(*initData.refNode.raw()))
     {
