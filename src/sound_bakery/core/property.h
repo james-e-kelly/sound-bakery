@@ -27,12 +27,9 @@ namespace SB::Core
 
         /**
          * @brief Copy constructor.
-         *
-         * Copies the min, max and value but not the delegate.
-         * The newly created property will have a fresh delegate.
          */
         Property(const Property& other)
-            : m_property(other.m_property), m_min(other.m_min), m_max(other.m_max), m_delegate()
+            : m_property(other.m_property), m_min(other.m_min), m_max(other.m_max), m_delegate(other.m_delegate)
         {
         }
 
