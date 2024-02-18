@@ -6,15 +6,11 @@
 
 using namespace SB::Engine;
 
-GameObject::GameObject()  = default;
-GameObject::~GameObject() = default;
-
 Voice* GameObject::playContainer(Container* container)
 {
     if (container)
     {
-        std::unique_ptr<Voice>& voice =
-            m_voices.emplace_back(std::make_unique<Voice>());
+        std::unique_ptr<Voice>& voice = m_voices.emplace_back(std::make_unique<Voice>(this));
         voice->playContainer(container);
         return voice.get();
     }
@@ -34,15 +30,12 @@ void SB::Engine::GameObject::postEvent(Event* event)
             SB::Engine::Event* childEvent      = nullptr;
             SB::Engine::GameObject* gameObject = nullptr;
 
-            if (const SB::Core::DatabasePtr<SB::Core::DatabaseObject>&
-                    destination = action.m_destination;
+            if (const SB::Core::DatabasePtr<SB::Core::DatabaseObject>& destination = action.m_destination;
                 destination.lookup())
             {
-                container =
-                    destination->tryConvertObject<SB::Engine::Container>();
+                container  = destination->tryConvertObject<SB::Engine::Container>();
                 childEvent = destination->tryConvertObject<SB::Engine::Event>();
-                gameObject =
-                    destination->tryConvertObject<SB::Engine::GameObject>();
+                gameObject = destination->tryConvertObject<SB::Engine::GameObject>();
             }
 
             switch (action.m_type)
@@ -129,10 +122,7 @@ void GameObject::update()
 
 bool SB::Engine::GameObject::isPlaying() const noexcept { return voiceCount(); }
 
-std::size_t SB::Engine::GameObject::voiceCount() const noexcept
-{
-    return m_voices.size();
-}
+std::size_t SB::Engine::GameObject::voiceCount() const noexcept { return m_voices.size(); }
 
 Voice* SB::Engine::GameObject::getVoice(std::size_t index) const
 {

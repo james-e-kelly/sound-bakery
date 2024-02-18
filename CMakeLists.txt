@@ -44,7 +44,7 @@ if(SOUND_BAKERY_MAIN_PROJECT)
     find_program(SOUND_BAKERY_CLANG_FORMAT_EXE NAMES clang-format)
   endif()
 
-  if(DEFINED SOUND_BAKERY_CLANG_FORMAT_EXE)
+  if(SOUND_BAKERY_CLANG_FORMAT_EXE)
     message(STATUS "Found clang-format exe")
   endif()
 
@@ -53,7 +53,7 @@ if(SOUND_BAKERY_MAIN_PROJECT)
     find_program(SOUND_BAKERY_CLANG_TIDY_EXE NAMES clang-tidy)
   endif()
 
-  if(DEFINED SOUND_BAKERY_TIDY_SOURCE)
+  if(SOUND_BAKERY_TIDY_SOURCE)
     message(STATUS "Found clang-tidy exe")
   endif()
 

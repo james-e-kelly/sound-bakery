@@ -176,7 +176,7 @@ void ProjectManager::LoadProject()
          std::filesystem::recursive_directory_iterator(
              m_projectConfiguration.m_sourceFolder))
     {
-        if (p.is_regular_file())
+        if (p.is_regular_file() && p.path().filename().string()[0] != '.')
         {
             const std::filesystem::path filename = p.path().filename();
 

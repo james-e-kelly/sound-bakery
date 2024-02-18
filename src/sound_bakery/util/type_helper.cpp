@@ -35,7 +35,7 @@ SB_OBJECT_CATEGORY TypeHelper::getCategoryFromType(rttr::type type)
         category = SB_CATEGORY_SOUND;
     }
     else if (type == rttr::type::get<SB::Engine::FloatParameter>() ||
-             type == rttr::type::get<SB::Engine::IntParameter>())
+             type == rttr::type::get<SB::Engine::NamedParameter>())
     {
         category = SB_CATEGORY_PARAMETER;
     }
@@ -55,8 +55,7 @@ SB_OBJECT_CATEGORY TypeHelper::getCategoryFromType(rttr::type type)
     return category;
 }
 
-std::unordered_set<rttr::type> TypeHelper::getTypesFromCategory(
-    SB_OBJECT_CATEGORY category)
+std::unordered_set<rttr::type> TypeHelper::getTypesFromCategory(SB_OBJECT_CATEGORY category)
 {
     std::unordered_set<rttr::type> result;
 
@@ -83,7 +82,7 @@ std::unordered_set<rttr::type> TypeHelper::getTypesFromCategory(
             break;
         case SB_CATEGORY_PARAMETER:
             result.insert(rttr::type::get<SB::Engine::FloatParameter>());
-            result.insert(rttr::type::get<SB::Engine::IntParameter>());
+            result.insert(rttr::type::get<SB::Engine::NamedParameter>());
             break;
         case SB_CATEGORY_NUM:
             break;
@@ -96,8 +95,7 @@ std::unordered_set<rttr::type> TypeHelper::getTypesFromCategory(
 
 std::string_view TypeHelper::getDisplayNameFromType(rttr::type type)
 {
-    std::string_view result =
-        "Invalid. Cannot get display name for type. type_helper.cpp";
+    std::string_view result = "Invalid. Cannot get display name for type. type_helper.cpp";
 
     if (type == rttr::type::get<SB::Engine::SoundContainer>())
     {
@@ -143,11 +141,11 @@ std::string_view TypeHelper::getDisplayNameFromType(rttr::type type)
     {
         result = "Parameter";
     }
-    else if (type == rttr::type::get<SB::Engine::IntParameter>())
+    else if (type == rttr::type::get<SB::Engine::NamedParameter>())
     {
         result = "Switch";
     }
-    else if (type == rttr::type::get<SB::Engine::IntParameterValue>())
+    else if (type == rttr::type::get<SB::Engine::NamedParameterValue>())
     {
         result = "Switch Value";
     }
@@ -161,11 +159,9 @@ std::string SB::Util::TypeHelper::getFolderNameForObjectType(rttr::type type)
 
     std::string typeNameString = typeName.to_string();
 
-    const std::size_t lastColonCharacterPos =
-        typeNameString.find_last_of(':') + 1;
+    const std::size_t lastColonCharacterPos = typeNameString.find_last_of(':') + 1;
 
-    if (lastColonCharacterPos == std::string::npos ||
-        lastColonCharacterPos >= typeNameString.size())
+    if (lastColonCharacterPos == std::string::npos || lastColonCharacterPos >= typeNameString.size())
     {
         return typeNameString;
     }
@@ -173,8 +169,7 @@ std::string SB::Util::TypeHelper::getFolderNameForObjectType(rttr::type type)
     return typeNameString.substr(lastColonCharacterPos, std::string::npos);
 }
 
-std::string_view TypeHelper::getFileExtensionOfObjectCategory(
-    SB_OBJECT_CATEGORY category)
+std::string_view TypeHelper::getFileExtensionOfObjectCategory(SB_OBJECT_CATEGORY category)
 {
     std::string_view result = ".object";
 
@@ -224,11 +219,11 @@ std::string_view TypeHelper::getPayloadFromType(rttr::type type)
     {
         result = SB::Editor::PayloadFloatParam;
     }
-    else if (type == rttr::type::get<SB::Engine::IntParameter>())
+    else if (type == rttr::type::get<SB::Engine::NamedParameter>())
     {
-        result = SB::Editor::PayloadIntParam;
+        result = SB::Editor::PayloadNamedParam;
     }
-    else if (type == rttr::type::get<SB::Engine::IntParameterValue>())
+    else if (type == rttr::type::get<SB::Engine::NamedParameterValue>())
     {
         result = SB::Editor::PayloadIntParamValue;
     }

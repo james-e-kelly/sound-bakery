@@ -34,22 +34,19 @@ void VoiceTracker::update(System* system)
 
                 for (std::size_t j = 0; j < voice->voices(); ++j)
                 {
-                    if (const NodeInstance* const nodeInstance =
-                            voice->voice(j))
+                    if (const NodeInstance* const nodeInstance = voice->voice(j))
                     {
                         if (!trackedNodes.contains(nodeInstance))
                         {
                             trackedNodes.insert(nodeInstance);
 
-                            if (const SB::Core::DatabasePtr<Node>& node =
-                                    nodeInstance->getReferencingNode())
+                            if (const std::shared_ptr<Node> node = nodeInstance->getReferencingNode())
                             {
                                 m_playingNodeIDs.insert(node->getDatabaseID());
                                 m_nodePlayingCount[node->getDatabaseID()]++;
                             }
 
-                            const NodeInstance* parent =
-                                nodeInstance->getParent().lock().get();
+                            const NodeInstance* parent = nodeInstance->getParent();
 
                             if (!trackedNodes.contains(parent))
                             {
@@ -57,26 +54,13 @@ void VoiceTracker::update(System* system)
 
                                 while (parent)
                                 {
-                                    if (const SB::Core::DatabasePtr<Node>&
-                                            node = parent->getReferencingNode())
+                                    if (const std::shared_ptr<Node> node = parent->getReferencingNode())
                                     {
-                                        m_playingNodeIDs.insert(
-                                            node->getDatabaseID());
-                                        m_nodePlayingCount
-                                            [node->getDatabaseID()]++;
+                                        m_playingNodeIDs.insert(node->getDatabaseID());
+                                        m_nodePlayingCount[node->getDatabaseID()]++;
                                     }
 
-                                    std::weak_ptr<NodeInstance> parentParent =
-                                        parent->getParent();
-
-                                    if (parentParent.expired())
-                                    {
-                                        parent = nullptr;
-                                    }
-                                    else
-                                    {
-                                        parent = parentParent.lock().get();
-                                    }
+                                    parent = parent->getParent();
                                 }
                             }
                         }
@@ -91,8 +75,7 @@ unsigned int VoiceTracker::getPlayingCountOfObject(SB_ID id) const
 {
     unsigned int result = 0;
 
-    if (std::unordered_map<SB_ID, unsigned int>::const_iterator find =
-            m_nodePlayingCount.find(id);
+    if (std::unordered_map<SB_ID, unsigned int>::const_iterator find = m_nodePlayingCount.find(id);
         find != m_nodePlayingCount.cend())
     {
         result = find->second;

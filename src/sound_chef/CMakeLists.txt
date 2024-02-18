@@ -8,15 +8,15 @@ set(SOUND_CHEF_SOURCES
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Source Files" FILES ${ATLAS_SOURCES})
 
 set(SOUND_CHEF_HEADERS
-    sound_chef.h    
-    sound_chef_dsp.h
+    ${CMAKE_SOURCE_DIR}/inc/sound_chef/sound_chef.h    
+    ${CMAKE_SOURCE_DIR}/inc/sound_chef/sound_chef_dsp.h
 )
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Header Files" FILES ${ATLAS_HEADERS})
 
 add_library(sound_chef STATIC ${SOUND_CHEF_SOURCES} ${SOUND_CHEF_HEADERS})
 target_include_directories(sound_chef
-    PUBLIC ${CMAKE_SOURCE_DIR}/src/
+    PUBLIC ${CMAKE_SOURCE_DIR}/inc/
 )
 
 add_library(SoundBakery::SoundChef ALIAS sound_chef)
@@ -43,12 +43,14 @@ else()
   target_compile_options(sound_chef PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
-get_target_property(SOUND_CHEF_ALL_FILES sound_chef SOURCES)
-foreach(source IN LISTS SOUND_CHEF_ALL_FILES)
+foreach(source IN LISTS SOUND_CHEF_SOURCES)
     list(APPEND SOUND_CHEF_ALL_FILES "${CMAKE_CURRENT_SOURCE_DIR}/${source}")
 endforeach()
 
+list(APPEND SOUND_CHEF_ALL_FILES ${SOUND_CHEF_HEADERS})
+
 if (SOUND_BAKERY_FORMAT_SOURCE AND SOUND_BAKERY_CLANG_FORMAT_EXE)
+  message(STATUS "Adding Sound Chef clang-format target")
   add_custom_target(format_sound_chef
     COMMAND clang-format --style=file -i ${SOUND_CHEF_ALL_FILES}
     COMMAND_EXPAND_LISTS

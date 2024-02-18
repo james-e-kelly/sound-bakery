@@ -4,39 +4,72 @@
 
 namespace SB::Engine
 {
-    class IntParameter;
+    class NamedParameter;
     class FloatParameter;
-    class IntParameterValue;
+    class NamedParameterValue;
 
     /**
      * @brief Defines a database object with a changeable property.
      *
      * Used for changing effect parameters, choosing sounds and anything else.
      */
-    template <typename T>
+    template <typename ParameterType>
     class Parameter : public SB::Core::DatabaseObject
     {
+        static_assert(std::is_arithmetic<ParameterType>::value);
+
     public:
         /**
-         * @brief Defines the type used for passing runtime versions/variations
-         * of this parameter.
+         * @brief Defines the underlying property type used to store and broadcast values.
          */
-        using RuntimeParameter = std::pair<SB_ID, SB::Core::Property<T>>;
+        using ParameterProperty = SB::Core::Property<ParameterType>;
 
-        using RuntimeProperty = SB::Core::Property<T>;
+        /**
+         * @brief Defines the type used for passing local versions/variations of this parameter.
+         *
+         * Uses a @ref SB_ID for the parameter ID instead of DatabasePtr<T> to help when used in child classes.
+         */
+        using LocalParameter = std::pair<SB_ID, ParameterProperty>;
+
+        /**
+         * @brief Defines an ID to a parameter and a value for that parameter.
+         *
+         * Used when setting the value on a parameter.
+         */
+        using LocalParameterValuePair = std::pair<SB_ID, ParameterType>;
 
         Parameter() = default;
 
-        Parameter(T min, T max)
-            : m_property(T(), min, max), SB::Core::DatabaseObject()
+        /**
+         * @brief Creates a Parameter with min and max values set.
+         * @param min value of the parameter.
+         * @param max value of the parameter.
+         */
+        Parameter(ParameterType min, ParameterType max)
+            : SB::Core::DatabaseObject(), m_property(min, min, max), m_defaultValue(min)
         {
         }
 
-    public:
-        T get() const { return m_property.get(); }
-        void set(T value) { m_property.set(value); }
+        /**
+         * @brief Get the current value of the parameter.
+         */
+        [[nodiscard]] ParameterType get() const { return m_property.get(); }
 
-        typename SB::Core::Property<T>::PropertyChangedDelegate& getDelegate()
+        [[nodiscard]] ParameterType getDefault() const { return m_defaultValue; }
+
+        /**
+         * @brief Set the value of the parameter.
+         *
+         * This sets the internal property and will therefore call any bound delegates.
+         */
+        void set(ParameterType value) { m_property.set(value); }
+
+        void setDefault(ParameterType value) { m_defaultValue = value; }
+
+        /**
+         * @brief Get the parameter delegate that fires when changing the value.
+         */
+        [[nodiscard]] typename ParameterProperty::PropertyChangedDelegate& getDelegate()
         {
             return m_property.getDelegate();
         }
@@ -46,55 +79,59 @@ namespace SB::Engine
          * handling unique variations per game object etc.
          * @return The runtime version of this Parameter.
          */
-        [[nodiscard]] RuntimeParameter createRuntimeParameterFromThis() const
+        [[nodiscard]] LocalParameter createLocalParameterFromThis() const
         {
-            return RuntimeParameter(getDatabaseID(), m_property);
+            return LocalParameter(getDatabaseID(), m_property);
         }
 
-    protected:  // made protected so child classes can add it to reflection
-        SB::Core::Property<T> m_property;
+    protected:
+        ParameterType m_defaultValue;
+        SB::Core::Property<ParameterType> m_property;
 
         RTTR_ENABLE(DatabaseObject)
     };
 
     class FloatParameter : public Parameter<float>
     {
-    public:
-        float m_min;
-        float m_max;
-        float m_default;
+        RTTR_ENABLE(Parameter)
+    };
 
+    class IntParameter : public Parameter<int>
+    {
         RTTR_ENABLE(Parameter)
     };
 
     /**
-     * @brief Represents a discrete value for an IntParameter.
+     * @brief Represents a discrete value for a @ref NamedParameter.
      *
      * The object inherits from SB::Core::DatabaseObject to be universally
      * referencable and have a display name. The object knows its parent
-     * IntParameter.
+     * NamedParameter.
      *
      * The object's ID is its parameter value.
      */
-    class IntParameterValue : public SB::Core::DatabaseObject
+    class NamedParameterValue : public SB::Core::DatabaseObject
     {
     public:
-        SB::Core::DatabasePtr<IntParameter> m_parentParameter;
+        SB::Core::DatabasePtr<NamedParameter> parentParameter;
 
         RTTR_ENABLE(DatabaseObject)
     };
 
     /**
      * @brief Holds discrete named integer values.
-     *
-     * Int parameters are what Wwise would call Switches and States. Sound
-     * Bakery uses the same type for both but _how_ they're used changes.
      */
-    class IntParameter : public Parameter<SB_ID>
+    class NamedParameter : public Parameter<SB_ID>
     {
     public:
-        IntParameter()
-            : m_values(), Parameter(SB_ID(), 18'446'744'073'709'551'615llu)
+        /**
+         * @brief Creates a NamedParameter with min and max values.
+         *
+         * @warning Weird parentheses wrapping is required here for Windows min and max macro workaround.
+         * See https://stackoverflow.com/questions/40492414/why-does-stdnumeric-limitslong-longmax-fail
+         */
+        NamedParameter()
+            : m_values(), Parameter((std::numeric_limits<SB_ID>::min)(), (std::numeric_limits<SB_ID>::max)())
         {
         }
 
@@ -103,18 +140,16 @@ namespace SB::Engine
          * @param name Name of the parameter value
          * @return The newly created parameter value that's in the database
          */
-        SB::Core::DatabasePtr<IntParameterValue> addNewValue(
-            const std::string_view name)
+        SB::Core::DatabasePtr<NamedParameterValue> addNewValue(const std::string_view name)
         {
-            SB::Core::DatabasePtr<IntParameterValue> result;
+            SB::Core::DatabasePtr<NamedParameterValue> result;
 
-            if (!name.empty())
+            if (name.empty() == false)
             {
-                if (IntParameterValue* parameterValue =
-                        newDatabaseObject<IntParameterValue>())
+                if (NamedParameterValue* const parameterValue = newDatabaseObject<NamedParameterValue>())
                 {
                     parameterValue->setDatabaseName(name);
-                    parameterValue->m_parentParameter = this;
+                    parameterValue->parentParameter = this;
 
                     result = parameterValue;
 
@@ -125,7 +160,12 @@ namespace SB::Engine
             return result;
         }
 
-        std::unordered_set<SB::Core::DatabasePtr<IntParameterValue>> getValues()
+        /**
+         * @brief Gets all named values in this parameter.
+         *
+         * If none exists, ensures at least the "None" value exists.
+         */
+        std::unordered_set<SB::Core::DatabasePtr<NamedParameterValue>> getValues()
         {
             if (m_values.empty())
             {
@@ -135,23 +175,64 @@ namespace SB::Engine
             return m_values;
         }
 
-        void setSelectedValue(SB::Core::DatabasePtr<IntParameterValue> value)
+        /**
+         * @brief Sets the parameter value with a DatabasePtr, ensuring the value exists in this parameter.
+         *
+         * Internally sets the parameter with the DatabasePtr's ID.
+         * @param value
+         */
+        void setSelectedValue(SB::Core::DatabasePtr<NamedParameterValue> value)
         {
             if (m_values.contains(value))
             {
                 set(value.id());
             }
+            else
+            {
+                assert(false);
+            }
         }
 
-        SB::Core::DatabasePtr<IntParameterValue> getSelectedValue() const
+        /**
+         * @brief Get the selected value as a DatabasePtr.
+         *
+         * Mainly used in reflection and for displaying in the editor.
+         * @return
+         */
+        SB::Core::DatabasePtr<NamedParameterValue> getSelectedValue() const
         {
-            return SB::Core::DatabasePtr<IntParameterValue>(get());
+            SB::Core::DatabasePtr<NamedParameterValue> selected(get());
+            selected.lookup();
+            return selected;
         }
 
     private:
-        std::unordered_set<SB::Core::DatabasePtr<IntParameterValue>> m_values;
+        std::unordered_set<SB::Core::DatabasePtr<NamedParameterValue>> m_values;
 
         RTTR_ENABLE(DatabaseObject)
         RTTR_REGISTRATION_FRIEND
+    };
+
+    using GlobalFloatParameter = SB::Core::DatabasePtr<FloatParameter>;
+    using GlobalIntParameter   = SB::Core::DatabasePtr<NamedParameter>;
+
+    /**
+     * @brief Holds a list of parameters.
+     *
+     * Setting values on raw/database parameters assumes the global scope.
+     */
+    struct GlobalParameterList
+    {
+        std::unordered_set<GlobalFloatParameter> floatParameters;
+        std::unordered_set<GlobalIntParameter> intParameters;
+    };
+
+    /**
+     * @brief Holds a list of parameters and their local value.
+     */
+    struct LocalParameterList
+    {
+        std::unordered_map<GlobalFloatParameter, FloatParameter::ParameterProperty> floatParameters;
+        std::unordered_map<GlobalIntParameter, NamedParameter::ParameterProperty> intParameters;
     };
 }  // namespace SB::Engine

@@ -7,29 +7,20 @@ namespace SB::Engine
     class RandomContainer : public Container
     {
     public:
-        virtual void gatherSounds(
-            std::vector<Container*>& soundContainers,
-            const RuntimeFloatParameterMap& runtimeFloatParameters,
-            const RuntimeIntParameterMap& runtimeIntParameters) override
+        virtual void gatherChildrenForPlay(GatherChildrenContext& context) const override
         {
             switch (m_childNodes.size())
             {
                 case 0:
                     break;
                 case 1:
-                    dynamic_cast<Container*>(m_childNodes.begin()->raw())
-                        ->gatherSounds(soundContainers, runtimeFloatParameters,
-                                       runtimeIntParameters);
+                    context.sounds.push_back(m_childNodes.begin()->lookupRaw()->tryConvertObject<Container>());
                     break;
                 default:
                     int randomChildIndex = std::rand() % m_childNodes.size();
-                    std::unordered_set<
-                        SB::Core::DatabasePtr<NodeBase>>::iterator childIter =
-                        m_childNodes.begin();
+                    std::unordered_set<SB::Core::DatabasePtr<NodeBase>>::const_iterator childIter = m_childNodes.begin();
                     std::advance(childIter, randomChildIndex);
-                    dynamic_cast<Container*>(childIter->raw())
-                        ->gatherSounds(soundContainers, runtimeFloatParameters,
-                                       runtimeIntParameters);
+                    context.sounds.push_back(childIter->lookupRaw()->tryConvertObject<Container>());
                     break;
             }
         }

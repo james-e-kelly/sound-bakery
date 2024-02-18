@@ -9,12 +9,11 @@ namespace SB::Engine
     class SoundContainer : public Container
     {
     public:
-        virtual void gatherSounds(
-            std::vector<Container*>& soundContainers,
-            const RuntimeFloatParameterMap& runtimeFloatParameters,
-            const RuntimeIntParameterMap& runtimeIntParameters) override;
+        void gatherChildrenForPlay(GatherChildrenContext& context) const override;
 
-        Sound* getSound();
+        bool canAddChild(const SB::Core::DatabasePtr<NodeBase>& child) const override { return false; }
+
+        Sound* getSound() const;
 
         void setSound(const SB::Core::DatabasePtr<SB::Engine::Sound>& sound);
 

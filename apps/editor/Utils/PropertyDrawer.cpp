@@ -10,11 +10,18 @@ void PropertyDrawer::DrawObject(rttr::type type, rttr::instance instance)
 {
     ImGui::PushID(type.get_name().data());
 
-    int index = 0;
-
-    for (rttr::property property : type.get_properties())
+    if (ImGui::BeginTable(
+            "Properties", 2,
+                          ImGuiTableFlags_Resizable |
+                              ImGuiTableFlags_BordersInnerH |
+                              ImGuiTableFlags_SizingStretchProp))
     {
-        DrawProperty(property, instance);
+        for (rttr::property property : type.get_properties())
+        {
+            DrawProperty(property, instance);
+        }
+
+        ImGui::EndTable();
     }
 
     ImGui::PopID();
@@ -37,8 +44,11 @@ bool PropertyDrawer::DrawProperty(rttr::property property,
 
     rttr::variant propertyValue = property.get_value(instance);
 
+    ImGui::TableNextColumn();
+
     ImGui::Text("%s: ", property.get_name().data());
-    ImGui::SameLine();
+
+    ImGui::TableNextColumn();
 
     if (readonly)
     {
@@ -60,6 +70,7 @@ bool PropertyDrawer::DrawProperty(rttr::property property,
     if (edited)
     {
         edited = property.set_value(instance, propertyValue);
+        assert(edited);
     }
 
     ImGui::PopID();
@@ -277,7 +288,7 @@ void PropertyDrawer::DrawReadonlyVariant(rttr::variant variant, bool disabled)
         }
         else if (object.hasId())
         {
-            ImGui::TextUnformatted("Object Unloaded");
+            ImGui::Text("Object Unloaded {%s}", rttr::variant(object.id()).to_string().c_str());
         }
         else
         {
@@ -371,14 +382,36 @@ bool PropertyDrawer::DrawSequentialContainer(
 
     ImGui::SameLine();
 
+    ImGui::Text("%lu elements", view.get_size());
+
+    ImGui::SameLine();
+
     if (ImGui::Button("+"))
     {
         const rttr::type type = view.get_value_type();
 
+        rttr::variant createdDefault;
+
+        if (type.is_wrapper())
+        {
+            assert(type.get_wrapped_type() == rttr::type::get<SB_ID>());
+            createdDefault = (SB_ID)0;
+            const bool converted = createdDefault.convert(type);
+            assert(converted);
+        }
+        else
+        {
+            assert(type.is_class());
+            createdDefault = type.create_default();
+        }
+
+        assert(createdDefault.is_valid());
+
         rttr::variant_sequential_view::const_iterator insertedIterator =
-            view.insert(view.begin() + view.get_size(), type.create_default());
+            view.insert(view.begin() + view.get_size(), createdDefault);
 
         edited = insertedIterator != view.end();
+        assert(edited);
     }
 
     if (view.get_size())
@@ -393,22 +426,28 @@ bool PropertyDrawer::DrawSequentialContainer(
 
             rttr::variant value = iterator.get_data().extract_wrapped_value();
 
-            if (ImGui::Button("X"))
-            {
-                view.erase(iterator);
-                edited = true;
-                break;
-            }
-
             if (DrawVariant(value, std::to_string(index).data()))
             {
                 view.set_value(index, value);
                 edited = true;
             }
 
+            ImGui::SameLine();
+
+            if (ImGui::Button("X"))
+            {
+                iterator = view.erase(iterator);
+                edited = true;
+            }
+
             ImGui::PopID();
 
             ++index;
+
+            if (iterator == view.end())
+            {
+                break;
+            }
         }
     }
 
@@ -506,15 +545,24 @@ bool PropertyDrawer::DrawAssociateContainer(
                         {
                             edited = true;
 
-                            view.erase(key);
-                            std::pair<
-                                rttr::variant_associative_view::const_iterator,
-                                bool>
-                                insertedIter = view.insert(key, value);
+                            const size_t removed = view.erase(key);
 
-                            if (insertedIter.second)
+                            if (removed > 0)
                             {
-                                iter = insertedIter.first;
+                                std::pair<rttr::variant_associative_view::
+                                              const_iterator,
+                                          bool>
+                                    insertedIter = view.insert(key, value);
+
+                                if (insertedIter.second)
+                                {
+                                    iter = insertedIter.first;
+                                }
+                                else
+                                {
+                                    ImGui::PopID();
+                                    break;
+                                }
                             }
                         }
                     }
@@ -584,8 +632,40 @@ bool PropertyDrawer::DrawPayloadDrop(rttr::variant& value,
                 }
             }
 
-            value  = data;
-            edited = true;
+            // Hack for child pointers
+            // When setting variants, the value is completely overriden.
+            // There is no chance for child pointers to retain its parent value and check the child.
+            // Therefore, we have to do this ourselves here.
+            if (valueType.is_wrapper() && std::string(valueType.get_name().data()).find("ChildPtr") != std::string::npos)
+            {
+                bool convertSuccess = false;
+                SB::Core::ChildPtr<SB::Core::DatabaseObject> dataAsChildPtr = data.convert<SB::Core::ChildPtr<SB::Core::DatabaseObject>>(&convertSuccess);
+
+                if (convertSuccess)
+                {
+                    SB::Core::ChildPtr<SB::Core::DatabaseObject> valueAsChildPtr = value.convert<SB::Core::ChildPtr<SB::Core::DatabaseObject>>(&convertSuccess);
+
+                    if (convertSuccess)
+                    {
+                        SB_ID currentID = valueAsChildPtr.id();
+
+                        valueAsChildPtr = dataAsChildPtr;
+
+                        if (currentID != valueAsChildPtr.id())
+                        {
+                            value = valueAsChildPtr;
+                            value.convert(valueType);
+                            assert(value.is_valid());
+                            edited = value.is_valid();
+                        }
+                    }
+                }
+            }
+            else
+            {
+                value.swap(data);
+                edited = true;
+            }
         }
 
         ImGui::EndDragDropTarget();

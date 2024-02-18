@@ -2,9 +2,14 @@
 
 #include "sound_bakery/core/core_include.h"
 #include "sound_bakery/effect/effect.h"
+#include "sound_bakery/parameter/parameter.h"
 
 namespace SB::Engine
 {
+    class FloatParameter;
+    class NamedParameter;
+    class NamedParameterValue;
+
     enum SB_NODE_STATUS
     {
         // Has no parent and no bus
@@ -21,11 +26,7 @@ namespace SB::Engine
         ~NodeBase();
 
     public:
-        virtual void setParentNode(
-            const SB::Core::DatabasePtr<NodeBase>& parent)
-        {
-            m_parentNode = parent;
-        }
+        virtual void setParentNode(const SB::Core::DatabasePtr<NodeBase>& parent) { m_parentNode = parent; }
 
     public:
         SB_NODE_STATUS getNodeStatus() const noexcept
@@ -44,44 +45,16 @@ namespace SB::Engine
             return status;
         }
 
-        NodeBase* parent() const
-        {
-            if (m_parentNode.lookup())
-            {
-                return m_parentNode.raw();
-            }
-            else
-            {
-                return nullptr;
-            }
-        }
+        NodeBase* parent() const { return m_parentNode.lookupRaw(); }
 
-        virtual void setOutputBus(const SB::Core::DatabasePtr<NodeBase>& bus)
-        {
-            m_outputBus = bus;
-        }
+        virtual void setOutputBus(const SB::Core::DatabasePtr<NodeBase>& bus) { m_outputBus = bus; }
 
-        NodeBase* outputBus() const
-        {
-            if (m_outputBus.lookup())
-            {
-                return m_outputBus.raw();
-            }
-            else
-            {
-                return nullptr;
-            }
-        }
+        NodeBase* outputBus() const { return m_outputBus.lookupRaw(); }
 
     public:
-        virtual bool canAddChild(
-            const SB::Core::DatabasePtr<NodeBase>& child) const
+        virtual bool canAddChild(const SB::Core::DatabasePtr<NodeBase>& child) const
         {
-            if (m_childNodes.contains(child))
-            {
-                return false;
-            }
-            if (child && child->parent())
+            if (m_childNodes.contains(child) || child.id() == getDatabaseID())
             {
                 return false;
             }
@@ -92,6 +65,11 @@ namespace SB::Engine
         {
             if (canAddChild(child))
             {
+                if (child.lookup() && child->parent())
+                {
+                    child->parent()->removeChild(child);
+                }
+
                 m_childNodes.insert(child);
 
                 if (child.lookup())
@@ -128,6 +106,8 @@ namespace SB::Engine
 
         std::size_t getChildCount() const { return m_childNodes.size(); }
 
+        bool hasChild(const SB::Core::DatabasePtr<NodeBase>& test) const { return m_childNodes.contains(test); }
+
     protected:
         SB::Core::DatabasePtr<NodeBase> m_parentNode;
         SB::Core::DatabasePtr<NodeBase> m_outputBus;
@@ -143,19 +123,45 @@ namespace SB::Engine
     class Node : public NodeBase
     {
     public:
-        SB::Core::FloatProperty m_volume =
-            SB::Core::FloatProperty(1.0f, 0.0f, 1.0f);
-        SB::Core::FloatProperty m_pitch =
-            SB::Core::FloatProperty(1.0f, 0.0f, 1.0f);
-        SB::Core::FloatProperty m_lowpass =
-            SB::Core::FloatProperty(1.0f, 0.0f, 100.0f);
-        SB::Core::FloatProperty m_highpass =
-            SB::Core::FloatProperty(1.0f, 0.0f, 100.0f);
+        SB::Core::FloatProperty m_volume   = SB::Core::FloatProperty(1.0f, 0.0f, 1.0f);
+        SB::Core::FloatProperty m_pitch    = SB::Core::FloatProperty(1.0f, 0.0f, 1.0f);
+        SB::Core::FloatProperty m_lowpass  = SB::Core::FloatProperty(1.0f, 0.0f, 100.0f);
+        SB::Core::FloatProperty m_highpass = SB::Core::FloatProperty(1.0f, 0.0f, 100.0f);
 
-        std::vector<SB::Core::DatabasePtr<EffectDescription>>
-            m_effectDescriptions;
+        std::vector<SB::Core::DatabasePtr<EffectDescription>> m_effectDescriptions;
+
+        /**
+         * @brief Gathers all parameters on this and child nodes that can effect the runtime output.
+         */
+        virtual void gatherParameters(GlobalParameterList& parameters)
+        {
+            parameters.floatParameters.reserve(m_childNodes.size() + 1);
+            parameters.intParameters.reserve(m_childNodes.size() + 1);
+
+            gatherParametersFromThis(parameters);
+
+            for (NodeBase* const child : getChildren())
+            {
+                if (child != nullptr)
+                {
+                    if (Node* const childNode = child->tryConvertObject<Node>())
+                    {
+                        childNode->gatherParameters(parameters);
+                    }
+                }
+            }
+        }
 
         void addEffect(SC_DSP_TYPE type);
+
+    protected:
+        /**
+         * @brief Appends parameters from this node that are relevant to the runtime output.
+         *
+         * Called from gatherParameters.
+         * @param parameters to append to.
+         */
+        virtual void gatherParametersFromThis(GlobalParameterList& parameters) { (void)parameters; }
 
         RTTR_ENABLE(NodeBase)
         RTTR_REGISTRATION_FRIEND

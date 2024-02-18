@@ -11,7 +11,19 @@ namespace SB::Engine
     public:
         Bus() : Node(), m_masterBus(false) {}
 
-        virtual void onLoaded() override;
+        void onLoaded() override;
+
+        bool canAddChild(const SB::Core::DatabasePtr<NodeBase>& child) const override
+        {
+            if (child.lookup() && child->getType().is_derived_from<Bus>())
+            {
+                return NodeBase::canAddChild(child);
+            }
+            else
+            {
+                return false;
+            }
+        }
 
         void setMasterBus(bool isMaster)
         {
@@ -19,6 +31,11 @@ namespace SB::Engine
             {
                 m_masterBus = isMaster;
             }
+        }
+
+        bool isMasterBus() const
+        { 
+            return m_masterBus;
         }
 
     public:

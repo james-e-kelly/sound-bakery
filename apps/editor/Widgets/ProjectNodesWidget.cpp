@@ -107,7 +107,7 @@ void ProjectNodesWidget::RenderSingleNode(rttr::type type,
                 ImGuiTreeNodeFlags_None | ImGuiTreeNodeFlags_SpanAvailWidth;
 
             if (hasChildren || object->getType() ==
-                                   rttr::type::get<SB::Engine::IntParameter>())
+                                   rttr::type::get<SB::Engine::NamedParameter>())
             {
                 flags |= ImGuiTreeNodeFlags_OpenOnArrow;
             }
@@ -134,6 +134,28 @@ void ProjectNodesWidget::RenderSingleNode(rttr::type type,
                     ImGui::TextUnformatted(object->getDatabaseName().data());
 
                     ImGui::EndDragDropSource();
+                }
+
+                if (ImGui::BeginDragDropTarget())
+                {
+                    if (node != nullptr)
+                    {
+                        if (const ImGuiPayload* const currentPayload = ImGui::GetDragDropPayload())
+                        {
+                            SB_ID payloadID = *static_cast<SB_ID*>(currentPayload->Data);
+                            SB::Core::DatabasePtr<SB::Engine::NodeBase> potentialChild(payloadID);
+
+                            if (node->canAddChild(potentialChild))
+                            {
+                                if (const ImGuiPayload* const payload =
+                                        ImGui::AcceptDragDropPayload(currentPayload->DataType))
+                                {
+                                    node->addChild(potentialChild);
+                                }
+                            }
+                        }
+                    }
+                    ImGui::EndDragDropTarget();
                 }
             }
 
@@ -177,12 +199,12 @@ void ProjectNodesWidget::RenderSingleNode(rttr::type type,
                             RenderSingleNode(type, child);
                         }
                     }
-                    else if (SB::Engine::IntParameter* const intParameter =
+                    else if (SB::Engine::NamedParameter* const intParameter =
                                  object->tryConvertObject<
-                                     SB::Engine::IntParameter>())
+                                     SB::Engine::NamedParameter>())
                     {
                         for (const SB::Core::DatabasePtr<
-                                 SB::Engine::IntParameterValue>& value :
+                                 SB::Engine::NamedParameterValue>& value :
                              intParameter->getValues())
                         {
                             if (value.lookup())
@@ -270,13 +292,13 @@ bool ProjectNodesWidget::RenderNodeContextMenu(rttr::type type,
                 }
 
                 if (object->getType() ==
-                    rttr::type::get<SB::Engine::IntParameter>())
+                    rttr::type::get<SB::Engine::NamedParameter>())
                 {
                     if (ImGui::MenuItem("Create New Value"))
                     {
-                        if (SB::Engine::IntParameter* const intParameter =
+                        if (SB::Engine::NamedParameter* const intParameter =
                                 object->tryConvertObject<
-                                    SB::Engine::IntParameter>())
+                                    SB::Engine::NamedParameter>())
                         {
                             intParameter->addNewValue("New Switch Value");
                         }
