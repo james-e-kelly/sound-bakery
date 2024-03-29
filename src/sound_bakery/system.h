@@ -4,6 +4,12 @@
 #include "sound_bakery/core/database/database_ptr.h"
 #include "sound_bakery/util/fmod_pointers.h"
 
+namespace SB::Core
+{
+    class Database;
+    class ObjectTracker;
+}
+
 namespace SB::Engine
 {
     class Bus;
@@ -31,6 +37,9 @@ namespace SB::Engine
         static SC_SYSTEM* getChef();
         static System* create();
         static void destroy();
+        
+        static SB::Core::ObjectTracker* getObjectTracker();
+        static SB::Core::Database* getDatabase();
 
     public:
         SB_RESULT init();
@@ -56,6 +65,8 @@ namespace SB::Engine
 
         bool m_registeredReflection = false;
 
+        std::unique_ptr<SB::Core::Database> m_database;
+        std::unique_ptr<SB::Core::ObjectTracker> m_objectTracker;
         std::unique_ptr<Profiling::VoiceTracker> m_voiceTracker;
     };
 }  // namespace SB::Engine

@@ -5,6 +5,8 @@
 #include "Widgets/DetailsWidget.h"
 #include "Widgets/PlayControlsWidget.h"
 #include "Widgets/ProjectExplorerWidget.h"
+
+#include "sound_bakery/system.h"
 #include "sound_bakery/core/database/database.h"
 #include "sound_bakery/core/object/object_global.h"
 #include "sound_bakery/core/object/object_tracker.h"
@@ -45,9 +47,16 @@ void ProjectManager::Init(const ProjectConfiguration&& projectConfig)
             SB::Engine::Factory::createObjectFromType(
                 SB::Engine::SoundContainer::type()));
     m_previewSoundContainer->setDatabaseName("Preview Node");
-    SB::Core::ObjectTracker::get()->untrackObject(m_previewSoundContainer);
-    m_previewSoundContainerResource =
-        SB::Core::Database::get()->removeUnsafe(m_previewSoundContainer);
+
+    if (SB::Core::ObjectTracker* const objectTracker = SB::Engine::System::getObjectTracker())
+    {
+        objectTracker->untrackObject(m_previewSoundContainer);
+    }
+
+    if (SB::Core::Database* const database = SB::Engine::System::getDatabase())
+    {
+        m_previewSoundContainerResource = database->removeUnsafe(m_previewSoundContainer);
+    }
 
     LoadProject();
 
@@ -112,21 +121,19 @@ void ProjectManager::SaveProject() const
     SaveYAMLToFile(systemYaml, outputStream,
                    m_projectConfiguration.m_projectFolder / "System.yaml");
 
-    for (const std::weak_ptr<SB::Core::DatabaseObject>& object :
-         SB::Core::Database::get()->getAll())
+    if (SB::Core::Database* const database = SB::Engine::System::getDatabase())
     {
-        if (std::shared_ptr<SB::Core::DatabaseObject> sharedObject =
-                object.lock())
+        for (const std::weak_ptr<SB::Core::DatabaseObject>& object : database->getAll())
         {
-            YAML::Emitter yaml;
-            SB::Core::Serialization::Serializer::saveObject(sharedObject.get(),
-                                                            yaml);
-            SaveObjectToFile(
-                yaml, outputStream, sharedObject->getDatabaseID(),
-                m_projectConfiguration.m_objectsFolder /
-                    SB::Util::TypeHelper::getFolderNameForObjectType(
-                        sharedObject->getType()),
-                ".yaml");
+            if (std::shared_ptr<SB::Core::DatabaseObject> sharedObject = object.lock())
+            {
+                YAML::Emitter yaml;
+                SB::Core::Serialization::Serializer::saveObject(sharedObject.get(), yaml);
+                SaveObjectToFile(yaml, outputStream, sharedObject->getDatabaseID(),
+                                 m_projectConfiguration.m_objectsFolder /
+                                     SB::Util::TypeHelper::getFolderNameForObjectType(sharedObject->getType()),
+                                 ".yaml");
+            }
         }
     }
 }
@@ -180,20 +187,19 @@ void ProjectManager::LoadProject()
         {
             const std::filesystem::path filename = p.path().filename();
 
-            if (SB::Core::Database::get()->tryFind(filename.string().c_str()) ==
-                nullptr)
+            if (SB::Core::Database* const database = SB::Engine::System::getDatabase())
             {
-                if (SB::Core::DatabaseObject* const createdSound =
-                        newDatabaseObject<SB::Engine::Sound>())
+                if (database->tryFind(filename.string().c_str()) == nullptr)
                 {
-                    createdSound->setDatabaseName(filename.string().c_str());
-
-                    if (SB::Engine::Sound* const castedSound =
-                            SB::Reflection::cast<SB::Engine::Sound*,
-                                            SB::Core::DatabaseObject*>(
-                                createdSound))
+                    if (SB::Core::DatabaseObject* const createdSound = newDatabaseObject<SB::Engine::Sound>())
                     {
-                        castedSound->setSoundName(p.path().string());
+                        createdSound->setDatabaseName(filename.string().c_str());
+
+                        if (SB::Engine::Sound* const castedSound =
+                                SB::Reflection::cast<SB::Engine::Sound*, SB::Core::DatabaseObject*>(createdSound))
+                        {
+                            castedSound->setSoundName(p.path().string());
+                        }
                     }
                 }
             }

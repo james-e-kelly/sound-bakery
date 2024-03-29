@@ -76,6 +76,12 @@ System* System::create()
     if (s_system == nullptr)
     {
         s_system = new System();
+
+        if (s_system)
+        {
+            s_system->m_objectTracker = std::make_unique<SB::Core::ObjectTracker>();
+            s_system->m_database      = std::make_unique<SB::Core::Database>();
+        }
     }
 
     return s_system;
@@ -86,7 +92,7 @@ void System::destroy()
     if (s_system != nullptr)
     {
         s_system->m_listenerGameObject->stopAll();
-        SB::Core::Database::get()->clear();
+        s_system->m_database->clear();
 
         SB::Reflection::unregisterReflectionTypes();
 
@@ -118,6 +124,26 @@ SB_RESULT System::update()
     m_listenerGameObject->update();
 
     return MA_SUCCESS;
+}
+
+SB::Core::ObjectTracker* System::getObjectTracker()
+{
+    if (s_system)
+    {
+        return s_system->m_objectTracker.get();
+    }
+
+    return nullptr;
+}
+
+SB::Core::Database* System::getDatabase() 
+{
+    if (s_system)
+    {
+        return s_system->m_database.get();
+    }
+
+    return nullptr;
 }
 
 void SB::Engine::System::onLoaded()

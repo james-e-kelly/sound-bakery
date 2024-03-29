@@ -2,6 +2,12 @@
 
 #include "sound_bakery/pch.h"
 
+namespace SB::Engine
+{
+    class NodeBase;
+    class Node;
+}
+
 namespace SB::Util
 {
     class SB_CLASS TypeHelper final
@@ -28,5 +34,9 @@ namespace SB::Util
         static SB::Core::Object* getObjectFromInstance(const rttr::instance& instance);
 
         static SB::Core::DatabaseObject* getDatabaseObjectFromInstance(const rttr::instance& instance);
+
+        static SB::Engine::Node* getNodeFromInstance(const rttr::instance& instance);
+
+        static SB::Engine::NodeBase* getNodeBaseFromInstance(const rttr::instance& instance);
     };
 }  // namespace SB::Util

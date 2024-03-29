@@ -1,11 +1,10 @@
 #pragma once
 
 #include "sound_bakery/core/core_fwd.h"
-#include "sound_bakery/util/singleton.h"
 
 namespace SB::Core
 {
-    class SB_CLASS ObjectTracker : public Singleton<ObjectTracker>
+    class SB_CLASS ObjectTracker
     {
         using RawObjectPtr = Object*;
 

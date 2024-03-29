@@ -63,7 +63,7 @@ void ProjectNodesWidget::RenderEventsPage()
 void ProjectNodesWidget::RenderCategory(SB_OBJECT_CATEGORY category)
 {
     const std::unordered_set<SB::Core::Object*> categoryObjects =
-        SB::Core::ObjectTracker::get()->getObjectsOfCategory(category);
+        SB::Engine::System::getObjectTracker()->getObjectsOfCategory(category);
 
     for (SB::Core::Object* const object : categoryObjects)
     {
@@ -268,8 +268,7 @@ bool ProjectNodesWidget::RenderNodeContextMenu(rttr::type type,
     {
         result = true;
 
-        if (SB::Core::DatabaseObject* const object =
-                instance.try_convert<SB::Core::DatabaseObject>())
+        if (SB::Core::DatabaseObject* const object = SB::Util::TypeHelper::getDatabaseObjectFromInstance(instance))
         {
             if (ImGui::BeginPopupContextItem(
                     std::to_string(object->getDatabaseID()).c_str()))
@@ -314,7 +313,7 @@ bool ProjectNodesWidget::RenderNodeContextMenu(rttr::type type,
                 {
                     GetApp()->GetProjectManager()->GetSelection().SelectObject(
                         nullptr);
-                    SB::Core::Database::get()->remove(object);
+                    SB::Engine::System::getDatabase()->remove(object);
                     result = false;
                 }
 
@@ -336,7 +335,7 @@ void ProjectNodesWidget::RenderCreateParentOrChildMenu(
     const std::unordered_set<rttr::type> categoryTypes =
         SB::Util::TypeHelper::getTypesFromCategory(category);
 
-    SB::Engine::Node* const castedNode = node.try_convert<SB::Engine::Node>();
+    SB::Engine::Node* const castedNode = SB::Util::TypeHelper::getNodeFromInstance(node);
 
     if (ImGui::BeginMenu(CreateParentOrChildMenuName(creationType).data()))
     {

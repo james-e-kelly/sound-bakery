@@ -270,3 +270,13 @@ SB::Core::DatabaseObject* TypeHelper::getDatabaseObjectFromInstance(const rttr::
 {
     return instance.try_convert<SB::Core::DatabaseObject>();
 }
+
+SB::Engine::Node* TypeHelper::getNodeFromInstance(const rttr::instance& instance)
+{
+    return instance.try_convert<SB::Engine::Node>();
+}
+
+SB::Engine::NodeBase* TypeHelper::getNodeBaseFromInstance(const rttr::instance& instance) 
+{
+    return instance.try_convert<SB::Engine::NodeBase>();
+}

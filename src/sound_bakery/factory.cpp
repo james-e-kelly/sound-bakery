@@ -45,7 +45,11 @@ SB::Core::Object* SB::Engine::Factory::createObjectFromType(rttr::type objectTyp
     assert(converted != nullptr);
     assert(conversionWasSuccessful == true);
 
-    SB::Core::ObjectTracker::get()->trackObject((SB::Core::Object*)converted);
+    if (SB::Core::ObjectTracker* const objectTracker = SB::Engine::System::getObjectTracker())
+    {
+        objectTracker->trackObject((SB::Core::Object*)converted);
+    }
+
     converted->setDatabaseID(id);
 
     return converted;

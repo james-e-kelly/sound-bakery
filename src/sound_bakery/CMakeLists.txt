@@ -102,7 +102,6 @@ set(ATLAS_HEADERS
     util/api_macros.h
     util/fmod_pointers.h
     util/sb_pointers.h
-    util/singleton.h
     util/type_helper.h
     util/macros.h
 
