@@ -4,6 +4,8 @@
 
 using namespace SB::Core;
 
+DEFINE_REFLECTION(SB::Core::DatabaseObject)
+
 DatabaseObject::~DatabaseObject()
 {
     // Database::get()->remove(this);

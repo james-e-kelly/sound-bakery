@@ -5,13 +5,13 @@
 
 namespace SB::Core
 {
-    class ObjectTracker : public Singleton<ObjectTracker>
+    class SB_CLASS ObjectTracker : public Singleton<ObjectTracker>
     {
         using RawObjectPtr = Object*;
 
     public:
         void trackObject(RawObjectPtr object);
-        void untrackObject(RawObjectPtr object, const rttr::type& typeOverride = rttr::type::get<void>());
+        void untrackObject(RawObjectPtr object, std::optional<rttr::type> typeOverride = std::nullopt);
 
         std::unordered_set<RawObjectPtr> getObjectsOfCategory(SB_OBJECT_CATEGORY category);
         std::unordered_set<RawObjectPtr> getObjectsOfType(rttr::type type);

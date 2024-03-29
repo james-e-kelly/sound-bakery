@@ -1,6 +1,7 @@
 #include "MethodDrawer.h"
 
 #include "imgui.h"
+#include "sound_bakery/system.h"
 #include "sound_bakery/core/database/database_object.h"
 #include "sound_bakery/editor/editor_defines.h"
 
@@ -15,7 +16,7 @@ static std::unordered_map<MethodIndex,
 void MethodDrawer::DrawObject(rttr::type type, rttr::instance instance)
 {
     if (!instance.get_type().is_derived_from(
-            rttr::type::get<SB::Core::Object>()))
+            SB::Core::Object::type()))
     {
         assert(false);
         return;

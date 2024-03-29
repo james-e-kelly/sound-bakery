@@ -1,6 +1,7 @@
 #include "PropertyDrawer.h"
 
 #include "imgui.h"
+#include "sound_bakery/system.h"
 #include "sound_bakery/core/object/object.h"
 #include "sound_bakery/editor/editor_defines.h"
 #include "sound_bakery/node/node.h"
@@ -177,7 +178,7 @@ bool PropertyDrawer::DrawVariant(rttr::variant& variant,
     }
     else if (type.is_class())
     {
-        if (type == rttr::type::get<SB::Engine::EffectParameterDescription>())
+        if (type == SB::Engine::EffectParameterDescription::type())
         {
             SB::Engine::EffectParameterDescription effectParamterDescription =
                 variant.convert<SB::Engine::EffectParameterDescription>();

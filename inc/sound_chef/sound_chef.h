@@ -168,13 +168,6 @@
  * node groups together, insert lowpass and highpass effects, and insert user-defined effects.
  */
 
-/**
- * @todo Add proper DLL support and testing
- */
-#ifdef SC_DLL
-    #define MA_DLL
-#endif
-
 #include "sound_chef_common.h"
 
 #ifdef __cplusplus

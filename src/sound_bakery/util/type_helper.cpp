@@ -234,3 +234,39 @@ std::string_view TypeHelper::getPayloadFromType(rttr::type type)
 
     return result;
 }
+
+bool TypeHelper::isTypePlayable(const rttr::type& type) 
+{ 
+    bool result = false;
+
+    if (type.is_valid())
+    {
+        result =    type.is_derived_from<SB::Engine::Container>() ||
+                    type.is_derived_from<SB::Engine::Sound>() ||
+                    type.is_derived_from<SB::Engine::Event>();
+    }
+
+    return result;
+}
+
+rttr::enumeration TypeHelper::getObjectCategoryEnum()
+{
+    return rttr::type::get<SB_OBJECT_CATEGORY>().get_enumeration();
+}
+
+rttr::string_view TypeHelper::getObjectCategoryName(const SB_OBJECT_CATEGORY& objectCategory)
+{
+    static const rttr::enumeration objectCategoryEnum = getObjectCategoryEnum();
+
+    return objectCategoryEnum.value_to_name(objectCategory);
+}
+
+SB::Core::Object* TypeHelper::getObjectFromInstance(const rttr::instance& instance)
+{
+    return instance.try_convert<SB::Core::Object>();
+}
+
+SB::Core::DatabaseObject* TypeHelper::getDatabaseObjectFromInstance(const rttr::instance& instance) 
+{
+    return instance.try_convert<SB::Core::DatabaseObject>();
+}

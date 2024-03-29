@@ -41,9 +41,9 @@ void ProjectManager::Init(const ProjectConfiguration&& projectConfig)
     SB::Engine::System::get()->init();
 
     m_previewSoundContainer =
-        rttr::rttr_cast<SB::Engine::SoundContainer*, SB::Core::Object*>(
+        SB::Reflection::cast<SB::Engine::SoundContainer*, SB::Core::Object*>(
             SB::Engine::Factory::createObjectFromType(
-                rttr::type::get<SB::Engine::SoundContainer>()));
+                SB::Engine::SoundContainer::type()));
     m_previewSoundContainer->setDatabaseName("Preview Node");
     SB::Core::ObjectTracker::get()->untrackObject(m_previewSoundContainer);
     m_previewSoundContainerResource =
@@ -189,7 +189,7 @@ void ProjectManager::LoadProject()
                     createdSound->setDatabaseName(filename.string().c_str());
 
                     if (SB::Engine::Sound* const castedSound =
-                            rttr::rttr_cast<SB::Engine::Sound*,
+                            SB::Reflection::cast<SB::Engine::Sound*,
                                             SB::Core::DatabaseObject*>(
                                 createdSound))
                     {

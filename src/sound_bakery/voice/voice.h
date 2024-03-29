@@ -13,7 +13,7 @@ namespace SB::Engine
      * @brief A runtime graph of nodes and busses, playing a sound or many.
      *
      */
-    class Voice : public SB::Core::Object
+    class SB_CLASS Voice : public SB::Core::Object
     {
     public:
         Voice() = delete;

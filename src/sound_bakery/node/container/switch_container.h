@@ -4,7 +4,7 @@
 
 namespace SB::Engine
 {
-    class SwitchContainer : public Container
+    class SB_CLASS SwitchContainer : public Container
     {
     public:
         void gatherChildrenForPlay(GatherChildrenContext& context) const override
@@ -64,7 +64,7 @@ namespace SB::Engine
          */
         std::unordered_map<SB::Core::DatabasePtr<NamedParameterValue>, SB::Core::ChildPtr<Container>> m_switchToChild;
 
-        RTTR_ENABLE(Container)
+        REGISTER_REFLECTION(SwitchContainer, Container)
         RTTR_REGISTRATION_FRIEND
     };
 }  // namespace SB::Engine

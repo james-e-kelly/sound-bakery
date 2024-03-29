@@ -9,6 +9,10 @@
 #define GL_SILENCE_DEPRECATION
 #include <GLFW/glfw3.h>
 
+#include <cmrc/cmrc.hpp>
+
+CMRC_DECLARE(SB::Images);
+
 namespace SplashScreenUtils
 {
     static const char* splashScreenName = "SplashScreen";
@@ -18,9 +22,13 @@ void SplashWidget::Start()
 {
     Widget::Start();
 
+    const cmrc::embedded_filesystem embeddedfilesystem = cmrc::SB::Images::get_filesystem();
+
+    const cmrc::file splashImageFile = embeddedfilesystem.open("SplashImage02.png");
+
     int image_width, image_height, n;
-    unsigned char* image_data = stbi_load(
-        GetApp()->GetResourceFilePath("images/SplashImage.png").c_str(),
+    unsigned char* image_data =
+        stbi_load_from_memory((stbi_uc*)splashImageFile.begin(), splashImageFile.size(),
         &image_width, &image_height, &n, 0);
 
     assert(image_data);

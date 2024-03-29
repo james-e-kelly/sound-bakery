@@ -14,7 +14,7 @@ set(SOUND_CHEF_HEADERS
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Header Files" FILES ${ATLAS_HEADERS})
 
-add_library(sound_chef STATIC ${SOUND_CHEF_SOURCES} ${SOUND_CHEF_HEADERS})
+add_library(sound_chef SHARED ${SOUND_CHEF_SOURCES} ${SOUND_CHEF_HEADERS})
 target_include_directories(sound_chef
     PUBLIC ${CMAKE_SOURCE_DIR}/inc/
 )
@@ -73,3 +73,6 @@ if(SOUND_BAKERY_TIDY_SOURCE AND SOUND_BAKERY_CLANG_TIDY_EXE AND MSVC)
     VS_GLOBAL_EnableClangTidyCodeAnalysis true
   )
 endif()
+
+install(TARGETS sound_chef DESTINATION lib)
+install(FILES ${SOUND_CHEF_HEADERS} DESTINATION inc)

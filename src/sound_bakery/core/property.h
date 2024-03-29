@@ -1,12 +1,12 @@
 #pragma once
 
 #include "Delegates.h"
-#include "sound_bakery/sound_bakery.h"
+#include "sound_bakery/sound_bakery_internal.h"
 
 namespace SB::Core
 {
     template <typename T>
-    class Property
+    class SB_CLASS Property
     {
         static_assert(std::is_arithmetic<T>::value);
 

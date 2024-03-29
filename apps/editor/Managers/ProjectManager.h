@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Manager.h"
+#include "sound_bakery/system.h"
 #include "sound_bakery/core/database/database_object.h"
 
 #include "yaml-cpp/yaml.h"
@@ -16,13 +17,13 @@ struct Selection
 
     void SelectObject(SB::Core::Object* object) { m_selected = object; }
 
-    rttr::type SelectedType() const
+    std::optional<rttr::type> SelectedType() const
     {
         if (m_selected)
         {
             return m_selected->getType();
         }
-        return rttr::type::get<void>();
+        return std::nullopt;
     }
 
     SB::Core::Object* GetSelected() const { return m_selected; }

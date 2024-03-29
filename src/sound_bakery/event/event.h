@@ -12,18 +12,17 @@ namespace SB::Engine
         SB_ACTION_NUM
     };
 
-    struct Action
+    struct SB_CLASS Action
     {
         SB_ACTION_TYPE m_type = SB_ACTION_PLAY;
         SB::Core::DatabasePtr<SB::Core::DatabaseObject> m_destination;
     };
 
-    class Event : public SB::Core::DatabaseObject
+    class SB_CLASS Event : public SB::Core::DatabaseObject
     {
+        REGISTER_REFLECTION(Event, SB::Core::DatabaseObject)
+
     public:
         std::vector<Action> m_actions;
-
-        RTTR_ENABLE(SB::Core::DatabaseObject)
-        RTTR_REGISTRATION_FRIEND
     };
 }  // namespace SB::Engine

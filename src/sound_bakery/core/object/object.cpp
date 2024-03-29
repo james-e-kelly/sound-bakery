@@ -5,6 +5,8 @@
 
 using namespace SB::Core;
 
+DEFINE_REFLECTION(SB::Core::Object)
+
 Object::~Object() { ObjectTracker::get()->untrackObject(this, m_type); }
 
 SB::Engine::System* ObjectUtilities::getSystem() const { return SB::Engine::System::get(); }

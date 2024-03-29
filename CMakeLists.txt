@@ -2,9 +2,16 @@ if(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
   message(FATAL_ERROR "In-source builds are not allowed. You should create a separate directory for build files.")
 endif()
 
-cmake_minimum_required(VERSION 3.23)
+# Version set to have EXCLUDE_FROM_ALL available in FetchContent_Declare
+cmake_minimum_required(VERSION 3.28)
 
 project(SoundBakery VERSION 0.1.0 DESCRIPTION "An open-source audio middleware tool with an authoring application and programmer's API")
+
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+  set(CMAKE_INSTALL_PREFIX "${PROJECT_SOURCE_DIR}/dist" CACHE PATH "Sound Bakery Install Prefix" FORCE)
+endif()
+
+message(STATUS "Install path is ${CMAKE_INSTALL_PREFIX}")
 
 set(SOUND_BAKERY_MAIN_PROJECT OFF)
 if(CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
@@ -26,6 +33,33 @@ if(SOUND_BAKERY_MAIN_PROJECT)
   set(CMAKE_C_STANDARD 17)
   set(CMAKE_CXX_STANDARD 20)
   set(CMAKE_CXX_EXTENSIONS OFF)
+
+    # ---------- Setup output Directories -------------------------
+  if(NOT DEFINED CMAKE_LIBRARY_OUTPUT_DIRECTORY)
+  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY
+    ${SoundBakery_BINARY_DIR}/Bin
+    CACHE PATH
+    "Single Directory for all Libraries"
+    )
+  endif()
+
+  # --------- Setup the Executable output Directory -------------
+  if(NOT DEFINED CMAKE_RUNTIME_OUTPUT_DIRECTORY)
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY
+    ${SoundBakery_BINARY_DIR}/Bin
+    CACHE PATH
+    "Single Directory for all Executables."
+    )
+  endif()
+
+  # --------- Setup the Executable output Directory -------------
+  if(NOT DEFINED CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
+  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY
+    ${SoundBakery_BINARY_DIR}/Bin
+    CACHE PATH
+    "Single Directory for all static libraries."
+    )
+  endif()
 
   if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND UNIX AND NOT APPLE)
     # Clang on Linux needs to use its own standard library headers and not the system default (gcc)
@@ -73,11 +107,24 @@ endif()
 
 include(FetchContent)
 
+FetchContent_Declare(
+  cmrc
+  GIT_REPOSITORY https://github.com/vector-of-bool/cmrc.git
+  GIT_TAG        2.0.1
+  GIT_SHALLOW    TRUE
+  GIT_PROGRESS TRUE
+  OVERRIDE_FIND_PACKAGE
+)
+
+message(STATUS "Fetching CMRC for resource embedding")
+FetchContent_MakeAvailable(cmrc)
+
 set(CMAKE_FOLDER src)
 add_subdirectory(src)
-add_subdirectory(resources)
 set(CMAKE_FOLDER apps)
 add_subdirectory(apps)
+set(CMAKE_FOLDER resources)
+add_subdirectory(resources)
 
 if(SOUND_BAKERY_TESTS)
   if((CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME OR MODERN_CMAKE_BUILD_TESTING) AND BUILD_TESTING)

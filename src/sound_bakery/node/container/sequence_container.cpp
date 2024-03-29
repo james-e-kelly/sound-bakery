@@ -2,6 +2,8 @@
 
 using namespace SB::Engine;
 
+DEFINE_REFLECTION(SB::Engine::SequenceContainer)
+
 void SequenceContainer::gatherChildrenForPlay(GatherChildrenContext& context) const
 {
     if (!m_sequence.empty() && context.numTimesPlayed > 0)

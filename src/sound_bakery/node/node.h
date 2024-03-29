@@ -20,7 +20,7 @@ namespace SB::Engine
         SB_NODE_TOP
     };
 
-    class NodeBase : public SB::Core::DatabaseObject
+    class SB_CLASS NodeBase : public SB::Core::DatabaseObject
     {
     public:
         ~NodeBase();
@@ -113,14 +113,13 @@ namespace SB::Engine
         SB::Core::DatabasePtr<NodeBase> m_outputBus;
         std::unordered_set<SB::Core::DatabasePtr<NodeBase>> m_childNodes;
 
-        RTTR_ENABLE(SB::Core::DatabaseObject)
-        RTTR_REGISTRATION_FRIEND
+        REGISTER_REFLECTION(NodeBase, SB::Core::DatabaseObject)
     };
 
     /**
      * @brief Root node that builds the core graph of sounds and busses.
      */
-    class Node : public NodeBase
+    class SB_CLASS Node : public NodeBase
     {
     public:
         SB::Core::FloatProperty m_volume   = SB::Core::FloatProperty(1.0f, 0.0f, 1.0f);
@@ -163,7 +162,6 @@ namespace SB::Engine
          */
         virtual void gatherParametersFromThis(GlobalParameterList& parameters) { (void)parameters; }
 
-        RTTR_ENABLE(NodeBase)
-        RTTR_REGISTRATION_FRIEND
+        REGISTER_REFLECTION(Node, NodeBase)
     };
 }  // namespace SB::Engine

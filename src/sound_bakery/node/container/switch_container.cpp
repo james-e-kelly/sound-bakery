@@ -2,6 +2,8 @@
 
 #include "sound_bakery/parameter/parameter.h"
 
+DEFINE_REFLECTION(SB::Engine::SwitchContainer)
+
 void SB::Engine::SwitchContainer::setSwitchParameter(SB::Core::DatabasePtr<NamedParameter> parameter)
 {
     m_switchParameter = parameter;

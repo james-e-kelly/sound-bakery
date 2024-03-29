@@ -18,11 +18,11 @@ void ObjectTracker::trackObject(RawObjectPtr object)
     }
 }
 
-void ObjectTracker::untrackObject(RawObjectPtr object, const rttr::type& typeOverride)
+void ObjectTracker::untrackObject(RawObjectPtr object, std::optional<rttr::type> typeOverride)
 {
     if (object != nullptr)
     {
-        const rttr::type type             = typeOverride != rttr::type::get<void>() ? typeOverride : object->getType();
+        const rttr::type type             = typeOverride.has_value() ? typeOverride.value() : object->getType();
         const SB_OBJECT_CATEGORY category = SB::Util::TypeHelper::getCategoryFromType(type);
 
         m_typeToObjects[type].erase(object);

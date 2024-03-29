@@ -1,10 +1,8 @@
 #ifndef SOUND_CHEF_COMMON
 #define SOUND_CHEF_COMMON
 
-/**
- * @todo Add proper DLL support and testing
- */
-#ifdef SC_DLL
+#ifdef sound_chef_EXPORTS
+    #define SC_DLL
     #define MA_DLL
 #endif
 
@@ -31,9 +29,11 @@
 #endif
 
 #ifdef SC_DLL
-    #define SC_API SC_DLL_EXPORT SC_CALL
+    #define SC_API      SC_DLL_EXPORT SC_CALL
+    #define SC_CLASS    SC_DLL_EXPORT 
 #else
     #define SC_API SC_CALL
+    #define SC_CLASS
 #endif
 
 #ifdef __cplusplus

@@ -4,7 +4,7 @@
 
 namespace SB::Engine
 {
-    class RandomContainer : public Container
+    class SB_CLASS RandomContainer : public Container
     {
     public:
         virtual void gatherChildrenForPlay(GatherChildrenContext& context) const override
@@ -25,7 +25,7 @@ namespace SB::Engine
             }
         }
 
-        RTTR_ENABLE(Container)
+        REGISTER_REFLECTION(RandomContainer, Container)
         RTTR_REGISTRATION_FRIEND
     };
 }  // namespace SB::Engine

@@ -14,7 +14,7 @@ namespace SB::Engine
      * Used for changing effect parameters, choosing sounds and anything else.
      */
     template <typename ParameterType>
-    class Parameter : public SB::Core::DatabaseObject
+    class SB_CLASS Parameter : public SB::Core::DatabaseObject
     {
         static_assert(std::is_arithmetic<ParameterType>::value);
 
@@ -88,17 +88,17 @@ namespace SB::Engine
         ParameterType m_defaultValue;
         SB::Core::Property<ParameterType> m_property;
 
-        RTTR_ENABLE(DatabaseObject)
+        REGISTER_REFLECTION(Parameter, DatabaseObject)
     };
 
-    class FloatParameter : public Parameter<float>
+    class SB_CLASS FloatParameter : public Parameter<float>
     {
-        RTTR_ENABLE(Parameter)
+        REGISTER_REFLECTION(FloatParameter, Parameter)
     };
 
-    class IntParameter : public Parameter<int>
+    class SB_CLASS IntParameter : public Parameter<int>
     {
-        RTTR_ENABLE(Parameter)
+        REGISTER_REFLECTION(IntParameter, Parameter)
     };
 
     /**
@@ -110,19 +110,21 @@ namespace SB::Engine
      *
      * The object's ID is its parameter value.
      */
-    class NamedParameterValue : public SB::Core::DatabaseObject
+    class SB_CLASS NamedParameterValue : public SB::Core::DatabaseObject
     {
     public:
         SB::Core::DatabasePtr<NamedParameter> parentParameter;
 
-        RTTR_ENABLE(DatabaseObject)
+        REGISTER_REFLECTION(NamedParameterValue, DatabaseObject)
     };
 
     /**
      * @brief Holds discrete named integer values.
      */
-    class NamedParameter : public Parameter<SB_ID>
+    class SB_CLASS NamedParameter : public Parameter<SB_ID>
     {
+        REGISTER_REFLECTION(NamedParameter, Parameter)
+
     public:
         /**
          * @brief Creates a NamedParameter with min and max values.
@@ -208,9 +210,6 @@ namespace SB::Engine
 
     private:
         std::unordered_set<SB::Core::DatabasePtr<NamedParameterValue>> m_values;
-
-        RTTR_ENABLE(DatabaseObject)
-        RTTR_REGISTRATION_FRIEND
     };
 
     using GlobalFloatParameter = SB::Core::DatabasePtr<FloatParameter>;
@@ -221,7 +220,7 @@ namespace SB::Engine
      *
      * Setting values on raw/database parameters assumes the global scope.
      */
-    struct GlobalParameterList
+    struct SB_CLASS GlobalParameterList
     {
         std::unordered_set<GlobalFloatParameter> floatParameters;
         std::unordered_set<GlobalIntParameter> intParameters;
@@ -230,7 +229,7 @@ namespace SB::Engine
     /**
      * @brief Holds a list of parameters and their local value.
      */
-    struct LocalParameterList
+    struct SB_CLASS LocalParameterList
     {
         std::unordered_map<GlobalFloatParameter, FloatParameter::ParameterProperty> floatParameters;
         std::unordered_map<GlobalIntParameter, NamedParameter::ParameterProperty> intParameters;

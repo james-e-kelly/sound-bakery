@@ -4,14 +4,14 @@ set(ATLAS_SOURCES
     system.cpp
     factory.cpp
     pch.cpp
-
+    
     core/object/object.cpp
     core/object/object_tracker.cpp
-
+    
     core/database/database.cpp
     core/database/database_object.cpp
     core/database/database_ptr.cpp
-
+    
     core/property.cpp
     
     effect/effect.cpp
@@ -35,6 +35,8 @@ set(ATLAS_SOURCES
     parameter/parameter.cpp
     profiling/voice_tracker.cpp
     
+    reflection/reflection.cpp
+
     serialization/serializer.cpp
     
     sound/sound.cpp
@@ -49,7 +51,7 @@ set(ATLAS_SOURCES
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Source Files" FILES ${ATLAS_SOURCES})
 
 set(ATLAS_HEADERS
-    sound_bakery.h
+    sound_bakery_internal.h
     system.h
     factory.h
     pch.h
@@ -90,6 +92,8 @@ set(ATLAS_HEADERS
     
     parameter/parameter.h
     profiling/voice_tracker.h
+
+    reflection/reflection.h
     
     serialization/serializer.h
     
@@ -111,10 +115,11 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Header Files" FILES ${ATLA
 set(PCH_HEADER pch.h)
 set(PCH_SOURCE pch.cpp)
 
-add_library(sound_bakery STATIC ${ATLAS_SOURCES} ${ATLAS_HEADERS} ${PCH_SOURCE})
+add_library(sound_bakery SHARED ${ATLAS_SOURCES} ${ATLAS_HEADERS} ${PCH_SOURCE})
 add_library(SoundBakery::SoundBakery ALIAS sound_bakery)
 target_include_directories(sound_bakery
     PUBLIC ${CMAKE_SOURCE_DIR}/src/
+    PUBLIC ${CMAKE_SOURCE_DIR}/inc/
 )
 
 set_target_properties(sound_bakery PROPERTIES LANGUAGE CXX)
@@ -202,3 +207,5 @@ if(SOUND_BAKERY_TIDY_SOURCE AND SOUND_BAKERY_CLANG_TIDY_EXE AND MSVC)
     VS_GLOBAL_EnableClangTidyCodeAnalysis true
   )
 endif()
+
+install(TARGETS sound_bakery DESTINATION lib)

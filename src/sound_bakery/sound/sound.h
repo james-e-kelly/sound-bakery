@@ -5,7 +5,7 @@
 
 namespace SB::Engine
 {
-    class Sound : public SB::Core::DatabaseObject
+    class SB_CLASS Sound : public SB::Core::DatabaseObject
     {
     public:
         Sound();
@@ -28,7 +28,7 @@ namespace SB::Engine
         std::string m_soundName;
         bool m_streaming;
 
-        RTTR_ENABLE(SB::Core::DatabaseObject)
+        REGISTER_REFLECTION(Sound, SB::Core::DatabaseObject)
         RTTR_REGISTRATION_FRIEND
     };
 }  // namespace SB::Engine

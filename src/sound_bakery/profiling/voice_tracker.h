@@ -11,10 +11,11 @@ namespace SB::Engine
         /**
          * @brief Tracks every active voice with helper functions
          */
-        class VoiceTracker final
+        class SB_CLASS VoiceTracker final
         {
         public:
             VoiceTracker();
+            ~VoiceTracker() = default;
 
             static VoiceTracker* get();
 

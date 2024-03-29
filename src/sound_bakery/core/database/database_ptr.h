@@ -7,9 +7,9 @@ namespace SB::Core
 {
     class DatabaseObject;
 
-    std::weak_ptr<DatabaseObject> findObject(SB_ID id);
-    bool objectIdIsChildOfParent(SB_ID childToCheck, SB_ID parent);
-    SB_ID getParentIdFromId(SB_ID id);
+    std::weak_ptr<DatabaseObject> SB_API findObject(SB_ID id);
+    bool SB_API objectIdIsChildOfParent(SB_ID childToCheck, SB_ID parent);
+    SB_ID SB_API getParentIdFromId(SB_ID id);
 
     /** Lazy Pointer
      * Lazy pointers store an Indentifier to an object and use it to find the

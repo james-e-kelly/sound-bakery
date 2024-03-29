@@ -8,7 +8,7 @@ namespace SB::Core
     /**
      * @brief Runtime lookup of objects, using their ID or name
      */
-    class Database : public Singleton<Database>
+    class SB_CLASS Database : public Singleton<Database>
     {
     public:
         void addOrUpdateID(SB_ID oldID, SB_ID newID, DatabaseObject* object)

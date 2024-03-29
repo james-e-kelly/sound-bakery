@@ -5,6 +5,10 @@
 
 using namespace SB::Engine;
 
+DEFINE_REFLECTION(SB::Engine::NodeBase)
+
+DEFINE_REFLECTION(SB::Engine::Node)
+
 void Node::addEffect(SC_DSP_TYPE type)
 {
     EffectDescription* effect = newDatabaseObject<EffectDescription>();

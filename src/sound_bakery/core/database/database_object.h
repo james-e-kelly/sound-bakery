@@ -4,22 +4,24 @@
 
 namespace SB::Core
 {
-    class DatabaseObjectUtilities
+    class SB_CLASS DatabaseObjectUtilities
     {
     public:
         virtual void onLoaded() {}
         virtual void onProjectLoaded() {}
         virtual void onDestroy() {}
 
-        RTTR_ENABLE()
+        REGISTER_REFLECTION(DatabaseObjectUtilities)
     };
 
     /**
      * @brief Base object type for any object that can exist in the
      * editor/database. Holds an ID and name
      */
-    class DatabaseObject : public Object, public DatabaseObjectUtilities
+    class SB_CLASS DatabaseObject : public Object, public DatabaseObjectUtilities
     {
+        REGISTER_REFLECTION(DatabaseObject, Object, DatabaseObjectUtilities)
+
     public:
         ~DatabaseObject();
 
@@ -40,6 +42,5 @@ namespace SB::Core
 
         friend class Database;
 
-        RTTR_ENABLE(Object, DatabaseObjectUtilities)
     };
 }  // namespace SB::Core

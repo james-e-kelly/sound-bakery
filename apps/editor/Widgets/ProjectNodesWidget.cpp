@@ -24,12 +24,9 @@ static const std::vector<SB_OBJECT_CATEGORY> s_eventPageCategories{
 void ProjectNodesWidget::RenderPage(
     const std::vector<SB_OBJECT_CATEGORY>& categories)
 {
-    static const rttr::enumeration categoryEnum =
-        rttr::type::get<SB_OBJECT_CATEGORY>().get_enumeration();
-
     for (const SB_OBJECT_CATEGORY category : categories)
     {
-        rttr::string_view categoryName = categoryEnum.value_to_name(category);
+        rttr::string_view categoryName = SB::Util::TypeHelper::getObjectCategoryName(category);
 
         if (categoryName.empty())
         {
@@ -92,11 +89,10 @@ void ProjectNodesWidget::RenderSingleNode(rttr::type type,
 {
     if (instance)
     {
-        if (SB::Core::DatabaseObject* const object =
-                instance.try_convert<SB::Core::DatabaseObject>())
+        if (SB::Core::DatabaseObject* const object = SB::Util::TypeHelper::getDatabaseObjectFromInstance(instance))
         {
             SB::Engine::Node* const node =
-                rttr::rttr_cast<SB::Engine::Node*, SB::Core::DatabaseObject*>(
+                SB::Reflection::cast<SB::Engine::Node*, SB::Core::DatabaseObject*>(
                     object);
 
             const bool hasChildren = node && NodeHasChildren(node);
@@ -106,8 +102,8 @@ void ProjectNodesWidget::RenderSingleNode(rttr::type type,
             ImGuiTreeNodeFlags flags =
                 ImGuiTreeNodeFlags_None | ImGuiTreeNodeFlags_SpanAvailWidth;
 
-            if (hasChildren || object->getType() ==
-                                   rttr::type::get<SB::Engine::NamedParameter>())
+            if (hasChildren  || object->getType() ==
+                                   SB::Engine::NamedParameter::type())
             {
                 flags |= ImGuiTreeNodeFlags_OpenOnArrow;
             }
@@ -282,7 +278,7 @@ bool ProjectNodesWidget::RenderNodeContextMenu(rttr::type type,
                     SB::Util::TypeHelper::getCategoryFromType(type);
 
                 if (object->getType().is_derived_from(
-                        rttr::type::get<SB::Engine::NodeBase>()))
+                        SB::Engine::NodeBase::type()))
                 {
                     RenderCreateParentOrChildMenu(category, instance,
                                                   NodeCreationType::NewParent);
@@ -292,7 +288,7 @@ bool ProjectNodesWidget::RenderNodeContextMenu(rttr::type type,
                 }
 
                 if (object->getType() ==
-                    rttr::type::get<SB::Engine::NamedParameter>())
+                    SB::Engine::NamedParameter::type())
                 {
                     if (ImGui::MenuItem("Create New Value"))
                     {
@@ -362,7 +358,7 @@ void ProjectNodesWidget::RenderCreateParentOrChildMenu(
                 SetupRenameNode(newObject);
 
                 SB::Engine::Node* newNode =
-                    rttr::rttr_cast<SB::Engine::Node*, SB::Core::Object*>(
+                    SB::Reflection::cast<SB::Engine::Node*, SB::Core::Object*>(
                         newObject);
 
                 if (newNode)

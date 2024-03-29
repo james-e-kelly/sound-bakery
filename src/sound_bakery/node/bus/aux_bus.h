@@ -4,10 +4,8 @@
 
 namespace SB::Engine
 {
-    class AuxBus : public Bus
+    class SB_CLASS AuxBus : public Bus
     {
-
-        RTTR_ENABLE(Bus)
-        RTTR_REGISTRATION_FRIEND
+        REGISTER_REFLECTION(AuxBus, Bus)
     };
 }  // namespace SB::Engine

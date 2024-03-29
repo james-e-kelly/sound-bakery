@@ -7,6 +7,10 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
+#include <cmrc/cmrc.hpp>
+
+CMRC_DECLARE(SB::Fonts);
+
 #include <stdio.h>
 
 #define GL_SILENCE_DEPRECATION
@@ -736,22 +740,37 @@ int RendererSubsystem::InitImGui()
                                                   0};
 
     ImFontConfig icons_config;
+    icons_config.FontDataOwnedByAtlas = false;
     icons_config.MergeMode        = true;
     icons_config.PixelSnapH       = true;
     icons_config.GlyphMinAdvanceX = iconFontSize;
 
-    ImFont* mainFont = io.Fonts->AddFontFromFileTTF(
-        m_app->GetResourceFilePath("fonts/Montserrat-Light.ttf").c_str(),
-        baseFontSize);
-    ImFont* fontAudio = io.Fonts->AddFontFromFileTTF(
-        m_app->GetResourceFilePath("fonts/" FONT_ICON_FILE_NAME_FAD).c_str(),
-        iconFontSize * 1.3f, &icons_config, fontAudioIconRanges);
+    const cmrc::embedded_filesystem embeddedfilesystem = cmrc::SB::Fonts::get_filesystem();
 
-    io.Fonts->AddFontFromFileTTF(
-        m_app->GetResourceFilePath("fonts/Montserrat-Light.ttf").c_str(),
-        baseFontSize);
-    ImFont* fontAwesome = io.Fonts->AddFontFromFileTTF(
-        m_app->GetResourceFilePath("fonts/" FONT_ICON_FILE_NAME_FAR).c_str(),
+    const cmrc::file mainFontFile        = embeddedfilesystem.open("Montserrat-Light.ttf");
+    const cmrc::file audioFontFile       = embeddedfilesystem.open("fontaudio/font/" FONT_ICON_FILE_NAME_FAD);
+    const cmrc::file fontAwesomeFontFile = embeddedfilesystem.open("Font-Awesome/webfonts/" FONT_ICON_FILE_NAME_FAR);
+
+    assert(mainFontFile.size() > 0);
+
+    ImFontConfig fontConfig;
+    fontConfig.FontDataOwnedByAtlas = false;    // the memory is statically owned by the virtual filesystem
+
+    ImFont* mainFont = io.Fonts->AddFontFromMemoryTTF((void*)mainFontFile.begin(), 
+        mainFontFile.size(),
+        baseFontSize, &fontConfig);
+
+    ImFont* fontAudio = io.Fonts->AddFontFromMemoryTTF((void*)audioFontFile.begin(),
+        audioFontFile.size(), iconFontSize * 1.3f,
+                                       &icons_config, fontAudioIconRanges);
+
+    io.Fonts->AddFontFromMemoryTTF(
+        (void*)mainFontFile.begin(),
+        mainFontFile.size(), baseFontSize, &fontConfig);
+
+    ImFont* fontAwesome = io.Fonts->AddFontFromMemoryTTF(
+        (void*)fontAwesomeFontFile.begin(),
+        fontAwesomeFontFile.size(),
         iconFontSize, &icons_config, fontAwesomeIconRanges);
 
     return 0;
@@ -813,6 +832,8 @@ void RendererSubsystem::TickRendering(double deltaTime)
 
 void RendererSubsystem::Exit()
 {
+    ImGui::GetIO().Fonts->Clear();
+
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();

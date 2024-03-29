@@ -4,7 +4,7 @@
 
 namespace SB::Engine
 {
-    class Factory final
+    class SB_CLASS Factory final
     {
     public:
         /**

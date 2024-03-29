@@ -5,6 +5,8 @@
 
 using namespace SB::Engine;
 
+DEFINE_REFLECTION(SB::Engine::Bus)
+
 void Bus::onLoaded()
 {
     Node::onLoaded();

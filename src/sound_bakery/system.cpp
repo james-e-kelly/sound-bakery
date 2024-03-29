@@ -4,9 +4,12 @@
 #include "sound_bakery/factory.h"
 #include "sound_bakery/gameobject/gameobject.h"
 #include "sound_bakery/node/bus/bus.h"
+#include "sound_bakery/reflection/reflection.h"
 #include "sound_bakery/profiling/voice_tracker.h"
 
 using namespace SB::Engine;
+
+System::~System() = default;
 
 namespace
 {
@@ -84,6 +87,9 @@ void System::destroy()
     {
         s_system->m_listenerGameObject->stopAll();
         SB::Core::Database::get()->clear();
+
+        SB::Reflection::unregisterReflectionTypes();
+
         delete s_system;
     }
 }
@@ -93,11 +99,13 @@ SB_RESULT System::init()
     SC_RESULT result = SC_System_Init(m_chefSystem.get());
     assert(result == MA_SUCCESS);
 
+    SB::Reflection::registerReflectionTypes();
+
     // TODO
     // Add way of turning off profiling
     m_voiceTracker = std::make_unique<Profiling::VoiceTracker>();
 
-    return result == MA_SUCCESS ? SB_SUCCESS : SB_ERROR;
+    return result;
 }
 
 SB_RESULT System::update()
@@ -109,7 +117,7 @@ SB_RESULT System::update()
 
     m_listenerGameObject->update();
 
-    return SB_SUCCESS;
+    return MA_SUCCESS;
 }
 
 void SB::Engine::System::onLoaded()
