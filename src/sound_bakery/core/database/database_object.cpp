@@ -39,4 +39,6 @@ void SB::Core::DatabaseObject::setDatabaseName(std::string_view name)
     }
 
     m_objectName = name;
+
+    m_debugName = name;
 }

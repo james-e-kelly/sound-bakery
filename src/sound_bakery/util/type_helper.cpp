@@ -18,6 +18,11 @@ SB_OBJECT_CATEGORY TypeHelper::getCategoryFromType(rttr::type type)
 {
     SB_OBJECT_CATEGORY category = SB_CATEGORY_UNKNOWN;
 
+    if (!type.is_valid())
+    {
+        return category;
+    }
+
     if (type.is_derived_from(rttr::type::get<SB::Engine::Bus>()))
     {
         category = SB_CATEGORY_BUS;

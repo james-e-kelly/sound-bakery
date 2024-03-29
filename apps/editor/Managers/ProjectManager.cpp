@@ -68,7 +68,12 @@ void ProjectManager::Tick(double deltaTime)
     SB::Engine::System::get()->update();
 }
 
-void ProjectManager::Exit() { SB::Engine::System::get()->destroy(); }
+void ProjectManager::Exit() 
+{ 
+    m_previewSoundContainerResource.reset();
+
+    SB::Engine::System::get()->destroy(); 
+}
 
 void ProjectManager::SaveYAMLToFile(YAML::Emitter& yaml,
                                     std::ofstream& stream,

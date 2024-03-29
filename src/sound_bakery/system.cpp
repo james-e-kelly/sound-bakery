@@ -92,11 +92,14 @@ void System::destroy()
     if (s_system != nullptr)
     {
         s_system->m_listenerGameObject->stopAll();
+        s_system->m_listenerGameObject.reset();
+
         s_system->m_database->clear();
 
         SB::Reflection::unregisterReflectionTypes();
 
         delete s_system;
+        s_system = nullptr;
     }
 }
 

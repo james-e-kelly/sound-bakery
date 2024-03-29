@@ -16,7 +16,7 @@ static std::unordered_map<MethodIndex,
 
 void MethodDrawer::DrawObject(rttr::type type, rttr::instance instance)
 {
-    if (!instance.get_type().is_derived_from(
+    if (!type.is_derived_from(
             SB::Core::Object::type()))
     {
         assert(false);
