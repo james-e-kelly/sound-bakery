@@ -230,7 +230,7 @@ target_include_directories(editor PRIVATE
 
 target_link_libraries(editor
     PRIVATE
-    SoundBakery::SoundBakery
+    SoundBakery::SoundBakery_Static
     SoundBakery::Fonts
     SoundBakery::Images
     nfd

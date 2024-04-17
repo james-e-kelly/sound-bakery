@@ -91,9 +91,7 @@ void ProjectNodesWidget::RenderSingleNode(rttr::type type,
     {
         if (SB::Core::DatabaseObject* const object = SB::Util::TypeHelper::getDatabaseObjectFromInstance(instance))
         {
-            SB::Engine::Node* const node =
-                SB::Reflection::cast<SB::Engine::Node*, SB::Core::DatabaseObject*>(
-                    object);
+            SB::Engine::Node* const node = rttr::rttr_cast<SB::Engine::Node*, SB::Core::DatabaseObject*>(object);
 
             const bool hasChildren = node && NodeHasChildren(node);
 
