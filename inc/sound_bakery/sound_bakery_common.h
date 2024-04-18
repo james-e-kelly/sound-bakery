@@ -1,7 +1,7 @@
 #ifndef SOUND_BAKERY_COMMON_H
 #define SOUND_BAKERY_COMMON_H
 
-#ifdef sound_bakery_EXPORTS
+#ifdef sound_bakery_shared_EXPORTS
     #define SB_DLL
     #define SC_DLL
     #define MA_DLL

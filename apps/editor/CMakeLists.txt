@@ -63,8 +63,6 @@ add_executable(editor
   ${PCH_SOURCE}
   ${EDITOR_SOURCES}
   ${EDITOR_HEADERS}
-  ${FONT_FILES}
-  ${IMAGE_FILES}
 )
 
 target_include_directories(editor

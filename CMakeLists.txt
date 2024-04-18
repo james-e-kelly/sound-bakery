@@ -34,33 +34,6 @@ if(SOUND_BAKERY_MAIN_PROJECT)
   set(CMAKE_CXX_STANDARD 20)
   set(CMAKE_CXX_EXTENSIONS OFF)
 
-    # ---------- Setup output Directories -------------------------
-  if(NOT DEFINED CMAKE_LIBRARY_OUTPUT_DIRECTORY)
-  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY
-    ${SoundBakery_BINARY_DIR}/Bin
-    CACHE PATH
-    "Single Directory for all Libraries"
-    )
-  endif()
-
-  # --------- Setup the Executable output Directory -------------
-  if(NOT DEFINED CMAKE_RUNTIME_OUTPUT_DIRECTORY)
-  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY
-    ${SoundBakery_BINARY_DIR}/Bin
-    CACHE PATH
-    "Single Directory for all Executables."
-    )
-  endif()
-
-  # --------- Setup the Executable output Directory -------------
-  if(NOT DEFINED CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
-  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY
-    ${SoundBakery_BINARY_DIR}/Bin
-    CACHE PATH
-    "Single Directory for all static libraries."
-    )
-  endif()
-
   if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND UNIX AND NOT APPLE)
     # Clang on Linux needs to use its own standard library headers and not the system default (gcc)
     # https://stackoverflow.com/questions/76859275/error-compiling-a-cpp-containing-stdchrono-errorstatic-constexpr-unsigned-fra

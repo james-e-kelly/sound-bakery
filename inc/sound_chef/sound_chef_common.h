@@ -1,7 +1,7 @@
 #ifndef SOUND_CHEF_COMMON
 #define SOUND_CHEF_COMMON
 
-#ifdef sound_chef_EXPORTS
+#ifdef sound_chef_shared_EXPORTS
     #define SC_DLL
     #define MA_DLL
 #endif
