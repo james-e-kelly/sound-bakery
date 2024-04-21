@@ -25,7 +25,7 @@ jobs:
         uses: actions/checkout@4.1.4
       - name: Create Auto Release
         id: auto_release 
-      - uses: CupOfTea696/gh-action-auto-release@v1.0.0
+        uses: CupOfTea696/gh-action-auto-release@v1.0.0
         with:
           title: "Release: $version"
           tag: "v$semver"
