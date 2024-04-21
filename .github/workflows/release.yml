@@ -11,7 +11,7 @@ jobs:
     uses: ./.github/workflows/linux.yaml
   build_mac:
     name: Build On Mac
-    uses: ./.github/workflows/mac.yaml
+    uses: ./.github/workflows/macos.yaml
   build_windows:
     name: Build On Windows
     uses: ./.github/workflows/windows.yaml
