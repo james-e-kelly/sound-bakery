@@ -21,9 +21,10 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+      - name: Checkout
+        uses: actions/checkout@4.1.4
       - name: Create Auto Release
         id: auto_release 
-      - uses: actions/checkout@v2
       - uses: CupOfTea696/gh-action-auto-release@v1.0.0
         with:
           title: "Release: $version"
@@ -41,7 +42,6 @@ jobs:
         run: |
           zip win-dist $GITHUB_WORKSPACE/win/**/*
       - name: Upload Windows Dist
-        id: upload-release-asset 
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
