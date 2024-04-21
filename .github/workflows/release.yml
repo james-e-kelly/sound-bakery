@@ -1,0 +1,52 @@
+# This is a basic workflow to help you get started with the GitHub Auto-Release on Commit Action.
+name: AutoRelease
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build_linux:
+    name: Build On Linux GCC And Clang
+    uses: ./.github/workflows/linux.yaml
+  build_mac:
+    name: Build On Mac
+    uses: ./.github/workflows/mac.yaml
+  build_windows:
+    name: Build On Windows
+    uses: ./.github/workflows/windows.yaml
+  release:
+    name: Create Release
+    needs: [build_linux, build_mac, build_windows]
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Create Auto Release
+        id: auto_release 
+      - uses: actions/checkout@v2
+      - uses: CupOfTea696/gh-action-auto-release@v1.0.0
+        with:
+          title: "Release: $version"
+          tag: "v$semver"
+          draft: true
+          regex: "/^Release: #{semver}$/i"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Download Windows Dist
+        uses: actions/download-artifact@v4.1.5
+        with:
+          name: windows-dist
+          path: $GITHUB_WORKSPACE/win
+      - name: Zip Windows Dist
+        run: |
+          zip win-dist $GITHUB_WORKSPACE/win/**/*
+      - name: Upload Windows Dist
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.auto_release.outputs.upload_url }}
+          asset_path: $GITHUB_WORKSPACE/wind
+          asset_name: win-dist.zip
+          asset_content_type: application/zip
