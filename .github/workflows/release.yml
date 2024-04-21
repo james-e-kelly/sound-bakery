@@ -22,7 +22,7 @@ jobs:
     
     steps:
       - name: Checkout
-        uses: actions/checkout@4.1.3
+        uses: actions/checkout@v4.1.3
       - name: Create Auto Release
         id: auto_release 
         uses: CupOfTea696/gh-action-auto-release@v1.0.0
