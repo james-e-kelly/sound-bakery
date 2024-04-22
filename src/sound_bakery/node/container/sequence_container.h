@@ -4,7 +4,7 @@
 
 namespace SB::Engine
 {
-    class SequenceContainer : public Container
+    class SB_CLASS SequenceContainer : public Container
     {
     public:
         virtual void gatherChildrenForPlay(GatherChildrenContext& context) const override;
@@ -12,7 +12,7 @@ namespace SB::Engine
     private:
         std::vector<SB::Core::ChildPtr<Container>> m_sequence;
 
-        RTTR_ENABLE(Container)
+        REGISTER_REFLECTION(SequenceContainer, Container)
         RTTR_REGISTRATION_FRIEND
     };
 }  // namespace SB::Engine

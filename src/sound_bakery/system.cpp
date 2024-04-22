@@ -4,9 +4,12 @@
 #include "sound_bakery/factory.h"
 #include "sound_bakery/gameobject/gameobject.h"
 #include "sound_bakery/node/bus/bus.h"
+#include "sound_bakery/reflection/reflection.h"
 #include "sound_bakery/profiling/voice_tracker.h"
 
 using namespace SB::Engine;
+
+System::~System() = default;
 
 namespace
 {
@@ -73,6 +76,12 @@ System* System::create()
     if (s_system == nullptr)
     {
         s_system = new System();
+
+        if (s_system)
+        {
+            s_system->m_objectTracker = std::make_unique<SB::Core::ObjectTracker>();
+            s_system->m_database      = std::make_unique<SB::Core::Database>();
+        }
     }
 
     return s_system;
@@ -83,8 +92,14 @@ void System::destroy()
     if (s_system != nullptr)
     {
         s_system->m_listenerGameObject->stopAll();
-        SB::Core::Database::get()->clear();
+        s_system->m_listenerGameObject.reset();
+
+        s_system->m_database->clear();
+
+        SB::Reflection::unregisterReflectionTypes();
+
         delete s_system;
+        s_system = nullptr;
     }
 }
 
@@ -93,11 +108,13 @@ SB_RESULT System::init()
     SC_RESULT result = SC_System_Init(m_chefSystem.get());
     assert(result == MA_SUCCESS);
 
+    SB::Reflection::registerReflectionTypes();
+
     // TODO
     // Add way of turning off profiling
     m_voiceTracker = std::make_unique<Profiling::VoiceTracker>();
 
-    return result == MA_SUCCESS ? SB_SUCCESS : SB_ERROR;
+    return result;
 }
 
 SB_RESULT System::update()
@@ -109,7 +126,27 @@ SB_RESULT System::update()
 
     m_listenerGameObject->update();
 
-    return SB_SUCCESS;
+    return MA_SUCCESS;
+}
+
+SB::Core::ObjectTracker* System::getObjectTracker()
+{
+    if (s_system)
+    {
+        return s_system->m_objectTracker.get();
+    }
+
+    return nullptr;
+}
+
+SB::Core::Database* System::getDatabase() 
+{
+    if (s_system)
+    {
+        return s_system->m_database.get();
+    }
+
+    return nullptr;
 }
 
 void SB::Engine::System::onLoaded()

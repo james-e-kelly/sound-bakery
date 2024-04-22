@@ -5,7 +5,15 @@
 
 using namespace SB::Core;
 
-Object::~Object() { ObjectTracker::get()->untrackObject(this, m_type); }
+DEFINE_REFLECTION(SB::Core::Object)
+
+Object::~Object() 
+{ 
+    if (ObjectTracker* const objectTracker = SB::Engine::System::getObjectTracker())
+    {
+        objectTracker->untrackObject(this, m_type);
+    }
+}
 
 SB::Engine::System* ObjectUtilities::getSystem() const { return SB::Engine::System::get(); }
 

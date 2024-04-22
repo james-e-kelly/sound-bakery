@@ -14,7 +14,6 @@ set(IMAGE_FILES
 )
 
 set(EDITOR_SOURCES
-  Reflection.cpp
   AppEntry.cpp 
   App/App.cpp
   Managers/AppManager.cpp
@@ -64,8 +63,6 @@ add_executable(editor
   ${PCH_SOURCE}
   ${EDITOR_SOURCES}
   ${EDITOR_HEADERS}
-  ${FONT_FILES}
-  ${IMAGE_FILES}
 )
 
 target_include_directories(editor
@@ -97,7 +94,7 @@ set_source_files_properties(
 )
 
 # Set output directory for executable
-set_target_properties(editor PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${BUILD_FOLDER})
+# set_target_properties(editor PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${BUILD_FOLDER})
 
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
@@ -143,6 +140,7 @@ FetchContent_Declare(
   GIT_TAG        10.2.1
   GIT_SHALLOW    TRUE
   OVERRIDE_FIND_PACKAGE
+  EXCLUDE_FROM_ALL
 )
 
 message(STATUS "Fetching glfw")
@@ -229,11 +227,14 @@ target_include_directories(editor PRIVATE
 )
 
 target_link_libraries(editor
-    SoundBakery::SoundBakery
+    PRIVATE
+    SoundBakery::SoundBakery_Static
+    SoundBakery::Fonts
+    SoundBakery::Images
     nfd
     glfw
     imgui
-    fmt::fmt
+    PRIVATE fmt::fmt
 )
 
 if(MSVC)
@@ -257,3 +258,5 @@ if (SOUND_BAKERY_FORMAT_SOURCE AND SOUND_BAKERY_CLANG_FORMAT_EXE)
   VERBATIM
   )
 endif()
+
+install(TARGETS editor DESTINATION apps)

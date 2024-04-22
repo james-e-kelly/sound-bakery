@@ -9,8 +9,10 @@ namespace SB::Engine
     class Container;
     class Event;
 
-    class GameObject : public SB::Core::Object
+    class SB_CLASS GameObject : public SB::Core::Object
     {
+        REGISTER_REFLECTION(GameObject, SB::Core::Object)
+
     public:
         Voice* playContainer(Container* container);
         void postEvent(Event* event);

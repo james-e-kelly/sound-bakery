@@ -15,19 +15,41 @@
 
 SB::Core::Object* SB::Engine::Factory::createObjectFromType(rttr::type objectType, SB_ID id)
 {
+    assert(objectType.is_valid() && "Object Type must be valid!");
+
     rttr::constructor constructor = objectType.get_constructor();
     assert(constructor.is_valid() && "Object in Sound Bakery must be constructable. Define this in the "
                                      "Reflection file");
 
     rttr::variant variant = constructor.invoke();
+    const rttr::type variantType = variant.get_type();
     assert(variant.is_valid());
+    assert(variantType.is_valid());
     assert(variant.get_type().is_pointer() && "Database Objects must be constructed as raw ptrs. Raw objects or "
-                                              "shared ptrs is disallowed");
+                                              "shared ptrs are disallowed");
+    assert(variantType.get_raw_type().is_valid());
 
-    SB::Core::DatabaseObject* converted = variant.convert<SB::Core::DatabaseObject*>();
+    const rttr::type testObjectType = rttr::type::get<SB::Core::Object>();
+    const rttr::type databaseType = rttr::type::get<SB::Core::DatabaseObject>();
+
+    assert(databaseType.is_derived_from(testObjectType));
+
+    const rttr::type type = variant.get_type();
+    const rttr::type rawType = type.get_raw_type();
+
+    assert(rawType.is_derived_from(testObjectType) &&
+           "Type must derive from the SB::Core::Object type");
+
+    bool conversionWasSuccessful        = false;
+    SB::Core::DatabaseObject* converted = variant.convert<SB::Core::DatabaseObject*>(&conversionWasSuccessful);
     assert(converted != nullptr);
+    assert(conversionWasSuccessful == true);
 
-    SB::Core::ObjectTracker::get()->trackObject((SB::Core::Object*)converted);
+    if (SB::Core::ObjectTracker* const objectTracker = SB::Engine::System::getObjectTracker())
+    {
+        objectTracker->trackObject((SB::Core::Object*)converted);
+    }
+
     converted->setDatabaseID(id);
 
     return converted;

@@ -1,27 +1,17 @@
-SET(FONT_DESTINATION_FOLDER ${CMAKE_BINARY_DIR}/fonts)
+SET(FONT_DESTINATION_FOLDER ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE})
 
 SET(RAW_FONTS
     Montserrat-Light.ttf
 )
 
 SET(FONT_AWESOME_FONTS
-    fa-brands-400.ttf
-    fa-regular-400.ttf
-    fa-solid-900.ttf
+    Font-Awesome/webfonts/fa-brands-400.ttf
+    Font-Awesome/webfonts/fa-regular-400.ttf
+    Font-Awesome/webfonts/fa-solid-900.ttf
 )
 
 SET(FONT_AUDIO_FONTS
-    fontaudio.ttf
+    fontaudio/font/fontaudio.ttf
 )
 
-FOREACH(FONT ${RAW_FONTS})
-    configure_file(${FONT} ${FONT_DESTINATION_FOLDER}/${FONT} COPYONLY)
-ENDFOREACH()
-
-FOREACH(FONT ${FONT_AWESOME_FONTS})
-    configure_file(Font-Awesome/webfonts/${FONT} ${FONT_DESTINATION_FOLDER}/${FONT} COPYONLY)
-ENDFOREACH()
-
-FOREACH(FONT ${FONT_AUDIO_FONTS})
-    configure_file(fontaudio/font/${FONT} ${FONT_DESTINATION_FOLDER}/${FONT} COPYONLY)
-ENDFOREACH()
+cmrc_add_resource_library(sound_bakery_fonts ${RAW_FONTS} ${FONT_AWESOME_FONTS} ${FONT_AUDIO_FONTS} ALIAS SoundBakery::Fonts NAMESPACE SB::Fonts)

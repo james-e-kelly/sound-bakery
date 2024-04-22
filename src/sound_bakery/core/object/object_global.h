@@ -1,5 +1,6 @@
 #pragma once
 
+#include "sound_bakery/system.h"
 #include "sound_bakery/core/object/object.h"
 #include "sound_bakery/core/object/object_tracker.h"
 
@@ -12,7 +13,10 @@ T* newObject()
 
     if (obj)
     {
-        SB::Core::ObjectTracker::get()->trackObject((SB::Core::Object*)obj);
+        if (SB::Core::ObjectTracker* const objectTracker = SB::Engine::System::getObjectTracker())
+        {
+            objectTracker->trackObject((SB::Core::Object*)obj);
+        }
     }
     else
     {
@@ -31,7 +35,10 @@ T* newDatabaseObject(SB_ID id = 0)
 
     if (obj)
     {
-        SB::Core::ObjectTracker::get()->trackObject((SB::Core::Object*)obj);
+        if (SB::Core::ObjectTracker* const objectTracker = SB::Engine::System::getObjectTracker())
+        {
+            objectTracker->trackObject((SB::Core::Object*)obj);
+        }
     }
     else
     {

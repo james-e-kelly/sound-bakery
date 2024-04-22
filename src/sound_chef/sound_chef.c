@@ -1,7 +1,6 @@
-#include "sound_chef/sound_chef.h"
-
 #define MINIAUDIO_IMPLEMENTATION
-#include "miniaudio.h"
+
+#include "sound_chef/sound_chef.h"
 
 #ifndef NDEBUG
     #define DEBUG_ASSERT(condition) MA_ASSERT(condition)

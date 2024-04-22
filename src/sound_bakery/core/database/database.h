@@ -1,14 +1,13 @@
 #pragma once
 
 #include "sound_bakery/core/database/database_object.h"
-#include "sound_bakery/util/singleton.h"
 
 namespace SB::Core
 {
     /**
      * @brief Runtime lookup of objects, using their ID or name
      */
-    class Database : public Singleton<Database>
+    class SB_CLASS Database
     {
     public:
         void addOrUpdateID(SB_ID oldID, SB_ID newID, DatabaseObject* object)

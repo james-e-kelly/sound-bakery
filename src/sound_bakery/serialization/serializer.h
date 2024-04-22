@@ -16,13 +16,13 @@ namespace SB::Engine
 
 namespace SB::Core::Serialization
 {
-    struct SaveData
+    struct SB_CLASS SaveData
     {
         rttr::string_view saveName;
         rttr::variant saveData;
     };
 
-    class Serializer final
+    class SB_CLASS Serializer final
     {
     public:
         static void saveObject(SB::Core::Object* object, YAML::Emitter& emitter);

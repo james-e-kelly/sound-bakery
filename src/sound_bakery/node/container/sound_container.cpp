@@ -2,6 +2,8 @@
 
 #include "sound_bakery/sound/sound.h"
 
+DEFINE_REFLECTION(SB::Engine::SoundContainer)
+
 void SB::Engine::SoundContainer::gatherChildrenForPlay(GatherChildrenContext& context) const
 {
     context.sounds.push_back(this);

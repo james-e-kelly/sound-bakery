@@ -6,6 +6,8 @@ PROJECT_NUMBER          = v0.1.0
 
 PROJECT_LOGO            = @CMAKE_SOURCE_DIR@/docs/img/sound-bakery-logo.png
 
+PROJECT_ICON            = @CMAKE_SOURCE_DIR@/docs/img/sound-bakery-logo.png
+
 OUTPUT_DIRECTORY        = @CMAKE_SOURCE_DIR@/doxygen/
 
 INPUT                   = @CMAKE_SOURCE_DIR@/README.md \

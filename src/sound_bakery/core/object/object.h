@@ -13,23 +13,27 @@ namespace SB::Core
     /**
      * @brief Provides basic helper functions. Not meant to be used directly
      */
-    class ObjectUtilities
+    class SB_CLASS ObjectUtilities
     {
     public:
         SB::Engine::System* getSystem() const;
         SC_SYSTEM* getChef() const;
         ma_engine* getMini() const;
         rttr::type getType() const;
+        
+        std::string m_debugName;
 
-        RTTR_ENABLE()
+        REGISTER_REFLECTION(ObjectUtilities)
     };
 
     /**
      * @brief Simple base Object that all Sound Bakery objects should inherit
      * from
      */
-    class Object : public ObjectUtilities
+    class SB_CLASS Object : public ObjectUtilities
     {
+        REGISTER_REFLECTION(Object, ObjectUtilities)
+
     public:
         Object() = default;
         virtual ~Object();
@@ -44,9 +48,9 @@ namespace SB::Core
         template <typename T>
         T* tryConvertObject() noexcept
         {
-            if (getType().is_derived_from<T>() || getType() == rttr::type::get<T>())
+            if (getType().is_derived_from(T::type()) || getType() == T::type())
             {
-                return rttr::rttr_cast<T*, Object*>(this);
+                return SB::Reflection::cast<T*, Object*>(this);
             }
             return nullptr;
         }
@@ -54,21 +58,29 @@ namespace SB::Core
         template <typename T>
         const T* tryConvertObject() const noexcept
         {
-            if (getType().is_derived_from<T>() || getType() == rttr::type::get<T>())
+            if (getType().is_derived_from(T::type()) || getType() == T::type())
             {
-                return rttr::rttr_cast<const T*, const Object*>(this);
+                return SB::Reflection::cast<const T*, const Object*>(this);
             }
             return nullptr;
         }
 
         rttr::type getType() const
         {
-            if (m_type == rttr::type::get<void>())
+            if (this == nullptr)
+            {
+                return rttr::type::get<void>();
+            }
+
+            if (!m_type.has_value())
             {
                 m_type = get_type();
             }
 
-            return m_type;
+            assert(m_type.has_value());
+            assert(m_type.value().is_valid());
+
+            return m_type.value();
         }
 
     private:
@@ -76,8 +88,6 @@ namespace SB::Core
          * @brief Cache of this object's type so it can be grabbed during
          * destruction
          */
-        mutable rttr::type m_type = rttr::type::get<void>();
-
-        RTTR_ENABLE(ObjectUtilities)
+        mutable std::optional<rttr::type> m_type = std::nullopt;
     };
 }  // namespace SB::Core

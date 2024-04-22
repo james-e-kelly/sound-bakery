@@ -9,7 +9,7 @@ namespace SB::Engine
     /**
      * @brief Contains all information required for gathering sounds for runtime playing and selection.
      */
-    struct GatherChildrenContext
+    struct SB_CLASS GatherChildrenContext
     {
         GatherChildrenContext()
         {
@@ -45,7 +45,7 @@ namespace SB::Engine
      * @brief Base container type. Inherited types include sounds, random,
      * sequence etc.
      */
-    class Container : public Node
+    class SB_CLASS Container : public Node
     {
     public:
         Container() : Node() {}
@@ -74,7 +74,7 @@ namespace SB::Engine
          */
         virtual void gatherChildrenForPlay(GatherChildrenContext& context) const = 0;
 
-        RTTR_ENABLE(Node)
+        REGISTER_REFLECTION(Container, Node)
         RTTR_REGISTRATION_FRIEND
     };
 }  // namespace SB::Engine

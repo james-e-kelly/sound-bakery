@@ -6,8 +6,10 @@ namespace SB::Engine
 {
     class NodeInstance;
 
-    class Bus : public Node
+    class SB_CLASS Bus : public Node
     {
+        REGISTER_REFLECTION(Bus, Node)
+
     public:
         Bus() : Node(), m_masterBus(false) {}
 
@@ -48,8 +50,5 @@ namespace SB::Engine
 
     private:
         bool m_masterBus;
-
-        RTTR_ENABLE(Node)
-        RTTR_REGISTRATION_FRIEND
     };
 }  // namespace SB::Engine

@@ -112,7 +112,7 @@ void AudioDisplayWidget::Render()
     {
         if (SB::Core::Object* selected = manager->GetSelection().GetSelected())
         {
-            if (selected->getType() == rttr::type::get<SB::Engine::Sound>())
+            if (selected->getType() == SB::Engine::Sound::type())
             {
                 static float scale = 1.0f;
                 ImGui::SliderFloat("Scale", &scale, 0.01f, 2.0f);

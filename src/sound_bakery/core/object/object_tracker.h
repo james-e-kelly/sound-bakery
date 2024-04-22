@@ -1,17 +1,16 @@
 #pragma once
 
 #include "sound_bakery/core/core_fwd.h"
-#include "sound_bakery/util/singleton.h"
 
 namespace SB::Core
 {
-    class ObjectTracker : public Singleton<ObjectTracker>
+    class SB_CLASS ObjectTracker
     {
         using RawObjectPtr = Object*;
 
     public:
         void trackObject(RawObjectPtr object);
-        void untrackObject(RawObjectPtr object, const rttr::type& typeOverride = rttr::type::get<void>());
+        void untrackObject(RawObjectPtr object, std::optional<rttr::type> typeOverride = std::nullopt);
 
         std::unordered_set<RawObjectPtr> getObjectsOfCategory(SB_OBJECT_CATEGORY category);
         std::unordered_set<RawObjectPtr> getObjectsOfType(rttr::type type);

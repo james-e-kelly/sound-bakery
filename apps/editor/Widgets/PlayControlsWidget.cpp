@@ -9,6 +9,7 @@
 #include "sound_bakery/node/container/sound_container.h"
 #include "sound_bakery/sound/sound.h"
 #include "sound_bakery/system.h"
+#include "sound_bakery/util/type_helper.h"
 #include "sound_bakery/voice/node_instance.h"
 #include "sound_bakery/voice/voice.h"
 
@@ -28,13 +29,11 @@ void PlayerWidget::Render()
     ImGui::Begin("Player");
 
     Selection& selection    = GetApp()->GetProjectManager()->GetSelection();
-    rttr::type selectedType = selection.SelectedType();
+    std::optional<rttr::type> selectedType = selection.SelectedType();
 
     const bool isSelected = !!selection.GetSelected();
     const bool isPlayable =
-        isSelected && (selectedType.is_derived_from<SB::Engine::Container>() ||
-                       selectedType.is_derived_from<SB::Engine::Sound>() ||
-                       selectedType.is_derived_from<SB::Engine::Event>());
+        isSelected && selectedType.has_value() && SB::Util::TypeHelper::isTypePlayable(selectedType.value());
 
     if (isPlayable)
     {

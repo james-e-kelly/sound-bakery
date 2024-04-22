@@ -386,7 +386,10 @@ rttr::instance SB::Core::Serialization::Serializer::createAndLoadObject(YAML::No
     {
         if (created.get_derived_type().is_derived_from<SB::Core::Object>())
         {
-            SB::Core::ObjectTracker::get()->trackObject(created.try_convert<SB::Core::Object>());
+            if (SB::Core::ObjectTracker* const objectTracker = SB::Engine::System::getObjectTracker())
+            {
+                objectTracker->trackObject(created.try_convert<SB::Core::Object>());
+            }
         }
 
         loadProperties(node, created, onLoadedMethod);

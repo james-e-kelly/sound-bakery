@@ -6,6 +6,8 @@
 
 using namespace SB::Engine;
 
+DEFINE_REFLECTION(SB::Engine::GameObject)
+
 Voice* GameObject::playContainer(Container* container)
 {
     if (container)

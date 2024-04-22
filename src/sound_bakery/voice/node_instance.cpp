@@ -10,6 +10,8 @@
 
 using namespace SB::Engine;
 
+DEFINE_REFLECTION(SB::Engine::NodeInstance)
+
 NodeInstance::~NodeInstance()
 {
     if (m_referencingNode != nullptr)

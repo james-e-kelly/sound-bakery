@@ -2,6 +2,8 @@
 
 using namespace SB::Engine;
 
+DEFINE_REFLECTION(SB::Engine::Sound)
+
 Sound::Sound() : m_soundName(), m_sound(), m_streaming(false) {}
 
 void Sound::loadSynchronous()

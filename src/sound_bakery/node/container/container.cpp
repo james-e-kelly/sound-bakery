@@ -5,6 +5,8 @@
 
 using namespace SB::Engine;
 
+DEFINE_REFLECTION(SB::Engine::Container)
+
 void Container::onLoaded()
 {
     if (!m_parentNode.hasId())

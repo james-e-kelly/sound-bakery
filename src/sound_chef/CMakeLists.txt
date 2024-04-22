@@ -14,12 +14,19 @@ set(SOUND_CHEF_HEADERS
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Header Files" FILES ${ATLAS_HEADERS})
 
-add_library(sound_chef STATIC ${SOUND_CHEF_SOURCES} ${SOUND_CHEF_HEADERS})
-target_include_directories(sound_chef
+add_library(sound_chef_shared SHARED ${SOUND_CHEF_SOURCES} ${SOUND_CHEF_HEADERS})
+add_library(sound_chef_static STATIC ${SOUND_CHEF_SOURCES} ${SOUND_CHEF_HEADERS})
+
+target_include_directories(sound_chef_shared
     PUBLIC ${CMAKE_SOURCE_DIR}/inc/
 )
 
-add_library(SoundBakery::SoundChef ALIAS sound_chef)
+target_include_directories(sound_chef_static
+    PUBLIC ${CMAKE_SOURCE_DIR}/inc/
+)
+
+add_library(SoundBakery::SoundChef_Shared ALIAS sound_chef_shared)
+add_library(SoundBakery::SoundChef_Static ALIAS sound_chef_static)
 
 message(STATUS "Fetching miniaudio")
 
@@ -33,14 +40,20 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(miniaudio)
 
-target_include_directories(sound_chef
+target_include_directories(sound_chef_shared
+    PUBLIC ${miniaudio_SOURCE_DIR}
+)
+
+target_include_directories(sound_chef_static
     PUBLIC ${miniaudio_SOURCE_DIR}
 )
 
 if(MSVC)
-  target_compile_options(sound_chef PRIVATE /W4)
+  target_compile_options(sound_chef_shared PRIVATE /W4)
+  target_compile_options(sound_chef_static PRIVATE /W4)
 else()
-  target_compile_options(sound_chef PRIVATE -Wall -Wextra -Wpedantic)
+  target_compile_options(sound_chef_shared PRIVATE -Wall -Wextra -Wpedantic)
+  target_compile_options(sound_chef_static PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
 foreach(source IN LISTS SOUND_CHEF_SOURCES)
@@ -63,7 +76,17 @@ endif()
 # CMakeSettings.json is possible but seemed a pain in its own right
 # https://discourse.cmake.org/t/cmake-cxx-clang-tidy-in-msvc/890/9
 if(SOUND_BAKERY_TIDY_SOURCE AND SOUND_BAKERY_CLANG_TIDY_EXE AND MSVC)
-  set_target_properties(sound_chef PROPERTIES
+  set_target_properties(sound_chef_shared PROPERTIES
+    VS_GLOBAL_RunCodeAnalysis false
+
+    # Use visual studio core guidelines
+    VS_GLOBAL_EnableMicrosoftCodeAnalysis false
+
+    # Use clangtidy
+    VS_GLOBAL_EnableClangTidyCodeAnalysis true
+  )
+
+  set_target_properties(sound_chef_static PROPERTIES
     VS_GLOBAL_RunCodeAnalysis false
 
     # Use visual studio core guidelines
@@ -73,3 +96,6 @@ if(SOUND_BAKERY_TIDY_SOURCE AND SOUND_BAKERY_CLANG_TIDY_EXE AND MSVC)
     VS_GLOBAL_EnableClangTidyCodeAnalysis true
   )
 endif()
+
+install(TARGETS sound_chef_shared DESTINATION lib)
+install(FILES ${SOUND_CHEF_HEADERS} DESTINATION inc)

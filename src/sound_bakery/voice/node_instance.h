@@ -17,7 +17,7 @@ namespace SB::Engine
     /**
      * @brief Owns a node group and applies DSP effects to it.
      */
-    struct NodeGroupInstance
+    struct SB_CLASS NodeGroupInstance
     {
         bool initNodeGroup(const NodeBase& node);
 
@@ -29,7 +29,7 @@ namespace SB::Engine
     /**
      * @brief Owns a parent node instance.
      */
-    struct ParentNodeOwner
+    struct SB_CLASS ParentNodeOwner
     {
         bool createParent(const NodeBase& thisNode, Voice* owningVoice);
 
@@ -39,7 +39,7 @@ namespace SB::Engine
     /**
      * @brief Owns a list of child node instances.
      */
-    struct ChildrenNodeOwner
+    struct SB_CLASS ChildrenNodeOwner
     {
         bool createChildren(const NodeBase& thisNode, Voice* owningVoice, NodeInstance* thisNodeInstance, unsigned int numTimesPlayed);
 
@@ -65,7 +65,7 @@ namespace SB::Engine
         PLAYING
     };
 
-    struct InitNodeInstance
+    struct SB_CLASS InitNodeInstance
     {
         /**
          * @brief Node to reference
@@ -97,7 +97,7 @@ namespace SB::Engine
      * @brief NodeInstances represent runtime versions of Nodes, either
      * containers or busses
      */
-    class NodeInstance : public SB::Core::Object
+    class SB_CLASS NodeInstance : public SB::Core::Object
     {
     public:
         ~NodeInstance();
@@ -131,6 +131,6 @@ namespace SB::Engine
         std::unique_ptr<SC_SOUND_INSTANCE, SC_SOUND_INSTANCE_DELETER> m_soundInstance;
         unsigned int m_numTimesPlayed = 0;
 
-        RTTR_ENABLE(SB::Core::Object)
+        REGISTER_REFLECTION(NodeInstance, SB::Core::Object)
     };
 }  // namespace SB::Engine

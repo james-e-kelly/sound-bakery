@@ -4,25 +4,25 @@
 
 namespace SB::Engine
 {
-    class EffectParameterDescription final
+    class SB_CLASS EffectParameterDescription final
     {
+        REGISTER_REFLECTION(EffectParameterDescription)
+
     public:
         EffectParameterDescription() = default;
 
         EffectParameterDescription(const SC_DSP_PARAMETER* parameter) { m_parameter = *parameter; }
 
         SC_DSP_PARAMETER m_parameter;
-
-    private:
-        RTTR_ENABLE()
-        RTTR_REGISTRATION_FRIEND
     };
 
     /**
      * @brief Wraps a SC_DSP_CONFIG
      */
-    class EffectDescription final : public SB::Core::DatabaseObject
+    class SB_CLASS EffectDescription final : public SB::Core::DatabaseObject
     {
+        REGISTER_REFLECTION(EffectDescription, DatabaseObject)
+
     public:
         EffectDescription() : SB::Core::DatabaseObject(), m_config() { setDSPType(SC_DSP_TYPE_LOWPASS); }
 
@@ -46,7 +46,5 @@ namespace SB::Engine
         SC_DSP_CONFIG m_config;
         std::vector<EffectParameterDescription> m_parameterDescriptions;
 
-        RTTR_ENABLE(DatabaseObject)
-        RTTR_REGISTRATION_FRIEND
     };
 }  // namespace SB::Engine

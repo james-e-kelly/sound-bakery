@@ -1,5 +1,6 @@
 #include "database_ptr.h"
 
+#include "sound_bakery/system.h"
 #include "sound_bakery/core/database/database.h"
 #include "sound_bakery/node/node.h"
 
@@ -7,7 +8,7 @@ using namespace SB::Core;
 
 std::weak_ptr<DatabaseObject> SB::Core::findObject(SB_ID id)
 {
-    if (Database* database = Database::get())
+    if (Database* const database = SB::Engine::System::getDatabase())
     {
         return database->tryFindWeak(id);
     }
