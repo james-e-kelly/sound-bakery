@@ -135,6 +135,8 @@ set_target_properties(sound_bakery_static PROPERTIES LANGUAGE CXX)
 target_precompile_headers(sound_bakery_shared PRIVATE ${PCH_HEADER})
 target_precompile_headers(sound_bakery_static PRIVATE ${PCH_HEADER})
 
+set(CMAKE_FOLDER extern)
+
 set(BUILD_STATIC ON CACHE BOOL "" FORCE)
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 set(BUILD_WITH_STATIC_RUNTIME_LIBS ON CACHE BOOL "" FORCE)
@@ -200,6 +202,8 @@ get_target_property(SOUND_BAKERY_ALL_FILES sound_bakery_shared SOURCES)
 foreach(source IN LISTS SOUND_BAKERY_ALL_FILES)
   list(APPEND SOUND_BAKERY_FORMAT_FILES "${CMAKE_CURRENT_SOURCE_DIR}/${source}")
 endforeach()
+
+set(CMAKE_FOLDER src)
 
 if (SOUND_BAKERY_FORMAT_SOURCE AND SOUND_BAKERY_CLANG_FORMAT_EXE)
   add_custom_target(format_sound_bakery

@@ -1,6 +1,8 @@
 # clang-tidy
 option(SOUND_BAKERY_TIDY "Run clang-tidy" ON)
 
+set(CMAKE_FOLDER extern)
+
 message(STATUS "Fetching CppDelegates")
 
 FetchContent_Declare(
@@ -24,6 +26,8 @@ target_include_directories(delegates
 set_property(TARGET delegates PROPERTY CXX_STANDARD 20)
 
 add_library(SoundBakery::Delegates ALIAS delegates)
+
+set(CMAKE_FOLDER src)
 
 add_subdirectory(sound_chef)
 add_subdirectory(sound_bakery)

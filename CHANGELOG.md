@@ -32,9 +32,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Sound Bakery - Initial commit
 - Sound Chef - Initial commit
 - Editor - Initial commit
-
-### Changed
-### Deprecated
-### Removed
-### Fixed
-### Security
