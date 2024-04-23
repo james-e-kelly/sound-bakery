@@ -33,6 +33,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Download Windows Dist
+        if: ${{ steps.auto_release.outputs.released == true }}
         uses: actions/download-artifact@v4.1.5
         with:
           name: windows-dist
