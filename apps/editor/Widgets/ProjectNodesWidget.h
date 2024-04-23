@@ -34,6 +34,7 @@ public:
     void RenderPage(const std::vector<SB_OBJECT_CATEGORY>& categories);
     void RenderObjectsPage();
     void RenderEventsPage();
+    void RenderSoundbankPage();
 
 public:
     void RenderCategory(SB_OBJECT_CATEGORY category);

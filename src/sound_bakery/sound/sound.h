@@ -13,6 +13,7 @@ namespace SB::Engine
     public:
         void loadSynchronous();
         void loadAsynchronous();
+
         void setSoundName(const std::string& soundName);
         void setStreaming(bool streaming) { m_streaming = streaming; }
 

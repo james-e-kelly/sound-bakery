@@ -19,7 +19,6 @@ namespace SB::Core
         SB::Engine::System* getSystem() const;
         SC_SYSTEM* getChef() const;
         ma_engine* getMini() const;
-        rttr::type getType() const;
         
         std::string m_debugName;
 

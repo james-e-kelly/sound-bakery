@@ -11,6 +11,7 @@
 #include "sound_bakery/node/container/switch_container.h"
 #include "sound_bakery/parameter/parameter.h"
 #include "sound_bakery/sound/sound.h"
+#include "sound_bakery/soundbank/soundbank.h"
 
 using namespace SB::Util;
 
@@ -43,6 +44,10 @@ SB_OBJECT_CATEGORY TypeHelper::getCategoryFromType(rttr::type type)
              type == rttr::type::get<SB::Engine::NamedParameter>())
     {
         category = SB_CATEGORY_PARAMETER;
+    }
+    else if (type == rttr::type::get<SB::Engine::Soundbank>())
+    {
+        category = SB_CATEGORY_BANK;
     }
     else if (type.is_derived_from<SB::Core::DatabaseObject>())
     {
@@ -81,6 +86,9 @@ std::unordered_set<rttr::type> TypeHelper::getTypesFromCategory(SB_OBJECT_CATEGO
             break;
         case SB_CATEGORY_EVENT:
             result.insert(rttr::type::get<SB::Engine::Event>());
+            break;
+        case SB_CATEGORY_BANK:
+            result.insert(rttr::type::get<SB::Engine::Soundbank>());
             break;
         case SB_CATEGORY_SOUND:
             result.insert(rttr::type::get<SB::Engine::Sound>());
@@ -154,6 +162,10 @@ std::string_view TypeHelper::getDisplayNameFromType(rttr::type type)
     {
         result = "Switch Value";
     }
+    else if (type == rttr::type::get<SB::Engine::Soundbank>())
+    {
+        result = "Soundbank";
+    }
 
     return result;
 }
@@ -194,6 +206,9 @@ std::string_view TypeHelper::getFileExtensionOfObjectCategory(SB_OBJECT_CATEGORY
             break;
         case SB_CATEGORY_SOUND:
             result = ".sound";
+            break;
+        case SB_CATEGORY_BANK:
+            result = ".bank";
             break;
         case SB_CATEGORY_NUM:
             break;

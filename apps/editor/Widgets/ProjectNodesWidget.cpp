@@ -18,8 +18,11 @@
 static const std::vector<SB_OBJECT_CATEGORY> s_objectPageCategories{
     SB_CATEGORY_PARAMETER, SB_CATEGORY_BUS, SB_CATEGORY_NODE,
     SB_CATEGORY_MUSIC};
+
 static const std::vector<SB_OBJECT_CATEGORY> s_eventPageCategories{
     SB_CATEGORY_EVENT};
+
+static const std::vector<SB_OBJECT_CATEGORY> s_soundbankPageCategories{SB_CATEGORY_BANK};
 
 void ProjectNodesWidget::RenderPage(
     const std::vector<SB_OBJECT_CATEGORY>& categories)
@@ -58,6 +61,11 @@ void ProjectNodesWidget::RenderObjectsPage()
 void ProjectNodesWidget::RenderEventsPage()
 {
     RenderPage(s_eventPageCategories);
+}
+
+void ProjectNodesWidget::RenderSoundbankPage() 
+{ 
+    RenderPage(s_soundbankPageCategories); 
 }
 
 void ProjectNodesWidget::RenderCategory(SB_OBJECT_CATEGORY category)

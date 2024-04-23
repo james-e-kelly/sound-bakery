@@ -38,6 +38,10 @@ typedef enum SB_OBJECT_CATEGORY
      */
     SB_CATEGORY_EVENT,
     /**
+     * @brief Soundbanks
+    */
+    SB_CATEGORY_BANK,
+    /**
      * @brief Parameter types
      */
     SB_CATEGORY_PARAMETER,

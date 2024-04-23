@@ -38,6 +38,8 @@ set(ATLAS_SOURCES
     reflection/reflection.cpp
 
     serialization/serializer.cpp
+
+    soundbank/soundbank.cpp
     
     sound/sound.cpp
 
@@ -96,6 +98,8 @@ set(ATLAS_HEADERS
     reflection/reflection.h
     
     serialization/serializer.h
+
+    soundbank/soundbank.h
     
     sound/sound.h
     

@@ -9,6 +9,7 @@
 #include "sound_bakery/node/container/switch_container.h"
 #include "sound_bakery/parameter/parameter.h"
 #include "sound_bakery/sound/sound.h"
+#include "sound_bakery/soundbank/soundbank.h"
 #include "sound_bakery/system.h"
 
 #include <rttr/registration>
@@ -106,7 +107,8 @@ namespace SB::Reflection
         registration::enumeration<SB_OBJECT_CATEGORY>("SB_OBJECT_CATEGORY")(
             value("Sound", SB_CATEGORY_SOUND), value("Bus", SB_CATEGORY_BUS),
             value("Node", SB_CATEGORY_NODE), value("Music", SB_CATEGORY_MUSIC),
-            value("Event", SB_CATEGORY_EVENT),
+            value("Event", SB_CATEGORY_EVENT), 
+            value("Soundbank", SB_CATEGORY_BANK),
             value("Parameter", SB_CATEGORY_PARAMETER));
 
         registration::enumeration<SB_ACTION_TYPE>("SB_ACTION_TYPE")(
@@ -230,6 +232,10 @@ namespace SB::Reflection
             .property("Parent", &NamedParameterValue::parentParameter)(
                 metadata(SB::Editor::METADATA_KEY::Readonly, true));
 
+        registration::class_<Soundbank>("SB::Engine::Soundbank")
+            .constructor<>()(policy::ctor::as_raw_ptr)
+            .property("Events", &Soundbank::m_events);
+
         SB::Reflection::RegisterPointerConversionsForBaseClasses<AuxBus>();
         
         SB::Reflection::RegisterPointerConversionsForBaseClasses<BlendContainer>();
@@ -241,5 +247,7 @@ namespace SB::Reflection
         SB::Reflection::RegisterPointerConversionsForBaseClasses<Container>();  // makes sure we have a direct conversion between Container and DatabaseObject
         
         SB::Reflection::RegisterPointerConversionsForBaseClasses<Sound>();
+
+        SB::Reflection::RegisterPointerConversionsForBaseClasses<Soundbank>();
     }
 }  // namespace SB::Reflection
