@@ -32,8 +32,10 @@ jobs:
           draft: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Check Release Was Created
+        if: ${{ steps.auto_release.outputs.released == false }}
+        run: exit 1
       - name: Download Windows Dist
-        if: ${{ steps.auto_release.outputs.released == true }}
         uses: actions/download-artifact@v4.1.5
         with:
           name: windows-dist
