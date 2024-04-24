@@ -407,22 +407,24 @@ void Serializer::packageSoundbank(SB::Engine::Soundbank* soundbank, YAML::Emitte
                     SB::Engine::NodeBase* const nodeBase =
                         action.m_destination->tryConvertObject<SB::Engine::NodeBase>();
 
+                    assert(nodeBase);
+
                     nodeBase->gatherAllDescendants(nodesToSave);
                     nodeBase->gatherAllParents(nodesToSave);
+                }
+            }
+        }
 
-                    for (auto& node : nodesToSave)
+        for (auto& node : nodesToSave)
+        {
+            if (node->getType() == SB::Engine::SoundContainer::type())
+            {
+                if (SB::Engine::SoundContainer* const soundContainer =
+                    node->tryConvertObject<SB::Engine::SoundContainer>())
+                {
+                    if (SB::Engine::Sound* const sound = soundContainer->getSound())
                     {
-                        if (node->getType() == SB::Engine::SoundContainer::type())
-                        {
-                            if (SB::Engine::SoundContainer* const soundContainer =
-                                node->tryConvertObject<SB::Engine::SoundContainer>())
-                            {
-                                if (SB::Engine::Sound* const sound = soundContainer->getSound())
-                                {
-                                    soundsToSave.push_back(sound);
-                                }
-                            }
-                        }
+                        soundsToSave.push_back(sound);
                     }
                 }
             }
@@ -441,9 +443,18 @@ void Serializer::packageSoundbank(SB::Engine::Soundbank* soundbank, YAML::Emitte
         {
             assert(node);
 
-            Doc eventDoc(emitter);
+            Doc soundDoc(emitter);
 
             saveInstance(emitter, node);
+        }
+
+        for (SB::Engine::Sound* sound : soundsToSave)
+        {
+            assert(sound);
+
+            Doc soundDoc(emitter);
+
+            saveInstance(emitter, sound);
         }
 
         {

@@ -14,6 +14,7 @@
 #include "sound_bakery/node/container/sound_container.h"
 #include "sound_bakery/serialization/serializer.h"
 #include "sound_bakery/sound/sound.h"
+#include "sound_bakery/soundbank/soundbank.h"
 #include "sound_bakery/system.h"
 #include "sound_bakery/util/type_helper.h"
 
@@ -138,6 +139,24 @@ void ProjectManager::SaveProject() const
                                  m_projectConfiguration.m_objectsFolder /
                                      SB::Util::TypeHelper::getFolderNameForObjectType(sharedObject->getType()),
                                  ".yaml");
+            }
+        }
+    }
+
+    // Test output
+    if (SB::Core::ObjectTracker* const objectTracker = SB::Engine::System::getObjectTracker())
+    {
+        const std::unordered_set<SB::Core::Object*> soundbankObjects = objectTracker->getObjectsOfCategory(SB_CATEGORY_BANK);
+
+        for (auto& soundbankObject : soundbankObjects)
+        {
+            if (SB::Engine::Soundbank* const soundbank = soundbankObject->tryConvertObject<SB::Engine::Soundbank>())
+            {
+                YAML::Emitter soundbankEmitter;
+                SB::Core::Serialization::Serializer::packageSoundbank(soundbank, soundbankEmitter);
+
+                SaveObjectToFile(soundbankEmitter, outputStream, soundbank->getDatabaseID(),
+                                 m_projectConfiguration.m_objectsFolder, ".bank");
             }
         }
     }

@@ -10,22 +10,19 @@ namespace SB::Engine
     public:
         Sound();
 
-    public:
         void loadSynchronous();
         void loadAsynchronous();
 
         void setSoundName(const std::string& soundName);
-        void setStreaming(bool streaming) { m_streaming = streaming; }
-
         const std::string& getSoundName() const;
+
+        void setStreaming(bool streaming) { m_streaming = streaming; }
         bool getIsStreaming() const { return m_streaming; }
 
         SC_SOUND* getSound() { return m_sound.get(); }
 
     private:
         std::unique_ptr<SC_SOUND, SC_SOUND_DELETER> m_sound;
-
-    private:
         std::string m_soundName;
         bool m_streaming;
 

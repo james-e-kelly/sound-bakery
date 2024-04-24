@@ -121,7 +121,8 @@ void SB::Engine::NodeBase::removeChild(const SB::Core::DatabasePtr<NodeBase>& ch
 
 std::vector<NodeBase*> SB::Engine::NodeBase::getChildren() const
 {
-    std::vector<NodeBase*> children(m_childNodes.size());
+    std::vector<NodeBase*> children;
+    children.reserve(m_childNodes.size());
 
     for (auto& child : m_childNodes)
     {
