@@ -14,6 +14,8 @@ set(ATLAS_SOURCES
     
     core/property.cpp
     
+    editor/project/project.cpp
+
     effect/effect.cpp
     
     event/event.cpp
@@ -70,11 +72,12 @@ set(ATLAS_HEADERS
     core/database/database_object.h
     core/database/database_ptr.h
     
+    editor/editor_defines.h
+    editor/project/project.h
+
     effect/effect.h
     
     event/event.h
-    
-    editor/editor_defines.h
     
     gameobject/gameobject.h
     
