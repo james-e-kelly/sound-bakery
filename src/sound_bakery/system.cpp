@@ -4,8 +4,8 @@
 #include "sound_bakery/factory.h"
 #include "sound_bakery/gameobject/gameobject.h"
 #include "sound_bakery/node/bus/bus.h"
-#include "sound_bakery/reflection/reflection.h"
 #include "sound_bakery/profiling/voice_tracker.h"
+#include "sound_bakery/reflection/reflection.h"
 
 using namespace SB::Engine;
 
@@ -139,7 +139,7 @@ SB::Core::ObjectTracker* System::getObjectTracker()
     return nullptr;
 }
 
-SB::Core::Database* System::getDatabase() 
+SB::Core::Database* System::getDatabase()
 {
     if (s_system)
     {

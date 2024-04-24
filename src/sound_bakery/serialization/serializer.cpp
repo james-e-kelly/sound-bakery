@@ -3,11 +3,11 @@
 #include "sound_bakery/core/object/object.h"
 #include "sound_bakery/core/object/object_tracker.h"
 #include "sound_bakery/event/event.h"
-#include "sound_bakery/node/node.h"
+#include "sound_bakery/factory.h"
 #include "sound_bakery/node/container/sound_container.h"
+#include "sound_bakery/node/node.h"
 #include "sound_bakery/sound/sound.h"
 #include "sound_bakery/soundbank/soundbank.h"
-#include "sound_bakery/factory.h"
 #include "sound_bakery/system.h"
 
 #include <rttr/type.h>
@@ -420,7 +420,7 @@ void Serializer::packageSoundbank(SB::Engine::Soundbank* soundbank, YAML::Emitte
             if (node->getType() == SB::Engine::SoundContainer::type())
             {
                 if (SB::Engine::SoundContainer* const soundContainer =
-                    node->tryConvertObject<SB::Engine::SoundContainer>())
+                        node->tryConvertObject<SB::Engine::SoundContainer>())
                 {
                     if (SB::Engine::Sound* const sound = soundContainer->getSound())
                     {
@@ -465,10 +465,7 @@ void Serializer::packageSoundbank(SB::Engine::Soundbank* soundbank, YAML::Emitte
     }
 }
 
-rttr::instance Serializer::unpackSoundbank(YAML::Node& node)
-{ 
-    return rttr::instance(); 
-}
+rttr::instance Serializer::unpackSoundbank(YAML::Node& node) { return rttr::instance(); }
 
 rttr::instance SB::Core::Serialization::Serializer::createAndLoadObject(YAML::Node& node,
                                                                         std::optional<rttr::method> onLoadedMethod)

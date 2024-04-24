@@ -13,13 +13,13 @@ void SB::Engine::Voice::playContainer(Container* container)
 
     m_playingContainer = container;
 
-     const std::unique_ptr<NodeInstance>& voiceInstance =
+    const std::unique_ptr<NodeInstance>& voiceInstance =
         m_voiceInstances.emplace_back(std::make_unique<NodeInstance>());
 
-     InitNodeInstance initData;
-     initData.refNode = container->tryConvertObject<NodeBase>();
-     initData.type    = SB::Engine::NodeInstanceType::MAIN;
-     initData.owningVoice = this;
+    InitNodeInstance initData;
+    initData.refNode     = container->tryConvertObject<NodeBase>();
+    initData.type        = SB::Engine::NodeInstanceType::MAIN;
+    initData.owningVoice = this;
 
     if (voiceInstance->init(initData))
     {

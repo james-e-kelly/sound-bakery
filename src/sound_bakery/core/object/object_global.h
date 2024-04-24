@@ -1,8 +1,8 @@
 #pragma once
 
-#include "sound_bakery/system.h"
 #include "sound_bakery/core/object/object.h"
 #include "sound_bakery/core/object/object_tracker.h"
+#include "sound_bakery/system.h"
 
 template <typename T>
 T* newObject()

@@ -19,7 +19,7 @@ namespace SB::Core
         SB::Engine::System* getSystem() const;
         SC_SYSTEM* getChef() const;
         ma_engine* getMini() const;
-        
+
         std::string m_debugName;
 
         REGISTER_REFLECTION(ObjectUtilities)

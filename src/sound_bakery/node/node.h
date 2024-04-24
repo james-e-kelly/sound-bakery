@@ -41,7 +41,7 @@ namespace SB::Engine
 
         void gatherAllDescendants(std::vector<NodeBase*>& descendants) const;
         void gatherAllParents(std::vector<NodeBase*>& parents) const;
-            
+
     protected:
         SB::Core::DatabasePtr<NodeBase> m_parentNode;
         SB::Core::DatabasePtr<NodeBase> m_outputBus;

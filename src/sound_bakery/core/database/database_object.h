@@ -41,6 +41,5 @@ namespace SB::Core
         SB_ID m_objectID = 0;
 
         friend class Database;
-
     };
 }  // namespace SB::Core

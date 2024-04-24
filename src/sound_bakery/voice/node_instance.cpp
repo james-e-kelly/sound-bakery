@@ -35,8 +35,9 @@ bool SB::Engine::NodeInstance::init(const InitNodeInstance& initData)
         return false;
     }
 
-    bool converted    = false;
-    m_referencingNode = rttr::wrapper_mapper<SB::Core::DatabasePtr<NodeBase>>::convert<Node>(initData.refNode, converted).shared();
+    bool converted = false;
+    m_referencingNode =
+        rttr::wrapper_mapper<SB::Core::DatabasePtr<NodeBase>>::convert<Node>(initData.refNode, converted).shared();
 
     if (!m_nodeGroup.initNodeGroup(*initData.refNode.raw()))
     {
@@ -76,7 +77,8 @@ bool SB::Engine::NodeInstance::init(const InitNodeInstance& initData)
         {
             if (const Bus* const bus = initData.refNode->tryConvertObject<Bus>())
             {
-                // Checks nullptr as master busses are technically busses without an output, even if they're not marked as masters
+                // Checks nullptr as master busses are technically busses without an output, even if they're not marked
+                // as masters
                 if (bus->isMasterBus() || bus->parent() == nullptr)
                 {
                     success = true;
@@ -127,7 +129,8 @@ bool NodeInstance::play()
         SC_SOUND* sound                  = engineSound != nullptr ? engineSound->getSound() : nullptr;
         SC_SOUND_INSTANCE* soundInstance = nullptr;
 
-        SC_RESULT playSoundResult = SC_System_PlaySound(getChef(), sound, &soundInstance, m_nodeGroup.nodeGroup.get(), MA_FALSE);
+        SC_RESULT playSoundResult =
+            SC_System_PlaySound(getChef(), sound, &soundInstance, m_nodeGroup.nodeGroup.get(), MA_FALSE);
 
         if (playSoundResult == MA_SUCCESS)
         {
@@ -156,8 +159,8 @@ bool NodeInstance::play()
     return isPlaying();
 }
 
-void NodeInstance::update() 
-{ 
+void NodeInstance::update()
+{
     if (m_soundInstance)
     {
         if (ma_sound_at_end(&m_soundInstance->m_sound) == MA_TRUE)

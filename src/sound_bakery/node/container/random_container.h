@@ -18,7 +18,8 @@ namespace SB::Engine
                     break;
                 default:
                     int randomChildIndex = std::rand() % m_childNodes.size();
-                    std::unordered_set<SB::Core::DatabasePtr<NodeBase>>::const_iterator childIter = m_childNodes.begin();
+                    std::unordered_set<SB::Core::DatabasePtr<NodeBase>>::const_iterator childIter =
+                        m_childNodes.begin();
                     std::advance(childIter, randomChildIndex);
                     context.sounds.push_back(childIter->lookupRaw()->tryConvertObject<Container>());
                     break;

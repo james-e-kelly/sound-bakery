@@ -74,11 +74,11 @@ bool ParentNodeOwner::createParent(const NodeBase& thisNode, Voice* owningVoice)
 
             if (masterBus.lookup() && masterBus.id() != thisNode.getDatabaseID())
             {
-                parent        = masterBus->lockAndCopy();
+                parent = masterBus->lockAndCopy();
 
                 InitNodeInstance initData;
-                initData.refNode = masterBus->tryConvertObject<NodeBase>();
-                initData.type    = NodeInstanceType::BUS;
+                initData.refNode     = masterBus->tryConvertObject<NodeBase>();
+                initData.type        = NodeInstanceType::BUS;
                 initData.owningVoice = owningVoice;
 
                 createdParent = parent->init(initData);
@@ -89,7 +89,7 @@ bool ParentNodeOwner::createParent(const NodeBase& thisNode, Voice* owningVoice)
         {
             if (SB::Engine::NodeBase* parentNode = thisNode.parent())
             {
-                parent        = std::make_shared<NodeInstance>();
+                parent = std::make_shared<NodeInstance>();
 
                 InitNodeInstance initData;
                 initData.refNode     = parentNode->tryConvertObject<NodeBase>();
@@ -106,7 +106,7 @@ bool ParentNodeOwner::createParent(const NodeBase& thisNode, Voice* owningVoice)
             {
                 if (SB::Engine::Bus* bus = output->tryConvertObject<Bus>())
                 {
-                    parent        = bus->lockAndCopy();
+                    parent = bus->lockAndCopy();
 
                     InitNodeInstance initData;
                     initData.refNode     = bus->tryConvertObject<NodeBase>();
@@ -132,11 +132,12 @@ bool ChildrenNodeOwner::createChildren(const NodeBase& thisNode,
 {
     bool success = false;
 
-    if (const Container* container = thisNode.tryConvertObject<Container>(); container != nullptr && owningVoice != nullptr)
+    if (const Container* container = thisNode.tryConvertObject<Container>();
+        container != nullptr && owningVoice != nullptr)
     {
         GatherChildrenContext context;
         context.numTimesPlayed = numTimesPlayed;
-        context.parameters = owningVoice->getOwningGameObject()->getLocalParameters();
+        context.parameters     = owningVoice->getOwningGameObject()->getLocalParameters();
 
         container->gatherChildrenForPlay(context);
 

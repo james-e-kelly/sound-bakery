@@ -8,7 +8,7 @@ namespace SB::Core
 {
     class Database;
     class ObjectTracker;
-}
+}  // namespace SB::Core
 
 namespace SB::Engine
 {
@@ -37,7 +37,7 @@ namespace SB::Engine
         static SC_SYSTEM* getChef();
         static System* create();
         static void destroy();
-        
+
         static SB::Core::ObjectTracker* getObjectTracker();
         static SB::Core::Database* getDatabase();
 

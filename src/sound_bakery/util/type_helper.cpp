@@ -255,15 +255,14 @@ std::string_view TypeHelper::getPayloadFromType(rttr::type type)
     return result;
 }
 
-bool TypeHelper::isTypePlayable(const rttr::type& type) 
-{ 
+bool TypeHelper::isTypePlayable(const rttr::type& type)
+{
     bool result = false;
 
     if (type.is_valid())
     {
-        result =    type.is_derived_from<SB::Engine::Container>() ||
-                    type.is_derived_from<SB::Engine::Sound>() ||
-                    type.is_derived_from<SB::Engine::Event>();
+        result = type.is_derived_from<SB::Engine::Container>() || type.is_derived_from<SB::Engine::Sound>() ||
+                 type.is_derived_from<SB::Engine::Event>();
     }
 
     return result;
@@ -286,7 +285,7 @@ SB::Core::Object* TypeHelper::getObjectFromInstance(const rttr::instance& instan
     return instance.try_convert<SB::Core::Object>();
 }
 
-SB::Core::DatabaseObject* TypeHelper::getDatabaseObjectFromInstance(const rttr::instance& instance) 
+SB::Core::DatabaseObject* TypeHelper::getDatabaseObjectFromInstance(const rttr::instance& instance)
 {
     return instance.try_convert<SB::Core::DatabaseObject>();
 }
@@ -296,7 +295,7 @@ SB::Engine::Node* TypeHelper::getNodeFromInstance(const rttr::instance& instance
     return instance.try_convert<SB::Engine::Node>();
 }
 
-SB::Engine::NodeBase* TypeHelper::getNodeBaseFromInstance(const rttr::instance& instance) 
+SB::Engine::NodeBase* TypeHelper::getNodeBaseFromInstance(const rttr::instance& instance)
 {
     return instance.try_convert<SB::Engine::NodeBase>();
 }

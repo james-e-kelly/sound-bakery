@@ -46,15 +46,9 @@ NodeBase::~NodeBase()
     }
 }
 
-void SB::Engine::NodeBase::setParentNode(const SB::Core::DatabasePtr<NodeBase>& parent)
-{
-    m_parentNode = parent; 
-}
+void SB::Engine::NodeBase::setParentNode(const SB::Core::DatabasePtr<NodeBase>& parent) { m_parentNode = parent; }
 
-void SB::Engine::NodeBase::setOutputBus(const SB::Core::DatabasePtr<NodeBase>& bus) 
-{ 
-    m_outputBus = bus; 
-}
+void SB::Engine::NodeBase::setOutputBus(const SB::Core::DatabasePtr<NodeBase>& bus) { m_outputBus = bus; }
 
 SB_NODE_STATUS SB::Engine::NodeBase::getNodeStatus() const noexcept
 {
@@ -72,15 +66,9 @@ SB_NODE_STATUS SB::Engine::NodeBase::getNodeStatus() const noexcept
     return status;
 }
 
-NodeBase* SB::Engine::NodeBase::parent() const 
-{ 
-    return m_parentNode.lookupRaw(); 
-}
+NodeBase* SB::Engine::NodeBase::parent() const { return m_parentNode.lookupRaw(); }
 
-NodeBase* SB::Engine::NodeBase::outputBus() const 
-{ 
-    return m_outputBus.lookupRaw(); 
-}
+NodeBase* SB::Engine::NodeBase::outputBus() const { return m_outputBus.lookupRaw(); }
 
 bool SB::Engine::NodeBase::canAddChild(const SB::Core::DatabasePtr<NodeBase>& child) const
 {
@@ -135,17 +123,14 @@ std::vector<NodeBase*> SB::Engine::NodeBase::getChildren() const
     return children;
 }
 
-std::size_t SB::Engine::NodeBase::getChildCount() const 
-{ 
-    return m_childNodes.size(); 
-}
+std::size_t SB::Engine::NodeBase::getChildCount() const { return m_childNodes.size(); }
 
 bool SB::Engine::NodeBase::hasChild(const SB::Core::DatabasePtr<NodeBase>& test) const
 {
     return m_childNodes.contains(test);
 }
 
-void SB::Engine::NodeBase::gatherAllDescendants(std::vector<NodeBase*>& descendants) const 
+void SB::Engine::NodeBase::gatherAllDescendants(std::vector<NodeBase*>& descendants) const
 {
     for (auto& child : getChildren())
     {

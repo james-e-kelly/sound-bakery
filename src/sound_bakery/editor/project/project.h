@@ -6,9 +6,9 @@ namespace SB::Editor
 {
     /**
      * Manages a project file and the objects contained within it.
-    */
+     */
     class SB_CLASS Project : public SB::Core::Object
     {
         REGISTER_REFLECTION(Project, SB::Core::Object)
     };
-}  // namespace SB::Engine
+}  // namespace SB::Editor

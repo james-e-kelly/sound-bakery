@@ -13,7 +13,7 @@ namespace SB::Engine
 {
     class Soundbank;
     class System;
-}
+}  // namespace SB::Engine
 
 namespace SB::Core::Serialization
 {

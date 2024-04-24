@@ -35,10 +35,7 @@ namespace SB::Engine
             }
         }
 
-        bool isMasterBus() const
-        { 
-            return m_masterBus;
-        }
+        bool isMasterBus() const { return m_masterBus; }
 
     public:
         void lock();

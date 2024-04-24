@@ -41,7 +41,10 @@ namespace SB::Engine
      */
     struct SB_CLASS ChildrenNodeOwner
     {
-        bool createChildren(const NodeBase& thisNode, Voice* owningVoice, NodeInstance* thisNodeInstance, unsigned int numTimesPlayed);
+        bool createChildren(const NodeBase& thisNode,
+                            Voice* owningVoice,
+                            NodeInstance* thisNodeInstance,
+                            unsigned int numTimesPlayed);
 
         std::vector<std::shared_ptr<NodeInstance>> childrenNodes;
     };
@@ -69,27 +72,27 @@ namespace SB::Engine
     {
         /**
          * @brief Node to reference
-        */
+         */
         SB::Core::DatabasePtr<NodeBase> refNode;
 
         /**
          * @brief Type of node to create.
-         * 
+         *
          * Different types of nodes initialize differently. For example, parent nodes only create more parents.
          * Children create more children.
-        */
+         */
         NodeInstanceType type = NodeInstanceType::MAIN;
 
         /**
          * @brief Voice owner.
-        */
+         */
         Voice* owningVoice = nullptr;
 
         /**
          * @brief Parent node instance for this node instance.
-         * 
+         *
          * Used when initializing children so it can join the DSP graph correctly.
-        */
+         */
         NodeInstance* parentForChildren = nullptr;
     };
 
@@ -122,9 +125,9 @@ namespace SB::Engine
         void setLowpass(float oldLowpass, float newLowpass);
         void setHighpass(float oldHighpass, float newHighpass);
 
-        std::shared_ptr<Node> m_referencingNode   = nullptr;
-        Voice* m_owningVoice      = nullptr;
-        NodeInstanceState m_state = NodeInstanceState::UNINIT;
+        std::shared_ptr<Node> m_referencingNode = nullptr;
+        Voice* m_owningVoice                    = nullptr;
+        NodeInstanceState m_state               = NodeInstanceState::UNINIT;
         NodeGroupInstance m_nodeGroup;
         ParentNodeOwner m_parent;
         ChildrenNodeOwner m_children;

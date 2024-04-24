@@ -1,8 +1,8 @@
 #include "database_ptr.h"
 
-#include "sound_bakery/system.h"
 #include "sound_bakery/core/database/database.h"
 #include "sound_bakery/node/node.h"
+#include "sound_bakery/system.h"
 
 using namespace SB::Core;
 

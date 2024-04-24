@@ -7,8 +7,8 @@ using namespace SB::Core;
 
 DEFINE_REFLECTION(SB::Core::Object)
 
-Object::~Object() 
-{ 
+Object::~Object()
+{
     if (ObjectTracker* const objectTracker = SB::Engine::System::getObjectTracker())
     {
         objectTracker->untrackObject(this, m_type);
