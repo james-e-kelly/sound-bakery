@@ -1,6 +1,7 @@
 #include "system.h"
 
 #include "sound_bakery/core/object/object_global.h"
+#include "sound_bakery/editor/project/project.h"
 #include "sound_bakery/factory.h"
 #include "sound_bakery/gameobject/gameobject.h"
 #include "sound_bakery/node/bus/bus.h"
@@ -81,6 +82,7 @@ System* System::create()
         {
             s_system->m_objectTracker = std::make_unique<SB::Core::ObjectTracker>();
             s_system->m_database      = std::make_unique<SB::Core::Database>();
+            s_system->m_project       = std::make_unique<SB::Editor::Project>();
         }
     }
 
@@ -105,28 +107,52 @@ void System::destroy()
 
 SB_RESULT System::init()
 {
-    SC_RESULT result = SC_System_Init(m_chefSystem.get());
+    if (s_system == nullptr)
+    {
+        return MA_DEVICE_NOT_STARTED;
+    }
+
+    SC_RESULT result = SC_System_Init(s_system->m_chefSystem.get());
     assert(result == MA_SUCCESS);
 
     SB::Reflection::registerReflectionTypes();
 
     // TODO
     // Add way of turning off profiling
-    m_voiceTracker = std::make_unique<Profiling::VoiceTracker>();
+    s_system->m_voiceTracker = std::make_unique<Profiling::VoiceTracker>();
 
     return result;
 }
 
 SB_RESULT System::update()
 {
-    if (m_voiceTracker)
+    if (s_system == nullptr)
     {
-        m_voiceTracker->update(this);
+        return MA_DEVICE_NOT_STARTED;
     }
 
-    m_listenerGameObject->update();
+    if (s_system->m_voiceTracker)
+    {
+        s_system->m_voiceTracker->update(s_system);
+    }
+
+    s_system->m_listenerGameObject->update();
 
     return MA_SUCCESS;
+}
+
+SB_RESULT System::openProject(const std::filesystem::path& projectFile)
+{
+    if (s_system == nullptr)
+    {
+        return MA_DEVICE_NOT_STARTED;
+    }
+
+    s_system->m_project.reset();
+
+    s_system->m_project = std::make_unique<SB::Editor::Project>();
+
+    return s_system->m_project->openProject(projectFile) ? MA_SUCCESS : MA_INVALID_FILE;
 }
 
 SB::Core::ObjectTracker* System::getObjectTracker()
@@ -144,6 +170,16 @@ SB::Core::Database* System::getDatabase()
     if (s_system)
     {
         return s_system->m_database.get();
+    }
+
+    return nullptr;
+}
+
+SB::Editor::Project* System::getProject()
+{
+    if (s_system)
+    {
+        return s_system->m_project.get();
     }
 
     return nullptr;

@@ -38,15 +38,12 @@ public:
     ProjectManager(App* appOwner) : Manager(appOwner) {}
 
 public:
-    void Init(const ProjectConfiguration&& projectConfig);
+    void Init(const std::filesystem::path& projectFile);
     virtual void Tick(double deltaTime) override;
     virtual void Exit() override;
 
-public:
     void SaveProject() const;
-    void LoadProject();
 
-public:
     Selection& GetSelection() { return m_selection; }
     SB::Engine::SoundContainer* GetPreviewSoundContainer() const
     {
@@ -54,18 +51,6 @@ public:
     }
 
 private:
-    void SaveYAMLToFile(YAML::Emitter& yaml,
-                        std::ofstream& stream,
-                        std::filesystem::path file) const;
-    void SaveObjectToFile(YAML::Emitter& yaml,
-                          std::ofstream& stream,
-                          SB_ID objectID,
-                          std::filesystem::path file,
-                          std::string_view fileExtension) const;
-
-private:
-    ProjectConfiguration m_projectConfiguration;
-
     Selection m_selection;
 
     SB::Engine::SoundContainer* m_previewSoundContainer = nullptr;

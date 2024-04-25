@@ -6,6 +6,8 @@
 #include "Managers/ProjectManager.h"
 #include "imgui.h"
 #include "imgui_internal.h"
+
+#include "sound_bakery/editor/project/project.h"
 #include "sound_bakery/editor/editor_defines.h"
 #include "sound_bakery/node/container/sound_container.h"
 
@@ -241,6 +243,15 @@ void FileBrowserWidget::ShowDirectoryBrowserList() noexcept
 
         ImGui::EndTable();
     }
+}
+
+void FileBrowserWidget::Start()
+{
+    Widget::Start();
+
+    m_currentDirectory = SB::Engine::System::getProject()->getConfig().sourceFolder();
+    m_topDir           = m_currentDirectory;
+    m_selectedItemID   = std::numeric_limits<uint32_t>::max();
 }
 
 void FileBrowserWidget::Render()

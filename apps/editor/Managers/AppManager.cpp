@@ -148,14 +148,9 @@ retry:
     assert(outputStream.is_open());
 
     outputStream << projectYAML.c_str();
+    outputStream.close();
 
-    // Create project config
-    ProjectConfiguration projectConfig{
-        projectName,  projectFile,     rootFolderPath, sourceFolder,
-        sfxFolder,    dxFolder,        mxFolder,       objectsFolder,
-        eventsFolder, soundbanksFolder};
-
-    GetApp()->OpenProject(projectConfig);
+    GetApp()->OpenProject(projectFile);
 }
 
 void AppManager::OpenProject()
@@ -173,46 +168,8 @@ retry:
     YAML::Node projectYAML = YAML::LoadFile(outPath);
 
     const std::filesystem::path projectFile(outPath);
-    const std::filesystem::path projectFolder(projectFile.parent_path());
 
-    // Source folder
-    YAML::Node sourceNode = projectYAML["Source Folder"];
-    const std::filesystem::path sourceFolder(
-        projectFolder / projectYAML["Source Folder"].as<std::string>());
-    const std::filesystem::path sfxFolder(
-        sourceFolder /
-        projectYAML["Source Folders"]["Sound Folder"].as<std::string>());
-    const std::filesystem::path dxFolder(
-        sourceFolder /
-        projectYAML["Source Folders"]["Dialogue Folder"].as<std::string>());
-    const std::filesystem::path mxFolder(
-        sourceFolder /
-        projectYAML["Source Folders"]["Music Folder"].as<std::string>());
-
-    // Objects folder
-    const std::filesystem::path objectsFolder(
-        projectFolder / projectYAML["Objects Folder"].as<std::string>());
-
-    // Events folder
-    const std::filesystem::path eventsFolder(
-        projectFolder / projectYAML["Events Folder"].as<std::string>());
-
-    // Soundbanks folder
-    const std::filesystem::path soundbanksFolder(
-        projectFolder / projectYAML["Soundbanks Folder"].as<std::string>());
-
-    ProjectConfiguration projectConfig{projectFile.filename().string(),
-                                       projectFile,
-                                       projectFolder,
-                                       sourceFolder,
-                                       sfxFolder,
-                                       dxFolder,
-                                       mxFolder,
-                                       objectsFolder,
-                                       eventsFolder,
-                                       soundbanksFolder};
-
-    GetApp()->OpenProject(projectConfig);
+    GetApp()->OpenProject(projectFile);
 }
 
 void AppManager::OnSplashWidgetDestroy(Widget* widget) {}

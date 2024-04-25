@@ -10,6 +10,11 @@ namespace SB::Core
     class ObjectTracker;
 }  // namespace SB::Core
 
+namespace SB::Editor
+{
+    class Project;
+}  // namespace SB::Editor
+
 namespace SB::Engine
 {
     class Bus;
@@ -35,15 +40,18 @@ namespace SB::Engine
     public:
         static System* get();
         static SC_SYSTEM* getChef();
+
         static System* create();
         static void destroy();
 
+        static SB_RESULT init();
+        static SB_RESULT update();
+
+        static SB_RESULT openProject(const std::filesystem::path& projectFile);
+
         static SB::Core::ObjectTracker* getObjectTracker();
         static SB::Core::Database* getDatabase();
-
-    public:
-        SB_RESULT init();
-        SB_RESULT update();
+        static SB::Editor::Project* getProject();
 
         void onLoaded();
 
@@ -54,10 +62,6 @@ namespace SB::Engine
         GameObject* getListenerGameObject() const;
 
     private:
-        void registerReflectionTypes();
-        void unregisterReflectionTypes();
-
-    private:
         SB::SystemPtr m_chefSystem;
 
         std::unique_ptr<GameObject> m_listenerGameObject;
@@ -65,6 +69,7 @@ namespace SB::Engine
 
         bool m_registeredReflection = false;
 
+        std::unique_ptr<SB::Editor::Project> m_project;
         std::unique_ptr<SB::Core::Database> m_database;
         std::unique_ptr<SB::Core::ObjectTracker> m_objectTracker;
         std::unique_ptr<Profiling::VoiceTracker> m_voiceTracker;
