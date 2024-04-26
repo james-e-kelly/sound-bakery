@@ -1,6 +1,12 @@
 #define MINIAUDIO_IMPLEMENTATION
 
+#define MA_NO_VORBIS
+#define MA_NO_OPUS
+
 #include "sound_chef/sound_chef.h"
+
+#include "extras/miniaudio_libopus.h"
+#include "extras/miniaudio_libvorbis.h"
 
 #ifndef NDEBUG
     #define DEBUG_ASSERT(condition) MA_ASSERT(condition)

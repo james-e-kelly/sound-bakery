@@ -28,6 +28,8 @@ target_include_directories(sound_chef_static
 add_library(SoundBakery::SoundChef_Shared ALIAS sound_chef_shared)
 add_library(SoundBakery::SoundChef_Static ALIAS sound_chef_static)
 
+set(CMAKE_FOLDER extern)
+
 message(STATUS "Fetching miniaudio")
 
 FetchContent_Declare(
@@ -40,13 +42,78 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(miniaudio)
 
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+
+message(STATUS "Fetching ogg")
+
+FetchContent_Declare(
+  ogg
+  GIT_REPOSITORY https://github.com/xiph/ogg.git
+  GIT_TAG        v1.3.5
+  GIT_SHALLOW    TRUE
+  GIT_PROGRESS TRUE
+  OVERRIDE_FIND_PACKAGE
+)
+FetchContent_MakeAvailable(ogg)
+
+message(STATUS "Fetching vorbis")
+
+FetchContent_Declare(
+  vorbis
+  GIT_REPOSITORY https://github.com/xiph/vorbis.git
+  GIT_TAG        v1.3.7
+  GIT_SHALLOW    TRUE
+  GIT_PROGRESS TRUE
+  OVERRIDE_FIND_PACKAGE
+)
+FetchContent_MakeAvailable(vorbis)
+
+message(STATUS "Fetching opus")
+
+FetchContent_Declare(
+  opus
+  GIT_REPOSITORY https://github.com/xiph/opus.git
+  GIT_TAG        v1.5.2
+  GIT_SHALLOW    TRUE
+  GIT_PROGRESS TRUE
+  OVERRIDE_FIND_PACKAGE
+)
+FetchContent_MakeAvailable(opus)
+
+message(STATUS "Fetching opusfile")
+
+set(OP_DISABLE_HTTP ON CACHE BOOL "" FORCE)
+
+FetchContent_Declare(
+  opusfile
+  GIT_REPOSITORY https://github.com/KarateKidzz/opusfile.git
+  GIT_TAG        master
+  GIT_SHALLOW    TRUE
+  GIT_PROGRESS TRUE
+  OVERRIDE_FIND_PACKAGE
+)
+FetchContent_MakeAvailable(opusfile)
+
 target_include_directories(sound_chef_shared
     PUBLIC ${miniaudio_SOURCE_DIR}
+    PRIVATE ${opusfile_SOURCE_DIR}/include
 )
 
 target_include_directories(sound_chef_static
     PUBLIC ${miniaudio_SOURCE_DIR}
+    PRIVATE ${opusfile_SOURCE_DIR}/include
 )
+
+target_link_libraries(sound_chef_shared
+    PRIVATE vorbis
+    PRIVATE vorbisfile
+    PRIVATE Opus::opus
+    PRIVATE OpusFile::opusfile)
+target_link_libraries(sound_chef_static
+    PRIVATE vorbis
+    PRIVATE vorbisfile
+    PRIVATE Opus::opus
+    PRIVATE OpusFile::opusfile)
 
 if(MSVC)
   target_compile_options(sound_chef_shared PRIVATE /W4)
@@ -61,6 +128,8 @@ foreach(source IN LISTS SOUND_CHEF_SOURCES)
 endforeach()
 
 list(APPEND SOUND_CHEF_ALL_FILES ${SOUND_CHEF_HEADERS})
+
+set(CMAKE_FOLDER src)
 
 if (SOUND_BAKERY_FORMAT_SOURCE AND SOUND_BAKERY_CLANG_FORMAT_EXE)
   message(STATUS "Adding Sound Chef clang-format target")
