@@ -3,11 +3,13 @@ message(STATUS "Adding Sound Chef")
 set(SOUND_CHEF_SOURCES 
     sound_chef.c
     sound_chef_dsp.c
+    sound_chef_encoder.c
 )
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Source Files" FILES ${ATLAS_SOURCES})
 
 set(SOUND_CHEF_HEADERS
+    sound_chef_encoder.h
     ${CMAKE_SOURCE_DIR}/inc/sound_chef/sound_chef.h    
     ${CMAKE_SOURCE_DIR}/inc/sound_chef/sound_chef_dsp.h
 )
@@ -146,7 +148,7 @@ endif()
 # https://discourse.cmake.org/t/cmake-cxx-clang-tidy-in-msvc/890/9
 if(SOUND_BAKERY_TIDY_SOURCE AND SOUND_BAKERY_CLANG_TIDY_EXE AND MSVC)
   set_target_properties(sound_chef_shared PROPERTIES
-    VS_GLOBAL_RunCodeAnalysis false
+    VS_GLOBAL_RunCodeAnalysis true
 
     # Use visual studio core guidelines
     VS_GLOBAL_EnableMicrosoftCodeAnalysis false
@@ -156,7 +158,7 @@ if(SOUND_BAKERY_TIDY_SOURCE AND SOUND_BAKERY_CLANG_TIDY_EXE AND MSVC)
   )
 
   set_target_properties(sound_chef_static PROPERTIES
-    VS_GLOBAL_RunCodeAnalysis false
+    VS_GLOBAL_RunCodeAnalysis true
 
     # Use visual studio core guidelines
     VS_GLOBAL_EnableMicrosoftCodeAnalysis false
