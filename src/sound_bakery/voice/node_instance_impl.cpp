@@ -6,11 +6,11 @@
 
 using namespace SB::Engine;
 
-static void addDspToNodeGroup(SC_NODE_GROUP* nodeGroup, SC_DSP** dsp, const SC_DSP_CONFIG& config)
+static void addDspToNodeGroup(sc_node_group* nodeGroup, sc_dsp** dsp, const sc_dsp_config& config)
 {
     assert(dsp != nullptr);
-    SC_System_CreateDSP(SB::Engine::System::getChef(), &config, dsp);
-    SC_NodeGroup_AddDSP(nodeGroup, *dsp, SC_DSP_INDEX_HEAD);
+    sc_system_create_dsp(SB::Engine::System::getChef(), &config, dsp);
+    sc_node_group_add_dsp(nodeGroup, *dsp, SC_DSP_INDEX_HEAD);
 }
 
 bool NodeGroupInstance::initNodeGroup(const NodeBase& node)
@@ -20,8 +20,8 @@ bool NodeGroupInstance::initNodeGroup(const NodeBase& node)
         return true;
     }
 
-    SC_NODE_GROUP* nGroup                 = nullptr;
-    const SC_RESULT createNodeGroupResult = SC_System_CreateNodeGroup(SB::Engine::System::getChef(), &nGroup);
+    sc_node_group* nGroup                 = nullptr;
+    const sc_result createNodeGroupResult = sc_system_create_node_group(SB::Engine::System::getChef(), &nGroup);
 
     if (createNodeGroupResult != MA_SUCCESS)
     {
@@ -30,8 +30,8 @@ bool NodeGroupInstance::initNodeGroup(const NodeBase& node)
 
     nodeGroup.reset(nGroup);
 
-    addDspToNodeGroup(nodeGroup.get(), &lowpass, SC_DSP_Config_Init(SC_DSP_TYPE_LOWPASS));
-    addDspToNodeGroup(nodeGroup.get(), &highpass, SC_DSP_Config_Init(SC_DSP_TYPE_HIGHPASS));
+    addDspToNodeGroup(nodeGroup.get(), &lowpass, sc_dsp_config_init(SC_DSP_TYPE_LOWPASS));
+    addDspToNodeGroup(nodeGroup.get(), &highpass, sc_dsp_config_init(SC_DSP_TYPE_HIGHPASS));
 
     for (const SB::Core::DatabasePtr<SB::Engine::EffectDescription>& desc :
          node.tryConvertObject<Node>()->m_effectDescriptions)
@@ -41,17 +41,17 @@ bool NodeGroupInstance::initNodeGroup(const NodeBase& node)
             continue;
         }
 
-        SC_DSP* dsp = nullptr;
+        sc_dsp* dsp = nullptr;
 
         addDspToNodeGroup(nodeGroup.get(), &dsp, *desc->getConfig());
 
         int index = 0;
         for (const SB::Engine::EffectParameterDescription& parameter : desc->getParameters())
         {
-            switch (parameter.m_parameter.m_type)
+            switch (parameter.m_parameter.type)
             {
                 case SC_DSP_PARAMETER_TYPE_FLOAT:
-                    SC_DSP_SetParameterFloat(dsp, index++, parameter.m_parameter.m_float.m_value);
+                    sc_dsp_set_parameter_float(dsp, index++, parameter.m_parameter.floatParameter.value);
                     break;
             }
         }

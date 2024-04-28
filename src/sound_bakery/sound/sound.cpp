@@ -10,9 +10,9 @@ void Sound::loadSynchronous()
 {
     if (m_soundName.size())
     {
-        SC_SOUND* loadedSound = nullptr;
+        sc_sound* loadedSound = nullptr;
 
-        SC_RESULT result = SC_System_CreateSound(getChef(), m_soundName.c_str(), SC_SOUND_MODE_DEFAULT, &loadedSound);
+        sc_result result = sc_system_create_sound(getChef(), m_soundName.c_str(), SC_SOUND_MODE_DEFAULT, &loadedSound);
         assert(result == MA_SUCCESS);
 
         m_sound.reset(loadedSound);

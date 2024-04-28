@@ -1,51 +1,55 @@
 #ifndef SOUND_CHEF_ENCODER
 #define SOUND_CHEF_ENCODER
 
-#include "sound_chef/sound_chef.h"
+/**
+ * @file
+ * @brief Provides extensions to miniaudio's encoding API.
+ *
+ * Handles encoding for soundbanks.
+ */
+
+#include "sound_chef/sound_chef_common.h"
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-    typedef enum SC_ENCODING_FORMAT;
-    typedef struct SC_ENCODER_CONFIG SC_ENCODER_CONFIG;
-    typedef struct SC_ENCODER SC_ENCODER;
+    typedef struct sc_encoder_config sc_encoder_config;
+    typedef struct sc_encoder sc_encoder;
 
-	typedef enum SC_ENCODING_FORMAT
+	typedef enum ma_encoding_format_ext
     {
-        SC_ENCODING_FORMAT_WAV,
-        SC_ENCODING_FORMAT_VORBIS,
-        SC_ENCODING_FORMAT_OPUS
-    } SC_ENCODING_FORMAT;
+        ma_encoding_format_opus = ma_encoding_format_vorbis + 1
+    } ma_encoding_format_ext;
 
-    struct SC_ENCODER_CONFIG
+    struct sc_encoder_config
     {
-        ma_encoder_config m_baseConfig;
-        ma_uint8 m_quality;
+        ma_encoder_config baseConfig;
+        ma_uint8 quality;   //< quality setting for formats that allow it
+        ma_encoding_format_ext encodingFormat;
     };
 
-    struct SC_ENCODER
+    struct sc_encoder
     {
-        SC_ENCODER_CONFIG m_config;
-        ma_data_source_base* m_dataSource;
+        ma_encoder baseEncoder;
+        sc_encoder_config config;
     };
 
-    SC_ENCODER_CONFIG SC_API SC_Encoder_Config_Init(
-        ma_encoding_format encodingFormat, ma_format format, ma_uint32 channels, ma_uint32 sampleRate, ma_uint8 quality)
-    {
-    }
+    sc_encoder_config SC_API sc_encoder_config_init(ma_encoding_format_ext encodingFormat,
+                                                    ma_format format,
+                                                    ma_uint32 channels,
+                                                    ma_uint32 sampleRate,
+                                                    ma_uint8 quality);
 
-
-    SC_RESULT SC_API SC_Encoder_Init(ma_encoder_write_proc onWrite,
+    sc_result SC_API sc_encoder_init(ma_encoder_write_proc onWrite,
                                      ma_encoder_seek_proc onSeek,
                                      void* userData,
-                                     const SC_ENCODER_CONFIG* config,
-                                     SC_ENCODER* encoder);
+                                     const sc_encoder_config* config,
+                                     sc_encoder* encoder);
 
-    SC_RESULT SC_API SC_Encoder_WriteFrames() {}
 
-    SC_RESULT SC_API SC_Encoder_Uninit(SC_ENCODER* encoder) {}
+    sc_result SC_API sc_encoder_uninit(sc_encoder* encoder);
 
 #ifdef __cplusplus
 }

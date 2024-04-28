@@ -109,7 +109,7 @@ namespace SB::Reflection
         using namespace SB::Core;
         using namespace SB::Engine;
 
-        registration::enumeration<SC_DSP_TYPE>("SC_DSP_TYPE")(
+        registration::enumeration<sc_dsp_type>("sc_dsp_type")(
             value("Fader", SC_DSP_TYPE_FADER), value("Lowpass", SC_DSP_TYPE_LOWPASS),
             value("Highpass", SC_DSP_TYPE_HIGHPASS), value("Delay", SC_DSP_TYPE_DELAY));
 

@@ -17,7 +17,7 @@ Object::~Object()
 
 SB::Engine::System* ObjectUtilities::getSystem() const { return SB::Engine::System::get(); }
 
-SC_SYSTEM* ObjectUtilities::getChef() const
+sc_system* ObjectUtilities::getChef() const
 {
     if (SB::Engine::System* system = getSystem())
     {
@@ -28,7 +28,7 @@ SC_SYSTEM* ObjectUtilities::getChef() const
 
 ma_engine* ObjectUtilities::getMini() const
 {
-    if (SC_SYSTEM* system = getChef())
+    if (sc_system* system = getChef())
     {
         return (ma_engine*)system;
     }

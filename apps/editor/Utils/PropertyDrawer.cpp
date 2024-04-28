@@ -183,15 +183,15 @@ bool PropertyDrawer::DrawVariant(rttr::variant& variant,
             SB::Engine::EffectParameterDescription effectParamterDescription =
                 variant.convert<SB::Engine::EffectParameterDescription>();
 
-            switch (effectParamterDescription.m_parameter.m_type)
+            switch (effectParamterDescription.m_parameter.type)
             {
                 case SC_DSP_PARAMETER_TYPE_FLOAT:
                     SB::Editor::MinMax minMax(
-                        effectParamterDescription.m_parameter.m_float.m_min,
-                        effectParamterDescription.m_parameter.m_float.m_max);
+                        effectParamterDescription.m_parameter.floatParameter.min,
+                        effectParamterDescription.m_parameter.floatParameter.max);
                     edited = DrawFloat(
-                        effectParamterDescription.m_parameter.m_float.m_value,
-                        effectParamterDescription.m_parameter.m_name, minMax);
+                        effectParamterDescription.m_parameter.floatParameter.value,
+                        effectParamterDescription.m_parameter.name, minMax);
                     break;
             }
 

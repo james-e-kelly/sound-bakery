@@ -19,10 +19,10 @@ namespace SB::Engine
         void setStreaming(bool streaming) { m_streaming = streaming; }
         bool getIsStreaming() const { return m_streaming; }
 
-        SC_SOUND* getSound() { return m_sound.get(); }
+        sc_sound* getSound() { return m_sound.get(); }
 
     private:
-        std::unique_ptr<SC_SOUND, SC_SOUND_DELETER> m_sound;
+        std::unique_ptr<sc_sound, SC_SOUND_DELETER> m_sound;
         std::string m_soundName;
         bool m_streaming;
 

@@ -28,7 +28,7 @@ void SB::Engine::Node::gatherParameters(GlobalParameterList& parameters)
     }
 }
 
-void Node::addEffect(SC_DSP_TYPE type)
+void Node::addEffect(sc_dsp_type type)
 {
     EffectDescription* effect = newDatabaseObject<EffectDescription>();
     effect->setDSPType(type);

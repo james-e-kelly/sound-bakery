@@ -9,6 +9,7 @@ set(SOUND_CHEF_SOURCES
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Source Files" FILES ${ATLAS_SOURCES})
 
 set(SOUND_CHEF_HEADERS
+    sound_chef_guide.h
     sound_chef_encoder.h
     ${CMAKE_SOURCE_DIR}/inc/sound_chef/sound_chef.h    
     ${CMAKE_SOURCE_DIR}/inc/sound_chef/sound_chef_dsp.h

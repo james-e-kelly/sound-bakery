@@ -99,11 +99,11 @@ bool SB::Engine::NodeInstance::init(const InitNodeInstance& initData)
 
     if (m_parent.parent)
     {
-        SC_NodeGroup_SetParent(m_nodeGroup.nodeGroup.get(), m_parent.parent->getBus());
+        sc_node_group_set_parent(m_nodeGroup.nodeGroup.get(), m_parent.parent->getBus());
     }
     else if (initData.parentForChildren)
     {
-        SC_NodeGroup_SetParent(m_nodeGroup.nodeGroup.get(), initData.parentForChildren->getBus());
+        sc_node_group_set_parent(m_nodeGroup.nodeGroup.get(), initData.parentForChildren->getBus());
     }
     // else, should be connected to master bus by default
 
@@ -126,11 +126,11 @@ bool NodeInstance::play()
     {
         SoundContainer* soundContainer   = m_referencingNode->tryConvertObject<SoundContainer>();
         Sound* engineSound               = soundContainer->getSound();
-        SC_SOUND* sound                  = engineSound != nullptr ? engineSound->getSound() : nullptr;
-        SC_SOUND_INSTANCE* soundInstance = nullptr;
+        sc_sound* sound                  = engineSound != nullptr ? engineSound->getSound() : nullptr;
+        sc_sound_instance* soundInstance = nullptr;
 
-        SC_RESULT playSoundResult =
-            SC_System_PlaySound(getChef(), sound, &soundInstance, m_nodeGroup.nodeGroup.get(), MA_FALSE);
+        sc_result playSoundResult =
+            sc_system_play_sound(getChef(), sound, &soundInstance, m_nodeGroup.nodeGroup.get(), MA_FALSE);
 
         if (playSoundResult == MA_SUCCESS)
         {
@@ -163,7 +163,7 @@ void NodeInstance::update()
 {
     if (m_soundInstance)
     {
-        if (ma_sound_at_end(&m_soundInstance->m_sound) == MA_TRUE)
+        if (ma_sound_at_end(&m_soundInstance->sound) == MA_TRUE)
         {
             m_state = NodeInstanceState::STOPPED;
             m_soundInstance.release();
@@ -207,7 +207,7 @@ void NodeInstance::setVolume(float oldVolume, float newVolume)
 
     if (m_nodeGroup.nodeGroup)
     {
-        ma_sound_group_set_volume((ma_sound_group*)m_nodeGroup.nodeGroup->m_fader->m_state->m_userData, newVolume);
+        ma_sound_group_set_volume((ma_sound_group*)m_nodeGroup.nodeGroup->fader->state->userData, newVolume);
     }
 }
 
@@ -217,7 +217,7 @@ void NodeInstance::setPitch(float oldPitch, float newPitch)
 
     if (m_nodeGroup.nodeGroup)
     {
-        ma_sound_group_set_pitch((ma_sound_group*)m_nodeGroup.nodeGroup->m_fader->m_state->m_userData, newPitch);
+        ma_sound_group_set_pitch((ma_sound_group*)m_nodeGroup.nodeGroup->fader->state->userData, newPitch);
     }
 }
 
@@ -229,7 +229,7 @@ void NodeInstance::setLowpass(float oldLowpass, float newLowpass)
     const double lowpassCutoff = (19980 - (19980.0 * percentage)) + 20.0;
     assert(lowpassCutoff >= 20.0);
 
-    SC_DSP_SetParameterFloat(m_nodeGroup.lowpass, SC_DSP_LOWPASS_CUTOFF, static_cast<float>(lowpassCutoff));
+    sc_dsp_set_parameter_float(m_nodeGroup.lowpass, SC_DSP_LOWPASS_CUTOFF, static_cast<float>(lowpassCutoff));
 }
 
 void NodeInstance::setHighpass(float oldHighpass, float newHighpass)
@@ -240,5 +240,5 @@ void NodeInstance::setHighpass(float oldHighpass, float newHighpass)
     const double highpassCutoff = (19980.0 * percentage) + 20.0;
     assert(highpassCutoff >= 20.0);
 
-    SC_DSP_SetParameterFloat(m_nodeGroup.highpass, SC_DSP_HIGHPASS_CUTOFF, static_cast<float>(highpassCutoff));
+    sc_dsp_set_parameter_float(m_nodeGroup.highpass, SC_DSP_HIGHPASS_CUTOFF, static_cast<float>(highpassCutoff));
 }

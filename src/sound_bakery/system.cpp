@@ -53,9 +53,9 @@ System::System() : m_listenerGameObject(nullptr)
     assert(s_system == nullptr);
     s_system = this;
 
-    SC_SYSTEM* chefSystem = nullptr;
+    sc_system* chefSystem = nullptr;
 
-    SC_RESULT createResult = SC_System_Create(&chefSystem);
+    sc_result createResult = sc_system_create(&chefSystem);
     assert(createResult == MA_SUCCESS);
 
     if (createResult == MA_SUCCESS)
@@ -66,7 +66,7 @@ System::System() : m_listenerGameObject(nullptr)
 
 System* System::get() { return s_system; }
 
-SC_SYSTEM* System::getChef()
+sc_system* System::getChef()
 {
     System* system = get();
     return system ? system->m_chefSystem.get() : nullptr;
@@ -112,7 +112,7 @@ SB_RESULT System::init()
         return MA_DEVICE_NOT_STARTED;
     }
 
-    SC_RESULT result = SC_System_Init(s_system->m_chefSystem.get());
+    sc_result result = sc_system_init(s_system->m_chefSystem.get());
     assert(result == MA_SUCCESS);
 
     SB::Reflection::registerReflectionTypes();

@@ -68,7 +68,7 @@ namespace SB::Engine
          */
         virtual void gatherParameters(GlobalParameterList& parameters);
 
-        void addEffect(SC_DSP_TYPE type);
+        void addEffect(sc_dsp_type type);
 
     protected:
         /**

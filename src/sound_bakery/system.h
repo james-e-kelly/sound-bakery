@@ -39,7 +39,7 @@ namespace SB::Engine
 
     public:
         static System* get();
-        static SC_SYSTEM* getChef();
+        static sc_system* getChef();
 
         static System* create();
         static void destroy();
