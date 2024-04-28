@@ -7,7 +7,8 @@ sc_encoder_config sc_encoder_config_init(ma_encoding_format_ext encodingFormat,
     ma_uint8 quality)
 {
     sc_encoder_config config;
-    memset(&config, 0, sizeof(config));
+
+    SC_ZERO_OBJECT(&config);
 
     config.baseConfig = ma_encoder_config_init(ma_encoding_format_unknown, format, channels, sampleRate);
     config.encodingFormat = encodingFormat;
