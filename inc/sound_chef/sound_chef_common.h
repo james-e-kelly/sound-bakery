@@ -8,6 +8,8 @@
 
 #include "miniaudio.h"
 
+#include <string.h>
+
 #if defined(_WIN32)
     #define SC_CALL __stdcall
 #else
@@ -54,6 +56,8 @@
         ma_free((freePtr), NULL);       \
         return MA_OUT_OF_MEMORY;        \
     }
+
+#define SC_ZERO_OBJECT(p) memset((p), 0, sizeof(*(p)))
 
 #ifdef __cplusplus
 extern "C"

@@ -1,7 +1,5 @@
 #include "sound_chef_encoder.h"
 
-#include <string.h> 
-
 sc_encoder_config sc_encoder_config_init(ma_encoding_format_ext encodingFormat,
     ma_format format,
     ma_uint32 channels,
@@ -32,7 +30,7 @@ sc_result sc_encoder_init(ma_encoder_write_proc onWrite,
     SC_CHECK_ARG(config->baseConfig.channels != 0);
     SC_CHECK_ARG(config->baseConfig.sampleRate != 0);
 
-    memset(encoder, 0, sizeof(*encoder));
+    SC_ZERO_OBJECT(encoder);
 
     encoder->config = *config;
     encoder->baseEncoder.config = config->baseConfig;
