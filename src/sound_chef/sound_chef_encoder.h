@@ -20,7 +20,8 @@ extern "C"
 
 	typedef enum ma_encoding_format_ext
     {
-        ma_encoding_format_opus = ma_encoding_format_vorbis + 1
+        ma_encoding_format_opus = ma_encoding_format_vorbis + 1,
+        ma_encoding_format_adpcm
     } ma_encoding_format_ext;
 
     struct sc_encoder_config
@@ -48,6 +49,14 @@ extern "C"
                                      const sc_encoder_config* config,
                                      sc_encoder* encoder);
 
+    sc_result SC_API sc_encoder_init_file(const char* filePath,
+                                          const sc_encoder_config* config,
+                                          sc_encoder* encoder);
+
+    sc_result SC_API sc_encoder_write_pcm_frames(sc_encoder* encoder,
+                                                 const void* framesIn,
+                                                 ma_uint64 frameCount,
+                                                 ma_uint64* framesWritten);
 
     sc_result SC_API sc_encoder_uninit(sc_encoder* encoder);
 

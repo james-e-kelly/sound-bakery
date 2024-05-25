@@ -4,6 +4,9 @@ set(SOUND_CHEF_SOURCES
     sound_chef.c
     sound_chef_dsp.c
     sound_chef_encoder.c
+
+    encoders/sound_chef_encoder_vorbis.c
+    encoders/vorbis_encode_test.c
 )
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Source Files" FILES ${ATLAS_SOURCES})
@@ -11,6 +14,9 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Source Files" FILES ${ATLA
 set(SOUND_CHEF_HEADERS
     sound_chef_guide.h
     sound_chef_encoder.h
+
+    encoders/sound_chef_encoder_vorbis.h
+
     ${CMAKE_SOURCE_DIR}/inc/sound_chef/sound_chef.h    
     ${CMAKE_SOURCE_DIR}/inc/sound_chef/sound_chef_dsp.h
 )
@@ -22,10 +28,12 @@ add_library(sound_chef_static STATIC ${SOUND_CHEF_SOURCES} ${SOUND_CHEF_HEADERS}
 
 target_include_directories(sound_chef_shared
     PUBLIC ${CMAKE_SOURCE_DIR}/inc/
+    PRIVATE ${CMAKE_SOURCE_DIR}/src/
 )
 
 target_include_directories(sound_chef_static
     PUBLIC ${CMAKE_SOURCE_DIR}/inc/
+    PRIVATE ${CMAKE_SOURCE_DIR}/src/
 )
 
 add_library(SoundBakery::SoundChef_Shared ALIAS sound_chef_shared)
@@ -110,11 +118,13 @@ target_include_directories(sound_chef_static
 target_link_libraries(sound_chef_shared
     PRIVATE vorbis
     PRIVATE vorbisfile
+    PRIVATE vorbisenc
     PRIVATE Opus::opus
     PRIVATE OpusFile::opusfile)
 target_link_libraries(sound_chef_static
     PRIVATE vorbis
     PRIVATE vorbisfile
+    PRIVATE vorbisenc
     PRIVATE Opus::opus
     PRIVATE OpusFile::opusfile)
 
