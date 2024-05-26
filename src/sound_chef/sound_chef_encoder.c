@@ -175,8 +175,8 @@ sc_result sc_encoder_write_from_data_source(const char* filePath,
     SC_CHECK_RESULT(initDataConverter);
 
     const ma_uint64 desiredFrameCount  = 1024;
-    const ma_uint64 sourceBufferSize = desiredFrameCount * origChannelCount * origFormat;
-    const ma_uint64 convertedBufferSize = desiredFrameCount * origChannelCount * ma_format_s24;
+    const ma_uint64 sourceBufferSize    = desiredFrameCount * origChannelCount * ma_get_bytes_per_sample(origFormat);
+    const ma_uint64 convertedBufferSize = desiredFrameCount * origChannelCount * ma_get_bytes_per_sample(ma_format_f32);
     void* outDataSourceBuffer = ma_malloc(sourceBufferSize, NULL);
     void* outConvertedBuffer            = ma_malloc(convertedBufferSize, NULL);
 
@@ -193,7 +193,7 @@ sc_result sc_encoder_write_from_data_source(const char* filePath,
             framesToEncode = framesRead;
         }
         
-        ma_uint64 framesConverted = 0;
+        ma_uint64 framesConverted = framesRead;
         sc_result convertResult = ma_data_converter_process_pcm_frames(&dataConverter, outDataSourceBuffer, &framesRead, outConvertedBuffer, &framesConverted);
         assert(framesConverted <= desiredFrameCount);
 

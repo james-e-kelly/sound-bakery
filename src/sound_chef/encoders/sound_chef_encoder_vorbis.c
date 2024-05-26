@@ -85,11 +85,8 @@ sc_result sc_encoder_vorbis_on_init(ma_encoder* encoder)
     int vorbisInitResultCode = -1;
 
 	vorbis_info_init(&vorbisEncoder->info);
-	vorbisInitResultCode = vorbis_encode_setup_vbr(&vorbisEncoder->info, (long)encoder->config.channels, (long)encoder->config.sampleRate,
-                                SC_ENCODER_VORBIS_DEFAULT_QUALITY);
-    SC_CHECK(vorbisInitResultCode == 0, MA_ERROR);
-
-	vorbisInitResultCode = vorbis_encode_setup_init(&vorbisEncoder->info);
+	
+	vorbisInitResultCode = vorbis_encode_init_vbr(&vorbisEncoder->info, encoder->config.channels, encoder->config.sampleRate, SC_ENCODER_VORBIS_DEFAULT_QUALITY);
     SC_CHECK(vorbisInitResultCode == 0, MA_ERROR);
 
     vorbisInitResultCode = vorbis_analysis_init(&vorbisEncoder->dsp, &vorbisEncoder->info);
@@ -128,13 +125,7 @@ sc_result sc_encoder_vorbis_write_pcm_frames(ma_encoder* encoder,
 
     float** const analysisBuffer = vorbis_analysis_buffer(&vorbisEncoder->dsp, frameCount);
 
-    for (ma_uint32 sample = 0; sample < frameCount; ++sample)
-    {
-        for (ma_uint32 channel = 0; channel < encoder->config.channels; ++channel)
-        {
-            analysisBuffer[channel][sample]  = ((const float*)framesIn)[sample + channel];
-        }
-    }
+    ma_deinterleave_pcm_frames(ma_format_f32, encoder->config.channels, frameCount, framesIn, analysisBuffer);
 
     int wroteResult = vorbis_analysis_wrote(&vorbisEncoder->dsp, frameCount);
     assert(wroteResult == 0);
