@@ -44,6 +44,8 @@ public:
 
     void SaveProject() const;
 
+    void ConvertAllFilesTest() const;
+
     Selection& GetSelection() { return m_selection; }
     SB::Engine::SoundContainer* GetPreviewSoundContainer() const
     {

@@ -26,8 +26,7 @@ sc_encoder_config sc_encoder_config_init(ma_encoding_format_ext encodingFormat,
     ma_format format,
     ma_uint32 channels,
     ma_uint32 sampleRate,
-    ma_uint8 quality,
-    ma_uint32 desiredSampleRate)
+    ma_uint8 quality)
 {
     sc_encoder_config config;
 
@@ -36,7 +35,6 @@ sc_encoder_config sc_encoder_config_init(ma_encoding_format_ext encodingFormat,
     config.baseConfig = ma_encoder_config_init(ma_encoding_format_unknown, format, channels, sampleRate);
     config.encodingFormat = encodingFormat;
     config.quality        = quality;
-    config.desiredSampleRate = desiredSampleRate;
 
     return config;
 }
@@ -101,6 +99,15 @@ sc_result sc_encoder_uninit(sc_encoder* encoder)
 
     ma_encoder_uninit(&encoder->baseEncoder);
 
+    ma_default_vfs vfs;
+    ma_default_vfs_init(&vfs, NULL);
+
+    if (encoder->baseEncoder.data.vfs.file != NULL)
+    {
+        ma_result closeResult = ma_vfs_close(&vfs, encoder->baseEncoder.data.vfs.file);
+        SC_CHECK_RESULT(closeResult);
+    }
+
     return MA_SUCCESS;
 }
 
@@ -116,14 +123,14 @@ sc_result sc_encoder_init_file(const char* filePath,
     ma_result result = ma_vfs_open(&vfs, filePath, MA_OPEN_MODE_WRITE, &file);
     SC_CHECK_RESULT(result);
 
-    encoder->baseEncoder.data.vfs.file = file;
-
     result = sc_encoder_init(sc_encoder_on_write_vfs, sc_encoder_on_seek_vfs, NULL, config, encoder);
     if (result != MA_SUCCESS)
     {
         ma_vfs_close(&vfs, file);
         return result;
     }
+
+    encoder->baseEncoder.data.vfs.file = file;
 
     return MA_SUCCESS;
 }
@@ -163,36 +170,52 @@ sc_result sc_encoder_write_from_data_source(const char* filePath,
     
     ma_data_converter dataConverter;
     ma_data_converter_config dataConverterConfig =
-        ma_data_converter_config_init(origFormat, ma_format_s24, origChannelCount, origChannelCount, origSampleRate, config->desiredSampleRate);
+        ma_data_converter_config_init(origFormat, ma_format_f32, origChannelCount, origChannelCount, origSampleRate, config->baseConfig.sampleRate);
     ma_result initDataConverter = ma_data_converter_init(&dataConverterConfig, NULL, &dataConverter);
     SC_CHECK_RESULT(initDataConverter);
 
     const ma_uint64 desiredFrameCount  = 1024;
-    const ma_uint64 encoderBufferSize = desiredFrameCount * origChannelCount;
-    void* outDataSourceBuffer = ma_malloc(encoderBufferSize, NULL);
-    void* outConvertedBuffer           = ma_malloc(encoderBufferSize, NULL);
+    const ma_uint64 sourceBufferSize = desiredFrameCount * origChannelCount * origFormat;
+    const ma_uint64 convertedBufferSize = desiredFrameCount * origChannelCount * ma_format_s24;
+    void* outDataSourceBuffer = ma_malloc(sourceBufferSize, NULL);
+    void* outConvertedBuffer            = ma_malloc(convertedBufferSize, NULL);
 
     for (;;)
     {
+        ma_uint64 framesToEncode = 0;
+
         ma_uint64 framesRead = 0;
         sc_result readResult = ma_data_source_read_pcm_frames(dataSource, outDataSourceBuffer, desiredFrameCount, &framesRead);
+        assert(framesRead <= desiredFrameCount);
+
+        if (framesRead > framesToEncode)
+        {
+            framesToEncode = framesRead;
+        }
         
         ma_uint64 framesConverted = 0;
         sc_result convertResult = ma_data_converter_process_pcm_frames(&dataConverter, outDataSourceBuffer, &framesRead, outConvertedBuffer, &framesConverted);
+        assert(framesConverted <= desiredFrameCount);
+
+        if (framesConverted < framesToEncode && framesConverted != 0)
+        {
+            framesToEncode = framesConverted;
+        }
 
         ma_uint64 framesEncoded = 0;
-        sc_encoder_write_pcm_frames(&encoder, outConvertedBuffer, framesConverted, &framesEncoded);
+        sc_result encodeResult = sc_encoder_write_pcm_frames(&encoder, outConvertedBuffer, framesToEncode, &framesEncoded);
 
-        if (readResult == MA_AT_END)
+        if (readResult == MA_AT_END || encodeResult != MA_SUCCESS)
         {
             break;
         }
     }
 
-    sc_encoder_uninit(&encoder);
-
     ma_free(outDataSourceBuffer, NULL);
     ma_free(outConvertedBuffer, NULL);
+
+    sc_encoder_uninit(&encoder);
+    ma_data_converter_uninit(&dataConverter, NULL);
 
     return MA_SUCCESS;
 }

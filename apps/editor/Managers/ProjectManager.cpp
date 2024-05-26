@@ -19,6 +19,8 @@
 #include "sound_bakery/system.h"
 #include "sound_bakery/util/type_helper.h"
 
+#include "sound_chef/sound_chef_encoder.h"
+
 void ProjectManager::Init(const std::filesystem::path& projectFile)
 {
     SB::Engine::System::create();
@@ -67,4 +69,42 @@ void ProjectManager::Exit()
 void ProjectManager::SaveProject() const 
 { 
     SB::Engine::System::get()->getProject()->saveProject(); 
+}
+
+void ProjectManager::ConvertAllFilesTest() const
+{
+
+    SB::Editor::Project* editorProject = SB::Engine::System::getProject();
+    const SB::Editor::ProjectConfiguration& projectConfig = editorProject->getConfig();
+    std::filesystem::path buildFolder = projectConfig.buildFolder();
+
+    if (SB::Core::ObjectTracker* const objectTracker = SB::Engine::System::getObjectTracker())
+    {
+        for (SB::Core::Object* const soundObject : objectTracker->getObjectsOfType(SB::Engine::Sound::type()))
+        {
+            if (SB::Engine::Sound* const sound = soundObject->tryConvertObject<SB::Engine::Sound>())
+            {
+                if (sc_sound* const lowSound = sound->getSound())
+                {
+                    if (ma_data_source* const dataSource = lowSound->sound.pDataSource)
+                    {
+                        std::filesystem::path soundFileName    = sound->getSoundName();
+                        std::filesystem::path encodedSoundFile = buildFolder / soundFileName.filename();
+                        encodedSoundFile.replace_extension("ogg");
+
+                        std::filesystem::create_directories(encodedSoundFile.parent_path());
+
+                        ma_uint32 channels = 0;
+
+                        ma_data_source_get_data_format(dataSource, NULL, &channels, NULL, NULL, NULL);
+
+                        sc_encoder_config encoderConfig = sc_encoder_config_init((ma_encoding_format_ext)ma_encoding_format_vorbis, ma_format_s24, channels, ma_standard_sample_rate_48000, 8);
+
+                        sc_encoder_write_from_data_source(encodedSoundFile.string().c_str(), dataSource,
+                                                          &encoderConfig);
+                    }
+                }
+            }
+        }
+    }
 }

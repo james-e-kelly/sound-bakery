@@ -105,6 +105,11 @@ void RootWidget::Render()
             {
             }
 
+            if (ImGui::MenuItem("Convert Files", nullptr, nullptr))
+            {
+                GetApp()->GetProjectManager()->ConvertAllFilesTest();
+            }
+
             ImGui::EndMenu();
         }
 

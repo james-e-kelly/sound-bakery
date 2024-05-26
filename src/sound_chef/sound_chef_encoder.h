@@ -28,7 +28,6 @@ extern "C"
     {
         ma_encoder_config baseConfig;
         ma_uint8 quality;   //< quality setting for formats that allow it
-        ma_uint32 desiredSampleRate;
         ma_encoding_format_ext encodingFormat;
     };
 
@@ -42,8 +41,7 @@ extern "C"
                                                     ma_format format,
                                                     ma_uint32 channels,
                                                     ma_uint32 sampleRate,
-                                                    ma_uint8 quality,
-                                                    ma_uint32 desiredSampleRate);
+                                                    ma_uint8 quality);
 
     sc_result SC_API sc_encoder_init(ma_encoder_write_proc onWrite,
                                      ma_encoder_seek_proc onSeek,
