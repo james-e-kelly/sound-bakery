@@ -16,8 +16,8 @@ namespace SB::Engine
         void setSoundName(std::string soundName);
         std::string getSoundName() const;
 
-        void setEncodedSoundName(std::filesystem::path path);
-        std::filesystem::path getEncodedSoundName() const { return encodedSoundPath; }
+        void setEncodedSoundName(std::string path);
+        std::string getEncodedSoundName() const { return encodedSoundPath.string(); }
 
         void setStreaming(bool streaming) { m_streaming = streaming; }
         bool getIsStreaming() const { return m_streaming; }

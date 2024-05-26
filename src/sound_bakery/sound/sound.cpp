@@ -67,9 +67,9 @@ std::string Sound::getSoundName() const
     return rawSoundPath.string().c_str();
 }
 
-void Sound::setEncodedSoundName(std::filesystem::path path)
+void Sound::setEncodedSoundName(std::string encodedSoundName)
 {
-    encodedSoundPath = path;
+    encodedSoundPath = encodedSoundName;
     loadSynchronous();
 }
 

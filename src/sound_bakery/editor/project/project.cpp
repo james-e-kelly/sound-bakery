@@ -95,7 +95,7 @@ void SB::Editor::Project::encodeAllMedia() const
 
                                 concurrencpp::resume_on(SB::Engine::System::get()->getMainThreadExecutuer());
                                 
-                                sound->setEncodedSoundName(encodedSoundFile);
+                                sound->setEncodedSoundName(encodedSoundFile.string());
                             });
                     }
                 }
