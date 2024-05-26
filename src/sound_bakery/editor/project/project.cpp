@@ -110,11 +110,11 @@ void SB::Editor::Project::loadSounds()
 
             if (SB::Core::Database* const database = SB::Engine::System::getDatabase())
             {
-                if (database->tryFind(filename.string().c_str()) == nullptr)
+                if (database->tryFind(filename.stem().string().c_str()) == nullptr)
                 {
                     if (SB::Core::DatabaseObject* const createdSound = newDatabaseObject<SB::Engine::Sound>())
                     {
-                        createdSound->setDatabaseName(filename.string().c_str());
+                        createdSound->setDatabaseName(filename.stem().string().c_str());
 
                         if (SB::Engine::Sound* const castedSound =
                                 SB::Reflection::cast<SB::Engine::Sound*, SB::Core::DatabaseObject*>(createdSound))
