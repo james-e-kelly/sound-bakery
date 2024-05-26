@@ -26,12 +26,13 @@ namespace SB::Core
         ~DatabaseObject();
 
         SB_ID getDatabaseID() const;
-
-        std::string_view getDatabaseName() const;
-
         void setDatabaseID(SB_ID id);
 
+        std::string_view getDatabaseName() const;
         void setDatabaseName(std::string_view name);
+
+        bool getEditorHidden() const { return editorHidden; }
+        void setEditorHidden(bool hidden) { editorHidden = hidden; }
 
     public:
         operator SB_ID() const { return m_objectID; }
@@ -39,6 +40,8 @@ namespace SB::Core
     private:
         std::string m_objectName;
         SB_ID m_objectID = 0;
+
+        bool editorHidden = false; //< If true, the object won't render in the editor or be saved
 
         friend class Database;
     };

@@ -43,15 +43,7 @@ void ProjectManager::Init(const std::filesystem::path& projectFile)
                 SB::Engine::SoundContainer::type()));
     m_previewSoundContainer->setDatabaseName("Preview Node");
 
-    if (SB::Core::ObjectTracker* const objectTracker = SB::Engine::System::getObjectTracker())
-    {
-        objectTracker->untrackObject(m_previewSoundContainer);
-    }
-
-    if (SB::Core::Database* const database = SB::Engine::System::getDatabase())
-    {
-        m_previewSoundContainerResource = database->removeUnsafe(m_previewSoundContainer);
-    }
+    m_previewSoundContainer->setEditorHidden(true);
 }
 
 void ProjectManager::Tick(double deltaTime)
@@ -61,8 +53,6 @@ void ProjectManager::Tick(double deltaTime)
 
 void ProjectManager::Exit() 
 { 
-    m_previewSoundContainerResource.reset();
-
     SB::Engine::System::destroy(); 
 }
 
@@ -73,7 +63,6 @@ void ProjectManager::SaveProject() const
 
 void ProjectManager::ConvertAllFilesTest() const
 {
-
     SB::Editor::Project* editorProject = SB::Engine::System::getProject();
     const SB::Editor::ProjectConfiguration& projectConfig = editorProject->getConfig();
     std::filesystem::path buildFolder = projectConfig.buildFolder();

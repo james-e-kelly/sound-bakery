@@ -56,5 +56,4 @@ private:
     Selection m_selection;
 
     SB::Engine::SoundContainer* m_previewSoundContainer = nullptr;
-    std::shared_ptr<SB::Core::DatabaseObject> m_previewSoundContainerResource;
 };

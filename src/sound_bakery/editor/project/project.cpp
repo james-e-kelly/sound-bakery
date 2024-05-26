@@ -155,8 +155,13 @@ void SB::Editor::Project::saveObjects() const
     {
         for (const std::weak_ptr<SB::Core::DatabaseObject>& object : database->getAll())
         {
-            if (std::shared_ptr<SB::Core::DatabaseObject> sharedObject = object.lock())
+            if (const std::shared_ptr<SB::Core::DatabaseObject> sharedObject = object.lock())
             {
+                if (sharedObject->getEditorHidden())
+                {
+                    continue;
+                }
+
                 YAML::Emitter yaml;
                 SB::Core::Serialization::Serializer::saveObject(sharedObject.get(), yaml);
 
