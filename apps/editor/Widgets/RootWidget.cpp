@@ -5,6 +5,8 @@
 #include "IconsFontaudio.h"
 #include "imgui.h"
 
+#include "sound_bakery/editor/project/project.h"
+
 void RootWidget::Render()
 {
     static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
@@ -107,7 +109,7 @@ void RootWidget::Render()
 
             if (ImGui::MenuItem("Convert Files", nullptr, nullptr))
             {
-                GetApp()->GetProjectManager()->ConvertAllFilesTest();
+                SB::Engine::System::getProject()->encodeAllMedia();
             }
 
             ImGui::EndMenu();

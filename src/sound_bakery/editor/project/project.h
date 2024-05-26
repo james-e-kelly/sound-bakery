@@ -28,6 +28,8 @@ namespace SB::Editor
         std::filesystem::path objectFolder() const { return m_projectFolder / "Objects"; }
         std::filesystem::path buildFolder() const { return m_projectFolder / "Build"; }
 
+        std::filesystem::path encodedFolder() const { return buildFolder() / "Encoded"; }
+
         /**
          * @brief Converts an object type to a folder location
         */
@@ -51,6 +53,8 @@ namespace SB::Editor
         void createProject(const std::filesystem::path& projectFile) {}
 
         void saveProject() const;
+
+        void encodeAllMedia() const;
 
         const ProjectConfiguration& getConfig() const { return m_projectConfig; }
 

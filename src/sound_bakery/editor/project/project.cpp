@@ -4,6 +4,8 @@
 #include "sound_bakery/sound/sound.h"
 #include "sound_bakery/soundbank/soundbank.h"
 
+#include "sound_chef/sound_chef_encoder.h"
+
 std::filesystem::path SB::Editor::ProjectConfiguration::typeFolder(const rttr::type& type) const
 {
     const std::filesystem::path rootObjectFolder = objectFolder();
@@ -56,6 +58,39 @@ void SB::Editor::Project::saveProject() const
     saveSystem();
     saveObjects();
     buildSoundbanks();  // temp for testing
+}
+
+void SB::Editor::Project::encodeAllMedia() const 
+{
+    if (SB::Core::ObjectTracker* const objectTracker = SB::Engine::System::getObjectTracker())
+    {
+        for (SB::Core::Object* const soundObject : objectTracker->getObjectsOfType(SB::Engine::Sound::type()))
+        {
+            if (SB::Engine::Sound* const sound = soundObject->tryConvertObject<SB::Engine::Sound>())
+            {
+                if (sc_sound* const lowSound = sound->getSound())
+                {
+                    if (ma_data_source* const dataSource = lowSound->sound.pDataSource)
+                    {
+                        const std::filesystem::path encodedSoundFile =
+                            m_projectConfig.encodedFolder() / (std::to_string(sound->getDatabaseID()) + ".ogg");
+
+                        std::filesystem::create_directories(encodedSoundFile.parent_path());
+
+                        ma_uint32 channels = 0;
+                        ma_data_source_get_data_format(dataSource, NULL, &channels, NULL, NULL, NULL);
+
+                        const sc_encoder_config encoderConfig =
+                            sc_encoder_config_init((ma_encoding_format_ext)ma_encoding_format_vorbis, ma_format_s24,
+                                                   channels, ma_standard_sample_rate_48000, 8);
+
+                        sc_encoder_write_from_data_source(encodedSoundFile.string().c_str(), dataSource,
+                                                          &encoderConfig);
+                    }
+                }
+            }
+        }
+    }
 }
 
 void SB::Editor::Project::loadSounds()

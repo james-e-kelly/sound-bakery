@@ -172,8 +172,20 @@ FetchContent_Declare(
   OVERRIDE_FIND_PACKAGE
 )
 
+FetchContent_Declare(
+  concurrencpp
+  GIT_REPOSITORY https://github.com/David-Haim/concurrencpp.git
+  GIT_TAG        v.0.1.7
+  GIT_SHALLOW    TRUE
+  GIT_PROGRESS TRUE
+  OVERRIDE_FIND_PACKAGE
+)
+
 message(STATUS "Fetching rttr...")
 FetchContent_MakeAvailable(rttr)
+
+message(STATUS "Fetching concurrencpp...")
+FetchContent_MakeAvailable(concurrencpp)
 
 FetchContent_GetProperties(yaml)
 
