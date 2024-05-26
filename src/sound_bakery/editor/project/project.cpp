@@ -86,11 +86,16 @@ void SB::Editor::Project::encodeAllMedia() const
                             sc_encoder_config_init((ma_encoding_format_ext)ma_encoding_format_vorbis, ma_format_s24,
                                                    channels, ma_standard_sample_rate_48000, 8);
 
+
                         threadPool->post(
-                            [encoderConfig, encodedSoundFile, dataSource] 
+                            [sound, encoderConfig, encodedSoundFile, dataSource] 
                             {
                                 sc_encoder_write_from_data_source(encodedSoundFile.string().c_str(), dataSource,
                                                           &encoderConfig);
+
+                                concurrencpp::resume_on(SB::Engine::System::get()->getMainThreadExecutuer());
+                                
+                                sound->setEncodedSoundName(encodedSoundFile);
                             });
                     }
                 }

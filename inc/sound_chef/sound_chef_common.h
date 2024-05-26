@@ -197,6 +197,8 @@ struct sc_node_group
 struct sc_system
 {
     ma_engine engine;
+
+    ma_resource_manager resourceManager; //< We need a custom resource manager for custom decoders
 };
 
 #ifdef __cplusplus

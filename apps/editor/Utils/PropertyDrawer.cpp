@@ -218,6 +218,10 @@ bool PropertyDrawer::DrawVariant(rttr::variant& variant,
         else if (type == rttr::type::get<SB::Core::IntProperty>())
         {
         }
+        else if (type == rttr::type::get<std::filesystem::path>())
+        {
+            DrawReadonlyVariant(variant);
+        }
         else
         {
             if (type.get_properties().size())
@@ -303,6 +307,10 @@ void PropertyDrawer::DrawReadonlyVariant(rttr::variant variant, bool disabled)
     else if (variant.can_convert(rttr::type::get<std::string_view>()))
     {
         ImGui::TextUnformatted(variant.convert<std::string_view>().data());
+    }
+    else if (variant.get_type() == rttr::type::get<std::filesystem::path>())
+    {
+        ImGui::TextUnformatted(variant.convert<std::filesystem::path>().string().c_str());
     }
     else
     {

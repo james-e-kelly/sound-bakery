@@ -83,6 +83,8 @@ System* System::create()
             s_system->m_objectTracker = std::make_unique<SB::Core::ObjectTracker>();
             s_system->m_database      = std::make_unique<SB::Core::Database>();
             s_system->m_project       = std::make_unique<SB::Editor::Project>();
+
+            s_system->mainThreadExecuter = s_system->concurrenRuntime.make_manual_executor();
         }
     }
 
@@ -137,6 +139,8 @@ SB_RESULT System::update()
     }
 
     s_system->m_listenerGameObject->update();
+
+    s_system->mainThreadExecuter->loop(32);
 
     return MA_SUCCESS;
 }

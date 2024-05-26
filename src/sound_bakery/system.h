@@ -66,6 +66,11 @@ namespace SB::Engine
             return concurrenRuntime.background_executor();
         }
 
+        std::shared_ptr<concurrencpp::manual_executor> getMainThreadExecutuer() const
+        { 
+            return mainThreadExecuter;
+        }
+
     private:
         SB::SystemPtr m_chefSystem;
 
@@ -80,5 +85,6 @@ namespace SB::Engine
         std::unique_ptr<Profiling::VoiceTracker> m_voiceTracker;
 
         concurrencpp::runtime concurrenRuntime;
+        std::shared_ptr<concurrencpp::manual_executor> mainThreadExecuter;
     };
 }  // namespace SB::Engine

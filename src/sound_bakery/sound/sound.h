@@ -16,10 +16,13 @@ namespace SB::Engine
         void setSoundName(std::string soundName);
         std::string getSoundName() const;
 
+        void setEncodedSoundName(std::filesystem::path path);
+        std::filesystem::path getEncodedSoundName() const { return encodedSoundPath; }
+
         void setStreaming(bool streaming) { m_streaming = streaming; }
         bool getIsStreaming() const { return m_streaming; }
 
-        sc_sound* getSound() { return m_sound.get(); }
+        sc_sound* getSound();
 
     private:
         std::unique_ptr<sc_sound, SC_SOUND_DELETER> m_sound;

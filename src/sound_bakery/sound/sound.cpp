@@ -12,6 +12,7 @@ void Sound::loadSynchronous()
 {
     std::filesystem::path finalSoundPath;
 
+    // Prefer encoded media
     if (!encodedSoundPath.empty())
     {
         if (std::filesystem::exists(encodedSoundPath))
@@ -64,4 +65,20 @@ void Sound::setSoundName(std::string soundName)
 std::string Sound::getSoundName() const 
 {
     return rawSoundPath.string().c_str();
+}
+
+void Sound::setEncodedSoundName(std::filesystem::path path)
+{
+    encodedSoundPath = path;
+    loadSynchronous();
+}
+
+sc_sound* Sound::getSound() 
+{
+    if (!m_sound)
+    {
+        loadSynchronous();
+    }
+
+    return m_sound.get(); 
 }
