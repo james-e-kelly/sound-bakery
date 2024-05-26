@@ -19,7 +19,7 @@ void Sound::loadSynchronous()
         {
             finalSoundPath = encodedSoundPath;
             encodedSoundPath = std::filesystem::relative(encodedSoundPath,
-                                                         SB::Engine::System::getProject()->getConfig().sourceFolder());
+                                                         SB::Engine::System::getProject()->getConfig().encodedFolder());
         }
         else
         {
