@@ -62,6 +62,8 @@ void SB::Editor::Project::saveProject() const
 
 void SB::Editor::Project::encodeAllMedia() const 
 {
+    std::shared_ptr<concurrencpp::thread_pool_executor> threadPool = SB::Engine::System::get()->getBackgroundExecuter();
+
     if (SB::Core::ObjectTracker* const objectTracker = SB::Engine::System::getObjectTracker())
     {
         for (SB::Core::Object* const soundObject : objectTracker->getObjectsOfType(SB::Engine::Sound::type()))
@@ -84,8 +86,12 @@ void SB::Editor::Project::encodeAllMedia() const
                             sc_encoder_config_init((ma_encoding_format_ext)ma_encoding_format_vorbis, ma_format_s24,
                                                    channels, ma_standard_sample_rate_48000, 8);
 
-                        sc_encoder_write_from_data_source(encodedSoundFile.string().c_str(), dataSource,
+                        threadPool->post(
+                            [encoderConfig, encodedSoundFile, dataSource] 
+                            {
+                                sc_encoder_write_from_data_source(encodedSoundFile.string().c_str(), dataSource,
                                                           &encoderConfig);
+                            });
                     }
                 }
             }

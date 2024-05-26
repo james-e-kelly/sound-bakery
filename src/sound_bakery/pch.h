@@ -6,6 +6,7 @@
 
 #include <atomic>
 #include <cassert>
+#include "concurrencpp/concurrencpp.h"
 #include <filesystem>
 #include <fstream>
 #include <iostream>

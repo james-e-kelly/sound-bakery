@@ -200,12 +200,14 @@ target_link_libraries(sound_bakery_shared PUBLIC
   SoundBakery::Delegates 
   SoundBakery::SoundChef_Shared
   RTTR::Core_Lib
+  concurrencpp::concurrencpp
   yaml-cpp::yaml-cpp)
 
 target_link_libraries(sound_bakery_static PUBLIC 
   SoundBakery::Delegates 
   SoundBakery::SoundChef_Static
   RTTR::Core_Lib
+  concurrencpp::concurrencpp
   yaml-cpp::yaml-cpp)
 
 if(MSVC)

@@ -61,6 +61,11 @@ namespace SB::Engine
 
         GameObject* getListenerGameObject() const;
 
+        std::shared_ptr<concurrencpp::thread_pool_executor> getBackgroundExecuter() const 
+        { 
+            return concurrenRuntime.background_executor();
+        }
+
     private:
         SB::SystemPtr m_chefSystem;
 
@@ -73,5 +78,7 @@ namespace SB::Engine
         std::unique_ptr<SB::Core::Database> m_database;
         std::unique_ptr<SB::Core::ObjectTracker> m_objectTracker;
         std::unique_ptr<Profiling::VoiceTracker> m_voiceTracker;
+
+        concurrencpp::runtime concurrenRuntime;
     };
 }  // namespace SB::Engine
