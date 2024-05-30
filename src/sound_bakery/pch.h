@@ -15,6 +15,8 @@
 #include <random>
 #include <set>
 #include <shared_mutex>
+#include "spdlog/spdlog.h"
+#include "spdlog/async.h"
 #include <string>
 #include <string_view>
 #include <type_traits>

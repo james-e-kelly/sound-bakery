@@ -181,11 +181,23 @@ FetchContent_Declare(
   OVERRIDE_FIND_PACKAGE
 )
 
+FetchContent_Declare(
+  spdlog
+  GIT_REPOSITORY https://github.com/gabime/spdlog.git
+  GIT_TAG        v1.14.1
+  GIT_SHALLOW    TRUE
+  GIT_PROGRESS TRUE
+  OVERRIDE_FIND_PACKAGE
+)
+
 message(STATUS "Fetching rttr...")
 FetchContent_MakeAvailable(rttr)
 
 message(STATUS "Fetching concurrencpp...")
 FetchContent_MakeAvailable(concurrencpp)
+
+message(STATUS "Fetching spdlog...")
+FetchContent_MakeAvailable(spdlog)
 
 FetchContent_GetProperties(yaml)
 
@@ -201,6 +213,7 @@ target_link_libraries(sound_bakery_shared PUBLIC
   SoundBakery::SoundChef_Shared
   RTTR::Core_Lib
   concurrencpp::concurrencpp
+  spdlog::spdlog
   yaml-cpp::yaml-cpp)
 
 target_link_libraries(sound_bakery_static PUBLIC 
@@ -208,6 +221,7 @@ target_link_libraries(sound_bakery_static PUBLIC
   SoundBakery::SoundChef_Static
   RTTR::Core_Lib
   concurrencpp::concurrencpp
+  spdlog::spdlog
   yaml-cpp::yaml-cpp)
 
 if(MSVC)

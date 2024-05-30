@@ -27,8 +27,10 @@ namespace SB::Editor
         std::filesystem::path sourceFolder() const { return m_projectFolder / "Source"; }
         std::filesystem::path objectFolder() const { return m_projectFolder / "Objects"; }
         std::filesystem::path buildFolder() const { return m_projectFolder / "Build"; }
+        std::filesystem::path savedFolder() const { return m_projectFolder / "Saved"; }
 
         std::filesystem::path encodedFolder() const { return buildFolder() / "Encoded"; }
+        std::filesystem::path logFolder() const { return savedFolder() / "Logs"; }
 
         /**
          * @brief Converts an object type to a folder location

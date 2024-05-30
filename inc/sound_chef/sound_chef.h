@@ -28,6 +28,13 @@ extern "C"
     sc_result SC_API sc_system_release(sc_system* system);
 
     /**
+     * @brief Sets up logging.
+     * 
+     * Must be called before sc_system_init.
+    */
+    sc_result SC_API sc_system_log_init(sc_system* system, ma_log_callback_proc logCallback);
+
+    /**
      * @brief Initialises the system.
      *
      * Initializes the ma_engine and therefore the ma_device. This makes the

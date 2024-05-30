@@ -244,6 +244,22 @@ sc_result sc_system_release(sc_system* system)
     return result;
 }
 
+sc_result sc_system_log_init(sc_system* system, ma_log_callback_proc callbackProc) 
+{ 
+    SC_CHECK_ARG(system != NULL); 
+    SC_CHECK_ARG(callbackProc != NULL);
+
+    ma_result logInitResult = ma_log_init(NULL, &system->log);
+    SC_CHECK_RESULT(logInitResult);
+
+    ma_result registerResult = ma_log_register_callback(&system->log, ma_log_callback_init(callbackProc, NULL));
+    SC_CHECK_RESULT(registerResult);
+
+    ma_log_post(&system->log, MA_LOG_LEVEL_INFO, "Initialized Sound Bakery");
+
+    return MA_SUCCESS;
+}
+
 sc_result sc_system_init(sc_system* system)
 {
     sc_result result = MA_ERROR;
@@ -259,6 +275,7 @@ sc_result sc_system_init(sc_system* system)
         resourceManagerConfig.ppCustomDecodingBackendVTables    = customBackendVTables;
         resourceManagerConfig.customDecodingBackendCount        = sizeof(customBackendVTables) / sizeof(customBackendVTables[0]);
         resourceManagerConfig.pCustomDecodingBackendUserData    = NULL; /* <-- This will be passed in to the pUserData parameter of each function in the decoding backend vtables. */
+        resourceManagerConfig.pLog = &system->log;
 
         result = ma_resource_manager_init(&resourceManagerConfig, &system->resourceManager);
         SC_CHECK_RESULT(result);
@@ -268,6 +285,7 @@ sc_result sc_system_init(sc_system* system)
         engineConfig.listenerCount    = 1;
         engineConfig.channels         = 2;
         engineConfig.sampleRate       = ma_standard_sample_rate_48000;
+        engineConfig.pLog             = &system->log;
 
         result = ma_engine_init(&engineConfig, engine);
     }

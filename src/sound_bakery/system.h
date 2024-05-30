@@ -4,6 +4,8 @@
 #include "sound_bakery/core/database/database_ptr.h"
 #include "sound_bakery/util/fmod_pointers.h"
 
+#include "spdlog/sinks/basic_file_sink.h"
+
 namespace SB::Core
 {
     class Database;
@@ -86,5 +88,7 @@ namespace SB::Engine
 
         concurrencpp::runtime concurrenRuntime;
         std::shared_ptr<concurrencpp::manual_executor> mainThreadExecuter;
+
+        std::shared_ptr<spdlog::logger> logger;
     };
 }  // namespace SB::Engine
