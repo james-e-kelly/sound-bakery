@@ -148,33 +148,32 @@ SB_RESULT System::update()
 
 SB_RESULT System::openProject(const std::filesystem::path& projectFile)
 {
-    if (s_system == nullptr)
-    {
-        return MA_DEVICE_NOT_STARTED;
-    }
+    destroy();
 
-    s_system->m_project.reset();
+    // Create the global logger before initializing Sound Bakery
+
+    const SB::Editor::ProjectConfiguration tempProject = SB::Editor::ProjectConfiguration(projectFile);
+
+    auto consoleSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+    consoleSink->set_level(spdlog::level::info);
+    consoleSink->set_pattern("[multi_sink_example] [%^%l%$] %v");
+
+    auto fileSink =
+        std::make_shared<spdlog::sinks::basic_file_sink_mt>((tempProject.logFolder() / "log.txt").string(), true);
+    fileSink->set_level(spdlog::level::trace);
+
+    std::shared_ptr<spdlog::logger> logger = std::make_shared<spdlog::logger>(std::string("multi_sink"), spdlog::sinks_init_list{consoleSink, fileSink});
+    logger->set_level(spdlog::level::debug);
+
+    spdlog::set_default_logger(logger);
+
+    create();
+    init();
 
     s_system->m_project = std::make_unique<SB::Editor::Project>();
 
     if (s_system->m_project->openProject(projectFile))
     {
-        auto consoleSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-        consoleSink->set_level(spdlog::level::info);
-        consoleSink->set_pattern("[multi_sink_example] [%^%l%$] %v");
-
-        auto fileSink = std::make_shared<spdlog::sinks::basic_file_sink_mt>((s_system->m_project->getConfig().logFolder() / "log.txt").string(), true);
-        fileSink->set_level(spdlog::level::trace);
-
-        spdlog::logger logger("multi_sink", {consoleSink, fileSink});
-        logger.set_level(spdlog::level::debug);
-
-        s_system->logger = std::make_shared<spdlog::logger>(std::string("multi_sink"), spdlog::sinks_init_list{consoleSink, fileSink});
-        
-        spdlog::set_default_logger(s_system->logger);
-
-        spdlog::dump_backtrace();
-
         return MA_SUCCESS;
     }
 

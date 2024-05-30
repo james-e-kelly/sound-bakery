@@ -49,6 +49,9 @@ namespace SB::Engine
         static SB_RESULT init();
         static SB_RESULT update();
 
+        /**
+         * @brief Creates an instance of Sound Bakery and opens the project.
+        */
         static SB_RESULT openProject(const std::filesystem::path& projectFile);
 
         static SB::Core::ObjectTracker* getObjectTracker();

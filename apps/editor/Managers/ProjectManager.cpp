@@ -19,12 +19,8 @@
 #include "sound_bakery/system.h"
 #include "sound_bakery/util/type_helper.h"
 
-
-
 void ProjectManager::Init(const std::filesystem::path& projectFile)
 {
-    SB::Engine::System::create();
-    SB::Engine::System::init();
     SB::Engine::System::openProject(projectFile);
 
     GetApp()
@@ -36,14 +32,6 @@ void ProjectManager::Init(const std::filesystem::path& projectFile)
     GetApp()
         ->GetSubsystemByClass<WidgetSubsystem>()
         ->AddWidgetClassToRoot<DetailsWidget>();
-
-    m_previewSoundContainer =
-        SB::Reflection::cast<SB::Engine::SoundContainer*, SB::Core::Object*>(
-            SB::Engine::Factory::createObjectFromType(
-                SB::Engine::SoundContainer::type()));
-    m_previewSoundContainer->setDatabaseName("Preview Node");
-
-    m_previewSoundContainer->setEditorHidden(true);
 }
 
 void ProjectManager::Tick(double deltaTime)
@@ -59,4 +47,9 @@ void ProjectManager::Exit()
 void ProjectManager::SaveProject() const 
 { 
     SB::Engine::System::get()->getProject()->saveProject(); 
+}
+
+SB::Engine::SoundContainer* ProjectManager::GetPreviewSoundContainer() const
+{
+    return SB::Engine::System::getProject()->getPreviewContainer();
 }

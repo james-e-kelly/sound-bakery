@@ -2,6 +2,7 @@
 
 #include "sound_bakery/serialization/serializer.h"
 #include "sound_bakery/sound/sound.h"
+#include "sound_bakery/node/container/sound_container.h"
 #include "sound_bakery/soundbank/soundbank.h"
 
 #include "sound_chef/sound_chef_encoder.h"
@@ -47,6 +48,8 @@ bool SB::Editor::Project::openProject(const std::filesystem::path& projectFile)
     loadObjects();
     loadSystem();
     loadSounds();
+
+    createPreviewContainer();
 
     SB::Engine::System::get()->onLoaded();
 
@@ -163,6 +166,13 @@ void SB::Editor::Project::loadObjects()
             }
         }
     }
+}
+
+void SB::Editor::Project::createPreviewContainer()
+{
+    m_previewSoundContainer = newDatabaseObject<SB::Engine::SoundContainer>();
+    m_previewSoundContainer->setDatabaseName("Preview Node");
+    m_previewSoundContainer->setEditorHidden(true);
 }
 
 void SB::Editor::Project::buildSoundbanks() const

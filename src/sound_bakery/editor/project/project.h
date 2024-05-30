@@ -4,6 +4,11 @@
 
 #include "yaml-cpp/yaml.h"
 
+namespace SB::Engine
+{
+    class SoundContainer;
+}
+
 namespace SB::Editor
 {
     /**
@@ -60,10 +65,14 @@ namespace SB::Editor
 
         const ProjectConfiguration& getConfig() const { return m_projectConfig; }
 
+        SB::Engine::SoundContainer* getPreviewContainer() const { return m_previewSoundContainer; }
+
     private:
         void loadSounds();
         void loadSystem();
         void loadObjects();
+
+        void createPreviewContainer();
 
         void buildSoundbanks() const;
 
@@ -73,5 +82,6 @@ namespace SB::Editor
 
     private:
         ProjectConfiguration m_projectConfig;
+        SB::Engine::SoundContainer* m_previewSoundContainer;
     };
 }  // namespace SB::Editor

@@ -45,13 +45,8 @@ public:
     void SaveProject() const;
 
     Selection& GetSelection() { return m_selection; }
-    SB::Engine::SoundContainer* GetPreviewSoundContainer() const
-    {
-        return m_previewSoundContainer;
-    }
+    SB::Engine::SoundContainer* GetPreviewSoundContainer() const;
 
 private:
     Selection m_selection;
-
-    SB::Engine::SoundContainer* m_previewSoundContainer = nullptr;
 };
