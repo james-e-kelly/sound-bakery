@@ -5,10 +5,10 @@
 #define MA_NO_OPUS
 
 #include "sound_chef/sound_chef.h"
-#include "sound_chef_encoder.h"
 
 #include "extras/miniaudio_libopus.h"
 #include "extras/miniaudio_libvorbis.h"
+#include "sound_chef_encoder.h"
 
 #ifndef NDEBUG
     #define DEBUG_ASSERT(condition) MA_ASSERT(condition)
@@ -194,11 +194,9 @@ static ma_result ma_decoding_backend_get_channel_map__libopus(void* pUserData,
 }
 
 static ma_decoding_backend_vtable g_ma_decoding_backend_vtable_libopus = {
-    ma_decoding_backend_init__libopus, ma_decoding_backend_init_file__libopus, 
-    NULL,   /* onInitFileW() */
-    NULL,   /* onInitMemory() */
-    ma_decoding_backend_uninit__libopus
-};
+    ma_decoding_backend_init__libopus, ma_decoding_backend_init_file__libopus, NULL, /* onInitFileW() */
+    NULL,                                                                            /* onInitMemory() */
+    ma_decoding_backend_uninit__libopus};
 
 // SOUND CHEF
 
@@ -244,9 +242,9 @@ sc_result sc_system_release(sc_system* system)
     return result;
 }
 
-sc_result sc_system_log_init(sc_system* system, ma_log_callback_proc callbackProc) 
-{ 
-    SC_CHECK_ARG(system != NULL); 
+sc_result sc_system_log_init(sc_system* system, ma_log_callback_proc callbackProc)
+{
+    SC_CHECK_ARG(system != NULL);
     SC_CHECK_ARG(callbackProc != NULL);
 
     ma_result logInitResult = ma_log_init(NULL, &system->log);
@@ -269,12 +267,15 @@ sc_result sc_system_init(sc_system* system)
         ma_engine* engine = (ma_engine*)system;
 
         ma_decoding_backend_vtable* customBackendVTables[] = {&g_ma_decoding_backend_vtable_libvorbis,
-                                                            &g_ma_decoding_backend_vtable_libopus};
+                                                              &g_ma_decoding_backend_vtable_libopus};
 
-        ma_resource_manager_config resourceManagerConfig        = ma_resource_manager_config_init();
-        resourceManagerConfig.ppCustomDecodingBackendVTables    = customBackendVTables;
-        resourceManagerConfig.customDecodingBackendCount        = sizeof(customBackendVTables) / sizeof(customBackendVTables[0]);
-        resourceManagerConfig.pCustomDecodingBackendUserData    = NULL; /* <-- This will be passed in to the pUserData parameter of each function in the decoding backend vtables. */
+        ma_resource_manager_config resourceManagerConfig     = ma_resource_manager_config_init();
+        resourceManagerConfig.ppCustomDecodingBackendVTables = customBackendVTables;
+        resourceManagerConfig.customDecodingBackendCount =
+            sizeof(customBackendVTables) / sizeof(customBackendVTables[0]);
+        resourceManagerConfig.pCustomDecodingBackendUserData =
+            NULL; /* <-- This will be passed in to the pUserData parameter of each function in the decoding backend
+                     vtables. */
         resourceManagerConfig.pLog = &system->log;
 
         result = ma_resource_manager_init(&resourceManagerConfig, &system->resourceManager);
@@ -527,7 +528,7 @@ sc_result sc_node_group_add_dsp(sc_node_group* nodeGroup, sc_dsp* dsp, sc_dsp_in
         {
             sc_dsp* currentHead = nodeGroup->head;
             DEBUG_ASSERT(currentHead->next == NULL);  // head nodes can't have
-                                                        // something after them
+                                                      // something after them
             ma_node_base* currentParent = ((ma_node_base*)currentHead->state->userData)->pOutputBuses[0].pInputNode;
             DEBUG_ASSERT(currentParent != NULL);  // must be attached to
                                                   // something, even if it's the
@@ -545,7 +546,7 @@ sc_result sc_node_group_add_dsp(sc_node_group* nodeGroup, sc_dsp* dsp, sc_dsp_in
                 SC_CHECK_RESULT(result);
 
                 nodeGroup->head->next = dsp;
-                dsp->prev               = nodeGroup->head;
+                dsp->prev             = nodeGroup->head;
 
                 nodeGroup->head = dsp;
                 ;

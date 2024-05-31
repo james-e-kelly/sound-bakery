@@ -7,7 +7,6 @@
 #include "sound_bakery/node/bus/bus.h"
 #include "sound_bakery/profiling/voice_tracker.h"
 #include "sound_bakery/reflection/reflection.h"
-
 #include "spdlog/sinks/daily_file_sink.h"
 #include "spdlog/sinks/rotating_file_sink.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
@@ -21,7 +20,7 @@ namespace
     static System* s_system = nullptr;
 
     static const std::string s_soundChefLoggerName("LogSoundChef");
-}
+}  // namespace
 
 static void miniaudioLogCallback(void* pUserData, ma_uint32 level, const char* pMessage)
 {
@@ -84,9 +83,6 @@ System* System::create()
 {
     if (s_system == nullptr)
     {
-        // Store messages and later dump them when the project is loaded
-        spdlog::enable_backtrace(128);
-
         s_system = new System();
 
         if (s_system)
@@ -172,25 +168,21 @@ SB_RESULT System::openProject(const std::filesystem::path& projectFile)
     auto consoleSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
     consoleSink->set_level(spdlog::level::info);
 
-    auto now = spdlog::log_clock::now();
+    auto now    = spdlog::log_clock::now();
     time_t tnow = spdlog::log_clock::to_time_t(now);
-    tm now_tm = spdlog::details::os::localtime(tnow);
+    tm now_tm   = spdlog::details::os::localtime(tnow);
 
     auto dailySink = std::make_shared<spdlog::sinks::daily_file_sink_mt>(
-        (tempProject.logFolder() / (tempProject.m_projectName + ".txt")).string(), 
-        now_tm.tm_hour,
-        now_tm.tm_min,
-        true,
-        0,
-        spdlog::file_event_handlers{});
+        (tempProject.logFolder() / (tempProject.m_projectName + ".txt")).string(), now_tm.tm_hour, now_tm.tm_min, true,
+        0, spdlog::file_event_handlers{});
     dailySink->set_level(spdlog::level::trace);
 
-    auto basicFileSink = std::make_shared<spdlog::sinks::basic_file_sink_mt>((tempProject.logFolder() / (tempProject.m_projectName + ".txt")).string(), true);
+    auto basicFileSink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(
+        (tempProject.logFolder() / (tempProject.m_projectName + ".txt")).string(), true);
     basicFileSink->set_level(spdlog::level::trace);
 
-    std::shared_ptr<spdlog::logger>
-            logger = std::make_shared<spdlog::logger>(std::string("LogSoundBakery"),
-                                                      spdlog::sinks_init_list{consoleSink, dailySink, basicFileSink});
+    std::shared_ptr<spdlog::logger> logger = std::make_shared<spdlog::logger>(
+        std::string("LogSoundBakery"), spdlog::sinks_init_list{consoleSink, dailySink, basicFileSink});
     logger->set_level(spdlog::level::debug);
     logger->set_pattern("[%Y-%m-%d %H:%M:%S %z][Thread %t][%l] %n: %v");
 

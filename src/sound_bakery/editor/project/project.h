@@ -13,16 +13,17 @@ namespace SB::Editor
 {
     /**
      * @brief Handles file and folder paths for a project.
-    */
+     */
     struct ProjectConfiguration
     {
         ProjectConfiguration() = default;
 
-        ProjectConfiguration(const std::filesystem::path& projectFile) 
+        ProjectConfiguration(const std::filesystem::path& projectFile)
             : m_projectFile(projectFile),
-            m_projectFolder(projectFile.parent_path()),
-            m_projectName(projectFile.filename().stem().string())
-        {}
+              m_projectFolder(projectFile.parent_path()),
+              m_projectName(projectFile.filename().stem().string())
+        {
+        }
 
         std::filesystem::path m_projectFile;
 
@@ -39,12 +40,14 @@ namespace SB::Editor
 
         /**
          * @brief Converts an object type to a folder location
-        */
+         */
         std::filesystem::path typeFolder(const rttr::type& type) const;
 
-        std::string getIdFilename(SB::Core::DatabaseObject* databaseObject, std::optional<std::string> extensionOverride = std::nullopt) const
+        std::string getIdFilename(SB::Core::DatabaseObject* databaseObject,
+                                  std::optional<std::string> extensionOverride = std::nullopt) const
         {
-            return std::to_string(databaseObject->getDatabaseID()) + (extensionOverride.has_value() ? extensionOverride.value() : ".yaml");
+            return std::to_string(databaseObject->getDatabaseID()) +
+                   (extensionOverride.has_value() ? extensionOverride.value() : ".yaml");
         }
 
         bool isValid() const { return std::filesystem::exists(m_projectFile); }

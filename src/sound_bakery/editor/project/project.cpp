@@ -1,10 +1,9 @@
 #include "project.h"
 
+#include "sound_bakery/node/container/sound_container.h"
 #include "sound_bakery/serialization/serializer.h"
 #include "sound_bakery/sound/sound.h"
-#include "sound_bakery/node/container/sound_container.h"
 #include "sound_bakery/soundbank/soundbank.h"
-
 #include "sound_chef/sound_chef_encoder.h"
 
 std::filesystem::path SB::Editor::ProjectConfiguration::typeFolder(const rttr::type& type) const
@@ -63,7 +62,7 @@ void SB::Editor::Project::saveProject() const
     buildSoundbanks();  // temp for testing
 }
 
-void SB::Editor::Project::encodeAllMedia() const 
+void SB::Editor::Project::encodeAllMedia() const
 {
     std::shared_ptr<concurrencpp::thread_pool_executor> threadPool = SB::Engine::System::get()->getBackgroundExecuter();
 
@@ -89,15 +88,14 @@ void SB::Editor::Project::encodeAllMedia() const
                             sc_encoder_config_init((ma_encoding_format_ext)ma_encoding_format_vorbis, ma_format_s24,
                                                    channels, ma_standard_sample_rate_48000, 8);
 
-
                         threadPool->post(
-                            [sound, encoderConfig, encodedSoundFile, dataSource] 
+                            [sound, encoderConfig, encodedSoundFile, dataSource]
                             {
                                 sc_encoder_write_from_data_source(encodedSoundFile.string().c_str(), dataSource,
-                                                          &encoderConfig);
+                                                                  &encoderConfig);
 
                                 concurrencpp::resume_on(SB::Engine::System::get()->getMainThreadExecutuer());
-                                
+
                                 sound->setEncodedSoundName(encodedSoundFile.string());
                             });
                     }
@@ -221,7 +219,8 @@ void SB::Editor::Project::saveObjects() const
                 YAML::Emitter yaml;
                 SB::Core::Serialization::Serializer::saveObject(sharedObject.get(), yaml);
 
-                const std::filesystem::path filePath = m_projectConfig.typeFolder(sharedObject->getType()) / m_projectConfig.getIdFilename(sharedObject.get());
+                const std::filesystem::path filePath = m_projectConfig.typeFolder(sharedObject->getType()) /
+                                                       m_projectConfig.getIdFilename(sharedObject.get());
                 std::filesystem::create_directories(filePath.parent_path());
 
                 saveYAML(yaml, filePath);

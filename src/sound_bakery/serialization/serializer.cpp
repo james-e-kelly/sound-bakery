@@ -457,7 +457,6 @@ void Serializer::packageSoundbank(SB::Engine::Soundbank* soundbank, YAML::Emitte
             saveInstance(emitter, sound);
 
             ma_data_source* dataSource = ma_sound_get_data_source(&sound->getSound()->sound);
-
         }
 
         {

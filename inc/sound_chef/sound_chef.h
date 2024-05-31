@@ -4,7 +4,7 @@
 /**
  * @file
  * @brief A wrapper library for miniaudio that emulates functionality of FMOD.
- * 
+ *
  * The low level engine powering Sound Bakery.
  */
 
@@ -29,9 +29,9 @@ extern "C"
 
     /**
      * @brief Sets up logging.
-     * 
+     *
      * Must be called before sc_system_init.
-    */
+     */
     sc_result SC_API sc_system_log_init(sc_system* system, ma_log_callback_proc logCallback);
 
     /**
@@ -53,9 +53,9 @@ extern "C"
     ////////////////////////////////////////////////////////////////////////////
 
     sc_result SC_API sc_system_create_sound(sc_system* system,
-                                           const char* fileName,
-                                           sc_sound_mode mode,
-                                           sc_sound** sound);
+                                            const char* fileName,
+                                            sc_sound_mode mode,
+                                            sc_sound** sound);
 
     /**
      * @brief Plays a sound and returns the playing instance.

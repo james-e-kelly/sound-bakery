@@ -1,12 +1,14 @@
 #pragma once
 
+#include "concurrencpp/concurrencpp.h"
 #include "sound_bakery/core/core_fwd.h"
 #include "sound_bakery/reflection/reflection.h"
 #include "sound_bakery_internal.h"
+#include "spdlog/async.h"
+#include "spdlog/spdlog.h"
 
 #include <atomic>
 #include <cassert>
-#include "concurrencpp/concurrencpp.h"
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -15,8 +17,6 @@
 #include <random>
 #include <set>
 #include <shared_mutex>
-#include "spdlog/spdlog.h"
-#include "spdlog/async.h"
 #include <string>
 #include <string_view>
 #include <type_traits>

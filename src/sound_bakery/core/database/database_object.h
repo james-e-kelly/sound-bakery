@@ -41,7 +41,7 @@ namespace SB::Core
         std::string m_objectName;
         SB_ID m_objectID = 0;
 
-        bool editorHidden = false; //< If true, the object won't render in the editor or be saved
+        bool editorHidden = false;  //< If true, the object won't render in the editor or be saved
 
         friend class Database;
     };

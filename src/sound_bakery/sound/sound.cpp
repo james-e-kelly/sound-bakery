@@ -17,7 +17,7 @@ void Sound::loadSynchronous()
     {
         if (std::filesystem::exists(encodedSoundPath))
         {
-            finalSoundPath = encodedSoundPath;
+            finalSoundPath   = encodedSoundPath;
             encodedSoundPath = std::filesystem::relative(encodedSoundPath,
                                                          SB::Engine::System::getProject()->getConfig().encodedFolder());
         }
@@ -51,10 +51,7 @@ void Sound::loadSynchronous()
     m_sound.reset(loadedSound);
 }
 
-void Sound::loadAsynchronous()
-{
-    loadSynchronous();
-}
+void Sound::loadAsynchronous() { loadSynchronous(); }
 
 void Sound::setSoundName(std::string soundName)
 {
@@ -62,10 +59,7 @@ void Sound::setSoundName(std::string soundName)
     loadSynchronous();
 }
 
-std::string Sound::getSoundName() const 
-{
-    return rawSoundPath.string().c_str();
-}
+std::string Sound::getSoundName() const { return rawSoundPath.string().c_str(); }
 
 void Sound::setEncodedSoundName(std::string encodedSoundName)
 {
@@ -73,12 +67,12 @@ void Sound::setEncodedSoundName(std::string encodedSoundName)
     loadSynchronous();
 }
 
-sc_sound* Sound::getSound() 
+sc_sound* Sound::getSound()
 {
     if (!m_sound)
     {
         loadSynchronous();
     }
 
-    return m_sound.get(); 
+    return m_sound.get();
 }

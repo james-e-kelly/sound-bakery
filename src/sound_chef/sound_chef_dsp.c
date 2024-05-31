@@ -4,8 +4,8 @@
 
 enum
 {
-    SC_DSP_CUTOFF_MIN = 1,
-    SC_DSP_CUTOFF_MAX = 22000,
+    SC_DSP_CUTOFF_MIN           = 1,
+    SC_DSP_CUTOFF_MAX           = 22000,
     SC_DSP_DEFAULT_FILTER_ORDER = 2,
 };
 
@@ -113,8 +113,7 @@ static sc_dsp_vtable s_lowpassVtable = {
  * HIGHPASS
  */
 
-static sc_result sc_dsp_highpass_create
-(sc_dsp_state* state)
+static sc_result sc_dsp_highpass_create(sc_dsp_state* state)
 {
     state->userData = ma_malloc(sizeof(ma_hpf_node), NULL);
     if (state->userData == NULL)

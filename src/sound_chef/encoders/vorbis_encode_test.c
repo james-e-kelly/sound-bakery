@@ -5,19 +5,19 @@
 #include <time.h>
 #include <vorbis/vorbisenc.h>
 //
-//#ifdef _WIN32 /* We need the following two to set stdin/stdout to binary */
+// #ifdef _WIN32 /* We need the following two to set stdin/stdout to binary */
 //    #include <fcntl.h>
 //    #include <io.h>
-//#endif
+// #endif
 //
-//#if defined(__MACOS__) && defined(__MWERKS__)
+// #if defined(__MACOS__) && defined(__MWERKS__)
 //    #include <console.h> /* CodeWarrior's Mac "command-line" support */
-//#endif
+// #endif
 //
-//#define READ 1024
-//signed char readbuffer[READ * 4 + 44]; /* out of the data segment, not the stack */
+// #define READ 1024
+// signed char readbuffer[READ * 4 + 44]; /* out of the data segment, not the stack */
 //
-//int main()
+// int main()
 //{
 //    ogg_stream_state oggStream;     /* take physical pages, weld into a logical stream of packets */
 //    ogg_page oggPage;               /* one Ogg bitstream page.  Vorbis packets are inside */

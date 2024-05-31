@@ -154,8 +154,8 @@ namespace SB::Reflection
             .constructor<>()(policy::ctor::as_raw_ptr)
             .property("Sound", &Sound::getSoundName,
                       &Sound::setSoundName)(metadata(SB::Editor::METADATA_KEY::Payload, SB::Editor::PayloadSound))
-            .property("Encoded Sound", &Sound::getEncodedSoundName,
-                      &Sound::setEncodedSoundName)(metadata(SB::Editor::METADATA_KEY::Payload, SB::Editor::PayloadSound));
+            .property("Encoded Sound", &Sound::getEncodedSoundName, &Sound::setEncodedSoundName)(
+                metadata(SB::Editor::METADATA_KEY::Payload, SB::Editor::PayloadSound));
 
         registration::class_<NodeBase>("SB::Engine::NodeBase")
             .constructor<>()(policy::ctor::as_raw_ptr)
