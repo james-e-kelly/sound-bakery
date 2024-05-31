@@ -21,7 +21,7 @@ namespace SB::Editor
         ProjectConfiguration(const std::filesystem::path& projectFile) 
             : m_projectFile(projectFile),
             m_projectFolder(projectFile.parent_path()),
-            m_projectName(projectFile.filename().string())
+            m_projectName(projectFile.filename().stem().string())
         {}
 
         std::filesystem::path m_projectFile;

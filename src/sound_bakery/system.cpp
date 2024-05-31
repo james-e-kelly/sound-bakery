@@ -8,6 +8,8 @@
 #include "sound_bakery/profiling/voice_tracker.h"
 #include "sound_bakery/reflection/reflection.h"
 
+#include "spdlog/sinks/daily_file_sink.h"
+#include "spdlog/sinks/rotating_file_sink.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 
 using namespace SB::Engine;
@@ -17,25 +19,34 @@ System::~System() = default;
 namespace
 {
     static System* s_system = nullptr;
+
+    static const std::string s_soundChefLoggerName("LogSoundChef");
 }
 
-void miniaudioLogCallback(void* pUserData, ma_uint32 level, const char* pMessage)
+static void miniaudioLogCallback(void* pUserData, ma_uint32 level, const char* pMessage)
 {
     (void)pUserData;
+
+    auto soundChefLogger = spdlog::get(s_soundChefLoggerName);
+
+    if (!soundChefLogger)
+    {
+        return;
+    }
 
     switch (level)
     {
         case MA_LOG_LEVEL_DEBUG:
-            spdlog::debug("[BAKERY]: {}", pMessage);
+            soundChefLogger->debug("{}", pMessage);
             break;
         case MA_LOG_LEVEL_INFO:
-            spdlog::info("[BAKERY]: {}", pMessage);
+            soundChefLogger->info("{}", pMessage);
             break;
         case MA_LOG_LEVEL_WARNING:
-            spdlog::warn("[BAKERY]: {}", pMessage);
+            soundChefLogger->warn("{}", pMessage);
             break;
         case MA_LOG_LEVEL_ERROR:
-            spdlog::error("[BAKERY]: {}", pMessage);
+            soundChefLogger->error("{}", pMessage);
             break;
         default:
             break;
@@ -94,12 +105,16 @@ void System::destroy()
 {
     if (s_system != nullptr)
     {
+        spdlog::debug("Closing Sound Bakery");
+
         s_system->m_listenerGameObject->stopAll();
         s_system->m_listenerGameObject.reset();
 
         s_system->m_database->clear();
 
         SB::Reflection::unregisterReflectionTypes();
+
+        s_system->m_chefSystem.reset();
 
         spdlog::shutdown();
 
@@ -156,16 +171,35 @@ SB_RESULT System::openProject(const std::filesystem::path& projectFile)
 
     auto consoleSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
     consoleSink->set_level(spdlog::level::info);
-    consoleSink->set_pattern("[multi_sink_example] [%^%l%$] %v");
 
-    auto fileSink =
-        std::make_shared<spdlog::sinks::basic_file_sink_mt>((tempProject.logFolder() / "log.txt").string(), true);
-    fileSink->set_level(spdlog::level::trace);
+    auto now = spdlog::log_clock::now();
+    time_t tnow = spdlog::log_clock::to_time_t(now);
+    tm now_tm = spdlog::details::os::localtime(tnow);
 
-    std::shared_ptr<spdlog::logger> logger = std::make_shared<spdlog::logger>(std::string("multi_sink"), spdlog::sinks_init_list{consoleSink, fileSink});
+    auto dailySink = std::make_shared<spdlog::sinks::daily_file_sink_mt>(
+        (tempProject.logFolder() / (tempProject.m_projectName + ".txt")).string(), 
+        now_tm.tm_hour,
+        now_tm.tm_min,
+        true,
+        0,
+        spdlog::file_event_handlers{});
+    dailySink->set_level(spdlog::level::trace);
+
+    auto basicFileSink = std::make_shared<spdlog::sinks::basic_file_sink_mt>((tempProject.logFolder() / (tempProject.m_projectName + ".txt")).string(), true);
+    basicFileSink->set_level(spdlog::level::trace);
+
+    std::shared_ptr<spdlog::logger>
+            logger = std::make_shared<spdlog::logger>(std::string("LogSoundBakery"),
+                                                      spdlog::sinks_init_list{consoleSink, dailySink, basicFileSink});
     logger->set_level(spdlog::level::debug);
+    logger->set_pattern("[%Y-%m-%d %H:%M:%S %z][Thread %t][%l] %n: %v");
+
+    std::shared_ptr<spdlog::logger> soundChefLogger = std::make_shared<spdlog::logger>(
+        s_soundChefLoggerName, spdlog::sinks_init_list{consoleSink, dailySink, basicFileSink});
+    soundChefLogger->set_level(spdlog::level::debug);
 
     spdlog::set_default_logger(logger);
+    spdlog::register_logger(soundChefLogger);
 
     create();
     init();

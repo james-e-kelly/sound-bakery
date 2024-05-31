@@ -255,7 +255,7 @@ sc_result sc_system_log_init(sc_system* system, ma_log_callback_proc callbackPro
     ma_result registerResult = ma_log_register_callback(&system->log, ma_log_callback_init(callbackProc, NULL));
     SC_CHECK_RESULT(registerResult);
 
-    ma_log_post(&system->log, MA_LOG_LEVEL_INFO, "Initialized Sound Bakery");
+    ma_log_post(&system->log, MA_LOG_LEVEL_INFO, "Initialized Sound Chef Logging");
 
     return MA_SUCCESS;
 }
@@ -288,6 +288,11 @@ sc_result sc_system_init(sc_system* system)
         engineConfig.pLog             = &system->log;
 
         result = ma_engine_init(&engineConfig, engine);
+
+        if (result == MA_SUCCESS)
+        {
+            ma_log_post(&system->log, MA_LOG_LEVEL_INFO, "Initialized Sound Chef");
+        }
     }
 
     DEBUG_ASSERT(result == MA_SUCCESS);
@@ -303,6 +308,8 @@ sc_result sc_system_close(sc_system* system)
     {
         ma_engine_uninit((ma_engine*)system);
         result = MA_SUCCESS;
+
+        ma_log_post(&system->log, MA_LOG_LEVEL_INFO, "Closed Sound Chef");
     }
 
     DEBUG_ASSERT(result == MA_SUCCESS);
