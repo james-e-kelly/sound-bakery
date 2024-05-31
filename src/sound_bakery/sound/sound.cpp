@@ -12,9 +12,12 @@ void Sound::loadSynchronous()
 {
     std::filesystem::path finalSoundPath;
 
+    bool useRawSound = true;
+
     // Prefer encoded media
     if (!encodedSoundPath.empty())
     {
+        // Absolute path. Needs to be relative
         if (std::filesystem::exists(encodedSoundPath))
         {
             finalSoundPath   = encodedSoundPath;
@@ -25,8 +28,11 @@ void Sound::loadSynchronous()
         {
             finalSoundPath = SB::Engine::System::getProject()->getConfig().encodedFolder() / encodedSoundPath;
         }
+
+        useRawSound = !std::filesystem::exists(finalSoundPath);
     }
-    else if (!rawSoundPath.empty())
+
+    if (useRawSound && !rawSoundPath.empty())
     {
         if (std::filesystem::exists(rawSoundPath))
         {
