@@ -103,6 +103,10 @@ void System::destroy()
     {
         spdlog::debug("Closing Sound Bakery");
 
+        // Close threads
+        s_system->getBackgroundExecuter()->shutdown();
+        s_system->mainThreadExecuter->shutdown();
+
         s_system->m_listenerGameObject->stopAll();
         s_system->m_listenerGameObject.reset();
 
