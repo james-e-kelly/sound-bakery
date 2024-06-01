@@ -85,7 +85,7 @@ void SB::Editor::Project::encodeAllMedia() const
                         ma_data_source_get_data_format(dataSource, NULL, &channels, NULL, NULL, NULL);
 
                         const sc_encoder_config encoderConfig =
-                            sc_encoder_config_init((ma_encoding_format_ext)ma_encoding_format_vorbis, ma_format_s24,
+                            sc_encoder_config_init((ma_encoding_format_ext)ma_encoding_format_vorbis, ma_format_f32,
                                                    channels, ma_standard_sample_rate_48000, 8);
 
                         threadPool->post(
