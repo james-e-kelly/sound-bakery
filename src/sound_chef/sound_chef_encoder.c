@@ -28,7 +28,7 @@ sc_encoder_config sc_encoder_config_init(
 
     SC_ZERO_OBJECT(&config);
 
-    config.baseConfig     = ma_encoder_config_init(ma_encoding_format_unknown, format, channels, sampleRate);
+    config.baseConfig     = ma_encoder_config_init(encodingFormat, format, channels, sampleRate);
     config.encodingFormat = encodingFormat;
     config.quality        = quality;
 
@@ -50,6 +50,11 @@ sc_result sc_encoder_init(ma_encoder_write_proc onWrite,
     SC_CHECK_ARG(config->baseConfig.sampleRate != 0);
 
     SC_ZERO_OBJECT(encoder);
+
+    if (config->baseConfig.encodingFormat == ma_encoding_format_wav)
+    {
+        return ma_encoder_init(onWrite, onSeek, userData, &config->baseConfig, &encoder->baseEncoder);
+    }
 
     encoder->config             = *config;
     encoder->baseEncoder.config = config->baseConfig;
@@ -109,6 +114,15 @@ sc_result sc_encoder_uninit(sc_encoder* encoder)
 
 sc_result sc_encoder_init_file(const char* filePath, const sc_encoder_config* config, sc_encoder* encoder)
 {
+    SC_CHECK_ARG(filePath != NULL);
+    SC_CHECK_ARG(config != NULL);
+    SC_CHECK_ARG(encoder != NULL);
+
+    if (config->encodingFormat == ma_encoding_format_wav)
+    {
+        return ma_encoder_init_file(filePath, &config->baseConfig, &encoder->baseEncoder);
+    }
+
     ma_default_vfs vfs;
     ma_default_vfs_init(&vfs, NULL);
 
@@ -144,75 +158,52 @@ sc_result sc_encoder_write_pcm_frames(sc_encoder* encoder,
 
 //
 
-sc_result sc_encoder_write_from_data_source(const char* filePath,
-                                            ma_data_source* dataSource,
-                                            const sc_encoder_config* config)
+sc_result sc_encoder_write_from_file(const char* decodeFilePath,
+                                     const char* encodeFilePath,
+                                     const sc_encoder_config* config)
 {
-    SC_CHECK_ARG(dataSource != NULL);
+    SC_CHECK_ARG(decodeFilePath != NULL);
+    SC_CHECK_ARG(encodeFilePath != NULL);
     SC_CHECK_ARG(config != NULL);
 
     sc_encoder encoder;
-    sc_result encoderInitResult = sc_encoder_init_file(filePath, config, &encoder);
+    sc_result encoderInitResult = sc_encoder_init_file(encodeFilePath, config, &encoder);
     SC_CHECK_RESULT(encoderInitResult);
 
-    ma_uint32 origChannelCount = 0;
-    ma_format origFormat       = ma_format_unknown;
-    ma_uint32 origSampleRate   = ma_standard_sample_rate_48000;
-    sc_result dataFormatResult =
-        ma_data_source_get_data_format(dataSource, &origFormat, &origChannelCount, &origSampleRate, NULL, 0);
-    SC_CHECK_RESULT(dataFormatResult);
+    ma_decoder decoder;
+    ma_decoder_config decoderConfig = ma_decoder_config_init(config->baseConfig.format, config->baseConfig.channels, config->baseConfig.sampleRate);
+    ma_result decoderInitResult = ma_decoder_init_file(decodeFilePath, &decoderConfig, &decoder);
+    SC_CHECK_RESULT(decoderInitResult);
 
-    ma_data_converter dataConverter;
-    ma_data_converter_config dataConverterConfig = ma_data_converter_config_init(
-        origFormat, ma_format_f32, origChannelCount, origChannelCount, origSampleRate, config->baseConfig.sampleRate);
-    ma_result initDataConverter = ma_data_converter_init(&dataConverterConfig, NULL, &dataConverter);
-    SC_CHECK_RESULT(initDataConverter);
-
-    const ma_uint64 desiredFrameCount   = 1024;
-    const ma_uint64 sourceBufferSize    = desiredFrameCount * origChannelCount * ma_get_bytes_per_sample(origFormat);
-    const ma_uint64 convertedBufferSize = desiredFrameCount * origChannelCount * ma_get_bytes_per_sample(ma_format_f32);
-    void* outDataSourceBuffer           = ma_malloc(sourceBufferSize, NULL);
-    void* outConvertedBuffer            = ma_malloc(convertedBufferSize, NULL);
+    const ma_uint64 desiredFrameCount = 1024;
+    const ma_uint64 convertedBufferSize = desiredFrameCount * ma_get_bytes_per_frame(config->baseConfig.format, config->baseConfig.channels);
+    void* outConvertedBuffer  = ma_malloc(convertedBufferSize, NULL);
 
     for (;;)
     {
-        ma_uint64 framesToEncode = 0;
-
         ma_uint64 framesRead = 0;
-        sc_result readResult =
-            ma_data_source_read_pcm_frames(dataSource, outDataSourceBuffer, desiredFrameCount, &framesRead);
-        assert(framesRead <= desiredFrameCount);
+        sc_result readResult = ma_decoder_read_pcm_frames(&decoder, outConvertedBuffer, desiredFrameCount, &framesRead);
 
-        if (framesRead > framesToEncode)
+        if (framesRead == 0 || readResult == MA_AT_END)
         {
-            framesToEncode = framesRead;
-        }
-
-        ma_uint64 framesConverted = framesRead;
-        sc_result convertResult = ma_data_converter_process_pcm_frames(&dataConverter, outDataSourceBuffer, &framesRead,
-                                                                       outConvertedBuffer, &framesConverted);
-        assert(framesConverted <= desiredFrameCount);
-
-        if (framesConverted < framesToEncode && framesConverted != 0)
-        {
-            framesToEncode = framesConverted;
+            break;
         }
 
         ma_uint64 framesEncoded = 0;
-        sc_result encodeResult =
-            sc_encoder_write_pcm_frames(&encoder, outConvertedBuffer, framesToEncode, &framesEncoded);
+        sc_result encodeResult = sc_encoder_write_pcm_frames(&encoder, outConvertedBuffer, framesRead, &framesEncoded);
+        assert(encodeResult == MA_SUCCESS);
 
-        if (readResult == MA_AT_END || encodeResult != MA_SUCCESS)
+        // Out of data
+        if (framesRead < desiredFrameCount)
         {
             break;
         }
     }
 
-    ma_free(outDataSourceBuffer, NULL);
     ma_free(outConvertedBuffer, NULL);
 
+    ma_decoder_uninit(&decoder);
     sc_encoder_uninit(&encoder);
-    ma_data_converter_uninit(&dataConverter, NULL);
 
     return MA_SUCCESS;
 }

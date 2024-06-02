@@ -62,8 +62,9 @@ extern "C"
 
     //
 
-    sc_result SC_API sc_encoder_write_from_data_source(const char* filePath, ma_data_source* dataSource,
-                                                       const sc_encoder_config* config);
+    sc_result SC_API sc_encoder_write_from_file(const char* decodeFilePath,
+                                         const char* encodeFilePath,
+                                         const sc_encoder_config* config);
 
 #ifdef __cplusplus
 }
