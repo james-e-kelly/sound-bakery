@@ -166,17 +166,26 @@ sc_result sc_encoder_write_from_file(const char* decodeFilePath,
     SC_CHECK_ARG(encodeFilePath != NULL);
     SC_CHECK_ARG(config != NULL);
 
-    sc_encoder encoder;
-    sc_result encoderInitResult = sc_encoder_init_file(encodeFilePath, config, &encoder);
-    SC_CHECK_RESULT(encoderInitResult);
-
     ma_decoder decoder;
     ma_decoder_config decoderConfig = ma_decoder_config_init(config->baseConfig.format, config->baseConfig.channels, config->baseConfig.sampleRate);
     ma_result decoderInitResult = ma_decoder_init_file(decodeFilePath, &decoderConfig, &decoder);
     SC_CHECK_RESULT(decoderInitResult);
 
+    sc_encoder_config configCopy = *config;
+
+    // If encoding to "As Input" channels, find the channel count from the decoder
+    if (config->baseConfig.channels == 0)
+    {
+        ma_result getChannelsResult = ma_decoder_get_data_format(&decoder, NULL, &configCopy.baseConfig.channels, NULL, NULL, 0);
+        SC_CHECK_RESULT(getChannelsResult);
+    }
+
+    sc_encoder encoder;
+    sc_result encoderInitResult = sc_encoder_init_file(encodeFilePath, &configCopy, &encoder);
+    SC_CHECK_RESULT(encoderInitResult);
+
     const ma_uint64 desiredFrameCount = 1024;
-    const ma_uint64 convertedBufferSize = desiredFrameCount * ma_get_bytes_per_frame(config->baseConfig.format, config->baseConfig.channels);
+    const ma_uint64 convertedBufferSize = desiredFrameCount * ma_get_bytes_per_frame(config->baseConfig.format, configCopy.baseConfig.channels);
     void* outConvertedBuffer  = ma_malloc(convertedBufferSize, NULL);
 
     for (;;)

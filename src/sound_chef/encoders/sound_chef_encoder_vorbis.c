@@ -1,6 +1,6 @@
 #include "sound_chef_encoder_vorbis.h"
 
-#define SC_ENCODER_VORBIS_DEFAULT_QUALITY 0.8f
+#define SC_ENCODER_VORBIS_DEFAULT_QUALITY 0.3f
 
 #include <stdlib.h>
 #include <time.h>
@@ -39,6 +39,9 @@ static sc_result ma_encoder_vorbis_write_stream(ma_encoder* encoder)
 
         ma_result headerWriteResult = encoder->onWrite(encoder, oggPage.header, oggPage.header_len, NULL);
         ma_result bodyWriteResult   = encoder->onWrite(encoder, oggPage.body, oggPage.body_len, NULL);
+
+        assert(headerWriteResult == MA_SUCCESS);
+        assert(bodyWriteResult == MA_SUCCESS);
 
         SC_CHECK_RESULT(headerWriteResult);
         SC_CHECK_RESULT(bodyWriteResult);
@@ -84,22 +87,21 @@ sc_result sc_encoder_vorbis_on_init(ma_encoder* encoder)
     int vorbisInitResultCode = -1;
 
     vorbis_info_init(&vorbisEncoder->info);
-
     vorbisInitResultCode = vorbis_encode_init_vbr(&vorbisEncoder->info, encoder->config.channels,
                                                   encoder->config.sampleRate, SC_ENCODER_VORBIS_DEFAULT_QUALITY);
-    SC_CHECK(vorbisInitResultCode == 0, MA_ERROR);
-
-    vorbisInitResultCode = vorbis_analysis_init(&vorbisEncoder->dsp, &vorbisEncoder->info);
-    SC_CHECK(vorbisInitResultCode == 0, MA_ERROR);
-
-    srand(time(NULL));
-    vorbisInitResultCode = ogg_stream_init(&vorbisEncoder->oggStream, rand());
     SC_CHECK(vorbisInitResultCode == 0, MA_ERROR);
 
     vorbis_comment_init(&vorbisEncoder->comment);
     vorbis_comment_add_tag(&vorbisEncoder->comment, "ENCODER", "SOUND_CHEF");
 
+    vorbisInitResultCode = vorbis_analysis_init(&vorbisEncoder->dsp, &vorbisEncoder->info);
+    SC_CHECK(vorbisInitResultCode == 0, MA_ERROR);
+
     vorbisInitResultCode = vorbis_block_init(&vorbisEncoder->dsp, &vorbisEncoder->block);
+    SC_CHECK(vorbisInitResultCode == 0, MA_ERROR);
+
+    srand(time(NULL));
+    vorbisInitResultCode = ogg_stream_init(&vorbisEncoder->oggStream, rand());
     SC_CHECK(vorbisInitResultCode == 0, MA_ERROR);
 
     return MA_SUCCESS;
@@ -117,18 +119,28 @@ sc_result sc_encoder_vorbis_write_pcm_frames(ma_encoder* encoder,
     sc_encoder_vorbis* vorbisEncoder = (sc_encoder_vorbis*)encoder->pInternalEncoder;
     SC_CHECK(vorbisEncoder != NULL, MA_ERROR);
 
+    if (framesWritten)
+    {
+        *framesWritten = 0;
+    }
+
     if (!vorbisEncoder->hasWrittenHeader)
     {
         sc_result headerResult = sc_encoder_vorbis_write_header(encoder);
         SC_CHECK(headerResult == MA_SUCCESS, MA_ERROR);
     }
 
-    float** const analysisBuffer = vorbis_analysis_buffer(&vorbisEncoder->dsp, frameCount);
+    float** const analysisBuffer = vorbis_analysis_buffer(&vorbisEncoder->dsp, (int)frameCount);
 
-    ma_deinterleave_pcm_frames(ma_format_f32, encoder->config.channels, frameCount, framesIn, analysisBuffer);
+    ma_deinterleave_pcm_frames(ma_format_f32, encoder->config.channels, frameCount, framesIn, (void**)analysisBuffer);
 
-    int wroteResult = vorbis_analysis_wrote(&vorbisEncoder->dsp, frameCount);
+    int wroteResult = vorbis_analysis_wrote(&vorbisEncoder->dsp, (int)frameCount);
     assert(wroteResult == 0);
+
+    if (framesWritten)
+    { 
+        *framesWritten = frameCount;
+    }
 
     while (vorbis_analysis_blockout(&vorbisEncoder->dsp, &vorbisEncoder->block) == 1)
     {

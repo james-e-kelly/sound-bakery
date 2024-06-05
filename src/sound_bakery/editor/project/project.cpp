@@ -72,34 +72,32 @@ void SB::Editor::Project::encodeAllMedia() const
         {
             if (SB::Engine::Sound* const sound = soundObject->tryConvertObject<SB::Engine::Sound>())
             {
-                if (sc_sound* const lowSound = sound->getSound())
+                const std::filesystem::path encodedSoundFile =
+                    m_projectConfig.encodedFolder() / (std::to_string(sound->getDatabaseID()) + ".ogg");
+                std::filesystem::create_directories(encodedSoundFile.parent_path());
+
+                const sc_encoder_config encoderConfig =
+                    sc_encoder_config_init((ma_encoding_format_ext)ma_encoding_format_vorbis, ma_format_f32,
+                                            0, ma_standard_sample_rate_48000, 8);
+
+                std::filesystem::path soundPath = sound->getSoundName();
+
+                if (!std::filesystem::exists(soundPath))
                 {
-                    if (ma_data_source* const dataSource = lowSound->sound.pDataSource)
-                    {
-                        const std::filesystem::path encodedSoundFile =
-                            m_projectConfig.encodedFolder() / (std::to_string(sound->getDatabaseID()) + ".ogg");
-
-                        std::filesystem::create_directories(encodedSoundFile.parent_path());
-
-                        ma_uint32 channels = 0;
-                        ma_data_source_get_data_format(dataSource, NULL, &channels, NULL, NULL, NULL);
-
-                        const sc_encoder_config encoderConfig =
-                            sc_encoder_config_init((ma_encoding_format_ext)ma_encoding_format_vorbis, ma_format_f32,
-                                                   channels, ma_standard_sample_rate_48000, 8);
-
-                        threadPool->post(
-                            [sound, encoderConfig, encodedSoundFile, dataSource]
-                            {
-                                sc_encoder_write_from_data_source(encodedSoundFile.string().c_str(), dataSource,
-                                                                  &encoderConfig);
-
-                                concurrencpp::resume_on(SB::Engine::System::get()->getMainThreadExecutuer());
-
-                                sound->setEncodedSoundName(encodedSoundFile.string());
-                            });
-                    }
+                    soundPath = m_projectConfig.sourceFolder() / soundPath;
                 }
+
+                threadPool->post(
+                    [sound, encoderConfig, encodedSoundFile, soundPath]
+                    {
+                        sc_result result = sc_encoder_write_from_file(soundPath.string().c_str(), encodedSoundFile.string().c_str(),
+                                                                        &encoderConfig);
+                        assert(result == MA_SUCCESS);
+
+                        concurrencpp::resume_on(SB::Engine::System::get()->getMainThreadExecutuer());
+
+                        sound->setEncodedSoundName(encodedSoundFile.string());
+                    });
             }
         }
     }
