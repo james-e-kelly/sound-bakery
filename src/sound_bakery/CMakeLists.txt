@@ -14,6 +14,8 @@ set(ATLAS_SOURCES
     
     core/property.cpp
     
+    editor/project/project.cpp
+
     effect/effect.cpp
     
     event/event.cpp
@@ -38,6 +40,8 @@ set(ATLAS_SOURCES
     reflection/reflection.cpp
 
     serialization/serializer.cpp
+
+    soundbank/soundbank.cpp
     
     sound/sound.cpp
 
@@ -68,11 +72,12 @@ set(ATLAS_HEADERS
     core/database/database_object.h
     core/database/database_ptr.h
     
+    editor/editor_defines.h
+    editor/project/project.h
+
     effect/effect.h
     
     event/event.h
-    
-    editor/editor_defines.h
     
     gameobject/gameobject.h
     
@@ -96,6 +101,8 @@ set(ATLAS_HEADERS
     reflection/reflection.h
     
     serialization/serializer.h
+
+    soundbank/soundbank.h
     
     sound/sound.h
     
@@ -135,6 +142,8 @@ set_target_properties(sound_bakery_static PROPERTIES LANGUAGE CXX)
 target_precompile_headers(sound_bakery_shared PRIVATE ${PCH_HEADER})
 target_precompile_headers(sound_bakery_static PRIVATE ${PCH_HEADER})
 
+set(CMAKE_FOLDER extern)
+
 set(BUILD_STATIC ON CACHE BOOL "" FORCE)
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 set(BUILD_WITH_STATIC_RUNTIME_LIBS ON CACHE BOOL "" FORCE)
@@ -163,8 +172,32 @@ FetchContent_Declare(
   OVERRIDE_FIND_PACKAGE
 )
 
+FetchContent_Declare(
+  concurrencpp
+  GIT_REPOSITORY https://github.com/David-Haim/concurrencpp.git
+  GIT_TAG        v.0.1.7
+  GIT_SHALLOW    TRUE
+  GIT_PROGRESS TRUE
+  OVERRIDE_FIND_PACKAGE
+)
+
+FetchContent_Declare(
+  spdlog
+  GIT_REPOSITORY https://github.com/gabime/spdlog.git
+  GIT_TAG        v1.14.1
+  GIT_SHALLOW    TRUE
+  GIT_PROGRESS TRUE
+  OVERRIDE_FIND_PACKAGE
+)
+
 message(STATUS "Fetching rttr...")
 FetchContent_MakeAvailable(rttr)
+
+message(STATUS "Fetching concurrencpp...")
+FetchContent_MakeAvailable(concurrencpp)
+
+message(STATUS "Fetching spdlog...")
+FetchContent_MakeAvailable(spdlog)
 
 FetchContent_GetProperties(yaml)
 
@@ -179,12 +212,16 @@ target_link_libraries(sound_bakery_shared PUBLIC
   SoundBakery::Delegates 
   SoundBakery::SoundChef_Shared
   RTTR::Core_Lib
+  concurrencpp::concurrencpp
+  spdlog::spdlog
   yaml-cpp::yaml-cpp)
 
 target_link_libraries(sound_bakery_static PUBLIC 
   SoundBakery::Delegates 
   SoundBakery::SoundChef_Static
   RTTR::Core_Lib
+  concurrencpp::concurrencpp
+  spdlog::spdlog
   yaml-cpp::yaml-cpp)
 
 if(MSVC)
@@ -200,6 +237,8 @@ get_target_property(SOUND_BAKERY_ALL_FILES sound_bakery_shared SOURCES)
 foreach(source IN LISTS SOUND_BAKERY_ALL_FILES)
   list(APPEND SOUND_BAKERY_FORMAT_FILES "${CMAKE_CURRENT_SOURCE_DIR}/${source}")
 endforeach()
+
+set(CMAKE_FOLDER src)
 
 if (SOUND_BAKERY_FORMAT_SOURCE AND SOUND_BAKERY_CLANG_FORMAT_EXE)
   add_custom_target(format_sound_bakery

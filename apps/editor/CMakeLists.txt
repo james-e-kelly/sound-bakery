@@ -96,6 +96,8 @@ set_source_files_properties(
 # Set output directory for executable
 # set_target_properties(editor PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${BUILD_FOLDER})
 
+set(CMAKE_FOLDER extern)
+
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
@@ -243,6 +245,8 @@ if(MSVC)
 else()
   target_compile_options(editor PRIVATE -Wall -Wextra -Wpedantic)
 endif()
+
+set(CMAKE_FOLDER apps)
 
 if (SOUND_BAKERY_FORMAT_SOURCE AND SOUND_BAKERY_CLANG_FORMAT_EXE)
   get_target_property(SOUND_BAKERY_EDITOR_ALL_FILES editor SOURCES)

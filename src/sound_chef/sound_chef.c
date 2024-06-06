@@ -1,6 +1,14 @@
 #define MINIAUDIO_IMPLEMENTATION
 
+// Disable built-in decoding in favour of the ones from the example
+#define MA_NO_VORBIS
+#define MA_NO_OPUS
+
 #include "sound_chef/sound_chef.h"
+
+#include "extras/miniaudio_libopus.h"
+#include "extras/miniaudio_libvorbis.h"
+#include "sound_chef_encoder.h"
 
 #ifndef NDEBUG
     #define DEBUG_ASSERT(condition) MA_ASSERT(condition)
@@ -8,24 +16,189 @@
     #define DEBUG_ASSERT(condition)
 #endif  // NDEBUG
 
-#define SC_CHECK(condition, result) \
-    if ((condition) == MA_FALSE)    \
-    return (result)
-#define SC_CHECK_RESULT(result) \
-    if ((result) != MA_SUCCESS) \
-    return (result)
-#define SC_CHECK_ARG(condition)  \
-    if ((condition) == MA_FALSE) \
-    return MA_INVALID_ARGS
-#define SC_CHECK_MEM(ptr) \
-    if ((ptr) == NULL)    \
-    return MA_OUT_OF_MEMORY
-#define SC_CHECK_MEM_FREE(ptr, freePtr) \
-    if ((ptr) == NULL)                  \
-    {                                   \
-        ma_free((freePtr), NULL);       \
-        return MA_OUT_OF_MEMORY;        \
+// BACKENDS
+
+static ma_result ma_decoding_backend_init__libvorbis(void* pUserData,
+                                                     ma_read_proc onRead,
+                                                     ma_seek_proc onSeek,
+                                                     ma_tell_proc onTell,
+                                                     void* pReadSeekTellUserData,
+                                                     const ma_decoding_backend_config* pConfig,
+                                                     const ma_allocation_callbacks* pAllocationCallbacks,
+                                                     ma_data_source** ppBackend)
+{
+    ma_result result;
+    ma_libvorbis* pVorbis;
+
+    (void)pUserData;
+
+    pVorbis = (ma_libvorbis*)ma_malloc(sizeof(*pVorbis), pAllocationCallbacks);
+    if (pVorbis == NULL)
+    {
+        return MA_OUT_OF_MEMORY;
     }
+
+    result = ma_libvorbis_init(onRead, onSeek, onTell, pReadSeekTellUserData, pConfig, pAllocationCallbacks, pVorbis);
+    if (result != MA_SUCCESS)
+    {
+        ma_free(pVorbis, pAllocationCallbacks);
+        return result;
+    }
+
+    *ppBackend = pVorbis;
+
+    return MA_SUCCESS;
+}
+
+static ma_result ma_decoding_backend_init_file__libvorbis(void* pUserData,
+                                                          const char* pFilePath,
+                                                          const ma_decoding_backend_config* pConfig,
+                                                          const ma_allocation_callbacks* pAllocationCallbacks,
+                                                          ma_data_source** ppBackend)
+{
+    ma_result result;
+    ma_libvorbis* pVorbis;
+
+    (void)pUserData;
+
+    pVorbis = (ma_libvorbis*)ma_malloc(sizeof(*pVorbis), pAllocationCallbacks);
+    if (pVorbis == NULL)
+    {
+        return MA_OUT_OF_MEMORY;
+    }
+
+    result = ma_libvorbis_init_file(pFilePath, pConfig, pAllocationCallbacks, pVorbis);
+    if (result != MA_SUCCESS)
+    {
+        ma_free(pVorbis, pAllocationCallbacks);
+        return result;
+    }
+
+    *ppBackend = pVorbis;
+
+    return MA_SUCCESS;
+}
+
+static void ma_decoding_backend_uninit__libvorbis(void* pUserData,
+                                                  ma_data_source* pBackend,
+                                                  const ma_allocation_callbacks* pAllocationCallbacks)
+{
+    ma_libvorbis* pVorbis = (ma_libvorbis*)pBackend;
+
+    (void)pUserData;
+
+    ma_libvorbis_uninit(pVorbis, pAllocationCallbacks);
+    ma_free(pVorbis, pAllocationCallbacks);
+}
+
+static ma_result ma_decoding_backend_get_channel_map__libvorbis(void* pUserData,
+                                                                ma_data_source* pBackend,
+                                                                ma_channel* pChannelMap,
+                                                                size_t channelMapCap)
+{
+    ma_libvorbis* pVorbis = (ma_libvorbis*)pBackend;
+
+    (void)pUserData;
+
+    return ma_libvorbis_get_data_format(pVorbis, NULL, NULL, NULL, pChannelMap, channelMapCap);
+}
+
+static ma_decoding_backend_vtable g_ma_decoding_backend_vtable_libvorbis = {
+    ma_decoding_backend_init__libvorbis, ma_decoding_backend_init_file__libvorbis, NULL, /* onInitFileW() */
+    NULL,                                                                                /* onInitMemory() */
+    ma_decoding_backend_uninit__libvorbis};
+
+static ma_result ma_decoding_backend_init__libopus(void* pUserData,
+                                                   ma_read_proc onRead,
+                                                   ma_seek_proc onSeek,
+                                                   ma_tell_proc onTell,
+                                                   void* pReadSeekTellUserData,
+                                                   const ma_decoding_backend_config* pConfig,
+                                                   const ma_allocation_callbacks* pAllocationCallbacks,
+                                                   ma_data_source** ppBackend)
+{
+    ma_result result;
+    ma_libopus* pOpus;
+
+    (void)pUserData;
+
+    pOpus = (ma_libopus*)ma_malloc(sizeof(*pOpus), pAllocationCallbacks);
+    if (pOpus == NULL)
+    {
+        return MA_OUT_OF_MEMORY;
+    }
+
+    result = ma_libopus_init(onRead, onSeek, onTell, pReadSeekTellUserData, pConfig, pAllocationCallbacks, pOpus);
+    if (result != MA_SUCCESS)
+    {
+        ma_free(pOpus, pAllocationCallbacks);
+        return result;
+    }
+
+    *ppBackend = pOpus;
+
+    return MA_SUCCESS;
+}
+
+static ma_result ma_decoding_backend_init_file__libopus(void* pUserData,
+                                                        const char* pFilePath,
+                                                        const ma_decoding_backend_config* pConfig,
+                                                        const ma_allocation_callbacks* pAllocationCallbacks,
+                                                        ma_data_source** ppBackend)
+{
+    ma_result result;
+    ma_libopus* pOpus;
+
+    (void)pUserData;
+
+    pOpus = (ma_libopus*)ma_malloc(sizeof(*pOpus), pAllocationCallbacks);
+    if (pOpus == NULL)
+    {
+        return MA_OUT_OF_MEMORY;
+    }
+
+    result = ma_libopus_init_file(pFilePath, pConfig, pAllocationCallbacks, pOpus);
+    if (result != MA_SUCCESS)
+    {
+        ma_free(pOpus, pAllocationCallbacks);
+        return result;
+    }
+
+    *ppBackend = pOpus;
+
+    return MA_SUCCESS;
+}
+
+static void ma_decoding_backend_uninit__libopus(void* pUserData,
+                                                ma_data_source* pBackend,
+                                                const ma_allocation_callbacks* pAllocationCallbacks)
+{
+    ma_libopus* pOpus = (ma_libopus*)pBackend;
+
+    (void)pUserData;
+
+    ma_libopus_uninit(pOpus, pAllocationCallbacks);
+    ma_free(pOpus, pAllocationCallbacks);
+}
+
+static ma_result ma_decoding_backend_get_channel_map__libopus(void* pUserData,
+                                                              ma_data_source* pBackend,
+                                                              ma_channel* pChannelMap,
+                                                              size_t channelMapCap)
+{
+    ma_libopus* pOpus = (ma_libopus*)pBackend;
+
+    (void)pUserData;
+
+    return ma_libopus_get_data_format(pOpus, NULL, NULL, NULL, pChannelMap, channelMapCap);
+}
+
+static ma_decoding_backend_vtable g_ma_decoding_backend_vtable_libopus = {
+    ma_decoding_backend_init__libopus, ma_decoding_backend_init_file__libopus, NULL, /* onInitFileW() */
+    NULL,                                                                            /* onInitMemory() */
+    ma_decoding_backend_uninit__libopus};
+
+// SOUND CHEF
 
 /**
  * @def mallocs an object, sets it to 0 and checks for errors and potentially
@@ -38,13 +211,13 @@
     SC_CHECK_MEM((ptr));                \
     MA_ZERO_OBJECT((ptr))
 
-SC_RESULT SC_System_Create(SC_SYSTEM** outSystem)
+sc_result sc_system_create(sc_system** outSystem)
 {
-    SC_RESULT result = MA_ERROR;
+    sc_result result = MA_ERROR;
 
     if (outSystem)
     {
-        *outSystem = (SC_SYSTEM*)ma_malloc(sizeof(SC_SYSTEM), NULL);
+        *outSystem = (sc_system*)ma_malloc(sizeof(sc_system), NULL);
 
         result = *outSystem ? MA_SUCCESS : MA_ERROR;
     }
@@ -54,9 +227,9 @@ SC_RESULT SC_System_Create(SC_SYSTEM** outSystem)
     return result;
 }
 
-SC_RESULT SC_System_Release(SC_SYSTEM* system)
+sc_result sc_system_release(sc_system* system)
 {
-    SC_RESULT result = MA_ERROR;
+    sc_result result = MA_ERROR;
 
     if (system)
     {
@@ -69,20 +242,58 @@ SC_RESULT SC_System_Release(SC_SYSTEM* system)
     return result;
 }
 
-SC_RESULT SC_System_Init(SC_SYSTEM* system)
+sc_result sc_system_log_init(sc_system* system, ma_log_callback_proc callbackProc)
 {
-    SC_RESULT result = MA_ERROR;
+    SC_CHECK_ARG(system != NULL);
+    SC_CHECK_ARG(callbackProc != NULL);
+
+    ma_result logInitResult = ma_log_init(NULL, &system->log);
+    SC_CHECK_RESULT(logInitResult);
+
+    ma_result registerResult = ma_log_register_callback(&system->log, ma_log_callback_init(callbackProc, NULL));
+    SC_CHECK_RESULT(registerResult);
+
+    ma_log_post(&system->log, MA_LOG_LEVEL_INFO, "Initialized Sound Chef Logging");
+
+    return MA_SUCCESS;
+}
+
+sc_result sc_system_init(sc_system* system)
+{
+    sc_result result = MA_ERROR;
 
     if (system)
     {
         ma_engine* engine = (ma_engine*)system;
 
+        ma_decoding_backend_vtable* customBackendVTables[] = {&g_ma_decoding_backend_vtable_libvorbis,
+                                                              &g_ma_decoding_backend_vtable_libopus};
+
+        ma_resource_manager_config resourceManagerConfig     = ma_resource_manager_config_init();
+        resourceManagerConfig.ppCustomDecodingBackendVTables = customBackendVTables;
+        resourceManagerConfig.customDecodingBackendCount =
+            sizeof(customBackendVTables) / sizeof(customBackendVTables[0]);
+        resourceManagerConfig.pCustomDecodingBackendUserData =
+            NULL; /* <-- This will be passed in to the pUserData parameter of each function in the decoding backend
+                     vtables. */
+        resourceManagerConfig.pLog = &system->log;
+
+        result = ma_resource_manager_init(&resourceManagerConfig, &system->resourceManager);
+        SC_CHECK_RESULT(result);
+
         ma_engine_config engineConfig = ma_engine_config_init();
+        engineConfig.pResourceManager = &system->resourceManager;
         engineConfig.listenerCount    = 1;
         engineConfig.channels         = 2;
         engineConfig.sampleRate       = ma_standard_sample_rate_48000;
+        engineConfig.pLog             = &system->log;
 
         result = ma_engine_init(&engineConfig, engine);
+
+        if (result == MA_SUCCESS)
+        {
+            ma_log_post(&system->log, MA_LOG_LEVEL_INFO, "Initialized Sound Chef");
+        }
     }
 
     DEBUG_ASSERT(result == MA_SUCCESS);
@@ -90,14 +301,16 @@ SC_RESULT SC_System_Init(SC_SYSTEM* system)
     return result;
 }
 
-SC_RESULT SC_System_Close(SC_SYSTEM* system)
+sc_result sc_system_close(sc_system* system)
 {
-    SC_RESULT result = MA_ERROR;
+    sc_result result = MA_ERROR;
 
     if (system)
     {
         ma_engine_uninit((ma_engine*)system);
         result = MA_SUCCESS;
+
+        ma_log_post(&system->log, MA_LOG_LEVEL_INFO, "Closed Sound Chef");
     }
 
     DEBUG_ASSERT(result == MA_SUCCESS);
@@ -105,7 +318,7 @@ SC_RESULT SC_System_Close(SC_SYSTEM* system)
     return result;
 }
 
-static ma_uint32 GetFlagsFromMode(SC_SOUND_MODE mode)
+static ma_uint32 get_flags_from_mode(sc_sound_mode mode)
 {
     ma_uint32 flags = 0;
 
@@ -127,105 +340,105 @@ static ma_uint32 GetFlagsFromMode(SC_SOUND_MODE mode)
     return flags;
 }
 
-SC_RESULT SC_System_CreateSound(SC_SYSTEM* system, const char* fileName, SC_SOUND_MODE mode, SC_SOUND** sound)
+sc_result sc_system_create_sound(sc_system* system, const char* fileName, sc_sound_mode mode, sc_sound** sound)
 {
     SC_CHECK_ARG(system != NULL);
     SC_CHECK_ARG(fileName != NULL);
     SC_CHECK_ARG(sound != NULL);
 
-    SC_CREATE(*sound, SC_SOUND);
+    SC_CREATE(*sound, sc_sound);
 
-    (*sound)->m_mode = mode;
+    (*sound)->mode = mode;
 
-    return ma_sound_init_from_file((ma_engine*)system, fileName, GetFlagsFromMode(mode), NULL, NULL,
-                                   &(*sound)->m_sound);
+    return ma_sound_init_from_file((ma_engine*)system, fileName, get_flags_from_mode(mode), NULL, NULL,
+                                   &(*sound)->sound);
 }
 
-SC_RESULT SC_System_PlaySound(
-    SC_SYSTEM* system, SC_SOUND* sound, SC_SOUND_INSTANCE** instance, SC_NODE_GROUP* parent, SC_BOOL paused)
+sc_result sc_system_play_sound(
+    sc_system* system, sc_sound* sound, sc_sound_instance** instance, sc_node_group* parent, sc_bool paused)
 {
     SC_CHECK_ARG(system != NULL);
     SC_CHECK_ARG(sound != NULL);
     SC_CHECK_ARG(instance != NULL);
 
-    SC_CREATE(*instance, SC_SOUND_INSTANCE);
-    (*instance)->m_mode = sound->m_mode;
+    SC_CREATE(*instance, sc_sound_instance);
+    (*instance)->mode = sound->mode;
 
     ma_result copyResult =
-        ma_sound_init_copy((ma_engine*)system, &sound->m_sound, sound->m_mode, NULL, &(*instance)->m_sound);
+        ma_sound_init_copy((ma_engine*)system, &sound->sound, sound->mode, NULL, &(*instance)->sound);
     SC_CHECK_RESULT(copyResult);
 
     if (parent != NULL)
     {
-        ma_result attachResult = ma_node_attach_output_bus(*instance, 0, parent->m_tail->m_state->m_userData, 0);
+        ma_result attachResult = ma_node_attach_output_bus(*instance, 0, parent->tail->state->userData, 0);
         SC_CHECK_RESULT(attachResult);
     }
 
     if (paused == MA_FALSE)
     {
-        ma_result startResult = ma_sound_start(&(*instance)->m_sound);
+        ma_result startResult = ma_sound_start(&(*instance)->sound);
         SC_CHECK_RESULT(startResult);
     }
 
     return MA_SUCCESS;
 }
 
-SC_RESULT SC_System_CreateNodeGroup(SC_SYSTEM* system, SC_NODE_GROUP** nodeGroup)
+sc_result sc_system_create_node_group(sc_system* system, sc_node_group** nodeGroup)
 {
     SC_CHECK_ARG(system != NULL);
     SC_CHECK_ARG(nodeGroup != NULL);
 
-    SC_RESULT result = MA_ERROR;
+    sc_result result = MA_ERROR;
 
     /**
      * @todo Check for memory allocation failure
      */
-    *nodeGroup = (SC_NODE_GROUP*)ma_malloc(sizeof(SC_NODE_GROUP), NULL);
+    *nodeGroup = (sc_node_group*)ma_malloc(sizeof(sc_node_group), NULL);
     SC_CHECK_MEM(*nodeGroup);
     MA_ZERO_OBJECT(*nodeGroup);
 
     // Always create a fader/sound_group by default
-    SC_DSP_CONFIG faderConfig = SC_DSP_Config_Init(SC_DSP_TYPE_FADER);
-    result                    = SC_System_CreateDSP(system, &faderConfig, &(*nodeGroup)->m_fader);
+    sc_dsp_config faderConfig = sc_dsp_config_init(SC_DSP_TYPE_FADER);
+    result                    = sc_system_create_dsp(system, &faderConfig, &(*nodeGroup)->fader);
 
-    (*nodeGroup)->m_head = (*nodeGroup)->m_fader;
-    (*nodeGroup)->m_tail = (*nodeGroup)->m_fader;
+    (*nodeGroup)->head = (*nodeGroup)->fader;
+    (*nodeGroup)->tail = (*nodeGroup)->fader;
 
     DEBUG_ASSERT(result == MA_SUCCESS);
 
     return result;
 }
 
-SC_RESULT SC_System_CreateDSP(SC_SYSTEM* system, const SC_DSP_CONFIG* config, SC_DSP** dsp)
+sc_result sc_system_create_dsp(sc_system* system, const sc_dsp_config* config, sc_dsp** dsp)
 {
     SC_CHECK_ARG(system != NULL);
     SC_CHECK_ARG(config != NULL);
-    SC_CHECK_ARG(config->m_vtable != NULL);
-    SC_CHECK_ARG(config->m_vtable->m_create != NULL);
-    SC_CHECK_ARG(config->m_vtable->m_release != NULL);
+    SC_CHECK_ARG(config->vtable != NULL);
+    SC_CHECK_ARG(config->vtable->create != NULL);
+    SC_CHECK_ARG(config->vtable->release != NULL);
     SC_CHECK_ARG(dsp != NULL);
 
-    SC_RESULT result = MA_ERROR;
+    sc_result result = MA_ERROR;
 
-    *dsp = (SC_DSP*)ma_malloc(sizeof(SC_DSP), NULL);
+    *dsp = (sc_dsp*)ma_malloc(sizeof(sc_dsp), NULL);
     SC_CHECK_MEM(*dsp);
     MA_ZERO_OBJECT(*dsp);
 
-    (*dsp)->m_state = ma_malloc(sizeof(SC_DSP_STATE), NULL);
-    SC_CHECK_MEM_FREE((*dsp)->m_state, *dsp);
-    MA_ZERO_OBJECT((*dsp)->m_state);
+    (*dsp)->state = ma_malloc(sizeof(sc_dsp_state), NULL);
+    SC_CHECK_MEM_FREE((*dsp)->state, *dsp);
+    MA_ZERO_OBJECT((*dsp)->state);
 
-    (*dsp)->m_state->m_instance = *dsp;
-    (*dsp)->m_state->m_system   = system;
+    (*dsp)->state->instance = *dsp;
+    (*dsp)->state->system   = system;
 
-    (*dsp)->m_type   = config->m_type;
-    (*dsp)->m_vtable = config->m_vtable;
+    (*dsp)->type   = config->type;
+    (*dsp)->vtable = config->vtable;
 
-    result = (*dsp)->m_vtable->m_create((*dsp)->m_state);
+    result = (*dsp)->vtable->create((*dsp)->state);
 
     if (result != MA_SUCCESS)
     {
-        SC_DSP_Release(*dsp);
+        sc_dsp_release(*dsp);
         *dsp = NULL;
     }
 
@@ -234,89 +447,89 @@ SC_RESULT SC_System_CreateDSP(SC_SYSTEM* system, const SC_DSP_CONFIG* config, SC
     return result;
 }
 
-SC_RESULT SC_Sound_Release(SC_SOUND* sound)
+sc_result sc_sound_release(sc_sound* sound)
 {
     SC_CHECK_ARG(sound != NULL);
-    ma_sound_uninit(&sound->m_sound);
+    ma_sound_uninit(&sound->sound);
     ma_free(sound, NULL);
     return MA_SUCCESS;
 }
 
-SC_RESULT SC_API SC_SoundInstance_IsPlaying(SC_SOUND_INSTANCE* instance, SC_BOOL* isPlaying)
+sc_result SC_API sc_sound_instance_is_playing(sc_sound_instance* instance, sc_bool* isPlaying)
 {
     SC_CHECK_ARG(instance != NULL);
     SC_CHECK_ARG(isPlaying != NULL);
 
-    *isPlaying = ma_sound_is_playing(&instance->m_sound);
+    *isPlaying = ma_sound_is_playing(&instance->sound);
 
     return MA_SUCCESS;
 }
 
-SC_RESULT SC_SoundInstance_Release(SC_SOUND_INSTANCE* instance)
+sc_result sc_sound_instance_release(sc_sound_instance* instance)
 {
     SC_CHECK_ARG(instance != NULL);
-    ma_sound_uninit(&instance->m_sound);
+    ma_sound_uninit(&instance->sound);
     ma_free(instance, NULL);
     return MA_SUCCESS;
 }
 
-SC_RESULT SC_DSP_GetParameterFloat(SC_DSP* dsp, int index, float* value)
+sc_result sc_dsp_get_parameter_float(sc_dsp* dsp, int index, float* value)
 {
     SC_CHECK_ARG(dsp != NULL);
-    SC_CHECK_ARG(dsp->m_vtable != NULL);
-    SC_CHECK_ARG(dsp->m_vtable->m_getFloat != NULL);
-    SC_CHECK_ARG(dsp->m_state != NULL);
+    SC_CHECK_ARG(dsp->vtable != NULL);
+    SC_CHECK_ARG(dsp->vtable->getFloat != NULL);
+    SC_CHECK_ARG(dsp->state != NULL);
     SC_CHECK_ARG(value != NULL);
     SC_CHECK_ARG(index >= 0);
 
-    return dsp->m_vtable->m_getFloat(dsp->m_state, index, value);
+    return dsp->vtable->getFloat(dsp->state, index, value);
 }
 
-SC_RESULT SC_DSP_SetParameterFloat(SC_DSP* dsp, int index, float value)
+sc_result sc_dsp_set_parameter_float(sc_dsp* dsp, int index, float value)
 {
     SC_CHECK_ARG(dsp != NULL);
-    SC_CHECK_ARG(dsp->m_vtable != NULL);
-    SC_CHECK_ARG(dsp->m_vtable->m_setFloat != NULL);
-    SC_CHECK_ARG(dsp->m_state != NULL);
+    SC_CHECK_ARG(dsp->vtable != NULL);
+    SC_CHECK_ARG(dsp->vtable->setFloat != NULL);
+    SC_CHECK_ARG(dsp->state != NULL);
     SC_CHECK_ARG(index >= 0);
 
-    return dsp->m_vtable->m_setFloat(dsp->m_state, index, value);
+    return dsp->vtable->setFloat(dsp->state, index, value);
 }
 
-SC_RESULT SC_DSP_Release(SC_DSP* dsp)
+sc_result sc_dsp_release(sc_dsp* dsp)
 {
     SC_CHECK_ARG(dsp != NULL);
-    SC_CHECK_ARG(dsp->m_vtable != NULL);
-    SC_CHECK_ARG(dsp->m_vtable->m_release != NULL);
-    SC_CHECK_ARG(dsp->m_state != NULL);
+    SC_CHECK_ARG(dsp->vtable != NULL);
+    SC_CHECK_ARG(dsp->vtable->release != NULL);
+    SC_CHECK_ARG(dsp->state != NULL);
 
-    SC_RESULT result = dsp->m_vtable->m_release(dsp->m_state);
-    ma_free(dsp->m_state, NULL);
+    sc_result result = dsp->vtable->release(dsp->state);
+    ma_free(dsp->state, NULL);
     ma_free(dsp, NULL);
 
     return result;
 }
 
-SC_RESULT SC_NodeGroup_AddDSP(SC_NODE_GROUP* nodeGroup, SC_DSP* dsp, SC_DSP_INDEX index)
+sc_result sc_node_group_add_dsp(sc_node_group* nodeGroup, sc_dsp* dsp, sc_dsp_index index)
 {
     SC_CHECK(index == SC_DSP_INDEX_HEAD, MA_NOT_IMPLEMENTED);
     SC_CHECK_ARG(nodeGroup != NULL);
     SC_CHECK_ARG(dsp != NULL);
-    SC_CHECK(dsp->m_prev == NULL,
+    SC_CHECK(dsp->prev == NULL,
              MA_NOT_IMPLEMENTED);  // don't have detatch logic
-    SC_CHECK(dsp->m_next == NULL,
+    SC_CHECK(dsp->next == NULL,
              MA_NOT_IMPLEMENTED);  // don't have detatch logic
 
-    SC_RESULT result = MA_ERROR;
+    sc_result result = MA_ERROR;
 
     switch ((int)index)
     {
         case SC_DSP_INDEX_HEAD:
         {
-            SC_DSP* currentHead = nodeGroup->m_head;
-            DEBUG_ASSERT(currentHead->m_next == NULL);  // head nodes can't have
-                                                        // something after them
-            ma_node_base* currentParent = ((ma_node_base*)currentHead->m_state->m_userData)->pOutputBuses[0].pInputNode;
+            sc_dsp* currentHead = nodeGroup->head;
+            DEBUG_ASSERT(currentHead->next == NULL);  // head nodes can't have
+                                                      // something after them
+            ma_node_base* currentParent = ((ma_node_base*)currentHead->state->userData)->pOutputBuses[0].pInputNode;
             DEBUG_ASSERT(currentParent != NULL);  // must be attached to
                                                   // something, even if it's the
                                                   // endpoint
@@ -324,18 +537,18 @@ SC_RESULT SC_NodeGroup_AddDSP(SC_NODE_GROUP* nodeGroup, SC_DSP* dsp, SC_DSP_INDE
             if (currentParent)
             {
                 // Attach the dsp to the parent output
-                result = ma_node_attach_output_bus(dsp->m_state->m_userData, 0, currentParent, 0);
+                result = ma_node_attach_output_bus(dsp->state->userData, 0, currentParent, 0);
                 SC_CHECK_RESULT(result);
 
                 // Make the current head attach to the DSP (which is now the
                 // head)
-                result = ma_node_attach_output_bus(currentHead->m_state->m_userData, 0, dsp->m_state->m_userData, 0);
+                result = ma_node_attach_output_bus(currentHead->state->userData, 0, dsp->state->userData, 0);
                 SC_CHECK_RESULT(result);
 
-                nodeGroup->m_head->m_next = dsp;
-                dsp->m_prev               = nodeGroup->m_head;
+                nodeGroup->head->next = dsp;
+                dsp->prev             = nodeGroup->head;
 
-                nodeGroup->m_head = dsp;
+                nodeGroup->head = dsp;
                 ;
             }
 
@@ -344,9 +557,9 @@ SC_RESULT SC_NodeGroup_AddDSP(SC_NODE_GROUP* nodeGroup, SC_DSP* dsp, SC_DSP_INDE
         case 0:
         case SC_DSP_INDEX_TAIL:
         {
-            SC_DSP* currentTail = nodeGroup->m_tail;
+            sc_dsp* currentTail = nodeGroup->tail;
 
-            result = ma_node_attach_output_bus(dsp->m_state->m_userData, 0, currentTail->m_state->m_userData, 0);
+            result = ma_node_attach_output_bus(dsp->state->userData, 0, currentTail->state->userData, 0);
             SC_CHECK_RESULT(result);
 
             break;
@@ -360,25 +573,25 @@ SC_RESULT SC_NodeGroup_AddDSP(SC_NODE_GROUP* nodeGroup, SC_DSP* dsp, SC_DSP_INDE
     return result;
 }
 
-SC_RESULT SC_NodeGroup_SetParent(SC_NODE_GROUP* nodeGroup, SC_NODE_GROUP* parent)
+sc_result sc_node_group_set_parent(sc_node_group* nodeGroup, sc_node_group* parent)
 {
     SC_CHECK_ARG(nodeGroup != NULL);
     SC_CHECK_ARG(parent != NULL);
 
-    return ma_node_attach_output_bus(nodeGroup->m_head->m_state->m_userData, 0, parent->m_tail->m_state->m_userData, 0);
+    return ma_node_attach_output_bus(nodeGroup->head->state->userData, 0, parent->tail->state->userData, 0);
 }
 
-SC_RESULT SC_NodeGroup_Release(SC_NODE_GROUP* nodeGroup)
+sc_result sc_node_group_release(sc_node_group* nodeGroup)
 {
     SC_CHECK_ARG(nodeGroup != NULL);
 
-    SC_DSP* iDSP = nodeGroup->m_tail;
+    sc_dsp* iDSP = nodeGroup->tail;
 
     while (iDSP != NULL)
     {
-        SC_DSP* toFreeDSP = iDSP;
-        iDSP              = toFreeDSP->m_next;
-        SC_DSP_Release(toFreeDSP);
+        sc_dsp* toFreeDSP = iDSP;
+        iDSP              = toFreeDSP->next;
+        sc_dsp_release(toFreeDSP);
     }
 
     ma_free(nodeGroup, NULL);

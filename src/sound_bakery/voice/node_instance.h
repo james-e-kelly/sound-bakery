@@ -21,9 +21,9 @@ namespace SB::Engine
     {
         bool initNodeGroup(const NodeBase& node);
 
-        SC_DSP* lowpass  = nullptr;
-        SC_DSP* highpass = nullptr;
-        std::unique_ptr<SC_NODE_GROUP, SC_NODE_GROUP_DELETER> nodeGroup;
+        sc_dsp* lowpass  = nullptr;
+        sc_dsp* highpass = nullptr;
+        std::unique_ptr<sc_node_group, SC_NODE_GROUP_DELETER> nodeGroup;
     };
 
     /**
@@ -41,7 +41,10 @@ namespace SB::Engine
      */
     struct SB_CLASS ChildrenNodeOwner
     {
-        bool createChildren(const NodeBase& thisNode, Voice* owningVoice, NodeInstance* thisNodeInstance, unsigned int numTimesPlayed);
+        bool createChildren(const NodeBase& thisNode,
+                            Voice* owningVoice,
+                            NodeInstance* thisNodeInstance,
+                            unsigned int numTimesPlayed);
 
         std::vector<std::shared_ptr<NodeInstance>> childrenNodes;
     };
@@ -69,27 +72,27 @@ namespace SB::Engine
     {
         /**
          * @brief Node to reference
-        */
+         */
         SB::Core::DatabasePtr<NodeBase> refNode;
 
         /**
          * @brief Type of node to create.
-         * 
+         *
          * Different types of nodes initialize differently. For example, parent nodes only create more parents.
          * Children create more children.
-        */
+         */
         NodeInstanceType type = NodeInstanceType::MAIN;
 
         /**
          * @brief Voice owner.
-        */
+         */
         Voice* owningVoice = nullptr;
 
         /**
          * @brief Parent node instance for this node instance.
-         * 
+         *
          * Used when initializing children so it can join the DSP graph correctly.
-        */
+         */
         NodeInstance* parentForChildren = nullptr;
     };
 
@@ -114,7 +117,7 @@ namespace SB::Engine
 
         std::shared_ptr<Node> getReferencingNode() const noexcept { return m_referencingNode; }
         NodeInstance* getParent() const noexcept { return m_parent.parent.get(); }
-        SC_NODE_GROUP* getBus() const noexcept { return m_nodeGroup.nodeGroup.get(); }
+        sc_node_group* getBus() const noexcept { return m_nodeGroup.nodeGroup.get(); }
 
     private:
         void setVolume(float oldVolume, float newVolume);
@@ -122,13 +125,13 @@ namespace SB::Engine
         void setLowpass(float oldLowpass, float newLowpass);
         void setHighpass(float oldHighpass, float newHighpass);
 
-        std::shared_ptr<Node> m_referencingNode   = nullptr;
-        Voice* m_owningVoice      = nullptr;
-        NodeInstanceState m_state = NodeInstanceState::UNINIT;
+        std::shared_ptr<Node> m_referencingNode = nullptr;
+        Voice* m_owningVoice                    = nullptr;
+        NodeInstanceState m_state               = NodeInstanceState::UNINIT;
         NodeGroupInstance m_nodeGroup;
         ParentNodeOwner m_parent;
         ChildrenNodeOwner m_children;
-        std::unique_ptr<SC_SOUND_INSTANCE, SC_SOUND_INSTANCE_DELETER> m_soundInstance;
+        std::unique_ptr<sc_sound_instance, SC_SOUND_INSTANCE_DELETER> m_soundInstance;
         unsigned int m_numTimesPlayed = 0;
 
         REGISTER_REFLECTION(NodeInstance, SB::Core::Object)

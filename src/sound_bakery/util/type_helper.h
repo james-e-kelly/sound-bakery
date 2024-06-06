@@ -6,7 +6,7 @@ namespace SB::Engine
 {
     class NodeBase;
     class Node;
-}
+}  // namespace SB::Engine
 
 namespace SB::Util
 {
@@ -28,7 +28,7 @@ namespace SB::Util
         static bool isTypePlayable(const rttr::type& type);
 
         static rttr::enumeration getObjectCategoryEnum();
-        
+
         static rttr::string_view getObjectCategoryName(const SB_OBJECT_CATEGORY& objectCategory);
 
         static SB::Core::Object* getObjectFromInstance(const rttr::instance& instance);

@@ -17,10 +17,9 @@ namespace SB::Core
     {
     public:
         SB::Engine::System* getSystem() const;
-        SC_SYSTEM* getChef() const;
+        sc_system* getChef() const;
         ma_engine* getMini() const;
-        rttr::type getType() const;
-        
+
         std::string m_debugName;
 
         REGISTER_REFLECTION(ObjectUtilities)

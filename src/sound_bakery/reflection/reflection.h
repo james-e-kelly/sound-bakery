@@ -30,10 +30,10 @@ namespace SB::Reflection
 
         using source_type_no_cv = typename std::remove_cv<typename std::remove_pointer<Source_Type>::type>::type;
         return static_cast<Target_Type>(rttr::type::apply_offset(const_cast<source_type_no_cv*>(object)->get_ptr(),
-                                                           const_cast<source_type_no_cv*>(object)->get_type(),
+                                                                 const_cast<source_type_no_cv*>(object)->get_type(),
                                                                  Arg_Type::type()));
     }
 
     void registerReflectionTypes();
     void unregisterReflectionTypes();
-}
+}  // namespace SB::Reflection

@@ -6,11 +6,11 @@
 
 using namespace SB::Engine;
 
-static void addDspToNodeGroup(SC_NODE_GROUP* nodeGroup, SC_DSP** dsp, const SC_DSP_CONFIG& config)
+static void addDspToNodeGroup(sc_node_group* nodeGroup, sc_dsp** dsp, const sc_dsp_config& config)
 {
     assert(dsp != nullptr);
-    SC_System_CreateDSP(SB::Engine::System::getChef(), &config, dsp);
-    SC_NodeGroup_AddDSP(nodeGroup, *dsp, SC_DSP_INDEX_HEAD);
+    sc_system_create_dsp(SB::Engine::System::getChef(), &config, dsp);
+    sc_node_group_add_dsp(nodeGroup, *dsp, SC_DSP_INDEX_HEAD);
 }
 
 bool NodeGroupInstance::initNodeGroup(const NodeBase& node)
@@ -20,8 +20,8 @@ bool NodeGroupInstance::initNodeGroup(const NodeBase& node)
         return true;
     }
 
-    SC_NODE_GROUP* nGroup                 = nullptr;
-    const SC_RESULT createNodeGroupResult = SC_System_CreateNodeGroup(SB::Engine::System::getChef(), &nGroup);
+    sc_node_group* nGroup                 = nullptr;
+    const sc_result createNodeGroupResult = sc_system_create_node_group(SB::Engine::System::getChef(), &nGroup);
 
     if (createNodeGroupResult != MA_SUCCESS)
     {
@@ -30,8 +30,8 @@ bool NodeGroupInstance::initNodeGroup(const NodeBase& node)
 
     nodeGroup.reset(nGroup);
 
-    addDspToNodeGroup(nodeGroup.get(), &lowpass, SC_DSP_Config_Init(SC_DSP_TYPE_LOWPASS));
-    addDspToNodeGroup(nodeGroup.get(), &highpass, SC_DSP_Config_Init(SC_DSP_TYPE_HIGHPASS));
+    addDspToNodeGroup(nodeGroup.get(), &lowpass, sc_dsp_config_init(SC_DSP_TYPE_LOWPASS));
+    addDspToNodeGroup(nodeGroup.get(), &highpass, sc_dsp_config_init(SC_DSP_TYPE_HIGHPASS));
 
     for (const SB::Core::DatabasePtr<SB::Engine::EffectDescription>& desc :
          node.tryConvertObject<Node>()->m_effectDescriptions)
@@ -41,17 +41,17 @@ bool NodeGroupInstance::initNodeGroup(const NodeBase& node)
             continue;
         }
 
-        SC_DSP* dsp = nullptr;
+        sc_dsp* dsp = nullptr;
 
         addDspToNodeGroup(nodeGroup.get(), &dsp, *desc->getConfig());
 
         int index = 0;
         for (const SB::Engine::EffectParameterDescription& parameter : desc->getParameters())
         {
-            switch (parameter.m_parameter.m_type)
+            switch (parameter.m_parameter.type)
             {
                 case SC_DSP_PARAMETER_TYPE_FLOAT:
-                    SC_DSP_SetParameterFloat(dsp, index++, parameter.m_parameter.m_float.m_value);
+                    sc_dsp_set_parameter_float(dsp, index++, parameter.m_parameter.floatParameter.value);
                     break;
             }
         }
@@ -74,11 +74,11 @@ bool ParentNodeOwner::createParent(const NodeBase& thisNode, Voice* owningVoice)
 
             if (masterBus.lookup() && masterBus.id() != thisNode.getDatabaseID())
             {
-                parent        = masterBus->lockAndCopy();
+                parent = masterBus->lockAndCopy();
 
                 InitNodeInstance initData;
-                initData.refNode = masterBus->tryConvertObject<NodeBase>();
-                initData.type    = NodeInstanceType::BUS;
+                initData.refNode     = masterBus->tryConvertObject<NodeBase>();
+                initData.type        = NodeInstanceType::BUS;
                 initData.owningVoice = owningVoice;
 
                 createdParent = parent->init(initData);
@@ -89,7 +89,7 @@ bool ParentNodeOwner::createParent(const NodeBase& thisNode, Voice* owningVoice)
         {
             if (SB::Engine::NodeBase* parentNode = thisNode.parent())
             {
-                parent        = std::make_shared<NodeInstance>();
+                parent = std::make_shared<NodeInstance>();
 
                 InitNodeInstance initData;
                 initData.refNode     = parentNode->tryConvertObject<NodeBase>();
@@ -106,7 +106,7 @@ bool ParentNodeOwner::createParent(const NodeBase& thisNode, Voice* owningVoice)
             {
                 if (SB::Engine::Bus* bus = output->tryConvertObject<Bus>())
                 {
-                    parent        = bus->lockAndCopy();
+                    parent = bus->lockAndCopy();
 
                     InitNodeInstance initData;
                     initData.refNode     = bus->tryConvertObject<NodeBase>();
@@ -132,11 +132,12 @@ bool ChildrenNodeOwner::createChildren(const NodeBase& thisNode,
 {
     bool success = false;
 
-    if (const Container* container = thisNode.tryConvertObject<Container>(); container != nullptr && owningVoice != nullptr)
+    if (const Container* container = thisNode.tryConvertObject<Container>();
+        container != nullptr && owningVoice != nullptr)
     {
         GatherChildrenContext context;
         context.numTimesPlayed = numTimesPlayed;
-        context.parameters = owningVoice->getOwningGameObject()->getLocalParameters();
+        context.parameters     = owningVoice->getOwningGameObject()->getLocalParameters();
 
         container->gatherChildrenForPlay(context);
 

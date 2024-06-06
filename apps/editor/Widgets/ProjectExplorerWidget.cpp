@@ -51,7 +51,10 @@ void ProjectExplorerWidget::Render()
             }
             if (ImGui::BeginTabItem("SoundBanks"))
             {
-                ImGui::Text("SoundBanks Go Here");
+                if (m_projectNodesWidget)
+                {
+                    m_projectNodesWidget->RenderSoundbankPage();
+                }
                 ImGui::EndTabItem();
             }
             ImGui::EndTabBar();

@@ -2,63 +2,70 @@
 
 #include <string.h>  // for memset
 
-#define SC_DSP_CUTOFF_MIN           1
-#define SC_DSP_CUTOFF_MAX           22000
-#define SC_DSP_DEFAULT_FILTER_ORDER 2
+enum
+{
+    SC_DSP_CUTOFF_MIN           = 1,
+    SC_DSP_CUTOFF_MAX           = 22000,
+    SC_DSP_DEFAULT_FILTER_ORDER = 2,
+};
 
 /**
  * FADER
  */
 
-static SC_RESULT SC_DSP_FADER_CREATE(SC_DSP_STATE* state)
+static sc_result sc_dsp_fader_create(sc_dsp_state* state)
 {
-    state->m_userData = ma_malloc(sizeof(ma_sound_group), NULL);
-    if (state->m_userData == NULL)
+    state->userData = ma_malloc(sizeof(ma_sound_group), NULL);
+    if (state->userData == NULL)
+    {
         return MA_OUT_OF_MEMORY;
+    }
 
-    ma_sound_group_config config = ma_sound_group_config_init_2((ma_engine*)state->m_system);
-    return ma_sound_group_init_ex((ma_engine*)state->m_system, &config, (ma_sound_group*)state->m_userData);
+    ma_sound_group_config config = ma_sound_group_config_init_2((ma_engine*)state->system);
+    return ma_sound_group_init_ex((ma_engine*)state->system, &config, (ma_sound_group*)state->userData);
 }
 
-static SC_RESULT SC_DSP_FADER_RELEASE(SC_DSP_STATE* state)
+static sc_result sc_dsp_fader_release(sc_dsp_state* state)
 {
-    ma_sound_group_uninit((ma_sound_group*)state->m_userData);
+    ma_sound_group_uninit((ma_sound_group*)state->userData);
     return MA_SUCCESS;
 }
 
-static SC_DSP_VTABLE s_faderVtable = {SC_DSP_FADER_CREATE, SC_DSP_FADER_RELEASE};
+static sc_dsp_vtable s_faderVtable = {sc_dsp_fader_create, sc_dsp_fader_release};
 
 /**
  * LOWPASS
  */
 
-static SC_RESULT SC_DSP_LOWPASS_CREATE(SC_DSP_STATE* state)
+static sc_result sc_dsp_lowpass_create(sc_dsp_state* state)
 {
-    state->m_userData = ma_malloc(sizeof(ma_lpf_node), NULL);
-    if (state->m_userData == NULL)
+    state->userData = ma_malloc(sizeof(ma_lpf_node), NULL);
+    if (state->userData == NULL)
+    {
         return MA_OUT_OF_MEMORY;
+    }
 
-    ma_lpf_node_config config = ma_lpf_node_config_init(ma_engine_get_channels((ma_engine*)state->m_system),
-                                                        ma_engine_get_sample_rate((ma_engine*)state->m_system),
+    ma_lpf_node_config config = ma_lpf_node_config_init(ma_engine_get_channels((ma_engine*)state->system),
+                                                        ma_engine_get_sample_rate((ma_engine*)state->system),
                                                         SC_DSP_CUTOFF_MAX, SC_DSP_DEFAULT_FILTER_ORDER);
-    return ma_lpf_node_init((ma_node_graph*)state->m_system, &config, NULL, (ma_lpf_node*)state->m_userData);
+    return ma_lpf_node_init((ma_node_graph*)state->system, &config, NULL, (ma_lpf_node*)state->userData);
 }
 
-static SC_RESULT SC_DSP_LOWPASS_RELEASE(SC_DSP_STATE* state)
+static sc_result sc_dsp_lowpass_release(sc_dsp_state* state)
 {
-    ma_lpf_node_uninit((ma_lpf_node*)state->m_userData, NULL);
+    ma_lpf_node_uninit((ma_lpf_node*)state->userData, NULL);
     return MA_SUCCESS;
 }
 
-static SC_RESULT SC_DSP_LOWPASS_SET_PARAM_FLOAT(SC_DSP_STATE* state, int index, float value)
+static sc_result sc_dsp_lowpass_set_param_float(sc_dsp_state* state, int index, float value)
 {
     (void)value;
 
-    SC_RESULT result = MA_ERROR;
+    sc_result result = MA_ERROR;
 
     ma_format format     = ma_format_f32;
-    ma_uint32 channels   = ma_node_get_output_channels(state->m_userData, 0);
-    ma_uint32 sampleRate = ma_engine_get_sample_rate((ma_engine*)state->m_system);
+    ma_uint32 channels   = ma_node_get_output_channels(state->userData, 0);
+    ma_uint32 sampleRate = ma_engine_get_sample_rate((ma_engine*)state->system);
 
     switch (index)
     {
@@ -68,7 +75,7 @@ static SC_RESULT SC_DSP_LOWPASS_SET_PARAM_FLOAT(SC_DSP_STATE* state, int index, 
         {
             ma_lpf_config lpfConfig =
                 ma_lpf_config_init(format, channels, sampleRate, value, SC_DSP_DEFAULT_FILTER_ORDER);
-            result = ma_lpf_node_reinit(&lpfConfig, state->m_userData);
+            result = ma_lpf_node_reinit(&lpfConfig, state->userData);
             break;
         }
     }
@@ -76,12 +83,12 @@ static SC_RESULT SC_DSP_LOWPASS_SET_PARAM_FLOAT(SC_DSP_STATE* state, int index, 
     return result;
 }
 
-static SC_RESULT SC_DSP_LOWPASS_GET_PARAM_FLOAT(SC_DSP_STATE* const state, int index, float* const value)
+static sc_result sc_dsp_lowpass_get_param_float(sc_dsp_state* const state, int index, float* const value)
 {
     (void)state;
     (void)value;
 
-    SC_RESULT result = MA_ERROR;
+    sc_result result = MA_ERROR;
 
     switch (index)
     {
@@ -93,46 +100,48 @@ static SC_RESULT SC_DSP_LOWPASS_GET_PARAM_FLOAT(SC_DSP_STATE* const state, int i
     return result;
 }
 
-static SC_DSP_PARAMETER s_lowpassCutoffParam = {SC_DSP_PARAMETER_TYPE_FLOAT, "Cutoff", SC_DSP_CUTOFF_MIN,
+static sc_dsp_parameter s_lowpassCutoffParam = {SC_DSP_PARAMETER_TYPE_FLOAT, "Cutoff", SC_DSP_CUTOFF_MIN,
                                                 SC_DSP_CUTOFF_MAX, SC_DSP_CUTOFF_MAX};
 
-static SC_DSP_PARAMETER* s_lowpassParams[SC_DSP_LOWPASS_NUM_PARAM] = {&s_lowpassCutoffParam};
+static sc_dsp_parameter* s_lowpassParams[SC_DSP_LOWPASS_NUM_PARAM] = {&s_lowpassCutoffParam};
 
-static SC_DSP_VTABLE s_lowpassVtable = {
-    SC_DSP_LOWPASS_CREATE,          SC_DSP_LOWPASS_RELEASE, SC_DSP_LOWPASS_SET_PARAM_FLOAT,
-    SC_DSP_LOWPASS_GET_PARAM_FLOAT, s_lowpassParams,        SC_DSP_LOWPASS_NUM_PARAM};
+static sc_dsp_vtable s_lowpassVtable = {
+    sc_dsp_lowpass_create,          sc_dsp_lowpass_release, sc_dsp_lowpass_set_param_float,
+    sc_dsp_lowpass_get_param_float, s_lowpassParams,        SC_DSP_LOWPASS_NUM_PARAM};
 
 /**
  * HIGHPASS
  */
 
-static SC_RESULT SC_DSP_HIGHPASS_CREATE(SC_DSP_STATE* state)
+static sc_result sc_dsp_highpass_create(sc_dsp_state* state)
 {
-    state->m_userData = ma_malloc(sizeof(ma_hpf_node), NULL);
-    if (state->m_userData == NULL)
+    state->userData = ma_malloc(sizeof(ma_hpf_node), NULL);
+    if (state->userData == NULL)
+    {
         return MA_OUT_OF_MEMORY;
+    }
 
-    ma_hpf_node_config config = ma_hpf_node_config_init(ma_engine_get_channels((ma_engine*)state->m_system),
-                                                        ma_engine_get_sample_rate((ma_engine*)state->m_system),
+    ma_hpf_node_config config = ma_hpf_node_config_init(ma_engine_get_channels((ma_engine*)state->system),
+                                                        ma_engine_get_sample_rate((ma_engine*)state->system),
                                                         SC_DSP_CUTOFF_MIN, SC_DSP_DEFAULT_FILTER_ORDER);
-    return ma_hpf_node_init((ma_node_graph*)state->m_system, &config, NULL, (ma_hpf_node*)state->m_userData);
+    return ma_hpf_node_init((ma_node_graph*)state->system, &config, NULL, (ma_hpf_node*)state->userData);
 }
 
-static SC_RESULT SC_DSP_HIGHPASS_RELEASE(SC_DSP_STATE* state)
+static sc_result sc_dsp_highpass_release(sc_dsp_state* state)
 {
-    ma_hpf_node_uninit((ma_hpf_node*)state->m_userData, NULL);
+    ma_hpf_node_uninit((ma_hpf_node*)state->userData, NULL);
     return MA_SUCCESS;
 }
 
-static SC_RESULT SC_DSP_HIGHPASS_SET_PARAM_FLOAT(SC_DSP_STATE* state, int index, float value)
+static sc_result sc_dsp_highpass_set_param_float(sc_dsp_state* state, int index, float value)
 {
     (void)value;
 
-    SC_RESULT result = MA_ERROR;
+    sc_result result = MA_ERROR;
 
     ma_format format     = ma_format_f32;
-    ma_uint32 channels   = ma_node_get_output_channels(state->m_userData, 0);
-    ma_uint32 sampleRate = ma_engine_get_sample_rate((ma_engine*)state->m_system);
+    ma_uint32 channels   = ma_node_get_output_channels(state->userData, 0);
+    ma_uint32 sampleRate = ma_engine_get_sample_rate((ma_engine*)state->system);
 
     switch (index)
     {
@@ -142,7 +151,7 @@ static SC_RESULT SC_DSP_HIGHPASS_SET_PARAM_FLOAT(SC_DSP_STATE* state, int index,
         {
             ma_hpf_config hpfConfig =
                 ma_hpf_config_init(format, channels, sampleRate, value, SC_DSP_DEFAULT_FILTER_ORDER);
-            result = ma_hpf_node_reinit(&hpfConfig, state->m_userData);
+            result = ma_hpf_node_reinit(&hpfConfig, state->userData);
             break;
         }
     }
@@ -150,12 +159,12 @@ static SC_RESULT SC_DSP_HIGHPASS_SET_PARAM_FLOAT(SC_DSP_STATE* state, int index,
     return result;
 }
 
-static SC_RESULT SC_DSP_HIGHPASS_GET_PARAM_FLOAT(SC_DSP_STATE* state, int index, float* const value)
+static sc_result sc_dsp_highpass_get_param_float(sc_dsp_state* state, int index, float* const value)
 {
     (void)state;
     (void)value;
 
-    SC_RESULT result = MA_ERROR;
+    sc_result result = MA_ERROR;
 
     switch (index)
     {
@@ -167,25 +176,25 @@ static SC_RESULT SC_DSP_HIGHPASS_GET_PARAM_FLOAT(SC_DSP_STATE* state, int index,
     return result;
 }
 
-static SC_DSP_PARAMETER s_highpassCutoffParam = {SC_DSP_PARAMETER_TYPE_FLOAT, "Cutoff", SC_DSP_CUTOFF_MIN,
+static sc_dsp_parameter s_highpassCutoffParam = {SC_DSP_PARAMETER_TYPE_FLOAT, "Cutoff", SC_DSP_CUTOFF_MIN,
                                                  SC_DSP_CUTOFF_MAX, SC_DSP_CUTOFF_MIN};
 
-static SC_DSP_PARAMETER* s_highpassParams[SC_DSP_HIGHPASS_NUM_PARAM] = {&s_highpassCutoffParam};
+static sc_dsp_parameter* s_highpassParams[SC_DSP_HIGHPASS_NUM_PARAM] = {&s_highpassCutoffParam};
 
-static SC_DSP_VTABLE s_highpassVtable = {
-    SC_DSP_HIGHPASS_CREATE,          SC_DSP_HIGHPASS_RELEASE, SC_DSP_HIGHPASS_SET_PARAM_FLOAT,
-    SC_DSP_HIGHPASS_GET_PARAM_FLOAT, s_highpassParams,        SC_DSP_HIGHPASS_NUM_PARAM};
+static sc_dsp_vtable s_highpassVtable = {
+    sc_dsp_highpass_create,          sc_dsp_highpass_release, sc_dsp_highpass_set_param_float,
+    sc_dsp_highpass_get_param_float, s_highpassParams,        SC_DSP_HIGHPASS_NUM_PARAM};
 
 /**
  * FUNCTIONS
  */
 
-SC_DSP_CONFIG SC_DSP_Config_Init(SC_DSP_TYPE type)
+sc_dsp_config sc_dsp_config_init(sc_dsp_type type)
 {
-    SC_DSP_CONFIG result;
-    memset(&result, 0, sizeof(SC_DSP_CONFIG));
+    sc_dsp_config result;
+    memset(&result, 0, sizeof(sc_dsp_config));
 
-    result.m_type = type;
+    result.type = type;
 
     switch (type)
     {
@@ -193,13 +202,13 @@ SC_DSP_CONFIG SC_DSP_Config_Init(SC_DSP_TYPE type)
         case SC_DSP_TYPE_UNKOWN:
             break;
         case SC_DSP_TYPE_FADER:
-            result.m_vtable = &s_faderVtable;
+            result.vtable = &s_faderVtable;
             break;
         case SC_DSP_TYPE_LOWPASS:
-            result.m_vtable = &s_lowpassVtable;
+            result.vtable = &s_lowpassVtable;
             break;
         case SC_DSP_TYPE_HIGHPASS:
-            result.m_vtable = &s_highpassVtable;
+            result.vtable = &s_highpassVtable;
             break;
         case SC_DSP_TYPE_DELAY:
             break;

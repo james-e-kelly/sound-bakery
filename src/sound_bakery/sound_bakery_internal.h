@@ -5,17 +5,17 @@
 
 struct SC_SOUND_DELETER
 {
-    void operator()(SC_SOUND* sound) { SC_Sound_Release(sound); }
+    void operator()(sc_sound* sound) { sc_sound_release(sound); }
 };
 
 struct SC_SOUND_INSTANCE_DELETER
 {
-    void operator()(SC_SOUND_INSTANCE* instance) { SC_SoundInstance_Release(instance); }
+    void operator()(sc_sound_instance* instance) { sc_sound_instance_release(instance); }
 };
 
 struct SC_NODE_GROUP_DELETER
 {
-    void operator()(SC_NODE_GROUP* bus) { SC_NodeGroup_Release(bus); }
+    void operator()(sc_node_group* bus) { sc_node_group_release(bus); }
 };
 
 #endif

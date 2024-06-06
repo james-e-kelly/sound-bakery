@@ -21,7 +21,7 @@ SB::Core::Object* SB::Engine::Factory::createObjectFromType(rttr::type objectTyp
     assert(constructor.is_valid() && "Object in Sound Bakery must be constructable. Define this in the "
                                      "Reflection file");
 
-    rttr::variant variant = constructor.invoke();
+    rttr::variant variant        = constructor.invoke();
     const rttr::type variantType = variant.get_type();
     assert(variant.is_valid());
     assert(variantType.is_valid());
@@ -30,15 +30,14 @@ SB::Core::Object* SB::Engine::Factory::createObjectFromType(rttr::type objectTyp
     assert(variantType.get_raw_type().is_valid());
 
     const rttr::type testObjectType = rttr::type::get<SB::Core::Object>();
-    const rttr::type databaseType = rttr::type::get<SB::Core::DatabaseObject>();
+    const rttr::type databaseType   = rttr::type::get<SB::Core::DatabaseObject>();
 
     assert(databaseType.is_derived_from(testObjectType));
 
-    const rttr::type type = variant.get_type();
+    const rttr::type type    = variant.get_type();
     const rttr::type rawType = type.get_raw_type();
 
-    assert(rawType.is_derived_from(testObjectType) &&
-           "Type must derive from the SB::Core::Object type");
+    assert(rawType.is_derived_from(testObjectType) && "Type must derive from the SB::Core::Object type");
 
     bool conversionWasSuccessful        = false;
     SB::Core::DatabaseObject* converted = variant.convert<SB::Core::DatabaseObject*>(&conversionWasSuccessful);

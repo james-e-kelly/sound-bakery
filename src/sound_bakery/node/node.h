@@ -6,10 +6,6 @@
 
 namespace SB::Engine
 {
-    class FloatParameter;
-    class NamedParameter;
-    class NamedParameterValue;
-
     enum SB_NODE_STATUS
     {
         // Has no parent and no bus
@@ -26,87 +22,25 @@ namespace SB::Engine
         ~NodeBase();
 
     public:
-        virtual void setParentNode(const SB::Core::DatabasePtr<NodeBase>& parent) { m_parentNode = parent; }
+        virtual void setParentNode(const SB::Core::DatabasePtr<NodeBase>& parent);
+        virtual void setOutputBus(const SB::Core::DatabasePtr<NodeBase>& bus);
 
-    public:
-        SB_NODE_STATUS getNodeStatus() const noexcept
-        {
-            SB_NODE_STATUS status = SB_NODE_NULL;
+        SB_NODE_STATUS getNodeStatus() const noexcept;
 
-            if (m_parentNode.hasId())
-            {
-                status = SB_NODE_MIDDLE;
-            }
-            else if (m_outputBus.hasId())
-            {
-                status = SB_NODE_TOP;
-            }
+        NodeBase* parent() const;
+        NodeBase* outputBus() const;
 
-            return status;
-        }
+        virtual bool canAddChild(const SB::Core::DatabasePtr<NodeBase>& child) const;
 
-        NodeBase* parent() const { return m_parentNode.lookupRaw(); }
+        void addChild(const SB::Core::DatabasePtr<NodeBase>& child);
+        void removeChild(const SB::Core::DatabasePtr<NodeBase>& child);
 
-        virtual void setOutputBus(const SB::Core::DatabasePtr<NodeBase>& bus) { m_outputBus = bus; }
+        std::vector<NodeBase*> getChildren() const;
+        std::size_t getChildCount() const;
+        bool hasChild(const SB::Core::DatabasePtr<NodeBase>& test) const;
 
-        NodeBase* outputBus() const { return m_outputBus.lookupRaw(); }
-
-    public:
-        virtual bool canAddChild(const SB::Core::DatabasePtr<NodeBase>& child) const
-        {
-            if (m_childNodes.contains(child) || child.id() == getDatabaseID())
-            {
-                return false;
-            }
-            return true;
-        }
-
-        void addChild(const SB::Core::DatabasePtr<NodeBase>& child)
-        {
-            if (canAddChild(child))
-            {
-                if (child.lookup() && child->parent())
-                {
-                    child->parent()->removeChild(child);
-                }
-
-                m_childNodes.insert(child);
-
-                if (child.lookup())
-                {
-                    child->setParentNode(this);
-                }
-            }
-        }
-
-        void removeChild(const SB::Core::DatabasePtr<NodeBase>& child)
-        {
-            if (child)
-            {
-                child->setParentNode(nullptr);
-            }
-
-            m_childNodes.erase(child);
-        }
-
-        std::vector<NodeBase*> getChildren() const
-        {
-            std::vector<NodeBase*> children(m_childNodes.size());
-
-            for (auto& child : m_childNodes)
-            {
-                if (child.lookup())
-                {
-                    children.push_back(child.raw());
-                }
-            }
-
-            return children;
-        }
-
-        std::size_t getChildCount() const { return m_childNodes.size(); }
-
-        bool hasChild(const SB::Core::DatabasePtr<NodeBase>& test) const { return m_childNodes.contains(test); }
+        void gatherAllDescendants(std::vector<NodeBase*>& descendants) const;
+        void gatherAllParents(std::vector<NodeBase*>& parents) const;
 
     protected:
         SB::Core::DatabasePtr<NodeBase> m_parentNode;
@@ -132,26 +66,9 @@ namespace SB::Engine
         /**
          * @brief Gathers all parameters on this and child nodes that can effect the runtime output.
          */
-        virtual void gatherParameters(GlobalParameterList& parameters)
-        {
-            parameters.floatParameters.reserve(m_childNodes.size() + 1);
-            parameters.intParameters.reserve(m_childNodes.size() + 1);
+        virtual void gatherParameters(GlobalParameterList& parameters);
 
-            gatherParametersFromThis(parameters);
-
-            for (NodeBase* const child : getChildren())
-            {
-                if (child != nullptr)
-                {
-                    if (Node* const childNode = child->tryConvertObject<Node>())
-                    {
-                        childNode->gatherParameters(parameters);
-                    }
-                }
-            }
-        }
-
-        void addEffect(SC_DSP_TYPE type);
+        void addEffect(sc_dsp_type type);
 
     protected:
         /**

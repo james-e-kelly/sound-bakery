@@ -92,33 +92,7 @@ int App::Run(int argc, char** argv)
 
 void App::RequestExit() { m_isRequestingExit = true; }
 
-std::string App::GetResourceFilePath(const char* filename) const
-{
-    std::filesystem::path executablePath(
-        std::filesystem::path(m_executableLocation).parent_path());
-    assert(std::filesystem::exists(executablePath));
-
-    std::filesystem::path resourcePath =
-        executablePath;  // by default, the exe sits next to its resources
-
-    // We're in a MacOS App
-    if (executablePath.filename().string() == std::string("MacOS"))
-    {
-        resourcePath =
-            executablePath.parent_path() / PathHelpers::ResourcesFolder;
-        assert(std::filesystem::exists(resourcePath));
-    }
-
-    // We're possibly in a debug folder
-    if (!std::filesystem::exists(resourcePath / "fonts"))
-    {
-        resourcePath = executablePath.parent_path();
-    }
-
-    return std::filesystem::path(resourcePath / filename).string();
-}
-
-void App::OpenProject(const ProjectConfiguration& projectConfiguration)
+void App::OpenProject(const std::filesystem::path& projectFile)
 {
     if (m_projectManager)
     {
@@ -127,5 +101,5 @@ void App::OpenProject(const ProjectConfiguration& projectConfiguration)
     }
 
     m_projectManager = std::make_unique<ProjectManager>(this);
-    m_projectManager->Init(std::move(projectConfiguration));
+    m_projectManager->Init(projectFile);
 }

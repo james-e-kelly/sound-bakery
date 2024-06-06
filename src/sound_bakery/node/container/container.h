@@ -33,9 +33,9 @@ namespace SB::Engine
 
         /**
          * @brief How many times the voice/node has played.
-         * 
+         *
          * Will equal 1 in most cases.
-         * 
+         *
          * For sequences, this can be higher.
          */
         unsigned int numTimesPlayed;

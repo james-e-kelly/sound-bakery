@@ -2,7 +2,12 @@
 
 #include "sound_bakery/core/object/object.h"
 #include "sound_bakery/core/object/object_tracker.h"
+#include "sound_bakery/event/event.h"
 #include "sound_bakery/factory.h"
+#include "sound_bakery/node/container/sound_container.h"
+#include "sound_bakery/node/node.h"
+#include "sound_bakery/sound/sound.h"
+#include "sound_bakery/soundbank/soundbank.h"
 #include "sound_bakery/system.h"
 
 #include <rttr/type.h>
@@ -372,6 +377,97 @@ void Serializer::loadSystem(SB::Engine::System* system, YAML::Node& node)
         loadProperties(node, system, system->get_type().get_method("onLoaded"));
     }
 }
+
+void Serializer::packageSoundbank(SB::Engine::Soundbank* soundbank, YAML::Emitter& emitter)
+{
+    if (soundbank != nullptr)
+    {
+        std::vector<SB::Engine::Event*> eventsToSave;
+        std::vector<SB::Engine::NodeBase*> nodesToSave;
+        std::vector<SB::Engine::Sound*> soundsToSave;
+
+        for (auto& event : soundbank->GetEvents())
+        {
+            if (event.lookup())
+            {
+                eventsToSave.push_back(event.raw());
+
+                for (auto& action : event->m_actions)
+                {
+                    if (action.m_type != SB::Engine::SB_ACTION_PLAY)
+                    {
+                        continue;
+                    }
+
+                    if (!action.m_destination.lookup())
+                    {
+                        continue;
+                    }
+
+                    SB::Engine::NodeBase* const nodeBase =
+                        action.m_destination->tryConvertObject<SB::Engine::NodeBase>();
+
+                    assert(nodeBase);
+
+                    nodeBase->gatherAllDescendants(nodesToSave);
+                    nodeBase->gatherAllParents(nodesToSave);
+                }
+            }
+        }
+
+        for (auto& node : nodesToSave)
+        {
+            if (node->getType() == SB::Engine::SoundContainer::type())
+            {
+                if (SB::Engine::SoundContainer* const soundContainer =
+                        node->tryConvertObject<SB::Engine::SoundContainer>())
+                {
+                    if (SB::Engine::Sound* const sound = soundContainer->getSound())
+                    {
+                        soundsToSave.push_back(sound);
+                    }
+                }
+            }
+        }
+
+        for (SB::Engine::Event* event : eventsToSave)
+        {
+            assert(event);
+
+            Doc eventDoc(emitter);
+
+            saveInstance(emitter, event);
+        }
+
+        for (SB::Engine::NodeBase* node : nodesToSave)
+        {
+            assert(node);
+
+            Doc soundDoc(emitter);
+
+            saveInstance(emitter, node);
+        }
+
+        for (SB::Engine::Sound* sound : soundsToSave)
+        {
+            assert(sound);
+
+            Doc soundDoc(emitter);
+
+            saveInstance(emitter, sound);
+
+            ma_data_source* dataSource = ma_sound_get_data_source(&sound->getSound()->sound);
+        }
+
+        {
+            Doc doc(emitter);
+
+            saveInstance(emitter, soundbank);
+        }
+    }
+}
+
+rttr::instance Serializer::unpackSoundbank(YAML::Node& node) { return rttr::instance(); }
 
 rttr::instance SB::Core::Serialization::Serializer::createAndLoadObject(YAML::Node& node,
                                                                         std::optional<rttr::method> onLoadedMethod)

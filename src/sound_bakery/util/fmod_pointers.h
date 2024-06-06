@@ -6,12 +6,12 @@ namespace SB
 {
     struct SC_SYSTEM_DELETER
     {
-        void operator()(SC_SYSTEM* system)
+        void operator()(sc_system* system)
         {
-            SC_System_Close(system);
-            SC_System_Release(system);
+            sc_system_close(system);
+            sc_system_release(system);
         }
     };
 
-    using SystemPtr = std::unique_ptr<SC_SYSTEM, SC_SYSTEM_DELETER>;
+    using SystemPtr = std::unique_ptr<sc_system, SC_SYSTEM_DELETER>;
 }  // namespace SB

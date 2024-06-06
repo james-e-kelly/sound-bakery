@@ -10,22 +10,26 @@ namespace SB::Engine
     public:
         Sound();
 
-    public:
         void loadSynchronous();
         void loadAsynchronous();
-        void setSoundName(const std::string& soundName);
-        void setStreaming(bool streaming) { m_streaming = streaming; }
 
-        const std::string& getSoundName() const;
+        void setSoundName(std::string soundName);
+        std::string getSoundName() const;
+
+        void setEncodedSoundName(std::string path);
+        std::string getEncodedSoundName() const { return encodedSoundPath.string(); }
+
+        void setStreaming(bool streaming) { m_streaming = streaming; }
         bool getIsStreaming() const { return m_streaming; }
 
-        SC_SOUND* getSound() { return m_sound.get(); }
+        sc_sound* getSound();
 
     private:
-        std::unique_ptr<SC_SOUND, SC_SOUND_DELETER> m_sound;
+        std::unique_ptr<sc_sound, SC_SOUND_DELETER> m_sound;
 
-    private:
-        std::string m_soundName;
+        std::filesystem::path rawSoundPath;
+        std::filesystem::path encodedSoundPath;
+
         bool m_streaming;
 
         REGISTER_REFLECTION(Sound, SB::Core::DatabaseObject)

@@ -3,12 +3,18 @@
 #include "sound_bakery/core/core_fwd.h"
 #include "sound_bakery/core/database/database_ptr.h"
 #include "sound_bakery/util/fmod_pointers.h"
+#include "spdlog/sinks/basic_file_sink.h"
 
 namespace SB::Core
 {
     class Database;
     class ObjectTracker;
-}
+}  // namespace SB::Core
+
+namespace SB::Editor
+{
+    class Project;
+}  // namespace SB::Editor
 
 namespace SB::Engine
 {
@@ -34,16 +40,22 @@ namespace SB::Engine
 
     public:
         static System* get();
-        static SC_SYSTEM* getChef();
+        static sc_system* getChef();
+
         static System* create();
         static void destroy();
-        
+
+        static SB_RESULT init();
+        static SB_RESULT update();
+
+        /**
+         * @brief Creates an instance of Sound Bakery and opens the project.
+         */
+        static SB_RESULT openProject(const std::filesystem::path& projectFile);
+
         static SB::Core::ObjectTracker* getObjectTracker();
         static SB::Core::Database* getDatabase();
-
-    public:
-        SB_RESULT init();
-        SB_RESULT update();
+        static SB::Editor::Project* getProject();
 
         void onLoaded();
 
@@ -53,9 +65,12 @@ namespace SB::Engine
 
         GameObject* getListenerGameObject() const;
 
-    private:
-        void registerReflectionTypes();
-        void unregisterReflectionTypes();
+        std::shared_ptr<concurrencpp::thread_pool_executor> getBackgroundExecuter() const
+        {
+            return concurrenRuntime.background_executor();
+        }
+
+        std::shared_ptr<concurrencpp::manual_executor> getMainThreadExecutuer() const { return mainThreadExecuter; }
 
     private:
         SB::SystemPtr m_chefSystem;
@@ -65,8 +80,14 @@ namespace SB::Engine
 
         bool m_registeredReflection = false;
 
+        std::unique_ptr<SB::Editor::Project> m_project;
         std::unique_ptr<SB::Core::Database> m_database;
         std::unique_ptr<SB::Core::ObjectTracker> m_objectTracker;
         std::unique_ptr<Profiling::VoiceTracker> m_voiceTracker;
+
+        concurrencpp::runtime concurrenRuntime;
+        std::shared_ptr<concurrencpp::manual_executor> mainThreadExecuter;
+
+        std::shared_ptr<spdlog::logger> logger;
     };
 }  // namespace SB::Engine
