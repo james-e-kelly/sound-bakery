@@ -7,27 +7,108 @@
 [![GitHub license](https://img.shields.io/badge/C%2B%2B-20-blue)](https://en.cppreference.com/w/cpp/compiler_support#cpp20)
 ![WIP](https://img.shields.io/badge/Status-WIP-yellow)
 
-*Sound Bakery is currently under development!*
+Welcome to **Sound Bakery** – an open-source audio middleware tool designed to bring game audio to life! Inspired by industry-leading tools Wwise and FMOD, Sound Bakery combines the robustness of the miniaudio library with the custom-built low-level library Sound Chef and high-level library Sound Bakery to deliver a seamless audio experience.
 
-Sound Bakery is an open-source audio middleware tool with an editing workflow like Wwise and an API like FMOD. It aims to be a free alternative to the industry standards without sacrificing quality. It is also highly customisable and easy to edit.
+## Table of Contents
+- [About Sound Bakery](#about-sound-bakery)
+- [Vision](#vision)
+- [Features](#features)
+- [Getting Started](#getting-started)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Documentation](#documentation)
+- [Contributing](#contributing)
+- [License](#license)
+- [Acknowledgements](#acknowledgements)
 
-It is built on [miniaudio](https://miniaud.io/index.html) for audio playback and [Dear ImGui](https://github.com/ocornut/imgui) for editing.
+## About Sound Bakery
+Sound Bakery offers an effective solution for integrating high-quality audio into games and interactive media. Leveraging the simplicity and efficiency of miniaudio, along with custom libraries, Sound Bakery provides a comprehensive suite of tools to manage and play audio effortlessly.
 
-The library comes in three parts:
-- A cross-platform editor
-- An adaptive audio library called `Sound Bakery`
-- An audio playback library called `Sound Chef` with features like virtual voices
+Sound Bakery provides an intuitive and flexible environment for crafting immersive soundscapes for both seasoned audio programmers and newcomers.
 
-# Features
-- Cross-platform authoring application
-- Compiles on Windows, MacOS, Linux GCC and Linux Clang
-- Built with C++20
-- Public C API
-- Adaptive audio support with container types mirroring Wwise
-- Soundbanks
+### Vision
 
-# License
+Sound Bakery endeavours to be an open and free audio middleware tool, flourishing through the collective efforts of many. We aspire to deliver a high-quality solution capable of handling the extensive personnel and data demands of AAA development, yet intuitive enough for indie developers and students. The project is anchored by the following principles:
 
-Sound Bakery is distributed under the MIT [license](https://github.com/KarateKidzz/sound-bakery/blob/master/LICENSE).
+- An intuitive and user-friendly authoring application
+- A simple, clean, yet powerful API for programmers
+- Seamless integrations with leading game engines
+- Clear and comprehensive documentation, complete with usage examples
+- A flexible design that accommodates plugins and extensions
 
-The library and application are free to use in personal and commercial applications.
+### Features
+- **Seamless Integration:** Integrate Sound Bakery into existing projects with minimal setup.
+- **Powerful Audio Engine:** Utilize miniaudio for robust audio playback capabilities.
+- **Modular Design:** Use Sound Chef for low-level audio manipulation and Sound Bakery for high-level audio management.
+- **Authoring Tool:** Create and modify audio experiences using an authoring tool powered by ImGui.
+- **Written in C++20:** Modern C++20 features ensure optimal performance and a great developer experience.
+- **Easy API:** An API designed to be as simple to use as FMOD's.
+- **Cross-Platform Support:** Develop audio solutions for multiple platforms without hassle.
+- **Flexible Media Encoding:** Encode media with Vorbis, Opus, or ADPCM.
+- **Human-Readable Data:** Save data in YAML format to minimize source control conflicts.
+- **Profiling Tools:** Profile audio performance with the tracy profiler.
+- **Open-Source:** Contributions to the project are welcome to help build the future of game audio.
+
+## Getting Started
+Ready to start baking some sounds? Follow these steps to set up Sound Bakery in a project.
+
+### Prerequisites
+Ensure the following are installed:
+
+- A C++ compiler (e.g., GCC, Clang, MSVC)
+- CMake (version 3.10 or higher)
+- Git
+
+### Installation
+Clone the repository and build the project:
+
+```
+git clone https://github.com/KarateKidzz/sound-bakery.git
+cd sound-bakery
+mkdir build
+cd build
+cmake ..
+make
+```
+
+### Usage
+Here's a simple example to get started with Sound Bakery:
+
+```cpp
+#include "sound_chef.h"
+
+int main() {
+    sc_system* system = NULL;
+    sc_system_create(&system);
+    sc_system_init(system);
+ 
+    sc_sound* sound = NULL;
+    sc_system_create_sound(system, "some_sound.wav", SC_SOUND_MODE_DEFAULT, &sound);
+ 
+    sc_sound_instance* instance = NULL;
+    sc_system_play_sound(system, sound, &instance, NULL, SC_FALSE);
+
+    return 0;
+}
+```
+
+### Documentation
+
+For comprehensive documentation on Sound Bakery, including API references and usage guides, visit [soundbakery.jameskelly.audio](https://soundbakery.jameskelly.audio). Here, you'll find everything you need to get started with integrating and optimizing audio into projects.
+
+## Contributing
+Contributions from the community are welcome! Whether fixing bugs, adding new features, or improving documentation, all help is valuable.
+
+### How to Contribute
+1. Fork the repository.
+2. Create a new branch for the feature or bug fix.
+3. Commit changes and push the branch to the fork.
+4. Create a pull request with a detailed description of the changes.
+
+For more details, check out our [contributing guidelines](CONTRIBUTING.md).
+
+## License
+Sound Bakery is licensed under the MIT License. See the LICENSE file for more information.
+
+## Acknowledgements
+A big thank you to the creators of miniaudio, concurrencpp, ImGui, rttr, tracy, and spdlog for their incredible libraries and to all our contributors who make Sound Bakery possible.
