@@ -11,10 +11,12 @@ Welcome to **Sound Bakery** – an open-source audio middleware tool designed to
 
 ## Table of Contents
 - [About Sound Bakery](#about-sound-bakery)
+- [Vision](#vision)
 - [Features](#features)
 - [Getting Started](#getting-started)
 - [Installation](#installation)
 - [Usage](#usage)
+- [Documentation](#documentation)
 - [Contributing](#contributing)
 - [License](#license)
 - [Acknowledgements](#acknowledgements)
@@ -24,7 +26,17 @@ Sound Bakery offers an effective solution for integrating high-quality audio int
 
 Sound Bakery provides an intuitive and flexible environment for crafting immersive soundscapes for both seasoned audio programmers and newcomers.
 
-## Features
+### Vision
+
+Sound Bakery endeavours to be an open and free audio middleware tool, flourishing through the collective efforts of many. We aspire to deliver a high-quality solution capable of handling the extensive personnel and data demands of AAA development, yet intuitive enough for indie developers and students. The project is anchored by the following principles:
+
+- An intuitive and user-friendly authoring application
+- A simple, clean, yet powerful API for programmers
+- Seamless integrations with leading game engines
+- Clear and comprehensive documentation, complete with usage examples
+- A flexible design that accommodates plugins and extensions
+
+### Features
 - **Seamless Integration:** Integrate Sound Bakery into existing projects with minimal setup.
 - **Powerful Audio Engine:** Utilize miniaudio for robust audio playback capabilities.
 - **Modular Design:** Use Sound Chef for low-level audio manipulation and Sound Bakery for high-level audio management.
