@@ -89,7 +89,7 @@ Contributions from the community are welcome! Whether fixing bugs, adding new fe
 3. Commit changes and push the branch to the fork.
 4. Create a pull request with a detailed description of the changes.
 
-For more details, check out our contributing guidelines.
+For more details, check out our [contributing guidelines](CONTRIBUTING.MD).
 
 ## License
 Sound Bakery is licensed under the MIT License. See the LICENSE file for more information.
