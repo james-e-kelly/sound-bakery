@@ -80,6 +80,10 @@ int main() {
 }
 ```
 
+### Documentation
+
+For comprehensive documentation on Sound Bakery, including API references and usage guides, visit [soundbakery.jameskelly.audio](https://soundbakery.jameskelly.audio). Here, you'll find everything you need to get started with integrating and optimizing audio into projects.
+
 ## Contributing
 Contributions from the community are welcome! Whether fixing bugs, adding new features, or improving documentation, all help is valuable.
 
