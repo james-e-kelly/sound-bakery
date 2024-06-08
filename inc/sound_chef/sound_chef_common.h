@@ -57,6 +57,9 @@
         ma_free((freePtr), NULL);       \
         return MA_OUT_OF_MEMORY;        \
     }
+#define SC_CHECK_AND_GOTO(condition, dest) \
+    if ((condition) == MA_FALSE)           \
+    goto dest
 
 #define SC_ZERO_OBJECT(p) memset((p), 0, sizeof(*(p)))
 

@@ -2,6 +2,7 @@ message(STATUS "Adding Sound Chef")
 
 set(SOUND_CHEF_SOURCES 
     sound_chef.c
+    sound_chef_bank.c
     sound_chef_dsp.c
     sound_chef_encoder.c
 
@@ -12,8 +13,9 @@ set(SOUND_CHEF_SOURCES
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Source Files" FILES ${ATLAS_SOURCES})
 
 set(SOUND_CHEF_HEADERS
-    sound_chef_guide.h
+    sound_chef_bank.h
     sound_chef_encoder.h
+    sound_chef_guide.h
 
     encoders/sound_chef_encoder_vorbis.h
 
