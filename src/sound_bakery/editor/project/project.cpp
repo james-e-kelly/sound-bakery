@@ -1,9 +1,11 @@
 #include "project.h"
 
+#include "sound_bakery/event/event.h"
 #include "sound_bakery/node/container/sound_container.h"
 #include "sound_bakery/serialization/serializer.h"
 #include "sound_bakery/sound/sound.h"
 #include "sound_bakery/soundbank/soundbank.h"
+#include "sound_chef/sound_chef_bank.h"
 #include "sound_chef/sound_chef_encoder.h"
 
 std::filesystem::path SB::Editor::ProjectConfiguration::typeFolder(const rttr::type& type) const
@@ -182,13 +184,76 @@ void SB::Editor::Project::buildSoundbanks() const
         {
             if (SB::Engine::Soundbank* const soundbank = soundbankObject->tryConvertObject<SB::Engine::Soundbank>())
             {
-                YAML::Emitter soundbankEmitter;
+                /*YAML::Emitter soundbankEmitter;
                 SB::Core::Serialization::Serializer::packageSoundbank(soundbank, soundbankEmitter);
 
                 const std::filesystem::path filePath =
                     m_projectConfig.objectFolder() / m_projectConfig.getIdFilename(soundbank, std::string(".bank"));
 
-                saveYAML(soundbankEmitter, filePath);
+                saveYAML(soundbankEmitter, filePath);*/
+
+                std::vector<SB::Engine::NodeBase*> nodesToSave;
+
+                for (auto& event : soundbank->GetEvents())
+                {
+                    if (event.lookup())
+                    {
+                        for (auto& action : event->m_actions)
+                        {
+                            if (!action.m_destination.lookup())
+                            {
+                                continue;
+                            }
+
+                            SB::Engine::NodeBase* const nodeBase =
+                                action.m_destination->tryConvertObject<SB::Engine::NodeBase>();
+
+                            assert(nodeBase);
+
+                            nodesToSave.push_back(nodeBase);
+                            nodeBase->gatherAllDescendants(nodesToSave);
+                            nodeBase->gatherAllParents(nodesToSave);
+                        }
+                    }
+                }
+
+                if (nodesToSave.empty())
+                {
+                    continue;
+                }
+
+                std::vector<SB::Engine::Sound*> soundsToSave;
+                std::vector<std::string> ecodedSoundPathsToSaveStrings;
+                std::vector<const char*> encodedSoundPathsToSave;
+                std::vector<ma_encoding_format> encodingFormats;
+
+                for (auto& node : nodesToSave)
+                {
+                    if (node->getType() == SB::Engine::SoundContainer::type())
+                    {
+                        if (SB::Engine::SoundContainer* const soundContainer =
+                                node->tryConvertObject<SB::Engine::SoundContainer>())
+                        {
+                            if (SB::Engine::Sound* const sound = soundContainer->getSound())
+                            {
+                                soundsToSave.push_back(sound);
+                                ecodedSoundPathsToSaveStrings.push_back(
+                                    (m_projectConfig.encodedFolder() / sound->getEncodedSoundName()).string());
+                                encodedSoundPathsToSave.push_back(ecodedSoundPathsToSaveStrings.back().c_str());
+                                encodingFormats.push_back(ma_encoding_format_unknown);
+                            }
+                        }
+                    }
+                }
+
+                sc_bank bank;
+                sc_result initresult = sc_bank_init((m_projectConfig.buildFolder() / (std::string(soundbank->getDatabaseName()) + ".bnk")).string().c_str(), &bank);
+                assert(initresult == MA_SUCCESS);
+
+                sc_result buildResult = sc_bank_build(&bank, encodedSoundPathsToSave.data(), encodingFormats.data(), encodedSoundPathsToSave.size());
+                assert(buildResult == MA_SUCCESS);
+
+                sc_bank_uninit(&bank);
             }
         }
     }

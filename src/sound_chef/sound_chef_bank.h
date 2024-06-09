@@ -15,6 +15,11 @@
 #define SC_BANK_ID      (FOURCC('S', 'C', 'B', 'K'))
 #define SC_BANK_SUB_ID  (FOURCC('S', 'C', 'F', 'E'))
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 typedef struct sc_bank sc_bank;
 
 typedef struct sc_subChunk sc_subChunk;
@@ -60,5 +65,9 @@ sc_result SC_API sc_bank_init(const char* outputFile, sc_bank* bank);
 sc_result SC_API sc_bank_uninit(sc_bank* bank);
 
 sc_result SC_API sc_bank_build(sc_bank* bank, const char** inputFiles, ma_encoding_format* inputFileFormats, ma_uint32 inputFilesSize);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

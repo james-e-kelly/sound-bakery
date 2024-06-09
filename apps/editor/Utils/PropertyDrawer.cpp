@@ -616,11 +616,20 @@ bool PropertyDrawer::DrawPayloadDrop(rttr::variant& value,
 
     if (ImGui::BeginDragDropTarget())
     {
-        const rttr::type valueType = value.get_type();
+        std::string payloadStringString = payloadString.to_string();
 
-        if (const ImGuiPayload* const payload =
-                ImGui::AcceptDragDropPayload(payloadString.to_string().c_str()))
+        // Allow all
+        if (payloadStringString == SB::Editor::PayloadObject)
         {
+            if (const ImGuiPayload* const payload = ImGui::GetDragDropPayload())
+            {
+                payloadStringString = payload->DataType;
+            }
+        }
+
+        if (const ImGuiPayload* const payload = ImGui::AcceptDragDropPayload(payloadStringString.c_str()))
+        {
+            const rttr::type valueType = value.get_type();
             rttr::variant data;
 
             if (valueType == rttr::type::get<std::string>())

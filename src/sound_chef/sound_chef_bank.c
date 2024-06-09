@@ -157,7 +157,10 @@ cleanup:
     {
         void* data = finalData[index];
 
-		ma_free(data, NULL);
+        if (data != NULL)
+        {
+            ma_free(data, NULL);
+        }
     }
 
 	ma_free(finalData, NULL);
