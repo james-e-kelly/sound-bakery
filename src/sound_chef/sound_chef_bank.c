@@ -100,6 +100,7 @@ sc_result sc_bank_build(sc_bank* bank,
     }
 
 	size_t totalDataSize = 0;
+    size_t filesRead     = 0;
 
     ma_result returnResult = MA_ERROR;
 
@@ -119,6 +120,8 @@ sc_result sc_bank_build(sc_bank* bank,
         finalDataSize[index] = inputFileDataSize + SC_BANK_FILE_NAME_BUFFER_SIZE;
         memcpy_s(finalFilenames + (index * SC_BANK_FILE_NAME_BUFFER_SIZE), SC_BANK_FILE_NAME_BUFFER_SIZE, filename, strnlen_s(filename, SC_BANK_FILE_NAME_BUFFER_SIZE));
         totalDataSize += SC_CHUNK_MIN_SIZE + SC_BANK_FILE_NAME_BUFFER_SIZE + inputFileDataSize;
+
+        ++filesRead;
 	}
 
     size_t bytesWritten = 0;
@@ -153,7 +156,7 @@ sc_result sc_bank_build(sc_bank* bank,
     returnResult = writeResult;
 
 cleanup:
-	for (size_t index = 0; index < inputFilesSize; ++index)
+	for (size_t index = 0; index < filesRead; ++index)
     {
         void* data = finalData[index];
 
