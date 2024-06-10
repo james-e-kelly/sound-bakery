@@ -6,18 +6,18 @@
 #include "Widgets/Widget.h"
 #include "pch.h"
 
-class App final
+class app final
 {
 public:
-    int Run(int argc, char** argv);
-    void RequestExit();
+    int run(int argc, char** argv);
+    void request_exit();
 
 public:
     template <class T>
-    T* AddSubsystemClass();
+    T* add_subsystem_class();
 
     template <class T>
-    T* GetSubsystemByClass();
+    T* get_subsystem_by_class();
 
     AppManager* GetAppManager() const { return m_appManager.get(); }
     ProjectManager* GetProjectManager() const { return m_projectManager.get(); }
@@ -25,7 +25,7 @@ public:
     void OpenProject(const std::filesystem::path& projectFile);
 
 private:
-    std::vector<std::unique_ptr<Subsystem>> m_subsystems;
+    std::vector<std::unique_ptr<subsystem>> m_subsystems;
     std::chrono::high_resolution_clock::time_point m_previousTime;
     std::string m_executableLocation;
     bool m_hasInit          = false;
@@ -36,7 +36,7 @@ private:
 };
 
 template <class T>
-T* App::AddSubsystemClass()
+T* app::add_subsystem_class()
 {
     m_subsystems.push_back(std::make_unique<T>(this));
     T* subsystem = dynamic_cast<T*>(m_subsystems.back().get());
@@ -52,9 +52,9 @@ T* App::AddSubsystemClass()
 }
 
 template <class T>
-T* App::GetSubsystemByClass()
+T* app::get_subsystem_by_class()
 {
-    for (std::unique_ptr<Subsystem>& subsystem : m_subsystems)
+    for (std::unique_ptr<subsystem>& subsystem : m_subsystems)
     {
         if (T* castedSubsystem = dynamic_cast<T*>(subsystem.get()))
         {

@@ -170,7 +170,7 @@ void ProjectNodesWidget::RenderSingleNode(rttr::type type,
                 ImGui::IsMouseReleased(ImGuiMouseButton_Left) &&
                 !ImGui::GetDragDropPayload())
             {
-                GetApp()->GetProjectManager()->GetSelection().SelectObject(
+                get_app()->GetProjectManager()->GetSelection().SelectObject(
                     object);
             }
 
@@ -322,7 +322,7 @@ bool ProjectNodesWidget::RenderNodeContextMenu(rttr::type type,
 
                 if (ImGui::MenuItem("Delete"))
                 {
-                    GetApp()->GetProjectManager()->GetSelection().SelectObject(
+                    get_app()->GetProjectManager()->GetSelection().SelectObject(
                         nullptr);
                     SB::Engine::System::getDatabase()->remove(object);
                     result = false;

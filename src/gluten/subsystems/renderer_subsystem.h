@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Subsystem.h"
+#include "subsystem.h"
 
 struct GLFWwindow;
 

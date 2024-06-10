@@ -1,6 +1,6 @@
-#include "RendererSubsystem.h"
+#include "renderer_subsystem.h"
 
-#include "App/App.h"
+#include "app/app.h"
 #include "IconsFontAwesome6.h"
 #include "IconsFontaudio.h"
 #include "imgui.h"
@@ -32,7 +32,7 @@ static void glfw_error_callback(int error, const char* description)
     fprintf(stderr, "GLFW Error %d: %s\n", error, description);
 }
 
-RendererSubsystem::WindowGuard::WindowGuard(int width,
+renderer_subsystem::window_guard::window_guard(int width,
                                             int height,
                                             const std::string& windowName)
 {
@@ -59,14 +59,14 @@ RendererSubsystem::WindowGuard::WindowGuard(int width,
     }
 }
 
-RendererSubsystem::WindowGuard::WindowGuard(WindowGuard&& other) noexcept
+renderer_subsystem::window_guard::window_guard(window_guard&& other) noexcept
 {
     m_window       = other.m_window;
     other.m_window = nullptr;
 }
 
-RendererSubsystem::WindowGuard& RendererSubsystem::WindowGuard::operator=(
-    WindowGuard&& other) noexcept
+renderer_subsystem::window_guard& renderer_subsystem::window_guard::operator=(
+    window_guard&& other) noexcept
 {
     if (this != &other)
     {
@@ -77,7 +77,7 @@ RendererSubsystem::WindowGuard& RendererSubsystem::WindowGuard::operator=(
     return *this;
 }
 
-RendererSubsystem::WindowGuard::~WindowGuard()
+renderer_subsystem::window_guard::~window_guard()
 {
     if (m_window)
     {
@@ -86,9 +86,9 @@ RendererSubsystem::WindowGuard::~WindowGuard()
     }
 }
 
-int RendererSubsystem::PreInit(int ArgC, char* ArgV[]) { return 0; }
+int renderer_subsystem::pre_init(int ArgC, char* ArgV[]) { return 0; }
 
-void RendererSubsystem::SetDefaultWindowHints()
+void renderer_subsystem::set_default_window_hints()
 {
     // Decide GL+GLSL versions
 #if defined(__APPLE__)
@@ -106,7 +106,7 @@ void RendererSubsystem::SetDefaultWindowHints()
 #endif
 }
 
-static ImVec4 hexToRGB(ImU32 hex) 
+static ImVec4 hex_to_rgb(ImU32 hex) 
 {
     float s = 1.0f / 255.0f;
 
@@ -119,32 +119,32 @@ static ImVec4 hexToRGB(ImU32 hex)
                   ((hex >> IM_COL32_A_SHIFT) & 0xFF) * s);
 }
 
-static ImVec4 hexStringToRGB(const std::string& string)
+static ImVec4 hex_string_to_rgb(const std::string& string)
 {
-    ImVec4 color = hexToRGB(static_cast<ImU32>(std::stoul(string, nullptr, 16)));
+    ImVec4 color = hex_to_rgb(static_cast<ImU32>(std::stoul(string, nullptr, 16)));
     color.w = 1.0f;
     return color;
 }
 
-static ImVec4 adjustAlpha(const ImVec4& color, const float alpha)
+static ImVec4 adjust_alpha(const ImVec4& color, const float alpha)
 {
     ImVec4 resultColor = color;
     resultColor.w      = alpha;
     return resultColor;
 }
 
-int RendererSubsystem::InitGLFW()
+int renderer_subsystem::init_glfw()
 {
     glfwSetErrorCallback(glfw_error_callback);
     if (!glfwInit())
         return 1;
 
-    SetDefaultWindowHints();
+    set_default_window_hints();
 
     return 0;
 }
 
-int RendererSubsystem::InitImGui()
+int renderer_subsystem::init_imgui()
 {
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
@@ -223,287 +223,287 @@ int RendererSubsystem::InitImGui()
 
     #pragma region "Carbon"
 
-    static ImVec4 black         = hexStringToRGB("000000");
+    static ImVec4 black         = hex_string_to_rgb("000000");
     static ImVec4 black100      = black;
-    static ImVec4 blackHover    = hexStringToRGB("212121");
+    static ImVec4 blackHover    = hex_string_to_rgb("212121");
 
-    static ImVec4 white         = hexStringToRGB("ffffff");
+    static ImVec4 white         = hex_string_to_rgb("ffffff");
     static ImVec4 white0        = white;
-    static ImVec4 whiteHover    = hexStringToRGB("e8e8e8");
+    static ImVec4 whiteHover    = hex_string_to_rgb("e8e8e8");
 
-    static ImVec4 yellow10      = hexStringToRGB("fcf4d6");
-    static ImVec4 yellow20      = hexStringToRGB("fddc69");
-    static ImVec4 yellow30      = hexStringToRGB("f1c21b");
-    static ImVec4 yellow40      = hexStringToRGB("d2a106");
-    static ImVec4 yellow50      = hexStringToRGB("b28600");
-    static ImVec4 yellow60      = hexStringToRGB("8e6a00");
-    static ImVec4 yellow70      = hexStringToRGB("684e00");
-    static ImVec4 yellow80      = hexStringToRGB("483700");
-    static ImVec4 yellow90      = hexStringToRGB("302400");
-    static ImVec4 yellow100     = hexStringToRGB("1c1500");
+    static ImVec4 yellow10      = hex_string_to_rgb("fcf4d6");
+    static ImVec4 yellow20      = hex_string_to_rgb("fddc69");
+    static ImVec4 yellow30      = hex_string_to_rgb("f1c21b");
+    static ImVec4 yellow40      = hex_string_to_rgb("d2a106");
+    static ImVec4 yellow50      = hex_string_to_rgb("b28600");
+    static ImVec4 yellow60      = hex_string_to_rgb("8e6a00");
+    static ImVec4 yellow70      = hex_string_to_rgb("684e00");
+    static ImVec4 yellow80      = hex_string_to_rgb("483700");
+    static ImVec4 yellow90      = hex_string_to_rgb("302400");
+    static ImVec4 yellow100     = hex_string_to_rgb("1c1500");
 
-    static ImVec4 yellow10Hover  = hexStringToRGB("f8e6a0");
-    static ImVec4 yellow20Hover  = hexStringToRGB("fccd27");
-    static ImVec4 yellow30Hover  = hexStringToRGB("ddb00e");
-    static ImVec4 yellow40Hover  = hexStringToRGB("bc9005");
-    static ImVec4 yellow50Hover  = hexStringToRGB("9e7700");
-    static ImVec4 yellow60Hover  = hexStringToRGB("755800");
-    static ImVec4 yellow70Hover  = hexStringToRGB("806000");
-    static ImVec4 yellow80Hover  = hexStringToRGB("5c4600");
-    static ImVec4 yellow90Hover  = hexStringToRGB("3d2e00");
-    static ImVec4 yellow100Hover = hexStringToRGB("332600");
+    static ImVec4 yellow10Hover  = hex_string_to_rgb("f8e6a0");
+    static ImVec4 yellow20Hover  = hex_string_to_rgb("fccd27");
+    static ImVec4 yellow30Hover  = hex_string_to_rgb("ddb00e");
+    static ImVec4 yellow40Hover  = hex_string_to_rgb("bc9005");
+    static ImVec4 yellow50Hover  = hex_string_to_rgb("9e7700");
+    static ImVec4 yellow60Hover  = hex_string_to_rgb("755800");
+    static ImVec4 yellow70Hover  = hex_string_to_rgb("806000");
+    static ImVec4 yellow80Hover  = hex_string_to_rgb("5c4600");
+    static ImVec4 yellow90Hover  = hex_string_to_rgb("3d2e00");
+    static ImVec4 yellow100Hover = hex_string_to_rgb("332600");
    
-    static ImVec4 orange10  = hexStringToRGB("fff2e8");
-    static ImVec4 orange20  = hexStringToRGB("ffd9be");
-    static ImVec4 orange30  = hexStringToRGB("ffb784");
-    static ImVec4 orange40  = hexStringToRGB("ff832b");
-    static ImVec4 orange50  = hexStringToRGB("eb6200");
-    static ImVec4 orange60  = hexStringToRGB("ba4e00");
-    static ImVec4 orange70  = hexStringToRGB("8a3800");
-    static ImVec4 orange80  = hexStringToRGB("5e2900");
-    static ImVec4 orange90  = hexStringToRGB("3e1a00");
-    static ImVec4 orange100 = hexStringToRGB("231000");
+    static ImVec4 orange10  = hex_string_to_rgb("fff2e8");
+    static ImVec4 orange20  = hex_string_to_rgb("ffd9be");
+    static ImVec4 orange30  = hex_string_to_rgb("ffb784");
+    static ImVec4 orange40  = hex_string_to_rgb("ff832b");
+    static ImVec4 orange50  = hex_string_to_rgb("eb6200");
+    static ImVec4 orange60  = hex_string_to_rgb("ba4e00");
+    static ImVec4 orange70  = hex_string_to_rgb("8a3800");
+    static ImVec4 orange80  = hex_string_to_rgb("5e2900");
+    static ImVec4 orange90  = hex_string_to_rgb("3e1a00");
+    static ImVec4 orange100 = hex_string_to_rgb("231000");
 
-    static ImVec4 orange10Hover  = hexStringToRGB("ffe2cc");
-    static ImVec4 orange20Hover  = hexStringToRGB("ffc69e");
-    static ImVec4 orange30Hover  = hexStringToRGB("ff9d57");
-    static ImVec4 orange40Hover  = hexStringToRGB("fa6800");
-    static ImVec4 orange50Hover  = hexStringToRGB("cc5500");
-    static ImVec4 orange60Hover  = hexStringToRGB("9e4200");
-    static ImVec4 orange70Hover  = hexStringToRGB("a84400");
-    static ImVec4 orange80Hover  = hexStringToRGB("753300");
-    static ImVec4 orange90Hover  = hexStringToRGB("522200");
-    static ImVec4 orange100Hover = hexStringToRGB("421e00");
+    static ImVec4 orange10Hover  = hex_string_to_rgb("ffe2cc");
+    static ImVec4 orange20Hover  = hex_string_to_rgb("ffc69e");
+    static ImVec4 orange30Hover  = hex_string_to_rgb("ff9d57");
+    static ImVec4 orange40Hover  = hex_string_to_rgb("fa6800");
+    static ImVec4 orange50Hover  = hex_string_to_rgb("cc5500");
+    static ImVec4 orange60Hover  = hex_string_to_rgb("9e4200");
+    static ImVec4 orange70Hover  = hex_string_to_rgb("a84400");
+    static ImVec4 orange80Hover  = hex_string_to_rgb("753300");
+    static ImVec4 orange90Hover  = hex_string_to_rgb("522200");
+    static ImVec4 orange100Hover = hex_string_to_rgb("421e00");
 
-    static ImVec4 red10  = hexStringToRGB("fff1f1");
-    static ImVec4 red20  = hexStringToRGB("ffd7d9");
-    static ImVec4 red30  = hexStringToRGB("ffb3b8");
-    static ImVec4 red40  = hexStringToRGB("ff8389");
-    static ImVec4 red50  = hexStringToRGB("fa4d56");
-    static ImVec4 red60  = hexStringToRGB("da1e28");
-    static ImVec4 red70  = hexStringToRGB("a2191f");
-    static ImVec4 red80  = hexStringToRGB("750e13");
-    static ImVec4 red90  = hexStringToRGB("520408");
-    static ImVec4 red100 = hexStringToRGB("2d0709");
+    static ImVec4 red10  = hex_string_to_rgb("fff1f1");
+    static ImVec4 red20  = hex_string_to_rgb("ffd7d9");
+    static ImVec4 red30  = hex_string_to_rgb("ffb3b8");
+    static ImVec4 red40  = hex_string_to_rgb("ff8389");
+    static ImVec4 red50  = hex_string_to_rgb("fa4d56");
+    static ImVec4 red60  = hex_string_to_rgb("da1e28");
+    static ImVec4 red70  = hex_string_to_rgb("a2191f");
+    static ImVec4 red80  = hex_string_to_rgb("750e13");
+    static ImVec4 red90  = hex_string_to_rgb("520408");
+    static ImVec4 red100 = hex_string_to_rgb("2d0709");
 
-    static ImVec4 red100Hover = hexStringToRGB("540d11");
-    static ImVec4 red90Hover  = hexStringToRGB("66050a");
-    static ImVec4 red80Hover  = hexStringToRGB("921118");
-    static ImVec4 red70Hover  = hexStringToRGB("c21e25");
-    static ImVec4 red60Hover  = hexStringToRGB("b81922");
-    static ImVec4 red50Hover  = hexStringToRGB("ee0713");
-    static ImVec4 red40Hover  = hexStringToRGB("ff6168");
-    static ImVec4 red30Hover  = hexStringToRGB("ff99a0");
-    static ImVec4 red20Hover  = hexStringToRGB("ffc2c5");
-    static ImVec4 red10Hover  = hexStringToRGB("ffe0e0");
+    static ImVec4 red100Hover = hex_string_to_rgb("540d11");
+    static ImVec4 red90Hover  = hex_string_to_rgb("66050a");
+    static ImVec4 red80Hover  = hex_string_to_rgb("921118");
+    static ImVec4 red70Hover  = hex_string_to_rgb("c21e25");
+    static ImVec4 red60Hover  = hex_string_to_rgb("b81922");
+    static ImVec4 red50Hover  = hex_string_to_rgb("ee0713");
+    static ImVec4 red40Hover  = hex_string_to_rgb("ff6168");
+    static ImVec4 red30Hover  = hex_string_to_rgb("ff99a0");
+    static ImVec4 red20Hover  = hex_string_to_rgb("ffc2c5");
+    static ImVec4 red10Hover  = hex_string_to_rgb("ffe0e0");
 
-    static ImVec4 magenta10  = hexStringToRGB("fff0f7");
-    static ImVec4 magenta20  = hexStringToRGB("ffd6e8");
-    static ImVec4 magenta30  = hexStringToRGB("ffafd2");
-    static ImVec4 magenta40  = hexStringToRGB("ff7eb6");
-    static ImVec4 magenta50  = hexStringToRGB("ee5396");
-    static ImVec4 magenta60  = hexStringToRGB("d02670");
-    static ImVec4 magenta70  = hexStringToRGB("9f1853");
-    static ImVec4 magenta80  = hexStringToRGB("740937");
-    static ImVec4 magenta90  = hexStringToRGB("510224");
-    static ImVec4 magenta100 = hexStringToRGB("2a0a18");
+    static ImVec4 magenta10  = hex_string_to_rgb("fff0f7");
+    static ImVec4 magenta20  = hex_string_to_rgb("ffd6e8");
+    static ImVec4 magenta30  = hex_string_to_rgb("ffafd2");
+    static ImVec4 magenta40  = hex_string_to_rgb("ff7eb6");
+    static ImVec4 magenta50  = hex_string_to_rgb("ee5396");
+    static ImVec4 magenta60  = hex_string_to_rgb("d02670");
+    static ImVec4 magenta70  = hex_string_to_rgb("9f1853");
+    static ImVec4 magenta80  = hex_string_to_rgb("740937");
+    static ImVec4 magenta90  = hex_string_to_rgb("510224");
+    static ImVec4 magenta100 = hex_string_to_rgb("2a0a18");
 
-    static ImVec4 magenta100Hover = hexStringToRGB("53142f");
-    static ImVec4 magenta90Hover  = hexStringToRGB("68032e");
-    static ImVec4 magenta80Hover  = hexStringToRGB("8e0b43");
-    static ImVec4 magenta70Hover  = hexStringToRGB("bf1d63");
-    static ImVec4 magenta60Hover  = hexStringToRGB("b0215f");
-    static ImVec4 magenta50Hover  = hexStringToRGB("e3176f");
-    static ImVec4 magenta40Hover  = hexStringToRGB("ff57a0");
-    static ImVec4 magenta30Hover  = hexStringToRGB("ff94c3");
-    static ImVec4 magenta20Hover  = hexStringToRGB("ffbdda");
-    static ImVec4 magenta10Hover  = hexStringToRGB("ffe0ef");
+    static ImVec4 magenta100Hover = hex_string_to_rgb("53142f");
+    static ImVec4 magenta90Hover  = hex_string_to_rgb("68032e");
+    static ImVec4 magenta80Hover  = hex_string_to_rgb("8e0b43");
+    static ImVec4 magenta70Hover  = hex_string_to_rgb("bf1d63");
+    static ImVec4 magenta60Hover  = hex_string_to_rgb("b0215f");
+    static ImVec4 magenta50Hover  = hex_string_to_rgb("e3176f");
+    static ImVec4 magenta40Hover  = hex_string_to_rgb("ff57a0");
+    static ImVec4 magenta30Hover  = hex_string_to_rgb("ff94c3");
+    static ImVec4 magenta20Hover  = hex_string_to_rgb("ffbdda");
+    static ImVec4 magenta10Hover  = hex_string_to_rgb("ffe0ef");
 
-    static ImVec4 purple10  = hexStringToRGB("f6f2ff");
-    static ImVec4 purple20  = hexStringToRGB("e8daff");
-    static ImVec4 purple30  = hexStringToRGB("d4bbff");
-    static ImVec4 purple40  = hexStringToRGB("be95ff");
-    static ImVec4 purple50  = hexStringToRGB("a56eff");
-    static ImVec4 purple60  = hexStringToRGB("8a3ffc");
-    static ImVec4 purple70  = hexStringToRGB("6929c4");
-    static ImVec4 purple80  = hexStringToRGB("491d8b");
-    static ImVec4 purple90  = hexStringToRGB("31135e");
-    static ImVec4 purple100 = hexStringToRGB("1c0f30");
+    static ImVec4 purple10  = hex_string_to_rgb("f6f2ff");
+    static ImVec4 purple20  = hex_string_to_rgb("e8daff");
+    static ImVec4 purple30  = hex_string_to_rgb("d4bbff");
+    static ImVec4 purple40  = hex_string_to_rgb("be95ff");
+    static ImVec4 purple50  = hex_string_to_rgb("a56eff");
+    static ImVec4 purple60  = hex_string_to_rgb("8a3ffc");
+    static ImVec4 purple70  = hex_string_to_rgb("6929c4");
+    static ImVec4 purple80  = hex_string_to_rgb("491d8b");
+    static ImVec4 purple90  = hex_string_to_rgb("31135e");
+    static ImVec4 purple100 = hex_string_to_rgb("1c0f30");
 
-    static ImVec4 purple100Hover = hexStringToRGB("341c59");
-    static ImVec4 purple90Hover  = hexStringToRGB("40197b");
-    static ImVec4 purple80Hover  = hexStringToRGB("5b24ad");
-    static ImVec4 purple70Hover  = hexStringToRGB("7c3dd6");
-    static ImVec4 purple60Hover  = hexStringToRGB("7822fb");
-    static ImVec4 purple50Hover  = hexStringToRGB("9352ff");
-    static ImVec4 purple40Hover  = hexStringToRGB("ae7aff");
-    static ImVec4 purple30Hover  = hexStringToRGB("c5a3ff");
-    static ImVec4 purple20Hover  = hexStringToRGB("dcc7ff");
-    static ImVec4 purple10Hover  = hexStringToRGB("ede5ff");
+    static ImVec4 purple100Hover = hex_string_to_rgb("341c59");
+    static ImVec4 purple90Hover  = hex_string_to_rgb("40197b");
+    static ImVec4 purple80Hover  = hex_string_to_rgb("5b24ad");
+    static ImVec4 purple70Hover  = hex_string_to_rgb("7c3dd6");
+    static ImVec4 purple60Hover  = hex_string_to_rgb("7822fb");
+    static ImVec4 purple50Hover  = hex_string_to_rgb("9352ff");
+    static ImVec4 purple40Hover  = hex_string_to_rgb("ae7aff");
+    static ImVec4 purple30Hover  = hex_string_to_rgb("c5a3ff");
+    static ImVec4 purple20Hover  = hex_string_to_rgb("dcc7ff");
+    static ImVec4 purple10Hover  = hex_string_to_rgb("ede5ff");
 
-    static ImVec4 blue10  = hexStringToRGB("edf5ff");
-    static ImVec4 blue20  = hexStringToRGB("d0e2ff");
-    static ImVec4 blue30  = hexStringToRGB("a6c8ff");
-    static ImVec4 blue40  = hexStringToRGB("78a9ff");
-    static ImVec4 blue50  = hexStringToRGB("4589ff");
-    static ImVec4 blue60  = hexStringToRGB("0f62fe");
-    static ImVec4 blue70  = hexStringToRGB("0043ce");
-    static ImVec4 blue80  = hexStringToRGB("002d9c");
-    static ImVec4 blue90  = hexStringToRGB("001d6c");
-    static ImVec4 blue100 = hexStringToRGB("001141");
+    static ImVec4 blue10  = hex_string_to_rgb("edf5ff");
+    static ImVec4 blue20  = hex_string_to_rgb("d0e2ff");
+    static ImVec4 blue30  = hex_string_to_rgb("a6c8ff");
+    static ImVec4 blue40  = hex_string_to_rgb("78a9ff");
+    static ImVec4 blue50  = hex_string_to_rgb("4589ff");
+    static ImVec4 blue60  = hex_string_to_rgb("0f62fe");
+    static ImVec4 blue70  = hex_string_to_rgb("0043ce");
+    static ImVec4 blue80  = hex_string_to_rgb("002d9c");
+    static ImVec4 blue90  = hex_string_to_rgb("001d6c");
+    static ImVec4 blue100 = hex_string_to_rgb("001141");
 
-    static ImVec4 blue100Hover = hexStringToRGB("001f75");
-    static ImVec4 blue90Hover  = hexStringToRGB("00258a");
-    static ImVec4 blue80Hover  = hexStringToRGB("0039c7");
-    static ImVec4 blue70Hover  = hexStringToRGB("0053ff");
-    static ImVec4 blue60Hover  = hexStringToRGB("0050e6");
-    static ImVec4 blue50Hover  = hexStringToRGB("1f70ff");
-    static ImVec4 blue40Hover  = hexStringToRGB("5c97ff");
-    static ImVec4 blue30Hover  = hexStringToRGB("8ab6ff");
-    static ImVec4 blue20Hover  = hexStringToRGB("b8d3ff");
-    static ImVec4 blue10Hover  = hexStringToRGB("dbebff");
+    static ImVec4 blue100Hover = hex_string_to_rgb("001f75");
+    static ImVec4 blue90Hover  = hex_string_to_rgb("00258a");
+    static ImVec4 blue80Hover  = hex_string_to_rgb("0039c7");
+    static ImVec4 blue70Hover  = hex_string_to_rgb("0053ff");
+    static ImVec4 blue60Hover  = hex_string_to_rgb("0050e6");
+    static ImVec4 blue50Hover  = hex_string_to_rgb("1f70ff");
+    static ImVec4 blue40Hover  = hex_string_to_rgb("5c97ff");
+    static ImVec4 blue30Hover  = hex_string_to_rgb("8ab6ff");
+    static ImVec4 blue20Hover  = hex_string_to_rgb("b8d3ff");
+    static ImVec4 blue10Hover  = hex_string_to_rgb("dbebff");
 
-    static ImVec4 cyan10  = hexStringToRGB("e5f6ff");
-    static ImVec4 cyan20  = hexStringToRGB("bae6ff");
-    static ImVec4 cyan30  = hexStringToRGB("82cfff");
-    static ImVec4 cyan40  = hexStringToRGB("33b1ff");
-    static ImVec4 cyan50  = hexStringToRGB("1192e8");
-    static ImVec4 cyan60  = hexStringToRGB("0072c3");
-    static ImVec4 cyan70  = hexStringToRGB("00539a");
-    static ImVec4 cyan80  = hexStringToRGB("003a6d");
-    static ImVec4 cyan90  = hexStringToRGB("012749");
-    static ImVec4 cyan100 = hexStringToRGB("061727");
+    static ImVec4 cyan10  = hex_string_to_rgb("e5f6ff");
+    static ImVec4 cyan20  = hex_string_to_rgb("bae6ff");
+    static ImVec4 cyan30  = hex_string_to_rgb("82cfff");
+    static ImVec4 cyan40  = hex_string_to_rgb("33b1ff");
+    static ImVec4 cyan50  = hex_string_to_rgb("1192e8");
+    static ImVec4 cyan60  = hex_string_to_rgb("0072c3");
+    static ImVec4 cyan70  = hex_string_to_rgb("00539a");
+    static ImVec4 cyan80  = hex_string_to_rgb("003a6d");
+    static ImVec4 cyan90  = hex_string_to_rgb("012749");
+    static ImVec4 cyan100 = hex_string_to_rgb("061727");
 
-    static ImVec4 cyan10Hover  = hexStringToRGB("cceeff");
-    static ImVec4 cyan20Hover  = hexStringToRGB("99daff");
-    static ImVec4 cyan30Hover  = hexStringToRGB("57beff");
-    static ImVec4 cyan40Hover  = hexStringToRGB("059fff");
-    static ImVec4 cyan50Hover  = hexStringToRGB("0f7ec8");
-    static ImVec4 cyan60Hover  = hexStringToRGB("005fa3");
-    static ImVec4 cyan70Hover  = hexStringToRGB("0066bd");
-    static ImVec4 cyan80Hover  = hexStringToRGB("00498a");
-    static ImVec4 cyan90Hover  = hexStringToRGB("013360");
-    static ImVec4 cyan100Hover = hexStringToRGB("0b2947");
+    static ImVec4 cyan10Hover  = hex_string_to_rgb("cceeff");
+    static ImVec4 cyan20Hover  = hex_string_to_rgb("99daff");
+    static ImVec4 cyan30Hover  = hex_string_to_rgb("57beff");
+    static ImVec4 cyan40Hover  = hex_string_to_rgb("059fff");
+    static ImVec4 cyan50Hover  = hex_string_to_rgb("0f7ec8");
+    static ImVec4 cyan60Hover  = hex_string_to_rgb("005fa3");
+    static ImVec4 cyan70Hover  = hex_string_to_rgb("0066bd");
+    static ImVec4 cyan80Hover  = hex_string_to_rgb("00498a");
+    static ImVec4 cyan90Hover  = hex_string_to_rgb("013360");
+    static ImVec4 cyan100Hover = hex_string_to_rgb("0b2947");
 
-    static ImVec4 teal10  = hexStringToRGB("d9fbfb");
-    static ImVec4 teal20  = hexStringToRGB("9ef0f0");
-    static ImVec4 teal30  = hexStringToRGB("3ddbd9");
-    static ImVec4 teal40  = hexStringToRGB("08bdba");
-    static ImVec4 teal50  = hexStringToRGB("009d9a");
-    static ImVec4 teal60  = hexStringToRGB("007d79");
-    static ImVec4 teal70  = hexStringToRGB("005d5d");
-    static ImVec4 teal80  = hexStringToRGB("004144");
-    static ImVec4 teal90  = hexStringToRGB("022b30");
-    static ImVec4 teal100 = hexStringToRGB("081a1c");
+    static ImVec4 teal10  = hex_string_to_rgb("d9fbfb");
+    static ImVec4 teal20  = hex_string_to_rgb("9ef0f0");
+    static ImVec4 teal30  = hex_string_to_rgb("3ddbd9");
+    static ImVec4 teal40  = hex_string_to_rgb("08bdba");
+    static ImVec4 teal50  = hex_string_to_rgb("009d9a");
+    static ImVec4 teal60  = hex_string_to_rgb("007d79");
+    static ImVec4 teal70  = hex_string_to_rgb("005d5d");
+    static ImVec4 teal80  = hex_string_to_rgb("004144");
+    static ImVec4 teal90  = hex_string_to_rgb("022b30");
+    static ImVec4 teal100 = hex_string_to_rgb("081a1c");
 
-    static ImVec4 teal10Hover  = hexStringToRGB("acf6f6");
-    static ImVec4 teal20Hover  = hexStringToRGB("57e5e5");
-    static ImVec4 teal30Hover  = hexStringToRGB("25cac8");
-    static ImVec4 teal40Hover  = hexStringToRGB("07aba9");
-    static ImVec4 teal50Hover  = hexStringToRGB("008a87");
-    static ImVec4 teal60Hover  = hexStringToRGB("006b68");
-    static ImVec4 teal70Hover  = hexStringToRGB("007070");
-    static ImVec4 teal80Hover  = hexStringToRGB("005357");
-    static ImVec4 teal90Hover  = hexStringToRGB("033940");
-    static ImVec4 teal100Hover = hexStringToRGB("0f3034");
+    static ImVec4 teal10Hover  = hex_string_to_rgb("acf6f6");
+    static ImVec4 teal20Hover  = hex_string_to_rgb("57e5e5");
+    static ImVec4 teal30Hover  = hex_string_to_rgb("25cac8");
+    static ImVec4 teal40Hover  = hex_string_to_rgb("07aba9");
+    static ImVec4 teal50Hover  = hex_string_to_rgb("008a87");
+    static ImVec4 teal60Hover  = hex_string_to_rgb("006b68");
+    static ImVec4 teal70Hover  = hex_string_to_rgb("007070");
+    static ImVec4 teal80Hover  = hex_string_to_rgb("005357");
+    static ImVec4 teal90Hover  = hex_string_to_rgb("033940");
+    static ImVec4 teal100Hover = hex_string_to_rgb("0f3034");
 
-    static ImVec4 green10  = hexStringToRGB("defbe6");
-    static ImVec4 green20  = hexStringToRGB("a7f0ba");
-    static ImVec4 green30  = hexStringToRGB("6fdc8c");
-    static ImVec4 green40  = hexStringToRGB("42be65");
-    static ImVec4 green50  = hexStringToRGB("24a148");
-    static ImVec4 green60  = hexStringToRGB("198038");
-    static ImVec4 green70  = hexStringToRGB("0e6027");
-    static ImVec4 green80  = hexStringToRGB("044317");
-    static ImVec4 green90  = hexStringToRGB("022d0d");
-    static ImVec4 green100 = hexStringToRGB("071908");
+    static ImVec4 green10  = hex_string_to_rgb("defbe6");
+    static ImVec4 green20  = hex_string_to_rgb("a7f0ba");
+    static ImVec4 green30  = hex_string_to_rgb("6fdc8c");
+    static ImVec4 green40  = hex_string_to_rgb("42be65");
+    static ImVec4 green50  = hex_string_to_rgb("24a148");
+    static ImVec4 green60  = hex_string_to_rgb("198038");
+    static ImVec4 green70  = hex_string_to_rgb("0e6027");
+    static ImVec4 green80  = hex_string_to_rgb("044317");
+    static ImVec4 green90  = hex_string_to_rgb("022d0d");
+    static ImVec4 green100 = hex_string_to_rgb("071908");
 
-    static ImVec4 green10Hover  = hexStringToRGB("b6f6c8");
-    static ImVec4 green20Hover  = hexStringToRGB("74e792");
-    static ImVec4 green30Hover  = hexStringToRGB("36ce5e");
-    static ImVec4 green40Hover  = hexStringToRGB("3bab5a");
-    static ImVec4 green50Hover  = hexStringToRGB("208e3f");
-    static ImVec4 green60Hover  = hexStringToRGB("166f31");
-    static ImVec4 green70Hover  = hexStringToRGB("11742f");
-    static ImVec4 green80Hover  = hexStringToRGB("05521c");
-    static ImVec4 green90Hover  = hexStringToRGB("033b11");
-    static ImVec4 green100Hover = hexStringToRGB("0d300f");
+    static ImVec4 green10Hover  = hex_string_to_rgb("b6f6c8");
+    static ImVec4 green20Hover  = hex_string_to_rgb("74e792");
+    static ImVec4 green30Hover  = hex_string_to_rgb("36ce5e");
+    static ImVec4 green40Hover  = hex_string_to_rgb("3bab5a");
+    static ImVec4 green50Hover  = hex_string_to_rgb("208e3f");
+    static ImVec4 green60Hover  = hex_string_to_rgb("166f31");
+    static ImVec4 green70Hover  = hex_string_to_rgb("11742f");
+    static ImVec4 green80Hover  = hex_string_to_rgb("05521c");
+    static ImVec4 green90Hover  = hex_string_to_rgb("033b11");
+    static ImVec4 green100Hover = hex_string_to_rgb("0d300f");
 
-    static ImVec4 coolGray10  = hexStringToRGB("f2f4f8");
-    static ImVec4 coolGray20  = hexStringToRGB("dde1e6");
-    static ImVec4 coolGray30  = hexStringToRGB("c1c7cd");
-    static ImVec4 coolGray40  = hexStringToRGB("a2a9b0");
-    static ImVec4 coolGray50  = hexStringToRGB("878d96");
-    static ImVec4 coolGray60  = hexStringToRGB("697077");
-    static ImVec4 coolGray70  = hexStringToRGB("4d5358");
-    static ImVec4 coolGray80  = hexStringToRGB("343a3f");
-    static ImVec4 coolGray90  = hexStringToRGB("21272a");
-    static ImVec4 coolGray100 = hexStringToRGB("121619");
+    static ImVec4 coolGray10  = hex_string_to_rgb("f2f4f8");
+    static ImVec4 coolGray20  = hex_string_to_rgb("dde1e6");
+    static ImVec4 coolGray30  = hex_string_to_rgb("c1c7cd");
+    static ImVec4 coolGray40  = hex_string_to_rgb("a2a9b0");
+    static ImVec4 coolGray50  = hex_string_to_rgb("878d96");
+    static ImVec4 coolGray60  = hex_string_to_rgb("697077");
+    static ImVec4 coolGray70  = hex_string_to_rgb("4d5358");
+    static ImVec4 coolGray80  = hex_string_to_rgb("343a3f");
+    static ImVec4 coolGray90  = hex_string_to_rgb("21272a");
+    static ImVec4 coolGray100 = hex_string_to_rgb("121619");
 
-    static ImVec4 coolGray10Hover  = hexStringToRGB("e4e9f1");
-    static ImVec4 coolGray20Hover  = hexStringToRGB("cdd3da");
-    static ImVec4 coolGray30Hover  = hexStringToRGB("adb5bd");
-    static ImVec4 coolGray40Hover  = hexStringToRGB("9199a1");
-    static ImVec4 coolGray50Hover  = hexStringToRGB("757b85");
-    static ImVec4 coolGray60Hover  = hexStringToRGB("585e64");
-    static ImVec4 coolGray70Hover  = hexStringToRGB("5d646a");
-    static ImVec4 coolGray80Hover  = hexStringToRGB("434a51");
-    static ImVec4 coolGray90Hover  = hexStringToRGB("2b3236");
-    static ImVec4 coolGray100Hover = hexStringToRGB("222a2f");
+    static ImVec4 coolGray10Hover  = hex_string_to_rgb("e4e9f1");
+    static ImVec4 coolGray20Hover  = hex_string_to_rgb("cdd3da");
+    static ImVec4 coolGray30Hover  = hex_string_to_rgb("adb5bd");
+    static ImVec4 coolGray40Hover  = hex_string_to_rgb("9199a1");
+    static ImVec4 coolGray50Hover  = hex_string_to_rgb("757b85");
+    static ImVec4 coolGray60Hover  = hex_string_to_rgb("585e64");
+    static ImVec4 coolGray70Hover  = hex_string_to_rgb("5d646a");
+    static ImVec4 coolGray80Hover  = hex_string_to_rgb("434a51");
+    static ImVec4 coolGray90Hover  = hex_string_to_rgb("2b3236");
+    static ImVec4 coolGray100Hover = hex_string_to_rgb("222a2f");
 
-    static ImVec4 gray10  = hexStringToRGB("f4f4f4");
-    static ImVec4 gray20  = hexStringToRGB("e0e0e0");
-    static ImVec4 gray30  = hexStringToRGB("c6c6c6");
-    static ImVec4 gray40  = hexStringToRGB("a8a8a8");
-    static ImVec4 gray50  = hexStringToRGB("8d8d8d");
-    static ImVec4 gray60  = hexStringToRGB("6f6f6f");
-    static ImVec4 gray70  = hexStringToRGB("525252");
-    static ImVec4 gray80  = hexStringToRGB("393939");
-    static ImVec4 gray90  = hexStringToRGB("262626");
-    static ImVec4 gray100 = hexStringToRGB("161616");
+    static ImVec4 gray10  = hex_string_to_rgb("f4f4f4");
+    static ImVec4 gray20  = hex_string_to_rgb("e0e0e0");
+    static ImVec4 gray30  = hex_string_to_rgb("c6c6c6");
+    static ImVec4 gray40  = hex_string_to_rgb("a8a8a8");
+    static ImVec4 gray50  = hex_string_to_rgb("8d8d8d");
+    static ImVec4 gray60  = hex_string_to_rgb("6f6f6f");
+    static ImVec4 gray70  = hex_string_to_rgb("525252");
+    static ImVec4 gray80  = hex_string_to_rgb("393939");
+    static ImVec4 gray90  = hex_string_to_rgb("262626");
+    static ImVec4 gray100 = hex_string_to_rgb("161616");
 
-    static ImVec4 gray10Hover  = hexStringToRGB("e8e8e8");
-    static ImVec4 gray20Hover  = hexStringToRGB("d1d1d1");
-    static ImVec4 gray30Hover  = hexStringToRGB("b5b5b5");
-    static ImVec4 gray40Hover  = hexStringToRGB("999999");
-    static ImVec4 gray50Hover  = hexStringToRGB("7a7a7a");
-    static ImVec4 gray60Hover  = hexStringToRGB("5e5e5e");
-    static ImVec4 gray70Hover  = hexStringToRGB("636363");
-    static ImVec4 gray80Hover  = hexStringToRGB("474747");
-    static ImVec4 gray90Hover  = hexStringToRGB("333333");
-    static ImVec4 gray100Hover = hexStringToRGB("292929");
+    static ImVec4 gray10Hover  = hex_string_to_rgb("e8e8e8");
+    static ImVec4 gray20Hover  = hex_string_to_rgb("d1d1d1");
+    static ImVec4 gray30Hover  = hex_string_to_rgb("b5b5b5");
+    static ImVec4 gray40Hover  = hex_string_to_rgb("999999");
+    static ImVec4 gray50Hover  = hex_string_to_rgb("7a7a7a");
+    static ImVec4 gray60Hover  = hex_string_to_rgb("5e5e5e");
+    static ImVec4 gray70Hover  = hex_string_to_rgb("636363");
+    static ImVec4 gray80Hover  = hex_string_to_rgb("474747");
+    static ImVec4 gray90Hover  = hex_string_to_rgb("333333");
+    static ImVec4 gray100Hover = hex_string_to_rgb("292929");
 
-    static ImVec4 warmGray10  = hexStringToRGB("f7f3f2");
-    static ImVec4 warmGray20  = hexStringToRGB("e5e0df");
-    static ImVec4 warmGray30  = hexStringToRGB("cac5c4");
-    static ImVec4 warmGray40  = hexStringToRGB("ada8a8");
-    static ImVec4 warmGray50  = hexStringToRGB("8f8b8b");
-    static ImVec4 warmGray60  = hexStringToRGB("726e6e");
-    static ImVec4 warmGray70  = hexStringToRGB("565151");
-    static ImVec4 warmGray80  = hexStringToRGB("3c3838");
-    static ImVec4 warmGray90  = hexStringToRGB("272525");
-    static ImVec4 warmGray100 = hexStringToRGB("171414");
+    static ImVec4 warmGray10  = hex_string_to_rgb("f7f3f2");
+    static ImVec4 warmGray20  = hex_string_to_rgb("e5e0df");
+    static ImVec4 warmGray30  = hex_string_to_rgb("cac5c4");
+    static ImVec4 warmGray40  = hex_string_to_rgb("ada8a8");
+    static ImVec4 warmGray50  = hex_string_to_rgb("8f8b8b");
+    static ImVec4 warmGray60  = hex_string_to_rgb("726e6e");
+    static ImVec4 warmGray70  = hex_string_to_rgb("565151");
+    static ImVec4 warmGray80  = hex_string_to_rgb("3c3838");
+    static ImVec4 warmGray90  = hex_string_to_rgb("272525");
+    static ImVec4 warmGray100 = hex_string_to_rgb("171414");
 
-    static ImVec4 warmGray10Hover  = hexStringToRGB("f0e8e6");
-    static ImVec4 warmGray20Hover  = hexStringToRGB("d8d0cf");
-    static ImVec4 warmGray30Hover  = hexStringToRGB("b9b3b1");
-    static ImVec4 warmGray40Hover  = hexStringToRGB("9c9696");
-    static ImVec4 warmGray50Hover  = hexStringToRGB("7f7b7b");
-    static ImVec4 warmGray60Hover  = hexStringToRGB("605d5d");
-    static ImVec4 warmGray70Hover  = hexStringToRGB("696363");
-    static ImVec4 warmGray80Hover  = hexStringToRGB("4c4848");
-    static ImVec4 warmGray90Hover  = hexStringToRGB("343232");
-    static ImVec4 warmGray100Hover = hexStringToRGB("2c2626");
+    static ImVec4 warmGray10Hover  = hex_string_to_rgb("f0e8e6");
+    static ImVec4 warmGray20Hover  = hex_string_to_rgb("d8d0cf");
+    static ImVec4 warmGray30Hover  = hex_string_to_rgb("b9b3b1");
+    static ImVec4 warmGray40Hover  = hex_string_to_rgb("9c9696");
+    static ImVec4 warmGray50Hover  = hex_string_to_rgb("7f7b7b");
+    static ImVec4 warmGray60Hover  = hex_string_to_rgb("605d5d");
+    static ImVec4 warmGray70Hover  = hex_string_to_rgb("696363");
+    static ImVec4 warmGray80Hover  = hex_string_to_rgb("4c4848");
+    static ImVec4 warmGray90Hover  = hex_string_to_rgb("343232");
+    static ImVec4 warmGray100Hover = hex_string_to_rgb("2c2626");
 
     // Background
     static ImVec4 background              = gray100;
     static ImVec4 backgroundInverse       = gray10;
     static ImVec4 backgroundBrand         = blue60;
-    static ImVec4 backgroundActive        = adjustAlpha(gray50, 0.4);
-    static ImVec4 backgroundHover         = adjustAlpha(gray50, 0.16);
+    static ImVec4 backgroundActive        = adjust_alpha(gray50, 0.4);
+    static ImVec4 backgroundHover         = adjust_alpha(gray50, 0.16);
     static ImVec4 backgroundInverseHover  = gray10Hover;
-    static ImVec4 backgroundSelected      = adjustAlpha(gray50, 0.24);
-    static ImVec4 backgroundSelectedHover = adjustAlpha(gray50, 0.32);
+    static ImVec4 backgroundSelected      = adjust_alpha(gray50, 0.24);
+    static ImVec4 backgroundSelectedHover = adjust_alpha(gray50, 0.32);
 
     // Layer
     // layer-01
@@ -592,18 +592,18 @@ int RendererSubsystem::InitImGui()
     static ImVec4 borderInteractive = blue50;
 
     // border
-    static ImVec4 borderDisabled = adjustAlpha(gray50, 0.5f);
+    static ImVec4 borderDisabled = adjust_alpha(gray50, 0.5f);
 
     // Text
     static ImVec4 textPrimary         = gray10;
     static ImVec4 textSecondary       = gray30;
-    static ImVec4 textPlaceholder     = adjustAlpha(textPrimary, 0.4f);
+    static ImVec4 textPlaceholder     = adjust_alpha(textPrimary, 0.4f);
     static ImVec4 textHelper          = gray40;
     static ImVec4 textError           = red40;
     static ImVec4 textInverse         = gray100;
     static ImVec4 textOnColor         = white;
-    static ImVec4 textOnColorDisabled = adjustAlpha(textOnColor, 0.25f);
-    static ImVec4 textDisabled        = adjustAlpha(textPrimary, 0.25f);
+    static ImVec4 textOnColorDisabled = adjust_alpha(textOnColor, 0.25f);
+    static ImVec4 textDisabled        = adjust_alpha(textPrimary, 0.25f);
 
     // Link
     static ImVec4 linkPrimary       = blue40;
@@ -619,8 +619,8 @@ int RendererSubsystem::InitImGui()
     static ImVec4 iconSecondary       = gray30;
     static ImVec4 iconInverse         = gray100;
     static ImVec4 iconOnColor         = white;
-    static ImVec4 iconOnColorDisabled = adjustAlpha(iconOnColor, 0.25f);
-    static ImVec4 iconDisabled        = adjustAlpha(iconPrimary, 0.25f);
+    static ImVec4 iconOnColorDisabled = adjust_alpha(iconOnColor, 0.25f);
+    static ImVec4 iconDisabled        = adjust_alpha(iconPrimary, 0.25f);
     static ImVec4 iconInteractive     = white;
 
     // Support
@@ -644,16 +644,16 @@ int RendererSubsystem::InitImGui()
     // Misc
     static ImVec4 interactive = blue50;
     static ImVec4 highlight   = blue80;
-    static ImVec4 overlay     = adjustAlpha(black, 0.65);
+    static ImVec4 overlay     = adjust_alpha(black, 0.65);
     static ImVec4 toggleOff   = gray60;
-    static ImVec4 shadow      = adjustAlpha(black, 0.8);
+    static ImVec4 shadow      = adjust_alpha(black, 0.8);
 
     #pragma endregion
 
     static const ImVec4 missingColorColor = magenta50;
 
     style->Colors[ImGuiCol_Text]                    = textPrimary;
-    style->Colors[ImGuiCol_TextDisabled]            = adjustAlpha(textPrimary, 0.6f);
+    style->Colors[ImGuiCol_TextDisabled]            = adjust_alpha(textPrimary, 0.6f);
 
     style->Colors[ImGuiCol_TitleBg]                 = background;
     style->Colors[ImGuiCol_MenuBarBg]               = background;  
@@ -776,14 +776,14 @@ int RendererSubsystem::InitImGui()
     return 0;
 }
 
-int RendererSubsystem::Init()
+int renderer_subsystem::init()
 {
-    if (InitGLFW() == 0)
+    if (init_glfw() == 0)
     {
-        if (InitImGui() == 0)
+        if (init_imgui() == 0)
         {
             // Create window with graphics context
-            m_window = WindowGuard(1920, 1080, "Sound Bakery");
+            m_window = window_guard(1920, 1080, "Sound Bakery");
 
             return 0;
         }
@@ -791,11 +791,11 @@ int RendererSubsystem::Init()
     return 1;
 }
 
-void RendererSubsystem::PreTick(double deltaTime)
+void renderer_subsystem::pre_tick(double deltaTime)
 {
     if (glfwWindowShouldClose(m_window))
     {
-        GetApp()->RequestExit();
+        GetApp()->request_exit();
     }
     else
     {
@@ -807,9 +807,9 @@ void RendererSubsystem::PreTick(double deltaTime)
     }
 }
 
-void RendererSubsystem::Tick(double deltaTime) {}
+void renderer_subsystem::tick(double deltaTime) {}
 
-void RendererSubsystem::TickRendering(double deltaTime)
+void renderer_subsystem::tick_rendering(double deltaTime)
 {
     static ImVec4 clear_color = ImVec4(255.0f, 100.0f, 180.0f, 1.00f);
 
@@ -830,7 +830,7 @@ void RendererSubsystem::TickRendering(double deltaTime)
     glfwSwapBuffers(m_window);
 }
 
-void RendererSubsystem::Exit()
+void renderer_subsystem::exit()
 {
     ImGui::GetIO().Fonts->Clear();
 

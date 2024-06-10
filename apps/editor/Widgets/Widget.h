@@ -5,59 +5,59 @@
 #define WIDGET_CONSTRUCT(type)                                          \
                                                                         \
 public:                                                                 \
-    type(WidgetSubsystem* parentSubsystem) : Widget(parentSubsystem) {} \
+    type(widget_subsystem* parentSubsystem) : widget(parentSubsystem) {} \
                                                                         \
-    type(Widget* parent) : Widget(parent) {}
+    type(widget* parent) : widget(parent) {}
 
-class WidgetSubsystem;
+class widget_subsystem;
 
 // Base widget that can render ImGui UI
-class Widget
+class widget
 {
 public:
-    Widget(WidgetSubsystem* parentSubsystem);
-    Widget(Widget* parentWidget);
-    virtual ~Widget() {}
+    widget(widget_subsystem* parentSubsystem);
+    widget(widget* parentWidget);
+    virtual ~widget() {}
 
 public:
-    virtual void Start();
-    virtual void Tick(double deltaTime) {}
-    virtual void Render() {}
-    virtual void End() {}
+    virtual void start();
+    virtual void tick(double deltaTime) {}
+    virtual void render() {}
+    virtual void end() {}
 
     template <class T>
-    T* AddChildWidget()
+    T* add_child_widget()
     {
         m_childWidgets.push_back(std::make_unique<T>(this));
-        Widget* widget = m_childWidgets.back().get();
+        widget* widget = m_childWidgets.back().get();
         if (m_hasStarted)
-            widget->Start();
+            widget->start();
         return dynamic_cast<T*>(widget);
     }
 
-    bool HasStarted() { return m_hasStarted; }
+    bool has_started() { return m_hasStarted; }
 
-    void Destroy();
+    void destroy();
 
 public:
-    MulticastDelegate<Widget*> m_OnDestroy;
+    MulticastDelegate<widget*> m_onDestroy;
 
 protected:
-    void RenderChildren();
+    void render_children();
 
 protected:
-    class App* GetApp() const;
-    Widget* GetParentWidget() const;
-    WidgetSubsystem* GetParentSubsystem() const;
+    class app* get_app() const;
+    widget* get_parent_widget() const;
+    widget_subsystem* get_parent_subsystem() const;
 
 private:
-    WidgetSubsystem* m_parentSubsystem = nullptr;
-    Widget* m_parentWidget             = nullptr;
+    widget_subsystem* m_parentSubsystem = nullptr;
+    widget* m_parentWidget             = nullptr;
     bool m_hasStarted                  = false;
 
-    std::vector<std::unique_ptr<Widget>> m_childWidgets;
+    std::vector<std::unique_ptr<widget>> m_childWidgets;
 
-    friend class WidgetSubsystem;
+    friend class widget_subsystem;
 
     bool m_wantsDestroy = false;
 };

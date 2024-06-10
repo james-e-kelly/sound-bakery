@@ -35,7 +35,7 @@ private:
 class ProjectManager : public Manager
 {
 public:
-    ProjectManager(App* appOwner) : Manager(appOwner) {}
+    ProjectManager(app* appOwner) : Manager(appOwner) {}
 
 public:
     void Init(const std::filesystem::path& projectFile);

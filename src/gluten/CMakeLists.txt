@@ -14,21 +14,20 @@ set(IMAGE_FILES
 )
 
 set(GLUTEN_SOURCES
-  AppEntry.cpp 
-  App/App.cpp
-  Subsystems/RendererSubsystem.cpp
-  Subsystems/WidgetSubsystem.cpp
-  Widgets/Widget.cpp
-  Widgets/ImguiExtensions.cpp
-  Widgets/RootWidget.cpp
+  app_entry.cpp 
+  app/app.cpp
+  subsystems/renderer_subsystem.cpp
+  subsystems/widget_subsystem.cpp
+  widgets/widget.cpp
+  widgets/root_widget.cpp
 )
 
 set(GLUTEN_HEADERS
-  App/App.h
-  Subsystems/RendererSubsystem.h
-  Subsystems/WidgetSubsystem.h
-  Widgets/Widget.h
-  Widgets/RootWidget.h
+  app/app.h
+  subsystems/renderer_subsystem.h
+  subsystems/widget_subsystem.h
+  widgets/widget.h
+  widgets/root_widget.h
 )
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Source Files" FILES ${GLUTEN_SOURCES})

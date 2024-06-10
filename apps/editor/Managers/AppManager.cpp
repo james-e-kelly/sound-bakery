@@ -15,10 +15,10 @@ static std::chrono::high_resolution_clock::time_point prevTime = currentTime;
 void AppManager::Init(const std::string& executablePath)
 {
     SplashWidget* splashWidget = GetApp()
-                                     ->GetSubsystemByClass<WidgetSubsystem>()
-                                     ->AddWidgetClass<SplashWidget>();
+                                     ->get_subsystem_by_class<widget_subsystem>()
+                                     ->add_widget_class<SplashWidget>();
 
-    splashWidget->m_OnDestroy.AddRaw(this, &AppManager::OnSplashWidgetDestroy);
+    splashWidget->m_onDestroy.AddRaw(this, &AppManager::OnSplashWidgetDestroy);
     splashWidget->ShowSplashScreen();  // this is not instant. It will show asap
 
     // Start the clock
@@ -172,4 +172,4 @@ retry:
     GetApp()->OpenProject(projectFile);
 }
 
-void AppManager::OnSplashWidgetDestroy(Widget* widget) {}
+void AppManager::OnSplashWidgetDestroy(widget* widget) {}

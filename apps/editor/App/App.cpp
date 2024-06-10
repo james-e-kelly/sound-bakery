@@ -10,26 +10,26 @@ namespace PathHelpers
     static const char* ResourcesFolder = "Resources";
 }
 
-int App::Run(int argc, char** argv)
+int app::run(int argc, char** argv)
 {
     m_executableLocation = std::string(argv[0]);
 
-    AddSubsystemClass<RendererSubsystem>();
-    AddSubsystemClass<WidgetSubsystem>();
+    add_subsystem_class<renderer_subsystem>();
+    add_subsystem_class<widget_subsystem>();
 
     // PreInit
-    for (std::unique_ptr<Subsystem>& subsystem : m_subsystems)
+    for (std::unique_ptr<subsystem>& subsystem : m_subsystems)
     {
-        if (int errorCode = subsystem->PreInit(argc, argv); errorCode != 0)
+        if (int errorCode = subsystem->pre_init(argc, argv); errorCode != 0)
         {
             return errorCode;
         }
     }
 
     // Init
-    for (std::unique_ptr<Subsystem>& subsystem : m_subsystems)
+    for (std::unique_ptr<subsystem>& subsystem : m_subsystems)
     {
-        if (int errorCode = subsystem->Init(); errorCode != 0)
+        if (int errorCode = subsystem->init(); errorCode != 0)
         {
             return errorCode;
         }
@@ -46,9 +46,9 @@ int App::Run(int argc, char** argv)
         double deltaTime = m_appManager->GetDeltaTime();
 
         // PreTick
-        for (std::unique_ptr<Subsystem>& subsystem : m_subsystems)
+        for (std::unique_ptr<subsystem>& subsystem : m_subsystems)
         {
-            subsystem->PreTick(deltaTime);
+            subsystem->pre_tick(deltaTime);
         }
 
         if (m_isRequestingExit)
@@ -57,9 +57,9 @@ int App::Run(int argc, char** argv)
         }
 
         // Tick
-        for (std::unique_ptr<Subsystem>& subsystem : m_subsystems)
+        for (std::unique_ptr<subsystem>& subsystem : m_subsystems)
         {
-            subsystem->Tick(deltaTime);
+            subsystem->tick(deltaTime);
         }
 
         m_appManager->Tick(deltaTime);
@@ -70,9 +70,9 @@ int App::Run(int argc, char** argv)
         }
 
         // Rendering
-        for (std::unique_ptr<Subsystem>& subsystem : m_subsystems)
+        for (std::unique_ptr<subsystem>& subsystem : m_subsystems)
         {
-            subsystem->TickRendering(deltaTime);
+            subsystem->tick_rendering(deltaTime);
         }
     }
 
@@ -82,17 +82,17 @@ int App::Run(int argc, char** argv)
         m_projectManager->Exit();
     }
 
-    for (std::unique_ptr<Subsystem>& subsystem : m_subsystems)
+    for (std::unique_ptr<subsystem>& subsystem : m_subsystems)
     {
-        subsystem->Exit();
+        subsystem->exit();
     }
 
     return 0;
 }
 
-void App::RequestExit() { m_isRequestingExit = true; }
+void app::request_exit() { m_isRequestingExit = true; }
 
-void App::OpenProject(const std::filesystem::path& projectFile)
+void app::OpenProject(const std::filesystem::path& projectFile)
 {
     if (m_projectManager)
     {

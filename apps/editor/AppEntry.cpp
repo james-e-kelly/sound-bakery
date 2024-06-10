@@ -1,6 +1,6 @@
 #include "App/App.h"
 
-App* CreateApplication()
+app* CreateApplication()
 {
-    return new App();
+    return new app();
 }

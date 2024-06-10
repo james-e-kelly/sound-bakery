@@ -1,6 +1,6 @@
-#include "WidgetSubsystem.h"
+#include "widget_subsystem.h"
 
-#include "Widgets/RootWidget.h"
+#include "widgets/root_widget.h"
 #include "imgui.h"
 
 int widget_subsystem::init()

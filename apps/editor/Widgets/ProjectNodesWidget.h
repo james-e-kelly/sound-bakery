@@ -17,16 +17,16 @@ enum class NodeCreationType
     NewChild
 };
 
-class ProjectNodesWidget : public Widget
+class ProjectNodesWidget : public widget
 {
 public:
-    ProjectNodesWidget(WidgetSubsystem* parentSubsystem)
-        : Widget(parentSubsystem), m_renameID(0)
+    ProjectNodesWidget(widget_subsystem* parentSubsystem)
+        : widget(parentSubsystem), m_renameID(0)
     {
     }
 
-    ProjectNodesWidget(Widget* parentWidget)
-        : Widget(parentWidget), m_renameID(0)
+    ProjectNodesWidget(widget* parentWidget)
+        : widget(parentWidget), m_renameID(0)
     {
     }
 

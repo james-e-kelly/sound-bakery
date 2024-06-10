@@ -7,7 +7,7 @@
 
 #include "sound_bakery/editor/project/project.h"
 
-void RootWidget::Render()
+void root_widget::render()
 {
     static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
 
@@ -60,22 +60,22 @@ void RootWidget::Render()
 
             if (ImGui::MenuItem(ICON_FA_FILE " New...", "Ctrl+N"))
             {
-                GetApp()->GetAppManager()->CreateNewProject();
+                get_app()->GetAppManager()->CreateNewProject();
             }
 
             if (ImGui::MenuItem(ICON_FA_FOLDER_OPEN " Open...", "Ctrl+O"))
             {
-                GetApp()->GetAppManager()->OpenProject();
+                get_app()->GetAppManager()->OpenProject();
             }
 
-            if (GetApp()->GetProjectManager())
+            if (get_app()->GetProjectManager())
             {
                 ImGui::Separator();
 
                 ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[0]);
                 if (ImGui::MenuItem(ICON_FAD_SAVE " Save", "Ctrl+S"))
                 {
-                    GetApp()->GetProjectManager()->SaveProject();
+                    get_app()->GetProjectManager()->SaveProject();
                 }
 
                 if (ImGui::MenuItem(ICON_FAD_SAVEAS " Save As...",
@@ -86,9 +86,9 @@ void RootWidget::Render()
             }
 
             ImGui::Separator();
-            if (ImGui::MenuItem("Exit", "Alt+F4"))
+            if (ImGui::MenuItem("exit", "Alt+F4"))
             {
-                GetApp()->RequestExit();
+                get_app()->request_exit();
             }
 
             ImGui::EndMenu();
@@ -169,7 +169,7 @@ void RootWidget::Render()
         //        ImGui::ShowDebugLogWindow();
     }
 
-    RenderChildren();
+    render_children();
 
     ImGui::End();
 }

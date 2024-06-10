@@ -245,9 +245,9 @@ void FileBrowserWidget::ShowDirectoryBrowserList() noexcept
     }
 }
 
-void FileBrowserWidget::Start()
+void FileBrowserWidget::start()
 {
-    Widget::Start();
+    widget::start();
 
     m_currentDirectory = SB::Engine::System::getProject()->getConfig().sourceFolder();
     m_topDir           = m_currentDirectory;
@@ -277,7 +277,7 @@ void FileBrowserWidget::Render()
     {
         m_selectedFile = m_selectedFileString;
 
-        if (ProjectManager* manager = GetApp()->GetProjectManager())
+        if (ProjectManager* manager = get_app()->GetProjectManager())
         {
             // manager->GetPreviewSoundContainer()->setSound(m_selectedFile);
             // manager->GetSelection().SelectAudioFile(m_selectedFile);

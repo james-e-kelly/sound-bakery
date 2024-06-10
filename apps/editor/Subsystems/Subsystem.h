@@ -2,13 +2,13 @@
 
 #include "pch.h"
 
-class App;
+class app;
 
-class Subsystem
+class subsystem
 {
 public:
-    Subsystem() = delete;
-    Subsystem(App* appOwner)
+    subsystem() = delete;
+    subsystem(app* appOwner)
     : m_app(appOwner) { }
 
 public:
@@ -19,42 +19,42 @@ public:
      * @param ArgV Command line arguments array
      * @return int Returns for success and greater than 0 for error
      */
-    virtual int PreInit(int ArgC, char* ArgV[]) { return 0; }
+    virtual int pre_init(int ArgC, char* ArgV[]) { return 0; }
 
     /**
      * @brief Init the subsystem / start
      * 
      * @return int Returns for success and greater than 0 for error
      */
-    virtual int Init() { return 0; }
+    virtual int init() { return 0; }
 
     /**
      * @brief Runs before to tick to get if the app should close or set up a new frame
      * 
      */
-    virtual void PreTick(double deltaTime) {}
+    virtual void pre_tick(double deltaTime) {}
 
     /**
      * @brief Called every frame regardless of if the app is closing
      * 
      */
-    virtual void Tick(double deltaTime) {}
+    virtual void tick(double deltaTime) {}
 
     /**
      * @brief Called every frame if the app is NOT closing
      * 
      */
-    virtual void TickRendering(double deltaTime) {}
+    virtual void tick_rendering(double deltaTime) {}
 
     /**
      * @brief Called when closing the app
      * 
      */
-    virtual void Exit() {}
+    virtual void exit() {}
     
 public:
-    App* GetApp() const { return m_app; }
+    app* GetApp() const { return m_app; }
 
 protected:
-    App* m_app = nullptr;
+    app* m_app = nullptr;
 };

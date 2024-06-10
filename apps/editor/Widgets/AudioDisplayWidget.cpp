@@ -108,7 +108,7 @@ int littleEndian24Bit(const void* bytes)
 
 void AudioDisplayWidget::Render()
 {
-    if (ProjectManager* manager = GetApp()->GetProjectManager())
+    if (ProjectManager* manager = get_app()->GetProjectManager())
     {
         if (SB::Core::Object* selected = manager->GetSelection().GetSelected())
         {
@@ -132,7 +132,7 @@ void AudioDisplayWidget::Render()
                     if (isPlaying)
                     {
                         SB::Engine::SoundContainer* previewSound =
-                            GetApp()
+                            get_app()
                                 ->GetProjectManager()
                                 ->GetPreviewSoundContainer();
                         /*FMOD_SOUND* sound = previewSound ?
@@ -240,7 +240,7 @@ void AudioDisplayWidget::Render()
 bool AudioDisplayWidget::HasCache()
 {
     SB::Engine::SoundContainer* currentNode =
-        GetApp()->GetProjectManager()->GetPreviewSoundContainer();
+        get_app()->GetProjectManager()->GetPreviewSoundContainer();
 
     if (currentNode)
     {

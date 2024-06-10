@@ -2,12 +2,12 @@
 
 #include "Manager.h"
 
-class Widget;
+class widget;
 
 class AppManager : public Manager
 {
 public:
-    AppManager(App* appOwner) : Manager(appOwner) {}
+    AppManager(app* appOwner) : Manager(appOwner) {}
 
 public:
     void Init(const std::string& executablePath);
@@ -30,5 +30,5 @@ public:
     void OpenProject();
 
 private:
-    void OnSplashWidgetDestroy(Widget* widget);
+    void OnSplashWidgetDestroy(widget* widget);
 };

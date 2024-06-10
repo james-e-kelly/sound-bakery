@@ -4,40 +4,40 @@
 #include "Subsystems/WidgetSubsystem.h"
 #include "imgui.h"
 
-Widget::Widget(WidgetSubsystem* parentSubsystem)
+widget::widget(widget_subsystem* parentSubsystem)
     : m_parentSubsystem(parentSubsystem)
 {
 }
 
-Widget::Widget(Widget* parentWidget) : m_parentWidget(parentWidget) {}
+widget::widget(widget* parentWidget) : m_parentWidget(parentWidget) {}
 
-void Widget::Start() { m_hasStarted = true; }
+void widget::start() { m_hasStarted = true; }
 
-void Widget::RenderChildren()
+void widget::render_children()
 {
-    for (std::unique_ptr<Widget>& child : m_childWidgets)
+    for (std::unique_ptr<widget>& child : m_childWidgets)
     {
-        child->Render();
+        child->render();
     }
 }
 
-App* Widget::GetApp() const
+app* widget::get_app() const
 {
-    const Widget* currentWidget = this;
+    const widget* currentWidget = this;
 
-    while (currentWidget->GetParentSubsystem() == nullptr)
+    while (currentWidget->get_parent_subsystem() == nullptr)
     {
-        currentWidget = currentWidget->GetParentWidget();
+        currentWidget = currentWidget->get_parent_widget();
     }
 
-    return currentWidget->GetParentSubsystem()->GetApp();
+    return currentWidget->get_parent_subsystem()->GetApp();
 }
 
-Widget* Widget::GetParentWidget() const { return m_parentWidget; }
+widget* widget::get_parent_widget() const { return m_parentWidget; }
 
-WidgetSubsystem* Widget::GetParentSubsystem() const
+widget_subsystem* widget::get_parent_subsystem() const
 {
     return m_parentSubsystem;
 }
 
-void Widget::Destroy() { m_wantsDestroy = true; }
+void widget::destroy() { m_wantsDestroy = true; }

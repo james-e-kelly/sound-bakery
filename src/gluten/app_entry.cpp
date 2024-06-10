@@ -1,6 +1,6 @@
-#include "App/App.h"
+#include "app/app.h"
 
-extern App* CreateApplication();
+extern app* CreateApplication();
 
 #if defined(WIN32)
     #include <windows.h>
@@ -15,9 +15,9 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance,
     (void)pCmdLine;
     (void)nCmdShow;
 
-    App* app = CreateApplication();
+    app* app = CreateApplication();
 
-    app->Run(__argc, __argv);
+    app->run(__argc, __argv);
 
     delete app;
 
@@ -28,9 +28,9 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance,
 
 int main(int argc, char* argv[])
 {
-    App* app = CreateApplication();
+    app* app = CreateApplication();
 
-    app->Run(__argc, __argv);
+    app->run(__argc, __argv);
 
     delete app;
 

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Subsystem.h"
-#include "Widgets/Widget.h"
+#include "subsystem.h"
+#include "widgets/widget.h"
 
 class widget_subsystem : public subsystem
 {

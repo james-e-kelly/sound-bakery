@@ -2,7 +2,7 @@
 
 #include "pch.h"
 
-class App;
+class app;
 
 /**
  * @brief Manager class that can handle application operations or project operations.
@@ -14,7 +14,7 @@ class Manager
 {
 public:
     Manager() = delete;
-    Manager(App* appOwner)
+    Manager(app* appOwner)
     : m_app(appOwner) { }
 
 public:
@@ -32,8 +32,8 @@ public:
     virtual void Exit() {}
     
 public:
-    App* GetApp() const { return m_app; }
+    app* GetApp() const { return m_app; }
 
 protected:
-    App* m_app = nullptr;
+    app* m_app = nullptr;
 };

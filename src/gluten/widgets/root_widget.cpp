@@ -1,13 +1,13 @@
-#include "RootWidget.h"
+#include "root_widget.h"
 
-#include "App/App.h"
+#include "app/app.h"
 #include "IconsFontAwesome6.h"
 #include "IconsFontaudio.h"
 #include "imgui.h"
 
-void RootWidget::Render()
+void root_widget::render()
 {
-    static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
+    static ImGuiDockNodeFlags dockspaceFlags = ImGuiDockNodeFlags_None;
 
     // We are using the ImGuiWindowFlags_NoDocking flag to make the parent
     // window not dockable into, because it would be confusing to have two
@@ -29,7 +29,7 @@ void RootWidget::Render()
     // When using ImGuiDockNodeFlags_PassthruCentralNode, DockSpace() will
     // render our background and handle the pass-thru hole, so we ask Begin() to
     // not render a background.
-    if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
+    if (dockspaceFlags & ImGuiDockNodeFlags_PassthruCentralNode)
         window_flags |= ImGuiWindowFlags_NoBackground;
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
@@ -43,7 +43,7 @@ void RootWidget::Render()
     if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
     {
         ImGuiID dockspace_id = ImGui::GetID("RootDockSpace");
-        ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+        ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspaceFlags);
     }
 
     static bool showMenu = false;
@@ -56,9 +56,9 @@ void RootWidget::Render()
         if (ImGui::BeginMenu("File"))
         {
             ImGui::Separator();
-            if (ImGui::MenuItem("Exit", "Alt+F4"))
+            if (ImGui::MenuItem("exit", "Alt+F4"))
             {
-                GetApp()->RequestExit();
+                get_app()->request_exit();
             }
 
             ImGui::EndMenu();
@@ -133,7 +133,7 @@ void RootWidget::Render()
         //        ImGui::ShowDebugLogWindow();
     }
 
-    RenderChildren();
+    render_children();
 
     ImGui::End();
 }

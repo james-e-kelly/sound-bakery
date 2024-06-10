@@ -1,29 +1,29 @@
 #pragma once
 
-#include "Managers/Manager.h"
-#include "Subsystems/Subsystem.h"
+#include "managers/manager.h"
+#include "subsystems/subsystem.h"
 
-class App final
+class app final
 {
 public:
-    int Run(int argc, char** argv);
-    void RequestExit();
+    int run(int argc, char** argv);
+    void request_exit();
 
 public:
     template <class T>
-    T* AddSubsystemClass();
+    T* add_subsystem_class();
 
     template <class T>
-    T* GetSubsystemByClass();
+    T* get_subsystem_by_class();
 
     template <class T>
-    T* AddManagerClass();
+    T* add_manager_class();
 
     template <class T>
-    T* GetManagerByClass();
+    T* get_manager_by_class();
 
 private:
-    std::vector<std::unique_ptr<Subsystem>> m_subsystems;
+    std::vector<std::unique_ptr<subsystem>> m_subsystems;
     std::vector<std::unique_ptr<Manager>> m_managers;
 
     std::chrono::high_resolution_clock::time_point m_currentTime;
@@ -36,7 +36,7 @@ private:
 };
 
 template <class T>
-T* App::AddSubsystemClass()
+T* app::add_subsystem_class()
 {
     m_subsystems.push_back(std::make_unique<T>(this));
     T* subsystem = dynamic_cast<T*>(m_subsystems.back().get());
@@ -44,17 +44,17 @@ T* App::AddSubsystemClass()
 
     if (m_hasInit)
     {
-        subsystem->PreInit(0, NULL);
-        subsystem->Init();
+        subsystem->pre_init(0, NULL);
+        subsystem->init();
     }
 
     return subsystem;
 }
 
 template <class T>
-T* App::GetSubsystemByClass()
+T* app::get_subsystem_by_class()
 {
-    for (std::unique_ptr<Subsystem>& subsystem : m_subsystems)
+    for (std::unique_ptr<subsystem>& subsystem : m_subsystems)
     {
         if (T* castedSubsystem = dynamic_cast<T*>(subsystem.get()))
         {
@@ -66,21 +66,21 @@ T* App::GetSubsystemByClass()
 }
 
 template <class T>
-T* App::AddManagerClass()
+T* app::add_manager_class()
 {
     m_managers.push_back(std::make_unique<T>(this));
     T* manager = dynamic_cast<T*>(m_managers.back().get());
 
     if (manager)
     {
-        manager->Init(this);
+        manager->init(this);
     }
 
     return manager;
 }
 
 template <class T>
-T* App::GetManagerByClass()
+T* app::get_manager_by_class()
 {
     for (std::unique_ptr<Manager>& manager : m_managers)
     {

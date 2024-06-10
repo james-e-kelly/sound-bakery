@@ -17,18 +17,18 @@
 
 static SB::Core::Object* s_lastPlayableSelection;
 
-void PlayerWidget::Start()
+void PlayerWidget::start()
 {
-    Widget::Start();
+    widget::start();
 
-    AddChildWidget<AudioDisplayWidget>();
+    add_child_widget<AudioDisplayWidget>();
 }
 
 void PlayerWidget::Render()
 {
     ImGui::Begin("Player");
 
-    Selection& selection    = GetApp()->GetProjectManager()->GetSelection();
+    Selection& selection    = get_app()->GetProjectManager()->GetSelection();
     std::optional<rttr::type> selectedType = selection.SelectedType();
 
     const bool isSelected = !!selection.GetSelected();
@@ -74,7 +74,7 @@ void PlayerWidget::Render()
                          ->tryConvertObject<SB::Engine::Sound>())
         {
             if (SB::Engine::SoundContainer* previewContainer =
-                    GetApp()->GetProjectManager()->GetPreviewSoundContainer())
+                    get_app()->GetProjectManager()->GetPreviewSoundContainer())
             {
                 previewContainer->setSound(sound);
 
@@ -171,7 +171,7 @@ void PlayerWidget::Render()
 
     ImGui::EndDisabled();
 
-    RenderChildren();
+    render_children();
 
     ImGui::End();
 }

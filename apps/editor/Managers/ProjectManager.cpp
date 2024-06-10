@@ -24,14 +24,14 @@ void ProjectManager::Init(const std::filesystem::path& projectFile)
     SB::Engine::System::openProject(projectFile);
 
     GetApp()
-        ->GetSubsystemByClass<WidgetSubsystem>()
-        ->AddWidgetClassToRoot<ProjectExplorerWidget>();
+        ->get_subsystem_by_class<widget_subsystem>()
+        ->add_widget_class_to_root<ProjectExplorerWidget>();
     GetApp()
-        ->GetSubsystemByClass<WidgetSubsystem>()
-        ->AddWidgetClassToRoot<PlayerWidget>();
+        ->get_subsystem_by_class<widget_subsystem>()
+        ->add_widget_class_to_root<PlayerWidget>();
     GetApp()
-        ->GetSubsystemByClass<WidgetSubsystem>()
-        ->AddWidgetClassToRoot<DetailsWidget>();
+        ->get_subsystem_by_class<widget_subsystem>()
+        ->add_widget_class_to_root<DetailsWidget>();
 }
 
 void ProjectManager::Tick(double deltaTime)

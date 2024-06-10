@@ -18,9 +18,9 @@ namespace SplashScreenUtils
     static const char* splashScreenName = "SplashScreen";
 }
 
-void SplashWidget::Start()
+void SplashWidget::start()
 {
-    Widget::Start();
+    widget::start();
 
     const cmrc::embedded_filesystem embeddedfilesystem = cmrc::SB::Images::get_filesystem();
 
@@ -66,7 +66,7 @@ void SplashWidget::ShowSplashScreen()
 
 void SplashWidget::CloseSplashScreen() { m_wantsToShow = false; }
 
-void SplashWidget::Tick(double deltaTime)
+void SplashWidget::tick(double deltaTime)
 {
     if (m_wantsToShow)
     {
@@ -100,7 +100,7 @@ void SplashWidget::Tick(double deltaTime)
 
         if (m_timeShowingScreen >= 0.2)
         {
-            Destroy();
+            destroy();
         }
     }
 }

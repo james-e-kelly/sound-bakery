@@ -32,7 +32,7 @@ static void glfw_error_callback(int error, const char* description)
     fprintf(stderr, "GLFW Error %d: %s\n", error, description);
 }
 
-RendererSubsystem::WindowGuard::WindowGuard(int width,
+renderer_subsystem::window_guard::window_guard(int width,
                                             int height,
                                             const std::string& windowName)
 {
@@ -59,14 +59,14 @@ RendererSubsystem::WindowGuard::WindowGuard(int width,
     }
 }
 
-RendererSubsystem::WindowGuard::WindowGuard(WindowGuard&& other) noexcept
+renderer_subsystem::window_guard::window_guard(window_guard&& other) noexcept
 {
     m_window       = other.m_window;
     other.m_window = nullptr;
 }
 
-RendererSubsystem::WindowGuard& RendererSubsystem::WindowGuard::operator=(
-    WindowGuard&& other) noexcept
+renderer_subsystem::window_guard& renderer_subsystem::window_guard::operator=(
+    window_guard&& other) noexcept
 {
     if (this != &other)
     {
@@ -77,7 +77,7 @@ RendererSubsystem::WindowGuard& RendererSubsystem::WindowGuard::operator=(
     return *this;
 }
 
-RendererSubsystem::WindowGuard::~WindowGuard()
+renderer_subsystem::window_guard::~window_guard()
 {
     if (m_window)
     {
@@ -86,9 +86,9 @@ RendererSubsystem::WindowGuard::~WindowGuard()
     }
 }
 
-int RendererSubsystem::PreInit(int ArgC, char* ArgV[]) { return 0; }
+int renderer_subsystem::pre_init(int ArgC, char* ArgV[]) { return 0; }
 
-void RendererSubsystem::SetDefaultWindowHints()
+void renderer_subsystem::set_default_window_hints()
 {
     // Decide GL+GLSL versions
 #if defined(__APPLE__)
@@ -133,18 +133,18 @@ static ImVec4 adjustAlpha(const ImVec4& color, const float alpha)
     return resultColor;
 }
 
-int RendererSubsystem::InitGLFW()
+int renderer_subsystem::init_glfw()
 {
     glfwSetErrorCallback(glfw_error_callback);
     if (!glfwInit())
         return 1;
 
-    SetDefaultWindowHints();
+    set_default_window_hints();
 
     return 0;
 }
 
-int RendererSubsystem::InitImGui()
+int renderer_subsystem::init_imgui()
 {
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
@@ -776,14 +776,14 @@ int RendererSubsystem::InitImGui()
     return 0;
 }
 
-int RendererSubsystem::Init()
+int renderer_subsystem::init()
 {
-    if (InitGLFW() == 0)
+    if (init_glfw() == 0)
     {
-        if (InitImGui() == 0)
+        if (init_imgui() == 0)
         {
             // Create window with graphics context
-            m_window = WindowGuard(1920, 1080, "Sound Bakery");
+            m_window = window_guard(1920, 1080, "Sound Bakery");
 
             return 0;
         }
@@ -791,11 +791,11 @@ int RendererSubsystem::Init()
     return 1;
 }
 
-void RendererSubsystem::PreTick(double deltaTime)
+void renderer_subsystem::pre_tick(double deltaTime)
 {
     if (glfwWindowShouldClose(m_window))
     {
-        GetApp()->RequestExit();
+        GetApp()->request_exit();
     }
     else
     {
@@ -807,9 +807,9 @@ void RendererSubsystem::PreTick(double deltaTime)
     }
 }
 
-void RendererSubsystem::Tick(double deltaTime) {}
+void renderer_subsystem::tick(double deltaTime) {}
 
-void RendererSubsystem::TickRendering(double deltaTime)
+void renderer_subsystem::tick_rendering(double deltaTime)
 {
     static ImVec4 clear_color = ImVec4(255.0f, 100.0f, 180.0f, 1.00f);
 
@@ -830,7 +830,7 @@ void RendererSubsystem::TickRendering(double deltaTime)
     glfwSwapBuffers(m_window);
 }
 
-void RendererSubsystem::Exit()
+void renderer_subsystem::exit()
 {
     ImGui::GetIO().Fonts->Clear();
 
