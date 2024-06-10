@@ -189,7 +189,7 @@ target_link_libraries(imgui
   OpenGL::GL
 )
 
-target_include_directories(gluten PRIVATE
+target_include_directories(gluten PUBLIC
   ${fonts_SOURCE_DIR}
 )
 

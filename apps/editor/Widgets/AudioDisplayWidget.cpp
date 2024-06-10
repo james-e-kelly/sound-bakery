@@ -11,9 +11,9 @@
 
 int littleEndian24Bit(const void* bytes)
 {
-    return (int32)((((uint32) static_cast<const int8*>(bytes)[2]) << 16) |
-                   (((uint32) static_cast<const uint8*>(bytes)[1]) << 8) |
-                   ((uint32) static_cast<const uint8*>(bytes)[0]));
+    return (ma_int32)((((ma_uint32) static_cast<const ma_uint8*>(bytes)[2]) << 16) |
+                   (((ma_uint32) static_cast<const ma_uint8*>(bytes)[1]) << 8) |
+                   ((ma_uint32) static_cast<const ma_uint8*>(bytes)[0]));
 }
 //
 // float getAverageValueFromSampleRange(FMOD_SOUND* sound, unsigned int

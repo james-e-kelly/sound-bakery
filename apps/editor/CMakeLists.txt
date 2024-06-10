@@ -2,17 +2,6 @@ message(STATUS "Adding editor")
 
 set(BUILD_FOLDER ${CMAKE_BINARY_DIR})
 
-set(FONT_FILES
-  ${BUILD_FOLDER}/fonts/Montserrat-Light.ttf
-  ${BUILD_FOLDER}/fonts/fa-regular-400.ttf
-  ${BUILD_FOLDER}/fonts/fa-solid-900.ttf
-  ${BUILD_FOLDER}/fonts/fontaudio.ttf
-)
-
-set(IMAGE_FILES
-  ${BUILD_FOLDER}/images/SplashImage.png
-)
-
 set(EDITOR_SOURCES
   AppEntry.cpp 
   App/App.cpp

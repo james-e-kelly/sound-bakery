@@ -1,5 +1,7 @@
 #include "App/App.h"
 
+extern App* CreateApplication();
+
 #if defined(WIN32)
     #include <windows.h>
 
@@ -8,17 +10,30 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance,
                    _In_ PSTR pCmdLine,
                    _In_ int nCmdShow)
 {
-    App app;
+    (void)hInstance;
+    (void)hPrevInstance;
+    (void)pCmdLine;
+    (void)nCmdShow;
 
-    return app.Run(__argc, __argv);
+    App* app = CreateApplication();
+
+    app->Run(__argc, __argv);
+
+    delete app;
+
+    return 0;
 }
 
 #else
 
 int main(int argc, char* argv[])
 {
-    App app;
+    App* app = CreateApplication();
 
-    return app.Run(argc, argv);
+    app->Run(__argc, __argv);
+
+    delete app;
+
+    return 0;
 }
 #endif
