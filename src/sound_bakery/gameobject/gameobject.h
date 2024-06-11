@@ -9,9 +9,9 @@ namespace SB::Engine
     class Container;
     class Event;
 
-    class SB_CLASS GameObject : public SB::Core::Object
+    class SB_CLASS GameObject : public SB::Core::object
     {
-        REGISTER_REFLECTION(GameObject, SB::Core::Object)
+        REGISTER_REFLECTION(GameObject, SB::Core::object)
 
     public:
         Voice* playContainer(Container* container);
@@ -64,9 +64,9 @@ namespace SB::Engine
          * @param parameter to get the value for.
          * @return value of the parameter.
          */
-        SB_ID getIntParameterValue(const SB::Core::DatabasePtr<NamedParameter>& parameter) const
+        sb_id getIntParameterValue(const SB::Core::DatabasePtr<NamedParameter>& parameter) const
         {
-            SB_ID result = 0;
+            sb_id result = 0;
 
             auto found = m_parameters.intParameters.find(parameter);
 

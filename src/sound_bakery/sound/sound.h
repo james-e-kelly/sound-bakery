@@ -5,7 +5,7 @@
 
 namespace SB::Engine
 {
-    class SB_CLASS Sound : public SB::Core::DatabaseObject
+    class SB_CLASS Sound : public SB::Core::database_object
     {
     public:
         Sound();
@@ -32,7 +32,7 @@ namespace SB::Engine
 
         bool m_streaming;
 
-        REGISTER_REFLECTION(Sound, SB::Core::DatabaseObject)
+        REGISTER_REFLECTION(Sound, SB::Core::database_object)
         RTTR_REGISTRATION_FRIEND
     };
 }  // namespace SB::Engine

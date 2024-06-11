@@ -7,7 +7,7 @@
 
 namespace SB::Core
 {
-    class Database;
+    class database;
     class ObjectTracker;
 }  // namespace SB::Core
 
@@ -45,16 +45,16 @@ namespace SB::Engine
         static System* create();
         static void destroy();
 
-        static SB_RESULT init();
-        static SB_RESULT update();
+        static sc_result init();
+        static sc_result update();
 
         /**
          * @brief Creates an instance of Sound Bakery and opens the project.
          */
-        static SB_RESULT openProject(const std::filesystem::path& projectFile);
+        static sc_result openProject(const std::filesystem::path& projectFile);
 
         static SB::Core::ObjectTracker* getObjectTracker();
-        static SB::Core::Database* getDatabase();
+        static SB::Core::database* getDatabase();
         static SB::Editor::Project* getProject();
 
         void onLoaded();
@@ -81,7 +81,7 @@ namespace SB::Engine
         bool m_registeredReflection = false;
 
         std::unique_ptr<SB::Editor::Project> m_project;
-        std::unique_ptr<SB::Core::Database> m_database;
+        std::unique_ptr<SB::Core::database> m_database;
         std::unique_ptr<SB::Core::ObjectTracker> m_objectTracker;
         std::unique_ptr<Profiling::VoiceTracker> m_voiceTracker;
 

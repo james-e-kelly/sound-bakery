@@ -23,11 +23,11 @@ namespace SB::Engine
             void update(System* system);
 
         public:
-            unsigned int getPlayingCountOfObject(SB_ID id) const;
+            unsigned int getPlayingCountOfObject(sb_id id) const;
 
         private:
-            std::unordered_set<SB_ID> m_playingNodeIDs;
-            std::unordered_map<SB_ID, unsigned int> m_nodePlayingCount;
+            std::unordered_set<sb_id> m_playingNodeIDs;
+            std::unordered_map<sb_id, unsigned int> m_nodePlayingCount;
         };
     }  // namespace Profiling
 }  // namespace SB::Engine

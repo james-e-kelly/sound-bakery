@@ -13,7 +13,7 @@ void Bus::onLoaded()
 
     if (SB::Engine::System* system = SB::Engine::System::get())
     {
-        if (system->getMasterBus().id() == getDatabaseID())
+        if (system->getMasterBus().id() == get_database_id())
         {
             setMasterBus(true);
         }
@@ -27,7 +27,7 @@ void Bus::lock()
         m_busInstance = std::make_shared<NodeInstance>();
 
         InitNodeInstance initData;
-        initData.refNode = tryConvertObject<NodeBase>();
+        initData.refNode = try_convert_object<NodeBase>();
         initData.type    = NodeInstanceType::BUS;
 
         m_busInstance->init(initData);

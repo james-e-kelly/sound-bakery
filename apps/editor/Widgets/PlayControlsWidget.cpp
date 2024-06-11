@@ -15,7 +15,7 @@
 
 #include <rttr/type>
 
-static SB::Core::Object* s_lastPlayableSelection;
+static SB::Core::object* s_lastPlayableSelection;
 
 void PlayerWidget::start()
 {
@@ -55,8 +55,8 @@ void PlayerWidget::Render()
     if (isSelected && !!s_lastPlayableSelection)
     {
         ImGui::Text("%s", s_lastPlayableSelection
-                              ->tryConvertObject<SB::Core::DatabaseObject>()
-                              ->getDatabaseName()
+                              ->try_convert_object<SB::Core::database_object>()
+                              ->get_database_name()
                               .data());
     }
 
@@ -64,14 +64,14 @@ void PlayerWidget::Render()
     {
         if (SB::Engine::Container* container =
                 s_lastPlayableSelection
-                    ->tryConvertObject<SB::Engine::Container>())
+                    ->try_convert_object<SB::Engine::Container>())
         {
             SB::Engine::System::get()->getListenerGameObject()->playContainer(
                 container);
         }
         else if (SB::Engine::Sound* sound =
                      s_lastPlayableSelection
-                         ->tryConvertObject<SB::Engine::Sound>())
+                         ->try_convert_object<SB::Engine::Sound>())
         {
             if (SB::Engine::SoundContainer* previewContainer =
                     get_app()->GetProjectManager()->GetPreviewSoundContainer())
@@ -85,7 +85,7 @@ void PlayerWidget::Render()
         }
         else if (SB::Engine::Event* event =
                      s_lastPlayableSelection
-                         ->tryConvertObject<SB::Engine::Event>())
+                         ->try_convert_object<SB::Engine::Event>())
         {
             SB::Engine::System::get()->getListenerGameObject()->postEvent(
                 event);
@@ -100,7 +100,7 @@ void PlayerWidget::Render()
     }
 
     SB::Engine::Node* const nodeSelection =
-        s_lastPlayableSelection ? s_lastPlayableSelection->tryConvertObject<SB::Engine::Node>() : nullptr;
+        s_lastPlayableSelection ? s_lastPlayableSelection->try_convert_object<SB::Engine::Node>() : nullptr;
 
     SB::Engine::GlobalParameterList parameterList;
 
@@ -134,11 +134,11 @@ void PlayerWidget::Render()
                     }
 
                     ImGui::TableNextColumn();
-                    ImGui::TextUnformatted(intParameter->getDatabaseName().data());
+                    ImGui::TextUnformatted(intParameter->get_database_name().data());
 
                     ImGui::TableNextColumn();
 
-                    if (ImGui::BeginCombo("Selected", selectedIntParameterValue->getDatabaseName().data()))
+                    if (ImGui::BeginCombo("Selected", selectedIntParameterValue->get_database_name().data()))
                     {
                         for (SB::Core::DatabasePtr<SB::Engine::NamedParameterValue> parameterValue : intParameter->getValues())
                         {
@@ -148,10 +148,10 @@ void PlayerWidget::Render()
                             }
 
                             bool selected = parameterValue == selectedIntParameterValue;
-                            if (ImGui::Selectable(parameterValue->getDatabaseName().data(), &selected))
+                            if (ImGui::Selectable(parameterValue->get_database_name().data(), &selected))
                             {
                                 listenerGameObject->setIntParameterValue(
-                                    {intParameter.id(), parameterValue->getDatabaseID()});
+                                    {intParameter.id(), parameterValue->get_database_id()});
                             }
                         }
 

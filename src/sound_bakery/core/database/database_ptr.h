@@ -5,11 +5,11 @@
 
 namespace SB::Core
 {
-    class DatabaseObject;
+    class database_object;
 
-    std::weak_ptr<DatabaseObject> SB_API findObject(SB_ID id);
-    bool SB_API objectIdIsChildOfParent(SB_ID childToCheck, SB_ID parent);
-    SB_ID SB_API getParentIdFromId(SB_ID id);
+    std::weak_ptr<database_object> SB_API findObject(sb_id id);
+    bool SB_API objectIdIsChildOfParent(sb_id childToCheck, sb_id parent);
+    sb_id SB_API getParentIdFromId(sb_id id);
 
     /** Lazy Pointer
      * Lazy pointers store an Indentifier to an object and use it to find the
@@ -23,12 +23,12 @@ namespace SB::Core
     {
     public:
         using TThisType       = DatabasePtr<TObject>;
-        using TIdentifierType = SB_ID;
+        using TIdentifierType = sb_id;
         using TObjectPtr      = TObject*;
         using TObjectRef      = TObject&;
-        using TObjectWeak     = std::weak_ptr<DatabaseObject>;
+        using TObjectWeak     = std::weak_ptr<database_object>;
         using TObjectShared   = std::shared_ptr<TObject>;
-        using TPtrType        = std::weak_ptr<DatabaseObject>;
+        using TPtrType        = std::weak_ptr<database_object>;
 
         static_assert(!std::is_pointer<TObject>::value);
 
@@ -46,7 +46,7 @@ namespace SB::Core
          * construction
          * @param id ID of the object to reference
          */
-        DatabasePtr(SB_ID id) : m_objectID(id), m_objectPtr(), m_null(true) {}
+        DatabasePtr(sb_id id) : m_objectID(id), m_objectPtr(), m_null(true) {}
 
         /**
          * @brief Create a valid LazyPtr
@@ -70,7 +70,7 @@ namespace SB::Core
          * @brief Get ID of the referenced object
          * @return
          */
-        SB_ID id() const noexcept { return m_objectID; }
+        sb_id id() const noexcept { return m_objectID; }
 
         TObjectShared shared() const noexcept
         {
@@ -218,7 +218,7 @@ namespace SB::Core
         TObjectPtr operator->() const { return raw(); }
 
     protected:
-        SB_ID m_objectID;
+        sb_id m_objectID;
         mutable TPtrType m_objectPtr = TPtrType();
         mutable bool m_null;
     };
@@ -310,14 +310,14 @@ namespace SB::Core
          *
          * @param owner to check for child objects on
          */
-        ChildPtr(const DatabaseObject& owner) : DatabasePtr<TObject>(), m_ownerID(owner.getDatabaseID()) {}
+        ChildPtr(const database_object& owner) : DatabasePtr<TObject>(), m_ownerID(owner.get_database_id()) {}
 
         /**
          * @brief Construct a new ChildPtr that points to the ID.
          *
          * Tries to find the owner from the ID.
          */
-        ChildPtr(SB_ID id) : DatabasePtr<TObject>(id), m_ownerID(getParentIdFromId(id)) {}
+        ChildPtr(sb_id id) : DatabasePtr<TObject>(id), m_ownerID(getParentIdFromId(id)) {}
 
         TThisType& operator=(typename DatabasePtr<TObject>::TIdentifierType id)
         {
@@ -411,7 +411,7 @@ namespace SB::Core
             // Point to new object if it's a child of our owner
             else
             {
-                SB_ID newObjectID = static_cast<typename DatabasePtr<TObject>::TIdentifierType>(*object);
+                sb_id newObjectID = static_cast<typename DatabasePtr<TObject>::TIdentifierType>(*object);
 
                 if (m_ownerID == 0 || objectIdIsChildOfParent(newObjectID, m_ownerID))
                 {
@@ -432,13 +432,13 @@ namespace std
     template <typename T>
     struct hash<SB::Core::DatabasePtr<T>>
     {
-        size_t operator()(const SB::Core::DatabasePtr<T>& k) const { return hash<SB_ID>{}(k.id()); }
+        size_t operator()(const SB::Core::DatabasePtr<T>& k) const { return hash<sb_id>{}(k.id()); }
     };
 
     template <typename T>
     struct hash<SB::Core::ChildPtr<T>>
     {
-        size_t operator()(const SB::Core::ChildPtr<T>& k) const { return hash<SB_ID>{}(k.id()); }
+        size_t operator()(const SB::Core::ChildPtr<T>& k) const { return hash<sb_id>{}(k.id()); }
     };
 }  // namespace std
 

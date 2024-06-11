@@ -350,7 +350,7 @@ void loadProperty(YAML::Node& node, rttr::property property, rttr::instance inst
 //
 // -----
 
-void Serializer::saveObject(SB::Core::Object* object, YAML::Emitter& emitter)
+void Serializer::saveObject(SB::Core::object* object, YAML::Emitter& emitter)
 {
     if (object != nullptr)
     {
@@ -405,7 +405,7 @@ void Serializer::packageSoundbank(SB::Engine::Soundbank* soundbank, YAML::Emitte
                     }
 
                     SB::Engine::NodeBase* const nodeBase =
-                        action.m_destination->tryConvertObject<SB::Engine::NodeBase>();
+                        action.m_destination->try_convert_object<SB::Engine::NodeBase>();
 
                     assert(nodeBase);
 
@@ -420,7 +420,7 @@ void Serializer::packageSoundbank(SB::Engine::Soundbank* soundbank, YAML::Emitte
             if (node->getType() == SB::Engine::SoundContainer::type())
             {
                 if (SB::Engine::SoundContainer* const soundContainer =
-                        node->tryConvertObject<SB::Engine::SoundContainer>())
+                        node->try_convert_object<SB::Engine::SoundContainer>())
                 {
                     if (SB::Engine::Sound* const sound = soundContainer->getSound())
                     {
@@ -480,11 +480,11 @@ rttr::instance SB::Core::Serialization::Serializer::createAndLoadObject(YAML::No
 
     if (created)
     {
-        if (created.get_derived_type().is_derived_from<SB::Core::Object>())
+        if (created.get_derived_type().is_derived_from<SB::Core::object>())
         {
             if (SB::Core::ObjectTracker* const objectTracker = SB::Engine::System::getObjectTracker())
             {
-                objectTracker->trackObject(created.try_convert<SB::Core::Object>());
+                objectTracker->trackObject(created.try_convert<SB::Core::object>());
             }
         }
 

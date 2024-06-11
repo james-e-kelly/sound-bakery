@@ -70,12 +70,12 @@ void SB::Editor::Project::encodeAllMedia() const
 
     if (SB::Core::ObjectTracker* const objectTracker = SB::Engine::System::getObjectTracker())
     {
-        for (SB::Core::Object* const soundObject : objectTracker->getObjectsOfType(SB::Engine::Sound::type()))
+        for (SB::Core::object* const soundObject : objectTracker->getObjectsOfType(SB::Engine::Sound::type()))
         {
-            if (SB::Engine::Sound* const sound = soundObject->tryConvertObject<SB::Engine::Sound>())
+            if (SB::Engine::Sound* const sound = soundObject->try_convert_object<SB::Engine::Sound>())
             {
                 const std::filesystem::path encodedSoundFile =
-                    m_projectConfig.encodedFolder() / (std::to_string(sound->getDatabaseID()) + ".ogg");
+                    m_projectConfig.encodedFolder() / (std::to_string(sound->get_database_id()) + ".ogg");
                 std::filesystem::create_directories(encodedSoundFile.parent_path());
 
                 const sc_encoder_config encoderConfig =
@@ -114,16 +114,16 @@ void SB::Editor::Project::loadSounds()
         {
             const std::filesystem::path filename = p.path().filename();
 
-            if (SB::Core::Database* const database = SB::Engine::System::getDatabase())
+            if (SB::Core::database* const database = SB::Engine::System::getDatabase())
             {
-                if (database->tryFind(filename.stem().string().c_str()) == nullptr)
+                if (database->try_find(filename.stem().string().c_str()) == nullptr)
                 {
-                    if (SB::Core::DatabaseObject* const createdSound = newDatabaseObject<SB::Engine::Sound>())
+                    if (SB::Core::database_object* const createdSound = newDatabaseObject<SB::Engine::Sound>())
                     {
-                        createdSound->setDatabaseName(filename.stem().string().c_str());
+                        createdSound->set_database_name(filename.stem().string().c_str());
 
                         if (SB::Engine::Sound* const castedSound =
-                                SB::Reflection::cast<SB::Engine::Sound*, SB::Core::DatabaseObject*>(createdSound))
+                                SB::Reflection::cast<SB::Engine::Sound*, SB::Core::database_object*>(createdSound))
                         {
                             castedSound->setSoundName(p.path().string());
                         }
@@ -169,20 +169,20 @@ void SB::Editor::Project::loadObjects()
 void SB::Editor::Project::createPreviewContainer()
 {
     m_previewSoundContainer = newDatabaseObject<SB::Engine::SoundContainer>();
-    m_previewSoundContainer->setDatabaseName("Preview Node");
-    m_previewSoundContainer->setEditorHidden(true);
+    m_previewSoundContainer->set_database_name("Preview Node");
+    m_previewSoundContainer->set_editor_hidden(true);
 }
 
 void SB::Editor::Project::buildSoundbanks() const
 {
     if (SB::Core::ObjectTracker* const objectTracker = SB::Engine::System::getObjectTracker())
     {
-        const std::unordered_set<SB::Core::Object*> soundbankObjects =
+        const std::unordered_set<SB::Core::object*> soundbankObjects =
             objectTracker->getObjectsOfCategory(SB_CATEGORY_BANK);
 
         for (auto& soundbankObject : soundbankObjects)
         {
-            if (SB::Engine::Soundbank* const soundbank = soundbankObject->tryConvertObject<SB::Engine::Soundbank>())
+            if (SB::Engine::Soundbank* const soundbank = soundbankObject->try_convert_object<SB::Engine::Soundbank>())
             {
                 /*YAML::Emitter soundbankEmitter;
                 SB::Core::Serialization::Serializer::packageSoundbank(soundbank, soundbankEmitter);
@@ -206,7 +206,7 @@ void SB::Editor::Project::buildSoundbanks() const
                             }
 
                             SB::Engine::NodeBase* const nodeBase =
-                                action.m_destination->tryConvertObject<SB::Engine::NodeBase>();
+                                action.m_destination->try_convert_object<SB::Engine::NodeBase>();
 
                             assert(nodeBase);
 
@@ -232,7 +232,7 @@ void SB::Editor::Project::buildSoundbanks() const
                     if (node->getType() == SB::Engine::SoundContainer::type())
                     {
                         if (SB::Engine::SoundContainer* const soundContainer =
-                                node->tryConvertObject<SB::Engine::SoundContainer>())
+                                node->try_convert_object<SB::Engine::SoundContainer>())
                         {
                             if (SB::Engine::Sound* const sound = soundContainer->getSound())
                             {
@@ -247,7 +247,7 @@ void SB::Editor::Project::buildSoundbanks() const
                 }
 
                 sc_bank bank;
-                sc_result initresult = sc_bank_init((m_projectConfig.buildFolder() / (std::string(soundbank->getDatabaseName()) + ".bnk")).string().c_str(), &bank);
+                sc_result initresult = sc_bank_init((m_projectConfig.buildFolder() / (std::string(soundbank->get_database_name()) + ".bnk")).string().c_str(), &bank);
                 assert(initresult == MA_SUCCESS);
 
                 sc_result buildResult = sc_bank_build(&bank, encodedSoundPathsToSave.data(), encodingFormats.data(), encodedSoundPathsToSave.size());
@@ -268,13 +268,13 @@ void SB::Editor::Project::saveSystem() const
 
 void SB::Editor::Project::saveObjects() const
 {
-    if (SB::Core::Database* const database = SB::Engine::System::getDatabase())
+    if (SB::Core::database* const database = SB::Engine::System::getDatabase())
     {
-        for (const std::weak_ptr<SB::Core::DatabaseObject>& object : database->getAll())
+        for (const std::weak_ptr<SB::Core::database_object>& object : database->get_all())
         {
-            if (const std::shared_ptr<SB::Core::DatabaseObject> sharedObject = object.lock())
+            if (const std::shared_ptr<SB::Core::database_object> sharedObject = object.lock())
             {
-                if (sharedObject->getEditorHidden())
+                if (sharedObject->get_editor_hidden())
                 {
                     continue;
                 }

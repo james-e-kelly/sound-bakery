@@ -4,8 +4,8 @@ namespace SB
 {
     namespace Core
     {
-        class Object;
-        class DatabaseObject;
+        class object;
+        class database_object;
 
         template <typename T>
         class DatabasePtr;

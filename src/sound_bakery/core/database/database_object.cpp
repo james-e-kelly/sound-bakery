@@ -6,24 +6,19 @@
 
 using namespace SB::Core;
 
-DEFINE_REFLECTION(SB::Core::DatabaseObject)
+DEFINE_REFLECTION(SB::Core::database_object)
 
-DatabaseObject::~DatabaseObject()
-{
-    // Database::get()->remove(this);
-}
+sb_id SB::Core::database_object::get_database_id() const { return m_objectID; }
 
-SB_ID SB::Core::DatabaseObject::getDatabaseID() const { return m_objectID; }
+std::string_view SB::Core::database_object::get_database_name() const { return m_objectName; }
 
-std::string_view SB::Core::DatabaseObject::getDatabaseName() const { return m_objectName; }
-
-void SB::Core::DatabaseObject::setDatabaseID(SB_ID id)
+void SB::Core::database_object::set_database_id(sb_id id)
 {
     assert(m_objectID == 0 && "Shouldn't update an object's ID at runtime");
 
-    if (Database* const database = SB::Engine::System::getDatabase())
+    if (database* const database = SB::Engine::System::getDatabase())
     {
-        database->addOrUpdateID(m_objectID, id, this);
+        database->add_or_update_id(m_objectID, id, this);
     }
 
     if (id != 0)
@@ -32,11 +27,11 @@ void SB::Core::DatabaseObject::setDatabaseID(SB_ID id)
     }
 }
 
-void SB::Core::DatabaseObject::setDatabaseName(std::string_view name)
+void SB::Core::database_object::set_database_name(std::string_view name)
 {
-    if (Database* const database = SB::Engine::System::getDatabase())
+    if (database* const database = SB::Engine::System::getDatabase())
     {
-        database->addOrUpdateName(m_objectName, name.data(), this);
+        database->add_or_update_name(m_objectName, name.data(), this);
     }
 
     m_objectName = name;

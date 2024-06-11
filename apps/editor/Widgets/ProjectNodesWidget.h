@@ -43,11 +43,11 @@ public:
 
     bool NodeHasChildren(SB::Engine::Node* node);
 
-    void HandleOpenNode(SB::Core::DatabaseObject* object);
+    void HandleOpenNode(SB::Core::database_object* object);
 
-    bool ObjectIsRenaming(SB::Core::DatabaseObject* object);
+    bool ObjectIsRenaming(SB::Core::database_object* object);
 
-    void RenderRenameObject(SB::Core::DatabaseObject* const& object);
+    void RenderRenameObject(SB::Core::database_object* const& object);
 
 private:
     bool RenderNodeContextMenu(rttr::type type, rttr::instance instance);
@@ -59,10 +59,10 @@ private:
     std::string_view CreateParentOrChildMenuName(NodeCreationType creationType);
 
 private:
-    void SetupRenameNode(SB::Core::DatabaseObject* object);
+    void SetupRenameNode(SB::Core::database_object* object);
 
 private:
-    SB_ID m_renameID         = 0;
-    SB_ID m_nodeToOpen       = 0;
+    sb_id m_renameID         = 0;
+    sb_id m_nodeToOpen       = 0;
     char m_renameString[255] = "\0";
 };

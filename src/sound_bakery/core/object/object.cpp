@@ -5,9 +5,9 @@
 
 using namespace SB::Core;
 
-DEFINE_REFLECTION(SB::Core::Object)
+DEFINE_REFLECTION(SB::Core::object)
 
-Object::~Object()
+object::~object()
 {
     if (ObjectTracker* const objectTracker = SB::Engine::System::getObjectTracker())
     {
@@ -15,9 +15,9 @@ Object::~Object()
     }
 }
 
-SB::Engine::System* ObjectUtilities::getSystem() const { return SB::Engine::System::get(); }
+SB::Engine::System* object_utilities::getSystem() const { return SB::Engine::System::get(); }
 
-sc_system* ObjectUtilities::getChef() const
+sc_system* object_utilities::getChef() const
 {
     if (SB::Engine::System* system = getSystem())
     {
@@ -26,7 +26,7 @@ sc_system* ObjectUtilities::getChef() const
     return nullptr;
 }
 
-ma_engine* ObjectUtilities::getMini() const
+ma_engine* object_utilities::getMini() const
 {
     if (sc_system* system = getChef())
     {

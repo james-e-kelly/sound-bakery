@@ -20,7 +20,7 @@ void SB::Engine::Node::gatherParameters(GlobalParameterList& parameters)
     {
         if (child != nullptr)
         {
-            if (Node* const childNode = child->tryConvertObject<Node>())
+            if (Node* const childNode = child->try_convert_object<Node>())
             {
                 childNode->gatherParameters(parameters);
             }
@@ -72,7 +72,7 @@ NodeBase* SB::Engine::NodeBase::outputBus() const { return m_outputBus.lookupRaw
 
 bool SB::Engine::NodeBase::canAddChild(const SB::Core::DatabasePtr<NodeBase>& child) const
 {
-    if (m_childNodes.contains(child) || child.id() == getDatabaseID())
+    if (m_childNodes.contains(child) || child.id() == get_database_id())
     {
         return false;
     }

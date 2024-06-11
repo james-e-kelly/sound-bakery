@@ -18,7 +18,7 @@ void DetailsWidget::Render()
                 get_app()->GetProjectManager())
         {
             Selection& selection = projectManager->GetSelection();
-            if (SB::Core::Object* selected = selection.GetSelected())
+            if (SB::Core::object* selected = selection.GetSelected())
             {
                 PropertyDrawer::DrawObject(selected->getType(), selected);
                 ImGui::Separator();

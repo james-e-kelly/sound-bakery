@@ -1,7 +1,7 @@
 Checks: '-*,bugprone-*,clang-*,*cppcoreguidelines-*,cert-*,modernize-*,-modernize-use-trailing-return-type,-modernize-use-auto,-modernize-use-using,misc-*,performance-*,readability-*,readability-identifier-naming'
 CheckOptions:
   - key:             readability-identifier-naming.ClassCase
-    value:           CamelCase
+    value:           lower_case
   - key:             readability-identifier-naming.StructCase
     value:           lower_case
   - key:             readability-identifier-naming.EnumCase
@@ -9,13 +9,15 @@ CheckOptions:
   - key:             readability-identifier-naming.GlobalFunctionCase
     value:           lower_case
   - key:             readability-identifier-naming.FunctionCase
-    value:           camelBack
+    value:           lower_case
+  - key:             readability-identifier-naming.UnionCase
+    value:           lower_case
   - key:             readability-identifier-naming.MemberCase
     value:           camelBack
+  - key:             readability-identifier-naming.PrivateMemberPrefix
+    value:           m_
   - key:             readability-identifier-naming.ParameterCase
     value:           camelBack
-  - key:             readability-identifier-naming.UnionCase
-    value:           CamelCase
   - key:             readability-identifier-naming.VariableCase
     value:           camelBack
   - key:             readability-identifier-naming.StaticVariableCase

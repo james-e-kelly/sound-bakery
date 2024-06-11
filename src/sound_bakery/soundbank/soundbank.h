@@ -6,9 +6,9 @@ namespace SB::Engine
 {
     class Event;
 
-    class SB_CLASS Soundbank : public SB::Core::DatabaseObject
+    class SB_CLASS Soundbank : public SB::Core::database_object
     {
-        REGISTER_REFLECTION(Soundbank, SB::Core::DatabaseObject)
+        REGISTER_REFLECTION(Soundbank, SB::Core::database_object)
 
     public:
         std::vector<SB::Core::DatabasePtr<Event>> GetEvents() const { return m_events; }

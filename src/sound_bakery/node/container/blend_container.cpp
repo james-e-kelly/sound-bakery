@@ -8,7 +8,7 @@ void SB::Engine::BlendContainer::gatherChildrenForPlay(GatherChildrenContext& co
     {
         if (child != nullptr)
         {
-            if (Container* const childContainer = child->tryConvertObject<Container>())
+            if (Container* const childContainer = child->try_convert_object<Container>())
             {
                 context.sounds.push_back(childContainer);
             }

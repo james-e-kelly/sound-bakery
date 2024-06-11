@@ -14,7 +14,7 @@ namespace SB::Engine
      * Used for changing effect parameters, choosing sounds and anything else.
      */
     template <typename ParameterType>
-    class SB_CLASS Parameter : public SB::Core::DatabaseObject
+    class SB_CLASS Parameter : public SB::Core::database_object
     {
         static_assert(std::is_arithmetic<ParameterType>::value);
 
@@ -29,14 +29,14 @@ namespace SB::Engine
          *
          * Uses a @ref SB_ID for the parameter ID instead of DatabasePtr<T> to help when used in child classes.
          */
-        using LocalParameter = std::pair<SB_ID, ParameterProperty>;
+        using LocalParameter = std::pair<sb_id, ParameterProperty>;
 
         /**
          * @brief Defines an ID to a parameter and a value for that parameter.
          *
          * Used when setting the value on a parameter.
          */
-        using LocalParameterValuePair = std::pair<SB_ID, ParameterType>;
+        using LocalParameterValuePair = std::pair<sb_id, ParameterType>;
 
         Parameter() = default;
 
@@ -46,7 +46,7 @@ namespace SB::Engine
          * @param max value of the parameter.
          */
         Parameter(ParameterType min, ParameterType max)
-            : SB::Core::DatabaseObject(), m_property(min, min, max), m_defaultValue(min)
+            : SB::Core::database_object(), m_property(min, min, max), m_defaultValue(min)
         {
         }
 
@@ -81,14 +81,14 @@ namespace SB::Engine
          */
         [[nodiscard]] LocalParameter createLocalParameterFromThis() const
         {
-            return LocalParameter(getDatabaseID(), m_property);
+            return LocalParameter(get_database_id(), m_property);
         }
 
     protected:
         ParameterType m_defaultValue;
         SB::Core::Property<ParameterType> m_property;
 
-        REGISTER_REFLECTION(Parameter, DatabaseObject)
+        REGISTER_REFLECTION(Parameter, database_object)
     };
 
     class SB_CLASS FloatParameter : public Parameter<float>
@@ -110,18 +110,18 @@ namespace SB::Engine
      *
      * The object's ID is its parameter value.
      */
-    class SB_CLASS NamedParameterValue : public SB::Core::DatabaseObject
+    class SB_CLASS NamedParameterValue : public SB::Core::database_object
     {
     public:
         SB::Core::DatabasePtr<NamedParameter> parentParameter;
 
-        REGISTER_REFLECTION(NamedParameterValue, DatabaseObject)
+        REGISTER_REFLECTION(NamedParameterValue, database_object)
     };
 
     /**
      * @brief Holds discrete named integer values.
      */
-    class SB_CLASS NamedParameter : public Parameter<SB_ID>
+    class SB_CLASS NamedParameter : public Parameter<sb_id>
     {
         REGISTER_REFLECTION(NamedParameter, Parameter)
 
@@ -133,7 +133,7 @@ namespace SB::Engine
          * See https://stackoverflow.com/questions/40492414/why-does-stdnumeric-limitslong-longmax-fail
          */
         NamedParameter()
-            : m_values(), Parameter((std::numeric_limits<SB_ID>::min)(), (std::numeric_limits<SB_ID>::max)())
+            : m_values(), Parameter((std::numeric_limits<sb_id>::min)(), (std::numeric_limits<sb_id>::max)())
         {
         }
 
@@ -150,7 +150,7 @@ namespace SB::Engine
             {
                 if (NamedParameterValue* const parameterValue = newDatabaseObject<NamedParameterValue>())
                 {
-                    parameterValue->setDatabaseName(name);
+                    parameterValue->set_database_name(name);
                     parameterValue->parentParameter = this;
 
                     result = parameterValue;

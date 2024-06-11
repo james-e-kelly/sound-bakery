@@ -110,7 +110,7 @@ void AudioDisplayWidget::Render()
 {
     if (ProjectManager* manager = get_app()->GetProjectManager())
     {
-        if (SB::Core::Object* selected = manager->GetSelection().GetSelected())
+        if (SB::Core::object* selected = manager->GetSelection().GetSelected())
         {
             if (selected->getType() == SB::Engine::Sound::type())
             {

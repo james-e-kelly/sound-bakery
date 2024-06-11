@@ -19,12 +19,12 @@ namespace SB::Engine
     /**
      * @brief Wraps a sc_dsp_config
      */
-    class SB_CLASS EffectDescription final : public SB::Core::DatabaseObject
+    class SB_CLASS EffectDescription final : public SB::Core::database_object
     {
-        REGISTER_REFLECTION(EffectDescription, DatabaseObject)
+        REGISTER_REFLECTION(EffectDescription, database_object)
 
     public:
-        EffectDescription() : SB::Core::DatabaseObject(), m_config() { setDSPType(SC_DSP_TYPE_LOWPASS); }
+        EffectDescription() : SB::Core::database_object(), m_config() { setDSPType(SC_DSP_TYPE_LOWPASS); }
 
         void setDSPType(sc_dsp_type type)
         {

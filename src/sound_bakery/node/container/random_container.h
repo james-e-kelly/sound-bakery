@@ -14,14 +14,14 @@ namespace SB::Engine
                 case 0:
                     break;
                 case 1:
-                    context.sounds.push_back(m_childNodes.begin()->lookupRaw()->tryConvertObject<Container>());
+                    context.sounds.push_back(m_childNodes.begin()->lookupRaw()->try_convert_object<Container>());
                     break;
                 default:
                     int randomChildIndex = std::rand() % m_childNodes.size();
                     std::unordered_set<SB::Core::DatabasePtr<NodeBase>>::const_iterator childIter =
                         m_childNodes.begin();
                     std::advance(childIter, randomChildIndex);
-                    context.sounds.push_back(childIter->lookupRaw()->tryConvertObject<Container>());
+                    context.sounds.push_back(childIter->lookupRaw()->try_convert_object<Container>());
                     break;
             }
         }

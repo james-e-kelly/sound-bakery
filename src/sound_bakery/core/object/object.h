@@ -13,7 +13,7 @@ namespace SB::Core
     /**
      * @brief Provides basic helper functions. Not meant to be used directly
      */
-    class SB_CLASS ObjectUtilities
+    class SB_CLASS object_utilities
     {
     public:
         SB::Engine::System* getSystem() const;
@@ -22,22 +22,22 @@ namespace SB::Core
 
         std::string m_debugName;
 
-        REGISTER_REFLECTION(ObjectUtilities)
+        REGISTER_REFLECTION(object_utilities)
     };
 
     /**
      * @brief Simple base Object that all Sound Bakery objects should inherit
      * from
      */
-    class SB_CLASS Object : public ObjectUtilities
+    class SB_CLASS object : public object_utilities
     {
-        REGISTER_REFLECTION(Object, ObjectUtilities)
+        REGISTER_REFLECTION(object, object_utilities)
 
     public:
-        Object() = default;
-        virtual ~Object();
+        object() = default;
+        virtual ~object();
 
-        NOT_COPYABLE(Object)
+        NOT_COPYABLE(object)
 
         /**
          * @brief Gets the most derived type of this object and upcasts it to T
@@ -45,21 +45,21 @@ namespace SB::Core
          * @return
          */
         template <typename T>
-        T* tryConvertObject() noexcept
+        T* try_convert_object() noexcept
         {
             if (getType().is_derived_from(T::type()) || getType() == T::type())
             {
-                return SB::Reflection::cast<T*, Object*>(this);
+                return SB::Reflection::cast<T*, object*>(this);
             }
             return nullptr;
         }
 
         template <typename T>
-        const T* tryConvertObject() const noexcept
+        const T* try_convert_object() const noexcept
         {
             if (getType().is_derived_from(T::type()) || getType() == T::type())
             {
-                return SB::Reflection::cast<const T*, const Object*>(this);
+                return SB::Reflection::cast<const T*, const object*>(this);
             }
             return nullptr;
         }

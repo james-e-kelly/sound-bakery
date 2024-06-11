@@ -42,8 +42,8 @@ void VoiceTracker::update(System* system)
 
                             if (const std::shared_ptr<Node> node = nodeInstance->getReferencingNode())
                             {
-                                m_playingNodeIDs.insert(node->getDatabaseID());
-                                m_nodePlayingCount[node->getDatabaseID()]++;
+                                m_playingNodeIDs.insert(node->get_database_id());
+                                m_nodePlayingCount[node->get_database_id()]++;
                             }
 
                             const NodeInstance* parent = nodeInstance->getParent();
@@ -56,8 +56,8 @@ void VoiceTracker::update(System* system)
                                 {
                                     if (const std::shared_ptr<Node> node = parent->getReferencingNode())
                                     {
-                                        m_playingNodeIDs.insert(node->getDatabaseID());
-                                        m_nodePlayingCount[node->getDatabaseID()]++;
+                                        m_playingNodeIDs.insert(node->get_database_id());
+                                        m_nodePlayingCount[node->get_database_id()]++;
                                     }
 
                                     parent = parent->getParent();
@@ -71,11 +71,11 @@ void VoiceTracker::update(System* system)
     }
 }
 
-unsigned int VoiceTracker::getPlayingCountOfObject(SB_ID id) const
+unsigned int VoiceTracker::getPlayingCountOfObject(sb_id id) const
 {
     unsigned int result = 0;
 
-    if (std::unordered_map<SB_ID, unsigned int>::const_iterator find = m_nodePlayingCount.find(id);
+    if (std::unordered_map<sb_id, unsigned int>::const_iterator find = m_nodePlayingCount.find(id);
         find != m_nodePlayingCount.cend())
     {
         result = find->second;

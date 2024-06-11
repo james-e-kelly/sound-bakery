@@ -9,7 +9,7 @@
 using MethodIndex    = uint32_t;
 using ParameterIndex = uint32_t;
 
-static SB_ID s_currentInstance;
+static sb_id s_currentInstance;
 static std::unordered_map<MethodIndex,
                           std::unordered_map<ParameterIndex, rttr::variant>>
     s_parameterCache;
@@ -17,17 +17,17 @@ static std::unordered_map<MethodIndex,
 void MethodDrawer::DrawObject(rttr::type type, rttr::instance instance)
 {
     if (!type.is_derived_from(
-            SB::Core::Object::type()))
+            SB::Core::object::type()))
     {
         assert(false);
         return;
     }
 
-    SB::Core::DatabaseObject* object = SB::Util::TypeHelper::getDatabaseObjectFromInstance(instance);
+    SB::Core::database_object* object = SB::Util::TypeHelper::getDatabaseObjectFromInstance(instance);
 
-    if (s_currentInstance != object->getDatabaseID())
+    if (s_currentInstance != object->get_database_id())
     {
-        s_currentInstance = object->getDatabaseID();
+        s_currentInstance = object->get_database_id();
         s_parameterCache.clear();
     }
 

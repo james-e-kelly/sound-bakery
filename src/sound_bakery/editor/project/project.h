@@ -43,10 +43,10 @@ namespace SB::Editor
          */
         std::filesystem::path typeFolder(const rttr::type& type) const;
 
-        std::string getIdFilename(SB::Core::DatabaseObject* databaseObject,
+        std::string getIdFilename(SB::Core::database_object* databaseObject,
                                   std::optional<std::string> extensionOverride = std::nullopt) const
         {
-            return std::to_string(databaseObject->getDatabaseID()) +
+            return std::to_string(databaseObject->get_database_id()) +
                    (extensionOverride.has_value() ? extensionOverride.value() : ".yaml");
         }
 

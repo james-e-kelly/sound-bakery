@@ -6,7 +6,7 @@ namespace SB::Core
 {
     class SB_CLASS ObjectTracker
     {
-        using RawObjectPtr = Object*;
+        using RawObjectPtr = object*;
 
     public:
         void trackObject(RawObjectPtr object);

@@ -88,7 +88,7 @@ System* System::create()
         if (s_system)
         {
             s_system->m_objectTracker = std::make_unique<SB::Core::ObjectTracker>();
-            s_system->m_database      = std::make_unique<SB::Core::Database>();
+            s_system->m_database      = std::make_unique<SB::Core::database>();
 
             s_system->mainThreadExecuter = s_system->concurrenRuntime.make_manual_executor();
         }
@@ -123,7 +123,7 @@ void System::destroy()
     }
 }
 
-SB_RESULT System::init()
+sc_result System::init()
 {
     if (s_system == nullptr)
     {
@@ -142,7 +142,7 @@ SB_RESULT System::init()
     return result;
 }
 
-SB_RESULT System::update()
+sc_result System::update()
 {
     if (s_system == nullptr)
     {
@@ -161,7 +161,7 @@ SB_RESULT System::update()
     return MA_SUCCESS;
 }
 
-SB_RESULT System::openProject(const std::filesystem::path& projectFile)
+sc_result System::openProject(const std::filesystem::path& projectFile)
 {
     destroy();
 
@@ -222,7 +222,7 @@ SB::Core::ObjectTracker* System::getObjectTracker()
     return nullptr;
 }
 
-SB::Core::Database* System::getDatabase()
+SB::Core::database* System::getDatabase()
 {
     if (s_system)
     {
@@ -262,7 +262,7 @@ void SB::Engine::System::createMasterBus()
     assert(m_masterBus.null() && "Shouldn't create a master bus when one exists");
 
     m_masterBus = newDatabaseObject<Bus>();
-    m_masterBus->setDatabaseName("Master Bus");
+    m_masterBus->set_database_name("Master Bus");
     m_masterBus->setMasterBus(true);
 }
 

@@ -15,7 +15,7 @@ struct Selection
 {
     Selection() = default;
 
-    void SelectObject(SB::Core::Object* object) { m_selected = object; }
+    void SelectObject(SB::Core::object* object) { m_selected = object; }
 
     std::optional<rttr::type> SelectedType() const
     {
@@ -26,10 +26,10 @@ struct Selection
         return std::nullopt;
     }
 
-    SB::Core::Object* GetSelected() const { return m_selected; }
+    SB::Core::object* GetSelected() const { return m_selected; }
 
 private:
-    SB::Core::Object* m_selected = nullptr;
+    SB::Core::object* m_selected = nullptr;
 };
 
 class ProjectManager : public Manager

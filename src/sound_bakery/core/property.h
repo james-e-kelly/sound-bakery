@@ -93,6 +93,6 @@ namespace SB::Core
     };
 
     using IntProperty   = Property<int32_t>;
-    using IdProperty    = Property<SB_ID>;
+    using IdProperty    = Property<sb_id>;
     using FloatProperty = Property<float>;
 }  // namespace SB::Core

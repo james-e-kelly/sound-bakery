@@ -16,7 +16,7 @@ namespace SB::Engine
         SB_NODE_TOP
     };
 
-    class SB_CLASS NodeBase : public SB::Core::DatabaseObject
+    class SB_CLASS NodeBase : public SB::Core::database_object
     {
     public:
         ~NodeBase();
@@ -47,7 +47,7 @@ namespace SB::Engine
         SB::Core::DatabasePtr<NodeBase> m_outputBus;
         std::unordered_set<SB::Core::DatabasePtr<NodeBase>> m_childNodes;
 
-        REGISTER_REFLECTION(NodeBase, SB::Core::DatabaseObject)
+        REGISTER_REFLECTION(NodeBase, SB::Core::database_object)
     };
 
     /**

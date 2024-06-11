@@ -31,9 +31,9 @@ namespace SB::Util
 
         static rttr::string_view getObjectCategoryName(const SB_OBJECT_CATEGORY& objectCategory);
 
-        static SB::Core::Object* getObjectFromInstance(const rttr::instance& instance);
+        static SB::Core::object* getObjectFromInstance(const rttr::instance& instance);
 
-        static SB::Core::DatabaseObject* getDatabaseObjectFromInstance(const rttr::instance& instance);
+        static SB::Core::database_object* getDatabaseObjectFromInstance(const rttr::instance& instance);
 
         static SB::Engine::Node* getNodeFromInstance(const rttr::instance& instance);
 

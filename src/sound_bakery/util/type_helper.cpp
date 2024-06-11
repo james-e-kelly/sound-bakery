@@ -49,11 +49,11 @@ SB_OBJECT_CATEGORY TypeHelper::getCategoryFromType(rttr::type type)
     {
         category = SB_CATEGORY_BANK;
     }
-    else if (type.is_derived_from<SB::Core::DatabaseObject>())
+    else if (type.is_derived_from<SB::Core::database_object>())
     {
         category = SB_CATEGORY_DATABASE_OBJECT;
     }
-    else if (type.is_derived_from<SB::Core::Object>())
+    else if (type.is_derived_from<SB::Core::object>())
     {
         category = SB_CATEGORY_RUNTIME_OBJECT;
     }
@@ -247,7 +247,7 @@ std::string_view TypeHelper::getPayloadFromType(rttr::type type)
     {
         result = SB::Editor::PayloadIntParamValue;
     }
-    else if (type.is_derived_from<SB::Core::DatabaseObject>())
+    else if (type.is_derived_from<SB::Core::database_object>())
     {
         result = SB::Editor::PayloadObject;
     }
@@ -280,14 +280,14 @@ rttr::string_view TypeHelper::getObjectCategoryName(const SB_OBJECT_CATEGORY& ob
     return objectCategoryEnum.value_to_name(objectCategory);
 }
 
-SB::Core::Object* TypeHelper::getObjectFromInstance(const rttr::instance& instance)
+SB::Core::object* TypeHelper::getObjectFromInstance(const rttr::instance& instance)
 {
-    return instance.try_convert<SB::Core::Object>();
+    return instance.try_convert<SB::Core::object>();
 }
 
-SB::Core::DatabaseObject* TypeHelper::getDatabaseObjectFromInstance(const rttr::instance& instance)
+SB::Core::database_object* TypeHelper::getDatabaseObjectFromInstance(const rttr::instance& instance)
 {
-    return instance.try_convert<SB::Core::DatabaseObject>();
+    return instance.try_convert<SB::Core::database_object>();
 }
 
 SB::Engine::Node* TypeHelper::getNodeFromInstance(const rttr::instance& instance)

@@ -6,7 +6,7 @@
 
 namespace SB::Core
 {
-    class Object;
+    class object;
 }
 
 namespace SB::Engine
@@ -26,7 +26,7 @@ namespace SB::Core::Serialization
     class SB_CLASS Serializer final
     {
     public:
-        static void saveObject(SB::Core::Object* object, YAML::Emitter& emitter);
+        static void saveObject(SB::Core::object* object, YAML::Emitter& emitter);
         static void saveSystem(SB::Engine::System* system, YAML::Emitter& emitter);
 
         static void packageSoundbank(SB::Engine::Soundbank* soundbank, YAML::Emitter& emitter);

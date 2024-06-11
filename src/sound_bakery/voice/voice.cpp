@@ -17,7 +17,7 @@ void SB::Engine::Voice::playContainer(Container* container)
         m_voiceInstances.emplace_back(std::make_unique<NodeInstance>());
 
     InitNodeInstance initData;
-    initData.refNode     = container->tryConvertObject<NodeBase>();
+    initData.refNode     = container->try_convert_object<NodeBase>();
     initData.type        = SB::Engine::NodeInstanceType::MAIN;
     initData.owningVoice = this;
 
@@ -59,12 +59,12 @@ bool SB::Engine::Voice::playingContainer(Container* container) const noexcept
         return false;
     }
 
-    if (container->getDatabaseID() == m_playingContainer.id())
+    if (container->get_database_id() == m_playingContainer.id())
     {
         return true;
     }
 
-    auto containerEqual = [id = container->getDatabaseID()](const std::unique_ptr<NodeInstance>& node)
+    auto containerEqual = [id = container->get_database_id()](const std::unique_ptr<NodeInstance>& node)
     {
         if (!node)
         {
@@ -73,7 +73,7 @@ bool SB::Engine::Voice::playingContainer(Container* container) const noexcept
 
         const NodeInstance* nodeInstance = node.get();
 
-        if (nodeInstance->getReferencingNode()->getDatabaseID() == id)
+        if (nodeInstance->getReferencingNode()->get_database_id() == id)
         {
             return true;
         }
@@ -82,7 +82,7 @@ bool SB::Engine::Voice::playingContainer(Container* container) const noexcept
 
         while (sharedNodeInstance)
         {
-            if (sharedNodeInstance->getReferencingNode()->getDatabaseID() == id)
+            if (sharedNodeInstance->getReferencingNode()->get_database_id() == id)
             {
                 return true;
             }

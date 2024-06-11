@@ -100,7 +100,7 @@ namespace SB::Engine
      * @brief NodeInstances represent runtime versions of Nodes, either
      * containers or busses
      */
-    class SB_CLASS NodeInstance : public SB::Core::Object
+    class SB_CLASS NodeInstance : public SB::Core::object
     {
     public:
         ~NodeInstance();
@@ -134,6 +134,6 @@ namespace SB::Engine
         std::unique_ptr<sc_sound_instance, SC_SOUND_INSTANCE_DELETER> m_soundInstance;
         unsigned int m_numTimesPlayed = 0;
 
-        REGISTER_REFLECTION(NodeInstance, SB::Core::Object)
+        REGISTER_REFLECTION(NodeInstance, SB::Core::object)
     };
 }  // namespace SB::Engine

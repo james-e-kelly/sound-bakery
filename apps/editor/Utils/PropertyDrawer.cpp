@@ -153,13 +153,13 @@ bool PropertyDrawer::DrawVariant(rttr::variant& variant,
     }
     else if (type.is_wrapper() && type.get_wrapped_type().is_arithmetic())
     {
-        SB_ID id = variant.extract_wrapped_value().convert<SB_ID>();
+        sb_id id = variant.extract_wrapped_value().convert<sb_id>();
         rttr::type templateType = *type.get_template_arguments().begin();
 
         std::string payloadString =
             std::string(SB::Util::TypeHelper::getPayloadFromType(templateType));
 
-        SB::Core::DatabasePtr<SB::Core::Object> objectPtr(id);
+        SB::Core::DatabasePtr<SB::Core::object> objectPtr(id);
 
         edited = DrawPayloadDrop(variant, payloadString);
     }
@@ -233,7 +233,7 @@ bool PropertyDrawer::DrawVariant(rttr::variant& variant,
             }
             else
             {
-                ImGui::TextUnformatted("Object doesn't have properties");
+                ImGui::TextUnformatted("object doesn't have properties");
             }
         }
     }
@@ -282,18 +282,18 @@ void PropertyDrawer::DrawReadonlyVariant(rttr::variant variant, bool disabled)
         variant = variant.extract_wrapped_value();
     }
 
-    if (variant.is_type<SB_ID>() && isWrapper)
+    if (variant.is_type<sb_id>() && isWrapper)
     {
-        SB::Core::DatabasePtr<SB::Core::DatabaseObject> object(
-            variant.convert<SB_ID>());
+        SB::Core::DatabasePtr<SB::Core::database_object> object(
+            variant.convert<sb_id>());
 
         if (object.lookup())
         {
-            ImGui::TextUnformatted(object->getDatabaseName().data());
+            ImGui::TextUnformatted(object->get_database_name().data());
         }
         else if (object.hasId())
         {
-            ImGui::Text("Object Unloaded {%s}", rttr::variant(object.id()).to_string().c_str());
+            ImGui::Text("object Unloaded {%s}", rttr::variant(object.id()).to_string().c_str());
         }
         else
         {
@@ -403,8 +403,8 @@ bool PropertyDrawer::DrawSequentialContainer(
 
         if (type.is_wrapper())
         {
-            assert(type.get_wrapped_type() == rttr::type::get<SB_ID>());
-            createdDefault = (SB_ID)0;
+            assert(type.get_wrapped_type() == rttr::type::get<sb_id>());
+            createdDefault = (sb_id)0;
             const bool converted = createdDefault.convert(type);
             assert(converted);
         }
@@ -488,17 +488,17 @@ bool PropertyDrawer::DrawAssociateContainer(
              * @todo Can we construct basic types without any manual work?
              */
             if (keyType.is_wrapper() &&
-                keyType.get_wrapped_type() == rttr::type::get<SB_ID>())
+                keyType.get_wrapped_type() == rttr::type::get<sb_id>())
             {
-                SB_ID id = 0;
+                sb_id id = 0;
                 key      = id;
                 key.convert(keyType);
             }
 
             if (valueType.is_wrapper() &&
-                valueType.get_wrapped_type() == rttr::type::get<SB_ID>())
+                valueType.get_wrapped_type() == rttr::type::get<sb_id>())
             {
-                SB_ID id = 0;
+                sb_id id = 0;
                 value    = id;
                 value.convert(valueType);
             }
@@ -637,11 +637,11 @@ bool PropertyDrawer::DrawPayloadDrop(rttr::variant& value,
                 char* payloadCharString = static_cast<char*>(payload->Data);
                 data                    = std::string(payloadCharString);
             }
-            else if (valueType == rttr::type::get<SB_ID>() ||
+            else if (valueType == rttr::type::get<sb_id>() ||
                      (valueType.is_wrapper() &&
-                      valueType.get_wrapped_type() == rttr::type::get<SB_ID>()))
+                      valueType.get_wrapped_type() == rttr::type::get<sb_id>()))
             {
-                SB_ID* payloadID = static_cast<SB_ID*>(payload->Data);
+                sb_id* payloadID = static_cast<sb_id*>(payload->Data);
                 data             = *payloadID;
 
                 if (valueType.is_wrapper())
@@ -657,15 +657,15 @@ bool PropertyDrawer::DrawPayloadDrop(rttr::variant& value,
             if (valueType.is_wrapper() && std::string(valueType.get_name().data()).find("ChildPtr") != std::string::npos)
             {
                 bool convertSuccess = false;
-                SB::Core::ChildPtr<SB::Core::DatabaseObject> dataAsChildPtr = data.convert<SB::Core::ChildPtr<SB::Core::DatabaseObject>>(&convertSuccess);
+                SB::Core::ChildPtr<SB::Core::database_object> dataAsChildPtr = data.convert<SB::Core::ChildPtr<SB::Core::database_object>>(&convertSuccess);
 
                 if (convertSuccess)
                 {
-                    SB::Core::ChildPtr<SB::Core::DatabaseObject> valueAsChildPtr = value.convert<SB::Core::ChildPtr<SB::Core::DatabaseObject>>(&convertSuccess);
+                    SB::Core::ChildPtr<SB::Core::database_object> valueAsChildPtr = value.convert<SB::Core::ChildPtr<SB::Core::database_object>>(&convertSuccess);
 
                     if (convertSuccess)
                     {
-                        SB_ID currentID = valueAsChildPtr.id();
+                        sb_id currentID = valueAsChildPtr.id();
 
                         valueAsChildPtr = dataAsChildPtr;
 
@@ -720,12 +720,12 @@ bool PropertyDrawer::DrawPayloadDrop(rttr::property property,
                 char* payloadCharString = static_cast<char*>(payload->Data);
                 data                    = std::string(payloadCharString);
             }
-            else if (propertyType == rttr::type::get<SB_ID>() ||
+            else if (propertyType == rttr::type::get<sb_id>() ||
                      (propertyType.is_wrapper() &&
                       propertyType.get_wrapped_type() ==
-                          rttr::type::get<SB_ID>()))
+                          rttr::type::get<sb_id>()))
             {
-                SB_ID* payloadID = static_cast<SB_ID*>(payload->Data);
+                sb_id* payloadID = static_cast<sb_id*>(payload->Data);
                 data             = *payloadID;
 
                 if (propertyType.is_wrapper())

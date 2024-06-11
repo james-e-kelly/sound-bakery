@@ -43,14 +43,14 @@ namespace SB::Reflection
         static void perform()
         {
             rttr::type::register_converter_func(
-                rttr::wrapper_mapper<SB::Core::ChildPtr<DerivedClass>>::template convert<SB::Core::DatabaseObject>);
+                rttr::wrapper_mapper<SB::Core::ChildPtr<DerivedClass>>::template convert<SB::Core::database_object>);
             rttr::type::register_converter_func(
-                rttr::wrapper_mapper<SB::Core::ChildPtr<SB::Core::DatabaseObject>>::template convert<DerivedClass>);
+                rttr::wrapper_mapper<SB::Core::ChildPtr<SB::Core::database_object>>::template convert<DerivedClass>);
 
             rttr::type::register_converter_func(
-                rttr::wrapper_mapper<SB::Core::DatabasePtr<DerivedClass>>::template convert<SB::Core::DatabaseObject>);
+                rttr::wrapper_mapper<SB::Core::DatabasePtr<DerivedClass>>::template convert<SB::Core::database_object>);
             rttr::type::register_converter_func(
-                rttr::wrapper_mapper<SB::Core::DatabasePtr<SB::Core::DatabaseObject>>::template convert<DerivedClass>);
+                rttr::wrapper_mapper<SB::Core::DatabasePtr<SB::Core::database_object>>::template convert<DerivedClass>);
         }
     };
 
@@ -138,17 +138,17 @@ namespace SB::Reflection
 
         registration::class_<System>("SB::Engine::System").property("MasterBus", &System::m_masterBus);
 
-        registration::class_<Object>("SB::Core::Object").constructor<>()(policy::ctor::as_raw_ptr);
+        registration::class_<object>("SB::Core::object").constructor<>()(policy::ctor::as_raw_ptr);
 
-        registration::class_<DatabaseObject>("SB::Core::DatabaseObject")
+        registration::class_<database_object>("SB::Core::database_object")
             .constructor<>()(policy::ctor::as_raw_ptr)
             // Order is important here!
             // ID must be set first
             // When loading the object name, the ID must be valid for the name->ID
             // lookup
-            .property("ObjectID", &DatabaseObject::getDatabaseID,
-                      &DatabaseObject::setDatabaseID)(metadata(SB::Editor::METADATA_KEY::Readonly, true))
-            .property("ObjectName", &DatabaseObject::getDatabaseName, &DatabaseObject::setDatabaseName);
+            .property("ObjectID", &database_object::get_database_id,
+                      &database_object::set_database_id)(metadata(SB::Editor::METADATA_KEY::Readonly, true))
+            .property("ObjectName", &database_object::get_database_name, &database_object::set_database_name);
 
         registration::class_<Sound>("SB::Engine::Sound")
             .constructor<>()(policy::ctor::as_raw_ptr)

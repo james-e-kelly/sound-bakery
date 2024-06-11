@@ -75,7 +75,7 @@ bool SB::Engine::NodeInstance::init(const InitNodeInstance& initData)
         }
         case NodeInstanceType::BUS:
         {
-            if (const Bus* const bus = initData.refNode->tryConvertObject<Bus>())
+            if (const Bus* const bus = initData.refNode->try_convert_object<Bus>())
             {
                 // Checks nullptr as master busses are technically busses without an output, even if they're not marked
                 // as masters
@@ -124,7 +124,7 @@ bool NodeInstance::play()
 
     if (m_referencingNode->getType() == rttr::type::get<SoundContainer>())
     {
-        SoundContainer* soundContainer   = m_referencingNode->tryConvertObject<SoundContainer>();
+        SoundContainer* soundContainer   = m_referencingNode->try_convert_object<SoundContainer>();
         Sound* engineSound               = soundContainer->getSound();
         sc_sound* sound                  = engineSound != nullptr ? engineSound->getSound() : nullptr;
         sc_sound_instance* soundInstance = nullptr;
@@ -191,7 +191,7 @@ void NodeInstance::update()
             // Sequence nodes retrigger when the current sound stops
             if (m_referencingNode->getType() == rttr::type::get<SequenceContainer>())
             {
-                m_children.createChildren(*m_referencingNode->tryConvertObject<NodeBase>(), m_owningVoice, this,
+                m_children.createChildren(*m_referencingNode->try_convert_object<NodeBase>(), m_owningVoice, this,
                                           ++m_numTimesPlayed);
                 play();
             }

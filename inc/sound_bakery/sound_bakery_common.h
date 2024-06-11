@@ -12,9 +12,9 @@
 #define SB_API SC_API
 #define SB_CLASS SC_CLASS
 
-typedef sc_result SB_RESULT;
+typedef sc_result sb_result;
 
-typedef unsigned long long SB_ID;
+typedef unsigned long long sb_id;
 #define SB_INVALID_ID 0
 
 #endif

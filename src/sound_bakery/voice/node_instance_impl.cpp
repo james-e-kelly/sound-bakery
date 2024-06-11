@@ -34,7 +34,7 @@ bool NodeGroupInstance::initNodeGroup(const NodeBase& node)
     addDspToNodeGroup(nodeGroup.get(), &highpass, sc_dsp_config_init(SC_DSP_TYPE_HIGHPASS));
 
     for (const SB::Core::DatabasePtr<SB::Engine::EffectDescription>& desc :
-         node.tryConvertObject<Node>()->m_effectDescriptions)
+         node.try_convert_object<Node>()->m_effectDescriptions)
     {
         if (desc.lookup() == false)
         {
@@ -72,12 +72,12 @@ bool ParentNodeOwner::createParent(const NodeBase& thisNode, Voice* owningVoice)
         {
             const SB::Core::DatabasePtr<Bus>& masterBus = SB::Engine::System::get()->getMasterBus();
 
-            if (masterBus.lookup() && masterBus.id() != thisNode.getDatabaseID())
+            if (masterBus.lookup() && masterBus.id() != thisNode.get_database_id())
             {
                 parent = masterBus->lockAndCopy();
 
                 InitNodeInstance initData;
-                initData.refNode     = masterBus->tryConvertObject<NodeBase>();
+                initData.refNode     = masterBus->try_convert_object<NodeBase>();
                 initData.type        = NodeInstanceType::BUS;
                 initData.owningVoice = owningVoice;
 
@@ -92,7 +92,7 @@ bool ParentNodeOwner::createParent(const NodeBase& thisNode, Voice* owningVoice)
                 parent = std::make_shared<NodeInstance>();
 
                 InitNodeInstance initData;
-                initData.refNode     = parentNode->tryConvertObject<NodeBase>();
+                initData.refNode     = parentNode->try_convert_object<NodeBase>();
                 initData.type        = NodeInstanceType::BUS;
                 initData.owningVoice = owningVoice;
 
@@ -104,12 +104,12 @@ bool ParentNodeOwner::createParent(const NodeBase& thisNode, Voice* owningVoice)
         {
             if (SB::Engine::NodeBase* output = thisNode.outputBus())
             {
-                if (SB::Engine::Bus* bus = output->tryConvertObject<Bus>())
+                if (SB::Engine::Bus* bus = output->try_convert_object<Bus>())
                 {
                     parent = bus->lockAndCopy();
 
                     InitNodeInstance initData;
-                    initData.refNode     = bus->tryConvertObject<NodeBase>();
+                    initData.refNode     = bus->try_convert_object<NodeBase>();
                     initData.type        = NodeInstanceType::BUS;
                     initData.owningVoice = owningVoice;
 
@@ -132,7 +132,7 @@ bool ChildrenNodeOwner::createChildren(const NodeBase& thisNode,
 {
     bool success = false;
 
-    if (const Container* container = thisNode.tryConvertObject<Container>();
+    if (const Container* container = thisNode.try_convert_object<Container>();
         container != nullptr && owningVoice != nullptr)
     {
         GatherChildrenContext context;
@@ -153,7 +153,7 @@ bool ChildrenNodeOwner::createChildren(const NodeBase& thisNode,
             childrenNodes.push_back(std::make_shared<NodeInstance>());
 
             InitNodeInstance initData;
-            initData.refNode           = SB::Core::DatabasePtr<NodeBase>(child->getDatabaseID());
+            initData.refNode           = SB::Core::DatabasePtr<NodeBase>(child->get_database_id());
             initData.type              = NodeInstanceType::CHILD;
             initData.owningVoice       = owningVoice;
             initData.parentForChildren = thisNodeInstance;

@@ -70,17 +70,17 @@ void ProjectNodesWidget::RenderSoundbankPage()
 
 void ProjectNodesWidget::RenderCategory(SB_OBJECT_CATEGORY category)
 {
-    const std::unordered_set<SB::Core::Object*> categoryObjects =
+    const std::unordered_set<SB::Core::object*> categoryObjects =
         SB::Engine::System::getObjectTracker()->getObjectsOfCategory(category);
 
-    for (SB::Core::Object* const object : categoryObjects)
+    for (SB::Core::object* const object : categoryObjects)
     {
         if (object)
         {
             const rttr::type type = object->getType();
 
             SB::Engine::NodeBase* const nodeBase =
-                object->tryConvertObject<SB::Engine::NodeBase>();
+                object->try_convert_object<SB::Engine::NodeBase>();
 
             const bool notNodeType = nodeBase == nullptr;
 
@@ -97,14 +97,14 @@ void ProjectNodesWidget::RenderSingleNode(rttr::type type,
 {
     if (instance)
     {
-        if (SB::Core::DatabaseObject* const object = SB::Util::TypeHelper::getDatabaseObjectFromInstance(instance))
+        if (SB::Core::database_object* const object = SB::Util::TypeHelper::getDatabaseObjectFromInstance(instance))
         {
-            if (object->getEditorHidden())
+            if (object->get_editor_hidden())
             {
                 return;
             }
 
-            SB::Engine::Node* const node = rttr::rttr_cast<SB::Engine::Node*, SB::Core::DatabaseObject*>(object);
+            SB::Engine::Node* const node = rttr::rttr_cast<SB::Engine::Node*, SB::Core::database_object*>(object);
 
             const bool hasChildren = node && NodeHasChildren(node);
 
@@ -124,7 +124,7 @@ void ProjectNodesWidget::RenderSingleNode(rttr::type type,
             }
 
             const bool opened = ImGui::TreeNodeEx(
-                fmt::format("##{}", object->getDatabaseName()).c_str(), flags);
+                fmt::format("##{}", object->get_database_name()).c_str(), flags);
 
             if (std::string_view payloadString =
                     SB::Util::TypeHelper::getPayloadFromType(object->getType());
@@ -133,12 +133,12 @@ void ProjectNodesWidget::RenderSingleNode(rttr::type type,
                 if (ImGui::BeginDragDropSource(
                         ImGuiDragDropFlags_SourceAllowNullID))
                 {
-                    SB_ID dragID = object->getDatabaseID();
+                    sb_id dragID = object->get_database_id();
 
                     ImGui::SetDragDropPayload(payloadString.data(), &dragID,
-                                              sizeof(SB_ID), ImGuiCond_Once);
+                                              sizeof(sb_id), ImGuiCond_Once);
 
-                    ImGui::TextUnformatted(object->getDatabaseName().data());
+                    ImGui::TextUnformatted(object->get_database_name().data());
 
                     ImGui::EndDragDropSource();
                 }
@@ -149,7 +149,7 @@ void ProjectNodesWidget::RenderSingleNode(rttr::type type,
                     {
                         if (const ImGuiPayload* const currentPayload = ImGui::GetDragDropPayload())
                         {
-                            SB_ID payloadID = *static_cast<SB_ID*>(currentPayload->Data);
+                            sb_id payloadID = *static_cast<sb_id*>(currentPayload->Data);
                             SB::Core::DatabasePtr<SB::Engine::NodeBase> potentialChild(payloadID);
 
                             if (node->canAddChild(potentialChild))
@@ -185,12 +185,12 @@ void ProjectNodesWidget::RenderSingleNode(rttr::type type,
                 else
                 {
                     ImGui::Text(ICON_FAD_FILTER_BELL " %s",
-                                object->getDatabaseName().data());
+                                object->get_database_name().data());
 
                     if (unsigned int playingCount =
                             SB::Engine::Profiling::VoiceTracker::get()
                                 ->getPlayingCountOfObject(
-                                    object->getDatabaseID()))
+                                    object->get_database_id()))
                     {
                         ImGui::SameLine();
                         ImGui::Text("|%u|", playingCount);
@@ -207,7 +207,7 @@ void ProjectNodesWidget::RenderSingleNode(rttr::type type,
                         }
                     }
                     else if (SB::Engine::NamedParameter* const intParameter =
-                                 object->tryConvertObject<
+                                 object->try_convert_object<
                                      SB::Engine::NamedParameter>())
                     {
                         for (const SB::Core::DatabasePtr<
@@ -237,11 +237,11 @@ bool ProjectNodesWidget::NodeHasChildren(SB::Engine::Node* node)
     return node ? node->getChildCount() : false;
 }
 
-void ProjectNodesWidget::HandleOpenNode(SB::Core::DatabaseObject* object)
+void ProjectNodesWidget::HandleOpenNode(SB::Core::database_object* object)
 {
     if (object)
     {
-        if (m_nodeToOpen == object->getDatabaseID())
+        if (m_nodeToOpen == object->get_database_id())
         {
             ImGui::SetNextItemOpen(true, ImGuiCond_Always);
             m_nodeToOpen = 0;
@@ -249,20 +249,20 @@ void ProjectNodesWidget::HandleOpenNode(SB::Core::DatabaseObject* object)
     }
 }
 
-bool ProjectNodesWidget::ObjectIsRenaming(SB::Core::DatabaseObject* object)
+bool ProjectNodesWidget::ObjectIsRenaming(SB::Core::database_object* object)
 {
-    return object && object->getDatabaseID() &&
-           object->getDatabaseID() == m_renameID;
+    return object && object->get_database_id() &&
+           object->get_database_id() == m_renameID;
 }
 
 void ProjectNodesWidget::RenderRenameObject(
-    SB::Core::DatabaseObject* const& object)
+    SB::Core::database_object* const& object)
 {
     if (ImGui::InputText("###rename", m_renameString, 255,
                          ImGuiInputTextFlags_AutoSelectAll |
                              ImGuiInputTextFlags_EnterReturnsTrue))
     {
-        object->setDatabaseName(m_renameString);
+        object->set_database_name(m_renameString);
         m_renameID        = 0;
         m_renameString[0] = '\0';
     }
@@ -279,10 +279,10 @@ bool ProjectNodesWidget::RenderNodeContextMenu(rttr::type type,
     {
         result = true;
 
-        if (SB::Core::DatabaseObject* const object = SB::Util::TypeHelper::getDatabaseObjectFromInstance(instance))
+        if (SB::Core::database_object* const object = SB::Util::TypeHelper::getDatabaseObjectFromInstance(instance))
         {
             if (ImGui::BeginPopupContextItem(
-                    std::to_string(object->getDatabaseID()).c_str()))
+                    std::to_string(object->get_database_id()).c_str()))
             {
                 const SB_OBJECT_CATEGORY category =
                     SB::Util::TypeHelper::getCategoryFromType(type);
@@ -303,7 +303,7 @@ bool ProjectNodesWidget::RenderNodeContextMenu(rttr::type type,
                     if (ImGui::MenuItem("Create New Value"))
                     {
                         if (SB::Engine::NamedParameter* const intParameter =
-                                object->tryConvertObject<
+                                object->try_convert_object<
                                     SB::Engine::NamedParameter>())
                         {
                             intParameter->addNewValue("New Switch Value");
@@ -357,9 +357,9 @@ void ProjectNodesWidget::RenderCreateParentOrChildMenu(
 
             if (ImGui::MenuItem(typeIndexName.data()))
             {
-                SB::Core::DatabaseObject* const newObject =
+                SB::Core::database_object* const newObject =
                     SB::Engine::Factory::createDatabaseObjectFromType(type);
-                newObject->setDatabaseName(
+                newObject->set_database_name(
                     fmt::format("New {} Node", typeIndexName.data()));
                 newObject->onLoaded();
 
@@ -368,7 +368,7 @@ void ProjectNodesWidget::RenderCreateParentOrChildMenu(
                 SetupRenameNode(newObject);
 
                 SB::Engine::Node* newNode =
-                    SB::Reflection::cast<SB::Engine::Node*, SB::Core::Object*>(
+                    SB::Reflection::cast<SB::Engine::Node*, SB::Core::object*>(
                         newObject);
 
                 if (newNode)
@@ -380,7 +380,7 @@ void ProjectNodesWidget::RenderCreateParentOrChildMenu(
                             if (SB::Engine::NodeBase* baseParent =
                                     castedNode->parent())
                             {
-                                m_nodeToOpen = baseParent->getDatabaseID();
+                                m_nodeToOpen = baseParent->get_database_id();
                                 baseParent->addChild(newNode);
                                 baseParent->removeChild(castedNode);
                             }
@@ -390,12 +390,12 @@ void ProjectNodesWidget::RenderCreateParentOrChildMenu(
                         }
                         case NodeCreationType::NewChild:
                         {
-                            m_nodeToOpen = castedNode->getDatabaseID();
+                            m_nodeToOpen = castedNode->get_database_id();
                             castedNode->addChild(newNode);
                             break;
                         }
                         case NodeCreationType::New:
-                            m_nodeToOpen = newNode->getDatabaseID();
+                            m_nodeToOpen = newNode->get_database_id();
                             break;
                         default:
                             break;
@@ -403,7 +403,7 @@ void ProjectNodesWidget::RenderCreateParentOrChildMenu(
                 }
                 else
                 {
-                    m_nodeToOpen = newObject->getDatabaseID();
+                    m_nodeToOpen = newObject->get_database_id();
                 }
             }
         }
@@ -434,10 +434,10 @@ std::string_view ProjectNodesWidget::CreateParentOrChildMenuName(
     return menuName;
 }
 
-void ProjectNodesWidget::SetupRenameNode(SB::Core::DatabaseObject* object)
+void ProjectNodesWidget::SetupRenameNode(SB::Core::database_object* object)
 {
-    m_renameID                = object->getDatabaseID();
-    std::string_view nodeName = object->getDatabaseName();
+    m_renameID                = object->get_database_id();
+    std::string_view nodeName = object->get_database_name();
     nodeName.copy(m_renameString, 255);
     m_renameString[nodeName.length()] = '\0';
 }
