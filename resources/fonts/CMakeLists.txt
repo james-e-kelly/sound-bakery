@@ -14,4 +14,4 @@ SET(FONT_AUDIO_FONTS
     fontaudio/font/fontaudio.ttf
 )
 
-cmrc_add_resource_library(sound_bakery_fonts ${RAW_FONTS} ${FONT_AWESOME_FONTS} ${FONT_AUDIO_FONTS} ALIAS SoundBakery::Fonts NAMESPACE SB::Fonts)
+cmrc_add_resource_library(sound_bakery_fonts ${RAW_FONTS} ${FONT_AWESOME_FONTS} ${FONT_AUDIO_FONTS} ALIAS SoundBakery::Fonts NAMESPACE sb::Fonts)

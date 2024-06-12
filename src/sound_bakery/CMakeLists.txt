@@ -121,26 +121,22 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Header Files" FILES ${ATLA
 set(PCH_HEADER pch.h)
 set(PCH_SOURCE pch.cpp)
 
-add_library(sound_bakery_shared SHARED ${ATLAS_SOURCES} ${ATLAS_HEADERS} ${PCH_SOURCE})
-add_library(sound_bakery_static STATIC ${ATLAS_SOURCES} ${ATLAS_HEADERS} ${PCH_SOURCE})
-add_library(SoundBakery::SoundBakery_Shared ALIAS sound_bakery_shared)
-add_library(SoundBakery::SoundBakery_Static ALIAS sound_bakery_static)
+if (SOUND_BAKERY_SHARED)
+  add_library(sound_bakery SHARED ${ATLAS_SOURCES} ${ATLAS_HEADERS} ${PCH_SOURCE})
+else()
+  add_library(sound_bakery STATIC ${ATLAS_SOURCES} ${ATLAS_HEADERS} ${PCH_SOURCE})
+endif()
 
-target_include_directories(sound_bakery_shared
+add_library(SoundBakery::SoundBakery ALIAS sound_bakery)
+
+target_include_directories(sound_bakery
     PUBLIC ${CMAKE_SOURCE_DIR}/src/
     PUBLIC ${CMAKE_SOURCE_DIR}/inc/
 )
 
-target_include_directories(sound_bakery_static
-    PUBLIC ${CMAKE_SOURCE_DIR}/src/
-    PUBLIC ${CMAKE_SOURCE_DIR}/inc/
-)
+set_target_properties(sound_bakery PROPERTIES LANGUAGE CXX)
 
-set_target_properties(sound_bakery_shared PROPERTIES LANGUAGE CXX)
-set_target_properties(sound_bakery_static PROPERTIES LANGUAGE CXX)
-
-target_precompile_headers(sound_bakery_shared PRIVATE ${PCH_HEADER})
-target_precompile_headers(sound_bakery_static PRIVATE ${PCH_HEADER})
+target_precompile_headers(sound_bakery PRIVATE ${PCH_HEADER})
 
 set(CMAKE_FOLDER extern)
 
@@ -208,34 +204,28 @@ if(NOT yaml_POPULATED)
   add_subdirectory(${yaml_SOURCE_DIR} ${yaml_BINARY_DIR})
 endif()
 
-target_link_libraries(sound_bakery_shared PUBLIC 
+target_link_libraries(sound_bakery PUBLIC 
   SoundBakery::Delegates 
-  SoundBakery::SoundChef_Shared
-  RTTR::Core_Lib
-  concurrencpp::concurrencpp
-  spdlog::spdlog
-  yaml-cpp::yaml-cpp)
-
-target_link_libraries(sound_bakery_static PUBLIC 
-  SoundBakery::Delegates 
-  SoundBakery::SoundChef_Static
+  SoundBakery::SoundChef
   RTTR::Core_Lib
   concurrencpp::concurrencpp
   spdlog::spdlog
   yaml-cpp::yaml-cpp)
 
 if(MSVC)
-  target_compile_options(sound_bakery_shared PRIVATE /W4)
-  target_compile_options(sound_bakery_static PRIVATE /W4)
+  target_compile_options(sound_bakery PRIVATE /W4)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
 else()
-  target_compile_options(sound_bakery_shared PRIVATE -Wall -Wextra -Wpedantic)
-  target_compile_options(sound_bakery_static PRIVATE -Wall -Wextra -Wpedantic)
+  target_compile_options(sound_bakery PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
-get_target_property(SOUND_BAKERY_ALL_FILES sound_bakery_shared SOURCES)
+get_target_property(SOUND_BAKERY_ALL_FILES sound_bakery SOURCES)
 foreach(source IN LISTS SOUND_BAKERY_ALL_FILES)
   list(APPEND SOUND_BAKERY_FORMAT_FILES "${CMAKE_CURRENT_SOURCE_DIR}/${source}")
+endforeach()
+
+foreach(source IN LISTS ATLAS_SOURCES)
+  list(APPEND SOUND_BAKERY_TIDY_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/${source}")
 endforeach()
 
 set(CMAKE_FOLDER src)
@@ -249,21 +239,20 @@ if (SOUND_BAKERY_FORMAT_SOURCE AND SOUND_BAKERY_CLANG_FORMAT_EXE)
   )
 endif()
 
+if (SOUND_BAKERY_TIDY_SOURCE AND SOUND_BAKERY_CLANG_TIDY_EXE)
+  add_custom_target(tidy_sound_bakery
+  COMMAND clang-tidy --fix --fix-errors ${SOUND_BAKERY_TIDY_SOURCES} -- -I ${CMAKE_SOURCE_DIR}/src
+  COMMAND_EXPAND_LISTS
+  COMMENT "Running clang-tidy -fix"
+  VERBATIM
+  )
+endif()
+
 # Sad things to make clang-tidy work in VS
 # CMakeSettings.json is possible but seemed a pain in its own right
 # https://discourse.cmake.org/t/cmake-cxx-clang-tidy-in-msvc/890/9
 if(SOUND_BAKERY_TIDY_SOURCE AND SOUND_BAKERY_CLANG_TIDY_EXE AND MSVC)
-  set_target_properties(sound_bakery_shared PROPERTIES
-    VS_GLOBAL_RunCodeAnalysis false
-
-    # Use visual studio core guidelines
-    VS_GLOBAL_EnableMicrosoftCodeAnalysis false
-
-    # Use clangtidy
-    VS_GLOBAL_EnableClangTidyCodeAnalysis true
-  )
-
-  set_target_properties(sound_bakery_static PROPERTIES
+  set_target_properties(sound_bakery PROPERTIES
     VS_GLOBAL_RunCodeAnalysis false
 
     # Use visual studio core guidelines
@@ -274,5 +263,4 @@ if(SOUND_BAKERY_TIDY_SOURCE AND SOUND_BAKERY_CLANG_TIDY_EXE AND MSVC)
   )
 endif()
 
-install(TARGETS sound_bakery_shared DESTINATION lib)
-install(TARGETS sound_bakery_static DESTINATION lib)
+install(TARGETS sound_bakery DESTINATION lib)

@@ -85,7 +85,7 @@ set_source_files_properties(
 target_link_libraries(editor
     PRIVATE
     SoundBakery::Gluten
-    SoundBakery::SoundBakery_Static
+    SoundBakery::SoundBakery
 )
 
 if(MSVC)
