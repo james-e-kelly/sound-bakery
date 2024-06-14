@@ -241,7 +241,7 @@ endif()
 
 if (SOUND_BAKERY_TIDY_SOURCE AND SOUND_BAKERY_CLANG_TIDY_EXE)
   add_custom_target(tidy_sound_bakery
-  COMMAND clang-tidy --fix --fix-errors ${SOUND_BAKERY_TIDY_SOURCES} -- -I ${CMAKE_SOURCE_DIR}/src
+  COMMAND clang-tidy -fix --fix-errors --format-style=file --fix-notes -p ${CMAKE_BINARY_DIR} ${SOUND_BAKERY_TIDY_SOURCES}
   COMMAND_EXPAND_LISTS
   COMMENT "Running clang-tidy -fix"
   VERBATIM
