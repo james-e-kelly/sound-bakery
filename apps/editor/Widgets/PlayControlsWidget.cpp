@@ -49,7 +49,6 @@ void PlayerWidget::Render()
     else if (!isSelected)
     {
         s_lastPlayableSelection = nullptr;
-        SB::Engine::System::get()->getListenerGameObject()->stopAll();
     }
 
     ImGui::BeginDisabled(!isSelected);
