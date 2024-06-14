@@ -11,9 +11,9 @@
 
 int littleEndian24Bit(const void* bytes)
 {
-    return (int32)((((uint32) static_cast<const int8*>(bytes)[2]) << 16) |
-                   (((uint32) static_cast<const uint8*>(bytes)[1]) << 8) |
-                   ((uint32) static_cast<const uint8*>(bytes)[0]));
+    return (ma_int32)((((ma_uint32) static_cast<const ma_uint8*>(bytes)[2]) << 16) |
+                   (((ma_uint32) static_cast<const ma_uint8*>(bytes)[1]) << 8) |
+                   ((ma_uint32) static_cast<const ma_uint8*>(bytes)[0]));
 }
 //
 // float getAverageValueFromSampleRange(FMOD_SOUND* sound, unsigned int
@@ -108,11 +108,11 @@ int littleEndian24Bit(const void* bytes)
 
 void AudioDisplayWidget::Render()
 {
-    if (ProjectManager* manager = GetApp()->GetProjectManager())
+    if (ProjectManager* manager = get_app()->GetProjectManager())
     {
-        if (SB::Core::Object* selected = manager->GetSelection().GetSelected())
+        if (SB::Core::object* selected = manager->GetSelection().GetSelected())
         {
-            if (selected->getType() == rttr::type::get<SB::Engine::Sound>())
+            if (selected->getType() == SB::Engine::Sound::type())
             {
                 static float scale = 1.0f;
                 ImGui::SliderFloat("Scale", &scale, 0.01f, 2.0f);
@@ -132,7 +132,7 @@ void AudioDisplayWidget::Render()
                     if (isPlaying)
                     {
                         SB::Engine::SoundContainer* previewSound =
-                            GetApp()
+                            get_app()
                                 ->GetProjectManager()
                                 ->GetPreviewSoundContainer();
                         /*FMOD_SOUND* sound = previewSound ?
@@ -240,7 +240,7 @@ void AudioDisplayWidget::Render()
 bool AudioDisplayWidget::HasCache()
 {
     SB::Engine::SoundContainer* currentNode =
-        GetApp()->GetProjectManager()->GetPreviewSoundContainer();
+        get_app()->GetProjectManager()->GetPreviewSoundContainer();
 
     if (currentNode)
     {

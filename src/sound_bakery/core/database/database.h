@@ -1,23 +1,22 @@
 #pragma once
 
 #include "sound_bakery/core/database/database_object.h"
-#include "sound_bakery/util/singleton.h"
 
 namespace SB::Core
 {
     /**
      * @brief Runtime lookup of objects, using their ID or name
      */
-    class Database : public Singleton<Database>
+    class SB_CLASS database
     {
     public:
-        void addOrUpdateID(SB_ID oldID, SB_ID newID, DatabaseObject* object)
+        void add_or_update_id(sb_id oldID, sb_id newID, database_object* object)
         {
-            assert(object != nullptr && "Object was nullptr");
+            assert(object != nullptr && "object was nullptr");
 
             if (newID == SB_INVALID_ID)
             {
-                newID              = createNewID();
+                newID              = create_new_id();
                 object->m_objectID = newID;  // privately set the ID without recursion
             }
 
@@ -33,9 +32,9 @@ namespace SB::Core
             m_idToPointerMap[newID].reset(object);
         }
 
-        void addOrUpdateName(std::string_view oldName, std::string_view newName, DatabaseObject* object)
+        void add_or_update_name(std::string_view oldName, std::string_view newName, database_object* object)
         {
-            assert(object != nullptr && "Object was nullptr");
+            assert(object != nullptr && "object was nullptr");
 
             if (!oldName.empty())
             {
@@ -47,11 +46,11 @@ namespace SB::Core
 
             if (!newName.empty())
             {
-                m_nameToIdMap.emplace(newName, object->getDatabaseID());
+                m_nameToIdMap.emplace(newName, object->get_database_id());
             }
         }
 
-        void remove(SB_ID id)
+        void remove(sb_id id)
         {
             if (id)
             {
@@ -62,14 +61,14 @@ namespace SB::Core
             }
         }
 
-        void remove(DatabaseObject* object)
+        void remove(database_object* object)
         {
-            assert(object != nullptr && "Object was nullptr");
+            assert(object != nullptr && "object was nullptr");
 
             if (object)
             {
-                m_nameToIdMap.erase(object->getDatabaseName().data());
-                m_idToPointerMap.erase(object->getDatabaseID());
+                m_nameToIdMap.erase(object->get_database_name().data());
+                m_idToPointerMap.erase(object->get_database_id());
             }
         }
 
@@ -77,22 +76,22 @@ namespace SB::Core
          * @brief Removes the entry and gives ownership to the caller
          * @param object
          */
-        std::shared_ptr<DatabaseObject> removeUnsafe(DatabaseObject* object)
+        std::shared_ptr<database_object> remove_unsafe(database_object* object)
         {
             assert(object != nullptr);
 
-            std::shared_ptr<DatabaseObject> result;
+            std::shared_ptr<database_object> result;
 
-            m_nameToIdMap.erase(object->getDatabaseName().data());
-            m_idToPointerMap[object->getDatabaseID()].swap(result);
-            m_idToPointerMap.erase(object->getDatabaseID());
+            m_nameToIdMap.erase(object->get_database_name().data());
+            m_idToPointerMap[object->get_database_id()].swap(result);
+            m_idToPointerMap.erase(object->get_database_id());
 
             return result;
         }
 
-        DatabaseObject* tryFind(SB_ID id) const
+        database_object* try_find(sb_id id) const
         {
-            DatabaseObject* result = nullptr;
+            database_object* result = nullptr;
 
             if (auto iter = m_idToPointerMap.find(id); iter != m_idToPointerMap.end())
             {
@@ -102,21 +101,21 @@ namespace SB::Core
             return result;
         }
 
-        DatabaseObject* tryFind(std::string_view name) const
+        database_object* try_find(std::string_view name) const
         {
-            DatabaseObject* result = nullptr;
+            database_object* result = nullptr;
 
             if (auto iter = m_nameToIdMap.find(name.data()); iter != m_nameToIdMap.end())
             {
-                result = tryFind(iter->second);
+                result = try_find(iter->second);
             }
 
             return result;
         }
 
-        std::weak_ptr<DatabaseObject> tryFindWeak(SB_ID id) const
+        std::weak_ptr<database_object> try_find_weak(sb_id id) const
         {
-            std::weak_ptr<DatabaseObject> result;
+            std::weak_ptr<database_object> result;
 
             if (auto iter = m_idToPointerMap.find(id); iter != m_idToPointerMap.end())
             {
@@ -126,21 +125,21 @@ namespace SB::Core
             return result;
         }
 
-        std::weak_ptr<DatabaseObject> tryFindWeak(std::string_view name) const
+        std::weak_ptr<database_object> try_find_weak(std::string_view name) const
         {
-            std::weak_ptr<DatabaseObject> result;
+            std::weak_ptr<database_object> result;
 
             if (auto iter = m_nameToIdMap.find(name.data()); iter != m_nameToIdMap.end())
             {
-                result = tryFindWeak(iter->second);
+                result = try_find_weak(iter->second);
             }
 
             return result;
         }
 
-        std::vector<std::weak_ptr<DatabaseObject>> getAll() const
+        std::vector<std::weak_ptr<database_object>> get_all() const
         {
-            std::vector<std::weak_ptr<DatabaseObject>> result;
+            std::vector<std::weak_ptr<database_object>> result;
             result.reserve(m_idToPointerMap.size());
 
             for (auto& i : m_idToPointerMap)
@@ -158,10 +157,9 @@ namespace SB::Core
         }
 
     private:
-        static SB_ID createNewID();
+        static sb_id create_new_id();
 
-    private:
-        std::unordered_map<SB_ID, std::shared_ptr<DatabaseObject>> m_idToPointerMap;
-        std::unordered_map<std::string, SB_ID> m_nameToIdMap;
+        std::unordered_map<sb_id, std::shared_ptr<database_object>> m_idToPointerMap;
+        std::unordered_map<std::string, sb_id> m_nameToIdMap;
     };
 }  // namespace SB::Core

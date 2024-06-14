@@ -5,13 +5,15 @@
 
 using namespace SB::Engine;
 
+DEFINE_REFLECTION(SB::Engine::Bus)
+
 void Bus::onLoaded()
 {
     Node::onLoaded();
 
     if (SB::Engine::System* system = SB::Engine::System::get())
     {
-        if (system->getMasterBus().id() == getDatabaseID())
+        if (system->getMasterBus().id() == get_database_id())
         {
             setMasterBus(true);
         }
@@ -23,7 +25,12 @@ void Bus::lock()
     if (!m_busInstance)
     {
         m_busInstance = std::make_shared<NodeInstance>();
-        m_busInstance->setBusInstance(this);
+
+        InitNodeInstance initData;
+        initData.refNode = try_convert_object<NodeBase>();
+        initData.type    = NodeInstanceType::BUS;
+
+        m_busInstance->init(initData);
     }
 }
 

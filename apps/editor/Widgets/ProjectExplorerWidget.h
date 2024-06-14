@@ -4,21 +4,21 @@
 
 class ProjectNodesWidget;
 
-class ProjectExplorerWidget : public Widget
+class ProjectExplorerWidget : public widget
 {
 public:
-    ProjectExplorerWidget(WidgetSubsystem* parentSubsystem)
-        : Widget(parentSubsystem)
+    ProjectExplorerWidget(widget_subsystem* parentSubsystem)
+        : widget(parentSubsystem)
     {
     }
 
-    ProjectExplorerWidget(Widget* parentWidget) : Widget(parentWidget) {}
+    ProjectExplorerWidget(widget* parentWidget) : widget(parentWidget) {}
 
 public:
-    virtual void Start() override;
+    virtual void start() override;
     virtual void Render() override;
 
 private:
-    Widget* m_fileBrowserWidget;
+    widget* m_fileBrowserWidget;
     ProjectNodesWidget* m_projectNodesWidget;
 };

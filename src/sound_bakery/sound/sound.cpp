@@ -1,34 +1,84 @@
 #include "sound_bakery/sound/sound.h"
 
+#include "sound_bakery/editor/project/project.h"
+
 using namespace SB::Engine;
 
-Sound::Sound() : m_soundName(), m_sound(), m_streaming(false) {}
+DEFINE_REFLECTION(SB::Engine::Sound)
+
+Sound::Sound() : m_streaming(false) {}
 
 void Sound::loadSynchronous()
 {
-    if (m_soundName.size())
+    std::filesystem::path finalSoundPath;
+
+    bool useRawSound = true;
+
+    // Prefer encoded media
+    if (!encodedSoundPath.empty())
     {
-        SC_SOUND* loadedSound = nullptr;
+        // Absolute path. Needs to be relative
+        if (std::filesystem::exists(encodedSoundPath))
+        {
+            finalSoundPath   = encodedSoundPath;
+            encodedSoundPath = std::filesystem::relative(encodedSoundPath,
+                                                         SB::Engine::System::getProject()->getConfig().encodedFolder());
+        }
+        else
+        {
+            finalSoundPath = SB::Engine::System::getProject()->getConfig().encodedFolder() / encodedSoundPath;
+        }
 
-        SC_RESULT result = SC_System_CreateSound(getChef(), m_soundName.c_str(), SC_SOUND_MODE_DEFAULT, &loadedSound);
-        assert(result == MA_SUCCESS);
-
-        m_sound.reset(loadedSound);
+        useRawSound = !std::filesystem::exists(finalSoundPath);
     }
+
+    if (useRawSound && !rawSoundPath.empty())
+    {
+        if (std::filesystem::exists(rawSoundPath))
+        {
+            finalSoundPath = rawSoundPath;
+            rawSoundPath =
+                std::filesystem::relative(rawSoundPath, SB::Engine::System::getProject()->getConfig().sourceFolder());
+        }
+        else
+        {
+            finalSoundPath = SB::Engine::System::getProject()->getConfig().sourceFolder() / rawSoundPath;
+        }
+    }
+
+    assert(std::filesystem::exists(finalSoundPath));
+
+    sc_sound* loadedSound = nullptr;
+
+    sc_result result =
+        sc_system_create_sound(getChef(), finalSoundPath.string().c_str(), SC_SOUND_MODE_DEFAULT, &loadedSound);
+    assert(result == MA_SUCCESS);
+
+    m_sound.reset(loadedSound);
 }
 
-void Sound::loadAsynchronous()
-{
-    if (m_soundName.size())
-    {
-        loadSynchronous();
-    }
-}
+void Sound::loadAsynchronous() { loadSynchronous(); }
 
-void Sound::setSoundName(const std::string& soundName)
+void Sound::setSoundName(std::string soundName)
 {
-    m_soundName = soundName;
+    rawSoundPath = soundName;
     loadSynchronous();
 }
 
-const std::string& Sound::getSoundName() const { return m_soundName; }
+std::string Sound::getSoundName() const { return rawSoundPath.string().c_str(); }
+
+void Sound::setEncodedSoundName(std::string encodedSoundName)
+{
+    encodedSoundPath = encodedSoundName;
+    loadSynchronous();
+}
+
+sc_sound* Sound::getSound()
+{
+    if (!m_sound)
+    {
+        loadSynchronous();
+    }
+
+    return m_sound.get();
+}

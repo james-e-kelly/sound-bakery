@@ -10,15 +10,15 @@
 
 void DetailsWidget::Render()
 {
-    Widget::Render();
+    widget::render();
 
     if (ImGui::Begin("Details", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
     {
         if (ProjectManager* const projectManager =
-                GetApp()->GetProjectManager())
+                get_app()->GetProjectManager())
         {
             Selection& selection = projectManager->GetSelection();
-            if (SB::Core::Object* selected = selection.GetSelected())
+            if (SB::Core::object* selected = selection.GetSelected())
             {
                 PropertyDrawer::DrawObject(selected->getType(), selected);
                 ImGui::Separator();

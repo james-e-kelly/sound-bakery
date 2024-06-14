@@ -2,25 +2,26 @@
 
 #include "sound_bakery/core/database/database.h"
 #include "sound_bakery/node/node.h"
+#include "sound_bakery/system.h"
 
 using namespace SB::Core;
 
-std::weak_ptr<DatabaseObject> SB::Core::findObject(SB_ID id)
+std::weak_ptr<database_object> SB::Core::findObject(sb_id id)
 {
-    if (Database* database = Database::get())
+    if (database* const database = SB::Engine::System::getDatabase())
     {
-        return database->tryFindWeak(id);
+        return database->try_find_weak(id);
     }
-    return std::weak_ptr<DatabaseObject>();
+    return std::weak_ptr<database_object>();
 }
 
-bool SB::Core::objectIdIsChildOfParent(SB_ID childToCheck, SB_ID parent)
+bool SB::Core::objectIdIsChildOfParent(sb_id childToCheck, sb_id parent)
 {
-    SB::Core::DatabasePtr<DatabaseObject> parentPtr(parent);
+    SB::Core::DatabasePtr<database_object> parentPtr(parent);
 
     if (parentPtr.lookup())
     {
-        if (SB::Engine::NodeBase* nodeBase = parentPtr->tryConvertObject<SB::Engine::NodeBase>())
+        if (SB::Engine::NodeBase* nodeBase = parentPtr->try_convert_object<SB::Engine::NodeBase>())
         {
             return nodeBase->hasChild(childToCheck);
         }
@@ -29,19 +30,19 @@ bool SB::Core::objectIdIsChildOfParent(SB_ID childToCheck, SB_ID parent)
     return false;
 }
 
-SB_ID SB::Core::getParentIdFromId(SB_ID id)
+sb_id SB::Core::getParentIdFromId(sb_id id)
 {
     if (id != 0)
     {
-        SB::Core::DatabasePtr<DatabaseObject> databasePtr(id);
+        SB::Core::DatabasePtr<database_object> databasePtr(id);
 
         if (databasePtr.lookup())
         {
-            if (SB::Engine::NodeBase* nodeBase = databasePtr->tryConvertObject<SB::Engine::NodeBase>())
+            if (SB::Engine::NodeBase* nodeBase = databasePtr->try_convert_object<SB::Engine::NodeBase>())
             {
                 if (SB::Engine::NodeBase* parent = nodeBase->parent())
                 {
-                    return parent->getDatabaseID();
+                    return parent->get_database_id();
                 }
             }
         }

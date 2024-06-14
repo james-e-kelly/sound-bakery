@@ -1,18 +1,23 @@
 #pragma once
 
+#include "sound_bakery/system.h"
 #include "sound_bakery/core/object/object.h"
 #include "sound_bakery/core/object/object_tracker.h"
+#include "sound_bakery/system.h"
 
 template <typename T>
 T* newObject()
 {
-    static_assert(std::is_base_of<SB::Core::Object, T>::value);
+    static_assert(std::is_base_of<SB::Core::object, T>::value);
 
     T* obj = new T();
 
     if (obj)
     {
-        SB::Core::ObjectTracker::get()->trackObject((SB::Core::Object*)obj);
+        if (SB::Core::ObjectTracker* const objectTracker = SB::Engine::System::getObjectTracker())
+        {
+            objectTracker->trackObject((SB::Core::object*)obj);
+        }
     }
     else
     {
@@ -23,24 +28,27 @@ T* newObject()
 }
 
 template <typename T>
-T* newDatabaseObject(SB_ID id = 0)
+T* newDatabaseObject(sb_id id = 0)
 {
-    static_assert(std::is_base_of<SB::Core::DatabaseObject, T>::value);
+    static_assert(std::is_base_of<SB::Core::database_object, T>::value);
 
     T* obj = new T();
 
     if (obj)
     {
-        SB::Core::ObjectTracker::get()->trackObject((SB::Core::Object*)obj);
+        if (SB::Core::ObjectTracker* const objectTracker = SB::Engine::System::getObjectTracker())
+        {
+            objectTracker->trackObject((SB::Core::object*)obj);
+        }
     }
     else
     {
         assert(false && "Memory allocation failed");
     }
 
-    obj->setDatabaseID(id);
+    obj->set_database_id(id);
 
-    assert(obj->getDatabaseID() && "ID must be valid by this point");
+    assert(obj->get_database_id() && "ID must be valid by this point");
 
     return obj;
 }

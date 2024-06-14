@@ -2,6 +2,7 @@
 
 #include "sound_bakery/maths/easing.h"
 #include "sound_bakery/node/bus/bus.h"
+#include "sound_bakery/node/container/sequence_container.h"
 #include "sound_bakery/node/container/sound_container.h"
 #include "sound_bakery/sound/sound.h"
 #include "sound_bakery/system.h"
@@ -9,7 +10,7 @@
 
 using namespace SB::Engine;
 
-NodeInstance::NodeInstance() = default;
+DEFINE_REFLECTION(SB::Engine::NodeInstance)
 
 NodeInstance::~NodeInstance()
 {
@@ -22,100 +23,29 @@ NodeInstance::~NodeInstance()
     }
 }
 
-void SB::Engine::NodeInstance::setSoundInstance(SoundContainer* soundContainer, Sound* sound) noexcept
+bool SB::Engine::NodeInstance::init(const InitNodeInstance& initData)
 {
-    m_referencingNode      = soundContainer;
-    m_referencingSoundNode = soundContainer;
-
-    init();
-
-    SC_SOUND_INSTANCE* soundInstance = nullptr;
-    SC_RESULT playResult = SC_System_PlaySound(getChef(), sound->getSound(), &soundInstance, m_nodeGroup.get(), false);
-    m_soundInstance.reset(soundInstance);
-
-    assert(playResult == MA_SUCCESS);
-}
-
-void SB::Engine::NodeInstance::setNodeInstance(Container* container) noexcept
-{
-    m_referencingNode = container;
-
-    init();
-}
-
-void SB::Engine::NodeInstance::setBusInstance(Bus* bus) noexcept
-{
-    m_referencingNode = bus;
-    m_referencingBus  = bus;
-
-    init();
-}
-
-void SB::Engine::NodeInstance::createParentBusInstance()
-{
-    if (NodeBase* outputBusNode = m_referencingNode->outputBus())
+    if (m_state != NodeInstanceState::UNINIT)
     {
-        m_parent = outputBusNode->tryConvertObject<Bus>()->lockAndCopy();
+        return true;
     }
-    else
+
+    if (!initData.refNode.lookup())
     {
-        createMasterBusParent();
+        return false;
     }
-}
 
-void SB::Engine::NodeInstance::createParentInstance()
-{
-    Container* const parent = m_referencingNode->parent()->tryConvertObject<Container>();
+    bool converted = false;
+    m_referencingNode =
+        rttr::wrapper_mapper<SB::Core::DatabasePtr<NodeBase>>::convert<Node>(initData.refNode, converted).shared();
 
-    m_parent = std::make_shared<NodeInstance>();
-    m_parent->setNodeInstance(parent);
-}
-
-void SB::Engine::NodeInstance::init()
-{
-    createChannelGroup();
-    createDSP();
-    bindDelegates();
-    createParent();
-    attachToParent();
-}
-
-void NodeInstance::createChannelGroup()
-{
-    SC_NODE_GROUP* nodeGroup = nullptr;
-    SC_System_CreateNodeGroup(getChef(), &nodeGroup);
-
-    m_nodeGroup.reset(nodeGroup);
-}
-
-void SB::Engine::NodeInstance::createParent()
-{
-    switch (m_referencingNode->getNodeStatus())
+    if (!m_nodeGroup.initNodeGroup(*initData.refNode.raw()))
     {
-        case SB_NODE_NULL:
-            createMasterBusParent();
-            break;
-        case SB_NODE_MIDDLE:
-            createParentInstance();
-            break;
-        case SB_NODE_TOP:
-            createParentBusInstance();
-            break;
+        return false;
     }
-}
 
-void SB::Engine::NodeInstance::createMasterBusParent()
-{
-    const SB::Core::DatabasePtr<Bus>& masterBus = SB::Engine::System::get()->getMasterBus();
+    m_owningVoice = initData.owningVoice;
 
-    if (masterBus.lookup() && masterBus.id() != m_referencingNode->getDatabaseID())
-    {
-        m_parent = masterBus->lockAndCopy();
-    }
-}
-
-void SB::Engine::NodeInstance::bindDelegates()
-{
     m_referencingNode->m_volume.getDelegate().AddRaw(this, &NodeInstance::setVolume);
     m_referencingNode->m_pitch.getDelegate().AddRaw(this, &NodeInstance::setPitch);
     m_referencingNode->m_lowpass.getDelegate().AddRaw(this, &NodeInstance::setLowpass);
@@ -125,72 +55,169 @@ void SB::Engine::NodeInstance::bindDelegates()
     setPitch(0.0F, m_referencingNode->m_pitch.get());
     setLowpass(0.0F, m_referencingNode->m_lowpass.get());
     setHighpass(0.0F, m_referencingNode->m_highpass.get());
+
+    bool success = false;
+
+    switch (initData.type)
+    {
+        case NodeInstanceType::CHILD:
+        {
+            if (initData.refNode->getChildCount() == 0)
+            {
+                success = true;
+            }
+            else
+            {
+                success = m_children.createChildren(*initData.refNode.raw(), m_owningVoice, this, ++m_numTimesPlayed);
+            }
+
+            break;
+        }
+        case NodeInstanceType::BUS:
+        {
+            if (const Bus* const bus = initData.refNode->try_convert_object<Bus>())
+            {
+                // Checks nullptr as master busses are technically busses without an output, even if they're not marked
+                // as masters
+                if (bus->isMasterBus() || bus->parent() == nullptr)
+                {
+                    success = true;
+                    break;
+                }
+            }
+
+            success = m_parent.createParent(*initData.refNode.raw(), m_owningVoice);
+            break;
+        }
+        case NodeInstanceType::MAIN:
+        {
+            success = m_parent.createParent(*initData.refNode.raw(), m_owningVoice);
+            success &= m_children.createChildren(*initData.refNode.raw(), m_owningVoice, this, ++m_numTimesPlayed);
+            break;
+        }
+    }
+
+    if (m_parent.parent)
+    {
+        sc_node_group_set_parent(m_nodeGroup.nodeGroup.get(), m_parent.parent->getBus());
+    }
+    else if (initData.parentForChildren)
+    {
+        sc_node_group_set_parent(m_nodeGroup.nodeGroup.get(), initData.parentForChildren->getBus());
+    }
+    // else, should be connected to master bus by default
+
+    if (success)
+    {
+        m_state = NodeInstanceState::STOPPED;
+    }
+
+    return success;
 }
 
-void SB::Engine::NodeInstance::createDSP()
+bool NodeInstance::play()
 {
-    const SC_DSP_CONFIG lpfConfig = SC_DSP_Config_Init(SC_DSP_TYPE_LOWPASS);
-    SC_System_CreateDSP(getChef(), &lpfConfig, &m_lowpass);
-    SC_NodeGroup_AddDSP(m_nodeGroup.get(), m_lowpass, SC_DSP_INDEX_HEAD);
-
-    const SC_DSP_CONFIG hpfConfig = SC_DSP_Config_Init(SC_DSP_TYPE_HIGHPASS);
-    SC_System_CreateDSP(getChef(), &hpfConfig, &m_highpass);
-    SC_NodeGroup_AddDSP(m_nodeGroup.get(), m_highpass, SC_DSP_INDEX_HEAD);
-
-    for (const SB::Core::DatabasePtr<SB::Engine::EffectDescription>& desc : m_referencingNode->m_effectDescriptions)
+    if (isPlaying())
     {
-        if (desc.lookup())
+        return true;
+    }
+
+    if (m_referencingNode->getType() == rttr::type::get<SoundContainer>())
+    {
+        SoundContainer* soundContainer   = m_referencingNode->try_convert_object<SoundContainer>();
+        Sound* engineSound               = soundContainer->getSound();
+        sc_sound* sound                  = engineSound != nullptr ? engineSound->getSound() : nullptr;
+        sc_sound_instance* soundInstance = nullptr;
+
+        sc_result playSoundResult =
+            sc_system_play_sound(getChef(), sound, &soundInstance, m_nodeGroup.nodeGroup.get(), MA_FALSE);
+
+        if (playSoundResult == MA_SUCCESS)
         {
-            SC_DSP* dsp = nullptr;
+            m_state = NodeInstanceState::PLAYING;
+            m_soundInstance.reset(soundInstance);
+        }
+    }
+    else
+    {
+        unsigned int playingCount = 0;
 
-            SC_RESULT create = SC_System_CreateDSP(getChef(), desc->getConfig(), &dsp);
-            assert(create == MA_SUCCESS);
-
-            SC_RESULT add = SC_NodeGroup_AddDSP(m_nodeGroup.get(), dsp, SC_DSP_INDEX_HEAD);
-            assert(add == MA_SUCCESS);
-
-            int index = 0;
-            for (const SB::Engine::EffectParameterDescription& parameter : desc->getParameters())
+        for (const auto& child : m_children.childrenNodes)
+        {
+            if (child->play())
             {
-                switch (parameter.m_parameter.m_type)
-                {
-                    case SC_DSP_PARAMETER_TYPE_FLOAT:
-                        SC_DSP_SetParameterFloat(dsp, index++, parameter.m_parameter.m_float.m_value);
-                        break;
-                }
+                ++playingCount;
+            }
+        }
+
+        if (playingCount > 0)
+        {
+            m_state = NodeInstanceState::PLAYING;
+        }
+    }
+
+    return isPlaying();
+}
+
+void NodeInstance::update()
+{
+    if (m_soundInstance)
+    {
+        if (ma_sound_at_end(&m_soundInstance->sound) == MA_TRUE)
+        {
+            m_state = NodeInstanceState::STOPPED;
+            m_soundInstance.release();
+        }
+    }
+    else if (!m_children.childrenNodes.empty())
+    {
+        unsigned int stoppedChildren = 0;
+
+        for (const auto& child : m_children.childrenNodes)
+        {
+            child->update();
+
+            if (!child->isPlaying())
+            {
+                ++stoppedChildren;
+            }
+        }
+
+        if (stoppedChildren == m_children.childrenNodes.size())
+        {
+            m_state = NodeInstanceState::STOPPED;
+            m_children.childrenNodes.clear();
+
+            // Sequence nodes retrigger when the current sound stops
+            if (m_referencingNode->getType() == rttr::type::get<SequenceContainer>())
+            {
+                m_children.createChildren(*m_referencingNode->try_convert_object<NodeBase>(), m_owningVoice, this,
+                                          ++m_numTimesPlayed);
+                play();
             }
         }
     }
 }
 
-void SB::Engine::NodeInstance::attachToParent()
-{
-    if (m_parent)
-    {
-        SC_NodeGroup_SetParent(m_nodeGroup.get(), m_parent->getBus());
-    }
-}
-
-bool SB::Engine::NodeInstance::isPlaying() const
-{
-    SC_BOOL playing = false;
-    SC_SoundInstance_IsPlaying(m_soundInstance.get(), &playing);
-    return playing;
-}
+//////////////////////////////////////////////////////////////////////////////////
 
 void NodeInstance::setVolume(float oldVolume, float newVolume)
 {
-    if (m_nodeGroup)
+    (void)oldVolume;
+
+    if (m_nodeGroup.nodeGroup)
     {
-        ma_sound_group_set_volume((ma_sound_group*)m_nodeGroup->m_fader->m_state->m_userData, newVolume);
+        ma_sound_group_set_volume((ma_sound_group*)m_nodeGroup.nodeGroup->fader->state->userData, newVolume);
     }
 }
 
 void NodeInstance::setPitch(float oldPitch, float newPitch)
 {
-    if (m_nodeGroup)
+    (void)oldPitch;
+
+    if (m_nodeGroup.nodeGroup)
     {
-        ma_sound_group_set_pitch((ma_sound_group*)m_nodeGroup->m_fader->m_state->m_userData, newPitch);
+        ma_sound_group_set_pitch((ma_sound_group*)m_nodeGroup.nodeGroup->fader->state->userData, newPitch);
     }
 }
 
@@ -202,7 +229,7 @@ void NodeInstance::setLowpass(float oldLowpass, float newLowpass)
     const double lowpassCutoff = (19980 - (19980.0 * percentage)) + 20.0;
     assert(lowpassCutoff >= 20.0);
 
-    SC_DSP_SetParameterFloat(m_lowpass, SC_DSP_LOWPASS_CUTOFF, static_cast<float>(lowpassCutoff));
+    sc_dsp_set_parameter_float(m_nodeGroup.lowpass, SC_DSP_LOWPASS_CUTOFF, static_cast<float>(lowpassCutoff));
 }
 
 void NodeInstance::setHighpass(float oldHighpass, float newHighpass)
@@ -213,5 +240,5 @@ void NodeInstance::setHighpass(float oldHighpass, float newHighpass)
     const double highpassCutoff = (19980.0 * percentage) + 20.0;
     assert(highpassCutoff >= 20.0);
 
-    SC_DSP_SetParameterFloat(m_highpass, SC_DSP_HIGHPASS_CUTOFF, static_cast<float>(highpassCutoff));
+    sc_dsp_set_parameter_float(m_nodeGroup.highpass, SC_DSP_HIGHPASS_CUTOFF, static_cast<float>(highpassCutoff));
 }

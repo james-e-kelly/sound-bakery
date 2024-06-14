@@ -2,14 +2,14 @@
 
 #include "sound_bakery/sound/sound.h"
 
-void SB::Engine::SoundContainer::gatherSounds(std::vector<Container*>& soundContainers,
-                                              const RuntimeFloatParameterMap& runtimeFloatParameters,
-                                              const RuntimeIntParameterMap& runtimeIntParameters)
+DEFINE_REFLECTION(SB::Engine::SoundContainer)
+
+void SB::Engine::SoundContainer::gatherChildrenForPlay(GatherChildrenContext& context) const
 {
-    soundContainers.push_back(this);
+    context.sounds.push_back(this);
 }
 
-SB::Engine::Sound* SB::Engine::SoundContainer::getSound()
+SB::Engine::Sound* SB::Engine::SoundContainer::getSound() const
 {
     if (m_sound.lookup())
     {

@@ -4,16 +4,15 @@
 
 namespace SB::Engine
 {
-    class SequenceContainer : public Container
+    class SB_CLASS SequenceContainer : public Container
     {
     public:
-        virtual void gatherSounds(std::vector<Container*>& soundContainers,
-                                  const RuntimeFloatParameterMap& runtimeFloatParameters,
-                                  const RuntimeIntParameterMap& runtimeIntParameters) override
-        {
-        }
+        virtual void gatherChildrenForPlay(GatherChildrenContext& context) const override;
 
-        RTTR_ENABLE(Container)
+    private:
+        std::vector<SB::Core::ChildPtr<Container>> m_sequence;
+
+        REGISTER_REFLECTION(SequenceContainer, Container)
         RTTR_REGISTRATION_FRIEND
     };
 }  // namespace SB::Engine

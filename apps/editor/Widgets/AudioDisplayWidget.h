@@ -8,15 +8,15 @@ namespace SB::Engine
     class Sound;
 }
 
-class AudioDisplayWidget : public Widget
+class AudioDisplayWidget : public widget
 {
 public:
-    AudioDisplayWidget(WidgetSubsystem* parentSubsystem)
-        : Widget(parentSubsystem)
+    AudioDisplayWidget(widget_subsystem* parentSubsystem)
+        : widget(parentSubsystem)
     {
     }
 
-    AudioDisplayWidget(Widget* parent) : Widget(parent) {}
+    AudioDisplayWidget(widget* parent) : widget(parent) {}
 
 public:
     virtual void Render() override;

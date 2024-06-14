@@ -2,14 +2,14 @@
 
 #include "Widget.h"
 
-class PlayerWidget : public Widget
+class PlayerWidget : public widget
 {
 public:
-    PlayerWidget(WidgetSubsystem* parentSubsystem) : Widget(parentSubsystem) {}
+    PlayerWidget(widget_subsystem* parentSubsystem) : widget(parentSubsystem) {}
 
-    PlayerWidget(Widget* parentWidget) : Widget(parentWidget) {}
+    PlayerWidget(widget* parentWidget) : widget(parentWidget) {}
 
 public:
     virtual void Render() override;
-    virtual void Start() override;
+    virtual void start() override;
 };

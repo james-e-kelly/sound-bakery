@@ -4,43 +4,43 @@
 
 struct GLFWwindow;
 
-class RendererSubsystem : public Subsystem
+class renderer_subsystem : public subsystem
 {
 public:
-    RendererSubsystem(App* appOwner) : Subsystem(appOwner) {}
+    renderer_subsystem(app* appOwner) : subsystem(appOwner) {}
 
 public:
     /** AppSubsystem Implementation */
 
-    virtual int PreInit(int ArgC, char* ArgV[]) override;
-    virtual int Init() override;
-    virtual void PreTick(double deltaTime) override;
-    virtual void Tick(double deltaTime) override;
-    virtual void TickRendering(double deltaTime) override;
-    virtual void Exit() override;
+    virtual int pre_init(int ArgC, char* ArgV[]) override;
+    virtual int init() override;
+    virtual void pre_tick(double deltaTime) override;
+    virtual void tick(double deltaTime) override;
+    virtual void tick_rendering(double deltaTime) override;
+    virtual void exit() override;
 
 private:
-    int InitGLFW();
-    int InitImGui();
+    int init_glfw();
+    int init_imgui();
 
-    void SetDefaultWindowHints();
+    void set_default_window_hints();
 
 private:
-    struct WindowGuard
+    struct window_guard
     {
-        WindowGuard() : m_window(nullptr) {}
-        WindowGuard(int width, int height, const std::string& windowName);
-        ~WindowGuard();
+        window_guard() : m_window(nullptr) {}
+        window_guard(int width, int height, const std::string& windowName);
+        ~window_guard();
 
         // Add move operator
         // This class should always own the window
-        WindowGuard(WindowGuard&& other) noexcept;
-        WindowGuard& operator=(WindowGuard&& other) noexcept;
+        window_guard(window_guard&& other) noexcept;
+        window_guard& operator=(window_guard&& other) noexcept;
 
         // Delete the copy constructor and copy assignment operator to prevent
         // copying
-        WindowGuard(const WindowGuard& other)            = delete;
-        WindowGuard& operator=(const WindowGuard& other) = delete;
+        window_guard(const window_guard& other)            = delete;
+        window_guard& operator=(const window_guard& other) = delete;
 
         operator GLFWwindow*() const { return m_window; }
         GLFWwindow* operator->() const { return m_window; }
@@ -49,6 +49,6 @@ private:
     };
 
 private:
-    WindowGuard m_window;
+    window_guard m_window;
     std::string m_fontPath;
 };

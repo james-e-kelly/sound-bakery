@@ -1,12 +1,12 @@
 #pragma once
 
 #include "Delegates.h"
-#include "sound_bakery/sound_bakery.h"
+#include "sound_bakery/sound_bakery_internal.h"
 
 namespace SB::Core
 {
     template <typename T>
-    class Property
+    class SB_CLASS Property
     {
         static_assert(std::is_arithmetic<T>::value);
 
@@ -27,12 +27,9 @@ namespace SB::Core
 
         /**
          * @brief Copy constructor.
-         *
-         * Copies the min, max and value but not the delegate.
-         * The newly created property will have a fresh delegate.
          */
         Property(const Property& other)
-            : m_property(other.m_property), m_min(other.m_min), m_max(other.m_max), m_delegate()
+            : m_property(other.m_property), m_min(other.m_min), m_max(other.m_max), m_delegate(other.m_delegate)
         {
         }
 
@@ -88,7 +85,7 @@ namespace SB::Core
 
         [[nodiscard]] std::pair<T, T> getMinMaxPair() const { return std::pair<T, T>(m_min, m_max); }
 
-    protected:
+    private:
         T m_property;
         T m_min;
         T m_max;
@@ -96,6 +93,6 @@ namespace SB::Core
     };
 
     using IntProperty   = Property<int32_t>;
-    using IdProperty    = Property<SB_ID>;
+    using IdProperty    = Property<sb_id>;
     using FloatProperty = Property<float>;
 }  // namespace SB::Core

@@ -9,32 +9,31 @@
 #include "sound_bakery/node/container/sound_container.h"
 #include "sound_bakery/sound/sound.h"
 #include "sound_bakery/system.h"
+#include "sound_bakery/util/type_helper.h"
 #include "sound_bakery/voice/node_instance.h"
 #include "sound_bakery/voice/voice.h"
 
 #include <rttr/type>
 
-static SB::Core::Object* s_lastPlayableSelection;
+static SB::Core::object* s_lastPlayableSelection;
 
-void PlayerWidget::Start()
+void PlayerWidget::start()
 {
-    Widget::Start();
+    widget::start();
 
-    AddChildWidget<AudioDisplayWidget>();
+    add_child_widget<AudioDisplayWidget>();
 }
 
 void PlayerWidget::Render()
 {
     ImGui::Begin("Player");
 
-    Selection& selection    = GetApp()->GetProjectManager()->GetSelection();
-    rttr::type selectedType = selection.SelectedType();
+    Selection& selection    = get_app()->GetProjectManager()->GetSelection();
+    std::optional<rttr::type> selectedType = selection.SelectedType();
 
     const bool isSelected = !!selection.GetSelected();
     const bool isPlayable =
-        isSelected && (selectedType.is_derived_from<SB::Engine::Container>() ||
-                       selectedType.is_derived_from<SB::Engine::Sound>() ||
-                       selectedType.is_derived_from<SB::Engine::Event>());
+        isSelected && selectedType.has_value() && SB::Util::TypeHelper::isTypePlayable(selectedType.value());
 
     if (isPlayable)
     {
@@ -56,8 +55,8 @@ void PlayerWidget::Render()
     if (isSelected && !!s_lastPlayableSelection)
     {
         ImGui::Text("%s", s_lastPlayableSelection
-                              ->tryConvertObject<SB::Core::DatabaseObject>()
-                              ->getDatabaseName()
+                              ->try_convert_object<SB::Core::database_object>()
+                              ->get_database_name()
                               .data());
     }
 
@@ -65,17 +64,17 @@ void PlayerWidget::Render()
     {
         if (SB::Engine::Container* container =
                 s_lastPlayableSelection
-                    ->tryConvertObject<SB::Engine::Container>())
+                    ->try_convert_object<SB::Engine::Container>())
         {
             SB::Engine::System::get()->getListenerGameObject()->playContainer(
                 container);
         }
         else if (SB::Engine::Sound* sound =
                      s_lastPlayableSelection
-                         ->tryConvertObject<SB::Engine::Sound>())
+                         ->try_convert_object<SB::Engine::Sound>())
         {
             if (SB::Engine::SoundContainer* previewContainer =
-                    GetApp()->GetProjectManager()->GetPreviewSoundContainer())
+                    get_app()->GetProjectManager()->GetPreviewSoundContainer())
             {
                 previewContainer->setSound(sound);
 
@@ -86,7 +85,7 @@ void PlayerWidget::Render()
         }
         else if (SB::Engine::Event* event =
                      s_lastPlayableSelection
-                         ->tryConvertObject<SB::Engine::Event>())
+                         ->try_convert_object<SB::Engine::Event>())
         {
             SB::Engine::System::get()->getListenerGameObject()->postEvent(
                 event);
@@ -100,42 +99,79 @@ void PlayerWidget::Render()
         SB::Engine::System::get()->getListenerGameObject()->stopAll();
     }
 
-    ImGui::EndDisabled();
+    SB::Engine::Node* const nodeSelection =
+        s_lastPlayableSelection ? s_lastPlayableSelection->try_convert_object<SB::Engine::Node>() : nullptr;
 
-    if (SB::Engine::GameObject* listener =
-            SB::Engine::System::get()->getListenerGameObject())
+    SB::Engine::GlobalParameterList parameterList;
+
+    if (nodeSelection)
     {
-        if (std::size_t voicesSize = listener->voiceCount())
-        {
-            ImGui::Text("Number of playing voices {%lu}", voicesSize);
-
-            for (std::size_t index = 0; index < voicesSize; ++index)
-            {
-                SB::Engine::Voice* voice = listener->getVoice(index);
-
-                if (voice == nullptr)
-                {
-                    continue;
-                }
-
-                for (std::size_t instanceIndex = 0; instanceIndex < voice->voices();
-                     ++instanceIndex)
-                {
-                    SB::Engine::NodeInstance* nodeInstance =
-                        voice->voice(instanceIndex);
-
-                    if (nodeInstance)
-                    {
-                        bool playing = nodeInstance->isPlaying();
-                        ImGui::Text("Channel is %s",
-                                    playing ? "playing" : "not playing");
-                    }
-                }
-            }
-        }
+        nodeSelection->gatherParameters(parameterList);
     }
 
-    RenderChildren();
+    SB::Engine::GameObject* const listenerGameObject = SB::Engine::System::get()->getListenerGameObject();
+
+    if (ImGui::BeginTabBar("Runtime Parameters"))
+    {
+        if (ImGui::BeginTabItem("Switches"))
+        {
+            if (ImGui::BeginTable("Table", 2))
+            {
+                for (const SB::Core::DatabasePtr<SB::Engine::NamedParameter>& intParameter :
+                     parameterList.intParameters)
+                {
+                    if (intParameter.lookup() == false)
+                    {
+                        continue;
+                    }
+
+                    SB::Core::DatabasePtr<SB::Engine::NamedParameterValue> selectedIntParameterValue =
+                        listenerGameObject->getIntParameterValue(intParameter);
+
+                    if (selectedIntParameterValue.lookup() == false)
+                    {
+                        continue;
+                    }
+
+                    ImGui::TableNextColumn();
+                    ImGui::TextUnformatted(intParameter->get_database_name().data());
+
+                    ImGui::TableNextColumn();
+
+                    if (ImGui::BeginCombo("Selected", selectedIntParameterValue->get_database_name().data()))
+                    {
+                        for (SB::Core::DatabasePtr<SB::Engine::NamedParameterValue> parameterValue : intParameter->getValues())
+                        {
+                            if (parameterValue.lookup() == false)
+                            {
+                                continue;
+                            }
+
+                            bool selected = parameterValue == selectedIntParameterValue;
+                            if (ImGui::Selectable(parameterValue->get_database_name().data(), &selected))
+                            {
+                                listenerGameObject->setIntParameterValue(
+                                    {intParameter.id(), parameterValue->get_database_id()});
+                            }
+                        }
+
+                        ImGui::EndCombo();
+                    }
+                }
+
+                ImGui::EndTable();
+            }
+            
+            
+            ImGui::EndTabItem();
+        }
+
+        ImGui::EndTabBar();
+    }
+
+    ImGui::EndDisabled();
+
+    render_children();
 
     ImGui::End();
 }

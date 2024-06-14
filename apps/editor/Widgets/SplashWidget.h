@@ -2,21 +2,21 @@
 
 #include "Widget.h"
 
-class SplashWidget : public Widget
+class SplashWidget : public widget
 {
 public:
-    SplashWidget(WidgetSubsystem* parentSubsystem) : Widget(parentSubsystem) {}
+    SplashWidget(widget_subsystem* parentSubsystem) : widget(parentSubsystem) {}
 
 public:
     void ShowSplashScreen();
     void CloseSplashScreen();
 
 public:
-    virtual void Tick(double deltaTime) override;
+    virtual void tick(double deltaTime) override;
     virtual void Render() override;
 
 protected:
-    virtual void Start() override;
+    virtual void start() override;
 
 private:
     bool m_wantsToShow         = false;

@@ -4,16 +4,18 @@ set(ATLAS_SOURCES
     system.cpp
     factory.cpp
     pch.cpp
-
+    
     core/object/object.cpp
     core/object/object_tracker.cpp
-
+    
     core/database/database.cpp
     core/database/database_object.cpp
     core/database/database_ptr.cpp
-
+    
     core/property.cpp
     
+    editor/project/project.cpp
+
     effect/effect.cpp
     
     event/event.cpp
@@ -35,7 +37,11 @@ set(ATLAS_SOURCES
     parameter/parameter.cpp
     profiling/voice_tracker.cpp
     
+    reflection/reflection.cpp
+
     serialization/serializer.cpp
+
+    soundbank/soundbank.cpp
     
     sound/sound.cpp
 
@@ -43,12 +49,13 @@ set(ATLAS_SOURCES
 
     voice/voice.cpp
     voice/node_instance.cpp
+    voice/node_instance_impl.cpp
 )
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Source Files" FILES ${ATLAS_SOURCES})
 
 set(ATLAS_HEADERS
-    sound_bakery.h
+    sound_bakery_internal.h
     system.h
     factory.h
     pch.h
@@ -65,11 +72,12 @@ set(ATLAS_HEADERS
     core/database/database_object.h
     core/database/database_ptr.h
     
+    editor/editor_defines.h
+    editor/project/project.h
+
     effect/effect.h
     
     event/event.h
-    
-    editor/editor_defines.h
     
     gameobject/gameobject.h
     
@@ -89,15 +97,18 @@ set(ATLAS_HEADERS
     
     parameter/parameter.h
     profiling/voice_tracker.h
+
+    reflection/reflection.h
     
     serialization/serializer.h
+
+    soundbank/soundbank.h
     
     sound/sound.h
     
     util/api_macros.h
     util/fmod_pointers.h
     util/sb_pointers.h
-    util/singleton.h
     util/type_helper.h
     util/macros.h
 
@@ -110,15 +121,24 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Header Files" FILES ${ATLA
 set(PCH_HEADER pch.h)
 set(PCH_SOURCE pch.cpp)
 
-add_library(sound_bakery STATIC ${ATLAS_SOURCES} ${ATLAS_HEADERS} ${PCH_SOURCE})
+if (SOUND_BAKERY_SHARED)
+  add_library(sound_bakery SHARED ${ATLAS_SOURCES} ${ATLAS_HEADERS} ${PCH_SOURCE})
+else()
+  add_library(sound_bakery STATIC ${ATLAS_SOURCES} ${ATLAS_HEADERS} ${PCH_SOURCE})
+endif()
+
 add_library(SoundBakery::SoundBakery ALIAS sound_bakery)
+
 target_include_directories(sound_bakery
     PUBLIC ${CMAKE_SOURCE_DIR}/src/
+    PUBLIC ${CMAKE_SOURCE_DIR}/inc/
 )
 
 set_target_properties(sound_bakery PROPERTIES LANGUAGE CXX)
 
 target_precompile_headers(sound_bakery PRIVATE ${PCH_HEADER})
+
+set(CMAKE_FOLDER extern)
 
 set(BUILD_STATIC ON CACHE BOOL "" FORCE)
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
@@ -148,8 +168,32 @@ FetchContent_Declare(
   OVERRIDE_FIND_PACKAGE
 )
 
+FetchContent_Declare(
+  concurrencpp
+  GIT_REPOSITORY https://github.com/David-Haim/concurrencpp.git
+  GIT_TAG        v.0.1.7
+  GIT_SHALLOW    TRUE
+  GIT_PROGRESS TRUE
+  OVERRIDE_FIND_PACKAGE
+)
+
+FetchContent_Declare(
+  spdlog
+  GIT_REPOSITORY https://github.com/gabime/spdlog.git
+  GIT_TAG        v1.14.1
+  GIT_SHALLOW    TRUE
+  GIT_PROGRESS TRUE
+  OVERRIDE_FIND_PACKAGE
+)
+
 message(STATUS "Fetching rttr...")
 FetchContent_MakeAvailable(rttr)
+
+message(STATUS "Fetching concurrencpp...")
+FetchContent_MakeAvailable(concurrencpp)
+
+message(STATUS "Fetching spdlog...")
+FetchContent_MakeAvailable(spdlog)
 
 FetchContent_GetProperties(yaml)
 
@@ -164,6 +208,8 @@ target_link_libraries(sound_bakery PUBLIC
   SoundBakery::Delegates 
   SoundBakery::SoundChef
   RTTR::Core_Lib
+  concurrencpp::concurrencpp
+  spdlog::spdlog
   yaml-cpp::yaml-cpp)
 
 if(MSVC)
@@ -178,11 +224,26 @@ foreach(source IN LISTS SOUND_BAKERY_ALL_FILES)
   list(APPEND SOUND_BAKERY_FORMAT_FILES "${CMAKE_CURRENT_SOURCE_DIR}/${source}")
 endforeach()
 
+foreach(source IN LISTS ATLAS_SOURCES)
+  list(APPEND SOUND_BAKERY_TIDY_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/${source}")
+endforeach()
+
+set(CMAKE_FOLDER src)
+
 if (SOUND_BAKERY_FORMAT_SOURCE AND SOUND_BAKERY_CLANG_FORMAT_EXE)
   add_custom_target(format_sound_bakery
   COMMAND clang-format --style=file -i ${SOUND_BAKERY_FORMAT_FILES}
   COMMAND_EXPAND_LISTS
   COMMENT "Running clang-format"
+  VERBATIM
+  )
+endif()
+
+if (SOUND_BAKERY_TIDY_SOURCE AND SOUND_BAKERY_CLANG_TIDY_EXE)
+  add_custom_target(tidy_sound_bakery
+  COMMAND clang-tidy -fix --fix-errors --format-style=file --fix-notes -p ${CMAKE_BINARY_DIR} ${SOUND_BAKERY_TIDY_SOURCES}
+  COMMAND_EXPAND_LISTS
+  COMMENT "Running clang-tidy -fix"
   VERBATIM
   )
 endif()
@@ -201,3 +262,5 @@ if(SOUND_BAKERY_TIDY_SOURCE AND SOUND_BAKERY_CLANG_TIDY_EXE AND MSVC)
     VS_GLOBAL_EnableClangTidyCodeAnalysis true
   )
 endif()
+
+install(TARGETS sound_bakery DESTINATION lib)

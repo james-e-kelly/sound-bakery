@@ -2,6 +2,7 @@ name: macos
 
 on:
   workflow_dispatch:
+  workflow_call:
   push:
     branches: [ "main", "dev" ]
   pull_request:
@@ -46,3 +47,15 @@ jobs:
     - name: Test
       working-directory: ${{ steps.strings.outputs.build-output-dir }}
       run: ctest --build-config ${{ matrix.build_type }}
+
+    - name: Install
+      run: cmake --install ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} --verbose
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4.3.2
+      with:
+        name: mac-dist
+        path: dist/**/*
+        if-no-files-found: error
+        retention-days: 1
+        overwrite: true

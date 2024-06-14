@@ -7,6 +7,10 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
+#include <cmrc/cmrc.hpp>
+
+CMRC_DECLARE(SB::Fonts);
+
 #include <stdio.h>
 
 #define GL_SILENCE_DEPRECATION
@@ -28,7 +32,7 @@ static void glfw_error_callback(int error, const char* description)
     fprintf(stderr, "GLFW Error %d: %s\n", error, description);
 }
 
-RendererSubsystem::WindowGuard::WindowGuard(int width,
+renderer_subsystem::window_guard::window_guard(int width,
                                             int height,
                                             const std::string& windowName)
 {
@@ -55,14 +59,14 @@ RendererSubsystem::WindowGuard::WindowGuard(int width,
     }
 }
 
-RendererSubsystem::WindowGuard::WindowGuard(WindowGuard&& other) noexcept
+renderer_subsystem::window_guard::window_guard(window_guard&& other) noexcept
 {
     m_window       = other.m_window;
     other.m_window = nullptr;
 }
 
-RendererSubsystem::WindowGuard& RendererSubsystem::WindowGuard::operator=(
-    WindowGuard&& other) noexcept
+renderer_subsystem::window_guard& renderer_subsystem::window_guard::operator=(
+    window_guard&& other) noexcept
 {
     if (this != &other)
     {
@@ -73,7 +77,7 @@ RendererSubsystem::WindowGuard& RendererSubsystem::WindowGuard::operator=(
     return *this;
 }
 
-RendererSubsystem::WindowGuard::~WindowGuard()
+renderer_subsystem::window_guard::~window_guard()
 {
     if (m_window)
     {
@@ -82,9 +86,9 @@ RendererSubsystem::WindowGuard::~WindowGuard()
     }
 }
 
-int RendererSubsystem::PreInit(int ArgC, char* ArgV[]) { return 0; }
+int renderer_subsystem::pre_init(int ArgC, char* ArgV[]) { return 0; }
 
-void RendererSubsystem::SetDefaultWindowHints()
+void renderer_subsystem::set_default_window_hints()
 {
     // Decide GL+GLSL versions
 #if defined(__APPLE__)
@@ -129,18 +133,18 @@ static ImVec4 adjustAlpha(const ImVec4& color, const float alpha)
     return resultColor;
 }
 
-int RendererSubsystem::InitGLFW()
+int renderer_subsystem::init_glfw()
 {
     glfwSetErrorCallback(glfw_error_callback);
     if (!glfwInit())
         return 1;
 
-    SetDefaultWindowHints();
+    set_default_window_hints();
 
     return 0;
 }
 
-int RendererSubsystem::InitImGui()
+int renderer_subsystem::init_imgui()
 {
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
@@ -736,35 +740,50 @@ int RendererSubsystem::InitImGui()
                                                   0};
 
     ImFontConfig icons_config;
+    icons_config.FontDataOwnedByAtlas = false;
     icons_config.MergeMode        = true;
     icons_config.PixelSnapH       = true;
     icons_config.GlyphMinAdvanceX = iconFontSize;
 
-    ImFont* mainFont = io.Fonts->AddFontFromFileTTF(
-        m_app->GetResourceFilePath("fonts/Montserrat-Light.ttf").c_str(),
-        baseFontSize);
-    ImFont* fontAudio = io.Fonts->AddFontFromFileTTF(
-        m_app->GetResourceFilePath("fonts/" FONT_ICON_FILE_NAME_FAD).c_str(),
-        iconFontSize * 1.3f, &icons_config, fontAudioIconRanges);
+    const cmrc::embedded_filesystem embeddedfilesystem = cmrc::SB::Fonts::get_filesystem();
 
-    io.Fonts->AddFontFromFileTTF(
-        m_app->GetResourceFilePath("fonts/Montserrat-Light.ttf").c_str(),
-        baseFontSize);
-    ImFont* fontAwesome = io.Fonts->AddFontFromFileTTF(
-        m_app->GetResourceFilePath("fonts/" FONT_ICON_FILE_NAME_FAR).c_str(),
+    const cmrc::file mainFontFile        = embeddedfilesystem.open("Montserrat-Light.ttf");
+    const cmrc::file audioFontFile       = embeddedfilesystem.open("fontaudio/font/" FONT_ICON_FILE_NAME_FAD);
+    const cmrc::file fontAwesomeFontFile = embeddedfilesystem.open("Font-Awesome/webfonts/" FONT_ICON_FILE_NAME_FAR);
+
+    assert(mainFontFile.size() > 0);
+
+    ImFontConfig fontConfig;
+    fontConfig.FontDataOwnedByAtlas = false;    // the memory is statically owned by the virtual filesystem
+
+    ImFont* mainFont = io.Fonts->AddFontFromMemoryTTF((void*)mainFontFile.begin(), 
+        mainFontFile.size(),
+        baseFontSize, &fontConfig);
+
+    ImFont* fontAudio = io.Fonts->AddFontFromMemoryTTF((void*)audioFontFile.begin(),
+        audioFontFile.size(), iconFontSize * 1.3f,
+                                       &icons_config, fontAudioIconRanges);
+
+    io.Fonts->AddFontFromMemoryTTF(
+        (void*)mainFontFile.begin(),
+        mainFontFile.size(), baseFontSize, &fontConfig);
+
+    ImFont* fontAwesome = io.Fonts->AddFontFromMemoryTTF(
+        (void*)fontAwesomeFontFile.begin(),
+        fontAwesomeFontFile.size(),
         iconFontSize, &icons_config, fontAwesomeIconRanges);
 
     return 0;
 }
 
-int RendererSubsystem::Init()
+int renderer_subsystem::init()
 {
-    if (InitGLFW() == 0)
+    if (init_glfw() == 0)
     {
-        if (InitImGui() == 0)
+        if (init_imgui() == 0)
         {
             // Create window with graphics context
-            m_window = WindowGuard(1920, 1080, "Sound Bakery");
+            m_window = window_guard(1920, 1080, "Sound Bakery");
 
             return 0;
         }
@@ -772,11 +791,11 @@ int RendererSubsystem::Init()
     return 1;
 }
 
-void RendererSubsystem::PreTick(double deltaTime)
+void renderer_subsystem::pre_tick(double deltaTime)
 {
     if (glfwWindowShouldClose(m_window))
     {
-        GetApp()->RequestExit();
+        GetApp()->request_exit();
     }
     else
     {
@@ -788,9 +807,9 @@ void RendererSubsystem::PreTick(double deltaTime)
     }
 }
 
-void RendererSubsystem::Tick(double deltaTime) {}
+void renderer_subsystem::tick(double deltaTime) {}
 
-void RendererSubsystem::TickRendering(double deltaTime)
+void renderer_subsystem::tick_rendering(double deltaTime)
 {
     static ImVec4 clear_color = ImVec4(255.0f, 100.0f, 180.0f, 1.00f);
 
@@ -811,8 +830,10 @@ void RendererSubsystem::TickRendering(double deltaTime)
     glfwSwapBuffers(m_window);
 }
 
-void RendererSubsystem::Exit()
+void renderer_subsystem::exit()
 {
+    ImGui::GetIO().Fonts->Clear();
+
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();

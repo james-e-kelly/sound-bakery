@@ -5,11 +5,19 @@
 
 using namespace SB::Core;
 
-Object::~Object() { ObjectTracker::get()->untrackObject(this, m_type); }
+DEFINE_REFLECTION(SB::Core::object)
 
-SB::Engine::System* ObjectUtilities::getSystem() const { return SB::Engine::System::get(); }
+object::~object()
+{
+    if (ObjectTracker* const objectTracker = SB::Engine::System::getObjectTracker())
+    {
+        objectTracker->untrackObject(this, m_type);
+    }
+}
 
-SC_SYSTEM* ObjectUtilities::getChef() const
+SB::Engine::System* object_utilities::getSystem() const { return SB::Engine::System::get(); }
+
+sc_system* object_utilities::getChef() const
 {
     if (SB::Engine::System* system = getSystem())
     {
@@ -18,9 +26,9 @@ SC_SYSTEM* ObjectUtilities::getChef() const
     return nullptr;
 }
 
-ma_engine* ObjectUtilities::getMini() const
+ma_engine* object_utilities::getMini() const
 {
-    if (SC_SYSTEM* system = getChef())
+    if (sc_system* system = getChef())
     {
         return (ma_engine*)system;
     }

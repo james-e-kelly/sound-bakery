@@ -6,21 +6,22 @@ namespace SB::Engine
 {
     class Sound;
 
-    class SoundContainer : public Container
+    class SB_CLASS SoundContainer : public Container
     {
     public:
-        virtual void gatherSounds(std::vector<Container*>& soundContainers,
-                                  const RuntimeFloatParameterMap& runtimeFloatParameters,
-                                  const RuntimeIntParameterMap& runtimeIntParameters) override;
+        SoundContainer() = default;
 
-        Sound* getSound();
+        void gatherChildrenForPlay(GatherChildrenContext& context) const override;
+
+        bool canAddChild(const SB::Core::DatabasePtr<NodeBase>& child) const override { return false; }
+
+        Sound* getSound() const;
 
         void setSound(const SB::Core::DatabasePtr<SB::Engine::Sound>& sound);
 
     private:
         SB::Core::DatabasePtr<SB::Engine::Sound> m_sound;
 
-        RTTR_ENABLE(Container)
-        RTTR_REGISTRATION_FRIEND
+        REGISTER_REFLECTION(SoundContainer, Container)
     };
 }  // namespace SB::Engine

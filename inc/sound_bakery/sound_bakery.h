@@ -1,24 +1,12 @@
-#ifndef _SOUND_BAKERY_H
-#define _SOUND_BAKERY_H
+#ifndef SOUND_BAKERY_H
+#define SOUND_BAKERY_H
 
-#include "sound_chef/sound_chef.h"
+#include "sound_bakery_common.h"
 
-#define SB_INVALID_ID 0
-typedef unsigned long long SB_ID;
-
-typedef enum SB_RESULT
+#ifdef __cplusplus
+extern "C"
 {
-    SB_SUCCESS = 1,
-    SB_ERROR   = 0
-} SB_RESULT;
-
-typedef enum ATLAS_EVENT_ACTION
-{
-    ATLAS_EVENT_ACTION_PLAY,
-    ATLAS_EVENT_ACTION_STOP,
-    ATLAS_EVENT_ACTION_BREAK,
-    ATLAS_EVENT_ACTION_NUM
-} ATLAS_EVENT_ACTION;
+#endif
 
 /**
  * @brief Defines groups of objects that are rendered together/in the same tree
@@ -50,6 +38,10 @@ typedef enum SB_OBJECT_CATEGORY
      */
     SB_CATEGORY_EVENT,
     /**
+     * @brief Soundbanks
+    */
+    SB_CATEGORY_BANK,
+    /**
      * @brief Parameter types
      */
     SB_CATEGORY_PARAMETER,
@@ -64,19 +56,10 @@ typedef enum SB_OBJECT_CATEGORY
     SB_CATEGORY_NUM
 } SB_OBJECT_CATEGORY;
 
-struct SC_SOUND_DELETER
-{
-    void operator()(SC_SOUND* sound) { SC_Sound_Release(sound); }
-};
+void SB_API SB_System_Test();
 
-struct SC_SOUND_INSTANCE_DELETER
-{
-    void operator()(SC_SOUND_INSTANCE* instance) { SC_SoundInstance_Release(instance); }
-};
-
-struct SC_NODE_GROUP_DELETER
-{
-    void operator()(SC_NODE_GROUP* bus) { SC_NodeGroup_Release(bus); }
-};
+#ifdef __cplusplus
+}
+#endif
 
 #endif

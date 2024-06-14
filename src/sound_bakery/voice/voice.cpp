@@ -1,13 +1,11 @@
 #include "voice.h"
 
+#include "sound_bakery/gameobject/gameobject.h"
 #include "sound_bakery/node/container/sound_container.h"
 #include "sound_bakery/sound/sound.h"
 #include "sound_bakery/voice/node_instance.h"
 
 using namespace SB::Engine;
-
-Voice::Voice()  = default;
-Voice::~Voice() = default;
 
 void SB::Engine::Voice::playContainer(Container* container)
 {
@@ -15,39 +13,21 @@ void SB::Engine::Voice::playContainer(Container* container)
 
     m_playingContainer = container;
 
-    std::vector<Container*> containersToPlay;
+    const std::unique_ptr<NodeInstance>& voiceInstance =
+        m_voiceInstances.emplace_back(std::make_unique<NodeInstance>());
 
-    if (container->getType() == rttr::type::get<SoundContainer>())
+    InitNodeInstance initData;
+    initData.refNode     = container->try_convert_object<NodeBase>();
+    initData.type        = SB::Engine::NodeInstanceType::MAIN;
+    initData.owningVoice = this;
+
+    if (voiceInstance->init(initData))
     {
-        containersToPlay.push_back(container);
+        voiceInstance->play();
     }
     else
     {
-        containersToPlay.reserve(3);
-        container->gatherSounds(containersToPlay, SB::Engine::Container::RuntimeFloatParameterMap(),
-                                SB::Engine::Container::RuntimeIntParameterMap());
-    }
-
-    for (Container* const containerToPlay : containersToPlay)
-    {
-        if (containerToPlay == nullptr)
-        {
-            continue;
-        }
-
-        if (auto* const soundContainer = containerToPlay->tryConvertObject<SoundContainer>())
-        {
-            if (Sound* const sound = soundContainer->getSound())
-            {
-                const std::unique_ptr<NodeInstance>& voiceInstance =
-                    m_voiceInstances.emplace_back(std::make_unique<NodeInstance>());
-                voiceInstance->setSoundInstance(soundContainer, sound);
-            }
-        }
-        else
-        {
-            // error
-        }
+        m_voiceInstances.clear();
     }
 }
 
@@ -58,6 +38,8 @@ void Voice::update()
         std::vector<std::unique_ptr<NodeInstance>>::iterator iter;
         for (iter = m_voiceInstances.begin(); iter != m_voiceInstances.end();)
         {
+            iter->get()->update();
+
             if (!iter->get()->isPlaying())
             {
                 iter = m_voiceInstances.erase(iter);
@@ -77,12 +59,12 @@ bool SB::Engine::Voice::playingContainer(Container* container) const noexcept
         return false;
     }
 
-    if (container->getDatabaseID() == m_playingContainer.id())
+    if (container->get_database_id() == m_playingContainer.id())
     {
         return true;
     }
 
-    auto containerEqual = [id = container->getDatabaseID()](const std::unique_ptr<NodeInstance>& node)
+    auto containerEqual = [id = container->get_database_id()](const std::unique_ptr<NodeInstance>& node)
     {
         if (!node)
         {
@@ -91,21 +73,21 @@ bool SB::Engine::Voice::playingContainer(Container* container) const noexcept
 
         const NodeInstance* nodeInstance = node.get();
 
-        if (nodeInstance->getReferencingNode()->getDatabaseID() == id)
+        if (nodeInstance->getReferencingNode()->get_database_id() == id)
         {
             return true;
         }
 
-        std::shared_ptr<NodeInstance> sharedNodeInstance = nodeInstance->getParent().lock();
+        NodeInstance* sharedNodeInstance = nodeInstance->getParent();
 
         while (sharedNodeInstance)
         {
-            if (sharedNodeInstance->getReferencingNode()->getDatabaseID() == id)
+            if (sharedNodeInstance->getReferencingNode()->get_database_id() == id)
             {
                 return true;
             }
 
-            sharedNodeInstance = sharedNodeInstance->getParent().lock();
+            sharedNodeInstance = sharedNodeInstance->getParent();
         }
 
         return false;

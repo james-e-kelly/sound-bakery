@@ -3,45 +3,45 @@
 #include "Widgets/RootWidget.h"
 #include "imgui.h"
 
-int WidgetSubsystem::Init()
+int widget_subsystem::init()
 {
-    m_rootWidget = AddWidgetClass<RootWidget>();
+    m_rootWidget = add_widget_class<root_widget>();
     return 0;
 }
 
-void WidgetSubsystem::Tick(double deltaTime)
+void widget_subsystem::tick(double deltaTime)
 {
     assert(m_widgets.size() > 0);
 
     for (int index = m_widgets.size() - 1; index >= 0; index--)
     {
-        std::unique_ptr<Widget>& widget = m_widgets[index];
+        std::unique_ptr<widget>& widget = m_widgets[index];
 
-        if (!widget->HasStarted())
+        if (!widget->has_started())
         {
-            widget->Start();
+            widget->start();
         }
 
-        widget->Tick(deltaTime);
+        widget->tick(deltaTime);
 
         // We destroy before rendering
         // Ticking gives the widget the chance to kill itself
         // And after that we don't want to render it
         if (widget->m_wantsDestroy)
         {
-            widget->m_OnDestroy.Broadcast(widget.get());
+            widget->m_onDestroy.Broadcast(widget.get());
             m_widgets.erase(m_widgets.begin() + index);
             continue;
         }
 
-        widget->Render();
+        widget->render();
     }
 }
 
-void WidgetSubsystem::Exit()
+void widget_subsystem::exit()
 {
-    for (std::unique_ptr<Widget>& widget : m_widgets)
+    for (std::unique_ptr<widget>& widget : m_widgets)
     {
-        widget->End();
+        widget->end();
     }
 }

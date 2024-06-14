@@ -4,42 +4,42 @@
 
 namespace SB::Core
 {
-    class DatabaseObjectUtilities
+    class SB_CLASS database_object_utilities
     {
     public:
         virtual void onLoaded() {}
         virtual void onProjectLoaded() {}
         virtual void onDestroy() {}
 
-        RTTR_ENABLE()
+        REGISTER_REFLECTION(database_object_utilities)
     };
 
     /**
      * @brief Base object type for any object that can exist in the
      * editor/database. Holds an ID and name
      */
-    class DatabaseObject : public Object, public DatabaseObjectUtilities
+    class SB_CLASS database_object : public object, public database_object_utilities
     {
-    public:
-        ~DatabaseObject();
-
-        SB_ID getDatabaseID() const;
-
-        std::string_view getDatabaseName() const;
-
-        void setDatabaseID(SB_ID id);
-
-        void setDatabaseName(std::string_view name);
+        REGISTER_REFLECTION(database_object, object, database_object_utilities)
 
     public:
-        operator SB_ID() const { return m_objectID; }
+        sb_id get_database_id() const;
+        void set_database_id(sb_id id);
+
+        std::string_view get_database_name() const;
+        void set_database_name(std::string_view name);
+
+        bool get_editor_hidden() const { return editorHidden; }
+        void set_editor_hidden(bool hidden) { editorHidden = hidden; }
+
+        operator sb_id() const { return m_objectID; }
 
     private:
         std::string m_objectName;
-        SB_ID m_objectID = 0;
+        sb_id m_objectID = 0;
 
-        friend class Database;
+        bool editorHidden = false;  //< If true, the object won't render in the editor or be saved
 
-        RTTR_ENABLE(Object, DatabaseObjectUtilities)
+        friend class database;
     };
 }  // namespace SB::Core

@@ -11,19 +11,12 @@ enum class ButtonState
     CLICKED
 };
 
-class FileBrowserWidget : public Widget
+class FileBrowserWidget : public widget
 {
     WIDGET_CONSTRUCT(FileBrowserWidget)
 
 public:
-    virtual void Start() override
-    {
-        Widget::Start();
-
-        m_currentDirectory = std::filesystem::current_path();
-        m_topDir           = m_currentDirectory;
-        m_selectedItemID   = std::numeric_limits<uint32_t>::max();
-    }
+    virtual void start() override;
     virtual void Render() override;
 
     const std::string& GetSelectedFileName() const

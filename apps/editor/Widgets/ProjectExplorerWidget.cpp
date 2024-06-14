@@ -6,12 +6,12 @@
 #include "Widgets/ProjectNodesWidget.h"
 #include "imgui.h"
 
-void ProjectExplorerWidget::Start()
+void ProjectExplorerWidget::start()
 {
-    Widget::Start();
+    widget::start();
 
-    m_fileBrowserWidget  = AddChildWidget<FileBrowserWidget>();
-    m_projectNodesWidget = AddChildWidget<ProjectNodesWidget>();
+    m_fileBrowserWidget  = add_child_widget<FileBrowserWidget>();
+    m_projectNodesWidget = add_child_widget<ProjectNodesWidget>();
 }
 
 void ProjectExplorerWidget::Render()
@@ -51,7 +51,10 @@ void ProjectExplorerWidget::Render()
             }
             if (ImGui::BeginTabItem("SoundBanks"))
             {
-                ImGui::Text("SoundBanks Go Here");
+                if (m_projectNodesWidget)
+                {
+                    m_projectNodesWidget->RenderSoundbankPage();
+                }
                 ImGui::EndTabItem();
             }
             ImGui::EndTabBar();

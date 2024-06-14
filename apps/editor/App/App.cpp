@@ -10,26 +10,26 @@ namespace PathHelpers
     static const char* ResourcesFolder = "Resources";
 }
 
-int App::Run(int argc, char** argv)
+int app::run(int argc, char** argv)
 {
     m_executableLocation = std::string(argv[0]);
 
-    AddSubsystemClass<RendererSubsystem>();
-    AddSubsystemClass<WidgetSubsystem>();
+    add_subsystem_class<renderer_subsystem>();
+    add_subsystem_class<widget_subsystem>();
 
     // PreInit
-    for (std::unique_ptr<Subsystem>& subsystem : m_subsystems)
+    for (std::unique_ptr<subsystem>& subsystem : m_subsystems)
     {
-        if (int errorCode = subsystem->PreInit(argc, argv); errorCode != 0)
+        if (int errorCode = subsystem->pre_init(argc, argv); errorCode != 0)
         {
             return errorCode;
         }
     }
 
     // Init
-    for (std::unique_ptr<Subsystem>& subsystem : m_subsystems)
+    for (std::unique_ptr<subsystem>& subsystem : m_subsystems)
     {
-        if (int errorCode = subsystem->Init(); errorCode != 0)
+        if (int errorCode = subsystem->init(); errorCode != 0)
         {
             return errorCode;
         }
@@ -46,9 +46,9 @@ int App::Run(int argc, char** argv)
         double deltaTime = m_appManager->GetDeltaTime();
 
         // PreTick
-        for (std::unique_ptr<Subsystem>& subsystem : m_subsystems)
+        for (std::unique_ptr<subsystem>& subsystem : m_subsystems)
         {
-            subsystem->PreTick(deltaTime);
+            subsystem->pre_tick(deltaTime);
         }
 
         if (m_isRequestingExit)
@@ -57,9 +57,9 @@ int App::Run(int argc, char** argv)
         }
 
         // Tick
-        for (std::unique_ptr<Subsystem>& subsystem : m_subsystems)
+        for (std::unique_ptr<subsystem>& subsystem : m_subsystems)
         {
-            subsystem->Tick(deltaTime);
+            subsystem->tick(deltaTime);
         }
 
         m_appManager->Tick(deltaTime);
@@ -70,9 +70,9 @@ int App::Run(int argc, char** argv)
         }
 
         // Rendering
-        for (std::unique_ptr<Subsystem>& subsystem : m_subsystems)
+        for (std::unique_ptr<subsystem>& subsystem : m_subsystems)
         {
-            subsystem->TickRendering(deltaTime);
+            subsystem->tick_rendering(deltaTime);
         }
     }
 
@@ -82,43 +82,17 @@ int App::Run(int argc, char** argv)
         m_projectManager->Exit();
     }
 
-    for (std::unique_ptr<Subsystem>& subsystem : m_subsystems)
+    for (std::unique_ptr<subsystem>& subsystem : m_subsystems)
     {
-        subsystem->Exit();
+        subsystem->exit();
     }
 
     return 0;
 }
 
-void App::RequestExit() { m_isRequestingExit = true; }
+void app::request_exit() { m_isRequestingExit = true; }
 
-std::string App::GetResourceFilePath(const char* filename) const
-{
-    std::filesystem::path executablePath(
-        std::filesystem::path(m_executableLocation).parent_path());
-    assert(std::filesystem::exists(executablePath));
-
-    std::filesystem::path resourcePath =
-        executablePath;  // by default, the exe sits next to its resources
-
-    // We're in a MacOS App
-    if (executablePath.filename().string() == std::string("MacOS"))
-    {
-        resourcePath =
-            executablePath.parent_path() / PathHelpers::ResourcesFolder;
-        assert(std::filesystem::exists(resourcePath));
-    }
-
-    // We're possibly in a debug folder
-    if (!std::filesystem::exists(resourcePath / "fonts"))
-    {
-        resourcePath = executablePath.parent_path();
-    }
-
-    return std::filesystem::path(resourcePath / filename).string();
-}
-
-void App::OpenProject(const ProjectConfiguration& projectConfiguration)
+void app::OpenProject(const std::filesystem::path& projectFile)
 {
     if (m_projectManager)
     {
@@ -127,5 +101,5 @@ void App::OpenProject(const ProjectConfiguration& projectConfiguration)
     }
 
     m_projectManager = std::make_unique<ProjectManager>(this);
-    m_projectManager->Init(std::move(projectConfiguration));
+    m_projectManager->Init(projectFile);
 }

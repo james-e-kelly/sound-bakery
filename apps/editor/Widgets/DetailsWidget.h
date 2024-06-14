@@ -2,12 +2,12 @@
 
 #include "Widget.h"
 
-class DetailsWidget : public Widget
+class DetailsWidget : public widget
 {
 public:
-    DetailsWidget(WidgetSubsystem* parentSubsystem) : Widget(parentSubsystem) {}
+    DetailsWidget(widget_subsystem* parentSubsystem) : widget(parentSubsystem) {}
 
-    DetailsWidget(Widget* parent) : Widget(parent) {}
+    DetailsWidget(widget* parent) : widget(parent) {}
 
 public:
     virtual void Render() override;

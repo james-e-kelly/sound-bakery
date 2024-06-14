@@ -6,12 +6,26 @@ namespace SB::Engine
 {
     class NodeInstance;
 
-    class Bus : public Node
+    class SB_CLASS Bus : public Node
     {
+        REGISTER_REFLECTION(Bus, Node)
+
     public:
         Bus() : Node(), m_masterBus(false) {}
 
-        virtual void onLoaded() override;
+        void onLoaded() override;
+
+        bool canAddChild(const SB::Core::DatabasePtr<NodeBase>& child) const override
+        {
+            if (child.lookup() && child->getType().is_derived_from<Bus>())
+            {
+                return NodeBase::canAddChild(child);
+            }
+            else
+            {
+                return false;
+            }
+        }
 
         void setMasterBus(bool isMaster)
         {
@@ -20,6 +34,8 @@ namespace SB::Engine
                 m_masterBus = isMaster;
             }
         }
+
+        bool isMasterBus() const { return m_masterBus; }
 
     public:
         void lock();
@@ -31,8 +47,5 @@ namespace SB::Engine
 
     private:
         bool m_masterBus;
-
-        RTTR_ENABLE(Node)
-        RTTR_REGISTRATION_FRIEND
     };
 }  // namespace SB::Engine
