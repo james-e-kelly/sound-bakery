@@ -2,9 +2,9 @@
 
 #include "sound_bakery/core/lazy_pointer.h"
 
-namespace SB
+namespace sbk
 {
-    namespace Core
+    namespace core
     {
         class object;
         class database_object;

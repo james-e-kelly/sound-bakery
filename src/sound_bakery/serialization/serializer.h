@@ -4,18 +4,18 @@
 
 #include "yaml-cpp/yaml.h"
 
-namespace SB::Core
+namespace sbk::core
 {
     class object;
 }
 
-namespace SB::Engine
+namespace sbk::engine
 {
     class Soundbank;
-    class System;
+    class system;
 }  // namespace SB::Engine
 
-namespace SB::Core::Serialization
+namespace sbk::core::Serialization
 {
     struct SB_CLASS SaveData
     {
@@ -26,13 +26,13 @@ namespace SB::Core::Serialization
     class SB_CLASS Serializer final
     {
     public:
-        static void saveObject(SB::Core::object* object, YAML::Emitter& emitter);
-        static void saveSystem(SB::Engine::System* system, YAML::Emitter& emitter);
+        static void saveObject(sbk::core::object* object, YAML::Emitter& emitter);
+        static void saveSystem(sbk::engine::system* system, YAML::Emitter& emitter);
 
-        static void packageSoundbank(SB::Engine::Soundbank* soundbank, YAML::Emitter& emitter);
+        static void packageSoundbank(sbk::engine::Soundbank* soundbank, YAML::Emitter& emitter);
         static rttr::instance unpackSoundbank(YAML::Node& node);
 
-        static void loadSystem(SB::Engine::System* system, YAML::Node& node);
+        static void loadSystem(sbk::engine::system* system, YAML::Node& node);
 
         static rttr::instance createAndLoadObject(
             YAML::Node& node, std::optional<rttr::method> onLoadedMethod = std::optional<rttr::method>());

@@ -2,9 +2,9 @@
 
 #include "sound_bakery/core/core_fwd.h"
 
-namespace SB::Core
+namespace sbk::core
 {
-    class SB_CLASS ObjectTracker
+    class SB_CLASS object_tracker
     {
         using RawObjectPtr = object*;
 

@@ -4,7 +4,7 @@
 #include "sound_bakery/effect/effect.h"
 #include "sound_bakery/parameter/parameter.h"
 
-namespace SB::Engine
+namespace sbk::engine
 {
     enum SB_NODE_STATUS
     {
@@ -16,38 +16,38 @@ namespace SB::Engine
         SB_NODE_TOP
     };
 
-    class SB_CLASS NodeBase : public SB::Core::database_object
+    class SB_CLASS NodeBase : public sbk::core::database_object
     {
     public:
         ~NodeBase();
 
     public:
-        virtual void setParentNode(const SB::Core::DatabasePtr<NodeBase>& parent);
-        virtual void setOutputBus(const SB::Core::DatabasePtr<NodeBase>& bus);
+        virtual void setParentNode(const sbk::core::DatabasePtr<NodeBase>& parent);
+        virtual void setOutputBus(const sbk::core::DatabasePtr<NodeBase>& bus);
 
         SB_NODE_STATUS getNodeStatus() const noexcept;
 
         NodeBase* parent() const;
         NodeBase* outputBus() const;
 
-        virtual bool canAddChild(const SB::Core::DatabasePtr<NodeBase>& child) const;
+        virtual bool canAddChild(const sbk::core::DatabasePtr<NodeBase>& child) const;
 
-        void addChild(const SB::Core::DatabasePtr<NodeBase>& child);
-        void removeChild(const SB::Core::DatabasePtr<NodeBase>& child);
+        void addChild(const sbk::core::DatabasePtr<NodeBase>& child);
+        void removeChild(const sbk::core::DatabasePtr<NodeBase>& child);
 
         std::vector<NodeBase*> getChildren() const;
         std::size_t getChildCount() const;
-        bool hasChild(const SB::Core::DatabasePtr<NodeBase>& test) const;
+        bool hasChild(const sbk::core::DatabasePtr<NodeBase>& test) const;
 
         void gatherAllDescendants(std::vector<NodeBase*>& descendants) const;
         void gatherAllParents(std::vector<NodeBase*>& parents) const;
 
     protected:
-        SB::Core::DatabasePtr<NodeBase> m_parentNode;
-        SB::Core::DatabasePtr<NodeBase> m_outputBus;
-        std::unordered_set<SB::Core::DatabasePtr<NodeBase>> m_childNodes;
+        sbk::core::DatabasePtr<NodeBase> m_parentNode;
+        sbk::core::DatabasePtr<NodeBase> m_outputBus;
+        std::unordered_set<sbk::core::DatabasePtr<NodeBase>> m_childNodes;
 
-        REGISTER_REFLECTION(NodeBase, SB::Core::database_object)
+        REGISTER_REFLECTION(NodeBase, sbk::core::database_object)
     };
 
     /**
@@ -56,12 +56,12 @@ namespace SB::Engine
     class SB_CLASS Node : public NodeBase
     {
     public:
-        SB::Core::FloatProperty m_volume   = SB::Core::FloatProperty(1.0f, 0.0f, 1.0f);
-        SB::Core::FloatProperty m_pitch    = SB::Core::FloatProperty(1.0f, 0.0f, 1.0f);
-        SB::Core::FloatProperty m_lowpass  = SB::Core::FloatProperty(1.0f, 0.0f, 100.0f);
-        SB::Core::FloatProperty m_highpass = SB::Core::FloatProperty(1.0f, 0.0f, 100.0f);
+        sbk::core::FloatProperty m_volume   = sbk::core::FloatProperty(1.0f, 0.0f, 1.0f);
+        sbk::core::FloatProperty m_pitch    = sbk::core::FloatProperty(1.0f, 0.0f, 1.0f);
+        sbk::core::FloatProperty m_lowpass  = sbk::core::FloatProperty(1.0f, 0.0f, 100.0f);
+        sbk::core::FloatProperty m_highpass = sbk::core::FloatProperty(1.0f, 0.0f, 100.0f);
 
-        std::vector<SB::Core::DatabasePtr<EffectDescription>> m_effectDescriptions;
+        std::vector<sbk::core::DatabasePtr<EffectDescription>> m_effectDescriptions;
 
         /**
          * @brief Gathers all parameters on this and child nodes that can effect the runtime output.

@@ -1,8 +1,8 @@
 #pragma once
 
-namespace SB
+namespace sbk
 {
-    namespace Core
+    namespace core
     {
         class object;
         class database_object;

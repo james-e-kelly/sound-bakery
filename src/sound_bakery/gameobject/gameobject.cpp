@@ -4,9 +4,9 @@
 #include "sound_bakery/node/container/container.h"
 #include "sound_bakery/voice/voice.h"
 
-using namespace SB::Engine;
+using namespace sbk::engine;
 
-DEFINE_REFLECTION(SB::Engine::GameObject)
+DEFINE_REFLECTION(sbk::engine::GameObject)
 
 Voice* GameObject::playContainer(Container* container)
 {
@@ -22,22 +22,22 @@ Voice* GameObject::playContainer(Container* container)
     }
 }
 
-void SB::Engine::GameObject::postEvent(Event* event)
+void sbk::engine::GameObject::postEvent(Event* event)
 {
     if (event)
     {
         for (const Action& action : event->m_actions)
         {
-            SB::Engine::Container* container   = nullptr;
-            SB::Engine::Event* childEvent      = nullptr;
-            SB::Engine::GameObject* gameObject = nullptr;
+            sbk::engine::Container* container   = nullptr;
+            sbk::engine::Event* childEvent      = nullptr;
+            sbk::engine::GameObject* gameObject = nullptr;
 
-            if (const SB::Core::DatabasePtr<SB::Core::database_object>& destination = action.m_destination;
+            if (const sbk::core::DatabasePtr<sbk::core::database_object>& destination = action.m_destination;
                 destination.lookup())
             {
-                container  = destination->try_convert_object<SB::Engine::Container>();
-                childEvent = destination->try_convert_object<SB::Engine::Event>();
-                gameObject = destination->try_convert_object<SB::Engine::GameObject>();
+                container  = destination->try_convert_object<sbk::engine::Container>();
+                childEvent = destination->try_convert_object<sbk::engine::Event>();
+                gameObject = destination->try_convert_object<sbk::engine::GameObject>();
             }
 
             switch (action.m_type)
@@ -72,7 +72,7 @@ void SB::Engine::GameObject::postEvent(Event* event)
     }
 }
 
-void SB::Engine::GameObject::stopVoice(Voice* voice)
+void sbk::engine::GameObject::stopVoice(Voice* voice)
 {
     for (std::size_t i = m_voices.size(); i--;)
     {
@@ -84,7 +84,7 @@ void SB::Engine::GameObject::stopVoice(Voice* voice)
     }
 }
 
-void SB::Engine::GameObject::stopContainer(Container* container)
+void sbk::engine::GameObject::stopContainer(Container* container)
 {
     for (std::size_t i = m_voices.size(); i--;)
     {
@@ -122,11 +122,11 @@ void GameObject::update()
     }
 }
 
-bool SB::Engine::GameObject::isPlaying() const noexcept { return voiceCount(); }
+bool sbk::engine::GameObject::isPlaying() const noexcept { return voiceCount(); }
 
-std::size_t SB::Engine::GameObject::voiceCount() const noexcept { return m_voices.size(); }
+std::size_t sbk::engine::GameObject::voiceCount() const noexcept { return m_voices.size(); }
 
-Voice* SB::Engine::GameObject::getVoice(std::size_t index) const
+Voice* sbk::engine::GameObject::getVoice(std::size_t index) const
 {
     if (index >= 0 && index < m_voices.size())
     {

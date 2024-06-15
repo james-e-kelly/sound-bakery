@@ -2,18 +2,18 @@
 
 #include "sound_bakery/core/core_include.h"
 
-namespace SB::Engine
+namespace sbk::engine
 {
     class Event;
 
-    class SB_CLASS Soundbank : public SB::Core::database_object
+    class SB_CLASS Soundbank : public sbk::core::database_object
     {
-        REGISTER_REFLECTION(Soundbank, SB::Core::database_object)
+        REGISTER_REFLECTION(Soundbank, sbk::core::database_object)
 
     public:
-        std::vector<SB::Core::DatabasePtr<Event>> GetEvents() const { return m_events; }
+        std::vector<sbk::core::DatabasePtr<Event>> GetEvents() const { return m_events; }
 
     private:
-        std::vector<SB::Core::DatabasePtr<Event>> m_events;
+        std::vector<sbk::core::DatabasePtr<Event>> m_events;
     };
 }  // namespace SB::Engine

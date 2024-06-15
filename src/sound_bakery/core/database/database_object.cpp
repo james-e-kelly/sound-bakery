@@ -4,19 +4,19 @@
 #include "sound_bakery/core/database/database.h"
 #include "sound_bakery/system.h"
 
-using namespace SB::Core;
+using namespace sbk::core;
 
-DEFINE_REFLECTION(SB::Core::database_object)
+DEFINE_REFLECTION(sbk::core::database_object)
 
-sb_id SB::Core::database_object::get_database_id() const { return m_objectID; }
+sbk_id sbk::core::database_object::get_database_id() const { return m_objectID; }
 
-std::string_view SB::Core::database_object::get_database_name() const { return m_objectName; }
+std::string_view sbk::core::database_object::get_database_name() const { return m_objectName; }
 
-void SB::Core::database_object::set_database_id(sb_id id)
+void sbk::core::database_object::set_database_id(sbk_id id)
 {
     assert(m_objectID == 0 && "Shouldn't update an object's ID at runtime");
 
-    if (database* const database = SB::Engine::System::getDatabase())
+    if (database* const database = sbk::engine::system::get())
     {
         database->add_or_update_id(m_objectID, id, this);
     }
@@ -27,9 +27,9 @@ void SB::Core::database_object::set_database_id(sb_id id)
     }
 }
 
-void SB::Core::database_object::set_database_name(std::string_view name)
+void sbk::core::database_object::set_database_name(std::string_view name)
 {
-    if (database* const database = SB::Engine::System::getDatabase())
+    if (database* const database = sbk::engine::system::get())
     {
         database->add_or_update_name(m_objectName, name.data(), this);
     }

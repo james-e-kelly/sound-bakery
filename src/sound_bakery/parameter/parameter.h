@@ -2,7 +2,7 @@
 
 #include "sound_bakery/core/core_include.h"
 
-namespace SB::Engine
+namespace sbk::engine
 {
     class NamedParameter;
     class FloatParameter;
@@ -14,7 +14,7 @@ namespace SB::Engine
      * Used for changing effect parameters, choosing sounds and anything else.
      */
     template <typename ParameterType>
-    class SB_CLASS Parameter : public SB::Core::database_object
+    class SB_CLASS Parameter : public sbk::core::database_object
     {
         static_assert(std::is_arithmetic<ParameterType>::value);
 
@@ -22,21 +22,21 @@ namespace SB::Engine
         /**
          * @brief Defines the underlying property type used to store and broadcast values.
          */
-        using ParameterProperty = SB::Core::Property<ParameterType>;
+        using ParameterProperty = sbk::core::Property<ParameterType>;
 
         /**
          * @brief Defines the type used for passing local versions/variations of this parameter.
          *
          * Uses a @ref SB_ID for the parameter ID instead of DatabasePtr<T> to help when used in child classes.
          */
-        using LocalParameter = std::pair<sb_id, ParameterProperty>;
+        using LocalParameter = std::pair<sbk_id, ParameterProperty>;
 
         /**
          * @brief Defines an ID to a parameter and a value for that parameter.
          *
          * Used when setting the value on a parameter.
          */
-        using LocalParameterValuePair = std::pair<sb_id, ParameterType>;
+        using LocalParameterValuePair = std::pair<sbk_id, ParameterType>;
 
         Parameter() = default;
 
@@ -46,7 +46,7 @@ namespace SB::Engine
          * @param max value of the parameter.
          */
         Parameter(ParameterType min, ParameterType max)
-            : SB::Core::database_object(), m_property(min, min, max), m_defaultValue(min)
+            : sbk::core::database_object(), m_property(min, min, max), m_defaultValue(min)
         {
         }
 
@@ -86,7 +86,7 @@ namespace SB::Engine
 
     protected:
         ParameterType m_defaultValue;
-        SB::Core::Property<ParameterType> m_property;
+        sbk::core::Property<ParameterType> m_property;
 
         REGISTER_REFLECTION(Parameter, database_object)
     };
@@ -110,10 +110,10 @@ namespace SB::Engine
      *
      * The object's ID is its parameter value.
      */
-    class SB_CLASS NamedParameterValue : public SB::Core::database_object
+    class SB_CLASS NamedParameterValue : public sbk::core::database_object
     {
     public:
-        SB::Core::DatabasePtr<NamedParameter> parentParameter;
+        sbk::core::DatabasePtr<NamedParameter> parentParameter;
 
         REGISTER_REFLECTION(NamedParameterValue, database_object)
     };
@@ -121,7 +121,7 @@ namespace SB::Engine
     /**
      * @brief Holds discrete named integer values.
      */
-    class SB_CLASS NamedParameter : public Parameter<sb_id>
+    class SB_CLASS NamedParameter : public Parameter<sbk_id>
     {
         REGISTER_REFLECTION(NamedParameter, Parameter)
 
@@ -133,7 +133,7 @@ namespace SB::Engine
          * See https://stackoverflow.com/questions/40492414/why-does-stdnumeric-limitslong-longmax-fail
          */
         NamedParameter()
-            : m_values(), Parameter((std::numeric_limits<sb_id>::min)(), (std::numeric_limits<sb_id>::max)())
+            : m_values(), Parameter((std::numeric_limits<sbk_id>::min)(), (std::numeric_limits<sbk_id>::max)())
         {
         }
 
@@ -142,9 +142,9 @@ namespace SB::Engine
          * @param name Name of the parameter value
          * @return The newly created parameter value that's in the database
          */
-        SB::Core::DatabasePtr<NamedParameterValue> addNewValue(const std::string_view name)
+        sbk::core::DatabasePtr<NamedParameterValue> addNewValue(const std::string_view name)
         {
-            SB::Core::DatabasePtr<NamedParameterValue> result;
+            sbk::core::DatabasePtr<NamedParameterValue> result;
 
             if (name.empty() == false)
             {
@@ -167,7 +167,7 @@ namespace SB::Engine
          *
          * If none exists, ensures at least the "None" value exists.
          */
-        std::unordered_set<SB::Core::DatabasePtr<NamedParameterValue>> getValues()
+        std::unordered_set<sbk::core::DatabasePtr<NamedParameterValue>> getValues()
         {
             if (m_values.empty())
             {
@@ -183,7 +183,7 @@ namespace SB::Engine
          * Internally sets the parameter with the DatabasePtr's ID.
          * @param value
          */
-        void setSelectedValue(SB::Core::DatabasePtr<NamedParameterValue> value)
+        void setSelectedValue(sbk::core::DatabasePtr<NamedParameterValue> value)
         {
             if (m_values.contains(value))
             {
@@ -201,19 +201,19 @@ namespace SB::Engine
          * Mainly used in reflection and for displaying in the editor.
          * @return
          */
-        SB::Core::DatabasePtr<NamedParameterValue> getSelectedValue() const
+        sbk::core::DatabasePtr<NamedParameterValue> getSelectedValue() const
         {
-            SB::Core::DatabasePtr<NamedParameterValue> selected(get());
+            sbk::core::DatabasePtr<NamedParameterValue> selected(get());
             selected.lookup();
             return selected;
         }
 
     private:
-        std::unordered_set<SB::Core::DatabasePtr<NamedParameterValue>> m_values;
+        std::unordered_set<sbk::core::DatabasePtr<NamedParameterValue>> m_values;
     };
 
-    using GlobalFloatParameter = SB::Core::DatabasePtr<FloatParameter>;
-    using GlobalIntParameter   = SB::Core::DatabasePtr<NamedParameter>;
+    using GlobalFloatParameter = sbk::core::DatabasePtr<FloatParameter>;
+    using GlobalIntParameter   = sbk::core::DatabasePtr<NamedParameter>;
 
     /**
      * @brief Holds a list of parameters.

@@ -4,12 +4,12 @@
 
 #include "yaml-cpp/yaml.h"
 
-namespace SB::Engine
+namespace sbk::engine
 {
     class SoundContainer;
 }
 
-namespace SB::Editor
+namespace sbk::editor
 {
     /**
      * @brief Handles file and folder paths for a project.
@@ -43,7 +43,7 @@ namespace SB::Editor
          */
         std::filesystem::path typeFolder(const rttr::type& type) const;
 
-        std::string getIdFilename(SB::Core::database_object* databaseObject,
+        std::string getIdFilename(sbk::core::database_object* databaseObject,
                                   std::optional<std::string> extensionOverride = std::nullopt) const
         {
             return std::to_string(databaseObject->get_database_id()) +
@@ -56,7 +56,7 @@ namespace SB::Editor
     /**
      * Manages a project file and the objects contained within it.
      */
-    class SB_CLASS Project
+    class SB_CLASS project
     {
     public:
         bool openProject(const std::filesystem::path& projectFile);
@@ -68,7 +68,7 @@ namespace SB::Editor
 
         const ProjectConfiguration& getConfig() const { return m_projectConfig; }
 
-        SB::Engine::SoundContainer* getPreviewContainer() const { return m_previewSoundContainer; }
+        sbk::engine::SoundContainer* getPreviewContainer() const { return m_previewSoundContainer; }
 
     private:
         void loadSounds();
@@ -85,6 +85,6 @@ namespace SB::Editor
 
     private:
         ProjectConfiguration m_projectConfig;
-        SB::Engine::SoundContainer* m_previewSoundContainer;
+        sbk::engine::SoundContainer* m_previewSoundContainer;
     };
 }  // namespace SB::Editor

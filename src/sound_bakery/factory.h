@@ -2,7 +2,7 @@
 
 #include "sound_bakery/pch.h"
 
-namespace SB::Engine
+namespace sbk::engine
 {
     class SB_CLASS Factory final
     {
@@ -14,8 +14,8 @@ namespace SB::Engine
          * @return the created object represented as the base SB::Core::Object
          * type
          */
-        static SB::Core::object* createObjectFromType(rttr::type objectType, sb_id id = 0);
+        static sbk::core::object* createObjectFromType(rttr::type objectType, sbk_id id = 0);
 
-        static SB::Core::database_object* createDatabaseObjectFromType(rttr::type objectType, sb_id id = 0);
+        static sbk::core::database_object* createDatabaseObjectFromType(rttr::type objectType, sbk_id id = 0);
     };
 }  // namespace SB::Engine

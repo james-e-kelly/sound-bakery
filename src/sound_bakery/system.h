@@ -1,27 +1,19 @@
 #pragma once
 
 #include "sound_bakery/core/core_fwd.h"
+#include "sound_bakery/core/database/database.h"
 #include "sound_bakery/core/database/database_ptr.h"
+#include "sound_bakery/core/object/object_tracker.h"
 #include "sound_bakery/util/fmod_pointers.h"
 #include "spdlog/sinks/basic_file_sink.h"
 
-namespace SB::Core
+namespace sbk::editor
 {
-    class database;
-    class ObjectTracker;
-}  // namespace SB::Core
-
-namespace SB::Editor
-{
-    class Project;
+    class project;
 }  // namespace SB::Editor
 
-namespace SB::Engine
+namespace sbk::engine
 {
-    class Bus;
-    class GameObject;
-    class System;
-
     namespace Profiling
     {
         class VoiceTracker;
@@ -30,19 +22,22 @@ namespace SB::Engine
     /**
      * @brief Manager of the whole Sound Bakery.
      */
-    class SB_CLASS System final
+    class SB_CLASS system final : 
+        public sc_system, 
+        public concurrencpp::runtime, 
+        public sbk::core::object_tracker, 
+        public sbk::core::database
     {
-        REGISTER_REFLECTION(System)
+        REGISTER_REFLECTION(system)
+        NOT_COPYABLE(system)
 
     public:
-        System();
-        ~System();
+        system();
+        ~system();
 
-    public:
-        static System* get();
-        static sc_system* getChef();
+        static system* get();
 
-        static System* create();
+        static system* create();
         static void destroy();
 
         static sc_result init();
@@ -51,43 +46,17 @@ namespace SB::Engine
         /**
          * @brief Creates an instance of Sound Bakery and opens the project.
          */
-        static sc_result openProject(const std::filesystem::path& projectFile);
+        static sc_result open_project(const std::filesystem::path& projectFile);
+        static sbk::editor::project* get_project();
 
-        static SB::Core::ObjectTracker* getObjectTracker();
-        static SB::Core::database* getDatabase();
-        static SB::Editor::Project* getProject();
-
-        void onLoaded();
-
-        void createMasterBus();
-        const SB::Core::DatabasePtr<Bus>& getMasterBus() const { return m_masterBus; }
-        void setMasterBus(const SB::Core::DatabasePtr<Bus>& bus);
-
-        GameObject* getListenerGameObject() const;
-
-        std::shared_ptr<concurrencpp::thread_pool_executor> getBackgroundExecuter() const
-        {
-            return concurrenRuntime.background_executor();
-        }
-
-        std::shared_ptr<concurrencpp::manual_executor> getMainThreadExecutuer() const { return mainThreadExecuter; }
+        std::shared_ptr<concurrencpp::manual_executor> game_thread_executer() const { return m_gameThreadExecuter; }
 
     private:
-        SB::SystemPtr m_chefSystem;
-
-        std::unique_ptr<GameObject> m_listenerGameObject;
-        SB::Core::DatabasePtr<Bus> m_masterBus;
-
         bool m_registeredReflection = false;
 
-        std::unique_ptr<SB::Editor::Project> m_project;
-        std::unique_ptr<SB::Core::database> m_database;
-        std::unique_ptr<SB::Core::ObjectTracker> m_objectTracker;
+        std::unique_ptr<sbk::editor::project> m_project;
         std::unique_ptr<Profiling::VoiceTracker> m_voiceTracker;
-
-        concurrencpp::runtime concurrenRuntime;
-        std::shared_ptr<concurrencpp::manual_executor> mainThreadExecuter;
-
-        std::shared_ptr<spdlog::logger> logger;
+        std::shared_ptr<concurrencpp::manual_executor> m_gameThreadExecuter;
+        std::shared_ptr<spdlog::logger> m_logger;
     };
 }  // namespace SB::Engine

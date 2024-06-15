@@ -3,13 +3,13 @@
 #include "sound_bakery/core/object/object_global.h"
 #include "sound_bakery/system.h"
 
-using namespace SB::Engine;
+using namespace sbk::engine;
 
-DEFINE_REFLECTION(SB::Engine::NodeBase)
+DEFINE_REFLECTION(sbk::engine::NodeBase)
 
-DEFINE_REFLECTION(SB::Engine::Node)
+DEFINE_REFLECTION(sbk::engine::Node)
 
-void SB::Engine::Node::gatherParameters(GlobalParameterList& parameters)
+void sbk::engine::Node::gatherParameters(GlobalParameterList& parameters)
 {
     parameters.floatParameters.reserve(m_childNodes.size() + 1);
     parameters.intParameters.reserve(m_childNodes.size() + 1);
@@ -46,11 +46,11 @@ NodeBase::~NodeBase()
     }
 }
 
-void SB::Engine::NodeBase::setParentNode(const SB::Core::DatabasePtr<NodeBase>& parent) { m_parentNode = parent; }
+void sbk::engine::NodeBase::setParentNode(const sbk::core::DatabasePtr<NodeBase>& parent) { m_parentNode = parent; }
 
-void SB::Engine::NodeBase::setOutputBus(const SB::Core::DatabasePtr<NodeBase>& bus) { m_outputBus = bus; }
+void sbk::engine::NodeBase::setOutputBus(const sbk::core::DatabasePtr<NodeBase>& bus) { m_outputBus = bus; }
 
-SB_NODE_STATUS SB::Engine::NodeBase::getNodeStatus() const noexcept
+SB_NODE_STATUS sbk::engine::NodeBase::getNodeStatus() const noexcept
 {
     SB_NODE_STATUS status = SB_NODE_NULL;
 
@@ -66,11 +66,11 @@ SB_NODE_STATUS SB::Engine::NodeBase::getNodeStatus() const noexcept
     return status;
 }
 
-NodeBase* SB::Engine::NodeBase::parent() const { return m_parentNode.lookupRaw(); }
+NodeBase* sbk::engine::NodeBase::parent() const { return m_parentNode.lookupRaw(); }
 
-NodeBase* SB::Engine::NodeBase::outputBus() const { return m_outputBus.lookupRaw(); }
+NodeBase* sbk::engine::NodeBase::outputBus() const { return m_outputBus.lookupRaw(); }
 
-bool SB::Engine::NodeBase::canAddChild(const SB::Core::DatabasePtr<NodeBase>& child) const
+bool sbk::engine::NodeBase::canAddChild(const sbk::core::DatabasePtr<NodeBase>& child) const
 {
     if (m_childNodes.contains(child) || child.id() == get_database_id())
     {
@@ -79,7 +79,7 @@ bool SB::Engine::NodeBase::canAddChild(const SB::Core::DatabasePtr<NodeBase>& ch
     return true;
 }
 
-void SB::Engine::NodeBase::addChild(const SB::Core::DatabasePtr<NodeBase>& child)
+void sbk::engine::NodeBase::addChild(const sbk::core::DatabasePtr<NodeBase>& child)
 {
     if (canAddChild(child))
     {
@@ -97,7 +97,7 @@ void SB::Engine::NodeBase::addChild(const SB::Core::DatabasePtr<NodeBase>& child
     }
 }
 
-void SB::Engine::NodeBase::removeChild(const SB::Core::DatabasePtr<NodeBase>& child)
+void sbk::engine::NodeBase::removeChild(const sbk::core::DatabasePtr<NodeBase>& child)
 {
     if (child)
     {
@@ -107,7 +107,7 @@ void SB::Engine::NodeBase::removeChild(const SB::Core::DatabasePtr<NodeBase>& ch
     m_childNodes.erase(child);
 }
 
-std::vector<NodeBase*> SB::Engine::NodeBase::getChildren() const
+std::vector<NodeBase*> sbk::engine::NodeBase::getChildren() const
 {
     std::vector<NodeBase*> children;
     children.reserve(m_childNodes.size());
@@ -123,14 +123,14 @@ std::vector<NodeBase*> SB::Engine::NodeBase::getChildren() const
     return children;
 }
 
-std::size_t SB::Engine::NodeBase::getChildCount() const { return m_childNodes.size(); }
+std::size_t sbk::engine::NodeBase::getChildCount() const { return m_childNodes.size(); }
 
-bool SB::Engine::NodeBase::hasChild(const SB::Core::DatabasePtr<NodeBase>& test) const
+bool sbk::engine::NodeBase::hasChild(const sbk::core::DatabasePtr<NodeBase>& test) const
 {
     return m_childNodes.contains(test);
 }
 
-void SB::Engine::NodeBase::gatherAllDescendants(std::vector<NodeBase*>& descendants) const
+void sbk::engine::NodeBase::gatherAllDescendants(std::vector<NodeBase*>& descendants) const
 {
     for (auto& child : getChildren())
     {
@@ -140,7 +140,7 @@ void SB::Engine::NodeBase::gatherAllDescendants(std::vector<NodeBase*>& descenda
     }
 }
 
-void SB::Engine::NodeBase::gatherAllParents(std::vector<NodeBase*>& parents) const
+void sbk::engine::NodeBase::gatherAllParents(std::vector<NodeBase*>& parents) const
 {
     if (NodeBase* const nodeParent = parent())
     {

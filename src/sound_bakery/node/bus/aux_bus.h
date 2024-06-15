@@ -2,7 +2,7 @@
 
 #include "bus.h"
 
-namespace SB::Engine
+namespace sbk::engine
 {
     class SB_CLASS AuxBus : public Bus
     {

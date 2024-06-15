@@ -2,8 +2,8 @@
 
 #include "sound_bakery/system.h"
 
-using namespace SB::Engine;
+using namespace sbk::engine;
 
-DEFINE_REFLECTION(SB::Engine::EffectParameterDescription)
+DEFINE_REFLECTION(sbk::engine::EffectParameterDescription)
 
-DEFINE_REFLECTION(SB::Engine::EffectDescription)
+DEFINE_REFLECTION(sbk::engine::EffectDescription)

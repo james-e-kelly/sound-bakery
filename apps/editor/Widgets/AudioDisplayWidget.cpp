@@ -110,9 +110,9 @@ void AudioDisplayWidget::Render()
 {
     if (ProjectManager* manager = get_app()->GetProjectManager())
     {
-        if (SB::Core::object* selected = manager->GetSelection().GetSelected())
+        if (sbk::core::object* selected = manager->GetSelection().GetSelected())
         {
-            if (selected->getType() == SB::Engine::Sound::type())
+            if (selected->getType() == sbk::engine::Sound::type())
             {
                 static float scale = 1.0f;
                 ImGui::SliderFloat("Scale", &scale, 0.01f, 2.0f);
@@ -131,7 +131,7 @@ void AudioDisplayWidget::Render()
 
                     if (isPlaying)
                     {
-                        SB::Engine::SoundContainer* previewSound =
+                        sbk::engine::SoundContainer* previewSound =
                             get_app()
                                 ->GetProjectManager()
                                 ->GetPreviewSoundContainer();
@@ -239,12 +239,12 @@ void AudioDisplayWidget::Render()
 
 bool AudioDisplayWidget::HasCache()
 {
-    SB::Engine::SoundContainer* currentNode =
+    sbk::engine::SoundContainer* currentNode =
         get_app()->GetProjectManager()->GetPreviewSoundContainer();
 
     if (currentNode)
     {
-        SB::Engine::Sound* currentSound = currentNode->getSound();
+        sbk::engine::Sound* currentSound = currentNode->getSound();
 
         const bool selectedNewSound = currentSound != m_previousSound;
 

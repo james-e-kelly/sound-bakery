@@ -3,7 +3,7 @@
 #include "sound_bakery/core/core_include.h"
 #include "sound_bakery/voice/node_instance.h"
 
-namespace SB::Engine
+namespace sbk::engine
 {
     class Container;
     class GameObject;
@@ -13,7 +13,7 @@ namespace SB::Engine
      * @brief A runtime graph of nodes and busses, playing a sound or many.
      *
      */
-    class SB_CLASS Voice : public SB::Core::object
+    class SB_CLASS Voice : public sbk::core::object
     {
     public:
         Voice() = delete;
@@ -38,7 +38,7 @@ namespace SB::Engine
 
     private:
         GameObject* m_owningGameObject = nullptr;
-        SB::Core::DatabasePtr<Container> m_playingContainer;
+        sbk::core::DatabasePtr<Container> m_playingContainer;
 
         std::vector<std::unique_ptr<NodeInstance>> m_voiceInstances;
     };

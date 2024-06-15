@@ -29,7 +29,7 @@ void ProjectNodesWidget::RenderPage(
 {
     for (const SB_OBJECT_CATEGORY category : categories)
     {
-        rttr::string_view categoryName = SB::Util::TypeHelper::getObjectCategoryName(category);
+        rttr::string_view categoryName = sbk::Util::TypeHelper::getObjectCategoryName(category);
 
         if (categoryName.empty())
         {
@@ -70,17 +70,17 @@ void ProjectNodesWidget::RenderSoundbankPage()
 
 void ProjectNodesWidget::RenderCategory(SB_OBJECT_CATEGORY category)
 {
-    const std::unordered_set<SB::Core::object*> categoryObjects =
-        SB::Engine::System::getObjectTracker()->getObjectsOfCategory(category);
+    const std::unordered_set<sbk::core::object*> categoryObjects =
+        sbk::engine::system::getObjectTracker()->getObjectsOfCategory(category);
 
-    for (SB::Core::object* const object : categoryObjects)
+    for (sbk::core::object* const object : categoryObjects)
     {
         if (object)
         {
             const rttr::type type = object->getType();
 
-            SB::Engine::NodeBase* const nodeBase =
-                object->try_convert_object<SB::Engine::NodeBase>();
+            sbk::engine::NodeBase* const nodeBase =
+                object->try_convert_object<sbk::engine::NodeBase>();
 
             const bool notNodeType = nodeBase == nullptr;
 
@@ -97,14 +97,14 @@ void ProjectNodesWidget::RenderSingleNode(rttr::type type,
 {
     if (instance)
     {
-        if (SB::Core::database_object* const object = SB::Util::TypeHelper::getDatabaseObjectFromInstance(instance))
+        if (sbk::core::database_object* const object = sbk::Util::TypeHelper::getDatabaseObjectFromInstance(instance))
         {
             if (object->get_editor_hidden())
             {
                 return;
             }
 
-            SB::Engine::Node* const node = rttr::rttr_cast<SB::Engine::Node*, SB::Core::database_object*>(object);
+            sbk::engine::Node* const node = rttr::rttr_cast<sbk::engine::Node*, sbk::core::database_object*>(object);
 
             const bool hasChildren = node && NodeHasChildren(node);
 
@@ -114,7 +114,7 @@ void ProjectNodesWidget::RenderSingleNode(rttr::type type,
                 ImGuiTreeNodeFlags_None | ImGuiTreeNodeFlags_SpanAvailWidth;
 
             if (hasChildren  || object->getType() ==
-                                   SB::Engine::NamedParameter::type())
+                                   sbk::engine::NamedParameter::type())
             {
                 flags |= ImGuiTreeNodeFlags_OpenOnArrow;
             }
@@ -127,16 +127,16 @@ void ProjectNodesWidget::RenderSingleNode(rttr::type type,
                 fmt::format("##{}", object->get_database_name()).c_str(), flags);
 
             if (std::string_view payloadString =
-                    SB::Util::TypeHelper::getPayloadFromType(object->getType());
+                    sbk::Util::TypeHelper::getPayloadFromType(object->getType());
                 payloadString.size())
             {
                 if (ImGui::BeginDragDropSource(
                         ImGuiDragDropFlags_SourceAllowNullID))
                 {
-                    sb_id dragID = object->get_database_id();
+                    sbk_id dragID = object->get_database_id();
 
                     ImGui::SetDragDropPayload(payloadString.data(), &dragID,
-                                              sizeof(sb_id), ImGuiCond_Once);
+                                              sizeof(sbk_id), ImGuiCond_Once);
 
                     ImGui::TextUnformatted(object->get_database_name().data());
 
@@ -149,8 +149,8 @@ void ProjectNodesWidget::RenderSingleNode(rttr::type type,
                     {
                         if (const ImGuiPayload* const currentPayload = ImGui::GetDragDropPayload())
                         {
-                            sb_id payloadID = *static_cast<sb_id*>(currentPayload->Data);
-                            SB::Core::DatabasePtr<SB::Engine::NodeBase> potentialChild(payloadID);
+                            sbk_id payloadID = *static_cast<sbk_id*>(currentPayload->Data);
+                            sbk::core::DatabasePtr<sbk::engine::NodeBase> potentialChild(payloadID);
 
                             if (node->canAddChild(potentialChild))
                             {
@@ -188,7 +188,7 @@ void ProjectNodesWidget::RenderSingleNode(rttr::type type,
                                 object->get_database_name().data());
 
                     if (unsigned int playingCount =
-                            SB::Engine::Profiling::VoiceTracker::get()
+                            sbk::engine::Profiling::VoiceTracker::get()
                                 ->getPlayingCountOfObject(
                                     object->get_database_id()))
                     {
@@ -206,12 +206,12 @@ void ProjectNodesWidget::RenderSingleNode(rttr::type type,
                             RenderSingleNode(type, child);
                         }
                     }
-                    else if (SB::Engine::NamedParameter* const intParameter =
+                    else if (sbk::engine::NamedParameter* const intParameter =
                                  object->try_convert_object<
-                                     SB::Engine::NamedParameter>())
+                                     sbk::engine::NamedParameter>())
                     {
-                        for (const SB::Core::DatabasePtr<
-                                 SB::Engine::NamedParameterValue>& value :
+                        for (const sbk::core::DatabasePtr<
+                                 sbk::engine::NamedParameterValue>& value :
                              intParameter->getValues())
                         {
                             if (value.lookup())
@@ -232,12 +232,12 @@ void ProjectNodesWidget::RenderSingleNode(rttr::type type,
     }
 }
 
-bool ProjectNodesWidget::NodeHasChildren(SB::Engine::Node* node)
+bool ProjectNodesWidget::NodeHasChildren(sbk::engine::Node* node)
 {
     return node ? node->getChildCount() : false;
 }
 
-void ProjectNodesWidget::HandleOpenNode(SB::Core::database_object* object)
+void ProjectNodesWidget::HandleOpenNode(sbk::core::database_object* object)
 {
     if (object)
     {
@@ -249,14 +249,14 @@ void ProjectNodesWidget::HandleOpenNode(SB::Core::database_object* object)
     }
 }
 
-bool ProjectNodesWidget::ObjectIsRenaming(SB::Core::database_object* object)
+bool ProjectNodesWidget::ObjectIsRenaming(sbk::core::database_object* object)
 {
     return object && object->get_database_id() &&
            object->get_database_id() == m_renameID;
 }
 
 void ProjectNodesWidget::RenderRenameObject(
-    SB::Core::database_object* const& object)
+    sbk::core::database_object* const& object)
 {
     if (ImGui::InputText("###rename", m_renameString, 255,
                          ImGuiInputTextFlags_AutoSelectAll |
@@ -279,16 +279,16 @@ bool ProjectNodesWidget::RenderNodeContextMenu(rttr::type type,
     {
         result = true;
 
-        if (SB::Core::database_object* const object = SB::Util::TypeHelper::getDatabaseObjectFromInstance(instance))
+        if (sbk::core::database_object* const object = sbk::Util::TypeHelper::getDatabaseObjectFromInstance(instance))
         {
             if (ImGui::BeginPopupContextItem(
                     std::to_string(object->get_database_id()).c_str()))
             {
                 const SB_OBJECT_CATEGORY category =
-                    SB::Util::TypeHelper::getCategoryFromType(type);
+                    sbk::Util::TypeHelper::getCategoryFromType(type);
 
                 if (object->getType().is_derived_from(
-                        SB::Engine::NodeBase::type()))
+                        sbk::engine::NodeBase::type()))
                 {
                     RenderCreateParentOrChildMenu(category, instance,
                                                   NodeCreationType::NewParent);
@@ -298,13 +298,13 @@ bool ProjectNodesWidget::RenderNodeContextMenu(rttr::type type,
                 }
 
                 if (object->getType() ==
-                    SB::Engine::NamedParameter::type())
+                    sbk::engine::NamedParameter::type())
                 {
                     if (ImGui::MenuItem("Create New Value"))
                     {
-                        if (SB::Engine::NamedParameter* const intParameter =
+                        if (sbk::engine::NamedParameter* const intParameter =
                                 object->try_convert_object<
-                                    SB::Engine::NamedParameter>())
+                                    sbk::engine::NamedParameter>())
                         {
                             intParameter->addNewValue("New Switch Value");
                         }
@@ -324,7 +324,7 @@ bool ProjectNodesWidget::RenderNodeContextMenu(rttr::type type,
                 {
                     get_app()->GetProjectManager()->GetSelection().SelectObject(
                         nullptr);
-                    SB::Engine::System::getDatabase()->remove(object);
+                    sbk::engine::system::getDatabase()->remove(object);
                     result = false;
                 }
 
@@ -344,21 +344,21 @@ void ProjectNodesWidget::RenderCreateParentOrChildMenu(
     m_renameID = 0;
 
     const std::unordered_set<rttr::type> categoryTypes =
-        SB::Util::TypeHelper::getTypesFromCategory(category);
+        sbk::Util::TypeHelper::getTypesFromCategory(category);
 
-    SB::Engine::Node* const castedNode = SB::Util::TypeHelper::getNodeFromInstance(node);
+    sbk::engine::Node* const castedNode = sbk::Util::TypeHelper::getNodeFromInstance(node);
 
     if (ImGui::BeginMenu(CreateParentOrChildMenuName(creationType).data()))
     {
         for (const rttr::type type : categoryTypes)
         {
             const rttr::string_view typeIndexName =
-                SB::Util::TypeHelper::getDisplayNameFromType(type).data();
+                sbk::Util::TypeHelper::getDisplayNameFromType(type).data();
 
             if (ImGui::MenuItem(typeIndexName.data()))
             {
-                SB::Core::database_object* const newObject =
-                    SB::Engine::Factory::createDatabaseObjectFromType(type);
+                sbk::core::database_object* const newObject =
+                    sbk::engine::Factory::createDatabaseObjectFromType(type);
                 newObject->set_database_name(
                     fmt::format("New {} Node", typeIndexName.data()));
                 newObject->onLoaded();
@@ -367,8 +367,8 @@ void ProjectNodesWidget::RenderCreateParentOrChildMenu(
 
                 SetupRenameNode(newObject);
 
-                SB::Engine::Node* newNode =
-                    SB::Reflection::cast<SB::Engine::Node*, SB::Core::object*>(
+                sbk::engine::Node* newNode =
+                    sbk::reflection::cast<sbk::engine::Node*, sbk::core::object*>(
                         newObject);
 
                 if (newNode)
@@ -377,7 +377,7 @@ void ProjectNodesWidget::RenderCreateParentOrChildMenu(
                     {
                         case NodeCreationType::NewParent:
                         {
-                            if (SB::Engine::NodeBase* baseParent =
+                            if (sbk::engine::NodeBase* baseParent =
                                     castedNode->parent())
                             {
                                 m_nodeToOpen = baseParent->get_database_id();
@@ -434,7 +434,7 @@ std::string_view ProjectNodesWidget::CreateParentOrChildMenuName(
     return menuName;
 }
 
-void ProjectNodesWidget::SetupRenameNode(SB::Core::database_object* object)
+void ProjectNodesWidget::SetupRenameNode(sbk::core::database_object* object)
 {
     m_renameID                = object->get_database_id();
     std::string_view nodeName = object->get_database_name();

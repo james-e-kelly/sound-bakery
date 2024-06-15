@@ -5,7 +5,7 @@
 #include "imgui.h"
 #include "sound_bakery/pch.h"
 
-namespace SB::Engine
+namespace sbk::engine
 {
     class Node;
 }
@@ -41,13 +41,13 @@ public:
 
     void RenderSingleNode(rttr::type type, rttr::instance instance);
 
-    bool NodeHasChildren(SB::Engine::Node* node);
+    bool NodeHasChildren(sbk::engine::Node* node);
 
-    void HandleOpenNode(SB::Core::database_object* object);
+    void HandleOpenNode(sbk::core::database_object* object);
 
-    bool ObjectIsRenaming(SB::Core::database_object* object);
+    bool ObjectIsRenaming(sbk::core::database_object* object);
 
-    void RenderRenameObject(SB::Core::database_object* const& object);
+    void RenderRenameObject(sbk::core::database_object* const& object);
 
 private:
     bool RenderNodeContextMenu(rttr::type type, rttr::instance instance);
@@ -59,10 +59,10 @@ private:
     std::string_view CreateParentOrChildMenuName(NodeCreationType creationType);
 
 private:
-    void SetupRenameNode(SB::Core::database_object* object);
+    void SetupRenameNode(sbk::core::database_object* object);
 
 private:
-    sb_id m_renameID         = 0;
-    sb_id m_nodeToOpen       = 0;
+    sbk_id m_renameID         = 0;
+    sbk_id m_nodeToOpen       = 0;
     char m_renameString[255] = "\0";
 };

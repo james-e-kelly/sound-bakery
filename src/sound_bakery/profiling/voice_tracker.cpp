@@ -6,7 +6,7 @@
 #include "sound_bakery/voice/node_instance.h"
 #include "sound_bakery/voice/voice.h"
 
-using namespace SB::Engine::Profiling;
+using namespace sbk::engine::Profiling;
 
 static VoiceTracker* s_voiceTracker = nullptr;
 
@@ -19,12 +19,13 @@ VoiceTracker::VoiceTracker()
 
 VoiceTracker* VoiceTracker::get() { return s_voiceTracker; }
 
-void VoiceTracker::update(System* system)
+void VoiceTracker::update(system* system)
 {
     m_playingNodeIDs.clear();
     m_nodePlayingCount.clear();
 
-    if (const GameObject* const listener = system->getListenerGameObject())
+    // @TODO Fix listener game object
+    if (const GameObject* const listener = nullptr /* system->getListenerGameObject() */)
     {
         for (std::size_t i = 0; i < listener->voiceCount(); ++i)
         {
@@ -71,11 +72,11 @@ void VoiceTracker::update(System* system)
     }
 }
 
-unsigned int VoiceTracker::getPlayingCountOfObject(sb_id id) const
+unsigned int VoiceTracker::getPlayingCountOfObject(sbk_id id) const
 {
     unsigned int result = 0;
 
-    if (std::unordered_map<sb_id, unsigned int>::const_iterator find = m_nodePlayingCount.find(id);
+    if (std::unordered_map<sbk_id, unsigned int>::const_iterator find = m_nodePlayingCount.find(id);
         find != m_nodePlayingCount.cend())
     {
         result = find->second;

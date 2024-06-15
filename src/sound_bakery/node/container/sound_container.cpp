@@ -2,14 +2,14 @@
 
 #include "sound_bakery/sound/sound.h"
 
-DEFINE_REFLECTION(SB::Engine::SoundContainer)
+DEFINE_REFLECTION(sbk::engine::SoundContainer)
 
-void SB::Engine::SoundContainer::gatherChildrenForPlay(GatherChildrenContext& context) const
+void sbk::engine::SoundContainer::gatherChildrenForPlay(GatherChildrenContext& context) const
 {
     context.sounds.push_back(this);
 }
 
-SB::Engine::Sound* SB::Engine::SoundContainer::getSound() const
+sbk::engine::Sound* sbk::engine::SoundContainer::getSound() const
 {
     if (m_sound.lookup())
     {
@@ -21,4 +21,4 @@ SB::Engine::Sound* SB::Engine::SoundContainer::getSound() const
     }
 }
 
-void SB::Engine::SoundContainer::setSound(const SB::Core::DatabasePtr<SB::Engine::Sound>& sound) { m_sound = sound; }
+void sbk::engine::SoundContainer::setSound(const sbk::core::DatabasePtr<sbk::engine::Sound>& sound) { m_sound = sound; }

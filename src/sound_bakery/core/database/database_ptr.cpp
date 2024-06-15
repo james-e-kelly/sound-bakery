@@ -4,24 +4,24 @@
 #include "sound_bakery/node/node.h"
 #include "sound_bakery/system.h"
 
-using namespace SB::Core;
+using namespace sbk::core;
 
-std::weak_ptr<database_object> SB::Core::findObject(sb_id id)
+std::weak_ptr<database_object> sbk::core::findObject(sbk_id id)
 {
-    if (database* const database = SB::Engine::System::getDatabase())
+    if (database* const database = sbk::engine::system::get())
     {
         return database->try_find_weak(id);
     }
-    return std::weak_ptr<database_object>();
+    return {};
 }
 
-bool SB::Core::objectIdIsChildOfParent(sb_id childToCheck, sb_id parent)
+bool sbk::core::objectIdIsChildOfParent(sbk_id childToCheck, sbk_id parent)
 {
-    SB::Core::DatabasePtr<database_object> parentPtr(parent);
+    sbk::core::DatabasePtr<database_object> parentPtr(parent);
 
     if (parentPtr.lookup())
     {
-        if (SB::Engine::NodeBase* nodeBase = parentPtr->try_convert_object<SB::Engine::NodeBase>())
+        if (sbk::engine::NodeBase* nodeBase = parentPtr->try_convert_object<sbk::engine::NodeBase>())
         {
             return nodeBase->hasChild(childToCheck);
         }
@@ -30,17 +30,17 @@ bool SB::Core::objectIdIsChildOfParent(sb_id childToCheck, sb_id parent)
     return false;
 }
 
-sb_id SB::Core::getParentIdFromId(sb_id id)
+sbk_id sbk::core::getParentIdFromId(sbk_id id)
 {
     if (id != 0)
     {
-        SB::Core::DatabasePtr<database_object> databasePtr(id);
+        const sbk::core::DatabasePtr<database_object> databasePtr(id);
 
         if (databasePtr.lookup())
         {
-            if (SB::Engine::NodeBase* nodeBase = databasePtr->try_convert_object<SB::Engine::NodeBase>())
+            if (sbk::engine::NodeBase* nodeBase = databasePtr->try_convert_object<sbk::engine::NodeBase>())
             {
-                if (SB::Engine::NodeBase* parent = nodeBase->parent())
+                if (sbk::engine::NodeBase* parent = nodeBase->parent())
                 {
                     return parent->get_database_id();
                 }

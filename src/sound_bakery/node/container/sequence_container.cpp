@@ -1,8 +1,8 @@
 #include "sequence_container.h"
 
-using namespace SB::Engine;
+using namespace sbk::engine;
 
-DEFINE_REFLECTION(SB::Engine::SequenceContainer)
+DEFINE_REFLECTION(sbk::engine::SequenceContainer)
 
 void SequenceContainer::gatherChildrenForPlay(GatherChildrenContext& context) const
 {

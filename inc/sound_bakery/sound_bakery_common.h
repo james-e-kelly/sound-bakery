@@ -14,7 +14,7 @@
 
 typedef sc_result sb_result;
 
-typedef unsigned long long sb_id;
+typedef unsigned long long sbk_id;
 #define SB_INVALID_ID 0
 
 #endif

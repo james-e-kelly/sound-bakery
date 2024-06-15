@@ -3,21 +3,21 @@
 #include "sound_bakery/system.h"
 #include "sound_bakery/voice/node_instance.h"
 
-using namespace SB::Engine;
+using namespace sbk::engine;
 
-DEFINE_REFLECTION(SB::Engine::Bus)
+DEFINE_REFLECTION(sbk::engine::Bus)
 
 void Bus::onLoaded()
 {
     Node::onLoaded();
 
-    if (SB::Engine::System* system = SB::Engine::System::get())
-    {
-        if (system->getMasterBus().id() == get_database_id())
-        {
-            setMasterBus(true);
-        }
-    }
+    //if (sbk::engine::system* system = sbk::engine::system::get())
+    //{
+    //    if (system->getMasterBus().id() == get_database_id())
+    //    {
+    //        setMasterBus(true);
+    //    }
+    //}
 }
 
 void Bus::lock()
@@ -34,7 +34,7 @@ void Bus::lock()
     }
 }
 
-void SB::Engine::Bus::unlock() { m_busInstance.reset(); }
+void sbk::engine::Bus::unlock() { m_busInstance.reset(); }
 
 std::shared_ptr<NodeInstance> Bus::lockAndCopy()
 {

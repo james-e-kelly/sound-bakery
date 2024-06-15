@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-namespace SB::Maths
+namespace sbk::Maths
 {
     constexpr double PI = 3.1415926545;
 

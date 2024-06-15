@@ -3,7 +3,7 @@
 #include "sound_bakery/core/core_include.h"
 #include "sound_bakery/system.h"
 
-namespace SB::Engine
+namespace sbk::engine
 {
     class Bus;
     class Container;
@@ -73,7 +73,7 @@ namespace SB::Engine
         /**
          * @brief Node to reference
          */
-        SB::Core::DatabasePtr<NodeBase> refNode;
+        sbk::core::DatabasePtr<NodeBase> refNode;
 
         /**
          * @brief Type of node to create.
@@ -100,7 +100,7 @@ namespace SB::Engine
      * @brief NodeInstances represent runtime versions of Nodes, either
      * containers or busses
      */
-    class SB_CLASS NodeInstance : public SB::Core::object
+    class SB_CLASS NodeInstance : public sbk::core::object
     {
     public:
         ~NodeInstance();
@@ -134,6 +134,6 @@ namespace SB::Engine
         std::unique_ptr<sc_sound_instance, SC_SOUND_INSTANCE_DELETER> m_soundInstance;
         unsigned int m_numTimesPlayed = 0;
 
-        REGISTER_REFLECTION(NodeInstance, SB::Core::object)
+        REGISTER_REFLECTION(NodeInstance, sbk::core::object)
     };
 }  // namespace SB::Engine

@@ -2,7 +2,7 @@
 
 #include "sound_bakery/node/node.h"
 
-namespace SB::Engine
+namespace sbk::engine
 {
     class NodeInstance;
 
@@ -15,7 +15,7 @@ namespace SB::Engine
 
         void onLoaded() override;
 
-        bool canAddChild(const SB::Core::DatabasePtr<NodeBase>& child) const override
+        bool canAddChild(const sbk::core::DatabasePtr<NodeBase>& child) const override
         {
             if (child.lookup() && child->getType().is_derived_from<Bus>())
             {

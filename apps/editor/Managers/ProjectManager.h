@@ -6,7 +6,7 @@
 
 #include "yaml-cpp/yaml.h"
 
-namespace SB::Engine
+namespace sbk::engine
 {
     class SoundContainer;
 }
@@ -15,7 +15,7 @@ struct Selection
 {
     Selection() = default;
 
-    void SelectObject(SB::Core::object* object) { m_selected = object; }
+    void SelectObject(sbk::core::object* object) { m_selected = object; }
 
     std::optional<rttr::type> SelectedType() const
     {
@@ -26,10 +26,10 @@ struct Selection
         return std::nullopt;
     }
 
-    SB::Core::object* GetSelected() const { return m_selected; }
+    sbk::core::object* GetSelected() const { return m_selected; }
 
 private:
-    SB::Core::object* m_selected = nullptr;
+    sbk::core::object* m_selected = nullptr;
 };
 
 class ProjectManager : public Manager
@@ -45,7 +45,7 @@ public:
     void SaveProject() const;
 
     Selection& GetSelection() { return m_selection; }
-    SB::Engine::SoundContainer* GetPreviewSoundContainer() const;
+    sbk::engine::SoundContainer* GetPreviewSoundContainer() const;
 
 private:
     Selection m_selection;

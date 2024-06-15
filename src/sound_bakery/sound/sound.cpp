@@ -2,9 +2,9 @@
 
 #include "sound_bakery/editor/project/project.h"
 
-using namespace SB::Engine;
+using namespace sbk::engine;
 
-DEFINE_REFLECTION(SB::Engine::Sound)
+DEFINE_REFLECTION(sbk::engine::Sound)
 
 Sound::Sound() : m_streaming(false) {}
 
@@ -22,11 +22,11 @@ void Sound::loadSynchronous()
         {
             finalSoundPath   = encodedSoundPath;
             encodedSoundPath = std::filesystem::relative(encodedSoundPath,
-                                                         SB::Engine::System::getProject()->getConfig().encodedFolder());
+                                                         sbk::engine::system::get_project()->getConfig().encodedFolder());
         }
         else
         {
-            finalSoundPath = SB::Engine::System::getProject()->getConfig().encodedFolder() / encodedSoundPath;
+            finalSoundPath = sbk::engine::system::get_project()->getConfig().encodedFolder() / encodedSoundPath;
         }
 
         useRawSound = !std::filesystem::exists(finalSoundPath);
@@ -38,11 +38,11 @@ void Sound::loadSynchronous()
         {
             finalSoundPath = rawSoundPath;
             rawSoundPath =
-                std::filesystem::relative(rawSoundPath, SB::Engine::System::getProject()->getConfig().sourceFolder());
+                std::filesystem::relative(rawSoundPath, sbk::engine::system::get_project()->getConfig().sourceFolder());
         }
         else
         {
-            finalSoundPath = SB::Engine::System::getProject()->getConfig().sourceFolder() / rawSoundPath;
+            finalSoundPath = sbk::engine::system::get_project()->getConfig().sourceFolder() / rawSoundPath;
         }
     }
 

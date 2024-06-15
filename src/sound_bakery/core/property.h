@@ -3,7 +3,7 @@
 #include "Delegates.h"
 #include "sound_bakery/sound_bakery_internal.h"
 
-namespace SB::Core
+namespace sbk::core
 {
     template <typename T>
     class SB_CLASS Property
@@ -93,6 +93,6 @@ namespace SB::Core
     };
 
     using IntProperty   = Property<int32_t>;
-    using IdProperty    = Property<sb_id>;
+    using IdProperty    = Property<sbk_id>;
     using FloatProperty = Property<float>;
 }  // namespace SB::Core

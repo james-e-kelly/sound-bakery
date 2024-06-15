@@ -1,8 +1,8 @@
 #include "blend_container.h"
 
-DEFINE_REFLECTION(SB::Engine::BlendContainer)
+DEFINE_REFLECTION(sbk::engine::BlendContainer)
 
-void SB::Engine::BlendContainer::gatherChildrenForPlay(GatherChildrenContext& context) const
+void sbk::engine::BlendContainer::gatherChildrenForPlay(GatherChildrenContext& context) const
 {
     for (NodeBase* const child : getChildren())
     {

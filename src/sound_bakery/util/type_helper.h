@@ -2,13 +2,13 @@
 
 #include "sound_bakery/pch.h"
 
-namespace SB::Engine
+namespace sbk::engine
 {
     class NodeBase;
     class Node;
 }  // namespace SB::Engine
 
-namespace SB::Util
+namespace sbk::Util
 {
     class SB_CLASS TypeHelper final
     {
@@ -31,12 +31,12 @@ namespace SB::Util
 
         static rttr::string_view getObjectCategoryName(const SB_OBJECT_CATEGORY& objectCategory);
 
-        static SB::Core::object* getObjectFromInstance(const rttr::instance& instance);
+        static sbk::core::object* getObjectFromInstance(const rttr::instance& instance);
 
-        static SB::Core::database_object* getDatabaseObjectFromInstance(const rttr::instance& instance);
+        static sbk::core::database_object* getDatabaseObjectFromInstance(const rttr::instance& instance);
 
-        static SB::Engine::Node* getNodeFromInstance(const rttr::instance& instance);
+        static sbk::engine::Node* getNodeFromInstance(const rttr::instance& instance);
 
-        static SB::Engine::NodeBase* getNodeBaseFromInstance(const rttr::instance& instance);
+        static sbk::engine::NodeBase* getNodeBaseFromInstance(const rttr::instance& instance);
     };
 }  // namespace SB::Util

@@ -11,7 +11,7 @@
 
 #include <cmrc/cmrc.hpp>
 
-CMRC_DECLARE(SB::Images);
+CMRC_DECLARE(sbk::Images);
 
 namespace SplashScreenUtils
 {

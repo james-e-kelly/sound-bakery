@@ -226,7 +226,7 @@ void FileBrowserWidget::ShowDirectoryBrowserList() noexcept
                     // Set payload to carry the index of our item (could be
                     // anything)
                     ImGui::SetDragDropPayload(
-                        SB::Editor::PayloadSound.c_str(),
+                        sbk::editor::PayloadSound.c_str(),
                         m_draggingFile.c_str(),
                         (m_draggingFile.size() + 1) * sizeof(char),
                         ImGuiCond_Once);
@@ -249,7 +249,7 @@ void FileBrowserWidget::start()
 {
     widget::start();
 
-    m_currentDirectory = SB::Engine::System::getProject()->getConfig().sourceFolder();
+    m_currentDirectory = sbk::engine::system::getProject()->getConfig().sourceFolder();
     m_topDir           = m_currentDirectory;
     m_selectedItemID   = std::numeric_limits<uint32_t>::max();
 }

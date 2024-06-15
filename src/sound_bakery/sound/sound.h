@@ -3,9 +3,9 @@
 #include "miniaudio.h"
 #include "sound_bakery/core/core_include.h"
 
-namespace SB::Engine
+namespace sbk::engine
 {
-    class SB_CLASS Sound : public SB::Core::database_object
+    class SB_CLASS Sound : public sbk::core::database_object
     {
     public:
         Sound();
@@ -32,7 +32,7 @@ namespace SB::Engine
 
         bool m_streaming;
 
-        REGISTER_REFLECTION(Sound, SB::Core::database_object)
+        REGISTER_REFLECTION(Sound, sbk::core::database_object)
         RTTR_REGISTRATION_FRIEND
     };
 }  // namespace SB::Engine

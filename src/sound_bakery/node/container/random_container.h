@@ -2,7 +2,7 @@
 
 #include "sound_bakery/node/container/container.h"
 
-namespace SB::Engine
+namespace sbk::engine
 {
     class SB_CLASS RandomContainer : public Container
     {
@@ -18,7 +18,7 @@ namespace SB::Engine
                     break;
                 default:
                     int randomChildIndex = std::rand() % m_childNodes.size();
-                    std::unordered_set<SB::Core::DatabasePtr<NodeBase>>::const_iterator childIter =
+                    std::unordered_set<sbk::core::DatabasePtr<NodeBase>>::const_iterator childIter =
                         m_childNodes.begin();
                     std::advance(childIter, randomChildIndex);
                     context.sounds.push_back(childIter->lookupRaw()->try_convert_object<Container>());

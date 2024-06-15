@@ -109,7 +109,7 @@ void root_widget::render()
 
             if (ImGui::MenuItem("Convert Files", nullptr, nullptr))
             {
-                SB::Engine::System::getProject()->encodeAllMedia();
+                sbk::engine::system::getProject()->encodeAllMedia();
             }
 
             ImGui::EndMenu();

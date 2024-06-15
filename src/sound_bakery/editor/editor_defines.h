@@ -2,7 +2,7 @@
 
 #include <utility>
 
-namespace SB::Editor
+namespace sbk::editor
 {
     using MinMax = std::pair<float, float>;
 

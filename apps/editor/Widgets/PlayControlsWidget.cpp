@@ -15,7 +15,7 @@
 
 #include <rttr/type>
 
-static SB::Core::object* s_lastPlayableSelection;
+static sbk::core::object* s_lastPlayableSelection;
 
 void PlayerWidget::start()
 {
@@ -33,14 +33,14 @@ void PlayerWidget::Render()
 
     const bool isSelected = !!selection.GetSelected();
     const bool isPlayable =
-        isSelected && selectedType.has_value() && SB::Util::TypeHelper::isTypePlayable(selectedType.value());
+        isSelected && selectedType.has_value() && sbk::Util::TypeHelper::isTypePlayable(selectedType.value());
 
     if (isPlayable)
     {
         // Stop playing previous if we're selecting something new that is playable
         if (selection.GetSelected() != s_lastPlayableSelection)
         {
-            SB::Engine::System::get()->getListenerGameObject()->stopAll();
+            sbk::engine::system::get()->getListenerGameObject()->stopAll();
         }
         
         s_lastPlayableSelection = selection.GetSelected();
@@ -55,39 +55,39 @@ void PlayerWidget::Render()
     if (isSelected && !!s_lastPlayableSelection)
     {
         ImGui::Text("%s", s_lastPlayableSelection
-                              ->try_convert_object<SB::Core::database_object>()
+                              ->try_convert_object<sbk::core::database_object>()
                               ->get_database_name()
                               .data());
     }
 
     if (ImGui::Button("Play"))
     {
-        if (SB::Engine::Container* container =
+        if (sbk::engine::Container* container =
                 s_lastPlayableSelection
-                    ->try_convert_object<SB::Engine::Container>())
+                    ->try_convert_object<sbk::engine::Container>())
         {
-            SB::Engine::System::get()->getListenerGameObject()->playContainer(
+            sbk::engine::system::get()->getListenerGameObject()->playContainer(
                 container);
         }
-        else if (SB::Engine::Sound* sound =
+        else if (sbk::engine::Sound* sound =
                      s_lastPlayableSelection
-                         ->try_convert_object<SB::Engine::Sound>())
+                         ->try_convert_object<sbk::engine::Sound>())
         {
-            if (SB::Engine::SoundContainer* previewContainer =
+            if (sbk::engine::SoundContainer* previewContainer =
                     get_app()->GetProjectManager()->GetPreviewSoundContainer())
             {
                 previewContainer->setSound(sound);
 
-                SB::Engine::System::get()
+                sbk::engine::system::get()
                     ->getListenerGameObject()
                     ->playContainer(previewContainer);
             }
         }
-        else if (SB::Engine::Event* event =
+        else if (sbk::engine::Event* event =
                      s_lastPlayableSelection
-                         ->try_convert_object<SB::Engine::Event>())
+                         ->try_convert_object<sbk::engine::Event>())
         {
-            SB::Engine::System::get()->getListenerGameObject()->postEvent(
+            sbk::engine::system::get()->getListenerGameObject()->postEvent(
                 event);
         }
     }
@@ -96,20 +96,20 @@ void PlayerWidget::Render()
 
     if (ImGui::Button("Stop"))
     {
-        SB::Engine::System::get()->getListenerGameObject()->stopAll();
+        sbk::engine::system::get()->getListenerGameObject()->stopAll();
     }
 
-    SB::Engine::Node* const nodeSelection =
-        s_lastPlayableSelection ? s_lastPlayableSelection->try_convert_object<SB::Engine::Node>() : nullptr;
+    sbk::engine::Node* const nodeSelection =
+        s_lastPlayableSelection ? s_lastPlayableSelection->try_convert_object<sbk::engine::Node>() : nullptr;
 
-    SB::Engine::GlobalParameterList parameterList;
+    sbk::engine::GlobalParameterList parameterList;
 
     if (nodeSelection)
     {
         nodeSelection->gatherParameters(parameterList);
     }
 
-    SB::Engine::GameObject* const listenerGameObject = SB::Engine::System::get()->getListenerGameObject();
+    sbk::engine::GameObject* const listenerGameObject = sbk::engine::system::get()->getListenerGameObject();
 
     if (ImGui::BeginTabBar("Runtime Parameters"))
     {
@@ -117,7 +117,7 @@ void PlayerWidget::Render()
         {
             if (ImGui::BeginTable("Table", 2))
             {
-                for (const SB::Core::DatabasePtr<SB::Engine::NamedParameter>& intParameter :
+                for (const sbk::core::DatabasePtr<sbk::engine::NamedParameter>& intParameter :
                      parameterList.intParameters)
                 {
                     if (intParameter.lookup() == false)
@@ -125,7 +125,7 @@ void PlayerWidget::Render()
                         continue;
                     }
 
-                    SB::Core::DatabasePtr<SB::Engine::NamedParameterValue> selectedIntParameterValue =
+                    sbk::core::DatabasePtr<sbk::engine::NamedParameterValue> selectedIntParameterValue =
                         listenerGameObject->getIntParameterValue(intParameter);
 
                     if (selectedIntParameterValue.lookup() == false)
@@ -140,7 +140,7 @@ void PlayerWidget::Render()
 
                     if (ImGui::BeginCombo("Selected", selectedIntParameterValue->get_database_name().data()))
                     {
-                        for (SB::Core::DatabasePtr<SB::Engine::NamedParameterValue> parameterValue : intParameter->getValues())
+                        for (sbk::core::DatabasePtr<sbk::engine::NamedParameterValue> parameterValue : intParameter->getValues())
                         {
                             if (parameterValue.lookup() == false)
                             {

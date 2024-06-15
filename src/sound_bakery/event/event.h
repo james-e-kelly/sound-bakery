@@ -2,7 +2,7 @@
 
 #include "sound_bakery/core/core_include.h"
 
-namespace SB::Engine
+namespace sbk::engine
 {
     enum SB_ACTION_TYPE
     {
@@ -15,12 +15,12 @@ namespace SB::Engine
     struct SB_CLASS Action
     {
         SB_ACTION_TYPE m_type = SB_ACTION_PLAY;
-        SB::Core::DatabasePtr<SB::Core::database_object> m_destination;
+        sbk::core::DatabasePtr<sbk::core::database_object> m_destination;
     };
 
-    class SB_CLASS Event : public SB::Core::database_object
+    class SB_CLASS Event : public sbk::core::database_object
     {
-        REGISTER_REFLECTION(Event, SB::Core::database_object)
+        REGISTER_REFLECTION(Event, sbk::core::database_object)
 
     public:
         std::vector<Action> m_actions;

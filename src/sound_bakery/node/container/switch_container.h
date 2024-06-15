@@ -2,19 +2,19 @@
 
 #include "sound_bakery/node/container/container.h"
 
-namespace SB::Engine
+namespace sbk::engine
 {
     class SB_CLASS SwitchContainer : public Container
     {
     public:
         void gatherChildrenForPlay(GatherChildrenContext& context) const override
         {
-            SB::Core::DatabasePtr<NamedParameterValue> selectedValue;
+            sbk::core::DatabasePtr<NamedParameterValue> selectedValue;
 
             if (auto findLocalValue = context.parameters.intParameters.find(m_switchParameter);
                 findLocalValue != context.parameters.intParameters.cend())
             {
-                selectedValue = SB::Core::DatabasePtr<NamedParameterValue>(findLocalValue->second.get());
+                selectedValue = sbk::core::DatabasePtr<NamedParameterValue>(findLocalValue->second.get());
             }
             else if (m_switchParameter.lookup())
             {
@@ -23,7 +23,7 @@ namespace SB::Engine
 
             if (auto foundIter = m_switchToChild.find(selectedValue); foundIter != m_switchToChild.end())
             {
-                SB::Core::ChildPtr<Container> selectedChild(*this);
+                sbk::core::ChildPtr<Container> selectedChild(*this);
                 selectedChild = foundIter->second;
 
                 if (selectedChild.lookup())
@@ -38,11 +38,11 @@ namespace SB::Engine
             parameters.intParameters.insert(m_switchParameter);
         }
 
-        void setSwitchParameter(SB::Core::DatabasePtr<NamedParameter> parameter);
+        void setSwitchParameter(sbk::core::DatabasePtr<NamedParameter> parameter);
 
-        SB::Core::DatabasePtr<NamedParameter> getSwitchParameter() const { return m_switchParameter; }
+        sbk::core::DatabasePtr<NamedParameter> getSwitchParameter() const { return m_switchParameter; }
 
-        std::unordered_map<SB::Core::DatabasePtr<NamedParameterValue>, SB::Core::ChildPtr<Container>>
+        std::unordered_map<sbk::core::DatabasePtr<NamedParameterValue>, sbk::core::ChildPtr<Container>>
             getSwitchToChildMap() const
         {
             return m_switchToChild;
@@ -50,7 +50,7 @@ namespace SB::Engine
 
     private:
         void setSwitchToChild(
-            std::unordered_map<SB::Core::DatabasePtr<NamedParameterValue>, SB::Core::ChildPtr<Container>> map);
+            std::unordered_map<sbk::core::DatabasePtr<NamedParameterValue>, sbk::core::ChildPtr<Container>> map);
 
         void populateChildKeys();
 
@@ -62,7 +62,7 @@ namespace SB::Engine
         /**
          * @brief Holds the map for which switch value maps to which child.
          */
-        std::unordered_map<SB::Core::DatabasePtr<NamedParameterValue>, SB::Core::ChildPtr<Container>> m_switchToChild;
+        std::unordered_map<sbk::core::DatabasePtr<NamedParameterValue>, sbk::core::ChildPtr<Container>> m_switchToChild;
 
         REGISTER_REFLECTION(SwitchContainer, Container)
         RTTR_REGISTRATION_FRIEND

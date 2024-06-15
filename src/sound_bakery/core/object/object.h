@@ -3,12 +3,12 @@
 #include "sound_bakery/pch.h"
 #include "sound_bakery/util/macros.h"
 
-namespace SB::Engine
+namespace sbk::engine
 {
-    class System;
+    class system;
 }
 
-namespace SB::Core
+namespace sbk::core
 {
     /**
      * @brief Provides basic helper functions. Not meant to be used directly
@@ -16,7 +16,7 @@ namespace SB::Core
     class SB_CLASS object_utilities
     {
     public:
-        SB::Engine::System* getSystem() const;
+        sbk::engine::system* getSystem() const;
         sc_system* getChef() const;
         ma_engine* getMini() const;
 
@@ -49,7 +49,7 @@ namespace SB::Core
         {
             if (getType().is_derived_from(T::type()) || getType() == T::type())
             {
-                return SB::Reflection::cast<T*, object*>(this);
+                return sbk::reflection::cast<T*, object*>(this);
             }
             return nullptr;
         }
@@ -59,7 +59,7 @@ namespace SB::Core
         {
             if (getType().is_derived_from(T::type()) || getType() == T::type())
             {
-                return SB::Reflection::cast<const T*, const object*>(this);
+                return sbk::reflection::cast<const T*, const object*>(this);
             }
             return nullptr;
         }

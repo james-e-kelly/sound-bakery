@@ -4,14 +4,14 @@
 #include "sound_bakery/parameter/parameter.h"
 #include "sound_bakery/voice/voice.h"
 
-namespace SB::Engine
+namespace sbk::engine
 {
     class Container;
     class Event;
 
-    class SB_CLASS GameObject : public SB::Core::object
+    class SB_CLASS GameObject : public sbk::core::object
     {
-        REGISTER_REFLECTION(GameObject, SB::Core::object)
+        REGISTER_REFLECTION(GameObject, sbk::core::object)
 
     public:
         Voice* playContainer(Container* container);
@@ -36,7 +36,7 @@ namespace SB::Engine
          * @param parameter to get the value for.
          * @return value of the parameter.
          */
-        float getFloatParameterValue(const SB::Core::DatabasePtr<FloatParameter>& parameter) const
+        float getFloatParameterValue(const sbk::core::DatabasePtr<FloatParameter>& parameter) const
         {
             float result = 0.0F;
 
@@ -64,9 +64,9 @@ namespace SB::Engine
          * @param parameter to get the value for.
          * @return value of the parameter.
          */
-        sb_id getIntParameterValue(const SB::Core::DatabasePtr<NamedParameter>& parameter) const
+        sbk_id getIntParameterValue(const sbk::core::DatabasePtr<NamedParameter>& parameter) const
         {
-            sb_id result = 0;
+            sbk_id result = 0;
 
             auto found = m_parameters.intParameters.find(parameter);
 
@@ -94,7 +94,7 @@ namespace SB::Engine
         {
             if (m_parameters.intParameters.find(parameterValue.first) == m_parameters.intParameters.cend())
             {
-                SB::Core::DatabasePtr<NamedParameterValue> parameterValuePtr(parameterValue.second);
+                sbk::core::DatabasePtr<NamedParameterValue> parameterValuePtr(parameterValue.second);
                 parameterValuePtr.lookup();
                 parameterValuePtr->parentParameter.lookup();
 

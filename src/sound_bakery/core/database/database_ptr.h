@@ -3,13 +3,13 @@
 #include "sound_bakery/core/database/database_object.h"
 #include "sound_bakery/pch.h"
 
-namespace SB::Core
+namespace sbk::core
 {
     class database_object;
 
-    std::weak_ptr<database_object> SB_API findObject(sb_id id);
-    bool SB_API objectIdIsChildOfParent(sb_id childToCheck, sb_id parent);
-    sb_id SB_API getParentIdFromId(sb_id id);
+    std::weak_ptr<database_object> SB_API findObject(sbk_id id);
+    bool SB_API objectIdIsChildOfParent(sbk_id childToCheck, sbk_id parent);
+    sbk_id SB_API getParentIdFromId(sbk_id id);
 
     /** Lazy Pointer
      * Lazy pointers store an Indentifier to an object and use it to find the
@@ -23,7 +23,7 @@ namespace SB::Core
     {
     public:
         using TThisType       = DatabasePtr<TObject>;
-        using TIdentifierType = sb_id;
+        using TIdentifierType = sbk_id;
         using TObjectPtr      = TObject*;
         using TObjectRef      = TObject&;
         using TObjectWeak     = std::weak_ptr<database_object>;
@@ -46,7 +46,7 @@ namespace SB::Core
          * construction
          * @param id ID of the object to reference
          */
-        DatabasePtr(sb_id id) : m_objectID(id), m_objectPtr(), m_null(true) {}
+        DatabasePtr(sbk_id id) : m_objectID(id), m_objectPtr(), m_null(true) {}
 
         /**
          * @brief Create a valid LazyPtr
@@ -70,7 +70,7 @@ namespace SB::Core
          * @brief Get ID of the referenced object
          * @return
          */
-        sb_id id() const noexcept { return m_objectID; }
+        sbk_id id() const noexcept { return m_objectID; }
 
         TObjectShared shared() const noexcept
         {
@@ -218,7 +218,7 @@ namespace SB::Core
         TObjectPtr operator->() const { return raw(); }
 
     protected:
-        sb_id m_objectID;
+        sbk_id m_objectID;
         mutable TPtrType m_objectPtr = TPtrType();
         mutable bool m_null;
     };
@@ -317,7 +317,7 @@ namespace SB::Core
          *
          * Tries to find the owner from the ID.
          */
-        ChildPtr(sb_id id) : DatabasePtr<TObject>(id), m_ownerID(getParentIdFromId(id)) {}
+        ChildPtr(sbk_id id) : DatabasePtr<TObject>(id), m_ownerID(getParentIdFromId(id)) {}
 
         TThisType& operator=(typename DatabasePtr<TObject>::TIdentifierType id)
         {
@@ -411,7 +411,7 @@ namespace SB::Core
             // Point to new object if it's a child of our owner
             else
             {
-                sb_id newObjectID = static_cast<typename DatabasePtr<TObject>::TIdentifierType>(*object);
+                sbk_id newObjectID = static_cast<typename DatabasePtr<TObject>::TIdentifierType>(*object);
 
                 if (m_ownerID == 0 || objectIdIsChildOfParent(newObjectID, m_ownerID))
                 {
@@ -430,15 +430,15 @@ namespace SB::Core
 namespace std
 {
     template <typename T>
-    struct hash<SB::Core::DatabasePtr<T>>
+    struct hash<sbk::core::DatabasePtr<T>>
     {
-        size_t operator()(const SB::Core::DatabasePtr<T>& k) const { return hash<sb_id>{}(k.id()); }
+        size_t operator()(const sbk::core::DatabasePtr<T>& k) const { return hash<sbk_id>{}(k.id()); }
     };
 
     template <typename T>
-    struct hash<SB::Core::ChildPtr<T>>
+    struct hash<sbk::core::ChildPtr<T>>
     {
-        size_t operator()(const SB::Core::ChildPtr<T>& k) const { return hash<sb_id>{}(k.id()); }
+        size_t operator()(const sbk::core::ChildPtr<T>& k) const { return hash<sbk_id>{}(k.id()); }
     };
 }  // namespace std
 
@@ -447,19 +447,19 @@ namespace std
 namespace rttr
 {
     template <typename T>
-    struct wrapper_mapper<SB::Core::ChildPtr<T>>
+    struct wrapper_mapper<sbk::core::ChildPtr<T>>
     {
-        using wrapped_type = decltype(SB::Core::ChildPtr<T>(0).id());
-        using type         = SB::Core::ChildPtr<T>;
+        using wrapped_type = decltype(sbk::core::ChildPtr<T>(0).id());
+        using type         = sbk::core::ChildPtr<T>;
 
         inline static wrapped_type get(const type& obj) { return obj.id(); }
 
         inline static type create(const wrapped_type& t) { return type(t); }
 
         template <typename T2>
-        inline static SB::Core::ChildPtr<T2> convert(const type& source, bool& ok)
+        inline static sbk::core::ChildPtr<T2> convert(const type& source, bool& ok)
         {
-            SB::Core::ChildPtr<T2> convertedLazyPtr(source.id());
+            sbk::core::ChildPtr<T2> convertedLazyPtr(source.id());
 
             ok = source.hasId() == convertedLazyPtr.hasId();
 
@@ -468,19 +468,19 @@ namespace rttr
     };
 
     template <typename T>
-    struct wrapper_mapper<SB::Core::DatabasePtr<T>>
+    struct wrapper_mapper<sbk::core::DatabasePtr<T>>
     {
-        using wrapped_type = decltype(SB::Core::DatabasePtr<T>().id());
-        using type         = SB::Core::DatabasePtr<T>;
+        using wrapped_type = decltype(sbk::core::DatabasePtr<T>().id());
+        using type         = sbk::core::DatabasePtr<T>;
 
         inline static wrapped_type get(const type& obj) { return obj.id(); }
 
         inline static type create(const wrapped_type& t) { return type(t); }
 
         template <typename T2>
-        inline static SB::Core::DatabasePtr<T2> convert(const type& source, bool& ok)
+        inline static sbk::core::DatabasePtr<T2> convert(const type& source, bool& ok)
         {
-            SB::Core::DatabasePtr<T2> convertedLazyPtr(source.id());
+            sbk::core::DatabasePtr<T2> convertedLazyPtr(source.id());
 
             ok = source.hasId() == convertedLazyPtr.hasId();
 

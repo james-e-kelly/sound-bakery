@@ -5,7 +5,7 @@
 #include <rttr/registration_friend>
 #include <rttr/type>
 
-namespace SB::Reflection
+namespace sbk::reflection
 {
     template <typename Target_Type, typename Source_Type>
     Target_Type cast(Source_Type object)

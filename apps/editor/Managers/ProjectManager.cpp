@@ -21,7 +21,7 @@
 
 void ProjectManager::Init(const std::filesystem::path& projectFile)
 {
-    SB::Engine::System::openProject(projectFile);
+    sbk::engine::system::open_project(projectFile);
 
     GetApp()
         ->get_subsystem_by_class<widget_subsystem>()
@@ -36,20 +36,20 @@ void ProjectManager::Init(const std::filesystem::path& projectFile)
 
 void ProjectManager::Tick(double deltaTime)
 {
-    SB::Engine::System::update();
+    sbk::engine::system::update();
 }
 
 void ProjectManager::Exit() 
 { 
-    SB::Engine::System::destroy(); 
+    sbk::engine::system::destroy(); 
 }
 
 void ProjectManager::SaveProject() const 
 { 
-    SB::Engine::System::get()->getProject()->saveProject(); 
+    sbk::engine::system::get()->getProject()->saveProject(); 
 }
 
-SB::Engine::SoundContainer* ProjectManager::GetPreviewSoundContainer() const
+sbk::engine::SoundContainer* ProjectManager::GetPreviewSoundContainer() const
 {
-    return SB::Engine::System::getProject()->getPreviewContainer();
+    return sbk::engine::system::getProject()->getPreviewContainer();
 }

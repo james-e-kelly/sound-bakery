@@ -5,9 +5,9 @@
 #include "sound_bakery/sound/sound.h"
 #include "sound_bakery/voice/node_instance.h"
 
-using namespace SB::Engine;
+using namespace sbk::engine;
 
-void SB::Engine::Voice::playContainer(Container* container)
+void sbk::engine::Voice::playContainer(Container* container)
 {
     m_voiceInstances.clear();
 
@@ -18,7 +18,7 @@ void SB::Engine::Voice::playContainer(Container* container)
 
     InitNodeInstance initData;
     initData.refNode     = container->try_convert_object<NodeBase>();
-    initData.type        = SB::Engine::NodeInstanceType::MAIN;
+    initData.type        = sbk::engine::NodeInstanceType::MAIN;
     initData.owningVoice = this;
 
     if (voiceInstance->init(initData))
@@ -52,7 +52,7 @@ void Voice::update()
     }
 }
 
-bool SB::Engine::Voice::playingContainer(Container* container) const noexcept
+bool sbk::engine::Voice::playingContainer(Container* container) const noexcept
 {
     if (container == nullptr)
     {
@@ -96,13 +96,13 @@ bool SB::Engine::Voice::playingContainer(Container* container) const noexcept
     return std::find_if(m_voiceInstances.begin(), m_voiceInstances.end(), containerEqual) != m_voiceInstances.end();
 }
 
-const std::vector<std::unique_ptr<NodeInstance>>& SB::Engine::Voice::getVoices() const noexcept
+const std::vector<std::unique_ptr<NodeInstance>>& sbk::engine::Voice::getVoices() const noexcept
 {
     return m_voiceInstances;
 }
 
-std::size_t SB::Engine::Voice::voices() const { return m_voiceInstances.size(); }
+std::size_t sbk::engine::Voice::voices() const { return m_voiceInstances.size(); }
 
-NodeInstance* SB::Engine::Voice::voice(std::size_t index) const { return m_voiceInstances[index].get(); }
+NodeInstance* sbk::engine::Voice::voice(std::size_t index) const { return m_voiceInstances[index].get(); }
 
-bool SB::Engine::Voice::isPlaying() const { return !m_voiceInstances.empty(); }
+bool sbk::engine::Voice::isPlaying() const { return !m_voiceInstances.empty(); }

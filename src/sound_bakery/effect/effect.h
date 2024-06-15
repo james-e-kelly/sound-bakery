@@ -2,7 +2,7 @@
 
 #include "sound_bakery/core/core_include.h"
 
-namespace SB::Engine
+namespace sbk::engine
 {
     class SB_CLASS EffectParameterDescription final
     {
@@ -19,12 +19,12 @@ namespace SB::Engine
     /**
      * @brief Wraps a sc_dsp_config
      */
-    class SB_CLASS EffectDescription final : public SB::Core::database_object
+    class SB_CLASS EffectDescription final : public sbk::core::database_object
     {
         REGISTER_REFLECTION(EffectDescription, database_object)
 
     public:
-        EffectDescription() : SB::Core::database_object(), m_config() { setDSPType(SC_DSP_TYPE_LOWPASS); }
+        EffectDescription() : sbk::core::database_object(), m_config() { setDSPType(SC_DSP_TYPE_LOWPASS); }
 
         void setDSPType(sc_dsp_type type)
         {

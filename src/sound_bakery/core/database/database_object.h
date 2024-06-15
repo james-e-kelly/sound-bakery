@@ -2,7 +2,7 @@
 
 #include "sound_bakery/core/object/object.h"
 
-namespace SB::Core
+namespace sbk::core
 {
     class SB_CLASS database_object_utilities
     {
@@ -23,8 +23,8 @@ namespace SB::Core
         REGISTER_REFLECTION(database_object, object, database_object_utilities)
 
     public:
-        sb_id get_database_id() const;
-        void set_database_id(sb_id id);
+        sbk_id get_database_id() const;
+        void set_database_id(sbk_id id);
 
         std::string_view get_database_name() const;
         void set_database_name(std::string_view name);
@@ -32,11 +32,11 @@ namespace SB::Core
         bool get_editor_hidden() const { return editorHidden; }
         void set_editor_hidden(bool hidden) { editorHidden = hidden; }
 
-        operator sb_id() const { return m_objectID; }
+        operator sbk_id() const { return m_objectID; }
 
     private:
         std::string m_objectName;
-        sb_id m_objectID = 0;
+        sbk_id m_objectID = 0;
 
         bool editorHidden = false;  //< If true, the object won't render in the editor or be saved
 

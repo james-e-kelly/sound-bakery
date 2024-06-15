@@ -38,7 +38,7 @@ bool PropertyDrawer::DrawProperty(rttr::property property,
     if (!readonly)
     {
         readonly =
-            property.get_metadata(SB::Editor::METADATA_KEY::Readonly).to_bool();
+            property.get_metadata(sbk::editor::METADATA_KEY::Readonly).to_bool();
     }
 
     ImGui::PushID(property.get_name().data());
@@ -56,7 +56,7 @@ bool PropertyDrawer::DrawProperty(rttr::property property,
         DrawReadonlyVariant(propertyValue);
     }
     else if (const rttr::variant payloadString =
-                 property.get_metadata(SB::Editor::METADATA_KEY::Payload);
+                 property.get_metadata(sbk::editor::METADATA_KEY::Payload);
              payloadString.is_valid())
     {
         edited = DrawPayloadDrop(propertyValue, payloadString);
@@ -65,7 +65,7 @@ bool PropertyDrawer::DrawProperty(rttr::property property,
     {
         edited = DrawVariant(
             propertyValue, property.get_name(),
-            property.get_metadata(SB::Editor::METADATA_KEY::MinMax));
+            property.get_metadata(sbk::editor::METADATA_KEY::MinMax));
     }
 
     if (edited)
@@ -153,13 +153,13 @@ bool PropertyDrawer::DrawVariant(rttr::variant& variant,
     }
     else if (type.is_wrapper() && type.get_wrapped_type().is_arithmetic())
     {
-        sb_id id = variant.extract_wrapped_value().convert<sb_id>();
+        sbk_id id = variant.extract_wrapped_value().convert<sbk_id>();
         rttr::type templateType = *type.get_template_arguments().begin();
 
         std::string payloadString =
-            std::string(SB::Util::TypeHelper::getPayloadFromType(templateType));
+            std::string(sbk::Util::TypeHelper::getPayloadFromType(templateType));
 
-        SB::Core::DatabasePtr<SB::Core::object> objectPtr(id);
+        sbk::core::DatabasePtr<sbk::core::object> objectPtr(id);
 
         edited = DrawPayloadDrop(variant, payloadString);
     }
@@ -178,15 +178,15 @@ bool PropertyDrawer::DrawVariant(rttr::variant& variant,
     }
     else if (type.is_class())
     {
-        if (type == SB::Engine::EffectParameterDescription::type())
+        if (type == sbk::engine::EffectParameterDescription::type())
         {
-            SB::Engine::EffectParameterDescription effectParamterDescription =
-                variant.convert<SB::Engine::EffectParameterDescription>();
+            sbk::engine::EffectParameterDescription effectParamterDescription =
+                variant.convert<sbk::engine::EffectParameterDescription>();
 
             switch (effectParamterDescription.m_parameter.type)
             {
                 case SC_DSP_PARAMETER_TYPE_FLOAT:
-                    SB::Editor::MinMax minMax(
+                    sbk::editor::MinMax minMax(
                         effectParamterDescription.m_parameter.floatParameter.min,
                         effectParamterDescription.m_parameter.floatParameter.max);
                     edited = DrawFloat(
@@ -200,10 +200,10 @@ bool PropertyDrawer::DrawVariant(rttr::variant& variant,
                 variant = effectParamterDescription;
             }
         }
-        else if (type == rttr::type::get<SB::Core::FloatProperty>())
+        else if (type == rttr::type::get<sbk::core::FloatProperty>())
         {
-            SB::Core::FloatProperty floatProperty =
-                variant.convert<SB::Core::FloatProperty>();
+            sbk::core::FloatProperty floatProperty =
+                variant.convert<sbk::core::FloatProperty>();
             float floatValue = floatProperty.get();
 
             std::pair<float, float> floatMinMax = floatProperty.getMinMaxPair();
@@ -215,7 +215,7 @@ bool PropertyDrawer::DrawVariant(rttr::variant& variant,
                 edited  = true;
             }
         }
-        else if (type == rttr::type::get<SB::Core::IntProperty>())
+        else if (type == rttr::type::get<sbk::core::IntProperty>())
         {
         }
         else if (type == rttr::type::get<std::filesystem::path>())
@@ -282,10 +282,10 @@ void PropertyDrawer::DrawReadonlyVariant(rttr::variant variant, bool disabled)
         variant = variant.extract_wrapped_value();
     }
 
-    if (variant.is_type<sb_id>() && isWrapper)
+    if (variant.is_type<sbk_id>() && isWrapper)
     {
-        SB::Core::DatabasePtr<SB::Core::database_object> object(
-            variant.convert<sb_id>());
+        sbk::core::DatabasePtr<sbk::core::database_object> object(
+            variant.convert<sbk_id>());
 
         if (object.lookup())
         {
@@ -403,8 +403,8 @@ bool PropertyDrawer::DrawSequentialContainer(
 
         if (type.is_wrapper())
         {
-            assert(type.get_wrapped_type() == rttr::type::get<sb_id>());
-            createdDefault = (sb_id)0;
+            assert(type.get_wrapped_type() == rttr::type::get<sbk_id>());
+            createdDefault = (sbk_id)0;
             const bool converted = createdDefault.convert(type);
             assert(converted);
         }
@@ -488,17 +488,17 @@ bool PropertyDrawer::DrawAssociateContainer(
              * @todo Can we construct basic types without any manual work?
              */
             if (keyType.is_wrapper() &&
-                keyType.get_wrapped_type() == rttr::type::get<sb_id>())
+                keyType.get_wrapped_type() == rttr::type::get<sbk_id>())
             {
-                sb_id id = 0;
+                sbk_id id = 0;
                 key      = id;
                 key.convert(keyType);
             }
 
             if (valueType.is_wrapper() &&
-                valueType.get_wrapped_type() == rttr::type::get<sb_id>())
+                valueType.get_wrapped_type() == rttr::type::get<sbk_id>())
             {
-                sb_id id = 0;
+                sbk_id id = 0;
                 value    = id;
                 value.convert(valueType);
             }
@@ -619,7 +619,7 @@ bool PropertyDrawer::DrawPayloadDrop(rttr::variant& value,
         std::string payloadStringString = payloadString.to_string();
 
         // Allow all
-        if (payloadStringString == SB::Editor::PayloadObject)
+        if (payloadStringString == sbk::editor::PayloadObject)
         {
             if (const ImGuiPayload* const payload = ImGui::GetDragDropPayload())
             {
@@ -637,11 +637,11 @@ bool PropertyDrawer::DrawPayloadDrop(rttr::variant& value,
                 char* payloadCharString = static_cast<char*>(payload->Data);
                 data                    = std::string(payloadCharString);
             }
-            else if (valueType == rttr::type::get<sb_id>() ||
+            else if (valueType == rttr::type::get<sbk_id>() ||
                      (valueType.is_wrapper() &&
-                      valueType.get_wrapped_type() == rttr::type::get<sb_id>()))
+                      valueType.get_wrapped_type() == rttr::type::get<sbk_id>()))
             {
-                sb_id* payloadID = static_cast<sb_id*>(payload->Data);
+                sbk_id* payloadID = static_cast<sbk_id*>(payload->Data);
                 data             = *payloadID;
 
                 if (valueType.is_wrapper())
@@ -657,15 +657,15 @@ bool PropertyDrawer::DrawPayloadDrop(rttr::variant& value,
             if (valueType.is_wrapper() && std::string(valueType.get_name().data()).find("ChildPtr") != std::string::npos)
             {
                 bool convertSuccess = false;
-                SB::Core::ChildPtr<SB::Core::database_object> dataAsChildPtr = data.convert<SB::Core::ChildPtr<SB::Core::database_object>>(&convertSuccess);
+                sbk::core::ChildPtr<sbk::core::database_object> dataAsChildPtr = data.convert<sbk::core::ChildPtr<sbk::core::database_object>>(&convertSuccess);
 
                 if (convertSuccess)
                 {
-                    SB::Core::ChildPtr<SB::Core::database_object> valueAsChildPtr = value.convert<SB::Core::ChildPtr<SB::Core::database_object>>(&convertSuccess);
+                    sbk::core::ChildPtr<sbk::core::database_object> valueAsChildPtr = value.convert<sbk::core::ChildPtr<sbk::core::database_object>>(&convertSuccess);
 
                     if (convertSuccess)
                     {
-                        sb_id currentID = valueAsChildPtr.id();
+                        sbk_id currentID = valueAsChildPtr.id();
 
                         valueAsChildPtr = dataAsChildPtr;
 
@@ -720,12 +720,12 @@ bool PropertyDrawer::DrawPayloadDrop(rttr::property property,
                 char* payloadCharString = static_cast<char*>(payload->Data);
                 data                    = std::string(payloadCharString);
             }
-            else if (propertyType == rttr::type::get<sb_id>() ||
+            else if (propertyType == rttr::type::get<sbk_id>() ||
                      (propertyType.is_wrapper() &&
                       propertyType.get_wrapped_type() ==
-                          rttr::type::get<sb_id>()))
+                          rttr::type::get<sbk_id>()))
             {
-                sb_id* payloadID = static_cast<sb_id*>(payload->Data);
+                sbk_id* payloadID = static_cast<sbk_id*>(payload->Data);
                 data             = *payloadID;
 
                 if (propertyType.is_wrapper())

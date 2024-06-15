@@ -8,15 +8,15 @@
 template <typename T>
 T* newObject()
 {
-    static_assert(std::is_base_of<SB::Core::object, T>::value);
+    static_assert(std::is_base_of<sbk::core::object, T>::value);
 
     T* obj = new T();
 
     if (obj)
     {
-        if (SB::Core::ObjectTracker* const objectTracker = SB::Engine::System::getObjectTracker())
+        if (sbk::core::object_tracker* const objectTracker = sbk::engine::system::getObjectTracker())
         {
-            objectTracker->trackObject((SB::Core::object*)obj);
+            objectTracker->trackObject((sbk::core::object*)obj);
         }
     }
     else
@@ -28,17 +28,17 @@ T* newObject()
 }
 
 template <typename T>
-T* newDatabaseObject(sb_id id = 0)
+T* newDatabaseObject(sbk_id id = 0)
 {
-    static_assert(std::is_base_of<SB::Core::database_object, T>::value);
+    static_assert(std::is_base_of<sbk::core::database_object, T>::value);
 
     T* obj = new T();
 
     if (obj)
     {
-        if (SB::Core::ObjectTracker* const objectTracker = SB::Engine::System::getObjectTracker())
+        if (sbk::core::object_tracker* const objectTracker = sbk::engine::system::get())
         {
-            objectTracker->trackObject((SB::Core::object*)obj);
+            objectTracker->trackObject((sbk::core::object*)obj);
         }
     }
     else

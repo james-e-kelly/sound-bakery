@@ -2,7 +2,7 @@
 
 #include "sound_bakery/core/database/database_object.h"
 
-namespace SB::Core
+namespace sbk::core
 {
     /**
      * @brief Runtime lookup of objects, using their ID or name
@@ -10,7 +10,7 @@ namespace SB::Core
     class SB_CLASS database
     {
     public:
-        void add_or_update_id(sb_id oldID, sb_id newID, database_object* object)
+        void add_or_update_id(sbk_id oldID, sbk_id newID, database_object* object)
         {
             assert(object != nullptr && "object was nullptr");
 
@@ -50,7 +50,7 @@ namespace SB::Core
             }
         }
 
-        void remove(sb_id id)
+        void remove(sbk_id id)
         {
             if (id)
             {
@@ -89,7 +89,7 @@ namespace SB::Core
             return result;
         }
 
-        database_object* try_find(sb_id id) const
+        database_object* try_find(sbk_id id) const
         {
             database_object* result = nullptr;
 
@@ -113,7 +113,7 @@ namespace SB::Core
             return result;
         }
 
-        std::weak_ptr<database_object> try_find_weak(sb_id id) const
+        std::weak_ptr<database_object> try_find_weak(sbk_id id) const
         {
             std::weak_ptr<database_object> result;
 
@@ -157,9 +157,9 @@ namespace SB::Core
         }
 
     private:
-        static sb_id create_new_id();
+        static sbk_id create_new_id();
 
-        std::unordered_map<sb_id, std::shared_ptr<database_object>> m_idToPointerMap;
-        std::unordered_map<std::string, sb_id> m_nameToIdMap;
+        std::unordered_map<sbk_id, std::shared_ptr<database_object>> m_idToPointerMap;
+        std::unordered_map<std::string, sbk_id> m_nameToIdMap;
     };
 }  // namespace SB::Core

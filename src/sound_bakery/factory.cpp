@@ -13,13 +13,13 @@
 #include "sound_bakery/sound/sound.h"
 #include "sound_bakery/system.h"
 
-SB::Core::object* SB::Engine::Factory::createObjectFromType(rttr::type objectType, sb_id id)
+sbk::core::object* sbk::engine::Factory::createObjectFromType(rttr::type objectType, sbk_id id)
 {
     assert(objectType.is_valid() && "object Type must be valid!");
 
     rttr::constructor constructor = objectType.get_constructor();
     assert(constructor.is_valid() && "object in Sound Bakery must be constructable. Define this in the "
-                                     "Reflection file");
+                                     "reflection file");
 
     rttr::variant variant        = constructor.invoke();
     const rttr::type variantType = variant.get_type();
@@ -29,24 +29,24 @@ SB::Core::object* SB::Engine::Factory::createObjectFromType(rttr::type objectTyp
                                               "shared ptrs are disallowed");
     assert(variantType.get_raw_type().is_valid());
 
-    const rttr::type testObjectType = rttr::type::get<SB::Core::object>();
-    const rttr::type databaseType   = rttr::type::get<SB::Core::database_object>();
+    const rttr::type testObjectType = rttr::type::get<sbk::core::object>();
+    const rttr::type databaseType   = rttr::type::get<sbk::core::database_object>();
 
     assert(databaseType.is_derived_from(testObjectType));
 
     const rttr::type type    = variant.get_type();
     const rttr::type rawType = type.get_raw_type();
 
-    assert(rawType.is_derived_from(testObjectType) && "Type must derive from the SB::Core::object type");
+    assert(rawType.is_derived_from(testObjectType) && "Type must derive from the sbk::core::object type");
 
     bool conversionWasSuccessful        = false;
-    SB::Core::database_object* converted = variant.convert<SB::Core::database_object*>(&conversionWasSuccessful);
+    sbk::core::database_object* converted = variant.convert<sbk::core::database_object*>(&conversionWasSuccessful);
     assert(converted != nullptr);
     assert(conversionWasSuccessful == true);
 
-    if (SB::Core::ObjectTracker* const objectTracker = SB::Engine::System::getObjectTracker())
+    if (sbk::core::object_tracker* const objectTracker = sbk::engine::system::get())
     {
-        objectTracker->trackObject((SB::Core::object*)converted);
+        objectTracker->trackObject((sbk::core::object*)converted);
     }
 
     converted->set_database_id(id);
@@ -54,9 +54,9 @@ SB::Core::object* SB::Engine::Factory::createObjectFromType(rttr::type objectTyp
     return converted;
 }
 
-SB::Core::database_object* SB::Engine::Factory::createDatabaseObjectFromType(rttr::type objectType, sb_id id)
+sbk::core::database_object* sbk::engine::Factory::createDatabaseObjectFromType(rttr::type objectType, sbk_id id)
 {
-    assert(objectType.is_derived_from<SB::Core::database_object>());
+    assert(objectType.is_derived_from<sbk::core::database_object>());
 
-    return createObjectFromType(objectType, id)->try_convert_object<SB::Core::database_object>();
+    return createObjectFromType(objectType, id)->try_convert_object<sbk::core::database_object>();
 }

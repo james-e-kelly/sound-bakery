@@ -2,7 +2,7 @@
 
 #include "sound_chef/sound_chef.h"
 
-namespace SB
+namespace sbk
 {
     struct SC_SYSTEM_DELETER
     {

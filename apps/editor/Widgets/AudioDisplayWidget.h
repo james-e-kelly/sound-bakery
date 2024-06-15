@@ -3,7 +3,7 @@
 #include "Widget.h"
 #include "sound_bakery/sound_bakery.h"
 
-namespace SB::Engine
+namespace sbk::engine
 {
     class Sound;
 }
@@ -30,5 +30,5 @@ private:
     int m_playPixel           = 0;
     float m_drawWidth         = 0;
     float m_previousDrawWidth = 0;
-    SB::Engine::Sound* m_previousSound;
+    sbk::engine::Sound* m_previousSound;
 };

@@ -8,9 +8,9 @@
 #include "sound_bakery/system.h"
 #include "sound_bakery/voice/voice.h"
 
-using namespace SB::Engine;
+using namespace sbk::engine;
 
-DEFINE_REFLECTION(SB::Engine::NodeInstance)
+DEFINE_REFLECTION(sbk::engine::NodeInstance)
 
 NodeInstance::~NodeInstance()
 {
@@ -23,7 +23,7 @@ NodeInstance::~NodeInstance()
     }
 }
 
-bool SB::Engine::NodeInstance::init(const InitNodeInstance& initData)
+bool sbk::engine::NodeInstance::init(const InitNodeInstance& initData)
 {
     if (m_state != NodeInstanceState::UNINIT)
     {
@@ -37,7 +37,7 @@ bool SB::Engine::NodeInstance::init(const InitNodeInstance& initData)
 
     bool converted = false;
     m_referencingNode =
-        rttr::wrapper_mapper<SB::Core::DatabasePtr<NodeBase>>::convert<Node>(initData.refNode, converted).shared();
+        rttr::wrapper_mapper<sbk::core::DatabasePtr<NodeBase>>::convert<Node>(initData.refNode, converted).shared();
 
     if (!m_nodeGroup.initNodeGroup(*initData.refNode.raw()))
     {
@@ -225,7 +225,7 @@ void NodeInstance::setLowpass(float oldLowpass, float newLowpass)
 {
     (void)oldLowpass;
 
-    const double percentage    = SB::Maths::easeOutCubic(newLowpass / 100.0);
+    const double percentage    = sbk::Maths::easeOutCubic(newLowpass / 100.0);
     const double lowpassCutoff = (19980 - (19980.0 * percentage)) + 20.0;
     assert(lowpassCutoff >= 20.0);
 
@@ -236,7 +236,7 @@ void NodeInstance::setHighpass(float oldHighpass, float newHighpass)
 {
     (void)oldHighpass;
 
-    const double percentage     = SB::Maths::easeInCubic(newHighpass / 100.0);
+    const double percentage     = sbk::Maths::easeInCubic(newHighpass / 100.0);
     const double highpassCutoff = (19980.0 * percentage) + 20.0;
     assert(highpassCutoff >= 20.0);
 

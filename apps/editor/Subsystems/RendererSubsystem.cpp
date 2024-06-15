@@ -9,7 +9,7 @@
 
 #include <cmrc/cmrc.hpp>
 
-CMRC_DECLARE(SB::Fonts);
+CMRC_DECLARE(sbk::Fonts);
 
 #include <stdio.h>
 

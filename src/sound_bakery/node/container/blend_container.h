@@ -2,7 +2,7 @@
 
 #include "sound_bakery/node/container/container.h"
 
-namespace SB::Engine
+namespace sbk::engine
 {
     class SB_CLASS BlendContainer : public Container
     {
