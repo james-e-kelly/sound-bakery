@@ -234,4 +234,4 @@ namespace sbk::engine
         std::unordered_map<GlobalFloatParameter, FloatParameter::ParameterProperty> floatParameters;
         std::unordered_map<GlobalIntParameter, NamedParameter::ParameterProperty> intParameters;
     };
-}  // namespace SB::Engine
+}  // namespace sbk::engine

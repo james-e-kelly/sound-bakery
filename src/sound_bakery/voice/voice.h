@@ -42,4 +42,4 @@ namespace sbk::engine
 
         std::vector<std::unique_ptr<NodeInstance>> m_voiceInstances;
     };
-}  // namespace SB::Engine
+}  // namespace sbk::engine

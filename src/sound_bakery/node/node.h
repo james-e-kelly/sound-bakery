@@ -81,4 +81,4 @@ namespace sbk::engine
 
         REGISTER_REFLECTION(Node, NodeBase)
     };
-}  // namespace SB::Engine
+}  // namespace sbk::engine

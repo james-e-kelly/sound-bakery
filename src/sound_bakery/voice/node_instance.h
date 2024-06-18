@@ -136,4 +136,4 @@ namespace sbk::engine
 
         REGISTER_REFLECTION(NodeInstance, sbk::core::object)
     };
-}  // namespace SB::Engine
+}  // namespace sbk::engine

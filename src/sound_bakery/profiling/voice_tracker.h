@@ -30,4 +30,4 @@ namespace sbk::engine
             std::unordered_map<sbk_id, unsigned int> m_nodePlayingCount;
         };
     }  // namespace Profiling
-}  // namespace SB::Engine
+}  // namespace sbk::engine

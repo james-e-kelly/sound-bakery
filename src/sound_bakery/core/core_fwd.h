@@ -12,5 +12,5 @@ namespace sbk
 
         template <typename T>
         class Property;
-    }  // namespace Core
-}  // namespace SB
+    }  // namespace core
+}  // namespace sbk

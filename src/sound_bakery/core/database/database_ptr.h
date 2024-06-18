@@ -425,7 +425,7 @@ namespace sbk::core
     private:
         typename DatabasePtr<TObject>::TIdentifierType m_ownerID = 0;
     };
-}  // namespace SB::Core
+}  // namespace sbk::core
 
 namespace std
 {

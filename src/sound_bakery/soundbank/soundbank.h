@@ -16,4 +16,4 @@ namespace sbk::engine
     private:
         std::vector<sbk::core::DatabasePtr<Event>> m_events;
     };
-}  // namespace SB::Engine
+}  // namespace sbk::engine

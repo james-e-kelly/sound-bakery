@@ -14,4 +14,4 @@ namespace sbk
     };
 
     using SystemPtr = std::unique_ptr<sc_system, SC_SYSTEM_DELETER>;
-}  // namespace SB
+}  // namespace sbk

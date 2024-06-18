@@ -8,7 +8,7 @@ namespace sbk
     {
         class object;
         class database_object;
-    }  // namespace Core
+    }  // namespace core
 
     using LObjectPtr = SB::Core::DatabasePtr<SB::Core::DatabaseObject>;
-}  // namespace SB
+}  // namespace sbk

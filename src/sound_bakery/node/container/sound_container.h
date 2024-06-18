@@ -24,4 +24,4 @@ namespace sbk::engine
 
         REGISTER_REFLECTION(SoundContainer, Container)
     };
-}  // namespace SB::Engine
+}  // namespace sbk::engine

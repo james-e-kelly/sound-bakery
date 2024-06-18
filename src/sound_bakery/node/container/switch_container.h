@@ -67,4 +67,4 @@ namespace sbk::engine
         REGISTER_REFLECTION(SwitchContainer, Container)
         RTTR_REGISTRATION_FRIEND
     };
-}  // namespace SB::Engine
+}  // namespace sbk::engine

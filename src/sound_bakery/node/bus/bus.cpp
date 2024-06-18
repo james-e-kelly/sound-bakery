@@ -11,13 +11,13 @@ void Bus::onLoaded()
 {
     Node::onLoaded();
 
-    //if (sbk::engine::system* system = sbk::engine::system::get())
+    // if (sbk::engine::system* system = sbk::engine::system::get())
     //{
-    //    if (system->getMasterBus().id() == get_database_id())
-    //    {
-    //        setMasterBus(true);
-    //    }
-    //}
+    //     if (system->getMasterBus().id() == get_database_id())
+    //     {
+    //         setMasterBus(true);
+    //     }
+    // }
 }
 
 void Bus::lock()

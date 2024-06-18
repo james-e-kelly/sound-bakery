@@ -8,4 +8,4 @@ namespace sbk::engine
     {
         REGISTER_REFLECTION(AuxBus, Bus)
     };
-}  // namespace SB::Engine
+}  // namespace sbk::engine

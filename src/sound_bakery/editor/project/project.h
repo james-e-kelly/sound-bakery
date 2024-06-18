@@ -54,7 +54,7 @@ namespace sbk::editor
     };
 
     /**
-     * Manages a project file and the objects contained within it.
+     * @brief Manages a project file and the objects contained within it.
      */
     class SB_CLASS project
     {
@@ -66,9 +66,9 @@ namespace sbk::editor
 
         void encodeAllMedia() const;
 
-        const ProjectConfiguration& getConfig() const { return m_projectConfig; }
+        [[nodiscard]] const ProjectConfiguration& getConfig() const { return m_projectConfig; }
 
-        sbk::engine::SoundContainer* getPreviewContainer() const { return m_previewSoundContainer; }
+        [[nodiscard]] sbk::engine::SoundContainer* getPreviewContainer() const { return m_previewSoundContainer; }
 
     private:
         void loadSounds();
@@ -87,4 +87,4 @@ namespace sbk::editor
         ProjectConfiguration m_projectConfig;
         sbk::engine::SoundContainer* m_previewSoundContainer;
     };
-}  // namespace SB::Editor
+}  // namespace sbk::editor

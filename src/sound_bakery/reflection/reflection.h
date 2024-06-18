@@ -36,4 +36,4 @@ namespace sbk::reflection
 
     void registerReflectionTypes();
     void unregisterReflectionTypes();
-}  // namespace SB::Reflection
+}  // namespace sbk::reflection

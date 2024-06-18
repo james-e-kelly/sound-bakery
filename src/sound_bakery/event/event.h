@@ -25,4 +25,4 @@ namespace sbk::engine
     public:
         std::vector<Action> m_actions;
     };
-}  // namespace SB::Engine
+}  // namespace sbk::engine

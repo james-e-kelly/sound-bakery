@@ -15,4 +15,4 @@ namespace sbk::engine
         REGISTER_REFLECTION(SequenceContainer, Container)
         RTTR_REGISTRATION_FRIEND
     };
-}  // namespace SB::Engine
+}  // namespace sbk::engine

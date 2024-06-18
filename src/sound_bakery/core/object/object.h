@@ -89,4 +89,4 @@ namespace sbk::core
          */
         mutable std::optional<rttr::type> m_type = std::nullopt;
     };
-}  // namespace SB::Core
+}  // namespace sbk::core

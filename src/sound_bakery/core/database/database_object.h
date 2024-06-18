@@ -42,4 +42,4 @@ namespace sbk::core
 
         friend class database;
     };
-}  // namespace SB::Core
+}  // namespace sbk::core

@@ -470,7 +470,7 @@ void Serializer::packageSoundbank(sbk::engine::Soundbank* soundbank, YAML::Emitt
 rttr::instance Serializer::unpackSoundbank(YAML::Node& node) { return rttr::instance(); }
 
 rttr::instance sbk::core::Serialization::Serializer::createAndLoadObject(YAML::Node& node,
-                                                                        std::optional<rttr::method> onLoadedMethod)
+                                                                         std::optional<rttr::method> onLoadedMethod)
 {
     const rttr::type type = rttr::type::get_by_name(node[s_ObjectTypeKey].as<std::string>());
 
@@ -495,8 +495,8 @@ rttr::instance sbk::core::Serialization::Serializer::createAndLoadObject(YAML::N
 }
 
 bool sbk::core::Serialization::Serializer::loadProperties(YAML::Node& node,
-                                                         rttr::instance instance,
-                                                         std::optional<rttr::method> onLoadedMethod)
+                                                          rttr::instance instance,
+                                                          std::optional<rttr::method> onLoadedMethod)
 {
     bool result = false;
 
@@ -594,8 +594,8 @@ bool Serializer::saveVariant(YAML::Emitter& emitter, rttr::string_view name, rtt
 }
 
 bool sbk::core::Serialization::Serializer::saveStringVariant(YAML::Emitter& emitter,
-                                                            rttr::string_view name,
-                                                            rttr::variant variant)
+                                                             rttr::string_view name,
+                                                             rttr::variant variant)
 {
     bool result = false;
 
@@ -640,8 +640,8 @@ bool sbk::core::Serialization::Serializer::saveStringVariant(YAML::Emitter& emit
 }
 
 bool sbk::core::Serialization::Serializer::saveEnumVariant(YAML::Emitter& emitter,
-                                                          rttr::string_view name,
-                                                          rttr::variant variant)
+                                                           rttr::string_view name,
+                                                           rttr::variant variant)
 {
     bool result = false;
 
@@ -662,8 +662,8 @@ bool sbk::core::Serialization::Serializer::saveEnumVariant(YAML::Emitter& emitte
 }
 
 bool sbk::core::Serialization::Serializer::saveAssociateContainerVariant(YAML::Emitter& emitter,
-                                                                        rttr::string_view name,
-                                                                        rttr::variant variant)
+                                                                         rttr::string_view name,
+                                                                         rttr::variant variant)
 {
     bool result = false;
 
@@ -713,8 +713,8 @@ bool sbk::core::Serialization::Serializer::saveAssociateContainerVariant(YAML::E
 }
 
 bool sbk::core::Serialization::Serializer::saveSequentialContainerVariant(YAML::Emitter& emitter,
-                                                                         rttr::string_view name,
-                                                                         rttr::variant variant)
+                                                                          rttr::string_view name,
+                                                                          rttr::variant variant)
 {
     bool result = false;
 
@@ -747,8 +747,8 @@ bool sbk::core::Serialization::Serializer::saveSequentialContainerVariant(YAML::
 }
 
 bool sbk::core::Serialization::Serializer::saveClassVariant(YAML::Emitter& emitter,
-                                                           rttr::string_view name,
-                                                           rttr::variant variant)
+                                                            rttr::string_view name,
+                                                            rttr::variant variant)
 {
     bool result = false;
 

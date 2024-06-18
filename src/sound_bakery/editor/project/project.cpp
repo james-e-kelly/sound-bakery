@@ -77,8 +77,8 @@ void sbk::editor::project::encodeAllMedia() const
                 std::filesystem::create_directories(encodedSoundFile.parent_path());
 
                 const sc_encoder_config encoderConfig =
-                    sc_encoder_config_init((ma_encoding_format_ext)ma_encoding_format_vorbis, ma_format_f32,
-                                            0, ma_standard_sample_rate_48000, 8);
+                    sc_encoder_config_init((ma_encoding_format_ext)ma_encoding_format_vorbis, ma_format_f32, 0,
+                                           ma_standard_sample_rate_48000, 8);
 
                 std::filesystem::path soundPath = sound->getSoundName();
 
@@ -90,8 +90,8 @@ void sbk::editor::project::encodeAllMedia() const
                 threadPool->post(
                     [sound, encoderConfig, encodedSoundFile, soundPath]
                     {
-                        sc_result result = sc_encoder_write_from_file(soundPath.string().c_str(), encodedSoundFile.string().c_str(),
-                                                                        &encoderConfig);
+                        sc_result result = sc_encoder_write_from_file(
+                            soundPath.string().c_str(), encodedSoundFile.string().c_str(), &encoderConfig);
                         assert(result == MA_SUCCESS);
 
                         concurrencpp::resume_on(sbk::engine::system::get()->game_thread_executer());
@@ -245,10 +245,15 @@ void sbk::editor::project::buildSoundbanks() const
                 }
 
                 sc_bank bank;
-                sc_result initresult = sc_bank_init((m_projectConfig.buildFolder() / (std::string(soundbank->get_database_name()) + ".bnk")).string().c_str(), &bank);
+                sc_result initresult = sc_bank_init(
+                    (m_projectConfig.buildFolder() / (std::string(soundbank->get_database_name()) + ".bnk"))
+                        .string()
+                        .c_str(),
+                    &bank);
                 assert(initresult == MA_SUCCESS);
 
-                sc_result buildResult = sc_bank_build(&bank, encodedSoundPathsToSave.data(), encodingFormats.data(), encodedSoundPathsToSave.size());
+                sc_result buildResult = sc_bank_build(&bank, encodedSoundPathsToSave.data(), encodingFormats.data(),
+                                                      encodedSoundPathsToSave.size());
                 assert(buildResult == MA_SUCCESS);
 
                 sc_bank_uninit(&bank);

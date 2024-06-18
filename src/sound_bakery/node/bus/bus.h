@@ -48,4 +48,4 @@ namespace sbk::engine
     private:
         bool m_masterBus;
     };
-}  // namespace SB::Engine
+}  // namespace sbk::engine

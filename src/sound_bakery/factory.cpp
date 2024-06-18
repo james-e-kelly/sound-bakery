@@ -39,7 +39,7 @@ sbk::core::object* sbk::engine::Factory::createObjectFromType(rttr::type objectT
 
     assert(rawType.is_derived_from(testObjectType) && "Type must derive from the sbk::core::object type");
 
-    bool conversionWasSuccessful        = false;
+    bool conversionWasSuccessful          = false;
     sbk::core::database_object* converted = variant.convert<sbk::core::database_object*>(&conversionWasSuccessful);
     assert(converted != nullptr);
     assert(conversionWasSuccessful == true);

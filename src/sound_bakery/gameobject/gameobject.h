@@ -112,4 +112,4 @@ namespace sbk::engine
         std::vector<std::unique_ptr<Voice>> m_voices;
         LocalParameterList m_parameters;
     };
-}  // namespace SB::Engine
+}  // namespace sbk::engine

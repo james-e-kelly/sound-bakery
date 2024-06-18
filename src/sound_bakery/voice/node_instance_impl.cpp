@@ -71,11 +71,11 @@ bool ParentNodeOwner::createParent(const NodeBase& thisNode, Voice* owningVoice)
         case SB_NODE_NULL:
         {
             // @TODO Fix up master bus
-            //const sbk::core::DatabasePtr<Bus>& masterBus = sbk::engine::system::get()->getMasterBus();
+            // const sbk::core::DatabasePtr<Bus>& masterBus = sbk::engine::system::get()->getMasterBus();
 
-            //if (masterBus.lookup() && masterBus.id() != thisNode.get_database_id())
+            // if (masterBus.lookup() && masterBus.id() != thisNode.get_database_id())
             //{
-            //    parent = masterBus->lockAndCopy();
+            //     parent = masterBus->lockAndCopy();
 
             //    InitNodeInstance initData;
             //    initData.refNode     = masterBus->try_convert_object<NodeBase>();

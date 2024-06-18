@@ -18,4 +18,4 @@ namespace sbk::engine
 
         static sbk::core::database_object* createDatabaseObjectFromType(rttr::type objectType, sbk_id id = 0);
     };
-}  // namespace SB::Engine
+}  // namespace sbk::engine

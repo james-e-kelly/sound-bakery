@@ -46,4 +46,4 @@ namespace sbk::engine
         sc_dsp_config m_config;
         std::vector<EffectParameterDescription> m_parameterDescriptions;
     };
-}  // namespace SB::Engine
+}  // namespace sbk::engine

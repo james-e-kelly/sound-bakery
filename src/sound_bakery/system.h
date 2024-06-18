@@ -10,7 +10,7 @@
 namespace sbk::editor
 {
     class project;
-}  // namespace SB::Editor
+}  // namespace sbk::editor
 
 namespace sbk::engine
 {
@@ -22,11 +22,10 @@ namespace sbk::engine
     /**
      * @brief Manager of the whole Sound Bakery.
      */
-    class SB_CLASS system final : 
-        public sc_system, 
-        public concurrencpp::runtime, 
-        public sbk::core::object_tracker, 
-        public sbk::core::database
+    class SB_CLASS system final : public sc_system,
+                                  public concurrencpp::runtime,
+                                  public sbk::core::object_tracker,
+                                  public sbk::core::database
     {
         REGISTER_REFLECTION(system)
         NOT_COPYABLE(system)
@@ -59,4 +58,4 @@ namespace sbk::engine
         std::shared_ptr<concurrencpp::manual_executor> m_gameThreadExecuter;
         std::shared_ptr<spdlog::logger> m_logger;
     };
-}  // namespace SB::Engine
+}  // namespace sbk::engine

@@ -77,4 +77,4 @@ namespace sbk::engine
         REGISTER_REFLECTION(Container, Node)
         RTTR_REGISTRATION_FRIEND
     };
-}  // namespace SB::Engine
+}  // namespace sbk::engine

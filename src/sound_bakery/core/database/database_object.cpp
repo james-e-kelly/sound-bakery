@@ -1,6 +1,5 @@
 #include "database_object.h"
 
-#include "sound_bakery/system.h"
 #include "sound_bakery/core/database/database.h"
 #include "sound_bakery/system.h"
 
@@ -31,7 +30,7 @@ void sbk::core::database_object::set_database_name(std::string_view name)
 {
     if (database* const database = sbk::engine::system::get())
     {
-        database->add_or_update_name(m_objectName, name.data(), this);
+        database->add_or_update_name(m_objectName, this, name.data());
     }
 
     m_objectName = name;

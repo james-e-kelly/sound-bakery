@@ -13,7 +13,7 @@ namespace sbk::engine
 {
     class Soundbank;
     class system;
-}  // namespace SB::Engine
+}  // namespace sbk::engine
 
 namespace sbk::core::Serialization
 {
@@ -54,4 +54,4 @@ namespace sbk::core::Serialization
                                                    rttr::variant variant);
         static bool saveClassVariant(YAML::Emitter& emitter, rttr::string_view name, rttr::variant variant);
     };
-}  // namespace SB::Core::Serialization
+}  // namespace sbk::core::Serialization

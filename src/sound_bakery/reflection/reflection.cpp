@@ -48,9 +48,11 @@ namespace sbk::reflection
                 rttr::wrapper_mapper<sbk::core::ChildPtr<sbk::core::database_object>>::template convert<DerivedClass>);
 
             rttr::type::register_converter_func(
-                rttr::wrapper_mapper<sbk::core::DatabasePtr<DerivedClass>>::template convert<sbk::core::database_object>);
+                rttr::wrapper_mapper<sbk::core::DatabasePtr<DerivedClass>>::template convert<
+                    sbk::core::database_object>);
             rttr::type::register_converter_func(
-                rttr::wrapper_mapper<sbk::core::DatabasePtr<sbk::core::database_object>>::template convert<DerivedClass>);
+                rttr::wrapper_mapper<sbk::core::DatabasePtr<sbk::core::database_object>>::template convert<
+                    DerivedClass>);
         }
     };
 
@@ -181,8 +183,8 @@ namespace sbk::reflection
 
         registration::class_<SoundContainer>("sbk::engine::SoundContainer")
             .constructor<>()(policy::ctor::as_raw_ptr)
-            .property("Sound",
-                      &SoundContainer::m_sound)(metadata(sbk::editor::METADATA_KEY::Payload, sbk::editor::PayloadSound));
+            .property("Sound", &SoundContainer::m_sound)(
+                metadata(sbk::editor::METADATA_KEY::Payload, sbk::editor::PayloadSound));
 
         registration::class_<BlendContainer>("sbk::engine::BlendContainer").constructor<>()(policy::ctor::as_raw_ptr);
 
@@ -233,11 +235,11 @@ namespace sbk::reflection
         sbk::reflection::RegisterPointerConversionsForBaseClasses<SwitchContainer>();
 
         sbk::reflection::RegisterPointerConversionsForBaseClasses<Container>();  // makes sure we have a direct
-                                                                                // conversion between Container and
-                                                                                // DatabaseObject
+                                                                                 // conversion between Container and
+                                                                                 // DatabaseObject
 
         sbk::reflection::RegisterPointerConversionsForBaseClasses<Sound>();
 
         sbk::reflection::RegisterPointerConversionsForBaseClasses<Soundbank>();
     }
-}  // namespace SB::Reflection
+}  // namespace sbk::reflection

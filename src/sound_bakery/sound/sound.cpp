@@ -21,8 +21,8 @@ void Sound::loadSynchronous()
         if (std::filesystem::exists(encodedSoundPath))
         {
             finalSoundPath   = encodedSoundPath;
-            encodedSoundPath = std::filesystem::relative(encodedSoundPath,
-                                                         sbk::engine::system::get_project()->getConfig().encodedFolder());
+            encodedSoundPath = std::filesystem::relative(
+                encodedSoundPath, sbk::engine::system::get_project()->getConfig().encodedFolder());
         }
         else
         {

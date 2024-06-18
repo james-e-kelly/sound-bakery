@@ -50,9 +50,7 @@ namespace
     }
 }  // namespace
 
-system::system() : 
-    sc_system(),
-    m_gameThreadExecuter(make_manual_executor())
+system::system() : sc_system(), m_gameThreadExecuter(make_manual_executor())
 {
     assert(s_system == nullptr);
     s_system = this;

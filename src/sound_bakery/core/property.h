@@ -95,4 +95,4 @@ namespace sbk::core
     using IntProperty   = Property<int32_t>;
     using IdProperty    = Property<sbk_id>;
     using FloatProperty = Property<float>;
-}  // namespace SB::Core
+}  // namespace sbk::core
