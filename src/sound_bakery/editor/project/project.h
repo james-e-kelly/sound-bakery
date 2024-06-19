@@ -1,6 +1,7 @@
 #pragma once
 
 #include "sound_bakery/core/core_include.h"
+#include "sound_bakery/core/object/object_owner.h"
 
 #include "yaml-cpp/yaml.h"
 
@@ -56,7 +57,7 @@ namespace sbk::editor
     /**
      * @brief Manages a project file and the objects contained within it.
      */
-    class SB_CLASS project
+    class SB_CLASS project : public sbk::core::object_owner
     {
     public:
         bool openProject(const std::filesystem::path& projectFile);
@@ -68,7 +69,7 @@ namespace sbk::editor
 
         [[nodiscard]] const ProjectConfiguration& getConfig() const { return m_projectConfig; }
 
-        [[nodiscard]] sbk::engine::SoundContainer* getPreviewContainer() const { return m_previewSoundContainer; }
+        [[nodiscard]] std::weak_ptr<sbk::engine::SoundContainer> getPreviewContainer() const { return m_previewSoundContainer; }
 
     private:
         void loadSounds();
@@ -85,6 +86,6 @@ namespace sbk::editor
 
     private:
         ProjectConfiguration m_projectConfig;
-        sbk::engine::SoundContainer* m_previewSoundContainer;
+        std::weak_ptr<sbk::engine::SoundContainer> m_previewSoundContainer;
     };
 }  // namespace sbk::editor

@@ -67,8 +67,6 @@ system::~system()
     background_executor()->shutdown();
     game_thread_executer()->shutdown();
 
-    sbk::core::database::clear_database();
-
     sbk::reflection::unregisterReflectionTypes();
 
     sc_system_close(this);
@@ -131,6 +129,11 @@ sc_result system::update()
     s_system->m_gameThreadExecuter->loop(32);
 
     return MA_SUCCESS;
+}
+
+sbk::core::object_owner* system::current_object_owner() 
+{ 
+    return m_project.get(); 
 }
 
 sc_result system::open_project(const std::filesystem::path& projectFile)

@@ -1,53 +1,35 @@
 #pragma once
 
-#include "sound_bakery/core/object/object.h"
-#include "sound_bakery/core/object/object_tracker.h"
+#include "sound_bakery/core/object/object_owner.h"
 #include "sound_bakery/system.h"
 
-template <typename T>
-T* newObject()
+namespace sbk
 {
-    static_assert(std::is_base_of<sbk::core::object, T>::value);
-
-    T* obj = new T();
-
-    if (obj)
+    template <typename T>
+    std::shared_ptr<T> new_object()
     {
-        if (sbk::core::object_tracker* const objectTracker = sbk::engine::system::getObjectTracker())
+        if (sbk::engine::system* const system = sbk::engine::system::get())
         {
-            objectTracker->track_object((sbk::core::object*)obj);
+            if (sbk::core::object_owner* const objectOwner = system->current_object_owner())
+            {
+                return objectOwner->create_runtime_object<T>();
+            }
         }
-    }
-    else
-    {
-        assert(false && "Memory allocation failed");
+
+        return {};
     }
 
-    return obj;
-}
-
-template <typename T>
-T* newDatabaseObject(sbk_id id = 0)
-{
-    static_assert(std::is_base_of<sbk::core::database_object, T>::value);
-
-    T* obj = new T();
-
-    if (obj)
+    template <typename T>
+    std::shared_ptr<T> new_database_object()
     {
-        if (sbk::core::object_tracker* const objectTracker = sbk::engine::system::get())
+        if (sbk::engine::system* const system = sbk::engine::system::get())
         {
-            objectTracker->track_object((sbk::core::object*)obj);
+            if (sbk::core::object_owner* const objectOwner = system->current_object_owner())
+            {
+                return objectOwner->create_database_object<T>();
+            }
         }
+
+        return {};
     }
-    else
-    {
-        assert(false && "Memory allocation failed");
-    }
-
-    obj->set_database_id(id);
-
-    assert(obj->get_database_id() && "ID must be valid by this point");
-
-    return obj;
-}
+}  // namespace sbk

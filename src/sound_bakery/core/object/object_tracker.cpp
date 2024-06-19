@@ -38,12 +38,12 @@ void object_tracker::untrack_object(object* object, std::optional<rttr::type> ty
     }
 }
 
-std::unordered_set<object*> object_tracker::getObjectsOfCategory(const SB_OBJECT_CATEGORY& category)
+std::unordered_set<object*> object_tracker::get_objects_of_category(const SB_OBJECT_CATEGORY& category) const
 {
-    return m_categoryToObjects[category];
+    return m_categoryToObjects.at(category);
 }
 
-std::unordered_set<object*> object_tracker::getObjectsOfType(const rttr::type& type) { return m_typeToObjects[type]; }
+std::unordered_set<object*> object_tracker::get_objects_of_type(const rttr::type& type) const { return m_typeToObjects.at(type); }
 
 void object_tracker::on_object_destroyed(object* object)
 {

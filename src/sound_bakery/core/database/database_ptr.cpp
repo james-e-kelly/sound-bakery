@@ -8,9 +8,9 @@ using namespace sbk::core;
 
 std::weak_ptr<database_object> sbk::core::findObject(sbk_id id)
 {
-    if (database* const database = sbk::engine::system::get())
+    if (object_owner* const objectOwner = sbk::engine::system::get()->current_object_owner())
     {
-        return database->try_find(id);
+        return objectOwner->try_find(id);
     }
     return {};
 }

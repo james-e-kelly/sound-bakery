@@ -7,6 +7,7 @@ set(ATLAS_SOURCES
     
     core/object/object.cpp
     core/object/object_tracker.cpp
+    core/object/object_owner.cpp
     
     core/database/database.cpp
     core/database/database_object.cpp
@@ -67,6 +68,7 @@ set(ATLAS_HEADERS
     core/object/object.h
     core/object/object_global.h
     core/object/object_tracker.h
+    core/object/object_owner.h
     
     core/database/database.h
     core/database/database_object.h

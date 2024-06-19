@@ -148,7 +148,7 @@ namespace sbk::engine
 
             if (name.empty() == false)
             {
-                if (NamedParameterValue* const parameterValue = newDatabaseObject<NamedParameterValue>())
+                if (std::shared_ptr<NamedParameterValue> parameterValue = sbk::new_database_object<NamedParameterValue>())
                 {
                     parameterValue->set_database_name(name);
                     parameterValue->parentParameter = this;

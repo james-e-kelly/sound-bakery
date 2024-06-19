@@ -12,7 +12,7 @@ namespace sbk::core
      *
      * Another object should own the shared_ptr objects to the database_object.
      */
-    class SB_CLASS database : protected object_tracker
+    class SB_CLASS database
     {
     public:
         void add_object_to_database(const std::shared_ptr<database_object>& object);
@@ -22,8 +22,6 @@ namespace sbk::core
         [[nodiscard]] std::weak_ptr<database_object> try_find(std::string_view name) const;
 
         [[nodiscard]] std::vector<std::weak_ptr<database_object>> get_all() const;
-        using object_tracker::getObjectsOfCategory;
-        using object_tracker::getObjectsOfType;
 
         void clear_database() noexcept;
 

@@ -8,10 +8,14 @@ void sbk::core::database::add_object_to_database(const std::shared_ptr<database_
         return;
     }
 
-    track_object(object.get());
-
-    const sbk_id objectID = object->get_database_id();
+    sbk_id objectID = object->get_database_id();
     const std::string objectName = std::string(object->get_database_name());
+
+    if (objectID == SB_INVALID_ID)
+    {
+        objectID = create_new_id();
+        object->m_objectID = objectID;  // calling the function would trigger the callbacks
+    }
 
     if (auto iter = m_idToPointerMap.find(objectID); iter != m_idToPointerMap.end())
     {
@@ -49,8 +53,6 @@ void sbk::core::database::remove_object_from_database(sbk_id objectID)
             {
                 m_nameToIdMap.erase(nameIter);
             }
-
-            untrack_object(object.get());
 
             object->get_on_destroy().RemoveObject(this);
             object->get_on_update_id().RemoveObject(this);

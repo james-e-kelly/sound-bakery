@@ -52,6 +52,15 @@ namespace sbk::core
          * @brief Create a valid LazyPtr
          * @param object
          */
+        DatabasePtr(const TObjectShared& object)
+            : m_objectID(object ? static_cast<TIdentifierType>(*object) : 0), m_objectPtr(object), m_null(object.use_count() == 0)
+        {
+        }
+
+        /**
+         * @brief Create a valid LazyPtr
+         * @param object
+         */
         DatabasePtr(const TObjectPtr& object)
             : m_objectID(static_cast<TIdentifierType>(*object)), m_objectPtr(findObject(id())), m_null(false)
         {
@@ -162,6 +171,15 @@ namespace sbk::core
         }
 
     public:
+        TThisType& operator=(TObjectShared object)
+        {
+            if (raw() != object.get())
+            {
+                reset(object.get());
+            }
+            return *this;
+        }
+
         /**
          * @brief Assign this LazyPtr to a new object, potentially destroying
          * the current object if we're acting as a UniquePtr

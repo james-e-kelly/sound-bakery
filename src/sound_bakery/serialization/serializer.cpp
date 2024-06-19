@@ -474,24 +474,19 @@ rttr::instance sbk::core::Serialization::Serializer::createAndLoadObject(YAML::N
 {
     const rttr::type type = rttr::type::get_by_name(node[s_ObjectTypeKey].as<std::string>());
 
-    const rttr::instance created = type.create_default();
-
-    assert(created);
-
-    if (created)
+    if (sbk::engine::system* const system = sbk::engine::system::get())
     {
-        if (created.get_derived_type().is_derived_from<sbk::core::object>())
+        if (sbk::core::object_owner* const objectOwner = system->current_object_owner())
         {
-            if (sbk::core::object_tracker* const objectTracker = sbk::engine::system::get())
-            {
-                objectTracker->track_object(created.try_convert<sbk::core::object>());
-            }
-        }
+            rttr::variant created = objectOwner->create_runtime_object(type);
 
-        loadProperties(node, created, onLoadedMethod);
+            loadProperties(node, created, onLoadedMethod);
+
+            return created;
+        }
     }
 
-    return created;
+    return {};
 }
 
 bool sbk::core::Serialization::Serializer::loadProperties(YAML::Node& node,

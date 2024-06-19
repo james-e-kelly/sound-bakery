@@ -30,7 +30,7 @@ void sbk::engine::Node::gatherParameters(GlobalParameterList& parameters)
 
 void Node::addEffect(sc_dsp_type type)
 {
-    EffectDescription* effect = newDatabaseObject<EffectDescription>();
+    std::shared_ptr<EffectDescription> effect = sbk::new_database_object<EffectDescription>();
     effect->setDSPType(type);
     m_effectDescriptions.emplace_back(effect);
 }
