@@ -32,7 +32,7 @@ void sbk::engine::GameObject::postEvent(Event* event)
             sbk::engine::Event* childEvent      = nullptr;
             sbk::engine::GameObject* gameObject = nullptr;
 
-            if (const sbk::core::DatabasePtr<sbk::core::database_object>& destination = action.m_destination;
+            if (const sbk::core::database_ptr<sbk::core::database_object>& destination = action.m_destination;
                 destination.lookup())
             {
                 container  = destination->try_convert_object<sbk::engine::Container>();

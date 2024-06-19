@@ -113,7 +113,7 @@ namespace sbk::engine
     class SB_CLASS NamedParameterValue : public sbk::core::database_object
     {
     public:
-        sbk::core::DatabasePtr<NamedParameter> parentParameter;
+        sbk::core::database_ptr<NamedParameter> parentParameter;
 
         REGISTER_REFLECTION(NamedParameterValue, database_object)
     };
@@ -142,9 +142,9 @@ namespace sbk::engine
          * @param name Name of the parameter value
          * @return The newly created parameter value that's in the database
          */
-        sbk::core::DatabasePtr<NamedParameterValue> addNewValue(const std::string_view name)
+        sbk::core::database_ptr<NamedParameterValue> addNewValue(const std::string_view name)
         {
-            sbk::core::DatabasePtr<NamedParameterValue> result;
+            sbk::core::database_ptr<NamedParameterValue> result;
 
             if (name.empty() == false)
             {
@@ -168,7 +168,7 @@ namespace sbk::engine
          *
          * If none exists, ensures at least the "None" value exists.
          */
-        std::unordered_set<sbk::core::DatabasePtr<NamedParameterValue>> getValues()
+        std::unordered_set<sbk::core::database_ptr<NamedParameterValue>> getValues()
         {
             if (m_values.empty())
             {
@@ -184,7 +184,7 @@ namespace sbk::engine
          * Internally sets the parameter with the DatabasePtr's ID.
          * @param value
          */
-        void setSelectedValue(sbk::core::DatabasePtr<NamedParameterValue> value)
+        void setSelectedValue(sbk::core::database_ptr<NamedParameterValue> value)
         {
             if (m_values.contains(value))
             {
@@ -202,19 +202,19 @@ namespace sbk::engine
          * Mainly used in reflection and for displaying in the editor.
          * @return
          */
-        sbk::core::DatabasePtr<NamedParameterValue> getSelectedValue() const
+        sbk::core::database_ptr<NamedParameterValue> getSelectedValue() const
         {
-            sbk::core::DatabasePtr<NamedParameterValue> selected(get());
+            sbk::core::database_ptr<NamedParameterValue> selected(get());
             selected.lookup();
             return selected;
         }
 
     private:
-        std::unordered_set<sbk::core::DatabasePtr<NamedParameterValue>> m_values;
+        std::unordered_set<sbk::core::database_ptr<NamedParameterValue>> m_values;
     };
 
-    using GlobalFloatParameter = sbk::core::DatabasePtr<FloatParameter>;
-    using GlobalIntParameter   = sbk::core::DatabasePtr<NamedParameter>;
+    using GlobalFloatParameter = sbk::core::database_ptr<FloatParameter>;
+    using GlobalIntParameter   = sbk::core::database_ptr<NamedParameter>;
 
     /**
      * @brief Holds a list of parameters.

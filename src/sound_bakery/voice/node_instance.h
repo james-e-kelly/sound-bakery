@@ -73,7 +73,7 @@ namespace sbk::engine
         /**
          * @brief Node to reference
          */
-        sbk::core::DatabasePtr<NodeBase> refNode;
+        sbk::core::database_ptr<NodeBase> refNode;
 
         /**
          * @brief Type of node to create.

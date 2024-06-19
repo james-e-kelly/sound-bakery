@@ -22,30 +22,30 @@ namespace sbk::engine
         ~NodeBase();
 
     public:
-        virtual void setParentNode(const sbk::core::DatabasePtr<NodeBase>& parent);
-        virtual void setOutputBus(const sbk::core::DatabasePtr<NodeBase>& bus);
+        virtual void setParentNode(const sbk::core::database_ptr<NodeBase>& parent);
+        virtual void setOutputBus(const sbk::core::database_ptr<NodeBase>& bus);
 
         SB_NODE_STATUS getNodeStatus() const noexcept;
 
         NodeBase* parent() const;
         NodeBase* outputBus() const;
 
-        virtual bool canAddChild(const sbk::core::DatabasePtr<NodeBase>& child) const;
+        virtual bool canAddChild(const sbk::core::database_ptr<NodeBase>& child) const;
 
-        void addChild(const sbk::core::DatabasePtr<NodeBase>& child);
-        void removeChild(const sbk::core::DatabasePtr<NodeBase>& child);
+        void addChild(const sbk::core::database_ptr<NodeBase>& child);
+        void removeChild(const sbk::core::database_ptr<NodeBase>& child);
 
         std::vector<NodeBase*> getChildren() const;
         std::size_t getChildCount() const;
-        bool hasChild(const sbk::core::DatabasePtr<NodeBase>& test) const;
+        bool hasChild(const sbk::core::database_ptr<NodeBase>& test) const;
 
         void gatherAllDescendants(std::vector<NodeBase*>& descendants) const;
         void gatherAllParents(std::vector<NodeBase*>& parents) const;
 
     protected:
-        sbk::core::DatabasePtr<NodeBase> m_parentNode;
-        sbk::core::DatabasePtr<NodeBase> m_outputBus;
-        std::unordered_set<sbk::core::DatabasePtr<NodeBase>> m_childNodes;
+        sbk::core::database_ptr<NodeBase> m_parentNode;
+        sbk::core::database_ptr<NodeBase> m_outputBus;
+        std::unordered_set<sbk::core::database_ptr<NodeBase>> m_childNodes;
 
         REGISTER_REFLECTION(NodeBase, sbk::core::database_object)
     };
@@ -61,7 +61,7 @@ namespace sbk::engine
         sbk::core::float_property m_lowpass  = sbk::core::float_property(1.0f, 0.0f, 100.0f);
         sbk::core::float_property m_highpass = sbk::core::float_property(1.0f, 0.0f, 100.0f);
 
-        std::vector<sbk::core::DatabasePtr<effect_description>> m_effectDescriptions;
+        std::vector<sbk::core::database_ptr<effect_description>> m_effectDescriptions;
 
         /**
          * @brief Gathers all parameters on this and child nodes that can effect the runtime output.

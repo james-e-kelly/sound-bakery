@@ -33,7 +33,7 @@ bool NodeGroupInstance::initNodeGroup(const NodeBase& node)
     addDspToNodeGroup(nodeGroup.get(), &lowpass, sc_dsp_config_init(SC_DSP_TYPE_LOWPASS));
     addDspToNodeGroup(nodeGroup.get(), &highpass, sc_dsp_config_init(SC_DSP_TYPE_HIGHPASS));
 
-    for (const sbk::core::DatabasePtr<sbk::engine::effect_description>& desc :
+    for (const sbk::core::database_ptr<sbk::engine::effect_description>& desc :
          node.try_convert_object<Node>()->m_effectDescriptions)
     {
         if (desc.lookup() == false)
@@ -154,7 +154,7 @@ bool ChildrenNodeOwner::createChildren(const NodeBase& thisNode,
             childrenNodes.push_back(std::make_shared<NodeInstance>());
 
             InitNodeInstance initData;
-            initData.refNode           = sbk::core::DatabasePtr<NodeBase>(child->get_database_id());
+            initData.refNode           = sbk::core::database_ptr<NodeBase>(child->get_database_id());
             initData.type              = NodeInstanceType::CHILD;
             initData.owningVoice       = owningVoice;
             initData.parentForChildren = thisNodeInstance;

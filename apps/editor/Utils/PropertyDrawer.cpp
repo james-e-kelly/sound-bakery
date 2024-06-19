@@ -159,7 +159,7 @@ bool PropertyDrawer::DrawVariant(rttr::variant& variant,
         std::string payloadString =
             std::string(sbk::Util::TypeHelper::getPayloadFromType(templateType));
 
-        sbk::core::DatabasePtr<sbk::core::object> objectPtr(id);
+        sbk::core::database_ptr<sbk::core::object> objectPtr(id);
 
         edited = DrawPayloadDrop(variant, payloadString);
     }
@@ -284,7 +284,7 @@ void PropertyDrawer::DrawReadonlyVariant(rttr::variant variant, bool disabled)
 
     if (variant.is_type<sbk_id>() && isWrapper)
     {
-        sbk::core::DatabasePtr<sbk::core::database_object> object(
+        sbk::core::database_ptr<sbk::core::database_object> object(
             variant.convert<sbk_id>());
 
         if (object.lookup())

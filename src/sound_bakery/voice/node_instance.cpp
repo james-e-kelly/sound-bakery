@@ -37,7 +37,7 @@ bool sbk::engine::NodeInstance::init(const InitNodeInstance& initData)
 
     bool converted = false;
     m_referencingNode =
-        rttr::wrapper_mapper<sbk::core::DatabasePtr<NodeBase>>::convert<Node>(initData.refNode, converted).shared();
+        rttr::wrapper_mapper<sbk::core::database_ptr<NodeBase>>::convert<Node>(initData.refNode, converted).shared();
 
     if (!m_nodeGroup.initNodeGroup(*initData.refNode.raw()))
     {

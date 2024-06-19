@@ -117,7 +117,7 @@ void PlayerWidget::Render()
         {
             if (ImGui::BeginTable("Table", 2))
             {
-                for (const sbk::core::DatabasePtr<sbk::engine::NamedParameter>& intParameter :
+                for (const sbk::core::database_ptr<sbk::engine::NamedParameter>& intParameter :
                      parameterList.intParameters)
                 {
                     if (intParameter.lookup() == false)
@@ -125,7 +125,7 @@ void PlayerWidget::Render()
                         continue;
                     }
 
-                    sbk::core::DatabasePtr<sbk::engine::NamedParameterValue> selectedIntParameterValue =
+                    sbk::core::database_ptr<sbk::engine::NamedParameterValue> selectedIntParameterValue =
                         listenerGameObject->getIntParameterValue(intParameter);
 
                     if (selectedIntParameterValue.lookup() == false)
@@ -140,7 +140,7 @@ void PlayerWidget::Render()
 
                     if (ImGui::BeginCombo("Selected", selectedIntParameterValue->get_database_name().data()))
                     {
-                        for (sbk::core::DatabasePtr<sbk::engine::NamedParameterValue> parameterValue : intParameter->getValues())
+                        for (sbk::core::database_ptr<sbk::engine::NamedParameterValue> parameterValue : intParameter->getValues())
                         {
                             if (parameterValue.lookup() == false)
                             {

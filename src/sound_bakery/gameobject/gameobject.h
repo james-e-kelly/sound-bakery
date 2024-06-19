@@ -36,7 +36,7 @@ namespace sbk::engine
          * @param parameter to get the value for.
          * @return value of the parameter.
          */
-        float getFloatParameterValue(const sbk::core::DatabasePtr<FloatParameter>& parameter) const
+        float getFloatParameterValue(const sbk::core::database_ptr<FloatParameter>& parameter) const
         {
             float result = 0.0F;
 
@@ -64,7 +64,7 @@ namespace sbk::engine
          * @param parameter to get the value for.
          * @return value of the parameter.
          */
-        sbk_id getIntParameterValue(const sbk::core::DatabasePtr<NamedParameter>& parameter) const
+        sbk_id getIntParameterValue(const sbk::core::database_ptr<NamedParameter>& parameter) const
         {
             sbk_id result = 0;
 
@@ -94,7 +94,7 @@ namespace sbk::engine
         {
             if (m_parameters.intParameters.find(parameterValue.first) == m_parameters.intParameters.cend())
             {
-                sbk::core::DatabasePtr<NamedParameterValue> parameterValuePtr(parameterValue.second);
+                sbk::core::database_ptr<NamedParameterValue> parameterValuePtr(parameterValue.second);
                 parameterValuePtr.lookup();
                 parameterValuePtr->parentParameter.lookup();
 

@@ -11,9 +11,9 @@ namespace sbk::engine
         REGISTER_REFLECTION(Soundbank, sbk::core::database_object)
 
     public:
-        std::vector<sbk::core::DatabasePtr<Event>> GetEvents() const { return m_events; }
+        std::vector<sbk::core::database_ptr<Event>> GetEvents() const { return m_events; }
 
     private:
-        std::vector<sbk::core::DatabasePtr<Event>> m_events;
+        std::vector<sbk::core::database_ptr<Event>> m_events;
     };
 }  // namespace sbk::engine

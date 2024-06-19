@@ -21,4 +21,4 @@ sbk::engine::Sound* sbk::engine::SoundContainer::getSound() const
     }
 }
 
-void sbk::engine::SoundContainer::setSound(const sbk::core::DatabasePtr<sbk::engine::Sound>& sound) { m_sound = sound; }
+void sbk::engine::SoundContainer::setSound(const sbk::core::database_ptr<sbk::engine::Sound>& sound) { m_sound = sound; }

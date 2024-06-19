@@ -150,7 +150,7 @@ void ProjectNodesWidget::RenderSingleNode(rttr::type type,
                         if (const ImGuiPayload* const currentPayload = ImGui::GetDragDropPayload())
                         {
                             sbk_id payloadID = *static_cast<sbk_id*>(currentPayload->Data);
-                            sbk::core::DatabasePtr<sbk::engine::NodeBase> potentialChild(payloadID);
+                            sbk::core::database_ptr<sbk::engine::NodeBase> potentialChild(payloadID);
 
                             if (node->canAddChild(potentialChild))
                             {
@@ -210,7 +210,7 @@ void ProjectNodesWidget::RenderSingleNode(rttr::type type,
                                  object->try_convert_object<
                                      sbk::engine::NamedParameter>())
                     {
-                        for (const sbk::core::DatabasePtr<
+                        for (const sbk::core::database_ptr<
                                  sbk::engine::NamedParameterValue>& value :
                              intParameter->getValues())
                         {

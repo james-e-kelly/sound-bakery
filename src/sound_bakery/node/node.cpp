@@ -46,9 +46,9 @@ NodeBase::~NodeBase()
     }
 }
 
-void sbk::engine::NodeBase::setParentNode(const sbk::core::DatabasePtr<NodeBase>& parent) { m_parentNode = parent; }
+void sbk::engine::NodeBase::setParentNode(const sbk::core::database_ptr<NodeBase>& parent) { m_parentNode = parent; }
 
-void sbk::engine::NodeBase::setOutputBus(const sbk::core::DatabasePtr<NodeBase>& bus) { m_outputBus = bus; }
+void sbk::engine::NodeBase::setOutputBus(const sbk::core::database_ptr<NodeBase>& bus) { m_outputBus = bus; }
 
 SB_NODE_STATUS sbk::engine::NodeBase::getNodeStatus() const noexcept
 {
@@ -70,7 +70,7 @@ NodeBase* sbk::engine::NodeBase::parent() const { return m_parentNode.lookupRaw(
 
 NodeBase* sbk::engine::NodeBase::outputBus() const { return m_outputBus.lookupRaw(); }
 
-bool sbk::engine::NodeBase::canAddChild(const sbk::core::DatabasePtr<NodeBase>& child) const
+bool sbk::engine::NodeBase::canAddChild(const sbk::core::database_ptr<NodeBase>& child) const
 {
     if (m_childNodes.contains(child) || child.id() == get_database_id())
     {
@@ -79,7 +79,7 @@ bool sbk::engine::NodeBase::canAddChild(const sbk::core::DatabasePtr<NodeBase>& 
     return true;
 }
 
-void sbk::engine::NodeBase::addChild(const sbk::core::DatabasePtr<NodeBase>& child)
+void sbk::engine::NodeBase::addChild(const sbk::core::database_ptr<NodeBase>& child)
 {
     if (canAddChild(child))
     {
@@ -97,7 +97,7 @@ void sbk::engine::NodeBase::addChild(const sbk::core::DatabasePtr<NodeBase>& chi
     }
 }
 
-void sbk::engine::NodeBase::removeChild(const sbk::core::DatabasePtr<NodeBase>& child)
+void sbk::engine::NodeBase::removeChild(const sbk::core::database_ptr<NodeBase>& child)
 {
     if (child)
     {
@@ -125,7 +125,7 @@ std::vector<NodeBase*> sbk::engine::NodeBase::getChildren() const
 
 std::size_t sbk::engine::NodeBase::getChildCount() const { return m_childNodes.size(); }
 
-bool sbk::engine::NodeBase::hasChild(const sbk::core::DatabasePtr<NodeBase>& test) const
+bool sbk::engine::NodeBase::hasChild(const sbk::core::database_ptr<NodeBase>& test) const
 {
     return m_childNodes.contains(test);
 }

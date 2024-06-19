@@ -13,14 +13,14 @@ namespace sbk::engine
 
         void gatherChildrenForPlay(GatherChildrenContext& context) const override;
 
-        bool canAddChild(const sbk::core::DatabasePtr<NodeBase>& child) const override { return false; }
+        bool canAddChild(const sbk::core::database_ptr<NodeBase>& child) const override { return false; }
 
         Sound* getSound() const;
 
-        void setSound(const sbk::core::DatabasePtr<sbk::engine::Sound>& sound);
+        void setSound(const sbk::core::database_ptr<sbk::engine::Sound>& sound);
 
     private:
-        sbk::core::DatabasePtr<sbk::engine::Sound> m_sound;
+        sbk::core::database_ptr<sbk::engine::Sound> m_sound;
 
         REGISTER_REFLECTION(SoundContainer, Container)
     };

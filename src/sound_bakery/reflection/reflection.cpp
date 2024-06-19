@@ -48,10 +48,10 @@ namespace sbk::reflection
                 rttr::wrapper_mapper<sbk::core::ChildPtr<sbk::core::database_object>>::template convert<DerivedClass>);
 
             rttr::type::register_converter_func(
-                rttr::wrapper_mapper<sbk::core::DatabasePtr<DerivedClass>>::template convert<
+                rttr::wrapper_mapper<sbk::core::database_ptr<DerivedClass>>::template convert<
                     sbk::core::database_object>);
             rttr::type::register_converter_func(
-                rttr::wrapper_mapper<sbk::core::DatabasePtr<sbk::core::database_object>>::template convert<
+                rttr::wrapper_mapper<sbk::core::database_ptr<sbk::core::database_object>>::template convert<
                     DerivedClass>);
         }
     };
@@ -73,9 +73,9 @@ namespace sbk::reflection
                 rttr::wrapper_mapper<sbk::core::ChildPtr<BaseClass>>::template convert<DerivedClass>);
 
             rttr::type::register_converter_func(
-                rttr::wrapper_mapper<sbk::core::DatabasePtr<DerivedClass>>::template convert<BaseClass>);
+                rttr::wrapper_mapper<sbk::core::database_ptr<DerivedClass>>::template convert<BaseClass>);
             rttr::type::register_converter_func(
-                rttr::wrapper_mapper<sbk::core::DatabasePtr<BaseClass>>::template convert<DerivedClass>);
+                rttr::wrapper_mapper<sbk::core::database_ptr<BaseClass>>::template convert<DerivedClass>);
 
             CreatePointerConversion<DerivedClass, typename BaseClass::base_class_list>::perform();
             CreatePointerConversion<DerivedClass, U...>::perform();

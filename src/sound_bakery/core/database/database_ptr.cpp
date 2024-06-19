@@ -17,7 +17,7 @@ std::weak_ptr<database_object> sbk::core::findObject(sbk_id id)
 
 bool sbk::core::objectIdIsChildOfParent(sbk_id childToCheck, sbk_id parent)
 {
-    sbk::core::DatabasePtr<database_object> parentPtr(parent);
+    sbk::core::database_ptr<database_object> parentPtr(parent);
 
     if (parentPtr.lookup())
     {
@@ -34,7 +34,7 @@ sbk_id sbk::core::getParentIdFromId(sbk_id id)
 {
     if (id != 0)
     {
-        const sbk::core::DatabasePtr<database_object> databasePtr(id);
+        const sbk::core::database_ptr<database_object> databasePtr(id);
 
         if (databasePtr.lookup())
         {

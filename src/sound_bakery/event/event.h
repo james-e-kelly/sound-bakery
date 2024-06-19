@@ -15,7 +15,7 @@ namespace sbk::engine
     struct SB_CLASS Action
     {
         SB_ACTION_TYPE m_type = SB_ACTION_PLAY;
-        sbk::core::DatabasePtr<sbk::core::database_object> m_destination;
+        sbk::core::database_ptr<sbk::core::database_object> m_destination;
     };
 
     class SB_CLASS Event : public sbk::core::database_object

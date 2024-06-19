@@ -8,7 +8,7 @@ namespace sbk
         class database_object;
 
         template <typename T>
-        class DatabasePtr;
+        class database_ptr;
 
         template <typename T>
         class property;

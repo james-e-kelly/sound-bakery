@@ -38,7 +38,7 @@ namespace sbk::engine
 
     private:
         GameObject* m_owningGameObject = nullptr;
-        sbk::core::DatabasePtr<Container> m_playingContainer;
+        sbk::core::database_ptr<Container> m_playingContainer;
 
         std::vector<std::unique_ptr<NodeInstance>> m_voiceInstances;
     };
