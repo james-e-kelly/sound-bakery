@@ -67,7 +67,7 @@ system::~system()
     background_executor()->shutdown();
     game_thread_executer()->shutdown();
 
-    sbk::core::database::clear();
+    sbk::core::database::clear_database();
 
     sbk::reflection::unregisterReflectionTypes();
 

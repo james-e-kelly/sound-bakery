@@ -13,8 +13,6 @@ namespace sbk::engine
     public:
         Bus() : Node(), m_masterBus(false) {}
 
-        void onLoaded() override;
-
         bool canAddChild(const sbk::core::DatabasePtr<NodeBase>& child) const override
         {
             if (child.lookup() && child->getType().is_derived_from<Bus>())

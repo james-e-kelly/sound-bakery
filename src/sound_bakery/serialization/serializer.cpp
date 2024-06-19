@@ -484,7 +484,7 @@ rttr::instance sbk::core::Serialization::Serializer::createAndLoadObject(YAML::N
         {
             if (sbk::core::object_tracker* const objectTracker = sbk::engine::system::get())
             {
-                objectTracker->trackObject(created.try_convert<sbk::core::object>());
+                objectTracker->track_object(created.try_convert<sbk::core::object>());
             }
         }
 

@@ -17,13 +17,15 @@ namespace sbk::core
     class SB_CLASS object_tracker
     {
     public:
-        void trackObject(object* object);
-        void untrackObject(object* object, std::optional<rttr::type> typeOverride = std::nullopt);
+        void track_object(object* object);
+        void untrack_object(object* object, std::optional<rttr::type> typeOverride = std::nullopt);
 
         [[nodiscard]] std::unordered_set<object*> getObjectsOfCategory(const SB_OBJECT_CATEGORY& category);
         [[nodiscard]] std::unordered_set<object*> getObjectsOfType(const rttr::type& type);
 
     private:
+        void on_object_destroyed(object* object);
+
         std::unordered_map<SB_OBJECT_CATEGORY, std::unordered_set<object*>> m_categoryToObjects;
         std::unordered_map<rttr::type, std::unordered_set<object*>> m_typeToObjects;
     };

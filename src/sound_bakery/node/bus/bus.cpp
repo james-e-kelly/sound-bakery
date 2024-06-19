@@ -7,19 +7,6 @@ using namespace sbk::engine;
 
 DEFINE_REFLECTION(sbk::engine::Bus)
 
-void Bus::onLoaded()
-{
-    Node::onLoaded();
-
-    // if (sbk::engine::system* system = sbk::engine::system::get())
-    //{
-    //     if (system->getMasterBus().id() == get_database_id())
-    //     {
-    //         setMasterBus(true);
-    //     }
-    // }
-}
-
 void Bus::lock()
 {
     if (!m_busInstance)

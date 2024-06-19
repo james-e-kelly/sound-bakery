@@ -50,8 +50,6 @@ namespace sbk::engine
     public:
         Container() : Node() {}
 
-        void onLoaded() override;
-
         bool canAddChild(const sbk::core::DatabasePtr<NodeBase>& child) const override
         {
             if (child.lookup() && child->getType().is_derived_from<Container>())

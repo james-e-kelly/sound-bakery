@@ -26,18 +26,17 @@ namespace sbk::core
     };
 
     /**
-     * @brief Simple base Object that all Sound Bakery objects should inherit
+     * @brief Simple base object that all Sound Bakery objects should inherit
      * from
      */
-    class SB_CLASS object : public object_utilities
+    class SB_CLASS object : public object_utilities, public std::enable_shared_from_this<object>
     {
         REGISTER_REFLECTION(object, object_utilities)
+        NOT_COPYABLE(object)
 
     public:
         object() = default;
         virtual ~object();
-
-        NOT_COPYABLE(object)
 
         /**
          * @brief Gets the most derived type of this object and upcasts it to T
@@ -82,11 +81,18 @@ namespace sbk::core
             return m_type.value();
         }
 
+        [[nodiscard]] MulticastDelegate<object*>& get_on_destroy()
+        { 
+            return m_onDestroyEvent;
+        }
+
     private:
         /**
          * @brief Cache of this object's type so it can be grabbed during
          * destruction
          */
         mutable std::optional<rttr::type> m_type = std::nullopt;
+
+        MulticastDelegate<object*> m_onDestroyEvent;
     };
 }  // namespace sbk::core

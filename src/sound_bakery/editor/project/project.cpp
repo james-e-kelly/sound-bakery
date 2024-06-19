@@ -114,7 +114,7 @@ void sbk::editor::project::loadSounds()
 
             if (sbk::core::database* const database = sbk::engine::system::get())
             {
-                if (database->try_find(filename.stem().string().c_str()) == nullptr)
+                if (database->try_find(filename.stem().string().c_str()).expired())
                 {
                     if (sbk::core::database_object* const createdSound = newDatabaseObject<sbk::engine::Sound>())
                     {

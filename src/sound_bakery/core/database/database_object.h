@@ -4,23 +4,13 @@
 
 namespace sbk::core
 {
-    class SB_CLASS database_object_utilities
-    {
-    public:
-        virtual void onLoaded() {}
-        virtual void onProjectLoaded() {}
-        virtual void onDestroy() {}
-
-        REGISTER_REFLECTION(database_object_utilities)
-    };
-
     /**
      * @brief Base object type for any object that can exist in the
      * editor/database. Holds an ID and name
      */
-    class SB_CLASS database_object : public object, public database_object_utilities
+    class SB_CLASS database_object : public object
     {
-        REGISTER_REFLECTION(database_object, object, database_object_utilities)
+        REGISTER_REFLECTION(database_object, object)
 
     public:
         sbk_id get_database_id() const;
@@ -34,7 +24,13 @@ namespace sbk::core
 
         operator sbk_id() const { return m_objectID; }
 
+        [[nodiscard]] MulticastDelegate<sbk_id, sbk_id> get_on_update_id();
+        [[nodiscard]] MulticastDelegate<std::string_view, std::string_view> get_on_update_name();
+
     private:
+        MulticastDelegate<sbk_id, sbk_id> m_onUpdateID;
+        MulticastDelegate<std::string_view, std::string_view> m_onUpdateName;
+
         std::string m_objectName;
         sbk_id m_objectID = 0;
 

@@ -6,7 +6,7 @@
 
 using namespace sbk::core;
 
-void object_tracker::trackObject(object* object)
+void object_tracker::track_object(object* object)
 {
     if (object != nullptr)
     {
@@ -15,10 +15,12 @@ void object_tracker::trackObject(object* object)
 
         m_typeToObjects[type].emplace(object);
         m_categoryToObjects[category].emplace(object);
+
+        object->get_on_destroy().AddRaw(this, &object_tracker::on_object_destroyed);
     }
 }
 
-void object_tracker::untrackObject(object* object, std::optional<rttr::type> typeOverride)
+void object_tracker::untrack_object(object* object, std::optional<rttr::type> typeOverride)
 {
     if (object != nullptr)
     {
@@ -31,6 +33,8 @@ void object_tracker::untrackObject(object* object, std::optional<rttr::type> typ
         }
 
         m_categoryToObjects[category].erase(object);
+
+        object->get_on_destroy().RemoveObject(this);
     }
 }
 
@@ -40,3 +44,11 @@ std::unordered_set<object*> object_tracker::getObjectsOfCategory(const SB_OBJECT
 }
 
 std::unordered_set<object*> object_tracker::getObjectsOfType(const rttr::type& type) { return m_typeToObjects[type]; }
+
+void object_tracker::on_object_destroyed(object* object)
+{
+    if (object != nullptr)
+    {
+        untrack_object(object);
+    }
+}

@@ -46,7 +46,7 @@ sbk::core::object* sbk::engine::Factory::createObjectFromType(rttr::type objectT
 
     if (sbk::core::object_tracker* const objectTracker = sbk::engine::system::get())
     {
-        objectTracker->trackObject((sbk::core::object*)converted);
+        objectTracker->track_object((sbk::core::object*)converted);
     }
 
     converted->set_database_id(id);

@@ -15,7 +15,7 @@ T* newObject()
     {
         if (sbk::core::object_tracker* const objectTracker = sbk::engine::system::getObjectTracker())
         {
-            objectTracker->trackObject((sbk::core::object*)obj);
+            objectTracker->track_object((sbk::core::object*)obj);
         }
     }
     else
@@ -37,7 +37,7 @@ T* newDatabaseObject(sbk_id id = 0)
     {
         if (sbk::core::object_tracker* const objectTracker = sbk::engine::system::get())
         {
-            objectTracker->trackObject((sbk::core::object*)obj);
+            objectTracker->track_object((sbk::core::object*)obj);
         }
     }
     else

@@ -7,12 +7,9 @@ using namespace sbk::core;
 
 DEFINE_REFLECTION(sbk::core::object)
 
-object::~object()
-{
-    if (sbk::engine::system* const system = sbk::engine::system::get())
-    {
-        system->untrackObject(this, m_type);
-    }
+object::~object() 
+{ 
+    m_onDestroyEvent.Broadcast(this); 
 }
 
 sbk::engine::system* object_utilities::getSystem() const { return sbk::engine::system::get(); }

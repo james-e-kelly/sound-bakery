@@ -15,25 +15,28 @@ void sbk::core::database_object::set_database_id(sbk_id id)
 {
     assert(m_objectID == 0 && "Shouldn't update an object's ID at runtime");
 
-    if (database* const database = sbk::engine::system::get())
-    {
-        database->add_or_update_id(m_objectID, id, this);
-    }
-
     if (id != 0)
     {
+        m_onUpdateID.Broadcast(m_objectID, id);
         m_objectID = id;
     }
 }
 
 void sbk::core::database_object::set_database_name(std::string_view name)
 {
-    if (database* const database = sbk::engine::system::get())
-    {
-        database->add_or_update_name(m_objectName, this, name.data());
-    }
+    m_onUpdateName.Broadcast(m_objectName, name);
 
     m_objectName = name;
 
     m_debugName = name;
+}
+
+MulticastDelegate<sbk_id, sbk_id> sbk::core::database_object::get_on_update_id()
+{ 
+    return m_onUpdateID; 
+}
+
+MulticastDelegate<std::string_view, std::string_view> sbk::core::database_object::get_on_update_name()
+{
+    return m_onUpdateName;
 }
