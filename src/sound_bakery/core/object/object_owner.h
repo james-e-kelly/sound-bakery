@@ -7,13 +7,14 @@ namespace sbk::core
 {
     /**
      * @brief Creates, owns and tracks objects.
+     *
+     * This is the central location for object creation.
      */
     class SB_CLASS object_owner : protected database, protected object_tracker
     {
     public:
         using database::get_all;
         using database::try_find;
-
         using object_tracker::get_objects_of_category;
         using object_tracker::get_objects_of_type;
 

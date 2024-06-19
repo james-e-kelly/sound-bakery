@@ -4,6 +4,6 @@
 
 using namespace sbk::engine;
 
-DEFINE_REFLECTION(sbk::engine::EffectParameterDescription)
+DEFINE_REFLECTION(sbk::engine::effect_parameter_description)
 
-DEFINE_REFLECTION(sbk::engine::EffectDescription)
+DEFINE_REFLECTION(sbk::engine::effect_description)

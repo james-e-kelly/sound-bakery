@@ -11,6 +11,6 @@ namespace sbk
         class DatabasePtr;
 
         template <typename T>
-        class Property;
+        class property;
     }  // namespace core
 }  // namespace sbk

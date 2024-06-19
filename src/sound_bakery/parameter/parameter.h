@@ -22,14 +22,14 @@ namespace sbk::engine
         /**
          * @brief Defines the underlying property type used to store and broadcast values.
          */
-        using ParameterProperty = sbk::core::Property<ParameterType>;
+        using parameter_property = sbk::core::property<ParameterType>;
 
         /**
          * @brief Defines the type used for passing local versions/variations of this parameter.
          *
          * Uses a @ref SB_ID for the parameter ID instead of DatabasePtr<T> to help when used in child classes.
          */
-        using LocalParameter = std::pair<sbk_id, ParameterProperty>;
+        using LocalParameter = std::pair<sbk_id, parameter_property>;
 
         /**
          * @brief Defines an ID to a parameter and a value for that parameter.
@@ -69,9 +69,9 @@ namespace sbk::engine
         /**
          * @brief Get the parameter delegate that fires when changing the value.
          */
-        [[nodiscard]] typename ParameterProperty::PropertyChangedDelegate& getDelegate()
+        [[nodiscard]] typename parameter_property::property_changed_delegate& getDelegate()
         {
-            return m_property.getDelegate();
+            return m_property.get_delegate();
         }
 
         /**
@@ -86,7 +86,7 @@ namespace sbk::engine
 
     protected:
         ParameterType m_defaultValue;
-        sbk::core::Property<ParameterType> m_property;
+        sbk::core::property<ParameterType> m_property;
 
         REGISTER_REFLECTION(Parameter, database_object)
     };
@@ -232,7 +232,7 @@ namespace sbk::engine
      */
     struct SB_CLASS LocalParameterList
     {
-        std::unordered_map<GlobalFloatParameter, FloatParameter::ParameterProperty> floatParameters;
-        std::unordered_map<GlobalIntParameter, NamedParameter::ParameterProperty> intParameters;
+        std::unordered_map<GlobalFloatParameter, FloatParameter::parameter_property> floatParameters;
+        std::unordered_map<GlobalIntParameter, NamedParameter::parameter_property> intParameters;
     };
 }  // namespace sbk::engine

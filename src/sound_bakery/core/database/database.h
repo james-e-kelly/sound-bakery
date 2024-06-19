@@ -1,7 +1,6 @@
 #pragma once
 
 #include "sound_bakery/core/database/database_object.h"
-#include "sound_bakery/core/object/object_tracker.h"
 
 namespace sbk::core
 {

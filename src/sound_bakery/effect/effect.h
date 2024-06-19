@@ -4,14 +4,14 @@
 
 namespace sbk::engine
 {
-    class SB_CLASS EffectParameterDescription final
+    class SB_CLASS effect_parameter_description final
     {
-        REGISTER_REFLECTION(EffectParameterDescription)
+        REGISTER_REFLECTION(effect_parameter_description)
 
     public:
-        EffectParameterDescription() = default;
+        effect_parameter_description() = default;
 
-        EffectParameterDescription(const sc_dsp_parameter* parameter) { m_parameter = *parameter; }
+        effect_parameter_description(const sc_dsp_parameter* parameter) { m_parameter = *parameter; }
 
         sc_dsp_parameter m_parameter;
     };
@@ -19,14 +19,14 @@ namespace sbk::engine
     /**
      * @brief Wraps a sc_dsp_config
      */
-    class SB_CLASS EffectDescription final : public sbk::core::database_object
+    class SB_CLASS effect_description final : public sbk::core::database_object
     {
-        REGISTER_REFLECTION(EffectDescription, database_object)
+        REGISTER_REFLECTION(effect_description, database_object)
 
     public:
-        EffectDescription() : sbk::core::database_object(), m_config() { setDSPType(SC_DSP_TYPE_LOWPASS); }
+        effect_description() : sbk::core::database_object(), m_config() { set_dsp_type(SC_DSP_TYPE_LOWPASS); }
 
-        void setDSPType(sc_dsp_type type)
+        void set_dsp_type(sc_dsp_type type)
         {
             m_parameterDescriptions.clear();
 
@@ -38,12 +38,12 @@ namespace sbk::engine
             }
         }
 
-        const std::vector<EffectParameterDescription> getParameters() const { return m_parameterDescriptions; }
-        const sc_dsp_config* getConfig() const { return &m_config; }
-        sc_dsp_type getDSPType() const { return m_config.type; }
+        [[nodiscard]] std::vector<effect_parameter_description> get_parameters() const { return m_parameterDescriptions; }
+        [[nodiscard]] const sc_dsp_config* get_config() const { return &m_config; }
+        [[nodiscard]] sc_dsp_type get_dsp_type() const { return m_config.type; }
 
     private:
         sc_dsp_config m_config;
-        std::vector<EffectParameterDescription> m_parameterDescriptions;
+        std::vector<effect_parameter_description> m_parameterDescriptions;
     };
 }  // namespace sbk::engine

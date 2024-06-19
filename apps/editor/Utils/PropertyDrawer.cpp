@@ -178,10 +178,10 @@ bool PropertyDrawer::DrawVariant(rttr::variant& variant,
     }
     else if (type.is_class())
     {
-        if (type == sbk::engine::EffectParameterDescription::type())
+        if (type == sbk::engine::effect_parameter_description::type())
         {
-            sbk::engine::EffectParameterDescription effectParamterDescription =
-                variant.convert<sbk::engine::EffectParameterDescription>();
+            sbk::engine::effect_parameter_description effectParamterDescription =
+                variant.convert<sbk::engine::effect_parameter_description>();
 
             switch (effectParamterDescription.m_parameter.type)
             {
@@ -200,13 +200,13 @@ bool PropertyDrawer::DrawVariant(rttr::variant& variant,
                 variant = effectParamterDescription;
             }
         }
-        else if (type == rttr::type::get<sbk::core::FloatProperty>())
+        else if (type == rttr::type::get<sbk::core::float_property>())
         {
-            sbk::core::FloatProperty floatProperty =
-                variant.convert<sbk::core::FloatProperty>();
+            sbk::core::float_property floatProperty =
+                variant.convert<sbk::core::float_property>();
             float floatValue = floatProperty.get();
 
-            std::pair<float, float> floatMinMax = floatProperty.getMinMaxPair();
+            std::pair<float, float> floatMinMax = floatProperty.get_min_max_pair();
 
             if (DrawFloat(floatValue, name, floatMinMax))
             {
@@ -215,7 +215,7 @@ bool PropertyDrawer::DrawVariant(rttr::variant& variant,
                 edited  = true;
             }
         }
-        else if (type == rttr::type::get<sbk::core::IntProperty>())
+        else if (type == rttr::type::get<sbk::core::int_property>())
         {
         }
         else if (type == rttr::type::get<std::filesystem::path>())

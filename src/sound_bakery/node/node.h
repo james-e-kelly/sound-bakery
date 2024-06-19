@@ -56,12 +56,12 @@ namespace sbk::engine
     class SB_CLASS Node : public NodeBase
     {
     public:
-        sbk::core::FloatProperty m_volume   = sbk::core::FloatProperty(1.0f, 0.0f, 1.0f);
-        sbk::core::FloatProperty m_pitch    = sbk::core::FloatProperty(1.0f, 0.0f, 1.0f);
-        sbk::core::FloatProperty m_lowpass  = sbk::core::FloatProperty(1.0f, 0.0f, 100.0f);
-        sbk::core::FloatProperty m_highpass = sbk::core::FloatProperty(1.0f, 0.0f, 100.0f);
+        sbk::core::float_property m_volume   = sbk::core::float_property(1.0f, 0.0f, 1.0f);
+        sbk::core::float_property m_pitch    = sbk::core::float_property(1.0f, 0.0f, 1.0f);
+        sbk::core::float_property m_lowpass  = sbk::core::float_property(1.0f, 0.0f, 100.0f);
+        sbk::core::float_property m_highpass = sbk::core::float_property(1.0f, 0.0f, 100.0f);
 
-        std::vector<sbk::core::DatabasePtr<EffectDescription>> m_effectDescriptions;
+        std::vector<sbk::core::DatabasePtr<effect_description>> m_effectDescriptions;
 
         /**
          * @brief Gathers all parameters on this and child nodes that can effect the runtime output.

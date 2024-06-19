@@ -129,14 +129,14 @@ namespace sbk::reflection
             .property("Destination",
                       &Action::m_destination)(metadata(sbk::editor::METADATA_KEY::Payload, sbk::editor::PayloadObject));
 
-        registration::class_<EffectDescription>("sbk::engine::EffectDescription")
+        registration::class_<effect_description>("sbk::engine::EffectDescription")
             .constructor<>()(policy::ctor::as_raw_ptr)
-            .property("Type", &EffectDescription::getDSPType, &EffectDescription::setDSPType)
-            .property("Parameters", &EffectDescription::m_parameterDescriptions);
+            .property("Type", &effect_description::get_dsp_type, &effect_description::set_dsp_type)
+            .property("Parameters", &effect_description::m_parameterDescriptions);
 
-        registration::class_<EffectParameterDescription>("sbk::engine::EffectParameterDescription")
+        registration::class_<effect_parameter_description>("sbk::engine::EffectParameterDescription")
             .constructor<>()(policy::ctor::as_object)
-            .property("Parameter", &EffectParameterDescription::m_parameter);
+            .property("Parameter", &effect_parameter_description::m_parameter);
 
         registration::class_<system>("sbk::engine::system");
 

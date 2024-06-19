@@ -33,7 +33,7 @@ bool NodeGroupInstance::initNodeGroup(const NodeBase& node)
     addDspToNodeGroup(nodeGroup.get(), &lowpass, sc_dsp_config_init(SC_DSP_TYPE_LOWPASS));
     addDspToNodeGroup(nodeGroup.get(), &highpass, sc_dsp_config_init(SC_DSP_TYPE_HIGHPASS));
 
-    for (const sbk::core::DatabasePtr<sbk::engine::EffectDescription>& desc :
+    for (const sbk::core::DatabasePtr<sbk::engine::effect_description>& desc :
          node.try_convert_object<Node>()->m_effectDescriptions)
     {
         if (desc.lookup() == false)
@@ -43,10 +43,10 @@ bool NodeGroupInstance::initNodeGroup(const NodeBase& node)
 
         sc_dsp* dsp = nullptr;
 
-        addDspToNodeGroup(nodeGroup.get(), &dsp, *desc->getConfig());
+        addDspToNodeGroup(nodeGroup.get(), &dsp, *desc->get_config());
 
         int index = 0;
-        for (const sbk::engine::EffectParameterDescription& parameter : desc->getParameters())
+        for (const sbk::engine::effect_parameter_description& parameter : desc->get_parameters())
         {
             switch (parameter.m_parameter.type)
             {

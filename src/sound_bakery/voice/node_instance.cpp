@@ -16,10 +16,10 @@ NodeInstance::~NodeInstance()
 {
     if (m_referencingNode != nullptr)
     {
-        m_referencingNode->m_volume.getDelegate().RemoveObject(this);
-        m_referencingNode->m_pitch.getDelegate().RemoveObject(this);
-        m_referencingNode->m_lowpass.getDelegate().RemoveObject(this);
-        m_referencingNode->m_highpass.getDelegate().RemoveObject(this);
+        m_referencingNode->m_volume.get_delegate().RemoveObject(this);
+        m_referencingNode->m_pitch.get_delegate().RemoveObject(this);
+        m_referencingNode->m_lowpass.get_delegate().RemoveObject(this);
+        m_referencingNode->m_highpass.get_delegate().RemoveObject(this);
     }
 }
 
@@ -46,10 +46,10 @@ bool sbk::engine::NodeInstance::init(const InitNodeInstance& initData)
 
     m_owningVoice = initData.owningVoice;
 
-    m_referencingNode->m_volume.getDelegate().AddRaw(this, &NodeInstance::setVolume);
-    m_referencingNode->m_pitch.getDelegate().AddRaw(this, &NodeInstance::setPitch);
-    m_referencingNode->m_lowpass.getDelegate().AddRaw(this, &NodeInstance::setLowpass);
-    m_referencingNode->m_highpass.getDelegate().AddRaw(this, &NodeInstance::setHighpass);
+    m_referencingNode->m_volume.get_delegate().AddRaw(this, &NodeInstance::setVolume);
+    m_referencingNode->m_pitch.get_delegate().AddRaw(this, &NodeInstance::setPitch);
+    m_referencingNode->m_lowpass.get_delegate().AddRaw(this, &NodeInstance::setLowpass);
+    m_referencingNode->m_highpass.get_delegate().AddRaw(this, &NodeInstance::setHighpass);
 
     setVolume(0.0F, m_referencingNode->m_volume.get());
     setPitch(0.0F, m_referencingNode->m_pitch.get());
