@@ -53,7 +53,9 @@ namespace sbk::core
          * @param object
          */
         DatabasePtr(const TObjectShared& object)
-            : m_objectID(object ? static_cast<TIdentifierType>(*object) : 0), m_objectPtr(object), m_null(object.use_count() == 0)
+            : m_objectID(object ? static_cast<TIdentifierType>(*object) : 0),
+              m_objectPtr(object),
+              m_null(object.use_count() == 0)
         {
         }
 

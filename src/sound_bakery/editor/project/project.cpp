@@ -116,12 +116,14 @@ void sbk::editor::project::loadSounds()
             {
                 if (objectOwner->try_find(filename.stem().string().c_str()).expired())
                 {
-                    if (std::shared_ptr<sbk::core::database_object> createdSound = sbk::new_database_object<sbk::engine::Sound>())
+                    if (std::shared_ptr<sbk::core::database_object> createdSound =
+                            sbk::new_database_object<sbk::engine::Sound>())
                     {
                         createdSound->set_database_name(filename.stem().string().c_str());
 
                         if (sbk::engine::Sound* const castedSound =
-                                sbk::reflection::cast<sbk::engine::Sound*, sbk::core::database_object*>(createdSound.get()))
+                                sbk::reflection::cast<sbk::engine::Sound*, sbk::core::database_object*>(
+                                    createdSound.get()))
                         {
                             castedSound->setSoundName(p.path().string());
                         }
@@ -177,8 +179,7 @@ void sbk::editor::project::createPreviewContainer()
 
 void sbk::editor::project::buildSoundbanks() const
 {
-    const std::unordered_set<sbk::core::object*> soundbankObjects =
-        get_objects_of_category(SB_CATEGORY_BANK);
+    const std::unordered_set<sbk::core::object*> soundbankObjects = get_objects_of_category(SB_CATEGORY_BANK);
 
     for (auto& soundbankObject : soundbankObjects)
     {
@@ -247,15 +248,15 @@ void sbk::editor::project::buildSoundbanks() const
             }
 
             sc_bank bank;
-            sc_result initresult = sc_bank_init(
-                (m_projectConfig.buildFolder() / (std::string(soundbank->get_database_name()) + ".bnk"))
-                    .string()
-                    .c_str(),
-                &bank);
+            sc_result initresult =
+                sc_bank_init((m_projectConfig.buildFolder() / (std::string(soundbank->get_database_name()) + ".bnk"))
+                                 .string()
+                                 .c_str(),
+                             &bank);
             assert(initresult == MA_SUCCESS);
 
             sc_result buildResult = sc_bank_build(&bank, encodedSoundPathsToSave.data(), encodingFormats.data(),
-                                                    encodedSoundPathsToSave.size());
+                                                  encodedSoundPathsToSave.size());
             assert(buildResult == MA_SUCCESS);
 
             sc_bank_uninit(&bank);
@@ -284,8 +285,8 @@ void sbk::editor::project::saveObjects() const
             YAML::Emitter yaml;
             sbk::core::Serialization::Serializer::saveObject(sharedObject.get(), yaml);
 
-            const std::filesystem::path filePath = m_projectConfig.typeFolder(sharedObject->getType()) /
-                                                    m_projectConfig.getIdFilename(sharedObject.get());
+            const std::filesystem::path filePath =
+                m_projectConfig.typeFolder(sharedObject->getType()) / m_projectConfig.getIdFilename(sharedObject.get());
             std::filesystem::create_directories(filePath.parent_path());
 
             saveYAML(yaml, filePath);

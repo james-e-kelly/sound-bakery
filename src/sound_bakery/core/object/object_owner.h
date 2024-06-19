@@ -7,7 +7,7 @@ namespace sbk::core
 {
     /**
      * @brief Creates, owns and tracks objects.
-    */
+     */
     class SB_CLASS object_owner : protected database, protected object_tracker
     {
     public:
@@ -23,13 +23,10 @@ namespace sbk::core
         template <typename T>
         std::shared_ptr<T> create_runtime_object();
 
-        template<typename T>
+        template <typename T>
         std::shared_ptr<T> create_database_object();
 
-        void destroy_all() 
-        { 
-            m_objects.clear();
-        }
+        void destroy_all() { m_objects.clear(); }
 
     private:
         std::vector<std::shared_ptr<object>> m_objects;
@@ -74,4 +71,4 @@ namespace sbk::core
 
         return {};
     }
-}
+}  // namespace sbk::core

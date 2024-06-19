@@ -131,10 +131,7 @@ sc_result system::update()
     return MA_SUCCESS;
 }
 
-sbk::core::object_owner* system::current_object_owner() 
-{ 
-    return m_project.get(); 
-}
+sbk::core::object_owner* system::current_object_owner() { return m_project.get(); }
 
 sc_result system::open_project(const std::filesystem::path& projectFile)
 {

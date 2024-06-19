@@ -69,7 +69,10 @@ namespace sbk::editor
 
         [[nodiscard]] const ProjectConfiguration& getConfig() const { return m_projectConfig; }
 
-        [[nodiscard]] std::weak_ptr<sbk::engine::SoundContainer> getPreviewContainer() const { return m_previewSoundContainer; }
+        [[nodiscard]] std::weak_ptr<sbk::engine::SoundContainer> getPreviewContainer() const
+        {
+            return m_previewSoundContainer;
+        }
 
     private:
         void loadSounds();

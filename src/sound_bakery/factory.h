@@ -7,6 +7,5 @@ namespace sbk::engine
     class SB_CLASS Factory final
     {
     public:
-        
     };
 }  // namespace sbk::engine

@@ -7,10 +7,7 @@ using namespace sbk::core;
 
 DEFINE_REFLECTION(sbk::core::object)
 
-object::~object() 
-{ 
-    m_onDestroyEvent.Broadcast(this); 
-}
+object::~object() { m_onDestroyEvent.Broadcast(this); }
 
 sbk::engine::system* object_utilities::getSystem() const { return sbk::engine::system::get(); }
 

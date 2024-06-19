@@ -56,8 +56,7 @@ std::shared_ptr<sbk::core::object> sbk::core::object_owner::create_runtime_objec
     return result;
 }
 
-std::shared_ptr<sbk::core::database_object> sbk::core::object_owner::create_database_object(
-    const rttr::type& type)
+std::shared_ptr<sbk::core::database_object> sbk::core::object_owner::create_database_object(const rttr::type& type)
 {
     if (!type.is_derived_from(rttr::type::get<sbk::core::database_object>()))
     {

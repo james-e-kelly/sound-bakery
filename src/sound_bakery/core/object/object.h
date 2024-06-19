@@ -81,10 +81,7 @@ namespace sbk::core
             return m_type.value();
         }
 
-        [[nodiscard]] MulticastDelegate<object*>& get_on_destroy()
-        { 
-            return m_onDestroyEvent;
-        }
+        [[nodiscard]] MulticastDelegate<object*>& get_on_destroy() { return m_onDestroyEvent; }
 
     private:
         /**

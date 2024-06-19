@@ -1,7 +1,7 @@
 #pragma once
 
-#include "concurrencpp/concurrencpp.h"
 #include "Delegates.h"
+#include "concurrencpp/concurrencpp.h"
 #include "sound_bakery/core/core_fwd.h"
 #include "sound_bakery/reflection/reflection.h"
 #include "sound_bakery_internal.h"

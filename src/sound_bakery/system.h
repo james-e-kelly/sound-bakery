@@ -48,7 +48,7 @@ namespace sbk
 
             /**
              * @brief Returns the current object owner. Either a project or soundbank runtime.
-            */
+             */
             sbk::core::object_owner* current_object_owner();
 
             /**
