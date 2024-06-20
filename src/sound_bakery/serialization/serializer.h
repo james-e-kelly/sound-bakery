@@ -40,6 +40,7 @@ namespace sbk::core::serialization
         static bool loadProperties(YAML::Node& node,
                                    rttr::instance instance,
                                    std::optional<rttr::method> onLoadedMethod = std::optional<rttr::method>());
+
     private:
         static bool saveInstance(YAML::Emitter& emitter, rttr::instance instance);
         static bool saveVariant(YAML::Emitter& emitter, rttr::string_view name, rttr::variant& variant);
@@ -53,4 +54,4 @@ namespace sbk::core::serialization
                                                    rttr::variant variant);
         static bool saveClassVariant(YAML::Emitter& emitter, rttr::string_view name, rttr::variant variant);
     };
-}  // namespace sbk::core::Serialization
+}  // namespace sbk::core::serialization

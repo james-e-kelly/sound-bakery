@@ -1,7 +1,7 @@
 #include "object_owner.h"
 
-#include "sound_bakery/system.h"
 #include "sound_bakery/serialization/serializer.h"
+#include "sound_bakery/system.h"
 
 std::shared_ptr<sbk::core::object> sbk::core::object_owner::create_runtime_object(const rttr::type& type)
 {
@@ -69,7 +69,7 @@ std::shared_ptr<sbk::core::object> sbk::core::object_owner::create_runtime_objec
     return result;
 }
 
-std::shared_ptr<sbk::core::object> sbk::core::object_owner::load_object(YAML::Node& node) 
+std::shared_ptr<sbk::core::object> sbk::core::object_owner::load_object(YAML::Node& node)
 {
     const rttr::type type = rttr::type::get_by_name(node["ObjectType"].as<std::string>());
 
