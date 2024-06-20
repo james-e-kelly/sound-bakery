@@ -1,6 +1,7 @@
 #include "object_owner.h"
 
 #include "sound_bakery/system.h"
+#include "sound_bakery/serialization/serializer.h"
 
 std::shared_ptr<sbk::core::object> sbk::core::object_owner::create_runtime_object(const rttr::type& type)
 {
@@ -66,6 +67,34 @@ std::shared_ptr<sbk::core::object> sbk::core::object_owner::create_runtime_objec
     result->set_owner(this);
 
     return result;
+}
+
+std::shared_ptr<sbk::core::object> sbk::core::object_owner::load_object(YAML::Node& node) 
+{
+    const rttr::type type = rttr::type::get_by_name(node["ObjectType"].as<std::string>());
+
+    if (type.is_derived_from<sbk::core::database_object>())
+    {
+        std::shared_ptr<sbk::core::database_object> databaseObject = create_database_object(type);
+
+        sbk::core::serialization::Serializer::loadProperties(node, databaseObject);
+
+        return databaseObject;
+    }
+    else if (type.is_derived_from<sbk::core::object>())
+    {
+        std::shared_ptr<sbk::core::object> object = create_runtime_object(type);
+
+        sbk::core::serialization::Serializer::loadProperties(node, object);
+
+        return object;
+    }
+    else
+    {
+        assert(false);
+    }
+
+    return {};
 }
 
 std::shared_ptr<sbk::core::database_object> sbk::core::object_owner::create_database_object(const rttr::type& type)

@@ -12,7 +12,7 @@
 
 #include <rttr/type.h>
 
-using namespace sbk::core::Serialization;
+using namespace sbk::core::serialization;
 
 static const char* s_ObjectTypeKey = "ObjectType";
 static const char* s_ObjectIDKey   = "ObjectID";
@@ -469,7 +469,7 @@ void Serializer::packageSoundbank(sbk::engine::Soundbank* soundbank, YAML::Emitt
 
 rttr::instance Serializer::unpackSoundbank(YAML::Node& node) { return rttr::instance(); }
 
-rttr::instance sbk::core::Serialization::Serializer::createAndLoadObject(YAML::Node& node,
+rttr::instance sbk::core::serialization::Serializer::createAndLoadObject(YAML::Node& node,
                                                                          std::optional<rttr::method> onLoadedMethod)
 {
     const rttr::type type = rttr::type::get_by_name(node[s_ObjectTypeKey].as<std::string>());
@@ -489,7 +489,7 @@ rttr::instance sbk::core::Serialization::Serializer::createAndLoadObject(YAML::N
     return {};
 }
 
-bool sbk::core::Serialization::Serializer::loadProperties(YAML::Node& node,
+bool sbk::core::serialization::Serializer::loadProperties(YAML::Node& node,
                                                           rttr::instance instance,
                                                           std::optional<rttr::method> onLoadedMethod)
 {
@@ -525,7 +525,7 @@ bool sbk::core::Serialization::Serializer::loadProperties(YAML::Node& node,
 
 #pragma region Save
 
-bool sbk::core::Serialization::Serializer::saveInstance(YAML::Emitter& emitter, rttr::instance instance)
+bool sbk::core::serialization::Serializer::saveInstance(YAML::Emitter& emitter, rttr::instance instance)
 {
     bool result = false;
 
@@ -588,7 +588,7 @@ bool Serializer::saveVariant(YAML::Emitter& emitter, rttr::string_view name, rtt
     return result;
 }
 
-bool sbk::core::Serialization::Serializer::saveStringVariant(YAML::Emitter& emitter,
+bool sbk::core::serialization::Serializer::saveStringVariant(YAML::Emitter& emitter,
                                                              rttr::string_view name,
                                                              rttr::variant variant)
 {
@@ -634,7 +634,7 @@ bool sbk::core::Serialization::Serializer::saveStringVariant(YAML::Emitter& emit
     return result;
 }
 
-bool sbk::core::Serialization::Serializer::saveEnumVariant(YAML::Emitter& emitter,
+bool sbk::core::serialization::Serializer::saveEnumVariant(YAML::Emitter& emitter,
                                                            rttr::string_view name,
                                                            rttr::variant variant)
 {
@@ -656,7 +656,7 @@ bool sbk::core::Serialization::Serializer::saveEnumVariant(YAML::Emitter& emitte
     return result;
 }
 
-bool sbk::core::Serialization::Serializer::saveAssociateContainerVariant(YAML::Emitter& emitter,
+bool sbk::core::serialization::Serializer::saveAssociateContainerVariant(YAML::Emitter& emitter,
                                                                          rttr::string_view name,
                                                                          rttr::variant variant)
 {
@@ -707,7 +707,7 @@ bool sbk::core::Serialization::Serializer::saveAssociateContainerVariant(YAML::E
     return result;
 }
 
-bool sbk::core::Serialization::Serializer::saveSequentialContainerVariant(YAML::Emitter& emitter,
+bool sbk::core::serialization::Serializer::saveSequentialContainerVariant(YAML::Emitter& emitter,
                                                                           rttr::string_view name,
                                                                           rttr::variant variant)
 {
@@ -741,7 +741,7 @@ bool sbk::core::Serialization::Serializer::saveSequentialContainerVariant(YAML::
     return result;
 }
 
-bool sbk::core::Serialization::Serializer::saveClassVariant(YAML::Emitter& emitter,
+bool sbk::core::serialization::Serializer::saveClassVariant(YAML::Emitter& emitter,
                                                             rttr::string_view name,
                                                             rttr::variant variant)
 {

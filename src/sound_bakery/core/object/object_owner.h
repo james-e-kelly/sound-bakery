@@ -2,6 +2,8 @@
 
 #include "sound_bakery/core/core_fwd.h"
 
+#include "yaml-cpp/yaml.h"
+
 namespace sbk::core
 {
     /**
@@ -13,6 +15,7 @@ namespace sbk::core
     {
     public:
         std::shared_ptr<object> create_runtime_object(const rttr::type& type);
+        std::shared_ptr<object> load_object(YAML::Node& node);
         std::shared_ptr<database_object> create_database_object(const rttr::type& type);
 
         template <typename T>

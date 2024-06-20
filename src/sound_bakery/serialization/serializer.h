@@ -15,7 +15,7 @@ namespace sbk::engine
     class system;
 }  // namespace sbk::engine
 
-namespace sbk::core::Serialization
+namespace sbk::core::serialization
 {
     struct SB_CLASS SaveData
     {
@@ -37,11 +37,10 @@ namespace sbk::core::Serialization
         static rttr::instance createAndLoadObject(
             YAML::Node& node, std::optional<rttr::method> onLoadedMethod = std::optional<rttr::method>());
 
-    private:
         static bool loadProperties(YAML::Node& node,
                                    rttr::instance instance,
                                    std::optional<rttr::method> onLoadedMethod = std::optional<rttr::method>());
-
+    private:
         static bool saveInstance(YAML::Emitter& emitter, rttr::instance instance);
         static bool saveVariant(YAML::Emitter& emitter, rttr::string_view name, rttr::variant& variant);
         static bool saveStringVariant(YAML::Emitter& emitter, rttr::string_view name, rttr::variant variant);

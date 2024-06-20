@@ -143,7 +143,7 @@ void sbk::editor::project::loadSystem()
         if (p.path().extension() == ".yaml")
         {
             YAML::Node node = YAML::LoadFile(p.path().string());
-            sbk::core::Serialization::Serializer::loadSystem(sbk::engine::system::get(), node);
+            sbk::core::serialization::Serializer::loadSystem(sbk::engine::system::get(), node);
         }
     }
 }
@@ -161,7 +161,7 @@ void sbk::editor::project::loadObjects()
             if (p.is_regular_file())
             {
                 YAML::Node node = YAML::LoadFile(p.path().string());
-                sbk::core::Serialization::Serializer::createAndLoadObject(node);
+                load_object(node);
             }
         }
     }
@@ -269,7 +269,7 @@ void sbk::editor::project::buildSoundbanks() const
 void sbk::editor::project::saveSystem() const
 {
     YAML::Emitter systemYaml;
-    sbk::core::Serialization::Serializer::saveSystem(sbk::engine::system::get(), systemYaml);
+    sbk::core::serialization::Serializer::saveSystem(sbk::engine::system::get(), systemYaml);
     saveYAML(systemYaml, m_projectConfig.m_projectFolder / "system.yaml");
 }
 
@@ -285,7 +285,7 @@ void sbk::editor::project::saveObjects() const
             }
 
             YAML::Emitter yaml;
-            sbk::core::Serialization::Serializer::saveObject(sharedObject.get(), yaml);
+            sbk::core::serialization::Serializer::saveObject(sharedObject.get(), yaml);
 
             const std::filesystem::path filePath =
                 m_projectConfig.typeFolder(sharedObject->getType()) / m_projectConfig.getIdFilename(sharedObject.get());
