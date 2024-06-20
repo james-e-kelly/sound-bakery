@@ -38,7 +38,10 @@ namespace sbk::engine
             }
         }
 
-        [[nodiscard]] std::vector<effect_parameter_description> get_parameters() const { return m_parameterDescriptions; }
+        [[nodiscard]] std::vector<effect_parameter_description> get_parameters() const
+        {
+            return m_parameterDescriptions;
+        }
         [[nodiscard]] const sc_dsp_config* get_config() const { return &m_config; }
         [[nodiscard]] sc_dsp_type get_dsp_type() const { return m_config.type; }
 

@@ -29,7 +29,10 @@ namespace sbk
         /**
          * @brief Manager of the whole Sound Bakery.
          */
-        class SB_CLASS system final : public sc_system, public concurrencpp::runtime
+        class SB_CLASS system final : public sc_system,
+                                      public sbk::core::object_tracker,
+                                      public sbk::core::database,
+                                      public concurrencpp::runtime
         {
             REGISTER_REFLECTION(system)
             NOT_COPYABLE(system)

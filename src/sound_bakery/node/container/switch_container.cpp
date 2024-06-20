@@ -12,7 +12,7 @@ void sbk::engine::SwitchContainer::setSwitchParameter(sbk::core::database_ptr<Na
 }
 
 void sbk::engine::SwitchContainer::setSwitchToChild(
-    std::unordered_map<sbk::core::database_ptr<NamedParameterValue>, sbk::core::ChildPtr<Container>> map)
+    std::unordered_map<sbk::core::database_ptr<NamedParameterValue>, sbk::core::child_ptr<Container>> map)
 {
     if (map.empty())
     {
@@ -32,7 +32,7 @@ void sbk::engine::SwitchContainer::populateChildKeys()
     {
         for (const sbk::core::database_ptr<NamedParameterValue>& value : m_switchParameter->getValues())
         {
-            m_switchToChild.insert({value, sbk::core::ChildPtr<Container>(*this)});
+            m_switchToChild.insert({value, sbk::core::child_ptr<Container>(*this)});
         }
     }
 }

@@ -25,7 +25,7 @@ namespace sbk::reflection
      *
      * Once large difference is rttr assumes wrappers to wrap object types. However, our pointers wrap the SB_ID type.
      * This means it cannot automatically find the base_class_list.
-     * In our custom version, we remove the auto deduction of wrapper types and just use our DatabasePtr and ChildPtr
+     * In our custom version, we remove the auto deduction of wrapper types and just use our DatabasePtr and child_ptr
      * wrappers.
      */
     template <typename DerivedClass, typename... T>
@@ -43,9 +43,9 @@ namespace sbk::reflection
         static void perform()
         {
             rttr::type::register_converter_func(
-                rttr::wrapper_mapper<sbk::core::ChildPtr<DerivedClass>>::template convert<sbk::core::database_object>);
+                rttr::wrapper_mapper<sbk::core::child_ptr<DerivedClass>>::template convert<sbk::core::database_object>);
             rttr::type::register_converter_func(
-                rttr::wrapper_mapper<sbk::core::ChildPtr<sbk::core::database_object>>::template convert<DerivedClass>);
+                rttr::wrapper_mapper<sbk::core::child_ptr<sbk::core::database_object>>::template convert<DerivedClass>);
 
             rttr::type::register_converter_func(
                 rttr::wrapper_mapper<sbk::core::database_ptr<DerivedClass>>::template convert<
@@ -68,9 +68,9 @@ namespace sbk::reflection
             static_assert(rttr::detail::has_base_class_list<BaseClass>::value);
 
             rttr::type::register_converter_func(
-                rttr::wrapper_mapper<sbk::core::ChildPtr<DerivedClass>>::template convert<BaseClass>);
+                rttr::wrapper_mapper<sbk::core::child_ptr<DerivedClass>>::template convert<BaseClass>);
             rttr::type::register_converter_func(
-                rttr::wrapper_mapper<sbk::core::ChildPtr<BaseClass>>::template convert<DerivedClass>);
+                rttr::wrapper_mapper<sbk::core::child_ptr<BaseClass>>::template convert<DerivedClass>);
 
             rttr::type::register_converter_func(
                 rttr::wrapper_mapper<sbk::core::database_ptr<DerivedClass>>::template convert<BaseClass>);

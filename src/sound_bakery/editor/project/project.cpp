@@ -66,9 +66,9 @@ void sbk::editor::project::encodeAllMedia() const
 {
     std::shared_ptr<concurrencpp::thread_pool_executor> threadPool = sbk::engine::system::get()->background_executor();
 
-    if (sbk::core::object_owner* const objectOwner = sbk::engine::system::get()->current_object_owner())
+    if (sbk::core::object_tracker* const objectTracker = sbk::engine::system::get())
     {
-        for (sbk::core::object* const soundObject : objectOwner->get_objects_of_type(sbk::engine::Sound::type()))
+        for (sbk::core::object* const soundObject : objectTracker->get_objects_of_type(sbk::engine::Sound::type()))
         {
             if (sbk::engine::Sound* const sound = soundObject->try_convert_object<sbk::engine::Sound>())
             {
@@ -112,9 +112,9 @@ void sbk::editor::project::loadSounds()
         {
             const std::filesystem::path filename = p.path().filename();
 
-            if (sbk::core::object_owner* const objectOwner = sbk::engine::system::get()->current_object_owner())
+            if (sbk::core::database* const database = sbk::engine::system::get())
             {
-                if (objectOwner->try_find(filename.stem().string().c_str()).expired())
+                if (database->try_find(filename.stem().string().c_str()).expired())
                 {
                     if (std::shared_ptr<sbk::core::database_object> createdSound =
                             sbk::new_database_object<sbk::engine::Sound>())
@@ -179,7 +179,7 @@ void sbk::editor::project::createPreviewContainer()
 
 void sbk::editor::project::buildSoundbanks() const
 {
-    const std::unordered_set<sbk::core::object*> soundbankObjects = get_objects_of_category(SB_CATEGORY_BANK);
+    const std::unordered_set<sbk::core::object*> soundbankObjects = sbk::engine::system::get()->get_objects_of_category(SB_CATEGORY_BANK);
 
     for (auto& soundbankObject : soundbankObjects)
     {
@@ -273,7 +273,7 @@ void sbk::editor::project::saveSystem() const
 
 void sbk::editor::project::saveObjects() const
 {
-    for (const std::weak_ptr<sbk::core::database_object>& object : get_all())
+    for (const std::weak_ptr<sbk::core::database_object>& object : sbk::engine::system::get()->get_all())
     {
         if (const std::shared_ptr<sbk::core::database_object> sharedObject = object.lock())
         {

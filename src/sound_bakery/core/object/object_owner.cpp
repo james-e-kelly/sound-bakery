@@ -1,7 +1,17 @@
 #include "object_owner.h"
 
+#include "sound_bakery/system.h"
+
 std::shared_ptr<sbk::core::object> sbk::core::object_owner::create_runtime_object(const rttr::type& type)
 {
+    sbk::engine::system* const system = sbk::engine::system::get();
+
+    if (!system)
+    {
+        SPDLOG_CRITICAL("Cannot create object. System is invalid");
+        return {};
+    }
+
     if (!type.is_valid())
     {
         SPDLOG_ERROR("Cannot create object. Object type is invalid");
@@ -51,13 +61,21 @@ std::shared_ptr<sbk::core::object> sbk::core::object_owner::create_runtime_objec
 
     m_objects.emplace_back(result);
 
-    track_object(result.get());
+    system->track_object(result.get());
 
     return result;
 }
 
 std::shared_ptr<sbk::core::database_object> sbk::core::object_owner::create_database_object(const rttr::type& type)
 {
+    sbk::engine::system* const system = sbk::engine::system::get();
+
+    if (!system)
+    {
+        SPDLOG_CRITICAL("Cannot create object. System is invalid");
+        return {};
+    }
+
     if (!type.is_derived_from(rttr::type::get<sbk::core::database_object>()))
     {
         SPDLOG_ERROR("Cannot create object. Database objects must derive from the base database object type");
@@ -68,7 +86,7 @@ std::shared_ptr<sbk::core::database_object> sbk::core::object_owner::create_data
     {
         if (std::shared_ptr<database_object> databaseObject = std::static_pointer_cast<database_object>(object))
         {
-            add_object_to_database(databaseObject);
+            system->add_object_to_database(databaseObject);
 
             return databaseObject;
         }

@@ -130,7 +130,7 @@ bool NodeInstance::play()
         sc_sound_instance* soundInstance = nullptr;
 
         sc_result playSoundResult =
-            sc_system_play_sound(getChef(), sound, &soundInstance, m_nodeGroup.nodeGroup.get(), MA_FALSE);
+            sc_system_play_sound(sbk::engine::system::get(), sound, &soundInstance, m_nodeGroup.nodeGroup.get(), MA_FALSE);
 
         if (playSoundResult == MA_SUCCESS)
         {

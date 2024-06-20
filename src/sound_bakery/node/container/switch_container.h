@@ -23,7 +23,7 @@ namespace sbk::engine
 
             if (auto foundIter = m_switchToChild.find(selectedValue); foundIter != m_switchToChild.end())
             {
-                sbk::core::ChildPtr<Container> selectedChild(*this);
+                sbk::core::child_ptr<Container> selectedChild(*this);
                 selectedChild = foundIter->second;
 
                 if (selectedChild.lookup())
@@ -42,7 +42,7 @@ namespace sbk::engine
 
         sbk::core::database_ptr<NamedParameter> getSwitchParameter() const { return m_switchParameter; }
 
-        std::unordered_map<sbk::core::database_ptr<NamedParameterValue>, sbk::core::ChildPtr<Container>>
+        std::unordered_map<sbk::core::database_ptr<NamedParameterValue>, sbk::core::child_ptr<Container>>
             getSwitchToChildMap() const
         {
             return m_switchToChild;
@@ -50,7 +50,7 @@ namespace sbk::engine
 
     private:
         void setSwitchToChild(
-            std::unordered_map<sbk::core::database_ptr<NamedParameterValue>, sbk::core::ChildPtr<Container>> map);
+            std::unordered_map<sbk::core::database_ptr<NamedParameterValue>, sbk::core::child_ptr<Container>> map);
 
         void populateChildKeys();
 
@@ -62,7 +62,8 @@ namespace sbk::engine
         /**
          * @brief Holds the map for which switch value maps to which child.
          */
-        std::unordered_map<sbk::core::database_ptr<NamedParameterValue>, sbk::core::ChildPtr<Container>> m_switchToChild;
+        std::unordered_map<sbk::core::database_ptr<NamedParameterValue>, sbk::core::child_ptr<Container>>
+            m_switchToChild;
 
         REGISTER_REFLECTION(SwitchContainer, Container)
         RTTR_REGISTRATION_FRIEND

@@ -654,24 +654,24 @@ bool PropertyDrawer::DrawPayloadDrop(rttr::variant& value,
             // When setting variants, the value is completely overriden.
             // There is no chance for child pointers to retain its parent value and check the child.
             // Therefore, we have to do this ourselves here.
-            if (valueType.is_wrapper() && std::string(valueType.get_name().data()).find("ChildPtr") != std::string::npos)
+            if (valueType.is_wrapper() && std::string(valueType.get_name().data()).find("child_ptr") != std::string::npos)
             {
                 bool convertSuccess = false;
-                sbk::core::ChildPtr<sbk::core::database_object> dataAsChildPtr = data.convert<sbk::core::ChildPtr<sbk::core::database_object>>(&convertSuccess);
+                sbk::core::child_ptr<sbk::core::database_object> dataAschild_ptr = data.convert<sbk::core::child_ptr<sbk::core::database_object>>(&convertSuccess);
 
                 if (convertSuccess)
                 {
-                    sbk::core::ChildPtr<sbk::core::database_object> valueAsChildPtr = value.convert<sbk::core::ChildPtr<sbk::core::database_object>>(&convertSuccess);
+                    sbk::core::child_ptr<sbk::core::database_object> valueAschild_ptr = value.convert<sbk::core::child_ptr<sbk::core::database_object>>(&convertSuccess);
 
                     if (convertSuccess)
                     {
-                        sbk_id currentID = valueAsChildPtr.id();
+                        sbk_id currentID = valueAschild_ptr.id();
 
-                        valueAsChildPtr = dataAsChildPtr;
+                        valueAschild_ptr = dataAschild_ptr;
 
-                        if (currentID != valueAsChildPtr.id())
+                        if (currentID != valueAschild_ptr.id())
                         {
-                            value = valueAsChildPtr;
+                            value = valueAschild_ptr;
                             value.convert(valueType);
                             assert(value.is_valid());
                             edited = value.is_valid();

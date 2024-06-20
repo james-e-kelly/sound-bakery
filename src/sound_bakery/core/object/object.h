@@ -1,5 +1,6 @@
 #pragma once
 
+#include "sound_bakery/core/object/object_owner.h"
 #include "sound_bakery/pch.h"
 #include "sound_bakery/util/macros.h"
 
@@ -11,27 +12,14 @@ namespace sbk::engine
 namespace sbk::core
 {
     /**
-     * @brief Provides basic helper functions. Not meant to be used directly
+     * @brief Base object that all Sound Bakery objects should inherit
+     * from.
+     *
+     * Objects can own other objects.
      */
-    class SB_CLASS object_utilities
+    class SB_CLASS object : public object_owner, public std::enable_shared_from_this<object>
     {
-    public:
-        sbk::engine::system* getSystem() const;
-        sc_system* getChef() const;
-        ma_engine* getMini() const;
-
-        std::string m_debugName;
-
-        REGISTER_REFLECTION(object_utilities)
-    };
-
-    /**
-     * @brief Simple base object that all Sound Bakery objects should inherit
-     * from
-     */
-    class SB_CLASS object : public object_utilities, public std::enable_shared_from_this<object>
-    {
-        REGISTER_REFLECTION(object, object_utilities)
+        REGISTER_REFLECTION(object)
         NOT_COPYABLE(object)
 
     public:

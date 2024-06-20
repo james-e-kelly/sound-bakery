@@ -294,10 +294,10 @@ namespace sbk::core
      * owning object.
      */
     template <typename TObject>
-    class ChildPtr final : public database_ptr<TObject>
+    class child_ptr final : public database_ptr<TObject>
     {
     public:
-        using TThisType = ChildPtr<TObject>;
+        using TThisType = child_ptr<TObject>;
 
     public:
         /**
@@ -306,9 +306,9 @@ namespace sbk::core
          * @warning Child Ptr objects must belong to a @ref DatabaseObject at
          * construction time.
          */
-        ChildPtr() = default;
+        child_ptr() = default;
 
-        ChildPtr(const TThisType& other) : database_ptr<TObject>(other), m_ownerID(other.m_ownerID)
+        child_ptr(const TThisType& other) : database_ptr<TObject>(other), m_ownerID(other.m_ownerID)
         {
             // If we don't have an owner, try finding it now
             // We can't do any other checks because we were empty before this copy
@@ -319,8 +319,8 @@ namespace sbk::core
             }
         }
 
-        ChildPtr(TThisType&& other) = default;
-        ~ChildPtr()                 = default;
+        child_ptr(TThisType&& other) = default;
+        ~child_ptr()                 = default;
 
         /**
          * @brief Construct a new Child Ptr object with an owner.
@@ -330,14 +330,14 @@ namespace sbk::core
          *
          * @param owner to check for child objects on
          */
-        ChildPtr(const database_object& owner) : database_ptr<TObject>(), m_ownerID(owner.get_database_id()) {}
+        child_ptr(const database_object& owner) : database_ptr<TObject>(), m_ownerID(owner.get_database_id()) {}
 
         /**
-         * @brief Construct a new ChildPtr that points to the ID.
+         * @brief Construct a new child_ptr that points to the ID.
          *
          * Tries to find the owner from the ID.
          */
-        ChildPtr(sbk_id id) : database_ptr<TObject>(id), m_ownerID(getParentIdFromId(id)) {}
+        child_ptr(sbk_id id) : database_ptr<TObject>(id), m_ownerID(getParentIdFromId(id)) {}
 
         TThisType& operator=(typename database_ptr<TObject>::TIdentifierType id)
         {
@@ -366,10 +366,10 @@ namespace sbk::core
                 // We can completely copy other
                 if (m_ownerID == 0)
                 {
-                    database_ptr<TObject>::m_objectID = other.id();
+                    database_ptr<TObject>::m_objectID  = other.id();
                     database_ptr<TObject>::m_objectPtr = other.weak();
                     database_ptr<TObject>::m_null      = other.null();
-                    m_ownerID                         = other.m_ownerID;
+                    m_ownerID                          = other.m_ownerID;
                 }
                 // If owner isn't trying to be changed, we can just check children and update the pointed to ID
                 else if (m_ownerID == other.m_ownerID || other.m_ownerID == 0)
@@ -377,7 +377,7 @@ namespace sbk::core
                     // Do child check
                     if (objectIdIsChildOfParent(other.m_objectID, m_ownerID))
                     {
-                        database_ptr<TObject>::m_objectID = other.id();
+                        database_ptr<TObject>::m_objectID  = other.id();
                         database_ptr<TObject>::m_objectPtr = other.weak();
                         database_ptr<TObject>::m_null      = other.null();
                     }
@@ -456,9 +456,9 @@ namespace std
     };
 
     template <typename T>
-    struct hash<sbk::core::ChildPtr<T>>
+    struct hash<sbk::core::child_ptr<T>>
     {
-        size_t operator()(const sbk::core::ChildPtr<T>& k) const { return hash<sbk_id>{}(k.id()); }
+        size_t operator()(const sbk::core::child_ptr<T>& k) const { return hash<sbk_id>{}(k.id()); }
     };
 }  // namespace std
 
@@ -467,19 +467,19 @@ namespace std
 namespace rttr
 {
     template <typename T>
-    struct wrapper_mapper<sbk::core::ChildPtr<T>>
+    struct wrapper_mapper<sbk::core::child_ptr<T>>
     {
-        using wrapped_type = decltype(sbk::core::ChildPtr<T>(0).id());
-        using type         = sbk::core::ChildPtr<T>;
+        using wrapped_type = decltype(sbk::core::child_ptr<T>(0).id());
+        using type         = sbk::core::child_ptr<T>;
 
         inline static wrapped_type get(const type& obj) { return obj.id(); }
 
         inline static type create(const wrapped_type& t) { return type(t); }
 
         template <typename T2>
-        inline static sbk::core::ChildPtr<T2> convert(const type& source, bool& ok)
+        inline static sbk::core::child_ptr<T2> convert(const type& source, bool& ok)
         {
-            sbk::core::ChildPtr<T2> convertedLazyPtr(source.id());
+            sbk::core::child_ptr<T2> convertedLazyPtr(source.id());
 
             ok = source.hasId() == convertedLazyPtr.hasId();
 

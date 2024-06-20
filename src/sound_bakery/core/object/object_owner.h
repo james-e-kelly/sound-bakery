@@ -1,7 +1,6 @@
 #pragma once
 
-#include "sound_bakery/core/database/database.h"
-#include "sound_bakery/core/object/object_tracker.h"
+#include "sound_bakery/core/core_fwd.h"
 
 namespace sbk::core
 {
@@ -10,14 +9,9 @@ namespace sbk::core
      *
      * This is the central location for object creation.
      */
-    class SB_CLASS object_owner : protected database, protected object_tracker
+    class SB_CLASS object_owner
     {
     public:
-        using database::get_all;
-        using database::try_find;
-        using object_tracker::get_objects_of_category;
-        using object_tracker::get_objects_of_type;
-
         std::shared_ptr<object> create_runtime_object(const rttr::type& type);
         std::shared_ptr<database_object> create_database_object(const rttr::type& type);
 
