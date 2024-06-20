@@ -26,6 +26,8 @@ namespace sbk::core
         object() = default;
         virtual ~object();
 
+        [[nodiscard]] object_owner* owner() const { return m_owner; }
+
         /**
          * @brief Gets the most derived type of this object and upcasts it to T
          * @tparam T
@@ -72,6 +74,16 @@ namespace sbk::core
         [[nodiscard]] MulticastDelegate<object*>& get_on_destroy() { return m_onDestroyEvent; }
 
     private:
+        friend class object_owner;
+
+        void set_owner(object_owner* newOwner)
+        {
+            assert(m_owner == nullptr);
+            m_owner = newOwner;
+        }
+
+        object_owner* m_owner = nullptr;
+
         /**
          * @brief Cache of this object's type so it can be grabbed during
          * destruction

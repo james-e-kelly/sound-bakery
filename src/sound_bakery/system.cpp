@@ -1,6 +1,5 @@
 #include "system.h"
 
-#include "sound_bakery/core/object/object_global.h"
 #include "sound_bakery/editor/project/project.h"
 #include "sound_bakery/factory.h"
 #include "sound_bakery/gameobject/gameobject.h"

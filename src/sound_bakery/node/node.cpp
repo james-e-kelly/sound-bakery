@@ -1,6 +1,5 @@
 #include "node.h"
 
-#include "sound_bakery/core/object/object_global.h"
 #include "sound_bakery/system.h"
 
 using namespace sbk::engine;
@@ -30,7 +29,7 @@ void sbk::engine::Node::gatherParameters(GlobalParameterList& parameters)
 
 void Node::addEffect(sc_dsp_type type)
 {
-    std::shared_ptr<effect_description> effect = sbk::new_database_object<effect_description>();
+    std::shared_ptr<effect_description> effect = owner()->create_database_object<effect_description>();
     effect->set_dsp_type(type);
     m_effectDescriptions.emplace_back(effect);
 }

@@ -5,6 +5,7 @@
 #include "sound_bakery/serialization/serializer.h"
 #include "sound_bakery/sound/sound.h"
 #include "sound_bakery/soundbank/soundbank.h"
+#include "sound_bakery/system.h"
 #include "sound_chef/sound_chef_bank.h"
 #include "sound_chef/sound_chef_encoder.h"
 
@@ -117,7 +118,7 @@ void sbk::editor::project::loadSounds()
                 if (database->try_find(filename.stem().string().c_str()).expired())
                 {
                     if (std::shared_ptr<sbk::core::database_object> createdSound =
-                            sbk::new_database_object<sbk::engine::Sound>())
+                            create_database_object<sbk::engine::Sound>())
                     {
                         createdSound->set_database_name(filename.stem().string().c_str());
 
@@ -168,7 +169,7 @@ void sbk::editor::project::loadObjects()
 
 void sbk::editor::project::createPreviewContainer()
 {
-    if (auto previewContainer = sbk::new_object<sbk::engine::SoundContainer>())
+    if (auto previewContainer = create_database_object<sbk::engine::SoundContainer>())
     {
         previewContainer->set_database_name("Preview Node");
         previewContainer->set_editor_hidden(true);
@@ -179,7 +180,8 @@ void sbk::editor::project::createPreviewContainer()
 
 void sbk::editor::project::buildSoundbanks() const
 {
-    const std::unordered_set<sbk::core::object*> soundbankObjects = sbk::engine::system::get()->get_objects_of_category(SB_CATEGORY_BANK);
+    const std::unordered_set<sbk::core::object*> soundbankObjects =
+        sbk::engine::system::get()->get_objects_of_category(SB_CATEGORY_BANK);
 
     for (auto& soundbankObject : soundbankObjects)
     {

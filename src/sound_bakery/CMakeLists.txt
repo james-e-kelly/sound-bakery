@@ -66,7 +66,6 @@ set(ATLAS_HEADERS
     core/property.h
     
     core/object/object.h
-    core/object/object_global.h
     core/object/object_tracker.h
     core/object/object_owner.h
     
