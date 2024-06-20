@@ -1,8 +1,8 @@
 #include "renderer_subsystem.h"
 
-#include "app/app.h"
 #include "IconsFontAwesome6.h"
 #include "IconsFontaudio.h"
+#include "app/app.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
@@ -32,9 +32,9 @@ static void glfw_error_callback(int error, const char* description)
     fprintf(stderr, "GLFW Error %d: %s\n", error, description);
 }
 
-renderer_subsystem::window_guard::window_guard(int width,
-                                            int height,
-                                            const std::string& windowName)
+using namespace gluten;
+
+renderer_subsystem::window_guard::window_guard(int width, int height, const std::string& windowName)
 {
     m_window = glfwCreateWindow(width, height, windowName.c_str(), NULL, NULL);
     assert(m_window);
@@ -65,8 +65,7 @@ renderer_subsystem::window_guard::window_guard(window_guard&& other) noexcept
     other.m_window = nullptr;
 }
 
-renderer_subsystem::window_guard& renderer_subsystem::window_guard::operator=(
-    window_guard&& other) noexcept
+renderer_subsystem::window_guard& renderer_subsystem::window_guard::operator=(window_guard&& other) noexcept
 {
     if (this != &other)
     {
@@ -96,7 +95,7 @@ void renderer_subsystem::set_default_window_hints()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);  // Required on Mac
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // Required on Mac
 #else
     // GL 3.0 + GLSL 130
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -106,23 +105,21 @@ void renderer_subsystem::set_default_window_hints()
 #endif
 }
 
-static ImVec4 hex_to_rgb(ImU32 hex) 
+static ImVec4 hex_to_rgb(ImU32 hex)
 {
     float s = 1.0f / 255.0f;
 
     // The RGB order is backwards here -> BGR
     // It was noted the "correct" order made blues look orange
     // Swapping created the correct colours
-    return ImVec4(((hex >> IM_COL32_B_SHIFT) & 0xFF) * s,
-                  ((hex >> IM_COL32_G_SHIFT) & 0xFF) * s,
-                  ((hex >> IM_COL32_R_SHIFT) & 0xFF) * s,
-                  ((hex >> IM_COL32_A_SHIFT) & 0xFF) * s);
+    return ImVec4(((hex >> IM_COL32_B_SHIFT) & 0xFF) * s, ((hex >> IM_COL32_G_SHIFT) & 0xFF) * s,
+                  ((hex >> IM_COL32_R_SHIFT) & 0xFF) * s, ((hex >> IM_COL32_A_SHIFT) & 0xFF) * s);
 }
 
 static ImVec4 hex_string_to_rgb(const std::string& string)
 {
     ImVec4 color = hex_to_rgb(static_cast<ImU32>(std::stoul(string, nullptr, 16)));
-    color.w = 1.0f;
+    color.w      = 1.0f;
     return color;
 }
 
@@ -151,96 +148,96 @@ int renderer_subsystem::init_imgui()
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
     (void)io;
-    io.ConfigFlags |=       ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
-    io.ConfigFlags |=       ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
-    io.ConfigFlags |=       ImGuiConfigFlags_DockingEnable;     // Enable Docking
-    io.ConfigFlags |=       ImGuiConfigFlags_ViewportsEnable;   // Enable Multi-Viewport / Platform
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;   // Enable Gamepad Controls
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;      // Enable Docking
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;    // Enable Multi-Viewport / Platform
 
     // Styling
 
     ImGuiStyle* style = &ImGui::GetStyle();
 
-    static constexpr float padding = 12.0f;
-    static constexpr ImVec2 noPadding  = ImVec2(0, 0);
-    static constexpr ImVec2 paddingVec = ImVec2(padding, padding);
+    static constexpr float padding             = 12.0f;
+    static constexpr ImVec2 noPadding          = ImVec2(0, 0);
+    static constexpr ImVec2 paddingVec         = ImVec2(padding, padding);
     static constexpr ImVec2 verticalPaddingVec = ImVec2(0, padding);
 
-    static constexpr float rounding         = 6.0f;
-    static constexpr float largerounding    = rounding * 2;
-    static constexpr float largestRounding  = rounding * 3;
-    static constexpr float noRounding       = 2.0f;
+    static constexpr float rounding        = 6.0f;
+    static constexpr float largerounding   = rounding * 2;
+    static constexpr float largestRounding = rounding * 3;
+    static constexpr float noRounding      = 2.0f;
 
-    style->Alpha                    = 1.0f;                   
-    style->DisabledAlpha            = 0.5f;   
+    style->Alpha         = 1.0f;
+    style->DisabledAlpha = 0.5f;
 
-    style->WindowPadding            = ImVec2(padding, padding / 2);
-    style->FramePadding             = paddingVec;
+    style->WindowPadding = ImVec2(padding, padding / 2);
+    style->FramePadding  = paddingVec;
 
-    style->WindowRounding           = rounding;
-    style->ChildRounding            = rounding;          
-    style->PopupRounding            = rounding;          
-    style->FrameRounding            = rounding;
-    style->ScrollbarRounding        = rounding;
-    style->GrabRounding             = rounding;
-    style->TabRounding              = largestRounding;
+    style->WindowRounding    = rounding;
+    style->ChildRounding     = rounding;
+    style->PopupRounding     = rounding;
+    style->FrameRounding     = rounding;
+    style->ScrollbarRounding = rounding;
+    style->GrabRounding      = rounding;
+    style->TabRounding       = largestRounding;
 
-    style->SeparatorTextPadding;       
-    style->DisplayWindowPadding     = paddingVec;       
-    style->DisplaySafeAreaPadding;     
-    style->CellPadding              = paddingVec;
-    style->TouchExtraPadding        = ImVec2(0, 0);        
+    style->SeparatorTextPadding;
+    style->DisplayWindowPadding = paddingVec;
+    style->DisplaySafeAreaPadding;
+    style->CellPadding       = paddingVec;
+    style->TouchExtraPadding = ImVec2(0, 0);
 
-    style->WindowBorderSize         = 0.0f;         
-    style->WindowMinSize            = ImVec2(100, 100);        
-    style->WindowTitleAlign         = ImVec2(0.0f, 0.0f);         
+    style->WindowBorderSize         = 0.0f;
+    style->WindowMinSize            = ImVec2(100, 100);
+    style->WindowTitleAlign         = ImVec2(0.0f, 0.0f);
     style->WindowMenuButtonPosition = ImGuiDir_Right;
-    style->ChildBorderSize          = 1.0f;          
-    style->PopupBorderSize          = 0.0f;            
-    style->FrameBorderSize          = 0.0f;          
+    style->ChildBorderSize          = 1.0f;
+    style->PopupBorderSize          = 0.0f;
+    style->FrameBorderSize          = 0.0f;
     style->ItemSpacing              = ImVec2(14, 8);
     style->ItemInnerSpacing         = ImVec2(0, 0);
     style->IndentSpacing            = 24.0f;
-    style->ColumnsMinSpacing        = 10.0f;        
+    style->ColumnsMinSpacing        = 10.0f;
     style->ScrollbarSize            = 18.0f;
     style->GrabMinSize              = 12.0f;
-    style->LogSliderDeadzone;          
-    style->TabBorderSize            = 1.0f;              
-    style->TabMinWidthForCloseButton= 0.0f;
-    style->TabBarBorderSize         = 1.0f;          
-    style->TableAngledHeadersAngle  = 45.0f;    
-    style->ColorButtonPosition;        
-    style->ButtonTextAlign          = ImVec2(0.0f, 0.5f);           
-    style->SelectableTextAlign      = ImVec2(0.5f, 0.5f);   
+    style->LogSliderDeadzone;
+    style->TabBorderSize             = 1.0f;
+    style->TabMinWidthForCloseButton = 0.0f;
+    style->TabBarBorderSize          = 1.0f;
+    style->TableAngledHeadersAngle   = 45.0f;
+    style->ColorButtonPosition;
+    style->ButtonTextAlign         = ImVec2(0.0f, 0.5f);
+    style->SelectableTextAlign     = ImVec2(0.5f, 0.5f);
     style->SeparatorTextBorderSize = 1.0f;
-    style->SeparatorTextAlign       = ImVec2(0.5f, 0.5f);            
-    style->DockingSeparatorSize     = 4.0f;   
-    style->MouseCursorScale;           
-    style->AntiAliasedLines;           
-    style->AntiAliasedLinesUseTex;     
-    style->AntiAliasedFill;            
-    style->CurveTessellationTol;       
-    style->CircleTessellationMaxError; 
+    style->SeparatorTextAlign      = ImVec2(0.5f, 0.5f);
+    style->DockingSeparatorSize    = 4.0f;
+    style->MouseCursorScale;
+    style->AntiAliasedLines;
+    style->AntiAliasedLinesUseTex;
+    style->AntiAliasedFill;
+    style->CurveTessellationTol;
+    style->CircleTessellationMaxError;
 
-    #pragma region "Carbon"
+#pragma region "Carbon"
 
-    static ImVec4 black         = hex_string_to_rgb("000000");
-    static ImVec4 black100      = black;
-    static ImVec4 blackHover    = hex_string_to_rgb("212121");
+    static ImVec4 black      = hex_string_to_rgb("000000");
+    static ImVec4 black100   = black;
+    static ImVec4 blackHover = hex_string_to_rgb("212121");
 
-    static ImVec4 white         = hex_string_to_rgb("ffffff");
-    static ImVec4 white0        = white;
-    static ImVec4 whiteHover    = hex_string_to_rgb("e8e8e8");
+    static ImVec4 white      = hex_string_to_rgb("ffffff");
+    static ImVec4 white0     = white;
+    static ImVec4 whiteHover = hex_string_to_rgb("e8e8e8");
 
-    static ImVec4 yellow10      = hex_string_to_rgb("fcf4d6");
-    static ImVec4 yellow20      = hex_string_to_rgb("fddc69");
-    static ImVec4 yellow30      = hex_string_to_rgb("f1c21b");
-    static ImVec4 yellow40      = hex_string_to_rgb("d2a106");
-    static ImVec4 yellow50      = hex_string_to_rgb("b28600");
-    static ImVec4 yellow60      = hex_string_to_rgb("8e6a00");
-    static ImVec4 yellow70      = hex_string_to_rgb("684e00");
-    static ImVec4 yellow80      = hex_string_to_rgb("483700");
-    static ImVec4 yellow90      = hex_string_to_rgb("302400");
-    static ImVec4 yellow100     = hex_string_to_rgb("1c1500");
+    static ImVec4 yellow10  = hex_string_to_rgb("fcf4d6");
+    static ImVec4 yellow20  = hex_string_to_rgb("fddc69");
+    static ImVec4 yellow30  = hex_string_to_rgb("f1c21b");
+    static ImVec4 yellow40  = hex_string_to_rgb("d2a106");
+    static ImVec4 yellow50  = hex_string_to_rgb("b28600");
+    static ImVec4 yellow60  = hex_string_to_rgb("8e6a00");
+    static ImVec4 yellow70  = hex_string_to_rgb("684e00");
+    static ImVec4 yellow80  = hex_string_to_rgb("483700");
+    static ImVec4 yellow90  = hex_string_to_rgb("302400");
+    static ImVec4 yellow100 = hex_string_to_rgb("1c1500");
 
     static ImVec4 yellow10Hover  = hex_string_to_rgb("f8e6a0");
     static ImVec4 yellow20Hover  = hex_string_to_rgb("fccd27");
@@ -252,7 +249,7 @@ int renderer_subsystem::init_imgui()
     static ImVec4 yellow80Hover  = hex_string_to_rgb("5c4600");
     static ImVec4 yellow90Hover  = hex_string_to_rgb("3d2e00");
     static ImVec4 yellow100Hover = hex_string_to_rgb("332600");
-   
+
     static ImVec4 orange10  = hex_string_to_rgb("fff2e8");
     static ImVec4 orange20  = hex_string_to_rgb("ffd9be");
     static ImVec4 orange30  = hex_string_to_rgb("ffb784");
@@ -648,102 +645,98 @@ int renderer_subsystem::init_imgui()
     static ImVec4 toggleOff   = gray60;
     static ImVec4 shadow      = adjust_alpha(black, 0.8);
 
-    #pragma endregion
+#pragma endregion
 
     static const ImVec4 missingColorColor = magenta50;
 
-    style->Colors[ImGuiCol_Text]                    = textPrimary;
-    style->Colors[ImGuiCol_TextDisabled]            = adjust_alpha(textPrimary, 0.6f);
+    style->Colors[ImGuiCol_Text]         = textPrimary;
+    style->Colors[ImGuiCol_TextDisabled] = adjust_alpha(textPrimary, 0.6f);
 
-    style->Colors[ImGuiCol_TitleBg]                 = background;
-    style->Colors[ImGuiCol_MenuBarBg]               = background;  
-    style->Colors[ImGuiCol_WindowBg]                = layer01;
-    style->Colors[ImGuiCol_ChildBg]                 = layer02;
-    style->Colors[ImGuiCol_FrameBg]                 = layer03;
+    style->Colors[ImGuiCol_TitleBg]   = background;
+    style->Colors[ImGuiCol_MenuBarBg] = background;
+    style->Colors[ImGuiCol_WindowBg]  = layer01;
+    style->Colors[ImGuiCol_ChildBg]   = layer02;
+    style->Colors[ImGuiCol_FrameBg]   = layer03;
 
-    style->Colors[ImGuiCol_PopupBg]                 = layer03;
-    style->Colors[ImGuiCol_ScrollbarBg]             = layer03;
-    style->Colors[ImGuiCol_DockingEmptyBg]          = layer03;
-    style->Colors[ImGuiCol_TableRowBg]              = layer03;
-    style->Colors[ImGuiCol_TableRowBgAlt]           = layerAccent03;
-    style->Colors[ImGuiCol_TextSelectedBg]          = layer03;
-    style->Colors[ImGuiCol_TableHeaderBg]           = layer03;
-    style->Colors[ImGuiCol_TextSelectedBg]          = layer03;
+    style->Colors[ImGuiCol_PopupBg]        = layer03;
+    style->Colors[ImGuiCol_ScrollbarBg]    = layer03;
+    style->Colors[ImGuiCol_DockingEmptyBg] = layer03;
+    style->Colors[ImGuiCol_TableRowBg]     = layer03;
+    style->Colors[ImGuiCol_TableRowBgAlt]  = layerAccent03;
+    style->Colors[ImGuiCol_TextSelectedBg] = layer03;
+    style->Colors[ImGuiCol_TableHeaderBg]  = layer03;
+    style->Colors[ImGuiCol_TextSelectedBg] = layer03;
 
-    style->Colors[ImGuiCol_TitleBgActive]           = background;
-    style->Colors[ImGuiCol_TitleBgCollapsed]        = background;
-    style->Colors[ImGuiCol_FrameBgHovered]          = backgroundHover;
-    style->Colors[ImGuiCol_FrameBgActive]           = backgroundActive;
+    style->Colors[ImGuiCol_TitleBgActive]    = background;
+    style->Colors[ImGuiCol_TitleBgCollapsed] = background;
+    style->Colors[ImGuiCol_FrameBgHovered]   = backgroundHover;
+    style->Colors[ImGuiCol_FrameBgActive]    = backgroundActive;
 
-    style->Colors[ImGuiCol_NavWindowingDimBg]       = background;
-    style->Colors[ImGuiCol_ModalWindowDimBg]        = background;
+    style->Colors[ImGuiCol_NavWindowingDimBg] = background;
+    style->Colors[ImGuiCol_ModalWindowDimBg]  = background;
 
-    style->Colors[ImGuiCol_Border]                  = background;
-    style->Colors[ImGuiCol_BorderShadow]            = shadow;
+    style->Colors[ImGuiCol_Border]       = background;
+    style->Colors[ImGuiCol_BorderShadow] = shadow;
 
-    style->Colors[ImGuiCol_ScrollbarGrab]           = interactive;
-    style->Colors[ImGuiCol_ScrollbarGrabHovered]    = layerHover03;
-    style->Colors[ImGuiCol_ScrollbarGrabActive]     = layerSelected03;
+    style->Colors[ImGuiCol_ScrollbarGrab]        = interactive;
+    style->Colors[ImGuiCol_ScrollbarGrabHovered] = layerHover03;
+    style->Colors[ImGuiCol_ScrollbarGrabActive]  = layerSelected03;
 
-    style->Colors[ImGuiCol_CheckMark]               = interactive;
-    style->Colors[ImGuiCol_SliderGrab]              = interactive;
-    style->Colors[ImGuiCol_SliderGrabActive]        = focus;
+    style->Colors[ImGuiCol_CheckMark]        = interactive;
+    style->Colors[ImGuiCol_SliderGrab]       = interactive;
+    style->Colors[ImGuiCol_SliderGrabActive] = focus;
 
-    style->Colors[ImGuiCol_Button]                  = interactive;
-    style->Colors[ImGuiCol_ButtonHovered]           = highlight;
-    style->Colors[ImGuiCol_ButtonActive]            = focusInverse;
+    style->Colors[ImGuiCol_Button]        = interactive;
+    style->Colors[ImGuiCol_ButtonHovered] = highlight;
+    style->Colors[ImGuiCol_ButtonActive]  = focusInverse;
 
-    style->Colors[ImGuiCol_Header]                  = background;
-    style->Colors[ImGuiCol_HeaderHovered]           = backgroundHover;
-    style->Colors[ImGuiCol_HeaderActive]            = backgroundActive;
+    style->Colors[ImGuiCol_Header]        = background;
+    style->Colors[ImGuiCol_HeaderHovered] = backgroundHover;
+    style->Colors[ImGuiCol_HeaderActive]  = backgroundActive;
 
-    style->Colors[ImGuiCol_ResizeGrip]              = background;
-    style->Colors[ImGuiCol_ResizeGripHovered]       = backgroundHover;
-    style->Colors[ImGuiCol_ResizeGripActive]        = backgroundActive;
+    style->Colors[ImGuiCol_ResizeGrip]        = background;
+    style->Colors[ImGuiCol_ResizeGripHovered] = backgroundHover;
+    style->Colors[ImGuiCol_ResizeGripActive]  = backgroundActive;
 
-    style->Colors[ImGuiCol_PlotLines]               = missingColorColor;
-    style->Colors[ImGuiCol_PlotLinesHovered]        = missingColorColor;
-    style->Colors[ImGuiCol_PlotHistogram]           = missingColorColor;
-    style->Colors[ImGuiCol_PlotHistogramHovered]    = missingColorColor;
+    style->Colors[ImGuiCol_PlotLines]            = missingColorColor;
+    style->Colors[ImGuiCol_PlotLinesHovered]     = missingColorColor;
+    style->Colors[ImGuiCol_PlotHistogram]        = missingColorColor;
+    style->Colors[ImGuiCol_PlotHistogramHovered] = missingColorColor;
 
-    style->Colors[ImGuiCol_Separator]               = background;
-    style->Colors[ImGuiCol_SeparatorHovered]        = backgroundHover;
-    style->Colors[ImGuiCol_SeparatorActive]         = backgroundActive;
+    style->Colors[ImGuiCol_Separator]        = background;
+    style->Colors[ImGuiCol_SeparatorHovered] = backgroundHover;
+    style->Colors[ImGuiCol_SeparatorActive]  = backgroundActive;
 
-    style->Colors[ImGuiCol_Tab]                     = layer01;
-    style->Colors[ImGuiCol_TabHovered]              = layerHover01;
+    style->Colors[ImGuiCol_Tab]        = layer01;
+    style->Colors[ImGuiCol_TabHovered] = layerHover01;
 
-    style->Colors[ImGuiCol_TabActive]               = layer02;
+    style->Colors[ImGuiCol_TabActive] = layer02;
 
-    style->Colors[ImGuiCol_TabUnfocused]            = style->Colors[ImGuiCol_Tab];
-    style->Colors[ImGuiCol_TabUnfocusedActive]      = style->Colors[ImGuiCol_TabActive];
+    style->Colors[ImGuiCol_TabUnfocused]       = style->Colors[ImGuiCol_Tab];
+    style->Colors[ImGuiCol_TabUnfocusedActive] = style->Colors[ImGuiCol_TabActive];
 
-    style->Colors[ImGuiCol_TableBorderStrong]       = layerAccent02;
-    style->Colors[ImGuiCol_TableBorderLight]        = layerAccent01;
+    style->Colors[ImGuiCol_TableBorderStrong] = layerAccent02;
+    style->Colors[ImGuiCol_TableBorderLight]  = layerAccent01;
 
-    style->Colors[ImGuiCol_DockingPreview]          = interactive;
-    style->Colors[ImGuiCol_DragDropTarget]          = interactive;
+    style->Colors[ImGuiCol_DockingPreview] = interactive;
+    style->Colors[ImGuiCol_DragDropTarget] = interactive;
 
-    style->Colors[ImGuiCol_NavHighlight]            = highlight;
-    style->Colors[ImGuiCol_NavWindowingHighlight]   = highlight;
+    style->Colors[ImGuiCol_NavHighlight]          = highlight;
+    style->Colors[ImGuiCol_NavWindowingHighlight] = highlight;
 
     // Load Fonts
     const float baseFontSize = 18.0f;
-    const float iconFontSize =
-        baseFontSize * 2.0f /
-        3.0f;  // FontAwesome fonts need to have their sizes reduced
-               // by 2.0f/3.0f in order to align correctly
+    const float iconFontSize = baseFontSize * 2.0f / 3.0f;  // FontAwesome fonts need to have their sizes reduced
+                                                            // by 2.0f/3.0f in order to align correctly
 
-    static const ImWchar fontAwesomeIconRanges[] = {ICON_MIN_FA, ICON_MAX_16_FA,
-                                                    0};
-    static const ImWchar fontAudioIconRanges[] = {ICON_MIN_FAD, ICON_MAX_16_FAD,
-                                                  0};
+    static const ImWchar fontAwesomeIconRanges[] = {ICON_MIN_FA, ICON_MAX_16_FA, 0};
+    static const ImWchar fontAudioIconRanges[]   = {ICON_MIN_FAD, ICON_MAX_16_FAD, 0};
 
     ImFontConfig icons_config;
     icons_config.FontDataOwnedByAtlas = false;
-    icons_config.MergeMode        = true;
-    icons_config.PixelSnapH       = true;
-    icons_config.GlyphMinAdvanceX = iconFontSize;
+    icons_config.MergeMode            = true;
+    icons_config.PixelSnapH           = true;
+    icons_config.GlyphMinAdvanceX     = iconFontSize;
 
     const cmrc::embedded_filesystem embeddedfilesystem = cmrc::SB::Fonts::get_filesystem();
 
@@ -754,24 +747,18 @@ int renderer_subsystem::init_imgui()
     assert(mainFontFile.size() > 0);
 
     ImFontConfig fontConfig;
-    fontConfig.FontDataOwnedByAtlas = false;    // the memory is statically owned by the virtual filesystem
+    fontConfig.FontDataOwnedByAtlas = false;  // the memory is statically owned by the virtual filesystem
 
-    ImFont* mainFont = io.Fonts->AddFontFromMemoryTTF((void*)mainFontFile.begin(), 
-        mainFontFile.size(),
-        baseFontSize, &fontConfig);
+    ImFont* mainFont =
+        io.Fonts->AddFontFromMemoryTTF((void*)mainFontFile.begin(), mainFontFile.size(), baseFontSize, &fontConfig);
 
-    ImFont* fontAudio = io.Fonts->AddFontFromMemoryTTF((void*)audioFontFile.begin(),
-        audioFontFile.size(), iconFontSize * 1.3f,
-                                       &icons_config, fontAudioIconRanges);
+    ImFont* fontAudio = io.Fonts->AddFontFromMemoryTTF((void*)audioFontFile.begin(), audioFontFile.size(),
+                                                       iconFontSize * 1.3f, &icons_config, fontAudioIconRanges);
 
-    io.Fonts->AddFontFromMemoryTTF(
-        (void*)mainFontFile.begin(),
-        mainFontFile.size(), baseFontSize, &fontConfig);
+    io.Fonts->AddFontFromMemoryTTF((void*)mainFontFile.begin(), mainFontFile.size(), baseFontSize, &fontConfig);
 
-    ImFont* fontAwesome = io.Fonts->AddFontFromMemoryTTF(
-        (void*)fontAwesomeFontFile.begin(),
-        fontAwesomeFontFile.size(),
-        iconFontSize, &icons_config, fontAwesomeIconRanges);
+    ImFont* fontAwesome = io.Fonts->AddFontFromMemoryTTF((void*)fontAwesomeFontFile.begin(), fontAwesomeFontFile.size(),
+                                                         iconFontSize, &icons_config, fontAwesomeIconRanges);
 
     return 0;
 }
@@ -818,8 +805,8 @@ void renderer_subsystem::tick_rendering(double deltaTime)
     int display_w, display_h;
     glfwGetFramebufferSize(m_window, &display_w, &display_h);
     glViewport(0, 0, display_w, display_h);
-    glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w,
-                 clear_color.z * clear_color.w, clear_color.w);
+    glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w,
+                 clear_color.w);
     glClear(GL_COLOR_BUFFER_BIT);
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 

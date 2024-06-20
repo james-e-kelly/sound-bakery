@@ -8,6 +8,8 @@ namespace PathHelpers
     static const char* ResourcesFolder = "Resources";
 }
 
+using namespace gluten;
+
 int app::run(int argc, char** argv)
 {
     m_executableLocation = std::string(argv[0]);
@@ -33,7 +35,7 @@ int app::run(int argc, char** argv)
         }
     }
 
-    m_currentTime = std::chrono::high_resolution_clock::now();
+    m_currentTime  = std::chrono::high_resolution_clock::now();
     m_previousTime = std::chrono::high_resolution_clock::now();
 
     m_hasInit = true;
@@ -42,7 +44,8 @@ int app::run(int argc, char** argv)
     while (!m_isRequestingExit)
     {
         m_currentTime = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double> timeDiff = std::chrono::duration_cast<std::chrono::duration<double>>(m_currentTime - m_previousTime);
+        std::chrono::duration<double> timeDiff =
+            std::chrono::duration_cast<std::chrono::duration<double>>(m_currentTime - m_previousTime);
         m_previousTime = m_currentTime;
 
         double deltaTime = timeDiff.count();

@@ -2,62 +2,65 @@
 
 #include "pch.h"
 
-#define WIDGET_CONSTRUCT(type)                                          \
-                                                                        \
-public:                                                                 \
+namespace gluten
+{
+#define WIDGET_CONSTRUCT(type)                                           \
+                                                                         \
+public:                                                                  \
     type(widget_subsystem* parentSubsystem) : widget(parentSubsystem) {} \
-                                                                        \
+                                                                         \
     type(widget* parent) : widget(parent) {}
 
-class widget_subsystem;
+    class widget_subsystem;
 
-// Base widget that can render ImGui UI
-class widget
-{
-public:
-    widget(widget_subsystem* parentSubsystem);
-    widget(widget* parentWidget);
-    virtual ~widget() {}
-
-public:
-    virtual void start();
-    virtual void tick(double deltaTime) {}
-    virtual void render() {}
-    virtual void end() {}
-
-    template <class T>
-    T* add_child_widget()
+    // Base widget that can render ImGui UI
+    class widget
     {
-        m_childWidgets.push_back(std::make_unique<T>(this));
-        widget* widget = m_childWidgets.back().get();
-        if (m_hasStarted)
-            widget->start();
-        return dynamic_cast<T*>(widget);
-    }
+    public:
+        widget(widget_subsystem* parentSubsystem);
+        widget(widget* parentWidget);
+        virtual ~widget() {}
 
-    bool has_started() { return m_hasStarted; }
+    public:
+        virtual void start();
+        virtual void tick(double deltaTime) {}
+        virtual void render() {}
+        virtual void end() {}
 
-    void destroy();
+        template <class T>
+        T* add_child_widget()
+        {
+            m_childWidgets.push_back(std::make_unique<T>(this));
+            widget* widget = m_childWidgets.back().get();
+            if (m_hasStarted)
+                widget->start();
+            return dynamic_cast<T*>(widget);
+        }
 
-public:
-    MulticastDelegate<widget*> m_onDestroy;
+        bool has_started() { return m_hasStarted; }
 
-protected:
-    void render_children();
+        void destroy();
 
-protected:
-    class app* get_app() const;
-    widget* get_parent_widget() const;
-    widget_subsystem* get_parent_subsystem() const;
+    public:
+        MulticastDelegate<widget*> m_onDestroy;
 
-private:
-    widget_subsystem* m_parentSubsystem = nullptr;
-    widget* m_parentWidget             = nullptr;
-    bool m_hasStarted                  = false;
+    protected:
+        void render_children();
 
-    std::vector<std::unique_ptr<widget>> m_childWidgets;
+    protected:
+        class app* get_app() const;
+        widget* get_parent_widget() const;
+        widget_subsystem* get_parent_subsystem() const;
 
-    friend class widget_subsystem;
+    private:
+        widget_subsystem* m_parentSubsystem = nullptr;
+        widget* m_parentWidget              = nullptr;
+        bool m_hasStarted                   = false;
 
-    bool m_wantsDestroy = false;
-};
+        std::vector<std::unique_ptr<widget>> m_childWidgets;
+
+        friend class widget_subsystem;
+
+        bool m_wantsDestroy = false;
+    };
+}  // namespace gluten

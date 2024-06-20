@@ -24,6 +24,7 @@ set(GLUTEN_SOURCES
 
 set(GLUTEN_HEADERS
   app/app.h
+  managers/manager.h
   subsystems/renderer_subsystem.h
   subsystems/widget_subsystem.h
   widgets/widget.h

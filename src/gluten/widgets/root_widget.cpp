@@ -1,9 +1,11 @@
 #include "root_widget.h"
 
-#include "app/app.h"
 #include "IconsFontAwesome6.h"
 #include "IconsFontaudio.h"
+#include "app/app.h"
 #include "imgui.h"
+
+using namespace gluten;
 
 void root_widget::render()
 {
@@ -12,8 +14,7 @@ void root_widget::render()
     // We are using the ImGuiWindowFlags_NoDocking flag to make the parent
     // window not dockable into, because it would be confusing to have two
     // docking targets within each others.
-    ImGuiWindowFlags window_flags =
-        ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+    ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
 
     const ImGuiViewport* viewport = ImGui::GetMainViewport();
     ImGui::SetNextWindowPos(viewport->WorkPos);
@@ -21,10 +22,9 @@ void root_widget::render()
     ImGui::SetNextWindowViewport(viewport->ID);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-    window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |
-                    ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
     window_flags |=
-        ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+        ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+    window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
     // When using ImGuiDockNodeFlags_PassthruCentralNode, DockSpace() will
     // render our background and handle the pass-thru hole, so we ask Begin() to
@@ -104,12 +104,10 @@ void root_widget::render()
         ImGui::OpenPopup("About");
     }
 
-    if (ImGui::BeginPopupModal("About", NULL,
-                               ImGuiWindowFlags_AlwaysAutoResize))
+    if (ImGui::BeginPopupModal("About", NULL, ImGuiWindowFlags_AlwaysAutoResize))
     {
-        static std::string aboutText(
-            "Atlas is an open source audio middleware alternatie to Wwise and "
-            "FMOD.\nWritten by James Kelly.");
+        static std::string aboutText("Atlas is an open source audio middleware alternatie to Wwise and "
+                                     "FMOD.\nWritten by James Kelly.");
 
         auto windowWidth = ImGui::GetWindowSize().x;
         auto textWidth   = ImGui::CalcTextSize(aboutText.c_str()).x;

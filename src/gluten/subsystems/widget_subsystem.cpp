@@ -1,7 +1,9 @@
 #include "widget_subsystem.h"
 
-#include "widgets/root_widget.h"
 #include "imgui.h"
+#include "widgets/root_widget.h"
+
+using namespace gluten;
 
 int widget_subsystem::init()
 {

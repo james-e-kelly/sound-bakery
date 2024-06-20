@@ -3,33 +3,36 @@
 #include "subsystem.h"
 #include "widgets/widget.h"
 
-class widget_subsystem : public subsystem
+namespace gluten
 {
-public:
-    widget_subsystem(app* appOwner) : subsystem(appOwner) {}
-
-public:
-    virtual int init() override;
-    virtual void tick(double deltaTime) override;
-    virtual void exit() override;
-
-public:
-    template <class T>
-    T* add_widget_class()
+    class widget_subsystem : public subsystem
     {
-        m_widgets.push_back(std::make_unique<T>(this));
-        return dynamic_cast<T*>(m_widgets.back().get());
-    }
+    public:
+        widget_subsystem(app* appOwner) : subsystem(appOwner) {}
 
-    template <class T>
-    T* add_widget_class_to_root()
-    {
-        assert(m_rootWidget);
+    public:
+        virtual int init() override;
+        virtual void tick(double deltaTime) override;
+        virtual void exit() override;
 
-        return m_rootWidget->add_child_widget<T>();
-    }
+    public:
+        template <class T>
+        T* add_widget_class()
+        {
+            m_widgets.push_back(std::make_unique<T>(this));
+            return dynamic_cast<T*>(m_widgets.back().get());
+        }
 
-private:
-    std::vector<std::unique_ptr<widget>> m_widgets;
-    widget* m_rootWidget = nullptr;
-};
+        template <class T>
+        T* add_widget_class_to_root()
+        {
+            assert(m_rootWidget);
+
+            return m_rootWidget->add_child_widget<T>();
+        }
+
+    private:
+        std::vector<std::unique_ptr<widget>> m_widgets;
+        widget* m_rootWidget = nullptr;
+    };
+}  // namespace gluten

@@ -2,59 +2,61 @@
 
 #include "pch.h"
 
-class app;
-
-class subsystem
+namespace
 {
-public:
-    subsystem() = delete;
-    subsystem(app* appOwner)
-    : m_app(appOwner) { }
+    class app;
 
-public:
-    /**
-     * @brief Runs as early as possible and provides command line arguments
-     * 
-     * @param ArgC Command line arguments count
-     * @param ArgV Command line arguments array
-     * @return int Returns for success and greater than 0 for error
-     */
-    virtual int pre_init(int ArgC, char* ArgV[]) { return 0; }
+    class subsystem
+    {
+    public:
+        subsystem() = delete;
+        subsystem(app* appOwner) : m_app(appOwner) {}
 
-    /**
-     * @brief Init the subsystem / start
-     * 
-     * @return int Returns for success and greater than 0 for error
-     */
-    virtual int init() { return 0; }
+    public:
+        /**
+         * @brief Runs as early as possible and provides command line arguments
+         *
+         * @param ArgC Command line arguments count
+         * @param ArgV Command line arguments array
+         * @return int Returns for success and greater than 0 for error
+         */
+        virtual int pre_init(int ArgC, char* ArgV[]) { return 0; }
 
-    /**
-     * @brief Runs before to tick to get if the app should close or set up a new frame
-     * 
-     */
-    virtual void pre_tick(double deltaTime) {}
+        /**
+         * @brief Init the subsystem / start
+         *
+         * @return int Returns for success and greater than 0 for error
+         */
+        virtual int init() { return 0; }
 
-    /**
-     * @brief Called every frame regardless of if the app is closing
-     * 
-     */
-    virtual void tick(double deltaTime) {}
+        /**
+         * @brief Runs before to tick to get if the app should close or set up a new frame
+         *
+         */
+        virtual void pre_tick(double deltaTime) {}
 
-    /**
-     * @brief Called every frame if the app is NOT closing
-     * 
-     */
-    virtual void tick_rendering(double deltaTime) {}
+        /**
+         * @brief Called every frame regardless of if the app is closing
+         *
+         */
+        virtual void tick(double deltaTime) {}
 
-    /**
-     * @brief Called when closing the app
-     * 
-     */
-    virtual void exit() {}
-    
-public:
-    app* GetApp() const { return m_app; }
+        /**
+         * @brief Called every frame if the app is NOT closing
+         *
+         */
+        virtual void tick_rendering(double deltaTime) {}
 
-protected:
-    app* m_app = nullptr;
-};
+        /**
+         * @brief Called when closing the app
+         *
+         */
+        virtual void exit() {}
+
+    public:
+        app* GetApp() const { return m_app; }
+
+    protected:
+        app* m_app = nullptr;
+    };
+}  // namespace
