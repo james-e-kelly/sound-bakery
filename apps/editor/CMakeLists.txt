@@ -3,36 +3,36 @@ message(STATUS "Adding editor")
 set(BUILD_FOLDER ${CMAKE_BINARY_DIR})
 
 set(EDITOR_SOURCES
-  App/App.cpp
-  Managers/AppManager.cpp
-  Managers/ProjectManager.cpp
-  Widgets/ImguiExtensions.cpp
-  Widgets/RootWidget.cpp
-  Widgets/SplashWidget.cpp
-  Widgets/FileBrowserWidget.cpp
-  Widgets/PlayControlsWidget.cpp
-  Widgets/AudioDisplayWidget.cpp
-  Widgets/ProjectExplorerWidget.cpp
-  Widgets/ProjectNodesWidget.cpp
-  Widgets/DetailsWidget.cpp
-  Utils/PropertyDrawer.cpp
-  Utils/MethodDrawer.cpp
+  app/App.cpp
+  managers/app_manager.cpp
+  managers/project_manager.cpp
+  widgets/imgui_extensions.cpp
+  widgets/root_widget.cpp
+  widgets/splash_widget.cpp
+  widgets/file_browser_widget.cpp
+  widgets/play_controls_widget.cpp
+  widgets/audio_display_widget.cpp
+  widgets/project_explorer_widget.cpp
+  widgets/project_nodes_widget.cpp
+  widgets/details_widget.cpp
+  utils/property_drawer.cpp
+  utils/method_drawer.cpp
 )
 
 set(EDITOR_HEADERS
-  App/App.h
-  Managers/AppManager.h
-  Managers/ProjectManager.h
-  Widgets/RootWidget.h
-  Widgets/SplashWidget.h
-  Widgets/FileBrowserWidget.h
-  Widgets/PlayControlsWidget.h
-  Widgets/AudioDisplayWidget.h
-  Widgets/ProjectExplorerWidget.h
-  Widgets/ProjectNodesWidget.h
-  Widgets/DetailsWidget.h
-  Utils/PropertyDrawer.h
-  Utils/MethodDrawer.h
+  app/app.h
+  managers/app_manager.h
+  managers/project_manager.h
+  widgets/root_widget.h
+  widgets/splash_widget.h
+  widgets/file_browser_widget.h
+  widgets/play_controls_widget.h
+  widgets/audio_display_widget.h
+  widgets/project_explorer_widget.h
+  widgets/project_nodes_widget.h
+  widgets/details_widget.h
+  utils/property_drawer.h
+  utils/method_drawer.h
 )
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Source Files" FILES ${EDITOR_SOURCES})
