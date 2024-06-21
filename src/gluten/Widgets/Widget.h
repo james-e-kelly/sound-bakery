@@ -2,11 +2,11 @@
 
 #include "gluten/pch.h"
 
-#define WIDGET_CONSTRUCT(type)                                           \
-                                                                         \
-public:                                                                  \
+#define WIDGET_CONSTRUCT(type)                                                   \
+                                                                                 \
+public:                                                                          \
     type(gluten::widget_subsystem* parentSubsystem) : widget(parentSubsystem) {} \
-                                                                         \
+                                                                                 \
     type(gluten::widget* parent) : gluten::widget(parent) {}
 
 namespace gluten

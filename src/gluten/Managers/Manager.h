@@ -39,4 +39,4 @@ namespace gluten
     protected:
         app* m_app = nullptr;
     };
-}  // namespace
+}  // namespace gluten
