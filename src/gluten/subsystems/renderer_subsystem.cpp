@@ -782,7 +782,7 @@ void renderer_subsystem::pre_tick(double deltaTime)
 {
     if (glfwWindowShouldClose(m_window))
     {
-        GetApp()->request_exit();
+        get_app()->request_exit();
     }
     else
     {

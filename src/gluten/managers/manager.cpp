@@ -1,3 +1,3 @@
 #include "manager.h"
 
-gluten::app* gluten::manager::GetApp() const { return m_app; }
+gluten::app* gluten::manager::get_app() const { return m_app; }

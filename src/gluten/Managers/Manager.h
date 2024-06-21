@@ -34,7 +34,7 @@ namespace gluten
         virtual void exit() {}
 
     public:
-        app* GetApp() const;
+        app* get_app() const;
 
     protected:
         app* m_app = nullptr;

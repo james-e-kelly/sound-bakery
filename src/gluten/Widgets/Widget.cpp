@@ -29,7 +29,7 @@ gluten::app* widget::get_app() const
         currentWidget = currentWidget->get_parent_widget();
     }
 
-    return currentWidget->get_parent_subsystem()->GetApp();
+    return currentWidget->get_parent_subsystem()->get_app();
 }
 
 widget* widget::get_parent_widget() const { return m_parentWidget; }

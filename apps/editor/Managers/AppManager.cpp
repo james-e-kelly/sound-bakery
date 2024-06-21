@@ -14,7 +14,7 @@ static std::chrono::high_resolution_clock::time_point prevTime = currentTime;
 
 void AppManager::Init(const std::string& executablePath)
 {
-    SplashWidget* splashWidget = GetApp()
+    SplashWidget* splashWidget = get_app()
                                      ->get_subsystem_by_class<gluten::widget_subsystem>()
                                      ->add_widget_class<SplashWidget>();
 

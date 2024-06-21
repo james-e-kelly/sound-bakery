@@ -22,13 +22,13 @@ void ProjectManager::init_project(const std::filesystem::path& projectFile)
 {
     sbk::engine::system::open_project(projectFile);
 
-    GetApp()
+    get_app()
         ->get_subsystem_by_class<gluten::widget_subsystem>()
         ->add_widget_class_to_root<ProjectExplorerWidget>();
-    GetApp()
+    get_app()
         ->get_subsystem_by_class<gluten::widget_subsystem>()
         ->add_widget_class_to_root<PlayerWidget>();
-    GetApp()
+    get_app()
         ->get_subsystem_by_class<gluten::widget_subsystem>()
         ->add_widget_class_to_root<DetailsWidget>();
 }
