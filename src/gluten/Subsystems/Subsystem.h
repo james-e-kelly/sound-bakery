@@ -2,7 +2,7 @@
 
 #include "pch.h"
 
-namespace
+namespace gluten
 {
     class app;
 

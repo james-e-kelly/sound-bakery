@@ -22,7 +22,7 @@ void SplashWidget::start()
 {
     widget::start();
 
-    const cmrc::embedded_filesystem embeddedfilesystem = cmrc::SB::Images::get_filesystem();
+    const cmrc::embedded_filesystem embeddedfilesystem = cmrc::sbk::Images::get_filesystem();
 
     const cmrc::file splashImageFile = embeddedfilesystem.open("SplashImage02.png");
 
@@ -105,7 +105,7 @@ void SplashWidget::tick(double deltaTime)
     }
 }
 
-void SplashWidget::Render()
+void SplashWidget::render()
 {
     if (m_wantsToShow &&
         !ImGui::IsPopupOpen(SplashScreenUtils::splashScreenName))

@@ -1,13 +1,13 @@
 #pragma once
 
-#include "Widget.h"
+#include "gluten/widgets/widget.h"
 
 class ProjectNodesWidget;
 
-class ProjectExplorerWidget : public widget
+class ProjectExplorerWidget : public gluten::widget
 {
 public:
-    ProjectExplorerWidget(widget_subsystem* parentSubsystem)
+    ProjectExplorerWidget(gluten::widget_subsystem* parentSubsystem)
         : widget(parentSubsystem)
     {
     }
@@ -16,7 +16,7 @@ public:
 
 public:
     virtual void start() override;
-    virtual void Render() override;
+    virtual void render() override;
 
 private:
     widget* m_fileBrowserWidget;

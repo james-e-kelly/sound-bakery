@@ -12,7 +12,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
     (void)pCmdLine;
     (void)nCmdShow;
 
-    app* app = CreateApplication();
+    gluten::app* app = CreateApplication();
 
     app->run(__argc, __argv);
 

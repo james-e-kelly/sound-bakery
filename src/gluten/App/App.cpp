@@ -10,7 +10,7 @@ namespace PathHelpers
 
 using namespace gluten;
 
-int app::run(int argc, char** argv)
+int gluten::app::run(int argc, char** argv)
 {
     m_executableLocation = std::string(argv[0]);
 
@@ -69,7 +69,7 @@ int app::run(int argc, char** argv)
 
         for (auto& manager : m_managers)
         {
-            manager->Tick(deltaTime);
+            manager->tick(deltaTime);
         }
 
         // Rendering
@@ -81,7 +81,7 @@ int app::run(int argc, char** argv)
 
     for (auto& manager : m_managers)
     {
-        manager->Exit();
+        manager->exit();
     }
 
     for (std::unique_ptr<subsystem>& subsystem : m_subsystems)
@@ -92,4 +92,4 @@ int app::run(int argc, char** argv)
     return 0;
 }
 
-void app::request_exit() { m_isRequestingExit = true; }
+void gluten::app::request_exit() { m_isRequestingExit = true; }

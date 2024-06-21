@@ -1,7 +1,7 @@
 #pragma once
 
-#include "managers/manager.h"
-#include "subsystems/subsystem.h"
+#include "gluten/managers/manager.h"
+#include "gluten/subsystems/subsystem.h"
 
 namespace gluten
 {
@@ -26,7 +26,7 @@ namespace gluten
 
     private:
         std::vector<std::unique_ptr<subsystem>> m_subsystems;
-        std::vector<std::unique_ptr<Manager>> m_managers;
+        std::vector<std::unique_ptr<manager>> m_managers;
 
         std::chrono::high_resolution_clock::time_point m_currentTime;
         std::chrono::high_resolution_clock::time_point m_previousTime;
@@ -84,7 +84,7 @@ namespace gluten
     template <class T>
     T* app::get_manager_by_class()
     {
-        for (std::unique_ptr<Manager>& manager : m_managers)
+        for (std::unique_ptr<manager>& manager : m_managers)
         {
             if (T* castedManager = dynamic_cast<T*>(manager.get()))
             {

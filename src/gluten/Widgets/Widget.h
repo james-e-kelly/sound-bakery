@@ -1,15 +1,16 @@
 #pragma once
 
-#include "pch.h"
+#include "gluten/pch.h"
 
-namespace gluten
-{
 #define WIDGET_CONSTRUCT(type)                                           \
                                                                          \
 public:                                                                  \
-    type(widget_subsystem* parentSubsystem) : widget(parentSubsystem) {} \
+    type(gluten::widget_subsystem* parentSubsystem) : widget(parentSubsystem) {} \
                                                                          \
-    type(widget* parent) : widget(parent) {}
+    type(gluten::widget* parent) : gluten::widget(parent) {}
+
+namespace gluten
+{
 
     class widget_subsystem;
 

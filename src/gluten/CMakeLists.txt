@@ -16,6 +16,7 @@ set(IMAGE_FILES
 set(GLUTEN_SOURCES
   app_entry.cpp 
   app/app.cpp
+  managers/manager.cpp
   subsystems/renderer_subsystem.cpp
   subsystems/widget_subsystem.cpp
   widgets/widget.cpp
@@ -46,6 +47,7 @@ add_library(gluten STATIC
 add_library(SoundBakery::Gluten ALIAS gluten)
 
 target_include_directories(gluten
+    PUBLIC ${CMAKE_SOURCE_DIR}/src
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
 )
 

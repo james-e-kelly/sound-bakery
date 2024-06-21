@@ -8,14 +8,14 @@
 #include "sound_bakery/node/container/sound_container.h"
 #include "sound_bakery/node/node.h"
 
-void DetailsWidget::Render()
+void DetailsWidget::render()
 {
     widget::render();
 
     if (ImGui::Begin("Details", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
     {
         if (ProjectManager* const projectManager =
-                get_app()->GetProjectManager())
+                get_app()->get_manager_by_class<ProjectManager>())
         {
             Selection& selection = projectManager->GetSelection();
             if (sbk::core::object* selected = selection.GetSelected())

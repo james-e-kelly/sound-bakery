@@ -1,13 +1,16 @@
 #pragma once
 
-#include "Manager.h"
+#include "gluten/managers/manager.h"
 
-class widget;
+namespace gluten
+{
+    class widget;
+}
 
-class AppManager : public Manager
+class AppManager : public gluten::manager
 {
 public:
-    AppManager(app* appOwner) : Manager(appOwner) {}
+    AppManager(gluten::app* appOwner) : manager(appOwner) {}
 
 public:
     void Init(const std::string& executablePath);
@@ -30,5 +33,5 @@ public:
     void OpenProject();
 
 private:
-    void OnSplashWidgetDestroy(widget* widget);
+    void OnSplashWidgetDestroy(gluten::widget* widget);
 };

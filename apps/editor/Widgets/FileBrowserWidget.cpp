@@ -249,12 +249,12 @@ void FileBrowserWidget::start()
 {
     widget::start();
 
-    m_currentDirectory = sbk::engine::system::getProject()->getConfig().sourceFolder();
+    m_currentDirectory = sbk::engine::system::get_project()->getConfig().sourceFolder();
     m_topDir           = m_currentDirectory;
     m_selectedItemID   = std::numeric_limits<uint32_t>::max();
 }
 
-void FileBrowserWidget::Render()
+void FileBrowserWidget::render()
 {
     ShowNavMenu();
     ImGui::Separator();
@@ -277,7 +277,7 @@ void FileBrowserWidget::Render()
     {
         m_selectedFile = m_selectedFileString;
 
-        if (ProjectManager* manager = get_app()->GetProjectManager())
+        if (ProjectManager* manager = get_app()->get_manager_by_class<ProjectManager>())
         {
             // manager->GetPreviewSoundContainer()->setSound(m_selectedFile);
             // manager->GetSelection().SelectAudioFile(m_selectedFile);

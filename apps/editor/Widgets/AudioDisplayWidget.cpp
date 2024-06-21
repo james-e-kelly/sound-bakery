@@ -106,9 +106,9 @@ int littleEndian24Bit(const void* bytes)
 //    return result / maxValue;
 //}
 
-void AudioDisplayWidget::Render()
+void AudioDisplayWidget::render()
 {
-    if (ProjectManager* manager = get_app()->GetProjectManager())
+    if (ProjectManager* manager = get_app()->get_manager_by_class<ProjectManager>())
     {
         if (sbk::core::object* selected = manager->GetSelection().GetSelected())
         {
@@ -133,7 +133,7 @@ void AudioDisplayWidget::Render()
                     {
                         sbk::engine::SoundContainer* previewSound =
                             get_app()
-                                ->GetProjectManager()
+                                ->get_manager_by_class<ProjectManager>()
                                 ->GetPreviewSoundContainer();
                         /*FMOD_SOUND* sound = previewSound ?
                         previewSound->getFSound() : nullptr;
@@ -240,7 +240,7 @@ void AudioDisplayWidget::Render()
 bool AudioDisplayWidget::HasCache()
 {
     sbk::engine::SoundContainer* currentNode =
-        get_app()->GetProjectManager()->GetPreviewSoundContainer();
+        get_app()->get_manager_by_class<ProjectManager>()->GetPreviewSoundContainer();
 
     if (currentNode)
     {

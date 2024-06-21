@@ -9,7 +9,7 @@
 
 #include <cmrc/cmrc.hpp>
 
-CMRC_DECLARE(SB::Fonts);
+CMRC_DECLARE(sbk::Fonts);
 
 #include <stdio.h>
 
@@ -738,7 +738,7 @@ int renderer_subsystem::init_imgui()
     icons_config.PixelSnapH           = true;
     icons_config.GlyphMinAdvanceX     = iconFontSize;
 
-    const cmrc::embedded_filesystem embeddedfilesystem = cmrc::SB::Fonts::get_filesystem();
+    const cmrc::embedded_filesystem embeddedfilesystem = cmrc::sbk::Fonts::get_filesystem();
 
     const cmrc::file mainFontFile        = embeddedfilesystem.open("Montserrat-Light.ttf");
     const cmrc::file audioFontFile       = embeddedfilesystem.open("fontaudio/font/" FONT_ICON_FILE_NAME_FAD);

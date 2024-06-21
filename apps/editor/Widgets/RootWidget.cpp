@@ -1,6 +1,8 @@
 #include "RootWidget.h"
 
 #include "App/App.h"
+#include "Managers/AppManager.h"
+#include "Managers/ProjectManager.h"
 #include "IconsFontAwesome6.h"
 #include "IconsFontaudio.h"
 #include "imgui.h"
@@ -60,22 +62,22 @@ void root_widget::render()
 
             if (ImGui::MenuItem(ICON_FA_FILE " New...", "Ctrl+N"))
             {
-                get_app()->GetAppManager()->CreateNewProject();
+                get_app()->get_manager_by_class<AppManager>()->CreateNewProject();
             }
 
             if (ImGui::MenuItem(ICON_FA_FOLDER_OPEN " Open...", "Ctrl+O"))
             {
-                get_app()->GetAppManager()->OpenProject();
+                get_app()->get_manager_by_class<AppManager>()->OpenProject();
             }
 
-            if (get_app()->GetProjectManager())
+            if (get_app()->get_manager_by_class<ProjectManager>())
             {
                 ImGui::Separator();
 
                 ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[0]);
                 if (ImGui::MenuItem(ICON_FAD_SAVE " Save", "Ctrl+S"))
                 {
-                    get_app()->GetProjectManager()->SaveProject();
+                    get_app()->get_manager_by_class<ProjectManager>()->SaveProject();
                 }
 
                 if (ImGui::MenuItem(ICON_FAD_SAVEAS " Save As...",
@@ -109,7 +111,7 @@ void root_widget::render()
 
             if (ImGui::MenuItem("Convert Files", nullptr, nullptr))
             {
-                sbk::engine::system::getProject()->encodeAllMedia();
+                sbk::engine::system::get_project()->encodeAllMedia();
             }
 
             ImGui::EndMenu();

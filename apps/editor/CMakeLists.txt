@@ -3,13 +3,9 @@ message(STATUS "Adding editor")
 set(BUILD_FOLDER ${CMAKE_BINARY_DIR})
 
 set(EDITOR_SOURCES
-  AppEntry.cpp 
   App/App.cpp
   Managers/AppManager.cpp
   Managers/ProjectManager.cpp
-  Subsystems/RendererSubsystem.cpp
-  Subsystems/WidgetSubsystem.cpp
-  Widgets/Widget.cpp
   Widgets/ImguiExtensions.cpp
   Widgets/RootWidget.cpp
   Widgets/SplashWidget.cpp
@@ -27,9 +23,6 @@ set(EDITOR_HEADERS
   App/App.h
   Managers/AppManager.h
   Managers/ProjectManager.h
-  Subsystems/RendererSubsystem.h
-  Subsystems/WidgetSubsystem.h
-  Widgets/Widget.h
   Widgets/RootWidget.h
   Widgets/SplashWidget.h
   Widgets/FileBrowserWidget.h

@@ -1,14 +1,14 @@
 #pragma once
 
-#include "Widget.h"
+#include "gluten/widgets/widget.h"
 
-class DetailsWidget : public widget
+class DetailsWidget : public gluten::widget
 {
 public:
-    DetailsWidget(widget_subsystem* parentSubsystem) : widget(parentSubsystem) {}
+    DetailsWidget(gluten::widget_subsystem* parentSubsystem) : widget(parentSubsystem) {}
 
     DetailsWidget(widget* parent) : widget(parent) {}
 
 public:
-    virtual void Render() override;
+    virtual void render() override;
 };

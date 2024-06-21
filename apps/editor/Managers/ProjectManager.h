@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Manager.h"
+#include "gluten/managers/manager.h"
 #include "sound_bakery/system.h"
 #include "sound_bakery/core/database/database_object.h"
 
@@ -32,15 +32,15 @@ private:
     sbk::core::object* m_selected = nullptr;
 };
 
-class ProjectManager : public Manager
+class ProjectManager : public gluten::manager
 {
 public:
-    ProjectManager(app* appOwner) : Manager(appOwner) {}
+    ProjectManager(gluten::app* appOwner) : gluten::manager(appOwner) {}
 
 public:
-    void Init(const std::filesystem::path& projectFile);
-    virtual void Tick(double deltaTime) override;
-    virtual void Exit() override;
+    void init_project(const std::filesystem::path& projectFile);
+    virtual void tick(double deltaTime) override;
+    virtual void exit() override;
 
     void SaveProject() const;
 

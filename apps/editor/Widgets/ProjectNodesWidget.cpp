@@ -14,6 +14,7 @@
 #include "sound_bakery/profiling/voice_tracker.h"
 #include "sound_bakery/system.h"
 #include "sound_bakery/util/type_helper.h"
+#include "sound_bakery/editor/project/project.h"
 
 static const std::vector<SB_OBJECT_CATEGORY> s_objectPageCategories{
     SB_CATEGORY_PARAMETER, SB_CATEGORY_BUS, SB_CATEGORY_NODE,
@@ -71,7 +72,7 @@ void ProjectNodesWidget::RenderSoundbankPage()
 void ProjectNodesWidget::RenderCategory(SB_OBJECT_CATEGORY category)
 {
     const std::unordered_set<sbk::core::object*> categoryObjects =
-        sbk::engine::system::getObjectTracker()->getObjectsOfCategory(category);
+        sbk::engine::system::get()->get_objects_of_category(category);
 
     for (sbk::core::object* const object : categoryObjects)
     {
@@ -170,7 +171,7 @@ void ProjectNodesWidget::RenderSingleNode(rttr::type type,
                 ImGui::IsMouseReleased(ImGuiMouseButton_Left) &&
                 !ImGui::GetDragDropPayload())
             {
-                get_app()->GetProjectManager()->GetSelection().SelectObject(
+                get_app()->get_manager_by_class<ProjectManager>()->GetSelection().SelectObject(
                     object);
             }
 
@@ -322,9 +323,9 @@ bool ProjectNodesWidget::RenderNodeContextMenu(rttr::type type,
 
                 if (ImGui::MenuItem("Delete"))
                 {
-                    get_app()->GetProjectManager()->GetSelection().SelectObject(
+                    get_app()->get_manager_by_class<ProjectManager>()->GetSelection().SelectObject(
                         nullptr);
-                    sbk::engine::system::getDatabase()->remove(object);
+                    sbk::engine::system::get()->remove_object_from_database(object->get_database_id());
                     result = false;
                 }
 
@@ -357,19 +358,18 @@ void ProjectNodesWidget::RenderCreateParentOrChildMenu(
 
             if (ImGui::MenuItem(typeIndexName.data()))
             {
-                sbk::core::database_object* const newObject =
-                    sbk::engine::Factory::createDatabaseObjectFromType(type);
+                std::shared_ptr<sbk::core::database_object> const newObject =
+                    sbk::engine::system::get()->get_project()->create_database_object(type);
                 newObject->set_database_name(
                     fmt::format("New {} Node", typeIndexName.data()));
-                newObject->onLoaded();
 
                 assert(newObject);
 
-                SetupRenameNode(newObject);
+                SetupRenameNode(newObject.get());
 
                 sbk::engine::Node* newNode =
                     sbk::reflection::cast<sbk::engine::Node*, sbk::core::object*>(
-                        newObject);
+                        newObject.get());
 
                 if (newNode)
                 {

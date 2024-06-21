@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Widget.h"
+#include "gluten/widgets/widget.h"
 
-class SplashWidget : public widget
+class SplashWidget : public gluten::widget
 {
 public:
-    SplashWidget(widget_subsystem* parentSubsystem) : widget(parentSubsystem) {}
+    SplashWidget(gluten::widget_subsystem* parentSubsystem) : widget(parentSubsystem) {}
 
 public:
     void ShowSplashScreen();
@@ -13,7 +13,7 @@ public:
 
 public:
     virtual void tick(double deltaTime) override;
-    virtual void Render() override;
+    virtual void render() override;
 
 protected:
     virtual void start() override;

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "subsystem.h"
-#include "widgets/widget.h"
+#include "gluten/subsystems/subsystem.h"
+#include "gluten/widgets/widget.h"
 
 namespace gluten
 {

@@ -1,7 +1,7 @@
 #include "AppManager.h"
 
 #include "App/App.h"
-#include "Subsystems/WidgetSubsystem.h"
+#include "gluten/subsystems/widget_subsystem.h"
 #include "Widgets/SplashWidget.h"
 #include "imgui.h"
 #include "nfd.h"  // native file dialog
@@ -15,7 +15,7 @@ static std::chrono::high_resolution_clock::time_point prevTime = currentTime;
 void AppManager::Init(const std::string& executablePath)
 {
     SplashWidget* splashWidget = GetApp()
-                                     ->get_subsystem_by_class<widget_subsystem>()
+                                     ->get_subsystem_by_class<gluten::widget_subsystem>()
                                      ->add_widget_class<SplashWidget>();
 
     splashWidget->m_onDestroy.AddRaw(this, &AppManager::OnSplashWidgetDestroy);
@@ -150,7 +150,7 @@ retry:
     outputStream << projectYAML.c_str();
     outputStream.close();
 
-    GetApp()->OpenProject(projectFile);
+    //GetApp()->OpenProject(projectFile);
 }
 
 void AppManager::OpenProject()
@@ -169,7 +169,7 @@ retry:
 
     const std::filesystem::path projectFile(outPath);
 
-    GetApp()->OpenProject(projectFile);
+    //GetApp()->OpenProject(projectFile);
 }
 
-void AppManager::OnSplashWidgetDestroy(widget* widget) {}
+void AppManager::OnSplashWidgetDestroy(gluten::widget* widget) {}

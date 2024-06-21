@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Widget.h"
+#include "gluten/widgets/widget.h"
 #include "sound_bakery/sound_bakery.h"
 
 namespace sbk::engine
@@ -8,10 +8,10 @@ namespace sbk::engine
     class Sound;
 }
 
-class AudioDisplayWidget : public widget
+class AudioDisplayWidget : public gluten::widget
 {
 public:
-    AudioDisplayWidget(widget_subsystem* parentSubsystem)
+    AudioDisplayWidget(gluten::widget_subsystem* parentSubsystem)
         : widget(parentSubsystem)
     {
     }
@@ -19,7 +19,7 @@ public:
     AudioDisplayWidget(widget* parent) : widget(parent) {}
 
 public:
-    virtual void Render() override;
+    virtual void render() override;
 
 private:
     bool HasCache();

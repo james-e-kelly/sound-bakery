@@ -20,7 +20,7 @@ void widget::render_children()
     }
 }
 
-app* widget::get_app() const
+gluten::app* widget::get_app() const
 {
     const widget* currentWidget = this;
 

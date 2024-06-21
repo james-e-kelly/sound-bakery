@@ -7,6 +7,7 @@
 #include "sound_bakery_internal.h"
 #include "spdlog/async.h"
 #include "spdlog/spdlog.h"
+#include "yaml-cpp/yaml.h"
 
 #include <atomic>
 #include <cassert>

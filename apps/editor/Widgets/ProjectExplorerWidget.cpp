@@ -14,7 +14,7 @@ void ProjectExplorerWidget::start()
     m_projectNodesWidget = add_child_widget<ProjectNodesWidget>();
 }
 
-void ProjectExplorerWidget::Render()
+void ProjectExplorerWidget::render()
 {
     if (ImGui::Begin("Project Explorer"))
     {

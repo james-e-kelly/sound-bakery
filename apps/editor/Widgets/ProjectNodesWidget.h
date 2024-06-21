@@ -1,7 +1,7 @@
 #pragma once
 
 #include "IconsFontaudio.h"
-#include "Widget.h"
+#include "gluten/widgets/widget.h"
 #include "imgui.h"
 #include "sound_bakery/pch.h"
 
@@ -17,10 +17,10 @@ enum class NodeCreationType
     NewChild
 };
 
-class ProjectNodesWidget : public widget
+class ProjectNodesWidget : public gluten::widget
 {
 public:
-    ProjectNodesWidget(widget_subsystem* parentSubsystem)
+    ProjectNodesWidget(gluten::widget_subsystem* parentSubsystem)
         : widget(parentSubsystem), m_renameID(0)
     {
     }

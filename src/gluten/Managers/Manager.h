@@ -1,8 +1,8 @@
 #pragma once
 
-#include "pch.h"
+#include "gluten/pch.h"
 
-namespace
+namespace gluten
 {
     class app;
 
@@ -12,29 +12,29 @@ namespace
      * The project subclass can handle loading project files and widgets needed only for the project.
      *
      */
-    class Manager
+    class manager
     {
     public:
-        Manager() = delete;
-        Manager(app* appOwner) : m_app(appOwner) {}
+        manager() = delete;
+        manager(app* appOwner) : m_app(appOwner) {}
 
     public:
-        virtual void Init(app* app) {}
+        virtual void init(app* app) {}
 
         /**
          * @brief Called every frame regardless of if the app is closing
          *
          */
-        virtual void Tick(double deltaTime) {}
+        virtual void tick(double deltaTime) {}
 
         /**
          * @brief Called when closing the app
          *
          */
-        virtual void Exit() {}
+        virtual void exit() {}
 
     public:
-        app* GetApp() const { return m_app; }
+        app* GetApp() const;
 
     protected:
         app* m_app = nullptr;

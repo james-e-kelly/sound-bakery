@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Widget.h"
+#include "gluten/widgets/widget.h"
 
 #include <cstdint>
 
@@ -11,13 +11,13 @@ enum class ButtonState
     CLICKED
 };
 
-class FileBrowserWidget : public widget
+class FileBrowserWidget : public gluten::widget
 {
     WIDGET_CONSTRUCT(FileBrowserWidget)
 
 public:
     virtual void start() override;
-    virtual void Render() override;
+    virtual void render() override;
 
     const std::string& GetSelectedFileName() const
     {
