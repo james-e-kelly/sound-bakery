@@ -66,6 +66,11 @@ system::~system()
     background_executor()->shutdown();
     game_thread_executer()->shutdown();
 
+    if (m_project)
+    {
+        m_project.reset();
+    }
+
     sbk::reflection::unregisterReflectionTypes();
 
     sc_system_close(this);

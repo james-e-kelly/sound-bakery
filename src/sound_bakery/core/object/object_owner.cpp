@@ -72,14 +72,19 @@ std::shared_ptr<sbk::core::object> sbk::core::object_owner::create_runtime_objec
 std::shared_ptr<sbk::core::object> sbk::core::object_owner::load_object(YAML::Node& node)
 {
     const std::string loadedTypeName = node["ObjectType"].as<std::string>();
-
     const rttr::type type = rttr::type::get_by_name(loadedTypeName);
 
     if (type.is_derived_from<sbk::core::database_object>())
     {
-        std::shared_ptr<sbk::core::database_object> databaseObject = create_database_object(type);
+        std::shared_ptr<sbk::core::database_object> databaseObject = create_database_object(type, false);
+        sbk::core::database_object* const databaseObjectPointer    = databaseObject.get();
 
-        sbk::core::serialization::Serializer::loadProperties(node, databaseObject);
+        sbk::core::serialization::Serializer::loadProperties(node, databaseObjectPointer);
+
+        if (sbk::engine::system* const system = sbk::engine::system::get())
+        {
+            system->add_object_to_database(databaseObject);
+        }
 
         return databaseObject;
     }
@@ -99,11 +104,12 @@ std::shared_ptr<sbk::core::object> sbk::core::object_owner::load_object(YAML::No
     return {};
 }
 
-std::shared_ptr<sbk::core::database_object> sbk::core::object_owner::create_database_object(const rttr::type& type)
+std::shared_ptr<sbk::core::database_object> sbk::core::object_owner::create_database_object(const rttr::type& type,
+                                                                                            bool addToDatabase)
 {
     sbk::engine::system* const system = sbk::engine::system::get();
 
-    if (!system)
+    if (system == nullptr)
     {
         SPDLOG_CRITICAL("Cannot create object. System is invalid");
         return {};
@@ -115,11 +121,14 @@ std::shared_ptr<sbk::core::database_object> sbk::core::object_owner::create_data
         return {};
     }
 
-    if (std::shared_ptr<object> object = create_runtime_object(type))
+    if (const std::shared_ptr<object> object = create_runtime_object(type))
     {
         if (std::shared_ptr<database_object> databaseObject = std::static_pointer_cast<database_object>(object))
         {
-            system->add_object_to_database(databaseObject);
+            if (addToDatabase)
+            {
+                system->add_object_to_database(databaseObject);
+            }
 
             return databaseObject;
         }

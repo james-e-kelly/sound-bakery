@@ -14,7 +14,11 @@ namespace sbk::core
     public:
         std::shared_ptr<object> create_runtime_object(const rttr::type& type);
         std::shared_ptr<object> load_object(YAML::Node& node);
-        std::shared_ptr<database_object> create_database_object(const rttr::type& type);
+
+        /**
+         * @param addToDatabase to automatically track the object. If set to false, the user is responsible for adding the object to the database.
+        */
+        std::shared_ptr<database_object> create_database_object(const rttr::type& type, bool addToDatabase = true);
 
         template <typename T>
         std::shared_ptr<T> create_runtime_object();

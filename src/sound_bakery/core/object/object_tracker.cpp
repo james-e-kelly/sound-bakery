@@ -40,7 +40,12 @@ void object_tracker::untrack_object(object* object, std::optional<rttr::type> ty
 
 std::unordered_set<object*> object_tracker::get_objects_of_category(const SB_OBJECT_CATEGORY& category) const
 {
-    return m_categoryToObjects.at(category);
+    if (m_categoryToObjects.find(category) != m_categoryToObjects.cend())
+    {
+        return m_categoryToObjects.at(category);
+    }
+
+    return {};
 }
 
 std::unordered_set<object*> object_tracker::get_objects_of_type(const rttr::type& type) const

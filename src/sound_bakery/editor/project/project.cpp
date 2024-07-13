@@ -100,12 +100,12 @@ void sbk::editor::project::loadSounds()
 
             if (sbk::core::database* const database = sbk::engine::system::get())
             {
-                if (database->try_find(filename.stem().string().c_str()).expired())
+                if (database->try_find(filename.stem().string()).expired())
                 {
-                    if (std::shared_ptr<sbk::core::database_object> createdSound =
+                    if (const std::shared_ptr<sbk::core::database_object> createdSound =
                             create_database_object<sbk::engine::Sound>())
                     {
-                        createdSound->set_database_name(filename.stem().string().c_str());
+                        createdSound->set_database_name(filename.stem().string());
 
                         if (sbk::engine::Sound* const castedSound =
                                 sbk::reflection::cast<sbk::engine::Sound*, sbk::core::database_object*>(
@@ -135,17 +135,17 @@ void sbk::editor::project::loadSystem()
 
 void sbk::editor::project::loadObjects()
 {
-    std::vector<std::filesystem::path> loadPaths{m_projectConfig.object_folder()};
+    const std::vector<std::filesystem::path> loadPaths{m_projectConfig.object_folder()};
 
     for (const std::filesystem::path& path : loadPaths)
     {
         std::filesystem::create_directories(path);
 
-        for (const std::filesystem::directory_entry& p : std::filesystem::recursive_directory_iterator(path))
+        for (const std::filesystem::directory_entry& directoryEntry : std::filesystem::recursive_directory_iterator(path))
         {
-            if (p.is_regular_file())
+            if (directoryEntry.is_regular_file())
             {
-                YAML::Node node = YAML::LoadFile(p.path().string());
+                YAML::Node node = YAML::LoadFile(directoryEntry.path().string());
                 load_object(node);
             }
         }

@@ -501,7 +501,9 @@ bool sbk::core::serialization::Serializer::loadProperties(YAML::Node& node,
         {
             if (!property.is_readonly())
             {
-                if (YAML::Node propertyNode = node[property.get_name().data()])
+                rttr::string_view propertyName = property.get_name();
+
+                if (YAML::Node propertyNode = node[propertyName.data()])
                 {
                     loadProperty(propertyNode, property, instance);
                 }
