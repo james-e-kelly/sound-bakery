@@ -11,9 +11,10 @@ namespace gluten
         widget_subsystem(app* appOwner) : subsystem(appOwner) {}
 
     public:
-        virtual int init() override;
         virtual void tick(double deltaTime) override;
         virtual void exit() override;
+
+        void set_root_widget(widget* rootWidget);
 
     public:
         template <class T>

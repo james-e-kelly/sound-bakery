@@ -46,90 +46,11 @@ void root_widget::render()
         ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspaceFlags);
     }
 
-    static bool showMenu = false;
-    bool showAbout       = false;
-
     ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[1]);
 
-    if (ImGui::BeginMenuBar())
-    {
-        if (ImGui::BeginMenu("File"))
-        {
-            ImGui::Separator();
-            if (ImGui::MenuItem("exit", "Alt+F4"))
-            {
-                get_app()->request_exit();
-            }
-
-            ImGui::EndMenu();
-        }
-
-        if (ImGui::BeginMenu("Options"))
-        {
-            ImGui::EndMenu();
-        }
-
-        if (ImGui::BeginMenu("Actions"))
-        {
-
-            if (ImGui::MenuItem("Open Demo Window", nullptr, &showMenu))
-            {
-            }
-
-            ImGui::EndMenu();
-        }
-
-        if (ImGui::BeginMenu("Help"))
-        {
-            if (ImGui::MenuItem("View Documentation"))
-            {
-            }
-
-            ImGui::Separator();
-            if (ImGui::MenuItem("About Atlas"))
-            {
-                showAbout = true;
-            }
-
-            ImGui::EndMenu();
-        }
-
-        ImGui::EndMenuBar();
-    }
+    render_menu();
 
     ImGui::PopFont();
-
-    if (showAbout)
-    {
-        ImGui::OpenPopup("About");
-    }
-
-    if (ImGui::BeginPopupModal("About", NULL, ImGuiWindowFlags_AlwaysAutoResize))
-    {
-        static std::string aboutText("Atlas is an open source audio middleware alternatie to Wwise and "
-                                     "FMOD.\nWritten by James Kelly.");
-
-        auto windowWidth = ImGui::GetWindowSize().x;
-        auto textWidth   = ImGui::CalcTextSize(aboutText.c_str()).x;
-
-        ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f);
-        ImGui::Text("%s", aboutText.c_str());
-
-        if (ImGui::Button("Close"))
-        {
-            ImGui::CloseCurrentPopup();
-        }
-
-        ImGui::EndPopup();
-    }
-
-    if (showMenu)
-    {
-        //        ImGui::ShowUserGuide();
-        ImGui::ShowDemoWindow();
-        //        ImGui::ShowAboutWindow();
-        //        ImGui::ShowDebugLogWindow();
-    }
 
     render_children();
 

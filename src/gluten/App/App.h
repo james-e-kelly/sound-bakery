@@ -11,6 +11,8 @@ namespace gluten
         int run(int argc, char** argv);
         void request_exit();
 
+        virtual void post_init() = 0;
+
     public:
         template <class T>
         T* add_subsystem_class();

@@ -5,12 +5,6 @@
 
 using namespace gluten;
 
-int widget_subsystem::init()
-{
-    m_rootWidget = add_widget_class<root_widget>();
-    return 0;
-}
-
 void widget_subsystem::tick(double deltaTime)
 {
     assert(m_widgets.size() > 0);
@@ -47,3 +41,5 @@ void widget_subsystem::exit()
         widget->end();
     }
 }
+
+void gluten::widget_subsystem::set_root_widget(widget* rootWidget) { m_rootWidget = rootWidget; }

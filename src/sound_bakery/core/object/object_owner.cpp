@@ -71,7 +71,9 @@ std::shared_ptr<sbk::core::object> sbk::core::object_owner::create_runtime_objec
 
 std::shared_ptr<sbk::core::object> sbk::core::object_owner::load_object(YAML::Node& node)
 {
-    const rttr::type type = rttr::type::get_by_name(node["ObjectType"].as<std::string>());
+    const std::string loadedTypeName = node["ObjectType"].as<std::string>();
+
+    const rttr::type type = rttr::type::get_by_name(loadedTypeName);
 
     if (type.is_derived_from<sbk::core::database_object>())
     {

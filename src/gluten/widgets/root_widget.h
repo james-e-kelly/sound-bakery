@@ -11,5 +11,6 @@ namespace gluten
 
     public:
         virtual void render() override;
+        virtual void render_menu() {}
     };
 }  // namespace gluten

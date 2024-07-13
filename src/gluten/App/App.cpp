@@ -35,6 +35,8 @@ int gluten::app::run(int argc, char** argv)
         }
     }
 
+    post_init();
+
     m_currentTime  = std::chrono::high_resolution_clock::now();
     m_previousTime = std::chrono::high_resolution_clock::now();
 
