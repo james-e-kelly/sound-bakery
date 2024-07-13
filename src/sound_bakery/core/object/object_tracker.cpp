@@ -50,7 +50,12 @@ std::unordered_set<object*> object_tracker::get_objects_of_category(const SB_OBJ
 
 std::unordered_set<object*> object_tracker::get_objects_of_type(const rttr::type& type) const
 {
-    return m_typeToObjects.at(type);
+    if (m_typeToObjects.find(type) != m_typeToObjects.cend())
+    {
+        return m_typeToObjects.at(type);
+    }
+
+    return {};
 }
 
 void object_tracker::on_object_destroyed(object* object)
