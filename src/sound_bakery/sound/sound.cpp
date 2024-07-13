@@ -23,11 +23,11 @@ void Sound::loadSynchronous()
         {
             finalSoundPath   = encodedSoundPath;
             encodedSoundPath = std::filesystem::relative(
-                encodedSoundPath, sbk::engine::system::get_project()->getConfig().encodedFolder());
+                encodedSoundPath, sbk::engine::system::get_project()->get_config().encoded_folder());
         }
         else
         {
-            finalSoundPath = sbk::engine::system::get_project()->getConfig().encodedFolder() / encodedSoundPath;
+            finalSoundPath = sbk::engine::system::get_project()->get_config().encoded_folder() / encodedSoundPath;
         }
 
         useRawSound = !std::filesystem::exists(finalSoundPath);
@@ -38,12 +38,12 @@ void Sound::loadSynchronous()
         if (std::filesystem::exists(rawSoundPath))
         {
             finalSoundPath = rawSoundPath;
-            rawSoundPath =
-                std::filesystem::relative(rawSoundPath, sbk::engine::system::get_project()->getConfig().sourceFolder());
+            rawSoundPath   = std::filesystem::relative(rawSoundPath,
+                                                       sbk::engine::system::get_project()->get_config().source_folder());
         }
         else
         {
-            finalSoundPath = sbk::engine::system::get_project()->getConfig().sourceFolder() / rawSoundPath;
+            finalSoundPath = sbk::engine::system::get_project()->get_config().source_folder() / rawSoundPath;
         }
     }
 

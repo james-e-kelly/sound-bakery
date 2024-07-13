@@ -1,8 +1,8 @@
-#include "PlayControlsWidget.h"
+#include "play_controls_widget.h"
 
-#include "App/App.h"
-#include "AudioDisplayWidget.h"
-#include "Managers/ProjectManager.h"
+#include "app/app.h"
+#include "audio_display_widget.h"
+#include "managers/project_manager.h"
 #include "imgui.h"
 #include "sound_bakery/event/event.h"
 #include "sound_bakery/gameobject/gameobject.h"

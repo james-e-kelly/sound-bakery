@@ -7,7 +7,6 @@
 #include "sound_bakery_internal.h"
 #include "spdlog/async.h"
 #include "spdlog/spdlog.h"
-#include "yaml-cpp/yaml.h"
 
 #include <atomic>
 #include <cassert>
@@ -26,6 +25,8 @@
 #include <unordered_set>
 #include <variant>
 #include <vector>
+
+#include "yaml-cpp/yaml.h"
 
 /**
  * @def Registers this type's parent classes (if any) and marks its private members visible to reflection.

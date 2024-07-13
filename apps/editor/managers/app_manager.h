@@ -13,14 +13,8 @@ public:
     AppManager(gluten::app* appOwner) : manager(appOwner) {}
 
 public:
-    void Init(const std::string& executablePath);
-    virtual void Tick(double deltaTime) {}
-    virtual void Exit() {}
+    void init(gluten::app* app) override;
 
-public:
-    double GetDeltaTime() const;
-
-public:
     /*
      * Opens a file dialogue window to create the project and handles creating
      * files.
@@ -30,8 +24,5 @@ public:
     /*
      * Opens a file dialogue and opens the project is found.
      */
-    void OpenProject();
-
-private:
-    void OnSplashWidgetDestroy(gluten::widget* widget);
+    void open_project();
 };

@@ -1,9 +1,9 @@
-#include "FileBrowserWidget.h"
+#include "file_browser_widget.h"
 
-#include "App/App.h"
+#include "app/app.h"
 #include "IconsFontAwesome6.h"
 #include "IconsFontaudio.h"
-#include "Managers/ProjectManager.h"
+#include "managers/project_manager.h"
 #include "imgui.h"
 #include "imgui_internal.h"
 
@@ -249,7 +249,7 @@ void FileBrowserWidget::start()
 {
     widget::start();
 
-    m_currentDirectory = sbk::engine::system::get_project()->getConfig().sourceFolder();
+    m_currentDirectory = sbk::engine::system::get_project()->get_config().source_folder();
     m_topDir           = m_currentDirectory;
     m_selectedItemID   = std::numeric_limits<uint32_t>::max();
 }

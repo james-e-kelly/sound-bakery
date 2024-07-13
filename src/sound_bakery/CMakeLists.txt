@@ -16,6 +16,7 @@ set(ATLAS_SOURCES
     core/property.cpp
     
     editor/project/project.cpp
+    editor/project/project_configuration.cpp
 
     effect/effect.cpp
     
@@ -75,6 +76,7 @@ set(ATLAS_HEADERS
     
     editor/editor_defines.h
     editor/project/project.h
+    editor/project/project_configuration.h
 
     effect/effect.h
     

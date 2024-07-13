@@ -9,29 +9,7 @@
 #include "sound_chef/sound_chef_bank.h"
 #include "sound_chef/sound_chef_encoder.h"
 
-std::filesystem::path sbk::editor::ProjectConfiguration::typeFolder(const rttr::type& type) const
-{
-    const std::filesystem::path rootObjectFolder = objectFolder();
-
-    if (!type.is_valid())
-    {
-        return rootObjectFolder;
-    }
-
-    const rttr::string_view typeName = type.get_name();
-    const std::string typeNameString = typeName.to_string();
-
-    const std::size_t lastColonCharacterPos = typeNameString.find_last_of(':') + 1;
-
-    if (lastColonCharacterPos == std::string::npos || lastColonCharacterPos >= typeNameString.size())
-    {
-        return rootObjectFolder;
-    }
-
-    return rootObjectFolder / typeNameString.substr(lastColonCharacterPos, std::string::npos);
-}
-
-bool sbk::editor::project::openProject(const std::filesystem::path& projectFile)
+bool sbk::editor::project::open_project(const std::filesystem::path& projectFile)
 {
     if (projectFile.empty())
     {
@@ -45,7 +23,7 @@ bool sbk::editor::project::openProject(const std::filesystem::path& projectFile)
 
     YAML::Node projectYAML = YAML::LoadFile(projectFile.string());
 
-    m_projectConfig = ProjectConfiguration(projectFile);
+    m_projectConfig = project_configuration(projectFile);
 
     loadObjects();
     loadSystem();
@@ -56,14 +34,14 @@ bool sbk::editor::project::openProject(const std::filesystem::path& projectFile)
     return true;
 }
 
-void sbk::editor::project::saveProject() const
+void sbk::editor::project::save_project() const
 {
     saveSystem();
     saveObjects();
     buildSoundbanks();  // temp for testing
 }
 
-void sbk::editor::project::encodeAllMedia() const
+void sbk::editor::project::encode_all_media() const
 {
     std::shared_ptr<concurrencpp::thread_pool_executor> threadPool = sbk::engine::system::get()->background_executor();
 
@@ -74,7 +52,7 @@ void sbk::editor::project::encodeAllMedia() const
             if (sbk::engine::Sound* const sound = soundObject->try_convert_object<sbk::engine::Sound>())
             {
                 const std::filesystem::path encodedSoundFile =
-                    m_projectConfig.encodedFolder() / (std::to_string(sound->get_database_id()) + ".ogg");
+                    m_projectConfig.encoded_folder() / (std::to_string(sound->get_database_id()) + ".ogg");
                 std::filesystem::create_directories(encodedSoundFile.parent_path());
 
                 const sc_encoder_config encoderConfig =
@@ -85,7 +63,7 @@ void sbk::editor::project::encodeAllMedia() const
 
                 if (!std::filesystem::exists(soundPath))
                 {
-                    soundPath = m_projectConfig.sourceFolder() / soundPath;
+                    soundPath = m_projectConfig.source_folder() / soundPath;
                 }
 
                 threadPool->post(
@@ -104,10 +82,17 @@ void sbk::editor::project::encodeAllMedia() const
     }
 }
 
+const sbk::editor::project_configuration& sbk::editor::project::get_config() const { return m_projectConfig; }
+
+std::weak_ptr<sbk::engine::SoundContainer> sbk::editor::project::get_preview_container() const
+{
+    return m_previewSoundContainer;
+}
+
 void sbk::editor::project::loadSounds()
 {
     for (const std::filesystem::directory_entry& p :
-         std::filesystem::recursive_directory_iterator(m_projectConfig.sourceFolder()))
+         std::filesystem::recursive_directory_iterator(m_projectConfig.source_folder()))
     {
         if (p.is_regular_file() && p.path().filename().string()[0] != '.')
         {
@@ -138,7 +123,7 @@ void sbk::editor::project::loadSounds()
 void sbk::editor::project::loadSystem()
 {
     for (const std::filesystem::directory_entry& p :
-         std::filesystem::directory_iterator(m_projectConfig.m_projectFolder))
+         std::filesystem::directory_iterator(m_projectConfig.project_folder()))
     {
         if (p.path().extension() == ".yaml")
         {
@@ -150,7 +135,7 @@ void sbk::editor::project::loadSystem()
 
 void sbk::editor::project::loadObjects()
 {
-    std::vector<std::filesystem::path> loadPaths{m_projectConfig.objectFolder()};
+    std::vector<std::filesystem::path> loadPaths{m_projectConfig.object_folder()};
 
     for (const std::filesystem::path& path : loadPaths)
     {
@@ -241,7 +226,7 @@ void sbk::editor::project::buildSoundbanks() const
                         {
                             soundsToSave.push_back(sound);
                             ecodedSoundPathsToSaveStrings.push_back(
-                                (m_projectConfig.encodedFolder() / sound->getEncodedSoundName()).string());
+                                (m_projectConfig.encoded_folder() / sound->getEncodedSoundName()).string());
                             encodedSoundPathsToSave.push_back(ecodedSoundPathsToSaveStrings.back().c_str());
                             encodingFormats.push_back(ma_encoding_format_unknown);
                         }
@@ -251,7 +236,7 @@ void sbk::editor::project::buildSoundbanks() const
 
             sc_bank bank;
             sc_result initresult =
-                sc_bank_init((m_projectConfig.buildFolder() / (std::string(soundbank->get_database_name()) + ".bnk"))
+                sc_bank_init((m_projectConfig.build_folder() / (std::string(soundbank->get_database_name()) + ".bnk"))
                                  .string()
                                  .c_str(),
                              &bank);
@@ -270,7 +255,7 @@ void sbk::editor::project::saveSystem() const
 {
     YAML::Emitter systemYaml;
     sbk::core::serialization::Serializer::saveSystem(sbk::engine::system::get(), systemYaml);
-    saveYAML(systemYaml, m_projectConfig.m_projectFolder / "system.yaml");
+    saveYAML(systemYaml, m_projectConfig.project_folder() / "system.yaml");
 }
 
 void sbk::editor::project::saveObjects() const
@@ -287,8 +272,8 @@ void sbk::editor::project::saveObjects() const
             YAML::Emitter yaml;
             sbk::core::serialization::Serializer::saveObject(sharedObject.get(), yaml);
 
-            const std::filesystem::path filePath =
-                m_projectConfig.typeFolder(sharedObject->getType()) / m_projectConfig.getIdFilename(sharedObject.get());
+            const std::filesystem::path filePath = m_projectConfig.type_folder(sharedObject->getType()) /
+                                                   m_projectConfig.get_filename_for_id(sharedObject.get());
             std::filesystem::create_directories(filePath.parent_path());
 
             saveYAML(yaml, filePath);

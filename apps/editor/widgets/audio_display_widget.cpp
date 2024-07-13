@@ -1,7 +1,7 @@
-#include "AudioDisplayWidget.h"
+#include "audio_display_widget.h"
 
-#include "App/App.h"
-#include "Managers/ProjectManager.h"
+#include "app/app.h"
+#include "managers/project_manager.h"
 #include "imgui.h"
 #include "sound_bakery/gameobject/gameobject.h"
 #include "sound_bakery/node/container/sound_container.h"

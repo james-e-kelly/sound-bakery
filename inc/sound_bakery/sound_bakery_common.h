@@ -17,4 +17,10 @@ typedef sc_result sb_result;
 typedef unsigned long long sbk_id;
 #define SB_INVALID_ID 0
 
+#define SBK_VERSION_MAJOR    0
+#define SBK_VERSION_MINOR    2
+#define SBK_VERSION_REVISION 0
+#define SBK_VERSION_STRING \
+    MA_XSTRINGIFY(SBK_VERSION_MAJOR) "." MA_XSTRINGIFY(SBK_VERSION_MINOR) "." MA_XSTRINGIFY(SBK_VERSION_REVISION)
+
 #endif

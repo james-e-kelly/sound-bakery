@@ -1,9 +1,9 @@
-#include "ProjectExplorerWidget.h"
+#include "project_explorer_widget.h"
 
-#include "App/App.h"
-#include "Managers/ProjectManager.h"
-#include "Widgets/FileBrowserWidget.h"
-#include "Widgets/ProjectNodesWidget.h"
+#include "app/app.h"
+#include "managers/project_manager.h"
+#include "widgets/file_browser_widget.h"
+#include "widgets/project_nodes_widget.h"
 #include "imgui.h"
 
 void ProjectExplorerWidget::start()

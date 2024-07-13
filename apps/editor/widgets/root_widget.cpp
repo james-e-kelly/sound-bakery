@@ -1,8 +1,8 @@
-#include "RootWidget.h"
+#include "root_widget.h"
 
-#include "App/App.h"
-#include "Managers/AppManager.h"
-#include "Managers/ProjectManager.h"
+#include "app/app.h"
+#include "managers/app_manager.h"
+#include "managers/project_manager.h"
 #include "IconsFontAwesome6.h"
 #include "IconsFontaudio.h"
 #include "imgui.h"
@@ -67,7 +67,7 @@ void root_widget::render()
 
             if (ImGui::MenuItem(ICON_FA_FOLDER_OPEN " Open...", "Ctrl+O"))
             {
-                get_app()->get_manager_by_class<AppManager>()->OpenProject();
+                get_app()->get_manager_by_class<AppManager>()->open_project();
             }
 
             if (get_app()->get_manager_by_class<ProjectManager>())
@@ -111,7 +111,7 @@ void root_widget::render()
 
             if (ImGui::MenuItem("Convert Files", nullptr, nullptr))
             {
-                sbk::engine::system::get_project()->encodeAllMedia();
+                sbk::engine::system::get_project()->encode_all_media();
             }
 
             ImGui::EndMenu();

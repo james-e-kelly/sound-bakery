@@ -1,6 +1,6 @@
-#include "SplashWidget.h"
+#include "splash_widget.h"
 
-#include "App/App.h"
+#include "app/app.h"
 #include "imgui.h"
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -98,7 +98,7 @@ void SplashWidget::tick(double deltaTime)
             previousRoundedTime = roundedTime;
         }
 
-        if (m_timeShowingScreen >= 0.2)
+        if (m_timeShowingScreen >= 1.2)
         {
             destroy();
         }

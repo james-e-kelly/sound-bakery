@@ -1,8 +1,8 @@
-#include "ProjectNodesWidget.h"
+#include "project_nodes_widget.h"
 
-#include "App/App.h"
-#include "Managers/ProjectManager.h"
-#include "Widgets/FileBrowserWidget.h"
+#include "app/app.h"
+#include "managers/project_manager.h"
+#include "widgets/file_browser_widget.h"
 #include "imgui.h"
 #include "sound_bakery/core/database/database.h"
 #include "sound_bakery/core/object/object_tracker.h"

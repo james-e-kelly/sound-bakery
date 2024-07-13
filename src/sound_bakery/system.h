@@ -57,7 +57,7 @@ namespace sbk
             /**
              * @brief Creates an instance of Sound Bakery and opens the project.
              */
-            static sc_result open_project(const std::filesystem::path& projectFile);
+            static sc_result open_project(const std::filesystem::path& project_file);
             static sbk::editor::project* get_project();
 
             std::shared_ptr<concurrencpp::manual_executor> game_thread_executer() const { return m_gameThreadExecuter; }

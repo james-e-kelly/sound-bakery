@@ -1,10 +1,10 @@
-#include "ProjectManager.h"
+#include "project_manager.h"
 
 #include "App/App.h"
 #include "gluten/subsystems/widget_subsystem.h"
-#include "Widgets/DetailsWidget.h"
-#include "Widgets/PlayControlsWidget.h"
-#include "Widgets/ProjectExplorerWidget.h"
+#include "widgets/details_widget.h"
+#include "widgets/play_controls_widget.h"
+#include "widgets/project_explorer_widget.h"
 
 #include "sound_bakery/system.h"
 #include "sound_bakery/core/database/database.h"
@@ -18,9 +18,9 @@
 #include "sound_bakery/system.h"
 #include "sound_bakery/util/type_helper.h"
 
-void ProjectManager::init_project(const std::filesystem::path& projectFile)
+void ProjectManager::init_project(const std::filesystem::path& project_file)
 {
-    sbk::engine::system::open_project(projectFile);
+    sbk::engine::system::open_project(project_file);
 
     get_app()
         ->get_subsystem_by_class<gluten::widget_subsystem>()
@@ -45,10 +45,10 @@ void ProjectManager::exit()
 
 void ProjectManager::SaveProject() const 
 { 
-    sbk::engine::system::get()->get_project()->saveProject(); 
+    sbk::engine::system::get()->get_project()->save_project(); 
 }
 
 sbk::engine::SoundContainer* ProjectManager::GetPreviewSoundContainer() const
 {
-    return sbk::engine::system::get_project()->getPreviewContainer().lock().get();
+    return sbk::engine::system::get_project()->get_preview_container().lock().get();
 }

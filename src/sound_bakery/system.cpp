@@ -132,13 +132,13 @@ sc_result system::update()
 
 sbk::core::object_owner* system::current_object_owner() { return m_project.get(); }
 
-sc_result system::open_project(const std::filesystem::path& projectFile)
+sc_result system::open_project(const std::filesystem::path& project_file)
 {
     destroy();
 
     // Create the global logger before initializing Sound Bakery
 
-    const sbk::editor::ProjectConfiguration tempProject = sbk::editor::ProjectConfiguration(projectFile);
+    const sbk::editor::project_configuration tempProject = sbk::editor::project_configuration(project_file);
 
     auto consoleSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
     consoleSink->set_level(spdlog::level::info);
@@ -148,12 +148,12 @@ sc_result system::open_project(const std::filesystem::path& projectFile)
     tm now_tm   = spdlog::details::os::localtime(tnow);
 
     auto dailySink = std::make_shared<spdlog::sinks::daily_file_sink_mt>(
-        (tempProject.logFolder() / (tempProject.m_projectName + ".txt")).string(), now_tm.tm_hour, now_tm.tm_min, true,
-        0, spdlog::file_event_handlers{});
+        (tempProject.log_folder() / (std::string(tempProject.project_name()) + ".txt")).string(), now_tm.tm_hour,
+        now_tm.tm_min, true, 0, spdlog::file_event_handlers{});
     dailySink->set_level(spdlog::level::trace);
 
     auto basicFileSink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(
-        (tempProject.logFolder() / (tempProject.m_projectName + ".txt")).string(), true);
+        (tempProject.log_folder() / (std::string(tempProject.project_name()) + ".txt")).string(), true);
     basicFileSink->set_level(spdlog::level::trace);
 
     std::shared_ptr<spdlog::logger> logger = std::make_shared<spdlog::logger>(
@@ -173,7 +173,7 @@ sc_result system::open_project(const std::filesystem::path& projectFile)
 
     s_system->m_project = std::make_unique<sbk::editor::project>();
 
-    if (s_system->m_project->openProject(projectFile))
+    if (s_system->m_project->open_project(project_file))
     {
         return MA_SUCCESS;
     }
