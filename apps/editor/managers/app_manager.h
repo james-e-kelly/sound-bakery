@@ -7,10 +7,10 @@ namespace gluten
     class widget;
 }
 
-class AppManager : public gluten::manager
+class app_manager : public gluten::manager
 {
 public:
-    AppManager(gluten::app* appOwner) : manager(appOwner) {}
+    app_manager(gluten::app* appOwner) : manager(appOwner) {}
 
 public:
     void init(gluten::app* app) override;
@@ -19,7 +19,7 @@ public:
      * Opens a file dialogue window to create the project and handles creating
      * files.
      */
-    void CreateNewProject();
+    void create_new_project();
 
     /*
      * Opens a file dialogue and opens the project is found.

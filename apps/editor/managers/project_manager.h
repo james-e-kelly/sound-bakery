@@ -11,13 +11,13 @@ namespace sbk::engine
     class SoundContainer;
 }
 
-struct Selection
+struct selection
 {
-    Selection() = default;
+    selection() = default;
 
-    void SelectObject(sbk::core::object* object) { m_selected = object; }
+    void selected_object(sbk::core::object* object) { m_selected = object; }
 
-    std::optional<rttr::type> SelectedType() const
+    std::optional<rttr::type> selected_type() const
     {
         if (m_selected)
         {
@@ -26,27 +26,27 @@ struct Selection
         return std::nullopt;
     }
 
-    sbk::core::object* GetSelected() const { return m_selected; }
+    sbk::core::object* get_selected() const { return m_selected; }
 
 private:
     sbk::core::object* m_selected = nullptr;
 };
 
-class ProjectManager : public gluten::manager
+class project_manager : public gluten::manager
 {
 public:
-    ProjectManager(gluten::app* appOwner) : gluten::manager(appOwner) {}
+    project_manager(gluten::app* appOwner) : gluten::manager(appOwner) {}
 
 public:
     void init_project(const std::filesystem::path& project_file);
     virtual void tick(double deltaTime) override;
     virtual void exit() override;
 
-    void SaveProject() const;
+    void save_project() const;
 
-    Selection& GetSelection() { return m_selection; }
-    sbk::engine::SoundContainer* GetPreviewSoundContainer() const;
+    selection& get_selection() { return m_selection; }
+    sbk::engine::SoundContainer* get_preview_sound_container() const;
 
 private:
-    Selection m_selection;
+    selection m_selection;
 };

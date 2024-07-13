@@ -11,12 +11,12 @@
 #include "sound_bakery/editor/editor_defines.h"
 #include "sound_bakery/node/container/sound_container.h"
 
-void FileBrowserWidget::UnselectItem() noexcept
+void file_browser_widget::unselect_item() noexcept
 {
     m_selectedItemID = std::numeric_limits<uint32_t>::max();
 }
 
-ButtonState FileBrowserWidget::DrawWideButton(
+ButtonState file_browser_widget::draw_wide_button(
     bool selected, uint32_t hovered_color, uint32_t active_color) const noexcept
 {
     const auto& style = ImGui::GetStyle();
@@ -50,7 +50,7 @@ ButtonState FileBrowserWidget::DrawWideButton(
     return ButtonState::NONE;
 }
 
-void FileBrowserWidget::ShowItemContextMenu(
+void file_browser_widget::show_item_context_menu(
     const std::filesystem::path& path) const noexcept
 {
     if (ImGui::Button("Rename"))
@@ -93,7 +93,7 @@ void FileBrowserWidget::ShowItemContextMenu(
     ImGui::Separator();
 }
 
-void FileBrowserWidget::ShowNavMenu() noexcept
+void file_browser_widget::show_nav_menu() noexcept
 {
     if (ImGui::ArrowButton("Back", ImGuiDir_Left))
     {
@@ -101,7 +101,7 @@ void FileBrowserWidget::ShowNavMenu() noexcept
         if (m_currentDirectory != m_topDir)
         {
             m_currentDirectory = m_currentDirectory.parent_path();
-            UnselectItem();
+            unselect_item();
             m_selectedFileString.clear();
         }
     }
@@ -124,7 +124,7 @@ void FileBrowserWidget::ShowNavMenu() noexcept
     ImGui::TextUnformatted(display_text.c_str());
 }
 
-void FileBrowserWidget::ShowDirectoryBrowserList() noexcept
+void file_browser_widget::show_directory_browser_list() noexcept
 {
     static const auto folder_color = IM_COL32(255, 255, 0, 255);
     static const auto file_color   = IM_COL32(0, 189, 255, 255);
@@ -148,7 +148,7 @@ void FileBrowserWidget::ShowDirectoryBrowserList() noexcept
                 ImGui::TableNextColumn();
 
                 const bool selected  = (id == m_selectedItemID);
-                const auto btn_state = DrawWideButton(
+                const auto btn_state = draw_wide_button(
                     selected, btn_hovered_color, btn_active_color);
 
                 if (selected && ImGui::IsItemHovered() &&
@@ -163,11 +163,11 @@ void FileBrowserWidget::ShowDirectoryBrowserList() noexcept
                 {
                     if (selected)
                     {
-                        ShowItemContextMenu(p.path().filename());
+                        show_item_context_menu(p.path().filename());
                     }
                     else
                     {
-                        UnselectItem();
+                        unselect_item();
                     }
 
                     ImGui::EndPopup();
@@ -180,7 +180,7 @@ void FileBrowserWidget::ShowDirectoryBrowserList() noexcept
                         if (p.is_directory())
                         {
                             m_currentDirectory = p.path();
-                            UnselectItem();
+                            unselect_item();
                         }
                     }
                     else
@@ -214,7 +214,7 @@ void FileBrowserWidget::ShowDirectoryBrowserList() noexcept
                 {
                     // m_selectedItemID = id;
 
-                    ShowItemContextMenu(p);
+                    show_item_context_menu(p);
                     ImGui::EndPopup();
                 }
 
@@ -245,7 +245,7 @@ void FileBrowserWidget::ShowDirectoryBrowserList() noexcept
     }
 }
 
-void FileBrowserWidget::start()
+void file_browser_widget::start()
 {
     widget::start();
 
@@ -254,9 +254,9 @@ void FileBrowserWidget::start()
     m_selectedItemID   = std::numeric_limits<uint32_t>::max();
 }
 
-void FileBrowserWidget::render()
+void file_browser_widget::render()
 {
-    ShowNavMenu();
+    show_nav_menu();
     ImGui::Separator();
 
     if (ImGui::BeginTable("ImGroot Main", 1,
@@ -268,7 +268,7 @@ void FileBrowserWidget::render()
 
         ImGui::TableSetColumnIndex(0);
 
-        ShowDirectoryBrowserList();
+        show_directory_browser_list();
 
         ImGui::EndTable();
     }
@@ -277,7 +277,7 @@ void FileBrowserWidget::render()
     {
         m_selectedFile = m_selectedFileString;
 
-        if (ProjectManager* manager = get_app()->get_manager_by_class<ProjectManager>())
+        if (project_manager* manager = get_app()->get_manager_by_class<project_manager>())
         {
             // manager->GetPreviewSoundContainer()->setSound(m_selectedFile);
             // manager->GetSelection().SelectAudioFile(m_selectedFile);

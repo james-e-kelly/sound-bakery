@@ -14,7 +14,7 @@ static std::unordered_map<MethodIndex,
                           std::unordered_map<ParameterIndex, rttr::variant>>
     s_parameterCache;
 
-void MethodDrawer::DrawObject(rttr::type type, rttr::instance instance)
+void method_drawer::draw_object(rttr::type type, rttr::instance instance)
 {
     if (!type.is_derived_from(
             sbk::core::object::type()))

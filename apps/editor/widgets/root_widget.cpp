@@ -21,22 +21,22 @@ void root_widget::render_menu()
 
             if (ImGui::MenuItem(ICON_FA_FILE " New...", "Ctrl+N"))
             {
-                get_app()->get_manager_by_class<AppManager>()->CreateNewProject();
+                get_app()->get_manager_by_class<app_manager>()->create_new_project();
             }
 
             if (ImGui::MenuItem(ICON_FA_FOLDER_OPEN " Open...", "Ctrl+O"))
             {
-                get_app()->get_manager_by_class<AppManager>()->open_project();
+                get_app()->get_manager_by_class<app_manager>()->open_project();
             }
 
-            if (get_app()->get_manager_by_class<ProjectManager>())
+            if (get_app()->get_manager_by_class<project_manager>())
             {
                 ImGui::Separator();
 
                 ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[0]);
                 if (ImGui::MenuItem(ICON_FAD_SAVE " Save", "Ctrl+S"))
                 {
-                    get_app()->get_manager_by_class<ProjectManager>()->SaveProject();
+                    get_app()->get_manager_by_class<project_manager>()->save_project();
                 }
 
                 if (ImGui::MenuItem(ICON_FAD_SAVEAS " Save As...",

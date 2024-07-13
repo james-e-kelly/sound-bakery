@@ -2,17 +2,17 @@
 
 #include "gluten/widgets/widget.h"
 
-class ProjectNodesWidget;
+class project_nodes_widget;
 
-class ProjectExplorerWidget : public gluten::widget
+class project_explorer_widget : public gluten::widget
 {
 public:
-    ProjectExplorerWidget(gluten::widget_subsystem* parentSubsystem)
+    project_explorer_widget(gluten::widget_subsystem* parentSubsystem)
         : widget(parentSubsystem)
     {
     }
 
-    ProjectExplorerWidget(widget* parentWidget) : widget(parentWidget) {}
+    project_explorer_widget(widget* parentWidget) : widget(parentWidget) {}
 
 public:
     virtual void start() override;
@@ -20,5 +20,5 @@ public:
 
 private:
     widget* m_fileBrowserWidget;
-    ProjectNodesWidget* m_projectNodesWidget;
+    project_nodes_widget* m_projectNodesWidget;
 };

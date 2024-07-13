@@ -106,11 +106,11 @@ int littleEndian24Bit(const void* bytes)
 //    return result / maxValue;
 //}
 
-void AudioDisplayWidget::render()
+void audio_display_widget::render()
 {
-    if (ProjectManager* manager = get_app()->get_manager_by_class<ProjectManager>())
+    if (project_manager* manager = get_app()->get_manager_by_class<project_manager>())
     {
-        if (sbk::core::object* selected = manager->GetSelection().GetSelected())
+        if (sbk::core::object* selected = manager->get_selection().get_selected())
         {
             if (selected->getType() == sbk::engine::Sound::type())
             {
@@ -133,8 +133,8 @@ void AudioDisplayWidget::render()
                     {
                         sbk::engine::SoundContainer* previewSound =
                             get_app()
-                                ->get_manager_by_class<ProjectManager>()
-                                ->GetPreviewSoundContainer();
+                                ->get_manager_by_class<project_manager>()
+                                ->get_preview_sound_container();
                         /*FMOD_SOUND* sound = previewSound ?
                         previewSound->getFSound() : nullptr;
 
@@ -168,7 +168,7 @@ void AudioDisplayWidget::render()
                         / (float)soundLength));*/
                     }
 
-                    if (HasCache() && !hasResized)
+                    if (has_cache() && !hasResized)
                     {
                         ImDrawList* const drawList = ImGui::GetWindowDrawList();
 
@@ -222,7 +222,7 @@ void AudioDisplayWidget::render()
                     }
                     else
                     {
-                        GenerateCache();
+                        generate_cache();
                     }
                 }
 
@@ -237,10 +237,10 @@ void AudioDisplayWidget::render()
     }
 }
 
-bool AudioDisplayWidget::HasCache()
+bool audio_display_widget::has_cache()
 {
     sbk::engine::SoundContainer* currentNode =
-        get_app()->get_manager_by_class<ProjectManager>()->GetPreviewSoundContainer();
+        get_app()->get_manager_by_class<project_manager>()->get_preview_sound_container();
 
     if (currentNode)
     {
@@ -255,7 +255,7 @@ bool AudioDisplayWidget::HasCache()
     return false;
 }
 
-void AudioDisplayWidget::GenerateCache()
+void audio_display_widget::generate_cache()
 {
     m_cachedSamples.clear();
 

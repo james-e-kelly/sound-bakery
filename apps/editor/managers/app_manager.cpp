@@ -10,15 +10,15 @@
 
 #include "yaml-cpp/yaml.h"
 
-void AppManager::init(gluten::app* app)
+void app_manager::init(gluten::app* app)
 {
-    SplashWidget* splashWidget = app->get_subsystem_by_class<gluten::widget_subsystem>()
-                                     ->add_widget_class<SplashWidget>();
+    splash_widget* splashWidget = app->get_subsystem_by_class<gluten::widget_subsystem>()
+                                     ->add_widget_class<splash_widget>();
 
     splashWidget->ShowSplashScreen();
 }
 
-void AppManager::CreateNewProject()
+void app_manager::create_new_project()
 {
     nfdchar_t* outPath = NULL;
 
@@ -49,7 +49,7 @@ retry:
     }
 }
 
-void AppManager::open_project()
+void app_manager::open_project()
 {
     nfdchar_t* outPath = NULL;
 retry:

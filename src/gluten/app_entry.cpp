@@ -1,6 +1,13 @@
 #include "app/app.h"
 
-extern gluten::app* CreateApplication();
+/**
+ * @brief Create a new application class.
+ * 
+ * All consuming libraries should implement this function.
+ * 
+ * @warn Ensure the object is created on the heap as gluten will delete the pointer upon close.
+*/
+extern gluten::app* create_application();
 
 #if defined(WIN32)
     #include <windows.h>
@@ -12,7 +19,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
     (void)pCmdLine;
     (void)nCmdShow;
 
-    gluten::app* app = CreateApplication();
+    gluten::app* app = create_application();
 
     app->run(__argc, __argv);
 
@@ -25,7 +32,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 int main(int argc, char* argv[])
 {
-    app* app = CreateApplication();
+    app* app = create_application();
 
     app->run(__argc, __argv);
 

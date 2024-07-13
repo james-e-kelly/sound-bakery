@@ -11,27 +11,27 @@ enum class ButtonState
     CLICKED
 };
 
-class FileBrowserWidget : public gluten::widget
+class file_browser_widget : public gluten::widget
 {
-    WIDGET_CONSTRUCT(FileBrowserWidget)
+    WIDGET_CONSTRUCT(file_browser_widget)
 
 public:
     virtual void start() override;
     virtual void render() override;
 
-    const std::string& GetSelectedFileName() const
+    const std::string& get_selected_filename() const
     {
         return m_selectedFileString;
     }
 
 private:
-    void UnselectItem() noexcept;
-    ButtonState DrawWideButton(bool selected,
+    void unselect_item() noexcept;
+    ButtonState draw_wide_button(bool selected,
                                uint32_t hoveredColor,
                                uint32_t activeColor) const noexcept;
-    void ShowItemContextMenu(const std::filesystem::path& path) const noexcept;
-    void ShowNavMenu() noexcept;
-    void ShowDirectoryBrowserList() noexcept;
+    void show_item_context_menu(const std::filesystem::path& path) const noexcept;
+    void show_nav_menu() noexcept;
+    void show_directory_browser_list() noexcept;
 
 private:
     std::string m_selectedFile;

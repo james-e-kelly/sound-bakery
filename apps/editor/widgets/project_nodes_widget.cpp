@@ -25,7 +25,7 @@ static const std::vector<SB_OBJECT_CATEGORY> s_eventPageCategories{
 
 static const std::vector<SB_OBJECT_CATEGORY> s_soundbankPageCategories{SB_CATEGORY_BANK};
 
-void ProjectNodesWidget::RenderPage(
+void project_nodes_widget::RenderPage(
     const std::vector<SB_OBJECT_CATEGORY>& categories)
 {
     for (const SB_OBJECT_CATEGORY category : categories)
@@ -54,22 +54,22 @@ void ProjectNodesWidget::RenderPage(
     }
 }
 
-void ProjectNodesWidget::RenderObjectsPage()
+void project_nodes_widget::RenderObjectsPage()
 {
     RenderPage(s_objectPageCategories);
 }
 
-void ProjectNodesWidget::RenderEventsPage()
+void project_nodes_widget::RenderEventsPage()
 {
     RenderPage(s_eventPageCategories);
 }
 
-void ProjectNodesWidget::RenderSoundbankPage() 
+void project_nodes_widget::RenderSoundbankPage() 
 { 
     RenderPage(s_soundbankPageCategories); 
 }
 
-void ProjectNodesWidget::RenderCategory(SB_OBJECT_CATEGORY category)
+void project_nodes_widget::RenderCategory(SB_OBJECT_CATEGORY category)
 {
     const std::unordered_set<sbk::core::object*> categoryObjects =
         sbk::engine::system::get()->get_objects_of_category(category);
@@ -93,7 +93,7 @@ void ProjectNodesWidget::RenderCategory(SB_OBJECT_CATEGORY category)
     }
 }
 
-void ProjectNodesWidget::RenderSingleNode(rttr::type type,
+void project_nodes_widget::RenderSingleNode(rttr::type type,
                                           rttr::instance instance)
 {
     if (instance)
@@ -171,7 +171,7 @@ void ProjectNodesWidget::RenderSingleNode(rttr::type type,
                 ImGui::IsMouseReleased(ImGuiMouseButton_Left) &&
                 !ImGui::GetDragDropPayload())
             {
-                get_app()->get_manager_by_class<ProjectManager>()->GetSelection().SelectObject(
+                get_app()->get_manager_by_class<project_manager>()->get_selection().selected_object(
                     object);
             }
 
@@ -233,12 +233,12 @@ void ProjectNodesWidget::RenderSingleNode(rttr::type type,
     }
 }
 
-bool ProjectNodesWidget::NodeHasChildren(sbk::engine::Node* node)
+bool project_nodes_widget::NodeHasChildren(sbk::engine::Node* node)
 {
     return node ? node->getChildCount() : false;
 }
 
-void ProjectNodesWidget::HandleOpenNode(sbk::core::database_object* object)
+void project_nodes_widget::HandleOpenNode(sbk::core::database_object* object)
 {
     if (object)
     {
@@ -250,13 +250,13 @@ void ProjectNodesWidget::HandleOpenNode(sbk::core::database_object* object)
     }
 }
 
-bool ProjectNodesWidget::ObjectIsRenaming(sbk::core::database_object* object)
+bool project_nodes_widget::ObjectIsRenaming(sbk::core::database_object* object)
 {
     return object && object->get_database_id() &&
            object->get_database_id() == m_renameID;
 }
 
-void ProjectNodesWidget::RenderRenameObject(
+void project_nodes_widget::RenderRenameObject(
     sbk::core::database_object* const& object)
 {
     if (ImGui::InputText("###rename", m_renameString, 255,
@@ -271,7 +271,7 @@ void ProjectNodesWidget::RenderRenameObject(
     ImGui::SetKeyboardFocusHere(-1);
 }
 
-bool ProjectNodesWidget::RenderNodeContextMenu(rttr::type type,
+bool project_nodes_widget::RenderNodeContextMenu(rttr::type type,
                                                rttr::instance instance)
 {
     bool result = false;
@@ -323,7 +323,7 @@ bool ProjectNodesWidget::RenderNodeContextMenu(rttr::type type,
 
                 if (ImGui::MenuItem("Delete"))
                 {
-                    get_app()->get_manager_by_class<ProjectManager>()->GetSelection().SelectObject(
+                    get_app()->get_manager_by_class<project_manager>()->get_selection().selected_object(
                         nullptr);
                     sbk::engine::system::get()->remove_object_from_database(object->get_database_id());
                     result = false;
@@ -337,7 +337,7 @@ bool ProjectNodesWidget::RenderNodeContextMenu(rttr::type type,
     return result;
 }
 
-void ProjectNodesWidget::RenderCreateParentOrChildMenu(
+void project_nodes_widget::RenderCreateParentOrChildMenu(
     SB_OBJECT_CATEGORY category,
     rttr::instance node,
     NodeCreationType creationType)
@@ -411,7 +411,7 @@ void ProjectNodesWidget::RenderCreateParentOrChildMenu(
     }
 }
 
-std::string_view ProjectNodesWidget::CreateParentOrChildMenuName(
+std::string_view project_nodes_widget::CreateParentOrChildMenuName(
     NodeCreationType creationType)
 {
     std::string_view menuName;
@@ -434,7 +434,7 @@ std::string_view ProjectNodesWidget::CreateParentOrChildMenuName(
     return menuName;
 }
 
-void ProjectNodesWidget::SetupRenameNode(sbk::core::database_object* object)
+void project_nodes_widget::SetupRenameNode(sbk::core::database_object* object)
 {
     m_renameID                = object->get_database_id();
     std::string_view nodeName = object->get_database_name();

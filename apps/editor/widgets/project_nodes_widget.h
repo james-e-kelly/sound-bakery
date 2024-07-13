@@ -17,15 +17,15 @@ enum class NodeCreationType
     NewChild
 };
 
-class ProjectNodesWidget : public gluten::widget
+class project_nodes_widget : public gluten::widget
 {
 public:
-    ProjectNodesWidget(gluten::widget_subsystem* parentSubsystem)
+    project_nodes_widget(gluten::widget_subsystem* parentSubsystem)
         : widget(parentSubsystem), m_renameID(0)
     {
     }
 
-    ProjectNodesWidget(widget* parentWidget)
+    project_nodes_widget(widget* parentWidget)
         : widget(parentWidget), m_renameID(0)
     {
     }

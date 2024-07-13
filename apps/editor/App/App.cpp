@@ -12,18 +12,18 @@ namespace PathHelpers
     static const char* ResourcesFolder = "Resources";
 }
 
-gluten::app* CreateApplication() { return new editor_app(); }
+gluten::app* create_application() { return new editor_app(); }
 
 void editor_app::open_project(const std::filesystem::path& project_file)
 {
-    if (ProjectManager* projectManager = get_manager_by_class<ProjectManager>())
+    if (project_manager* projectManager = get_manager_by_class<project_manager>())
     {
         projectManager->exit();
         projectManager->init_project(project_file);
     }
     else
     {
-        projectManager = add_manager_class<ProjectManager>();
+        projectManager = add_manager_class<project_manager>();
         projectManager->init_project(project_file);
     }
 }
@@ -34,7 +34,7 @@ void editor_app::create_and_open_project(const std::filesystem::directory_entry&
     {
         sbk::editor::project_configuration newProjectConfig(projectFolder, "Sound Bakery Project");
 
-        ProjectManager* projectManager = get_manager_by_class<ProjectManager>();
+        project_manager* projectManager = get_manager_by_class<project_manager>();
         
         if (projectManager != nullptr)
         {
@@ -42,7 +42,7 @@ void editor_app::create_and_open_project(const std::filesystem::directory_entry&
         }
         else
         {
-            projectManager = add_manager_class<ProjectManager>();
+            projectManager = add_manager_class<project_manager>();
         }
 
         projectManager->init_project(newProjectConfig.project_file());
@@ -57,5 +57,5 @@ void editor_app::post_init()
     root_widget* const rootWidget = widgetSubsystem->add_widget_class<root_widget>();
     widgetSubsystem->set_root_widget(rootWidget);
 
-    add_manager_class<AppManager>();
+    add_manager_class<app_manager>();
 }

@@ -2,10 +2,10 @@
 
 #include "gluten/widgets/widget.h"
 
-class SplashWidget : public gluten::widget
+class splash_widget : public gluten::widget
 {
 public:
-    SplashWidget(gluten::widget_subsystem* parentSubsystem) : widget(parentSubsystem) {}
+    splash_widget(gluten::widget_subsystem* parentSubsystem) : widget(parentSubsystem) {}
 
 public:
     void ShowSplashScreen();

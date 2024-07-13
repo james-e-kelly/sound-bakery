@@ -3,8 +3,8 @@
 #include <rttr/type>
 
 // Draws RTTR methods to ImGui
-class MethodDrawer final
+class method_drawer final
 {
 public:
-    static void DrawObject(rttr::type type, rttr::instance instance);
+    static void draw_object(rttr::type type, rttr::instance instance);
 };

@@ -7,7 +7,7 @@
 #include "sound_bakery/node/node.h"
 #include "sound_bakery/util/type_helper.h"
 
-void PropertyDrawer::DrawObject(rttr::type type, rttr::instance instance)
+void property_drawer::draw_object(rttr::type type, rttr::instance instance)
 {
     ImGui::PushID(type.get_name().data());
 
@@ -19,7 +19,7 @@ void PropertyDrawer::DrawObject(rttr::type type, rttr::instance instance)
     {
         for (rttr::property property : type.get_properties())
         {
-            DrawProperty(property, instance);
+            draw_property(property, instance);
         }
 
         ImGui::EndTable();
@@ -28,7 +28,7 @@ void PropertyDrawer::DrawObject(rttr::type type, rttr::instance instance)
     ImGui::PopID();
 }
 
-bool PropertyDrawer::DrawProperty(rttr::property property,
+bool property_drawer::draw_property(rttr::property property,
                                   rttr::instance instance)
 {
     bool edited = false;
@@ -53,17 +53,17 @@ bool PropertyDrawer::DrawProperty(rttr::property property,
 
     if (readonly)
     {
-        DrawReadonlyVariant(propertyValue);
+        draw_readonly_variant(propertyValue);
     }
     else if (const rttr::variant payloadString =
                  property.get_metadata(sbk::editor::METADATA_KEY::Payload);
              payloadString.is_valid())
     {
-        edited = DrawPayloadDrop(propertyValue, payloadString);
+        edited = draw_payload_drop(propertyValue, payloadString);
     }
     else
     {
-        edited = DrawVariant(
+        edited = draw_variant(
             propertyValue, property.get_name(),
             property.get_metadata(sbk::editor::METADATA_KEY::MinMax));
     }
@@ -79,7 +79,7 @@ bool PropertyDrawer::DrawProperty(rttr::property property,
     return edited;
 }
 
-bool PropertyDrawer::DrawVariant(rttr::variant& variant,
+bool property_drawer::draw_variant(rttr::variant& variant,
                                  rttr::string_view name,
                                  rttr::variant minMax)
 {
@@ -103,7 +103,7 @@ bool PropertyDrawer::DrawVariant(rttr::variant& variant,
             std::pair<float, float> floatMinMax =
                 minMax.convert<std::pair<float, float>>();
 
-            if (DrawFloat(value, name, floatMinMax))
+            if (draw_float(value, name, floatMinMax))
             {
                 variant = value;
                 edited  = true;
@@ -116,7 +116,7 @@ bool PropertyDrawer::DrawVariant(rttr::variant& variant,
             std::pair<int, int> intMinMax =
                 minMax.convert<std::pair<int, int>>();
 
-            if (DrawInt(value, name, intMinMax))
+            if (draw_int(value, name, intMinMax))
             {
                 variant = value;
                 edited  = true;
@@ -126,7 +126,7 @@ bool PropertyDrawer::DrawVariant(rttr::variant& variant,
         {
             bool value = variant.to_bool();
 
-            if (DrawBool(value, name))
+            if (draw_bool(value, name))
             {
                 variant = value;
                 edited  = true;
@@ -137,7 +137,7 @@ bool PropertyDrawer::DrawVariant(rttr::variant& variant,
     {
         rttr::variant_sequential_view view = variant.create_sequential_view();
 
-        if (DrawSequentialContainer(view, name))
+        if (draw_sequential_container(view, name))
         {
             edited = true;
         }
@@ -146,7 +146,7 @@ bool PropertyDrawer::DrawVariant(rttr::variant& variant,
     {
         rttr::variant_associative_view view = variant.create_associative_view();
 
-        if (DrawAssociateContainer(view, name))
+        if (draw_associate_container(view, name))
         {
             edited = true;
         }
@@ -161,20 +161,20 @@ bool PropertyDrawer::DrawVariant(rttr::variant& variant,
 
         sbk::core::database_ptr<sbk::core::object> objectPtr(id);
 
-        edited = DrawPayloadDrop(variant, payloadString);
+        edited = draw_payload_drop(variant, payloadString);
     }
     else if (type.is_pointer())
     {
-        DrawReadonlyVariant(variant);
+        draw_readonly_variant(variant);
     }
     else if (type.is_wrapper())
     {
-        DrawReadonlyVariant(variant);
+        draw_readonly_variant(variant);
     }
     else if (type == rttr::type::get<std::string>() ||
              type == rttr::type::get<std::string_view>())
     {
-        DrawReadonlyVariant(variant);
+        draw_readonly_variant(variant);
     }
     else if (type.is_class())
     {
@@ -189,7 +189,7 @@ bool PropertyDrawer::DrawVariant(rttr::variant& variant,
                     sbk::editor::MinMax minMax(
                         effectParamterDescription.m_parameter.floatParameter.min,
                         effectParamterDescription.m_parameter.floatParameter.max);
-                    edited = DrawFloat(
+                    edited = draw_float(
                         effectParamterDescription.m_parameter.floatParameter.value,
                         effectParamterDescription.m_parameter.name, minMax);
                     break;
@@ -208,7 +208,7 @@ bool PropertyDrawer::DrawVariant(rttr::variant& variant,
 
             std::pair<float, float> floatMinMax = floatProperty.get_min_max_pair();
 
-            if (DrawFloat(floatValue, name, floatMinMax))
+            if (draw_float(floatValue, name, floatMinMax))
             {
                 floatProperty.set(floatValue);
                 variant = floatProperty;
@@ -220,13 +220,13 @@ bool PropertyDrawer::DrawVariant(rttr::variant& variant,
         }
         else if (type == rttr::type::get<std::filesystem::path>())
         {
-            DrawReadonlyVariant(variant);
+            draw_readonly_variant(variant);
         }
         else
         {
             if (type.get_properties().size())
             {
-                if (DrawMemberObject(variant, name))
+                if (draw_member_object(variant, name))
                 {
                     edited = true;
                 }
@@ -271,7 +271,7 @@ bool PropertyDrawer::DrawVariant(rttr::variant& variant,
     return edited;
 }
 
-void PropertyDrawer::DrawReadonlyVariant(rttr::variant variant, bool disabled)
+void property_drawer::draw_readonly_variant(rttr::variant variant, bool disabled)
 {
     ImGui::BeginDisabled(disabled);
 
@@ -316,7 +316,7 @@ void PropertyDrawer::DrawReadonlyVariant(rttr::variant variant, bool disabled)
     {
         ImGui::BeginDisabled();
 
-        DrawVariant(variant, variant.get_type().get_name());
+        draw_variant(variant, variant.get_type().get_name());
 
         ImGui::EndDisabled();
     }
@@ -324,7 +324,7 @@ void PropertyDrawer::DrawReadonlyVariant(rttr::variant variant, bool disabled)
     ImGui::EndDisabled();
 }
 
-bool PropertyDrawer::DrawFloat(float& value,
+bool property_drawer::draw_float(float& value,
                                rttr::string_view name,
                                std::pair<float, float>& minMax)
 {
@@ -336,7 +336,7 @@ bool PropertyDrawer::DrawFloat(float& value,
     return ImGui::SliderFloat(name.data(), &value, minMax.first, minMax.second);
 }
 
-bool PropertyDrawer::DrawInt(int& value,
+bool property_drawer::draw_int(int& value,
                              rttr::string_view name,
                              std::pair<int, int>& minMax)
 {
@@ -348,12 +348,12 @@ bool PropertyDrawer::DrawInt(int& value,
     return ImGui::SliderInt(name.data(), &value, minMax.first, minMax.second);
 }
 
-bool PropertyDrawer::DrawBool(bool& value, rttr::string_view name)
+bool property_drawer::draw_bool(bool& value, rttr::string_view name)
 {
     return ImGui::Checkbox(name.data(), &value);
 }
 
-bool PropertyDrawer::DrawMemberObject(rttr::variant& value,
+bool property_drawer::draw_member_object(rttr::variant& value,
                                       rttr::string_view name)
 {
     bool edited = false;
@@ -367,7 +367,7 @@ bool PropertyDrawer::DrawMemberObject(rttr::variant& value,
     for (rttr::property childProperty : value.get_type().get_properties())
     {
         ImGui::PushID(index++);
-        if (DrawProperty(childProperty, rttr::instance(value)))
+        if (draw_property(childProperty, rttr::instance(value)))
         {
             edited = true;
         }
@@ -379,7 +379,7 @@ bool PropertyDrawer::DrawMemberObject(rttr::variant& value,
     return edited;
 }
 
-bool PropertyDrawer::DrawSequentialContainer(
+bool property_drawer::draw_sequential_container(
     rttr::variant_sequential_view& view, rttr::string_view name)
 {
     bool edited = false;
@@ -435,7 +435,7 @@ bool PropertyDrawer::DrawSequentialContainer(
 
             rttr::variant value = iterator.get_data().extract_wrapped_value();
 
-            if (DrawVariant(value, std::to_string(index).data()))
+            if (draw_variant(value, std::to_string(index).data()))
             {
                 view.set_value(index, value);
                 edited = true;
@@ -463,7 +463,7 @@ bool PropertyDrawer::DrawSequentialContainer(
     return edited;
 }
 
-bool PropertyDrawer::DrawAssociateContainer(
+bool property_drawer::draw_associate_container(
     rttr::variant_associative_view& view, rttr::string_view name)
 {
     bool edited = false;
@@ -540,15 +540,15 @@ bool PropertyDrawer::DrawAssociateContainer(
                         ImGui::TableNextColumn();  // enter column 2
 
                         edited =
-                            DrawVariant(key, std::to_string(index).c_str());
+                            draw_variant(key, std::to_string(index).c_str());
                     }
                     else
                     {
                         ImGui::TableNextColumn();
                         bool keyEdited =
-                            DrawVariant(key, std::to_string(index).c_str());
+                            draw_variant(key, std::to_string(index).c_str());
                         ImGui::TableNextColumn();
-                        bool valueEdited = DrawVariant(value, "Value");
+                        bool valueEdited = draw_variant(value, "Value");
 
                         if (keyEdited || valueEdited)
                         {
@@ -605,14 +605,14 @@ static void HelpMarker(const char* desc)
     }
 }
 
-bool PropertyDrawer::DrawPayloadDrop(rttr::variant& value,
+bool property_drawer::draw_payload_drop(rttr::variant& value,
                                      const rttr::variant& payloadString)
 {
     bool edited = false;
 
     ImGui::BeginGroup();
 
-    DrawReadonlyVariant(value, false);
+    draw_readonly_variant(value, false);
 
     if (ImGui::BeginDragDropTarget())
     {
@@ -694,7 +694,7 @@ bool PropertyDrawer::DrawPayloadDrop(rttr::variant& value,
     return edited;
 }
 
-bool PropertyDrawer::DrawPayloadDrop(rttr::property property,
+bool property_drawer::draw_payload_drop(rttr::property property,
                                      rttr::instance object,
                                      const rttr::variant& payloadString)
 {
@@ -706,7 +706,7 @@ bool PropertyDrawer::DrawPayloadDrop(rttr::property property,
 
     rttr::variant value = property.get_value(object);
 
-    DrawReadonlyVariant(value, false);
+    draw_readonly_variant(value, false);
 
     if (ImGui::BeginDragDropTarget())
     {

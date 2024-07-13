@@ -18,7 +18,7 @@ namespace SplashScreenUtils
     static const char* splashScreenName = "SplashScreen";
 }
 
-void SplashWidget::start()
+void splash_widget::start()
 {
     widget::start();
 
@@ -58,15 +58,15 @@ void SplashWidget::start()
     }
 }
 
-void SplashWidget::ShowSplashScreen()
+void splash_widget::ShowSplashScreen()
 {
     m_wantsToShow       = true;
     m_timeShowingScreen = 0.0;
 }
 
-void SplashWidget::CloseSplashScreen() { m_wantsToShow = false; }
+void splash_widget::CloseSplashScreen() { m_wantsToShow = false; }
 
-void SplashWidget::tick(double deltaTime)
+void splash_widget::tick(double deltaTime)
 {
     if (m_wantsToShow)
     {
@@ -105,7 +105,7 @@ void SplashWidget::tick(double deltaTime)
     }
 }
 
-void SplashWidget::render()
+void splash_widget::render()
 {
     if (m_wantsToShow &&
         !ImGui::IsPopupOpen(SplashScreenUtils::splashScreenName))

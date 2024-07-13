@@ -8,21 +8,21 @@
 #include "sound_bakery/node/container/sound_container.h"
 #include "sound_bakery/node/node.h"
 
-void DetailsWidget::render()
+void details_widget::render()
 {
     widget::render();
 
     if (ImGui::Begin("Details", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
     {
-        if (ProjectManager* const projectManager =
-                get_app()->get_manager_by_class<ProjectManager>())
+        if (project_manager* const projectManager =
+                get_app()->get_manager_by_class<project_manager>())
         {
-            Selection& selection = projectManager->GetSelection();
-            if (sbk::core::object* selected = selection.GetSelected())
+            selection& selection = projectManager->get_selection();
+            if (sbk::core::object* selected = selection.get_selected())
             {
-                PropertyDrawer::DrawObject(selected->getType(), selected);
+                property_drawer::draw_object(selected->getType(), selected);
                 ImGui::Separator();
-                MethodDrawer::DrawObject(selected->getType(), selected);
+                method_drawer::draw_object(selected->getType(), selected);
             }
             else
             {

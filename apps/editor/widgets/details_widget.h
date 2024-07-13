@@ -2,12 +2,12 @@
 
 #include "gluten/widgets/widget.h"
 
-class DetailsWidget : public gluten::widget
+class details_widget : public gluten::widget
 {
 public:
-    DetailsWidget(gluten::widget_subsystem* parentSubsystem) : widget(parentSubsystem) {}
+    details_widget(gluten::widget_subsystem* parentSubsystem) : widget(parentSubsystem) {}
 
-    DetailsWidget(widget* parent) : widget(parent) {}
+    details_widget(widget* parent) : widget(parent) {}
 
 public:
     virtual void render() override;

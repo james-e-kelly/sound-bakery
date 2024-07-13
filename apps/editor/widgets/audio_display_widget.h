@@ -8,22 +8,22 @@ namespace sbk::engine
     class Sound;
 }
 
-class AudioDisplayWidget : public gluten::widget
+class audio_display_widget : public gluten::widget
 {
 public:
-    AudioDisplayWidget(gluten::widget_subsystem* parentSubsystem)
+    audio_display_widget(gluten::widget_subsystem* parentSubsystem)
         : widget(parentSubsystem)
     {
     }
 
-    AudioDisplayWidget(widget* parent) : widget(parent) {}
+    audio_display_widget(widget* parent) : widget(parent) {}
 
 public:
     virtual void render() override;
 
 private:
-    bool HasCache();
-    void GenerateCache();
+    bool has_cache();
+    void generate_cache();
 
 private:
     std::vector<std::vector<float>> m_cachedSamples;

@@ -6,15 +6,15 @@
 #include "widgets/project_nodes_widget.h"
 #include "imgui.h"
 
-void ProjectExplorerWidget::start()
+void project_explorer_widget::start()
 {
     widget::start();
 
-    m_fileBrowserWidget  = add_child_widget<FileBrowserWidget>();
-    m_projectNodesWidget = add_child_widget<ProjectNodesWidget>();
+    m_fileBrowserWidget  = add_child_widget<file_browser_widget>();
+    m_projectNodesWidget = add_child_widget<project_nodes_widget>();
 }
 
-void ProjectExplorerWidget::render()
+void project_explorer_widget::render()
 {
     if (ImGui::Begin("Project Explorer"))
     {
