@@ -66,6 +66,8 @@ std::shared_ptr<sbk::core::object> sbk::core::object_owner::create_runtime_objec
 
     result->set_owner(this);
 
+    result->getType();
+
     return result;
 }
 

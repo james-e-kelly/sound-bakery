@@ -25,7 +25,7 @@ void VoiceTracker::update(system* system)
     m_nodePlayingCount.clear();
 
     // @TODO Fix listener game object
-    if (const GameObject* const listener = nullptr /* system->getListenerGameObject() */)
+    if (const GameObject* const listener = nullptr /* system->get_listener_game_object() */)
     {
         for (std::size_t i = 0; i < listener->voiceCount(); ++i)
         {

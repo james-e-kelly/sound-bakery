@@ -10,6 +10,6 @@ public:
     player_widget(widget* parentWidget) : widget(parentWidget) {}
 
 public:
-    //virtual void render() override;
-    //virtual void start() override;
+    virtual void render() override;
+    virtual void start() override;
 };

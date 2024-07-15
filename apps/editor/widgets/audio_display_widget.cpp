@@ -142,7 +142,7 @@ void audio_display_widget::render()
                         unsigned int soundLength = 0;
 
                         if (SB::Engine::GameObject* listener =
-                        SB::Engine::System::get()->get()->getListenerGameObject())
+                        SB::Engine::System::get()->get()->get_listener_game_object())
                         {
                             if (SB::Engine::Voice* voice =
                         listener->voiceCount() ? listener->getVoice(0) :

@@ -26,10 +26,13 @@ namespace sbk
             class VoiceTracker;
         }
 
+        class GameObject;
+
         /**
          * @brief Manager of the whole Sound Bakery.
          */
         class SB_CLASS system final : public sc_system,
+                                      public sbk::core::object_owner,
                                       public sbk::core::object_tracker,
                                       public sbk::core::database,
                                       public concurrencpp::runtime
@@ -62,9 +65,12 @@ namespace sbk
 
             std::shared_ptr<concurrencpp::manual_executor> game_thread_executer() const { return m_gameThreadExecuter; }
 
+            [[nodiscard]] sbk::engine::GameObject* get_listener_game_object() const { return m_listenerGameObject.get(); }
+
         private:
             bool m_registeredReflection = false;
 
+            std::shared_ptr<sbk::engine::GameObject> m_listenerGameObject;
             std::unique_ptr<sbk::editor::project> m_project;
             std::unique_ptr<Profiling::VoiceTracker> m_voiceTracker;
             std::shared_ptr<concurrencpp::manual_executor> m_gameThreadExecuter;

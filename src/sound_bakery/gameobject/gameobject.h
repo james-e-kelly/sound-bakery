@@ -14,6 +14,8 @@ namespace sbk::engine
         REGISTER_REFLECTION(GameObject, sbk::core::object)
 
     public:
+        GameObject() = default;
+
         Voice* playContainer(Container* container);
         void postEvent(Event* event);
 

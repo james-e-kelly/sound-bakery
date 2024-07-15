@@ -2,6 +2,7 @@
 #include "rttr/detail/type/base_classes.h"
 #include "sound_bakery/editor/editor_defines.h"
 #include "sound_bakery/event/event.h"
+#include "sound_bakery/gameobject/gameobject.h"
 #include "sound_bakery/node/bus/aux_bus.h"
 #include "sound_bakery/node/bus/bus.h"
 #include "sound_bakery/node/container/blend_container.h"
@@ -139,6 +140,8 @@ namespace sbk::reflection
             .property("Parameter", &effect_parameter_description::m_parameter);
 
         registration::class_<system>("SB::Engine::system");
+
+        registration::class_<GameObject>("SB::Engine::GameObject").constructor<>()(policy::ctor::as_raw_ptr);
 
         registration::class_<object>("SB::Core::object").constructor<>()(policy::ctor::as_raw_ptr);
 

@@ -49,7 +49,9 @@ namespace
     }
 }  // namespace
 
-system::system() : sc_system(), m_gameThreadExecuter(make_manual_executor())
+system::system()
+    : sc_system(),
+      m_gameThreadExecuter(make_manual_executor())
 {
     assert(s_system == nullptr);
     s_system = this;
@@ -70,6 +72,13 @@ system::~system()
     {
         m_project.reset();
     }
+
+    if (m_listenerGameObject)
+    {
+        m_listenerGameObject.reset();
+    }
+
+    destroy_all();
 
     sbk::reflection::unregisterReflectionTypes();
 
@@ -110,6 +119,8 @@ sc_result system::init()
     assert(result == MA_SUCCESS);
 
     sbk::reflection::registerReflectionTypes();
+
+    s_system->m_listenerGameObject = s_system->create_runtime_object<sbk::engine::GameObject>();
 
     // TODO
     // Add way of turning off profiling

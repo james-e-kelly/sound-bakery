@@ -18,7 +18,6 @@ void root_widget::render_menu()
     {
         if (ImGui::BeginMenu("File"))
         {
-
             if (ImGui::MenuItem(ICON_FA_FILE " New...", "Ctrl+N"))
             {
                 get_app()->get_manager_by_class<app_manager>()->create_new_project();
@@ -47,7 +46,7 @@ void root_widget::render_menu()
             }
 
             ImGui::Separator();
-            if (ImGui::MenuItem("exit", "Alt+F4"))
+            if (ImGui::MenuItem("Exit", "Alt+F4"))
             {
                 get_app()->request_exit();
             }
