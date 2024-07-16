@@ -7,7 +7,7 @@
 
 namespace sbk::engine
 {
-    class Node;
+    class node;
 }
 
 enum class NodeCreationType
@@ -41,7 +41,7 @@ public:
 
     void RenderSingleNode(rttr::type type, rttr::instance instance);
 
-    bool NodeHasChildren(sbk::engine::Node* node);
+    bool NodeHasChildren(sbk::engine::node* node);
 
     void HandleOpenNode(sbk::core::database_object* object);
 

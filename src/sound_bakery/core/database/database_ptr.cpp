@@ -21,7 +21,7 @@ bool sbk::core::objectIdIsChildOfParent(sbk_id childToCheck, sbk_id parent)
 
     if (parentPtr.lookup())
     {
-        if (sbk::engine::NodeBase* nodeBase = parentPtr->try_convert_object<sbk::engine::NodeBase>())
+        if (sbk::engine::node_base* nodeBase = parentPtr->try_convert_object<sbk::engine::node_base>())
         {
             return nodeBase->hasChild(childToCheck);
         }
@@ -38,9 +38,9 @@ sbk_id sbk::core::getParentIdFromId(sbk_id id)
 
         if (databasePtr.lookup())
         {
-            if (sbk::engine::NodeBase* nodeBase = databasePtr->try_convert_object<sbk::engine::NodeBase>())
+            if (sbk::engine::node_base* nodeBase = databasePtr->try_convert_object<sbk::engine::node_base>())
             {
-                if (sbk::engine::NodeBase* parent = nodeBase->parent())
+                if (sbk::engine::node_base* parent = nodeBase->parent())
                 {
                     return parent->get_database_id();
                 }

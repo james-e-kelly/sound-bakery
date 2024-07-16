@@ -5,10 +5,10 @@
 
 namespace sbk::engine
 {
-    class Bus;
+    class bus;
     class Container;
-    class Node;
-    class NodeBase;
+    class node;
+    class node_base;
     class NodeInstance;
     class Sound;
     class SoundContainer;
@@ -19,7 +19,7 @@ namespace sbk::engine
      */
     struct SB_CLASS NodeGroupInstance
     {
-        bool initNodeGroup(const NodeBase& node);
+        bool initNodeGroup(const node_base& node);
 
         sc_dsp* lowpass  = nullptr;
         sc_dsp* highpass = nullptr;
@@ -31,7 +31,7 @@ namespace sbk::engine
      */
     struct SB_CLASS ParentNodeOwner
     {
-        bool createParent(const NodeBase& thisNode, Voice* owningVoice);
+        bool createParent(const node_base& thisNode, Voice* owningVoice);
 
         std::shared_ptr<NodeInstance> parent;
     };
@@ -41,7 +41,7 @@ namespace sbk::engine
      */
     struct SB_CLASS ChildrenNodeOwner
     {
-        bool createChildren(const NodeBase& thisNode,
+        bool createChildren(const node_base& thisNode,
                             Voice* owningVoice,
                             NodeInstance* thisNodeInstance,
                             unsigned int numTimesPlayed);
@@ -73,7 +73,7 @@ namespace sbk::engine
         /**
          * @brief Node to reference
          */
-        sbk::core::database_ptr<NodeBase> refNode;
+        sbk::core::database_ptr<node_base> refNode;
 
         /**
          * @brief Type of node to create.
@@ -115,7 +115,7 @@ namespace sbk::engine
             return m_state == NodeInstanceState::PLAYING || m_state == NodeInstanceState::STOPPING;
         }
 
-        std::shared_ptr<Node> getReferencingNode() const noexcept { return m_referencingNode; }
+        std::shared_ptr<node> getReferencingNode() const noexcept { return m_referencingNode; }
         NodeInstance* getParent() const noexcept { return m_parent.parent.get(); }
         sc_node_group* getBus() const noexcept { return m_nodeGroup.nodeGroup.get(); }
 
@@ -125,7 +125,7 @@ namespace sbk::engine
         void setLowpass(float oldLowpass, float newLowpass);
         void setHighpass(float oldHighpass, float newHighpass);
 
-        std::shared_ptr<Node> m_referencingNode = nullptr;
+        std::shared_ptr<node> m_referencingNode = nullptr;
         Voice* m_owningVoice                    = nullptr;
         NodeInstanceState m_state               = NodeInstanceState::UNINIT;
         NodeGroupInstance m_nodeGroup;

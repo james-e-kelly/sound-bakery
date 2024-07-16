@@ -80,8 +80,8 @@ void project_nodes_widget::RenderCategory(SB_OBJECT_CATEGORY category)
         {
             const rttr::type type = object->getType();
 
-            sbk::engine::NodeBase* const nodeBase =
-                object->try_convert_object<sbk::engine::NodeBase>();
+            sbk::engine::node_base* const nodeBase =
+                object->try_convert_object<sbk::engine::node_base>();
 
             const bool notNodeType = nodeBase == nullptr;
 
@@ -105,7 +105,7 @@ void project_nodes_widget::RenderSingleNode(rttr::type type,
                 return;
             }
 
-            sbk::engine::Node* const node = rttr::rttr_cast<sbk::engine::Node*, sbk::core::database_object*>(object);
+            sbk::engine::node* const node = rttr::rttr_cast<sbk::engine::node*, sbk::core::database_object*>(object);
 
             const bool hasChildren = node && NodeHasChildren(node);
 
@@ -151,7 +151,7 @@ void project_nodes_widget::RenderSingleNode(rttr::type type,
                         if (const ImGuiPayload* const currentPayload = ImGui::GetDragDropPayload())
                         {
                             sbk_id payloadID = *static_cast<sbk_id*>(currentPayload->Data);
-                            sbk::core::database_ptr<sbk::engine::NodeBase> potentialChild(payloadID);
+                            sbk::core::database_ptr<sbk::engine::node_base> potentialChild(payloadID);
 
                             if (node->canAddChild(potentialChild))
                             {
@@ -233,7 +233,7 @@ void project_nodes_widget::RenderSingleNode(rttr::type type,
     }
 }
 
-bool project_nodes_widget::NodeHasChildren(sbk::engine::Node* node)
+bool project_nodes_widget::NodeHasChildren(sbk::engine::node* node)
 {
     return node ? node->getChildCount() : false;
 }
@@ -289,7 +289,7 @@ bool project_nodes_widget::RenderNodeContextMenu(rttr::type type,
                     sbk::Util::TypeHelper::getCategoryFromType(type);
 
                 if (object->getType().is_derived_from(
-                        sbk::engine::NodeBase::type()))
+                        sbk::engine::node_base::type()))
                 {
                     RenderCreateParentOrChildMenu(category, instance,
                                                   NodeCreationType::NewParent);
@@ -347,7 +347,7 @@ void project_nodes_widget::RenderCreateParentOrChildMenu(
     const std::unordered_set<rttr::type> categoryTypes =
         sbk::Util::TypeHelper::getTypesFromCategory(category);
 
-    sbk::engine::Node* const castedNode = sbk::Util::TypeHelper::getNodeFromInstance(node);
+    sbk::engine::node* const castedNode = sbk::Util::TypeHelper::getNodeFromInstance(node);
 
     if (ImGui::BeginMenu(CreateParentOrChildMenuName(creationType).data()))
     {
@@ -367,8 +367,8 @@ void project_nodes_widget::RenderCreateParentOrChildMenu(
 
                 SetupRenameNode(newObject.get());
 
-                sbk::engine::Node* newNode =
-                    sbk::reflection::cast<sbk::engine::Node*, sbk::core::object*>(
+                sbk::engine::node* newNode =
+                    sbk::reflection::cast<sbk::engine::node*, sbk::core::object*>(
                         newObject.get());
 
                 if (newNode)
@@ -377,7 +377,7 @@ void project_nodes_widget::RenderCreateParentOrChildMenu(
                     {
                         case NodeCreationType::NewParent:
                         {
-                            if (sbk::engine::NodeBase* baseParent =
+                            if (sbk::engine::node_base* baseParent =
                                     castedNode->parent())
                             {
                                 m_nodeToOpen = baseParent->get_database_id();

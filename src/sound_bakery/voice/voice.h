@@ -6,7 +6,7 @@
 namespace sbk::engine
 {
     class Container;
-    class GameObject;
+    class game_object;
     class NodeInstance;
 
     /**
@@ -17,7 +17,7 @@ namespace sbk::engine
     {
     public:
         Voice() = delete;
-        Voice(GameObject* owningObject) : m_owningGameObject(owningObject) {}
+        Voice(game_object* owningObject) : m_owningGameObject(owningObject) {}
 
     public:
         void playContainer(Container* container);
@@ -34,10 +34,10 @@ namespace sbk::engine
 
         bool isPlaying() const;
 
-        GameObject* getOwningGameObject() const { return m_owningGameObject; }
+        game_object* getOwningGameObject() const { return m_owningGameObject; }
 
     private:
-        GameObject* m_owningGameObject = nullptr;
+        game_object* m_owningGameObject = nullptr;
         sbk::core::database_ptr<Container> m_playingContainer;
 
         std::vector<std::unique_ptr<NodeInstance>> m_voiceInstances;

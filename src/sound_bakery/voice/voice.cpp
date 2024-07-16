@@ -17,7 +17,7 @@ void sbk::engine::Voice::playContainer(Container* container)
         m_voiceInstances.emplace_back(std::make_unique<NodeInstance>());
 
     InitNodeInstance initData;
-    initData.refNode     = container->try_convert_object<NodeBase>();
+    initData.refNode     = container->try_convert_object<node_base>();
     initData.type        = sbk::engine::NodeInstanceType::MAIN;
     initData.owningVoice = this;
 

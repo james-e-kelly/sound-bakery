@@ -25,7 +25,7 @@ void VoiceTracker::update(system* system)
     m_nodePlayingCount.clear();
 
     // @TODO Fix listener game object
-    if (const GameObject* const listener = nullptr /* system->get_listener_game_object() */)
+    if (const game_object* const listener = nullptr /* system->get_listener_game_object() */)
     {
         for (std::size_t i = 0; i < listener->voiceCount(); ++i)
         {
@@ -41,7 +41,7 @@ void VoiceTracker::update(system* system)
                         {
                             trackedNodes.insert(nodeInstance);
 
-                            if (const std::shared_ptr<Node> node = nodeInstance->getReferencingNode())
+                            if (const std::shared_ptr<node> node = nodeInstance->getReferencingNode())
                             {
                                 m_playingNodeIDs.insert(node->get_database_id());
                                 m_nodePlayingCount[node->get_database_id()]++;
@@ -55,7 +55,7 @@ void VoiceTracker::update(system* system)
 
                                 while (parent)
                                 {
-                                    if (const std::shared_ptr<Node> node = parent->getReferencingNode())
+                                    if (const std::shared_ptr<node> node = parent->getReferencingNode())
                                     {
                                         m_playingNodeIDs.insert(node->get_database_id());
                                         m_nodePlayingCount[node->get_database_id()]++;

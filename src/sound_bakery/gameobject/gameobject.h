@@ -7,17 +7,17 @@
 namespace sbk::engine
 {
     class Container;
-    class Event;
+    class event;
 
-    class SB_CLASS GameObject : public sbk::core::object
+    class SB_CLASS game_object : public sbk::core::object
     {
-        REGISTER_REFLECTION(GameObject, sbk::core::object)
+        REGISTER_REFLECTION(game_object, sbk::core::object)
 
     public:
-        GameObject() = default;
+        game_object() = default;
 
         Voice* playContainer(Container* container);
-        void postEvent(Event* event);
+        void postEvent(event* event);
 
         void stopVoice(Voice* voice);
         void stopContainer(Container* container);

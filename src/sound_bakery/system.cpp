@@ -125,7 +125,7 @@ sc_result system::init()
 
     sbk::reflection::registerReflectionTypes();
 
-    s_system->m_listenerGameObject = s_system->create_runtime_object<sbk::engine::GameObject>();
+    s_system->m_listenerGameObject = s_system->create_runtime_object<sbk::engine::game_object>();
 
     // TODO
     // Add way of turning off profiling
@@ -214,7 +214,7 @@ sbk::editor::project* system::get_project()
     return nullptr;
 }
 
-void sbk::engine::system::set_master_bus(const std::shared_ptr<sbk::engine::Bus>& masterBus)
+void sbk::engine::system::set_master_bus(const std::shared_ptr<sbk::engine::bus>& masterBus)
 {
     assert(!m_masterBus);
     m_masterBus = masterBus;

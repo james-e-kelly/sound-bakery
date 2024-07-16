@@ -37,7 +37,7 @@ bool sbk::engine::NodeInstance::init(const InitNodeInstance& initData)
 
     bool converted = false;
     m_referencingNode =
-        rttr::wrapper_mapper<sbk::core::database_ptr<NodeBase>>::convert<Node>(initData.refNode, converted).shared();
+        rttr::wrapper_mapper<sbk::core::database_ptr<node_base>>::convert<node>(initData.refNode, converted).shared();
 
     if (!m_nodeGroup.initNodeGroup(*initData.refNode.raw()))
     {
@@ -75,7 +75,7 @@ bool sbk::engine::NodeInstance::init(const InitNodeInstance& initData)
         }
         case NodeInstanceType::BUS:
         {
-            if (const Bus* const bus = initData.refNode->try_convert_object<Bus>())
+            if (const bus* const bus = initData.refNode->try_convert_object<sbk::engine::bus>())
             {
                 // Checks nullptr as master busses are technically busses without an output, even if they're not marked
                 // as masters
@@ -191,7 +191,7 @@ void NodeInstance::update()
             // Sequence nodes retrigger when the current sound stops
             if (m_referencingNode->getType() == rttr::type::get<SequenceContainer>())
             {
-                m_children.createChildren(*m_referencingNode->try_convert_object<NodeBase>(), m_owningVoice, this,
+                m_children.createChildren(*m_referencingNode->try_convert_object<node_base>(), m_owningVoice, this,
                                           ++m_numTimesPlayed);
                 play();
             }
@@ -225,7 +225,7 @@ void NodeInstance::setLowpass(float oldLowpass, float newLowpass)
 {
     (void)oldLowpass;
 
-    const double percentage    = sbk::Maths::easeOutCubic(newLowpass / 100.0);
+    const double percentage    = sbk::maths::easeOutCubic(newLowpass / 100.0);
     const double lowpassCutoff = (19980 - (19980.0 * percentage)) + 20.0;
     assert(lowpassCutoff >= 20.0);
 
@@ -236,7 +236,7 @@ void NodeInstance::setHighpass(float oldHighpass, float newHighpass)
 {
     (void)oldHighpass;
 
-    const double percentage     = sbk::Maths::easeInCubic(newHighpass / 100.0);
+    const double percentage     = sbk::maths::easeInCubic(newHighpass / 100.0);
     const double highpassCutoff = (19980.0 * percentage) + 20.0;
     assert(highpassCutoff >= 20.0);
 

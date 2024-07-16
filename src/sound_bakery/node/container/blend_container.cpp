@@ -4,7 +4,7 @@ DEFINE_REFLECTION(sbk::engine::BlendContainer)
 
 void sbk::engine::BlendContainer::gatherChildrenForPlay(GatherChildrenContext& context) const
 {
-    for (NodeBase* const child : getChildren())
+    for (node_base* const child : getChildren())
     {
         if (child != nullptr)
         {

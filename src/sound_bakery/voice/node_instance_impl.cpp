@@ -13,7 +13,7 @@ static void addDspToNodeGroup(sc_node_group* nodeGroup, sc_dsp** dsp, const sc_d
     sc_node_group_add_dsp(nodeGroup, *dsp, SC_DSP_INDEX_HEAD);
 }
 
-bool NodeGroupInstance::initNodeGroup(const NodeBase& node)
+bool NodeGroupInstance::initNodeGroup(const node_base& node)
 {
     if (nodeGroup != nullptr)
     {
@@ -34,7 +34,7 @@ bool NodeGroupInstance::initNodeGroup(const NodeBase& node)
     addDspToNodeGroup(nodeGroup.get(), &highpass, sc_dsp_config_init(SC_DSP_TYPE_HIGHPASS));
 
     for (const sbk::core::database_ptr<sbk::engine::effect_description>& desc :
-         node.try_convert_object<Node>()->m_effectDescriptions)
+         node.try_convert_object<sbk::engine::node>()->m_effectDescriptions)
     {
         if (desc.lookup() == false)
         {
@@ -62,7 +62,7 @@ bool NodeGroupInstance::initNodeGroup(const NodeBase& node)
 
 ////////////////////////////////////////////////////////////////////////////
 
-bool ParentNodeOwner::createParent(const NodeBase& thisNode, Voice* owningVoice)
+bool ParentNodeOwner::createParent(const node_base& thisNode, Voice* owningVoice)
 {
     bool createdParent = false;
 
@@ -70,7 +70,7 @@ bool ParentNodeOwner::createParent(const NodeBase& thisNode, Voice* owningVoice)
     {
         case SB_NODE_NULL:
         {
-             const sbk::core::database_ptr<Bus>& masterBus = sbk::engine::system::get()->get_master_bus();
+             const sbk::core::database_ptr<bus>& masterBus = sbk::engine::system::get()->get_master_bus();
 
              if (masterBus.lookup())
              {
@@ -79,7 +79,7 @@ bool ParentNodeOwner::createParent(const NodeBase& thisNode, Voice* owningVoice)
                     parent = masterBus->lockAndCopy();
 
                     InitNodeInstance initData;
-                    initData.refNode     = masterBus->try_convert_object<NodeBase>();
+                    initData.refNode     = masterBus->try_convert_object<node_base>();
                     initData.type        = NodeInstanceType::BUS;
                     initData.owningVoice = owningVoice;
 
@@ -94,12 +94,12 @@ bool ParentNodeOwner::createParent(const NodeBase& thisNode, Voice* owningVoice)
         }
         case SB_NODE_MIDDLE:
         {
-            if (sbk::engine::NodeBase* parentNode = thisNode.parent())
+            if (sbk::engine::node_base* parentNode = thisNode.parent())
             {
                 parent = std::make_shared<NodeInstance>();
 
                 InitNodeInstance initData;
-                initData.refNode     = parentNode->try_convert_object<NodeBase>();
+                initData.refNode     = parentNode->try_convert_object<node_base>();
                 initData.type        = NodeInstanceType::BUS;
                 initData.owningVoice = owningVoice;
 
@@ -109,14 +109,14 @@ bool ParentNodeOwner::createParent(const NodeBase& thisNode, Voice* owningVoice)
         }
         case SB_NODE_TOP:
         {
-            if (sbk::engine::NodeBase* output = thisNode.outputBus())
+            if (sbk::engine::node_base* output = thisNode.outputBus())
             {
-                if (sbk::engine::Bus* bus = output->try_convert_object<Bus>())
+                if (sbk::engine::bus* bus = output->try_convert_object<sbk::engine::bus>())
                 {
                     parent = bus->lockAndCopy();
 
                     InitNodeInstance initData;
-                    initData.refNode     = bus->try_convert_object<NodeBase>();
+                    initData.refNode     = bus->try_convert_object<node_base>();
                     initData.type        = NodeInstanceType::BUS;
                     initData.owningVoice = owningVoice;
 
@@ -132,7 +132,7 @@ bool ParentNodeOwner::createParent(const NodeBase& thisNode, Voice* owningVoice)
 
 ////////////////////////////////////////////////////////////////////////////
 
-bool ChildrenNodeOwner::createChildren(const NodeBase& thisNode,
+bool ChildrenNodeOwner::createChildren(const node_base& thisNode,
                                        Voice* owningVoice,
                                        NodeInstance* thisNodeInstance,
                                        unsigned int numTimesPlayed)
@@ -160,7 +160,7 @@ bool ChildrenNodeOwner::createChildren(const NodeBase& thisNode,
             childrenNodes.push_back(std::make_shared<NodeInstance>());
 
             InitNodeInstance initData;
-            initData.refNode           = sbk::core::database_ptr<NodeBase>(child->get_database_id());
+            initData.refNode           = sbk::core::database_ptr<node_base>(child->get_database_id());
             initData.type              = NodeInstanceType::CHILD;
             initData.owningVoice       = owningVoice;
             initData.parentForChildren = thisNodeInstance;

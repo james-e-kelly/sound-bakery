@@ -1,3 +1,3 @@
 #include "event.h"
 
-DEFINE_REFLECTION(sbk::engine::Event)
+DEFINE_REFLECTION(sbk::engine::event)

@@ -4,8 +4,8 @@
 
 namespace sbk::engine
 {
-    class SB_CLASS AuxBus : public Bus
+    class SB_CLASS aux_bus : public bus
     {
-        REGISTER_REFLECTION(AuxBus, Bus)
+        REGISTER_REFLECTION(aux_bus, bus)
     };
 }  // namespace sbk::engine

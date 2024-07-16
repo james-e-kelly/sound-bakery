@@ -85,9 +85,9 @@ void player_widget::render()
                     ->playContainer(previewContainer);
             }
         }
-        else if (sbk::engine::Event* event =
+        else if (sbk::engine::event* event =
                      s_lastPlayableSelection
-                         ->try_convert_object<sbk::engine::Event>())
+                         ->try_convert_object<sbk::engine::event>())
         {
             sbk::engine::system::get()->get_listener_game_object()->postEvent(
                 event);
@@ -101,8 +101,8 @@ void player_widget::render()
         sbk::engine::system::get()->get_listener_game_object()->stopAll();
     }
 
-    sbk::engine::Node* const nodeSelection =
-        s_lastPlayableSelection ? s_lastPlayableSelection->try_convert_object<sbk::engine::Node>() : nullptr;
+    sbk::engine::node* const nodeSelection =
+        s_lastPlayableSelection ? s_lastPlayableSelection->try_convert_object<sbk::engine::node>() : nullptr;
 
     sbk::engine::GlobalParameterList parameterList;
 
@@ -111,7 +111,7 @@ void player_widget::render()
         nodeSelection->gatherParameters(parameterList);
     }
 
-    sbk::engine::GameObject* const listenerGameObject = sbk::engine::system::get()->get_listener_game_object();
+    sbk::engine::game_object* const listenerGameObject = sbk::engine::system::get()->get_listener_game_object();
 
     if (ImGui::BeginTabBar("Runtime Parameters"))
     {

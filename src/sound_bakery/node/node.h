@@ -16,44 +16,44 @@ namespace sbk::engine
         SB_NODE_TOP
     };
 
-    class SB_CLASS NodeBase : public sbk::core::database_object
+    class SB_CLASS node_base : public sbk::core::database_object
     {
     public:
-        ~NodeBase();
+        ~node_base();
 
     public:
-        virtual void setParentNode(const sbk::core::database_ptr<NodeBase>& parent);
-        virtual void setOutputBus(const sbk::core::database_ptr<NodeBase>& bus);
+        virtual void setParentNode(const sbk::core::database_ptr<node_base>& parent);
+        virtual void setOutputBus(const sbk::core::database_ptr<node_base>& bus);
 
         SB_NODE_STATUS getNodeStatus() const noexcept;
 
-        NodeBase* parent() const;
-        NodeBase* outputBus() const;
+        node_base* parent() const;
+        node_base* outputBus() const;
 
-        virtual bool canAddChild(const sbk::core::database_ptr<NodeBase>& child) const;
+        virtual bool canAddChild(const sbk::core::database_ptr<node_base>& child) const;
 
-        void addChild(const sbk::core::database_ptr<NodeBase>& child);
-        void removeChild(const sbk::core::database_ptr<NodeBase>& child);
+        void addChild(const sbk::core::database_ptr<node_base>& child);
+        void removeChild(const sbk::core::database_ptr<node_base>& child);
 
-        std::vector<NodeBase*> getChildren() const;
+        std::vector<node_base*> getChildren() const;
         std::size_t getChildCount() const;
-        bool hasChild(const sbk::core::database_ptr<NodeBase>& test) const;
+        bool hasChild(const sbk::core::database_ptr<node_base>& test) const;
 
-        void gatherAllDescendants(std::vector<NodeBase*>& descendants) const;
-        void gatherAllParents(std::vector<NodeBase*>& parents) const;
+        void gatherAllDescendants(std::vector<node_base*>& descendants) const;
+        void gatherAllParents(std::vector<node_base*>& parents) const;
 
     protected:
-        sbk::core::database_ptr<NodeBase> m_parentNode;
-        sbk::core::database_ptr<NodeBase> m_outputBus;
-        std::unordered_set<sbk::core::database_ptr<NodeBase>> m_childNodes;
+        sbk::core::database_ptr<node_base> m_parentNode;
+        sbk::core::database_ptr<node_base> m_outputBus;
+        std::unordered_set<sbk::core::database_ptr<node_base>> m_childNodes;
 
-        REGISTER_REFLECTION(NodeBase, sbk::core::database_object)
+        REGISTER_REFLECTION(node_base, sbk::core::database_object)
     };
 
     /**
      * @brief Root node that builds the core graph of sounds and busses.
      */
-    class SB_CLASS Node : public NodeBase
+    class SB_CLASS node : public node_base
     {
     public:
         sbk::core::float_property m_volume   = sbk::core::float_property(1.0f, 0.0f, 1.0f);
@@ -79,6 +79,6 @@ namespace sbk::engine
          */
         virtual void gatherParametersFromThis(GlobalParameterList& parameters) { (void)parameters; }
 
-        REGISTER_REFLECTION(Node, NodeBase)
+        REGISTER_REFLECTION(node, node_base)
     };
 }  // namespace sbk::engine

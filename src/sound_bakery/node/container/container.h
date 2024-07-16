@@ -45,16 +45,16 @@ namespace sbk::engine
      * @brief Base container type. Inherited types include sounds, random,
      * sequence etc.
      */
-    class SB_CLASS Container : public Node
+    class SB_CLASS Container : public node
     {
     public:
-        Container() : Node() {}
+        Container() : node() {}
 
-        bool canAddChild(const sbk::core::database_ptr<NodeBase>& child) const override
+        bool canAddChild(const sbk::core::database_ptr<node_base>& child) const override
         {
             if (child.lookup() && child->getType().is_derived_from<Container>())
             {
-                return NodeBase::canAddChild(child);
+                return node_base::canAddChild(child);
             }
             else
             {
@@ -72,7 +72,7 @@ namespace sbk::engine
          */
         virtual void gatherChildrenForPlay(GatherChildrenContext& context) const = 0;
 
-        REGISTER_REFLECTION(Container, Node)
+        REGISTER_REFLECTION(Container, node)
         RTTR_REGISTRATION_FRIEND
     };
 }  // namespace sbk::engine

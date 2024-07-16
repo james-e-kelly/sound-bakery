@@ -180,7 +180,7 @@ void sbk::editor::project::buildSoundbanks() const
 
             saveYAML(soundbankEmitter, filePath);*/
 
-            std::vector<sbk::engine::NodeBase*> nodesToSave;
+            std::vector<sbk::engine::node_base*> nodesToSave;
 
             for (auto& event : soundbank->GetEvents())
             {
@@ -193,8 +193,8 @@ void sbk::editor::project::buildSoundbanks() const
                             continue;
                         }
 
-                        sbk::engine::NodeBase* const nodeBase =
-                            action.m_destination->try_convert_object<sbk::engine::NodeBase>();
+                        sbk::engine::node_base* const nodeBase =
+                            action.m_destination->try_convert_object<sbk::engine::node_base>();
 
                         assert(nodeBase);
 

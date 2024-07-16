@@ -26,8 +26,8 @@ namespace sbk
             class VoiceTracker;
         }
 
-        class Bus;
-        class GameObject;
+        class bus;
+        class game_object;
 
         /**
          * @brief Manager of the whole Sound Bakery.
@@ -70,16 +70,16 @@ namespace sbk
 
             std::shared_ptr<concurrencpp::manual_executor> game_thread_executer() const { return m_gameThreadExecuter; }
 
-            [[nodiscard]] sbk::engine::GameObject* get_listener_game_object() const { return m_listenerGameObject.get(); }
-            [[nodiscard]] sbk::engine::Bus* get_master_bus() const { return m_masterBus.get(); }
+            [[nodiscard]] sbk::engine::game_object* get_listener_game_object() const { return m_listenerGameObject.get(); }
+            [[nodiscard]] sbk::engine::bus* get_master_bus() const { return m_masterBus.get(); }
 
-            void set_master_bus(const std::shared_ptr<sbk::engine::Bus>& masterBus);
+            void set_master_bus(const std::shared_ptr<sbk::engine::bus>& masterBus);
 
         private:
             bool m_registeredReflection = false;
 
-            std::shared_ptr<sbk::engine::GameObject> m_listenerGameObject;
-            std::shared_ptr<sbk::engine::Bus> m_masterBus;
+            std::shared_ptr<sbk::engine::game_object> m_listenerGameObject;
+            std::shared_ptr<sbk::engine::bus> m_masterBus;
             std::unique_ptr<sbk::editor::project> m_project;
             std::unique_ptr<Profiling::VoiceTracker> m_voiceTracker;
             std::shared_ptr<concurrencpp::manual_executor> m_gameThreadExecuter;

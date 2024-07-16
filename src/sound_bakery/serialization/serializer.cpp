@@ -382,8 +382,8 @@ void Serializer::packageSoundbank(sbk::engine::Soundbank* soundbank, YAML::Emitt
 {
     if (soundbank != nullptr)
     {
-        std::vector<sbk::engine::Event*> eventsToSave;
-        std::vector<sbk::engine::NodeBase*> nodesToSave;
+        std::vector<sbk::engine::event*> eventsToSave;
+        std::vector<sbk::engine::node_base*> nodesToSave;
         std::vector<sbk::engine::Sound*> soundsToSave;
 
         for (auto& event : soundbank->GetEvents())
@@ -404,8 +404,8 @@ void Serializer::packageSoundbank(sbk::engine::Soundbank* soundbank, YAML::Emitt
                         continue;
                     }
 
-                    sbk::engine::NodeBase* const nodeBase =
-                        action.m_destination->try_convert_object<sbk::engine::NodeBase>();
+                    sbk::engine::node_base* const nodeBase =
+                        action.m_destination->try_convert_object<sbk::engine::node_base>();
 
                     assert(nodeBase);
 
@@ -430,7 +430,7 @@ void Serializer::packageSoundbank(sbk::engine::Soundbank* soundbank, YAML::Emitt
             }
         }
 
-        for (sbk::engine::Event* event : eventsToSave)
+        for (sbk::engine::event* event : eventsToSave)
         {
             assert(event);
 
@@ -439,7 +439,7 @@ void Serializer::packageSoundbank(sbk::engine::Soundbank* soundbank, YAML::Emitt
             saveInstance(emitter, event);
         }
 
-        for (sbk::engine::NodeBase* node : nodesToSave)
+        for (sbk::engine::node_base* node : nodesToSave)
         {
             assert(node);
 

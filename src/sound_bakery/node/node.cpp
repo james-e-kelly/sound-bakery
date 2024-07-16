@@ -4,22 +4,22 @@
 
 using namespace sbk::engine;
 
-DEFINE_REFLECTION(sbk::engine::NodeBase)
+DEFINE_REFLECTION(sbk::engine::node_base)
 
-DEFINE_REFLECTION(sbk::engine::Node)
+DEFINE_REFLECTION(sbk::engine::node)
 
-void sbk::engine::Node::gatherParameters(GlobalParameterList& parameters)
+void sbk::engine::node::gatherParameters(GlobalParameterList& parameters)
 {
     parameters.floatParameters.reserve(m_childNodes.size() + 1);
     parameters.intParameters.reserve(m_childNodes.size() + 1);
 
     gatherParametersFromThis(parameters);
 
-    for (NodeBase* const child : getChildren())
+    for (node_base* const child : getChildren())
     {
         if (child != nullptr)
         {
-            if (Node* const childNode = child->try_convert_object<Node>())
+            if (node* const childNode = child->try_convert_object<node>())
             {
                 childNode->gatherParameters(parameters);
             }
@@ -27,14 +27,14 @@ void sbk::engine::Node::gatherParameters(GlobalParameterList& parameters)
     }
 }
 
-void Node::addEffect(sc_dsp_type type)
+void node::addEffect(sc_dsp_type type)
 {
     std::shared_ptr<effect_description> effect = owner()->create_database_object<effect_description>();
     effect->set_dsp_type(type);
     m_effectDescriptions.emplace_back(effect);
 }
 
-NodeBase::~NodeBase()
+node_base::~node_base()
 {
     for (auto& child : m_childNodes)
     {
@@ -45,11 +45,11 @@ NodeBase::~NodeBase()
     }
 }
 
-void sbk::engine::NodeBase::setParentNode(const sbk::core::database_ptr<NodeBase>& parent) { m_parentNode = parent; }
+void sbk::engine::node_base::setParentNode(const sbk::core::database_ptr<node_base>& parent) { m_parentNode = parent; }
 
-void sbk::engine::NodeBase::setOutputBus(const sbk::core::database_ptr<NodeBase>& bus) { m_outputBus = bus; }
+void sbk::engine::node_base::setOutputBus(const sbk::core::database_ptr<node_base>& bus) { m_outputBus = bus; }
 
-SB_NODE_STATUS sbk::engine::NodeBase::getNodeStatus() const noexcept
+SB_NODE_STATUS sbk::engine::node_base::getNodeStatus() const noexcept
 {
     SB_NODE_STATUS status = SB_NODE_NULL;
 
@@ -65,11 +65,11 @@ SB_NODE_STATUS sbk::engine::NodeBase::getNodeStatus() const noexcept
     return status;
 }
 
-NodeBase* sbk::engine::NodeBase::parent() const { return m_parentNode.lookupRaw(); }
+node_base* sbk::engine::node_base::parent() const { return m_parentNode.lookupRaw(); }
 
-NodeBase* sbk::engine::NodeBase::outputBus() const { return m_outputBus.lookupRaw(); }
+node_base* sbk::engine::node_base::outputBus() const { return m_outputBus.lookupRaw(); }
 
-bool sbk::engine::NodeBase::canAddChild(const sbk::core::database_ptr<NodeBase>& child) const
+bool sbk::engine::node_base::canAddChild(const sbk::core::database_ptr<node_base>& child) const
 {
     if (m_childNodes.contains(child) || child.id() == get_database_id())
     {
@@ -78,7 +78,7 @@ bool sbk::engine::NodeBase::canAddChild(const sbk::core::database_ptr<NodeBase>&
     return true;
 }
 
-void sbk::engine::NodeBase::addChild(const sbk::core::database_ptr<NodeBase>& child)
+void sbk::engine::node_base::addChild(const sbk::core::database_ptr<node_base>& child)
 {
     if (canAddChild(child))
     {
@@ -96,7 +96,7 @@ void sbk::engine::NodeBase::addChild(const sbk::core::database_ptr<NodeBase>& ch
     }
 }
 
-void sbk::engine::NodeBase::removeChild(const sbk::core::database_ptr<NodeBase>& child)
+void sbk::engine::node_base::removeChild(const sbk::core::database_ptr<node_base>& child)
 {
     if (child)
     {
@@ -106,9 +106,9 @@ void sbk::engine::NodeBase::removeChild(const sbk::core::database_ptr<NodeBase>&
     m_childNodes.erase(child);
 }
 
-std::vector<NodeBase*> sbk::engine::NodeBase::getChildren() const
+std::vector<node_base*> sbk::engine::node_base::getChildren() const
 {
-    std::vector<NodeBase*> children;
+    std::vector<node_base*> children;
     children.reserve(m_childNodes.size());
 
     for (auto& child : m_childNodes)
@@ -122,14 +122,14 @@ std::vector<NodeBase*> sbk::engine::NodeBase::getChildren() const
     return children;
 }
 
-std::size_t sbk::engine::NodeBase::getChildCount() const { return m_childNodes.size(); }
+std::size_t sbk::engine::node_base::getChildCount() const { return m_childNodes.size(); }
 
-bool sbk::engine::NodeBase::hasChild(const sbk::core::database_ptr<NodeBase>& test) const
+bool sbk::engine::node_base::hasChild(const sbk::core::database_ptr<node_base>& test) const
 {
     return m_childNodes.contains(test);
 }
 
-void sbk::engine::NodeBase::gatherAllDescendants(std::vector<NodeBase*>& descendants) const
+void sbk::engine::node_base::gatherAllDescendants(std::vector<node_base*>& descendants) const
 {
     for (auto& child : getChildren())
     {
@@ -139,9 +139,9 @@ void sbk::engine::NodeBase::gatherAllDescendants(std::vector<NodeBase*>& descend
     }
 }
 
-void sbk::engine::NodeBase::gatherAllParents(std::vector<NodeBase*>& parents) const
+void sbk::engine::node_base::gatherAllParents(std::vector<node_base*>& parents) const
 {
-    if (NodeBase* const nodeParent = parent())
+    if (node_base* const nodeParent = parent())
     {
         parents.push_back(nodeParent);
 

@@ -24,7 +24,7 @@ SB_OBJECT_CATEGORY TypeHelper::getCategoryFromType(rttr::type type)
         return category;
     }
 
-    if (type.is_derived_from(rttr::type::get<sbk::engine::Bus>()))
+    if (type.is_derived_from(rttr::type::get<sbk::engine::bus>()))
     {
         category = SB_CATEGORY_BUS;
     }
@@ -32,7 +32,7 @@ SB_OBJECT_CATEGORY TypeHelper::getCategoryFromType(rttr::type type)
     {
         category = SB_CATEGORY_NODE;
     }
-    else if (type == rttr::type::get<sbk::engine::Event>())
+    else if (type == rttr::type::get<sbk::engine::event>())
     {
         category = SB_CATEGORY_EVENT;
     }
@@ -79,13 +79,13 @@ std::unordered_set<rttr::type> TypeHelper::getTypesFromCategory(SB_OBJECT_CATEGO
             result.insert(rttr::type::get<sbk::engine::SwitchContainer>());
             break;
         case SB_CATEGORY_BUS:
-            result.insert(rttr::type::get<sbk::engine::Bus>());
-            result.insert(rttr::type::get<sbk::engine::AuxBus>());
+            result.insert(rttr::type::get<sbk::engine::bus>());
+            result.insert(rttr::type::get<sbk::engine::aux_bus>());
             break;
         case SB_CATEGORY_MUSIC:
             break;
         case SB_CATEGORY_EVENT:
-            result.insert(rttr::type::get<sbk::engine::Event>());
+            result.insert(rttr::type::get<sbk::engine::event>());
             break;
         case SB_CATEGORY_BANK:
             result.insert(rttr::type::get<sbk::engine::Soundbank>());
@@ -134,11 +134,11 @@ std::string_view TypeHelper::getDisplayNameFromType(rttr::type type)
     {
         result = "Container";
     }
-    else if (type == rttr::type::get<sbk::engine::Bus>())
+    else if (type == rttr::type::get<sbk::engine::bus>())
     {
         result = "Bus";
     }
-    else if (type == rttr::type::get<sbk::engine::AuxBus>())
+    else if (type == rttr::type::get<sbk::engine::aux_bus>())
     {
         result = "Aux";
     }
@@ -146,7 +146,7 @@ std::string_view TypeHelper::getDisplayNameFromType(rttr::type type)
     {
         result = "Sound";
     }
-    else if (type == rttr::type::get<sbk::engine::Event>())
+    else if (type == rttr::type::get<sbk::engine::event>())
     {
         result = "Event";
     }
@@ -227,7 +227,7 @@ std::string_view TypeHelper::getPayloadFromType(rttr::type type)
     {
         result = sbk::editor::PayloadSound;
     }
-    else if (type.is_derived_from<sbk::engine::Bus>())
+    else if (type.is_derived_from<sbk::engine::bus>())
     {
         result = sbk::editor::PayloadBus;
     }
@@ -262,7 +262,7 @@ bool TypeHelper::isTypePlayable(const rttr::type& type)
     if (type.is_valid())
     {
         result = type.is_derived_from<sbk::engine::Container>() || type.is_derived_from<sbk::engine::Sound>() ||
-                 type.is_derived_from<sbk::engine::Event>();
+                 type.is_derived_from<sbk::engine::event>();
     }
 
     return result;
@@ -290,12 +290,12 @@ sbk::core::database_object* TypeHelper::getDatabaseObjectFromInstance(const rttr
     return instance.try_convert<sbk::core::database_object>();
 }
 
-sbk::engine::Node* TypeHelper::getNodeFromInstance(const rttr::instance& instance)
+sbk::engine::node* TypeHelper::getNodeFromInstance(const rttr::instance& instance)
 {
-    return instance.try_convert<sbk::engine::Node>();
+    return instance.try_convert<sbk::engine::node>();
 }
 
-sbk::engine::NodeBase* TypeHelper::getNodeBaseFromInstance(const rttr::instance& instance)
+sbk::engine::node_base* TypeHelper::getNodeBaseFromInstance(const rttr::instance& instance)
 {
-    return instance.try_convert<sbk::engine::NodeBase>();
+    return instance.try_convert<sbk::engine::node_base>();
 }

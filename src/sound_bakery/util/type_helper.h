@@ -4,8 +4,8 @@
 
 namespace sbk::engine
 {
-    class NodeBase;
-    class Node;
+    class node_base;
+    class node;
 }  // namespace sbk::engine
 
 namespace sbk::Util
@@ -35,8 +35,8 @@ namespace sbk::Util
 
         static sbk::core::database_object* getDatabaseObjectFromInstance(const rttr::instance& instance);
 
-        static sbk::engine::Node* getNodeFromInstance(const rttr::instance& instance);
+        static sbk::engine::node* getNodeFromInstance(const rttr::instance& instance);
 
-        static sbk::engine::NodeBase* getNodeBaseFromInstance(const rttr::instance& instance);
+        static sbk::engine::node_base* getNodeBaseFromInstance(const rttr::instance& instance);
     };
 }  // namespace sbk::Util
