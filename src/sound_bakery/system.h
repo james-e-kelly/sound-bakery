@@ -26,10 +26,15 @@ namespace sbk
             class VoiceTracker;
         }
 
+        class Bus;
         class GameObject;
 
         /**
          * @brief Manager of the whole Sound Bakery.
+         * 
+         * The system tracks all objects created during Sound Bakery's lifetime. 
+         * 
+         * It owns all loaded Soundbanks, listener game object, and busses.
          */
         class SB_CLASS system final : public sc_system,
                                       public sbk::core::object_owner,
@@ -66,11 +71,15 @@ namespace sbk
             std::shared_ptr<concurrencpp::manual_executor> game_thread_executer() const { return m_gameThreadExecuter; }
 
             [[nodiscard]] sbk::engine::GameObject* get_listener_game_object() const { return m_listenerGameObject.get(); }
+            [[nodiscard]] sbk::engine::Bus* get_master_bus() const { return m_masterBus.get(); }
+
+            void set_master_bus(const std::shared_ptr<sbk::engine::Bus>& masterBus);
 
         private:
             bool m_registeredReflection = false;
 
             std::shared_ptr<sbk::engine::GameObject> m_listenerGameObject;
+            std::shared_ptr<sbk::engine::Bus> m_masterBus;
             std::unique_ptr<sbk::editor::project> m_project;
             std::unique_ptr<Profiling::VoiceTracker> m_voiceTracker;
             std::shared_ptr<concurrencpp::manual_executor> m_gameThreadExecuter;

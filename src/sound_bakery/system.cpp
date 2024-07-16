@@ -62,7 +62,7 @@ system::system()
 
 system::~system()
 {
-    spdlog::debug("Closing Sound Bakery");
+    SPDLOG_DEBUG("Closing Sound Bakery");
 
     // Close threads
     background_executor()->shutdown();
@@ -76,6 +76,11 @@ system::~system()
     if (m_listenerGameObject)
     {
         m_listenerGameObject.reset();
+    }
+
+    if (m_masterBus)
+    {
+        m_masterBus.reset();
     }
 
     destroy_all();
@@ -115,7 +120,7 @@ sc_result system::init()
         return MA_DEVICE_NOT_STARTED;
     }
 
-    sc_result result = sc_system_init(s_system);
+    const sc_result result = sc_system_init(s_system);
     assert(result == MA_SUCCESS);
 
     sbk::reflection::registerReflectionTypes();
@@ -207,4 +212,10 @@ sbk::editor::project* system::get_project()
     }
 
     return nullptr;
+}
+
+void sbk::engine::system::set_master_bus(const std::shared_ptr<sbk::engine::Bus>& masterBus)
+{
+    assert(!m_masterBus);
+    m_masterBus = masterBus;
 }

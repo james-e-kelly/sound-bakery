@@ -7,6 +7,19 @@ using namespace sbk::engine;
 
 DEFINE_REFLECTION(sbk::engine::Bus)
 
+void sbk::engine::Bus::setMasterBus(bool isMaster)
+{
+    if (getType() == rttr::type::get<Bus>())
+    {
+        m_masterBus = isMaster;
+
+        if (isMaster)
+        {
+            sbk::engine::system::get()->set_master_bus(std::static_pointer_cast<sbk::engine::Bus>(shared_from_this()));
+        }
+    }
+}
+
 void Bus::lock()
 {
     if (!m_busInstance)

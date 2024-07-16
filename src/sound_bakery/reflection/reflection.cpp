@@ -205,7 +205,7 @@ namespace sbk::reflection
 
         registration::class_<Bus>("SB::Engine::Bus")
             .constructor<>()(policy::ctor::as_raw_ptr)
-            .property_readonly("IsMasterBus", &Bus::m_masterBus);
+            .property("IsMasterBus", &Bus::isMasterBus, &Bus::setMasterBus)(metadata(sbk::editor::METADATA_KEY::Readonly, true));
 
         registration::class_<Event>("SB::Engine::Event")
             .constructor<>()(policy::ctor::as_raw_ptr)

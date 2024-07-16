@@ -25,17 +25,10 @@ namespace sbk::engine
             }
         }
 
-        void setMasterBus(bool isMaster)
-        {
-            if (getType() == rttr::type::get<Bus>())
-            {
-                m_masterBus = isMaster;
-            }
-        }
+        void setMasterBus(bool isMaster);
 
         bool isMasterBus() const { return m_masterBus; }
 
-    public:
         void lock();
         void unlock();
         std::shared_ptr<NodeInstance> lockAndCopy();
