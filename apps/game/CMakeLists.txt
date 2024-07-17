@@ -5,11 +5,13 @@ set(BUILD_FOLDER ${CMAKE_BINARY_DIR})
 set(GAME_SOURCES
   app/app.cpp
   widgets/root_widget.cpp
+  widgets/soundbank_viewer.cpp
 )
 
 set(GAME_HEADERS
   app/app.h
   widgets/root_widget.h
+  widgets/soundbank_viewer.h
 )
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Source Files" FILES ${GAME_SOURCES})

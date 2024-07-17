@@ -236,10 +236,10 @@ void sbk::editor::project::buildSoundbanks() const
 
             sc_bank bank;
             sc_result initresult =
-                sc_bank_init((m_projectConfig.build_folder() / (std::string(soundbank->get_database_name()) + ".bnk"))
+                sc_bank_init(&bank, (m_projectConfig.build_folder() / (std::string(soundbank->get_database_name()) + ".bnk"))
                                  .string()
                                  .c_str(),
-                             &bank);
+                             MA_OPEN_MODE_WRITE);
             assert(initresult == MA_SUCCESS);
 
             sc_result buildResult = sc_bank_build(&bank, encodedSoundPathsToSave.data(), encodingFormats.data(),

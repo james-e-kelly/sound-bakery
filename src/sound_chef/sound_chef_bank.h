@@ -56,15 +56,15 @@ struct sc_riffChunk
 
 struct sc_bank
 {
-    sc_riffChunk riff;
-
-    ma_vfs_file outputFile;
+    sc_riffChunk riff;  //< bank data. Filled upon reading
+    ma_vfs_file outputFile; //< bank file used during read and write
 };
 
-sc_result SC_API sc_bank_init(const char* outputFile, sc_bank* bank);
+sc_result SC_API sc_bank_init(sc_bank* bank, const char* outputFile, ma_open_mode_flags openFlags);
 sc_result SC_API sc_bank_uninit(sc_bank* bank);
 
 sc_result SC_API sc_bank_build(sc_bank* bank, const char** inputFiles, ma_encoding_format* inputFileFormats, ma_uint32 inputFilesSize);
+sc_result SC_API sc_bank_read(sc_bank* bank);
 
 #ifdef __cplusplus
 }

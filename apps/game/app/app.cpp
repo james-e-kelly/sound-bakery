@@ -6,6 +6,7 @@
 #include "nfd.h"
 
 #include "widgets/root_widget.h"
+#include "widgets/soundbank_viewer.h"
 
 namespace PathHelpers
 {
@@ -35,5 +36,12 @@ retry:
 
     assert(std::filesystem::exists(outPath));
 
+    if (m_soundbankViewerWidget)
+    {
+        m_soundbankViewerWidget->destroy();
+    }
 
+    m_soundbankViewerWidget = get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class_to_root<soundbank_viewer_widget>();
+    
+    m_soundbankViewerWidget->set_soundbank_to_view(outPath);
 }
