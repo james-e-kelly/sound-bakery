@@ -31,13 +31,6 @@ enum
     SC_BANK_FILE_NAME_BUFFER_SIZE = 64
 };
 
-struct sc_subChunk
-{
-    ma_uint32   id;
-    ma_uint32   size;
-    void*       data;
-};
-
 struct sc_audioChunk
 {
     ma_uint32   id;
@@ -51,12 +44,12 @@ struct sc_riffChunk
     ma_uint32       id;
     ma_uint32       size;
     ma_uint32       numOfSubchunks;  
-    sc_subChunk**   subChunks;
+    sc_audioChunk** subChunks;
 };
 
 struct sc_bank
 {
-    sc_riffChunk riff;  //< bank data. Filled upon reading
+    sc_riffChunk* riff;  //< bank data. Filled upon reading
     ma_vfs_file outputFile; //< bank file used during read and write
 };
 

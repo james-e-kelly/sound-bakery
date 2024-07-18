@@ -66,6 +66,34 @@ sc_result sc_bank_uninit(sc_bank* bank)
     ma_default_vfs vfs;
     ma_default_vfs_init(&vfs, NULL);
 
+    if (bank->riff != NULL)
+    {
+        if (bank->riff->numOfSubchunks > 0)
+        {
+            if (bank->riff->subChunks != NULL)
+            {
+                for (size_t chunkIndex = 0; chunkIndex < bank->riff->numOfSubchunks; ++chunkIndex)
+                {
+                    sc_audioChunk* const audioChunk = bank->riff->subChunks[chunkIndex];
+
+                    if (audioChunk != NULL)
+                    {
+                        if (audioChunk->data != NULL)
+                        {
+                            ma_free(audioChunk->data, NULL);
+                        }
+
+                        ma_free(audioChunk, NULL);
+                    }
+                }
+
+                ma_free(bank->riff->subChunks, NULL);
+            }
+        }
+
+        ma_free(bank->riff, NULL);
+    }
+
 	return ma_vfs_close(&vfs, bank->outputFile);
 }
 
@@ -189,47 +217,57 @@ sc_result sc_bank_read(sc_bank* bank)
 { 
     SC_CHECK_ARG(bank != NULL);
     SC_CHECK_ARG(bank->outputFile != NULL);
+    SC_CHECK(bank->riff == NULL, MA_ALREADY_EXISTS);
 
     ma_default_vfs vfs;
     ma_default_vfs_init(&vfs, NULL);
 
     ma_file_info fileInfo;
     ma_vfs_info(&vfs, bank->outputFile, &fileInfo);
-    SC_CHECK(fileInfo.sizeInBytes > sizeof(ma_uint32), MA_INVALID_DATA);
+    SC_CHECK(fileInfo.sizeInBytes > SC_CHUNK_MIN_SIZE, MA_INVALID_DATA);
 
     ma_uint32 numOfSubchunks = 0;
 
     // Riff Chunk
-    {
-        ma_uint32 bankID = 0;
-        size_t bytesRead = 0;
+    ma_uint32 bankID = 0;
+    size_t bytesRead = 0;
 
-        sc_result readResult = ma_vfs_read(&vfs, bank->outputFile, &bankID, 4, &bytesRead);
-        SC_CHECK_RESULT(readResult);
-        SC_CHECK(bankID == SC_BANK_ID, MA_INVALID_DATA);
+    sc_result readResult = ma_vfs_read(&vfs, bank->outputFile, &bankID, 4, &bytesRead);
+    SC_CHECK_RESULT(readResult);
+    SC_CHECK(bankID == SC_BANK_ID, MA_INVALID_DATA);
 
-        size_t totalFileSize = 0;
+    size_t totalFileSize = 0;
 
-        readResult = ma_vfs_read(&vfs, bank->outputFile, &totalFileSize, sizeof(totalFileSize), &bytesRead);
-        SC_CHECK_RESULT(readResult);
-        SC_CHECK(totalFileSize > 4, MA_INVALID_DATA);
+    readResult = ma_vfs_read(&vfs, bank->outputFile, &totalFileSize, sizeof(totalFileSize), &bytesRead);
+    SC_CHECK_RESULT(readResult);
+    SC_CHECK(totalFileSize > 4, MA_INVALID_DATA);
 
-        ma_uint32 headerSize = sizeof(ma_uint32) + sizeof(ma_uint32) + sizeof(ma_uint32);
-        //SC_CHECK(totalFileSize == fileInfo.sizeInBytes - headerSize, MA_INVALID_DATA);
+    ma_uint32 headerSize = sizeof(ma_uint32) + sizeof(ma_uint32) + sizeof(ma_uint32);
+    //SC_CHECK(totalFileSize == fileInfo.sizeInBytes - headerSize, MA_INVALID_DATA);
 
-        readResult = ma_vfs_read(&vfs, bank->outputFile, &numOfSubchunks, sizeof(ma_uint32), &bytesRead);
-        SC_CHECK_RESULT(readResult);
-        SC_CHECK(numOfSubchunks > 0, MA_INVALID_DATA);
-    }
+    readResult = ma_vfs_read(&vfs, bank->outputFile, &numOfSubchunks, sizeof(ma_uint32), &bytesRead);
+    SC_CHECK_RESULT(readResult);
+    SC_CHECK(numOfSubchunks > 0, MA_INVALID_DATA);
 
-    ma_uint32 subchunksToRead = numOfSubchunks;
+    bank->riff = ma_malloc(sizeof(sc_riffChunk), NULL);
+    SC_CHECK_MEM(bank->riff);
+    memset(bank->riff, 0, sizeof(sc_riffChunk));
 
-    while (subchunksToRead)
+    bank->riff->id = bankID;
+    bank->riff->size = totalFileSize;
+    bank->riff->numOfSubchunks = numOfSubchunks;
+    bank->riff->subChunks      = ma_malloc(sizeof(sc_subChunk**) * numOfSubchunks, NULL);
+    SC_CHECK_MEM(bank->riff->subChunks);
+    memset(bank->riff->subChunks, 0, sizeof(sc_subChunk**) * numOfSubchunks);
+
+    // Sub chunks
+
+    for (size_t chunkIndex = 0; chunkIndex < numOfSubchunks; ++chunkIndex)
     {
         ma_uint32 chunkID = 0;
         size_t bytesRead  = 0;
 
-        sc_result readResult = ma_vfs_read(&vfs, bank->outputFile, &chunkID, 4, &bytesRead);
+        readResult = ma_vfs_read(&vfs, bank->outputFile, &chunkID, 4, &bytesRead);
         SC_CHECK_RESULT(readResult);
         SC_CHECK(chunkID == SC_BANK_SUB_ID, MA_INVALID_DATA);
 
@@ -239,16 +277,26 @@ sc_result sc_bank_read(sc_bank* bank)
         SC_CHECK_RESULT(readResult);
 
         char chunkName[SC_BANK_FILE_NAME_BUFFER_SIZE];
-        const char* chunkNamePtr = chunkName;
 
         readResult = ma_vfs_read(&vfs, bank->outputFile, &chunkName, SC_BANK_FILE_NAME_BUFFER_SIZE, &bytesRead);
         SC_CHECK_RESULT(readResult);
 
-        const sc_result seekResult =
-            ma_vfs_seek(&vfs, bank->outputFile, chunkSize - SC_BANK_FILE_NAME_BUFFER_SIZE, ma_seek_origin_current);
-        SC_CHECK_RESULT(seekResult);
+        const size_t dataLength = chunkSize - SC_BANK_FILE_NAME_BUFFER_SIZE;
 
-        --subchunksToRead;
+        bank->riff->subChunks[chunkIndex] = ma_malloc(sizeof(sc_audioChunk), NULL);
+        SC_CHECK_MEM(bank->riff->subChunks[chunkIndex]);
+        memset(bank->riff->subChunks[chunkIndex], 0, sizeof(sc_audioChunk));
+
+        bank->riff->subChunks[chunkIndex]->data = ma_malloc(dataLength, NULL);
+        SC_CHECK_MEM(bank->riff->subChunks[chunkIndex]->data);
+        memset(bank->riff->subChunks[chunkIndex]->data, 0, dataLength);
+
+        bank->riff->subChunks[chunkIndex]->id = chunkID;
+        bank->riff->subChunks[chunkIndex]->size = chunkSize;
+        strcpy_s(bank->riff->subChunks[chunkIndex]->name, SC_BANK_FILE_NAME_BUFFER_SIZE, &chunkName);
+
+        readResult = ma_vfs_read(&vfs, bank->outputFile, bank->riff->subChunks[chunkIndex]->data, dataLength, &bytesRead);
+        SC_CHECK_RESULT(readResult);
     }
 
     return MA_SUCCESS;
