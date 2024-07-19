@@ -26,6 +26,7 @@ namespace sbk::core
 
     private:
         static sbk_id create_new_id();
+        static std::string create_new_name(const rttr::type& type);
 
         void update_id(sbk_id oldID, sbk_id newID);
         void update_name(std::string_view oldName, std::string_view newName);

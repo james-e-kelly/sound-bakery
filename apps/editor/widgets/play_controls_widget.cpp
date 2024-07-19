@@ -36,7 +36,7 @@ void player_widget::render()
 
     const bool isSelected = !!selection.get_selected();
     const bool isPlayable =
-        isSelected && selectedType.has_value() && sbk::Util::TypeHelper::isTypePlayable(selectedType.value());
+        isSelected && selectedType.has_value() && sbk::util::type_helper::isTypePlayable(selectedType.value());
 
     if (isPlayable)
     {

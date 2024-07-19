@@ -24,8 +24,8 @@ namespace sbk::core
 
         operator sbk_id() const { return m_objectID; }
 
-        [[nodiscard]] MulticastDelegate<sbk_id, sbk_id> get_on_update_id();
-        [[nodiscard]] MulticastDelegate<std::string_view, std::string_view> get_on_update_name();
+        [[nodiscard]] MulticastDelegate<sbk_id, sbk_id>& get_on_update_id();
+        [[nodiscard]] MulticastDelegate<std::string_view, std::string_view>& get_on_update_name();
 
     private:
         MulticastDelegate<sbk_id, sbk_id> m_onUpdateID;

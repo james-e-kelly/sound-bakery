@@ -30,7 +30,7 @@ void project_nodes_widget::RenderPage(
 {
     for (const SB_OBJECT_CATEGORY category : categories)
     {
-        rttr::string_view categoryName = sbk::Util::TypeHelper::getObjectCategoryName(category);
+        rttr::string_view categoryName = sbk::util::type_helper::getObjectCategoryName(category);
 
         if (categoryName.empty())
         {
@@ -98,7 +98,7 @@ void project_nodes_widget::RenderSingleNode(rttr::type type,
 {
     if (instance)
     {
-        if (sbk::core::database_object* const object = sbk::Util::TypeHelper::getDatabaseObjectFromInstance(instance))
+        if (sbk::core::database_object* const object = sbk::util::type_helper::getDatabaseObjectFromInstance(instance))
         {
             if (object->get_editor_hidden())
             {
@@ -128,7 +128,7 @@ void project_nodes_widget::RenderSingleNode(rttr::type type,
                 fmt::format("##{}", object->get_database_name()).c_str(), flags);
 
             if (std::string_view payloadString =
-                    sbk::Util::TypeHelper::getPayloadFromType(object->getType());
+                    sbk::util::type_helper::getPayloadFromType(object->getType());
                 payloadString.size())
             {
                 if (ImGui::BeginDragDropSource(
@@ -280,13 +280,13 @@ bool project_nodes_widget::RenderNodeContextMenu(rttr::type type,
     {
         result = true;
 
-        if (sbk::core::database_object* const object = sbk::Util::TypeHelper::getDatabaseObjectFromInstance(instance))
+        if (sbk::core::database_object* const object = sbk::util::type_helper::getDatabaseObjectFromInstance(instance))
         {
             if (ImGui::BeginPopupContextItem(
                     std::to_string(object->get_database_id()).c_str()))
             {
                 const SB_OBJECT_CATEGORY category =
-                    sbk::Util::TypeHelper::getCategoryFromType(type);
+                    sbk::util::type_helper::getCategoryFromType(type);
 
                 if (object->getType().is_derived_from(
                         sbk::engine::node_base::type()))
@@ -345,23 +345,21 @@ void project_nodes_widget::RenderCreateParentOrChildMenu(
     m_renameID = 0;
 
     const std::unordered_set<rttr::type> categoryTypes =
-        sbk::Util::TypeHelper::getTypesFromCategory(category);
+        sbk::util::type_helper::getTypesFromCategory(category);
 
-    sbk::engine::node* const castedNode = sbk::Util::TypeHelper::getNodeFromInstance(node);
+    sbk::engine::node* const castedNode = sbk::util::type_helper::getNodeFromInstance(node);
 
     if (ImGui::BeginMenu(CreateParentOrChildMenuName(creationType).data()))
     {
         for (const rttr::type type : categoryTypes)
         {
             const rttr::string_view typeIndexName =
-                sbk::Util::TypeHelper::getDisplayNameFromType(type).data();
+                sbk::util::type_helper::get_display_name_from_type(type).data();
 
             if (ImGui::MenuItem(typeIndexName.data()))
             {
                 std::shared_ptr<sbk::core::database_object> const newObject =
                     sbk::engine::system::get()->get_project()->create_database_object(type);
-                newObject->set_database_name(
-                    fmt::format("New {} Node", typeIndexName.data()));
 
                 assert(newObject);
 

@@ -28,9 +28,9 @@ void sbk::core::database_object::set_database_name(std::string_view name)
     m_objectName = name;
 }
 
-MulticastDelegate<sbk_id, sbk_id> sbk::core::database_object::get_on_update_id() { return m_onUpdateID; }
+MulticastDelegate<sbk_id, sbk_id>& sbk::core::database_object::get_on_update_id() { return m_onUpdateID; }
 
-MulticastDelegate<std::string_view, std::string_view> sbk::core::database_object::get_on_update_name()
+MulticastDelegate<std::string_view, std::string_view>& sbk::core::database_object::get_on_update_name()
 {
     return m_onUpdateName;
 }

@@ -157,7 +157,7 @@ bool property_drawer::draw_variant(rttr::variant& variant,
         rttr::type templateType = *type.get_template_arguments().begin();
 
         std::string payloadString =
-            std::string(sbk::Util::TypeHelper::getPayloadFromType(templateType));
+            std::string(sbk::util::type_helper::getPayloadFromType(templateType));
 
         sbk::core::database_ptr<sbk::core::object> objectPtr(id);
 

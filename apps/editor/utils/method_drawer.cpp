@@ -23,7 +23,7 @@ void method_drawer::draw_object(rttr::type type, rttr::instance instance)
         return;
     }
 
-    sbk::core::database_object* object = sbk::Util::TypeHelper::getDatabaseObjectFromInstance(instance);
+    sbk::core::database_object* object = sbk::util::type_helper::getDatabaseObjectFromInstance(instance);
 
     if (s_currentInstance != object->get_database_id())
     {

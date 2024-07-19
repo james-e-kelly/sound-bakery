@@ -13,9 +13,9 @@
 #include "sound_bakery/sound/sound.h"
 #include "sound_bakery/soundbank/soundbank.h"
 
-using namespace sbk::Util;
+using namespace sbk::util;
 
-SB_OBJECT_CATEGORY TypeHelper::getCategoryFromType(rttr::type type)
+SB_OBJECT_CATEGORY type_helper::getCategoryFromType(rttr::type type)
 {
     SB_OBJECT_CATEGORY category = SB_CATEGORY_UNKNOWN;
 
@@ -65,7 +65,7 @@ SB_OBJECT_CATEGORY TypeHelper::getCategoryFromType(rttr::type type)
     return category;
 }
 
-std::unordered_set<rttr::type> TypeHelper::getTypesFromCategory(SB_OBJECT_CATEGORY category)
+std::unordered_set<rttr::type> type_helper::getTypesFromCategory(SB_OBJECT_CATEGORY category)
 {
     std::unordered_set<rttr::type> result;
 
@@ -106,9 +106,9 @@ std::unordered_set<rttr::type> TypeHelper::getTypesFromCategory(SB_OBJECT_CATEGO
     return result;
 }
 
-std::string_view TypeHelper::getDisplayNameFromType(rttr::type type)
+rttr::string_view type_helper::get_display_name_from_type(rttr::type type)
 {
-    std::string_view result = "Invalid. Cannot get display name for type. type_helper.cpp";
+    rttr::string_view result = type.get_name();
 
     if (type == rttr::type::get<sbk::engine::SoundContainer>())
     {
@@ -170,7 +170,7 @@ std::string_view TypeHelper::getDisplayNameFromType(rttr::type type)
     return result;
 }
 
-std::string sbk::Util::TypeHelper::getFolderNameForObjectType(rttr::type type)
+std::string sbk::util::type_helper::getFolderNameForObjectType(rttr::type type)
 {
     const rttr::string_view typeName = type.get_name();
 
@@ -186,7 +186,7 @@ std::string sbk::Util::TypeHelper::getFolderNameForObjectType(rttr::type type)
     return typeNameString.substr(lastColonCharacterPos, std::string::npos);
 }
 
-std::string_view TypeHelper::getFileExtensionOfObjectCategory(SB_OBJECT_CATEGORY category)
+std::string_view type_helper::getFileExtensionOfObjectCategory(SB_OBJECT_CATEGORY category)
 {
     std::string_view result = ".object";
 
@@ -219,7 +219,7 @@ std::string_view TypeHelper::getFileExtensionOfObjectCategory(SB_OBJECT_CATEGORY
     return result;
 }
 
-std::string_view TypeHelper::getPayloadFromType(rttr::type type)
+std::string_view type_helper::getPayloadFromType(rttr::type type)
 {
     std::string_view result = "OBJECT";
 
@@ -255,7 +255,7 @@ std::string_view TypeHelper::getPayloadFromType(rttr::type type)
     return result;
 }
 
-bool TypeHelper::isTypePlayable(const rttr::type& type)
+bool type_helper::isTypePlayable(const rttr::type& type)
 {
     bool result = false;
 
@@ -268,34 +268,34 @@ bool TypeHelper::isTypePlayable(const rttr::type& type)
     return result;
 }
 
-rttr::enumeration TypeHelper::getObjectCategoryEnum()
+rttr::enumeration type_helper::getObjectCategoryEnum()
 {
     return rttr::type::get<SB_OBJECT_CATEGORY>().get_enumeration();
 }
 
-rttr::string_view TypeHelper::getObjectCategoryName(const SB_OBJECT_CATEGORY& objectCategory)
+rttr::string_view type_helper::getObjectCategoryName(const SB_OBJECT_CATEGORY& objectCategory)
 {
     static const rttr::enumeration objectCategoryEnum = getObjectCategoryEnum();
 
     return objectCategoryEnum.value_to_name(objectCategory);
 }
 
-sbk::core::object* TypeHelper::getObjectFromInstance(const rttr::instance& instance)
+sbk::core::object* type_helper::getObjectFromInstance(const rttr::instance& instance)
 {
     return instance.try_convert<sbk::core::object>();
 }
 
-sbk::core::database_object* TypeHelper::getDatabaseObjectFromInstance(const rttr::instance& instance)
+sbk::core::database_object* type_helper::getDatabaseObjectFromInstance(const rttr::instance& instance)
 {
     return instance.try_convert<sbk::core::database_object>();
 }
 
-sbk::engine::node* TypeHelper::getNodeFromInstance(const rttr::instance& instance)
+sbk::engine::node* type_helper::getNodeFromInstance(const rttr::instance& instance)
 {
     return instance.try_convert<sbk::engine::node>();
 }
 
-sbk::engine::node_base* TypeHelper::getNodeBaseFromInstance(const rttr::instance& instance)
+sbk::engine::node_base* type_helper::getNodeBaseFromInstance(const rttr::instance& instance)
 {
     return instance.try_convert<sbk::engine::node_base>();
 }

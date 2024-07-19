@@ -1,5 +1,7 @@
 #include "database.h"
 
+#include "sound_bakery/util/type_helper.h"
+
 void sbk::core::database::add_object_to_database(const std::shared_ptr<database_object>& object)
 {
     if (!object)
@@ -9,12 +11,18 @@ void sbk::core::database::add_object_to_database(const std::shared_ptr<database_
     }
 
     sbk_id objectID              = object->get_database_id();
-    const std::string objectName = std::string(object->get_database_name());
+    std::string objectName = std::string(object->get_database_name());
 
     if (objectID == SB_INVALID_ID)
     {
         objectID           = create_new_id();
         object->m_objectID = objectID;  // calling the function would trigger the callbacks
+    }
+
+    if (objectName.empty())
+    {
+        objectName = create_new_name(object->get_type());
+        object->m_objectName = objectName;
     }
 
     if (auto iter = m_idToPointerMap.find(objectID); iter != m_idToPointerMap.end())
@@ -26,6 +34,7 @@ void sbk::core::database::add_object_to_database(const std::shared_ptr<database_
     if (auto iter = m_nameToIdMap.find(objectName); iter != m_nameToIdMap.end())
     {
         SPDLOG_ERROR("Cannot add object to database. Object name already mapped");
+        m_idToPointerMap.erase(objectID);
         return;
     }
 
@@ -116,6 +125,15 @@ sbk_id sbk::core::database::create_new_id()
     return s_uniformDistribution(s_engine);
 }
 
+std::string sbk::core::database::create_new_name(const rttr::type& type)
+{
+    static std::atomic<int> serialNumberGenerator = 0;
+
+    const std::string typeName = type.is_valid() ? sbk::util::type_helper::get_display_name_from_type(type).data() : "Object";
+
+    return fmt::format("{} {}", typeName, serialNumberGenerator.fetch_add(1));
+}
+
 void sbk::core::database::update_id(sbk_id oldID, sbk_id newID)
 {
     if (oldID == SB_INVALID_ID)
@@ -155,8 +173,8 @@ void sbk::core::database::update_name(std::string_view oldName, std::string_view
 
     if (auto iter = m_nameToIdMap.find(std::string(oldName)); iter != m_nameToIdMap.end())
     {
-        m_nameToIdMap.erase(iter);
         m_nameToIdMap[std::string(newName)] = iter->second;
+        m_nameToIdMap.erase(iter);
     }
 }
 
