@@ -189,7 +189,7 @@ sc_result sc_bank_build(sc_bank* bank,
         writeResult = ma_vfs_write(&vfs, bank->outputFile, filename, SC_BANK_FILE_NAME_BUFFER_SIZE, &bytesWritten);
         SC_CHECK_AND_GOTO(writeResult == MA_SUCCESS, cleanup);
 
-        writeResult = ma_vfs_write(&vfs, bank->outputFile, finalData[index], chunkSize, &bytesWritten);
+        writeResult = ma_vfs_write(&vfs, bank->outputFile, finalData[index], chunkSize - SC_BANK_FILE_NAME_BUFFER_SIZE, &bytesWritten);
         SC_CHECK_AND_GOTO(writeResult == MA_SUCCESS, cleanup);
     }
 
