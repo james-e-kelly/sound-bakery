@@ -4,8 +4,17 @@
 
 #include "imgui.h"
 
+void soundbank_viewer_widget::start() 
+{ 
+    sbk::engine::system::create(); 
+    sbk::engine::system::init();
+}
+
 void soundbank_viewer_widget::render()
 {
+    static sc_sound* sound = nullptr;
+    static sc_sound_instance* soundInstance = nullptr;
+
     if (ImGui::Begin("Soundbank Viewer"))
     {
         if (m_bank.riff != nullptr)
@@ -24,7 +33,29 @@ void soundbank_viewer_widget::render()
                     ImGui::TextUnformatted(std::to_string(m_bank.riff->subChunks[subChunkIndex]->size).c_str());
                     ImGui::TextUnformatted(m_bank.riff->subChunks[subChunkIndex]->name);
 
-                    ImGui::TextUnformatted("-");
+                    if (ImGui::Button("Play"))
+                    {
+                        if (soundInstance != nullptr)
+                        {
+                            sc_sound_instance_release(soundInstance);
+                            soundInstance = nullptr;
+                        }
+
+                        if (sound != nullptr)
+                        {
+                            sc_sound_release(sound);
+                            sound = nullptr;
+                        }
+
+                        sc_system_create_sound_memory(
+                            sbk::engine::system::get(), m_bank.riff->subChunks[subChunkIndex]->data,
+                            m_bank.riff->subChunks[subChunkIndex]->size - SC_BANK_FILE_NAME_BUFFER_SIZE,
+                            SC_SOUND_MODE_DEFAULT, &sound);
+
+                        sc_system_play_sound(sbk::engine::system::get(), sound, &soundInstance, NULL, MA_FALSE);
+                    }
+
+                    ImGui::TextUnformatted("--");
                 }
             }
         }
@@ -36,6 +67,8 @@ void soundbank_viewer_widget::render()
 void soundbank_viewer_widget::end()
 {
     sc_bank_uninit(&m_bank);
+
+    sbk::engine::system::destroy();
 }
 
 void soundbank_viewer_widget::set_soundbank_to_view(const std::filesystem::path& soundbankFilePath)

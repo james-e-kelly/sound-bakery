@@ -18,7 +18,7 @@ extern "C"
     typedef struct sc_encoder_config sc_encoder_config;
     typedef struct sc_encoder sc_encoder;
 
-	typedef enum ma_encoding_format_ext
+    typedef enum ma_encoding_format_ext
     {
         ma_encoding_format_opus = ma_encoding_format_vorbis + 1,
         ma_encoding_format_adpcm
@@ -27,7 +27,7 @@ extern "C"
     struct sc_encoder_config
     {
         ma_encoder_config baseConfig;
-        ma_uint8 quality;   //< quality setting for formats that allow it
+        ma_uint8 quality;  //< quality setting for formats that allow it
         ma_encoding_format_ext encodingFormat;
     };
 
@@ -49,9 +49,7 @@ extern "C"
                                      const sc_encoder_config* config,
                                      sc_encoder* encoder);
 
-    sc_result SC_API sc_encoder_init_file(const char* filePath,
-                                          const sc_encoder_config* config,
-                                          sc_encoder* encoder);
+    sc_result SC_API sc_encoder_init_file(const char* filePath, const sc_encoder_config* config, sc_encoder* encoder);
 
     sc_result SC_API sc_encoder_write_pcm_frames(sc_encoder* encoder,
                                                  const void* framesIn,
@@ -63,8 +61,8 @@ extern "C"
     //
 
     sc_result SC_API sc_encoder_write_from_file(const char* decodeFilePath,
-                                         const char* encodeFilePath,
-                                         const sc_encoder_config* config);
+                                                const char* encodeFilePath,
+                                                const sc_encoder_config* config);
 
 #ifdef __cplusplus
 }

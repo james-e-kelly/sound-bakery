@@ -354,6 +354,37 @@ sc_result sc_system_create_sound(sc_system* system, const char* fileName, sc_sou
                                    &(*sound)->sound);
 }
 
+sc_result sc_system_create_sound_memory(
+    sc_system* system, void* data, size_t dataSize, sc_sound_mode mode, sc_sound** sound)
+{
+    SC_CHECK_ARG(system != NULL);
+    SC_CHECK_ARG(data != NULL);
+    SC_CHECK_ARG(dataSize > 0);
+    SC_CHECK_ARG(sound != NULL);
+
+    SC_CREATE(*sound, sc_sound);
+    SC_CREATE((*sound)->memoryDecoder, ma_decoder);
+
+    (*sound)->mode = mode;
+
+    ma_decoder_config decoderConfig = ma_decoder_config_init_default();
+    decoderConfig.customBackendCount     = system->resourceManager.config.customDecodingBackendCount;
+    decoderConfig.ppCustomBackendVTables = system->resourceManager.config.ppCustomDecodingBackendVTables;
+
+    const ma_result decoderInitResult = ma_decoder_init_memory(data, dataSize, &decoderConfig, (*sound)->memoryDecoder);
+
+    if (decoderInitResult != MA_SUCCESS)
+    {
+        ma_decoder_uninit((*sound)->memoryDecoder);
+        ma_free((*sound)->memoryDecoder, NULL);
+        (*sound)->memoryDecoder = NULL;
+        return decoderInitResult;
+    }
+
+    return ma_sound_init_from_data_source((ma_engine*)system, (*sound)->memoryDecoder, get_flags_from_mode(mode), NULL,
+                                   &(*sound)->sound);
+}
+
 sc_result sc_system_play_sound(
     sc_system* system, sc_sound* sound, sc_sound_instance** instance, sc_node_group* parent, sc_bool paused)
 {
@@ -364,9 +395,18 @@ sc_result sc_system_play_sound(
     SC_CREATE(*instance, sc_sound_instance);
     (*instance)->mode = sound->mode;
 
-    ma_result copyResult =
-        ma_sound_init_copy((ma_engine*)system, &sound->sound, sound->mode, NULL, &(*instance)->sound);
-    SC_CHECK_RESULT(copyResult);
+    if (sound->memoryDecoder != NULL)
+    {
+        const ma_result initResult = 
+            ma_sound_init_from_data_source((ma_engine*)system, sound->memoryDecoder, sound->mode, NULL, &(*instance)->sound);
+        SC_CHECK_RESULT(initResult);
+    }
+    else
+    {
+        const ma_result copyResult =
+            ma_sound_init_copy((ma_engine*)system, &sound->sound, sound->mode, NULL, &(*instance)->sound);
+        SC_CHECK_RESULT(copyResult);
+    }
 
     if (parent != NULL)
     {
@@ -451,7 +491,15 @@ sc_result sc_sound_release(sc_sound* sound)
 {
     SC_CHECK_ARG(sound != NULL);
     ma_sound_uninit(&sound->sound);
+
+    if (sound->memoryDecoder != NULL)
+    {
+        ma_decoder_uninit(sound->memoryDecoder);
+        ma_free(sound->memoryDecoder, NULL);
+    }
+
     ma_free(sound, NULL);
+
     return MA_SUCCESS;
 }
 

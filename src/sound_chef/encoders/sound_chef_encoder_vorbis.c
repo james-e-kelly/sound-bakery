@@ -138,7 +138,7 @@ sc_result sc_encoder_vorbis_write_pcm_frames(ma_encoder* encoder,
     assert(wroteResult == 0);
 
     if (framesWritten)
-    { 
+    {
         *framesWritten = frameCount;
     }
 

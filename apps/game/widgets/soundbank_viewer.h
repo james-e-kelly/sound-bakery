@@ -2,6 +2,7 @@
 
 #include "gluten/widgets/root_widget.h"
 
+#include "sound_bakery/system.h"
 #include "sound_chef/sound_chef_bank.h"
 
 class soundbank_viewer_widget : public gluten::widget
@@ -9,6 +10,7 @@ class soundbank_viewer_widget : public gluten::widget
     WIDGET_CONSTRUCT(soundbank_viewer_widget)
 
 public:
+    void start() override;
     void render() override;
     void end() override;
 
