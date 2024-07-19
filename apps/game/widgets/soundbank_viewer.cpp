@@ -29,6 +29,8 @@ void soundbank_viewer_widget::render()
             {
                 for (std::size_t subChunkIndex = 0; subChunkIndex < m_bank.riff->numOfSubchunks; ++subChunkIndex)
                 {
+                    ImGui::PushID(subChunkIndex);
+
                     ImGui::TextUnformatted(std::to_string(m_bank.riff->subChunks[subChunkIndex]->id).c_str());
                     ImGui::TextUnformatted(std::to_string(m_bank.riff->subChunks[subChunkIndex]->size).c_str());
                     ImGui::TextUnformatted(m_bank.riff->subChunks[subChunkIndex]->name);
@@ -56,6 +58,8 @@ void soundbank_viewer_widget::render()
                     }
 
                     ImGui::TextUnformatted("--");
+
+                    ImGui::PopID();
                 }
             }
         }
@@ -78,7 +82,7 @@ void soundbank_viewer_widget::set_soundbank_to_view(const std::filesystem::path&
     if (initResult == MA_SUCCESS)
     {
         const sc_result readResult = sc_bank_read(&m_bank);
-
+        assert(readResult == MA_SUCCESS);
         (void)readResult;
     }
 }
