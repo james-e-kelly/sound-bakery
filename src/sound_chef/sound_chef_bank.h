@@ -3,7 +3,7 @@
 
 /**
  * @file
- * @brief Defines a Soundbank.
+ * @brief Defines a soundbank.
  *
  * Soundbanks hold a number of audio files within it and can play sounds from it.
  */

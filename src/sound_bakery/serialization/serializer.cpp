@@ -378,15 +378,15 @@ void Serializer::loadSystem(sbk::engine::system* system, YAML::Node& node)
     }
 }
 
-void Serializer::packageSoundbank(sbk::engine::Soundbank* soundbank, YAML::Emitter& emitter)
+void Serializer::packageSoundbank(sbk::engine::soundbank* soundbank, YAML::Emitter& emitter)
 {
     if (soundbank != nullptr)
     {
         std::vector<sbk::engine::event*> eventsToSave;
         std::vector<sbk::engine::node_base*> nodesToSave;
-        std::vector<sbk::engine::Sound*> soundsToSave;
+        std::vector<sbk::engine::sound*> soundsToSave;
 
-        for (auto& event : soundbank->GetEvents())
+        for (auto& event : soundbank->get_events())
         {
             if (event.lookup())
             {
@@ -422,7 +422,7 @@ void Serializer::packageSoundbank(sbk::engine::Soundbank* soundbank, YAML::Emitt
                 if (sbk::engine::SoundContainer* const soundContainer =
                         node->try_convert_object<sbk::engine::SoundContainer>())
                 {
-                    if (sbk::engine::Sound* const sound = soundContainer->getSound())
+                    if (sbk::engine::sound* const sound = soundContainer->getSound())
                     {
                         soundsToSave.push_back(sound);
                     }
@@ -448,7 +448,7 @@ void Serializer::packageSoundbank(sbk::engine::Soundbank* soundbank, YAML::Emitt
             saveInstance(emitter, node);
         }
 
-        for (sbk::engine::Sound* sound : soundsToSave)
+        for (sbk::engine::sound* sound : soundsToSave)
         {
             assert(sound);
 

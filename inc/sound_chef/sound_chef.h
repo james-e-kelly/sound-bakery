@@ -5,7 +5,7 @@
  * @file
  * @brief A wrapper library for miniaudio that emulates functionality of FMOD.
  *
- * The low level engine powering Sound Bakery.
+ * The low level engine powering sound Bakery.
  */
 
 #include "sound_chef_common.h"

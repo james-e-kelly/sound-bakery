@@ -72,9 +72,9 @@ void player_widget::render()
             sbk::engine::system::get()->get_listener_game_object()->playContainer(
                 container);
         }
-        else if (sbk::engine::Sound* sound =
+        else if (sbk::engine::sound* sound =
                      s_lastPlayableSelection
-                         ->try_convert_object<sbk::engine::Sound>())
+                         ->try_convert_object<sbk::engine::sound>())
         {
             if (sbk::engine::SoundContainer* previewContainer = sbk::engine::system::get_project()->get_preview_container().lock().get())
             {

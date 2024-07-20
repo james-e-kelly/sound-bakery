@@ -47,16 +47,16 @@ void sbk::editor::project::encode_all_media() const
 
     if (sbk::core::object_tracker* const objectTracker = sbk::engine::system::get())
     {
-        for (sbk::core::object* const soundObject : objectTracker->get_objects_of_type(sbk::engine::Sound::type()))
+        for (sbk::core::object* const soundObject : objectTracker->get_objects_of_type(sbk::engine::sound::type()))
         {
-            if (sbk::engine::Sound* const sound = soundObject->try_convert_object<sbk::engine::Sound>())
+            if (sbk::engine::sound* const sound = soundObject->try_convert_object<sbk::engine::sound>())
             {
                 const std::filesystem::path encodedSoundFile =
                     m_projectConfig.encoded_folder() / (std::to_string(sound->get_database_id()) + ".ogg");
                 std::filesystem::create_directories(encodedSoundFile.parent_path());
 
                 const sc_encoder_config encoderConfig =
-                    sc_encoder_config_init((ma_encoding_format_ext)ma_encoding_format_vorbis, ma_format_f32, 0,
+                    sc_encoder_config_init(sc_encoding_format_vorbis, ma_format_f32, 0,
                                            ma_standard_sample_rate_48000, 8);
 
                 std::filesystem::path soundPath = sound->getSoundName();
@@ -103,12 +103,12 @@ void sbk::editor::project::loadSounds()
                 if (database->try_find(filename.stem().string()).expired())
                 {
                     if (const std::shared_ptr<sbk::core::database_object> createdSound =
-                            create_database_object<sbk::engine::Sound>())
+                            create_database_object<sbk::engine::sound>())
                     {
                         createdSound->set_database_name(filename.stem().string());
 
-                        if (sbk::engine::Sound* const castedSound =
-                                sbk::reflection::cast<sbk::engine::Sound*, sbk::core::database_object*>(
+                        if (sbk::engine::sound* const castedSound =
+                                sbk::reflection::cast<sbk::engine::sound*, sbk::core::database_object*>(
                                     createdSound.get()))
                         {
                             castedSound->setSoundName(p.path().string());
@@ -170,7 +170,7 @@ void sbk::editor::project::buildSoundbanks() const
 
     for (auto& soundbankObject : soundbankObjects)
     {
-        if (sbk::engine::Soundbank* const soundbank = soundbankObject->try_convert_object<sbk::engine::Soundbank>())
+        if (sbk::engine::soundbank* const soundbank = soundbankObject->try_convert_object<sbk::engine::soundbank>())
         {
             /*YAML::Emitter soundbankEmitter;
             SB::Core::Serialization::Serializer::packageSoundbank(soundbank, soundbankEmitter);
@@ -182,7 +182,7 @@ void sbk::editor::project::buildSoundbanks() const
 
             std::vector<sbk::engine::node_base*> nodesToSave;
 
-            for (auto& event : soundbank->GetEvents())
+            for (auto& event : soundbank->get_events())
             {
                 if (event.lookup())
                 {
@@ -210,7 +210,7 @@ void sbk::editor::project::buildSoundbanks() const
                 continue;
             }
 
-            std::vector<sbk::engine::Sound*> soundsToSave;
+            std::vector<sbk::engine::sound*> soundsToSave;
             std::vector<std::string> ecodedSoundPathsToSaveStrings;
             std::vector<const char*> encodedSoundPathsToSave;
             std::vector<ma_encoding_format> encodingFormats;
@@ -222,7 +222,7 @@ void sbk::editor::project::buildSoundbanks() const
                     if (sbk::engine::SoundContainer* const soundContainer =
                             node->try_convert_object<sbk::engine::SoundContainer>())
                     {
-                        if (sbk::engine::Sound* const sound = soundContainer->getSound())
+                        if (sbk::engine::sound* const sound = soundContainer->getSound())
                         {
                             soundsToSave.push_back(sound);
                             ecodedSoundPathsToSaveStrings.push_back(
@@ -233,6 +233,8 @@ void sbk::editor::project::buildSoundbanks() const
                     }
                 }
             }
+
+            sbk::engine::soundbank_dependencies soundbankDependencies = soundbank->gather_dependencies();
 
             sc_bank bank;
             sc_result initresult =

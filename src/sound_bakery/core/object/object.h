@@ -12,7 +12,7 @@ namespace sbk::engine
 namespace sbk::core
 {
     /**
-     * @brief Base object that all Sound Bakery objects should inherit
+     * @brief Base object that all sound Bakery objects should inherit
      * from.
      *
      * Objects can own other objects.

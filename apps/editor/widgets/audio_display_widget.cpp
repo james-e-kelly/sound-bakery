@@ -112,7 +112,7 @@ void audio_display_widget::render()
     {
         if (sbk::core::object* selected = manager->get_selection().get_selected())
         {
-            if (selected->getType() == sbk::engine::Sound::type())
+            if (selected->getType() == sbk::engine::sound::type())
             {
                 static float scale = 1.0f;
                 ImGui::SliderFloat("Scale", &scale, 0.01f, 2.0f);
@@ -244,7 +244,7 @@ bool audio_display_widget::has_cache()
 
     if (currentNode)
     {
-        sbk::engine::Sound* currentSound = currentNode->getSound();
+        sbk::engine::sound* currentSound = currentNode->getSound();
 
         const bool selectedNewSound = currentSound != m_previousSound;
 

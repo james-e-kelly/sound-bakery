@@ -9,7 +9,7 @@ void sbk::engine::SoundContainer::gatherChildrenForPlay(GatherChildrenContext& c
     context.sounds.push_back(this);
 }
 
-sbk::engine::Sound* sbk::engine::SoundContainer::getSound() const
+sbk::engine::sound* sbk::engine::SoundContainer::getSound() const
 {
     if (m_sound.lookup())
     {
@@ -21,7 +21,7 @@ sbk::engine::Sound* sbk::engine::SoundContainer::getSound() const
     }
 }
 
-void sbk::engine::SoundContainer::setSound(const sbk::core::database_ptr<sbk::engine::Sound>& sound)
+void sbk::engine::SoundContainer::setSound(const sbk::core::database_ptr<sbk::engine::sound>& sound)
 {
     m_sound = sound;
 }

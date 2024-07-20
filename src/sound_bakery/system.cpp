@@ -157,7 +157,7 @@ sc_result system::open_project(const std::filesystem::path& project_file)
 {
     destroy();
 
-    // Create the global logger before initializing Sound Bakery
+    // Create the global logger before initializing sound Bakery
 
     const sbk::editor::project_configuration tempProject = sbk::editor::project_configuration(project_file);
 

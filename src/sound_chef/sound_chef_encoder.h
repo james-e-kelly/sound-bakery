@@ -18,17 +18,20 @@ extern "C"
     typedef struct sc_encoder_config sc_encoder_config;
     typedef struct sc_encoder sc_encoder;
 
-    typedef enum ma_encoding_format_ext
+    typedef enum sc_encoding_format
     {
-        ma_encoding_format_opus = ma_encoding_format_vorbis + 1,
-        ma_encoding_format_adpcm
-    } ma_encoding_format_ext;
+        sc_encoding_format_unknown = 0,
+        sc_encoding_format_wav,
+        sc_encoding_format_adpcm = 10,
+        sc_encoding_format_vorbis,
+        sc_encoding_format_opus
+    } sc_encoding_format;
 
     struct sc_encoder_config
     {
         ma_encoder_config baseConfig;
         ma_uint8 quality;  //< quality setting for formats that allow it
-        ma_encoding_format_ext encodingFormat;
+        sc_encoding_format encodingFormat;
     };
 
     struct sc_encoder
@@ -37,7 +40,7 @@ extern "C"
         sc_encoder_config config;
     };
 
-    sc_encoder_config SC_API sc_encoder_config_init(ma_encoding_format_ext encodingFormat,
+    sc_encoder_config SC_API sc_encoder_config_init(sc_encoding_format encodingFormat,
                                                     ma_format format,
                                                     ma_uint32 channels,
                                                     ma_uint32 sampleRate,

@@ -9,7 +9,7 @@ namespace sbk::core
      *
      * The object_tracker allows for searching of object types and categories.
      *
-     * Objects are tracked with their memory address. This means objects in Sound Bakery cannot be moved around in
+     * Objects are tracked with their memory address. This means objects in sound Bakery cannot be moved around in
      * memory.
      *
      * @see database

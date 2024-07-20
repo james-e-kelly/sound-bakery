@@ -30,9 +30,9 @@ namespace sbk
         class game_object;
 
         /**
-         * @brief Manager of the whole Sound Bakery.
+         * @brief Manager of the whole sound Bakery.
          * 
-         * The system tracks all objects created during Sound Bakery's lifetime. 
+         * The system tracks all objects created during sound Bakery's lifetime. 
          * 
          * It owns all loaded Soundbanks, listener game object, and busses.
          */
@@ -63,7 +63,7 @@ namespace sbk
             sbk::core::object_owner* current_object_owner();
 
             /**
-             * @brief Creates an instance of Sound Bakery and opens the project.
+             * @brief Creates an instance of sound Bakery and opens the project.
              */
             static sc_result open_project(const std::filesystem::path& project_file);
             static sbk::editor::project* get_project();

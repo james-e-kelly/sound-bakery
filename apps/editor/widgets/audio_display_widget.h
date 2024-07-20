@@ -5,7 +5,7 @@
 
 namespace sbk::engine
 {
-    class Sound;
+    class sound;
 }
 
 class audio_display_widget : public gluten::widget
@@ -30,5 +30,5 @@ private:
     int m_playPixel           = 0;
     float m_drawWidth         = 0;
     float m_previousDrawWidth = 0;
-    sbk::engine::Sound* m_previousSound;
+    sbk::engine::sound* m_previousSound;
 };

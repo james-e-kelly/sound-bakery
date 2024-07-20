@@ -5,11 +5,11 @@
 
 using namespace sbk::engine;
 
-DEFINE_REFLECTION(sbk::engine::Sound)
+DEFINE_REFLECTION(sbk::engine::sound)
 
-Sound::Sound() : m_streaming(false) {}
+sound::sound() : m_streaming(false) {}
 
-void Sound::loadSynchronous()
+void sound::loadSynchronous()
 {
     std::filesystem::path finalSoundPath;
 
@@ -58,23 +58,23 @@ void Sound::loadSynchronous()
     m_sound.reset(loadedSound);
 }
 
-void Sound::loadAsynchronous() { loadSynchronous(); }
+void sound::loadAsynchronous() { loadSynchronous(); }
 
-void Sound::setSoundName(std::string soundName)
+void sound::setSoundName(std::string soundName)
 {
     rawSoundPath = soundName;
     loadSynchronous();
 }
 
-std::string Sound::getSoundName() const { return rawSoundPath.string().c_str(); }
+std::string sound::getSoundName() const { return rawSoundPath.string().c_str(); }
 
-void Sound::setEncodedSoundName(std::string encodedSoundName)
+void sound::setEncodedSoundName(std::string encodedSoundName)
 {
     encodedSoundPath = encodedSoundName;
     loadSynchronous();
 }
 
-sc_sound* Sound::getSound()
+sc_sound* sound::getSound()
 {
     if (!m_sound)
     {
@@ -82,4 +82,15 @@ sc_sound* Sound::getSound()
     }
 
     return m_sound.get();
+}
+
+encoding_sound sound::get_encoding_sound_data() const
+{ 
+    encoding_sound encodingSound; 
+
+    encodingSound.rawSoundPath     = rawSoundPath;
+    encodingSound.encodedSoundPath = encodedSoundPath;
+    encodingSound.encodingFormat   = m_encodingFormat;
+
+    return encodingSound;
 }

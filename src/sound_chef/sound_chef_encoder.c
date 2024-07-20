@@ -22,7 +22,7 @@ static ma_result sc_encoder_on_seek_vfs(ma_encoder* encoder, ma_int64 offset, ma
 }
 
 sc_encoder_config sc_encoder_config_init(
-    ma_encoding_format_ext encodingFormat, ma_format format, ma_uint32 channels, ma_uint32 sampleRate, ma_uint8 quality)
+    sc_encoding_format encodingFormat, ma_format format, ma_uint32 channels, ma_uint32 sampleRate, ma_uint8 quality)
 {
     sc_encoder_config config;
 
@@ -45,7 +45,7 @@ sc_result sc_encoder_init(ma_encoder_write_proc onWrite,
     SC_CHECK_ARG(onWrite != NULL);
     SC_CHECK_ARG(onSeek != NULL);
     SC_CHECK_ARG(encoder != NULL);
-    SC_CHECK_ARG(config->encodingFormat != ma_encoding_format_unknown);
+    SC_CHECK_ARG(config->encodingFormat != sc_encoding_format_unknown);
     SC_CHECK_ARG(config->baseConfig.channels != 0);
     SC_CHECK_ARG(config->baseConfig.sampleRate != 0);
 
@@ -67,15 +67,14 @@ sc_result sc_encoder_init(ma_encoder_write_proc onWrite,
 
     switch (encoder->config.encodingFormat)
     {
-        case ma_encoding_format_vorbis:
+        case sc_encoding_format_vorbis:
             encoder->baseEncoder.onInit           = sc_encoder_vorbis_on_init;
             encoder->baseEncoder.onUninit         = sc_encoder_vorbis_on_uninit;
             encoder->baseEncoder.onWritePCMFrames = sc_encoder_vorbis_write_pcm_frames;
             break;
-        case ma_encoding_format_opus:
-        case ma_encoding_format_wav:
-        case ma_encoding_format_flac:
-        case ma_encoding_format_mp3:
+        case sc_encoding_format_wav:
+        case sc_encoding_format_opus:
+        case sc_encoding_format_adpcm:
         default:
             result = MA_NO_BACKEND;
             break;

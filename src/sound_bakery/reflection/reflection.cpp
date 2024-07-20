@@ -14,6 +14,7 @@
 #include "sound_bakery/sound/sound.h"
 #include "sound_bakery/soundbank/soundbank.h"
 #include "sound_bakery/system.h"
+#include "sound_chef/sound_chef_encoder.h"
 
 #include <rttr/registration>
 
@@ -124,6 +125,12 @@ namespace sbk::reflection
         registration::enumeration<SB_ACTION_TYPE>("SB_ACTION_TYPE")(value("Play", SB_ACTION_PLAY),
                                                                     value("Stop", SB_ACTION_STOP));
 
+        registration::enumeration<sc_encoding_format>("Encoding Format")
+            (value("WAV", sc_encoding_format_wav), 
+            value("ADPCM", sc_encoding_format_adpcm),
+            value("Vorbis", sc_encoding_format_vorbis),
+            value("Opus", sc_encoding_format_opus));
+
         registration::class_<action>("SB::Engine::Action")
             .constructor<>()(policy::ctor::as_object)
             .property("Type", &action::m_type)
@@ -155,12 +162,13 @@ namespace sbk::reflection
                       &database_object::set_database_id)(metadata(sbk::editor::METADATA_KEY::Readonly, true))
             .property("ObjectName", &database_object::get_database_name, &database_object::set_database_name);
 
-        registration::class_<Sound>("SB::Engine::Sound")
+        registration::class_<sound>("SB::Engine::Sound")
             .constructor<>()(policy::ctor::as_raw_ptr)
-            .property("Sound", &Sound::getSoundName,
-                      &Sound::setSoundName)(metadata(sbk::editor::METADATA_KEY::Payload, sbk::editor::PayloadSound))
-            .property("Encoded Sound", &Sound::getEncodedSoundName, &Sound::setEncodedSoundName)(
-                metadata(sbk::editor::METADATA_KEY::Payload, sbk::editor::PayloadSound));
+            .property("Sound", &sound::getSoundName,
+                      &sound::setSoundName)(metadata(sbk::editor::METADATA_KEY::Payload, sbk::editor::PayloadSound))
+            .property("Encoded Sound", &sound::getEncodedSoundName, &sound::setEncodedSoundName)(
+                metadata(sbk::editor::METADATA_KEY::Payload, sbk::editor::PayloadSound))
+            .property("Encoding Format", &sound::m_encodingFormat);
 
         registration::class_<node_base>("SB::Engine::NodeBase")
             .constructor<>()(policy::ctor::as_raw_ptr)
@@ -225,9 +233,9 @@ namespace sbk::reflection
             .property("Parent",
                       &NamedParameterValue::parentParameter)(metadata(sbk::editor::METADATA_KEY::Readonly, true));
 
-        registration::class_<Soundbank>("SB::Engine::Soundbank")
+        registration::class_<soundbank>("SB::Engine::Soundbank")
             .constructor<>()(policy::ctor::as_raw_ptr)
-            .property("Events", &Soundbank::m_events);
+            .property("Events", &soundbank::m_events);
 
         sbk::reflection::RegisterPointerConversionsForBaseClasses<aux_bus>();
 
@@ -241,8 +249,8 @@ namespace sbk::reflection
                                                                                  // conversion between Container and
                                                                                  // DatabaseObject
 
-        sbk::reflection::RegisterPointerConversionsForBaseClasses<Sound>();
+        sbk::reflection::RegisterPointerConversionsForBaseClasses<sound>();
 
-        sbk::reflection::RegisterPointerConversionsForBaseClasses<Soundbank>();
+        sbk::reflection::RegisterPointerConversionsForBaseClasses<soundbank>();
     }
 }  // namespace sbk::reflection

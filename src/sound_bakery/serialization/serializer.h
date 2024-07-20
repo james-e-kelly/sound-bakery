@@ -11,7 +11,7 @@ namespace sbk::core
 
 namespace sbk::engine
 {
-    class Soundbank;
+    class soundbank;
     class system;
 }  // namespace sbk::engine
 
@@ -29,7 +29,7 @@ namespace sbk::core::serialization
         static void saveObject(sbk::core::object* object, YAML::Emitter& emitter);
         static void saveSystem(sbk::engine::system* system, YAML::Emitter& emitter);
 
-        static void packageSoundbank(sbk::engine::Soundbank* soundbank, YAML::Emitter& emitter);
+        static void packageSoundbank(sbk::engine::soundbank* soundbank, YAML::Emitter& emitter);
         static rttr::instance unpackSoundbank(YAML::Node& node);
 
         static void loadSystem(sbk::engine::system* system, YAML::Node& node);

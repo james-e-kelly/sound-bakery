@@ -4,7 +4,7 @@
 
 namespace sbk::engine
 {
-    class Sound;
+    class sound;
 
     class SB_CLASS SoundContainer : public Container
     {
@@ -15,12 +15,12 @@ namespace sbk::engine
 
         bool canAddChild(const sbk::core::database_ptr<node_base>& child) const override { return false; }
 
-        Sound* getSound() const;
+        sound* getSound() const;
 
-        void setSound(const sbk::core::database_ptr<sbk::engine::Sound>& sound);
+        void setSound(const sbk::core::database_ptr<sbk::engine::sound>& sound);
 
     private:
-        sbk::core::database_ptr<sbk::engine::Sound> m_sound;
+        sbk::core::database_ptr<sbk::engine::sound> m_sound;
 
         REGISTER_REFLECTION(SoundContainer, Container)
     };

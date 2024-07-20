@@ -125,7 +125,7 @@ bool NodeInstance::play()
     if (m_referencingNode->getType() == rttr::type::get<SoundContainer>())
     {
         SoundContainer* soundContainer   = m_referencingNode->try_convert_object<SoundContainer>();
-        Sound* engineSound               = soundContainer->getSound();
+        sound* engineSound               = soundContainer->getSound();
         sc_sound* sound                  = engineSound != nullptr ? engineSound->getSound() : nullptr;
         sc_sound_instance* soundInstance = nullptr;
 

@@ -10,7 +10,7 @@ namespace sbk::engine
     class node;
     class node_base;
     class NodeInstance;
-    class Sound;
+    class sound;
     class SoundContainer;
     class Voice;
 

@@ -36,7 +36,7 @@ SB_OBJECT_CATEGORY type_helper::getCategoryFromType(rttr::type type)
     {
         category = SB_CATEGORY_EVENT;
     }
-    else if (type == rttr::type::get<sbk::engine::Sound>())
+    else if (type == rttr::type::get<sbk::engine::sound>())
     {
         category = SB_CATEGORY_SOUND;
     }
@@ -45,7 +45,7 @@ SB_OBJECT_CATEGORY type_helper::getCategoryFromType(rttr::type type)
     {
         category = SB_CATEGORY_PARAMETER;
     }
-    else if (type == rttr::type::get<sbk::engine::Soundbank>())
+    else if (type == rttr::type::get<sbk::engine::soundbank>())
     {
         category = SB_CATEGORY_BANK;
     }
@@ -88,10 +88,10 @@ std::unordered_set<rttr::type> type_helper::getTypesFromCategory(SB_OBJECT_CATEG
             result.insert(rttr::type::get<sbk::engine::event>());
             break;
         case SB_CATEGORY_BANK:
-            result.insert(rttr::type::get<sbk::engine::Soundbank>());
+            result.insert(rttr::type::get<sbk::engine::soundbank>());
             break;
         case SB_CATEGORY_SOUND:
-            result.insert(rttr::type::get<sbk::engine::Sound>());
+            result.insert(rttr::type::get<sbk::engine::sound>());
             break;
         case SB_CATEGORY_PARAMETER:
             result.insert(rttr::type::get<sbk::engine::FloatParameter>());
@@ -142,7 +142,7 @@ rttr::string_view type_helper::get_display_name_from_type(rttr::type type)
     {
         result = "Aux";
     }
-    else if (type == rttr::type::get<sbk::engine::Sound>())
+    else if (type == rttr::type::get<sbk::engine::sound>())
     {
         result = "Sound";
     }
@@ -162,7 +162,7 @@ rttr::string_view type_helper::get_display_name_from_type(rttr::type type)
     {
         result = "Switch Value";
     }
-    else if (type == rttr::type::get<sbk::engine::Soundbank>())
+    else if (type == rttr::type::get<sbk::engine::soundbank>())
     {
         result = "Soundbank";
     }
@@ -223,7 +223,7 @@ std::string_view type_helper::getPayloadFromType(rttr::type type)
 {
     std::string_view result = "OBJECT";
 
-    if (type == rttr::type::get<sbk::engine::Sound>())
+    if (type == rttr::type::get<sbk::engine::sound>())
     {
         result = sbk::editor::PayloadSound;
     }
@@ -261,7 +261,7 @@ bool type_helper::isTypePlayable(const rttr::type& type)
 
     if (type.is_valid())
     {
-        result = type.is_derived_from<sbk::engine::Container>() || type.is_derived_from<sbk::engine::Sound>() ||
+        result = type.is_derived_from<sbk::engine::Container>() || type.is_derived_from<sbk::engine::sound>() ||
                  type.is_derived_from<sbk::engine::event>();
     }
 
