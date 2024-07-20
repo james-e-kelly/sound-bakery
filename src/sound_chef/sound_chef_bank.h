@@ -10,10 +10,13 @@
 
 #include "sound_chef/sound_chef_common.h"
 
+#define SC_BANK_VERSION 1u
+
 #define FOURCC(a, b, c, d) ((ma_uint32)(((d) << 24) | ((c) << 16) | ((b) << 8) | (a)))
 
-#define SC_BANK_ID     (FOURCC('S', 'C', 'B', 'K'))
-#define SC_BANK_SUB_ID (FOURCC('S', 'C', 'F', 'E'))
+#define SC_BANK_ID              (FOURCC('S', 'C', 'B', 'K'))
+#define SC_BANK_AUDIO_CHUNK_ID  (FOURCC('S', 'C', 'A', 'C'))
+#define SC_BANK_SUB_ID          (FOURCC('S', 'C', 'F', 'E'))
 
 #ifdef __cplusplus
 extern "C"
@@ -43,6 +46,7 @@ extern "C"
     {
         ma_uint32 id;
         ma_uint32 size;
+        ma_uint32 version;
         ma_uint32 numOfSubchunks;
         sc_audioChunk** subChunks;
     };
