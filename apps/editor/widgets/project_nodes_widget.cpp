@@ -361,6 +361,11 @@ void project_nodes_widget::RenderCreateParentOrChildMenu(
         return;
     }
 
+    if (creationType == NodeCreationType::NewParent && !castedNode->can_add_parent())
+    {
+        return;
+    }
+
     if (ImGui::BeginMenu(CreateParentOrChildMenuName(creationType).data()))
     {
         for (const rttr::type type : categoryTypes)
@@ -369,6 +374,11 @@ void project_nodes_widget::RenderCreateParentOrChildMenu(
                 sbk::util::type_helper::get_display_name_from_type(type).data();
 
             if (creationType == NodeCreationType::NewChild && !castedNode->can_add_child_type(type))
+            {
+                continue;
+            }
+
+            if (creationType == NodeCreationType::NewParent && !castedNode->can_add_parent_type(type))
             {
                 continue;
             }

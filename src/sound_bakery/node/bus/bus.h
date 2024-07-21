@@ -15,6 +15,9 @@ namespace sbk::engine
 
         bool can_add_child_type(const rttr::type& childType) const override;
 
+        bool can_add_parent() const override;
+        bool can_add_parent_type(const rttr::type& parentType) const override;
+
         void setMasterBus(bool isMaster);
 
         bool isMasterBus() const { return m_masterBus; }

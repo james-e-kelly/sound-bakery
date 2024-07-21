@@ -93,6 +93,16 @@ bool sbk::engine::node_base::can_add_child(const sbk::core::database_ptr<node_ba
     return false;
 }
 
+bool sbk::engine::node_base::can_add_parent() const
+{ 
+    return true; 
+}
+
+bool sbk::engine::node_base::can_add_parent_type(const rttr::type& parentType) const
+{
+    return parentType.is_valid() && parentType.is_derived_from<sbk::engine::node_base>();
+}
+
 void sbk::engine::node_base::addChild(const sbk::core::database_ptr<node_base>& child)
 {
     if (can_add_child(child))

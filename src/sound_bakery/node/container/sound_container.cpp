@@ -9,6 +9,11 @@ void sbk::engine::SoundContainer::gatherChildrenForPlay(GatherChildrenContext& c
     context.sounds.push_back(this);
 }
 
+bool sbk::engine::SoundContainer::can_add_parent_type(const rttr::type& parentType) const
+{
+    return sbk::engine::node_base::can_add_parent_type(parentType) && parentType != sbk::engine::SoundContainer::type();
+}
+
 sbk::engine::sound* sbk::engine::SoundContainer::getSound() const
 {
     if (m_sound.lookup())

@@ -34,6 +34,9 @@ namespace sbk::engine
         virtual bool can_add_child_type(const rttr::type& childType) const; //< Can this type be added to the child?
         bool can_add_child(const sbk::core::database_ptr<node_base>& child) const;  //< Can this runtime child be added?
 
+        virtual bool can_add_parent() const;    //< Can any parents be added to this node?
+        virtual bool can_add_parent_type(const rttr::type& parentType) const;   //< Can this type be added as a parent?
+
         void addChild(const sbk::core::database_ptr<node_base>& child);
         void removeChild(const sbk::core::database_ptr<node_base>& child);
 
