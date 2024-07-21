@@ -4,6 +4,7 @@
 #include "managers/project_manager.h"
 #include "widgets/file_browser_widget.h"
 #include "imgui.h"
+#include "imgui_internal.h"
 #include "sound_bakery/core/database/database.h"
 #include "sound_bakery/core/object/object_tracker.h"
 #include "sound_bakery/editor/editor_defines.h"
@@ -124,6 +125,8 @@ void project_nodes_widget::RenderSingleNode(rttr::type type,
                 flags |= ImGuiTreeNodeFlags_Leaf;
             }
 
+            static ImGuiID previousFocusID = 0;
+
             const bool opened = ImGui::TreeNodeEx(
                 fmt::format("##{}", object->get_database_name()).c_str(), flags);
 
@@ -165,15 +168,32 @@ void project_nodes_widget::RenderSingleNode(rttr::type type,
                     }
                     ImGui::EndDragDropTarget();
                 }
+
+                // Using drag drop changes the focus to the dragged element
+                // This focus therefore shifts the selected object to the focus once complete
+                // This code sets the focus to the previous focus when a drag drop ends
+                static bool previousDragDropActive = false;
+
+                const bool dragDropActive = ImGui::IsDragDropActive();
+
+                if (!dragDropActive && previousDragDropActive)
+                {
+                    ImGui::SetFocusID(previousFocusID, ImGui::GetCurrentWindow());
+                }
+
+                previousDragDropActive = dragDropActive;
             }
 
             const bool nodeClicked = ImGui::IsItemHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Left) && !ImGui::GetDragDropPayload();
-            const bool nodeKeyboardFocused = ImGui::IsItemFocused() && !nodeClicked;
-
+            const bool nodeKeyboardFocused = ImGui::IsItemFocused() && !nodeClicked &&
+                                             !ImGui::IsAnyMouseDown() && !ImGui::GetDragDropPayload();
+            
             if (nodeClicked || nodeKeyboardFocused)
             {
                 get_app()->get_manager_by_class<project_manager>()->get_selection().selected_object(
                     object);
+
+                previousFocusID = ImGui::GetFocusID();
             }
 
             if (RenderNodeContextMenu(type, instance))
