@@ -190,7 +190,7 @@ namespace sbk::reflection
             .property("Effects", &node::m_effectDescriptions)
             .method("Add Effect", &node::addEffect)(parameter_names("Type"));
 
-        registration::class_<Container>("SB::Engine::Container");
+        registration::class_<container>("SB::Engine::Container");
 
         registration::class_<SoundContainer>("SB::Engine::SoundContainer")
             .constructor<>()(policy::ctor::as_raw_ptr)
@@ -207,9 +207,9 @@ namespace sbk::reflection
 
         registration::class_<RandomContainer>("SB::Engine::RandomContainer").constructor<>()(policy::ctor::as_raw_ptr);
 
-        registration::class_<SequenceContainer>("SB::Engine::SequenceContainer")
+        registration::class_<sequence_container>("SB::Engine::SequenceContainer")
             .constructor<>()(policy::ctor::as_raw_ptr)
-            .property("Sequence", &SequenceContainer::m_sequence);
+            .property("Sequence", &sequence_container::m_sequence);
 
         registration::class_<bus>("SB::Engine::Bus")
             .constructor<>()(policy::ctor::as_raw_ptr)
@@ -245,12 +245,12 @@ namespace sbk::reflection
 
         sbk::reflection::RegisterPointerConversionsForBaseClasses<BlendContainer>();
         sbk::reflection::RegisterPointerConversionsForBaseClasses<RandomContainer>();
-        sbk::reflection::RegisterPointerConversionsForBaseClasses<SequenceContainer>();
+        sbk::reflection::RegisterPointerConversionsForBaseClasses<sequence_container>();
         sbk::reflection::RegisterPointerConversionsForBaseClasses<SoundContainer>();
         sbk::reflection::RegisterPointerConversionsForBaseClasses<SwitchContainer>();
 
-        sbk::reflection::RegisterPointerConversionsForBaseClasses<Container>();  // makes sure we have a direct
-                                                                                 // conversion between Container and
+        sbk::reflection::RegisterPointerConversionsForBaseClasses<container>();  // makes sure we have a direct
+                                                                                 // conversion between container and
                                                                                  // DatabaseObject
 
         sbk::reflection::RegisterPointerConversionsForBaseClasses<sound>();

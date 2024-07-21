@@ -7,7 +7,7 @@
 
 using namespace sbk::engine;
 
-void sbk::engine::voice::play_container(Container* container)
+void sbk::engine::voice::play_container(container* container)
 {
     destroy_all();
 
@@ -55,7 +55,7 @@ void voice::update()
     }
 }
 
-bool sbk::engine::voice::playing_container(Container* container) const noexcept
+bool sbk::engine::voice::playing_container(container* container) const noexcept
 {
     if (container == nullptr)
     {

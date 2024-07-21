@@ -28,7 +28,7 @@ SB_OBJECT_CATEGORY type_helper::getCategoryFromType(rttr::type type)
     {
         category = SB_CATEGORY_BUS;
     }
-    else if (type.is_derived_from(rttr::type::get<sbk::engine::Container>()))
+    else if (type.is_derived_from(rttr::type::get<sbk::engine::container>()))
     {
         category = SB_CATEGORY_NODE;
     }
@@ -74,7 +74,7 @@ std::unordered_set<rttr::type> type_helper::getTypesFromCategory(SB_OBJECT_CATEG
         case SB_CATEGORY_NODE:
             result.insert(rttr::type::get<sbk::engine::BlendContainer>());
             result.insert(rttr::type::get<sbk::engine::RandomContainer>());
-            result.insert(rttr::type::get<sbk::engine::SequenceContainer>());
+            result.insert(rttr::type::get<sbk::engine::sequence_container>());
             result.insert(rttr::type::get<sbk::engine::SoundContainer>());
             result.insert(rttr::type::get<sbk::engine::SwitchContainer>());
             break;
@@ -122,7 +122,7 @@ rttr::string_view type_helper::get_display_name_from_type(rttr::type type)
     {
         result = "Switch";
     }
-    else if (type == rttr::type::get<sbk::engine::SequenceContainer>())
+    else if (type == rttr::type::get<sbk::engine::sequence_container>())
     {
         result = "Sequence";
     }
@@ -130,7 +130,7 @@ rttr::string_view type_helper::get_display_name_from_type(rttr::type type)
     {
         result = "Blend";
     }
-    else if (type == rttr::type::get<sbk::engine::Container>())
+    else if (type == rttr::type::get<sbk::engine::container>())
     {
         result = "Container";
     }
@@ -231,7 +231,7 @@ std::string_view type_helper::getPayloadFromType(rttr::type type)
     {
         result = sbk::editor::PayloadBus;
     }
-    else if (type.is_derived_from<sbk::engine::Container>())
+    else if (type.is_derived_from<sbk::engine::container>())
     {
         result = sbk::editor::PayloadContainer;
     }
@@ -261,7 +261,7 @@ bool type_helper::isTypePlayable(const rttr::type& type)
 
     if (type.is_valid())
     {
-        result = type.is_derived_from<sbk::engine::Container>() 
+        result = type.is_derived_from<sbk::engine::container>() 
             || type.is_derived_from<sbk::engine::sound>() ||
                  type.is_derived_from<sbk::engine::event>();
     }

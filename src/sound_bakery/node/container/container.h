@@ -4,7 +4,7 @@
 
 namespace sbk::engine
 {
-    class Container;
+    class container;
 
     /**
      * @brief Contains all information required for gathering sounds for runtime playing and selection.
@@ -13,7 +13,7 @@ namespace sbk::engine
     {
         GatherChildrenContext()
         {
-            // We're making the rough assumption that each call to gatherChildrenForPlay
+            // We're making the rough assumption that each call to gather_children_for_play
             // will gather, on average, 3 or less sounds.
             // This should hopefully save some allocation time in most cases.
             sounds.reserve(3);
@@ -22,7 +22,7 @@ namespace sbk::engine
         /**
          * @brief Vector of containers that should play this iteration.
          */
-        std::vector<const Container*> sounds;
+        std::vector<const container*> sounds;
 
         /**
          * @brief List of parameters that are local to this gathering.
@@ -45,10 +45,10 @@ namespace sbk::engine
      * @brief Base container type. Inherited types include sounds, random,
      * sequence etc.
      */
-    class SB_CLASS Container : public node
+    class SB_CLASS container : public node
     {
     public:
-        Container() : node() {}
+        container() : node() {}
 
         bool can_add_child_type(const rttr::type& childType) const override;
 
@@ -60,9 +60,9 @@ namespace sbk::engine
          *
          * @param context for this gather sounds call.
          */
-        virtual void gatherChildrenForPlay(GatherChildrenContext& context) const = 0;
+        virtual void gather_children_for_play(GatherChildrenContext& context) const = 0;
 
-        REGISTER_REFLECTION(Container, node)
+        REGISTER_REFLECTION(container, node)
         RTTR_REGISTRATION_FRIEND
     };
 }  // namespace sbk::engine

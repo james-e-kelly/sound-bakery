@@ -139,14 +139,14 @@ bool ChildrenNodeOwner::createChildren(const node_base& thisNode,
 {
     bool success = false;
 
-    if (const Container* container = thisNode.try_convert_object<Container>();
+    if (const container* const container = thisNode.try_convert_object<sbk::engine::container>();
         container != nullptr && owningVoice != nullptr)
     {
         GatherChildrenContext context;
         context.numTimesPlayed = numTimesPlayed;
         context.parameters     = owningVoice->get_owning_game_object()->get_local_parameters();
 
-        container->gatherChildrenForPlay(context);
+        container->gather_children_for_play(context);
 
         childrenNodes.reserve(context.sounds.size());
 

@@ -6,7 +6,7 @@
 
 namespace sbk::engine
 {
-    class Container;
+    class container;
     class event;
     class voice;
 
@@ -17,11 +17,11 @@ namespace sbk::engine
     public:
         game_object() = default;
 
-        voice* play_container(Container* container);
+        voice* play_container(container* container);
         void post_event(event* event);
 
         void stop_voice(voice* voice);
-        void stop_container(Container* container);
+        void stop_container(container* container);
         void stop_all();
 
         void update();

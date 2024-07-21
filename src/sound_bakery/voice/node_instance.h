@@ -6,7 +6,7 @@
 namespace sbk::engine
 {
     class bus;
-    class Container;
+    class container;
     class node;
     class node_base;
     class node_instance;

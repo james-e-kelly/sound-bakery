@@ -4,10 +4,10 @@
 
 namespace sbk::engine
 {
-    class SB_CLASS SwitchContainer : public Container
+    class SB_CLASS SwitchContainer : public container
     {
     public:
-        void gatherChildrenForPlay(GatherChildrenContext& context) const override
+        void gather_children_for_play(GatherChildrenContext& context) const override
         {
             sbk::core::database_ptr<named_parameter_value> selectedValue;
 
@@ -23,7 +23,7 @@ namespace sbk::engine
 
             if (auto foundIter = m_switchToChild.find(selectedValue); foundIter != m_switchToChild.end())
             {
-                sbk::core::child_ptr<Container> selectedChild(*this);
+                sbk::core::child_ptr<container> selectedChild(*this);
                 selectedChild = foundIter->second;
 
                 if (selectedChild.lookup())
@@ -42,7 +42,7 @@ namespace sbk::engine
 
         sbk::core::database_ptr<named_parameter> getSwitchParameter() const { return m_switchParameter; }
 
-        std::unordered_map<sbk::core::database_ptr<named_parameter_value>, sbk::core::child_ptr<Container>>
+        std::unordered_map<sbk::core::database_ptr<named_parameter_value>, sbk::core::child_ptr<container>>
             getSwitchToChildMap() const
         {
             return m_switchToChild;
@@ -50,7 +50,7 @@ namespace sbk::engine
 
     private:
         void setSwitchToChild(
-            std::unordered_map<sbk::core::database_ptr<named_parameter_value>, sbk::core::child_ptr<Container>> map);
+            std::unordered_map<sbk::core::database_ptr<named_parameter_value>, sbk::core::child_ptr<container>> map);
 
         void populateChildKeys();
 
@@ -62,10 +62,10 @@ namespace sbk::engine
         /**
          * @brief Holds the map for which switch value maps to which child.
          */
-        std::unordered_map<sbk::core::database_ptr<named_parameter_value>, sbk::core::child_ptr<Container>>
+        std::unordered_map<sbk::core::database_ptr<named_parameter_value>, sbk::core::child_ptr<container>>
             m_switchToChild;
 
-        REGISTER_REFLECTION(SwitchContainer, Container)
+        REGISTER_REFLECTION(SwitchContainer, container)
         RTTR_REGISTRATION_FRIEND
     };
 }  // namespace sbk::engine

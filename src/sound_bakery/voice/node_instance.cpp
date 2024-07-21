@@ -189,7 +189,7 @@ void node_instance::update()
             m_children.childrenNodes.clear();
 
             // Sequence nodes retrigger when the current sound stops
-            if (m_referencingNode->getType() == rttr::type::get<SequenceContainer>())
+            if (m_referencingNode->getType() == rttr::type::get<sequence_container>())
             {
                 m_children.createChildren(*m_referencingNode->try_convert_object<node_base>(), m_owningVoice, this,
                                           ++m_numTimesPlayed);

@@ -8,7 +8,7 @@ using namespace sbk::engine;
 
 DEFINE_REFLECTION(sbk::engine::game_object)
 
-voice* game_object::play_container(Container* container)
+voice* game_object::play_container(container* container)
 {
     if (container)
     {
@@ -28,14 +28,14 @@ void sbk::engine::game_object::post_event(event* event)
     {
         for (const action& action : event->m_actions)
         {
-            sbk::engine::Container* container   = nullptr;
+            sbk::engine::container* container   = nullptr;
             sbk::engine::event* childEvent      = nullptr;
             sbk::engine::game_object* gameObject = nullptr;
 
             if (const sbk::core::database_ptr<sbk::core::database_object>& destination = action.m_destination;
                 destination.lookup())
             {
-                container  = destination->try_convert_object<sbk::engine::Container>();
+                container  = destination->try_convert_object<sbk::engine::container>();
                 childEvent = destination->try_convert_object<sbk::engine::event>();
                 gameObject = destination->try_convert_object<sbk::engine::game_object>();
             }
@@ -84,7 +84,7 @@ void sbk::engine::game_object::stop_voice(voice* voice)
     }
 }
 
-void sbk::engine::game_object::stop_container(Container* container)
+void sbk::engine::game_object::stop_container(container* container)
 {
     for (std::size_t i = m_voices.size(); i--;)
     {

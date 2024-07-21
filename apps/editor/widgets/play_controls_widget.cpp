@@ -159,7 +159,7 @@ void player_widget::render()
 
 void player_widget::play_selected()
 {
-    if (sbk::engine::Container* container = s_lastPlayableSelection->try_convert_object<sbk::engine::Container>())
+    if (sbk::engine::container* container = s_lastPlayableSelection->try_convert_object<sbk::engine::container>())
     {
         sbk::engine::system::get()->get_listener_game_object()->play_container(container);
     }
