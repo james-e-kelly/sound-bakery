@@ -156,6 +156,6 @@
  * sc_node_group_set_parent(child, parent);
  * @endcode
  *
- * It is recommended to refer to the @ref SB::Engine::NodeInstance class for how sound Bakery uses sound Chef to connect
+ * It is recommended to refer to the @ref SB::Engine::node_instance class for how sound Bakery uses sound Chef to connect
  * node groups together, insert lowpass and highpass effects, and insert user-defined effects.
  */

@@ -4,7 +4,7 @@
 
 namespace sbk::engine
 {
-    class NodeInstance;
+    class node_instance;
 
     class SB_CLASS bus : public node
     {
@@ -24,10 +24,10 @@ namespace sbk::engine
 
         void lock();
         void unlock();
-        std::shared_ptr<NodeInstance> lockAndCopy();
+        std::shared_ptr<node_instance> lockAndCopy();
 
     protected:
-        std::shared_ptr<NodeInstance> m_busInstance;
+        std::shared_ptr<node_instance> m_busInstance;
 
     private:
         bool m_masterBus;

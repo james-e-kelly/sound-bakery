@@ -7,14 +7,14 @@
 
 using namespace sbk::engine;
 
-void sbk::engine::voice::playContainer(Container* container)
+void sbk::engine::voice::play_container(Container* container)
 {
     m_voiceInstances.clear();
 
     m_playingContainer = container;
 
-    const std::unique_ptr<NodeInstance>& voiceInstance =
-        m_voiceInstances.emplace_back(std::make_unique<NodeInstance>());
+    const std::unique_ptr<node_instance>& voiceInstance =
+        m_voiceInstances.emplace_back(std::make_unique<node_instance>());
 
     InitNodeInstance initData;
     initData.refNode     = container->try_convert_object<node_base>();
@@ -35,7 +35,7 @@ void voice::update()
 {
     if (!m_voiceInstances.empty())
     {
-        std::vector<std::unique_ptr<NodeInstance>>::iterator iter;
+        std::vector<std::unique_ptr<node_instance>>::iterator iter;
         for (iter = m_voiceInstances.begin(); iter != m_voiceInstances.end();)
         {
             iter->get()->update();
@@ -52,7 +52,7 @@ void voice::update()
     }
 }
 
-bool sbk::engine::voice::playingContainer(Container* container) const noexcept
+bool sbk::engine::voice::playing_container(Container* container) const noexcept
 {
     if (container == nullptr)
     {
@@ -64,21 +64,21 @@ bool sbk::engine::voice::playingContainer(Container* container) const noexcept
         return true;
     }
 
-    auto containerEqual = [id = container->get_database_id()](const std::unique_ptr<NodeInstance>& node)
+    auto containerEqual = [id = container->get_database_id()](const std::unique_ptr<node_instance>& node)
     {
         if (!node)
         {
             return false;
         }
 
-        const NodeInstance* nodeInstance = node.get();
+        const node_instance* nodeInstance = node.get();
 
         if (nodeInstance->getReferencingNode()->get_database_id() == id)
         {
             return true;
         }
 
-        NodeInstance* sharedNodeInstance = nodeInstance->getParent();
+        node_instance* sharedNodeInstance = nodeInstance->getParent();
 
         while (sharedNodeInstance)
         {
@@ -96,13 +96,13 @@ bool sbk::engine::voice::playingContainer(Container* container) const noexcept
     return std::find_if(m_voiceInstances.begin(), m_voiceInstances.end(), containerEqual) != m_voiceInstances.end();
 }
 
-const std::vector<std::unique_ptr<NodeInstance>>& sbk::engine::voice::getVoices() const noexcept
+const std::vector<std::unique_ptr<node_instance>>& sbk::engine::voice::get_voices() const noexcept
 {
     return m_voiceInstances;
 }
 
-std::size_t sbk::engine::voice::voices() const { return m_voiceInstances.size(); }
+std::size_t sbk::engine::voice::num_voices() const { return m_voiceInstances.size(); }
 
-NodeInstance* sbk::engine::voice::node_instance_at(std::size_t index) const { return m_voiceInstances[index].get(); }
+node_instance* sbk::engine::voice::node_instance_at(std::size_t index) const { return m_voiceInstances[index].get(); }
 
-bool sbk::engine::voice::isPlaying() const { return !m_voiceInstances.empty(); }
+bool sbk::engine::voice::is_playing() const { return !m_voiceInstances.empty(); }

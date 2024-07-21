@@ -7,11 +7,10 @@ namespace sbk::engine
 {
     class Container;
     class game_object;
-    class NodeInstance;
+    class node_instance;
 
     /**
      * @brief A runtime graph of nodes and busses, playing a sound or many.
-     *
      */
     class SB_CLASS voice : public sbk::core::object
     {
@@ -19,27 +18,24 @@ namespace sbk::engine
         voice() = delete;
         voice(game_object* owningObject) : m_owningGameObject(owningObject) {}
 
-    public:
-        void playContainer(Container* container);
+        void play_container(Container* container);
+
         void update();
 
-    public:
-        bool playingContainer(Container* container) const noexcept;
+        [[nodiscard]] bool playing_container(Container* container) const noexcept;
 
-        const std::vector<std::unique_ptr<NodeInstance>>& getVoices() const noexcept;
+        [[nodiscard]] const std::vector<std::unique_ptr<node_instance>>& get_voices() const noexcept;
+        [[nodiscard]] std::size_t num_voices() const;
+        [[nodiscard]] node_instance* node_instance_at(std::size_t index) const;
 
-        std::size_t voices() const;
+        [[nodiscard]] bool is_playing() const;
 
-        NodeInstance* node_instance_at(std::size_t index) const;
-
-        bool isPlaying() const;
-
-        game_object* getOwningGameObject() const { return m_owningGameObject; }
+        game_object* get_owning_game_object() const { return m_owningGameObject; }
 
     private:
         game_object* m_owningGameObject = nullptr;
         sbk::core::database_ptr<Container> m_playingContainer;
 
-        std::vector<std::unique_ptr<NodeInstance>> m_voiceInstances;
+        std::vector<std::unique_ptr<node_instance>> m_voiceInstances;
     };
 }  // namespace sbk::engine

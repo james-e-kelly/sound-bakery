@@ -96,7 +96,7 @@ bool ParentNodeOwner::createParent(const node_base& thisNode, voice* owningVoice
         {
             if (sbk::engine::node_base* parentNode = thisNode.parent())
             {
-                parent = std::make_shared<NodeInstance>();
+                parent = std::make_shared<node_instance>();
 
                 InitNodeInstance initData;
                 initData.refNode     = parentNode->try_convert_object<node_base>();
@@ -134,7 +134,7 @@ bool ParentNodeOwner::createParent(const node_base& thisNode, voice* owningVoice
 
 bool ChildrenNodeOwner::createChildren(const node_base& thisNode,
                                        voice* owningVoice,
-                                       NodeInstance* thisNodeInstance,
+                                       node_instance* thisNodeInstance,
                                        unsigned int numTimesPlayed)
 {
     bool success = false;
@@ -144,7 +144,7 @@ bool ChildrenNodeOwner::createChildren(const node_base& thisNode,
     {
         GatherChildrenContext context;
         context.numTimesPlayed = numTimesPlayed;
-        context.parameters     = owningVoice->getOwningGameObject()->get_local_parameters();
+        context.parameters     = owningVoice->get_owning_game_object()->get_local_parameters();
 
         container->gatherChildrenForPlay(context);
 
@@ -157,7 +157,7 @@ bool ChildrenNodeOwner::createChildren(const node_base& thisNode,
                 continue;
             }
 
-            childrenNodes.push_back(std::make_shared<NodeInstance>());
+            childrenNodes.push_back(std::make_shared<node_instance>());
 
             InitNodeInstance initData;
             initData.refNode           = sbk::core::database_ptr<node_base>(child->get_database_id());

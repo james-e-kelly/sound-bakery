@@ -10,9 +10,9 @@
 
 using namespace sbk::engine;
 
-DEFINE_REFLECTION(sbk::engine::NodeInstance)
+DEFINE_REFLECTION(sbk::engine::node_instance)
 
-NodeInstance::~NodeInstance()
+node_instance::~node_instance()
 {
     if (m_referencingNode != nullptr)
     {
@@ -23,7 +23,7 @@ NodeInstance::~NodeInstance()
     }
 }
 
-bool sbk::engine::NodeInstance::init(const InitNodeInstance& initData)
+bool sbk::engine::node_instance::init(const InitNodeInstance& initData)
 {
     if (m_state != NodeInstanceState::UNINIT)
     {
@@ -46,10 +46,10 @@ bool sbk::engine::NodeInstance::init(const InitNodeInstance& initData)
 
     m_owningVoice = initData.owningVoice;
 
-    m_referencingNode->m_volume.get_delegate().AddRaw(this, &NodeInstance::setVolume);
-    m_referencingNode->m_pitch.get_delegate().AddRaw(this, &NodeInstance::setPitch);
-    m_referencingNode->m_lowpass.get_delegate().AddRaw(this, &NodeInstance::setLowpass);
-    m_referencingNode->m_highpass.get_delegate().AddRaw(this, &NodeInstance::setHighpass);
+    m_referencingNode->m_volume.get_delegate().AddRaw(this, &node_instance::setVolume);
+    m_referencingNode->m_pitch.get_delegate().AddRaw(this, &node_instance::setPitch);
+    m_referencingNode->m_lowpass.get_delegate().AddRaw(this, &node_instance::setLowpass);
+    m_referencingNode->m_highpass.get_delegate().AddRaw(this, &node_instance::setHighpass);
 
     setVolume(0.0F, m_referencingNode->m_volume.get());
     setPitch(0.0F, m_referencingNode->m_pitch.get());
@@ -115,7 +115,7 @@ bool sbk::engine::NodeInstance::init(const InitNodeInstance& initData)
     return success;
 }
 
-bool NodeInstance::play()
+bool node_instance::play()
 {
     if (isPlaying())
     {
@@ -159,7 +159,7 @@ bool NodeInstance::play()
     return isPlaying();
 }
 
-void NodeInstance::update()
+void node_instance::update()
 {
     if (m_soundInstance)
     {
@@ -201,7 +201,7 @@ void NodeInstance::update()
 
 //////////////////////////////////////////////////////////////////////////////////
 
-void NodeInstance::setVolume(float oldVolume, float newVolume)
+void node_instance::setVolume(float oldVolume, float newVolume)
 {
     (void)oldVolume;
 
@@ -211,7 +211,7 @@ void NodeInstance::setVolume(float oldVolume, float newVolume)
     }
 }
 
-void NodeInstance::setPitch(float oldPitch, float newPitch)
+void node_instance::setPitch(float oldPitch, float newPitch)
 {
     (void)oldPitch;
 
@@ -221,7 +221,7 @@ void NodeInstance::setPitch(float oldPitch, float newPitch)
     }
 }
 
-void NodeInstance::setLowpass(float oldLowpass, float newLowpass)
+void node_instance::setLowpass(float oldLowpass, float newLowpass)
 {
     (void)oldLowpass;
 
@@ -232,7 +232,7 @@ void NodeInstance::setLowpass(float oldLowpass, float newLowpass)
     sc_dsp_set_parameter_float(m_nodeGroup.lowpass, SC_DSP_LOWPASS_CUTOFF, static_cast<float>(lowpassCutoff));
 }
 
-void NodeInstance::setHighpass(float oldHighpass, float newHighpass)
+void node_instance::setHighpass(float oldHighpass, float newHighpass)
 {
     (void)oldHighpass;
 

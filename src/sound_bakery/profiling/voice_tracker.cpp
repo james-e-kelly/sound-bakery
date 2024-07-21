@@ -31,11 +31,11 @@ void VoiceTracker::update(system* system)
         {
             if (const voice* const voice = listener->get_voice(i))
             {
-                std::unordered_set<const NodeInstance*> trackedNodes;
+                std::unordered_set<const node_instance*> trackedNodes;
 
-                for (std::size_t j = 0; j < voice->voices(); ++j)
+                for (std::size_t j = 0; j < voice->num_voices(); ++j)
                 {
-                    if (const NodeInstance* const nodeInstance = voice->node_instance_at(j))
+                    if (const node_instance* const nodeInstance = voice->node_instance_at(j))
                     {
                         if (!trackedNodes.contains(nodeInstance))
                         {
@@ -47,7 +47,7 @@ void VoiceTracker::update(system* system)
                                 m_nodePlayingCount[node->get_database_id()]++;
                             }
 
-                            const NodeInstance* parent = nodeInstance->getParent();
+                            const node_instance* parent = nodeInstance->getParent();
 
                             if (!trackedNodes.contains(parent))
                             {

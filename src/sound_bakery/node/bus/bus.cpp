@@ -40,7 +40,7 @@ void bus::lock()
 {
     if (!m_busInstance)
     {
-        m_busInstance = std::make_shared<NodeInstance>();
+        m_busInstance = std::make_shared<node_instance>();
 
         InitNodeInstance initData;
         initData.refNode = try_convert_object<node_base>();
@@ -52,7 +52,7 @@ void bus::lock()
 
 void sbk::engine::bus::unlock() { m_busInstance.reset(); }
 
-std::shared_ptr<NodeInstance> bus::lockAndCopy()
+std::shared_ptr<node_instance> bus::lockAndCopy()
 {
     lock();
     return m_busInstance;

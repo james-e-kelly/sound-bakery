@@ -148,8 +148,8 @@ void audio_display_widget::render()
                         listener->voice_count() ? listener->get_voice(0) :
                         nullptr)
                             {
-                                if (SB::Engine::NodeInstance* nodeInstance =
-                        voice->voices() ? voice->voice(0) : nullptr)
+                                if (SB::Engine::node_instance* nodeInstance =
+                        voice->num_voices() ? voice->voice(0) : nullptr)
                                 {
                                     if (FMOD_CHANNEL* channel =
                         nodeInstance->getChannel())

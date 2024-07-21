@@ -13,7 +13,7 @@ voice* game_object::play_container(Container* container)
     if (container)
     {
         std::unique_ptr<voice>& voice = m_voices.emplace_back(std::make_unique<sbk::engine::voice>(this));
-        voice->playContainer(container);
+        voice->play_container(container);
         return voice.get();
     }
     else
@@ -90,7 +90,7 @@ void sbk::engine::game_object::stop_container(Container* container)
     {
         if (const std::unique_ptr<voice>& voice = m_voices[i])
         {
-            if (voice->playingContainer(container))
+            if (voice->playing_container(container))
             {
                 m_voices.erase(m_voices.begin() + i);
                 break;
@@ -110,7 +110,7 @@ void game_object::update()
         {
             iter->get()->update();
 
-            if (!iter->get()->isPlaying())
+            if (!iter->get()->is_playing())
             {
                 iter = m_voices.erase(iter);
             }

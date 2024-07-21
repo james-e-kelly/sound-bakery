@@ -9,7 +9,7 @@ namespace sbk::engine
     class Container;
     class node;
     class node_base;
-    class NodeInstance;
+    class node_instance;
     class sound;
     class SoundContainer;
     class voice;
@@ -33,7 +33,7 @@ namespace sbk::engine
     {
         bool createParent(const node_base& thisNode, voice* owningVoice);
 
-        std::shared_ptr<NodeInstance> parent;
+        std::shared_ptr<node_instance> parent;
     };
 
     /**
@@ -43,10 +43,10 @@ namespace sbk::engine
     {
         bool createChildren(const node_base& thisNode,
                             voice* owningVoice,
-                            NodeInstance* thisNodeInstance,
+                            node_instance* thisNodeInstance,
                             unsigned int numTimesPlayed);
 
-        std::vector<std::shared_ptr<NodeInstance>> childrenNodes;
+        std::vector<std::shared_ptr<node_instance>> childrenNodes;
     };
 
     enum class NodeInstanceType
@@ -93,17 +93,17 @@ namespace sbk::engine
          *
          * Used when initializing children so it can join the DSP graph correctly.
          */
-        NodeInstance* parentForChildren = nullptr;
+        node_instance* parentForChildren = nullptr;
     };
 
     /**
      * @brief NodeInstances represent runtime versions of Nodes, either
      * containers or busses
      */
-    class SB_CLASS NodeInstance : public sbk::core::object
+    class SB_CLASS node_instance : public sbk::core::object
     {
     public:
-        ~NodeInstance();
+        ~node_instance();
 
         bool init(const InitNodeInstance& initData);
         bool play();
@@ -116,7 +116,7 @@ namespace sbk::engine
         }
 
         std::shared_ptr<node> getReferencingNode() const noexcept { return m_referencingNode; }
-        NodeInstance* getParent() const noexcept { return m_parent.parent.get(); }
+        node_instance* getParent() const noexcept { return m_parent.parent.get(); }
         sc_node_group* getBus() const noexcept { return m_nodeGroup.nodeGroup.get(); }
 
     private:
@@ -134,6 +134,6 @@ namespace sbk::engine
         std::unique_ptr<sc_sound_instance, SC_SOUND_INSTANCE_DELETER> m_soundInstance;
         unsigned int m_numTimesPlayed = 0;
 
-        REGISTER_REFLECTION(NodeInstance, sbk::core::object)
+        REGISTER_REFLECTION(node_instance, sbk::core::object)
     };
 }  // namespace sbk::engine
