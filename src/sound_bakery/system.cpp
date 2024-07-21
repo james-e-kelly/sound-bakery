@@ -146,6 +146,19 @@ sc_result system::update()
         s_system->m_voiceTracker->update(s_system);
     }
 
+    std::unordered_set<sbk::core::object*> objects = s_system->get_objects_of_type(sbk::engine::game_object::type());
+
+    std::for_each(objects.begin(), objects.end(), [](sbk::core::object* const object) 
+        {
+            if (object != nullptr)
+            {
+                if (sbk::engine::game_object* const gameObject = object->try_convert_object<sbk::engine::game_object>())
+                {
+                    gameObject->update();
+                }
+            }
+        });
+
     s_system->m_gameThreadExecuter->loop(32);
 
     return MA_SUCCESS;
