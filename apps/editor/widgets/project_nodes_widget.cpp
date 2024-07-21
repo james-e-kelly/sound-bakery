@@ -39,7 +39,7 @@ void project_nodes_widget::RenderPage(
 
         ImGui::SetNextItemOpen(true, ImGuiCond_Once);
 
-        if (ImGui::TreeNode(categoryName.data()))
+        if (ImGui::TreeNodeEx(categoryName.data(), ImGuiTreeNodeFlags_NavLeftJumpsBackHere))
         {
             if (ImGui::BeginPopupContextItem("TopNodeContext"))
             {
@@ -112,7 +112,7 @@ void project_nodes_widget::RenderSingleNode(rttr::type type,
             HandleOpenNode(object);
 
             ImGuiTreeNodeFlags flags =
-                ImGuiTreeNodeFlags_None | ImGuiTreeNodeFlags_SpanAvailWidth;
+                ImGuiTreeNodeFlags_None | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_NavLeftJumpsBackHere;
 
             if (hasChildren  || object->getType() ==
                                    sbk::engine::NamedParameter::type())
