@@ -116,7 +116,7 @@ void project_nodes_widget::render_single_node(rttr::type type,
                 ImGuiTreeNodeFlags_None | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_NavLeftJumpsBackHere;
 
             if (hasChildren  || object->getType() ==
-                                   sbk::engine::NamedParameter::type())
+                                   sbk::engine::named_parameter::type())
             {
                 flags |= ImGuiTreeNodeFlags_OpenOnArrow;
             }
@@ -228,13 +228,13 @@ void project_nodes_widget::render_single_node(rttr::type type,
                             render_single_node(type, child);
                         }
                     }
-                    else if (sbk::engine::NamedParameter* const intParameter =
+                    else if (sbk::engine::named_parameter* const intParameter =
                                  object->try_convert_object<
-                                     sbk::engine::NamedParameter>())
+                                     sbk::engine::named_parameter>())
                     {
                         for (const sbk::core::database_ptr<
-                                 sbk::engine::NamedParameterValue>& value :
-                             intParameter->getValues())
+                                 sbk::engine::named_parameter_value>& value :
+                             intParameter->get_values())
                         {
                             if (value.lookup())
                             {
@@ -326,15 +326,15 @@ bool project_nodes_widget::render_node_context_menu(rttr::type type,
                 }
 
                 if (object->getType() ==
-                    sbk::engine::NamedParameter::type())
+                    sbk::engine::named_parameter::type())
                 {
                     if (ImGui::MenuItem("Create New Value"))
                     {
-                        if (sbk::engine::NamedParameter* const intParameter =
+                        if (sbk::engine::named_parameter* const intParameter =
                                 object->try_convert_object<
-                                    sbk::engine::NamedParameter>())
+                                    sbk::engine::named_parameter>())
                         {
-                            intParameter->addNewValue("New Switch Value");
+                            intParameter->add_new_value("New Switch Value");
                         }
                     }
 

@@ -43,7 +43,7 @@ void player_widget::render()
         // Stop playing previous if we're selecting something new that is playable
         if (selection.get_selected() != s_lastPlayableSelection)
         {
-            sbk::engine::system::get()->get_listener_game_object()->stopAll();
+            sbk::engine::system::get()->get_listener_game_object()->stop_all();
         }
         
         s_lastPlayableSelection = selection.get_selected();
@@ -85,7 +85,7 @@ void player_widget::render()
     sbk::engine::node* const nodeSelection =
         s_lastPlayableSelection ? s_lastPlayableSelection->try_convert_object<sbk::engine::node>() : nullptr;
 
-    sbk::engine::GlobalParameterList parameterList;
+    sbk::engine::global_parameter_list parameterList;
 
     if (nodeSelection)
     {
@@ -100,7 +100,7 @@ void player_widget::render()
         {
             if (ImGui::BeginTable("Table", 2))
             {
-                for (const sbk::core::database_ptr<sbk::engine::NamedParameter>& intParameter :
+                for (const sbk::core::database_ptr<sbk::engine::named_parameter>& intParameter :
                      parameterList.intParameters)
                 {
                     if (intParameter.lookup() == false)
@@ -108,8 +108,8 @@ void player_widget::render()
                         continue;
                     }
 
-                    sbk::core::database_ptr<sbk::engine::NamedParameterValue> selectedIntParameterValue =
-                        listenerGameObject->getIntParameterValue(intParameter);
+                    sbk::core::database_ptr<sbk::engine::named_parameter_value> selectedIntParameterValue =
+                        listenerGameObject->get_int_parameter_value(intParameter);
 
                     if (selectedIntParameterValue.lookup() == false)
                     {
@@ -123,7 +123,7 @@ void player_widget::render()
 
                     if (ImGui::BeginCombo("Selected", selectedIntParameterValue->get_database_name().data()))
                     {
-                        for (sbk::core::database_ptr<sbk::engine::NamedParameterValue> parameterValue : intParameter->getValues())
+                        for (sbk::core::database_ptr<sbk::engine::named_parameter_value> parameterValue : intParameter->get_values())
                         {
                             if (parameterValue.lookup() == false)
                             {
@@ -133,7 +133,7 @@ void player_widget::render()
                             bool selected = parameterValue == selectedIntParameterValue;
                             if (ImGui::Selectable(parameterValue->get_database_name().data(), &selected))
                             {
-                                listenerGameObject->setIntParameterValue(
+                                listenerGameObject->set_int_parameter_value(
                                     {intParameter.id(), parameterValue->get_database_id()});
                             }
                         }
@@ -161,7 +161,7 @@ void player_widget::play_selected()
 {
     if (sbk::engine::Container* container = s_lastPlayableSelection->try_convert_object<sbk::engine::Container>())
     {
-        sbk::engine::system::get()->get_listener_game_object()->playContainer(container);
+        sbk::engine::system::get()->get_listener_game_object()->play_container(container);
     }
     else if (sbk::engine::sound* sound = s_lastPlayableSelection->try_convert_object<sbk::engine::sound>())
     {
@@ -170,23 +170,23 @@ void player_widget::play_selected()
         {
             previewContainer->setSound(sound);
 
-            sbk::engine::system::get()->get_listener_game_object()->playContainer(previewContainer);
+            sbk::engine::system::get()->get_listener_game_object()->play_container(previewContainer);
         }
     }
     else if (sbk::engine::event* event = s_lastPlayableSelection->try_convert_object<sbk::engine::event>())
     {
-        sbk::engine::system::get()->get_listener_game_object()->postEvent(event);
+        sbk::engine::system::get()->get_listener_game_object()->post_event(event);
     }
 }
 
 void player_widget::stop_selected()
 { 
-    sbk::engine::system::get()->get_listener_game_object()->stopAll(); 
+    sbk::engine::system::get()->get_listener_game_object()->stop_all(); 
 }
 
 void player_widget::toggle_play_selected()
 {
-    if (sbk::engine::system::get()->get_listener_game_object()->isPlaying())
+    if (sbk::engine::system::get()->get_listener_game_object()->is_playing())
     {
         stop_selected();
     }

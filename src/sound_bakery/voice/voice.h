@@ -13,11 +13,11 @@ namespace sbk::engine
      * @brief A runtime graph of nodes and busses, playing a sound or many.
      *
      */
-    class SB_CLASS Voice : public sbk::core::object
+    class SB_CLASS voice : public sbk::core::object
     {
     public:
-        Voice() = delete;
-        Voice(game_object* owningObject) : m_owningGameObject(owningObject) {}
+        voice() = delete;
+        voice(game_object* owningObject) : m_owningGameObject(owningObject) {}
 
     public:
         void playContainer(Container* container);
@@ -30,7 +30,7 @@ namespace sbk::engine
 
         std::size_t voices() const;
 
-        NodeInstance* voice(std::size_t index) const;
+        NodeInstance* node_instance_at(std::size_t index) const;
 
         bool isPlaying() const;
 

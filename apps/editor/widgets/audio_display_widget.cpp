@@ -144,8 +144,8 @@ void audio_display_widget::render()
                         if (SB::Engine::game_object* listener =
                         SB::Engine::System::get()->get()->get_listener_game_object())
                         {
-                            if (SB::Engine::Voice* voice =
-                        listener->voiceCount() ? listener->getVoice(0) :
+                            if (SB::Engine::voice* voice =
+                        listener->voice_count() ? listener->get_voice(0) :
                         nullptr)
                             {
                                 if (SB::Engine::NodeInstance* nodeInstance =

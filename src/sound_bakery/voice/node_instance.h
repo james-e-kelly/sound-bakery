@@ -12,7 +12,7 @@ namespace sbk::engine
     class NodeInstance;
     class sound;
     class SoundContainer;
-    class Voice;
+    class voice;
 
     /**
      * @brief Owns a node group and applies DSP effects to it.
@@ -31,7 +31,7 @@ namespace sbk::engine
      */
     struct SB_CLASS ParentNodeOwner
     {
-        bool createParent(const node_base& thisNode, Voice* owningVoice);
+        bool createParent(const node_base& thisNode, voice* owningVoice);
 
         std::shared_ptr<NodeInstance> parent;
     };
@@ -42,7 +42,7 @@ namespace sbk::engine
     struct SB_CLASS ChildrenNodeOwner
     {
         bool createChildren(const node_base& thisNode,
-                            Voice* owningVoice,
+                            voice* owningVoice,
                             NodeInstance* thisNodeInstance,
                             unsigned int numTimesPlayed);
 
@@ -84,9 +84,9 @@ namespace sbk::engine
         NodeInstanceType type = NodeInstanceType::MAIN;
 
         /**
-         * @brief Voice owner.
+         * @brief voice owner.
          */
-        Voice* owningVoice = nullptr;
+        voice* owningVoice = nullptr;
 
         /**
          * @brief Parent node instance for this node instance.
@@ -126,7 +126,7 @@ namespace sbk::engine
         void setHighpass(float oldHighpass, float newHighpass);
 
         std::shared_ptr<node> m_referencingNode = nullptr;
-        Voice* m_owningVoice                    = nullptr;
+        voice* m_owningVoice                    = nullptr;
         NodeInstanceState m_state               = NodeInstanceState::UNINIT;
         NodeGroupInstance m_nodeGroup;
         ParentNodeOwner m_parent;

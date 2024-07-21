@@ -27,15 +27,15 @@ void VoiceTracker::update(system* system)
     // @TODO Fix listener game object
     if (const game_object* const listener = nullptr /* system->get_listener_game_object() */)
     {
-        for (std::size_t i = 0; i < listener->voiceCount(); ++i)
+        for (std::size_t i = 0; i < listener->voice_count(); ++i)
         {
-            if (const Voice* const voice = listener->getVoice(i))
+            if (const voice* const voice = listener->get_voice(i))
             {
                 std::unordered_set<const NodeInstance*> trackedNodes;
 
                 for (std::size_t j = 0; j < voice->voices(); ++j)
                 {
-                    if (const NodeInstance* const nodeInstance = voice->voice(j))
+                    if (const NodeInstance* const nodeInstance = voice->node_instance_at(j))
                     {
                         if (!trackedNodes.contains(nodeInstance))
                         {

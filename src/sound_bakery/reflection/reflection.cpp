@@ -221,19 +221,19 @@ namespace sbk::reflection
             .constructor<>()(policy::ctor::as_raw_ptr)
             .property("Actions", &event::m_actions);
 
-        registration::class_<FloatParameter>("SB::Engine::FloatParameter").constructor<>()(policy::ctor::as_raw_ptr);
+        registration::class_<float_parameter>("SB::Engine::FloatParameter").constructor<>()(policy::ctor::as_raw_ptr);
 
-        registration::class_<IntParameter>("SB::Engine::IntParameter").constructor<>()(policy::ctor::as_raw_ptr);
+        registration::class_<int_parameter>("SB::Engine::IntParameter").constructor<>()(policy::ctor::as_raw_ptr);
 
-        registration::class_<NamedParameter>("SB::Engine::NamedParameter")
+        registration::class_<named_parameter>("SB::Engine::NamedParameter")
             .constructor<>()(policy::ctor::as_raw_ptr)
-            .property("Values", &NamedParameter::m_values)(metadata(sbk::editor::METADATA_KEY::Readonly, true))
-            .property("ParameterValue", &NamedParameter::getSelectedValue, &NamedParameter::setSelectedValue);
+            .property("Values", &named_parameter::m_values)(metadata(sbk::editor::METADATA_KEY::Readonly, true))
+            .property("ParameterValue", &named_parameter::get_selected_value, &named_parameter::set_selected_value);
 
-        registration::class_<NamedParameterValue>("SB::Engine::NamedParameterValue")
+        registration::class_<named_parameter_value>("SB::Engine::NamedParameterValue")
             .constructor<>()(policy::ctor::as_raw_ptr)
             .property("Parent",
-                      &NamedParameterValue::parentParameter)(metadata(sbk::editor::METADATA_KEY::Readonly, true));
+                      &named_parameter_value::parentParameter)(metadata(sbk::editor::METADATA_KEY::Readonly, true));
 
         registration::class_<soundbank>("SB::Engine::Soundbank")
             .constructor<>()(policy::ctor::as_raw_ptr)

@@ -62,7 +62,7 @@ bool NodeGroupInstance::initNodeGroup(const node_base& node)
 
 ////////////////////////////////////////////////////////////////////////////
 
-bool ParentNodeOwner::createParent(const node_base& thisNode, Voice* owningVoice)
+bool ParentNodeOwner::createParent(const node_base& thisNode, voice* owningVoice)
 {
     bool createdParent = false;
 
@@ -133,7 +133,7 @@ bool ParentNodeOwner::createParent(const node_base& thisNode, Voice* owningVoice
 ////////////////////////////////////////////////////////////////////////////
 
 bool ChildrenNodeOwner::createChildren(const node_base& thisNode,
-                                       Voice* owningVoice,
+                                       voice* owningVoice,
                                        NodeInstance* thisNodeInstance,
                                        unsigned int numTimesPlayed)
 {
@@ -144,7 +144,7 @@ bool ChildrenNodeOwner::createChildren(const node_base& thisNode,
     {
         GatherChildrenContext context;
         context.numTimesPlayed = numTimesPlayed;
-        context.parameters     = owningVoice->getOwningGameObject()->getLocalParameters();
+        context.parameters     = owningVoice->getOwningGameObject()->get_local_parameters();
 
         container->gatherChildrenForPlay(context);
 

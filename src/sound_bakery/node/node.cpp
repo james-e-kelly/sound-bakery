@@ -8,7 +8,7 @@ DEFINE_REFLECTION(sbk::engine::node_base)
 
 DEFINE_REFLECTION(sbk::engine::node)
 
-void sbk::engine::node::gatherParameters(GlobalParameterList& parameters)
+void sbk::engine::node::gatherParameters(global_parameter_list& parameters)
 {
     parameters.floatParameters.reserve(m_childNodes.size() + 1);
     parameters.intParameters.reserve(m_childNodes.size() + 1);

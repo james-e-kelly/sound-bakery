@@ -29,7 +29,7 @@ namespace sbk::engine
          *
          * Use this to choose sounds based on the current/local context.
          */
-        LocalParameterList parameters;
+        local_parameter_list parameters;
 
         /**
          * @brief How many times the voice/node has played.

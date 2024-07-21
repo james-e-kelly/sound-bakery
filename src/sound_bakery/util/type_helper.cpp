@@ -40,8 +40,8 @@ SB_OBJECT_CATEGORY type_helper::getCategoryFromType(rttr::type type)
     {
         category = SB_CATEGORY_SOUND;
     }
-    else if (type == rttr::type::get<sbk::engine::FloatParameter>() ||
-             type == rttr::type::get<sbk::engine::NamedParameter>())
+    else if (type == rttr::type::get<sbk::engine::float_parameter>() ||
+             type == rttr::type::get<sbk::engine::named_parameter>())
     {
         category = SB_CATEGORY_PARAMETER;
     }
@@ -94,8 +94,8 @@ std::unordered_set<rttr::type> type_helper::getTypesFromCategory(SB_OBJECT_CATEG
             result.insert(rttr::type::get<sbk::engine::sound>());
             break;
         case SB_CATEGORY_PARAMETER:
-            result.insert(rttr::type::get<sbk::engine::FloatParameter>());
-            result.insert(rttr::type::get<sbk::engine::NamedParameter>());
+            result.insert(rttr::type::get<sbk::engine::float_parameter>());
+            result.insert(rttr::type::get<sbk::engine::named_parameter>());
             break;
         case SB_CATEGORY_NUM:
             break;
@@ -150,15 +150,15 @@ rttr::string_view type_helper::get_display_name_from_type(rttr::type type)
     {
         result = "Event";
     }
-    else if (type == rttr::type::get<sbk::engine::FloatParameter>())
+    else if (type == rttr::type::get<sbk::engine::float_parameter>())
     {
         result = "Parameter";
     }
-    else if (type == rttr::type::get<sbk::engine::NamedParameter>())
+    else if (type == rttr::type::get<sbk::engine::named_parameter>())
     {
         result = "Switch";
     }
-    else if (type == rttr::type::get<sbk::engine::NamedParameterValue>())
+    else if (type == rttr::type::get<sbk::engine::named_parameter_value>())
     {
         result = "Switch Value";
     }
@@ -235,15 +235,15 @@ std::string_view type_helper::getPayloadFromType(rttr::type type)
     {
         result = sbk::editor::PayloadContainer;
     }
-    else if (type == rttr::type::get<sbk::engine::FloatParameter>())
+    else if (type == rttr::type::get<sbk::engine::float_parameter>())
     {
         result = sbk::editor::PayloadFloatParam;
     }
-    else if (type == rttr::type::get<sbk::engine::NamedParameter>())
+    else if (type == rttr::type::get<sbk::engine::named_parameter>())
     {
         result = sbk::editor::PayloadNamedParam;
     }
-    else if (type == rttr::type::get<sbk::engine::NamedParameterValue>())
+    else if (type == rttr::type::get<sbk::engine::named_parameter_value>())
     {
         result = sbk::editor::PayloadIntParamValue;
     }

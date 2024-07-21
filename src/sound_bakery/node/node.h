@@ -71,7 +71,7 @@ namespace sbk::engine
         /**
          * @brief Gathers all parameters on this and child nodes that can effect the runtime output.
          */
-        virtual void gatherParameters(GlobalParameterList& parameters);
+        virtual void gatherParameters(global_parameter_list& parameters);
 
         void addEffect(sc_dsp_type type);
 
@@ -82,7 +82,7 @@ namespace sbk::engine
          * Called from gatherParameters.
          * @param parameters to append to.
          */
-        virtual void gatherParametersFromThis(GlobalParameterList& parameters) { (void)parameters; }
+        virtual void gatherParametersFromThis(global_parameter_list& parameters) { (void)parameters; }
 
         REGISTER_REFLECTION(node, node_base)
     };

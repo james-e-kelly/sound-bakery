@@ -4,7 +4,7 @@
 
 DEFINE_REFLECTION(sbk::engine::SwitchContainer)
 
-void sbk::engine::SwitchContainer::setSwitchParameter(sbk::core::database_ptr<NamedParameter> parameter)
+void sbk::engine::SwitchContainer::setSwitchParameter(sbk::core::database_ptr<named_parameter> parameter)
 {
     m_switchParameter = parameter;
 
@@ -12,7 +12,7 @@ void sbk::engine::SwitchContainer::setSwitchParameter(sbk::core::database_ptr<Na
 }
 
 void sbk::engine::SwitchContainer::setSwitchToChild(
-    std::unordered_map<sbk::core::database_ptr<NamedParameterValue>, sbk::core::child_ptr<Container>> map)
+    std::unordered_map<sbk::core::database_ptr<named_parameter_value>, sbk::core::child_ptr<Container>> map)
 {
     if (map.empty())
     {
@@ -30,7 +30,7 @@ void sbk::engine::SwitchContainer::populateChildKeys()
 
     if (m_switchParameter.lookup())
     {
-        for (const sbk::core::database_ptr<NamedParameterValue>& value : m_switchParameter->getValues())
+        for (const sbk::core::database_ptr<named_parameter_value>& value : m_switchParameter->get_values())
         {
             m_switchToChild.insert({value, sbk::core::child_ptr<Container>(*this)});
         }

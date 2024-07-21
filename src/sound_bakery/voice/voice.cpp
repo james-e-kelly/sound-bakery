@@ -7,7 +7,7 @@
 
 using namespace sbk::engine;
 
-void sbk::engine::Voice::playContainer(Container* container)
+void sbk::engine::voice::playContainer(Container* container)
 {
     m_voiceInstances.clear();
 
@@ -31,7 +31,7 @@ void sbk::engine::Voice::playContainer(Container* container)
     }
 }
 
-void Voice::update()
+void voice::update()
 {
     if (!m_voiceInstances.empty())
     {
@@ -52,7 +52,7 @@ void Voice::update()
     }
 }
 
-bool sbk::engine::Voice::playingContainer(Container* container) const noexcept
+bool sbk::engine::voice::playingContainer(Container* container) const noexcept
 {
     if (container == nullptr)
     {
@@ -96,13 +96,13 @@ bool sbk::engine::Voice::playingContainer(Container* container) const noexcept
     return std::find_if(m_voiceInstances.begin(), m_voiceInstances.end(), containerEqual) != m_voiceInstances.end();
 }
 
-const std::vector<std::unique_ptr<NodeInstance>>& sbk::engine::Voice::getVoices() const noexcept
+const std::vector<std::unique_ptr<NodeInstance>>& sbk::engine::voice::getVoices() const noexcept
 {
     return m_voiceInstances;
 }
 
-std::size_t sbk::engine::Voice::voices() const { return m_voiceInstances.size(); }
+std::size_t sbk::engine::voice::voices() const { return m_voiceInstances.size(); }
 
-NodeInstance* sbk::engine::Voice::voice(std::size_t index) const { return m_voiceInstances[index].get(); }
+NodeInstance* sbk::engine::voice::node_instance_at(std::size_t index) const { return m_voiceInstances[index].get(); }
 
-bool sbk::engine::Voice::isPlaying() const { return !m_voiceInstances.empty(); }
+bool sbk::engine::voice::isPlaying() const { return !m_voiceInstances.empty(); }
