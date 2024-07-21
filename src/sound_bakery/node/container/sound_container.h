@@ -13,7 +13,8 @@ namespace sbk::engine
 
         void gatherChildrenForPlay(GatherChildrenContext& context) const override;
 
-        bool canAddChild(const sbk::core::database_ptr<node_base>& child) const override { return false; }
+        bool can_add_children() const override { return false; }
+        bool can_add_child_type(const rttr::type& childType) const override { return false; }
 
         sound* getSound() const;
 

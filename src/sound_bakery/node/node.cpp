@@ -69,18 +69,33 @@ node_base* sbk::engine::node_base::parent() const { return m_parentNode.lookupRa
 
 node_base* sbk::engine::node_base::outputBus() const { return m_outputBus.lookupRaw(); }
 
-bool sbk::engine::node_base::canAddChild(const sbk::core::database_ptr<node_base>& child) const
+bool sbk::engine::node_base::can_add_children() const
+{ 
+    return true; 
+}
+
+bool sbk::engine::node_base::can_add_child_type(const rttr::type& childType) const
 {
-    if (m_childNodes.contains(child) || child.id() == get_database_id())
+    return childType.is_valid() && childType.is_derived_from<sbk::engine::node_base>();
+}
+
+bool sbk::engine::node_base::can_add_child(const sbk::core::database_ptr<node_base>& child) const
+{
+    if (child.lookup())
     {
-        return false;
+        const bool canAddChildren = can_add_children();
+        const bool canAddType     = can_add_child_type(child->get_type());
+        const bool childIsNotAlreadyChild = !m_childNodes.contains(child);
+        const bool childIsNotSelf         = child.id() != get_database_id();
+
+        return canAddChildren && canAddType && childIsNotAlreadyChild && childIsNotSelf;
     }
-    return true;
+    return false;
 }
 
 void sbk::engine::node_base::addChild(const sbk::core::database_ptr<node_base>& child)
 {
-    if (canAddChild(child))
+    if (can_add_child(child))
     {
         if (child.lookup() && child->parent())
         {

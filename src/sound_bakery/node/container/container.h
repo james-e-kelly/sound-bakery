@@ -50,17 +50,7 @@ namespace sbk::engine
     public:
         Container() : node() {}
 
-        bool canAddChild(const sbk::core::database_ptr<node_base>& child) const override
-        {
-            if (child.lookup() && child->getType().is_derived_from<Container>())
-            {
-                return node_base::canAddChild(child);
-            }
-            else
-            {
-                return false;
-            }
-        }
+        bool can_add_child_type(const rttr::type& childType) const override;
 
         /**
          * @brief Collects and gathers sounds on this node and its children for play.

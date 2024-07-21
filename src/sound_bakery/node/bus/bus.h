@@ -13,17 +13,7 @@ namespace sbk::engine
     public:
         bus() : node(), m_masterBus(false) {}
 
-        bool canAddChild(const sbk::core::database_ptr<node_base>& child) const override
-        {
-            if (child.lookup() && child->getType().is_derived_from<bus>())
-            {
-                return node_base::canAddChild(child);
-            }
-            else
-            {
-                return false;
-            }
-        }
+        bool can_add_child_type(const rttr::type& childType) const override;
 
         void setMasterBus(bool isMaster);
 

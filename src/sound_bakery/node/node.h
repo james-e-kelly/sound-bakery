@@ -30,7 +30,9 @@ namespace sbk::engine
         node_base* parent() const;
         node_base* outputBus() const;
 
-        virtual bool canAddChild(const sbk::core::database_ptr<node_base>& child) const;
+        virtual bool can_add_children() const;  //< Can any children be added to this node?
+        virtual bool can_add_child_type(const rttr::type& childType) const; //< Can this type be added to the child?
+        bool can_add_child(const sbk::core::database_ptr<node_base>& child) const;  //< Can this runtime child be added?
 
         void addChild(const sbk::core::database_ptr<node_base>& child);
         void removeChild(const sbk::core::database_ptr<node_base>& child);

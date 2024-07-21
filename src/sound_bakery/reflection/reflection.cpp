@@ -215,6 +215,8 @@ namespace sbk::reflection
             .constructor<>()(policy::ctor::as_raw_ptr)
             .property("IsMasterBus", &bus::isMasterBus, &bus::setMasterBus)(metadata(sbk::editor::METADATA_KEY::Readonly, true));
 
+        registration::class_<aux_bus>("SB::Engine::AuxBus").constructor<>()(policy::ctor::as_raw_ptr);
+
         registration::class_<event>("SB::Engine::Event")
             .constructor<>()(policy::ctor::as_raw_ptr)
             .property("Actions", &event::m_actions);

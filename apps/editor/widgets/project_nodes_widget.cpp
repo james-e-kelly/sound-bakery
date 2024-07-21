@@ -153,7 +153,7 @@ void project_nodes_widget::RenderSingleNode(rttr::type type,
                             sbk_id payloadID = *static_cast<sbk_id*>(currentPayload->Data);
                             sbk::core::database_ptr<sbk::engine::node_base> potentialChild(payloadID);
 
-                            if (node->canAddChild(potentialChild))
+                            if (node->can_add_child(potentialChild))
                             {
                                 if (const ImGuiPayload* const payload =
                                         ImGui::AcceptDragDropPayload(currentPayload->DataType))
@@ -294,8 +294,14 @@ bool project_nodes_widget::RenderNodeContextMenu(rttr::type type,
                 {
                     RenderCreateParentOrChildMenu(category, instance,
                                                   NodeCreationType::NewParent);
-                    RenderCreateParentOrChildMenu(category, instance,
-                                                  NodeCreationType::NewChild);
+
+                    const sbk::engine::node_base* const nodeBase = object->try_convert_object<sbk::engine::node_base>();
+
+                    if (nodeBase->can_add_children())
+                    {
+                        RenderCreateParentOrChildMenu(category, instance, NodeCreationType::NewChild);
+                    }
+
                     ImGui::Separator();
                 }
 
@@ -350,12 +356,22 @@ void project_nodes_widget::RenderCreateParentOrChildMenu(
 
     sbk::engine::node* const castedNode = sbk::util::type_helper::getNodeFromInstance(node);
 
+    if (creationType == NodeCreationType::NewChild && !castedNode->can_add_children())
+    {
+        return;
+    }
+
     if (ImGui::BeginMenu(CreateParentOrChildMenuName(creationType).data()))
     {
         for (const rttr::type type : categoryTypes)
         {
             const rttr::string_view typeIndexName =
                 sbk::util::type_helper::get_display_name_from_type(type).data();
+
+            if (creationType == NodeCreationType::NewChild && !castedNode->can_add_child_type(type))
+            {
+                continue;
+            }
 
             if (ImGui::MenuItem(typeIndexName.data()))
             {
