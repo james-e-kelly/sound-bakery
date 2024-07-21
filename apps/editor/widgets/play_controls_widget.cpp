@@ -53,7 +53,7 @@ void player_widget::render()
         s_lastPlayableSelection = nullptr;
     }
 
-    ImGui::BeginDisabled(!isSelected);
+    ImGui::BeginDisabled(!isSelected || !isPlayable);
 
     if (isSelected && !!s_lastPlayableSelection)
     {
@@ -79,6 +79,8 @@ void player_widget::render()
     {
         stop_selected();
     }
+
+    ImGui::EndDisabled();
 
     sbk::engine::node* const nodeSelection =
         s_lastPlayableSelection ? s_lastPlayableSelection->try_convert_object<sbk::engine::node>() : nullptr;
@@ -149,8 +151,6 @@ void player_widget::render()
 
         ImGui::EndTabBar();
     }
-
-    ImGui::EndDisabled();
 
     render_children();
 
