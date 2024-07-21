@@ -63,42 +63,21 @@ void player_widget::render()
                               .data());
     }
 
+    if (ImGui::IsKeyReleased(ImGuiKey_Space))
+    {
+        toggle_play_selected();
+    }
+
     if (ImGui::Button("Play"))
     {
-        if (sbk::engine::Container* container =
-                s_lastPlayableSelection
-                    ->try_convert_object<sbk::engine::Container>())
-        {
-            sbk::engine::system::get()->get_listener_game_object()->playContainer(
-                container);
-        }
-        else if (sbk::engine::sound* sound =
-                     s_lastPlayableSelection
-                         ->try_convert_object<sbk::engine::sound>())
-        {
-            if (sbk::engine::SoundContainer* previewContainer = sbk::engine::system::get_project()->get_preview_container().lock().get())
-            {
-                previewContainer->setSound(sound);
-
-                sbk::engine::system::get()
-                    ->get_listener_game_object()
-                    ->playContainer(previewContainer);
-            }
-        }
-        else if (sbk::engine::event* event =
-                     s_lastPlayableSelection
-                         ->try_convert_object<sbk::engine::event>())
-        {
-            sbk::engine::system::get()->get_listener_game_object()->postEvent(
-                event);
-        }
+        play_selected();
     }
 
     ImGui::SameLine();
 
     if (ImGui::Button("Stop"))
     {
-        sbk::engine::system::get()->get_listener_game_object()->stopAll();
+        stop_selected();
     }
 
     sbk::engine::node* const nodeSelection =
@@ -176,4 +155,43 @@ void player_widget::render()
     render_children();
 
     ImGui::End();
+}
+
+void player_widget::play_selected()
+{
+    if (sbk::engine::Container* container = s_lastPlayableSelection->try_convert_object<sbk::engine::Container>())
+    {
+        sbk::engine::system::get()->get_listener_game_object()->playContainer(container);
+    }
+    else if (sbk::engine::sound* sound = s_lastPlayableSelection->try_convert_object<sbk::engine::sound>())
+    {
+        if (sbk::engine::SoundContainer* previewContainer =
+                sbk::engine::system::get_project()->get_preview_container().lock().get())
+        {
+            previewContainer->setSound(sound);
+
+            sbk::engine::system::get()->get_listener_game_object()->playContainer(previewContainer);
+        }
+    }
+    else if (sbk::engine::event* event = s_lastPlayableSelection->try_convert_object<sbk::engine::event>())
+    {
+        sbk::engine::system::get()->get_listener_game_object()->postEvent(event);
+    }
+}
+
+void player_widget::stop_selected()
+{ 
+    sbk::engine::system::get()->get_listener_game_object()->stopAll(); 
+}
+
+void player_widget::toggle_play_selected()
+{
+    if (sbk::engine::system::get()->get_listener_game_object()->isPlaying())
+    {
+        stop_selected();
+    }
+    else
+    {
+        play_selected();
+    }
 }

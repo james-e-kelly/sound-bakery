@@ -12,4 +12,9 @@ public:
 public:
     virtual void render() override;
     virtual void start() override;
+
+private:
+    void play_selected();
+    void stop_selected();
+    void toggle_play_selected();
 };
