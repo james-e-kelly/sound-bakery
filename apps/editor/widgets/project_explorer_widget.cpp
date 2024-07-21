@@ -23,6 +23,11 @@ void project_explorer_widget::render()
 
             if (ImGui::BeginTabItem("Audio"))
             {
+                if (ImGui::IsItemFocused())
+                {
+                    get_app()->get_manager_by_class<project_manager>()->get_selection().selected_object(nullptr);
+                }
+
                 ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(1, 1, 1, 1));
                 
                 if (m_projectNodesWidget)
@@ -35,6 +40,11 @@ void project_explorer_widget::render()
             }
             if (ImGui::BeginTabItem("Nodes"))
             {
+                if (ImGui::IsItemFocused())
+                {
+                    get_app()->get_manager_by_class<project_manager>()->get_selection().selected_object(nullptr);
+                }
+
                 if (m_projectNodesWidget)
                 {
                     m_projectNodesWidget->render_objects_page();
@@ -43,6 +53,11 @@ void project_explorer_widget::render()
             }
             if (ImGui::BeginTabItem("Events"))
             {
+                if (ImGui::IsItemFocused())
+                {
+                    get_app()->get_manager_by_class<project_manager>()->get_selection().selected_object(nullptr);
+                }
+
                 if (m_projectNodesWidget)
                 {
                     m_projectNodesWidget->render_events_page();
@@ -51,6 +66,11 @@ void project_explorer_widget::render()
             }
             if (ImGui::BeginTabItem("SoundBanks"))
             {
+                if (ImGui::IsItemFocused())
+                {
+                    get_app()->get_manager_by_class<project_manager>()->get_selection().selected_object(nullptr);
+                }
+
                 if (m_projectNodesWidget)
                 {
                     m_projectNodesWidget->render_soundbank_page();
