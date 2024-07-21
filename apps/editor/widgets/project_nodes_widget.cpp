@@ -167,9 +167,10 @@ void project_nodes_widget::RenderSingleNode(rttr::type type,
                 }
             }
 
-            if (ImGui::IsItemHovered() &&
-                ImGui::IsMouseReleased(ImGuiMouseButton_Left) &&
-                !ImGui::GetDragDropPayload())
+            const bool nodeClicked = ImGui::IsItemHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Left) && !ImGui::GetDragDropPayload();
+            const bool nodeKeyboardFocused = ImGui::IsItemFocused() && !nodeClicked;
+
+            if (nodeClicked || nodeKeyboardFocused)
             {
                 get_app()->get_manager_by_class<project_manager>()->get_selection().selected_object(
                     object);
