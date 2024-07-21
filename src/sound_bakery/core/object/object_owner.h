@@ -28,6 +28,9 @@ namespace sbk::core
 
         void destroy_all() { m_objects.clear(); }
 
+        std::vector<std::shared_ptr<object>>& get_objects() { return m_objects; }
+        const std::vector<std::shared_ptr<object>>& get_objects() const { return m_objects; }
+
     private:
         std::vector<std::shared_ptr<object>> m_objects;
     };

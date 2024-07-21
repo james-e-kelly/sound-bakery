@@ -239,6 +239,8 @@ namespace sbk::reflection
             .constructor<>()(policy::ctor::as_raw_ptr)
             .property("Events", &soundbank::m_events);
 
+        registration::class_<node_instance>("SB::Engine::NodeInstance").constructor<>()(policy::ctor::as_raw_ptr);
+
         sbk::reflection::RegisterPointerConversionsForBaseClasses<aux_bus>();
 
         sbk::reflection::RegisterPointerConversionsForBaseClasses<BlendContainer>();

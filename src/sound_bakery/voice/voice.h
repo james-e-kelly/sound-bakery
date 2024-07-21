@@ -24,7 +24,7 @@ namespace sbk::engine
 
         [[nodiscard]] bool playing_container(Container* container) const noexcept;
 
-        [[nodiscard]] const std::vector<std::unique_ptr<node_instance>>& get_voices() const noexcept;
+        [[nodiscard]] const std::vector<std::shared_ptr<node_instance>> get_voices() const noexcept;
         [[nodiscard]] std::size_t num_voices() const;
         [[nodiscard]] node_instance* node_instance_at(std::size_t index) const;
 
@@ -35,7 +35,5 @@ namespace sbk::engine
     private:
         game_object* m_owningGameObject = nullptr;
         sbk::core::database_ptr<Container> m_playingContainer;
-
-        std::vector<std::unique_ptr<node_instance>> m_voiceInstances;
     };
 }  // namespace sbk::engine

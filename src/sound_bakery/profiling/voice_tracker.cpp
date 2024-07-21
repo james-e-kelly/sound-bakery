@@ -47,7 +47,7 @@ void VoiceTracker::update(system* system)
                                 m_nodePlayingCount[node->get_database_id()]++;
                             }
 
-                            const node_instance* parent = nodeInstance->getParent();
+                            const node_instance* parent = nodeInstance->get_parent();
 
                             if (!trackedNodes.contains(parent))
                             {
@@ -61,7 +61,7 @@ void VoiceTracker::update(system* system)
                                         m_nodePlayingCount[node->get_database_id()]++;
                                     }
 
-                                    parent = parent->getParent();
+                                    parent = parent->get_parent();
                                 }
                             }
                         }

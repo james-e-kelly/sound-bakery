@@ -116,7 +116,7 @@ namespace sbk::engine
         }
 
         std::shared_ptr<node> getReferencingNode() const noexcept { return m_referencingNode; }
-        node_instance* getParent() const noexcept { return m_parent.parent.get(); }
+        node_instance* get_parent() const noexcept { return m_parent.parent.get(); }
         sc_node_group* getBus() const noexcept { return m_nodeGroup.nodeGroup.get(); }
 
     private:
