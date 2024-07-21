@@ -100,7 +100,7 @@ sc_result sc_bank_uninit(sc_bank* bank)
 
 sc_result sc_bank_build(sc_bank* bank,
                         const char** inputFiles,
-                        ma_encoding_format* inputFileFormats,
+                        sc_encoding_format* inputFileFormats,
                         ma_uint32 inputFilesSize)
 {
     SC_CHECK_ARG(bank != NULL);

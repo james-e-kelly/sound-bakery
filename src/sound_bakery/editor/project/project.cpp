@@ -168,7 +168,7 @@ void sbk::editor::project::buildSoundbanks() const
     const std::unordered_set<sbk::core::object*> soundbankObjects =
         sbk::engine::system::get()->get_objects_of_category(SB_CATEGORY_BANK);
 
-    for (auto& soundbankObject : soundbankObjects)
+    for (const auto& soundbankObject : soundbankObjects)
     {
         if (sbk::engine::soundbank* const soundbank = soundbankObject->try_convert_object<sbk::engine::soundbank>())
         {
@@ -179,73 +179,19 @@ void sbk::editor::project::buildSoundbanks() const
                 m_projectConfig.objectFolder() / m_projectConfig.getIdFilename(soundbank, std::string(".bank"));
 
             saveYAML(soundbankEmitter, filePath);*/
-
-            std::vector<sbk::engine::node_base*> nodesToSave;
-
-            for (auto& event : soundbank->get_events())
-            {
-                if (event.lookup())
-                {
-                    for (auto& action : event->m_actions)
-                    {
-                        if (!action.m_destination.lookup())
-                        {
-                            continue;
-                        }
-
-                        sbk::engine::node_base* const nodeBase =
-                            action.m_destination->try_convert_object<sbk::engine::node_base>();
-
-                        assert(nodeBase);
-
-                        nodesToSave.push_back(nodeBase);
-                        nodeBase->gatherAllDescendants(nodesToSave);
-                        nodeBase->gatherAllParents(nodesToSave);
-                    }
-                }
-            }
-
-            if (nodesToSave.empty())
-            {
-                continue;
-            }
-
-            std::vector<sbk::engine::sound*> soundsToSave;
-            std::vector<std::string> ecodedSoundPathsToSaveStrings;
-            std::vector<const char*> encodedSoundPathsToSave;
-            std::vector<ma_encoding_format> encodingFormats;
-
-            for (auto& node : nodesToSave)
-            {
-                if (node->getType() == sbk::engine::SoundContainer::type())
-                {
-                    if (sbk::engine::SoundContainer* const soundContainer =
-                            node->try_convert_object<sbk::engine::SoundContainer>())
-                    {
-                        if (sbk::engine::sound* const sound = soundContainer->getSound())
-                        {
-                            soundsToSave.push_back(sound);
-                            ecodedSoundPathsToSaveStrings.push_back(
-                                (m_projectConfig.encoded_folder() / sound->getEncodedSoundName()).string());
-                            encodedSoundPathsToSave.push_back(ecodedSoundPathsToSaveStrings.back().c_str());
-                            encodingFormats.push_back(ma_encoding_format_unknown);
-                        }
-                    }
-                }
-            }
-
+            
             sbk::engine::soundbank_dependencies soundbankDependencies = soundbank->gather_dependencies();
 
             sc_bank bank;
-            sc_result initresult =
+            const sc_result initresult =
                 sc_bank_init(&bank, (m_projectConfig.build_folder() / (std::string(soundbank->get_database_name()) + ".bnk"))
                                  .string()
                                  .c_str(),
                              MA_OPEN_MODE_WRITE);
             assert(initresult == MA_SUCCESS);
 
-            sc_result buildResult = sc_bank_build(&bank, encodedSoundPathsToSave.data(), encodingFormats.data(),
-                                                  encodedSoundPathsToSave.size());
+            const sc_result buildResult = sc_bank_build(&bank, soundbankDependencies.encodedSoundPaths.data(), soundbankDependencies.encodingFormats.data(),
+                                                  soundbankDependencies.encodedSoundPaths.size());
             assert(buildResult == MA_SUCCESS);
 
             sc_bank_uninit(&bank);

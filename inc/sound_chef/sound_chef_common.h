@@ -114,6 +114,14 @@ typedef enum sc_dsp_index
     SC_DSP_INDEX_HEAD = -1   //< Right/top of the chain and becomes the new output
 } sc_dsp_index;
 
+typedef enum sc_encoding_format
+{
+    sc_encoding_format_unknown = 0,
+    sc_encoding_format_wav,
+    sc_encoding_format_adpcm = 10,
+    sc_encoding_format_vorbis,
+    sc_encoding_format_opus
+} sc_encoding_format;
 
 typedef sc_result(SC_CALL* SC_DSP_CREATE_CALLBACK)(sc_dsp_state* dspState);
 typedef sc_result(SC_CALL* SC_DSP_RELEASE_CALLBACK)(sc_dsp_state* dspState);

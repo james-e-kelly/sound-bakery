@@ -1,6 +1,7 @@
 #pragma once
 
 #include "sound_bakery/core/core_include.h"
+#include "sound_chef/sound_chef_encoder.h"
 
 namespace sbk::engine
 {
@@ -16,6 +17,13 @@ namespace sbk::engine
         std::vector<std::shared_ptr<sbk::engine::event>> events;
         std::vector<std::shared_ptr<sbk::engine::sound>> sounds;
         std::vector<std::shared_ptr<sbk::engine::node_base>> nodes;
+
+        // The following properties are sent straight to Sound Chef
+        // for soundbank generation.
+        std::vector<const char*> encodedSoundPaths;
+        std::vector<sc_encoding_format> encodingFormats;
+
+        std::vector<std::string> encodedSoundPathsStrings;  //< used to keep sound paths alive while passing to Sound Chef
     };
 
     /**

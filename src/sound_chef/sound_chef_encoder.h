@@ -18,15 +18,6 @@ extern "C"
     typedef struct sc_encoder_config sc_encoder_config;
     typedef struct sc_encoder sc_encoder;
 
-    typedef enum sc_encoding_format
-    {
-        sc_encoding_format_unknown = 0,
-        sc_encoding_format_wav,
-        sc_encoding_format_adpcm = 10,
-        sc_encoding_format_vorbis,
-        sc_encoding_format_opus
-    } sc_encoding_format;
-
     struct sc_encoder_config
     {
         ma_encoder_config baseConfig;

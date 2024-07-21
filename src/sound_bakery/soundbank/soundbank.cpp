@@ -33,6 +33,7 @@ sbk::engine::soundbank_dependencies sbk::engine::soundbank::gather_dependencies(
                 sbk::engine::node_base* const nodeBase =
                     action.m_destination->try_convert_object<sbk::engine::node_base>();
 
+                nodesToSave.push_back(nodeBase);
                 nodeBase->gatherAllDescendants(nodesToSave);
                 nodeBase->gatherAllParents(nodesToSave);
             }
@@ -52,6 +53,13 @@ sbk::engine::soundbank_dependencies sbk::engine::soundbank::gather_dependencies(
                 {
                     if (sbk::engine::sound* const sound = soundContainer->getSound())
                     {
+                        const sbk::engine::encoding_sound encodingSound = sound->get_encoding_sound_data();
+                        assert(!encodingSound.encodedSoundPath.empty());
+
+                        dependencies.encodedSoundPathsStrings.push_back(encodingSound.encodedSoundPath.string());
+                        dependencies.encodedSoundPaths.push_back(dependencies.encodedSoundPathsStrings.back().c_str());
+                        dependencies.encodingFormats.push_back(encodingSound.encodingFormat);
+
                         dependencies.sounds.push_back(
                             std::static_pointer_cast<sbk::engine::sound>(sound->shared_from_this()));
                     }

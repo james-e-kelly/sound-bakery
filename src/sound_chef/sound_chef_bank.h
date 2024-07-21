@@ -62,7 +62,7 @@ extern "C"
 
     sc_result SC_API sc_bank_build(sc_bank* bank,
                                    const char** inputFiles,
-                                   ma_encoding_format* inputFileFormats,
+                                   sc_encoding_format* inputFileFormats,
                                    ma_uint32 inputFilesSize);
     sc_result SC_API sc_bank_read(sc_bank* bank);
 
