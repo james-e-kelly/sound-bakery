@@ -10,7 +10,7 @@ namespace sbk::engine
     class node;
 }
 
-enum class NodeCreationType
+enum class node_creation_type
 {
     New,
     NewParent,
@@ -31,35 +31,32 @@ public:
     }
 
 public:
-    void RenderPage(const std::vector<SB_OBJECT_CATEGORY>& categories);
-    void RenderObjectsPage();
-    void RenderEventsPage();
-    void RenderSoundbankPage();
+    void render_page(const std::vector<SB_OBJECT_CATEGORY>& categories);
+    void render_objects_page();
+    void render_events_page();
+    void render_soundbank_page();
 
 public:
-    void RenderCategory(SB_OBJECT_CATEGORY category);
+    void render_category(SB_OBJECT_CATEGORY category);
+    void render_single_node(rttr::type type, rttr::instance instance);
+    void render_rename_object(sbk::core::database_object* const& object);
 
-    void RenderSingleNode(rttr::type type, rttr::instance instance);
+    void handle_open_node(sbk::core::database_object* object);
 
-    bool NodeHasChildren(sbk::engine::node* node);
-
-    void HandleOpenNode(sbk::core::database_object* object);
-
-    bool ObjectIsRenaming(sbk::core::database_object* object);
-
-    void RenderRenameObject(sbk::core::database_object* const& object);
+    bool node_has_children(sbk::engine::node* node);
+    bool object_is_renaming(sbk::core::database_object* object);
 
 private:
-    bool RenderNodeContextMenu(rttr::type type, rttr::instance instance);
+    bool render_node_context_menu(rttr::type type, rttr::instance instance);
 
-    void RenderCreateParentOrChildMenu(SB_OBJECT_CATEGORY category,
+    void render_create_parent_or_child_menu(SB_OBJECT_CATEGORY category,
                                        rttr::instance node,
-                                       NodeCreationType creationType);
+                                       node_creation_type creationType);
 
-    std::string_view CreateParentOrChildMenuName(NodeCreationType creationType);
+    std::string_view create_parent_or_child_menu_name(node_creation_type creationType);
 
 private:
-    void SetupRenameNode(sbk::core::database_object* object);
+    void setup_rename_node(sbk::core::database_object* object);
 
 private:
     sbk_id m_renameID         = 0;

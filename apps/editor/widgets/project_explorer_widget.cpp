@@ -27,7 +27,7 @@ void project_explorer_widget::render()
                 
                 if (m_projectNodesWidget)
                 {
-                    m_projectNodesWidget->RenderPage({SB_CATEGORY_SOUND});
+                    m_projectNodesWidget->render_page({SB_CATEGORY_SOUND});
                 }
                 ImGui::EndTabItem();
 
@@ -37,7 +37,7 @@ void project_explorer_widget::render()
             {
                 if (m_projectNodesWidget)
                 {
-                    m_projectNodesWidget->RenderObjectsPage();
+                    m_projectNodesWidget->render_objects_page();
                 }
                 ImGui::EndTabItem();
             }
@@ -45,7 +45,7 @@ void project_explorer_widget::render()
             {
                 if (m_projectNodesWidget)
                 {
-                    m_projectNodesWidget->RenderEventsPage();
+                    m_projectNodesWidget->render_events_page();
                 }
                 ImGui::EndTabItem();
             }
@@ -53,7 +53,7 @@ void project_explorer_widget::render()
             {
                 if (m_projectNodesWidget)
                 {
-                    m_projectNodesWidget->RenderSoundbankPage();
+                    m_projectNodesWidget->render_soundbank_page();
                 }
                 ImGui::EndTabItem();
             }

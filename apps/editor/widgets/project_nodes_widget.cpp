@@ -26,7 +26,7 @@ static const std::vector<SB_OBJECT_CATEGORY> s_eventPageCategories{
 
 static const std::vector<SB_OBJECT_CATEGORY> s_soundbankPageCategories{SB_CATEGORY_BANK};
 
-void project_nodes_widget::RenderPage(
+void project_nodes_widget::render_page(
     const std::vector<SB_OBJECT_CATEGORY>& categories)
 {
     for (const SB_OBJECT_CATEGORY category : categories)
@@ -44,33 +44,33 @@ void project_nodes_widget::RenderPage(
         {
             if (ImGui::BeginPopupContextItem("TopNodeContext"))
             {
-                RenderCreateParentOrChildMenu(category, rttr::instance(),
-                                              NodeCreationType::New);
+                render_create_parent_or_child_menu(category, rttr::instance(),
+                                              node_creation_type::New);
                 ImGui::EndPopup();
             }
 
-            RenderCategory(category);
+            render_category(category);
             ImGui::TreePop();
         }
     }
 }
 
-void project_nodes_widget::RenderObjectsPage()
+void project_nodes_widget::render_objects_page()
 {
-    RenderPage(s_objectPageCategories);
+    render_page(s_objectPageCategories);
 }
 
-void project_nodes_widget::RenderEventsPage()
+void project_nodes_widget::render_events_page()
 {
-    RenderPage(s_eventPageCategories);
+    render_page(s_eventPageCategories);
 }
 
-void project_nodes_widget::RenderSoundbankPage() 
+void project_nodes_widget::render_soundbank_page() 
 { 
-    RenderPage(s_soundbankPageCategories); 
+    render_page(s_soundbankPageCategories); 
 }
 
-void project_nodes_widget::RenderCategory(SB_OBJECT_CATEGORY category)
+void project_nodes_widget::render_category(SB_OBJECT_CATEGORY category)
 {
     const std::unordered_set<sbk::core::object*> categoryObjects =
         sbk::engine::system::get()->get_objects_of_category(category);
@@ -88,13 +88,13 @@ void project_nodes_widget::RenderCategory(SB_OBJECT_CATEGORY category)
 
             if (notNodeType || (nodeBase && nodeBase->parent() == nullptr))
             {
-                RenderSingleNode(type, rttr::instance(object));
+                render_single_node(type, rttr::instance(object));
             }
         }
     }
 }
 
-void project_nodes_widget::RenderSingleNode(rttr::type type,
+void project_nodes_widget::render_single_node(rttr::type type,
                                           rttr::instance instance)
 {
     if (instance)
@@ -108,9 +108,9 @@ void project_nodes_widget::RenderSingleNode(rttr::type type,
 
             sbk::engine::node* const node = rttr::rttr_cast<sbk::engine::node*, sbk::core::database_object*>(object);
 
-            const bool hasChildren = node && NodeHasChildren(node);
+            const bool hasChildren = node && node_has_children(node);
 
-            HandleOpenNode(object);
+            handle_open_node(object);
 
             ImGuiTreeNodeFlags flags =
                 ImGuiTreeNodeFlags_None | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_NavLeftJumpsBackHere;
@@ -196,13 +196,13 @@ void project_nodes_widget::RenderSingleNode(rttr::type type,
                 previousFocusID = ImGui::GetFocusID();
             }
 
-            if (RenderNodeContextMenu(type, instance))
+            if (render_node_context_menu(type, instance))
             {
                 ImGui::SameLine();
 
-                if (ObjectIsRenaming(object))
+                if (object_is_renaming(object))
                 {
-                    RenderRenameObject(object);
+                    render_rename_object(object);
                 }
                 else
                 {
@@ -225,7 +225,7 @@ void project_nodes_widget::RenderSingleNode(rttr::type type,
                     {
                         for (auto child : node->getChildren())
                         {
-                            RenderSingleNode(type, child);
+                            render_single_node(type, child);
                         }
                     }
                     else if (sbk::engine::NamedParameter* const intParameter =
@@ -238,7 +238,7 @@ void project_nodes_widget::RenderSingleNode(rttr::type type,
                         {
                             if (value.lookup())
                             {
-                                RenderSingleNode(type,
+                                render_single_node(type,
                                                  rttr::instance(value.raw()));
                             }
                         }
@@ -254,12 +254,12 @@ void project_nodes_widget::RenderSingleNode(rttr::type type,
     }
 }
 
-bool project_nodes_widget::NodeHasChildren(sbk::engine::node* node)
+bool project_nodes_widget::node_has_children(sbk::engine::node* node)
 {
     return node ? node->getChildCount() : false;
 }
 
-void project_nodes_widget::HandleOpenNode(sbk::core::database_object* object)
+void project_nodes_widget::handle_open_node(sbk::core::database_object* object)
 {
     if (object)
     {
@@ -271,13 +271,13 @@ void project_nodes_widget::HandleOpenNode(sbk::core::database_object* object)
     }
 }
 
-bool project_nodes_widget::ObjectIsRenaming(sbk::core::database_object* object)
+bool project_nodes_widget::object_is_renaming(sbk::core::database_object* object)
 {
     return object && object->get_database_id() &&
            object->get_database_id() == m_renameID;
 }
 
-void project_nodes_widget::RenderRenameObject(
+void project_nodes_widget::render_rename_object(
     sbk::core::database_object* const& object)
 {
     if (ImGui::InputText("###rename", m_renameString, 255,
@@ -292,7 +292,7 @@ void project_nodes_widget::RenderRenameObject(
     ImGui::SetKeyboardFocusHere(-1);
 }
 
-bool project_nodes_widget::RenderNodeContextMenu(rttr::type type,
+bool project_nodes_widget::render_node_context_menu(rttr::type type,
                                                rttr::instance instance)
 {
     bool result = false;
@@ -312,14 +312,14 @@ bool project_nodes_widget::RenderNodeContextMenu(rttr::type type,
                 if (object->getType().is_derived_from(
                         sbk::engine::node_base::type()))
                 {
-                    RenderCreateParentOrChildMenu(category, instance,
-                                                  NodeCreationType::NewParent);
+                    render_create_parent_or_child_menu(category, instance,
+                                                  node_creation_type::NewParent);
 
                     const sbk::engine::node_base* const nodeBase = object->try_convert_object<sbk::engine::node_base>();
 
                     if (nodeBase->can_add_children())
                     {
-                        RenderCreateParentOrChildMenu(category, instance, NodeCreationType::NewChild);
+                        render_create_parent_or_child_menu(category, instance, node_creation_type::NewChild);
                     }
 
                     ImGui::Separator();
@@ -343,7 +343,7 @@ bool project_nodes_widget::RenderNodeContextMenu(rttr::type type,
 
                 if (ImGui::MenuItem("Rename"))
                 {
-                    SetupRenameNode(object);
+                    setup_rename_node(object);
                 }
 
                 ImGui::Separator();
@@ -364,10 +364,10 @@ bool project_nodes_widget::RenderNodeContextMenu(rttr::type type,
     return result;
 }
 
-void project_nodes_widget::RenderCreateParentOrChildMenu(
+void project_nodes_widget::render_create_parent_or_child_menu(
     SB_OBJECT_CATEGORY category,
     rttr::instance node,
-    NodeCreationType creationType)
+    node_creation_type creationType)
 {
     m_renameID = 0;
 
@@ -376,29 +376,29 @@ void project_nodes_widget::RenderCreateParentOrChildMenu(
 
     sbk::engine::node* const castedNode = sbk::util::type_helper::getNodeFromInstance(node);
 
-    if (creationType == NodeCreationType::NewChild && !castedNode->can_add_children())
+    if (creationType == node_creation_type::NewChild && !castedNode->can_add_children())
     {
         return;
     }
 
-    if (creationType == NodeCreationType::NewParent && !castedNode->can_add_parent())
+    if (creationType == node_creation_type::NewParent && !castedNode->can_add_parent())
     {
         return;
     }
 
-    if (ImGui::BeginMenu(CreateParentOrChildMenuName(creationType).data()))
+    if (ImGui::BeginMenu(create_parent_or_child_menu_name(creationType).data()))
     {
         for (const rttr::type type : categoryTypes)
         {
             const rttr::string_view typeIndexName =
                 sbk::util::type_helper::get_display_name_from_type(type).data();
 
-            if (creationType == NodeCreationType::NewChild && !castedNode->can_add_child_type(type))
+            if (creationType == node_creation_type::NewChild && !castedNode->can_add_child_type(type))
             {
                 continue;
             }
 
-            if (creationType == NodeCreationType::NewParent && !castedNode->can_add_parent_type(type))
+            if (creationType == node_creation_type::NewParent && !castedNode->can_add_parent_type(type))
             {
                 continue;
             }
@@ -410,7 +410,7 @@ void project_nodes_widget::RenderCreateParentOrChildMenu(
 
                 assert(newObject);
 
-                SetupRenameNode(newObject.get());
+                setup_rename_node(newObject.get());
 
                 sbk::engine::node* newNode =
                     sbk::reflection::cast<sbk::engine::node*, sbk::core::object*>(
@@ -420,7 +420,7 @@ void project_nodes_widget::RenderCreateParentOrChildMenu(
                 {
                     switch (creationType)
                     {
-                        case NodeCreationType::NewParent:
+                        case node_creation_type::NewParent:
                         {
                             if (sbk::engine::node_base* baseParent =
                                     castedNode->parent())
@@ -433,13 +433,13 @@ void project_nodes_widget::RenderCreateParentOrChildMenu(
                             newNode->addChild(castedNode);
                             break;
                         }
-                        case NodeCreationType::NewChild:
+                        case node_creation_type::NewChild:
                         {
                             m_nodeToOpen = castedNode->get_database_id();
                             castedNode->addChild(newNode);
                             break;
                         }
-                        case NodeCreationType::New:
+                        case node_creation_type::New:
                             m_nodeToOpen = newNode->get_database_id();
                             break;
                         default:
@@ -456,20 +456,20 @@ void project_nodes_widget::RenderCreateParentOrChildMenu(
     }
 }
 
-std::string_view project_nodes_widget::CreateParentOrChildMenuName(
-    NodeCreationType creationType)
+std::string_view project_nodes_widget::create_parent_or_child_menu_name(
+    node_creation_type creationType)
 {
     std::string_view menuName;
 
     switch (creationType)
     {
-        case NodeCreationType::New:
+        case node_creation_type::New:
             menuName = "Create New";
             break;
-        case NodeCreationType::NewParent:
+        case node_creation_type::NewParent:
             menuName = "Create Parent";
             break;
-        case NodeCreationType::NewChild:
+        case node_creation_type::NewChild:
             menuName = "Create Child";
             break;
         default:
@@ -479,7 +479,7 @@ std::string_view project_nodes_widget::CreateParentOrChildMenuName(
     return menuName;
 }
 
-void project_nodes_widget::SetupRenameNode(sbk::core::database_object* object)
+void project_nodes_widget::setup_rename_node(sbk::core::database_object* object)
 {
     m_renameID                = object->get_database_id();
     std::string_view nodeName = object->get_database_name();
