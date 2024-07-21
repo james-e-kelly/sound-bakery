@@ -7,7 +7,7 @@ namespace sbk::engine
     class SB_CLASS RandomContainer : public container
     {
     public:
-        virtual void gather_children_for_play(GatherChildrenContext& context) const override
+        virtual void gather_children_for_play(gather_children_context& context) const override
         {
             switch (m_childNodes.size())
             {

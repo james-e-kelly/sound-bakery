@@ -4,7 +4,7 @@ using namespace sbk::engine;
 
 DEFINE_REFLECTION(sbk::engine::sequence_container)
 
-void sequence_container::gather_children_for_play(GatherChildrenContext& context) const
+void sequence_container::gather_children_for_play(gather_children_context& context) const
 {
     if (!m_sequence.empty() && context.numTimesPlayed > 0)
     {

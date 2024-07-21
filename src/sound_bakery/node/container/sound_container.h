@@ -11,7 +11,7 @@ namespace sbk::engine
     public:
         SoundContainer() = default;
 
-        void gather_children_for_play(GatherChildrenContext& context) const override;
+        void gather_children_for_play(gather_children_context& context) const override;
 
         bool can_add_children() const override { return false; }
         bool can_add_child_type(const rttr::type& childType) const override { return false; }

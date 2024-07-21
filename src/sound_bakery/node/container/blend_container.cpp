@@ -2,7 +2,7 @@
 
 DEFINE_REFLECTION(sbk::engine::BlendContainer)
 
-void sbk::engine::BlendContainer::gather_children_for_play(GatherChildrenContext& context) const
+void sbk::engine::BlendContainer::gather_children_for_play(gather_children_context& context) const
 {
     for (node_base* const child : getChildren())
     {

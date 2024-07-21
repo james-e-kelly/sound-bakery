@@ -7,7 +7,7 @@ namespace sbk::engine
     class SB_CLASS SwitchContainer : public container
     {
     public:
-        void gather_children_for_play(GatherChildrenContext& context) const override
+        void gather_children_for_play(gather_children_context& context) const override
         {
             sbk::core::database_ptr<named_parameter_value> selectedValue;
 

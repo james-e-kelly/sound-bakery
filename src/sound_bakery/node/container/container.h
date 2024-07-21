@@ -9,9 +9,9 @@ namespace sbk::engine
     /**
      * @brief Contains all information required for gathering sounds for runtime playing and selection.
      */
-    struct SB_CLASS GatherChildrenContext
+    struct SB_CLASS gather_children_context
     {
-        GatherChildrenContext()
+        gather_children_context()
         {
             // We're making the rough assumption that each call to gather_children_for_play
             // will gather, on average, 3 or less sounds.
@@ -60,7 +60,7 @@ namespace sbk::engine
          *
          * @param context for this gather sounds call.
          */
-        virtual void gather_children_for_play(GatherChildrenContext& context) const = 0;
+        virtual void gather_children_for_play(gather_children_context& context) const = 0;
 
         REGISTER_REFLECTION(container, node)
         RTTR_REGISTRATION_FRIEND

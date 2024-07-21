@@ -4,7 +4,7 @@
 
 DEFINE_REFLECTION(sbk::engine::SoundContainer)
 
-void sbk::engine::SoundContainer::gather_children_for_play(GatherChildrenContext& context) const
+void sbk::engine::SoundContainer::gather_children_for_play(gather_children_context& context) const
 {
     context.sounds.push_back(this);
 }
