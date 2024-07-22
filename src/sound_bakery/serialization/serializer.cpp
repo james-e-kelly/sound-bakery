@@ -417,12 +417,12 @@ void Serializer::packageSoundbank(sbk::engine::soundbank* soundbank, YAML::Emitt
 
         for (auto& node : nodesToSave)
         {
-            if (node->getType() == sbk::engine::SoundContainer::type())
+            if (node->getType() == sbk::engine::sound_container::type())
             {
-                if (sbk::engine::SoundContainer* const soundContainer =
-                        node->try_convert_object<sbk::engine::SoundContainer>())
+                if (sbk::engine::sound_container* const soundContainer =
+                        node->try_convert_object<sbk::engine::sound_container>())
                 {
-                    if (sbk::engine::sound* const sound = soundContainer->getSound())
+                    if (sbk::engine::sound* const sound = soundContainer->get_sound())
                     {
                         soundsToSave.push_back(sound);
                     }

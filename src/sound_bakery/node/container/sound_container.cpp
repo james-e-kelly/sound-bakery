@@ -2,19 +2,19 @@
 
 #include "sound_bakery/sound/sound.h"
 
-DEFINE_REFLECTION(sbk::engine::SoundContainer)
+DEFINE_REFLECTION(sbk::engine::sound_container)
 
-void sbk::engine::SoundContainer::gather_children_for_play(gather_children_context& context) const
+void sbk::engine::sound_container::gather_children_for_play(gather_children_context& context) const
 {
     context.sounds.push_back(this);
 }
 
-bool sbk::engine::SoundContainer::can_add_parent_type(const rttr::type& parentType) const
+bool sbk::engine::sound_container::can_add_parent_type(const rttr::type& parentType) const
 {
-    return sbk::engine::node_base::can_add_parent_type(parentType) && parentType != sbk::engine::SoundContainer::type();
+    return sbk::engine::node_base::can_add_parent_type(parentType) && parentType != sbk::engine::sound_container::type();
 }
 
-sbk::engine::sound* sbk::engine::SoundContainer::getSound() const
+sbk::engine::sound* sbk::engine::sound_container::get_sound() const
 {
     if (m_sound.lookup())
     {
@@ -26,7 +26,7 @@ sbk::engine::sound* sbk::engine::SoundContainer::getSound() const
     }
 }
 
-void sbk::engine::SoundContainer::setSound(const sbk::core::database_ptr<sbk::engine::sound>& sound)
+void sbk::engine::sound_container::set_sound(const sbk::core::database_ptr<sbk::engine::sound>& sound)
 {
     m_sound = sound;
 }

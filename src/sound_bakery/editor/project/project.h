@@ -7,7 +7,7 @@
 
 namespace sbk::engine
 {
-    class SoundContainer;
+    class sound_container;
 }
 
 namespace sbk::editor
@@ -28,7 +28,7 @@ namespace sbk::editor
         void encode_all_media() const;
 
         [[nodiscard]] const project_configuration& get_config() const;
-        [[nodiscard]] std::weak_ptr<sbk::engine::SoundContainer> get_preview_container() const;
+        [[nodiscard]] std::weak_ptr<sbk::engine::sound_container> get_preview_container() const;
 
     private:
         void loadSounds();
@@ -44,6 +44,6 @@ namespace sbk::editor
         void saveYAML(const YAML::Emitter& emitter, const std::filesystem::path& filePath) const;
 
         project_configuration m_projectConfig;
-        std::weak_ptr<sbk::engine::SoundContainer> m_previewSoundContainer;
+        std::weak_ptr<sbk::engine::sound_container> m_previewSoundContainer;
     };
 }  // namespace sbk::editor

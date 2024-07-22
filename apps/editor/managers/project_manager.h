@@ -8,7 +8,7 @@
 
 namespace sbk::engine
 {
-    class SoundContainer;
+    class sound_container;
 }
 
 struct selection
@@ -45,7 +45,7 @@ public:
     void save_project() const;
 
     selection& get_selection() { return m_selection; }
-    sbk::engine::SoundContainer* get_preview_sound_container() const;
+    sbk::engine::sound_container* get_preview_sound_container() const;
 
 private:
     selection m_selection;

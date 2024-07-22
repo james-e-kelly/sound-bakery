@@ -279,7 +279,7 @@ void file_browser_widget::render()
 
         if (project_manager* manager = get_app()->get_manager_by_class<project_manager>())
         {
-            // manager->GetPreviewSoundContainer()->setSound(m_selectedFile);
+            // manager->GetPreviewSoundContainer()->set_sound(m_selectedFile);
             // manager->GetSelection().SelectAudioFile(m_selectedFile);
         }
     }

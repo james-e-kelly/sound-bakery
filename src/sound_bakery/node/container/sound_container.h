@@ -6,10 +6,10 @@ namespace sbk::engine
 {
     class sound;
 
-    class SB_CLASS SoundContainer : public container
+    class SB_CLASS sound_container : public container
     {
     public:
-        SoundContainer() = default;
+        sound_container() = default;
 
         void gather_children_for_play(gather_children_context& context) const override;
 
@@ -18,13 +18,12 @@ namespace sbk::engine
 
         bool can_add_parent_type(const rttr::type& parentType) const override;
 
-        sound* getSound() const;
-
-        void setSound(const sbk::core::database_ptr<sbk::engine::sound>& sound);
+        [[nodiscard]] sound* get_sound() const;
+        void set_sound(const sbk::core::database_ptr<sbk::engine::sound>& sound);
 
     private:
         sbk::core::database_ptr<sbk::engine::sound> m_sound;
 
-        REGISTER_REFLECTION(SoundContainer, container)
+        REGISTER_REFLECTION(sound_container, container)
     };
 }  // namespace sbk::engine

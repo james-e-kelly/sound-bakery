@@ -11,7 +11,7 @@ namespace sbk::engine
     class node_base;
     class node_instance;
     class sound;
-    class SoundContainer;
+    class sound_container;
     class voice;
 
     /**

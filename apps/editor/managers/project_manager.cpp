@@ -48,7 +48,7 @@ void project_manager::save_project() const
     sbk::engine::system::get()->get_project()->save_project(); 
 }
 
-sbk::engine::SoundContainer* project_manager::get_preview_sound_container() const
+sbk::engine::sound_container* project_manager::get_preview_sound_container() const
 {
     return sbk::engine::system::get_project()->get_preview_container().lock().get();
 }

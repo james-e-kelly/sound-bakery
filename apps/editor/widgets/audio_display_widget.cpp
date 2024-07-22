@@ -131,7 +131,7 @@ void audio_display_widget::render()
 
                     if (isPlaying)
                     {
-                        sbk::engine::SoundContainer* previewSound =
+                        sbk::engine::sound_container* previewSound =
                             get_app()
                                 ->get_manager_by_class<project_manager>()
                                 ->get_preview_sound_container();
@@ -239,12 +239,12 @@ void audio_display_widget::render()
 
 bool audio_display_widget::has_cache()
 {
-    sbk::engine::SoundContainer* currentNode =
+    sbk::engine::sound_container* currentNode =
         get_app()->get_manager_by_class<project_manager>()->get_preview_sound_container();
 
     if (currentNode)
     {
-        sbk::engine::sound* currentSound = currentNode->getSound();
+        sbk::engine::sound* currentSound = currentNode->get_sound();
 
         const bool selectedNewSound = currentSound != m_previousSound;
 
@@ -259,7 +259,7 @@ void audio_display_widget::generate_cache()
 {
     m_cachedSamples.clear();
 
-    // SB::Engine::SoundContainer* preview =
+    // SB::Engine::sound_container* preview =
     // GetApp()->GetProjectManager()->GetPreviewSoundContainer(); FMOD_SOUND*
     // sound = preview ? preview->getFSound() : nullptr;
 

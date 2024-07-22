@@ -46,12 +46,12 @@ sbk::engine::soundbank_dependencies sbk::engine::soundbank::gather_dependencies(
         {
             dependencies.nodes.push_back(std::static_pointer_cast<sbk::engine::node_base>(node->shared_from_this()));
 
-            if (node->getType() == sbk::engine::SoundContainer::type())
+            if (node->getType() == sbk::engine::sound_container::type())
             {
-                if (sbk::engine::SoundContainer* const soundContainer =
-                        node->try_convert_object<sbk::engine::SoundContainer>())
+                if (sbk::engine::sound_container* const soundContainer =
+                        node->try_convert_object<sbk::engine::sound_container>())
                 {
-                    if (sbk::engine::sound* const sound = soundContainer->getSound())
+                    if (sbk::engine::sound* const sound = soundContainer->get_sound())
                     {
                         const sbk::engine::encoding_sound encodingSound = sound->get_encoding_sound_data();
                         assert(!encodingSound.encodedSoundPath.empty());

@@ -84,7 +84,7 @@ void sbk::editor::project::encode_all_media() const
 
 const sbk::editor::project_configuration& sbk::editor::project::get_config() const { return m_projectConfig; }
 
-std::weak_ptr<sbk::engine::SoundContainer> sbk::editor::project::get_preview_container() const
+std::weak_ptr<sbk::engine::sound_container> sbk::editor::project::get_preview_container() const
 {
     return m_previewSoundContainer;
 }
@@ -154,7 +154,7 @@ void sbk::editor::project::loadObjects()
 
 void sbk::editor::project::createPreviewContainer()
 {
-    if (auto previewContainer = create_database_object<sbk::engine::SoundContainer>())
+    if (auto previewContainer = create_database_object<sbk::engine::sound_container>())
     {
         previewContainer->set_database_name("Preview Node");
         previewContainer->set_editor_hidden(true);
