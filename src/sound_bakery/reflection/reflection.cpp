@@ -199,11 +199,11 @@ namespace sbk::reflection
 
         registration::class_<BlendContainer>("SB::Engine::BlendContainer").constructor<>()(policy::ctor::as_raw_ptr);
 
-        registration::class_<SwitchContainer>("SB::Engine::SwitchContainer")
+        registration::class_<switch_container>("SB::Engine::SwitchContainer")
             .constructor<>()(policy::ctor::as_raw_ptr)
-            .property("Switch", &SwitchContainer::getSwitchParameter, &SwitchContainer::setSwitchParameter)(
+            .property("Switch", &switch_container::getSwitchParameter, &switch_container::setSwitchParameter)(
                 metadata(sbk::editor::METADATA_KEY::Payload, sbk::editor::PayloadNamedParam))
-            .property("Mappings", &SwitchContainer::getSwitchToChildMap, &SwitchContainer::setSwitchToChild);
+            .property("Mappings", &switch_container::getSwitchToChildMap, &switch_container::setSwitchToChild);
 
         registration::class_<RandomContainer>("SB::Engine::RandomContainer").constructor<>()(policy::ctor::as_raw_ptr);
 
@@ -247,7 +247,7 @@ namespace sbk::reflection
         sbk::reflection::RegisterPointerConversionsForBaseClasses<RandomContainer>();
         sbk::reflection::RegisterPointerConversionsForBaseClasses<sequence_container>();
         sbk::reflection::RegisterPointerConversionsForBaseClasses<sound_container>();
-        sbk::reflection::RegisterPointerConversionsForBaseClasses<SwitchContainer>();
+        sbk::reflection::RegisterPointerConversionsForBaseClasses<switch_container>();
 
         sbk::reflection::RegisterPointerConversionsForBaseClasses<container>();  // makes sure we have a direct
                                                                                  // conversion between container and

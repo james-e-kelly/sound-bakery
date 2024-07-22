@@ -4,39 +4,12 @@
 
 namespace sbk::engine
 {
-    class SB_CLASS SwitchContainer : public container
+    class SB_CLASS switch_container : public container
     {
     public:
-        void gather_children_for_play(gather_children_context& context) const override
-        {
-            sbk::core::database_ptr<named_parameter_value> selectedValue;
+        void gather_children_for_play(gather_children_context& context) const override;
 
-            if (auto findLocalValue = context.parameters.intParameters.find(m_switchParameter);
-                findLocalValue != context.parameters.intParameters.cend())
-            {
-                selectedValue = sbk::core::database_ptr<named_parameter_value>(findLocalValue->second.get());
-            }
-            else if (m_switchParameter.lookup())
-            {
-                selectedValue = m_switchParameter->get_selected_value();
-            }
-
-            if (auto foundIter = m_switchToChild.find(selectedValue); foundIter != m_switchToChild.end())
-            {
-                sbk::core::child_ptr<container> selectedChild(*this);
-                selectedChild = foundIter->second;
-
-                if (selectedChild.lookup())
-                {
-                    context.sounds.push_back(selectedChild.lookupRaw());
-                }
-            }
-        }
-
-        void gatherParametersFromThis(global_parameter_list& parameters) override
-        {
-            parameters.intParameters.insert(m_switchParameter);
-        }
+        void gatherParametersFromThis(global_parameter_list& parameters) override;
 
         void setSwitchParameter(sbk::core::database_ptr<named_parameter> parameter);
 
@@ -65,7 +38,7 @@ namespace sbk::engine
         std::unordered_map<sbk::core::database_ptr<named_parameter_value>, sbk::core::child_ptr<container>>
             m_switchToChild;
 
-        REGISTER_REFLECTION(SwitchContainer, container)
+        REGISTER_REFLECTION(switch_container, container)
         RTTR_REGISTRATION_FRIEND
     };
 }  // namespace sbk::engine

@@ -76,7 +76,7 @@ std::unordered_set<rttr::type> type_helper::getTypesFromCategory(SB_OBJECT_CATEG
             result.insert(rttr::type::get<sbk::engine::RandomContainer>());
             result.insert(rttr::type::get<sbk::engine::sequence_container>());
             result.insert(rttr::type::get<sbk::engine::sound_container>());
-            result.insert(rttr::type::get<sbk::engine::SwitchContainer>());
+            result.insert(rttr::type::get<sbk::engine::switch_container>());
             break;
         case SB_CATEGORY_BUS:
             result.insert(rttr::type::get<sbk::engine::bus>());
@@ -118,7 +118,7 @@ rttr::string_view type_helper::get_display_name_from_type(rttr::type type)
     {
         result = "Random";
     }
-    else if (type == rttr::type::get<sbk::engine::SwitchContainer>())
+    else if (type == rttr::type::get<sbk::engine::switch_container>())
     {
         result = "Switch";
     }
