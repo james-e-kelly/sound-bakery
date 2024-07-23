@@ -584,7 +584,7 @@ sc_result sc_node_group_add_dsp(sc_node_group* nodeGroup, sc_dsp* dsp, sc_dsp_in
 
             if (currentParent)
             {
-                // Attach the dsp to the parent output
+                // Attach the dsp to the get_parent output
                 result = ma_node_attach_output_bus(dsp->state->userData, 0, currentParent, 0);
                 SC_CHECK_RESULT(result);
 

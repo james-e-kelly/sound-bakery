@@ -8,34 +8,36 @@ namespace sbk::engine
 {
     enum SB_NODE_STATUS
     {
-        // Has no parent and no bus
+        // Has no get_parent and no bus
         SB_NODE_NULL,
-        // Has a parent node
+        // Has a get_parent node
         SB_NODE_MIDDLE,
-        // Has no parent but outputs to a bus
+        // Has no get_parent but outputs to a bus
         SB_NODE_TOP
     };
 
+    /**
+     * @brief Generic node that can have a get_parent and own children.
+    */
     class SB_CLASS node_base : public sbk::core::database_object
     {
     public:
         ~node_base();
 
-    public:
-        virtual void setParentNode(const sbk::core::database_ptr<node_base>& parent);
-        virtual void setOutputBus(const sbk::core::database_ptr<node_base>& bus);
+        virtual void set_parent_node(const sbk::core::database_ptr<node_base>& parent);
+        virtual void set_output_bus(const sbk::core::database_ptr<node_base>& bus);
+
+        node_base* get_parent() const;
+        node_base* get_output_bus() const;
 
         SB_NODE_STATUS getNodeStatus() const noexcept;
-
-        node_base* parent() const;
-        node_base* outputBus() const;
 
         virtual bool can_add_children() const;  //< Can any children be added to this node?
         virtual bool can_add_child_type(const rttr::type& childType) const; //< Can this type be added to the child?
         bool can_add_child(const sbk::core::database_ptr<node_base>& child) const;  //< Can this runtime child be added?
 
         virtual bool can_add_parent() const;    //< Can any parents be added to this node?
-        virtual bool can_add_parent_type(const rttr::type& parentType) const;   //< Can this type be added as a parent?
+        virtual bool can_add_parent_type(const rttr::type& parentType) const;   //< Can this type be added as a get_parent?
 
         void addChild(const sbk::core::database_ptr<node_base>& child);
         void removeChild(const sbk::core::database_ptr<node_base>& child);

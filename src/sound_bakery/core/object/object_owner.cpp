@@ -138,3 +138,18 @@ std::shared_ptr<sbk::core::database_object> sbk::core::object_owner::create_data
 
     return {};
 }
+
+void sbk::core::object_owner::remove_object(const std::shared_ptr<object>& object)
+{
+    if (object)
+    {
+        for (std::vector<std::shared_ptr<sbk::core::object>>::iterator iter = m_objects.begin(); iter != m_objects.end(); ++iter)
+        {
+            if (*iter == object)
+            {
+                m_objects.erase(iter);
+                return;
+            }
+        }
+    }
+}

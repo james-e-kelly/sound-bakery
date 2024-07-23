@@ -11,7 +11,7 @@ void root_widget::render()
 {
     static ImGuiDockNodeFlags dockspaceFlags = ImGuiDockNodeFlags_None;
 
-    // We are using the ImGuiWindowFlags_NoDocking flag to make the parent
+    // We are using the ImGuiWindowFlags_NoDocking flag to make the get_parent
     // window not dockable into, because it would be confusing to have two
     // docking targets within each others.
     ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;

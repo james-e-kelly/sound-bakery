@@ -390,7 +390,7 @@ namespace sbk::core
 
         void setID(typename database_ptr<TObject>::TIdentifierType id = 0)
         {
-            // Fill our parent ID if we didn't have it already
+            // Fill our get_parent ID if we didn't have it already
             if (m_ownerID == 0 && database_ptr<TObject>::m_objectID != 0)
             {
                 m_ownerID = getParentIdFromId(database_ptr<TObject>::m_objectID);
@@ -415,7 +415,7 @@ namespace sbk::core
 
         void reset(typename database_ptr<TObject>::TObjectPtr object = nullptr)
         {
-            // Fill our parent ID if we didn't have it already
+            // Fill our get_parent ID if we didn't have it already
             if (m_ownerID == 0 && database_ptr<TObject>::m_objectID != 0)
             {
                 m_ownerID = getParentIdFromId(database_ptr<TObject>::m_objectID);

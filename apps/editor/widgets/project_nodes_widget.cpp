@@ -86,7 +86,7 @@ void project_nodes_widget::render_category(SB_OBJECT_CATEGORY category)
 
             const bool notNodeType = nodeBase == nullptr;
 
-            if (notNodeType || (nodeBase && nodeBase->parent() == nullptr))
+            if (notNodeType || (nodeBase && nodeBase->get_parent() == nullptr))
             {
                 render_single_node(type, rttr::instance(object));
             }
@@ -352,7 +352,7 @@ bool project_nodes_widget::render_node_context_menu(rttr::type type,
                 {
                     get_app()->get_manager_by_class<project_manager>()->get_selection().selected_object(
                         nullptr);
-                    sbk::engine::system::get()->remove_object_from_database(object->get_database_id());
+                    object->destroy();
                     result = false;
                 }
 
@@ -423,7 +423,7 @@ void project_nodes_widget::render_create_parent_or_child_menu(
                         case node_creation_type::NewParent:
                         {
                             if (sbk::engine::node_base* baseParent =
-                                    castedNode->parent())
+                                    castedNode->get_parent())
                             {
                                 m_nodeToOpen = baseParent->get_database_id();
                                 baseParent->addChild(newNode);

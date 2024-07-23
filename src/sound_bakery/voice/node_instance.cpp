@@ -79,7 +79,7 @@ bool sbk::engine::node_instance::init(const InitNodeInstance& initData)
             {
                 // Checks nullptr as master busses are technically busses without an output, even if they're not marked
                 // as masters
-                if (bus->isMasterBus() || bus->parent() == nullptr)
+                if (bus->isMasterBus() || bus->get_parent() == nullptr)
                 {
                     success = true;
                     break;

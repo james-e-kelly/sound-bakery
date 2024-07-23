@@ -511,7 +511,7 @@ bool property_drawer::draw_associate_container(
             edited               = insertedIterator.second;
         }
 
-        return edited;  // exiting early to ensure the parent property is
+        return edited;  // exiting early to ensure the get_parent property is
                         // updated
     }
 
@@ -652,7 +652,7 @@ bool property_drawer::draw_payload_drop(rttr::variant& value,
 
             // Hack for child pointers
             // When setting variants, the value is completely overriden.
-            // There is no chance for child pointers to retain its parent value and check the child.
+            // There is no chance for child pointers to retain its get_parent value and check the child.
             // Therefore, we have to do this ourselves here.
             if (valueType.is_wrapper() && std::string(valueType.get_name().data()).find("child_ptr") != std::string::npos)
             {

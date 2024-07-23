@@ -104,7 +104,7 @@ namespace sbk::engine
      * @brief Represents a discrete value for a @ref named_parameter.
      *
      * The object inherits from SB::Core::DatabaseObject to be universally
-     * referencable and have a display name. The object knows its parent
+     * referencable and have a display name. The object knows its get_parent
      * named_parameter.
      *
      * The object's ID is its parameter value.

@@ -45,9 +45,9 @@ node_base::~node_base()
     }
 }
 
-void sbk::engine::node_base::setParentNode(const sbk::core::database_ptr<node_base>& parent) { m_parentNode = parent; }
+void sbk::engine::node_base::set_parent_node(const sbk::core::database_ptr<node_base>& parent) { m_parentNode = parent; }
 
-void sbk::engine::node_base::setOutputBus(const sbk::core::database_ptr<node_base>& bus) { m_outputBus = bus; }
+void sbk::engine::node_base::set_output_bus(const sbk::core::database_ptr<node_base>& bus) { m_outputBus = bus; }
 
 SB_NODE_STATUS sbk::engine::node_base::getNodeStatus() const noexcept
 {
@@ -65,9 +65,9 @@ SB_NODE_STATUS sbk::engine::node_base::getNodeStatus() const noexcept
     return status;
 }
 
-node_base* sbk::engine::node_base::parent() const { return m_parentNode.lookupRaw(); }
+node_base* sbk::engine::node_base::get_parent() const { return m_parentNode.lookupRaw(); }
 
-node_base* sbk::engine::node_base::outputBus() const { return m_outputBus.lookupRaw(); }
+node_base* sbk::engine::node_base::get_output_bus() const { return m_outputBus.lookupRaw(); }
 
 bool sbk::engine::node_base::can_add_children() const
 { 
@@ -107,16 +107,16 @@ void sbk::engine::node_base::addChild(const sbk::core::database_ptr<node_base>& 
 {
     if (can_add_child(child))
     {
-        if (child.lookup() && child->parent())
+        if (child.lookup() && child->get_parent())
         {
-            child->parent()->removeChild(child);
+            child->get_parent()->removeChild(child);
         }
 
         m_childNodes.insert(child);
 
         if (child.lookup())
         {
-            child->setParentNode(this);
+            child->set_parent_node(this);
         }
     }
 }
@@ -125,7 +125,7 @@ void sbk::engine::node_base::removeChild(const sbk::core::database_ptr<node_base
 {
     if (child)
     {
-        child->setParentNode(nullptr);
+        child->set_parent_node(nullptr);
     }
 
     m_childNodes.erase(child);
@@ -166,7 +166,7 @@ void sbk::engine::node_base::gatherAllDescendants(std::vector<node_base*>& desce
 
 void sbk::engine::node_base::gatherAllParents(std::vector<node_base*>& parents) const
 {
-    if (node_base* const nodeParent = parent())
+    if (node_base* const nodeParent = get_parent())
     {
         parents.push_back(nodeParent);
 

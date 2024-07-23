@@ -71,7 +71,7 @@ extern "C"
      * @param system system object
      * @param sound to copy to the instance
      * @param instance of the new sound for playing
-     * @param parent optional parameter. Outputs to the master node group by
+     * @param get_parent optional parameter. Outputs to the master node group by
      * default
      * @param paused whether this sound is paused upon creation or played
      * instantly

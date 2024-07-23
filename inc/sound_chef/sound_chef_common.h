@@ -171,7 +171,7 @@ struct sc_dsp
     sc_dsp_state* state;    //< holds the instance data for the dsp
     sc_dsp_vtable* vtable;  //< holds the functions for interacting with the underlying node type. Must be not null
     sc_dsp_type type;
-    sc_dsp* next;  //< when in a node group, the parent/next dsp. Can be null if the head node
+    sc_dsp* next;  //< when in a node group, the get_parent/next dsp. Can be null if the head node
     sc_dsp* prev;  //< when in a node group, the child/previous dsp. Can be null if the tail node
 };
 
@@ -196,7 +196,7 @@ struct sc_node_group
 {
     sc_dsp* tail;   //< Left/bottom most node. Sounds and child groups connect to this
     sc_dsp* fader;  //< Controls the volume and more of the group. Exists at start
-    sc_dsp* head;   //< Right/top most node. Nodes in the group route to this. The head then outputs to a parent
+    sc_dsp* head;   //< Right/top most node. Nodes in the group route to this. The head then outputs to a get_parent
 };
 
 /**

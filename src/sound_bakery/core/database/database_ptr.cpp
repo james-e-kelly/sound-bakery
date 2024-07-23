@@ -40,7 +40,7 @@ sbk_id sbk::core::getParentIdFromId(sbk_id id)
         {
             if (sbk::engine::node_base* nodeBase = databasePtr->try_convert_object<sbk::engine::node_base>())
             {
-                if (sbk::engine::node_base* parent = nodeBase->parent())
+                if (sbk::engine::node_base* parent = nodeBase->get_parent())
                 {
                     return parent->get_database_id();
                 }

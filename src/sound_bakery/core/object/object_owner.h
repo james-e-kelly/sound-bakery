@@ -26,6 +26,7 @@ namespace sbk::core
         template <typename T>
         std::shared_ptr<T> create_database_object();
 
+        void remove_object(const std::shared_ptr<object>& object);
         void destroy_all() { m_objects.clear(); }
 
         std::vector<std::shared_ptr<object>>& get_objects() { return m_objects; }

@@ -150,10 +150,10 @@
  * Node Groups can also be connected together to create a complex graph.
  *
  * @code
- * sc_node_group* parent = NULL;
+ * sc_node_group* get_parent = NULL;
  * sc_node_group* child = NULL;
  *
- * sc_node_group_set_parent(child, parent);
+ * sc_node_group_set_parent(child, get_parent);
  * @endcode
  *
  * It is recommended to refer to the @ref SB::Engine::node_instance class for how sound Bakery uses sound Chef to connect

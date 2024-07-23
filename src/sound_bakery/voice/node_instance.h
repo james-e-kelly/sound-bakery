@@ -27,7 +27,7 @@ namespace sbk::engine
     };
 
     /**
-     * @brief Owns a parent node instance.
+     * @brief Owns a get_parent node instance.
      */
     struct SB_CLASS ParentNodeOwner
     {
@@ -78,7 +78,7 @@ namespace sbk::engine
         /**
          * @brief Type of node to create.
          *
-         * Different types of nodes initialize differently. For example, parent nodes only create more parents.
+         * Different types of nodes initialize differently. For example, get_parent nodes only create more parents.
          * Children create more children.
          */
         NodeInstanceType type = NodeInstanceType::MAIN;

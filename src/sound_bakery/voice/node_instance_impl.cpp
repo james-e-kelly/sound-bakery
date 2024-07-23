@@ -94,7 +94,7 @@ bool ParentNodeOwner::createParent(const node_base& thisNode, voice* owningVoice
         }
         case SB_NODE_MIDDLE:
         {
-            if (sbk::engine::node_base* parentNode = thisNode.parent())
+            if (sbk::engine::node_base* parentNode = thisNode.get_parent())
             {
                 parent = std::make_shared<node_instance>();
 
@@ -109,7 +109,7 @@ bool ParentNodeOwner::createParent(const node_base& thisNode, voice* owningVoice
         }
         case SB_NODE_TOP:
         {
-            if (sbk::engine::node_base* output = thisNode.outputBus())
+            if (sbk::engine::node_base* output = thisNode.get_output_bus())
             {
                 if (sbk::engine::bus* bus = output->try_convert_object<sbk::engine::bus>())
                 {
