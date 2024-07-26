@@ -21,6 +21,8 @@ namespace gluten
         virtual void tick_rendering(double deltaTime) override;
         virtual void exit() override;
 
+        void set_window_title(const std::string& title);
+
     private:
         int init_glfw();
         int init_imgui();
@@ -34,15 +36,13 @@ namespace gluten
             window_guard(int width, int height, const std::string& windowName);
             ~window_guard();
 
-            // Add move operator
-            // This class should always own the window
+            window_guard(const window_guard& other)            = delete;
+            window_guard& operator=(const window_guard& other) = delete;
+
             window_guard(window_guard&& other) noexcept;
             window_guard& operator=(window_guard&& other) noexcept;
 
-            // Delete the copy constructor and copy assignment operator to prevent
-            // copying
-            window_guard(const window_guard& other)            = delete;
-            window_guard& operator=(const window_guard& other) = delete;
+            void set_title(const std::string& title);
 
             operator GLFWwindow*() const { return m_window; }
             GLFWwindow* operator->() const { return m_window; }

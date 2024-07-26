@@ -76,6 +76,14 @@ renderer_subsystem::window_guard& renderer_subsystem::window_guard::operator=(wi
     return *this;
 }
 
+void renderer_subsystem::window_guard::set_title(const std::string& title) 
+{
+    if (m_window && !title.empty())
+    {
+        glfwSetWindowTitle(m_window, title.c_str());
+    }
+}
+
 renderer_subsystem::window_guard::~window_guard()
 {
     if (m_window)
@@ -827,3 +835,5 @@ void renderer_subsystem::exit()
 
     glfwTerminate();
 }
+
+void renderer_subsystem::set_window_title(const std::string& title) { m_window.set_title(title); }

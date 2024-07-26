@@ -31,6 +31,9 @@ void project_manager::init_project(const std::filesystem::path& project_file)
     get_app()
         ->get_subsystem_by_class<gluten::widget_subsystem>()
         ->add_widget_class_to_root<details_widget>();
+
+    get_app()->get_subsystem_by_class<gluten::renderer_subsystem>()->set_window_title(
+        fmt::format("{} - {}", sbk::engine::system::get_project()->get_config().project_name(), SBK_PRODUCT_NAME));
 }
 
 void project_manager::tick(double deltaTime)
@@ -41,6 +44,8 @@ void project_manager::tick(double deltaTime)
 void project_manager::exit() 
 { 
     sbk::engine::system::destroy(); 
+
+    get_app()->get_subsystem_by_class<gluten::renderer_subsystem>()->set_window_title(SBK_PRODUCT_NAME);
 }
 
 void project_manager::save_project() const 

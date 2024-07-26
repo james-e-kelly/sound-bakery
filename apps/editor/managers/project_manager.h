@@ -39,6 +39,7 @@ public:
 
 public:
     void init_project(const std::filesystem::path& project_file);
+
     virtual void tick(double deltaTime) override;
     virtual void exit() override;
 
