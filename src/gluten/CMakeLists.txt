@@ -16,18 +16,25 @@ set(IMAGE_FILES
 set(GLUTEN_SOURCES
   app_entry.cpp 
   app/app.cpp
+  images/image.cpp
   managers/manager.cpp
   subsystems/renderer_subsystem.cpp
   subsystems/widget_subsystem.cpp
+  utils/imgui_util_functions.cpp
+  theme/window_images.embed
   widgets/widget.cpp
   widgets/root_widget.cpp
 )
 
 set(GLUTEN_HEADERS
   app/app.h
+  images/image.h
   managers/manager.h
   subsystems/renderer_subsystem.h
   subsystems/widget_subsystem.h
+  theme/theme.h
+  utils/imgui_util_functions.h
+  utils/imgui_util_structures.h
   widgets/widget.h
   widgets/root_widget.h
 )
@@ -42,6 +49,7 @@ add_library(gluten STATIC
   ${PCH_SOURCE}
   ${GLUTEN_SOURCES}
   ${GLUTEN_HEADERS}
+  ${stb_SOURCE_DIR}/stb_image.h
 )
 
 add_library(SoundBakery::Gluten ALIAS gluten)
@@ -49,6 +57,7 @@ add_library(SoundBakery::Gluten ALIAS gluten)
 target_include_directories(gluten
     PUBLIC ${CMAKE_SOURCE_DIR}/src
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
+    PRIVATE ${stb_SOURCE_DIR}
 )
 
 target_precompile_headers(gluten PRIVATE ${PCH_HEADER})
@@ -80,8 +89,8 @@ FetchContent_Declare(
 
 FetchContent_Declare(
   imgui
-  GIT_REPOSITORY https://github.com/ocornut/imgui.git
-  GIT_TAG        docking
+  GIT_REPOSITORY https://github.com/thedmd/imgui.git
+  GIT_TAG        feature/docking-layout-external
   GIT_SHALLOW    TRUE
   OVERRIDE_FIND_PACKAGE
 )
@@ -176,6 +185,7 @@ add_library(imgui STATIC
   ${imgui_SOURCE_DIR}/imgui_draw.cpp
   ${imgui_SOURCE_DIR}/imgui_tables.cpp
   ${imgui_SOURCE_DIR}/imgui_widgets.cpp
+  ${imgui_SOURCE_DIR}/imgui_stacklayout.cpp
   ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
   ${imgui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
 )

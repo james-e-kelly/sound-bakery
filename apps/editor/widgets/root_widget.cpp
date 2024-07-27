@@ -14,7 +14,6 @@ void root_widget::render_menu()
     static bool showMenu = false;
     bool showAbout       = false;
 
-    if (ImGui::BeginMenuBar())
     {
         if (ImGui::BeginMenu("File"))
         {
@@ -90,7 +89,6 @@ void root_widget::render_menu()
             ImGui::EndMenu();
         }
 
-        ImGui::EndMenuBar();
     }
 
     if (showAbout)

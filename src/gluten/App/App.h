@@ -1,5 +1,6 @@
 #pragma once
 
+#include "gluten/images/image.h"
 #include "gluten/managers/manager.h"
 #include "gluten/subsystems/subsystem.h"
 
@@ -13,7 +14,6 @@ namespace gluten
 
         virtual void post_init() = 0;
 
-    public:
         template <class T>
         T* add_subsystem_class();
 
@@ -26,6 +26,16 @@ namespace gluten
         template <class T>
         T* get_manager_by_class();
 
+        bool is_maximized();
+
+        void set_application_display_title(const std::string& title);
+        std::string_view get_application_display_title() const { return m_applicationDisplayTitle; }
+
+        gluten::image* get_window_close_icon() const { return m_windowCloseIcon.get(); }
+        gluten::image* get_window_minimise_icon() const { return m_windowMinimiseIcon.get(); }
+        gluten::image* get_window_maximise_icon() const { return m_windowMaximiseIcon.get(); }
+        gluten::image* get_window_restore_icon() const { return m_windowRestoreIcon.get(); }
+
     private:
         std::vector<std::unique_ptr<subsystem>> m_subsystems;
         std::vector<std::unique_ptr<manager>> m_managers;
@@ -34,6 +44,12 @@ namespace gluten
         std::chrono::high_resolution_clock::time_point m_previousTime;
 
         std::string m_executableLocation;
+        std::string m_applicationDisplayTitle;
+
+        std::unique_ptr<gluten::image> m_windowCloseIcon;
+        std::unique_ptr<gluten::image> m_windowMinimiseIcon;
+        std::unique_ptr<gluten::image> m_windowMaximiseIcon;
+        std::unique_ptr<gluten::image> m_windowRestoreIcon;
 
         bool m_hasInit          = false;
         bool m_isRequestingExit = false;

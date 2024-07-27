@@ -23,6 +23,9 @@ namespace gluten
 
         void set_window_title(const std::string& title);
 
+        void toggle_maximised();
+        bool is_maximized() const;
+
     private:
         int init_glfw();
         int init_imgui();

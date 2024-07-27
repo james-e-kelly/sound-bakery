@@ -12,5 +12,8 @@ namespace gluten
     public:
         virtual void render() override;
         virtual void render_menu() {}
+
+    private:
+        void draw_titlebar(float& outTitlebarHeight);
     };
 }  // namespace gluten

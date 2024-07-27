@@ -2,6 +2,7 @@
 
 #include "subsystems/renderer_subsystem.h"
 #include "subsystems/widget_subsystem.h"
+#include "gluten/theme/window_images.embed"
 
 namespace PathHelpers
 {
@@ -39,6 +40,11 @@ int gluten::app::run(int argc, char** argv)
 
     m_currentTime  = std::chrono::high_resolution_clock::now();
     m_previousTime = std::chrono::high_resolution_clock::now();
+
+    m_windowCloseIcon = std::make_unique<gluten::image>(g_WindowCloseIcon, sizeof(g_WindowCloseIcon));
+    m_windowMinimiseIcon = std::make_unique<gluten::image>(g_WindowMinimiseIcon, sizeof(g_WindowMinimiseIcon));
+    m_windowMaximiseIcon = std::make_unique<gluten::image>(g_WindowMaximiseIcon, sizeof(g_WindowMaximiseIcon));
+    m_windowRestoreIcon  = std::make_unique<gluten::image>(g_WindowRestoreIcon, sizeof(g_WindowRestoreIcon));
 
     m_hasInit = true;
 
@@ -95,3 +101,11 @@ int gluten::app::run(int argc, char** argv)
 }
 
 void gluten::app::request_exit() { m_isRequestingExit = true; }
+
+bool gluten::app::is_maximized() { return get_subsystem_by_class<gluten::renderer_subsystem>()->is_maximized(); }
+
+void gluten::app::set_application_display_title(const std::string& title)
+{
+    m_applicationDisplayTitle = title;
+    get_subsystem_by_class<renderer_subsystem>()->set_window_title(title);
+}

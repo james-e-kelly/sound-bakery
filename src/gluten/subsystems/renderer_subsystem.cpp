@@ -111,6 +111,8 @@ void renderer_subsystem::set_default_window_hints()
     // glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+
     // only glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // 3.0+ only
 #endif
+
+    glfwWindowHint(GLFW_DECORATED, false);
 }
 
 static ImVec4 hex_to_rgb(ImU32 hex)
@@ -155,7 +157,6 @@ int renderer_subsystem::init_imgui()
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
-    (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;   // Enable Gamepad Controls
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;      // Enable Docking
@@ -837,3 +838,20 @@ void renderer_subsystem::exit()
 }
 
 void renderer_subsystem::set_window_title(const std::string& title) { m_window.set_title(title); }
+
+void gluten::renderer_subsystem::toggle_maximised() 
+{
+    if (is_maximized())
+    {
+        glfwRestoreWindow(m_window.m_window);
+    }
+    else
+    {
+        glfwMaximizeWindow(m_window.m_window);
+    }
+}
+
+bool gluten::renderer_subsystem::is_maximized() const
+{
+    return (bool)glfwGetWindowAttrib(m_window.m_window, GLFW_MAXIMIZED);
+}

@@ -15,6 +15,18 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(cppdelegates)
 
+message(STATUS "Fetching stb")
+
+FetchContent_Declare(
+  stb
+  GIT_REPOSITORY https://github.com/nothings/stb.git
+  GIT_TAG        master
+  GIT_SHALLOW    TRUE
+  GIT_PROGRESS TRUE
+  OVERRIDE_FIND_PACKAGE
+)
+FetchContent_MakeAvailable(stb)
+
 add_library(delegates STATIC 
     ${cppdelegates_SOURCE_DIR}/Delegates.cpp
 )

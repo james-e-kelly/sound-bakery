@@ -8,8 +8,8 @@ public:
     splash_widget(gluten::widget_subsystem* parentSubsystem) : widget(parentSubsystem) {}
 
 public:
-    void ShowSplashScreen();
-    void CloseSplashScreen();
+    void show_splash_screen();
+    void close_splash_screen();
 
 public:
     virtual void tick(double deltaTime) override;

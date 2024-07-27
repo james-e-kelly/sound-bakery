@@ -12,12 +12,12 @@
 
 void app_manager::init(gluten::app* app)
 {
-    app->get_subsystem_by_class<gluten::renderer_subsystem>()->set_window_title(SBK_PRODUCT_NAME);
+    app->set_application_display_title(SBK_PRODUCT_NAME);
 
     splash_widget* splashWidget = app->get_subsystem_by_class<gluten::widget_subsystem>()
                                      ->add_widget_class<splash_widget>();
 
-    splashWidget->ShowSplashScreen();
+    splashWidget->show_splash_screen();
 }
 
 void app_manager::create_new_project()

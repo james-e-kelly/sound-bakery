@@ -3,7 +3,6 @@
 #include "app/app.h"
 #include "imgui.h"
 
-#define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
 #define GL_SILENCE_DEPRECATION
@@ -58,13 +57,13 @@ void splash_widget::start()
     }
 }
 
-void splash_widget::ShowSplashScreen()
+void splash_widget::show_splash_screen()
 {
     m_wantsToShow       = true;
     m_timeShowingScreen = 0.0;
 }
 
-void splash_widget::CloseSplashScreen() { m_wantsToShow = false; }
+void splash_widget::close_splash_screen() { m_wantsToShow = false; }
 
 void splash_widget::tick(double deltaTime)
 {
