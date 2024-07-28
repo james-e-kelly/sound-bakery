@@ -18,6 +18,7 @@ set(GLUTEN_SOURCES
   app/app.cpp
   elements/element.cpp
   elements/button.cpp
+  elements/image_button.cpp
   images/image.cpp
   managers/manager.cpp
   subsystems/renderer_subsystem.cpp
@@ -33,6 +34,7 @@ set(GLUTEN_HEADERS
   app/app.h
   elements/element.h
   elements/button.h
+  elements/image_button.h
   images/image.h
   managers/manager.h
   subsystems/renderer_subsystem.h
@@ -224,6 +226,7 @@ target_link_libraries(gluten
 if(MSVC)
   target_compile_options(gluten PRIVATE /W4)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus")
 else()
   target_compile_options(gluten PRIVATE -Wall -Wextra -Wpedantic)
 endif()

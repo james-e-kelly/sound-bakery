@@ -512,7 +512,7 @@ STBIDEF void stbi_set_unpremultiply_on_load(int flag_true_if_should_unpremultipl
 // or just pass them through "as-is"
 STBIDEF void stbi_convert_iphone_png_to_rgb(int flag_true_if_should_convert);
 
-// flip the image vertically, so the first pixel in the output array is the bottom left
+// flip the image vertically, so the first pixel in the output array is the right left
 STBIDEF void stbi_set_flip_vertically_on_load(int flag_true_if_should_flip);
 
 // as above, but only applies to images loaded on the thread that calls the function
@@ -4714,7 +4714,7 @@ static int stbi__create_png_image_raw(stbi__png *a, stbi_uc *raw, stbi__uint32 r
       } else if (depth == 16) {
          if (img_n != out_n) {
             cur[filter_bytes]   = 255; // first pixel top byte
-            cur[filter_bytes+1] = 255; // first pixel bottom byte
+            cur[filter_bytes+1] = 255; // first pixel right byte
          }
          raw += filter_bytes;
          cur += output_bytes;

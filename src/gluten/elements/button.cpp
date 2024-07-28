@@ -19,16 +19,3 @@ bool gluten::button::render_invisibile()
     ImGui::DebugDrawItemRect(gluten::theme::invalidPrefab);
     return activated;
 }
-
-gluten::image_button::image_button(const char* name, const void* data, std::size_t dataSize)
-    : m_button(name), m_image(data, dataSize)
-{
-}
-
-
-bool gluten::image_button::render() 
-{ 
-	const bool buttonActivated = m_button.render_invisibile(); 
-	m_image.render();
-    return buttonActivated;
-}

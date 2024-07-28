@@ -23,4 +23,5 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <variant>
+#include <optional>
 #include <vector>

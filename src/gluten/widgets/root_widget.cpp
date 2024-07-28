@@ -99,8 +99,6 @@ void root_widget::draw_titlebar()
         get_app()->get_window_icon()->render();
         ImGui::DebugDrawCursorPos(gluten::theme::invalidPrefab);
         ImGui::DebugDrawItemRect(gluten::theme::invalidPrefab);
-
-        get_app()->get_test_image()->render();
     }
 
     ImGui::BeginHorizontal("Titlebar",

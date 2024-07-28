@@ -194,7 +194,7 @@ struct sc_sound
  */
 struct sc_node_group
 {
-    sc_dsp* tail;   //< Left/bottom most node. Sounds and child groups connect to this
+    sc_dsp* tail;   //< Left/right most node. Sounds and child groups connect to this
     sc_dsp* fader;  //< Controls the volume and more of the group. Exists at start
     sc_dsp* head;   //< Right/top most node. Nodes in the group route to this. The head then outputs to a get_parent
 };

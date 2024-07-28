@@ -1,7 +1,5 @@
 #pragma once
 
-#define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
-
 #include "Delegates.h"
 
 #include <fmt/core.h>
@@ -16,5 +14,6 @@
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
+#include <optional>
 #include <variant>
 #include <vector>
