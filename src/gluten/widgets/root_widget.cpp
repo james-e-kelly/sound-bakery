@@ -1,5 +1,6 @@
 #include "root_widget.h"
 
+#include "gluten/elements/text.h"
 #include "gluten/subsystems/renderer_subsystem.h"
 #include "gluten/utils/imgui_util_functions.h"
 #include "gluten/utils/imgui_util_structures.h"
@@ -148,12 +149,14 @@ void root_widget::draw_titlebar()
     ImGui::ResumeLayout();
     
     {
-        // Centered Window title
-        ImVec2 currentCursorPos = ImGui::GetCursorPos();
-        ImVec2 textSize         = ImGui::CalcTextSize(get_app()->get_application_display_title().data());
-        ImGui::SetCursorPos(ImVec2(ImGui::GetWindowWidth() * 0.5f - textSize.x * 0.5f, 2.0f + windowPadding.y + 6.0f));
-        ImGui::Text("%s", get_app()->get_application_display_title().data());  // Draw title
-        ImGui::SetCursorPos(currentCursorPos);
+        static gluten::text windowTitleText;
+
+        windowTitleText.set_element_size_type(gluten::element::size_type::self);
+        windowTitleText.set_element_horizontal_alignment(gluten::element::horizontal_aligntment::center);
+        windowTitleText.set_element_vertical_alignment(gluten::element::vertical_alignment::middle);
+        windowTitleText.set_element_parent_info({ImVec2(0.0f, 0.0f), ImVec2(ImGui::GetWindowSize().x, titlebarHeight)});
+
+        windowTitleText.render_unformatted(get_app()->get_application_display_title().data());
     }
     
     // Minimize Button
