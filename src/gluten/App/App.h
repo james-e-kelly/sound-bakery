@@ -1,5 +1,6 @@
 #pragma once
 
+#include "gluten/elements/button.h"
 #include "gluten/images/image.h"
 #include "gluten/managers/manager.h"
 #include "gluten/subsystems/subsystem.h"
@@ -34,10 +35,12 @@ namespace gluten
         std::string_view get_application_display_title() const { return m_applicationDisplayTitle; }
 
         gluten::image* get_window_icon() const { return m_windowIcon.get(); }
-        gluten::image* get_window_close_icon() const { return m_windowCloseIcon.get(); }
-        gluten::image* get_window_minimise_icon() const { return m_windowMinimiseIcon.get(); }
-        gluten::image* get_window_maximise_icon() const { return m_windowMaximiseIcon.get(); }
-        gluten::image* get_window_restore_icon() const { return m_windowRestoreIcon.get(); }
+        gluten::image_button* get_window_close_icon() const { return m_windowCloseIcon.get(); }
+        gluten::image_button* get_window_minimise_icon() const { return m_windowMinimiseIcon.get(); }
+        gluten::image_button* get_window_maximise_icon() const { return m_windowMaximiseIcon.get(); }
+        gluten::image_button* get_window_restore_icon() const { return m_windowRestoreIcon.get(); }
+
+        gluten::image* get_test_image() const { return m_testImage.get(); }
 
     private:
         std::vector<std::unique_ptr<subsystem>> m_subsystems;
@@ -49,11 +52,13 @@ namespace gluten
         std::string m_executableLocation;
         std::string m_applicationDisplayTitle;
 
+        std::unique_ptr<gluten::image> m_testImage;
+
         std::unique_ptr<gluten::image> m_windowIcon;
-        std::unique_ptr<gluten::image> m_windowCloseIcon;
-        std::unique_ptr<gluten::image> m_windowMinimiseIcon;
-        std::unique_ptr<gluten::image> m_windowMaximiseIcon;
-        std::unique_ptr<gluten::image> m_windowRestoreIcon;
+        std::unique_ptr<gluten::image_button> m_windowCloseIcon;
+        std::unique_ptr<gluten::image_button> m_windowMinimiseIcon;
+        std::unique_ptr<gluten::image_button> m_windowMaximiseIcon;
+        std::unique_ptr<gluten::image_button> m_windowRestoreIcon;
 
         bool m_hasInit          = false;
         bool m_isRequestingExit = false;

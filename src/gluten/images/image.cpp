@@ -1,6 +1,9 @@
 #include "image.h"
 
+#include "gluten/theme/theme.h"
+
 #include "imgui.h"
+#include "imgui_internal.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -39,16 +42,11 @@ namespace gluten
         {
             if (ImDrawList* const drawList = ImGui::GetForegroundDrawList())
             {
-                drawList->AddImage((void*)(intptr_t)m_openGlId, ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
+                drawList->AddImage((void*)(intptr_t)m_openGlId, get_element_start(), get_element_end());
+               
+                //ImGui::DebugDrawItemRect(gluten::theme::invalidPrefab);
             }
         }
-    }
-
-    bool image::button(const char* name)
-    {
-        const bool result = ImGui::InvisibleButton(name, ImVec2(m_width, m_height));
-        render();
-        return result;
     }
 
 	image::data_ptr image::get_image_data(unsigned char* data, int dataLength)
@@ -59,6 +57,8 @@ namespace gluten
 
 	void image::bind_image_data(const image::data_ptr& imageData)
 	{
+        set_element_size(ImVec2(m_width, m_height));
+
         GLuint imageTexture;
         glGenTextures(1, &imageTexture);
         glBindTexture(GL_TEXTURE_2D, imageTexture);

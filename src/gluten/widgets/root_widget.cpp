@@ -91,14 +91,21 @@ void root_widget::draw_titlebar()
 
     // DEBUG TITLEBAR BOUNDS
     //fgDrawList->AddRect(titlebarMin, titlebarMax, gluten::theme::invalidPrefab);
+    
+    ImGui::DebugDrawCursorPos(gluten::theme::invalidPrefab);
 
+     // Logo
+    {
+        get_app()->get_window_icon()->render();
+        ImGui::DebugDrawCursorPos(gluten::theme::invalidPrefab);
+        ImGui::DebugDrawItemRect(gluten::theme::invalidPrefab);
+
+        get_app()->get_test_image()->render();
+    }
 
     ImGui::BeginHorizontal("Titlebar",
                            {ImGui::GetWindowWidth() - windowPadding.y * 2.0f, ImGui::GetFrameHeightWithSpacing()});
-    // Logo
-    {
-        get_app()->get_window_icon()->render();
-    }
+   
 
     const float w                = ImGui::GetContentRegionAvail().x;
     const float buttonsAreaWidth = 94;
@@ -107,8 +114,8 @@ void root_widget::draw_titlebar()
     // On Windows we hook into the GLFW win32 window internals
     ImGui::SetCursorPos(ImVec2(windowPadding.x, windowPadding.y + titlebarVerticalOffset));  // Reset cursor pos
     // DEBUG DRAG BOUNDS
-     fgDrawList->AddRect(ImGui::GetCursorScreenPos(), ImVec2(ImGui::GetCursorScreenPos().x + w - buttonsAreaWidth,
-     ImGui::GetCursorScreenPos().y + titlebarHeight), gluten::theme::invalidPrefab);
+     /*fgDrawList->AddRect(ImGui::GetCursorScreenPos(), ImVec2(ImGui::GetCursorScreenPos().x + w - buttonsAreaWidth,
+     ImGui::GetCursorScreenPos().y + titlebarHeight), gluten::theme::invalidPrefab);*/
     ImGui::InvisibleButton("##titleBarDragZone", ImVec2(w - buttonsAreaWidth, titlebarHeight));
 
     m_hoveringTitlebar = ImGui::IsItemHovered();
@@ -120,8 +127,12 @@ void root_widget::draw_titlebar()
         const float windowMousePosY = MouseY - DrawMouseY;
 
         if (windowMousePosY >= 0.0f && windowMousePosY <= 5.0f)
+        {
             m_hoveringTitlebar = true;  // Account for the top-most pixels which don't register
+        }
     }
+
+    
 
     // Draw Menubar
     ImGui::SuspendLayout();
@@ -151,7 +162,7 @@ void root_widget::draw_titlebar()
     ImGui::Spring();
     gluten::imgui::shift_cursor_y(8.0f);
     {
-        if (get_app()->get_window_minimise_icon()->button("Minimise"))
+        if (get_app()->get_window_minimise_icon()->render())
         {
             /*if (m_WindowHandle)
             {
@@ -166,14 +177,14 @@ void root_widget::draw_titlebar()
     {
         if (const bool isMaximized = get_app()->is_maximized())
         {
-            if (get_app()->get_window_restore_icon()->button("Restore"))
+            if (get_app()->get_window_restore_icon()->render())
             {
                 get_app()->get_subsystem_by_class<gluten::renderer_subsystem>()->toggle_maximised();
             }
         }
         else
         {
-            if (get_app()->get_window_maximise_icon()->button("Maximise"))
+            if (get_app()->get_window_maximise_icon()->render())
             {
                 get_app()->get_subsystem_by_class<gluten::renderer_subsystem>()->toggle_maximised();
             }
@@ -184,7 +195,7 @@ void root_widget::draw_titlebar()
     ImGui::Spring(-1.0f, 15.0f);
     gluten::imgui::shift_cursor_y(8.0f);
     {
-        if (get_app()->get_window_close_icon()->button("Close"))
+        if (get_app()->get_window_close_icon()->render())
         {
             get_app()->request_exit();
         }

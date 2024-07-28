@@ -16,6 +16,8 @@ set(IMAGE_FILES
 set(GLUTEN_SOURCES
   app_entry.cpp 
   app/app.cpp
+  elements/element.cpp
+  elements/button.cpp
   images/image.cpp
   managers/manager.cpp
   subsystems/renderer_subsystem.cpp
@@ -29,6 +31,8 @@ set(GLUTEN_SOURCES
 
 set(GLUTEN_HEADERS
   app/app.h
+  elements/element.h
+  elements/button.h
   images/image.h
   managers/manager.h
   subsystems/renderer_subsystem.h

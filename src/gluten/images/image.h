@@ -3,6 +3,7 @@
 #include "pch.h"
 #include <cmrc/cmrc.hpp>
 #include "stb_image.h"
+#include "gluten/elements/element.h"
 
 namespace gluten 
 {
@@ -14,7 +15,7 @@ namespace gluten
         }
 	};
 
-	class image
+	class image : public element
 	{
 	public:
 		using data_ptr = std::unique_ptr<unsigned char, image_destroyer>;
@@ -24,7 +25,6 @@ namespace gluten
         ~image();
 
 		void render();
-        bool button(const char* name);
         void release();
 
 		int get_width() const { return m_width; }
