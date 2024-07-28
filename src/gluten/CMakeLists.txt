@@ -22,6 +22,7 @@ set(GLUTEN_SOURCES
   subsystems/widget_subsystem.cpp
   utils/imgui_util_functions.cpp
   theme/window_images.embed
+  theme/walnut_icon.embed
   widgets/widget.cpp
   widgets/root_widget.cpp
 )
@@ -81,8 +82,8 @@ set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
 
 FetchContent_Declare(
   glfw
-  GIT_REPOSITORY https://github.com/glfw/glfw.git
-  GIT_TAG        3.3.9
+  GIT_REPOSITORY https://github.com/TheCherno/glfw.git
+  GIT_TAG        master
   GIT_SHALLOW    TRUE
   OVERRIDE_FIND_PACKAGE
 )

@@ -37,16 +37,24 @@ namespace gluten
     {
         if (m_openGlId != 0 && m_width > 0 && m_height > 0)
         {
-            ImGui::Image((void*)(intptr_t)m_openGlId, ImVec2(m_width, m_height));
+            if (ImDrawList* const drawList = ImGui::GetForegroundDrawList())
+            {
+                drawList->AddImage((void*)(intptr_t)m_openGlId, ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
+            }
         }
+    }
+
+    bool image::button(const char* name)
+    {
+        const bool result = ImGui::InvisibleButton(name, ImVec2(m_width, m_height));
+        render();
+        return result;
     }
 
 	image::data_ptr image::get_image_data(unsigned char* data, int dataLength)
 	{
-        int n;
-        image::data_ptr imageData = image::data_ptr(stbi_load_from_memory(data, dataLength, &m_width, &m_height, &n, 0));
-
-		return imageData;
+        int channelsInFile = 0;
+        return image::data_ptr(stbi_load_from_memory(data, dataLength, &m_width, &m_height, &channelsInFile, 4));
 	}
 
 	void image::bind_image_data(const image::data_ptr& imageData)
@@ -63,7 +71,7 @@ namespace gluten
 #if defined(GL_UNPACK_ROW_LENGTH) && !defined(__EMSCRIPTEN__)
         glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
 #endif
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_UNSIGNED_BYTE,
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE,
                         imageData.get());
 
         m_openGlId = imageTexture;

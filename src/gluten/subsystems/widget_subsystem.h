@@ -15,6 +15,7 @@ namespace gluten
         virtual void exit() override;
 
         void set_root_widget(widget* rootWidget);
+        widget* get_root_widget() const { return m_rootWidget; }
 
     public:
         template <class T>

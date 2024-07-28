@@ -1,5 +1,8 @@
 #include "renderer_subsystem.h"
 
+#include "gluten/subsystems/widget_subsystem.h"
+#include "gluten/widgets/root_widget.h"
+
 #include "IconsFontAwesome6.h"
 #include "IconsFontaudio.h"
 #include "app/app.h"
@@ -49,6 +52,26 @@ renderer_subsystem::window_guard::window_guard(int width, int height, const std:
     {
         glfwMakeContextCurrent(currentContext);
     }
+
+
+    glfwSetWindowUserPointer(m_window, gluten::app::get());
+    glfwSetTitlebarHitTestCallback(m_window,
+        [](GLFWwindow* window, int x, int y, int* hit)
+        {
+            if (gluten::app* const app = (gluten::app*)glfwGetWindowUserPointer(window))
+            {
+                if (gluten::widget_subsystem* const widgetSubsystem = app->get_subsystem_by_class<gluten::widget_subsystem>())
+                {
+                    if (gluten::widget* const rootWidget = widgetSubsystem->get_root_widget())
+                    {
+                        if (gluten::root_widget* const rootWidgetCasted = (gluten::root_widget*)rootWidget)
+                        {
+                            *hit = rootWidgetCasted->is_hovering_titlebar();
+                        }
+                    }
+                }
+            }
+        });
 
     ImGui_ImplGlfw_InitForOpenGL(m_window, true);
 
@@ -112,7 +135,10 @@ void renderer_subsystem::set_default_window_hints()
     // only glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // 3.0+ only
 #endif
 
-    glfwWindowHint(GLFW_DECORATED, false);
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+    glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);
+    glfwWindowHint(GLFW_TITLEBAR, GLFW_FALSE);
+    //glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
 }
 
 static ImVec4 hex_to_rgb(ImU32 hex)

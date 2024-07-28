@@ -3,6 +3,7 @@
 #include "subsystems/renderer_subsystem.h"
 #include "subsystems/widget_subsystem.h"
 #include "gluten/theme/window_images.embed"
+#include "gluten/theme/walnut_icon.embed"
 
 namespace PathHelpers
 {
@@ -11,8 +12,14 @@ namespace PathHelpers
 
 using namespace gluten;
 
+static gluten::app* s_app = nullptr;
+
+gluten::app* gluten::app::get() { return s_app; }
+
 int gluten::app::run(int argc, char** argv)
 {
+    s_app = this;
+
     m_executableLocation = std::string(argv[0]);
 
     add_subsystem_class<renderer_subsystem>();
@@ -41,6 +48,7 @@ int gluten::app::run(int argc, char** argv)
     m_currentTime  = std::chrono::high_resolution_clock::now();
     m_previousTime = std::chrono::high_resolution_clock::now();
 
+    m_windowIcon = std::make_unique<gluten::image>(g_WalnutIcon, sizeof(g_WalnutIcon));
     m_windowCloseIcon = std::make_unique<gluten::image>(g_WindowCloseIcon, sizeof(g_WindowCloseIcon));
     m_windowMinimiseIcon = std::make_unique<gluten::image>(g_WindowMinimiseIcon, sizeof(g_WindowMinimiseIcon));
     m_windowMaximiseIcon = std::make_unique<gluten::image>(g_WindowMaximiseIcon, sizeof(g_WindowMaximiseIcon));

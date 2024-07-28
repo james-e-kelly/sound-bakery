@@ -117,6 +117,14 @@ namespace gluten::imgui
 		~scoped_item_flags() { ImGui::PopItemFlag(); }
 	};
 
+	struct scoped_window
+    {
+        scoped_window(const scoped_item_flags&)               = delete;
+        scoped_window operator=(const scoped_item_flags&) = delete;
+        scoped_window(const char* name, bool* open = nullptr, ImGuiWindowFlags flags = 0) { ImGui::Begin(name, open, flags); }
+        ~scoped_window() { ImGui::End(); }
+    };
+
 	struct resize_border_def
     {
         ImVec2 InnerDir;

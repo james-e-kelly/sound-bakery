@@ -9,6 +9,8 @@ namespace gluten
     class app
     {
     public:
+        static app* get();
+
         int run(int argc, char** argv);
         void request_exit();
 
@@ -31,6 +33,7 @@ namespace gluten
         void set_application_display_title(const std::string& title);
         std::string_view get_application_display_title() const { return m_applicationDisplayTitle; }
 
+        gluten::image* get_window_icon() const { return m_windowIcon.get(); }
         gluten::image* get_window_close_icon() const { return m_windowCloseIcon.get(); }
         gluten::image* get_window_minimise_icon() const { return m_windowMinimiseIcon.get(); }
         gluten::image* get_window_maximise_icon() const { return m_windowMaximiseIcon.get(); }
@@ -46,6 +49,7 @@ namespace gluten
         std::string m_executableLocation;
         std::string m_applicationDisplayTitle;
 
+        std::unique_ptr<gluten::image> m_windowIcon;
         std::unique_ptr<gluten::image> m_windowCloseIcon;
         std::unique_ptr<gluten::image> m_windowMinimiseIcon;
         std::unique_ptr<gluten::image> m_windowMaximiseIcon;

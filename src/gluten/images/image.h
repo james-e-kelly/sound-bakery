@@ -24,6 +24,7 @@ namespace gluten
         ~image();
 
 		void render();
+        bool button(const char* name);
         void release();
 
 		int get_width() const { return m_width; }
