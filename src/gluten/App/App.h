@@ -2,7 +2,7 @@
 
 #include "gluten/elements/button.h"
 #include "gluten/elements/image_button.h"
-#include "gluten/images/image.h"
+#include "gluten/elements/image.h"
 #include "gluten/managers/manager.h"
 #include "gluten/subsystems/subsystem.h"
 

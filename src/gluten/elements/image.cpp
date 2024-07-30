@@ -36,7 +36,7 @@ namespace gluten
         release();
     }
 
-    void image::render()
+    bool image::render_element()
     {
         if (m_openGlId != 0 && m_width > 0 && m_height > 0)
         {
@@ -45,8 +45,12 @@ namespace gluten
                 drawList->AddImage((void*)(intptr_t)m_openGlId, get_element_start(), get_element_end());
                
                 //ImGui::DebugDrawItemRect(gluten::theme::invalidPrefab);
+
+                return true;
             }
         }
+
+        return false;
     }
 
 	image::data_ptr image::get_image_data(unsigned char* data, int dataLength)

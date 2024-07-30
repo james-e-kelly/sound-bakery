@@ -1,7 +1,6 @@
 #pragma once
 
 #include "gluten/elements/element.h"
-#include "gluten/images/image.h"
 
 namespace gluten
 {
@@ -9,12 +8,13 @@ namespace gluten
 	{
     public:
         button() = delete;
-        button(const char* name);
+        button(const char* name, bool invisible = false, std::function<void()> onActivateFunction = std::function<void()>());
 
-        bool render();
-        bool render_invisibile();
+        bool render_element() override;
 
 	private:
         const char* m_name = nullptr;
+        const bool m_invisible = false;
+        std::function<void()> m_function;
 	};
 }

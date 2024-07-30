@@ -7,7 +7,14 @@ namespace gluten
     class text : public element
 	{
     public:
-        void render_unformatted(const char* displayText);
-        void render(const char* fmt, ...);
+        text() = default;
+        text(const std::string& displayText);
+
+        void set_text(const std::string& displayText);
+
+        bool render_element() override;
+
+    private:
+        std::string m_displayText;
 	};
 }

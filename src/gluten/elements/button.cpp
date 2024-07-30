@@ -4,18 +4,19 @@
 
 #include "gluten/theme/theme.h"
 
-gluten::button::button(const char* name) : m_name(name) {}
+gluten::button::button(const char* name, bool invisible, std::function<void()> onActivateFunction) 
+    : m_name(name), 
+    m_invisible(invisible), 
+    m_function(onActivateFunction) {}
 
-bool gluten::button::render() 
-{ 
-    const bool activated = ImGui::Button(m_name, get_element_size()); 
-    ImGui::DebugDrawItemRect(gluten::theme::invalidPrefab);
-    return activated;
-}
+bool gluten::button::render_element()
+{
+    const bool activated =
+        m_invisible ? ImGui::InvisibleButton(m_name, get_element_size()) : ImGui::Button(m_name, get_element_size());
 
-bool gluten::button::render_invisibile() 
-{ 
-	const bool activated = ImGui::InvisibleButton(m_name, get_element_size());
-    ImGui::DebugDrawItemRect(gluten::theme::invalidPrefab);
+    if (activated && m_function)
+    {
+        m_function();
+    }
     return activated;
 }

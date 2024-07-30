@@ -97,9 +97,7 @@ void root_widget::draw_titlebar()
 
      // Logo
     {
-        get_app()->get_window_icon()->render();
-        ImGui::DebugDrawCursorPos(gluten::theme::invalidPrefab);
-        ImGui::DebugDrawItemRect(gluten::theme::invalidPrefab);
+        get_app()->get_window_icon()->render_element();
     }
 
     ImGui::BeginHorizontal("Titlebar",
@@ -149,21 +147,21 @@ void root_widget::draw_titlebar()
     ImGui::ResumeLayout();
     
     {
-        static gluten::text windowTitleText;
+        gluten::text windowTitleText(std::string(get_app()->get_application_display_title()));
 
         windowTitleText.set_element_size_type(gluten::element::size_type::self);
         windowTitleText.set_element_horizontal_alignment(gluten::element::horizontal_aligntment::center);
         windowTitleText.set_element_vertical_alignment(gluten::element::vertical_alignment::middle);
         windowTitleText.set_element_parent_info({ImVec2(0.0f, 0.0f), ImVec2(ImGui::GetWindowSize().x, titlebarHeight)});
 
-        windowTitleText.render_unformatted(get_app()->get_application_display_title().data());
+        windowTitleText.render_element();
     }
     
     // Minimize Button
     ImGui::Spring();
     gluten::imgui::shift_cursor_y(8.0f);
     {
-        if (get_app()->get_window_minimise_icon()->render())
+        if (get_app()->get_window_minimise_icon()->render_element())
         {
             /*if (m_WindowHandle)
             {
@@ -178,14 +176,14 @@ void root_widget::draw_titlebar()
     {
         if (const bool isMaximized = get_app()->is_maximized())
         {
-            if (get_app()->get_window_restore_icon()->render())
+            if (get_app()->get_window_restore_icon()->render_element())
             {
                 get_app()->get_subsystem_by_class<gluten::renderer_subsystem>()->toggle_maximised();
             }
         }
         else
         {
-            if (get_app()->get_window_maximise_icon()->render())
+            if (get_app()->get_window_maximise_icon()->render_element())
             {
                 get_app()->get_subsystem_by_class<gluten::renderer_subsystem>()->toggle_maximised();
             }
@@ -196,7 +194,7 @@ void root_widget::draw_titlebar()
     ImGui::Spring(-1.0f, 15.0f);
     gluten::imgui::shift_cursor_y(8.0f);
     {
-        if (get_app()->get_window_close_icon()->render())
+        if (get_app()->get_window_close_icon()->render_element())
         {
             get_app()->request_exit();
         }

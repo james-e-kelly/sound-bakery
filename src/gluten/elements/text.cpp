@@ -1,18 +1,22 @@
 #include "text.h"
 
-void gluten::text::render_unformatted(const char* displayText)
-{ 
-	const ImVec2 textSize = ImGui::CalcTextSize(displayText); 
-	set_element_size(textSize);
+gluten::text::text(const std::string& displayText) : m_displayText(displayText) {}
 
-    ImGui::SetCursorPos(get_element_start());
-    ImGui::TextUnformatted(displayText);
+void gluten::text::set_text(const std::string& displayText) 
+{ 
+    m_displayText = displayText; 
 }
 
-void gluten::text::render(const char* fmt, ...)
+bool gluten::text::render_element() 
 {
-    va_list args;
-    va_start(args, fmt);
-    ImGui::TextV(fmt, args);
-    va_end(args);
+    if (!m_displayText.empty())
+    {
+        const ImVec2 textSize = ImGui::CalcTextSize(m_displayText.c_str());
+        set_element_size(textSize);
+
+        ImGui::SetCursorPos(get_element_start());
+        ImGui::TextUnformatted(m_displayText.c_str());
+    }
+
+    return false;
 }

@@ -40,25 +40,10 @@ namespace gluten
             ImVec2 parentStart;
             ImVec2 parentSize;
 
-			float parent_center_horizontal() const 
-			{ 
-				return parentStart.x + (parentSize.x / 2.0f);
-			}
-
-			float parent_right_horizontal() const
-			{ 
-				return parentStart.x + parentSize.x;
-			}
-
-			float parent_center_vertical() const
-			{
-				return parentStart.y + (parentSize.y / 2.0f);
-			}
-
-			float parent_bottom_vertical() const
-			{ 
-				return parentStart.y + parentSize.y;
-			}
+			float parent_center_horizontal() const;
+			float parent_right_horizontal() const;
+			float parent_center_vertical() const;
+			float parent_bottom_vertical() const;
 		};
 
 		ImVec2 get_element_start() const;			//< Returns draw start position for the element
@@ -72,8 +57,10 @@ namespace gluten
         void set_element_horizontal_alignment(horizontal_aligntment alignment);
         void set_element_parent_info(const parent_info& parentInfo);
 
+		virtual bool render_element() = 0;
+
 	private:
-        ImVec2 m_selfSize		= ImVec2(16, 16);
+        ImVec2 m_selfSize		= ImVec2(32, 32);
         ImVec2 m_offset			= ImVec2(0, 0);
         
 		size_type m_sizeType	= size_type::fill;

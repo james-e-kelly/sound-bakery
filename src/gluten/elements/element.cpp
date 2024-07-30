@@ -95,5 +95,24 @@ void gluten::element::set_element_vertical_alignment(vertical_alignment alignmen
 void gluten::element::set_element_horizontal_alignment(horizontal_aligntment alignment)
 { m_horizontalAlignment = alignment; }
 
-void gluten::element::set_element_parent_info(const parent_info& parentInfo)
-{ m_parentInfo = parentInfo; }
+void gluten::element::set_element_parent_info(const parent_info& parentInfo) { m_parentInfo = parentInfo; }
+
+float gluten::element::parent_info::parent_center_horizontal() const
+{
+    return parentStart.x + (parentSize.x / 2.0f);
+}
+
+float gluten::element::parent_info::parent_right_horizontal() const 
+{ 
+    return parentStart.x + parentSize.x; 
+}
+
+float gluten::element::parent_info::parent_center_vertical() const
+{
+    return parentStart.y + (parentSize.y / 2.0f);
+}
+
+float gluten::element::parent_info::parent_bottom_vertical() const 
+{ 
+    return parentStart.y + parentSize.y; 
+}
