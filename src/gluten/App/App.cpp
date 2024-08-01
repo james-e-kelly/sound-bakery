@@ -54,23 +54,8 @@ int gluten::app::run(int argc, char** argv)
     m_windowMaximiseIcon = std::make_unique<gluten::image_button>("Maximise", g_WindowMaximiseIcon, sizeof(g_WindowMaximiseIcon));
     m_windowRestoreIcon  = std::make_unique<gluten::image_button>("Restore", g_WindowRestoreIcon, sizeof(g_WindowRestoreIcon));
 
-    m_windowIcon->set_element_size_type(gluten::element::size_type::self);
-    m_windowIcon->set_element_offset(ImVec2(16.0f,5.0f));
-
-    m_windowCloseIcon->get_image().set_element_size_type(gluten::element::size_type::self);
-    m_windowMinimiseIcon->get_image().set_element_size_type(gluten::element::size_type::self);
-    m_windowMaximiseIcon->get_image().set_element_size_type(gluten::element::size_type::self);
-    m_windowRestoreIcon->get_image().set_element_size_type(gluten::element::size_type::self);
-
-    m_windowCloseIcon->get_image().set_element_horizontal_alignment(gluten::element::horizontal_aligntment::center);
-    m_windowMinimiseIcon->get_image().set_element_horizontal_alignment(gluten::element::horizontal_aligntment::center);
-    m_windowMaximiseIcon->get_image().set_element_horizontal_alignment(gluten::element::horizontal_aligntment::center);
-    m_windowRestoreIcon->get_image().set_element_horizontal_alignment(gluten::element::horizontal_aligntment::center);
-
-    m_windowCloseIcon->get_image().set_element_vertical_alignment(gluten::element::vertical_alignment::middle);
-    m_windowMinimiseIcon->get_image().set_element_vertical_alignment(gluten::element::vertical_alignment::middle);
-    m_windowMaximiseIcon->get_image().set_element_vertical_alignment(gluten::element::vertical_alignment::middle);
-    m_windowRestoreIcon->get_image().set_element_vertical_alignment(gluten::element::vertical_alignment::middle);
+    m_windowIcon->set_element_alignment(ImVec2(0.5f, 0.5f));
+    m_windowIcon->get_element_anchor().minOffset = ImVec2(16.0f, 5.0f);
 
     m_hasInit = true;
 

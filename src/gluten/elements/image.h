@@ -24,7 +24,7 @@ namespace gluten
         image(const void* data, std::size_t dataSize);
         ~image();
 
-		bool render_element() override;
+		bool render_element(const box& parent) override;
         void release();
 
 		int get_width() const { return m_width; }

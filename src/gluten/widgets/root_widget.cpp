@@ -1,6 +1,7 @@
 #include "root_widget.h"
 
 #include "gluten/elements/text.h"
+#include "gluten/elements/layouts/layout.h"
 #include "gluten/subsystems/renderer_subsystem.h"
 #include "gluten/utils/imgui_util_functions.h"
 #include "gluten/utils/imgui_util_structures.h"
@@ -29,8 +30,14 @@ void root_widget::render()
 
     {
         gluten::imgui::scoped_style_stack rootStyle(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f),
-                                                    ImGuiStyleVar_WindowRounding, 0.0f,
+                                                    ImGuiStyleVar_WindowRounding, 0.0f, 
                                                     ImGuiStyleVar_WindowBorderSize, 0.0f);
+
+        gluten::imgui::scoped_color clearHeaderColor(ImGuiCol_WindowBg, gluten::theme::missingMesh);
+
+            ImGuiStyle& style                 = ImGui::GetStyle();
+        style.Colors[ImGuiCol_WindowBg].w = 0.0f;
+
         ImGui::Begin(rootWindowName, nullptr, rootWindowFlags);
     }
 
@@ -83,125 +90,109 @@ void root_widget::draw_titlebar()
     float titlebarVerticalOffset = isMaximized ? -6.0f : 0.0f;
     const ImVec2 windowPadding   = ImGui::GetCurrentWindow()->WindowPadding;
 
-    ImGui::SetCursorPos(ImVec2(windowPadding.x, windowPadding.y + titlebarVerticalOffset));
-    const ImVec2 titlebarMin = ImGui::GetCursorScreenPos();
-    const ImVec2 titlebarMax = {ImGui::GetCursorScreenPos().x + ImGui::GetWindowWidth(), ImGui::GetCursorScreenPos().y + titlebarHeight};
-    auto* bgDrawList         = ImGui::GetBackgroundDrawList();
-    auto* fgDrawList = ImGui::GetForegroundDrawList();
-    bgDrawList->AddRectFilled(titlebarMin, titlebarMax, gluten::theme::titlebar);
-
-    // DEBUG TITLEBAR BOUNDS
-    //fgDrawList->AddRect(titlebarMin, titlebarMax, gluten::theme::invalidPrefab);
+    const gluten::element::box windowParent{ImGui::GetWindowPos(), ImVec2(ImGui::GetWindowWidth(), titlebarHeight)};
     
-    ImGui::DebugDrawCursorPos(gluten::theme::invalidPrefab);
+    gluten::element::s_debug = true;
 
-     // Logo
+    gluten::layout topBarLayout(gluten::layout::layout_type::left_to_right);
+    topBarLayout.get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::stretch_full);
+    topBarLayout.set_element_background_color(gluten::theme::titlebar);
+    topBarLayout.render(windowParent);  // render background. no elements
+
+    gluten::layout logoLayout(gluten::layout::layout_type::left_to_right);
+    logoLayout.get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::stretch_full);
+    
+    topBarLayout.render_layout_element(&logoLayout, 0.1f, 1.0f);
+    logoLayout.render_layout_element(get_app()->get_window_icon(), 1.0f, 1.0f);
+
+    //logoLayout.render_layout_element()
+
+    // Logo
     {
-        get_app()->get_window_icon()->render_element();
+        //leftAlignTopBar.set_element_offset(ImVec2(20, 0));
+        //leftAlignTopBar.render_layout_element(get_app()->get_window_icon());
     }
-
-    ImGui::BeginHorizontal("Titlebar",
-                           {ImGui::GetWindowWidth() - windowPadding.y * 2.0f, ImGui::GetFrameHeightWithSpacing()});
-   
 
     const float w                = ImGui::GetContentRegionAvail().x;
     const float buttonsAreaWidth = 94;
 
-    // Title bar drag area
-    // On Windows we hook into the GLFW win32 window internals
+    
     ImGui::SetCursorPos(ImVec2(windowPadding.x, windowPadding.y + titlebarVerticalOffset));  // Reset cursor pos
-    // DEBUG DRAG BOUNDS
-     /*fgDrawList->AddRect(ImGui::GetCursorScreenPos(), ImVec2(ImGui::GetCursorScreenPos().x + w - buttonsAreaWidth,
-     ImGui::GetCursorScreenPos().y + titlebarHeight), gluten::theme::invalidPrefab);*/
     ImGui::InvisibleButton("##titleBarDragZone", ImVec2(w - buttonsAreaWidth, titlebarHeight));
+
 
     m_hoveringTitlebar = ImGui::IsItemHovered();
 
-    if (isMaximized)
-    {
-        const float MouseY = ImGui::GetMousePos().y;
-        const float DrawMouseY = ImGui::GetCursorScreenPos().y;
-        const float windowMousePosY = MouseY - DrawMouseY;
-
-        if (windowMousePosY >= 0.0f && windowMousePosY <= 5.0f)
-        {
-            m_hoveringTitlebar = true;  // Account for the top-most pixels which don't register
-        }
-    }
-
-    
-
-    // Draw Menubar
-    ImGui::SuspendLayout();
-    {
-        ImGui::SetItemAllowOverlap();
-        const float logoHorizontalOffset = 16.0f * 2.0f + 48.0f + windowPadding.x;
-        ImGui::SetCursorPos(ImVec2(logoHorizontalOffset, 6.0f + titlebarVerticalOffset));
-        //render_menu();
-
-        if (ImGui::IsItemHovered())
-        {
-            //m_hoveringTitlebar = false;
-        }
-    }
-    ImGui::ResumeLayout();
-    
-    {
-        gluten::text windowTitleText(std::string(get_app()->get_application_display_title()));
-
-        windowTitleText.set_element_size_type(gluten::element::size_type::self);
-        windowTitleText.set_element_horizontal_alignment(gluten::element::horizontal_aligntment::center);
-        windowTitleText.set_element_vertical_alignment(gluten::element::vertical_alignment::middle);
-        windowTitleText.set_element_parent_info({ImVec2(0.0f, 0.0f), ImVec2(ImGui::GetWindowSize().x, titlebarHeight)});
-
-        windowTitleText.render_element();
-    }
-    
-    // Minimize Button
-    ImGui::Spring();
-    gluten::imgui::shift_cursor_y(8.0f);
-    {
-        if (get_app()->get_window_minimise_icon()->render_element())
-        {
-            /*if (m_WindowHandle)
-            {
-                Application::Get().QueueEvent([windowHandle = m_WindowHandle]() { glfwIconifyWindow(windowHandle); });
-            }*/
-        }
-    }
-
-    // Maximize Button
-    ImGui::Spring(-1.0f, 17.0f);
-    gluten::imgui::shift_cursor_y(8.0f);
-    {
-        if (const bool isMaximized = get_app()->is_maximized())
-        {
-            if (get_app()->get_window_restore_icon()->render_element())
-            {
-                get_app()->get_subsystem_by_class<gluten::renderer_subsystem>()->toggle_maximised();
-            }
-        }
-        else
-        {
-            if (get_app()->get_window_maximise_icon()->render_element())
-            {
-                get_app()->get_subsystem_by_class<gluten::renderer_subsystem>()->toggle_maximised();
-            }
-        }
-    }
-
-    // Close Button
-    ImGui::Spring(-1.0f, 15.0f);
-    gluten::imgui::shift_cursor_y(8.0f);
-    {
-        if (get_app()->get_window_close_icon()->render_element())
-        {
-            get_app()->request_exit();
-        }
-    }
-
-    ImGui::Spring(-1.0f, 18.0f);
-    ImGui::EndHorizontal();
-
     ImGui::SetCursorPosY(titlebarHeight);
+
+    return;
+
+    //if (isMaximized)
+    //{
+    //    const float MouseY = ImGui::GetMousePos().y;
+    //    const float DrawMouseY = ImGui::GetCursorScreenPos().y;
+    //    const float windowMousePosY = MouseY - DrawMouseY;
+
+    //    if (windowMousePosY >= 0.0f && windowMousePosY <= 5.0f)
+    //    {
+    //        m_hoveringTitlebar = true;  // Account for the top-most pixels which don't register
+    //    }
+    //}
+
+    //// Draw Menubar
+    //{
+    //    ImGui::SetItemAllowOverlap();
+    //    const float logoHorizontalOffset = 16.0f * 2.0f + 48.0f + windowPadding.x;
+    //    ImGui::SetCursorPos(ImVec2(logoHorizontalOffset, 6.0f + titlebarVerticalOffset));
+    //    //render_menu();
+
+    //    if (ImGui::IsItemHovered())
+    //    {
+    //        //m_hoveringTitlebar = false;
+    //    }
+    //}
+    //
+    //{
+    //    gluten::text windowTitleText(std::string(get_app()->get_application_display_title()));
+
+    //}
+    //
+    //// Minimize Button
+    //{
+    //    if (get_app()->get_window_minimise_icon()->render())
+    //    {
+    //        /*if (m_WindowHandle)
+    //        {
+    //            Application::Get().QueueEvent([windowHandle = m_WindowHandle]() { glfwIconifyWindow(windowHandle); });
+    //        }*/
+    //    }
+    //}
+
+    //// Maximize Button
+    //{
+    //    if (const bool isMaximized = get_app()->is_maximized())
+    //    {
+    //        if (get_app()->get_window_restore_icon()->render())
+    //        {
+    //            get_app()->get_subsystem_by_class<gluten::renderer_subsystem>()->toggle_maximised();
+    //        }
+    //    }
+    //    else
+    //    {
+    //        if (get_app()->get_window_maximise_icon()->render())
+    //        {
+    //            get_app()->get_subsystem_by_class<gluten::renderer_subsystem>()->toggle_maximised();
+    //        }
+    //    }
+    //}
+
+    //// Close Button
+    //{
+    //    if (get_app()->get_window_close_icon()->render())
+    //    {
+    //        get_app()->request_exit();
+    //    }
+    //}
+
+    //ImGui::SetCursorPosY(titlebarHeight);
 }

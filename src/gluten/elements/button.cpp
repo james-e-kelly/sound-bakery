@@ -9,10 +9,10 @@ gluten::button::button(const char* name, bool invisible, std::function<void()> o
     m_invisible(invisible), 
     m_function(onActivateFunction) {}
 
-bool gluten::button::render_element()
+bool gluten::button::render_element(const box& parent)
 {
     const bool activated =
-        m_invisible ? ImGui::InvisibleButton(m_name, get_element_size()) : ImGui::Button(m_name, get_element_size());
+        m_invisible ? ImGui::InvisibleButton(m_name, parent.size) : ImGui::Button(m_name, parent.size);
 
     if (activated && m_function)
     {

@@ -12,14 +12,27 @@ namespace gluten
          */
         enum class layout_type
         {
-            horizontal,
-            vertical
+            left_to_right,
+            right_to_left,
+            top_to_bottom,
+            bottom_to_top
         };
 
-        void add_layout_child(element* child);
-        void remove_layout_child(element* child);
+        layout() = default;
+        layout(const layout_type& layoutType);
+
+        void set_layout_type(const layout_type& type);
+        
+        /**
+         * @brief Render an element and give it a portion of this layout's area.
+         */
+        bool render_layout_element(element* element, float horizontalPercent, float verticalPercent);
 
     private:
-        std::unordered_set<element*> m_children;
+        bool render_element(const box& info) override { return false; }
+
+        layout_type m_layoutType = layout_type::left_to_right;
+
+        std::optional<ImVec2> m_currentLayoutPos;
     };
 }

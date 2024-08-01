@@ -11,7 +11,7 @@ namespace gluten
         image_button() = delete;
         image_button(const char* name, const void* data, std::size_t dataSize);
 
-        bool render_element() override;
+        bool render_element(const box& parent) override;
 
         button& get_button() { return m_button; }
         image& get_image() { return m_image; }

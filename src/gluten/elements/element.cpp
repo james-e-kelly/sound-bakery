@@ -1,118 +1,186 @@
 #include "element.h"
 
+#include "gluten/theme/theme.h"
+
 static ImVec2 operator+(const ImVec2& lhs, const ImVec2& rhs) { return ImVec2(lhs.x + rhs.x, lhs.y + rhs.y); }
+static ImVec2 operator-(const ImVec2& lhs, const ImVec2& rhs) { return ImVec2(lhs.x - rhs.x, lhs.y - rhs.y); }
 
 static ImVec2 operator+=(const ImVec2& lhs, const ImVec2& rhs) { return ImVec2(lhs.x + rhs.x, lhs.y + rhs.y); }
 
-ImVec2 gluten::element::get_element_start() const
+static ImVec2 operator*(const ImVec2& lhs, const ImVec2& rhs) { return ImVec2(lhs.x * rhs.x, lhs.y * rhs.y); }
+
+static ImVec2 max_from_vec(const ImVec2& lhs, const ImVec2& rhs)
 {
-    ImVec2 start = ImGui::GetItemRectMin();
+    return ImVec2(lhs.x > rhs.x ? lhs.x : rhs.x, lhs.y > rhs.y ? lhs.y : rhs.y);
+}
 
-    if (m_parentInfo.has_value() && m_sizeType == size_type::self)
+void gluten::element::anchor_info::set_achor_from_preset(const anchor_preset& preset)
+{
+    anchorPreset = preset;
+
+    switch (preset)
     {
-        switch (m_horizontalAlignment)
-        {
-            case horizontal_aligntment::none:
-                break;
-            case horizontal_aligntment::left:
-                start.x = m_parentInfo.value().parentStart.x;
-                break;
-            case horizontal_aligntment::center:
-                start.x = m_parentInfo.value().parent_center_horizontal() - (get_element_size().x / 2.0f);
-                break;
-            case horizontal_aligntment::right:
-                start.x = m_parentInfo.value().parent_right_horizontal() - get_element_size().x;
-        }
+        case anchor_preset::left_top:
+            min = ImVec2(0, 0);
+            max = ImVec2(0, 0);
+            break;
+        case anchor_preset::center_top:
+            min = ImVec2(0.5f, 0);
+            max = ImVec2(0.5f, 0);
+            break;
+        case anchor_preset::right_top:
+            min = ImVec2(1, 0);
+            max = ImVec2(1, 0);
+            break;
 
-        switch (m_verticalAlignment)
-        {
-            case vertical_alignment::none:
-                break;
-            case vertical_alignment::top:
-                start.y = m_parentInfo.value().parentStart.y;
-                break;
-            case vertical_alignment::middle:
-                start.y = m_parentInfo.value().parent_center_vertical() - (get_element_size().y / 2.0f);
-                break;
-            case vertical_alignment::bottom:
-                start.y = m_parentInfo.value().parent_bottom_vertical() - (get_element_size().y);
-                break;
-        }
-    }
+        case anchor_preset::left_middle:
+            min = ImVec2(0, 0.5f);
+            max = ImVec2(0, 0.5f);
+            break;
+        case anchor_preset::center_middle:
+            min = ImVec2(0.5f, 0.5f);
+            max = ImVec2(0.5f, 0.5f);
+            break;
+        case anchor_preset::right_middle:
+            min = ImVec2(1, 0.5f);
+            max = ImVec2(1, 0.5f);
+            break;
 
-    switch (m_sizeType)
-    {
-        case size_type::self:
-            start += m_offset;
+        case anchor_preset::left_bottom:
+            min = ImVec2(0, 1);
+            max = ImVec2(0, 1);
+            break;
+        case anchor_preset::center_bottom:
+            min = ImVec2(0.5f, 1);
+            max = ImVec2(0.5f, 1);
+            break;
+        case anchor_preset::right_bottom:
+            min = ImVec2(1, 1);
+            max = ImVec2(1, 1);
+            break;
+
+        case anchor_preset::stretch_left:
+            min = ImVec2(0, 0);
+            max = ImVec2(0, 1);
+            break;
+        case anchor_preset::stretch_center:
+            min = ImVec2(0.5f, 0);
+            max = ImVec2(0.5f, 1);
+            break;
+        case anchor_preset::stretch_right:
+            min = ImVec2(1, 0);
+            max = ImVec2(1, 1);
+            break;
+
+        case anchor_preset::stretch_top:
+            min = ImVec2(0, 0);
+            max = ImVec2(1, 0);
+            break;
+        case anchor_preset::stretch_middle:
+            min = ImVec2(0, 0.5f);
+            max = ImVec2(1, 0.5f);
+            break;
+        case anchor_preset::stretch_bottom:
+            min = ImVec2(0, 1);
+            max = ImVec2(1, 1);
+            break;
+
+        case anchor_preset::stretch_full:
+            min = ImVec2(0, 0);
+            max = ImVec2(1, 1);
             break;
     }
-
-    return start;
 }
 
-ImVec2 gluten::element::get_element_end() const
-{
-    ImVec2 end = ImGui::GetItemRectMax();
-
-    switch (m_sizeType)
-    {
-        case size_type::self:
-            end = get_element_start() + get_element_size() + m_offset;
-            break;
-        case size_type::fill:
-            end = ImGui::GetItemRectMax();
-            break;
-    }
-
-    return end;
-}
-
-ImVec2 gluten::element::get_element_size() const
-{
-    switch (m_sizeType)
-    {
-        case size_type::self:
-            return m_selfSize;
-        case size_type::fill:
-            return ImGui::GetItemRectSize();
-    }
-
-    return ImGui::GetItemRectSize();
-}
-
-void gluten::element::set_element_size(ImVec2 size)
-{ m_selfSize = size; }
-
-void gluten::element::set_element_offset(ImVec2 offset)
-{ m_offset = offset; }
-
-void gluten::element::set_element_size_type(gluten::element::size_type type)
-{ m_sizeType = type; }
-
-void gluten::element::set_element_vertical_alignment(vertical_alignment alignment)
-{ m_verticalAlignment = alignment; }
-
-void gluten::element::set_element_horizontal_alignment(horizontal_aligntment alignment)
-{ m_horizontalAlignment = alignment; }
-
-void gluten::element::set_element_parent_info(const parent_info& parentInfo) { m_parentInfo = parentInfo; }
-
-float gluten::element::parent_info::parent_center_horizontal() const
-{
-    return parentStart.x + (parentSize.x / 2.0f);
-}
-
-float gluten::element::parent_info::parent_right_horizontal() const 
+void gluten::element::set_element_background_color(ImU32 color)
 { 
-    return parentStart.x + parentSize.x; 
+    m_backgroundColor = color; 
 }
 
-float gluten::element::parent_info::parent_center_vertical() const
-{
-    return parentStart.y + (parentSize.y / 2.0f);
-}
+gluten::element::anchor_info& gluten::element::get_element_anchor() { return m_anchor; }
 
-float gluten::element::parent_info::parent_bottom_vertical() const 
+bool gluten::element::render(const box& parent)
 { 
-    return parentStart.y + parentSize.y; 
+    const box elementBox = get_element_box_from_parent(parent, m_minSize, m_desiredSize, m_alignment, m_anchor);
+    m_currentBox         = elementBox;
+
+    if (s_debug)
+    {
+        ImDrawList* const foregroundDrawList = ImGui::GetForegroundDrawList();
+        foregroundDrawList->AddRect(elementBox.start, elementBox.end(), gluten::theme::invalidPrefab);
+    }
+
+    const bool activated = render_element(elementBox); 
+
+    if (m_backgroundColor.has_value())
+    {
+        ImGui::SetCursorScreenPos(elementBox.start);
+
+        ImDrawList* const backgroundDrawList = ImGui::GetBackgroundDrawList();
+        backgroundDrawList->AddRectFilled(elementBox.start, elementBox.end(), m_backgroundColor.value());
+    }
+
+    return activated;
 }
+
+ImVec2 gluten::element::get_anchor_start_position(const ImVec2& containerPosition,
+                                 const ImVec2& containerSize,
+                                 const anchor_info& anchor)
+{
+    const float xPositionWithOffset = containerPosition.x + anchor.minOffset.x;
+    const float xSizeOfAnchor      = containerSize.x * anchor.min.x;
+    const float xPosition           = xPositionWithOffset + xSizeOfAnchor;
+
+    const float yPositionWithOffset = containerPosition.y + anchor.minOffset.y;
+    const float ySizeOfAnchor      = containerSize.y * anchor.min.y;
+    const float yPosition           = yPositionWithOffset + ySizeOfAnchor;
+
+    return ImVec2(xPosition, yPosition);
+}
+
+ImVec2 gluten::element::get_anchor_end_position(const ImVec2& startPosition, 
+                                                const ImVec2& containerPosition,
+                                                const ImVec2& containerSize,
+                                                const anchor_info& anchor)
+{
+    
+    const ImVec2 anchorMax = anchor.max - anchor.min;
+
+    const float xSizeOfAnchor = containerSize.x * anchorMax.x;
+    const float xPosition     = startPosition.x + xSizeOfAnchor + anchor.maxOffset.x;
+
+    const float ySizeOfAnchor = containerSize.y * anchorMax.y;
+    const float yPosition     = startPosition.y + ySizeOfAnchor + anchor.maxOffset.y;
+
+    return ImVec2(xPosition, yPosition);
+}
+
+gluten::element::start_end gluten::element::get_element_start_position(const ImVec2& anchorStartPosition,
+    const ImVec2& anchorEndPosition,
+    const ImVec2& minSize,
+    const ImVec2& desiredSize,
+    const ImVec2& alignment)
+{
+    const ImVec2 desiredEnd = anchorStartPosition + desiredSize;
+    const ImVec2 minEnd     = anchorStartPosition + minSize;
+
+    const ImVec2 end = max_from_vec(anchorEndPosition, max_from_vec(desiredEnd, minEnd));
+
+    const ImVec2 size = end - anchorStartPosition;
+
+    const ImVec2 elementStart = anchorStartPosition - (alignment * size);
+
+    return start_end{elementStart, end};
+}
+
+gluten::element::box gluten::element::get_element_box_from_parent(const box& parent, const ImVec2& minSize, const ImVec2& desiredSize, const ImVec2& alignment, const anchor_info& anchor)
+{
+    const ImVec2 anchorStart = get_anchor_start_position(parent.start, parent.size, anchor);
+    const ImVec2 anchorEnd   = get_anchor_end_position(anchorStart, parent.start, parent.size, anchor);
+
+    const start_end elementStart = get_element_start_position(anchorStart, anchorEnd, minSize, desiredSize, alignment);
+
+    return box{elementStart.start, elementStart.end - elementStart.start};
+}
+
+ImVec2 gluten::element::box::end() const { return start + size; }

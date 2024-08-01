@@ -13,60 +13,222 @@ namespace gluten
 	class element
 	{
     public:
-		enum class size_type
+		enum class anchor_preset
 		{
-			self,	//< element defines its own size
-			fill	//< element fills parent item's size
+            /*
+			* ---------
+			* | x     |
+			* |       |
+			* |       |
+			* ---------
+			*/
+			left_top,
+            /*
+             * ---------
+             * |   x   |
+             * |       |
+             * |       |
+             * ---------
+             */
+			center_top,
+            /*
+             * ---------
+             * |     x |
+             * |       |
+             * |       |
+             * ---------
+             */
+			right_top,
+
+			/*
+             * ---------
+             * |       |
+             * | x     |
+             * |       |
+             * ---------
+             */
+			left_middle,
+            /*
+             * ---------
+             * |       |
+             * |   x   |
+             * |       |
+             * ---------
+             */
+			center_middle,
+            /*
+             * ---------
+             * |       |
+             * |     x |
+             * |       |
+             * ---------
+             */
+			right_middle,
+
+			/*
+             * ---------
+             * |       |
+             * |       |
+             * | x     |
+             * ---------
+             */
+			left_bottom,
+            /*
+             * ---------
+             * |       |
+             * |       |
+             * |   x   |
+             * ---------
+             */
+			center_bottom,
+            /*
+             * ---------
+             * |       |
+             * |       |
+             * |     x |
+             * ---------
+             */
+			right_bottom,
+
+			/*
+             * ---------
+             * |xxxxxxx|
+             * |       |
+             * |       |
+             * ---------
+             */
+			stretch_top,
+            /*
+             * ---------
+             * |       |
+             * |xxxxxxx|
+             * |       |
+             * ---------
+             */
+			stretch_middle,
+            /*
+             * ---------
+             * |       |
+             * |       |
+             * |xxxxxxx|
+             * ---------
+             */
+			stretch_bottom,
+
+			/*
+             * ---------
+             * | x     |
+             * | x     |
+             * | x     |
+             * ---------
+             */
+			stretch_left,
+            /*
+             * ---------
+             * |   x   |
+             * |   x   |
+             * |   x   |
+             * ---------
+             */
+			stretch_center,
+            /*
+             * ---------
+             * |     x |
+             * |     x |
+             * |     x |
+             * ---------
+             */
+			stretch_right,
+
+            /*
+             * ---------
+             * | x x x |
+             * | x x x |
+             * | x x x |
+             * ---------
+             */
+			stretch_full
 		};
 
-		enum class vertical_alignment
+		struct anchor_info
 		{
-			none,
-			top,
-			middle,
-			bottom
+            ImVec2 min; //< Start of the element in the range of 0-1
+            ImVec2 max; //< End of the element in the range of 0-1
+            ImVec2 minOffset;
+            ImVec2 maxOffset;
+
+            std::optional<anchor_preset> anchorPreset;  //< Possible preset, if using one
+                    
+            void set_achor_from_preset(const anchor_preset& preset);
 		};
 
-		enum class horizontal_aligntment
+		struct box
 		{
-			none,
-			left,
-			center,
-			right
+            ImVec2 start;
+            ImVec2 size;
+
+            ImVec2 end() const;
 		};
 
-		struct parent_info
-		{
-            ImVec2 parentStart;
-            ImVec2 parentSize;
+        struct start_end
+        {
+            ImVec2 start;
+            ImVec2 end;
+        };
 
-			float parent_center_horizontal() const;
-			float parent_right_horizontal() const;
-			float parent_center_vertical() const;
-			float parent_bottom_vertical() const;
-		};
+		void set_element_background_color(ImU32 color);
 
-		ImVec2 get_element_start() const;			//< Returns draw start position for the element
-        ImVec2 get_element_end() const;				//< Return draw end position for the element
-		ImVec2 get_element_size() const;			//< Return the element total size
+        anchor_info& get_element_anchor();
 
-		void set_element_size(ImVec2 size);			//< Set the element size, if sizing type is set to self
-        void set_element_offset(ImVec2 offset);		//< Set the element offset
-        void set_element_size_type(size_type type);	//< Set the sizing type of the element
-        void set_element_vertical_alignment(vertical_alignment alignment);
-        void set_element_horizontal_alignment(horizontal_aligntment alignment);
-        void set_element_parent_info(const parent_info& parentInfo);
+        /**
+         * @brief If the element has rendered before, return the box
+         */
+        box get_element_box() const
+        {
+            return m_currentBox.has_value() ? m_currentBox.value() : box{ImGui::GetWindowPos(), ImVec2()};
+        }
 
-		virtual bool render_element() = 0;
+		bool render(const box& parent);
 
-	private:
+        void set_element_alignment(const ImVec2& alignment) { m_alignment = alignment; }
+
+	protected:
+        void set_element_desired_size(const ImVec2& desiredSize) { m_desiredSize = desiredSize; }
+
+		virtual bool render_element(const box& parent) = 0;
+
+        static ImVec2 get_anchor_start_position(const ImVec2& containerPosition,
+                                            const ImVec2& containerSize,
+                                            const anchor_info& anchor);
+        static ImVec2 get_anchor_end_position(const ImVec2& startPosition,
+                                        const ImVec2& containerPosition,
+                                        const ImVec2& containerSize,
+                                        const anchor_info& anchor);
+        static start_end get_element_start_position(const ImVec2& anchorStartPosition,
+                                          const ImVec2& anchorEndPosition,
+                                          const ImVec2& minSize,
+                                          const ImVec2& desiredSize,
+                                          const ImVec2& alignment);
+        static box get_element_box_from_parent(const box& parent,
+                                           const ImVec2& minSize,
+                                           const ImVec2& desiredSize,
+                                           const ImVec2& alignment,
+                                           const anchor_info& anchor);
+
+        anchor_info m_anchor;
+        
+        ImVec2 m_minSize;
+        ImVec2 m_desiredSize;
+
         ImVec2 m_selfSize		= ImVec2(32, 32);
         ImVec2 m_offset			= ImVec2(0, 0);
+        ImVec2 m_alignment      = ImVec2(0, 0);
         
-		size_type m_sizeType	= size_type::fill;
-        vertical_alignment m_verticalAlignment = vertical_alignment::none;
-        horizontal_aligntment m_horizontalAlignment = horizontal_aligntment::none;
+        std::optional<ImU32> m_backgroundColor;
 
-		std::optional<parent_info> m_parentInfo;
+        std::optional<box> m_currentBox;
+
+        public:
+        static inline bool s_debug = false;
 	};
 }

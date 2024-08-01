@@ -10,7 +10,7 @@ namespace gluten
         button() = delete;
         button(const char* name, bool invisible = false, std::function<void()> onActivateFunction = std::function<void()>());
 
-        bool render_element() override;
+        bool render_element(const box& parent) override;
 
 	private:
         const char* m_name = nullptr;

@@ -567,7 +567,7 @@ void gluten::imgui::end_menubar()
     ImGui::PopClipRect();
     ImGui::PopID();
     window->DC.MenuBarOffset.x =
-        window->DC.CursorPos.x - window->Pos.x;  // Save horizontal position so next append can reuse it. This is kinda
+        window->DC.CursorPos.x - window->Pos.x;  // Save left_to_right position so next append can reuse it. This is kinda
                                                  // equivalent to a per-layer CursorPos.
     g.GroupStack.back().EmitItem = false;
     ImGui::EndGroup();  // Restore position on layer 0

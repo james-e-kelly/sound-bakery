@@ -36,13 +36,13 @@ namespace gluten
         release();
     }
 
-    bool image::render_element()
+    bool image::render_element(const box& parent)
     {
         if (m_openGlId != 0 && m_width > 0 && m_height > 0)
         {
             if (ImDrawList* const drawList = ImGui::GetForegroundDrawList())
             {
-                drawList->AddImage((void*)(intptr_t)m_openGlId, get_element_start(), get_element_end());
+                drawList->AddImage((void*)(intptr_t)m_openGlId, parent.start, parent.end());
                
                 //ImGui::DebugDrawItemRect(gluten::theme::invalidPrefab);
 
@@ -61,7 +61,7 @@ namespace gluten
 
 	void image::bind_image_data(const image::data_ptr& imageData)
 	{
-        set_element_size(ImVec2(m_width, m_height));
+        set_element_desired_size(ImVec2(m_width, m_height));
 
         GLuint imageTexture;
         glGenTextures(1, &imageTexture);

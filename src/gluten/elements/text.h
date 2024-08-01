@@ -12,7 +12,7 @@ namespace gluten
 
         void set_text(const std::string& displayText);
 
-        bool render_element() override;
+        bool render_element(const box& parent) override;
 
     private:
         std::string m_displayText;
