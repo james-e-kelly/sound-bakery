@@ -96,33 +96,34 @@ void root_widget::draw_titlebar()
 
     const ImRect windowParent{windowStart, ImVec2(windowEnd.x, windowStart.y + titlebarHeight)};
     
-    //gluten::element::s_debug = true;
+    gluten::element::s_debug = true;
 
     gluten::layout topBarLayout(gluten::layout::layout_type::left_to_right);
     topBarLayout.get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::stretch_full);
     topBarLayout.set_element_background_color(gluten::theme::titlebar);
-    topBarLayout.render(windowParent);
+    topBarLayout.render(windowParent);  // render background
 
     gluten::layout logoLayout(gluten::layout::layout_type::left_to_right);
     logoLayout.get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::stretch_full);
     topBarLayout.render_layout_element_pixels_horizontal(&logoLayout, 64.0f);
     logoLayout.render_layout_element_percent(get_app()->get_window_icon(), 1.0f, 1.0f);
-
-    gluten::layout centerTitleLayout(gluten::layout::layout_type::left_to_right);
-    centerTitleLayout.get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::center_middle);
-    centerTitleLayout.render(windowParent);
+    topBarLayout.reset_layout(windowParent);
 
     gluten::text titleText(std::string(get_app()->get_application_display_title()));
     titleText.set_element_alignment(ImVec2(0.5f, 0.5f));
-    centerTitleLayout.render_layout_element_percent(&titleText, 1.0f, 1.0f);
+    titleText.get_element_anchor().set_achor_from_preset(element::anchor_preset::center_middle);
+    titleText.render(windowParent);
 
-    const float w                = ImGui::GetContentRegionAvail().x;
-    const float buttonsAreaWidth = 94;
+    const float titleButtonsAreaWidth = 128.0f;
+    const float titleBarStartX        = windowStart.x;
+    const float titleBarButtonStartX  = windowEnd.x - titleButtonsAreaWidth;
 
-    
-    ImGui::SetCursorPos(ImVec2(windowPadding.x, windowPadding.y + titlebarVerticalOffset));  // Reset cursor pos
-    ImGui::InvisibleButton("##titleBarDragZone", ImVec2(w - buttonsAreaWidth, titlebarHeight));
+    const ImRect titleBarAreaLeftOfButtons = ImRect(windowParent.Min, ImVec2(titleBarButtonStartX, windowParent.Max.y));
+    const ImRect titleBarAreaButtons       = ImRect(ImVec2(titleBarButtonStartX, windowStart.y), windowEnd);
 
+    gluten::button dragZoneButton("##titleBarDragZone", true);
+    dragZoneButton.get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::stretch_full);
+    dragZoneButton.render(titleBarAreaLeftOfButtons);
 
     m_hoveringTitlebar = ImGui::IsItemHovered();
 

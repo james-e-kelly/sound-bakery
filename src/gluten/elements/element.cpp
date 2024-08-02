@@ -110,6 +110,8 @@ bool gluten::element::render(const ImRect& parent)
         foregroundDrawList->AddRect(elementBox.Min, elementBox.Max, gluten::theme::invalidPrefab);
     }
 
+    ImGui::SetCursorScreenPos(elementBox.Min);
+
     const bool activated = render_element(elementBox); 
 
     if (m_backgroundColor.has_value())

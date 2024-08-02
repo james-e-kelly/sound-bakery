@@ -31,6 +31,8 @@ namespace gluten
         bool render_layout_element_percent_horizontal(element* element, float horizontalPercent);
         bool render_layout_element_percent_vertical(element* element, float verticalPercent);
 
+        void reset_layout(const ImRect& parent);
+
     private:
         bool render_element(const ImRect& info) override { return false; }
 
