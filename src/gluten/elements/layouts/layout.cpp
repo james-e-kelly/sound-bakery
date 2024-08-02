@@ -11,22 +11,64 @@ gluten::layout::layout(const layout_type& layoutType) : m_layoutType(layoutType)
 
 void gluten::layout::set_layout_type(const layout_type& type) { m_layoutType = type; }
 
-bool gluten::layout::render_layout_element(element* element,
+bool gluten::layout::render_layout_element_pixels(element* element, float horizontalPixels, float verticalPixels) 
+{
+    const element::box elementBox = get_element_box();
+
+    return render_layout_element_internal(elementBox, element, horizontalPixels, verticalPixels);
+}
+
+bool gluten::layout::render_layout_element_pixels_horizontal(element* element, float horizontalPixels)
+{
+    const element::box elementBox = get_element_box();
+
+    return render_layout_element_internal(elementBox, element, horizontalPixels, elementBox.size.y);
+}
+
+bool gluten::layout::render_layout_element_pixels_vertical(element* element, float verticalPixels)
+{
+    const element::box elementBox = get_element_box();
+
+    return render_layout_element_internal(elementBox, element, elementBox.size.x, verticalPixels);
+}
+
+bool gluten::layout::render_layout_element_percent(element* element,
                                            float horizontalPercent,
                                            float verticalPercent)
 {
-    bool activated = false;
-
     const element::box elementBox = get_element_box();
 
-    // If first render, set the layout start
+    return render_layout_element_internal(elementBox, element, elementBox.size.x * horizontalPercent,
+                                        elementBox.size.y * verticalPercent);
+}
+
+bool gluten::layout::render_layout_element_percent_horizontal(element* element, float horizontalPercent)
+{
+    const element::box elementBox = get_element_box();
+
+    return render_layout_element_internal(elementBox, element, elementBox.size.x * horizontalPercent, elementBox.size.y);
+}
+
+bool gluten::layout::render_layout_element_percent_vertical(element* element, float verticalPercent)
+{
+    const element::box elementBox = get_element_box();
+
+    return render_layout_element_internal(elementBox, element, elementBox.size.x, elementBox.size.y * verticalPercent);
+}
+
+bool gluten::layout::render_layout_element_internal(const element::box& thisBox,
+                                                    element* element,
+                                                    float horizontalPixels,
+                                                    float verticalPixels)
+{
+    bool activated = false;
+
     if (!m_currentLayoutPos.has_value())
     {
-        m_currentLayoutPos = elementBox.start;
+        m_currentLayoutPos = thisBox.start;
     }
 
-    const ImVec2 sizeGivenToElement =
-        ImVec2(elementBox.size.x * horizontalPercent, elementBox.size.y * verticalPercent);
+    const ImVec2 sizeGivenToElement = ImVec2(horizontalPixels, verticalPixels);
 
     if (element)
     {

@@ -23,13 +23,18 @@ namespace gluten
 
         void set_layout_type(const layout_type& type);
         
-        /**
-         * @brief Render an element and give it a portion of this layout's area.
-         */
-        bool render_layout_element(element* element, float horizontalPercent, float verticalPercent);
+        bool render_layout_element_pixels(element* element, float horizontalPixels, float verticalPixels);
+        bool render_layout_element_pixels_horizontal(element* element, float horizontalPixels);
+        bool render_layout_element_pixels_vertical(element* element, float verticalPixels);
+
+        bool render_layout_element_percent(element* element, float horizontalPercent, float verticalPercent);
+        bool render_layout_element_percent_horizontal(element* element, float horizontalPercent);
+        bool render_layout_element_percent_vertical(element* element, float verticalPercent);
 
     private:
         bool render_element(const box& info) override { return false; }
+
+        bool render_layout_element_internal(const element::box& thisBox, element* element, float horizontalPixels, float verticalPixels);
 
         layout_type m_layoutType = layout_type::left_to_right;
 
