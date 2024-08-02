@@ -9,9 +9,16 @@ static ImVec2 operator+=(const ImVec2& lhs, const ImVec2& rhs) { return ImVec2(l
 
 static ImVec2 operator*(const ImVec2& lhs, const ImVec2& rhs) { return ImVec2(lhs.x * rhs.x, lhs.y * rhs.y); }
 
+static bool operator>(const ImVec2& lhs, const ImVec2& rhs) { return lhs.x > rhs.x || lhs.y > rhs.y; }
+
 static ImVec2 max_from_vec(const ImVec2& lhs, const ImVec2& rhs)
 {
     return ImVec2(lhs.x > rhs.x ? lhs.x : rhs.x, lhs.y > rhs.y ? lhs.y : rhs.y);
+}
+
+static ImVec2 clamp_vec(const ImVec2& max, const ImVec2& input)
+{
+    return ImVec2(input.x > max.x ? max.x : input.x, input.y > max.y ? max.y : input.y);
 }
 
 void gluten::element::anchor_info::set_achor_from_preset(const anchor_preset& preset)
@@ -166,7 +173,18 @@ ImRect gluten::element::get_element_start_position(const ImVec2& anchorStartPosi
     const ImVec2 desiredEnd = anchorStartPosition + desiredSize;
     const ImVec2 minEnd     = anchorStartPosition + minSize;
 
-    const ImVec2 end = max_from_vec(anchorEndPosition, max_from_vec(desiredEnd, minEnd));
+    ImVec2 end;
+
+    // If anchor end is set, the max is always the anchor end
+    if (anchorEndPosition > anchorStartPosition)
+    {
+        end = clamp_vec(anchorEndPosition, max_from_vec(anchorEndPosition, max_from_vec(desiredEnd, minEnd)));
+    }
+    // If anchor end is NOT set, the desired size and min size take over
+    else
+    {
+        end = max_from_vec(desiredEnd, minEnd);
+    }
 
     const ImVec2 size = end - anchorStartPosition;
 

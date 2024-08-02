@@ -96,7 +96,7 @@ void root_widget::draw_titlebar()
 
     const ImRect windowParent{windowStart, ImVec2(windowEnd.x, windowStart.y + titlebarHeight)};
     
-    gluten::element::s_debug = true;
+    //gluten::element::s_debug = true;
 
     gluten::layout topBarLayout(gluten::layout::layout_type::left_to_right);
     topBarLayout.get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::stretch_full);
@@ -113,7 +113,7 @@ void root_widget::draw_titlebar()
     titleText.get_element_anchor().set_achor_from_preset(element::anchor_preset::center_middle);
     titleText.render(windowParent);
 
-    const float titleButtonsAreaWidth = 128.0f;
+    const float titleButtonsAreaWidth = 512.0f;
     const float titleBarStartX        = windowStart.x;
     const float titleBarButtonStartX  = windowEnd.x - titleButtonsAreaWidth;
 
@@ -148,6 +148,9 @@ void root_widget::draw_titlebar()
     }
 
     if (titleButtonsLayout.render_layout_element_percent_horizontal(get_app()->get_window_close_icon(), 0.33f))
+    {
+        get_app()->request_exit();
+    }
 
     // Minimize Button
     {
