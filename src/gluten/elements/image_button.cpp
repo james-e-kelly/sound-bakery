@@ -5,7 +5,7 @@ gluten::image_button::image_button(const char* name, const void* data, std::size
 {
 }
 
-bool gluten::image_button::render_element(const box& parent)
+bool gluten::image_button::render_element(const ImRect& parent)
 {
     const ImVec2 cursorBegin   = ImGui::GetCursorScreenPos();
     const bool buttonActivated = m_button.render_element(parent);

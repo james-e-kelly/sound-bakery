@@ -36,13 +36,13 @@ namespace gluten
         release();
     }
 
-    bool image::render_element(const box& parent)
+    bool image::render_element(const ImRect& parent)
     {
         if (m_openGlId != 0 && m_width > 0 && m_height > 0)
         {
             if (ImDrawList* const drawList = ImGui::GetForegroundDrawList())
             {
-                drawList->AddImage((void*)(intptr_t)m_openGlId, parent.start, parent.end());
+                drawList->AddImage((void*)(intptr_t)m_openGlId, parent.Min, parent.Max);
                
                 //ImGui::DebugDrawItemRect(gluten::theme::invalidPrefab);
 

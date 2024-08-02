@@ -32,9 +32,9 @@ namespace gluten
         bool render_layout_element_percent_vertical(element* element, float verticalPercent);
 
     private:
-        bool render_element(const box& info) override { return false; }
+        bool render_element(const ImRect& info) override { return false; }
 
-        bool render_layout_element_internal(const element::box& thisBox, element* element, float horizontalPixels, float verticalPixels);
+        bool render_layout_element_internal(const ImRect& thisBox, element* element, float horizontalPixels, float verticalPixels);
 
         layout_type m_layoutType = layout_type::left_to_right;
 

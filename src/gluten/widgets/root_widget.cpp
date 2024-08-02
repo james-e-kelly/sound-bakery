@@ -90,28 +90,30 @@ void root_widget::draw_titlebar()
     float titlebarVerticalOffset = isMaximized ? -6.0f : 0.0f;
     const ImVec2 windowPadding   = ImGui::GetCurrentWindow()->WindowPadding;
 
-    const gluten::element::box windowParent{ImGui::GetWindowPos(), ImVec2(ImGui::GetWindowWidth(), titlebarHeight)};
+    const ImVec2 windowStart = ImGui::GetWindowPos();
+    const ImVec2 windowSize  = ImGui::GetWindowSize();
+    const ImVec2 windowEnd   = ImVec2(windowStart.x + windowSize.x, windowStart.y + windowSize.y);
+
+    const ImRect windowParent{windowStart, ImVec2(windowEnd.x, windowStart.y + titlebarHeight)};
     
     gluten::element::s_debug = true;
 
     gluten::layout topBarLayout(gluten::layout::layout_type::left_to_right);
     topBarLayout.get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::stretch_full);
     topBarLayout.set_element_background_color(gluten::theme::titlebar);
-    topBarLayout.render(windowParent);  // render background. no elements
+    topBarLayout.render(windowParent);
 
     gluten::layout logoLayout(gluten::layout::layout_type::left_to_right);
     logoLayout.get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::stretch_full);
-
     topBarLayout.render_layout_element_pixels_horizontal(&logoLayout, 64.0f);
     logoLayout.render_layout_element_percent(get_app()->get_window_icon(), 1.0f, 1.0f);
 
-    //logoLayout.render_layout_element()
+    gluten::layout centerTitleLayout(gluten::layout::layout_type::left_to_right);
+    centerTitleLayout.get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::stretch_center);
+    centerTitleLayout.render(windowParent);
 
-    // Logo
-    {
-        //leftAlignTopBar.set_element_offset(ImVec2(20, 0));
-        //leftAlignTopBar.render_layout_element(get_app()->get_window_icon());
-    }
+    gluten::text titleText(std::string(get_app()->get_application_display_title()));
+    centerTitleLayout.render_layout_element_percent(&titleText, 1.0f, 1.0f);
 
     const float w                = ImGui::GetContentRegionAvail().x;
     const float buttonsAreaWidth = 94;
@@ -124,8 +126,6 @@ void root_widget::draw_titlebar()
     m_hoveringTitlebar = ImGui::IsItemHovered();
 
     ImGui::SetCursorPosY(titlebarHeight);
-
-    return;
 
     //if (isMaximized)
     //{

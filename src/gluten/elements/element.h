@@ -2,6 +2,7 @@
 
 #include "gluten/pch.h"
 #include "imgui.h"
+#include "imgui_internal.h"
 
 namespace gluten
 {
@@ -162,20 +163,6 @@ namespace gluten
             void set_achor_from_preset(const anchor_preset& preset);
 		};
 
-		struct box
-		{
-            ImVec2 start;
-            ImVec2 size;
-
-            ImVec2 end() const;
-		};
-
-        struct start_end
-        {
-            ImVec2 start;
-            ImVec2 end;
-        };
-
 		void set_element_background_color(ImU32 color);
 
         anchor_info& get_element_anchor();
@@ -183,19 +170,19 @@ namespace gluten
         /**
          * @brief If the element has rendered before, return the box
          */
-        box get_element_box() const
+        ImRect get_element_rect() const
         {
-            return m_currentBox.has_value() ? m_currentBox.value() : box{ImGui::GetWindowPos(), ImVec2()};
+            return m_currentRect.has_value() ? m_currentRect.value() : ImRect{ImGui::GetWindowPos(), ImVec2()};
         }
 
-		bool render(const box& parent);
+		bool render(const ImRect& parent);
 
         void set_element_alignment(const ImVec2& alignment) { m_alignment = alignment; }
 
 	protected:
         void set_element_desired_size(const ImVec2& desiredSize) { m_desiredSize = desiredSize; }
 
-		virtual bool render_element(const box& parent) = 0;
+		virtual bool render_element(const ImRect& parent) = 0;
 
         static ImVec2 get_anchor_start_position(const ImVec2& containerPosition,
                                             const ImVec2& containerSize,
@@ -204,12 +191,12 @@ namespace gluten
                                         const ImVec2& containerPosition,
                                         const ImVec2& containerSize,
                                         const anchor_info& anchor);
-        static start_end get_element_start_position(const ImVec2& anchorStartPosition,
+        static ImRect get_element_start_position(const ImVec2& anchorStartPosition,
                                           const ImVec2& anchorEndPosition,
                                           const ImVec2& minSize,
                                           const ImVec2& desiredSize,
                                           const ImVec2& alignment);
-        static box get_element_box_from_parent(const box& parent,
+        static ImRect get_element_box_from_parent(const ImRect& parent,
                                            const ImVec2& minSize,
                                            const ImVec2& desiredSize,
                                            const ImVec2& alignment,
@@ -226,7 +213,7 @@ namespace gluten
         
         std::optional<ImU32> m_backgroundColor;
 
-        std::optional<box> m_currentBox;
+        std::optional<ImRect> m_currentRect;
 
         public:
         static inline bool s_debug = false;
