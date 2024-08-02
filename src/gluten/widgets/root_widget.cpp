@@ -96,7 +96,7 @@ void root_widget::draw_titlebar()
 
     const ImRect windowParent{windowStart, ImVec2(windowEnd.x, windowStart.y + titlebarHeight)};
     
-    gluten::element::s_debug = true;
+    //gluten::element::s_debug = true;
 
     gluten::layout topBarLayout(gluten::layout::layout_type::left_to_right);
     topBarLayout.get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::stretch_full);
@@ -109,10 +109,11 @@ void root_widget::draw_titlebar()
     logoLayout.render_layout_element_percent(get_app()->get_window_icon(), 1.0f, 1.0f);
 
     gluten::layout centerTitleLayout(gluten::layout::layout_type::left_to_right);
-    centerTitleLayout.get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::stretch_center);
+    centerTitleLayout.get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::center_middle);
     centerTitleLayout.render(windowParent);
 
     gluten::text titleText(std::string(get_app()->get_application_display_title()));
+    titleText.set_element_alignment(ImVec2(0.5f, 0.5f));
     centerTitleLayout.render_layout_element_percent(&titleText, 1.0f, 1.0f);
 
     const float w                = ImGui::GetContentRegionAvail().x;
