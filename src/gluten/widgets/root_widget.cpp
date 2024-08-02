@@ -107,7 +107,6 @@ void root_widget::draw_titlebar()
     logoLayout.get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::stretch_full);
     topBarLayout.render_layout_element_pixels_horizontal(&logoLayout, 64.0f);
     logoLayout.render_layout_element_percent(get_app()->get_window_icon(), 1.0f, 1.0f);
-    topBarLayout.reset_layout(windowParent);
 
     gluten::text titleText(std::string(get_app()->get_application_display_title()));
     titleText.set_element_alignment(ImVec2(0.5f, 0.5f));
@@ -119,13 +118,44 @@ void root_widget::draw_titlebar()
     const float titleBarButtonStartX  = windowEnd.x - titleButtonsAreaWidth;
 
     const ImRect titleBarAreaLeftOfButtons = ImRect(windowParent.Min, ImVec2(titleBarButtonStartX, windowParent.Max.y));
-    const ImRect titleBarAreaButtons       = ImRect(ImVec2(titleBarButtonStartX, windowStart.y), windowEnd);
+    const ImRect titleBarAreaButtons       = ImRect(ImVec2(titleBarButtonStartX, windowStart.y), windowParent.Max);
 
     gluten::button dragZoneButton("##titleBarDragZone", true);
     dragZoneButton.get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::stretch_full);
     dragZoneButton.render(titleBarAreaLeftOfButtons);
 
     m_hoveringTitlebar = ImGui::IsItemHovered();
+
+    gluten::layout titleButtonsLayout;
+    titleButtonsLayout.get_element_anchor().set_achor_from_preset(element::anchor_preset::stretch_full);
+    titleButtonsLayout.reset_layout(titleBarAreaButtons);
+
+    titleButtonsLayout.render_layout_element_percent_horizontal(get_app()->get_window_minimise_icon(), 0.33f);
+
+    if (const bool isMaximized = get_app()->is_maximized())
+    {
+        if (titleButtonsLayout.render_layout_element_percent_horizontal(get_app()->get_window_restore_icon(), 0.33f))
+        {
+            get_app()->get_subsystem_by_class<gluten::renderer_subsystem>()->toggle_maximised();
+        }
+    }
+    else
+    {
+        if (titleButtonsLayout.render_layout_element_percent_horizontal(get_app()->get_window_maximise_icon(), 0.33f))
+        {
+            get_app()->get_subsystem_by_class<gluten::renderer_subsystem>()->toggle_maximised();
+        }
+    }
+
+    if (titleButtonsLayout.render_layout_element_percent_horizontal(get_app()->get_window_close_icon(), 0.33f))
+
+    // Minimize Button
+    {
+            /*if (m_WindowHandle)
+            {
+                Application::Get().QueueEvent([windowHandle = m_WindowHandle]() { glfwIconifyWindow(windowHandle); });
+            }*/
+    }
 
     ImGui::SetCursorPosY(titlebarHeight);
 
@@ -155,46 +185,4 @@ void root_widget::draw_titlebar()
     //}
     //
     //{
-    //    gluten::text windowTitleText(std::string(get_app()->get_application_display_title()));
-
-    //}
-    //
-    //// Minimize Button
-    //{
-    //    if (get_app()->get_window_minimise_icon()->render())
-    //    {
-    //        /*if (m_WindowHandle)
-    //        {
-    //            Application::Get().QueueEvent([windowHandle = m_WindowHandle]() { glfwIconifyWindow(windowHandle); });
-    //        }*/
-    //    }
-    //}
-
-    //// Maximize Button
-    //{
-    //    if (const bool isMaximized = get_app()->is_maximized())
-    //    {
-    //        if (get_app()->get_window_restore_icon()->render())
-    //        {
-    //            get_app()->get_subsystem_by_class<gluten::renderer_subsystem>()->toggle_maximised();
-    //        }
-    //    }
-    //    else
-    //    {
-    //        if (get_app()->get_window_maximise_icon()->render())
-    //        {
-    //            get_app()->get_subsystem_by_class<gluten::renderer_subsystem>()->toggle_maximised();
-    //        }
-    //    }
-    //}
-
-    //// Close Button
-    //{
-    //    if (get_app()->get_window_close_icon()->render())
-    //    {
-    //        get_app()->request_exit();
-    //    }
-    //}
-
-    //ImGui::SetCursorPosY(titlebarHeight);
 }

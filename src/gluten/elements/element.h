@@ -166,6 +166,7 @@ namespace gluten
 		void set_element_background_color(ImU32 color);
 
         anchor_info& get_element_anchor();
+        ImVec2 get_element_desired_size() const;
 
         /**
          * @brief If the element has rendered before, return the box

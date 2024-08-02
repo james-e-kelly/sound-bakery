@@ -99,6 +99,8 @@ void gluten::element::set_element_background_color(ImU32 color)
 
 gluten::element::anchor_info& gluten::element::get_element_anchor() { return m_anchor; }
 
+ImVec2 gluten::element::get_element_desired_size() const { return m_desiredSize; }
+
 bool gluten::element::render(const ImRect& parent)
 { 
     const ImRect elementBox = get_element_box_from_parent(parent, m_minSize, m_desiredSize, m_alignment, m_anchor);
@@ -116,8 +118,6 @@ bool gluten::element::render(const ImRect& parent)
 
     if (m_backgroundColor.has_value())
     {
-        ImGui::SetCursorScreenPos(elementBox.Min);
-
         ImDrawList* const backgroundDrawList = ImGui::GetBackgroundDrawList();
         backgroundDrawList->AddRectFilled(elementBox.Min, elementBox.Max, m_backgroundColor.value());
     }

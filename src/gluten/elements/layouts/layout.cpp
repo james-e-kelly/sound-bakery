@@ -77,7 +77,27 @@ bool gluten::layout::render_layout_element_internal(const ImRect& thisBox,
         activated = element->render({m_currentLayoutPos.value(), m_currentLayoutPos.value() + sizeGivenToElement});
     }
 
-    m_currentLayoutPos = m_currentLayoutPos.value() + sizeGivenToElement;
+    ImVec2 currentLayoutPos = m_currentLayoutPos.value();
+
+    switch (m_layoutType)
+    {
+        case gluten::layout::layout_type::left_to_right:
+            currentLayoutPos.x += sizeGivenToElement.x;
+            break;
+        case gluten::layout::layout_type::right_to_left:
+            currentLayoutPos.x -= sizeGivenToElement.x;
+            break;
+        case gluten::layout::layout_type::top_to_bottom:
+            currentLayoutPos.y += sizeGivenToElement.y;
+            break;
+        case gluten::layout::layout_type::bottom_to_top:
+            currentLayoutPos.y -= sizeGivenToElement.y;
+            break;
+        default:
+            break;
+    }
+    
+    m_currentLayoutPos = currentLayoutPos;
 
     return activated;
 }

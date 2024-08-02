@@ -57,6 +57,18 @@ int gluten::app::run(int argc, char** argv)
     m_windowIcon->get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::center_middle);
     m_windowIcon->set_element_alignment(ImVec2(0.5f, 0.5f));
 
+    m_windowCloseIcon->get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::center_middle);
+    m_windowCloseIcon->set_element_alignment(ImVec2(0.5f, 0.5f));
+
+    m_windowMinimiseIcon->get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::center_middle);
+    m_windowMinimiseIcon->set_element_alignment(ImVec2(0.5f, 0.5f));
+
+    m_windowMaximiseIcon->get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::center_middle);
+    m_windowMaximiseIcon->set_element_alignment(ImVec2(0.5f, 0.5f));
+
+    m_windowRestoreIcon->get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::center_middle);
+    m_windowRestoreIcon->set_element_alignment(ImVec2(0.5f, 0.5f));
+
     m_hasInit = true;
 
     // Tick
