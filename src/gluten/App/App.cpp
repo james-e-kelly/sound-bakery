@@ -54,8 +54,8 @@ int gluten::app::run(int argc, char** argv)
     m_windowMaximiseIcon = std::make_unique<gluten::image_button>("Maximise", g_WindowMaximiseIcon, sizeof(g_WindowMaximiseIcon));
     m_windowRestoreIcon  = std::make_unique<gluten::image_button>("Restore", g_WindowRestoreIcon, sizeof(g_WindowRestoreIcon));
 
+    m_windowIcon->get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::center_middle);
     m_windowIcon->set_element_alignment(ImVec2(0.5f, 0.5f));
-    m_windowIcon->get_element_anchor().minOffset = ImVec2(16.0f, 5.0f);
 
     m_hasInit = true;
 

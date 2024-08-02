@@ -101,7 +101,7 @@ void root_widget::draw_titlebar()
 
     gluten::layout logoLayout(gluten::layout::layout_type::left_to_right);
     logoLayout.get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::stretch_full);
-    
+
     topBarLayout.render_layout_element(&logoLayout, 0.1f, 1.0f);
     logoLayout.render_layout_element(get_app()->get_window_icon(), 1.0f, 1.0f);
 

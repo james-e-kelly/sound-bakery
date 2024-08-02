@@ -156,10 +156,10 @@ ImVec2 gluten::element::get_anchor_end_position(const ImVec2& startPosition,
 }
 
 gluten::element::start_end gluten::element::get_element_start_position(const ImVec2& anchorStartPosition,
-    const ImVec2& anchorEndPosition,
-    const ImVec2& minSize,
-    const ImVec2& desiredSize,
-    const ImVec2& alignment)
+                                                                       const ImVec2& anchorEndPosition,
+                                                                       const ImVec2& minSize,
+                                                                       const ImVec2& desiredSize,
+                                                                       const ImVec2& alignment)
 {
     const ImVec2 desiredEnd = anchorStartPosition + desiredSize;
     const ImVec2 minEnd     = anchorStartPosition + minSize;
@@ -170,7 +170,7 @@ gluten::element::start_end gluten::element::get_element_start_position(const ImV
 
     const ImVec2 elementStart = anchorStartPosition - (alignment * size);
 
-    return start_end{elementStart, end};
+    return start_end{elementStart, elementStart + size};
 }
 
 gluten::element::box gluten::element::get_element_box_from_parent(const box& parent, const ImVec2& minSize, const ImVec2& desiredSize, const ImVec2& alignment, const anchor_info& anchor)
