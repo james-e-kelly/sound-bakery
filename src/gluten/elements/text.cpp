@@ -16,9 +16,6 @@ bool gluten::text::render_element(const ImRect& parent)
 {
     if (!m_displayText.empty())
     {
-        const ImVec2 textSize = ImGui::CalcTextSize(m_displayText.c_str());
-
-        ImGui::SetCursorScreenPos(parent.Min);
         ImGui::TextUnformatted(m_displayText.c_str());
     }
 
