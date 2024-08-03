@@ -44,8 +44,8 @@ namespace gluten
             {
                 const ImVec2 elementRectSize = elementRect.GetSize();
 
-                const float imageWidthRatio  = std::clamp(elementRectSize.x, 0.0f, m_maxSize.x > 0.0f ? m_maxSize.x : elementRectSize.x) / m_width;
-                const float imageHeightRatio = std::clamp(elementRectSize.y, 0.0f, m_maxSize.y > 0.0f ? m_maxSize.y : elementRectSize.y) / m_height;
+                const float imageWidthRatio  = std::clamp(elementRectSize.x, m_minSize.x, m_maxSize.x) / m_width;
+                const float imageHeightRatio = std::clamp(elementRectSize.y, m_minSize.y, m_maxSize.y) / m_height;
                 const float lengthWithLeastAmountOfSpace = std::min(imageWidthRatio, imageHeightRatio);
 
                 const float newImageWidth = m_width * lengthWithLeastAmountOfSpace;

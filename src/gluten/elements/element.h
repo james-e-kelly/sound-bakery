@@ -204,7 +204,7 @@ namespace gluten
         anchor_info m_anchor;
         
         ImVec2 m_minSize;
-        ImVec2 m_maxSize;
+        ImVec2 m_maxSize = ImVec2(std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
         ImVec2 m_desiredSize;
         ImVec2 m_alignment;
         
