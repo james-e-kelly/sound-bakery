@@ -34,6 +34,8 @@ namespace gluten
         void reset_layout(const ImRect& parent);
 
     private:
+        void setup_layout_begin(const ImRect& thisBox);
+
         bool render_element(const ImRect& info) override { return false; }
 
         bool render_layout_element_internal(const ImRect& thisBox, element* element, float horizontalPixels, float verticalPixels);
@@ -41,5 +43,7 @@ namespace gluten
         layout_type m_layoutType = layout_type::left_to_right;
 
         std::optional<ImVec2> m_currentLayoutPos;
+
+        bool m_firstLayout = true;
     };
 }

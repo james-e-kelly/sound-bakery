@@ -158,11 +158,14 @@ void root_widget::draw_titlebar()
 
     m_hoveringTitlebar = ImGui::IsItemHovered();
 
-    gluten::layout titleButtonsLayout;
+    gluten::layout titleButtonsLayout(layout::layout_type::right_to_left);
     titleButtonsLayout.get_element_anchor().set_achor_from_preset(element::anchor_preset::stretch_full);
     titleButtonsLayout.reset_layout(titleBarAreaButtons);
 
-    titleButtonsLayout.render_layout_element_percent_horizontal(m_windowMinimiseIcon.get(), 0.33f);
+    if (titleButtonsLayout.render_layout_element_percent_horizontal(m_windowCloseIcon.get(), 0.33f))
+    {
+        get_app()->request_exit();
+    }
 
     if (const bool isMaximized = get_app()->is_maximized())
     {
@@ -179,10 +182,7 @@ void root_widget::draw_titlebar()
         }
     }
 
-    if (titleButtonsLayout.render_layout_element_percent_horizontal(m_windowCloseIcon.get(), 0.33f))
-    {
-        get_app()->request_exit();
-    }
+    titleButtonsLayout.render_layout_element_percent_horizontal(m_windowMinimiseIcon.get(), 0.33f);
 
     // Minimize Button
     {
