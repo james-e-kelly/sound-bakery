@@ -3,16 +3,10 @@
 #include "gluten/subsystems/widget_subsystem.h"
 #include "gluten/widgets/root_widget.h"
 
-#include "IconsFontAwesome6.h"
-#include "IconsFontaudio.h"
 #include "app/app.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
-
-#include <cmrc/cmrc.hpp>
-
-CMRC_DECLARE(sbk::Fonts);
 
 #include <stdio.h>
 
@@ -758,42 +752,6 @@ int renderer_subsystem::init_imgui()
 
     style->Colors[ImGuiCol_NavHighlight]          = highlight;
     style->Colors[ImGuiCol_NavWindowingHighlight] = highlight;
-
-    // Load Fonts
-    const float baseFontSize = 18.0f;
-    const float iconFontSize = baseFontSize * 2.0f / 3.0f;  // FontAwesome fonts need to have their sizes reduced
-                                                            // by 2.0f/3.0f in order to align correctly
-
-    static const ImWchar fontAwesomeIconRanges[] = {ICON_MIN_FA, ICON_MAX_16_FA, 0};
-    static const ImWchar fontAudioIconRanges[]   = {ICON_MIN_FAD, ICON_MAX_16_FAD, 0};
-
-    ImFontConfig icons_config;
-    icons_config.FontDataOwnedByAtlas = false;
-    icons_config.MergeMode            = true;
-    icons_config.PixelSnapH           = true;
-    icons_config.GlyphMinAdvanceX     = iconFontSize;
-
-    const cmrc::embedded_filesystem embeddedfilesystem = cmrc::sbk::Fonts::get_filesystem();
-
-    const cmrc::file mainFontFile        = embeddedfilesystem.open("Montserrat-Light.ttf");
-    const cmrc::file audioFontFile       = embeddedfilesystem.open("fontaudio/font/" FONT_ICON_FILE_NAME_FAD);
-    const cmrc::file fontAwesomeFontFile = embeddedfilesystem.open("Font-Awesome/webfonts/" FONT_ICON_FILE_NAME_FAR);
-
-    assert(mainFontFile.size() > 0);
-
-    ImFontConfig fontConfig;
-    fontConfig.FontDataOwnedByAtlas = false;  // the memory is statically owned by the virtual filesystem
-
-    ImFont* mainFont =
-        io.Fonts->AddFontFromMemoryTTF((void*)mainFontFile.begin(), mainFontFile.size(), baseFontSize, &fontConfig);
-
-    ImFont* fontAudio = io.Fonts->AddFontFromMemoryTTF((void*)audioFontFile.begin(), audioFontFile.size(),
-                                                       iconFontSize * 1.3f, &icons_config, fontAudioIconRanges);
-
-    io.Fonts->AddFontFromMemoryTTF((void*)mainFontFile.begin(), mainFontFile.size(), baseFontSize, &fontConfig);
-
-    ImFont* fontAwesome = io.Fonts->AddFontFromMemoryTTF((void*)fontAwesomeFontFile.begin(), fontAwesomeFontFile.size(),
-                                                         iconFontSize, &icons_config, fontAwesomeIconRanges);
 
     return 0;
 }

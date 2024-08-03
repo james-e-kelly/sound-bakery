@@ -137,10 +137,13 @@ void root_widget::draw_titlebar()
     topBarLayout.render_layout_element_pixels_horizontal(&logoLayout, 64.0f);
     logoLayout.render_layout_element_percent(m_windowIcon.get(), 1.0f, 1.0f);
 
-    gluten::text titleText(std::string(get_app()->get_application_display_title()));
-    titleText.set_element_alignment(ImVec2(0.5f, 0.5f));
-    titleText.get_element_anchor().set_achor_from_preset(element::anchor_preset::center_middle);
-    titleText.render(windowParent);
+    {
+        gluten::imgui::scoped_font titleFont(get_app()->get_font(fonts::title));
+        gluten::text titleText(std::string(get_app()->get_application_display_title()));
+        titleText.set_element_alignment(ImVec2(0.5f, 0.5f));
+        titleText.get_element_anchor().set_achor_from_preset(element::anchor_preset::center_middle);
+        titleText.render(windowParent);
+    }
 
     const float titleButtonsAreaWidth = 256.0f;
     const float titleBarStartX        = windowStart.x;

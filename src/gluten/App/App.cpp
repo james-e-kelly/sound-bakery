@@ -3,6 +3,12 @@
 #include "subsystems/renderer_subsystem.h"
 #include "subsystems/widget_subsystem.h"
 
+#include "IconsFontAwesome6.h"
+#include "IconsFontaudio.h"
+#include <cmrc/cmrc.hpp>
+
+CMRC_DECLARE(sbk::Fonts);
+
 namespace PathHelpers
 {
     static const char* ResourcesFolder = "Resources";
@@ -40,6 +46,8 @@ int gluten::app::run(int argc, char** argv)
             return errorCode;
         }
     }
+
+    load_fonts();
 
     post_init();
 
@@ -98,6 +106,51 @@ int gluten::app::run(int argc, char** argv)
     }
 
     return 0;
+}
+
+void gluten::app::load_fonts()
+{
+    // Load Fonts
+    const float baseFontSize = 18.0f;
+    const float iconFontSize = baseFontSize * 2.0f / 3.0f;  // FontAwesome fonts need to have their sizes reduced
+                                                            // by 2.0f/3.0f in order to align correctly
+
+    static const ImWchar fontAwesomeIconRanges[] = {ICON_MIN_FA, ICON_MAX_16_FA, 0};
+    static const ImWchar fontAudioIconRanges[]   = {ICON_MIN_FAD, ICON_MAX_16_FAD, 0};
+
+    const cmrc::embedded_filesystem embeddedfilesystem = cmrc::sbk::Fonts::get_filesystem();
+
+    const cmrc::file lightFontFile       = embeddedfilesystem.open("Montserrat-Light.ttf");
+    const cmrc::file mainFontFile        = embeddedfilesystem.open("Montserrat-Regular.ttf");
+    const cmrc::file titleFontFile       = embeddedfilesystem.open("Montserrat-Black.ttf");
+    const cmrc::file audioFontFile       = embeddedfilesystem.open("fontaudio/font/" FONT_ICON_FILE_NAME_FAD);
+    const cmrc::file fontAwesomeFontFile = embeddedfilesystem.open("Font-Awesome/webfonts/" FONT_ICON_FILE_NAME_FAR);
+
+    assert(mainFontFile.size() > 0);
+
+    ImFontConfig iconFontsConfig;
+    iconFontsConfig.FontDataOwnedByAtlas = false;
+    iconFontsConfig.MergeMode            = true;
+    iconFontsConfig.PixelSnapH           = true;
+    iconFontsConfig.GlyphMinAdvanceX     = iconFontSize;
+
+    ImFontConfig fontConfig;
+    fontConfig.FontDataOwnedByAtlas = false;  // the memory is statically owned by the virtual filesystem
+
+    ImGuiIO& io = ImGui::GetIO();
+
+    m_fonts[fonts::regular] = io.Fonts->AddFontFromMemoryTTF((void*)mainFontFile.begin(), mainFontFile.size(), baseFontSize, &fontConfig);
+
+    m_fonts[fonts::regular_audio_icons] = io.Fonts->AddFontFromMemoryTTF((void*)mainFontFile.begin(), mainFontFile.size(), baseFontSize, &fontConfig);
+    io.Fonts->AddFontFromMemoryTTF((void*)audioFontFile.begin(), audioFontFile.size(), iconFontSize * 1.3f,
+                                   &iconFontsConfig, fontAudioIconRanges);
+
+    m_fonts[fonts::regular_font_awesome] = io.Fonts->AddFontFromMemoryTTF((void*)mainFontFile.begin(), mainFontFile.size(), baseFontSize, &fontConfig);
+    io.Fonts->AddFontFromMemoryTTF((void*)fontAwesomeFontFile.begin(), fontAwesomeFontFile.size(), iconFontSize,
+                                   &iconFontsConfig, fontAwesomeIconRanges);
+
+    m_fonts[fonts::light] = io.Fonts->AddFontFromMemoryTTF((void*)lightFontFile.begin(), lightFontFile.size(), baseFontSize, &fontConfig);
+    m_fonts[fonts::title] = io.Fonts->AddFontFromMemoryTTF((void*)titleFontFile.begin(), titleFontFile.size(), baseFontSize, &fontConfig);
 }
 
 void gluten::app::request_exit() { m_isRequestingExit = true; }

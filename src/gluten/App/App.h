@@ -3,8 +3,19 @@
 #include "gluten/managers/manager.h"
 #include "gluten/subsystems/subsystem.h"
 
+#include "imgui.h"
+
 namespace gluten
 {
+    enum class fonts
+    {
+        regular,
+        regular_font_awesome,
+        regular_audio_icons,
+        light,
+        title
+    };
+
     class app
     {
     public:
@@ -32,7 +43,11 @@ namespace gluten
         void set_application_display_title(const std::string& title);
         std::string_view get_application_display_title() const { return m_applicationDisplayTitle; }
 
+        ImFont* get_font(const fonts& font) { return m_fonts[font]; }
+
     private:
+        void load_fonts();
+
         std::vector<std::unique_ptr<subsystem>> m_subsystems;
         std::vector<std::unique_ptr<manager>> m_managers;
 
@@ -41,6 +56,8 @@ namespace gluten
 
         std::string m_executableLocation;
         std::string m_applicationDisplayTitle;
+
+        std::unordered_map<fonts, ImFont*> m_fonts;
 
         bool m_hasInit          = false;
         bool m_isRequestingExit = false;

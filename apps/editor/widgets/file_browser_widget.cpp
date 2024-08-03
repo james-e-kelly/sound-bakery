@@ -191,11 +191,11 @@ void file_browser_widget::show_directory_browser_list() noexcept
 
                 std::string filename = p.path().filename().string();
 
-                ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[1]);
+                ImGui::PushFont(get_app()->get_font(gluten::fonts::regular_font_awesome));
 
                 if (p.is_regular_file())
                 {
-                    ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[0]);
+                    ImGui::PushFont(get_app()->get_font(gluten::fonts::regular_audio_icons));
                     ImGui::Text("%s %s", ICON_FAD_WAVEFORM, filename.c_str());
                     ImGui::PopFont();
                 }
