@@ -133,11 +133,6 @@ void root_widget::draw_titlebar()
     const ImVec2 windowEnd   = ImVec2(windowStart.x + windowSize.x, windowStart.y + windowSize.y);
 
     const ImRect windowParent{windowStart, ImVec2(windowEnd.x, windowStart.y + titlebarHeight + titlebarVerticalOffset)};
-
-    if (isMaximized)
-    {
-        assert(windowParent.GetSize().y > 50.0f);
-    }
     
     //gluten::element::s_debug = true;
 
@@ -171,6 +166,20 @@ void root_widget::draw_titlebar()
     dragZoneButton.render(titleBarAreaLeftOfButtons);
 
     m_hoveringTitlebar = ImGui::IsItemHovered();
+
+    ImRect menuBarRect(ImVec2(windowParent.Min.x + 64, windowParent.Min.y),
+                       ImVec2(windowParent.Min.x + 400, windowParent.Max.y));
+
+    ImGui::SetCursorScreenPos(menuBarRect.Min);
+
+    ImGui::BeginGroup();
+    if (gluten::imgui::begin_menubar(menuBarRect))
+    {
+        render_menu();
+    }
+
+    gluten::imgui::end_menubar();
+    ImGui::EndGroup();
 
     gluten::layout titleButtonsLayout(layout::layout_type::right_to_left);
     titleButtonsLayout.get_element_anchor().set_achor_from_preset(element::anchor_preset::stretch_full);
