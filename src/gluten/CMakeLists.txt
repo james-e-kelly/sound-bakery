@@ -221,6 +221,7 @@ target_link_libraries(gluten
     SoundBakery::Delegates 
     SoundBakery::Fonts
     SoundBakery::Images
+    sbk::icon_images
     nfd
     glfw
     imgui

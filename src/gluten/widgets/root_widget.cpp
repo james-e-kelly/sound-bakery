@@ -16,6 +16,10 @@
 #include "imgui_internal.h"
 #include "imgui_stacklayout.h"
 
+#include <cmrc/cmrc.hpp>
+
+CMRC_DECLARE(sbk::icon_images);
+
 using namespace gluten;
 
 static const ImGuiDockNodeFlags dockspaceFlags = ImGuiDockNodeFlags_None;
@@ -30,7 +34,11 @@ void root_widget::start()
 { 
     widget::start();
 
-    m_windowIcon      = std::make_unique<gluten::image>(g_WalnutIcon, sizeof(g_WalnutIcon));
+    const cmrc::embedded_filesystem embeddedfilesystem = cmrc::sbk::icon_images::get_filesystem();
+    const cmrc::file logoFile = embeddedfilesystem.open("sound-bakery-logo.png");
+    assert(logoFile.size() > 0);
+
+    m_windowIcon      = std::make_unique<gluten::image>(logoFile.cbegin(), logoFile.size());
     m_windowCloseIcon = std::make_unique<gluten::image_button>("Close", g_WindowCloseIcon, sizeof(g_WindowCloseIcon));
     m_windowMinimiseIcon = std::make_unique<gluten::image_button>("Minimise", g_WindowMinimiseIcon, sizeof(g_WindowMinimiseIcon));
     m_windowMaximiseIcon = std::make_unique<gluten::image_button>("Maximise", g_WindowMaximiseIcon, sizeof(g_WindowMaximiseIcon));
@@ -42,6 +50,7 @@ void root_widget::start()
     m_windowMaximiseIcon->get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::stretch_full);
     m_windowRestoreIcon->get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::stretch_full);
 
+    m_windowIcon->set_element_max_size(ImVec2(32, 32));
     m_windowCloseIcon->set_element_max_size(ImVec2(16, 16));
     m_windowMinimiseIcon->set_element_max_size(ImVec2(14, 14));
     m_windowMaximiseIcon->set_element_max_size(ImVec2(14, 14));

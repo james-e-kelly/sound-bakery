@@ -1,7 +1,7 @@
 #include "widget_subsystem.h"
 
 #include "imgui.h"
-#include "widgets/root_widget.h"
+#include "gluten/widgets/root_widget.h"
 
 using namespace gluten;
 
