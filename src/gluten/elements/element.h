@@ -164,6 +164,7 @@ namespace gluten
 		};
 
 		void set_element_background_color(ImU32 color);
+        void set_element_hover_color(ImU32 color);
 
         anchor_info& get_element_anchor();
         ImVec2 get_element_desired_size() const;
@@ -209,6 +210,7 @@ namespace gluten
         ImVec2 m_alignment;
         
         std::optional<ImU32> m_backgroundColor;
+        std::optional<ImU32> m_hoverColor;
 
         std::optional<ImRect> m_currentRect;
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "gluten/widgets/widget.h"
+#include "gluten/elements/image_button.h"
 
 namespace gluten
 {
@@ -10,7 +11,8 @@ namespace gluten
         root_widget(widget_subsystem* parentSubsystem) : widget(parentSubsystem) {}
 
     public:
-        virtual void render() override;
+        void start() override;
+        void render() override;
         virtual void render_menu() {}
 
         bool is_hovering_titlebar() { return m_hoveringTitlebar; }
@@ -21,5 +23,11 @@ namespace gluten
         void draw_titlebar();
 
         bool m_hoveringTitlebar = false;
+
+        std::unique_ptr<gluten::image> m_windowIcon;
+        std::unique_ptr<gluten::image_button> m_windowCloseIcon;
+        std::unique_ptr<gluten::image_button> m_windowMinimiseIcon;
+        std::unique_ptr<gluten::image_button> m_windowMaximiseIcon;
+        std::unique_ptr<gluten::image_button> m_windowRestoreIcon;
     };
 }  // namespace gluten

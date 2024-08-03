@@ -2,8 +2,6 @@
 
 #include "subsystems/renderer_subsystem.h"
 #include "subsystems/widget_subsystem.h"
-#include "gluten/theme/window_images.embed"
-#include "gluten/theme/walnut_icon.embed"
 
 namespace PathHelpers
 {
@@ -47,25 +45,6 @@ int gluten::app::run(int argc, char** argv)
 
     m_currentTime  = std::chrono::high_resolution_clock::now();
     m_previousTime = std::chrono::high_resolution_clock::now();
-
-    m_windowIcon = std::make_unique<gluten::image>(g_WalnutIcon, sizeof(g_WalnutIcon));
-    m_windowCloseIcon = std::make_unique<gluten::image_button>("Close", g_WindowCloseIcon, sizeof(g_WindowCloseIcon));
-    m_windowMinimiseIcon = std::make_unique<gluten::image_button>("Minimise", g_WindowMinimiseIcon, sizeof(g_WindowMinimiseIcon));
-    m_windowMaximiseIcon = std::make_unique<gluten::image_button>("Maximise", g_WindowMaximiseIcon, sizeof(g_WindowMaximiseIcon));
-    m_windowRestoreIcon  = std::make_unique<gluten::image_button>("Restore", g_WindowRestoreIcon, sizeof(g_WindowRestoreIcon));
-
-    m_windowIcon->get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::stretch_full);
-    //m_windowIcon->set_element_alignment(ImVec2(0.5f, 0.5f));
-
-    m_windowCloseIcon->get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::stretch_full);
-    m_windowMinimiseIcon->get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::stretch_full);
-    m_windowMaximiseIcon->get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::stretch_full);
-    m_windowRestoreIcon->get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::stretch_full);
-
-    m_windowCloseIcon->set_element_max_size(ImVec2(16, 16));
-    m_windowMinimiseIcon->set_element_max_size(ImVec2(16,16));
-    m_windowMaximiseIcon->set_element_max_size(ImVec2(16,16));
-    m_windowRestoreIcon->set_element_max_size(ImVec2(16,16));
 
     m_hasInit = true;
 

@@ -99,10 +99,9 @@ void gluten::element::anchor_info::set_achor_from_preset(const anchor_preset& pr
     }
 }
 
-void gluten::element::set_element_background_color(ImU32 color)
-{ 
-    m_backgroundColor = color; 
-}
+void gluten::element::set_element_background_color(ImU32 color) { m_backgroundColor = color; }
+
+void gluten::element::set_element_hover_color(ImU32 color) { m_hoverColor = color; }
 
 gluten::element::anchor_info& gluten::element::get_element_anchor() { return m_anchor; }
 
@@ -128,10 +127,18 @@ bool gluten::element::render(const ImRect& parent)
 
     const bool activated = render_element(elementBox); 
 
-    if (m_backgroundColor.has_value())
+    const bool hovered = ImGui::IsItemHovered();
+
+    if (ImDrawList* const backgroundDrawList = ImGui::GetBackgroundDrawList())
     {
-        ImDrawList* const backgroundDrawList = ImGui::GetBackgroundDrawList();
-        backgroundDrawList->AddRectFilled(elementBox.Min, elementBox.Max, m_backgroundColor.value());
+        if (hovered && m_hoverColor.has_value())
+        {
+            backgroundDrawList->AddRectFilled(elementBox.Min, elementBox.Max, m_hoverColor.value());
+        }
+        else if (m_backgroundColor.has_value())
+        {
+            backgroundDrawList->AddRectFilled(elementBox.Min, elementBox.Max, m_backgroundColor.value());
+        }
     }
 
     return activated;

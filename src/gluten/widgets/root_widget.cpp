@@ -6,6 +6,8 @@
 #include "gluten/utils/imgui_util_functions.h"
 #include "gluten/utils/imgui_util_structures.h"
 #include "gluten/theme/theme.h"
+#include "gluten/theme/window_images.embed"
+#include "gluten/theme/walnut_icon.embed"
 
 #include "IconsFontAwesome6.h"
 #include "IconsFontaudio.h"
@@ -23,6 +25,33 @@ static const ImGuiWindowFlags rootWindowFlags  = ImGuiWindowFlags_NoDocking |
                                           ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
 static const char* rootWindowName = "RootDockSpace"; 
+
+void root_widget::start()
+{ 
+    widget::start();
+
+    m_windowIcon      = std::make_unique<gluten::image>(g_WalnutIcon, sizeof(g_WalnutIcon));
+    m_windowCloseIcon = std::make_unique<gluten::image_button>("Close", g_WindowCloseIcon, sizeof(g_WindowCloseIcon));
+    m_windowMinimiseIcon = std::make_unique<gluten::image_button>("Minimise", g_WindowMinimiseIcon, sizeof(g_WindowMinimiseIcon));
+    m_windowMaximiseIcon = std::make_unique<gluten::image_button>("Maximise", g_WindowMaximiseIcon, sizeof(g_WindowMaximiseIcon));
+    m_windowRestoreIcon = std::make_unique<gluten::image_button>("Restore", g_WindowRestoreIcon, sizeof(g_WindowRestoreIcon));
+
+    m_windowIcon->get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::stretch_full);
+    m_windowCloseIcon->get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::stretch_full);
+    m_windowMinimiseIcon->get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::stretch_full);
+    m_windowMaximiseIcon->get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::stretch_full);
+    m_windowRestoreIcon->get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::stretch_full);
+
+    m_windowCloseIcon->set_element_max_size(ImVec2(16, 16));
+    m_windowMinimiseIcon->set_element_max_size(ImVec2(14, 14));
+    m_windowMaximiseIcon->set_element_max_size(ImVec2(14, 14));
+    m_windowRestoreIcon->set_element_max_size(ImVec2(16, 16));
+
+    m_windowCloseIcon->set_element_hover_color(theme::ColorWithMultipliedValue(gluten::theme::titlebar, 2.f));
+    m_windowMinimiseIcon->set_element_hover_color(theme::ColorWithMultipliedValue(gluten::theme::titlebar, 2.f));
+    m_windowMaximiseIcon->set_element_hover_color(theme::ColorWithMultipliedValue(gluten::theme::titlebar, 2.f));
+    m_windowRestoreIcon->set_element_hover_color(theme::ColorWithMultipliedValue(gluten::theme::titlebar, 2.f));
+}
 
 void root_widget::render()
 {
@@ -106,7 +135,7 @@ void root_widget::draw_titlebar()
     gluten::layout logoLayout(gluten::layout::layout_type::left_to_right);
     logoLayout.get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::stretch_full);
     topBarLayout.render_layout_element_pixels_horizontal(&logoLayout, 64.0f);
-    logoLayout.render_layout_element_percent(get_app()->get_window_icon(), 1.0f, 1.0f);
+    logoLayout.render_layout_element_percent(m_windowIcon.get(), 1.0f, 1.0f);
 
     gluten::text titleText(std::string(get_app()->get_application_display_title()));
     titleText.set_element_alignment(ImVec2(0.5f, 0.5f));
@@ -130,24 +159,24 @@ void root_widget::draw_titlebar()
     titleButtonsLayout.get_element_anchor().set_achor_from_preset(element::anchor_preset::stretch_full);
     titleButtonsLayout.reset_layout(titleBarAreaButtons);
 
-    titleButtonsLayout.render_layout_element_percent_horizontal(get_app()->get_window_minimise_icon(), 0.33f);
+    titleButtonsLayout.render_layout_element_percent_horizontal(m_windowMinimiseIcon.get(), 0.33f);
 
     if (const bool isMaximized = get_app()->is_maximized())
     {
-        if (titleButtonsLayout.render_layout_element_percent_horizontal(get_app()->get_window_restore_icon(), 0.33f))
+        if (titleButtonsLayout.render_layout_element_percent_horizontal(m_windowRestoreIcon.get(), 0.33f))
         {
             get_app()->get_subsystem_by_class<gluten::renderer_subsystem>()->toggle_maximised();
         }
     }
     else
     {
-        if (titleButtonsLayout.render_layout_element_percent_horizontal(get_app()->get_window_maximise_icon(), 0.33f))
+        if (titleButtonsLayout.render_layout_element_percent_horizontal(m_windowMaximiseIcon.get(), 0.33f))
         {
             get_app()->get_subsystem_by_class<gluten::renderer_subsystem>()->toggle_maximised();
         }
     }
 
-    if (titleButtonsLayout.render_layout_element_percent_horizontal(get_app()->get_window_close_icon(), 0.33f))
+    if (titleButtonsLayout.render_layout_element_percent_horizontal(m_windowCloseIcon.get(), 0.33f))
     {
         get_app()->request_exit();
     }
