@@ -2,6 +2,8 @@ SET(FONT_DESTINATION_FOLDER ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE
 
 SET(RAW_FONTS
     Montserrat-Light.ttf
+    Montserrat-Regular.ttf
+    Montserrat-Black.ttf
 )
 
 SET(FONT_AWESOME_FONTS
