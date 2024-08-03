@@ -150,7 +150,7 @@ void gluten::app::load_fonts()
                                    &iconFontsConfig, fontAwesomeIconRanges);
 
     m_fonts[fonts::light] = io.Fonts->AddFontFromMemoryTTF((void*)lightFontFile.begin(), lightFontFile.size(), baseFontSize, &fontConfig);
-    m_fonts[fonts::title] = io.Fonts->AddFontFromMemoryTTF((void*)titleFontFile.begin(), titleFontFile.size(), baseFontSize, &fontConfig);
+    m_fonts[fonts::title] = io.Fonts->AddFontFromMemoryTTF((void*)titleFontFile.begin(), titleFontFile.size(), baseFontSize * 1.2f, &fontConfig);
 }
 
 void gluten::app::request_exit() { m_isRequestingExit = true; }
