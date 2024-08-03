@@ -131,6 +131,8 @@ bool gluten::element::render(const ImRect& parent)
 
     if (ImDrawList* const backgroundDrawList = ImGui::GetBackgroundDrawList())
     {
+        ImGui::SetCursorScreenPos(elementBox.Min);
+
         if (hovered && m_hoverColor.has_value())
         {
             backgroundDrawList->AddRectFilled(elementBox.Min, elementBox.Max, m_hoverColor.value());

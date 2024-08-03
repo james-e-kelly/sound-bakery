@@ -823,6 +823,18 @@ void renderer_subsystem::exit()
 
 void renderer_subsystem::set_window_title(const std::string& title) { m_window.set_title(title); }
 
+void gluten::renderer_subsystem::toggle_minimised() 
+{
+    if (is_minimised())
+    {
+        glfwRestoreWindow(m_window.m_window);
+    }
+    else
+    {
+        glfwIconifyWindow(m_window.m_window);
+    }
+}
+
 void gluten::renderer_subsystem::toggle_maximised() 
 {
     if (is_maximized())
@@ -833,6 +845,11 @@ void gluten::renderer_subsystem::toggle_maximised()
     {
         glfwMaximizeWindow(m_window.m_window);
     }
+}
+
+bool gluten::renderer_subsystem::is_minimised() const
+{
+    return (bool)glfwGetWindowAttrib(m_window.m_window, GLFW_ICONIFIED);
 }
 
 bool gluten::renderer_subsystem::is_maximized() const

@@ -74,7 +74,7 @@ void root_widget::render()
     submit_dockspace();
 
     {
-        gluten::imgui::scoped_font font(ImGui::GetIO().Fonts->Fonts[1]);
+        gluten::imgui::scoped_font font(get_app()->get_font(fonts::regular));
 
         const ImRect menuBarRect = {
             ImGui::GetCursorPos(),
@@ -116,14 +116,19 @@ void root_widget::draw_titlebar()
 {
     const float titlebarHeight   = 48.0f;
     const bool isMaximized       = get_app()->is_maximized();
-    float titlebarVerticalOffset = isMaximized ? -6.0f : 0.0f;
-    const ImVec2 windowPadding   = ImGui::GetCurrentWindow()->WindowPadding;
+    const float titlebarVerticalOffset = isMaximized ? 6.0f : 0.0f;
 
-    const ImVec2 windowStart = ImGui::GetWindowPos();
+    const ImVec2 windowPos = ImGui::GetWindowPos();
+    const ImVec2 windowStart = ImVec2(windowPos.x, windowPos.y + titlebarVerticalOffset);
     const ImVec2 windowSize  = ImGui::GetWindowSize();
     const ImVec2 windowEnd   = ImVec2(windowStart.x + windowSize.x, windowStart.y + windowSize.y);
 
-    const ImRect windowParent{windowStart, ImVec2(windowEnd.x, windowStart.y + titlebarHeight)};
+    const ImRect windowParent{windowStart, ImVec2(windowEnd.x, windowStart.y + titlebarHeight + titlebarVerticalOffset)};
+
+    if (isMaximized)
+    {
+        assert(windowParent.GetSize().y > 50.0f);
+    }
     
     //gluten::element::s_debug = true;
 
@@ -182,17 +187,12 @@ void root_widget::draw_titlebar()
         }
     }
 
-    titleButtonsLayout.render_layout_element_percent_horizontal(m_windowMinimiseIcon.get(), 0.33f);
-
-    // Minimize Button
+    if (titleButtonsLayout.render_layout_element_percent_horizontal(m_windowMinimiseIcon.get(), 0.33f))
     {
-            /*if (m_WindowHandle)
-            {
-                Application::Get().QueueEvent([windowHandle = m_WindowHandle]() { glfwIconifyWindow(windowHandle); });
-            }*/
+        get_app()->get_subsystem_by_class<gluten::renderer_subsystem>()->toggle_minimised();
     }
 
-    ImGui::SetCursorPosY(titlebarHeight);
+    ImGui::SetCursorScreenPos(ImVec2(windowParent.Min.x, windowParent.Max.y));
 
     //if (isMaximized)
     //{

@@ -23,7 +23,10 @@ namespace gluten
 
         void set_window_title(const std::string& title);
 
+        void toggle_minimised();
         void toggle_maximised();
+
+        bool is_minimised() const;
         bool is_maximized() const;
 
     private:
