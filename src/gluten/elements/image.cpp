@@ -36,13 +36,37 @@ namespace gluten
         release();
     }
 
-    bool image::render_element(const ImRect& parent)
+    bool image::render_element(const ImRect& elementRect)
     {
         if (m_openGlId != 0 && m_width > 0 && m_height > 0)
         {
             if (ImDrawList* const drawList = ImGui::GetForegroundDrawList())
             {
-                drawList->AddImage((void*)(intptr_t)m_openGlId, parent.Min, parent.Max);
+                const ImVec2 elementRectSize = elementRect.GetSize();
+
+                const float imageWidthRatio  = elementRectSize.x / m_width;
+                const float imageHeightRatio = elementRectSize.y / m_height;
+
+                const float largestLength = std::min(imageWidthRatio, imageHeightRatio);
+
+                const float newImageWidth = m_width * largestLength;
+                const float newImageHeight = m_height * largestLength;
+
+                const float widthMovementAfterResize  = newImageWidth - m_width;
+                const float heightMovementAfterResize = newImageHeight - m_height;
+
+                /*const float imageAspectRatio = m_width / m_height;
+                const float elementAspectRatio = elementRect.GetSize().x / elementRect.GetSize().y;
+
+                float new_width  = std::sqrtf(imageAspectRatio * elementRect.GetArea());
+                float new_height = elementRect.GetArea() / new_width;
+
+                int w = std::roundf(new_width);
+                int h = std::roundf(new_height - (w - new_width));*/
+
+                drawList->AddImage((void*)(intptr_t)m_openGlId, 
+                    ImVec2(elementRect.Min.x, elementRect.Min.y), 
+                    ImVec2(elementRect.Min.x + newImageWidth,elementRect.Min.y + newImageHeight));
                
                 //ImGui::DebugDrawItemRect(gluten::theme::invalidPrefab);
 
