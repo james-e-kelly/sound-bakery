@@ -13,7 +13,7 @@ namespace gluten
     public:
         void start() override;
         void render() override;
-        virtual void render_menu() {}
+        virtual void render_menu();
 
         bool is_hovering_titlebar() { return m_hoveringTitlebar; }
 

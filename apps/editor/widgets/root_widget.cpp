@@ -78,6 +78,11 @@ void root_widget::render_menu()
         {
             if (ImGui::MenuItem("View Documentation"))
             {
+                ImGuiContext* const context = ImGui::GetCurrentContext();
+                if (context->IO.PlatformOpenInShellFn != NULL)
+                {
+                    context->IO.PlatformOpenInShellFn(context, "https://soundbakery.jameskelly.audio");
+                }
             }
 
             ImGui::Separator();
@@ -124,4 +129,6 @@ void root_widget::render_menu()
         //        ImGui::ShowAboutWindow();
         //        ImGui::ShowDebugLogWindow();
     }
+
+    gluten::root_widget::render_menu();
 }

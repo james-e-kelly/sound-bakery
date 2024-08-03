@@ -176,7 +176,7 @@ void project_nodes_widget::render_single_node(rttr::type type,
 
                 const bool dragDropActive = ImGui::IsDragDropActive();
 
-                if (!dragDropActive && previousDragDropActive)
+                if (!dragDropActive && previousDragDropActive && previousFocusID != 0)
                 {
                     ImGui::SetFocusID(previousFocusID, ImGui::GetCurrentWindow());
                 }

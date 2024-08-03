@@ -30,6 +30,8 @@ static const ImGuiWindowFlags rootWindowFlags  = ImGuiWindowFlags_NoDocking |
 
 static const char* rootWindowName = "RootDockSpace"; 
 
+static bool showUserGuide = false;
+
 void root_widget::start()
 { 
     widget::start();
@@ -96,6 +98,15 @@ void root_widget::render()
         }
 
         gluten::imgui::end_menubar();*/
+    }
+
+    if (showUserGuide)
+    {
+        if (ImGui::Begin("User Guide", &showUserGuide))
+        {
+            ImGui::ShowUserGuide();
+        }
+        ImGui::End();
     }
 
     render_children();
@@ -223,19 +234,38 @@ void root_widget::draw_titlebar()
     //        m_hoveringTitlebar = true;  // Account for the top-most pixels which don't register
     //    }
     //}
+}
 
-    //// Draw Menubar
-    //{
-    //    ImGui::SetItemAllowOverlap();
-    //    const float logoHorizontalOffset = 16.0f * 2.0f + 48.0f + windowPadding.x;
-    //    ImGui::SetCursorPos(ImVec2(logoHorizontalOffset, 6.0f + titlebarVerticalOffset));
-    //    //render_menu();
+void root_widget::render_menu()
+{
+    static bool showMetricsWindow = false;
+    static bool showDebugLogWindow = false;
+    static bool showStackTool = false;
+    static bool showAboutWindow    = false;
+      
+    if (ImGui::BeginMenu("Help"))
+    {
+        ImGui::Separator();
 
-    //    if (ImGui::IsItemHovered())
-    //    {
-    //        //m_hoveringTitlebar = false;
-    //    }
-    //}
-    //
-    //{
+        ImGui::MenuItem("Show ImGui User Guide", NULL, &showUserGuide);
+        ImGui::MenuItem("Show ImGui About", NULL, &showAboutWindow);
+
+        ImGui::Separator();
+
+        ImGui::MenuItem("Show ImGui Metrics", NULL, &showMetricsWindow);
+        ImGui::MenuItem("Show ImGui Debug", NULL, &showDebugLogWindow);
+        ImGui::MenuItem("Show ImGui Stack Tool", NULL, &showStackTool);
+
+        ImGui::EndMenu();
+    }
+
+    if (showMetricsWindow)
+        ImGui::ShowMetricsWindow(&showMetricsWindow);
+    if (showDebugLogWindow)
+        ImGui::ShowDebugLogWindow(&showDebugLogWindow);
+    if (showStackTool) 
+        ImGui::ShowIDStackToolWindow(&showStackTool);
+    if (showAboutWindow)
+        ImGui::ShowAboutWindow(&showAboutWindow);
+
 }
