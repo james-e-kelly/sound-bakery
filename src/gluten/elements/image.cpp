@@ -46,27 +46,20 @@ namespace gluten
 
                 const float imageWidthRatio  = elementRectSize.x / m_width;
                 const float imageHeightRatio = elementRectSize.y / m_height;
+                const float lengthWithLeastAmountOfSpace = std::min(imageWidthRatio, imageHeightRatio);
 
-                const float largestLength = std::min(imageWidthRatio, imageHeightRatio);
-
-                const float newImageWidth = m_width * largestLength;
-                const float newImageHeight = m_height * largestLength;
+                const float newImageWidth = m_width * lengthWithLeastAmountOfSpace;
+                const float newImageHeight = m_height * lengthWithLeastAmountOfSpace;
 
                 const float widthMovementAfterResize  = newImageWidth - m_width;
                 const float heightMovementAfterResize = newImageHeight - m_height;
 
-                /*const float imageAspectRatio = m_width / m_height;
-                const float elementAspectRatio = elementRect.GetSize().x / elementRect.GetSize().y;
-
-                float new_width  = std::sqrtf(imageAspectRatio * elementRect.GetArea());
-                float new_height = elementRect.GetArea() / new_width;
-
-                int w = std::roundf(new_width);
-                int h = std::roundf(new_height - (w - new_width));*/
+                const float newStartX = elementRect.Min.x + (elementRectSize.x / 2) - (newImageWidth / 2);
+                const float newStartY = elementRect.Min.y + (elementRectSize.y / 2) - (newImageHeight / 2);
 
                 drawList->AddImage((void*)(intptr_t)m_openGlId, 
-                    ImVec2(elementRect.Min.x, elementRect.Min.y), 
-                    ImVec2(elementRect.Min.x + newImageWidth,elementRect.Min.y + newImageHeight));
+                    ImVec2(newStartX, newStartY), 
+                    ImVec2(newStartX + newImageWidth, newStartY + newImageHeight));
                
                 //ImGui::DebugDrawItemRect(gluten::theme::invalidPrefab);
 
