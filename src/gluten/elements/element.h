@@ -171,14 +171,12 @@ namespace gluten
         /**
          * @brief If the element has rendered before, return the box
          */
-        ImRect get_element_rect() const
-        {
-            return m_currentRect.has_value() ? m_currentRect.value() : ImRect{ImGui::GetWindowPos(), ImVec2()};
-        }
+        ImRect get_element_rect() const;
 
 		bool render(const ImRect& parent);
 
         void set_element_alignment(const ImVec2& alignment) { m_alignment = alignment; }
+        virtual void set_element_max_size(const ImVec2& maxSize);
 
 	protected:
         void set_element_desired_size(const ImVec2& desiredSize) { m_desiredSize = desiredSize; }
@@ -206,17 +204,15 @@ namespace gluten
         anchor_info m_anchor;
         
         ImVec2 m_minSize;
+        ImVec2 m_maxSize;
         ImVec2 m_desiredSize;
-
-        ImVec2 m_selfSize		= ImVec2(32, 32);
-        ImVec2 m_offset			= ImVec2(0, 0);
-        ImVec2 m_alignment      = ImVec2(0, 0);
+        ImVec2 m_alignment;
         
         std::optional<ImU32> m_backgroundColor;
 
         std::optional<ImRect> m_currentRect;
 
-        public:
+    public:
         static inline bool s_debug = false;
 	};
 }

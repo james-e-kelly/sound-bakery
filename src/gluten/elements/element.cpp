@@ -108,6 +108,11 @@ gluten::element::anchor_info& gluten::element::get_element_anchor() { return m_a
 
 ImVec2 gluten::element::get_element_desired_size() const { return m_desiredSize; }
 
+ImRect gluten::element::get_element_rect() const
+{
+    return m_currentRect.has_value() ? m_currentRect.value() : ImRect{ImGui::GetWindowPos(), ImVec2()};
+}
+
 bool gluten::element::render(const ImRect& parent)
 { 
     const ImRect elementBox = get_element_box_from_parent(parent, m_minSize, m_desiredSize, m_alignment, m_anchor);
@@ -131,6 +136,8 @@ bool gluten::element::render(const ImRect& parent)
 
     return activated;
 }
+
+void gluten::element::set_element_max_size(const ImVec2& maxSize) { m_maxSize = maxSize; }
 
 ImVec2 gluten::element::get_anchor_start_position(const ImVec2& containerPosition,
                                  const ImVec2& containerSize,

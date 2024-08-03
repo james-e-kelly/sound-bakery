@@ -85,7 +85,7 @@ void root_widget::set_root_window_to_viewport()
 
 void root_widget::draw_titlebar()
 {
-    const float titlebarHeight   = 58.0f;
+    const float titlebarHeight   = 48.0f;
     const bool isMaximized       = get_app()->is_maximized();
     float titlebarVerticalOffset = isMaximized ? -6.0f : 0.0f;
     const ImVec2 windowPadding   = ImGui::GetCurrentWindow()->WindowPadding;

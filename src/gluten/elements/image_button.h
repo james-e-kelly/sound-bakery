@@ -16,6 +16,8 @@ namespace gluten
         button& get_button() { return m_button; }
         image& get_image() { return m_image; }
 
+        void set_element_max_size(const ImVec2& maxSize) override;
+
     private:
         button m_button;
         image m_image;
