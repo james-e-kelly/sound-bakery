@@ -247,15 +247,16 @@ void root_widget::render_menu()
     {
         ImGui::Separator();
 
-        ImGui::MenuItem("Show ImGui User Guide", NULL, &showUserGuide);
-        ImGui::MenuItem("Show ImGui About", NULL, &showAboutWindow);
+        if (ImGui::BeginMenu("ImGui"))
+        {
+            ImGui::MenuItem("ImGui About...", NULL, &showAboutWindow);
+            ImGui::MenuItem("ImGui User Guide...", NULL, &showUserGuide);
+            ImGui::MenuItem("ImGui Metrics...", NULL, &showMetricsWindow);
+            ImGui::MenuItem("ImGui Debug...", NULL, &showDebugLogWindow);
+            ImGui::MenuItem("ImGui Stack Tool...", NULL, &showStackTool);
 
-        ImGui::Separator();
-
-        ImGui::MenuItem("Show ImGui Metrics", NULL, &showMetricsWindow);
-        ImGui::MenuItem("Show ImGui Debug", NULL, &showDebugLogWindow);
-        ImGui::MenuItem("Show ImGui Stack Tool", NULL, &showStackTool);
-
+            ImGui::EndMenu();
+        }
         ImGui::EndMenu();
     }
 
