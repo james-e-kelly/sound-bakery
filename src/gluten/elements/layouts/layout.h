@@ -20,8 +20,11 @@ namespace gluten
 
         layout() = default;
         layout(const layout_type& layoutType);
+        layout(const layout_type& layoutType, const anchor_preset& anchorPreset);
 
         void set_layout_type(const layout_type& type);
+
+        bool render_layout_element_full(element* element);
         
         bool render_layout_element_pixels(element* element, float horizontalPixels, float verticalPixels);
         bool render_layout_element_pixels_horizontal(element* element, float horizontalPixels);
@@ -32,6 +35,13 @@ namespace gluten
         bool render_layout_element_percent_vertical(element* element, float verticalPercent);
 
         void reset_layout(const ImRect& parent);
+
+        ImVec2 get_current_layout_pos() const
+        {
+            return m_currentLayoutPos.has_value() ? m_currentLayoutPos.value() : ImVec2(0, 0);
+        }
+
+        ImVec2 get_current_layout_pos_local() const;
 
     private:
         void setup_layout_begin(const ImRect& thisBox);

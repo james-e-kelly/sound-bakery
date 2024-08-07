@@ -30,6 +30,51 @@ static const ImGuiWindowFlags rootWindowFlags  = ImGuiWindowFlags_NoDocking |
 
 static const char* rootWindowName = "RootDockSpace"; 
 
+namespace root_widget_utils
+{
+    constexpr float titleBarHeight = 48.0f;
+    constexpr float titleLogoWidth = 64.0f;
+    constexpr float menuBarPaddingWithLogo   = 6.0f;
+    constexpr float menuBarStartWidth = titleLogoWidth + 6.0f;
+    constexpr float titleBarButtonsAreaWidth = 256.0f;
+
+    static ImRect get_titlebar_rect(const ImGuiWindow* const window)
+    {
+        ImRect windowRect = window->Rect();
+        windowRect.Add(window->Pos);
+        windowRect.Max.y = windowRect.Min.y + root_widget_utils::titleBarHeight;
+        return windowRect;
+    }
+
+    static ImRect get_logo_rect(const ImRect& titlebarRect)
+    {
+        ImRect logoRect = titlebarRect;
+        logoRect.Max.x = logoRect.Min.x + titleLogoWidth;
+        return logoRect;
+    }
+
+    static ImRect get_menu_bar_rect(const ImRect& titlebarRect)
+    { 
+        ImRect menuBarRect = titlebarRect;
+        menuBarRect.Min.x += titleLogoWidth + menuBarPaddingWithLogo;
+        return menuBarRect;
+    }
+
+    static ImRect get_drag_zone_rect(const ImRect& titlebarRect)
+    { 
+        ImRect dragZoneRect = titlebarRect;
+        dragZoneRect.Max.x -= titleBarButtonsAreaWidth;
+        return dragZoneRect;
+    }
+
+    static ImRect get_buttons_rect(const ImRect& titlebarRect)
+    { 
+        ImRect buttonRect = titlebarRect;
+        buttonRect.Min.x = buttonRect.Max.x - titleBarButtonsAreaWidth;
+        return buttonRect;
+    }
+}
+
 static bool showUserGuide = false;
 
 void root_widget::start()
@@ -134,52 +179,29 @@ void root_widget::set_root_window_to_viewport()
 
 void root_widget::draw_titlebar()
 {
-    const float titlebarHeight   = 48.0f;
-    const bool isMaximized       = get_app()->is_maximized();
-    const float titlebarVerticalOffset = isMaximized ? 6.0f : 0.0f;
+    const ImRect titleBarRect = root_widget_utils::get_titlebar_rect(ImGui::GetCurrentWindow());
+    const ImRect logoRect     = root_widget_utils::get_logo_rect(titleBarRect);
+    const ImRect dragZoneRect = root_widget_utils::get_drag_zone_rect(titleBarRect);
+    const ImRect buttonsRect  = root_widget_utils::get_buttons_rect(titleBarRect);
+    const ImRect menuBarRect  = root_widget_utils::get_menu_bar_rect(titleBarRect);
 
-    const ImVec2 windowPos = ImGui::GetWindowPos();
-    const ImVec2 windowStart = ImVec2(windowPos.x, windowPos.y + titlebarVerticalOffset);
-    const ImVec2 windowSize  = ImGui::GetWindowSize();
-    const ImVec2 windowEnd   = ImVec2(windowStart.x + windowSize.x, windowStart.y + windowSize.y);
+    element topBarBackground(element::anchor_preset::stretch_full);
+    topBarBackground.set_element_background_color(gluten::theme::titlebar);
+    topBarBackground.render(titleBarRect);
 
-    const ImRect windowParent{windowStart, ImVec2(windowEnd.x, windowStart.y + titlebarHeight + titlebarVerticalOffset)};
-    
-    //gluten::element::s_debug = true;
-
-    gluten::layout topBarLayout(gluten::layout::layout_type::left_to_right);
-    topBarLayout.get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::stretch_full);
-    topBarLayout.set_element_background_color(gluten::theme::titlebar);
-    topBarLayout.render(windowParent);  // render background
-
-    gluten::layout logoLayout(gluten::layout::layout_type::left_to_right);
-    logoLayout.get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::stretch_full);
-    topBarLayout.render_layout_element_pixels_horizontal(&logoLayout, 64.0f);
-    logoLayout.render_layout_element_percent(m_windowIcon.get(), 1.0f, 1.0f);
+    m_windowIcon->render(logoRect);
 
     {
         gluten::imgui::scoped_font titleFont(get_app()->get_font(fonts::title));
-        gluten::text titleText(std::string(get_app()->get_application_display_title()));
-        titleText.set_element_alignment(ImVec2(0.5f, 0.5f));
-        titleText.get_element_anchor().set_achor_from_preset(element::anchor_preset::center_middle);
-        titleText.render(windowParent);
+        gluten::text titleText(std::string(get_app()->get_application_display_title()), ImVec2(0.5f, 0.5f), element::anchor_preset::center_middle);
+        titleText.render(titleBarRect);
     }
-
-    const float titleButtonsAreaWidth = 256.0f;
-    const float titleBarStartX        = windowStart.x;
-    const float titleBarButtonStartX  = windowEnd.x - titleButtonsAreaWidth;
-
-    const ImRect titleBarAreaLeftOfButtons = ImRect(windowParent.Min, ImVec2(titleBarButtonStartX, windowParent.Max.y));
-    const ImRect titleBarAreaButtons       = ImRect(ImVec2(titleBarButtonStartX, windowStart.y), windowParent.Max);
 
     gluten::button dragZoneButton("##titleBarDragZone", true);
     dragZoneButton.get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::stretch_full);
-    dragZoneButton.render(titleBarAreaLeftOfButtons);
+    dragZoneButton.render(dragZoneRect);
 
     m_hoveringTitlebar = ImGui::IsItemHovered();
-
-    ImRect menuBarRect(ImVec2(windowParent.Min.x + 64, windowParent.Min.y),
-                       ImVec2(windowParent.Min.x + 400, windowParent.Max.y));
 
     ImGui::SetCursorScreenPos(menuBarRect.Min);
 
@@ -194,7 +216,7 @@ void root_widget::draw_titlebar()
 
     gluten::layout titleButtonsLayout(layout::layout_type::right_to_left);
     titleButtonsLayout.get_element_anchor().set_achor_from_preset(element::anchor_preset::stretch_full);
-    titleButtonsLayout.reset_layout(titleBarAreaButtons);
+    titleButtonsLayout.reset_layout(buttonsRect);
 
     if (titleButtonsLayout.render_layout_element_percent_horizontal(m_windowCloseIcon.get(), 0.33f))
     {
@@ -221,19 +243,7 @@ void root_widget::draw_titlebar()
         get_app()->get_subsystem_by_class<gluten::renderer_subsystem>()->toggle_minimised();
     }
 
-    ImGui::SetCursorScreenPos(ImVec2(windowParent.Min.x, windowParent.Max.y));
-
-    //if (isMaximized)
-    //{
-    //    const float MouseY = ImGui::GetMousePos().y;
-    //    const float DrawMouseY = ImGui::GetCursorScreenPos().y;
-    //    const float windowMousePosY = MouseY - DrawMouseY;
-
-    //    if (windowMousePosY >= 0.0f && windowMousePosY <= 5.0f)
-    //    {
-    //        m_hoveringTitlebar = true;  // Account for the top-most pixels which don't register
-    //    }
-    //}
+    ImGui::SetCursorScreenPos(titleBarRect.GetBL());
 }
 
 void root_widget::render_menu()
@@ -247,13 +257,17 @@ void root_widget::render_menu()
     {
         ImGui::Separator();
 
-        if (ImGui::BeginMenu("ImGui"))
+        if (ImGui::BeginMenu("UI"))
         {
             ImGui::MenuItem("ImGui About...", NULL, &showAboutWindow);
             ImGui::MenuItem("ImGui User Guide...", NULL, &showUserGuide);
             ImGui::MenuItem("ImGui Metrics...", NULL, &showMetricsWindow);
             ImGui::MenuItem("ImGui Debug...", NULL, &showDebugLogWindow);
             ImGui::MenuItem("ImGui Stack Tool...", NULL, &showStackTool);
+
+            ImGui::Separator();
+
+            ImGui::MenuItem("Debug Item Rects", NULL, &element::s_debug);
 
             ImGui::EndMenu();
         }

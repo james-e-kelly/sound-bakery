@@ -9,6 +9,7 @@ namespace gluten
     public:
         text() = default;
         text(const std::string& displayText);
+        text(const std::string& displayText, const ImVec2& alignment, const anchor_preset& anchorPreset);
 
         void set_text(const std::string& displayText);
 

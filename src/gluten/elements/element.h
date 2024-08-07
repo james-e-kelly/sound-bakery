@@ -163,6 +163,9 @@ namespace gluten
             void set_achor_from_preset(const anchor_preset& preset);
 		};
 
+        element() = default;
+        element(const anchor_preset& anchorPreset);
+
 		void set_element_background_color(ImU32 color);
         void set_element_hover_color(ImU32 color);
 
@@ -173,6 +176,7 @@ namespace gluten
          * @brief If the element has rendered before, return the box
          */
         ImRect get_element_rect() const;
+        ImRect get_element_rect_local() const; //< If the element has rendered before, return the box local to the current window
 
 		bool render(const ImRect& parent);
 
@@ -182,7 +186,7 @@ namespace gluten
 	protected:
         void set_element_desired_size(const ImVec2& desiredSize) { m_desiredSize = desiredSize; }
 
-		virtual bool render_element(const ImRect& parent) = 0;
+		virtual bool render_element(const ImRect& parent) { return false; }
 
         static ImVec2 get_anchor_start_position(const ImVec2& containerPosition,
                                             const ImVec2& containerSize,
@@ -207,7 +211,7 @@ namespace gluten
         ImVec2 m_minSize;
         ImVec2 m_maxSize = ImVec2(std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
         ImVec2 m_desiredSize;
-        ImVec2 m_alignment;
+        ImVec2 m_alignment;     //< defines the pivot point of the element in each axis from 0-1
         
         std::optional<ImU32> m_backgroundColor;
         std::optional<ImU32> m_hoverColor;

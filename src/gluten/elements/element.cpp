@@ -4,6 +4,7 @@
 
 static ImVec2 operator+(const ImVec2& lhs, const ImVec2& rhs) { return ImVec2(lhs.x + rhs.x, lhs.y + rhs.y); }
 static ImVec2 operator-(const ImVec2& lhs, const ImVec2& rhs) { return ImVec2(lhs.x - rhs.x, lhs.y - rhs.y); }
+static ImVec2 operator-(const ImVec2& lhs) { return ImVec2(-lhs.x, -lhs.y); }
 
 static ImVec2 operator+=(const ImVec2& lhs, const ImVec2& rhs) { return ImVec2(lhs.x + rhs.x, lhs.y + rhs.y); }
 
@@ -99,6 +100,8 @@ void gluten::element::anchor_info::set_achor_from_preset(const anchor_preset& pr
     }
 }
 
+gluten::element::element(const anchor_preset& anchorPreset) { m_anchor.set_achor_from_preset(anchorPreset); }
+
 void gluten::element::set_element_background_color(ImU32 color) { m_backgroundColor = color; }
 
 void gluten::element::set_element_hover_color(ImU32 color) { m_hoverColor = color; }
@@ -110,6 +113,13 @@ ImVec2 gluten::element::get_element_desired_size() const { return m_desiredSize;
 ImRect gluten::element::get_element_rect() const
 {
     return m_currentRect.has_value() ? m_currentRect.value() : ImRect{ImGui::GetWindowPos(), ImVec2()};
+}
+
+ImRect gluten::element::get_element_rect_local() const
+{
+    ImRect elementRect = get_element_rect();
+    elementRect.Translate(-ImGui::GetWindowPos());
+    return elementRect;
 }
 
 bool gluten::element::render(const ImRect& parent)

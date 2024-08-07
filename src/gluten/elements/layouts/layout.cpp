@@ -7,7 +7,16 @@ static ImVec2 operator*(const ImVec2& lhs, const float& rhs) { return ImVec2(lhs
 
 gluten::layout::layout(const layout_type& layoutType) : m_layoutType(layoutType) {}
 
+gluten::layout::layout(const layout_type& layoutType, const anchor_preset& anchorPreset) : element(anchorPreset) , m_layoutType(layoutType) { }
+
 void gluten::layout::set_layout_type(const layout_type& type) { m_layoutType = type; }
+
+bool gluten::layout::render_layout_element_full(element* element)
+{
+    const ImRect elementBox = get_element_rect();
+
+    return render_layout_element_internal(elementBox, element, elementBox.GetSize().x, elementBox.GetSize().y);
+}
 
 bool gluten::layout::render_layout_element_pixels(element* element, float horizontalPixels, float verticalPixels) 
 {
@@ -122,6 +131,12 @@ void gluten::layout::reset_layout(const ImRect& parent)
     m_currentRect           = elementBox;
     setup_layout_begin(elementBox);
     m_firstLayout = true;
+}
+
+ImVec2 gluten::layout::get_current_layout_pos_local() const
+{
+    ImVec2 layoutPos = get_current_layout_pos();
+    return layoutPos - ImGui::GetWindowPos();
 }
 
 void gluten::layout::setup_layout_begin(const ImRect& thisBox)

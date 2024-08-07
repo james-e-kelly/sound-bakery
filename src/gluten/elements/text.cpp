@@ -5,6 +5,14 @@ gluten::text::text(const std::string& displayText) : m_displayText(displayText)
     set_element_desired_size(ImGui::CalcTextSize(displayText.c_str()));
 }
 
+gluten::text::text(const std::string& displayText, const ImVec2& alignment, const anchor_preset& anchorPreset)
+    : element(anchorPreset), 
+    m_displayText(displayText)
+{
+    set_element_desired_size(ImGui::CalcTextSize(displayText.c_str()));
+    m_alignment = alignment;
+}
+
 void gluten::text::set_text(const std::string& displayText) 
 { 
     m_displayText = displayText; 
