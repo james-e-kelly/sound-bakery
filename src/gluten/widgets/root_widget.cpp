@@ -37,12 +37,20 @@ namespace root_widget_utils
     constexpr float menuBarPaddingWithLogo   = 6.0f;
     constexpr float menuBarStartWidth = titleLogoWidth + 6.0f;
     constexpr float titleBarButtonsAreaWidth = 256.0f;
+    constexpr float maximisedYOffset         = 6.0f;
+    constexpr float menuBarYOffset           = maximisedYOffset / 2.0f;
 
     static ImRect get_titlebar_rect(const ImGuiWindow* const window)
     {
         ImRect windowRect = window->Rect();
         windowRect.Add(window->Pos);
         windowRect.Max.y = windowRect.Min.y + root_widget_utils::titleBarHeight;
+
+        if (gluten::app::get()->is_maximized())
+        {
+            windowRect.TranslateY(maximisedYOffset);
+        }
+
         return windowRect;
     }
 
@@ -57,6 +65,7 @@ namespace root_widget_utils
     { 
         ImRect menuBarRect = titlebarRect;
         menuBarRect.Min.x += titleLogoWidth + menuBarPaddingWithLogo;
+        menuBarRect.TranslateY(menuBarYOffset);
         return menuBarRect;
     }
 
