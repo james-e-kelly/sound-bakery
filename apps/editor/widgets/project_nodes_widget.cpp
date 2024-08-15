@@ -127,8 +127,7 @@ void project_nodes_widget::render_single_node(rttr::type type,
 
             static ImGuiID previousFocusID = 0;
 
-            const bool opened = ImGui::TreeNodeEx(
-                fmt::format("##{}", object->get_database_name()).c_str(), flags);
+            const bool opened = ImGui::TreeNodeEx(fmt::format("##{}", object->get_database_name()).c_str(), flags);
 
             if (std::string_view payloadString =
                     sbk::util::type_helper::getPayloadFromType(object->getType());

@@ -2,6 +2,7 @@
 
 #include "gluten/subsystems/widget_subsystem.h"
 #include "gluten/widgets/root_widget.h"
+#include "gluten/theme/theme.h"
 
 #include "app/app.h"
 #include "imgui.h"
@@ -203,12 +204,12 @@ int renderer_subsystem::init_imgui()
     style->FramePadding  = paddingVec;
 
     style->WindowRounding    = rounding;
-    style->ChildRounding     = rounding;
+    style->ChildRounding     = 0.0f;
     style->PopupRounding     = rounding;
     style->FrameRounding     = rounding;
     style->ScrollbarRounding = rounding;
     style->GrabRounding      = rounding;
-    style->TabRounding       = largestRounding;
+    style->TabRounding       = rounding;
 
     style->SeparatorTextPadding;
     style->DisplayWindowPadding = paddingVec;
@@ -696,10 +697,10 @@ int renderer_subsystem::init_imgui()
     style->Colors[ImGuiCol_TableHeaderBg]  = layer03;
     style->Colors[ImGuiCol_TextSelectedBg] = layer03;
 
-    style->Colors[ImGuiCol_TitleBgActive]    = background;
-    style->Colors[ImGuiCol_TitleBgCollapsed] = background;
-    style->Colors[ImGuiCol_FrameBgHovered]   = backgroundHover;
-    style->Colors[ImGuiCol_FrameBgActive]    = backgroundActive;
+    style->Colors[ImGuiCol_TitleBgActive]    = ImColor( gluten::theme::groupHeader);
+    style->Colors[ImGuiCol_TitleBgCollapsed] = ImColor(gluten::theme::groupHeader);
+    style->Colors[ImGuiCol_FrameBgHovered]   = ImColor(gluten::theme::groupHeader);
+    style->Colors[ImGuiCol_FrameBgActive]    = ImColor(gluten::theme::groupHeader);
 
     style->Colors[ImGuiCol_NavWindowingDimBg] = background;
     style->Colors[ImGuiCol_ModalWindowDimBg]  = background;
@@ -740,6 +741,8 @@ int renderer_subsystem::init_imgui()
     style->Colors[ImGuiCol_TabHovered] = layerHover01;
 
     style->Colors[ImGuiCol_TabActive] = layer02;
+    style->Colors[ImGuiCol_TabSelectedOverline] = layerHover02;
+
 
     style->Colors[ImGuiCol_TabUnfocused]       = style->Colors[ImGuiCol_Tab];
     style->Colors[ImGuiCol_TabUnfocusedActive] = style->Colors[ImGuiCol_TabActive];

@@ -1,6 +1,7 @@
 #include "project_explorer_widget.h"
 
 #include "app/app.h"
+#include "gluten/utils/imgui_util_structures.h"
 #include "managers/project_manager.h"
 #include "widgets/file_browser_widget.h"
 #include "widgets/project_nodes_widget.h"
@@ -16,11 +17,12 @@ void project_explorer_widget::start()
 
 void project_explorer_widget::render()
 {
+    gluten::imgui::scoped_font audioFont(get_app()->get_font(gluten::fonts::regular_audio_icons));
+
     if (ImGui::Begin("Project Explorer"))
     {
         if (ImGui::BeginTabBar("Project Explorer Tabs", ImGuiTabBarFlags_None))
         {
-
             if (ImGui::BeginTabItem("Audio"))
             {
                 if (ImGui::IsItemFocused())

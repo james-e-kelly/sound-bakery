@@ -32,13 +32,13 @@ static const char* rootWindowName = "RootDockSpace";
 
 namespace root_widget_utils
 {
-    constexpr float titleBarHeight = 48.0f;
+    constexpr float titleBarHeight = 64.0f;
     constexpr float titleLogoWidth = 64.0f;
     constexpr float menuBarPaddingWithLogo   = 6.0f;
     constexpr float menuBarStartWidth = titleLogoWidth + 6.0f;
     constexpr float titleBarButtonsAreaWidth = 256.0f;
     constexpr float maximisedYOffset         = 6.0f;
-    constexpr float menuBarYOffset           = maximisedYOffset / 2.0f;
+    constexpr float menuBarYOffset           = titleBarHeight / 8.0f;
 
     static ImRect get_titlebar_rect(const ImGuiWindow* const window)
     {
@@ -81,6 +81,15 @@ namespace root_widget_utils
         ImRect buttonRect = titlebarRect;
         buttonRect.Min.x = buttonRect.Max.x - titleBarButtonsAreaWidth;
         return buttonRect;
+    }
+
+    static ImRect get_side_bar_rect(const ImRect& titlebarRect)
+    {
+        ImRect sideBarRect = titlebarRect;
+        sideBarRect.Max.x  = sideBarRect.Min.x + titleBarHeight + menuBarPaddingWithLogo;
+        sideBarRect.Min.y  = titlebarRect.Max.y;
+        sideBarRect.Max.y  = titlebarRect.Max.y + ImGui::GetWindowHeight();
+        return sideBarRect;
     }
 }
 
@@ -261,6 +270,7 @@ void root_widget::render_menu()
     static bool showDebugLogWindow = false;
     static bool showStackTool = false;
     static bool showAboutWindow    = false;
+    static bool showStyleEditor    = false;
       
     if (ImGui::BeginMenu("Help"))
     {
@@ -273,6 +283,7 @@ void root_widget::render_menu()
             ImGui::MenuItem("ImGui Metrics...", NULL, &showMetricsWindow);
             ImGui::MenuItem("ImGui Debug...", NULL, &showDebugLogWindow);
             ImGui::MenuItem("ImGui Stack Tool...", NULL, &showStackTool);
+            ImGui::MenuItem("ImGui Style Editor...", NULL, &showStyleEditor);
 
             ImGui::Separator();
 
@@ -291,5 +302,12 @@ void root_widget::render_menu()
         ImGui::ShowIDStackToolWindow(&showStackTool);
     if (showAboutWindow)
         ImGui::ShowAboutWindow(&showAboutWindow);
-
+    if (showStyleEditor)
+    {
+        if (ImGui::Begin("Style Editor"))
+        {
+            ImGui::ShowStyleEditor();
+        }
+        ImGui::End();
+    }
 }
