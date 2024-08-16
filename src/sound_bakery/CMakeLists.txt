@@ -153,42 +153,6 @@ set(BUILD_INSTALLER OFF CACHE BOOL "" FORCE)
 set(BUILD_PACKAGE OFF CACHE BOOL "" FORCE)
 set(CUSTOM_DOXYGEN_STYLE OFF CACHE BOOL "" FORCE)
 
-FetchContent_Declare(
-  rttr
-  GIT_REPOSITORY https://github.com/KarateKidzz/rttr.git
-  GIT_TAG        master
-  GIT_SHALLOW    TRUE
-  GIT_PROGRESS TRUE
-  OVERRIDE_FIND_PACKAGE
-)
-
-FetchContent_Declare(
-  yaml
-  GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
-  GIT_TAG        0.8.0
-  GIT_SHALLOW    TRUE
-  GIT_PROGRESS TRUE
-  OVERRIDE_FIND_PACKAGE
-)
-
-FetchContent_Declare(
-  concurrencpp
-  GIT_REPOSITORY https://github.com/David-Haim/concurrencpp.git
-  GIT_TAG        v.0.1.7
-  GIT_SHALLOW    TRUE
-  GIT_PROGRESS TRUE
-  OVERRIDE_FIND_PACKAGE
-)
-
-FetchContent_Declare(
-  spdlog
-  GIT_REPOSITORY https://github.com/gabime/spdlog.git
-  GIT_TAG        v1.14.1
-  GIT_SHALLOW    TRUE
-  GIT_PROGRESS TRUE
-  OVERRIDE_FIND_PACKAGE
-)
-
 message(STATUS "Fetching rttr...")
 FetchContent_MakeAvailable(rttr)
 

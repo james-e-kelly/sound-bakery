@@ -1,15 +1,6 @@
 include(FetchContent)
 
 message(STATUS "Fetching doxygen awesome")
-
-FetchContent_Declare(
-  doxygenawesome
-  GIT_REPOSITORY https://github.com/jothepro/doxygen-awesome-css.git
-  GIT_TAG        main
-  GIT_SHALLOW    TRUE
-  GIT_PROGRESS TRUE
-  OVERRIDE_FIND_PACKAGE
-)
 FetchContent_MakeAvailable(doxygenawesome)
 
 set(DOXYGEN_IN ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in)

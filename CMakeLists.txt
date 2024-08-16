@@ -13,6 +13,10 @@ endif()
 
 message(STATUS "Install path is ${CMAKE_INSTALL_PREFIX}")
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
+include(external_dependencies)
+
 set(SOUND_BAKERY_MAIN_PROJECT OFF)
 if(CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
   set(SOUND_BAKERY_MAIN_PROJECT ON)
@@ -83,20 +87,6 @@ if(SOUND_BAKERY_MAIN_PROJECT)
     message(STATUS "Skipping docs")
   endif()
 endif()
-
-include(FetchContent)
-
-FetchContent_Declare(
-  cmrc
-  GIT_REPOSITORY https://github.com/vector-of-bool/cmrc.git
-  GIT_TAG        2.0.1
-  GIT_SHALLOW    TRUE
-  GIT_PROGRESS TRUE
-  OVERRIDE_FIND_PACKAGE
-)
-
-message(STATUS "Fetching CMRC for resource embedding")
-FetchContent_MakeAvailable(cmrc)
 
 set(CMAKE_FOLDER src)
 add_subdirectory(src)

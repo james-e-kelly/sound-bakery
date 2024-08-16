@@ -92,53 +92,17 @@ set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
 
-FetchContent_Declare(
-  glfw
-  GIT_REPOSITORY https://github.com/TheCherno/glfw.git
-  GIT_TAG        master
-  GIT_SHALLOW    TRUE
-  OVERRIDE_FIND_PACKAGE
-)
-
-FetchContent_Declare(
-  imgui
-  GIT_REPOSITORY https://github.com/thedmd/imgui.git
-  GIT_TAG        feature/docking-layout-external
-  GIT_SHALLOW    TRUE
-  OVERRIDE_FIND_PACKAGE
-)
-
-FetchContent_Declare(
-  nfd
-  GIT_REPOSITORY https://github.com/mlabbe/nativefiledialog.git
-  GIT_TAG        67345b80ebb429ecc2aeda94c478b3bcc5f7888e
-  GIT_SHALLOW    TRUE
-  OVERRIDE_FIND_PACKAGE
-)
-
-FetchContent_Declare(
-  fonts
-  GIT_REPOSITORY https://github.com/juliettef/IconFontCppHeaders.git
-  GIT_TAG        main
-  GIT_SHALLOW    TRUE
-  OVERRIDE_FIND_PACKAGE
-)
-
-# Need fmt library for better cross compiler support
-FetchContent_Declare(
-  fmt
-  GIT_REPOSITORY https://github.com/fmtlib/fmt.git
-  GIT_TAG        10.2.1
-  GIT_SHALLOW    TRUE
-  OVERRIDE_FIND_PACKAGE
-  EXCLUDE_FROM_ALL
-)
+message(STATUS "Fetching CMRC for resource embedding")
+FetchContent_MakeAvailable(cmrc)
 
 message(STATUS "Fetching glfw")
 FetchContent_MakeAvailable(glfw)
 
 message(STATUS "Fetching imgui")
 FetchContent_MakeAvailable(imgui)
+
+message(STATUS "Fetching implot")
+FetchContent_MakeAvailable(implot)
 
 message(STATUS "Fetching native file dialog")
 FetchContent_MakeAvailable(nfd)
@@ -198,15 +162,20 @@ add_library(imgui STATIC
   ${imgui_SOURCE_DIR}/imgui_draw.cpp
   ${imgui_SOURCE_DIR}/imgui_tables.cpp
   ${imgui_SOURCE_DIR}/imgui_widgets.cpp
-  ${imgui_SOURCE_DIR}/imgui_stacklayout.cpp
   ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
   ${imgui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
+  ${implot_SOURCE_DIR}/implot.h
+  ${implot_SOURCE_DIR}/implot_internal.h
+  ${implot_SOURCE_DIR}/implot.cpp
+  ${implot_SOURCE_DIR}/implot_items.cpp
+  ${implot_SOURCE_DIR}/implot_demo.cpp
 )
 
 target_include_directories(imgui
   PUBLIC
     ${imgui_SOURCE_DIR}
     ${imgui_SOURCE_DIR}/backends
+    ${implot_SOURCE_DIR}
 )
 
 target_link_libraries(imgui

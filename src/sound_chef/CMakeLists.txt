@@ -43,15 +43,6 @@ target_include_directories(sound_chef
 set(CMAKE_FOLDER extern)
 
 message(STATUS "Fetching miniaudio")
-
-FetchContent_Declare(
-  miniaudio
-  GIT_REPOSITORY https://github.com/mackron/miniaudio.git
-  GIT_TAG        0.11.21
-  GIT_SHALLOW    TRUE
-  GIT_PROGRESS TRUE
-  OVERRIDE_FIND_PACKAGE
-)
 FetchContent_MakeAvailable(miniaudio)
 
 add_executable(audioconverter ${miniaudio_SOURCE_DIR}/tools/audioconverter/audioconverter.c)
@@ -65,55 +56,18 @@ endif()
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 
 message(STATUS "Fetching ogg")
-
-FetchContent_Declare(
-  ogg
-  GIT_REPOSITORY https://github.com/xiph/ogg.git
-  GIT_TAG        v1.3.5
-  GIT_SHALLOW    TRUE
-  GIT_PROGRESS TRUE
-  OVERRIDE_FIND_PACKAGE
-)
 FetchContent_MakeAvailable(ogg)
 
 message(STATUS "Fetching vorbis")
-
-FetchContent_Declare(
-  vorbis
-  GIT_REPOSITORY https://github.com/xiph/vorbis.git
-  GIT_TAG        v1.3.7
-  GIT_SHALLOW    TRUE
-  GIT_PROGRESS TRUE
-  OVERRIDE_FIND_PACKAGE
-)
 FetchContent_MakeAvailable(vorbis)
 
 message(STATUS "Fetching opus")
-
-FetchContent_Declare(
-  opus
-  GIT_REPOSITORY https://github.com/xiph/opus.git
-  GIT_TAG        v1.5.2
-  GIT_SHALLOW    TRUE
-  GIT_PROGRESS TRUE
-  OVERRIDE_FIND_PACKAGE
-)
 FetchContent_MakeAvailable(opus)
 
 message(STATUS "Fetching opusfile")
-
 set(OP_DISABLE_EXAMPLES ON CACHE BOOL "" FORCE)
 set(OP_DISABLE_DOCS ON CACHE BOOL "" FORCE)
 set(OP_DISABLE_HTTP ON CACHE BOOL "" FORCE)
-
-FetchContent_Declare(
-  opusfile
-  GIT_REPOSITORY https://github.com/KarateKidzz/opusfile.git
-  GIT_TAG        master
-  GIT_SHALLOW    TRUE
-  GIT_PROGRESS TRUE
-  OVERRIDE_FIND_PACKAGE
-)
 FetchContent_MakeAvailable(opusfile)
 
 target_include_directories(sound_chef

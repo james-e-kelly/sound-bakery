@@ -14,7 +14,7 @@
 #include "app/app.h"
 #include "imgui.h"
 #include "imgui_internal.h"
-#include "imgui_stacklayout.h"
+#include "implot.h"
 
 #include <cmrc/cmrc.hpp>
 
@@ -271,6 +271,8 @@ void root_widget::render_menu()
     static bool showStackTool = false;
     static bool showAboutWindow    = false;
     static bool showStyleEditor    = false;
+    static bool showDemo = false;
+    static bool showPlotDemo = false;
       
     if (ImGui::BeginMenu("Help"))
     {
@@ -284,6 +286,8 @@ void root_widget::render_menu()
             ImGui::MenuItem("ImGui Debug...", NULL, &showDebugLogWindow);
             ImGui::MenuItem("ImGui Stack Tool...", NULL, &showStackTool);
             ImGui::MenuItem("ImGui Style Editor...", NULL, &showStyleEditor);
+            ImGui::MenuItem("ImGui Demo...", NULL, &showDemo);
+            ImGui::MenuItem("ImPlot Demo...", NULL, &showPlotDemo);
 
             ImGui::Separator();
 
@@ -310,4 +314,8 @@ void root_widget::render_menu()
         }
         ImGui::End();
     }
+    if (showDemo)
+        ImGui::ShowDemoWindow(&showDemo);
+    if (showPlotDemo)
+        ImPlot::ShowDemoWindow(&showPlotDemo);
 }

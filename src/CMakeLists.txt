@@ -4,27 +4,9 @@ option(SOUND_BAKERY_TIDY "Run clang-tidy" ON)
 set(CMAKE_FOLDER extern)
 
 message(STATUS "Fetching CppDelegates")
-
-FetchContent_Declare(
-  cppdelegates
-  GIT_REPOSITORY https://github.com/KarateKidzz/CppDelegates.git
-  GIT_TAG        master
-  GIT_SHALLOW    TRUE
-  GIT_PROGRESS TRUE
-  OVERRIDE_FIND_PACKAGE
-)
 FetchContent_MakeAvailable(cppdelegates)
 
 message(STATUS "Fetching stb")
-
-FetchContent_Declare(
-  stb
-  GIT_REPOSITORY https://github.com/nothings/stb.git
-  GIT_TAG        master
-  GIT_SHALLOW    TRUE
-  GIT_PROGRESS TRUE
-  OVERRIDE_FIND_PACKAGE
-)
 FetchContent_MakeAvailable(stb)
 
 add_library(delegates STATIC 
