@@ -44,6 +44,8 @@ set(GLUTEN_HEADERS
   subsystems/renderer_subsystem.h
   subsystems/widget_subsystem.h
   theme/theme.h
+  theme/carbon_colors.h
+  theme/carbon_theme_g100.h
   utils/imgui_util_functions.h
   utils/imgui_util_structures.h
   widgets/widget.h
