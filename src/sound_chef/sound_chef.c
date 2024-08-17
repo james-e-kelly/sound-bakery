@@ -295,6 +295,19 @@ sc_result sc_system_init(sc_system* system)
         if (result == MA_SUCCESS)
         {
             ma_log_post(&system->log, MA_LOG_LEVEL_INFO, "Initialized Sound Chef");
+
+            result = sc_system_create_node_group(system, &system->masterNodeGroup);
+            result = sc_node_group_set_parent_endpoint(system->masterNodeGroup);
+
+            const sc_dsp_config meterConfig = sc_dsp_config_init(SC_DSP_TYPE_METER);
+            sc_dsp* meterDSP                = NULL;
+            result                          = sc_system_create_dsp(system, &meterConfig, &meterDSP);
+            result = sc_node_group_add_dsp(system->masterNodeGroup, meterDSP, SC_DSP_INDEX_HEAD);
+
+            if (result == MA_SUCCESS)
+            {
+                ma_log_post(&system->log, MA_LOG_LEVEL_INFO, "Initialized Master Node Group");
+            }
         }
     }
 
@@ -432,12 +445,7 @@ sc_result sc_system_create_node_group(sc_system* system, sc_node_group** nodeGro
 
     sc_result result = MA_ERROR;
 
-    /**
-     * @todo Check for memory allocation failure
-     */
-    *nodeGroup = (sc_node_group*)ma_malloc(sizeof(sc_node_group), NULL);
-    SC_CHECK_MEM(*nodeGroup);
-    MA_ZERO_OBJECT(*nodeGroup);
+    SC_CREATE(*nodeGroup, sc_node_group);
 
     // Always create a fader/sound_group by default
     sc_dsp_config faderConfig = sc_dsp_config_init(SC_DSP_TYPE_FADER);
@@ -611,7 +619,6 @@ sc_result sc_node_group_add_dsp(sc_node_group* nodeGroup, sc_dsp* dsp, sc_dsp_in
                 dsp->prev             = nodeGroup->head;
 
                 nodeGroup->head = dsp;
-                ;
             }
 
             break;
@@ -641,6 +648,42 @@ sc_result sc_node_group_set_parent(sc_node_group* nodeGroup, sc_node_group* pare
     SC_CHECK_ARG(parent != NULL);
 
     return ma_node_attach_output_bus(nodeGroup->head->state->userData, 0, parent->tail->state->userData, 0);
+}
+
+sc_result sc_node_group_set_parent_endpoint(sc_node_group* nodeGroup) 
+{ 
+    SC_CHECK_ARG(nodeGroup != NULL); 
+
+    sc_system* const system = (sc_system*)nodeGroup->fader->state->system;
+    SC_CHECK(system != NULL, MA_BAD_ADDRESS);
+
+    ma_node* const endPoint = ma_node_graph_get_endpoint((ma_node_graph*)system);
+    SC_CHECK(endPoint != NULL, MA_BAD_ADDRESS);
+
+    return ma_node_attach_output_bus(nodeGroup->head->state->userData, 0, endPoint, 0);
+}
+
+sc_result sc_node_group_get_dsp(sc_node_group* nodeGroup, sc_dsp_type type, sc_dsp** dsp)
+{
+    SC_CHECK_ARG(nodeGroup != NULL);
+    SC_CHECK_ARG(dsp != NULL);
+    SC_CHECK(nodeGroup->tail != NULL, MA_INVALID_DATA);
+
+    *dsp = NULL;
+
+    sc_dsp* currentDsp = nodeGroup->tail;
+
+    do
+    {
+        if (currentDsp->type == type)
+        {
+            *dsp = currentDsp;
+            break;
+        }
+        currentDsp = currentDsp->next;
+    } while (currentDsp != NULL);
+
+    return MA_SUCCESS;
 }
 
 sc_result sc_node_group_release(sc_node_group* nodeGroup)
@@ -892,10 +935,14 @@ static void sc_meter_node_process_pcm_frames(
 
 static ma_node_vtable sc_meter_node_vtable = {sc_meter_node_process_pcm_frames, NULL, 1, 1, MA_NODE_FLAG_PASSTHROUGH};
 
+static ma_uint32 channels = 2;
+
 static sc_result sc_meter_node_init(ma_node_graph* nodeGraph, const ma_allocation_callbacks* allocCallbacks, sc_meter_node* node)
 {
     ma_node_config baseNodeConfig = ma_node_config_init();
     baseNodeConfig.vtable         = &sc_meter_node_vtable;
+    baseNodeConfig.pInputChannels = &channels;
+    baseNodeConfig.pOutputChannels = &channels;
 
     return ma_node_init(nodeGraph, &baseNodeConfig, allocCallbacks, node);
 }
@@ -920,6 +967,8 @@ static sc_result sc_dsp_meter_release(sc_dsp_state* state)
     sc_meter_node_uninit((sc_meter_node*)state->userData, NULL);
     return MA_SUCCESS;
 }
+
+static sc_dsp_vtable s_meterVtable = { sc_dsp_meter_create, sc_dsp_meter_release, NULL, NULL, NULL, 0};
 
 sc_result sc_dsp_get_metering_info(sc_dsp* dsp, ma_uint32 channelIndex, sc_dsp_meter meterType, float* value)
 {
@@ -974,6 +1023,8 @@ sc_dsp_config sc_dsp_config_init(sc_dsp_type type)
             break;
         case SC_DSP_TYPE_DELAY:
             break;
+        case SC_DSP_TYPE_METER:
+            result.vtable = &s_meterVtable;
     }
 
     return result;

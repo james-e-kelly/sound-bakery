@@ -131,6 +131,9 @@ extern "C"
     sc_result SC_API sc_node_group_get_volume(sc_node_group* nodeGroup, float* volume);
 
     sc_result SC_API sc_node_group_set_parent(sc_node_group* nodeGroup, sc_node_group* parent);
+    sc_result SC_API sc_node_group_set_parent_endpoint(sc_node_group* nodeGroup);
+
+    sc_result SC_API sc_node_group_get_dsp(sc_node_group* nodeGroup, sc_dsp_type type, sc_dsp** dsp);
 
     sc_result SC_API sc_node_group_add_dsp(sc_node_group* nodeGroup, sc_dsp* dsp, sc_dsp_index index);
     sc_result SC_API sc_node_group_remove_dsp(sc_node_group* nodeGroup, sc_dsp* dsp);

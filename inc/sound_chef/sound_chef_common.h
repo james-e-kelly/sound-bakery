@@ -216,19 +216,19 @@ struct sc_node_group
  * to the user's audio device and everything expected from miniaudio's
  * high-level API.
  *
- * sc_system also holds and manages custom sound Chef types like Node
+ * sc_system also holds and manages custom Sound Chef types like Node
  * Groups.
  *
- * sound Chef allows for multiple system objects but it is likely unneeded
+ * Sound Chef allows for multiple system objects but it is likely unneeded
  * as future versions will support multiple outputs.
  */
 struct sc_system
 {
     ma_engine engine;
-
     ma_resource_manager resourceManager; //< We need a custom resource manager for custom decoders
-
     ma_log log;
+
+    sc_node_group* masterNodeGroup;
 };
 
 #ifdef __cplusplus
