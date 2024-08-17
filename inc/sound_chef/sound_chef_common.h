@@ -63,6 +63,15 @@
 
 #define SC_ZERO_OBJECT(p) memset((p), 0, sizeof(*(p)))
 
+#define SC_COUNTOF(x)            (sizeof(x) / sizeof(x[0]))
+#define SC_MAX(x, y)             (((x) > (y)) ? (x) : (y))
+#define SC_MIN(x, y)             (((x) < (y)) ? (x) : (y))
+#define SC_ABS(x)                (((x) > 0) ? (x) : -(x))
+#define SC_CLAMP(x, lo, hi)      (ma_max(lo, ma_min(x, hi)))
+#define SC_OFFSET_PTR(p, offset) (((ma_uint8*)(p)) + (offset))
+#define SC_ALIGN(x, a)           (((x) + ((a)-1)) & ~((a)-1))
+#define SC_ALIGN_64(x)           ma_align(x, 8)
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -105,7 +114,8 @@ typedef enum sc_dsp_type
     SC_DSP_TYPE_FADER,
     SC_DSP_TYPE_LOWPASS,
     SC_DSP_TYPE_HIGHPASS,
-    SC_DSP_TYPE_DELAY
+    SC_DSP_TYPE_DELAY,
+    SC_DSP_TYPE_METER
 } sc_dsp_type;
 
 typedef enum sc_dsp_index
@@ -149,8 +159,7 @@ struct sc_dsp_vtable
 struct sc_dsp_state
 {
     void* instance;  //< points to the current sc_dsp object
-    void* userData;  //< points to uer created object, likely some type of
-                     // ma_node
+    void* userData;  //< points to the user created object, likely some type of ma_node
     void* system;    //< points to the owning sc_system object
 };
 

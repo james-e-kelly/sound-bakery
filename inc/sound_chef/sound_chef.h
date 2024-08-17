@@ -5,10 +5,11 @@
  * @file
  * @brief A wrapper library for miniaudio that emulates functionality of FMOD.
  *
- * The low level engine powering sound Bakery.
+ * The low level engine powering Sound Bakery.
  */
 
 #include "sound_chef_common.h"
+#include "sound_chef_dsp.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -120,6 +121,10 @@ extern "C"
 
     sc_result SC_API sc_dsp_get_parameter_float(sc_dsp* dsp, int index, float* value);
     sc_result SC_API sc_dsp_set_parameter_float(sc_dsp* dsp, int index, float value);
+    sc_result SC_API sc_dsp_get_metering_info(sc_dsp* dsp,
+                                              ma_uint32 channelIndex,
+                                              sc_dsp_meter meterType,
+                                              float* value);
     sc_result SC_API sc_dsp_release(sc_dsp* dsp);
 
     sc_result SC_API sc_node_group_set_volume(sc_node_group* nodeGroup, float volume);
@@ -131,8 +136,6 @@ extern "C"
     sc_result SC_API sc_node_group_remove_dsp(sc_node_group* nodeGroup, sc_dsp* dsp);
 
     sc_result SC_API sc_node_group_release(sc_node_group* nodeGroup);
-
-#include "sound_chef_dsp.h"
 
 #ifdef __cplusplus
 }
