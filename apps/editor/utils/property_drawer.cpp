@@ -1,10 +1,10 @@
 #include "property_drawer.h"
 
 #include "imgui.h"
-#include "sound_bakery/system.h"
 #include "sound_bakery/core/object/object.h"
 #include "sound_bakery/editor/editor_defines.h"
 #include "sound_bakery/node/node.h"
+#include "sound_bakery/system.h"
 #include "sound_bakery/util/type_helper.h"
 
 void property_drawer::draw_object(rttr::type type, rttr::instance instance)
@@ -13,9 +13,7 @@ void property_drawer::draw_object(rttr::type type, rttr::instance instance)
 
     if (ImGui::BeginTable(
             "Properties", 2,
-                          ImGuiTableFlags_Resizable |
-                              ImGuiTableFlags_BordersInnerH |
-                              ImGuiTableFlags_SizingStretchProp))
+            ImGuiTableFlags_Resizable | ImGuiTableFlags_BordersInnerH | ImGuiTableFlags_SizingStretchProp))
     {
         for (rttr::property property : type.get_properties())
         {
@@ -28,8 +26,7 @@ void property_drawer::draw_object(rttr::type type, rttr::instance instance)
     ImGui::PopID();
 }
 
-bool property_drawer::draw_property(rttr::property property,
-                                  rttr::instance instance)
+bool property_drawer::draw_property(rttr::property property, rttr::instance instance)
 {
     bool edited = false;
 
@@ -37,8 +34,7 @@ bool property_drawer::draw_property(rttr::property property,
 
     if (!readonly)
     {
-        readonly =
-            property.get_metadata(sbk::editor::METADATA_KEY::Readonly).to_bool();
+        readonly = property.get_metadata(sbk::editor::METADATA_KEY::Readonly).to_bool();
     }
 
     ImGui::PushID(property.get_name().data());
@@ -55,17 +51,15 @@ bool property_drawer::draw_property(rttr::property property,
     {
         draw_readonly_variant(propertyValue);
     }
-    else if (const rttr::variant payloadString =
-                 property.get_metadata(sbk::editor::METADATA_KEY::Payload);
+    else if (const rttr::variant payloadString = property.get_metadata(sbk::editor::METADATA_KEY::Payload);
              payloadString.is_valid())
     {
         edited = draw_payload_drop(propertyValue, payloadString);
     }
     else
     {
-        edited = draw_variant(
-            propertyValue, property.get_name(),
-            property.get_metadata(sbk::editor::METADATA_KEY::MinMax));
+        edited =
+            draw_variant(propertyValue, property.get_name(), property.get_metadata(sbk::editor::METADATA_KEY::MinMax));
     }
 
     if (edited)
@@ -79,9 +73,7 @@ bool property_drawer::draw_property(rttr::property property,
     return edited;
 }
 
-bool property_drawer::draw_variant(rttr::variant& variant,
-                                 rttr::string_view name,
-                                 rttr::variant minMax)
+bool property_drawer::draw_variant(rttr::variant& variant, rttr::string_view name, rttr::variant minMax)
 {
     if (!variant.is_valid())
     {
@@ -100,8 +92,7 @@ bool property_drawer::draw_variant(rttr::variant& variant,
         {
             float value = variant.to_float();
 
-            std::pair<float, float> floatMinMax =
-                minMax.convert<std::pair<float, float>>();
+            std::pair<float, float> floatMinMax = minMax.convert<std::pair<float, float>>();
 
             if (draw_float(value, name, floatMinMax))
             {
@@ -113,8 +104,7 @@ bool property_drawer::draw_variant(rttr::variant& variant,
         {
             int value = variant.to_int();
 
-            std::pair<int, int> intMinMax =
-                minMax.convert<std::pair<int, int>>();
+            std::pair<int, int> intMinMax = minMax.convert<std::pair<int, int>>();
 
             if (draw_int(value, name, intMinMax))
             {
@@ -153,11 +143,10 @@ bool property_drawer::draw_variant(rttr::variant& variant,
     }
     else if (type.is_wrapper() && type.get_wrapped_type().is_arithmetic())
     {
-        sbk_id id = variant.extract_wrapped_value().convert<sbk_id>();
+        sbk_id id               = variant.extract_wrapped_value().convert<sbk_id>();
         rttr::type templateType = *type.get_template_arguments().begin();
 
-        std::string payloadString =
-            std::string(sbk::util::type_helper::getPayloadFromType(templateType));
+        std::string payloadString = std::string(sbk::util::type_helper::getPayloadFromType(templateType));
 
         sbk::core::database_ptr<sbk::core::object> objectPtr(id);
 
@@ -171,8 +160,7 @@ bool property_drawer::draw_variant(rttr::variant& variant,
     {
         draw_readonly_variant(variant);
     }
-    else if (type == rttr::type::get<std::string>() ||
-             type == rttr::type::get<std::string_view>())
+    else if (type == rttr::type::get<std::string>() || type == rttr::type::get<std::string_view>())
     {
         draw_readonly_variant(variant);
     }
@@ -186,12 +174,10 @@ bool property_drawer::draw_variant(rttr::variant& variant,
             switch (effectParamterDescription.m_parameter.type)
             {
                 case SC_DSP_PARAMETER_TYPE_FLOAT:
-                    sbk::editor::MinMax minMax(
-                        effectParamterDescription.m_parameter.floatParameter.min,
-                        effectParamterDescription.m_parameter.floatParameter.max);
-                    edited = draw_float(
-                        effectParamterDescription.m_parameter.floatParameter.value,
-                        effectParamterDescription.m_parameter.name, minMax);
+                    sbk::editor::MinMax minMax(effectParamterDescription.m_parameter.floatParameter.min,
+                                               effectParamterDescription.m_parameter.floatParameter.max);
+                    edited = draw_float(effectParamterDescription.m_parameter.floatParameter.value,
+                                        effectParamterDescription.m_parameter.name, minMax);
                     break;
             }
 
@@ -202,9 +188,8 @@ bool property_drawer::draw_variant(rttr::variant& variant,
         }
         else if (type == rttr::type::get<sbk::core::float_property>())
         {
-            sbk::core::float_property floatProperty =
-                variant.convert<sbk::core::float_property>();
-            float floatValue = floatProperty.get();
+            sbk::core::float_property floatProperty = variant.convert<sbk::core::float_property>();
+            float floatValue                        = floatProperty.get();
 
             std::pair<float, float> floatMinMax = floatProperty.get_min_max_pair();
 
@@ -241,18 +226,14 @@ bool property_drawer::draw_variant(rttr::variant& variant,
     {
         const rttr::enumeration enumeration = type.get_enumeration();
 
-        const rttr::string_view previewName =
-            enumeration.value_to_name(variant);
+        const rttr::string_view previewName = enumeration.value_to_name(variant);
 
-        if (ImGui::BeginCombo(enumeration.get_name().data(),
-                              previewName.data()))
+        if (ImGui::BeginCombo(enumeration.get_name().data(), previewName.data()))
         {
-            for (const rttr::string_view& enumValueName :
-                 enumeration.get_names())
+            for (const rttr::string_view& enumValueName : enumeration.get_names())
             {
-                rttr::variant enumValue =
-                    enumeration.name_to_value(enumValueName);
-                bool selected = enumValue == variant;
+                rttr::variant enumValue = enumeration.name_to_value(enumValueName);
+                bool selected           = enumValue == variant;
                 if (ImGui::Selectable(enumValueName.data(), &selected))
                 {
                     variant = enumValue;
@@ -264,8 +245,7 @@ bool property_drawer::draw_variant(rttr::variant& variant,
     }
     else
     {
-        ImGui::Text("Could not draw variant of type {%s}",
-                    variant.get_type().get_name().data());
+        ImGui::Text("Could not draw variant of type {%s}", variant.get_type().get_name().data());
     }
 
     return edited;
@@ -284,8 +264,7 @@ void property_drawer::draw_readonly_variant(rttr::variant variant, bool disabled
 
     if (variant.is_type<sbk_id>() && isWrapper)
     {
-        sbk::core::database_ptr<sbk::core::database_object> object(
-            variant.convert<sbk_id>());
+        sbk::core::database_ptr<sbk::core::database_object> object(variant.convert<sbk_id>());
 
         if (object.lookup())
         {
@@ -324,9 +303,7 @@ void property_drawer::draw_readonly_variant(rttr::variant variant, bool disabled
     ImGui::EndDisabled();
 }
 
-bool property_drawer::draw_float(float& value,
-                               rttr::string_view name,
-                               std::pair<float, float>& minMax)
+bool property_drawer::draw_float(float& value, rttr::string_view name, std::pair<float, float>& minMax)
 {
     if (minMax.first == minMax.second)
     {
@@ -336,9 +313,7 @@ bool property_drawer::draw_float(float& value,
     return ImGui::SliderFloat(name.data(), &value, minMax.first, minMax.second);
 }
 
-bool property_drawer::draw_int(int& value,
-                             rttr::string_view name,
-                             std::pair<int, int>& minMax)
+bool property_drawer::draw_int(int& value, rttr::string_view name, std::pair<int, int>& minMax)
 {
     if (minMax.first == minMax.second)
     {
@@ -348,13 +323,9 @@ bool property_drawer::draw_int(int& value,
     return ImGui::SliderInt(name.data(), &value, minMax.first, minMax.second);
 }
 
-bool property_drawer::draw_bool(bool& value, rttr::string_view name)
-{
-    return ImGui::Checkbox(name.data(), &value);
-}
+bool property_drawer::draw_bool(bool& value, rttr::string_view name) { return ImGui::Checkbox(name.data(), &value); }
 
-bool property_drawer::draw_member_object(rttr::variant& value,
-                                      rttr::string_view name)
+bool property_drawer::draw_member_object(rttr::variant& value, rttr::string_view name)
 {
     bool edited = false;
 
@@ -379,8 +350,7 @@ bool property_drawer::draw_member_object(rttr::variant& value,
     return edited;
 }
 
-bool property_drawer::draw_sequential_container(
-    rttr::variant_sequential_view& view, rttr::string_view name)
+bool property_drawer::draw_sequential_container(rttr::variant_sequential_view& view, rttr::string_view name)
 {
     bool edited = false;
 
@@ -404,7 +374,7 @@ bool property_drawer::draw_sequential_container(
         if (type.is_wrapper())
         {
             assert(type.get_wrapped_type() == rttr::type::get<sbk_id>());
-            createdDefault = (sbk_id)0;
+            createdDefault       = (sbk_id)0;
             const bool converted = createdDefault.convert(type);
             assert(converted);
         }
@@ -427,9 +397,7 @@ bool property_drawer::draw_sequential_container(
     {
         int index = 0;
 
-        for (rttr::variant_sequential_view::const_iterator iterator =
-                 view.begin();
-             iterator != view.end(); ++iterator)
+        for (rttr::variant_sequential_view::const_iterator iterator = view.begin(); iterator != view.end(); ++iterator)
         {
             ImGui::PushID(index);
 
@@ -446,7 +414,7 @@ bool property_drawer::draw_sequential_container(
             if (ImGui::Button("X"))
             {
                 iterator = view.erase(iterator);
-                edited = true;
+                edited   = true;
             }
 
             ImGui::PopID();
@@ -463,8 +431,7 @@ bool property_drawer::draw_sequential_container(
     return edited;
 }
 
-bool property_drawer::draw_associate_container(
-    rttr::variant_associative_view& view, rttr::string_view name)
+bool property_drawer::draw_associate_container(rttr::variant_associative_view& view, rttr::string_view name)
 {
     bool edited = false;
 
@@ -475,9 +442,9 @@ bool property_drawer::draw_associate_container(
 
         if (view.is_key_only_type())
         {
-            std::pair<rttr::variant_associative_view::const_iterator, bool>
-                insertedIterator = view.insert(keyType.create_default());
-            edited               = insertedIterator.second;
+            std::pair<rttr::variant_associative_view::const_iterator, bool> insertedIterator =
+                view.insert(keyType.create_default());
+            edited = insertedIterator.second;
         }
         else
         {
@@ -487,28 +454,25 @@ bool property_drawer::draw_associate_container(
             /**
              * @todo Can we construct basic types without any manual work?
              */
-            if (keyType.is_wrapper() &&
-                keyType.get_wrapped_type() == rttr::type::get<sbk_id>())
+            if (keyType.is_wrapper() && keyType.get_wrapped_type() == rttr::type::get<sbk_id>())
             {
                 sbk_id id = 0;
-                key      = id;
+                key       = id;
                 key.convert(keyType);
             }
 
-            if (valueType.is_wrapper() &&
-                valueType.get_wrapped_type() == rttr::type::get<sbk_id>())
+            if (valueType.is_wrapper() && valueType.get_wrapped_type() == rttr::type::get<sbk_id>())
             {
                 sbk_id id = 0;
-                value    = id;
+                value     = id;
                 value.convert(valueType);
             }
 
             assert(key.is_valid());
             assert(value.is_valid());
 
-            std::pair<rttr::variant_associative_view::const_iterator, bool>
-                insertedIterator = view.insert(key, value);
-            edited               = insertedIterator.second;
+            std::pair<rttr::variant_associative_view::const_iterator, bool> insertedIterator = view.insert(key, value);
+            edited                                                                           = insertedIterator.second;
         }
 
         return edited;  // exiting early to ensure the get_parent property is
@@ -517,36 +481,30 @@ bool property_drawer::draw_associate_container(
 
     if (view.get_size())
     {
-        if (ImGui::CollapsingHeader(name.data(),
-                                    ImGuiTreeNodeFlags_DefaultOpen))
+        if (ImGui::CollapsingHeader(name.data(), ImGuiTreeNodeFlags_DefaultOpen))
         {
             int index = 0;
 
             if (ImGui::BeginTable(name.data(), 2, ImGuiTableFlags_Resizable))
             {
-                for (rttr::variant_associative_view::const_iterator iter =
-                         view.begin();
-                     iter != view.end(); ++iter)
+                for (rttr::variant_associative_view::const_iterator iter = view.begin(); iter != view.end(); ++iter)
                 {
                     ImGui::PushID(index++);
 
-                    rttr::variant key = iter.get_key().extract_wrapped_value();
-                    rttr::variant value =
-                        iter.get_value().extract_wrapped_value();
+                    rttr::variant key   = iter.get_key().extract_wrapped_value();
+                    rttr::variant value = iter.get_value().extract_wrapped_value();
 
                     if (view.is_key_only_type())
                     {
                         ImGui::TableNextColumn();  // enter column 1
                         ImGui::TableNextColumn();  // enter column 2
 
-                        edited =
-                            draw_variant(key, std::to_string(index).c_str());
+                        edited = draw_variant(key, std::to_string(index).c_str());
                     }
                     else
                     {
                         ImGui::TableNextColumn();
-                        bool keyEdited =
-                            draw_variant(key, std::to_string(index).c_str());
+                        bool keyEdited = draw_variant(key, std::to_string(index).c_str());
                         ImGui::TableNextColumn();
                         bool valueEdited = draw_variant(value, "Value");
 
@@ -558,10 +516,8 @@ bool property_drawer::draw_associate_container(
 
                             if (removed > 0)
                             {
-                                std::pair<rttr::variant_associative_view::
-                                              const_iterator,
-                                          bool>
-                                    insertedIter = view.insert(key, value);
+                                std::pair<rttr::variant_associative_view::const_iterator, bool> insertedIter =
+                                    view.insert(key, value);
 
                                 if (insertedIter.second)
                                 {
@@ -595,8 +551,7 @@ bool property_drawer::draw_associate_container(
 static void HelpMarker(const char* desc)
 {
     ImGui::TextDisabled("(?)");
-    if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort) &&
-        ImGui::BeginTooltip())
+    if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort) && ImGui::BeginTooltip())
     {
         ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
         ImGui::TextUnformatted(desc);
@@ -605,8 +560,7 @@ static void HelpMarker(const char* desc)
     }
 }
 
-bool property_drawer::draw_payload_drop(rttr::variant& value,
-                                     const rttr::variant& payloadString)
+bool property_drawer::draw_payload_drop(rttr::variant& value, const rttr::variant& payloadString)
 {
     bool edited = false;
 
@@ -638,11 +592,10 @@ bool property_drawer::draw_payload_drop(rttr::variant& value,
                 data                    = std::string(payloadCharString);
             }
             else if (valueType == rttr::type::get<sbk_id>() ||
-                     (valueType.is_wrapper() &&
-                      valueType.get_wrapped_type() == rttr::type::get<sbk_id>()))
+                     (valueType.is_wrapper() && valueType.get_wrapped_type() == rttr::type::get<sbk_id>()))
             {
                 sbk_id* payloadID = static_cast<sbk_id*>(payload->Data);
-                data             = *payloadID;
+                data              = *payloadID;
 
                 if (valueType.is_wrapper())
                 {
@@ -654,14 +607,17 @@ bool property_drawer::draw_payload_drop(rttr::variant& value,
             // When setting variants, the value is completely overriden.
             // There is no chance for child pointers to retain its get_parent value and check the child.
             // Therefore, we have to do this ourselves here.
-            if (valueType.is_wrapper() && std::string(valueType.get_name().data()).find("child_ptr") != std::string::npos)
+            if (valueType.is_wrapper() &&
+                std::string(valueType.get_name().data()).find("child_ptr") != std::string::npos)
             {
                 bool convertSuccess = false;
-                sbk::core::child_ptr<sbk::core::database_object> dataAschild_ptr = data.convert<sbk::core::child_ptr<sbk::core::database_object>>(&convertSuccess);
+                sbk::core::child_ptr<sbk::core::database_object> dataAschild_ptr =
+                    data.convert<sbk::core::child_ptr<sbk::core::database_object>>(&convertSuccess);
 
                 if (convertSuccess)
                 {
-                    sbk::core::child_ptr<sbk::core::database_object> valueAschild_ptr = value.convert<sbk::core::child_ptr<sbk::core::database_object>>(&convertSuccess);
+                    sbk::core::child_ptr<sbk::core::database_object> valueAschild_ptr =
+                        value.convert<sbk::core::child_ptr<sbk::core::database_object>>(&convertSuccess);
 
                     if (convertSuccess)
                     {
@@ -695,8 +651,8 @@ bool property_drawer::draw_payload_drop(rttr::variant& value,
 }
 
 bool property_drawer::draw_payload_drop(rttr::property property,
-                                     rttr::instance object,
-                                     const rttr::variant& payloadString)
+                                        rttr::instance object,
+                                        const rttr::variant& payloadString)
 {
     bool edited = false;
 
@@ -710,8 +666,7 @@ bool property_drawer::draw_payload_drop(rttr::property property,
 
     if (ImGui::BeginDragDropTarget())
     {
-        if (const ImGuiPayload* const payload =
-                ImGui::AcceptDragDropPayload(payloadString.to_string().c_str()))
+        if (const ImGuiPayload* const payload = ImGui::AcceptDragDropPayload(payloadString.to_string().c_str()))
         {
             rttr::variant data;
 
@@ -721,12 +676,10 @@ bool property_drawer::draw_payload_drop(rttr::property property,
                 data                    = std::string(payloadCharString);
             }
             else if (propertyType == rttr::type::get<sbk_id>() ||
-                     (propertyType.is_wrapper() &&
-                      propertyType.get_wrapped_type() ==
-                          rttr::type::get<sbk_id>()))
+                     (propertyType.is_wrapper() && propertyType.get_wrapped_type() == rttr::type::get<sbk_id>()))
             {
                 sbk_id* payloadID = static_cast<sbk_id*>(payload->Data);
-                data             = *payloadID;
+                data              = *payloadID;
 
                 if (propertyType.is_wrapper())
                 {

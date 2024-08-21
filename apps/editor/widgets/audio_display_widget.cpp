@@ -1,8 +1,8 @@
 #include "audio_display_widget.h"
 
 #include "app/app.h"
-#include "managers/project_manager.h"
 #include "imgui.h"
+#include "managers/project_manager.h"
 #include "sound_bakery/gameobject/gameobject.h"
 #include "sound_bakery/node/container/sound_container.h"
 #include "sound_bakery/sound/sound.h"
@@ -12,8 +12,8 @@
 int littleEndian24Bit(const void* bytes)
 {
     return (ma_int32)((((ma_uint32) static_cast<const ma_uint8*>(bytes)[2]) << 16) |
-                   (((ma_uint32) static_cast<const ma_uint8*>(bytes)[1]) << 8) |
-                   ((ma_uint32) static_cast<const ma_uint8*>(bytes)[0]));
+                      (((ma_uint32) static_cast<const ma_uint8*>(bytes)[1]) << 8) |
+                      ((ma_uint32) static_cast<const ma_uint8*>(bytes)[0]));
 }
 //
 // float getAverageValueFromSampleRange(FMOD_SOUND* sound, unsigned int
@@ -121,9 +121,7 @@ void audio_display_widget::render()
                 {
                     m_drawWidth = ImGui::GetWindowWidth();
 
-                    const bool hasResized =
-                        static_cast<int>(m_drawWidth) !=
-                        static_cast<int>(m_previousDrawWidth);
+                    const bool hasResized = static_cast<int>(m_drawWidth) != static_cast<int>(m_previousDrawWidth);
 
                     m_previousDrawWidth = m_drawWidth;
 
@@ -132,9 +130,7 @@ void audio_display_widget::render()
                     if (isPlaying)
                     {
                         sbk::engine::sound_container* previewSound =
-                            get_app()
-                                ->get_manager_by_class<project_manager>()
-                                ->get_preview_sound_container();
+                            get_app()->get_manager_by_class<project_manager>()->get_preview_sound_container();
                         /*FMOD_SOUND* sound = previewSound ?
                         previewSound->getFSound() : nullptr;
 
@@ -180,45 +176,30 @@ void audio_display_widget::render()
                         const float windowPosX = cursorPos.x;
                         const float windowPosY = cursorPos.y;
 
-                        for (int channel = 0; channel < m_cachedSamples.size();
-                             channel++)
+                        for (int channel = 0; channel < m_cachedSamples.size(); channel++)
                         {
-                            const float channelLaneHeight =
-                                windowHeight / m_cachedSamples.size();
-                            const float channelLaneHalfHeight =
-                                channelLaneHeight / 2;
+                            const float channelLaneHeight     = windowHeight / m_cachedSamples.size();
+                            const float channelLaneHalfHeight = channelLaneHeight / 2;
                             const float channelStartHeight =
-                                windowPosY +
-                                (channel + (channelLaneHeight * channel) +
-                                 channelLaneHalfHeight);
+                                windowPosY + (channel + (channelLaneHeight * channel) + channelLaneHalfHeight);
 
-                            for (int sample = 0;
-                                 sample < m_cachedSamples[channel].size();
-                                 sample++)
+                            for (int sample = 0; sample < m_cachedSamples[channel].size(); sample++)
                             {
-                                float sampleValue =
-                                    m_cachedSamples[channel][sample] *
-                                    channelLaneHeight * 0.5f * scale;
+                                float sampleValue = m_cachedSamples[channel][sample] * channelLaneHeight * 0.5f * scale;
 
-                                ImVec2 bottomPoint{
-                                    cursorPos.x + static_cast<float>(sample),
-                                    channelStartHeight + -sampleValue};
-                                ImVec2 topPoint{
-                                    cursorPos.x + static_cast<float>(sample),
-                                    channelStartHeight + sampleValue};
+                                ImVec2 bottomPoint{cursorPos.x + static_cast<float>(sample),
+                                                   channelStartHeight + -sampleValue};
+                                ImVec2 topPoint{cursorPos.x + static_cast<float>(sample),
+                                                channelStartHeight + sampleValue};
 
-                                drawList->AddLine(bottomPoint, topPoint,
-                                                  IM_COL32_WHITE);
+                                drawList->AddLine(bottomPoint, topPoint, IM_COL32_WHITE);
                             }
                         }
 
-                        ImVec2 bottomPlayHead{cursorPos.x + m_playPixel,
-                                              cursorPos.y + windowHeight};
-                        ImVec2 topPlayHead{cursorPos.x + m_playPixel,
-                                           cursorPos.y};
+                        ImVec2 bottomPlayHead{cursorPos.x + m_playPixel, cursorPos.y + windowHeight};
+                        ImVec2 topPlayHead{cursorPos.x + m_playPixel, cursorPos.y};
 
-                        drawList->AddLine(bottomPlayHead, topPlayHead,
-                                          IM_COL32(255, 0, 0, 255));
+                        drawList->AddLine(bottomPlayHead, topPlayHead, IM_COL32(255, 0, 0, 255));
                     }
                     else
                     {

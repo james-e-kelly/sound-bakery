@@ -2,12 +2,10 @@
 
 #include "app/app.h"
 #include "imgui.h"
-
 #include "stb_image.h"
 
 #define GL_SILENCE_DEPRECATION
 #include <GLFW/glfw3.h>
-
 #include <cmrc/cmrc.hpp>
 
 CMRC_DECLARE(sbk::Images);
@@ -26,9 +24,8 @@ void splash_widget::start()
     const cmrc::file splashImageFile = embeddedfilesystem.open("SplashImage02.png");
 
     int image_width, image_height, n;
-    unsigned char* image_data =
-        stbi_load_from_memory((stbi_uc*)splashImageFile.begin(), splashImageFile.size(),
-        &image_width, &image_height, &n, 0);
+    unsigned char* image_data = stbi_load_from_memory((stbi_uc*)splashImageFile.begin(), splashImageFile.size(),
+                                                      &image_width, &image_height, &n, 0);
 
     assert(image_data);
 
@@ -47,8 +44,7 @@ void splash_widget::start()
 #if defined(GL_UNPACK_ROW_LENGTH) && !defined(__EMSCRIPTEN__)
         glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
 #endif
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image_width, image_height, 0,
-                     GL_RGB, GL_UNSIGNED_BYTE, image_data);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image_width, image_height, 0, GL_RGB, GL_UNSIGNED_BYTE, image_data);
         stbi_image_free(image_data);
 
         m_splashImageID     = image_texture;
@@ -72,7 +68,7 @@ void splash_widget::tick(double deltaTime)
         m_timeShowingScreen += deltaTime;
 
         static int previousRoundedTime = 0;
-        int roundedTime = static_cast<int>(m_timeShowingScreen / 0.2) % 4;
+        int roundedTime                = static_cast<int>(m_timeShowingScreen / 0.2) % 4;
 
         if (roundedTime != previousRoundedTime)
         {
@@ -106,8 +102,7 @@ void splash_widget::tick(double deltaTime)
 
 void splash_widget::render()
 {
-    if (m_wantsToShow &&
-        !ImGui::IsPopupOpen(SplashScreenUtils::splashScreenName))
+    if (m_wantsToShow && !ImGui::IsPopupOpen(SplashScreenUtils::splashScreenName))
     {
         ImGui::OpenPopup(SplashScreenUtils::splashScreenName);
     }
@@ -116,12 +111,10 @@ void splash_widget::render()
     ImVec2 center = ImGui::GetMainViewport()->GetCenter();
     ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
 
-    if (ImGui::BeginPopupModal(
-            SplashScreenUtils::splashScreenName, NULL,
-            ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar))
+    if (ImGui::BeginPopupModal(SplashScreenUtils::splashScreenName, NULL,
+                               ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar))
     {
-        ImGui::Image((void*)(intptr_t)m_splashImageID,
-                     ImVec2(m_splashImageWidth, m_splashImageHeight));
+        ImGui::Image((void*)(intptr_t)m_splashImageID, ImVec2(m_splashImageWidth, m_splashImageHeight));
 
         ImGui::Text("%s", m_loadingText.c_str());
 

@@ -1,13 +1,13 @@
 #include "project_nodes_widget.h"
 
 #include "app/app.h"
-#include "managers/project_manager.h"
-#include "widgets/file_browser_widget.h"
 #include "imgui.h"
 #include "imgui_internal.h"
+#include "managers/project_manager.h"
 #include "sound_bakery/core/database/database.h"
 #include "sound_bakery/core/object/object_tracker.h"
 #include "sound_bakery/editor/editor_defines.h"
+#include "sound_bakery/editor/project/project.h"
 #include "sound_bakery/factory.h"
 #include "sound_bakery/node/bus/bus.h"
 #include "sound_bakery/node/container/sound_container.h"
@@ -15,19 +15,16 @@
 #include "sound_bakery/profiling/voice_tracker.h"
 #include "sound_bakery/system.h"
 #include "sound_bakery/util/type_helper.h"
-#include "sound_bakery/editor/project/project.h"
+#include "widgets/file_browser_widget.h"
 
-static const std::vector<SB_OBJECT_CATEGORY> s_objectPageCategories{
-    SB_CATEGORY_PARAMETER, SB_CATEGORY_BUS, SB_CATEGORY_NODE,
-    SB_CATEGORY_MUSIC};
+static const std::vector<SB_OBJECT_CATEGORY> s_objectPageCategories{SB_CATEGORY_PARAMETER, SB_CATEGORY_BUS,
+                                                                    SB_CATEGORY_NODE, SB_CATEGORY_MUSIC};
 
-static const std::vector<SB_OBJECT_CATEGORY> s_eventPageCategories{
-    SB_CATEGORY_EVENT};
+static const std::vector<SB_OBJECT_CATEGORY> s_eventPageCategories{SB_CATEGORY_EVENT};
 
 static const std::vector<SB_OBJECT_CATEGORY> s_soundbankPageCategories{SB_CATEGORY_BANK};
 
-void project_nodes_widget::render_page(
-    const std::vector<SB_OBJECT_CATEGORY>& categories)
+void project_nodes_widget::render_page(const std::vector<SB_OBJECT_CATEGORY>& categories)
 {
     for (const SB_OBJECT_CATEGORY category : categories)
     {
@@ -44,8 +41,7 @@ void project_nodes_widget::render_page(
         {
             if (ImGui::BeginPopupContextItem("TopNodeContext"))
             {
-                render_create_parent_or_child_menu(category, rttr::instance(),
-                                              node_creation_type::New);
+                render_create_parent_or_child_menu(category, rttr::instance(), node_creation_type::New);
                 ImGui::EndPopup();
             }
 
@@ -55,20 +51,11 @@ void project_nodes_widget::render_page(
     }
 }
 
-void project_nodes_widget::render_objects_page()
-{
-    render_page(s_objectPageCategories);
-}
+void project_nodes_widget::render_objects_page() { render_page(s_objectPageCategories); }
 
-void project_nodes_widget::render_events_page()
-{
-    render_page(s_eventPageCategories);
-}
+void project_nodes_widget::render_events_page() { render_page(s_eventPageCategories); }
 
-void project_nodes_widget::render_soundbank_page() 
-{ 
-    render_page(s_soundbankPageCategories); 
-}
+void project_nodes_widget::render_soundbank_page() { render_page(s_soundbankPageCategories); }
 
 void project_nodes_widget::render_category(SB_OBJECT_CATEGORY category)
 {
@@ -81,8 +68,7 @@ void project_nodes_widget::render_category(SB_OBJECT_CATEGORY category)
         {
             const rttr::type type = object->getType();
 
-            sbk::engine::node_base* const nodeBase =
-                object->try_convert_object<sbk::engine::node_base>();
+            sbk::engine::node_base* const nodeBase = object->try_convert_object<sbk::engine::node_base>();
 
             const bool notNodeType = nodeBase == nullptr;
 
@@ -94,8 +80,7 @@ void project_nodes_widget::render_category(SB_OBJECT_CATEGORY category)
     }
 }
 
-void project_nodes_widget::render_single_node(rttr::type type,
-                                          rttr::instance instance)
+void project_nodes_widget::render_single_node(rttr::type type, rttr::instance instance)
 {
     if (instance)
     {
@@ -115,8 +100,7 @@ void project_nodes_widget::render_single_node(rttr::type type,
             ImGuiTreeNodeFlags flags =
                 ImGuiTreeNodeFlags_None | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_NavLeftJumpsBackHere;
 
-            if (hasChildren  || object->getType() ==
-                                   sbk::engine::named_parameter::type())
+            if (hasChildren || object->getType() == sbk::engine::named_parameter::type())
             {
                 flags |= ImGuiTreeNodeFlags_OpenOnArrow;
             }
@@ -129,17 +113,14 @@ void project_nodes_widget::render_single_node(rttr::type type,
 
             const bool opened = ImGui::TreeNodeEx(fmt::format("##{}", object->get_database_name()).c_str(), flags);
 
-            if (std::string_view payloadString =
-                    sbk::util::type_helper::getPayloadFromType(object->getType());
+            if (std::string_view payloadString = sbk::util::type_helper::getPayloadFromType(object->getType());
                 payloadString.size())
             {
-                if (ImGui::BeginDragDropSource(
-                        ImGuiDragDropFlags_SourceAllowNullID))
+                if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
                 {
                     sbk_id dragID = object->get_database_id();
 
-                    ImGui::SetDragDropPayload(payloadString.data(), &dragID,
-                                              sizeof(sbk_id), ImGuiCond_Once);
+                    ImGui::SetDragDropPayload(payloadString.data(), &dragID, sizeof(sbk_id), ImGuiCond_Once);
 
                     ImGui::TextUnformatted(object->get_database_name().data());
 
@@ -183,14 +164,14 @@ void project_nodes_widget::render_single_node(rttr::type type,
                 previousDragDropActive = dragDropActive;
             }
 
-            const bool nodeClicked = ImGui::IsItemHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Left) && !ImGui::GetDragDropPayload();
-            const bool nodeKeyboardFocused = ImGui::IsItemFocused() && !nodeClicked &&
-                                             !ImGui::IsAnyMouseDown() && !ImGui::GetDragDropPayload();
-            
+            const bool nodeClicked =
+                ImGui::IsItemHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Left) && !ImGui::GetDragDropPayload();
+            const bool nodeKeyboardFocused =
+                ImGui::IsItemFocused() && !nodeClicked && !ImGui::IsAnyMouseDown() && !ImGui::GetDragDropPayload();
+
             if (nodeClicked || nodeKeyboardFocused)
             {
-                get_app()->get_manager_by_class<project_manager>()->get_selection().selected_object(
-                    object);
+                get_app()->get_manager_by_class<project_manager>()->get_selection().selected_object(object);
 
                 previousFocusID = ImGui::GetFocusID();
             }
@@ -205,13 +186,11 @@ void project_nodes_widget::render_single_node(rttr::type type,
                 }
                 else
                 {
-                    ImGui::Text(ICON_FAD_FILTER_BELL " %s",
-                                object->get_database_name().data());
+                    ImGui::Text(ICON_FAD_FILTER_BELL " %s", object->get_database_name().data());
 
                     if (unsigned int playingCount =
-                            sbk::engine::Profiling::VoiceTracker::get()
-                                ->getPlayingCountOfObject(
-                                    object->get_database_id()))
+                            sbk::engine::Profiling::VoiceTracker::get()->getPlayingCountOfObject(
+                                object->get_database_id()))
                     {
                         ImGui::SameLine();
                         ImGui::Text("|%u|", playingCount);
@@ -228,17 +207,14 @@ void project_nodes_widget::render_single_node(rttr::type type,
                         }
                     }
                     else if (sbk::engine::named_parameter* const intParameter =
-                                 object->try_convert_object<
-                                     sbk::engine::named_parameter>())
+                                 object->try_convert_object<sbk::engine::named_parameter>())
                     {
-                        for (const sbk::core::database_ptr<
-                                 sbk::engine::named_parameter_value>& value :
+                        for (const sbk::core::database_ptr<sbk::engine::named_parameter_value>& value :
                              intParameter->get_values())
                         {
                             if (value.lookup())
                             {
-                                render_single_node(type,
-                                                 rttr::instance(value.raw()));
+                                render_single_node(type, rttr::instance(value.raw()));
                             }
                         }
                     }
@@ -253,10 +229,7 @@ void project_nodes_widget::render_single_node(rttr::type type,
     }
 }
 
-bool project_nodes_widget::node_has_children(sbk::engine::node* node)
-{
-    return node ? node->getChildCount() : false;
-}
+bool project_nodes_widget::node_has_children(sbk::engine::node* node) { return node ? node->getChildCount() : false; }
 
 void project_nodes_widget::handle_open_node(sbk::core::database_object* object)
 {
@@ -272,16 +245,13 @@ void project_nodes_widget::handle_open_node(sbk::core::database_object* object)
 
 bool project_nodes_widget::object_is_renaming(sbk::core::database_object* object)
 {
-    return object && object->get_database_id() &&
-           object->get_database_id() == m_renameID;
+    return object && object->get_database_id() && object->get_database_id() == m_renameID;
 }
 
-void project_nodes_widget::render_rename_object(
-    sbk::core::database_object* const& object)
+void project_nodes_widget::render_rename_object(sbk::core::database_object* const& object)
 {
     if (ImGui::InputText("###rename", m_renameString, 255,
-                         ImGuiInputTextFlags_AutoSelectAll |
-                             ImGuiInputTextFlags_EnterReturnsTrue))
+                         ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_EnterReturnsTrue))
     {
         object->set_database_name(m_renameString);
         m_renameID        = 0;
@@ -291,8 +261,7 @@ void project_nodes_widget::render_rename_object(
     ImGui::SetKeyboardFocusHere(-1);
 }
 
-bool project_nodes_widget::render_node_context_menu(rttr::type type,
-                                               rttr::instance instance)
+bool project_nodes_widget::render_node_context_menu(rttr::type type, rttr::instance instance)
 {
     bool result = false;
 
@@ -302,17 +271,13 @@ bool project_nodes_widget::render_node_context_menu(rttr::type type,
 
         if (sbk::core::database_object* const object = sbk::util::type_helper::getDatabaseObjectFromInstance(instance))
         {
-            if (ImGui::BeginPopupContextItem(
-                    std::to_string(object->get_database_id()).c_str()))
+            if (ImGui::BeginPopupContextItem(std::to_string(object->get_database_id()).c_str()))
             {
-                const SB_OBJECT_CATEGORY category =
-                    sbk::util::type_helper::getCategoryFromType(type);
+                const SB_OBJECT_CATEGORY category = sbk::util::type_helper::getCategoryFromType(type);
 
-                if (object->getType().is_derived_from(
-                        sbk::engine::node_base::type()))
+                if (object->getType().is_derived_from(sbk::engine::node_base::type()))
                 {
-                    render_create_parent_or_child_menu(category, instance,
-                                                  node_creation_type::NewParent);
+                    render_create_parent_or_child_menu(category, instance, node_creation_type::NewParent);
 
                     const sbk::engine::node_base* const nodeBase = object->try_convert_object<sbk::engine::node_base>();
 
@@ -324,14 +289,12 @@ bool project_nodes_widget::render_node_context_menu(rttr::type type,
                     ImGui::Separator();
                 }
 
-                if (object->getType() ==
-                    sbk::engine::named_parameter::type())
+                if (object->getType() == sbk::engine::named_parameter::type())
                 {
                     if (ImGui::MenuItem("Create New Value"))
                     {
                         if (sbk::engine::named_parameter* const intParameter =
-                                object->try_convert_object<
-                                    sbk::engine::named_parameter>())
+                                object->try_convert_object<sbk::engine::named_parameter>())
                         {
                             intParameter->add_new_value("New Switch Value");
                         }
@@ -349,8 +312,7 @@ bool project_nodes_widget::render_node_context_menu(rttr::type type,
 
                 if (ImGui::MenuItem("Delete"))
                 {
-                    get_app()->get_manager_by_class<project_manager>()->get_selection().selected_object(
-                        nullptr);
+                    get_app()->get_manager_by_class<project_manager>()->get_selection().selected_object(nullptr);
                     object->destroy();
                     result = false;
                 }
@@ -363,15 +325,13 @@ bool project_nodes_widget::render_node_context_menu(rttr::type type,
     return result;
 }
 
-void project_nodes_widget::render_create_parent_or_child_menu(
-    SB_OBJECT_CATEGORY category,
-    rttr::instance node,
-    node_creation_type creationType)
+void project_nodes_widget::render_create_parent_or_child_menu(SB_OBJECT_CATEGORY category,
+                                                              rttr::instance node,
+                                                              node_creation_type creationType)
 {
     m_renameID = 0;
 
-    const std::unordered_set<rttr::type> categoryTypes =
-        sbk::util::type_helper::getTypesFromCategory(category);
+    const std::unordered_set<rttr::type> categoryTypes = sbk::util::type_helper::getTypesFromCategory(category);
 
     sbk::engine::node* const castedNode = sbk::util::type_helper::getNodeFromInstance(node);
 
@@ -389,8 +349,7 @@ void project_nodes_widget::render_create_parent_or_child_menu(
     {
         for (const rttr::type type : categoryTypes)
         {
-            const rttr::string_view typeIndexName =
-                sbk::util::type_helper::get_display_name_from_type(type).data();
+            const rttr::string_view typeIndexName = sbk::util::type_helper::get_display_name_from_type(type).data();
 
             if (creationType == node_creation_type::NewChild && !castedNode->can_add_child_type(type))
             {
@@ -412,8 +371,7 @@ void project_nodes_widget::render_create_parent_or_child_menu(
                 setup_rename_node(newObject.get());
 
                 sbk::engine::node* newNode =
-                    sbk::reflection::cast<sbk::engine::node*, sbk::core::object*>(
-                        newObject.get());
+                    sbk::reflection::cast<sbk::engine::node*, sbk::core::object*>(newObject.get());
 
                 if (newNode)
                 {
@@ -421,8 +379,7 @@ void project_nodes_widget::render_create_parent_or_child_menu(
                     {
                         case node_creation_type::NewParent:
                         {
-                            if (sbk::engine::node_base* baseParent =
-                                    castedNode->get_parent())
+                            if (sbk::engine::node_base* baseParent = castedNode->get_parent())
                             {
                                 m_nodeToOpen = baseParent->get_database_id();
                                 baseParent->addChild(newNode);
@@ -455,8 +412,7 @@ void project_nodes_widget::render_create_parent_or_child_menu(
     }
 }
 
-std::string_view project_nodes_widget::create_parent_or_child_menu_name(
-    node_creation_type creationType)
+std::string_view project_nodes_widget::create_parent_or_child_menu_name(node_creation_type creationType)
 {
     std::string_view menuName;
 

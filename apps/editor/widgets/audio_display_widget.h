@@ -11,10 +11,7 @@ namespace sbk::engine
 class audio_display_widget : public gluten::widget
 {
 public:
-    audio_display_widget(gluten::widget_subsystem* parentSubsystem)
-        : widget(parentSubsystem)
-    {
-    }
+    audio_display_widget(gluten::widget_subsystem* parentSubsystem) : widget(parentSubsystem) {}
 
     audio_display_widget(widget* parent) : widget(parent) {}
 

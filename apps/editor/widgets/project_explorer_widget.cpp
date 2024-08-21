@@ -2,10 +2,10 @@
 
 #include "app/app.h"
 #include "gluten/utils/imgui_util_structures.h"
+#include "imgui.h"
 #include "managers/project_manager.h"
 #include "widgets/file_browser_widget.h"
 #include "widgets/project_nodes_widget.h"
-#include "imgui.h"
 
 void project_explorer_widget::start()
 {
@@ -31,7 +31,7 @@ void project_explorer_widget::render()
                 }
 
                 ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(1, 1, 1, 1));
-                
+
                 if (m_projectNodesWidget)
                 {
                     m_projectNodesWidget->render_page({SB_CATEGORY_SOUND});
@@ -80,9 +80,7 @@ void project_explorer_widget::render()
                 ImGui::EndTabItem();
             }
             ImGui::EndTabBar();
-
         }
-
     }
 
     ImGui::End();

@@ -19,16 +19,11 @@ public:
     virtual void start() override;
     virtual void render() override;
 
-    const std::string& get_selected_filename() const
-    {
-        return m_selectedFileString;
-    }
+    const std::string& get_selected_filename() const { return m_selectedFileString; }
 
 private:
     void unselect_item() noexcept;
-    ButtonState draw_wide_button(bool selected,
-                               uint32_t hoveredColor,
-                               uint32_t activeColor) const noexcept;
+    ButtonState draw_wide_button(bool selected, uint32_t hoveredColor, uint32_t activeColor) const noexcept;
     void show_item_context_menu(const std::filesystem::path& path) const noexcept;
     void show_nav_menu() noexcept;
     void show_directory_browser_list() noexcept;

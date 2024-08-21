@@ -1,28 +1,24 @@
 #include "file_browser_widget.h"
 
-#include "app/app.h"
 #include "IconsFontAwesome6.h"
 #include "IconsFontaudio.h"
-#include "managers/project_manager.h"
+#include "app/app.h"
 #include "imgui.h"
 #include "imgui_internal.h"
-
-#include "sound_bakery/editor/project/project.h"
+#include "managers/project_manager.h"
 #include "sound_bakery/editor/editor_defines.h"
+#include "sound_bakery/editor/project/project.h"
 #include "sound_bakery/node/container/sound_container.h"
 
-void file_browser_widget::unselect_item() noexcept
-{
-    m_selectedItemID = std::numeric_limits<uint32_t>::max();
-}
+void file_browser_widget::unselect_item() noexcept { m_selectedItemID = std::numeric_limits<uint32_t>::max(); }
 
-ButtonState file_browser_widget::draw_wide_button(
-    bool selected, uint32_t hovered_color, uint32_t active_color) const noexcept
+ButtonState file_browser_widget::draw_wide_button(bool selected,
+                                                  uint32_t hovered_color,
+                                                  uint32_t active_color) const noexcept
 {
     const auto& style = ImGui::GetStyle();
     auto cursor_pos   = ImGui::GetCursorPos();
-    ImGui::Dummy({ImGui::GetContentRegionMax().x,
-                  ImGui::GetTextLineHeight() + style.FramePadding.y * 2.0f});
+    ImGui::Dummy({ImGui::GetContentRegionMax().x, ImGui::GetTextLineHeight() + style.FramePadding.y * 2.0f});
 
     const auto item_min = ImGui::GetItemRectMin();
     const auto item_max = ImGui::GetItemRectMax();
@@ -50,8 +46,7 @@ ButtonState file_browser_widget::draw_wide_button(
     return ButtonState::NONE;
 }
 
-void file_browser_widget::show_item_context_menu(
-    const std::filesystem::path& path) const noexcept
+void file_browser_widget::show_item_context_menu(const std::filesystem::path& path) const noexcept
 {
     if (ImGui::Button("Rename"))
     {
@@ -74,10 +69,8 @@ void file_browser_widget::show_item_context_menu(
                 newPath /= prevExtension;
             }
 
-            const std::filesystem::path fullOldPath =
-                std::filesystem::absolute(m_currentDirectory / path);
-            const std::filesystem::path fullNewPath =
-                std::filesystem::absolute(m_currentDirectory / newPath);
+            const std::filesystem::path fullOldPath = std::filesystem::absolute(m_currentDirectory / path);
+            const std::filesystem::path fullNewPath = std::filesystem::absolute(m_currentDirectory / newPath);
 
             if (std::filesystem::exists(fullOldPath))
             {
@@ -108,8 +101,7 @@ void file_browser_widget::show_nav_menu() noexcept
 
     ImGui::SameLine();
     std::string display_text = m_currentDirectory.string();
-    display_text.erase(
-        0, m_topDir.string().length() - m_topDir.filename().string().length());
+    display_text.erase(0, m_topDir.string().length() - m_topDir.filename().string().length());
 
     static std::string match       = "/";
     static std::string replacement = " > ";
@@ -130,29 +122,23 @@ void file_browser_widget::show_directory_browser_list() noexcept
     static const auto file_color   = IM_COL32(0, 189, 255, 255);
     static const auto icon_size    = ImGui::GetTextLineHeight();
 
-    auto& style = ImGui::GetStyle();
-    const auto btn_hovered_color =
-        ImGui::ColorConvertFloat4ToU32(style.Colors[ImGuiCol_FrameBgHovered]);
-    const auto btn_active_color =
-        ImGui::ColorConvertFloat4ToU32(style.Colors[ImGuiCol_FrameBgActive]);
+    auto& style                  = ImGui::GetStyle();
+    const auto btn_hovered_color = ImGui::ColorConvertFloat4ToU32(style.Colors[ImGuiCol_FrameBgHovered]);
+    const auto btn_active_color  = ImGui::ColorConvertFloat4ToU32(style.Colors[ImGuiCol_FrameBgActive]);
 
-    if (ImGui::BeginTable("Dir Browser Table", 1,
-                          ImGuiTableFlags_Resizable | ImGuiTableFlags_RowBg))
+    if (ImGui::BeginTable("Dir Browser Table", 1, ImGuiTableFlags_Resizable | ImGuiTableFlags_RowBg))
     {
         uint32_t id = 0;
         if (m_currentDirectory.is_absolute())
         {
-            for (auto& p :
-                 std::filesystem::directory_iterator(m_currentDirectory))
+            for (auto& p : std::filesystem::directory_iterator(m_currentDirectory))
             {
                 ImGui::TableNextColumn();
 
                 const bool selected  = (id == m_selectedItemID);
-                const auto btn_state = draw_wide_button(
-                    selected, btn_hovered_color, btn_active_color);
+                const auto btn_state = draw_wide_button(selected, btn_hovered_color, btn_active_color);
 
-                if (selected && ImGui::IsItemHovered() &&
-                    ImGui::IsMouseReleased(ImGuiMouseButton_Left))
+                if (selected && ImGui::IsItemHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Left))
                 {
                     m_selectedFileString = p.path().string();
                 }
@@ -218,18 +204,14 @@ void file_browser_widget::show_directory_browser_list() noexcept
                     ImGui::EndPopup();
                 }
 
-                if (ImGui::BeginDragDropSource(
-                        ImGuiDragDropFlags_SourceAllowNullID))
+                if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
                 {
                     m_draggingFile = p.path().string();
 
                     // Set payload to carry the index of our item (could be
                     // anything)
-                    ImGui::SetDragDropPayload(
-                        sbk::editor::PayloadSound.c_str(),
-                        m_draggingFile.c_str(),
-                        (m_draggingFile.size() + 1) * sizeof(char),
-                        ImGuiCond_Once);
+                    ImGui::SetDragDropPayload(sbk::editor::PayloadSound.c_str(), m_draggingFile.c_str(),
+                                              (m_draggingFile.size() + 1) * sizeof(char), ImGuiCond_Once);
 
                     ImGui::TextUnformatted(m_draggingFile.c_str());
 
@@ -259,8 +241,7 @@ void file_browser_widget::render()
     show_nav_menu();
     ImGui::Separator();
 
-    if (ImGui::BeginTable("ImGroot Main", 1,
-                          ImGuiTableFlags_Resizable | ImGuiTableFlags_ScrollY))
+    if (ImGui::BeginTable("ImGroot Main", 1, ImGuiTableFlags_Resizable | ImGuiTableFlags_ScrollY))
     {
         ImGui::TableSetupColumn("Files");
 

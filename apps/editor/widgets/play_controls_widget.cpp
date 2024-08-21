@@ -2,9 +2,8 @@
 
 #include "app/app.h"
 #include "audio_display_widget.h"
-#include "managers/project_manager.h"
 #include "imgui.h"
-
+#include "managers/project_manager.h"
 #include "sound_bakery/editor/project/project.h"
 #include "sound_bakery/event/event.h"
 #include "sound_bakery/gameobject/gameobject.h"
@@ -14,7 +13,6 @@
 #include "sound_bakery/util/type_helper.h"
 #include "sound_bakery/voice/node_instance.h"
 #include "sound_bakery/voice/voice.h"
-#include "sound_bakery/editor/project/project.h"
 
 #include <rttr/type>
 
@@ -31,7 +29,7 @@ void player_widget::render()
 {
     ImGui::Begin("Player");
 
-    selection& selection    = get_app()->get_manager_by_class<project_manager>()->get_selection();
+    selection& selection                   = get_app()->get_manager_by_class<project_manager>()->get_selection();
     std::optional<rttr::type> selectedType = selection.selected_type();
 
     const bool isSelected = !!selection.get_selected();
@@ -45,7 +43,7 @@ void player_widget::render()
         {
             sbk::engine::system::get()->get_listener_game_object()->stop_all();
         }
-        
+
         s_lastPlayableSelection = selection.get_selected();
     }
     else if (!isSelected)
@@ -57,10 +55,9 @@ void player_widget::render()
 
     if (isSelected && !!s_lastPlayableSelection)
     {
-        ImGui::Text("%s", s_lastPlayableSelection
-                              ->try_convert_object<sbk::core::database_object>()
-                              ->get_database_name()
-                              .data());
+        ImGui::Text(
+            "%s",
+            s_lastPlayableSelection->try_convert_object<sbk::core::database_object>()->get_database_name().data());
     }
 
     if (ImGui::IsKeyReleased(ImGuiKey_Space))
@@ -123,7 +120,8 @@ void player_widget::render()
 
                     if (ImGui::BeginCombo("Selected", selectedIntParameterValue->get_database_name().data()))
                     {
-                        for (sbk::core::database_ptr<sbk::engine::named_parameter_value> parameterValue : intParameter->get_values())
+                        for (sbk::core::database_ptr<sbk::engine::named_parameter_value> parameterValue :
+                             intParameter->get_values())
                         {
                             if (parameterValue.lookup() == false)
                             {
@@ -144,8 +142,7 @@ void player_widget::render()
 
                 ImGui::EndTable();
             }
-            
-            
+
             ImGui::EndTabItem();
         }
 
@@ -179,10 +176,7 @@ void player_widget::play_selected()
     }
 }
 
-void player_widget::stop_selected()
-{ 
-    sbk::engine::system::get()->get_listener_game_object()->stop_all(); 
-}
+void player_widget::stop_selected() { sbk::engine::system::get()->get_listener_game_object()->stop_all(); }
 
 void player_widget::toggle_play_selected()
 {

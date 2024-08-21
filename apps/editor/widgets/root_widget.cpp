@@ -1,12 +1,11 @@
 #include "root_widget.h"
 
-#include "app/app.h"
-#include "managers/app_manager.h"
-#include "managers/project_manager.h"
 #include "IconsFontAwesome6.h"
 #include "IconsFontaudio.h"
+#include "app/app.h"
 #include "imgui.h"
-
+#include "managers/app_manager.h"
+#include "managers/project_manager.h"
 #include "sound_bakery/editor/project/project.h"
 
 void root_widget::render_menu()
@@ -37,8 +36,7 @@ void root_widget::render_menu()
                     get_app()->get_manager_by_class<project_manager>()->save_project();
                 }
 
-                if (ImGui::MenuItem(ICON_FAD_SAVEAS " Save As...",
-                                    "Shift+Ctrl+S"))
+                if (ImGui::MenuItem(ICON_FAD_SAVEAS " Save As...", "Shift+Ctrl+S"))
                 {
                 }
                 ImGui::PopFont();
@@ -93,7 +91,6 @@ void root_widget::render_menu()
 
             ImGui::EndMenu();
         }
-
     }
 
     if (showAbout)
@@ -101,12 +98,10 @@ void root_widget::render_menu()
         ImGui::OpenPopup("About");
     }
 
-    if (ImGui::BeginPopupModal("About", NULL,
-                               ImGuiWindowFlags_AlwaysAutoResize))
+    if (ImGui::BeginPopupModal("About", NULL, ImGuiWindowFlags_AlwaysAutoResize))
     {
-        static std::string aboutText(
-            "Atlas is an open source audio middleware alternatie to Wwise and "
-            "FMOD.\nWritten by James Kelly.");
+        static std::string aboutText("Atlas is an open source audio middleware alternatie to Wwise and "
+                                     "FMOD.\nWritten by James Kelly.");
 
         auto windowWidth = ImGui::GetWindowSize().x;
         auto textWidth   = ImGui::CalcTextSize(aboutText.c_str()).x;
