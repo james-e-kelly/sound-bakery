@@ -179,6 +179,7 @@ namespace gluten
         ImRect get_element_rect_local() const; //< If the element has rendered before, return the box local to the current window
 
 		bool render(const ImRect& parent);
+        bool render_window();   //< Render using the window as the container
 
         void set_element_alignment(const ImVec2& alignment) { m_alignment = alignment; }
         virtual void set_element_max_size(const ImVec2& maxSize);

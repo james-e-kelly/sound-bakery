@@ -9,6 +9,11 @@ gluten::layout::layout(const layout_type& layoutType) : m_layoutType(layoutType)
 
 gluten::layout::layout(const layout_type& layoutType, const anchor_preset& anchorPreset) : element(anchorPreset) , m_layoutType(layoutType) { }
 
+gluten::layout::layout(const anchor_preset& anchorPreset)
+    : element(anchorPreset), m_layoutType(layout_type::left_to_right)
+{
+}
+
 void gluten::layout::set_layout_type(const layout_type& type) { m_layoutType = type; }
 
 bool gluten::layout::render_layout_element_full(element* element)

@@ -153,7 +153,18 @@ bool gluten::element::render(const ImRect& parent)
         }
     }
 
+    ImGui::SetCursorScreenPos(ImVec2(elementBox.Min.x, elementBox.Max.y));
+
     return activated;
+}
+
+bool gluten::element::render_window()
+{
+    const ImGuiWindow* window = ImGui::GetCurrentWindow();
+    ImRect windowRect = window->WorkRect;
+    windowRect.Add(ImVec2(window->Pos.x, window->Pos.y + window->TitleBarHeight + window->MenuBarHeight));
+
+    return render(windowRect);
 }
 
 void gluten::element::set_element_max_size(const ImVec2& maxSize) { m_maxSize = maxSize; }

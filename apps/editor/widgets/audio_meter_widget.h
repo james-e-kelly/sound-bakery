@@ -1,6 +1,7 @@
 #pragma once
 
 #include "gluten/widgets/widget.h"
+#include "sound_bakery/system.h"
 
 class sc_dsp;
 
@@ -14,4 +15,5 @@ public:
 
 private:
     sc_dsp* m_meterDsp = nullptr;
+    std::array<float, SC_DSP_METER_MAX_CHANNELS> m_rmsVolumes;
 };

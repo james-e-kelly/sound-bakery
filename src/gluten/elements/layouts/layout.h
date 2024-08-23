@@ -21,6 +21,7 @@ namespace gluten
         layout() = default;
         layout(const layout_type& layoutType);
         layout(const layout_type& layoutType, const anchor_preset& anchorPreset);
+        layout(const anchor_preset& anchorPreset);  //< New layout with left_to_right layout and defined anchor preset
 
         void set_layout_type(const layout_type& type);
 

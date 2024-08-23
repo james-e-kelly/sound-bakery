@@ -428,6 +428,11 @@ sc_result sc_system_play_sound(
         ma_result attachResult = ma_node_attach_output_bus(*instance, 0, parent->tail->state->userData, 0);
         SC_CHECK_RESULT(attachResult);
     }
+    else if (system->masterNodeGroup != NULL)
+    {
+        ma_result attachResult = ma_node_attach_output_bus(*instance, 0, system->masterNodeGroup->tail->state->userData, 0);
+        SC_CHECK_RESULT(attachResult);
+    }
 
     if (paused == MA_FALSE)
     {
@@ -443,6 +448,8 @@ sc_result sc_system_create_node_group(sc_system* system, sc_node_group** nodeGro
     SC_CHECK_ARG(system != NULL);
     SC_CHECK_ARG(nodeGroup != NULL);
 
+    sc_node_group* const master = system->masterNodeGroup;
+
     sc_result result = MA_ERROR;
 
     SC_CREATE(*nodeGroup, sc_node_group);
@@ -453,6 +460,11 @@ sc_result sc_system_create_node_group(sc_system* system, sc_node_group** nodeGro
 
     (*nodeGroup)->head = (*nodeGroup)->fader;
     (*nodeGroup)->tail = (*nodeGroup)->fader;
+
+    if (master != NULL)
+    {
+        sc_node_group_set_parent(*nodeGroup, master);
+    }
 
     DEBUG_ASSERT(result == MA_SUCCESS);
 
@@ -915,7 +927,8 @@ static void sc_meter_node_process_pcm_frames(
     const ma_uint32 minChannels = SC_MIN(inputChannels, SC_DSP_METER_MAX_CHANNELS);
 
     float channelSums[SC_DSP_METER_MAX_CHANNELS];
-    MA_ZERO_OBJECT(channelSums);
+    MA_ZERO_MEMORY(channelSums, SC_DSP_METER_MAX_CHANNELS * sizeof(float));
+    
 
     for (ma_uint32 sampleIndex = 0; sampleIndex < inputFrames; ++sampleIndex)
     {
@@ -928,7 +941,10 @@ static void sc_meter_node_process_pcm_frames(
 
     for (ma_uint32 channelIndex = 0; channelIndex < minChannels; ++channelIndex)
     {
-        const float rms = sqrtf(channelSums[channelIndex] / (float)inputFrames);
+        const float channelSum = channelSums[channelIndex];
+        const float squareRoot = sqrtf(channelSum / (float)inputFrames);
+
+        const float rms = squareRoot;
         ma_atomic_store_explicit_f32(&meter->rmsLevels[channelIndex].value, rms, ma_atomic_memory_order_relaxed);
     }
 }
@@ -974,7 +990,7 @@ sc_result sc_dsp_get_metering_info(sc_dsp* dsp, ma_uint32 channelIndex, sc_dsp_m
 {
     SC_CHECK_ARG(dsp != NULL);
     SC_CHECK_ARG(dsp->type == SC_DSP_TYPE_METER);
-    SC_CHECK_ARG(channelIndex > 0);
+    SC_CHECK_ARG(channelIndex >= 0);
     SC_CHECK_ARG(channelIndex <= SC_DSP_METER_MAX_CHANNELS);
     SC_CHECK_ARG(meterType >= 0);
     SC_CHECK_ARG(meterType < SC_DSP_METER_NUM_PARAM);
