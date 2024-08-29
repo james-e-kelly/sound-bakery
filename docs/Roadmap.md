@@ -1,29 +1,53 @@
 # Roadmap {#Roadmap}
 
-## v1.0.0
+## 0.1.0 MVP
 
-- Adaptive audio
-    - Sound selection
-    - Events
+> The MVP release will mark the first version that provides a complete game audio experience. Users can use an editor tool to create playback logic, package the audio, and play it in a consuming application.
+
+- Audio playback
+- Editor application
+- Adaptive logic
     - Parameters
-- Soundbanks
-- Vorbis encoding
-- Profiler
+    - Audio nodes
+    - Events
+- Packaging
+    - Encoding
+    - Soundbanks
+- Basic runtime
 
-### v1.1.0
+## 1.0.0
 
-- Opus encoding
+> The 1.0.0 release marks the first version that is semi-comparable to the offerings of Wwise or FMOD. Users can create adaptive audio and music, optimise their content and package, run their audio inside leading engines, and debug at runtime.
 
-## v2.0.0
+- Adaptive music
+    - Editor
+- Profiling tools
+    - CPU insights
+    - Memory insights
+    - Voice graph
+    - Metering
+    - Remote debugging
+- Encoding formats
+    - ADPCM
+    - Vorbis
+    - Opus
+- Language bindings
+    - C#
+    - Python
+    - Rust
+- Engine integrations
+    - UE5
+    - Unity
+    - Godot
+ 
+## 1.0.0+
 
-- Music engine
-- Remote profiling
+> Here are future features Sound Bakery aims to provide.
 
-## v3.0.0
+- Source control integration
+- Auxillary outputs
+- Geometric simulation
+    - Runtime tool for occlusion and diffraction 
+- Numeric simulation
+    - Baked tool for occlusion and diffraction
 
-- Muti-output support
-- Controller haptics support
-
-## v4.0.0
-
-- Spatial audio library
