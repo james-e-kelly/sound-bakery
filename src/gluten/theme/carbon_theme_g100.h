@@ -161,7 +161,7 @@ namespace gluten::theme::carbon_g100
 
     constexpr ImVec4 missingColorColor = magenta50;
 
-    void apply_theme() 
+    inline void apply_theme() 
     { 
         ImGuiStyle* style = &ImGui::GetStyle();
 
@@ -210,9 +210,9 @@ namespace gluten::theme::carbon_g100
         style->Colors[ImGuiCol_BorderShadow] = shadow;
 
         // Scrollbar
-        style->Colors[ImGuiCol_ScrollbarGrab]        = interactive;
-        style->Colors[ImGuiCol_ScrollbarGrabHovered] = interactiveHover;
-        style->Colors[ImGuiCol_ScrollbarGrabActive]  = interactiveActive;
+        style->Colors[ImGuiCol_ScrollbarGrab]        = layer03;
+        style->Colors[ImGuiCol_ScrollbarGrabHovered] = layerHover03;
+        style->Colors[ImGuiCol_ScrollbarGrabActive]  = layerActive03;
 
         style->Colors[ImGuiCol_CheckMark]        = missingColorColor;
         style->Colors[ImGuiCol_SliderGrab]       = field03;

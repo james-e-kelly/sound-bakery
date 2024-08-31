@@ -1,6 +1,8 @@
 #include "project_nodes_widget.h"
 
 #include "app/app.h"
+#include "gluten/theme/carbon_theme_g100.h"
+#include "gluten/utils/imgui_util_structures.h"
 #include "imgui.h"
 #include "imgui_internal.h"
 #include "managers/project_manager.h"
@@ -26,6 +28,7 @@ static const std::vector<SB_OBJECT_CATEGORY> s_soundbankPageCategories{SB_CATEGO
 
 void project_nodes_widget::render_page(const std::vector<SB_OBJECT_CATEGORY>& categories)
 {
+    ImGui::BeginChild("##page");
     for (const SB_OBJECT_CATEGORY category : categories)
     {
         rttr::string_view categoryName = sbk::util::type_helper::getObjectCategoryName(category);
@@ -49,6 +52,7 @@ void project_nodes_widget::render_page(const std::vector<SB_OBJECT_CATEGORY>& ca
             ImGui::TreePop();
         }
     }
+    ImGui::EndChild();
 }
 
 void project_nodes_widget::render_objects_page() { render_page(s_objectPageCategories); }
@@ -61,6 +65,35 @@ void project_nodes_widget::render_category(SB_OBJECT_CATEGORY category)
 {
     const std::unordered_set<sbk::core::object*> categoryObjects =
         sbk::engine::system::get()->get_objects_of_category(category);
+
+
+    ImDrawList* draw_list = ImGui::GetWindowDrawList();
+
+    float x1             = ImGui::GetCurrentWindow()->WorkRect.Min.x;
+    float x2             = ImGui::GetCurrentWindow()->WorkRect.Max.x;
+    float item_spacing_y = ImGui::GetStyle().ItemSpacing.y;
+    float item_offset_y  = -item_spacing_y * 0.5f;
+    float line_height    = ImGui::GetTextLineHeight() + item_spacing_y;
+
+    float y0 = ImGui::GetCursorScreenPos().y + (float)(int)item_offset_y;
+   
+    const auto pos = ImGui::GetCursorPos();
+    ImGuiListClipper clipper;
+    clipper.Begin(categoryObjects.size(), line_height);
+    while (clipper.Step())
+    {
+        for (int row_n = clipper.DisplayStart; row_n < clipper.DisplayEnd; ++row_n)
+        {
+            ImU32 col = (row_n & 1) ? ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::layer02)
+                                    : ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::layer03);
+            if ((col & IM_COL32_A_MASK) == 0)
+                continue;
+            float y1 = y0 + (line_height * static_cast<float>(row_n));
+            float y2 = y1 + line_height;
+            draw_list->AddRectFilled(ImVec2(x1, y1), ImVec2(x2, y2), col);
+        }
+    }
+    ImGui::SetCursorPos(pos);
 
     for (sbk::core::object* const object : categoryObjects)
     {
@@ -97,8 +130,8 @@ void project_nodes_widget::render_single_node(rttr::type type, rttr::instance in
 
             handle_open_node(object);
 
-            ImGuiTreeNodeFlags flags =
-                ImGuiTreeNodeFlags_None | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_NavLeftJumpsBackHere;
+            ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_None |
+                                       ImGuiTreeNodeFlags_NavLeftJumpsBackHere | ImGuiTreeNodeFlags_SpanFullWidth;
 
             if (hasChildren || object->getType() == sbk::engine::named_parameter::type())
             {

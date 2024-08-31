@@ -19,16 +19,17 @@ void project_explorer_widget::render()
 {
     gluten::imgui::scoped_font audioFont(get_app()->get_font(gluten::fonts::regular_audio_icons));
 
+    // Style change to make the tree/table flush with the tab buttons
+    const ImVec2 currentItemSpacing = ImGui::GetStyle().ItemSpacing;
+    gluten::imgui::scoped_style noYItemSpacing(ImGuiStyleVar_ItemSpacing, ImVec2(currentItemSpacing.x, 0));
+
     if (ImGui::Begin("Project Explorer"))
     {
         if (ImGui::BeginTabBar("Project Explorer Tabs", ImGuiTabBarFlags_None))
         {
             if (ImGui::BeginTabItem("Audio"))
             {
-                /*if (ImGui::IsItemFocused())
-                {
-                    get_app()->get_manager_by_class<project_manager>()->get_selection().selected_object(nullptr);
-                }*/
+                gluten::imgui::scoped_style resetItemSpacing(ImGuiStyleVar_ItemSpacing, currentItemSpacing);
 
                 ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(1, 1, 1, 1));
 
@@ -42,10 +43,7 @@ void project_explorer_widget::render()
             }
             if (ImGui::BeginTabItem("Nodes"))
             {
-                /*if (ImGui::IsItemFocused())
-                {
-                    get_app()->get_manager_by_class<project_manager>()->get_selection().selected_object(nullptr);
-                }*/
+                gluten::imgui::scoped_style resetItemSpacing(ImGuiStyleVar_ItemSpacing, currentItemSpacing);
 
                 if (m_projectNodesWidget)
                 {
@@ -55,10 +53,7 @@ void project_explorer_widget::render()
             }
             if (ImGui::BeginTabItem("Events"))
             {
-                /*if (ImGui::IsItemFocused())
-                {
-                    get_app()->get_manager_by_class<project_manager>()->get_selection().selected_object(nullptr);
-                }*/
+                gluten::imgui::scoped_style resetItemSpacing(ImGuiStyleVar_ItemSpacing, currentItemSpacing);
 
                 if (m_projectNodesWidget)
                 {
@@ -68,10 +63,7 @@ void project_explorer_widget::render()
             }
             if (ImGui::BeginTabItem("SoundBanks"))
             {
-                /*if (ImGui::IsItemFocused())
-                {
-                    get_app()->get_manager_by_class<project_manager>()->get_selection().selected_object(nullptr);
-                }*/
+                gluten::imgui::scoped_style resetItemSpacing(ImGuiStyleVar_ItemSpacing, currentItemSpacing);
 
                 if (m_projectNodesWidget)
                 {
