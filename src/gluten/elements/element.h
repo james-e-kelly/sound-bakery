@@ -187,7 +187,7 @@ namespace gluten
 	protected:
         void set_element_desired_size(const ImVec2& desiredSize) { m_desiredSize = desiredSize; }
 
-		virtual bool render_element(const ImRect& parent) { return false; }
+		virtual bool render_element(const ImRect& elementBox) { return false; }
 
         static ImVec2 get_anchor_start_position(const ImVec2& containerPosition,
                                             const ImVec2& containerSize,

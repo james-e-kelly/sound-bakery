@@ -37,6 +37,8 @@ namespace gluten
 
         void reset_layout(const ImRect& parent);
 
+        void finish_layout();   //< Resets cursor so future elements are drawn after this layout area
+
         ImVec2 get_current_layout_pos() const
         {
             return m_currentLayoutPos.has_value() ? m_currentLayoutPos.value() : ImVec2(0, 0);

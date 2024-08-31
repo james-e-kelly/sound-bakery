@@ -21,6 +21,7 @@ set(GLUTEN_SOURCES
   elements/image_button.cpp
   elements/text.cpp
   elements/image.cpp
+  elements/slider.cpp
   elements/layouts/layout.cpp
   managers/manager.cpp
   subsystems/renderer_subsystem.cpp
@@ -39,6 +40,7 @@ set(GLUTEN_HEADERS
   elements/image_button.h
   elements/text.h
   elements/image.h
+  elements/slider.h
   elements/layouts/layout.h
   managers/manager.h
   subsystems/renderer_subsystem.h

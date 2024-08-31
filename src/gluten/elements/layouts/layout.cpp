@@ -138,6 +138,14 @@ void gluten::layout::reset_layout(const ImRect& parent)
     m_firstLayout = true;
 }
 
+void gluten::layout::finish_layout()
+{
+    if (m_currentRect.has_value())
+    {
+        ImGui::SetCursorScreenPos(m_currentRect.value().GetBL());
+    }
+}
+
 ImVec2 gluten::layout::get_current_layout_pos_local() const
 {
     ImVec2 layoutPos = get_current_layout_pos();

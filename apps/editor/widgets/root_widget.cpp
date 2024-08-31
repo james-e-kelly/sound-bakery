@@ -77,9 +77,9 @@ void root_widget::render_menu()
             if (ImGui::MenuItem("View Documentation"))
             {
                 ImGuiContext* const context = ImGui::GetCurrentContext();
-                if (context->IO.PlatformOpenInShellFn != NULL)
+                if (context->PlatformIO.Platform_OpenInShellFn != NULL)
                 {
-                    context->IO.PlatformOpenInShellFn(context, "https://soundbakery.jameskelly.audio");
+                    context->PlatformIO.Platform_OpenInShellFn(context, "https://soundbakery.jameskelly.audio");
                 }
             }
 
