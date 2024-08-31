@@ -30,8 +30,10 @@ namespace gluten
 		int get_width() const { return m_width; }
 		int get_height() const { return m_height; }
 
+		static auto load_image_data(unsigned char* data, int dataLength, int& width, int& height) -> data_ptr;
+
 	private:
-        data_ptr get_image_data(unsigned char* data, int dataLength);
+        auto get_image_data(unsigned char* data, int dataLength) -> data_ptr;
         void bind_image_data(const data_ptr& imageData);
 
 		uint32_t m_openGlId = 0;

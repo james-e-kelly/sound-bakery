@@ -223,9 +223,10 @@ namespace gluten::theme::carbon_g100
         style->Colors[ImGuiCol_ButtonHovered] = interactiveHover;
         style->Colors[ImGuiCol_ButtonActive]  = interactiveActive;
 
-        style->Colors[ImGuiCol_Header]        = field01;
-        style->Colors[ImGuiCol_HeaderHovered] = fieldHover01;
-        style->Colors[ImGuiCol_HeaderActive]  = field01;
+        // Collapsing Headers
+        style->Colors[ImGuiCol_Header]        = background;
+        style->Colors[ImGuiCol_HeaderHovered] = backgroundHover;
+        style->Colors[ImGuiCol_HeaderActive]  = backgroundActive;
 
         style->Colors[ImGuiCol_ResizeGrip]        = interactive;
         style->Colors[ImGuiCol_ResizeGripHovered] = interactiveHover;

@@ -6,6 +6,7 @@
 #include "gluten/utils/imgui_util_functions.h"
 #include "gluten/utils/imgui_util_structures.h"
 #include "gluten/theme/theme.h"
+#include "gluten/theme/carbon_theme_g100.h"
 #include "gluten/theme/window_images.embed"
 #include "gluten/theme/walnut_icon.embed"
 
@@ -121,10 +122,14 @@ void root_widget::start()
     m_windowMaximiseIcon->set_element_max_size(ImVec2(14, 14));
     m_windowRestoreIcon->set_element_max_size(ImVec2(16, 16));
 
-    m_windowCloseIcon->set_element_hover_color(theme::ColorWithMultipliedValue(gluten::theme::titlebar, 2.f));
-    m_windowMinimiseIcon->set_element_hover_color(theme::ColorWithMultipliedValue(gluten::theme::titlebar, 2.f));
-    m_windowMaximiseIcon->set_element_hover_color(theme::ColorWithMultipliedValue(gluten::theme::titlebar, 2.f));
-    m_windowRestoreIcon->set_element_hover_color(theme::ColorWithMultipliedValue(gluten::theme::titlebar, 2.f));
+    m_windowCloseIcon->set_element_hover_color(
+        theme::ColorWithMultipliedValue(ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::background), 2.f));
+    m_windowMinimiseIcon->set_element_hover_color(
+        theme::ColorWithMultipliedValue(ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::background), 2.f));
+    m_windowMaximiseIcon->set_element_hover_color(
+        theme::ColorWithMultipliedValue(ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::background), 2.f));
+    m_windowRestoreIcon->set_element_hover_color(
+        theme::ColorWithMultipliedValue(ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::background), 2.f));
 }
 
 void root_widget::render()
@@ -136,7 +141,7 @@ void root_widget::render()
                                                     ImGuiStyleVar_WindowRounding, 0.0f, 
                                                     ImGuiStyleVar_WindowBorderSize, 0.0f);
 
-        gluten::imgui::scoped_color clearHeaderColor(ImGuiCol_WindowBg, gluten::theme::missingMesh);
+        gluten::imgui::scoped_color clearHeaderColor(ImGuiCol_WindowBg, gluten::theme::invalidPrefab);
 
             ImGuiStyle& style                 = ImGui::GetStyle();
         style.Colors[ImGuiCol_WindowBg].w = 0.0f;
@@ -204,7 +209,7 @@ void root_widget::draw_titlebar()
     const ImRect menuBarRect  = root_widget_utils::get_menu_bar_rect(titleBarRect);
 
     element topBarBackground(element::anchor_preset::stretch_full);
-    topBarBackground.set_element_background_color(gluten::theme::titlebar);
+    topBarBackground.set_element_background_color(ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::background));
     topBarBackground.render(titleBarRect);
 
     m_windowIcon->render(logoRect);

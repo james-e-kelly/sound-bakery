@@ -9,6 +9,8 @@ namespace gluten::imgui
     void shift_cursor_y(float distance);
     void shift_cursor(float x, float y);
 
+    void indent_cursor();
+
     ImRect get_item_rect();
     ImRect rect_expanded(const ImRect& rect, float x, float y);
     ImRect rect_offset(const ImRect& rect, float x, float y);

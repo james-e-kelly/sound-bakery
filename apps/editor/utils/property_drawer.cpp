@@ -1,6 +1,7 @@
 #include "property_drawer.h"
 
 #include "imgui.h"
+#include "gluten/utils/imgui_util_functions.h"
 #include "sound_bakery/core/object/object.h"
 #include "sound_bakery/editor/editor_defines.h"
 #include "sound_bakery/node/node.h"
@@ -11,16 +12,21 @@ void property_drawer::draw_object(rttr::type type, rttr::instance instance)
 {
     ImGui::PushID(type.get_name().data());
 
-    if (ImGui::BeginTable(
-            "Properties", 2,
-            ImGuiTableFlags_Resizable | ImGuiTableFlags_BordersInnerH | ImGuiTableFlags_SizingStretchProp))
+    if (ImGui::CollapsingHeader("General", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        for (rttr::property property : type.get_properties())
-        {
-            draw_property(property, instance);
-        }
+        gluten::imgui::indent_cursor();
 
-        ImGui::EndTable();
+        if (ImGui::BeginTable(
+                "Properties", 2,
+                ImGuiTableFlags_Resizable | ImGuiTableFlags_BordersInnerH | ImGuiTableFlags_SizingStretchProp))
+        {
+            for (rttr::property property : type.get_properties())
+            {
+                draw_property(property, instance);
+            }
+
+            ImGui::EndTable();
+        }
     }
 
     ImGui::PopID();

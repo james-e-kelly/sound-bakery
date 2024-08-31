@@ -18,6 +18,11 @@ void gluten::imgui::shift_cursor(float x, float y)
     ImGui::SetCursorPos(ImVec2(cursor.x + x, cursor.y + y));
 }
 
+void gluten::imgui::indent_cursor()
+{ 
+    shift_cursor_x(ImGui::GetStyle().IndentSpacing);
+}
+
 ImRect gluten::imgui::get_item_rect() 
 { 
     return ImRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax()); 

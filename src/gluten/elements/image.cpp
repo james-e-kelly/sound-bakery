@@ -70,10 +70,15 @@ namespace gluten
         return false;
     }
 
+    auto image::load_image_data(unsigned char* data, int dataLength, int& width, int& height) -> data_ptr
+    {
+        int channelsInFile = 0;
+        return image::data_ptr(stbi_load_from_memory(data, dataLength, &width, &height, &channelsInFile, 4));
+    }
+
 	image::data_ptr image::get_image_data(unsigned char* data, int dataLength)
 	{
-        int channelsInFile = 0;
-        return image::data_ptr(stbi_load_from_memory(data, dataLength, &m_width, &m_height, &channelsInFile, 4));
+        return load_image_data(data, dataLength, m_width, m_height);
 	}
 
 	void image::bind_image_data(const image::data_ptr& imageData)

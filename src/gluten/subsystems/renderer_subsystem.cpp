@@ -18,6 +18,8 @@
 
 #define RGB_TO_FLOAT(rgb) (rgb) / 255.0F
 
+CMRC_DECLARE(sbk::icon_images);
+
 namespace glslVersion
 {
 #if defined(__APPLE__)
@@ -241,6 +243,19 @@ int renderer_subsystem::init()
         {
             // Create window with graphics context
             m_window = window_guard(1920, 1080, "Sound Bakery");
+
+            const cmrc::embedded_filesystem embeddedfilesystem = cmrc::sbk::icon_images::get_filesystem();
+            const cmrc::file logoFile                          = embeddedfilesystem.open("sound-bakery-logo.png");
+            assert(logoFile.size() > 0);
+
+            int width, height;
+            gluten::image::data_ptr windowIconImageData = image::load_image_data((unsigned char*)logoFile.begin(), logoFile.size(), width, height);
+
+            GLFWimage windowIconImage;
+            windowIconImage.pixels = windowIconImageData.get();
+            windowIconImage.width  = width;
+            windowIconImage.height = height;
+            glfwSetWindowIcon(m_window.m_window, 1, &windowIconImage);
 
             return 0;
         }
