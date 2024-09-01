@@ -25,23 +25,14 @@ void details_widget::render()
         {
             if (ImGui::CollapsingHeader("Details", ImGuiTreeNodeFlags_DefaultOpen))
             {
-                gluten::imgui::indent_cursor();
-
-                if (ImGui::BeginChild("##DetailsChild"))
+                selection& selection = projectManager->get_selection();
+                if (sbk::core::object* selected = selection.get_selected())
                 {
-                    selection& selection = projectManager->get_selection();
-                    if (sbk::core::object* selected = selection.get_selected())
-                    {
-                        property_drawer::draw_object(selected->getType(), selected);
-                        ImGui::Separator();
-                        method_drawer::draw_object(selected->getType(), selected);
-                    }
-                    else
-                    {
-                        ImGui::TextUnformatted("Nothing Selected");
-                    }
+                    gluten::imgui::indent_cursor();
+                    property_drawer::draw_object(selected->getType(), selected);
+                    gluten::imgui::indent_cursor();
+                    method_drawer::draw_object(selected->getType(), selected);
                 }
-                ImGui::EndChild();
             }
         }
     }

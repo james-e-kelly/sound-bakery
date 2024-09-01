@@ -30,19 +30,19 @@ namespace gluten
         template <>
         bool render_slider<float>(const ImRect& elementBox)
         {
-            return ImGui::DragFloat(m_label, m_value, 1.0f, m_min, m_max);
+            return ImGui::SliderFloat(m_label, m_value, m_min, m_max);
         }
 
         template <>
         bool render_slider<double>(const ImRect& elementBox)
         {
-            return ImGui::DragScalar(m_label, ImGuiDataType_Double, m_value, 1.0f, &m_min, &m_max);
+            return ImGui::SliderScalar(m_label, ImGuiDataType_Double, m_value, &m_min, &m_max);
         }
 
         template <>
         bool render_slider<int>(const ImRect& elementBox)
         {
-            return ImGui::DragInt(m_label, m_value, 1.0f, m_min, m_max);
+            return ImGui::SliderInt(m_label, m_value, m_min, m_max);
         }
 
 	private:

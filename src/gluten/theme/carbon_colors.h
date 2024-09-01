@@ -1,6 +1,7 @@
 #pragma once
 
 #include "imgui.h"
+#include "implot.h"
 
 namespace gluten::theme
 {

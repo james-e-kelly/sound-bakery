@@ -11,6 +11,13 @@ gluten::button::button(const char* name, bool invisible, std::function<void()> o
 
 bool gluten::button::render_element(const ImRect& elementRect)
 {
+    const ImVec2 size = elementRect.GetSize();
+
+    if (size.x < 0.1f || size.y < 0.1f)
+    {
+        return false;
+    }
+
     if (m_invisible)
     {
         ImGui::SetNextItemAllowOverlap();

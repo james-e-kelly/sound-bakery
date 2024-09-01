@@ -33,19 +33,23 @@ static const char* rootWindowName = "RootDockSpace";
 
 namespace root_widget_utils
 {
-    constexpr float titleBarHeight = 64.0f;
+    static float titleBarHeight()
+    {
+        ImGuiContext* context = ImGui::GetCurrentContext();
+        return context == nullptr ? 0.0f : context->FontSize * 2.5f;
+    }
     constexpr float titleLogoWidth = 64.0f;
     constexpr float menuBarPaddingWithLogo   = 6.0f;
     constexpr float menuBarStartWidth = titleLogoWidth + 6.0f;
     constexpr float titleBarButtonsAreaWidth = 256.0f;
     constexpr float maximisedYOffset         = 6.0f;
-    constexpr float menuBarYOffset           = titleBarHeight / 8.0f;
+    static float menuBarYOffset           = titleBarHeight() / 8.0f;
 
     static ImRect get_titlebar_rect(const ImGuiWindow* const window)
     {
         ImRect windowRect = window->Rect();
         windowRect.Add(window->Pos);
-        windowRect.Max.y = windowRect.Min.y + root_widget_utils::titleBarHeight;
+        windowRect.Max.y = windowRect.Min.y + root_widget_utils::titleBarHeight();
 
         if (gluten::app::get()->is_maximized())
         {
@@ -87,7 +91,7 @@ namespace root_widget_utils
     static ImRect get_side_bar_rect(const ImRect& titlebarRect)
     {
         ImRect sideBarRect = titlebarRect;
-        sideBarRect.Max.x  = sideBarRect.Min.x + titleBarHeight + menuBarPaddingWithLogo;
+        sideBarRect.Max.x  = sideBarRect.Min.x + titleBarHeight() + menuBarPaddingWithLogo;
         sideBarRect.Min.y  = titlebarRect.Max.y;
         sideBarRect.Max.y  = titlebarRect.Max.y + ImGui::GetWindowHeight();
         return sideBarRect;
@@ -209,7 +213,7 @@ void root_widget::draw_titlebar()
     const ImRect menuBarRect  = root_widget_utils::get_menu_bar_rect(titleBarRect);
 
     element topBarBackground(element::anchor_preset::stretch_full);
-    topBarBackground.set_element_background_color(ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::background));
+    topBarBackground.set_element_background_color(ImGui::ColorConvertFloat4ToU32(ImGui::GetStyleColorVec4(ImGuiCol_TitleBg)));
     topBarBackground.render(titleBarRect);
 
     m_windowIcon->render(logoRect);
@@ -228,14 +232,21 @@ void root_widget::draw_titlebar()
 
     ImGui::SetCursorScreenPos(menuBarRect.Min);
 
-    ImGui::BeginGroup();
-    if (gluten::imgui::begin_menubar(menuBarRect))
     {
-        render_menu();
-    }
+        const ImVec2 currentFramePadding = ImGui::GetStyle().FramePadding;
+        imgui::scoped_style paddingToCenterAlignButtons(ImGuiStyleVar_FramePadding, ImVec2(currentFramePadding.x, 0.0f));
+        const float halfTitlebarHeight = root_widget_utils::titleBarHeight() / 2.0f;
+        const float halfTextHeight     = ImGui::GetTextLineHeight() / 2.0f;
+        imgui::shift_cursor_y(halfTitlebarHeight - halfTextHeight);
+        ImGui::BeginGroup();
+        if (gluten::imgui::begin_menubar(menuBarRect))
+        {
+            render_menu();
+        }
 
-    gluten::imgui::end_menubar();
-    ImGui::EndGroup();
+        gluten::imgui::end_menubar();
+        ImGui::EndGroup();
+    }
 
     gluten::layout titleButtonsLayout(layout::layout_type::right_to_left);
     titleButtonsLayout.get_element_anchor().set_achor_from_preset(element::anchor_preset::stretch_full);
@@ -304,23 +315,35 @@ void root_widget::render_menu()
     }
 
     if (showMetricsWindow)
+    {
         ImGui::ShowMetricsWindow(&showMetricsWindow);
+    }
     if (showDebugLogWindow)
+    {
         ImGui::ShowDebugLogWindow(&showDebugLogWindow);
-    if (showStackTool) 
+    }
+    if (showStackTool)
+    {
         ImGui::ShowIDStackToolWindow(&showStackTool);
+    }
     if (showAboutWindow)
+    {
         ImGui::ShowAboutWindow(&showAboutWindow);
+    }
     if (showStyleEditor)
     {
-        if (ImGui::Begin("Style Editor"))
+        if (ImGui::Begin("Style Editor", &showStyleEditor))
         {
             ImGui::ShowStyleEditor();
         }
         ImGui::End();
     }
     if (showDemo)
+    {
         ImGui::ShowDemoWindow(&showDemo);
+    }
     if (showPlotDemo)
+    {
         ImPlot::ShowDemoWindow(&showPlotDemo);
+    }
 }

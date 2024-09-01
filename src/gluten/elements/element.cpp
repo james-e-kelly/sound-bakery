@@ -150,6 +150,18 @@ bool gluten::element::render(const ImRect& parent)
         else if (m_backgroundColor.has_value())
         {
             backgroundDrawList->AddRectFilled(elementBox.Min, elementBox.Max, m_backgroundColor.value());
+
+            ImVec2 bottomLeft = elementBox.GetBL();
+            ImVec2 bottomRight = elementBox.GetBR();
+            bottomLeft.x       = (int)bottomLeft.x;
+            bottomLeft.y       = (int)bottomLeft.y;
+            bottomRight.x       = (int)bottomRight.x;
+            bottomRight.y       = (int)bottomRight.y;
+
+            const ImGuiStyle& style = ImGui::GetStyle();
+            ImGui::GetCurrentWindow()->DrawList->AddLine(bottomLeft, bottomRight,
+                                        ImGui::ColorConvertFloat4ToU32(style.Colors[ImGuiCol_Border]),
+                                        style.WindowBorderSize);
         }
     }
 

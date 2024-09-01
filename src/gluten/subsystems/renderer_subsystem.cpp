@@ -174,7 +174,7 @@ int renderer_subsystem::init_imgui()
     static constexpr ImVec2 paddingVec         = ImVec2(padding, padding);
     static constexpr ImVec2 verticalPaddingVec = ImVec2(0, padding);
 
-    static constexpr float rounding        = 6.0f;
+    static constexpr float rounding        = 12.0f;
     static constexpr float largerounding   = rounding * 2;
     static constexpr float largestRounding = rounding * 3;
     static constexpr float noRounding      = 2.0f;
@@ -199,21 +199,21 @@ int renderer_subsystem::init_imgui()
     style->CellPadding       = paddingVec;
     style->TouchExtraPadding = ImVec2(0, 0);
 
-    style->WindowBorderSize         = 0.0f;
+    style->WindowBorderSize         = 2.0f;
     style->WindowMinSize            = ImVec2(100, 100);
-    style->WindowTitleAlign         = ImVec2(0.0f, 0.0f);
+    style->WindowTitleAlign         = ImVec2(0.1f, 0.5f);
     style->WindowMenuButtonPosition = ImGuiDir_Right;
-    style->ChildBorderSize          = 1.0f;
+    style->ChildBorderSize          = 2.0f;
     style->PopupBorderSize          = 0.0f;
     style->FrameBorderSize          = 0.0f;
-    style->ItemSpacing              = ImVec2(14, 8);
+    style->ItemSpacing              = ImVec2(6, 8);
     style->ItemInnerSpacing         = ImVec2(0, 0);
     style->IndentSpacing            = 24.0f;
     style->ColumnsMinSpacing        = 10.0f;
     style->ScrollbarSize            = 18.0f;
     style->GrabMinSize              = 12.0f;
     style->LogSliderDeadzone;
-    style->TabBorderSize             = 1.0f;
+    style->TabBorderSize             = 0.0f;
     style->TabMinWidthForCloseButton = 0.0f;
     style->TabBarBorderSize          = 1.0f;
     style->TableAngledHeadersAngle   = 45.0f;
@@ -283,7 +283,7 @@ void renderer_subsystem::tick(double deltaTime) {}
 
 void renderer_subsystem::tick_rendering(double deltaTime)
 {
-    static ImVec4 clear_color = ImVec4(255.0f, 100.0f, 180.0f, 1.00f);
+    static ImVec4 clear_color = gluten::theme::carbon_g100::background;
 
     // Rendering
     ImGui::Render();
