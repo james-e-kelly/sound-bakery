@@ -35,8 +35,8 @@ namespace root_widget_utils
 {
     static float titleBarHeight()
     {
-        ImGuiContext* context = ImGui::GetCurrentContext();
-        return context == nullptr ? 0.0f : context->FontSize * 2.5f;
+        ImGuiContext* const context = ImGui::GetCurrentContext();
+        return context == nullptr ? 0.0f : 12.0f + context->FontSize + context->Style.FramePadding.y * 2.0f;
     }
     constexpr float titleLogoWidth = 64.0f;
     constexpr float menuBarPaddingWithLogo   = 6.0f;
@@ -221,6 +221,7 @@ void root_widget::draw_titlebar()
     {
         gluten::imgui::scoped_font titleFont(get_app()->get_font(fonts::title));
         gluten::text titleText(std::string(get_app()->get_application_display_title()), ImVec2(0.5f, 0.5f), element::anchor_preset::center_middle);
+        //titleText.set_element_scale(.5f);
         titleText.render(titleBarRect);
     }
 
@@ -235,7 +236,7 @@ void root_widget::draw_titlebar()
     {
         const ImVec2 currentFramePadding = ImGui::GetStyle().FramePadding;
         imgui::scoped_style paddingToCenterAlignButtons(ImGuiStyleVar_FramePadding, ImVec2(currentFramePadding.x, 0.0f));
-        const float halfTitlebarHeight = root_widget_utils::titleBarHeight() / 2.0f;
+        const float halfTitlebarHeight = titleBarRect.GetSize().y / 2.0f;
         const float halfTextHeight     = ImGui::GetTextLineHeight() / 2.0f;
         imgui::shift_cursor_y(halfTitlebarHeight - halfTextHeight);
         ImGui::BeginGroup();

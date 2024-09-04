@@ -102,6 +102,8 @@ void gluten::element::anchor_info::set_achor_from_preset(const anchor_preset& pr
 
 gluten::element::element(const anchor_preset& anchorPreset) { m_anchor.set_achor_from_preset(anchorPreset); }
 
+void gluten::element::set_element_scale(float scale) { m_scale = scale; }
+
 void gluten::element::set_element_background_color(ImU32 color) { m_backgroundColor = color; }
 
 void gluten::element::set_element_hover_color(ImU32 color) { m_hoverColor = color; }
@@ -135,7 +137,17 @@ bool gluten::element::render(const ImRect& parent)
 
     ImGui::SetCursorScreenPos(elementBox.Min);
 
+    if (m_scale.has_value())
+    {
+        ImGui::SetWindowFontScale(m_scale.value());
+    }
+
     const bool activated = render_element(elementBox); 
+
+    if (m_scale.has_value())
+    {
+        ImGui::SetWindowFontScale(1.0f);
+    }
 
     const bool hovered = ImGui::IsItemHovered();
 

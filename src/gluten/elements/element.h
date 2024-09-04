@@ -166,6 +166,8 @@ namespace gluten
         element() = default;
         element(const anchor_preset& anchorPreset);
 
+        void set_element_scale(float scale);
+
 		void set_element_background_color(ImU32 color);
         void set_element_hover_color(ImU32 color);
 
@@ -216,8 +218,8 @@ namespace gluten
         
         std::optional<ImU32> m_backgroundColor;
         std::optional<ImU32> m_hoverColor;
-
         std::optional<ImRect> m_currentRect;
+        std::optional<float> m_scale;
 
     public:
         static inline bool s_debug = false;

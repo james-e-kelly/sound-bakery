@@ -93,7 +93,7 @@ void splash_widget::tick(double deltaTime)
             previousRoundedTime = roundedTime;
         }
 
-        if (m_timeShowingScreen >= 1.2)
+        if (m_timeShowingScreen >= 2.0)
         {
             destroy();
         }
@@ -116,7 +116,8 @@ void splash_widget::render()
     {
         ImGui::Image((void*)(intptr_t)m_splashImageID, ImVec2(m_splashImageWidth, m_splashImageHeight));
 
-        ImGui::Text("%s", m_loadingText.c_str());
+        ImGui::ProgressBar(-1.0f * (float)ImGui::GetTime(), ImVec2(m_splashImageWidth, 0.0f),
+                           "Loading...");
 
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
         ImGui::PopStyleVar();

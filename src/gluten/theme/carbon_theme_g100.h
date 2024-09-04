@@ -172,8 +172,8 @@ namespace gluten::theme::carbon_g100
         style->Colors[ImGuiCol_TextDisabled] = textDisabled;
 
         // Backgrounds
-        style->Colors[ImGuiCol_MenuBarBg] = layer01;    // Menu Bar (close buttons etc.)
-        style->Colors[ImGuiCol_WindowBg]  = layer01; // Main windows background
+        style->Colors[ImGuiCol_MenuBarBg] = background;    // Menu Bar (close buttons etc.)
+        style->Colors[ImGuiCol_WindowBg]  = background;    // Main windows background
         style->Colors[ImGuiCol_ChildBg]   = layer01;
         style->Colors[ImGuiCol_FrameBg]   = layer02;
         style->Colors[ImGuiCol_PopupBg]        = layer02;
@@ -189,20 +189,20 @@ namespace gluten::theme::carbon_g100
         // Tabs are both tabs inside a window
         // and also when windows are docked, they are tabbed
         style->Colors[ImGuiCol_Tab]                 = field02;              // actual tab
-        style->Colors[ImGuiCol_TabHovered]          = fieldHover02;         // actual tab and dock tab
-        style->Colors[ImGuiCol_TabActive]           = field02;              // actual tab and dock tab
-        style->Colors[ImGuiCol_TabSelectedOverline] = borderInteractive;    // top line over dock tab
-        style->Colors[ImGuiCol_TabSelected]         = layerAccentActive01;
+        style->Colors[ImGuiCol_TabHovered]          = field01;              // actual tab and dock tab
+        style->Colors[ImGuiCol_TabActive]           = background;           // actual tab and dock tab
+        style->Colors[ImGuiCol_TabSelectedOverline] = interactive;          // top line over dock tab
+        style->Colors[ImGuiCol_TabSelected]         = background;           // actual tab and dock tab
 
         style->Colors[ImGuiCol_TabUnfocused]       = missingColorColor;
         style->Colors[ImGuiCol_TabUnfocusedActive] = missingColorColor;
 
-        style->Colors[ImGuiCol_TabDimmedSelected] = field01;
+        style->Colors[ImGuiCol_TabDimmedSelected] = background;                // selected dock tab
         style->Colors[ImGuiCol_TabDimmed]         = field01;
 
         // Window Titles
         style->Colors[ImGuiCol_TitleBg]          = background;
-        style->Colors[ImGuiCol_TitleBgActive]    = backgroundActive;
+        style->Colors[ImGuiCol_TitleBgActive]    = background;
         style->Colors[ImGuiCol_TitleBgCollapsed] = background;
 
         style->Colors[ImGuiCol_FrameBgHovered]   = fieldHover01;
