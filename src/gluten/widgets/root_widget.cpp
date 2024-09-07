@@ -125,7 +125,8 @@ void root_widget::start()
     m_windowMaximiseIcon->get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::stretch_full);
     m_windowRestoreIcon->get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::stretch_full);
 
-    m_windowIcon->set_element_max_size(ImVec2(root_widget_utils::titleLogoWidth, root_widget_utils::titleLogoWidth));
+    m_windowIcon->set_element_max_size(ImVec2(root_widget_utils::titleBarHeight(), root_widget_utils::titleBarHeight()));
+    m_windowIcon->set_element_frame_padding();
     m_windowCloseIcon->set_element_max_size(ImVec2(16, 16));
     m_windowMinimiseIcon->set_element_max_size(ImVec2(14, 14));
     m_windowMaximiseIcon->set_element_max_size(ImVec2(14, 14));

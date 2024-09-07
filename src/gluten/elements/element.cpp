@@ -9,6 +9,7 @@ static ImVec2 operator-(const ImVec2& lhs) { return ImVec2(-lhs.x, -lhs.y); }
 static ImVec2 operator+=(const ImVec2& lhs, const ImVec2& rhs) { return ImVec2(lhs.x + rhs.x, lhs.y + rhs.y); }
 
 static ImVec2 operator*(const ImVec2& lhs, const ImVec2& rhs) { return ImVec2(lhs.x * rhs.x, lhs.y * rhs.y); }
+static ImVec2 operator*(const ImVec2& lhs, float rhs) { return ImVec2(lhs.x * rhs, lhs.y * rhs); }
 
 static bool operator>(const ImVec2& lhs, const ImVec2& rhs) { return lhs.x > rhs.x || lhs.y > rhs.y; }
 
@@ -119,6 +120,12 @@ void gluten::element::set_element_background_color(ImU32 color) { m_backgroundCo
 
 void gluten::element::set_element_hover_color(ImU32 color) { m_hoverColor = color; }
 
+void gluten::element::set_element_padding(const ImVec2& padding) { m_padding = padding; }
+
+void gluten::element::set_element_window_padding() { m_padding = ImGui::GetStyle().WindowPadding; }
+
+void gluten::element::set_element_frame_padding() { m_padding = ImGui::GetStyle().FramePadding; }
+
 gluten::element::anchor_info& gluten::element::get_element_anchor() { return m_anchor; }
 
 ImRect gluten::element::get_element_rect() const
@@ -140,7 +147,7 @@ bool gluten::element::render(const ImRect& parent)
     ImGui::SetWindowFontScale(m_scale);
 
     const ImRect elementBox =
-        get_element_box_from_parent(parent, m_minSize, get_element_content_size(), m_alignment, m_anchor);
+        get_element_box_from_parent(parent, m_minSize, get_element_content_size(), m_alignment, m_padding, m_anchor);
     m_currentRect         = elementBox;
 
     if (s_debug)
@@ -229,7 +236,8 @@ ImRect gluten::element::get_element_start_position(const ImVec2& anchorStartPosi
                                                                        const ImVec2& anchorEndPosition,
                                                                        const ImVec2& minSize,
                                                                        const ImVec2& desiredSize,
-                                                                       const ImVec2& alignment)
+                                                                       const ImVec2& alignment, 
+                                                                       const ImVec2& padding)
 {
     const ImVec2 desiredEnd = anchorStartPosition + desiredSize;
     const ImVec2 minEnd     = anchorStartPosition + minSize;
@@ -251,17 +259,18 @@ ImRect gluten::element::get_element_start_position(const ImVec2& anchorStartPosi
 
     const ImVec2 elementStart = anchorStartPosition - (alignment * size);
 
-    return ImRect{elementStart, elementStart + size};
+    return ImRect{elementStart + padding, elementStart + size - padding};
 }
 
 ImRect gluten::element::get_element_box_from_parent(const ImRect& parent,
                                                     const ImVec2& minSize,
                                                     const ImVec2& desiredSize,
-                                                    const ImVec2& alignment,
+                                                    const ImVec2& alignment, 
+                                                    const ImVec2& padding, 
                                                     const anchor_info& anchor)
 {
     const ImVec2 anchorStart = get_anchor_start_position(parent.Min, parent.GetSize(), anchor);
     const ImVec2 anchorEnd   = get_anchor_end_position(anchorStart, parent.Min, parent.GetSize(), anchor);
 
-    return get_element_start_position(anchorStart, anchorEnd, minSize, desiredSize, alignment);
+    return get_element_start_position(anchorStart, anchorEnd, minSize, desiredSize, alignment, padding);
 }

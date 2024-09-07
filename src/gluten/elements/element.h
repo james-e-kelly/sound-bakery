@@ -173,8 +173,11 @@ namespace gluten
 		void set_element_background_color(ImU32 color);
         void set_element_hover_color(ImU32 color);
 
+        void set_element_padding(const ImVec2& padding);
+        void set_element_window_padding();
+        void set_element_frame_padding();
+
         anchor_info& get_element_anchor();
-        ImVec2 get_element_desired_size() const;
 
         /**
          * @brief If the element has rendered before, return the box
@@ -205,18 +208,18 @@ namespace gluten
                                           const ImVec2& anchorEndPosition,
                                           const ImVec2& minSize,
                                           const ImVec2& desiredSize,
-                                          const ImVec2& alignment);
+                                          const ImVec2& alignment, const ImVec2& padding);
         static ImRect get_element_box_from_parent(const ImRect& parent,
                                            const ImVec2& minSize,
                                            const ImVec2& desiredSize,
-                                           const ImVec2& alignment,
-                                           const anchor_info& anchor);
+                                           const ImVec2& alignment, const ImVec2& padding, const anchor_info& anchor);
 
         anchor_info m_anchor;
         
         ImVec2 m_minSize;
         ImVec2 m_maxSize = ImVec2(std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
         ImVec2 m_alignment;     //< defines the pivot point of the element in each axis from 0-1
+        ImVec2 m_padding;
         
         std::optional<ImU32> m_backgroundColor;
         std::optional<ImU32> m_hoverColor;
