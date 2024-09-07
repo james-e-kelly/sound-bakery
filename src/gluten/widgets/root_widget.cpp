@@ -36,7 +36,7 @@ namespace root_widget_utils
     static float titleBarHeight()
     {
         ImGuiContext* const context = ImGui::GetCurrentContext();
-        return context == nullptr ? 0.0f : 12.0f + context->FontSize + context->Style.FramePadding.y * 2.0f;
+        return context == nullptr ? 0.0f : context->FontSize * gluten::theme::carbon_g100::appTitlebarHeightMultiplier;
     }
     constexpr float titleLogoWidth = 64.0f;
     constexpr float menuBarPaddingWithLogo   = 6.0f;

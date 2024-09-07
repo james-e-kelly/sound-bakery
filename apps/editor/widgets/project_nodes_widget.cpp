@@ -29,11 +29,6 @@ static const std::vector<SB_OBJECT_CATEGORY> s_soundbankPageCategories{SB_CATEGO
 
 void project_nodes_widget::render_page(const std::vector<SB_OBJECT_CATEGORY>& categories)
 {
-    gluten::imgui::scoped_style_stack childStyle(ImGuiStyleVar_FrameBorderSize, 2.0f, ImGuiStyleVar_FramePadding,
-                                                 ImVec2(0, 0), ImGuiStyleVar_FrameRounding, 0.0f);
-    gluten::imgui::scoped_color childBackgroundColor(ImGuiCol_FrameBg, gluten::theme::carbon_g100::layer01);
-    gluten::imgui::scoped_color childBorderColor(ImGuiCol_Border, gluten::theme::carbon_g100::borderStrong01);
-
     if (ImGui::BeginChild("##Page", ImVec2(0, 0), ImGuiChildFlags_FrameStyle))
     {
         for (const SB_OBJECT_CATEGORY category : categories)
@@ -47,17 +42,10 @@ void project_nodes_widget::render_page(const std::vector<SB_OBJECT_CATEGORY>& ca
 
             ImGui::SetNextItemOpen(true, ImGuiCond_Once);
 
-            gluten::imgui::scoped_style_stack topNodeStyle(ImGuiStyleVar_FrameBorderSize, 0.0f,
-                                                           ImGuiStyleVar_FramePadding, ImVec2(12, 6),
-                                                           ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
-            gluten::imgui::scoped_color topNodeColor(ImGuiCol_Header, gluten::theme::carbon_g100::layer02);
-
             if (ImGui::TreeNodeEx(categoryName.data(), ImGuiTreeNodeFlags_NavLeftJumpsBackHere |
                                                            ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_FramePadding |
                                                            ImGuiTreeNodeFlags_SpanFullWidth))
             {
-                gluten::imgui::scoped_style_stack nodeStyle(ImGuiStyleVar_ItemSpacing, ImVec2(6, 6));
-
                 if (ImGui::BeginPopupContextItem("TopNodeContext"))
                 {
                     render_create_parent_or_child_menu(category, rttr::instance(), node_creation_type::New);

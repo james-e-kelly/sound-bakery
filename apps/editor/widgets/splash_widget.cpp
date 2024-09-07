@@ -119,9 +119,6 @@ void splash_widget::render()
         ImGui::ProgressBar(-1.0f * (float)ImGui::GetTime(), ImVec2(m_splashImageWidth, 0.0f),
                            "Loading...");
 
-        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
-        ImGui::PopStyleVar();
-
         ImGui::EndPopup();
     }
 }

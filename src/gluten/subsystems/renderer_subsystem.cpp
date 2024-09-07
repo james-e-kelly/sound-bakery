@@ -165,72 +165,8 @@ int renderer_subsystem::init_imgui()
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;      // Enable Docking
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;    // Enable Multi-Viewport / Platform
 
-    // Styling
-
-    ImGuiStyle* style = &ImGui::GetStyle();
-
-    static constexpr float padding             = 12.0f;
-    static constexpr ImVec2 noPadding          = ImVec2(0, 0);
-    static constexpr ImVec2 paddingVec         = ImVec2(padding, padding);
-    static constexpr ImVec2 verticalPaddingVec = ImVec2(0, padding);
-
-    static constexpr float rounding        = 12.0f;
-    static constexpr float largerounding   = rounding * 2;
-    static constexpr float largestRounding = rounding * 3;
-    static constexpr float noRounding      = 2.0f;
-
-    style->Alpha         = 1.0f;
-    style->DisabledAlpha = 0.5f;
-
-    style->WindowPadding = ImVec2(padding, padding / 2);
-    style->FramePadding  = paddingVec;
-
-    style->WindowRounding    = rounding;
-    style->ChildRounding     = 0.0f;
-    style->PopupRounding     = rounding;
-    style->FrameRounding     = rounding;
-    style->ScrollbarRounding = rounding;
-    style->GrabRounding      = rounding;
-    style->TabRounding       = rounding;
-
-    style->SeparatorTextPadding;
-    style->DisplayWindowPadding = paddingVec;
-    style->DisplaySafeAreaPadding;
-    style->CellPadding       = paddingVec;
-    style->TouchExtraPadding = ImVec2(0, 0);
-
-    style->WindowBorderSize         = 2.0f;
-    style->WindowMinSize            = ImVec2(100, 100);
-    style->WindowTitleAlign         = ImVec2(0.1f, 0.5f);
-    style->WindowMenuButtonPosition = ImGuiDir_Right;
-    style->ChildBorderSize          = 2.0f;
-    style->PopupBorderSize          = 0.0f;
-    style->FrameBorderSize          = 0.0f;
-    style->ItemSpacing              = ImVec2(6, 8);
-    style->ItemInnerSpacing         = ImVec2(0, 0);
-    style->IndentSpacing            = 24.0f;
-    style->ColumnsMinSpacing        = 10.0f;
-    style->ScrollbarSize            = 18.0f;
-    style->GrabMinSize              = 12.0f;
-    style->LogSliderDeadzone;
-    style->TabBorderSize             = 0.0f;
-    style->TabMinWidthForCloseButton = 0.0f;
-    style->TabBarBorderSize          = 1.0f;
-    style->TableAngledHeadersAngle   = 45.0f;
-    style->ColorButtonPosition;
-    style->ButtonTextAlign         = ImVec2(0.0f, 0.5f);
-    style->SelectableTextAlign     = ImVec2(0.5f, 0.5f);
-    style->SeparatorTextBorderSize = 1.0f;
-    style->SeparatorTextAlign      = ImVec2(0.5f, 0.5f);
-    style->DockingSeparatorSize    = 4.0f;
-    style->MouseCursorScale;
-    style->AntiAliasedLines;
-    style->AntiAliasedLinesUseTex;
-    style->AntiAliasedFill;
-    style->CurveTessellationTol;
-    style->CircleTessellationMaxError;
-
-    theme::carbon_g100::apply_theme();
+    theme::carbon_g100::apply_styles();
+    theme::carbon_g100::apply_colours();
 
     return 0;
 }
