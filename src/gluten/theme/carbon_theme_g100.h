@@ -175,12 +175,12 @@ namespace gluten::theme::carbon_g100
 
         // Backgrounds
         style->Colors[ImGuiCol_MenuBarBg] = background;    // Menu Bar (close buttons etc.)
-        style->Colors[ImGuiCol_WindowBg]  = background;    // Main windows background
+        style->Colors[ImGuiCol_WindowBg]  = layer01;    // Main windows background
         style->Colors[ImGuiCol_ChildBg]   = layer01;
         style->Colors[ImGuiCol_FrameBg]   = layer02;
         style->Colors[ImGuiCol_PopupBg]        = layer02;
         style->Colors[ImGuiCol_ScrollbarBg]    = background;
-        style->Colors[ImGuiCol_DockingEmptyBg] = layer01;
+        style->Colors[ImGuiCol_DockingEmptyBg] = background;
         style->Colors[ImGuiCol_TableRowBg]     = missingColorColor;
         style->Colors[ImGuiCol_TableRowBgAlt]  = missingColorColor;
         style->Colors[ImGuiCol_TableHeaderBg]  = missingColorColor;
