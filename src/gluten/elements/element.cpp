@@ -102,6 +102,17 @@ void gluten::element::anchor_info::set_achor_from_preset(const anchor_preset& pr
 
 gluten::element::element(const anchor_preset& anchorPreset) { m_anchor.set_achor_from_preset(anchorPreset); }
 
+gluten::element::~element() { ImGui::SetWindowFontScale(1.0f); }
+
+void gluten::element::set_font_size(float size) 
+{ 
+    const float currentFontSize = ImGui::GetFontSize(); 
+
+    const float scale = size / currentFontSize;
+
+    set_element_scale(scale);
+}
+
 void gluten::element::set_element_scale(float scale) { m_scale = scale; }
 
 void gluten::element::set_element_background_color(ImU32 color) { m_backgroundColor = color; }
@@ -109,8 +120,6 @@ void gluten::element::set_element_background_color(ImU32 color) { m_backgroundCo
 void gluten::element::set_element_hover_color(ImU32 color) { m_hoverColor = color; }
 
 gluten::element::anchor_info& gluten::element::get_element_anchor() { return m_anchor; }
-
-ImVec2 gluten::element::get_element_desired_size() const { return m_desiredSize; }
 
 ImRect gluten::element::get_element_rect() const
 {
@@ -126,7 +135,12 @@ ImRect gluten::element::get_element_rect_local() const
 
 bool gluten::element::render(const ImRect& parent)
 { 
-    const ImRect elementBox = get_element_box_from_parent(parent, m_minSize, m_desiredSize, m_alignment, m_anchor);
+    pre_render_element();
+
+    ImGui::SetWindowFontScale(m_scale);
+
+    const ImRect elementBox =
+        get_element_box_from_parent(parent, m_minSize, get_element_content_size(), m_alignment, m_anchor);
     m_currentRect         = elementBox;
 
     if (s_debug)
@@ -137,24 +151,12 @@ bool gluten::element::render(const ImRect& parent)
 
     ImGui::SetCursorScreenPos(elementBox.Min);
 
-    if (m_scale.has_value())
-    {
-        ImGui::SetWindowFontScale(m_scale.value());
-    }
-
     const bool activated = render_element(elementBox); 
-
-    if (m_scale.has_value())
-    {
-        ImGui::SetWindowFontScale(1.0f);
-    }
 
     const bool hovered = ImGui::IsItemHovered();
 
     if (ImDrawList* const backgroundDrawList = ImGui::GetBackgroundDrawList())
     {
-        ImGui::SetCursorScreenPos(elementBox.Min);
-
         if (hovered && m_hoverColor.has_value())
         {
             backgroundDrawList->AddRectFilled(elementBox.Min, elementBox.Max, m_hoverColor.value());
@@ -176,8 +178,6 @@ bool gluten::element::render(const ImRect& parent)
                                         style.WindowBorderSize);
         }
     }
-
-    ImGui::SetCursorScreenPos(ImVec2(elementBox.Min.x, elementBox.Max.y));
 
     return activated;
 }

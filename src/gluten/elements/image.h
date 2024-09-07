@@ -27,8 +27,9 @@ namespace gluten
 		bool render_element(const ImRect& parent) override;
         void release();
 
-		int get_width() const { return m_width; }
-		int get_height() const { return m_height; }
+		auto get_element_content_size() -> ImVec2 const override { return ImVec2(get_width(), get_height()); }
+		auto get_width() -> int const { return m_width; }
+		auto get_height() -> int const { return m_height; }
 
 		static auto load_image_data(unsigned char* data, int dataLength, int& width, int& height) -> data_ptr;
 

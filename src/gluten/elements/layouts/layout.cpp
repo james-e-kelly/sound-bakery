@@ -132,7 +132,8 @@ bool gluten::layout::render_layout_element_internal(const ImRect& thisBox,
 
 void gluten::layout::reset_layout(const ImRect& parent)
 {
-    const ImRect elementBox = get_element_box_from_parent(parent, m_minSize, m_desiredSize, m_alignment, m_anchor);
+    const ImRect elementBox =
+        get_element_box_from_parent(parent, m_minSize, get_element_content_size(), m_alignment, m_anchor);
     m_currentRect           = elementBox;
     setup_layout_begin(elementBox);
     m_firstLayout = true;

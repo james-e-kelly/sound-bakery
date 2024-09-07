@@ -165,7 +165,9 @@ namespace gluten
 
         element() = default;
         element(const anchor_preset& anchorPreset);
+        ~element();
 
+        void set_font_size(float size);
         void set_element_scale(float scale);
 
 		void set_element_background_color(ImU32 color);
@@ -187,9 +189,10 @@ namespace gluten
         virtual void set_element_max_size(const ImVec2& maxSize);
 
 	protected:
-        void set_element_desired_size(const ImVec2& desiredSize) { m_desiredSize = desiredSize; }
+        virtual auto get_element_content_size() -> ImVec2 const { return ImVec2(0, 0); }
 
-		virtual bool render_element(const ImRect& elementBox) { return false; }
+        virtual auto pre_render_element() -> void {}
+		virtual auto render_element(const ImRect& elementBox) -> bool { return false; }
 
         static ImVec2 get_anchor_start_position(const ImVec2& containerPosition,
                                             const ImVec2& containerSize,
@@ -213,13 +216,13 @@ namespace gluten
         
         ImVec2 m_minSize;
         ImVec2 m_maxSize = ImVec2(std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
-        ImVec2 m_desiredSize;
         ImVec2 m_alignment;     //< defines the pivot point of the element in each axis from 0-1
         
         std::optional<ImU32> m_backgroundColor;
         std::optional<ImU32> m_hoverColor;
         std::optional<ImRect> m_currentRect;
-        std::optional<float> m_scale;
+        
+        float m_scale = 1.0f;
 
     public:
         static inline bool s_debug = false;

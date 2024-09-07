@@ -1,6 +1,7 @@
 #include "root_widget.h"
 
 #include "gluten/elements/text.h"
+#include "gluten/elements/menu_bar.h"
 #include "gluten/elements/layouts/layout.h"
 #include "gluten/subsystems/renderer_subsystem.h"
 #include "gluten/utils/imgui_util_functions.h"
@@ -33,11 +34,15 @@ static const char* rootWindowName = "RootDockSpace";
 
 namespace root_widget_utils
 {
+    constexpr float fontSize = 22.0f;
+    constexpr float titleFontSize = 22.0f;
+
     static float titleBarHeight()
     {
         ImGuiContext* const context = ImGui::GetCurrentContext();
         return context == nullptr ? 0.0f : context->FontSize * gluten::theme::carbon_g100::appTitlebarHeightMultiplier;
     }
+
     constexpr float titleLogoWidth = 64.0f;
     constexpr float menuBarPaddingWithLogo   = 6.0f;
     constexpr float menuBarStartWidth = titleLogoWidth + 6.0f;
@@ -120,7 +125,7 @@ void root_widget::start()
     m_windowMaximiseIcon->get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::stretch_full);
     m_windowRestoreIcon->get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::stretch_full);
 
-    m_windowIcon->set_element_max_size(ImVec2(32, 32));
+    m_windowIcon->set_element_max_size(ImVec2(root_widget_utils::titleLogoWidth, root_widget_utils::titleLogoWidth));
     m_windowCloseIcon->set_element_max_size(ImVec2(16, 16));
     m_windowMinimiseIcon->set_element_max_size(ImVec2(14, 14));
     m_windowMaximiseIcon->set_element_max_size(ImVec2(14, 14));
@@ -155,22 +160,6 @@ void root_widget::render()
 
     draw_titlebar();
     submit_dockspace();
-
-    {
-        gluten::imgui::scoped_font font(get_app()->get_font(fonts::regular));
-
-        const ImRect menuBarRect = {
-            ImGui::GetCursorPos(),
-            {ImGui::GetContentRegionAvail().x + ImGui::GetCursorScreenPos().x, ImGui::GetFrameHeightWithSpacing()}};
-
-        /*ImGui::BeginGroup();
-        if (gluten::imgui::begin_menubar(menuBarRect))
-        {
-            render_menu();
-        }
-
-        gluten::imgui::end_menubar();*/
-    }
 
     if (showUserGuide)
     {
@@ -218,12 +207,10 @@ void root_widget::draw_titlebar()
 
     m_windowIcon->render(logoRect);
 
-    {
-        gluten::imgui::scoped_font titleFont(get_app()->get_font(fonts::title));
-        gluten::text titleText(std::string(get_app()->get_application_display_title()), ImVec2(0.5f, 0.5f), element::anchor_preset::center_middle);
-        //titleText.set_element_scale(.5f);
-        titleText.render(titleBarRect);
-    }
+    gluten::text titleText(std::string(get_app()->get_application_display_title()), ImVec2(0.5f, 0.5f), element::anchor_preset::center_middle);
+    titleText.set_font_size(root_widget_utils::titleFontSize);
+    titleText.set_font(gluten::fonts::title);
+    titleText.render(titleBarRect);
 
     gluten::button dragZoneButton("##titleBarDragZone", true);
     dragZoneButton.get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::stretch_full);
@@ -231,23 +218,13 @@ void root_widget::draw_titlebar()
 
     m_hoveringTitlebar = ImGui::IsItemHovered();
 
-    ImGui::SetCursorScreenPos(menuBarRect.Min);
-
+    gluten::menu_bar menu_bar;
+    menu_bar.set_font_size(root_widget_utils::fontSize);
+    if (menu_bar.render(menuBarRect))
     {
-        const ImVec2 currentFramePadding = ImGui::GetStyle().FramePadding;
-        imgui::scoped_style paddingToCenterAlignButtons(ImGuiStyleVar_FramePadding, ImVec2(currentFramePadding.x, 0.0f));
-        const float halfTitlebarHeight = titleBarRect.GetSize().y / 2.0f;
-        const float halfTextHeight     = ImGui::GetTextLineHeight() / 2.0f;
-        imgui::shift_cursor_y(halfTitlebarHeight - halfTextHeight);
-        ImGui::BeginGroup();
-        if (gluten::imgui::begin_menubar(menuBarRect))
-        {
-            render_menu();
-        }
-
-        gluten::imgui::end_menubar();
-        ImGui::EndGroup();
+        render_menu();
     }
+    menu_bar.end_menu_bar();
 
     gluten::layout titleButtonsLayout(layout::layout_type::right_to_left);
     titleButtonsLayout.get_element_anchor().set_achor_from_preset(element::anchor_preset::stretch_full);

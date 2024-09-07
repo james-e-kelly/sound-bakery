@@ -261,7 +261,7 @@ namespace gluten::theme::carbon_g100
     {
         ImGuiStyle* style = &ImGui::GetStyle();
 
-        static constexpr float padding             = 0.0f;
+        static constexpr float padding             = 2.0f;
         static constexpr ImVec2 noPadding          = ImVec2(0, 0);
         static constexpr ImVec2 paddingVec         = ImVec2(padding, padding);
         static constexpr ImVec2 verticalPaddingVec = ImVec2(0, padding);

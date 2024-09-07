@@ -7,15 +7,6 @@
 
 namespace gluten
 {
-    enum class fonts
-    {
-        regular,
-        regular_font_awesome,
-        regular_audio_icons,
-        light,
-        title
-    };
-
     class app
     {
     public:

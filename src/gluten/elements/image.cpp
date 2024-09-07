@@ -83,8 +83,6 @@ namespace gluten
 
 	void image::bind_image_data(const image::data_ptr& imageData)
 	{
-        set_element_desired_size(ImVec2(m_width, m_height));
-
         GLuint imageTexture;
         glGenTextures(1, &imageTexture);
         glBindTexture(GL_TEXTURE_2D, imageTexture);
