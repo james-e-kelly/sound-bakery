@@ -126,7 +126,6 @@ void root_widget::start()
     m_windowRestoreIcon->get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::stretch_full);
 
     m_windowIcon->set_element_max_size(ImVec2(root_widget_utils::titleBarHeight(), root_widget_utils::titleBarHeight()));
-    m_windowIcon->set_element_frame_padding();
     m_windowCloseIcon->set_element_max_size(ImVec2(16, 16));
     m_windowMinimiseIcon->set_element_max_size(ImVec2(14, 14));
     m_windowMaximiseIcon->set_element_max_size(ImVec2(14, 14));
@@ -206,6 +205,7 @@ void root_widget::draw_titlebar()
     topBarBackground.set_element_background_color(ImGui::ColorConvertFloat4ToU32(ImGui::GetStyleColorVec4(ImGuiCol_TitleBg)));
     topBarBackground.render(titleBarRect);
 
+    m_windowIcon->set_element_frame_padding();
     m_windowIcon->render(logoRect);
 
     gluten::text titleText(std::string(get_app()->get_application_display_title()), ImVec2(0.5f, 0.5f), element::anchor_preset::center_middle);
