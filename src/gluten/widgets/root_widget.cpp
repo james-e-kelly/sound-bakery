@@ -34,7 +34,7 @@ static const char* rootWindowName = "RootDockSpace";
 
 namespace root_widget_utils
 {
-    constexpr float fontSize = 22.0f;
+    constexpr float fontSize = 20.0f;
     constexpr float titleFontSize = 22.0f;
 
     static float titleBarHeight()
@@ -210,7 +210,7 @@ void root_widget::draw_titlebar()
 
     gluten::text titleText(std::string(get_app()->get_application_display_title()), ImVec2(0.5f, 0.5f), element::anchor_preset::center_middle);
     titleText.set_font_size(root_widget_utils::titleFontSize);
-    titleText.set_font(gluten::fonts::title);
+    titleText.set_font(gluten::fonts::regular);
     titleText.render(titleBarRect);
 
     gluten::button dragZoneButton("##titleBarDragZone", true);

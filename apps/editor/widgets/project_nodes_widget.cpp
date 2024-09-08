@@ -1,6 +1,7 @@
 #include "project_nodes_widget.h"
 
 #include "app/app.h"
+#include "gluten/theme/theme.h"
 #include "gluten/theme/carbon_theme_g100.h"
 #include "gluten/utils/imgui_util_functions.h"
 #include "gluten/utils/imgui_util_structures.h"
@@ -29,8 +30,14 @@ static const std::vector<SB_OBJECT_CATEGORY> s_soundbankPageCategories{SB_CATEGO
 
 void project_nodes_widget::render_page(const std::vector<SB_OBJECT_CATEGORY>& categories)
 {
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+    const gluten::imgui::scoped_color frameIsBackgroundColor(ImGuiCol_FrameBg, gluten::theme::carbon_g100::background);
+    const gluten::imgui::scoped_style borderAroundTable(ImGuiStyleVar_FrameBorderSize, 2.0f);
+
     if (ImGui::BeginChild("##Page", ImVec2(0, 0), ImGuiChildFlags_FrameStyle))
     {
+        ImGui::PopStyleVar();
+
         for (const SB_OBJECT_CATEGORY category : categories)
         {
             rttr::string_view categoryName = sbk::util::type_helper::getObjectCategoryName(category);
@@ -42,9 +49,8 @@ void project_nodes_widget::render_page(const std::vector<SB_OBJECT_CATEGORY>& ca
 
             ImGui::SetNextItemOpen(true, ImGuiCond_Once);
 
-            if (ImGui::TreeNodeEx(categoryName.data(), ImGuiTreeNodeFlags_NavLeftJumpsBackHere |
-                                                           ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_FramePadding |
-                                                           ImGuiTreeNodeFlags_SpanFullWidth))
+
+            if (ImGui::TreeNodeEx(categoryName.data(), ImGuiTreeNodeFlags_NavLeftJumpsBackHere | ImGuiTreeNodeFlags_SpanFullWidth))
             {
                 if (ImGui::BeginPopupContextItem("TopNodeContext"))
                 {
@@ -54,8 +60,6 @@ void project_nodes_widget::render_page(const std::vector<SB_OBJECT_CATEGORY>& ca
 
                 render_category(category);
                 ImGui::TreePop();
-
-                //gluten::imgui::shift_cursor_y(ImGui::GetStyle().ItemSpacing.y);
             }
         }
     }
@@ -88,7 +92,24 @@ void project_nodes_widget::render_category(SB_OBJECT_CATEGORY category)
    
     const auto pos = ImGui::GetCursorPos();
     
-    numNodesRendered = 0;
+    numNodesRendered = categoryObjects.size();
+
+    ImGuiListClipper clipper;
+    clipper.Begin(numNodesRendered, line_height);
+    while (clipper.Step())
+    {
+        for (int row_n = clipper.DisplayStart; row_n < clipper.DisplayEnd; ++row_n)
+        {
+            ImU32 col = (row_n & 1) ? ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::background)
+                                    : gluten::theme::ColorWithMultipliedValue(ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::backgroundSelected), 0.22f);
+            if ((col & IM_COL32_A_MASK) == 0)
+                continue;
+            float y1 = y0 + (line_height * static_cast<float>(row_n));
+            float y2 = y1 + line_height;
+            draw_list->AddRectFilled(ImVec2(x1, y1), ImVec2(x2, y2), col);
+        }
+    }
+    ImGui::SetCursorPos(pos);
 
     for (sbk::core::object* const object : categoryObjects)
     {
@@ -106,23 +127,6 @@ void project_nodes_widget::render_category(SB_OBJECT_CATEGORY category)
             }
         }
     }
-
-    //ImGuiListClipper clipper;
-    //clipper.Begin(numNodesRendered, line_height);
-    //while (clipper.Step())
-    //{
-    //    for (int row_n = clipper.DisplayStart; row_n < clipper.DisplayEnd; ++row_n)
-    //    {
-    //        ImU32 col = (row_n & 1) ? ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::layer01)
-    //                                : ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::layer02);
-    //        if ((col & IM_COL32_A_MASK) == 0)
-    //            continue;
-    //        float y1 = y0 + (line_height * static_cast<float>(row_n));
-    //        float y2 = y1 + line_height;
-    //        draw_list->AddRectFilled(ImVec2(x1, y1), ImVec2(x2, y2), col);
-    //    }
-    //}
-    //ImGui::SetCursorPos(pos);
 }
 
 void project_nodes_widget::render_single_node(rttr::type type, rttr::instance instance)

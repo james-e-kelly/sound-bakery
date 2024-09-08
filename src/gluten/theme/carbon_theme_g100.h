@@ -176,7 +176,7 @@ namespace gluten::theme::carbon_g100
         // Backgrounds
         style->Colors[ImGuiCol_MenuBarBg] = background;    // Menu Bar (close buttons etc.)
         style->Colors[ImGuiCol_WindowBg]  = layer01;    // Main windows background
-        style->Colors[ImGuiCol_ChildBg]   = layer01;
+        style->Colors[ImGuiCol_ChildBg]   = background;
         style->Colors[ImGuiCol_FrameBg]   = layer02;
         style->Colors[ImGuiCol_PopupBg]        = layer02;
         style->Colors[ImGuiCol_ScrollbarBg]    = background;
@@ -229,9 +229,9 @@ namespace gluten::theme::carbon_g100
         style->Colors[ImGuiCol_ButtonActive]  = interactiveActive;
 
         // Collapsing Headers
-        style->Colors[ImGuiCol_Header]        = background;
-        style->Colors[ImGuiCol_HeaderHovered] = backgroundHover;
-        style->Colors[ImGuiCol_HeaderActive]  = backgroundActive;
+        style->Colors[ImGuiCol_Header]        = layer02;
+        style->Colors[ImGuiCol_HeaderHovered] = layerHover02;
+        style->Colors[ImGuiCol_HeaderActive]  = layerActive02;
 
         style->Colors[ImGuiCol_ResizeGrip]        = interactive;
         style->Colors[ImGuiCol_ResizeGripHovered] = interactiveHover;
@@ -274,8 +274,8 @@ namespace gluten::theme::carbon_g100
         style->Alpha         = 1.0f;
         style->DisabledAlpha = 0.5f;
 
-        style->WindowPadding = ImVec2(padding, padding / 2);
-        style->FramePadding  = paddingVec;
+        style->WindowPadding = ImVec2(padding * 0.5f, 0.0f);    // 1.5 chosen just on looks
+        style->FramePadding  = ImVec2(padding, padding * 1.5f);
 
         style->WindowRounding    = rounding;
         style->ChildRounding     = 0.0f;
