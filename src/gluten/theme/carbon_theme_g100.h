@@ -164,6 +164,10 @@ namespace gluten::theme::carbon_g100
     constexpr ImVec4 missingColorColor = magenta50;
 
     constexpr float appTitlebarHeightMultiplier = 3.0f;
+    constexpr float padding                     = 8.0f;
+    constexpr ImVec2 noPadding                  = ImVec2(0, 0);
+    constexpr ImVec2 paddingVec                 = ImVec2(padding, padding);
+    constexpr ImVec2 verticalPaddingVec         = ImVec2(0, padding);
 
     inline void apply_colours() 
     { 
@@ -260,11 +264,6 @@ namespace gluten::theme::carbon_g100
     inline void apply_styles()
     {
         ImGuiStyle* style = &ImGui::GetStyle();
-
-        static constexpr float padding             = 8.0f;
-        static constexpr ImVec2 noPadding          = ImVec2(0, 0);
-        static constexpr ImVec2 paddingVec         = ImVec2(padding, padding);
-        static constexpr ImVec2 verticalPaddingVec = ImVec2(0, padding);
 
         static constexpr float rounding        = 0.0f;
         static constexpr float largerounding   = rounding * 2;

@@ -1,5 +1,8 @@
 #include "menu_bar.h"
 
+#include "gluten/utils/imgui_util_structures.h"
+#include "gluten/theme/carbon_theme_g100.h"
+
 namespace menu_bar_utils
 {
     constexpr const char* menubar_id = "##menubar";
@@ -43,6 +46,9 @@ auto gluten::menu_bar::render_element(const ImRect& elementBox) -> bool
         topLeft.y      = desiredY;
         ImGui::SetCursorScreenPos(topLeft);
     }
+
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, gluten::theme::carbon_g100::paddingVec);
+
     return true;
 }
 
@@ -109,4 +115,6 @@ void gluten::menu_bar::end_menu_bar()
         window->DC.NavLayerCurrent  = ImGuiNavLayer_Main;
         window->DC.MenuBarAppending = false;
     }
+
+    ImGui::PopStyleVar();
 }
