@@ -1,7 +1,9 @@
 #include "method_drawer.h"
 
 #include "imgui.h"
+#include "gluten/theme/carbon_theme_g100.h"
 #include "gluten/utils/imgui_util_functions.h"
+#include "gluten/utils/imgui_util_structures.h"
 #include "sound_bakery/core/database/database_object.h"
 #include "sound_bakery/editor/editor_defines.h"
 #include "sound_bakery/system.h"
@@ -18,6 +20,8 @@ void method_drawer::draw_object(rttr::type type, rttr::instance instance)
     if (ImGui::CollapsingHeader("Methods", ImGuiTreeNodeFlags_DefaultOpen))
     {
         gluten::imgui::indent_cursor();
+
+        const gluten::imgui::scoped_color innerItemsBorder(ImGuiCol_Border, gluten::theme::carbon_g100::layer02);
 
         if (!type.is_derived_from(sbk::core::object::type()))
         {
