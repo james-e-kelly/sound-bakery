@@ -9,7 +9,7 @@
 
 static ImVec2 operator-(const ImVec2& lhs, const ImVec2& rhs) { return ImVec2(lhs.x - rhs.y, lhs.y - rhs.y); }
 
-static ImVec2 plotOffset(100, 60);
+static ImVec2 plotOffset(100, 70);
 
 namespace audio_meter_utils
 {
@@ -99,17 +99,19 @@ void audio_meter_widget::render()
 
         gluten::layout settingsBarLayout(gluten::element::anchor_preset::stretch_top);
         settingsBarLayout.get_element_anchor().maxOffset.y = 64;
+        settingsBarLayout.set_element_frame_padding();
         settingsBarLayout.render_window();
 
         gluten::slider<double> minVolumeSlider("##Min Volume", &audio_meter_utils::rendered_min_volume,
                                                audio_meter_utils::min_volume_slider_min(),
                                                audio_meter_utils::min_volume_slider_max());
-        settingsBarLayout.render_layout_element_percent_horizontal(&minVolumeSlider, 0.33f);
+        settingsBarLayout.render_layout_element_percent_horizontal(&minVolumeSlider, 0.49f);
+        settingsBarLayout.render_layout_element_percent_horizontal(nullptr, 0.02f);
 
         gluten::slider<double> maxVolumeSlider("##Max Volume", &audio_meter_utils::rendered_max_volume,
                                                audio_meter_utils::max_volume_slider_min(),
                                                audio_meter_utils::max_volume_slider_max());
-        settingsBarLayout.render_layout_element_percent_horizontal(&maxVolumeSlider, 0.33f);
+        settingsBarLayout.render_layout_element_percent_horizontal(&maxVolumeSlider, 0.49f);
 
         settingsBarLayout.finish_layout();
 

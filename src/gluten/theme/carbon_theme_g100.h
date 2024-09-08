@@ -259,6 +259,8 @@ namespace gluten::theme::carbon_g100
 
         style->Colors[ImGuiCol_NavHighlight]          = missingColorColor;
         style->Colors[ImGuiCol_NavWindowingHighlight] = borderInteractive;  // CTRL+TAB and docking previews
+
+        ImPlot::GetStyle().Colors[ImPlotCol_Fill] = green50;
     }
 
     inline void apply_styles()

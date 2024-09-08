@@ -88,20 +88,20 @@ bool gluten::layout::render_layout_element_internal(const ImRect& thisBox,
 
     ImVec2 currentLayoutPos = m_currentLayoutPos.value();
 
+    if (firstLayoutRender)
+    {
+        if (m_layoutType == layout_type::right_to_left)
+        {
+            currentLayoutPos.x -= sizeGivenToElement.x;
+        }
+        else if (m_layoutType == layout_type::bottom_to_top)
+        {
+            currentLayoutPos.y -= sizeGivenToElement.y;
+        }
+    }
+
     if (element)
     {
-        if (firstLayoutRender)
-        {
-            if (m_layoutType == layout_type::right_to_left)
-            {
-                currentLayoutPos.x -= sizeGivenToElement.x;
-            }
-            else if (m_layoutType == layout_type::bottom_to_top)
-            {
-                currentLayoutPos.y -= sizeGivenToElement.y;
-            }
-        }
-
         activated = element->render({currentLayoutPos, currentLayoutPos + sizeGivenToElement});
     }
 
@@ -143,7 +143,7 @@ void gluten::layout::finish_layout()
 {
     if (m_currentRect.has_value())
     {
-        ImGui::SetCursorScreenPos(m_currentRect.value().GetBL());
+        ImGui::SetCursorScreenPos(m_currentRect.value().GetBL() + m_padding);
     }
 }
 
