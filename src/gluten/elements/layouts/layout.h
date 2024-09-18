@@ -24,6 +24,10 @@ namespace gluten
         layout(const anchor_preset& anchorPreset);  //< New layout with left_to_right layout and defined anchor preset
 
         void set_layout_type(const layout_type& type);
+        void set_layout_spacing(float spacing);
+
+        void render_spacer_pixels(float horizonalPixels, float verticalPixels);
+        void render_spacer_percent(float horizontalPercent, float verticalPercent);
 
         bool render_layout_element_full(element* element);
         
@@ -58,5 +62,6 @@ namespace gluten
         std::optional<ImVec2> m_currentLayoutPos;
 
         bool m_firstLayout = true;
+        float m_spacing    = 0.0f;
     };
 }

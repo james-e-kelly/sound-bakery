@@ -117,4 +117,6 @@ void gluten::menu_bar::end_menu_bar()
     }
 
     ImGui::PopStyleVar();
+
+    ImGui::SetWindowFontScale(1.0f);
 }

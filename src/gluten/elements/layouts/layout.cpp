@@ -1,5 +1,7 @@
 #include "layout.h"
 
+#include "gluten/theme/carbon_theme_g100.h"
+
 static ImVec2 operator+(const ImVec2& lhs, const ImVec2& rhs) { return ImVec2(lhs.x + rhs.x, lhs.y + rhs.y); }
 static ImVec2 operator-(const ImVec2& lhs, const ImVec2& rhs) { return ImVec2(lhs.x - rhs.x, lhs.y - rhs.y); }
 static ImVec2 operator/(const ImVec2& lhs, const float& rhs) { return ImVec2(lhs.x / rhs, lhs.y / rhs); }
@@ -15,6 +17,18 @@ gluten::layout::layout(const anchor_preset& anchorPreset)
 }
 
 void gluten::layout::set_layout_type(const layout_type& type) { m_layoutType = type; }
+
+void gluten::layout::set_layout_spacing(float spacing) { m_spacing = spacing; }
+
+void gluten::layout::render_spacer_pixels(float horizonalPixels, float verticalPixels) 
+{
+    render_layout_element_pixels(nullptr, horizonalPixels, verticalPixels);
+}
+
+void gluten::layout::render_spacer_percent(float horizontalPercent, float verticalPercent) 
+{
+    render_layout_element_percent(nullptr, horizontalPercent, verticalPercent);
+}
 
 bool gluten::layout::render_layout_element_full(element* element)
 {
@@ -79,7 +93,8 @@ bool gluten::layout::render_layout_element_internal(const ImRect& thisBox,
 
     const ImVec2 sizeGivenToElement = ImVec2(horizontalPixels, verticalPixels);
 
-    bool firstLayoutRender = m_firstLayout;
+    const bool firstLayoutRender = m_firstLayout;
+    m_firstLayout          = false;
 
     if (!m_currentLayoutPos.has_value())
     {
@@ -90,6 +105,8 @@ bool gluten::layout::render_layout_element_internal(const ImRect& thisBox,
 
     if (firstLayoutRender)
     {
+        // "backwards" layouts still render left to right
+        // so start one element over
         if (m_layoutType == layout_type::right_to_left)
         {
             currentLayoutPos.x -= sizeGivenToElement.x;
@@ -100,32 +117,53 @@ bool gluten::layout::render_layout_element_internal(const ImRect& thisBox,
         }
     }
 
+    // If rendering would go outside the element box
+    // drop a new row or column
+    const ImVec2 thisSize = thisBox.GetSize();
+    switch (m_layoutType)
+    {
+        case layout::layout_type::left_to_right:
+            if (thisSize.x > 1.0f)  // if we have no size, allow going outside our box
+            {
+                if (currentLayoutPos.x + sizeGivenToElement.x > thisBox.GetTR().x)
+                {
+                    currentLayoutPos.x = thisBox.Min.x;
+                    currentLayoutPos.y += sizeGivenToElement.y + m_spacing;
+                }
+            }
+            break;
+    }
+
     if (element)
     {
+        if (s_debug)
+        {
+            ImDrawList* const foregroundDrawList = ImGui::GetForegroundDrawList();
+            foregroundDrawList->AddRect(currentLayoutPos, currentLayoutPos + sizeGivenToElement, ImGui::ColorConvertFloat4ToU32(gluten::theme::purple50));
+        }
+
         activated = element->render({currentLayoutPos, currentLayoutPos + sizeGivenToElement});
     }
 
     switch (m_layoutType)
     {
         case gluten::layout::layout_type::left_to_right:
-            currentLayoutPos.x += sizeGivenToElement.x;
+            currentLayoutPos.x += sizeGivenToElement.x + m_spacing;
             break;
         case gluten::layout::layout_type::right_to_left:
-            currentLayoutPos.x -= sizeGivenToElement.x;
+            currentLayoutPos.x -= sizeGivenToElement.x + m_spacing;
             break;
         case gluten::layout::layout_type::top_to_bottom:
-            currentLayoutPos.y += sizeGivenToElement.y;
+            currentLayoutPos.y += sizeGivenToElement.y + m_spacing;
             break;
         case gluten::layout::layout_type::bottom_to_top:
-            currentLayoutPos.y -= sizeGivenToElement.y;
+            currentLayoutPos.y -= sizeGivenToElement.y + m_spacing;
             break;
         default:
             break;
     }
-    
-    m_currentLayoutPos = currentLayoutPos;
 
-    m_firstLayout = false;
+    m_currentLayoutPos = currentLayoutPos;
 
     return activated;
 }
@@ -157,14 +195,14 @@ void gluten::layout::setup_layout_begin(const ImRect& thisBox)
 {
     if (m_layoutType == layout_type::left_to_right || m_layoutType == layout_type::top_to_bottom)
     {
-        m_currentLayoutPos = thisBox.Min;
+        m_currentLayoutPos = thisBox.GetTL();
     }
     else if (m_layoutType == layout_type::right_to_left)
     {
-        m_currentLayoutPos = ImVec2(thisBox.Max.x, thisBox.Min.y);
+        m_currentLayoutPos = thisBox.GetTR();
     }
     else if (m_layoutType == layout_type::bottom_to_top)
     {
-        m_currentLayoutPos = ImVec2(thisBox.Min.x, thisBox.Max.y);
+        m_currentLayoutPos = thisBox.GetBL();
     }
 }

@@ -223,9 +223,9 @@ namespace gluten
         
         std::optional<ImU32> m_backgroundColor;
         std::optional<ImU32> m_hoverColor;
-        std::optional<ImRect> m_currentRect;
+        mutable std::optional<ImRect> m_currentRect;
         
-        float m_scale = 1.0f;
+        std::optional<float> m_scale;
 
     public:
         static inline bool s_debug = false;

@@ -130,7 +130,11 @@ gluten::element::anchor_info& gluten::element::get_element_anchor() { return m_a
 
 ImRect gluten::element::get_element_rect() const
 {
-    return m_currentRect.has_value() ? m_currentRect.value() : ImRect{ImGui::GetWindowPos(), ImVec2()};
+    if (!m_currentRect.has_value())
+    {
+        m_currentRect = ImGui::GetCurrentWindow()->WorkRect;
+    }
+    return m_currentRect.value();
 }
 
 ImRect gluten::element::get_element_rect_local() const
@@ -144,7 +148,10 @@ bool gluten::element::render(const ImRect& parent)
 { 
     pre_render_element();
 
-    ImGui::SetWindowFontScale(m_scale);
+    if (m_scale.has_value())
+    {
+        ImGui::SetWindowFontScale(m_scale.value());
+    }
 
     const ImRect elementBox =
         get_element_box_from_parent(parent, m_minSize, get_element_content_size(), m_alignment, m_padding, m_anchor);
@@ -192,10 +199,7 @@ bool gluten::element::render(const ImRect& parent)
 bool gluten::element::render_window()
 {
     const ImGuiWindow* window = ImGui::GetCurrentWindow();
-    ImRect windowRect = window->WorkRect;
-    windowRect.Add(ImVec2(window->Pos.x, window->Pos.y + window->TitleBarHeight + window->MenuBarHeight));
-
-    return render(windowRect);
+    return render(window->WorkRect);
 }
 
 void gluten::element::set_element_max_size(const ImVec2& maxSize) { m_maxSize = maxSize; }

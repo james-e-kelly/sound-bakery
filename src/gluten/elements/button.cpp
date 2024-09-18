@@ -4,10 +4,10 @@
 
 #include "gluten/theme/theme.h"
 
-gluten::button::button(const char* name, bool invisible, std::function<void()> onActivateFunction) 
-    : m_name(name), 
-    m_invisible(invisible), 
-    m_function(onActivateFunction) {}
+gluten::button::button(const char* name, bool invisible, const anchor_preset& anchorPreset) 
+    : element(anchorPreset),
+    m_name(name), 
+    m_invisible(invisible) {}
 
 bool gluten::button::render_element(const ImRect& elementRect)
 {
@@ -26,9 +26,12 @@ bool gluten::button::render_element(const ImRect& elementRect)
     const bool activated =
         m_invisible ? ImGui::InvisibleButton(m_name, elementRect.GetSize()) : ImGui::Button(m_name, elementRect.GetSize());
 
-    if (activated && m_function)
-    {
-        m_function();
-    }
     return activated;
+}
+
+auto gluten::button::get_element_content_size() -> ImVec2 const
+{
+    const ImVec2 textSize = ImGui::CalcTextSize(m_name);
+    const ImVec2 padding  = ImGui::GetStyle().FramePadding;
+    return ImVec2(textSize.x + padding.x * 2, textSize.y + padding.y * 2);
 }
