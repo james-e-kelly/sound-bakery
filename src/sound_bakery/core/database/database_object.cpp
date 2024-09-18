@@ -1,5 +1,6 @@
 #include "database_object.h"
 
+#include "sound_bakery/system.h"
 #include "sound_bakery/core/database/database.h"
 #include "sound_bakery/system.h"
 
