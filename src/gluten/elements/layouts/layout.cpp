@@ -181,7 +181,7 @@ void gluten::layout::finish_layout()
 {
     if (m_currentRect.has_value())
     {
-        ImGui::SetCursorScreenPos(m_currentRect.value().GetBL() + m_padding);
+        ImGui::SetCursorScreenPos(m_currentRect.value().GetBL());
     }
 }
 

@@ -6,6 +6,7 @@
 #include "imgui.h"
 #include "gluten/elements/image_button.h"
 #include "gluten/elements/toolbar.h"
+#include "gluten/theme/carbon_theme_g100.h"
 #include "gluten/utils/imgui_util_structures.h"
 #include "managers/project_manager.h"
 #include "sound_bakery/editor/project/project.h"
@@ -56,6 +57,7 @@ void player_widget::start()
 void player_widget::render()
 {
     const gluten::imgui::scoped_font audioFont(get_app()->get_font(gluten::fonts::regular_audio_icons));
+    const gluten::imgui::scoped_style morePadding(ImGuiStyleVar_WindowPadding, gluten::theme::carbon_g100::paddingVec);
 
     ImGui::Begin(fmt::format("{} - Player###Player", s_lastPlayableSelection.get_name()).c_str());
 
@@ -75,7 +77,7 @@ void player_widget::render()
     }
 
     gluten::toolbar toolbar;
-    toolbar.set_element_scale(2.0f);
+    toolbar.set_element_scale(1.5f);
     toolbar.get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::stretch_full);
     toolbar.set_element_window_padding();
     toolbar.set_layout_spacing(6.0f);

@@ -1,6 +1,6 @@
 #include "element.h"
 
-#include "gluten/theme/theme.h"
+#include "gluten/theme/carbon_colors.h"
 
 static ImVec2 operator+(const ImVec2& lhs, const ImVec2& rhs) { return ImVec2(lhs.x + rhs.x, lhs.y + rhs.y); }
 static ImVec2 operator-(const ImVec2& lhs, const ImVec2& rhs) { return ImVec2(lhs.x - rhs.x, lhs.y - rhs.y); }
@@ -160,7 +160,7 @@ bool gluten::element::render(const ImRect& parent)
     if (s_debug)
     {
         ImDrawList* const foregroundDrawList = ImGui::GetForegroundDrawList();
-        foregroundDrawList->AddRect(elementBox.Min, elementBox.Max, gluten::theme::invalidPrefab);
+        foregroundDrawList->AddRect(elementBox.Min, elementBox.Max, ImGui::ColorConvertFloat4ToU32(gluten::theme::red50));
     }
 
     ImGui::SetCursorScreenPos(elementBox.Min);
@@ -199,7 +199,7 @@ bool gluten::element::render(const ImRect& parent)
 bool gluten::element::render_window()
 {
     const ImGuiWindow* window = ImGui::GetCurrentWindow();
-    return render(window->WorkRect);
+    return render(window->InnerRect);
 }
 
 void gluten::element::set_element_max_size(const ImVec2& maxSize) { m_maxSize = maxSize; }
