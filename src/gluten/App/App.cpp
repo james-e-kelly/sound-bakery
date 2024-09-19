@@ -133,9 +133,11 @@ void gluten::app::load_fonts()
     iconFontsConfig.MergeMode            = true;
     iconFontsConfig.PixelSnapH           = true;
     iconFontsConfig.GlyphMinAdvanceX     = iconFontSize;
+    iconFontsConfig.RasterizerDensity    = 2.0f;
 
     ImFontConfig fontConfig;
     fontConfig.FontDataOwnedByAtlas = false;  // the memory is statically owned by the virtual filesystem
+    fontConfig.RasterizerDensity    = 2.0f;
 
     ImGuiIO& io = ImGui::GetIO();
 

@@ -1,10 +1,11 @@
 # Contributing to Sound Bakery
 
-Thank you for your interest in contributing to Sound Bakery! Contributions are welcome and appreciated. This guide will help you get started with contributing to the project.
+Thank you for your interest in contributing to Sound Bakery. With your help, we can make something excellent.
 
 ## Table of Contents
 - [How to Contribute](#how-to-contribute)
 - [Reporting Issues](#reporting-issues)
+- [Suggesting UI/UX](#suggesting-ui-ux)
 - [Submitting Pull Requests](#submitting-pull-requests)
 - [Code Style](#code-style)
 - [Testing](#testing)
@@ -13,10 +14,12 @@ Thank you for your interest in contributing to Sound Bakery! Contributions are w
 
 ## How to Contribute
 
-There are several ways to contribute to Sound Bakery:
+There are several ways to contribute:
 - Reporting bugs and issues
 - Suggesting new features and enhancements
+- Suggesting visual improvements
 - Submitting pull requests to fix bugs or add features
+- Submitting pull requests to improve code cleanliness and technical debt
 - Improving documentation
 
 ## Reporting Issues
@@ -27,6 +30,10 @@ If any bugs or issues are encountered, please report them using the GitHub [issu
 - Expected and actual results
 - Any relevant screenshots or logs
 - The version of Sound Bakery and your development environment
+
+## Suggesting UI UX
+
+How to contribute visual improvements is an open question. Please reach out with designs and ideas on the issue tracker or discussions. If you have ideas for collaborating on the UI of Sound Bakery, please speak up.
 
 ## Submitting Pull Requests
 
@@ -61,46 +68,33 @@ To submit a pull request (PR), follow these steps:
 
 ## Code Style
 
-Consistent code style helps maintain readability and quality. Sound Bakery integrates `clang-format` and `clang-tidy` to ensure code quality and consistency. Please follow these guidelines when contributing:
+Sound Bakery integrates `clang-format` and `clang-tidy` to ensure code quality and consistency. Please follow these guidelines when contributing:
 - Use modern C++20 features and standard library components.
-- Use descriptive variable and function names.
-- Write clear and concise comments where necessary.
+- Write for people first and the machine second.
 - Ensure that your code is properly formatted using `clang-format`.
 - Run `clang-tidy` to catch and fix potential issues.
 
+Code style is a collaborative effort and discussions around style are welcome.
+
 ## Testing
 
-Ensuring that your changes do not introduce new issues is crucial. Sound Bakery uses `doctest` and `CTest` for testing. Please follow these testing guidelines:
-- Write unit tests for new features and bug fixes using `doctest`.
-- Ensure that all existing tests pass before submitting your pull request.
-- Use `CTest` to manage and run tests.
-
-To run tests, use the following commands:
-
-```bash
-cd build
-ctest
-```
+> Testing is WIP and details will be added in the future.
 
 ## Documentation
 
-Good documentation is key to a successful project. Sound Bakery uses Doxygen for documentation generation. When contributing, please:
-- Update or add documentation for any new features or changes.
-- Ensure that your documentation is clear and easy to understand.
-- Use Doxygen comments to document your code.
-- Use markdown for formatting other documentation files.
+Sound Bakery uses Doxygen for documentation generation. Therefore, documentation is mainly written in the code and guides written in markdown. Please ensure documentation is present for public API functions. Otherwise, write comments for classes and functions where appropriate.
 
 ### Using Doxygen
 
 To generate documentation using Doxygen, follow these steps:
 
-1. **Install Doxygen** if you haven't already.
+1. **Install Doxygen**.
 2. **Add Doxygen-style comments** to your code. Here is an example:
    ```cpp
    /**
     * @brief Initializes the Sound Bakery system.
     */
-   void Initialize();
+   void init();
    ```
 3. **Build the Doxygen Documentation**:
    - Ensure that CMake is set up for the project.
@@ -121,4 +115,4 @@ Sound Bakery aims to foster a welcoming and inclusive community. When contributi
 
 ---
 
-Thank you for contributing to Sound Bakery! Your efforts help make this project better for everyone. If you have any questions, feel free to reach out via the issue tracker or the project's communication channels.
+Thank you for contributing! If you have any questions, feel free to reach out via the issue tracker or discussions.

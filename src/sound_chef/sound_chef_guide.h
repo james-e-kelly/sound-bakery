@@ -21,13 +21,13 @@
 /**
  * @page ProgrammerGuide Programmer's Guide
  *
- * @subpage ChefProgrammerGuide "sound Chef Programmer Guide"
+ * @subpage ChefProgrammerGuide "Sound Chef Programmer Guide"
  */
 
 /**
- * @page ChefProgrammerGuide sound Chef Programmer's Guide
+ * @page ChefProgrammerGuide Sound Chef Programmer's Guide
  *
- * Welcome to sound Chef's programmer's guide. sound Chef is a low level audio playback library suited for video games.
+ * Welcome to Sound Chef's programmer's guide. Sound Chef is a low level audio playback library suited for video games.
  * It can be thought of as an extension and wrapper of miniaudio. Miniaudio will be referenced heavily in this guide and
  * it is recommended to be familiar with the tool. You can read its docs
  * [here](https://miniaud.io/docs/manual/index.html).
@@ -47,7 +47,7 @@
  *
  * The system manages the node graph, sounds, resources, and outputting audio to the audio device.
  *
- * ## Playing A sound
+ * ## Playing A Sound
  *
  * With a @ref sc_system object, playing a sound is incredibly easy.
  *
@@ -63,7 +63,7 @@
  * sc_system_play_sound(system, sound, &instance, NULL, SC_FALSE);
  * @endcode
  *
- * sound Chef seperates a loaded sound and a playing sound with the @ref sc_sound and @ref sc_sound_instance objects.
+ * Sound Chef seperates a loaded sound and a playing sound with the @ref sc_sound and @ref sc_sound_instance objects.
  * Internally, they are the same object and are simple extensions of the `ma_sound` object.
  *
  * This is done to ensure each call to @ref sc_system_play_sound creates a brand new sound with its play position set to
@@ -76,16 +76,16 @@
  *
  * ## DSP
  *
- * For programs where the outcome is not predetermined, there is a need to abstract away strongly defined types. sound
+ * For programs where the outcome is not predetermined, there is a need to abstract away strongly defined types. Sound
  * Bakery is a clear example as a user can insert many different types of effects into the signal chain; this would be
  * cumbersome if unique code was requried each time and for each effect.
  *
  * By abstracting effects into @ref sc_dsp objects, a user can quickly call functions like @ref sc_dsp_config_init and
- * @ref sc_system_create_dsp to create many different effects with ease. sound Chef handles initializing the underlying
+ * @ref sc_system_create_dsp to create many different effects with ease. Sound Chef handles initializing the underlying
  * `ma_*_node` objects.
  *
  * @note
- * sound Chef uses many of the miniaudio effects like `ma_lpf_node`, `ma_hpf_node` etc. Refer to miniaudio's
+ * Sound Chef uses many of the miniaudio effects like `ma_lpf_node`, `ma_hpf_node` etc. Refer to miniaudio's
  * documentation on how these work.
  *
  * With a DSP created, the user can call @ref sc_dsp_set_parameter_float to change properties of the effect on the fly.
@@ -102,7 +102,7 @@
  *
  * ## Node Groups
  *
- * sound Chef adds the concept of "Node Groups". These are analogous to busses and Channels/ChannelControls in FMOD. The
+ * Sound Chef adds the concept of "Node Groups". These are analogous to busses and Channels/ChannelControls in FMOD. The
  * intention is to create an easy API for inserting, removing, and modifying DSPs.
  *
  * To create a new @ref sc_node_group, call @ref sc_system_create_node_group. The created node group connects to the
@@ -156,6 +156,6 @@
  * sc_node_group_set_parent(child, get_parent);
  * @endcode
  *
- * It is recommended to refer to the @ref SB::Engine::node_instance class for how sound Bakery uses sound Chef to connect
+ * It is recommended to refer to the @ref SB::Engine::node_instance class for how Sound Bakery uses Sound Chef to connect
  * node groups together, insert lowpass and highpass effects, and insert user-defined effects.
  */
