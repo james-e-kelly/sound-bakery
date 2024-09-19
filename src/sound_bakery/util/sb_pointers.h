@@ -2,13 +2,13 @@
 
 #include "sound_bakery/core/lazy_pointer.h"
 
-namespace SB
+namespace sbk
 {
-    namespace Core
+    namespace core
     {
-        class Object;
-        class DatabaseObject;
-    }  // namespace Core
+        class object;
+        class database_object;
+    }  // namespace core
 
     using LObjectPtr = SB::Core::DatabasePtr<SB::Core::DatabaseObject>;
-}  // namespace SB
+}  // namespace sbk

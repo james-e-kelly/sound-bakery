@@ -2,55 +2,39 @@ message(STATUS "Adding editor")
 
 set(BUILD_FOLDER ${CMAKE_BINARY_DIR})
 
-set(FONT_FILES
-  ${BUILD_FOLDER}/fonts/Montserrat-Light.ttf
-  ${BUILD_FOLDER}/fonts/fa-regular-400.ttf
-  ${BUILD_FOLDER}/fonts/fa-solid-900.ttf
-  ${BUILD_FOLDER}/fonts/fontaudio.ttf
-)
-
-set(IMAGE_FILES
-  ${BUILD_FOLDER}/images/SplashImage.png
-)
-
 set(EDITOR_SOURCES
-  AppEntry.cpp 
-  App/App.cpp
-  Managers/AppManager.cpp
-  Managers/ProjectManager.cpp
-  Subsystems/RendererSubsystem.cpp
-  Subsystems/WidgetSubsystem.cpp
-  Widgets/Widget.cpp
-  Widgets/ImguiExtensions.cpp
-  Widgets/RootWidget.cpp
-  Widgets/SplashWidget.cpp
-  Widgets/FileBrowserWidget.cpp
-  Widgets/PlayControlsWidget.cpp
-  Widgets/AudioDisplayWidget.cpp
-  Widgets/ProjectExplorerWidget.cpp
-  Widgets/ProjectNodesWidget.cpp
-  Widgets/DetailsWidget.cpp
-  Utils/PropertyDrawer.cpp
-  Utils/MethodDrawer.cpp
+  app/App.cpp
+  managers/app_manager.cpp
+  managers/project_manager.cpp
+  widgets/imgui_extensions.cpp
+  widgets/root_widget.cpp
+  widgets/splash_widget.cpp
+  widgets/file_browser_widget.cpp
+  widgets/play_controls_widget.cpp
+  widgets/audio_display_widget.cpp
+  widgets/project_explorer_widget.cpp
+  widgets/project_nodes_widget.cpp
+  widgets/details_widget.cpp
+  utils/property_drawer.cpp
+  utils/method_drawer.cpp
+  widgets/audio_meter_widget.cpp
 )
 
 set(EDITOR_HEADERS
-  App/App.h
-  Managers/AppManager.h
-  Managers/ProjectManager.h
-  Subsystems/RendererSubsystem.h
-  Subsystems/WidgetSubsystem.h
-  Widgets/Widget.h
-  Widgets/RootWidget.h
-  Widgets/SplashWidget.h
-  Widgets/FileBrowserWidget.h
-  Widgets/PlayControlsWidget.h
-  Widgets/AudioDisplayWidget.h
-  Widgets/ProjectExplorerWidget.h
-  Widgets/ProjectNodesWidget.h
-  Widgets/DetailsWidget.h
-  Utils/PropertyDrawer.h
-  Utils/MethodDrawer.h
+  app/app.h
+  managers/app_manager.h
+  managers/project_manager.h
+  widgets/root_widget.h
+  widgets/splash_widget.h
+  widgets/file_browser_widget.h
+  widgets/play_controls_widget.h
+  widgets/audio_display_widget.h
+  widgets/project_explorer_widget.h
+  widgets/project_nodes_widget.h
+  widgets/details_widget.h
+  utils/property_drawer.h
+  utils/method_drawer.h
+  widgets/audio_meter_widget.h
 )
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Source Files" FILES ${EDITOR_SOURCES})
@@ -93,150 +77,10 @@ set_source_files_properties(
   PROPERTIES MACOSX_PACKAGE_LOCATION Resources/images
 )
 
-# Set output directory for executable
-# set_target_properties(editor PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${BUILD_FOLDER})
-
-set(CMAKE_FOLDER extern)
-
-set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
-set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
-
-FetchContent_Declare(
-  glfw
-  GIT_REPOSITORY https://github.com/glfw/glfw.git
-  GIT_TAG        3.3.9
-  GIT_SHALLOW    TRUE
-  OVERRIDE_FIND_PACKAGE
-)
-
-FetchContent_Declare(
-  imgui
-  GIT_REPOSITORY https://github.com/ocornut/imgui.git
-  GIT_TAG        docking
-  GIT_SHALLOW    TRUE
-  OVERRIDE_FIND_PACKAGE
-)
-
-FetchContent_Declare(
-  nfd
-  GIT_REPOSITORY https://github.com/mlabbe/nativefiledialog.git
-  GIT_TAG        67345b80ebb429ecc2aeda94c478b3bcc5f7888e
-  GIT_SHALLOW    TRUE
-  OVERRIDE_FIND_PACKAGE
-)
-
-FetchContent_Declare(
-  fonts
-  GIT_REPOSITORY https://github.com/juliettef/IconFontCppHeaders.git
-  GIT_TAG        main
-  GIT_SHALLOW    TRUE
-  OVERRIDE_FIND_PACKAGE
-)
-
-# Need fmt library for better cross compiler support
-FetchContent_Declare(
-  fmt
-  GIT_REPOSITORY https://github.com/fmtlib/fmt.git
-  GIT_TAG        10.2.1
-  GIT_SHALLOW    TRUE
-  OVERRIDE_FIND_PACKAGE
-  EXCLUDE_FROM_ALL
-)
-
-message(STATUS "Fetching glfw")
-FetchContent_MakeAvailable(glfw)
-
-message(STATUS "Fetching imgui")
-FetchContent_MakeAvailable(imgui)
-
-message(STATUS "Fetching native file dialog")
-FetchContent_MakeAvailable(nfd)
-
-message(STATUS "Fetching audio fonts")
-FetchContent_MakeAvailable(fonts)
-
-message(STATUS "Fetching fmt")
-FetchContent_MakeAvailable(fmt)
-
-if(UNIX AND NOT APPLE)
-  set(NFD_SOURCES 
-  ${nfd_SOURCE_DIR}/src/nfd_common.c
-  ${nfd_SOURCE_DIR}/src/nfd_gtk.c
-  ${nfd_SOURCE_DIR}/src/nfd_zenity.c
-  )
-
-  find_package(PkgConfig REQUIRED)
-  pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
-  message("Using GTK version: ${GTK3_VERSION}")
-
-elseif(APPLE)
-  set(NFD_SOURCES 
-  ${nfd_SOURCE_DIR}/src/nfd_common.c
-  ${nfd_SOURCE_DIR}/src/nfd_cocoa.m
-  )
-elseif(WIN32)
-  set(NFD_SOURCES 
-  ${nfd_SOURCE_DIR}/src/nfd_common.c
-  ${nfd_SOURCE_DIR}/src/nfd_win.cpp
-  )
-endif()
-
-add_library(nfd STATIC ${NFD_SOURCES})
-
-if(APPLE)
-  find_library(APPKIT_FRAMEWORK AppKit)
-  target_link_libraries(nfd ${APPKIT_FRAMEWORK})
-endif()
-
-if (UNIX AND NOT APPLE)
-  target_include_directories(nfd PRIVATE ${GTK3_INCLUDE_DIRS})
-  target_link_libraries(nfd PRIVATE ${GTK3_LINK_LIBRARIES})
-endif()
-
-target_include_directories(nfd
-  PUBLIC ${nfd_SOURCE_DIR}/src/include
-  PRIVATE ${nfd_SOURCE_DIR}/src
-)
-
-find_package(OpenGL REQUIRED)
-set(OpenGL_GL_PREFERENCE "GLVND")
-
-add_library(imgui STATIC
-  ${imgui_SOURCE_DIR}/imgui.cpp
-  ${imgui_SOURCE_DIR}/imgui_demo.cpp
-  ${imgui_SOURCE_DIR}/imgui_draw.cpp
-  ${imgui_SOURCE_DIR}/imgui_tables.cpp
-  ${imgui_SOURCE_DIR}/imgui_widgets.cpp
-  ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
-  ${imgui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
-)
-
-target_include_directories(imgui
-  PUBLIC
-    ${imgui_SOURCE_DIR}
-    ${imgui_SOURCE_DIR}/backends
-)
-
-target_link_libraries(imgui
-  glfw
-  OpenGL::GL
-)
-
-target_include_directories(editor PRIVATE
-  ${fonts_SOURCE_DIR}
-)
-
 target_link_libraries(editor
     PRIVATE
-    SoundBakery::SoundBakery_Static
-    SoundBakery::Fonts
-    SoundBakery::Images
-    nfd
-    glfw
-    imgui
-    PRIVATE fmt::fmt
+    SoundBakery::Gluten
+    SoundBakery::SoundBakery
 )
 
 if(MSVC)

@@ -67,8 +67,8 @@
  * Internally, they are the same object and are simple extensions of the `ma_sound` object.
  *
  * This is done to ensure each call to @ref sc_system_play_sound creates a brand new sound with its play position set to
- * 0. If multiple calls to @ref sc_system_play_sound were made to the @ref sc_sound object, only one sound would be heard
- * and not many.
+ * 0. If multiple calls to @ref sc_system_play_sound were made to the @ref sc_sound object, only one sound would be
+ * heard and not many.
  *
  * Memory bloat isn't an issue here as miniaudio doesn't copy the loaded sound buffer but the pointers to that resource.
  * Miniaudio also handles reference counting and will release the resource when all sounds have finished playing and the
@@ -150,12 +150,12 @@
  * Node Groups can also be connected together to create a complex graph.
  *
  * @code
- * sc_node_group* parent = NULL;
+ * sc_node_group* get_parent = NULL;
  * sc_node_group* child = NULL;
  *
- * sc_node_group_set_parent(child, parent);
+ * sc_node_group_set_parent(child, get_parent);
  * @endcode
  *
- * It is recommended to refer to the @ref SB::Engine::NodeInstance class for how Sound Bakery uses Sound Chef to connect
+ * It is recommended to refer to the @ref SB::Engine::node_instance class for how Sound Bakery uses Sound Chef to connect
  * node groups together, insert lowpass and highpass effects, and insert user-defined effects.
  */

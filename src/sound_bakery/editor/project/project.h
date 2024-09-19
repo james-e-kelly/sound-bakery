@@ -1,74 +1,34 @@
 #pragma once
 
 #include "sound_bakery/core/core_include.h"
+#include "sound_bakery/editor/project/project_configuration.h"
 
 #include "yaml-cpp/yaml.h"
 
-namespace SB::Engine
+namespace sbk::engine
 {
-    class SoundContainer;
+    class sound_container;
 }
 
-namespace SB::Editor
+namespace sbk::editor
 {
     /**
-     * @brief Handles file and folder paths for a project.
+     * @brief Manages a project file and the objects contained within it.
+     *
+     * The project class also creates a sound container to play sound files on.
      */
-    struct ProjectConfiguration
-    {
-        ProjectConfiguration() = default;
-
-        ProjectConfiguration(const std::filesystem::path& projectFile)
-            : m_projectFile(projectFile),
-              m_projectFolder(projectFile.parent_path()),
-              m_projectName(projectFile.filename().stem().string())
-        {
-        }
-
-        std::filesystem::path m_projectFile;
-
-        std::string m_projectName;
-        std::filesystem::path m_projectFolder;
-
-        std::filesystem::path sourceFolder() const { return m_projectFolder / "Source"; }
-        std::filesystem::path objectFolder() const { return m_projectFolder / "Objects"; }
-        std::filesystem::path buildFolder() const { return m_projectFolder / "Build"; }
-        std::filesystem::path savedFolder() const { return m_projectFolder / "Saved"; }
-
-        std::filesystem::path encodedFolder() const { return buildFolder() / "Encoded"; }
-        std::filesystem::path logFolder() const { return savedFolder() / "Logs"; }
-
-        /**
-         * @brief Converts an object type to a folder location
-         */
-        std::filesystem::path typeFolder(const rttr::type& type) const;
-
-        std::string getIdFilename(SB::Core::DatabaseObject* databaseObject,
-                                  std::optional<std::string> extensionOverride = std::nullopt) const
-        {
-            return std::to_string(databaseObject->getDatabaseID()) +
-                   (extensionOverride.has_value() ? extensionOverride.value() : ".yaml");
-        }
-
-        bool isValid() const { return std::filesystem::exists(m_projectFile); }
-    };
-
-    /**
-     * Manages a project file and the objects contained within it.
-     */
-    class SB_CLASS Project
+    class SB_CLASS project : public sbk::core::object_owner
     {
     public:
-        bool openProject(const std::filesystem::path& projectFile);
-        void createProject(const std::filesystem::path& projectFile) {}
+        bool open_project(const std::filesystem::path& projectFile);
+        void create_project(const std::filesystem::path& projectFile) {}
 
-        void saveProject() const;
+        void save_project() const;
 
-        void encodeAllMedia() const;
+        void encode_all_media() const;
 
-        const ProjectConfiguration& getConfig() const { return m_projectConfig; }
-
-        SB::Engine::SoundContainer* getPreviewContainer() const { return m_previewSoundContainer; }
+        [[nodiscard]] const project_configuration& get_config() const;
+        [[nodiscard]] std::weak_ptr<sbk::engine::sound_container> get_preview_container() const;
 
     private:
         void loadSounds();
@@ -83,8 +43,7 @@ namespace SB::Editor
         void saveObjects() const;
         void saveYAML(const YAML::Emitter& emitter, const std::filesystem::path& filePath) const;
 
-    private:
-        ProjectConfiguration m_projectConfig;
-        SB::Engine::SoundContainer* m_previewSoundContainer;
+        project_configuration m_projectConfig;
+        std::weak_ptr<sbk::engine::sound_container> m_previewSoundContainer;
     };
-}  // namespace SB::Editor
+}  // namespace sbk::editor

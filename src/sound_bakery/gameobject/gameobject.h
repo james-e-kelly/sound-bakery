@@ -4,58 +4,32 @@
 #include "sound_bakery/parameter/parameter.h"
 #include "sound_bakery/voice/voice.h"
 
-namespace SB::Engine
+namespace sbk::engine
 {
-    class Container;
-    class Event;
+    class container;
+    class event;
+    class voice;
 
-    class SB_CLASS GameObject : public SB::Core::Object
+    class SB_CLASS game_object : public sbk::core::object
     {
-        REGISTER_REFLECTION(GameObject, SB::Core::Object)
+        REGISTER_REFLECTION(game_object, sbk::core::object)
 
     public:
-        Voice* playContainer(Container* container);
-        void postEvent(Event* event);
+        game_object() = default;
 
-        void stopVoice(Voice* voice);
-        void stopContainer(Container* container);
-        void stopAll();
+        voice* play_container(container* container);
+        void post_event(event* event);
+
+        void stop_voice(voice* voice);
+        void stop_container(container* container);
+        void stop_all();
 
         void update();
 
-        bool isPlaying() const noexcept;
+        [[nodiscard]] bool is_playing() const noexcept;
 
-        std::size_t voiceCount() const noexcept;
-
-        Voice* getVoice(std::size_t index) const;
-
-        /**
-         * @brief Finds the parameter value on this gameobject.
-         *
-         * If there is no local value, the global parameter value is used.
-         * @param parameter to get the value for.
-         * @return value of the parameter.
-         */
-        float getFloatParameterValue(const SB::Core::DatabasePtr<FloatParameter>& parameter) const
-        {
-            float result = 0.0F;
-
-            auto found = m_parameters.floatParameters.find(parameter);
-
-            if (found != m_parameters.floatParameters.cend())
-            {
-                result = found->second.get();
-            }
-            else
-            {
-                if (parameter.lookup())
-                {
-                    result = parameter.raw()->get();
-                }
-            }
-
-            return result;
-        }
+        [[nodiscard]] std::size_t voice_count() const noexcept;
+        [[nodiscard]] voice* get_voice(std::size_t index) const;
 
         /**
          * @brief Finds the parameter value on this gameobject.
@@ -64,52 +38,24 @@ namespace SB::Engine
          * @param parameter to get the value for.
          * @return value of the parameter.
          */
-        SB_ID getIntParameterValue(const SB::Core::DatabasePtr<NamedParameter>& parameter) const
-        {
-            SB_ID result = 0;
+        [[nodiscard]] float get_float_parameter_value(const sbk::core::database_ptr<float_parameter>& parameter) const;
 
-            auto found = m_parameters.intParameters.find(parameter);
+        /**
+         * @brief Finds the parameter value on this gameobject.
+         *
+         * If there is no local value, the global parameter value is used.
+         * @param parameter to get the value for.
+         * @return value of the parameter.
+         */
+        [[nodiscard]] sbk_id get_int_parameter_value(const sbk::core::database_ptr<named_parameter>& parameter) const;
 
-            if (found != m_parameters.intParameters.cend())
-            {
-                result = found->second.get();
-            }
-            else
-            {
-                if (parameter.lookup())
-                {
-                    result = parameter.raw()->get();
-                }
-            }
+        void set_float_parameter(const float_parameter::local_parameter_value_pair& parameterValue);
+        void set_int_parameter_value(const named_parameter::local_parameter_value_pair& parameterValue);
 
-            return result;
-        }
-
-        void setFloatParameterValue(const FloatParameter::LocalParameterValuePair& parameterValue)
-        {
-            m_parameters.floatParameters[parameterValue.first].set(parameterValue.second);
-        }
-
-        void setIntParameterValue(const NamedParameter::LocalParameterValuePair& parameterValue)
-        {
-            if (m_parameters.intParameters.find(parameterValue.first) == m_parameters.intParameters.cend())
-            {
-                SB::Core::DatabasePtr<NamedParameterValue> parameterValuePtr(parameterValue.second);
-                parameterValuePtr.lookup();
-                parameterValuePtr->parentParameter.lookup();
-
-                m_parameters.intParameters.insert(parameterValuePtr->parentParameter->createLocalParameterFromThis());
-            }
-
-            m_parameters.intParameters[parameterValue.first].set(parameterValue.second);
-
-            assert(m_parameters.intParameters[parameterValue.first].get() == parameterValue.second);
-        }
-
-        LocalParameterList getLocalParameters() const { return m_parameters; }
+        [[nodiscard]] local_parameter_list get_local_parameters() const { return m_parameters; }
 
     private:
-        std::vector<std::unique_ptr<Voice>> m_voices;
-        LocalParameterList m_parameters;
+        std::vector<std::unique_ptr<voice>> m_voices;
+        local_parameter_list m_parameters;
     };
-}  // namespace SB::Engine
+}  // namespace sbk::engine

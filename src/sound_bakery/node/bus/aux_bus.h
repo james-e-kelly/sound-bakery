@@ -2,10 +2,14 @@
 
 #include "bus.h"
 
-namespace SB::Engine
+namespace sbk::engine
 {
-    class SB_CLASS AuxBus : public Bus
+    class SB_CLASS aux_bus : public bus
     {
-        REGISTER_REFLECTION(AuxBus, Bus)
+        REGISTER_REFLECTION(aux_bus, bus)
+
+        bool can_add_parent_type(const rttr::type& parentType) const override;
+
+        bool can_add_child_type(const rttr::type& childType) const override;
     };
-}  // namespace SB::Engine
+}  // namespace sbk::engine

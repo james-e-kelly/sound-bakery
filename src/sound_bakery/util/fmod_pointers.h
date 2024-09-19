@@ -2,7 +2,7 @@
 
 #include "sound_chef/sound_chef.h"
 
-namespace SB
+namespace sbk
 {
     struct SC_SYSTEM_DELETER
     {
@@ -14,4 +14,4 @@ namespace SB
     };
 
     using SystemPtr = std::unique_ptr<sc_system, SC_SYSTEM_DELETER>;
-}  // namespace SB
+}  // namespace sbk

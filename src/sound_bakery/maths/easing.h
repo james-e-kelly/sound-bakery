@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-namespace SB::Maths
+namespace sbk::maths
 {
     constexpr double PI = 3.1415926545;
 
@@ -171,4 +171,4 @@ namespace SB::Maths
             return 1 - 8 * pow(2, -8 * t) * abs(sin(t * PI * 7));
         }
     }
-}  // namespace SB::Maths
+}  // namespace sbk::maths

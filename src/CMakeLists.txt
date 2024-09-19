@@ -4,16 +4,10 @@ option(SOUND_BAKERY_TIDY "Run clang-tidy" ON)
 set(CMAKE_FOLDER extern)
 
 message(STATUS "Fetching CppDelegates")
-
-FetchContent_Declare(
-  cppdelegates
-  GIT_REPOSITORY https://github.com/KarateKidzz/CppDelegates.git
-  GIT_TAG        master
-  GIT_SHALLOW    TRUE
-  GIT_PROGRESS TRUE
-  OVERRIDE_FIND_PACKAGE
-)
 FetchContent_MakeAvailable(cppdelegates)
+
+message(STATUS "Fetching stb")
+FetchContent_MakeAvailable(stb)
 
 add_library(delegates STATIC 
     ${cppdelegates_SOURCE_DIR}/Delegates.cpp
@@ -29,5 +23,6 @@ add_library(SoundBakery::Delegates ALIAS delegates)
 
 set(CMAKE_FOLDER src)
 
+add_subdirectory(gluten)
 add_subdirectory(sound_chef)
 add_subdirectory(sound_bakery)

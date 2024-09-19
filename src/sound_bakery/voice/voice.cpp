@@ -5,20 +5,19 @@
 #include "sound_bakery/sound/sound.h"
 #include "sound_bakery/voice/node_instance.h"
 
-using namespace SB::Engine;
+using namespace sbk::engine;
 
-void SB::Engine::Voice::playContainer(Container* container)
+void sbk::engine::voice::play_container(container* container)
 {
-    m_voiceInstances.clear();
+    destroy_all();
 
     m_playingContainer = container;
 
-    const std::unique_ptr<NodeInstance>& voiceInstance =
-        m_voiceInstances.emplace_back(std::make_unique<NodeInstance>());
+    const std::shared_ptr<node_instance> voiceInstance = create_runtime_object<node_instance>();
 
     InitNodeInstance initData;
-    initData.refNode     = container->tryConvertObject<NodeBase>();
-    initData.type        = SB::Engine::NodeInstanceType::MAIN;
+    initData.refNode     = container->try_convert_object<node_base>();
+    initData.type        = sbk::engine::NodeInstanceType::MAIN;
     initData.owningVoice = this;
 
     if (voiceInstance->init(initData))
@@ -27,82 +26,109 @@ void SB::Engine::Voice::playContainer(Container* container)
     }
     else
     {
-        m_voiceInstances.clear();
+        destroy_all();
     }
 }
 
-void Voice::update()
+void voice::update()
 {
-    if (!m_voiceInstances.empty())
+    if (!get_objects().empty())
     {
-        std::vector<std::unique_ptr<NodeInstance>>::iterator iter;
-        for (iter = m_voiceInstances.begin(); iter != m_voiceInstances.end();)
+        std::vector<std::shared_ptr<sbk::core::object>>::iterator iter;
+        for (iter = get_objects().begin(); iter != get_objects().end();)
         {
-            iter->get()->update();
+            if (sbk::engine::node_instance* const nodeInstance =
+                    iter->get()->try_convert_object<sbk::engine::node_instance>())
+            {
+                nodeInstance->update();
 
-            if (!iter->get()->isPlaying())
-            {
-                iter = m_voiceInstances.erase(iter);
-            }
-            else
-            {
-                ++iter;
+                if (!nodeInstance->isPlaying())
+                {
+                    iter = get_objects().erase(iter);
+                }
+                else
+                {
+                    ++iter;
+                }
             }
         }
     }
 }
 
-bool SB::Engine::Voice::playingContainer(Container* container) const noexcept
+bool sbk::engine::voice::playing_container(container* container) const noexcept
 {
     if (container == nullptr)
     {
         return false;
     }
 
-    if (container->getDatabaseID() == m_playingContainer.id())
+    if (container->get_database_id() == m_playingContainer.id())
     {
         return true;
     }
 
-    auto containerEqual = [id = container->getDatabaseID()](const std::unique_ptr<NodeInstance>& node)
+    auto containerEqual = [id = container->get_database_id()](const std::shared_ptr<sbk::core::object>& object)
     {
-        if (!node)
+        if (!object)
         {
             return false;
         }
 
-        const NodeInstance* nodeInstance = node.get();
+        std::shared_ptr<sbk::engine::node_instance> nodeInstance =
+            std::static_pointer_cast<sbk::engine::node_instance>(object);
 
-        if (nodeInstance->getReferencingNode()->getDatabaseID() == id)
+        if (!nodeInstance)
+        {
+            return false;
+        }
+
+        if (nodeInstance->getReferencingNode()->get_database_id() == id)
         {
             return true;
         }
 
-        NodeInstance* sharedNodeInstance = nodeInstance->getParent();
+        node_instance* parentNodeInstance = nodeInstance->get_parent();
 
-        while (sharedNodeInstance)
+        while (parentNodeInstance)
         {
-            if (sharedNodeInstance->getReferencingNode()->getDatabaseID() == id)
+            if (parentNodeInstance->getReferencingNode()->get_database_id() == id)
             {
                 return true;
             }
 
-            sharedNodeInstance = sharedNodeInstance->getParent();
+            parentNodeInstance = parentNodeInstance->get_parent();
         }
 
         return false;
     };
 
-    return std::find_if(m_voiceInstances.begin(), m_voiceInstances.end(), containerEqual) != m_voiceInstances.end();
+    return std::find_if(get_objects().begin(), get_objects().end(), containerEqual) != get_objects().end();
 }
 
-const std::vector<std::unique_ptr<NodeInstance>>& SB::Engine::Voice::getVoices() const noexcept
+const std::vector<std::shared_ptr<node_instance>> sbk::engine::voice::get_voices() const noexcept
 {
-    return m_voiceInstances;
+    std::vector<std::shared_ptr<node_instance>> nodeInstances;
+
+    for (std::size_t index = 0; index < get_objects().size(); ++index)
+    {
+        if (get_objects()[index])
+        {
+            if (std::shared_ptr<sbk::engine::node_instance> nodeInstance = std::static_pointer_cast<sbk::engine::node_instance>(get_objects()[index]))
+            {
+                nodeInstances.push_back(nodeInstance);
+            }
+        }
+    }
+
+    return nodeInstances;
 }
 
-std::size_t SB::Engine::Voice::voices() const { return m_voiceInstances.size(); }
+std::size_t sbk::engine::voice::num_voices() const 
+{
+    // Just assuming all owned objects are node instances
+    return get_objects().size(); 
+}
 
-NodeInstance* SB::Engine::Voice::voice(std::size_t index) const { return m_voiceInstances[index].get(); }
+node_instance* sbk::engine::voice::node_instance_at(std::size_t index) const { return get_objects()[index]->try_convert_object<sbk::engine::node_instance>(); }
 
-bool SB::Engine::Voice::isPlaying() const { return !m_voiceInstances.empty(); }
+bool sbk::engine::voice::is_playing() const { return !get_objects().empty(); }

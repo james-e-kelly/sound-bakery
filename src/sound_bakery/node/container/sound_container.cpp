@@ -2,14 +2,19 @@
 
 #include "sound_bakery/sound/sound.h"
 
-DEFINE_REFLECTION(SB::Engine::SoundContainer)
+DEFINE_REFLECTION(sbk::engine::sound_container)
 
-void SB::Engine::SoundContainer::gatherChildrenForPlay(GatherChildrenContext& context) const
+void sbk::engine::sound_container::gather_children_for_play(gather_children_context& context) const
 {
     context.sounds.push_back(this);
 }
 
-SB::Engine::Sound* SB::Engine::SoundContainer::getSound() const
+bool sbk::engine::sound_container::can_add_parent_type(const rttr::type& parentType) const
+{
+    return sbk::engine::node_base::can_add_parent_type(parentType) && parentType != sbk::engine::sound_container::type();
+}
+
+sbk::engine::sound* sbk::engine::sound_container::get_sound() const
 {
     if (m_sound.lookup())
     {
@@ -21,4 +26,7 @@ SB::Engine::Sound* SB::Engine::SoundContainer::getSound() const
     }
 }
 
-void SB::Engine::SoundContainer::setSound(const SB::Core::DatabasePtr<SB::Engine::Sound>& sound) { m_sound = sound; }
+void sbk::engine::sound_container::set_sound(const sbk::core::database_ptr<sbk::engine::sound>& sound)
+{
+    m_sound = sound;
+}

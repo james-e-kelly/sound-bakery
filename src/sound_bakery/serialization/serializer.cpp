@@ -12,7 +12,7 @@
 
 #include <rttr/type.h>
 
-using namespace SB::Core::Serialization;
+using namespace sbk::core::serialization;
 
 static const char* s_ObjectTypeKey = "ObjectType";
 static const char* s_ObjectIDKey   = "ObjectID";
@@ -350,7 +350,7 @@ void loadProperty(YAML::Node& node, rttr::property property, rttr::instance inst
 //
 // -----
 
-void Serializer::saveObject(SB::Core::Object* object, YAML::Emitter& emitter)
+void Serializer::saveObject(sbk::core::object* object, YAML::Emitter& emitter)
 {
     if (object != nullptr)
     {
@@ -360,7 +360,7 @@ void Serializer::saveObject(SB::Core::Object* object, YAML::Emitter& emitter)
     }
 }
 
-void Serializer::saveSystem(SB::Engine::System* system, YAML::Emitter& emitter)
+void Serializer::saveSystem(sbk::engine::system* system, YAML::Emitter& emitter)
 {
     if (system != nullptr)
     {
@@ -370,7 +370,7 @@ void Serializer::saveSystem(SB::Engine::System* system, YAML::Emitter& emitter)
     }
 }
 
-void Serializer::loadSystem(SB::Engine::System* system, YAML::Node& node)
+void Serializer::loadSystem(sbk::engine::system* system, YAML::Node& node)
 {
     if (system != nullptr)
     {
@@ -378,15 +378,15 @@ void Serializer::loadSystem(SB::Engine::System* system, YAML::Node& node)
     }
 }
 
-void Serializer::packageSoundbank(SB::Engine::Soundbank* soundbank, YAML::Emitter& emitter)
+void Serializer::packageSoundbank(sbk::engine::soundbank* soundbank, YAML::Emitter& emitter)
 {
     if (soundbank != nullptr)
     {
-        std::vector<SB::Engine::Event*> eventsToSave;
-        std::vector<SB::Engine::NodeBase*> nodesToSave;
-        std::vector<SB::Engine::Sound*> soundsToSave;
+        std::vector<sbk::engine::event*> eventsToSave;
+        std::vector<sbk::engine::node_base*> nodesToSave;
+        std::vector<sbk::engine::sound*> soundsToSave;
 
-        for (auto& event : soundbank->GetEvents())
+        for (auto& event : soundbank->get_events())
         {
             if (event.lookup())
             {
@@ -394,7 +394,7 @@ void Serializer::packageSoundbank(SB::Engine::Soundbank* soundbank, YAML::Emitte
 
                 for (auto& action : event->m_actions)
                 {
-                    if (action.m_type != SB::Engine::SB_ACTION_PLAY)
+                    if (action.m_type != sbk::engine::SB_ACTION_PLAY)
                     {
                         continue;
                     }
@@ -404,8 +404,8 @@ void Serializer::packageSoundbank(SB::Engine::Soundbank* soundbank, YAML::Emitte
                         continue;
                     }
 
-                    SB::Engine::NodeBase* const nodeBase =
-                        action.m_destination->tryConvertObject<SB::Engine::NodeBase>();
+                    sbk::engine::node_base* const nodeBase =
+                        action.m_destination->try_convert_object<sbk::engine::node_base>();
 
                     assert(nodeBase);
 
@@ -417,12 +417,12 @@ void Serializer::packageSoundbank(SB::Engine::Soundbank* soundbank, YAML::Emitte
 
         for (auto& node : nodesToSave)
         {
-            if (node->getType() == SB::Engine::SoundContainer::type())
+            if (node->getType() == sbk::engine::sound_container::type())
             {
-                if (SB::Engine::SoundContainer* const soundContainer =
-                        node->tryConvertObject<SB::Engine::SoundContainer>())
+                if (sbk::engine::sound_container* const soundContainer =
+                        node->try_convert_object<sbk::engine::sound_container>())
                 {
-                    if (SB::Engine::Sound* const sound = soundContainer->getSound())
+                    if (sbk::engine::sound* const sound = soundContainer->get_sound())
                     {
                         soundsToSave.push_back(sound);
                     }
@@ -430,7 +430,7 @@ void Serializer::packageSoundbank(SB::Engine::Soundbank* soundbank, YAML::Emitte
             }
         }
 
-        for (SB::Engine::Event* event : eventsToSave)
+        for (sbk::engine::event* event : eventsToSave)
         {
             assert(event);
 
@@ -439,7 +439,7 @@ void Serializer::packageSoundbank(SB::Engine::Soundbank* soundbank, YAML::Emitte
             saveInstance(emitter, event);
         }
 
-        for (SB::Engine::NodeBase* node : nodesToSave)
+        for (sbk::engine::node_base* node : nodesToSave)
         {
             assert(node);
 
@@ -448,7 +448,7 @@ void Serializer::packageSoundbank(SB::Engine::Soundbank* soundbank, YAML::Emitte
             saveInstance(emitter, node);
         }
 
-        for (SB::Engine::Sound* sound : soundsToSave)
+        for (sbk::engine::sound* sound : soundsToSave)
         {
             assert(sound);
 
@@ -469,34 +469,29 @@ void Serializer::packageSoundbank(SB::Engine::Soundbank* soundbank, YAML::Emitte
 
 rttr::instance Serializer::unpackSoundbank(YAML::Node& node) { return rttr::instance(); }
 
-rttr::instance SB::Core::Serialization::Serializer::createAndLoadObject(YAML::Node& node,
-                                                                        std::optional<rttr::method> onLoadedMethod)
+rttr::instance sbk::core::serialization::Serializer::createAndLoadObject(YAML::Node& node,
+                                                                         std::optional<rttr::method> onLoadedMethod)
 {
     const rttr::type type = rttr::type::get_by_name(node[s_ObjectTypeKey].as<std::string>());
 
-    const rttr::instance created = type.create_default();
-
-    assert(created);
-
-    if (created)
+    if (sbk::engine::system* const system = sbk::engine::system::get())
     {
-        if (created.get_derived_type().is_derived_from<SB::Core::Object>())
+        if (sbk::core::object_owner* const objectOwner = system->current_object_owner())
         {
-            if (SB::Core::ObjectTracker* const objectTracker = SB::Engine::System::getObjectTracker())
-            {
-                objectTracker->trackObject(created.try_convert<SB::Core::Object>());
-            }
-        }
+            rttr::variant created = objectOwner->create_runtime_object(type);
 
-        loadProperties(node, created, onLoadedMethod);
+            loadProperties(node, created, onLoadedMethod);
+
+            return created;
+        }
     }
 
-    return created;
+    return {};
 }
 
-bool SB::Core::Serialization::Serializer::loadProperties(YAML::Node& node,
-                                                         rttr::instance instance,
-                                                         std::optional<rttr::method> onLoadedMethod)
+bool sbk::core::serialization::Serializer::loadProperties(YAML::Node& node,
+                                                          rttr::instance instance,
+                                                          std::optional<rttr::method> onLoadedMethod)
 {
     bool result = false;
 
@@ -506,7 +501,9 @@ bool SB::Core::Serialization::Serializer::loadProperties(YAML::Node& node,
         {
             if (!property.is_readonly())
             {
-                if (YAML::Node propertyNode = node[property.get_name().data()])
+                rttr::string_view propertyName = property.get_name();
+
+                if (YAML::Node propertyNode = node[propertyName.data()])
                 {
                     loadProperty(propertyNode, property, instance);
                 }
@@ -530,7 +527,7 @@ bool SB::Core::Serialization::Serializer::loadProperties(YAML::Node& node,
 
 #pragma region Save
 
-bool SB::Core::Serialization::Serializer::saveInstance(YAML::Emitter& emitter, rttr::instance instance)
+bool sbk::core::serialization::Serializer::saveInstance(YAML::Emitter& emitter, rttr::instance instance)
 {
     bool result = false;
 
@@ -593,9 +590,9 @@ bool Serializer::saveVariant(YAML::Emitter& emitter, rttr::string_view name, rtt
     return result;
 }
 
-bool SB::Core::Serialization::Serializer::saveStringVariant(YAML::Emitter& emitter,
-                                                            rttr::string_view name,
-                                                            rttr::variant variant)
+bool sbk::core::serialization::Serializer::saveStringVariant(YAML::Emitter& emitter,
+                                                             rttr::string_view name,
+                                                             rttr::variant variant)
 {
     bool result = false;
 
@@ -639,9 +636,9 @@ bool SB::Core::Serialization::Serializer::saveStringVariant(YAML::Emitter& emitt
     return result;
 }
 
-bool SB::Core::Serialization::Serializer::saveEnumVariant(YAML::Emitter& emitter,
-                                                          rttr::string_view name,
-                                                          rttr::variant variant)
+bool sbk::core::serialization::Serializer::saveEnumVariant(YAML::Emitter& emitter,
+                                                           rttr::string_view name,
+                                                           rttr::variant variant)
 {
     bool result = false;
 
@@ -661,9 +658,9 @@ bool SB::Core::Serialization::Serializer::saveEnumVariant(YAML::Emitter& emitter
     return result;
 }
 
-bool SB::Core::Serialization::Serializer::saveAssociateContainerVariant(YAML::Emitter& emitter,
-                                                                        rttr::string_view name,
-                                                                        rttr::variant variant)
+bool sbk::core::serialization::Serializer::saveAssociateContainerVariant(YAML::Emitter& emitter,
+                                                                         rttr::string_view name,
+                                                                         rttr::variant variant)
 {
     bool result = false;
 
@@ -712,9 +709,9 @@ bool SB::Core::Serialization::Serializer::saveAssociateContainerVariant(YAML::Em
     return result;
 }
 
-bool SB::Core::Serialization::Serializer::saveSequentialContainerVariant(YAML::Emitter& emitter,
-                                                                         rttr::string_view name,
-                                                                         rttr::variant variant)
+bool sbk::core::serialization::Serializer::saveSequentialContainerVariant(YAML::Emitter& emitter,
+                                                                          rttr::string_view name,
+                                                                          rttr::variant variant)
 {
     bool result = false;
 
@@ -746,9 +743,9 @@ bool SB::Core::Serialization::Serializer::saveSequentialContainerVariant(YAML::E
     return result;
 }
 
-bool SB::Core::Serialization::Serializer::saveClassVariant(YAML::Emitter& emitter,
-                                                           rttr::string_view name,
-                                                           rttr::variant variant)
+bool sbk::core::serialization::Serializer::saveClassVariant(YAML::Emitter& emitter,
+                                                            rttr::string_view name,
+                                                            rttr::variant variant)
 {
     bool result = false;
 

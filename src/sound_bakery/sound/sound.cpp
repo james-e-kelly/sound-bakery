@@ -1,14 +1,15 @@
 #include "sound_bakery/sound/sound.h"
 
 #include "sound_bakery/editor/project/project.h"
+#include "sound_bakery/system.h"
 
-using namespace SB::Engine;
+using namespace sbk::engine;
 
-DEFINE_REFLECTION(SB::Engine::Sound)
+DEFINE_REFLECTION(sbk::engine::sound)
 
-Sound::Sound() : m_streaming(false) {}
+sound::sound() : m_streaming(false) {}
 
-void Sound::loadSynchronous()
+void sound::loadSynchronous()
 {
     std::filesystem::path finalSoundPath;
 
@@ -21,12 +22,12 @@ void Sound::loadSynchronous()
         if (std::filesystem::exists(encodedSoundPath))
         {
             finalSoundPath   = encodedSoundPath;
-            encodedSoundPath = std::filesystem::relative(encodedSoundPath,
-                                                         SB::Engine::System::getProject()->getConfig().encodedFolder());
+            encodedSoundPath = std::filesystem::relative(
+                encodedSoundPath, sbk::engine::system::get_project()->get_config().encoded_folder());
         }
         else
         {
-            finalSoundPath = SB::Engine::System::getProject()->getConfig().encodedFolder() / encodedSoundPath;
+            finalSoundPath = sbk::engine::system::get_project()->get_config().encoded_folder() / encodedSoundPath;
         }
 
         useRawSound = !std::filesystem::exists(finalSoundPath);
@@ -37,12 +38,12 @@ void Sound::loadSynchronous()
         if (std::filesystem::exists(rawSoundPath))
         {
             finalSoundPath = rawSoundPath;
-            rawSoundPath =
-                std::filesystem::relative(rawSoundPath, SB::Engine::System::getProject()->getConfig().sourceFolder());
+            rawSoundPath   = std::filesystem::relative(rawSoundPath,
+                                                       sbk::engine::system::get_project()->get_config().source_folder());
         }
         else
         {
-            finalSoundPath = SB::Engine::System::getProject()->getConfig().sourceFolder() / rawSoundPath;
+            finalSoundPath = sbk::engine::system::get_project()->get_config().source_folder() / rawSoundPath;
         }
     }
 
@@ -50,30 +51,30 @@ void Sound::loadSynchronous()
 
     sc_sound* loadedSound = nullptr;
 
-    sc_result result =
-        sc_system_create_sound(getChef(), finalSoundPath.string().c_str(), SC_SOUND_MODE_DEFAULT, &loadedSound);
+    sc_result result = sc_system_create_sound(sbk::engine::system::get(), finalSoundPath.string().c_str(),
+                                              SC_SOUND_MODE_DEFAULT, &loadedSound);
     assert(result == MA_SUCCESS);
 
     m_sound.reset(loadedSound);
 }
 
-void Sound::loadAsynchronous() { loadSynchronous(); }
+void sound::loadAsynchronous() { loadSynchronous(); }
 
-void Sound::setSoundName(std::string soundName)
+void sound::setSoundName(std::string soundName)
 {
     rawSoundPath = soundName;
     loadSynchronous();
 }
 
-std::string Sound::getSoundName() const { return rawSoundPath.string().c_str(); }
+std::string sound::getSoundName() const { return rawSoundPath.string().c_str(); }
 
-void Sound::setEncodedSoundName(std::string encodedSoundName)
+void sound::setEncodedSoundName(std::string encodedSoundName)
 {
     encodedSoundPath = encodedSoundName;
     loadSynchronous();
 }
 
-sc_sound* Sound::getSound()
+sc_sound* sound::getSound()
 {
     if (!m_sound)
     {
@@ -81,4 +82,17 @@ sc_sound* Sound::getSound()
     }
 
     return m_sound.get();
+}
+
+encoding_sound sound::get_encoding_sound_data() const
+{ 
+    const sbk::editor::project_configuration projectConfig = sbk::engine::system::get_project()->get_config();
+
+    encoding_sound encodingSound; 
+
+    encodingSound.rawSoundPath     = projectConfig.source_folder() / rawSoundPath;
+    encodingSound.encodedSoundPath = projectConfig.encoded_folder() / encodedSoundPath;
+    encodingSound.encodingFormat   = m_encodingFormat;
+
+    return encodingSound;
 }

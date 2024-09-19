@@ -8,22 +8,22 @@
 #include "sound_bakery/system.h"
 #include "sound_bakery/voice/voice.h"
 
-using namespace SB::Engine;
+using namespace sbk::engine;
 
-DEFINE_REFLECTION(SB::Engine::NodeInstance)
+DEFINE_REFLECTION(sbk::engine::node_instance)
 
-NodeInstance::~NodeInstance()
+node_instance::~node_instance()
 {
     if (m_referencingNode != nullptr)
     {
-        m_referencingNode->m_volume.getDelegate().RemoveObject(this);
-        m_referencingNode->m_pitch.getDelegate().RemoveObject(this);
-        m_referencingNode->m_lowpass.getDelegate().RemoveObject(this);
-        m_referencingNode->m_highpass.getDelegate().RemoveObject(this);
+        m_referencingNode->m_volume.get_delegate().RemoveObject(this);
+        m_referencingNode->m_pitch.get_delegate().RemoveObject(this);
+        m_referencingNode->m_lowpass.get_delegate().RemoveObject(this);
+        m_referencingNode->m_highpass.get_delegate().RemoveObject(this);
     }
 }
 
-bool SB::Engine::NodeInstance::init(const InitNodeInstance& initData)
+bool sbk::engine::node_instance::init(const InitNodeInstance& initData)
 {
     if (m_state != NodeInstanceState::UNINIT)
     {
@@ -37,7 +37,7 @@ bool SB::Engine::NodeInstance::init(const InitNodeInstance& initData)
 
     bool converted = false;
     m_referencingNode =
-        rttr::wrapper_mapper<SB::Core::DatabasePtr<NodeBase>>::convert<Node>(initData.refNode, converted).shared();
+        rttr::wrapper_mapper<sbk::core::database_ptr<node_base>>::convert<node>(initData.refNode, converted).shared();
 
     if (!m_nodeGroup.initNodeGroup(*initData.refNode.raw()))
     {
@@ -46,10 +46,10 @@ bool SB::Engine::NodeInstance::init(const InitNodeInstance& initData)
 
     m_owningVoice = initData.owningVoice;
 
-    m_referencingNode->m_volume.getDelegate().AddRaw(this, &NodeInstance::setVolume);
-    m_referencingNode->m_pitch.getDelegate().AddRaw(this, &NodeInstance::setPitch);
-    m_referencingNode->m_lowpass.getDelegate().AddRaw(this, &NodeInstance::setLowpass);
-    m_referencingNode->m_highpass.getDelegate().AddRaw(this, &NodeInstance::setHighpass);
+    m_referencingNode->m_volume.get_delegate().AddRaw(this, &node_instance::setVolume);
+    m_referencingNode->m_pitch.get_delegate().AddRaw(this, &node_instance::setPitch);
+    m_referencingNode->m_lowpass.get_delegate().AddRaw(this, &node_instance::setLowpass);
+    m_referencingNode->m_highpass.get_delegate().AddRaw(this, &node_instance::setHighpass);
 
     setVolume(0.0F, m_referencingNode->m_volume.get());
     setPitch(0.0F, m_referencingNode->m_pitch.get());
@@ -75,11 +75,11 @@ bool SB::Engine::NodeInstance::init(const InitNodeInstance& initData)
         }
         case NodeInstanceType::BUS:
         {
-            if (const Bus* const bus = initData.refNode->tryConvertObject<Bus>())
+            if (const bus* const bus = initData.refNode->try_convert_object<sbk::engine::bus>())
             {
                 // Checks nullptr as master busses are technically busses without an output, even if they're not marked
                 // as masters
-                if (bus->isMasterBus() || bus->parent() == nullptr)
+                if (bus->isMasterBus() || bus->get_parent() == nullptr)
                 {
                     success = true;
                     break;
@@ -115,22 +115,22 @@ bool SB::Engine::NodeInstance::init(const InitNodeInstance& initData)
     return success;
 }
 
-bool NodeInstance::play()
+bool node_instance::play()
 {
     if (isPlaying())
     {
         return true;
     }
 
-    if (m_referencingNode->getType() == rttr::type::get<SoundContainer>())
+    if (m_referencingNode->getType() == rttr::type::get<sound_container>())
     {
-        SoundContainer* soundContainer   = m_referencingNode->tryConvertObject<SoundContainer>();
-        Sound* engineSound               = soundContainer->getSound();
+        sound_container* soundContainer   = m_referencingNode->try_convert_object<sound_container>();
+        sound* engineSound               = soundContainer->get_sound();
         sc_sound* sound                  = engineSound != nullptr ? engineSound->getSound() : nullptr;
         sc_sound_instance* soundInstance = nullptr;
 
-        sc_result playSoundResult =
-            sc_system_play_sound(getChef(), sound, &soundInstance, m_nodeGroup.nodeGroup.get(), MA_FALSE);
+        sc_result playSoundResult = sc_system_play_sound(sbk::engine::system::get(), sound, &soundInstance,
+                                                         m_nodeGroup.nodeGroup.get(), MA_FALSE);
 
         if (playSoundResult == MA_SUCCESS)
         {
@@ -159,7 +159,7 @@ bool NodeInstance::play()
     return isPlaying();
 }
 
-void NodeInstance::update()
+void node_instance::update()
 {
     if (m_soundInstance)
     {
@@ -189,9 +189,9 @@ void NodeInstance::update()
             m_children.childrenNodes.clear();
 
             // Sequence nodes retrigger when the current sound stops
-            if (m_referencingNode->getType() == rttr::type::get<SequenceContainer>())
+            if (m_referencingNode->getType() == rttr::type::get<sequence_container>())
             {
-                m_children.createChildren(*m_referencingNode->tryConvertObject<NodeBase>(), m_owningVoice, this,
+                m_children.createChildren(*m_referencingNode->try_convert_object<node_base>(), m_owningVoice, this,
                                           ++m_numTimesPlayed);
                 play();
             }
@@ -201,7 +201,7 @@ void NodeInstance::update()
 
 //////////////////////////////////////////////////////////////////////////////////
 
-void NodeInstance::setVolume(float oldVolume, float newVolume)
+void node_instance::setVolume(float oldVolume, float newVolume)
 {
     (void)oldVolume;
 
@@ -211,7 +211,7 @@ void NodeInstance::setVolume(float oldVolume, float newVolume)
     }
 }
 
-void NodeInstance::setPitch(float oldPitch, float newPitch)
+void node_instance::setPitch(float oldPitch, float newPitch)
 {
     (void)oldPitch;
 
@@ -221,22 +221,22 @@ void NodeInstance::setPitch(float oldPitch, float newPitch)
     }
 }
 
-void NodeInstance::setLowpass(float oldLowpass, float newLowpass)
+void node_instance::setLowpass(float oldLowpass, float newLowpass)
 {
     (void)oldLowpass;
 
-    const double percentage    = SB::Maths::easeOutCubic(newLowpass / 100.0);
+    const double percentage    = sbk::maths::easeOutCubic(newLowpass / 100.0);
     const double lowpassCutoff = (19980 - (19980.0 * percentage)) + 20.0;
     assert(lowpassCutoff >= 20.0);
 
     sc_dsp_set_parameter_float(m_nodeGroup.lowpass, SC_DSP_LOWPASS_CUTOFF, static_cast<float>(lowpassCutoff));
 }
 
-void NodeInstance::setHighpass(float oldHighpass, float newHighpass)
+void node_instance::setHighpass(float oldHighpass, float newHighpass)
 {
     (void)oldHighpass;
 
-    const double percentage     = SB::Maths::easeInCubic(newHighpass / 100.0);
+    const double percentage     = sbk::maths::easeInCubic(newHighpass / 100.0);
     const double highpassCutoff = (19980.0 * percentage) + 20.0;
     assert(highpassCutoff >= 20.0);
 

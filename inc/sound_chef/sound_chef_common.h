@@ -57,13 +57,32 @@
         ma_free((freePtr), NULL);       \
         return MA_OUT_OF_MEMORY;        \
     }
+#define SC_CHECK_AND_GOTO(condition, dest) \
+    if ((condition) == MA_FALSE)           \
+    goto dest
 
 #define SC_ZERO_OBJECT(p) memset((p), 0, sizeof(*(p)))
+
+#define SC_COUNTOF(x)            (sizeof(x) / sizeof(x[0]))
+#define SC_MAX(x, y)             (((x) > (y)) ? (x) : (y))
+#define SC_MIN(x, y)             (((x) < (y)) ? (x) : (y))
+#define SC_ABS(x)                (((x) > 0) ? (x) : -(x))
+#define SC_CLAMP(x, lo, hi)      (ma_max(lo, ma_min(x, hi)))
+#define SC_OFFSET_PTR(p, offset) (((ma_uint8*)(p)) + (offset))
+#define SC_ALIGN(x, a)           (((x) + ((a)-1)) & ~((a)-1))
+#define SC_ALIGN_64(x)           ma_align(x, 8)
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
+        
+#define SC_VERSION_MAJOR        0
+#define SC_VERSION_MINOR        1
+#define SC_VERSION_PATCH        0
+#define SC_VERSION_STRING       MA_XSTRINGIFY(SC_VERSION_MAJOR) "." MA_XSTRINGIFY(SC_VERSION_MINOR) "." MA_XSTRINGIFY(SC_VERSION_PATCH)
+
+#define SC_PRODUCT_NAME         "Sound Chef"
 
 typedef ma_bool32 sc_bool;
 typedef ma_result sc_result;
@@ -95,7 +114,8 @@ typedef enum sc_dsp_type
     SC_DSP_TYPE_FADER,
     SC_DSP_TYPE_LOWPASS,
     SC_DSP_TYPE_HIGHPASS,
-    SC_DSP_TYPE_DELAY
+    SC_DSP_TYPE_DELAY,
+    SC_DSP_TYPE_METER
 } sc_dsp_type;
 
 typedef enum sc_dsp_index
@@ -104,6 +124,14 @@ typedef enum sc_dsp_index
     SC_DSP_INDEX_HEAD = -1   //< Right/top of the chain and becomes the new output
 } sc_dsp_index;
 
+typedef enum sc_encoding_format
+{
+    sc_encoding_format_unknown = 0,
+    sc_encoding_format_wav,
+    sc_encoding_format_adpcm = 10,
+    sc_encoding_format_vorbis,
+    sc_encoding_format_opus
+} sc_encoding_format;
 
 typedef sc_result(SC_CALL* SC_DSP_CREATE_CALLBACK)(sc_dsp_state* dspState);
 typedef sc_result(SC_CALL* SC_DSP_RELEASE_CALLBACK)(sc_dsp_state* dspState);
@@ -131,8 +159,7 @@ struct sc_dsp_vtable
 struct sc_dsp_state
 {
     void* instance;  //< points to the current sc_dsp object
-    void* userData;  //< points to uer created object, likely some type of
-                     // ma_node
+    void* userData;  //< points to the user created object, likely some type of ma_node
     void* system;    //< points to the owning sc_system object
 };
 
@@ -153,7 +180,7 @@ struct sc_dsp
     sc_dsp_state* state;    //< holds the instance data for the dsp
     sc_dsp_vtable* vtable;  //< holds the functions for interacting with the underlying node type. Must be not null
     sc_dsp_type type;
-    sc_dsp* next;  //< when in a node group, the parent/next dsp. Can be null if the head node
+    sc_dsp* next;  //< when in a node group, the get_parent/next dsp. Can be null if the head node
     sc_dsp* prev;  //< when in a node group, the child/previous dsp. Can be null if the tail node
 };
 
@@ -161,6 +188,7 @@ struct sc_sound
 {
     ma_sound sound;
     sc_sound_mode mode;
+    ma_decoder* memoryDecoder;
 };
 
 /**
@@ -175,9 +203,9 @@ struct sc_sound
  */
 struct sc_node_group
 {
-    sc_dsp* tail;   //< Left/bottom most node. Sounds and child groups connect to this
+    sc_dsp* tail;   //< Left/right most node. Sounds and child groups connect to this
     sc_dsp* fader;  //< Controls the volume and more of the group. Exists at start
-    sc_dsp* head;   //< Right/top most node. Nodes in the group route to this. The head then outputs to a parent
+    sc_dsp* head;   //< Right/top most node. Nodes in the group route to this. The head then outputs to a get_parent
 };
 
 /**
@@ -197,10 +225,10 @@ struct sc_node_group
 struct sc_system
 {
     ma_engine engine;
-
     ma_resource_manager resourceManager; //< We need a custom resource manager for custom decoders
-
     ma_log log;
+
+    sc_node_group* masterNodeGroup;
 };
 
 #ifdef __cplusplus

@@ -1,6 +1,5 @@
 #include "system.h"
 
-#include "sound_bakery/core/object/object_global.h"
 #include "sound_bakery/editor/project/project.h"
 #include "sound_bakery/factory.h"
 #include "sound_bakery/gameobject/gameobject.h"
@@ -11,129 +10,122 @@
 #include "spdlog/sinks/rotating_file_sink.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 
-using namespace SB::Engine;
-
-System::~System() = default;
+using namespace sbk::engine;
 
 namespace
 {
-    static System* s_system = nullptr;
+    sbk::engine::system* s_system = nullptr;
 
-    static const std::string s_soundChefLoggerName("LogSoundChef");
+    const std::string s_soundChefLoggerName("LogSoundChef");
+
+    void miniaudio_log_callback(void* pUserData, ma_uint32 level, const char* pMessage)
+    {
+        (void)pUserData;
+
+        auto soundChefLogger = spdlog::get(s_soundChefLoggerName);
+
+        if (!soundChefLogger)
+        {
+            return;
+        }
+
+        switch (level)
+        {
+            case MA_LOG_LEVEL_DEBUG:
+                soundChefLogger->debug("{}", pMessage);
+                break;
+            case MA_LOG_LEVEL_INFO:
+                soundChefLogger->info("{}", pMessage);
+                break;
+            case MA_LOG_LEVEL_WARNING:
+                soundChefLogger->warn("{}", pMessage);
+                break;
+            case MA_LOG_LEVEL_ERROR:
+                soundChefLogger->error("{}", pMessage);
+                break;
+            default:
+                break;
+        }
+    }
 }  // namespace
 
-static void miniaudioLogCallback(void* pUserData, ma_uint32 level, const char* pMessage)
-{
-    (void)pUserData;
-
-    auto soundChefLogger = spdlog::get(s_soundChefLoggerName);
-
-    if (!soundChefLogger)
-    {
-        return;
-    }
-
-    switch (level)
-    {
-        case MA_LOG_LEVEL_DEBUG:
-            soundChefLogger->debug("{}", pMessage);
-            break;
-        case MA_LOG_LEVEL_INFO:
-            soundChefLogger->info("{}", pMessage);
-            break;
-        case MA_LOG_LEVEL_WARNING:
-            soundChefLogger->warn("{}", pMessage);
-            break;
-        case MA_LOG_LEVEL_ERROR:
-            soundChefLogger->error("{}", pMessage);
-            break;
-        default:
-            break;
-    }
-}
-
-System::System() : m_listenerGameObject(nullptr)
+system::system()
+    : sc_system(),
+      m_gameThreadExecuter(make_manual_executor())
 {
     assert(s_system == nullptr);
     s_system = this;
 
-    sc_system* chefSystem = nullptr;
-
-    sc_result createResult = sc_system_create(&chefSystem);
-    assert(createResult == MA_SUCCESS);
-
-    if (createResult == MA_SUCCESS)
-    {
-        m_chefSystem.reset(chefSystem);
-    }
-
-    sc_result initLogResult = sc_system_log_init(chefSystem, miniaudioLogCallback);
+    const sc_result initLogResult = sc_system_log_init(this, miniaudio_log_callback);
     assert(initLogResult == MA_SUCCESS);
 }
 
-System* System::get() { return s_system; }
-
-sc_system* System::getChef()
+system::~system()
 {
-    System* system = get();
-    return system ? system->m_chefSystem.get() : nullptr;
+    SPDLOG_DEBUG("Closing Sound Bakery");
+
+    // Close threads
+    background_executor()->shutdown();
+    game_thread_executer()->shutdown();
+
+    if (m_project)
+    {
+        m_project.reset();
+    }
+
+    if (m_listenerGameObject)
+    {
+        m_listenerGameObject.reset();
+    }
+
+    if (m_masterBus)
+    {
+        m_masterBus.reset();
+    }
+
+    destroy_all();
+
+    sbk::reflection::unregisterReflectionTypes();
+
+    sc_system_close(this);
+
+    spdlog::shutdown();
 }
 
-System* System::create()
+sbk::engine::system* system::get() { return s_system; }
+
+sbk::engine::system* system::create()
 {
     if (s_system == nullptr)
     {
-        s_system = new System();
-
-        if (s_system)
-        {
-            s_system->m_objectTracker = std::make_unique<SB::Core::ObjectTracker>();
-            s_system->m_database      = std::make_unique<SB::Core::Database>();
-
-            s_system->mainThreadExecuter = s_system->concurrenRuntime.make_manual_executor();
-        }
+        s_system = new system();
     }
 
     return s_system;
 }
 
-void System::destroy()
+void system::destroy()
 {
     if (s_system != nullptr)
     {
-        spdlog::debug("Closing Sound Bakery");
-
-        // Close threads
-        s_system->getBackgroundExecuter()->shutdown();
-        s_system->mainThreadExecuter->shutdown();
-
-        s_system->m_listenerGameObject->stopAll();
-        s_system->m_listenerGameObject.reset();
-
-        s_system->m_database->clear();
-
-        SB::Reflection::unregisterReflectionTypes();
-
-        s_system->m_chefSystem.reset();
-
-        spdlog::shutdown();
-
         delete s_system;
         s_system = nullptr;
     }
 }
 
-SB_RESULT System::init()
+sc_result system::init()
 {
     if (s_system == nullptr)
     {
         return MA_DEVICE_NOT_STARTED;
     }
 
-    sc_result result = sc_system_init(s_system->m_chefSystem.get());
+    const sc_result result = sc_system_init(s_system);
     assert(result == MA_SUCCESS);
 
-    SB::Reflection::registerReflectionTypes();
+    sbk::reflection::registerReflectionTypes();
+
+    s_system->m_listenerGameObject = s_system->create_runtime_object<sbk::engine::game_object>();
 
     // TODO
     // Add way of turning off profiling
@@ -142,7 +134,7 @@ SB_RESULT System::init()
     return result;
 }
 
-SB_RESULT System::update()
+sc_result system::update()
 {
     if (s_system == nullptr)
     {
@@ -154,20 +146,33 @@ SB_RESULT System::update()
         s_system->m_voiceTracker->update(s_system);
     }
 
-    s_system->m_listenerGameObject->update();
+    std::unordered_set<sbk::core::object*> objects = s_system->get_objects_of_type(sbk::engine::game_object::type());
 
-    s_system->mainThreadExecuter->loop(32);
+    std::for_each(objects.begin(), objects.end(), [](sbk::core::object* const object) 
+        {
+            if (object != nullptr)
+            {
+                if (sbk::engine::game_object* const gameObject = object->try_convert_object<sbk::engine::game_object>())
+                {
+                    gameObject->update();
+                }
+            }
+        });
+
+    s_system->m_gameThreadExecuter->loop(32);
 
     return MA_SUCCESS;
 }
 
-SB_RESULT System::openProject(const std::filesystem::path& projectFile)
+sbk::core::object_owner* system::current_object_owner() { return m_project.get(); }
+
+sc_result system::open_project(const std::filesystem::path& project_file)
 {
     destroy();
 
-    // Create the global logger before initializing Sound Bakery
+    // Create the global logger before initializing sound Bakery
 
-    const SB::Editor::ProjectConfiguration tempProject = SB::Editor::ProjectConfiguration(projectFile);
+    const sbk::editor::project_configuration tempProject = sbk::editor::project_configuration(project_file);
 
     auto consoleSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
     consoleSink->set_level(spdlog::level::info);
@@ -177,12 +182,12 @@ SB_RESULT System::openProject(const std::filesystem::path& projectFile)
     tm now_tm   = spdlog::details::os::localtime(tnow);
 
     auto dailySink = std::make_shared<spdlog::sinks::daily_file_sink_mt>(
-        (tempProject.logFolder() / (tempProject.m_projectName + ".txt")).string(), now_tm.tm_hour, now_tm.tm_min, true,
-        0, spdlog::file_event_handlers{});
+        (tempProject.log_folder() / (std::string(tempProject.project_name()) + ".txt")).string(), now_tm.tm_hour,
+        now_tm.tm_min, true, 0, spdlog::file_event_handlers{});
     dailySink->set_level(spdlog::level::trace);
 
     auto basicFileSink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(
-        (tempProject.logFolder() / (tempProject.m_projectName + ".txt")).string(), true);
+        (tempProject.log_folder() / (std::string(tempProject.project_name()) + ".txt")).string(), true);
     basicFileSink->set_level(spdlog::level::trace);
 
     std::shared_ptr<spdlog::logger> logger = std::make_shared<spdlog::logger>(
@@ -200,9 +205,9 @@ SB_RESULT System::openProject(const std::filesystem::path& projectFile)
     create();
     init();
 
-    s_system->m_project = std::make_unique<SB::Editor::Project>();
+    s_system->m_project = std::make_unique<sbk::editor::project>();
 
-    if (s_system->m_project->openProject(projectFile))
+    if (s_system->m_project->open_project(project_file))
     {
         return MA_SUCCESS;
     }
@@ -212,29 +217,9 @@ SB_RESULT System::openProject(const std::filesystem::path& projectFile)
     return MA_ERROR;
 }
 
-SB::Core::ObjectTracker* System::getObjectTracker()
+sbk::editor::project* system::get_project()
 {
-    if (s_system)
-    {
-        return s_system->m_objectTracker.get();
-    }
-
-    return nullptr;
-}
-
-SB::Core::Database* System::getDatabase()
-{
-    if (s_system)
-    {
-        return s_system->m_database.get();
-    }
-
-    return nullptr;
-}
-
-SB::Editor::Project* System::getProject()
-{
-    if (s_system)
+    if (s_system != nullptr)
     {
         return s_system->m_project.get();
     }
@@ -242,43 +227,8 @@ SB::Editor::Project* System::getProject()
     return nullptr;
 }
 
-void SB::Engine::System::onLoaded()
+void sbk::engine::system::set_master_bus(const std::shared_ptr<sbk::engine::bus>& masterBus)
 {
-    m_listenerGameObject = std::unique_ptr<GameObject>(newObject<GameObject>());
-
-    if (!m_masterBus.lookup())
-    {
-        createMasterBus();
-    }
-
-    // for (auto& object : m_objects)
-    //{
-    //     //object.second->onProjectLoaded();
-    // }
+    assert(!m_masterBus);
+    m_masterBus = masterBus;
 }
-
-void SB::Engine::System::createMasterBus()
-{
-    assert(m_masterBus.null() && "Shouldn't create a master bus when one exists");
-
-    m_masterBus = newDatabaseObject<Bus>();
-    m_masterBus->setDatabaseName("Master Bus");
-    m_masterBus->setMasterBus(true);
-}
-
-void System::setMasterBus(const SB::Core::DatabasePtr<Bus>& bus)
-{
-    if (m_masterBus.lookup())
-    {
-        m_masterBus->setMasterBus(false);
-    }
-
-    m_masterBus = bus;
-
-    if (m_masterBus.lookup())
-    {
-        m_masterBus->setMasterBus(true);
-    }
-}
-
-GameObject* System::getListenerGameObject() const { return m_listenerGameObject.get(); }

@@ -12,9 +12,16 @@
 #define SB_API SC_API
 #define SB_CLASS SC_CLASS
 
-typedef sc_result SB_RESULT;
+typedef sc_result sb_result;
 
-typedef unsigned long long SB_ID;
+typedef unsigned long long sbk_id;
 #define SB_INVALID_ID 0
+
+#define SBK_VERSION_MAJOR       0
+#define SBK_VERSION_MINOR       2
+#define SBK_VERSION_PATCH       0
+#define SBK_VERSION_STRING      MA_XSTRINGIFY(SBK_VERSION_MAJOR) "." MA_XSTRINGIFY(SBK_VERSION_MINOR) "." MA_XSTRINGIFY(SBK_VERSION_PATCH)
+
+#define SBK_PRODUCT_NAME        "Sound Bakery"
 
 #endif

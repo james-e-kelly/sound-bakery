@@ -9,6 +9,7 @@
  */
 
 #include "sound_chef_common.h"
+#include "sound_chef_dsp.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -57,6 +58,9 @@ extern "C"
                                             sc_sound_mode mode,
                                             sc_sound** sound);
 
+    sc_result SC_API sc_system_create_sound_memory(
+        sc_system* system, void* memoryLocation, size_t soundSize, sc_sound_mode mode, sc_sound** sound);
+
     /**
      * @brief Plays a sound and returns the playing instance.
      *
@@ -68,7 +72,7 @@ extern "C"
      * @param system system object
      * @param sound to copy to the instance
      * @param instance of the new sound for playing
-     * @param parent optional parameter. Outputs to the master node group by
+     * @param get_parent optional parameter. Outputs to the master node group by
      * default
      * @param paused whether this sound is paused upon creation or played
      * instantly
@@ -117,19 +121,24 @@ extern "C"
 
     sc_result SC_API sc_dsp_get_parameter_float(sc_dsp* dsp, int index, float* value);
     sc_result SC_API sc_dsp_set_parameter_float(sc_dsp* dsp, int index, float value);
+    sc_result SC_API sc_dsp_get_metering_info(sc_dsp* dsp,
+                                              ma_uint32 channelIndex,
+                                              sc_dsp_meter meterType,
+                                              float* value);
     sc_result SC_API sc_dsp_release(sc_dsp* dsp);
 
     sc_result SC_API sc_node_group_set_volume(sc_node_group* nodeGroup, float volume);
     sc_result SC_API sc_node_group_get_volume(sc_node_group* nodeGroup, float* volume);
 
     sc_result SC_API sc_node_group_set_parent(sc_node_group* nodeGroup, sc_node_group* parent);
+    sc_result SC_API sc_node_group_set_parent_endpoint(sc_node_group* nodeGroup);
+
+    sc_result SC_API sc_node_group_get_dsp(sc_node_group* nodeGroup, sc_dsp_type type, sc_dsp** dsp);
 
     sc_result SC_API sc_node_group_add_dsp(sc_node_group* nodeGroup, sc_dsp* dsp, sc_dsp_index index);
     sc_result SC_API sc_node_group_remove_dsp(sc_node_group* nodeGroup, sc_dsp* dsp);
 
     sc_result SC_API sc_node_group_release(sc_node_group* nodeGroup);
-
-#include "sound_chef_dsp.h"
 
 #ifdef __cplusplus
 }

@@ -2,21 +2,31 @@
 
 #include "sound_bakery/core/core_fwd.h"
 
-namespace SB::Core
+namespace sbk::core
 {
-    class SB_CLASS ObjectTracker
+    /**
+     * @brief Tracks object categories and types.
+     *
+     * The object_tracker allows for searching of object types and categories.
+     *
+     * Objects are tracked with their memory address. This means objects in sound Bakery cannot be moved around in
+     * memory.
+     *
+     * @see database
+     */
+    class SB_CLASS object_tracker
     {
-        using RawObjectPtr = Object*;
-
     public:
-        void trackObject(RawObjectPtr object);
-        void untrackObject(RawObjectPtr object, std::optional<rttr::type> typeOverride = std::nullopt);
+        void track_object(object* object);
+        void untrack_object(object* object, std::optional<rttr::type> typeOverride = std::nullopt);
 
-        std::unordered_set<RawObjectPtr> getObjectsOfCategory(SB_OBJECT_CATEGORY category);
-        std::unordered_set<RawObjectPtr> getObjectsOfType(rttr::type type);
+        [[nodiscard]] std::unordered_set<object*> get_objects_of_category(const SB_OBJECT_CATEGORY& category) const;
+        [[nodiscard]] std::unordered_set<object*> get_objects_of_type(const rttr::type& type) const;
 
     private:
-        std::unordered_map<SB_OBJECT_CATEGORY, std::unordered_set<RawObjectPtr>> m_categoryToObjects;
-        std::unordered_map<rttr::type, std::unordered_set<RawObjectPtr>> m_typeToObjects;
+        void on_object_destroyed(object* object);
+
+        std::unordered_map<SB_OBJECT_CATEGORY, std::unordered_set<object*>> m_categoryToObjects;
+        std::unordered_map<rttr::type, std::unordered_set<object*>> m_typeToObjects;
     };
-}  // namespace SB::Core
+}  // namespace sbk::core

@@ -5,21 +5,21 @@
 | [![windows](https://github.com/KarateKidzz/sound-bakery/actions/workflows/windows.yaml/badge.svg?branch=dev)](https://github.com/KarateKidzz/sound-bakery/actions/workflows/windows.yaml) | [![macos](https://github.com/KarateKidzz/sound-bakery/actions/workflows/macos.yaml/badge.svg?branch=dev)](https://github.com/KarateKidzz/sound-bakery/actions/workflows/macos.yaml) |[![linux](https://github.com/KarateKidzz/sound-bakery/actions/workflows/linux.yaml/badge.svg?branch=dev)](https://github.com/KarateKidzz/sound-bakery/actions/workflows/linux.yaml)  | [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT) | [![GitHub license](https://img.shields.io/badge/C%2B%2B-20-blue)](https://en.cppreference.com/w/cpp/compiler_support#cpp20) | ![WIP](https://img.shields.io/badge/Status-WIP-yellow) |
 
 <div align="center">
-    <a href="#why-choose-sound-bakery">Why?</a> • <a href="#goal">Goal</a> • <a href="#getting-started">Getting Started</a> • <a href="#contributing">Contributing</a>
+    <a href="#why-choose-sound-bakery">Why?</a> • <a href="#goal">Goal</a> • <a href="#getting-started">Getting Started</a> • <a href="#contributing">Join</a>
 </div>
 <p></p>
 
-Sound Bakery is a free and open-source event-based audio middleware tool. The tool comes packaged with an authoring application and C/C++ API for integration with game engines. It supports the entire audio pipeline, from asset management, sound selection, and packaging to playback and debugging.
+Sound Bakery is a free and open-source audio middleware tool. The tool comes packaged with an authoring application and C/C++ API for integration with game engines. It supports the entire audio pipeline, from asset management, sound selection, packaging, playback and debugging.
+
+![](docs/img/sound-bakery-wip-02.png)
 
 ## Why Choose Sound Bakery?
 
 From Blender and Krita to Godot, more and more developers are choosing open-source alternatives for their projects. Sound Bakery is the open choice for game audio. 
 
-The options for audio developers have always been restricted. The choice has been between expensive tools, engine tools, or free software that lacks essential features. That is not the case with Sound Bakery - it is fully featured from an authoring application to a robust API for integration.
-
 | Effective | Modern | Open |
 | --- | --- | --- |
-| Sound Bakery provides a powerful authoring application and clean API that is as powerful as any commercial tool. It is built with multithreading and performance in mind. | Instead of building atop decades-old codebases, Sound Bakery can start anew and use modern language features, libraries and development techniques. | Tired of spending thousands on your middleware tool just for it to ask for more? Sound Bakery is yours to use and modify - free of charge. |
+| With a full authoring application, powerful API, and multithreading built in, Sound Bakery is a competitive choice. | Sound Bakery is a tool for the modern era - Github hosting with CI, C++ 20, CMake, modern libraries and more. | Don't be restricted by cost or license. Sound Bakery is free, modifiable and MIT licensed. |
 
 ## Goal
 
@@ -29,7 +29,7 @@ Check out the [roadmap](docs/Roadmap.md) for where Sound Bakery is going!
 
 ## Getting Started
 
-Looking to get started instantly? Check out the [releases](https://github.com/KarateKidzz/sound-bakery/releases) page for prebuilt binaries and source code.
+Looking for binaries? Check out the [releases](https://github.com/KarateKidzz/sound-bakery/releases) page for prebuilt binaries and source code. Otherwise, see how to build from source.
 
 ### Prerequisites
 Ensure the following are installed:
@@ -76,13 +76,15 @@ int main() {
 For documentation and guides, visit [soundbakery.jameskelly.audio](https://soundbakery.jameskelly.audio).
 
 ## Contributing
-Contributions from the community are welcome! Whether fixing bugs, adding new features, or improving documentation, all help is valuable.
+Sound Bakery needs **you**! From UI/UX artists to DSP programmers, the project needs yours skills.
 
-### How to Contribute
-1. Fork the repository.
-2. Create a new branch for the feature or bug fix.
-3. Commit changes and push the branch to the fork.
-4. Create a pull request with a detailed description of the changes.
+Found a bug or want to request a feature? Open an [issue](https://github.com/KarateKidzz/sound-bakery/issues).
+
+Want to talk about the project? Start a [discussion](https://github.com/KarateKidzz/sound-bakery/discussions).
+
+Ready to make a change? Create a [fork](https://github.com/KarateKidzz/sound-bakery/fork).
+
+All contributions are welcome!
 
 For more details, check out our [contributing guidelines](CONTRIBUTING.md).
 
@@ -90,4 +92,4 @@ For more details, check out our [contributing guidelines](CONTRIBUTING.md).
 Sound Bakery is licensed under the MIT License. See the LICENSE file for more information.
 
 ## Acknowledgements
-A big thank you to the creators of miniaudio, concurrencpp, ImGui, rttr, tracy, and spdlog for their incredible libraries and to all our contributors who make Sound Bakery possible.
+A big thank you to the creators of miniaudio, concurrencpp, ImGui, rttr, tracy, and spdlog for their incredible libraries that make Sound Bakery possible.

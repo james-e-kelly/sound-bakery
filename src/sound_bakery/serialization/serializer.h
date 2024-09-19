@@ -4,18 +4,18 @@
 
 #include "yaml-cpp/yaml.h"
 
-namespace SB::Core
+namespace sbk::core
 {
-    class Object;
+    class object;
 }
 
-namespace SB::Engine
+namespace sbk::engine
 {
-    class Soundbank;
-    class System;
-}  // namespace SB::Engine
+    class soundbank;
+    class system;
+}  // namespace sbk::engine
 
-namespace SB::Core::Serialization
+namespace sbk::core::serialization
 {
     struct SB_CLASS SaveData
     {
@@ -26,22 +26,22 @@ namespace SB::Core::Serialization
     class SB_CLASS Serializer final
     {
     public:
-        static void saveObject(SB::Core::Object* object, YAML::Emitter& emitter);
-        static void saveSystem(SB::Engine::System* system, YAML::Emitter& emitter);
+        static void saveObject(sbk::core::object* object, YAML::Emitter& emitter);
+        static void saveSystem(sbk::engine::system* system, YAML::Emitter& emitter);
 
-        static void packageSoundbank(SB::Engine::Soundbank* soundbank, YAML::Emitter& emitter);
+        static void packageSoundbank(sbk::engine::soundbank* soundbank, YAML::Emitter& emitter);
         static rttr::instance unpackSoundbank(YAML::Node& node);
 
-        static void loadSystem(SB::Engine::System* system, YAML::Node& node);
+        static void loadSystem(sbk::engine::system* system, YAML::Node& node);
 
         static rttr::instance createAndLoadObject(
             YAML::Node& node, std::optional<rttr::method> onLoadedMethod = std::optional<rttr::method>());
 
-    private:
         static bool loadProperties(YAML::Node& node,
                                    rttr::instance instance,
                                    std::optional<rttr::method> onLoadedMethod = std::optional<rttr::method>());
 
+    private:
         static bool saveInstance(YAML::Emitter& emitter, rttr::instance instance);
         static bool saveVariant(YAML::Emitter& emitter, rttr::string_view name, rttr::variant& variant);
         static bool saveStringVariant(YAML::Emitter& emitter, rttr::string_view name, rttr::variant variant);
@@ -54,4 +54,4 @@ namespace SB::Core::Serialization
                                                    rttr::variant variant);
         static bool saveClassVariant(YAML::Emitter& emitter, rttr::string_view name, rttr::variant variant);
     };
-}  // namespace SB::Core::Serialization
+}  // namespace sbk::core::serialization

@@ -1,16 +1,16 @@
 #pragma once
 
-namespace SB
+namespace sbk
 {
-    namespace Core
+    namespace core
     {
-        class Object;
-        class DatabaseObject;
+        class object;
+        class database_object;
 
         template <typename T>
-        class DatabasePtr;
+        class database_ptr;
 
         template <typename T>
-        class Property;
-    }  // namespace Core
-}  // namespace SB
+        class property;
+    }  // namespace core
+}  // namespace sbk

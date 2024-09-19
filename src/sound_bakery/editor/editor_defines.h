@@ -2,7 +2,7 @@
 
 #include <utility>
 
-namespace SB::Editor
+namespace sbk::editor
 {
     using MinMax = std::pair<float, float>;
 
@@ -20,4 +20,4 @@ namespace SB::Editor
     inline std::string PayloadNamedParam    = "NAMED_PARAM";
     inline std::string PayloadIntParamValue = "NAMED_PARAM_VALUE";
     inline std::string PayloadFloatParam    = "FLOAT_PARAM";
-}  // namespace SB::Editor
+}  // namespace sbk::editor

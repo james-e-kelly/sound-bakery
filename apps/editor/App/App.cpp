@@ -1,105 +1,59 @@
 #include "App.h"
 
-#include "Managers/AppManager.h"
-#include "Managers/ProjectManager.h"
-#include "Subsystems/RendererSubsystem.h"
-#include "Subsystems/WidgetSubsystem.h"
+#include "gluten/subsystems/widget_subsystem.h"
+#include "managers/app_manager.h"
+#include "managers/project_manager.h"
+#include "sound_bakery/editor/project/project.h"
+#include "widgets/root_widget.h"
 
 namespace PathHelpers
 {
     static const char* ResourcesFolder = "Resources";
 }
 
-int App::Run(int argc, char** argv)
+gluten::app* create_application() { return new editor_app(); }
+
+void editor_app::open_project(const std::filesystem::path& project_file)
 {
-    m_executableLocation = std::string(argv[0]);
-
-    AddSubsystemClass<RendererSubsystem>();
-    AddSubsystemClass<WidgetSubsystem>();
-
-    // PreInit
-    for (std::unique_ptr<Subsystem>& subsystem : m_subsystems)
+    if (project_manager* projectManager = get_manager_by_class<project_manager>())
     {
-        if (int errorCode = subsystem->PreInit(argc, argv); errorCode != 0)
-        {
-            return errorCode;
-        }
+        projectManager->exit();
+        projectManager->init_project(project_file);
     }
-
-    // Init
-    for (std::unique_ptr<Subsystem>& subsystem : m_subsystems)
+    else
     {
-        if (int errorCode = subsystem->Init(); errorCode != 0)
-        {
-            return errorCode;
-        }
+        projectManager = add_manager_class<project_manager>();
+        projectManager->init_project(project_file);
     }
-
-    m_hasInit = true;
-
-    m_appManager = std::make_unique<AppManager>(this);
-    m_appManager->Init(m_executableLocation);
-
-    // Tick
-    while (!m_isRequestingExit)
-    {
-        double deltaTime = m_appManager->GetDeltaTime();
-
-        // PreTick
-        for (std::unique_ptr<Subsystem>& subsystem : m_subsystems)
-        {
-            subsystem->PreTick(deltaTime);
-        }
-
-        if (m_isRequestingExit)
-        {
-            break;
-        }
-
-        // Tick
-        for (std::unique_ptr<Subsystem>& subsystem : m_subsystems)
-        {
-            subsystem->Tick(deltaTime);
-        }
-
-        m_appManager->Tick(deltaTime);
-
-        if (m_projectManager)
-        {
-            m_projectManager->Tick(deltaTime);
-        }
-
-        // Rendering
-        for (std::unique_ptr<Subsystem>& subsystem : m_subsystems)
-        {
-            subsystem->TickRendering(deltaTime);
-        }
-    }
-
-    // Exit
-    if (m_projectManager)
-    {
-        m_projectManager->Exit();
-    }
-
-    for (std::unique_ptr<Subsystem>& subsystem : m_subsystems)
-    {
-        subsystem->Exit();
-    }
-
-    return 0;
 }
 
-void App::RequestExit() { m_isRequestingExit = true; }
-
-void App::OpenProject(const std::filesystem::path& projectFile)
+void editor_app::create_and_open_project(const std::filesystem::directory_entry& projectFolder)
 {
-    if (m_projectManager)
-    {
-        m_projectManager->Exit();
-        m_projectManager.reset();
-    }
+    sbk::editor::project_configuration newProjectConfig(projectFolder, "Sound Bakery Project");
 
-    m_projectManager = std::make_unique<ProjectManager>(this);
-    m_projectManager->Init(projectFile);
+    if (newProjectConfig.is_valid())
+    {
+        project_manager* projectManager = get_manager_by_class<project_manager>();
+
+        if (projectManager != nullptr)
+        {
+            projectManager->exit();
+        }
+        else
+        {
+            projectManager = add_manager_class<project_manager>();
+        }
+
+        projectManager->init_project(newProjectConfig.project_file());
+    }
+}
+
+void editor_app::post_init()
+{
+    gluten::widget_subsystem* const widgetSubsystem = get_subsystem_by_class<gluten::widget_subsystem>();
+
+    root_widget* const rootWidget = widgetSubsystem->add_widget_class<root_widget>();
+    widgetSubsystem->set_root_widget(rootWidget);
+
+    add_manager_class<app_manager>();
 }

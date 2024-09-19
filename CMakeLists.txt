@@ -13,17 +13,23 @@ endif()
 
 message(STATUS "Install path is ${CMAKE_INSTALL_PREFIX}")
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
+include(external_dependencies)
+
 set(SOUND_BAKERY_MAIN_PROJECT OFF)
 if(CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
   set(SOUND_BAKERY_MAIN_PROJECT ON)
 endif()
 
+option(SOUND_BAKERY_SHARED "Build Sound Bakery and Sound Chef as shared libraries" OFF)
 option(SOUND_BAKERY_DOCS "Build doxygen docs" OFF)
 option(SOUND_BAKERY_TESTS "Build test library" OFF)
 option(SOUND_BAKERY_FORMAT_SOURCE "Format source" ${SOUND_BAKERY_MAIN_PROJECT})
 option(SOUND_BAKERY_TIDY_SOURCE "Run clang-tidy on source files" OFF)
 
 message(STATUS "SOUND_BAKERY_MAIN_PROJECT=${SOUND_BAKERY_MAIN_PROJECT}")
+message(STATUS "SOUND_BAKERY_SHARED=${SOUND_BAKERY_SHARED}")
 message(STATUS "SOUND_BAKERY_DOCS=${SOUND_BAKERY_DOCS}")
 message(STATUS "SOUND_BAKERY_TESTS=${SOUND_BAKERY_TESTS}")
 message(STATUS "SOUND_BAKERY_FORMAT_SOURCE=${SOUND_BAKERY_FORMAT_SOURCE}")
@@ -60,10 +66,12 @@ if(SOUND_BAKERY_MAIN_PROJECT)
   if(SOUND_BAKERY_TIDY_SOURCE)
     set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
     find_program(SOUND_BAKERY_CLANG_TIDY_EXE NAMES clang-tidy)
-  endif()
 
-  if(SOUND_BAKERY_TIDY_SOURCE)
-    message(STATUS "Found clang-tidy exe")
+    if(SOUND_BAKERY_CLANG_TIDY_EXE)
+      message(STATUS "Found clang-tidy exe")
+    else()
+      message(FATAL_ERROR "Could not find clang-tidy exe")
+    endif()
   endif()
 
   include(CTest)
@@ -79,20 +87,6 @@ if(SOUND_BAKERY_MAIN_PROJECT)
     message(STATUS "Skipping docs")
   endif()
 endif()
-
-include(FetchContent)
-
-FetchContent_Declare(
-  cmrc
-  GIT_REPOSITORY https://github.com/vector-of-bool/cmrc.git
-  GIT_TAG        2.0.1
-  GIT_SHALLOW    TRUE
-  GIT_PROGRESS TRUE
-  OVERRIDE_FIND_PACKAGE
-)
-
-message(STATUS "Fetching CMRC for resource embedding")
-FetchContent_MakeAvailable(cmrc)
 
 set(CMAKE_FOLDER src)
 add_subdirectory(src)

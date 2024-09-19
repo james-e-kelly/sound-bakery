@@ -6,7 +6,7 @@
 #include "sound_bakery/voice/node_instance.h"
 #include "sound_bakery/voice/voice.h"
 
-using namespace SB::Engine::Profiling;
+using namespace sbk::engine::Profiling;
 
 static VoiceTracker* s_voiceTracker = nullptr;
 
@@ -19,34 +19,35 @@ VoiceTracker::VoiceTracker()
 
 VoiceTracker* VoiceTracker::get() { return s_voiceTracker; }
 
-void VoiceTracker::update(System* system)
+void VoiceTracker::update(system* system)
 {
     m_playingNodeIDs.clear();
     m_nodePlayingCount.clear();
 
-    if (const GameObject* const listener = system->getListenerGameObject())
+    // @TODO Fix listener game object
+    if (const game_object* const listener = nullptr /* system->get_listener_game_object() */)
     {
-        for (std::size_t i = 0; i < listener->voiceCount(); ++i)
+        for (std::size_t i = 0; i < listener->voice_count(); ++i)
         {
-            if (const Voice* const voice = listener->getVoice(i))
+            if (const voice* const voice = listener->get_voice(i))
             {
-                std::unordered_set<const NodeInstance*> trackedNodes;
+                std::unordered_set<const node_instance*> trackedNodes;
 
-                for (std::size_t j = 0; j < voice->voices(); ++j)
+                for (std::size_t j = 0; j < voice->num_voices(); ++j)
                 {
-                    if (const NodeInstance* const nodeInstance = voice->voice(j))
+                    if (const node_instance* const nodeInstance = voice->node_instance_at(j))
                     {
                         if (!trackedNodes.contains(nodeInstance))
                         {
                             trackedNodes.insert(nodeInstance);
 
-                            if (const std::shared_ptr<Node> node = nodeInstance->getReferencingNode())
+                            if (const std::shared_ptr<node> node = nodeInstance->getReferencingNode())
                             {
-                                m_playingNodeIDs.insert(node->getDatabaseID());
-                                m_nodePlayingCount[node->getDatabaseID()]++;
+                                m_playingNodeIDs.insert(node->get_database_id());
+                                m_nodePlayingCount[node->get_database_id()]++;
                             }
 
-                            const NodeInstance* parent = nodeInstance->getParent();
+                            const node_instance* parent = nodeInstance->get_parent();
 
                             if (!trackedNodes.contains(parent))
                             {
@@ -54,13 +55,13 @@ void VoiceTracker::update(System* system)
 
                                 while (parent)
                                 {
-                                    if (const std::shared_ptr<Node> node = parent->getReferencingNode())
+                                    if (const std::shared_ptr<node> node = parent->getReferencingNode())
                                     {
-                                        m_playingNodeIDs.insert(node->getDatabaseID());
-                                        m_nodePlayingCount[node->getDatabaseID()]++;
+                                        m_playingNodeIDs.insert(node->get_database_id());
+                                        m_nodePlayingCount[node->get_database_id()]++;
                                     }
 
-                                    parent = parent->getParent();
+                                    parent = parent->get_parent();
                                 }
                             }
                         }
@@ -71,11 +72,11 @@ void VoiceTracker::update(System* system)
     }
 }
 
-unsigned int VoiceTracker::getPlayingCountOfObject(SB_ID id) const
+unsigned int VoiceTracker::getPlayingCountOfObject(sbk_id id) const
 {
     unsigned int result = 0;
 
-    if (std::unordered_map<SB_ID, unsigned int>::const_iterator find = m_nodePlayingCount.find(id);
+    if (std::unordered_map<sbk_id, unsigned int>::const_iterator find = m_nodePlayingCount.find(id);
         find != m_nodePlayingCount.cend())
     {
         result = find->second;

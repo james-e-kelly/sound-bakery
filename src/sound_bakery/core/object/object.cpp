@@ -3,35 +3,16 @@
 #include "sound_bakery/core/object/object_tracker.h"
 #include "sound_bakery/system.h"
 
-using namespace SB::Core;
+using namespace sbk::core;
 
-DEFINE_REFLECTION(SB::Core::Object)
+DEFINE_REFLECTION(sbk::core::object)
 
-Object::~Object()
+object::~object() { m_onDestroyEvent.Broadcast(this); }
+
+void object::destroy()
 {
-    if (ObjectTracker* const objectTracker = SB::Engine::System::getObjectTracker())
+    if (m_owner)
     {
-        objectTracker->untrackObject(this, m_type);
+        m_owner->remove_object(shared_from_this());
     }
-}
-
-SB::Engine::System* ObjectUtilities::getSystem() const { return SB::Engine::System::get(); }
-
-sc_system* ObjectUtilities::getChef() const
-{
-    if (SB::Engine::System* system = getSystem())
-    {
-        return system->getChef();
-    }
-    return nullptr;
-}
-
-ma_engine* ObjectUtilities::getMini() const
-{
-    if (sc_system* system = getChef())
-    {
-        return (ma_engine*)system;
-    }
-
-    return nullptr;
 }

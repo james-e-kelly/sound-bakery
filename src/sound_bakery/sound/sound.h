@@ -1,14 +1,25 @@
 #pragma once
 
-#include "miniaudio.h"
+#include "sound_chef/sound_chef.h"
+#include "sound_chef/sound_chef_encoder.h"
 #include "sound_bakery/core/core_include.h"
 
-namespace SB::Engine
+namespace sbk::engine
 {
-    class SB_CLASS Sound : public SB::Core::DatabaseObject
+    /**
+     * @brief Data for converting a sound to an encoded format.
+    */
+    struct SB_CLASS encoding_sound
+    {
+        std::filesystem::path rawSoundPath;
+        std::filesystem::path encodedSoundPath;
+        sc_encoding_format encodingFormat = sc_encoding_format_wav;
+    };
+
+    class SB_CLASS sound : public sbk::core::database_object
     {
     public:
-        Sound();
+        sound();
 
         void loadSynchronous();
         void loadAsynchronous();
@@ -24,15 +35,19 @@ namespace SB::Engine
 
         sc_sound* getSound();
 
+        encoding_sound get_encoding_sound_data() const;
+
     private:
         std::unique_ptr<sc_sound, SC_SOUND_DELETER> m_sound;
 
         std::filesystem::path rawSoundPath;
         std::filesystem::path encodedSoundPath;
 
-        bool m_streaming;
+        sc_encoding_format m_encodingFormat = sc_encoding_format_wav;
 
-        REGISTER_REFLECTION(Sound, SB::Core::DatabaseObject)
+        bool m_streaming = false;
+
+        REGISTER_REFLECTION(sound, sbk::core::database_object)
         RTTR_REGISTRATION_FRIEND
     };
-}  // namespace SB::Engine
+}  // namespace sbk::engine

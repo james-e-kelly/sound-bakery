@@ -1,43 +1,32 @@
 #pragma once
 
+#include "sound_bakery/core/object/object_owner.h"
 #include "sound_bakery/pch.h"
 #include "sound_bakery/util/macros.h"
 
-namespace SB::Engine
+namespace sbk::engine
 {
-    class System;
+    class system;
 }
 
-namespace SB::Core
+namespace sbk::core
 {
     /**
-     * @brief Provides basic helper functions. Not meant to be used directly
+     * @brief Base object that all sound Bakery objects should inherit
+     * from.
+     *
+     * Objects can own other objects.
      */
-    class SB_CLASS ObjectUtilities
+    class SB_CLASS object : public object_owner, public std::enable_shared_from_this<object>
     {
-    public:
-        SB::Engine::System* getSystem() const;
-        sc_system* getChef() const;
-        ma_engine* getMini() const;
-
-        std::string m_debugName;
-
-        REGISTER_REFLECTION(ObjectUtilities)
-    };
-
-    /**
-     * @brief Simple base Object that all Sound Bakery objects should inherit
-     * from
-     */
-    class SB_CLASS Object : public ObjectUtilities
-    {
-        REGISTER_REFLECTION(Object, ObjectUtilities)
+        REGISTER_REFLECTION(object)
+        NOT_COPYABLE(object)
 
     public:
-        Object() = default;
-        virtual ~Object();
+        object() = default;
+        virtual ~object();
 
-        NOT_COPYABLE(Object)
+        [[nodiscard]] object_owner* owner() const { return m_owner; }
 
         /**
          * @brief Gets the most derived type of this object and upcasts it to T
@@ -45,21 +34,21 @@ namespace SB::Core
          * @return
          */
         template <typename T>
-        T* tryConvertObject() noexcept
+        T* try_convert_object() noexcept
         {
             if (getType().is_derived_from(T::type()) || getType() == T::type())
             {
-                return SB::Reflection::cast<T*, Object*>(this);
+                return sbk::reflection::cast<T*, object*>(this);
             }
             return nullptr;
         }
 
         template <typename T>
-        const T* tryConvertObject() const noexcept
+        const T* try_convert_object() const noexcept
         {
             if (getType().is_derived_from(T::type()) || getType() == T::type())
             {
-                return SB::Reflection::cast<const T*, const Object*>(this);
+                return sbk::reflection::cast<const T*, const object*>(this);
             }
             return nullptr;
         }
@@ -82,11 +71,27 @@ namespace SB::Core
             return m_type.value();
         }
 
+        void destroy();
+
+        [[nodiscard]] MulticastDelegate<object*>& get_on_destroy() { return m_onDestroyEvent; }
+
     private:
+        friend class object_owner;
+
+        void set_owner(object_owner* newOwner)
+        {
+            assert(m_owner == nullptr);
+            m_owner = newOwner;
+        }
+
+        object_owner* m_owner = nullptr;
+
         /**
          * @brief Cache of this object's type so it can be grabbed during
          * destruction
          */
         mutable std::optional<rttr::type> m_type = std::nullopt;
+
+        MulticastDelegate<object*> m_onDestroyEvent;
     };
-}  // namespace SB::Core
+}  // namespace sbk::core

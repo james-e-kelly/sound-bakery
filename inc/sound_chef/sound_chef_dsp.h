@@ -53,6 +53,31 @@ extern "C"
         SC_DSP_HIGHPASS_NUM_PARAM
     } sc_dsp_highpass;
 
+    typedef enum sc_dsp_meter
+    {
+        SC_DSP_METER_PEAK,
+        SC_DSP_METER_RMS,
+        SC_DSP_METER_NUM_PARAM
+    } sc_dsp_meter;
+
+    enum
+    {
+        SC_DSP_METER_MAX_CHANNELS = 36   //< Meter up to 5th order ambisonics
+    };
+
+    typedef struct sc_meter
+    {
+        ma_atomic_uint32 channels;
+        ma_atomic_float peakLevels[SC_DSP_METER_MAX_CHANNELS];
+        ma_atomic_float rmsLevels[SC_DSP_METER_MAX_CHANNELS];
+    } sc_meter;
+
+    typedef struct sc_meter_node
+    {
+        ma_node_base baseNode;
+        sc_meter meter;
+    } sc_meter_node;
+
 #ifdef __cplusplus
 }
 #endif

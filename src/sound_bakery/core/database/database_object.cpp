@@ -4,42 +4,34 @@
 #include "sound_bakery/core/database/database.h"
 #include "sound_bakery/system.h"
 
-using namespace SB::Core;
+using namespace sbk::core;
 
-DEFINE_REFLECTION(SB::Core::DatabaseObject)
+DEFINE_REFLECTION(sbk::core::database_object)
 
-DatabaseObject::~DatabaseObject()
-{
-    // Database::get()->remove(this);
-}
+sbk_id sbk::core::database_object::get_database_id() const { return m_objectID; }
 
-SB_ID SB::Core::DatabaseObject::getDatabaseID() const { return m_objectID; }
+std::string_view sbk::core::database_object::get_database_name() const { return m_objectName; }
 
-std::string_view SB::Core::DatabaseObject::getDatabaseName() const { return m_objectName; }
-
-void SB::Core::DatabaseObject::setDatabaseID(SB_ID id)
+void sbk::core::database_object::set_database_id(sbk_id id)
 {
     assert(m_objectID == 0 && "Shouldn't update an object's ID at runtime");
 
-    if (Database* const database = SB::Engine::System::getDatabase())
-    {
-        database->addOrUpdateID(m_objectID, id, this);
-    }
-
     if (id != 0)
     {
+        m_onUpdateID.Broadcast(m_objectID, id);
         m_objectID = id;
     }
 }
 
-void SB::Core::DatabaseObject::setDatabaseName(std::string_view name)
+void sbk::core::database_object::set_database_name(std::string_view name)
 {
-    if (Database* const database = SB::Engine::System::getDatabase())
-    {
-        database->addOrUpdateName(m_objectName, name.data(), this);
-    }
-
+    m_onUpdateName.Broadcast(m_objectName, name);
     m_objectName = name;
+}
 
-    m_debugName = name;
+MulticastDelegate<sbk_id, sbk_id>& sbk::core::database_object::get_on_update_id() { return m_onUpdateID; }
+
+MulticastDelegate<std::string_view, std::string_view>& sbk::core::database_object::get_on_update_name()
+{
+    return m_onUpdateName;
 }

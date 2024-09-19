@@ -4,24 +4,24 @@
 #include "sound_bakery/node/node.h"
 #include "sound_bakery/system.h"
 
-using namespace SB::Core;
+using namespace sbk::core;
 
-std::weak_ptr<DatabaseObject> SB::Core::findObject(SB_ID id)
+std::weak_ptr<database_object> sbk::core::findObject(sbk_id id)
 {
-    if (Database* const database = SB::Engine::System::getDatabase())
+    if (database* const objectOwner = sbk::engine::system::get())
     {
-        return database->tryFindWeak(id);
+        return objectOwner->try_find(id);
     }
-    return std::weak_ptr<DatabaseObject>();
+    return {};
 }
 
-bool SB::Core::objectIdIsChildOfParent(SB_ID childToCheck, SB_ID parent)
+bool sbk::core::objectIdIsChildOfParent(sbk_id childToCheck, sbk_id parent)
 {
-    SB::Core::DatabasePtr<DatabaseObject> parentPtr(parent);
+    sbk::core::database_ptr<database_object> parentPtr(parent);
 
     if (parentPtr.lookup())
     {
-        if (SB::Engine::NodeBase* nodeBase = parentPtr->tryConvertObject<SB::Engine::NodeBase>())
+        if (sbk::engine::node_base* nodeBase = parentPtr->try_convert_object<sbk::engine::node_base>())
         {
             return nodeBase->hasChild(childToCheck);
         }
@@ -30,19 +30,19 @@ bool SB::Core::objectIdIsChildOfParent(SB_ID childToCheck, SB_ID parent)
     return false;
 }
 
-SB_ID SB::Core::getParentIdFromId(SB_ID id)
+sbk_id sbk::core::getParentIdFromId(sbk_id id)
 {
     if (id != 0)
     {
-        SB::Core::DatabasePtr<DatabaseObject> databasePtr(id);
+        const sbk::core::database_ptr<database_object> databasePtr(id);
 
         if (databasePtr.lookup())
         {
-            if (SB::Engine::NodeBase* nodeBase = databasePtr->tryConvertObject<SB::Engine::NodeBase>())
+            if (sbk::engine::node_base* nodeBase = databasePtr->try_convert_object<sbk::engine::node_base>())
             {
-                if (SB::Engine::NodeBase* parent = nodeBase->parent())
+                if (sbk::engine::node_base* parent = nodeBase->get_parent())
                 {
-                    return parent->getDatabaseID();
+                    return parent->get_database_id();
                 }
             }
         }

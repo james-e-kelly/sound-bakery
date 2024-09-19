@@ -12,6 +12,7 @@ OUTPUT_DIRECTORY        = @CMAKE_SOURCE_DIR@/doxygen/
 
 INPUT                   = @CMAKE_SOURCE_DIR@/README.md \
                           @CMAKE_SOURCE_DIR@/CHANGELOG.md \
+                          @CMAKE_SOURCE_DIR@/CONTRIBUTING.md \
                           @CMAKE_SOURCE_DIR@/docs \
                           @CMAKE_SOURCE_DIR@/inc \
                           @CMAKE_SOURCE_DIR@/src/sound_bakery \

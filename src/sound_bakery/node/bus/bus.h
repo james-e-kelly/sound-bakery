@@ -2,50 +2,34 @@
 
 #include "sound_bakery/node/node.h"
 
-namespace SB::Engine
+namespace sbk::engine
 {
-    class NodeInstance;
+    class node_instance;
 
-    class SB_CLASS Bus : public Node
+    class SB_CLASS bus : public node
     {
-        REGISTER_REFLECTION(Bus, Node)
+        REGISTER_REFLECTION(bus, node)
 
     public:
-        Bus() : Node(), m_masterBus(false) {}
+        bus() : node(), m_masterBus(false) {}
 
-        void onLoaded() override;
+        bool can_add_child_type(const rttr::type& childType) const override;
 
-        bool canAddChild(const SB::Core::DatabasePtr<NodeBase>& child) const override
-        {
-            if (child.lookup() && child->getType().is_derived_from<Bus>())
-            {
-                return NodeBase::canAddChild(child);
-            }
-            else
-            {
-                return false;
-            }
-        }
+        bool can_add_parent() const override;
+        bool can_add_parent_type(const rttr::type& parentType) const override;
 
-        void setMasterBus(bool isMaster)
-        {
-            if (getType() == rttr::type::get<Bus>())
-            {
-                m_masterBus = isMaster;
-            }
-        }
+        void setMasterBus(bool isMaster);
 
         bool isMasterBus() const { return m_masterBus; }
 
-    public:
         void lock();
         void unlock();
-        std::shared_ptr<NodeInstance> lockAndCopy();
+        std::shared_ptr<node_instance> lockAndCopy();
 
     protected:
-        std::shared_ptr<NodeInstance> m_busInstance;
+        std::shared_ptr<node_instance> m_busInstance;
 
     private:
         bool m_masterBus;
     };
-}  // namespace SB::Engine
+}  // namespace sbk::engine

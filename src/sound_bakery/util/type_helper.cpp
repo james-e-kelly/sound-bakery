@@ -13,9 +13,9 @@
 #include "sound_bakery/sound/sound.h"
 #include "sound_bakery/soundbank/soundbank.h"
 
-using namespace SB::Util;
+using namespace sbk::util;
 
-SB_OBJECT_CATEGORY TypeHelper::getCategoryFromType(rttr::type type)
+SB_OBJECT_CATEGORY type_helper::getCategoryFromType(rttr::type type)
 {
     SB_OBJECT_CATEGORY category = SB_CATEGORY_UNKNOWN;
 
@@ -24,36 +24,36 @@ SB_OBJECT_CATEGORY TypeHelper::getCategoryFromType(rttr::type type)
         return category;
     }
 
-    if (type.is_derived_from(rttr::type::get<SB::Engine::Bus>()))
+    if (type.is_derived_from(rttr::type::get<sbk::engine::bus>()))
     {
         category = SB_CATEGORY_BUS;
     }
-    else if (type.is_derived_from(rttr::type::get<SB::Engine::Container>()))
+    else if (type.is_derived_from(rttr::type::get<sbk::engine::container>()))
     {
         category = SB_CATEGORY_NODE;
     }
-    else if (type == rttr::type::get<SB::Engine::Event>())
+    else if (type == rttr::type::get<sbk::engine::event>())
     {
         category = SB_CATEGORY_EVENT;
     }
-    else if (type == rttr::type::get<SB::Engine::Sound>())
+    else if (type == rttr::type::get<sbk::engine::sound>())
     {
         category = SB_CATEGORY_SOUND;
     }
-    else if (type == rttr::type::get<SB::Engine::FloatParameter>() ||
-             type == rttr::type::get<SB::Engine::NamedParameter>())
+    else if (type == rttr::type::get<sbk::engine::float_parameter>() ||
+             type == rttr::type::get<sbk::engine::named_parameter>())
     {
         category = SB_CATEGORY_PARAMETER;
     }
-    else if (type == rttr::type::get<SB::Engine::Soundbank>())
+    else if (type == rttr::type::get<sbk::engine::soundbank>())
     {
         category = SB_CATEGORY_BANK;
     }
-    else if (type.is_derived_from<SB::Core::DatabaseObject>())
+    else if (type.is_derived_from<sbk::core::database_object>())
     {
         category = SB_CATEGORY_DATABASE_OBJECT;
     }
-    else if (type.is_derived_from<SB::Core::Object>())
+    else if (type.is_derived_from<sbk::core::object>())
     {
         category = SB_CATEGORY_RUNTIME_OBJECT;
     }
@@ -65,37 +65,37 @@ SB_OBJECT_CATEGORY TypeHelper::getCategoryFromType(rttr::type type)
     return category;
 }
 
-std::unordered_set<rttr::type> TypeHelper::getTypesFromCategory(SB_OBJECT_CATEGORY category)
+std::unordered_set<rttr::type> type_helper::getTypesFromCategory(SB_OBJECT_CATEGORY category)
 {
     std::unordered_set<rttr::type> result;
 
     switch (category)
     {
         case SB_CATEGORY_NODE:
-            result.insert(rttr::type::get<SB::Engine::BlendContainer>());
-            result.insert(rttr::type::get<SB::Engine::RandomContainer>());
-            result.insert(rttr::type::get<SB::Engine::SequenceContainer>());
-            result.insert(rttr::type::get<SB::Engine::SoundContainer>());
-            result.insert(rttr::type::get<SB::Engine::SwitchContainer>());
+            result.insert(rttr::type::get<sbk::engine::BlendContainer>());
+            result.insert(rttr::type::get<sbk::engine::RandomContainer>());
+            result.insert(rttr::type::get<sbk::engine::sequence_container>());
+            result.insert(rttr::type::get<sbk::engine::sound_container>());
+            result.insert(rttr::type::get<sbk::engine::switch_container>());
             break;
         case SB_CATEGORY_BUS:
-            result.insert(rttr::type::get<SB::Engine::Bus>());
-            result.insert(rttr::type::get<SB::Engine::AuxBus>());
+            result.insert(rttr::type::get<sbk::engine::bus>());
+            result.insert(rttr::type::get<sbk::engine::aux_bus>());
             break;
         case SB_CATEGORY_MUSIC:
             break;
         case SB_CATEGORY_EVENT:
-            result.insert(rttr::type::get<SB::Engine::Event>());
+            result.insert(rttr::type::get<sbk::engine::event>());
             break;
         case SB_CATEGORY_BANK:
-            result.insert(rttr::type::get<SB::Engine::Soundbank>());
+            result.insert(rttr::type::get<sbk::engine::soundbank>());
             break;
         case SB_CATEGORY_SOUND:
-            result.insert(rttr::type::get<SB::Engine::Sound>());
+            result.insert(rttr::type::get<sbk::engine::sound>());
             break;
         case SB_CATEGORY_PARAMETER:
-            result.insert(rttr::type::get<SB::Engine::FloatParameter>());
-            result.insert(rttr::type::get<SB::Engine::NamedParameter>());
+            result.insert(rttr::type::get<sbk::engine::float_parameter>());
+            result.insert(rttr::type::get<sbk::engine::named_parameter>());
             break;
         case SB_CATEGORY_NUM:
             break;
@@ -106,63 +106,63 @@ std::unordered_set<rttr::type> TypeHelper::getTypesFromCategory(SB_OBJECT_CATEGO
     return result;
 }
 
-std::string_view TypeHelper::getDisplayNameFromType(rttr::type type)
+rttr::string_view type_helper::get_display_name_from_type(rttr::type type)
 {
-    std::string_view result = "Invalid. Cannot get display name for type. type_helper.cpp";
+    rttr::string_view result = type.get_name();
 
-    if (type == rttr::type::get<SB::Engine::SoundContainer>())
+    if (type == rttr::type::get<sbk::engine::sound_container>())
     {
         result = "Sound";
     }
-    else if (type == rttr::type::get<SB::Engine::RandomContainer>())
+    else if (type == rttr::type::get<sbk::engine::RandomContainer>())
     {
         result = "Random";
     }
-    else if (type == rttr::type::get<SB::Engine::SwitchContainer>())
+    else if (type == rttr::type::get<sbk::engine::switch_container>())
     {
         result = "Switch";
     }
-    else if (type == rttr::type::get<SB::Engine::SequenceContainer>())
+    else if (type == rttr::type::get<sbk::engine::sequence_container>())
     {
         result = "Sequence";
     }
-    else if (type == rttr::type::get<SB::Engine::BlendContainer>())
+    else if (type == rttr::type::get<sbk::engine::BlendContainer>())
     {
         result = "Blend";
     }
-    else if (type == rttr::type::get<SB::Engine::Container>())
+    else if (type == rttr::type::get<sbk::engine::container>())
     {
         result = "Container";
     }
-    else if (type == rttr::type::get<SB::Engine::Bus>())
+    else if (type == rttr::type::get<sbk::engine::bus>())
     {
         result = "Bus";
     }
-    else if (type == rttr::type::get<SB::Engine::AuxBus>())
+    else if (type == rttr::type::get<sbk::engine::aux_bus>())
     {
         result = "Aux";
     }
-    else if (type == rttr::type::get<SB::Engine::Sound>())
+    else if (type == rttr::type::get<sbk::engine::sound>())
     {
         result = "Sound";
     }
-    else if (type == rttr::type::get<SB::Engine::Event>())
+    else if (type == rttr::type::get<sbk::engine::event>())
     {
         result = "Event";
     }
-    else if (type == rttr::type::get<SB::Engine::FloatParameter>())
+    else if (type == rttr::type::get<sbk::engine::float_parameter>())
     {
         result = "Parameter";
     }
-    else if (type == rttr::type::get<SB::Engine::NamedParameter>())
+    else if (type == rttr::type::get<sbk::engine::named_parameter>())
     {
         result = "Switch";
     }
-    else if (type == rttr::type::get<SB::Engine::NamedParameterValue>())
+    else if (type == rttr::type::get<sbk::engine::named_parameter_value>())
     {
         result = "Switch Value";
     }
-    else if (type == rttr::type::get<SB::Engine::Soundbank>())
+    else if (type == rttr::type::get<sbk::engine::soundbank>())
     {
         result = "Soundbank";
     }
@@ -170,7 +170,7 @@ std::string_view TypeHelper::getDisplayNameFromType(rttr::type type)
     return result;
 }
 
-std::string SB::Util::TypeHelper::getFolderNameForObjectType(rttr::type type)
+std::string sbk::util::type_helper::getFolderNameForObjectType(rttr::type type)
 {
     const rttr::string_view typeName = type.get_name();
 
@@ -186,7 +186,7 @@ std::string SB::Util::TypeHelper::getFolderNameForObjectType(rttr::type type)
     return typeNameString.substr(lastColonCharacterPos, std::string::npos);
 }
 
-std::string_view TypeHelper::getFileExtensionOfObjectCategory(SB_OBJECT_CATEGORY category)
+std::string_view type_helper::getFileExtensionOfObjectCategory(SB_OBJECT_CATEGORY category)
 {
     std::string_view result = ".object";
 
@@ -219,83 +219,84 @@ std::string_view TypeHelper::getFileExtensionOfObjectCategory(SB_OBJECT_CATEGORY
     return result;
 }
 
-std::string_view TypeHelper::getPayloadFromType(rttr::type type)
+std::string_view type_helper::getPayloadFromType(rttr::type type)
 {
     std::string_view result = "OBJECT";
 
-    if (type == rttr::type::get<SB::Engine::Sound>())
+    if (type == rttr::type::get<sbk::engine::sound>())
     {
-        result = SB::Editor::PayloadSound;
+        result = sbk::editor::PayloadSound;
     }
-    else if (type.is_derived_from<SB::Engine::Bus>())
+    else if (type.is_derived_from<sbk::engine::bus>())
     {
-        result = SB::Editor::PayloadBus;
+        result = sbk::editor::PayloadBus;
     }
-    else if (type.is_derived_from<SB::Engine::Container>())
+    else if (type.is_derived_from<sbk::engine::container>())
     {
-        result = SB::Editor::PayloadContainer;
+        result = sbk::editor::PayloadContainer;
     }
-    else if (type == rttr::type::get<SB::Engine::FloatParameter>())
+    else if (type == rttr::type::get<sbk::engine::float_parameter>())
     {
-        result = SB::Editor::PayloadFloatParam;
+        result = sbk::editor::PayloadFloatParam;
     }
-    else if (type == rttr::type::get<SB::Engine::NamedParameter>())
+    else if (type == rttr::type::get<sbk::engine::named_parameter>())
     {
-        result = SB::Editor::PayloadNamedParam;
+        result = sbk::editor::PayloadNamedParam;
     }
-    else if (type == rttr::type::get<SB::Engine::NamedParameterValue>())
+    else if (type == rttr::type::get<sbk::engine::named_parameter_value>())
     {
-        result = SB::Editor::PayloadIntParamValue;
+        result = sbk::editor::PayloadIntParamValue;
     }
-    else if (type.is_derived_from<SB::Core::DatabaseObject>())
+    else if (type.is_derived_from<sbk::core::database_object>())
     {
-        result = SB::Editor::PayloadObject;
+        result = sbk::editor::PayloadObject;
     }
 
     return result;
 }
 
-bool TypeHelper::isTypePlayable(const rttr::type& type)
+bool type_helper::isTypePlayable(const rttr::type& type)
 {
     bool result = false;
 
     if (type.is_valid())
     {
-        result = type.is_derived_from<SB::Engine::Container>() || type.is_derived_from<SB::Engine::Sound>() ||
-                 type.is_derived_from<SB::Engine::Event>();
+        result = type.is_derived_from<sbk::engine::container>() 
+            || type.is_derived_from<sbk::engine::sound>() ||
+                 type.is_derived_from<sbk::engine::event>();
     }
 
     return result;
 }
 
-rttr::enumeration TypeHelper::getObjectCategoryEnum()
+rttr::enumeration type_helper::getObjectCategoryEnum()
 {
     return rttr::type::get<SB_OBJECT_CATEGORY>().get_enumeration();
 }
 
-rttr::string_view TypeHelper::getObjectCategoryName(const SB_OBJECT_CATEGORY& objectCategory)
+rttr::string_view type_helper::getObjectCategoryName(const SB_OBJECT_CATEGORY& objectCategory)
 {
     static const rttr::enumeration objectCategoryEnum = getObjectCategoryEnum();
 
     return objectCategoryEnum.value_to_name(objectCategory);
 }
 
-SB::Core::Object* TypeHelper::getObjectFromInstance(const rttr::instance& instance)
+sbk::core::object* type_helper::getObjectFromInstance(const rttr::instance& instance)
 {
-    return instance.try_convert<SB::Core::Object>();
+    return instance.try_convert<sbk::core::object>();
 }
 
-SB::Core::DatabaseObject* TypeHelper::getDatabaseObjectFromInstance(const rttr::instance& instance)
+sbk::core::database_object* type_helper::getDatabaseObjectFromInstance(const rttr::instance& instance)
 {
-    return instance.try_convert<SB::Core::DatabaseObject>();
+    return instance.try_convert<sbk::core::database_object>();
 }
 
-SB::Engine::Node* TypeHelper::getNodeFromInstance(const rttr::instance& instance)
+sbk::engine::node* type_helper::getNodeFromInstance(const rttr::instance& instance)
 {
-    return instance.try_convert<SB::Engine::Node>();
+    return instance.try_convert<sbk::engine::node>();
 }
 
-SB::Engine::NodeBase* TypeHelper::getNodeBaseFromInstance(const rttr::instance& instance)
+sbk::engine::node_base* type_helper::getNodeBaseFromInstance(const rttr::instance& instance)
 {
-    return instance.try_convert<SB::Engine::NodeBase>();
+    return instance.try_convert<sbk::engine::node_base>();
 }

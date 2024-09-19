@@ -2,26 +2,28 @@
 
 #include "container.h"
 
-namespace SB::Engine
+namespace sbk::engine
 {
-    class Sound;
+    class sound;
 
-    class SB_CLASS SoundContainer : public Container
+    class SB_CLASS sound_container : public container
     {
     public:
-        SoundContainer() = default;
+        sound_container() = default;
 
-        void gatherChildrenForPlay(GatherChildrenContext& context) const override;
+        void gather_children_for_play(gather_children_context& context) const override;
 
-        bool canAddChild(const SB::Core::DatabasePtr<NodeBase>& child) const override { return false; }
+        bool can_add_children() const override { return false; }
+        bool can_add_child_type(const rttr::type& childType) const override { return false; }
 
-        Sound* getSound() const;
+        bool can_add_parent_type(const rttr::type& parentType) const override;
 
-        void setSound(const SB::Core::DatabasePtr<SB::Engine::Sound>& sound);
+        [[nodiscard]] sound* get_sound() const;
+        void set_sound(const sbk::core::database_ptr<sbk::engine::sound>& sound);
 
     private:
-        SB::Core::DatabasePtr<SB::Engine::Sound> m_sound;
+        sbk::core::database_ptr<sbk::engine::sound> m_sound;
 
-        REGISTER_REFLECTION(SoundContainer, Container)
+        REGISTER_REFLECTION(sound_container, container)
     };
-}  // namespace SB::Engine
+}  // namespace sbk::engine

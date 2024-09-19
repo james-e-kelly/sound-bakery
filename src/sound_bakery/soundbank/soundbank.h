@@ -1,19 +1,44 @@
 #pragma once
 
 #include "sound_bakery/core/core_include.h"
+#include "sound_chef/sound_chef_encoder.h"
 
-namespace SB::Engine
+namespace sbk::engine
 {
-    class Event;
+    class event;
+    class sound;
+    class node_base;
 
-    class SB_CLASS Soundbank : public SB::Core::DatabaseObject
+    /**
+     * @brief Wraps all events, objects, and sounds needed to package a soundbank.
+    */
+    struct SB_CLASS soundbank_dependencies
     {
-        REGISTER_REFLECTION(Soundbank, SB::Core::DatabaseObject)
+        std::vector<std::shared_ptr<sbk::engine::event>> events;
+        std::vector<std::shared_ptr<sbk::engine::sound>> sounds;
+        std::vector<std::shared_ptr<sbk::engine::node_base>> nodes;
+
+        // The following properties are sent straight to Sound Chef
+        // for soundbank generation.
+        std::vector<const char*> encodedSoundPaths;
+        std::vector<sc_encoding_format> encodingFormats;
+
+        std::vector<std::string> encodedSoundPathsStrings;  //< used to keep sound paths alive while passing to Sound Chef
+    };
+
+    /**
+     * @brief Packages events and dependent objects and sounds.
+    */
+    class SB_CLASS soundbank : public sbk::core::database_object
+    {
+        REGISTER_REFLECTION(soundbank, sbk::core::database_object)
 
     public:
-        std::vector<SB::Core::DatabasePtr<Event>> GetEvents() const { return m_events; }
+        std::vector<sbk::core::database_ptr<event>> get_events() const { return m_events; }
+
+        soundbank_dependencies gather_dependencies() const;
 
     private:
-        std::vector<SB::Core::DatabasePtr<Event>> m_events;
+        std::vector<sbk::core::database_ptr<event>> m_events;
     };
-}  // namespace SB::Engine
+}  // namespace sbk::engine

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Delegates.h"
 #include "concurrencpp/concurrencpp.h"
 #include "sound_bakery/core/core_fwd.h"
 #include "sound_bakery/reflection/reflection.h"
@@ -25,8 +26,10 @@
 #include <variant>
 #include <vector>
 
+#include "yaml-cpp/yaml.h"
+
 /**
- * @def Registers this type's parent classes (if any) and marks its private members visible to reflection.
+ * @def Registers this type's get_parent classes (if any) and marks its private members visible to reflection.
  */
 #define REGISTER_REFLECTION(T, ...) \
                                     \
@@ -34,7 +37,7 @@ public:                             \
     static rttr::type type();       \
     RTTR_ENABLE(__VA_ARGS__)        \
     RTTR_REGISTRATION_FRIEND        \
-    friend void SB::Reflection::registerReflectionTypes();
+    friend void sbk::reflection::registerReflectionTypes();
 
 /**
  * @def Defines the static function so it is compiled into the SoundBakery library and not the consuming application.

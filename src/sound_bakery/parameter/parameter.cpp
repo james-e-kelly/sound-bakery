@@ -1,9 +1,9 @@
 #include "parameter.h"
 
-DEFINE_REFLECTION(SB::Engine::FloatParameter)
+DEFINE_REFLECTION(sbk::engine::float_parameter)
 
-DEFINE_REFLECTION(SB::Engine::IntParameter)
+DEFINE_REFLECTION(sbk::engine::int_parameter)
 
-DEFINE_REFLECTION(SB::Engine::NamedParameter)
+DEFINE_REFLECTION(sbk::engine::named_parameter)
 
-DEFINE_REFLECTION(SB::Engine::NamedParameterValue)
+DEFINE_REFLECTION(sbk::engine::named_parameter_value)

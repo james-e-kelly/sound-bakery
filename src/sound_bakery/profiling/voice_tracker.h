@@ -2,9 +2,9 @@
 
 #include "sound_bakery/pch.h"
 
-namespace SB::Engine
+namespace sbk::engine
 {
-    class System;
+    class system;
 
     namespace Profiling
     {
@@ -20,14 +20,14 @@ namespace SB::Engine
             static VoiceTracker* get();
 
         public:
-            void update(System* system);
+            void update(system* system);
 
         public:
-            unsigned int getPlayingCountOfObject(SB_ID id) const;
+            unsigned int getPlayingCountOfObject(sbk_id id) const;
 
         private:
-            std::unordered_set<SB_ID> m_playingNodeIDs;
-            std::unordered_map<SB_ID, unsigned int> m_nodePlayingCount;
+            std::unordered_set<sbk_id> m_playingNodeIDs;
+            std::unordered_map<sbk_id, unsigned int> m_nodePlayingCount;
         };
     }  // namespace Profiling
-}  // namespace SB::Engine
+}  // namespace sbk::engine

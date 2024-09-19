@@ -3,23 +3,11 @@
 #include "sound_bakery/node/bus/bus.h"
 #include "sound_bakery/system.h"
 
-using namespace SB::Engine;
+using namespace sbk::engine;
 
-DEFINE_REFLECTION(SB::Engine::Container)
+DEFINE_REFLECTION(sbk::engine::container)
 
-void Container::onLoaded()
+bool sbk::engine::container::can_add_child_type(const rttr::type& childType) const
 {
-    if (!m_parentNode.hasId())
-    {
-        const SB::Core::DatabasePtr<Bus>& masterBus = SB::Engine::System::get()->getMasterBus();
-        if (!m_outputBus.hasId())
-        {
-            setOutputBus(SB::Core::DatabasePtr<NodeBase>(masterBus));
-        }
-        // Ensure we're pointing to the correct master
-        else if (m_outputBus.id() != masterBus.id())
-        {
-            setOutputBus(SB::Core::DatabasePtr<NodeBase>(masterBus));
-        }
-    }
+    return sbk::engine::node_base::can_add_child_type(childType) && childType.is_derived_from<sbk::engine::container>();
 }

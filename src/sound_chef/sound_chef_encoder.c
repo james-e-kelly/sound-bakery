@@ -22,7 +22,7 @@ static ma_result sc_encoder_on_seek_vfs(ma_encoder* encoder, ma_int64 offset, ma
 }
 
 sc_encoder_config sc_encoder_config_init(
-    ma_encoding_format_ext encodingFormat, ma_format format, ma_uint32 channels, ma_uint32 sampleRate, ma_uint8 quality)
+    sc_encoding_format encodingFormat, ma_format format, ma_uint32 channels, ma_uint32 sampleRate, ma_uint8 quality)
 {
     sc_encoder_config config;
 
@@ -45,7 +45,7 @@ sc_result sc_encoder_init(ma_encoder_write_proc onWrite,
     SC_CHECK_ARG(onWrite != NULL);
     SC_CHECK_ARG(onSeek != NULL);
     SC_CHECK_ARG(encoder != NULL);
-    SC_CHECK_ARG(config->encodingFormat != ma_encoding_format_unknown);
+    SC_CHECK_ARG(config->encodingFormat != sc_encoding_format_unknown);
     SC_CHECK_ARG(config->baseConfig.channels != 0);
     SC_CHECK_ARG(config->baseConfig.sampleRate != 0);
 
@@ -67,15 +67,14 @@ sc_result sc_encoder_init(ma_encoder_write_proc onWrite,
 
     switch (encoder->config.encodingFormat)
     {
-        case ma_encoding_format_vorbis:
+        case sc_encoding_format_vorbis:
             encoder->baseEncoder.onInit           = sc_encoder_vorbis_on_init;
             encoder->baseEncoder.onUninit         = sc_encoder_vorbis_on_uninit;
             encoder->baseEncoder.onWritePCMFrames = sc_encoder_vorbis_write_pcm_frames;
             break;
-        case ma_encoding_format_opus:
-        case ma_encoding_format_wav:
-        case ma_encoding_format_flac:
-        case ma_encoding_format_mp3:
+        case sc_encoding_format_wav:
+        case sc_encoding_format_opus:
+        case sc_encoding_format_adpcm:
         default:
             result = MA_NO_BACKEND;
             break;
@@ -167,7 +166,8 @@ sc_result sc_encoder_write_from_file(const char* decodeFilePath,
     SC_CHECK_ARG(config != NULL);
 
     ma_decoder decoder;
-    ma_decoder_config decoderConfig = ma_decoder_config_init(config->baseConfig.format, config->baseConfig.channels, config->baseConfig.sampleRate);
+    ma_decoder_config decoderConfig =
+        ma_decoder_config_init(config->baseConfig.format, config->baseConfig.channels, config->baseConfig.sampleRate);
     ma_result decoderInitResult = ma_decoder_init_file(decodeFilePath, &decoderConfig, &decoder);
     SC_CHECK_RESULT(decoderInitResult);
 
@@ -176,7 +176,8 @@ sc_result sc_encoder_write_from_file(const char* decodeFilePath,
     // If encoding to "As Input" channels, find the channel count from the decoder
     if (config->baseConfig.channels == 0)
     {
-        ma_result getChannelsResult = ma_decoder_get_data_format(&decoder, NULL, &configCopy.baseConfig.channels, NULL, NULL, 0);
+        ma_result getChannelsResult =
+            ma_decoder_get_data_format(&decoder, NULL, &configCopy.baseConfig.channels, NULL, NULL, 0);
         SC_CHECK_RESULT(getChannelsResult);
     }
 
@@ -185,8 +186,9 @@ sc_result sc_encoder_write_from_file(const char* decodeFilePath,
     SC_CHECK_RESULT(encoderInitResult);
 
     const ma_uint64 desiredFrameCount = 1024;
-    const ma_uint64 convertedBufferSize = desiredFrameCount * ma_get_bytes_per_frame(config->baseConfig.format, configCopy.baseConfig.channels);
-    void* outConvertedBuffer  = ma_malloc(convertedBufferSize, NULL);
+    const ma_uint64 convertedBufferSize =
+        desiredFrameCount * ma_get_bytes_per_frame(config->baseConfig.format, configCopy.baseConfig.channels);
+    void* outConvertedBuffer = ma_malloc(convertedBufferSize, NULL);
 
     for (;;)
     {
@@ -199,7 +201,7 @@ sc_result sc_encoder_write_from_file(const char* decodeFilePath,
         }
 
         ma_uint64 framesEncoded = 0;
-        sc_result encodeResult = sc_encoder_write_pcm_frames(&encoder, outConvertedBuffer, framesRead, &framesEncoded);
+        sc_result encodeResult  = sc_encoder_write_pcm_frames(&encoder, outConvertedBuffer, framesRead, &framesEncoded);
         assert(encodeResult == MA_SUCCESS);
 
         // Out of data

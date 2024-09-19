@@ -4,16 +4,16 @@
 #include "sound_bakery/voice/node_instance.h"
 #include "sound_bakery/voice/voice.h"
 
-using namespace SB::Engine;
+using namespace sbk::engine;
 
 static void addDspToNodeGroup(sc_node_group* nodeGroup, sc_dsp** dsp, const sc_dsp_config& config)
 {
     assert(dsp != nullptr);
-    sc_system_create_dsp(SB::Engine::System::getChef(), &config, dsp);
+    sc_system_create_dsp(sbk::engine::system::get(), &config, dsp);
     sc_node_group_add_dsp(nodeGroup, *dsp, SC_DSP_INDEX_HEAD);
 }
 
-bool NodeGroupInstance::initNodeGroup(const NodeBase& node)
+bool NodeGroupInstance::initNodeGroup(const node_base& node)
 {
     if (nodeGroup != nullptr)
     {
@@ -21,7 +21,7 @@ bool NodeGroupInstance::initNodeGroup(const NodeBase& node)
     }
 
     sc_node_group* nGroup                 = nullptr;
-    const sc_result createNodeGroupResult = sc_system_create_node_group(SB::Engine::System::getChef(), &nGroup);
+    const sc_result createNodeGroupResult = sc_system_create_node_group(sbk::engine::system::get(), &nGroup);
 
     if (createNodeGroupResult != MA_SUCCESS)
     {
@@ -33,8 +33,8 @@ bool NodeGroupInstance::initNodeGroup(const NodeBase& node)
     addDspToNodeGroup(nodeGroup.get(), &lowpass, sc_dsp_config_init(SC_DSP_TYPE_LOWPASS));
     addDspToNodeGroup(nodeGroup.get(), &highpass, sc_dsp_config_init(SC_DSP_TYPE_HIGHPASS));
 
-    for (const SB::Core::DatabasePtr<SB::Engine::EffectDescription>& desc :
-         node.tryConvertObject<Node>()->m_effectDescriptions)
+    for (const sbk::core::database_ptr<sbk::engine::effect_description>& desc :
+         node.try_convert_object<sbk::engine::node>()->m_effectDescriptions)
     {
         if (desc.lookup() == false)
         {
@@ -43,10 +43,10 @@ bool NodeGroupInstance::initNodeGroup(const NodeBase& node)
 
         sc_dsp* dsp = nullptr;
 
-        addDspToNodeGroup(nodeGroup.get(), &dsp, *desc->getConfig());
+        addDspToNodeGroup(nodeGroup.get(), &dsp, *desc->get_config());
 
         int index = 0;
-        for (const SB::Engine::EffectParameterDescription& parameter : desc->getParameters())
+        for (const sbk::engine::effect_parameter_description& parameter : desc->get_parameters())
         {
             switch (parameter.m_parameter.type)
             {
@@ -62,7 +62,7 @@ bool NodeGroupInstance::initNodeGroup(const NodeBase& node)
 
 ////////////////////////////////////////////////////////////////////////////
 
-bool ParentNodeOwner::createParent(const NodeBase& thisNode, Voice* owningVoice)
+bool ParentNodeOwner::createParent(const node_base& thisNode, voice* owningVoice)
 {
     bool createdParent = false;
 
@@ -70,29 +70,36 @@ bool ParentNodeOwner::createParent(const NodeBase& thisNode, Voice* owningVoice)
     {
         case SB_NODE_NULL:
         {
-            const SB::Core::DatabasePtr<Bus>& masterBus = SB::Engine::System::get()->getMasterBus();
+             const sbk::core::database_ptr<bus>& masterBus = sbk::engine::system::get()->get_master_bus();
 
-            if (masterBus.lookup() && masterBus.id() != thisNode.getDatabaseID())
-            {
-                parent = masterBus->lockAndCopy();
+             if (masterBus.lookup())
+             {
+                if (masterBus.id() != thisNode.get_database_id())
+                {
+                    parent = masterBus->lockAndCopy();
 
-                InitNodeInstance initData;
-                initData.refNode     = masterBus->tryConvertObject<NodeBase>();
-                initData.type        = NodeInstanceType::BUS;
-                initData.owningVoice = owningVoice;
+                    InitNodeInstance initData;
+                    initData.refNode     = masterBus->try_convert_object<node_base>();
+                    initData.type        = NodeInstanceType::BUS;
+                    initData.owningVoice = owningVoice;
 
-                createdParent = parent->init(initData);
-            }
+                    createdParent = parent->init(initData);
+                }
+             }
+             else
+             {
+                SPDLOG_ERROR("Master Bus was invalid when creating node graph");
+             }
             break;
         }
         case SB_NODE_MIDDLE:
         {
-            if (SB::Engine::NodeBase* parentNode = thisNode.parent())
+            if (sbk::engine::node_base* parentNode = thisNode.get_parent())
             {
-                parent = std::make_shared<NodeInstance>();
+                parent = std::make_shared<node_instance>();
 
                 InitNodeInstance initData;
-                initData.refNode     = parentNode->tryConvertObject<NodeBase>();
+                initData.refNode     = parentNode->try_convert_object<node_base>();
                 initData.type        = NodeInstanceType::BUS;
                 initData.owningVoice = owningVoice;
 
@@ -102,14 +109,14 @@ bool ParentNodeOwner::createParent(const NodeBase& thisNode, Voice* owningVoice)
         }
         case SB_NODE_TOP:
         {
-            if (SB::Engine::NodeBase* output = thisNode.outputBus())
+            if (sbk::engine::node_base* output = thisNode.get_output_bus())
             {
-                if (SB::Engine::Bus* bus = output->tryConvertObject<Bus>())
+                if (sbk::engine::bus* bus = output->try_convert_object<sbk::engine::bus>())
                 {
                     parent = bus->lockAndCopy();
 
                     InitNodeInstance initData;
-                    initData.refNode     = bus->tryConvertObject<NodeBase>();
+                    initData.refNode     = bus->try_convert_object<node_base>();
                     initData.type        = NodeInstanceType::BUS;
                     initData.owningVoice = owningVoice;
 
@@ -125,21 +132,21 @@ bool ParentNodeOwner::createParent(const NodeBase& thisNode, Voice* owningVoice)
 
 ////////////////////////////////////////////////////////////////////////////
 
-bool ChildrenNodeOwner::createChildren(const NodeBase& thisNode,
-                                       Voice* owningVoice,
-                                       NodeInstance* thisNodeInstance,
+bool ChildrenNodeOwner::createChildren(const node_base& thisNode,
+                                       voice* owningVoice,
+                                       node_instance* thisNodeInstance,
                                        unsigned int numTimesPlayed)
 {
     bool success = false;
 
-    if (const Container* container = thisNode.tryConvertObject<Container>();
+    if (const container* const container = thisNode.try_convert_object<sbk::engine::container>();
         container != nullptr && owningVoice != nullptr)
     {
-        GatherChildrenContext context;
+        gather_children_context context;
         context.numTimesPlayed = numTimesPlayed;
-        context.parameters     = owningVoice->getOwningGameObject()->getLocalParameters();
+        context.parameters     = owningVoice->get_owning_game_object()->get_local_parameters();
 
-        container->gatherChildrenForPlay(context);
+        container->gather_children_for_play(context);
 
         childrenNodes.reserve(context.sounds.size());
 
@@ -150,10 +157,10 @@ bool ChildrenNodeOwner::createChildren(const NodeBase& thisNode,
                 continue;
             }
 
-            childrenNodes.push_back(std::make_shared<NodeInstance>());
+            childrenNodes.push_back(std::make_shared<node_instance>());
 
             InitNodeInstance initData;
-            initData.refNode           = SB::Core::DatabasePtr<NodeBase>(child->getDatabaseID());
+            initData.refNode           = sbk::core::database_ptr<node_base>(child->get_database_id());
             initData.type              = NodeInstanceType::CHILD;
             initData.owningVoice       = owningVoice;
             initData.parentForChildren = thisNodeInstance;
