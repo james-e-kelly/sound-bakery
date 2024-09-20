@@ -158,8 +158,8 @@ sc_result sc_bank_build(sc_bank* bank,
 
         finalData[index]     = inputFileData;
         finalDataSize[index] = inputFileDataSize + SC_BANK_FILE_NAME_BUFFER_SIZE;
-        memcpy_s(finalFilenames + (index * SC_BANK_FILE_NAME_BUFFER_SIZE), SC_BANK_FILE_NAME_BUFFER_SIZE, filename,
-                 strnlen_s(filename, SC_BANK_FILE_NAME_BUFFER_SIZE));
+        memcpy(finalFilenames + (index * SC_BANK_FILE_NAME_BUFFER_SIZE), filename,
+                 strnlen(filename, SC_BANK_FILE_NAME_BUFFER_SIZE));
         totalDataSize += SC_CHUNK_MIN_SIZE + SC_BANK_FILE_NAME_BUFFER_SIZE + inputFileDataSize;
 
         ++filesRead;
@@ -303,7 +303,7 @@ sc_result sc_bank_read(sc_bank* bank)
 
         bank->riff->subChunks[chunkIndex]->id   = chunkID;
         bank->riff->subChunks[chunkIndex]->size = chunkSize;
-        strcpy_s(bank->riff->subChunks[chunkIndex]->name, SC_BANK_FILE_NAME_BUFFER_SIZE, &chunkName);
+        strcpy(bank->riff->subChunks[chunkIndex]->name, &chunkName);
 
         readResult =
             ma_vfs_read(&vfs, bank->outputFile, bank->riff->subChunks[chunkIndex]->data, dataLength, &bytesRead);
