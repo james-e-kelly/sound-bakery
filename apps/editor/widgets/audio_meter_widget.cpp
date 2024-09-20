@@ -25,7 +25,7 @@ namespace audio_meter_utils
     // The std::array is stopping us from using constexpr fully
     struct audio_meter_draw_info
     {
-        constexpr audio_meter_draw_info() 
+        audio_meter_draw_info() 
         { 
             std::transform(
                 raw_volume_values.begin(), raw_volume_values.end(), 
@@ -65,11 +65,11 @@ namespace audio_meter_utils
     static double rendered_min_volume     = offset_min_volume;
     static double rendered_max_volume     = offset_max_volume;
 
-    static const double min_volume_slider_min() { return offset_min_volume; }
-    static const double min_volume_slider_max() { return rendered_max_volume - 5.0; }
+    static double min_volume_slider_min() { return offset_min_volume; }
+    static double min_volume_slider_max() { return rendered_max_volume - 5.0; }
 
-    static const double max_volume_slider_min() { return rendered_min_volume + 10.0; }
-    static const double max_volume_slider_max() { return offset_max_volume; }
+    static double max_volume_slider_min() { return rendered_min_volume + 10.0; }
+    static double max_volume_slider_max() { return offset_max_volume; }
 
     constexpr const char* channel_labels[] = {
         "L", 

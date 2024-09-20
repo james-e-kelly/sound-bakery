@@ -32,9 +32,9 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 int main(int argc, char* argv[])
 {
-    app* app = create_application();
+    gluten::app* app = create_application();
 
-    app->run(__argc, __argv);
+    app->run(argc, argv);
 
     delete app;
 
