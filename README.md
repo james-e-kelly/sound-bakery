@@ -35,7 +35,7 @@ Looking for binaries? Check out the [releases](https://github.com/KarateKidzz/so
 Ensure the following are installed:
 
 - A C++ compiler (e.g., GCC, Clang, MSVC)
-- CMake (version 3.10 or higher)
+- CMake (version 3.28 or higher)
 - Git
 
 ### Installation
