@@ -1,6 +1,6 @@
 #include "project_manager.h"
 
-#include "App/App.h"
+#include "app/app.h"
 #include "gluten/subsystems/widget_subsystem.h"
 #include "sound_bakery/core/database/database.h"
 #include "sound_bakery/core/object/object_tracker.h"

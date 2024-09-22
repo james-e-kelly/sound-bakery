@@ -1,4 +1,4 @@
-#include "App.h"
+#include "app.h"
 
 #include "gluten/subsystems/widget_subsystem.h"
 #include "managers/app_manager.h"
