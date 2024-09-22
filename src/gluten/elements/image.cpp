@@ -13,6 +13,12 @@
 
 namespace gluten 
 {
+
+    void image_destroyer::operator()(unsigned char* data)
+    {
+        stbi_image_free(data);
+    }
+
 	image::image(const cmrc::embedded_filesystem& filesystem, const std::string& filePath)
     {
         const cmrc::file file = filesystem.open(filePath);

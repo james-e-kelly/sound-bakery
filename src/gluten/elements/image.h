@@ -2,17 +2,13 @@
 
 #include "pch.h"
 #include <cmrc/cmrc.hpp>
-#include "stb_image.h"
 #include "gluten/elements/element.h"
 
 namespace gluten 
 {
 	struct image_destroyer
 	{
-        void operator()(unsigned char* data)
-        {
-            stbi_image_free(data);
-        }
+        void operator()(unsigned char* data);
 	};
 
 	class image : public element
