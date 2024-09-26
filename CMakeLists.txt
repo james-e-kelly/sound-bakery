@@ -1,26 +1,24 @@
-if(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
-  message(FATAL_ERROR "In-source builds are not allowed. You should create a separate directory for build files.")
-endif()
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
+include(c_standards)
+include(c++_standards)
+include(compiler_options)
+include(external_dependencies)
+include(out_of_source_builds)
+include(utils)
+
+disallow_source_builds()
 
 # Version set to have EXCLUDE_FROM_ALL available in FetchContent_Declare
 cmake_minimum_required(VERSION 3.28)
 
-project(SoundBakery VERSION 0.1.0 DESCRIPTION "An open-source audio middleware tool with an authoring application and programmer's API")
+project("Sound Bakery" VERSION 0.1.0 DESCRIPTION "An open-source audio middleware tool with an authoring application and programmer's API")
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   set(CMAKE_INSTALL_PREFIX "${PROJECT_SOURCE_DIR}/dist" CACHE PATH "Sound Bakery Install Prefix" FORCE)
 endif()
 
 message(STATUS "Install path is ${CMAKE_INSTALL_PREFIX}")
-
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-
-include(external_dependencies)
-
-set(SOUND_BAKERY_MAIN_PROJECT OFF)
-if(CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
-  set(SOUND_BAKERY_MAIN_PROJECT ON)
-endif()
 
 option(SOUND_BAKERY_SHARED "Build Sound Bakery and Sound Chef as shared libraries" OFF)
 option(SOUND_BAKERY_DOCS "Build doxygen docs" OFF)
@@ -35,16 +33,17 @@ message(STATUS "SOUND_BAKERY_TESTS=${SOUND_BAKERY_TESTS}")
 message(STATUS "SOUND_BAKERY_FORMAT_SOURCE=${SOUND_BAKERY_FORMAT_SOURCE}")
 message(STATUS "SOUND_BAKERY_TIDY_SOURCE=${SOUND_BAKERY_TIDY_SOURCE}")
 
-if(SOUND_BAKERY_MAIN_PROJECT)
-  set(CMAKE_C_STANDARD 17)
-  set(CMAKE_CXX_STANDARD 20)
-  set(CMAKE_CXX_EXTENSIONS OFF)
+detect_main_project()
 
-  if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND UNIX AND NOT APPLE)
-    # Clang on Linux needs to use its own standard library headers and not the system default (gcc)
-    # https://stackoverflow.com/questions/76859275/error-compiling-a-cpp-containing-stdchrono-errorstatic-constexpr-unsigned-fra
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
-  endif()
+if(SOUND_BAKERY_MAIN_PROJECT)
+  c_17()
+  cxx_20()
+
+  fix_linux_clang()
+
+  set(ENABLE_ALL_WARNINGS ON)
+  set(ENABLE_EFFECTIVE_CXX ON)
+  set(GENERATE_DEPENDENCY_DATA ON)
 
   set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE)
 
