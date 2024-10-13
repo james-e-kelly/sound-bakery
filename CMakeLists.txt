@@ -5,9 +5,11 @@ include(c++_standards)
 include(compiler_options)
 include(external_dependencies)
 include(out_of_source_builds)
+include(git_utils)
 include(utils)
 
 disallow_source_builds()
+get_commit_id()
 
 # Version set to have EXCLUDE_FROM_ALL available in FetchContent_Declare
 cmake_minimum_required(VERSION 3.28)

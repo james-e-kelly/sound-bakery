@@ -1,5 +1,7 @@
 message(STATUS "Adding Sound Chef")
 
+configure_file (${CMAKE_CURRENT_SOURCE_DIR}/sound_chef_version.h.in ${CMAKE_SOURCE_DIR}/inc/sound_chef/sound_chef_version.h @ONLY)
+
 set(SOUND_CHEF_SOURCES 
     sound_chef.c
     sound_chef_bank.c

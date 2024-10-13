@@ -77,12 +77,7 @@ extern "C"
 {
 #endif
         
-#define SC_VERSION_MAJOR        0
-#define SC_VERSION_MINOR        1
-#define SC_VERSION_PATCH        0
-#define SC_VERSION_STRING       MA_XSTRINGIFY(SC_VERSION_MAJOR) "." MA_XSTRINGIFY(SC_VERSION_MINOR) "." MA_XSTRINGIFY(SC_VERSION_PATCH)
-
-#define SC_PRODUCT_NAME         "Sound Chef"
+#include "sound_chef/sound_chef_version.h"
 
 typedef ma_bool32 sc_bool;
 typedef ma_result sc_result;
