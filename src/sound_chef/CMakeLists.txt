@@ -55,6 +55,9 @@ endif()
 
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 
+# Xiph libraries need C_EXTENSIONS on Linux for using alloca
+set(CMAKE_C_EXTENSIONS ON)
+
 message(STATUS "Fetching ogg")
 FetchContent_MakeAvailable(ogg)
 
@@ -69,6 +72,8 @@ set(OP_DISABLE_EXAMPLES ON CACHE BOOL "" FORCE)
 set(OP_DISABLE_DOCS ON CACHE BOOL "" FORCE)
 set(OP_DISABLE_HTTP ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(opusfile)
+
+set(CMAKE_C_EXTENSIONS OFF)
 
 target_include_directories(sound_chef
     PUBLIC ${miniaudio_SOURCE_DIR}
