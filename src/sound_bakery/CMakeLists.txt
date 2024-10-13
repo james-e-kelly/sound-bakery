@@ -1,5 +1,7 @@
 message(STATUS "Adding Sound Bakery")
 
+configure_file (${CMAKE_CURRENT_SOURCE_DIR}/sound_bakery_version.h.in ${CMAKE_SOURCE_DIR}/inc/sound_bakery/sound_bakery_version.h @ONLY)
+
 set(ATLAS_SOURCES 
     system.cpp
     factory.cpp
