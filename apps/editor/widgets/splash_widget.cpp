@@ -114,7 +114,7 @@ void splash_widget::render()
     if (ImGui::BeginPopupModal(SplashScreenUtils::splashScreenName, NULL,
                                ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar))
     {
-        ImGui::Image((void*)(intptr_t)m_splashImageID, ImVec2(m_splashImageWidth, m_splashImageHeight));
+        ImGui::Image((ImTextureID)m_splashImageID, ImVec2(m_splashImageWidth, m_splashImageHeight));
 
         ImGui::ProgressBar(-1.0f * (float)ImGui::GetTime(), ImVec2(m_splashImageWidth, 0.0f),
                            "Loading...");

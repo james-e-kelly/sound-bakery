@@ -63,7 +63,7 @@ namespace gluten
                 const float newStartX = elementRect.Min.x + (elementRectSize.x / 2) - (newImageWidth / 2);
                 const float newStartY = elementRect.Min.y + (elementRectSize.y / 2) - (newImageHeight / 2);
 
-                drawList->AddImage((void*)(intptr_t)m_openGlId, 
+                drawList->AddImage((ImTextureID)m_openGlId, 
                     ImVec2(newStartX, newStartY), 
                     ImVec2(newStartX + newImageWidth, newStartY + newImageHeight));
                
