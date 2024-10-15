@@ -125,11 +125,9 @@ namespace sbk::reflection
         registration::enumeration<SB_ACTION_TYPE>("SB_ACTION_TYPE")(value("Play", SB_ACTION_PLAY),
                                                                     value("Stop", SB_ACTION_STOP));
 
-        registration::enumeration<sc_encoding_format>("Encoding Format")
-            (value("WAV", sc_encoding_format_wav), 
-            value("ADPCM", sc_encoding_format_adpcm),
-            value("Vorbis", sc_encoding_format_vorbis),
-            value("Opus", sc_encoding_format_opus));
+        registration::enumeration<sc_encoding_format>("Encoding Format")(
+            value("WAV", sc_encoding_format_wav), value("ADPCM", sc_encoding_format_adpcm),
+            value("Vorbis", sc_encoding_format_vorbis), value("Opus", sc_encoding_format_opus));
 
         registration::class_<action>("SB::Engine::Action")
             .constructor<>()(policy::ctor::as_object)
@@ -213,7 +211,8 @@ namespace sbk::reflection
 
         registration::class_<bus>("SB::Engine::Bus")
             .constructor<>()(policy::ctor::as_raw_ptr)
-            .property("IsMasterBus", &bus::isMasterBus, &bus::setMasterBus)(metadata(sbk::editor::METADATA_KEY::Readonly, true));
+            .property("IsMasterBus", &bus::isMasterBus,
+                      &bus::setMasterBus)(metadata(sbk::editor::METADATA_KEY::Readonly, true));
 
         registration::class_<aux_bus>("SB::Engine::AuxBus").constructor<>()(policy::ctor::as_raw_ptr);
 

@@ -2,13 +2,10 @@
 
 #include "gluten/app/app.h"
 
-gluten::text::text(const std::string& displayText) : m_displayText(displayText) 
-{
-}
+gluten::text::text(const std::string& displayText) : m_displayText(displayText) {}
 
 gluten::text::text(const std::string& displayText, const ImVec2& alignment, const anchor_preset& anchorPreset)
-    : element(anchorPreset), 
-    m_displayText(displayText)
+    : element(anchorPreset), m_displayText(displayText)
 {
     m_alignment = alignment;
 }

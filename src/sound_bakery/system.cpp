@@ -49,9 +49,7 @@ namespace
     }
 }  // namespace
 
-system::system()
-    : sc_system(),
-      m_gameThreadExecuter(make_manual_executor())
+system::system() : sc_system(), m_gameThreadExecuter(make_manual_executor())
 {
     assert(s_system == nullptr);
     s_system = this;
@@ -148,7 +146,9 @@ sc_result system::update()
 
     std::unordered_set<sbk::core::object*> objects = s_system->get_objects_of_type(sbk::engine::game_object::type());
 
-    std::for_each(objects.begin(), objects.end(), [](sbk::core::object* const object) 
+    std::for_each(
+        objects.begin(), objects.end(),
+        [](sbk::core::object* const object)
         {
             if (object != nullptr)
             {

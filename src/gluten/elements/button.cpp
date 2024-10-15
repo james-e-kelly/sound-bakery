@@ -1,13 +1,12 @@
 #include "button.h"
 
+#include "gluten/theme/theme.h"
 #include "imgui_internal.h"
 
-#include "gluten/theme/theme.h"
-
-gluten::button::button(const char* name, bool invisible, const anchor_preset& anchorPreset) 
-    : element(anchorPreset),
-    m_name(name), 
-    m_invisible(invisible) {}
+gluten::button::button(const char* name, bool invisible, const anchor_preset& anchorPreset)
+    : element(anchorPreset), m_name(name), m_invisible(invisible)
+{
+}
 
 bool gluten::button::render_element(const ImRect& elementRect)
 {
@@ -23,8 +22,8 @@ bool gluten::button::render_element(const ImRect& elementRect)
         ImGui::SetNextItemAllowOverlap();
     }
 
-    const bool activated =
-        m_invisible ? ImGui::InvisibleButton(m_name, elementRect.GetSize()) : ImGui::Button(m_name, elementRect.GetSize());
+    const bool activated = m_invisible ? ImGui::InvisibleButton(m_name, elementRect.GetSize())
+                                       : ImGui::Button(m_name, elementRect.GetSize());
 
     return activated;
 }

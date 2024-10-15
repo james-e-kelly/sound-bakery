@@ -70,7 +70,4 @@ std::string sbk::editor::project_configuration::get_filename_for_id(sbk::core::d
            (extensionOverride.has_value() ? extensionOverride.value() : ".yaml");
 }
 
-bool sbk::editor::project_configuration::is_valid() const
-{
-    return std::filesystem::exists(m_projectFile);
-}
+bool sbk::editor::project_configuration::is_valid() const { return std::filesystem::exists(m_projectFile); }

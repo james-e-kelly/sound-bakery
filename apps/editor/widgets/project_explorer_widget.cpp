@@ -19,7 +19,6 @@ void project_explorer_widget::render()
 {
     gluten::imgui::scoped_font audioFont(get_app()->get_font(gluten::fonts::regular_audio_icons));
 
-
     if (ImGui::Begin("Project Explorer"))
     {
         if (ImGui::BeginTabBar("Project Explorer Tabs", ImGuiTabBarFlags_Reorderable))

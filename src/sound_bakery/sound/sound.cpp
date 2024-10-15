@@ -85,10 +85,10 @@ sc_sound* sound::getSound()
 }
 
 encoding_sound sound::get_encoding_sound_data() const
-{ 
+{
     const sbk::editor::project_configuration projectConfig = sbk::engine::system::get_project()->get_config();
 
-    encoding_sound encodingSound; 
+    encoding_sound encodingSound;
 
     encodingSound.rawSoundPath     = projectConfig.source_folder() / rawSoundPath;
     encodingSound.encodedSoundPath = projectConfig.encoded_folder() / encodedSoundPath;

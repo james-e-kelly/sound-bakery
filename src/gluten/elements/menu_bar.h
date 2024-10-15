@@ -4,8 +4,8 @@
 
 namespace gluten
 {
-	class menu_bar : public element
-	{
+    class menu_bar : public element
+    {
     public:
         menu_bar();
         ~menu_bar();
@@ -13,7 +13,7 @@ namespace gluten
         virtual bool render_element(const ImRect& elementBox) override;
         void end_menu_bar();
 
-	private:
+    private:
         bool m_hasEnded = false;
-	};
-}
+    };
+}  // namespace gluten

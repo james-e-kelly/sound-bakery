@@ -382,7 +382,7 @@ sc_result sc_system_create_sound_memory(
 
     (*sound)->mode = mode;
 
-    ma_decoder_config decoderConfig = ma_decoder_config_init_default();
+    ma_decoder_config decoderConfig      = ma_decoder_config_init_default();
     decoderConfig.customBackendCount     = system->resourceManager.config.customDecodingBackendCount;
     decoderConfig.ppCustomBackendVTables = system->resourceManager.config.ppCustomDecodingBackendVTables;
 
@@ -397,7 +397,7 @@ sc_result sc_system_create_sound_memory(
     }
 
     return ma_sound_init_from_data_source((ma_engine*)system, (*sound)->memoryDecoder, get_flags_from_mode(mode), NULL,
-                                   &(*sound)->sound);
+                                          &(*sound)->sound);
 }
 
 sc_result sc_system_play_sound(
@@ -412,8 +412,8 @@ sc_result sc_system_play_sound(
 
     if (sound->memoryDecoder != NULL)
     {
-        const ma_result initResult = 
-            ma_sound_init_from_data_source((ma_engine*)system, sound->memoryDecoder, sound->mode, NULL, &(*instance)->sound);
+        const ma_result initResult = ma_sound_init_from_data_source((ma_engine*)system, sound->memoryDecoder,
+                                                                    sound->mode, NULL, &(*instance)->sound);
         SC_CHECK_RESULT(initResult);
     }
     else
@@ -430,7 +430,8 @@ sc_result sc_system_play_sound(
     }
     else if (system->masterNodeGroup != NULL)
     {
-        ma_result attachResult = ma_node_attach_output_bus(*instance, 0, system->masterNodeGroup->tail->state->userData, 0);
+        ma_result attachResult =
+            ma_node_attach_output_bus(*instance, 0, system->masterNodeGroup->tail->state->userData, 0);
         SC_CHECK_RESULT(attachResult);
     }
 
@@ -662,9 +663,9 @@ sc_result sc_node_group_set_parent(sc_node_group* nodeGroup, sc_node_group* pare
     return ma_node_attach_output_bus(nodeGroup->head->state->userData, 0, parent->tail->state->userData, 0);
 }
 
-sc_result sc_node_group_set_parent_endpoint(sc_node_group* nodeGroup) 
-{ 
-    SC_CHECK_ARG(nodeGroup != NULL); 
+sc_result sc_node_group_set_parent_endpoint(sc_node_group* nodeGroup)
+{
+    SC_CHECK_ARG(nodeGroup != NULL);
 
     sc_system* const system = (sc_system*)nodeGroup->fader->state->system;
     SC_CHECK(system != NULL, MA_BAD_ADDRESS);
@@ -913,7 +914,7 @@ static void sc_meter_node_process_pcm_frames(
     (void)framesOut;
     (void)frameCountOut;
 
-    sc_meter* const meter          = &((sc_meter_node*)node)->meter;
+    sc_meter* const meter = &((sc_meter_node*)node)->meter;
 
     const ma_uint32 inputChannels = ma_node_get_input_channels(node, 0);
 
@@ -922,13 +923,12 @@ static void sc_meter_node_process_pcm_frames(
         return;
     }
 
-    const ma_uint32 inputFrames   = *frameCountIn;
+    const ma_uint32 inputFrames = *frameCountIn;
 
     const ma_uint32 minChannels = SC_MIN(inputChannels, SC_DSP_METER_MAX_CHANNELS);
 
     float channelSums[SC_DSP_METER_MAX_CHANNELS];
     MA_ZERO_MEMORY(channelSums, SC_DSP_METER_MAX_CHANNELS * sizeof(float));
-    
 
     for (ma_uint32 sampleIndex = 0; sampleIndex < inputFrames; ++sampleIndex)
     {
@@ -953,16 +953,18 @@ static ma_node_vtable sc_meter_node_vtable = {sc_meter_node_process_pcm_frames, 
 
 static ma_uint32 channels = 2;
 
-static sc_result sc_meter_node_init(ma_node_graph* nodeGraph, const ma_allocation_callbacks* allocCallbacks, sc_meter_node* node)
+static sc_result sc_meter_node_init(ma_node_graph* nodeGraph,
+                                    const ma_allocation_callbacks* allocCallbacks,
+                                    sc_meter_node* node)
 {
-    ma_node_config baseNodeConfig = ma_node_config_init();
-    baseNodeConfig.vtable         = &sc_meter_node_vtable;
-    baseNodeConfig.pInputChannels = &channels;
+    ma_node_config baseNodeConfig  = ma_node_config_init();
+    baseNodeConfig.vtable          = &sc_meter_node_vtable;
+    baseNodeConfig.pInputChannels  = &channels;
     baseNodeConfig.pOutputChannels = &channels;
 
     return ma_node_init(nodeGraph, &baseNodeConfig, allocCallbacks, node);
 }
-static void sc_meter_node_uninit(sc_meter_node* node, const ma_allocation_callbacks* allocationCallbacks) 
+static void sc_meter_node_uninit(sc_meter_node* node, const ma_allocation_callbacks* allocationCallbacks)
 {
     ma_node_uninit(node, allocationCallbacks);
 }
@@ -984,7 +986,7 @@ static sc_result sc_dsp_meter_release(sc_dsp_state* state)
     return MA_SUCCESS;
 }
 
-static sc_dsp_vtable s_meterVtable = { sc_dsp_meter_create, sc_dsp_meter_release, NULL, NULL, NULL, 0};
+static sc_dsp_vtable s_meterVtable = {sc_dsp_meter_create, sc_dsp_meter_release, NULL, NULL, NULL, 0};
 
 sc_result sc_dsp_get_metering_info(sc_dsp* dsp, ma_uint32 channelIndex, sc_dsp_meter meterType, float* value)
 {
@@ -1002,10 +1004,12 @@ sc_result sc_dsp_get_metering_info(sc_dsp* dsp, ma_uint32 channelIndex, sc_dsp_m
     switch (meterType)
     {
         case SC_DSP_METER_PEAK:
-            *value = ma_atomic_load_explicit_f32(&meterNode->meter.peakLevels[channelIndex].value, ma_atomic_memory_order_relaxed);
+            *value = ma_atomic_load_explicit_f32(&meterNode->meter.peakLevels[channelIndex].value,
+                                                 ma_atomic_memory_order_relaxed);
             break;
         case SC_DSP_METER_RMS:
-            *value = ma_atomic_load_explicit_f32(&meterNode->meter.rmsLevels[channelIndex].value, ma_atomic_memory_order_relaxed);
+            *value = ma_atomic_load_explicit_f32(&meterNode->meter.rmsLevels[channelIndex].value,
+                                                 ma_atomic_memory_order_relaxed);
             break;
         default:
             break;

@@ -36,7 +36,7 @@ static const char* sc_path_file_name(const char* path)
     return fileName;
 }
 
-static const ma_uint32 bankID = SC_BANK_ID;
+static const ma_uint32 bankID      = SC_BANK_ID;
 static const ma_uint32 bankVersion = SC_BANK_VERSION;
 
 sc_result sc_bank_init(sc_bank* bank, const char* outputFile, ma_open_mode_flags openFlags)
@@ -159,7 +159,7 @@ sc_result sc_bank_build(sc_bank* bank,
         finalData[index]     = inputFileData;
         finalDataSize[index] = inputFileDataSize + SC_BANK_FILE_NAME_BUFFER_SIZE;
         memcpy(finalFilenames + (index * SC_BANK_FILE_NAME_BUFFER_SIZE), filename,
-                 strnlen(filename, SC_BANK_FILE_NAME_BUFFER_SIZE));
+               strnlen(filename, SC_BANK_FILE_NAME_BUFFER_SIZE));
         totalDataSize += SC_CHUNK_MIN_SIZE + SC_BANK_FILE_NAME_BUFFER_SIZE + inputFileDataSize;
 
         ++filesRead;
@@ -193,7 +193,8 @@ sc_result sc_bank_build(sc_bank* bank,
         writeResult = ma_vfs_write(&vfs, bank->outputFile, filename, SC_BANK_FILE_NAME_BUFFER_SIZE, &bytesWritten);
         SC_CHECK_AND_GOTO(writeResult == MA_SUCCESS, cleanup);
 
-        writeResult = ma_vfs_write(&vfs, bank->outputFile, finalData[index], chunkSize - SC_BANK_FILE_NAME_BUFFER_SIZE, &bytesWritten);
+        writeResult = ma_vfs_write(&vfs, bank->outputFile, finalData[index], chunkSize - SC_BANK_FILE_NAME_BUFFER_SIZE,
+                                   &bytesWritten);
         SC_CHECK_AND_GOTO(writeResult == MA_SUCCESS, cleanup);
     }
 

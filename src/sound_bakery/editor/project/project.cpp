@@ -55,9 +55,8 @@ void sbk::editor::project::encode_all_media() const
                     m_projectConfig.encoded_folder() / (std::to_string(sound->get_database_id()) + ".ogg");
                 std::filesystem::create_directories(encodedSoundFile.parent_path());
 
-                const sc_encoder_config encoderConfig =
-                    sc_encoder_config_init(sc_encoding_format_vorbis, ma_format_f32, 0,
-                                           ma_standard_sample_rate_48000, 8);
+                const sc_encoder_config encoderConfig = sc_encoder_config_init(sc_encoding_format_vorbis, ma_format_f32,
+                                                                               0, ma_standard_sample_rate_48000, 8);
 
                 std::filesystem::path soundPath = sound->getSoundName();
 
@@ -141,7 +140,8 @@ void sbk::editor::project::loadObjects()
     {
         std::filesystem::create_directories(path);
 
-        for (const std::filesystem::directory_entry& directoryEntry : std::filesystem::recursive_directory_iterator(path))
+        for (const std::filesystem::directory_entry& directoryEntry :
+             std::filesystem::recursive_directory_iterator(path))
         {
             if (directoryEntry.is_regular_file())
             {
@@ -179,19 +179,21 @@ void sbk::editor::project::buildSoundbanks() const
                 m_projectConfig.objectFolder() / m_projectConfig.getIdFilename(soundbank, std::string(".bank"));
 
             saveYAML(soundbankEmitter, filePath);*/
-            
+
             sbk::engine::soundbank_dependencies soundbankDependencies = soundbank->gather_dependencies();
 
             sc_bank bank;
             const sc_result initresult =
-                sc_bank_init(&bank, (m_projectConfig.build_folder() / (std::string(soundbank->get_database_name()) + ".bnk"))
+                sc_bank_init(&bank,
+                             (m_projectConfig.build_folder() / (std::string(soundbank->get_database_name()) + ".bnk"))
                                  .string()
                                  .c_str(),
                              MA_OPEN_MODE_WRITE);
             assert(initresult == MA_SUCCESS);
 
-            const sc_result buildResult = sc_bank_build(&bank, soundbankDependencies.encodedSoundPaths.data(), soundbankDependencies.encodingFormats.data(),
-                                                  soundbankDependencies.encodedSoundPaths.size());
+            const sc_result buildResult = sc_bank_build(&bank, soundbankDependencies.encodedSoundPaths.data(),
+                                                        soundbankDependencies.encodingFormats.data(),
+                                                        soundbankDependencies.encodedSoundPaths.size());
             assert(buildResult == MA_SUCCESS);
 
             sc_bank_uninit(&bank);

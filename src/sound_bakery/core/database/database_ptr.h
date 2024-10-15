@@ -64,7 +64,9 @@ namespace sbk::core
          * @param object
          */
         database_ptr(const TObjectPtr& object)
-            : m_objectID(object ? static_cast<TIdentifierType>(*object) : 0), m_objectPtr(findObject(id())), m_null(object == nullptr)
+            : m_objectID(object ? static_cast<TIdentifierType>(*object) : 0),
+              m_objectPtr(findObject(id())),
+              m_null(object == nullptr)
         {
         }
 

@@ -10,8 +10,8 @@
 
 void root_widget::render_menu()
 {
-    static bool showMenu    = false;
-    static bool showAbout   = false;
+    static bool showMenu  = false;
+    static bool showAbout = false;
 
     {
         if (ImGui::BeginMenu("File"))

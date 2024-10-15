@@ -2,11 +2,11 @@
 
 /**
  * @brief Create a new application class.
- * 
+ *
  * All consuming libraries should implement this function.
- * 
+ *
  * @warn Ensure the object is created on the heap as gluten will delete the pointer upon close.
-*/
+ */
 extern gluten::app* create_application();
 
 #if defined(WIN32)

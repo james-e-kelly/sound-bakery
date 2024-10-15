@@ -1,11 +1,11 @@
 #pragma once
 
-#include "pch.h"
 #include "imgui.h"
+#include "pch.h"
 
 namespace gluten::theme
 {
-    constexpr auto invalidPrefab   = IM_COL32(222, 43, 43, 255);
+    constexpr auto invalidPrefab = IM_COL32(222, 43, 43, 255);
 
     inline ImU32 ColorWithValue(const ImColor& color, float value)
     {
@@ -54,4 +54,4 @@ namespace gluten::theme
         ImGui::ColorConvertRGBtoHSV(colRow.x, colRow.y, colRow.z, hue, sat, val);
         return ImColor::HSV(std::min(hue * multiplier, 1.0f), sat, val);
     }
-}
+}  // namespace gluten::theme

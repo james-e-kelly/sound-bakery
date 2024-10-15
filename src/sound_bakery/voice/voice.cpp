@@ -113,7 +113,8 @@ const std::vector<std::shared_ptr<node_instance>> sbk::engine::voice::get_voices
     {
         if (get_objects()[index])
         {
-            if (std::shared_ptr<sbk::engine::node_instance> nodeInstance = std::static_pointer_cast<sbk::engine::node_instance>(get_objects()[index]))
+            if (std::shared_ptr<sbk::engine::node_instance> nodeInstance =
+                    std::static_pointer_cast<sbk::engine::node_instance>(get_objects()[index]))
             {
                 nodeInstances.push_back(nodeInstance);
             }
@@ -123,12 +124,15 @@ const std::vector<std::shared_ptr<node_instance>> sbk::engine::voice::get_voices
     return nodeInstances;
 }
 
-std::size_t sbk::engine::voice::num_voices() const 
+std::size_t sbk::engine::voice::num_voices() const
 {
     // Just assuming all owned objects are node instances
-    return get_objects().size(); 
+    return get_objects().size();
 }
 
-node_instance* sbk::engine::voice::node_instance_at(std::size_t index) const { return get_objects()[index]->try_convert_object<sbk::engine::node_instance>(); }
+node_instance* sbk::engine::voice::node_instance_at(std::size_t index) const
+{
+    return get_objects()[index]->try_convert_object<sbk::engine::node_instance>();
+}
 
 bool sbk::engine::voice::is_playing() const { return !get_objects().empty(); }

@@ -1,8 +1,8 @@
 #include "soundbank.h"
 
 #include "sound_bakery/event/event.h"
-#include "sound_bakery/sound/sound.h"
 #include "sound_bakery/node/container/sound_container.h"
+#include "sound_bakery/sound/sound.h"
 
 DEFINE_REFLECTION(sbk::engine::soundbank)
 

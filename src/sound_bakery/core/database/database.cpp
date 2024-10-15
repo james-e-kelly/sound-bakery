@@ -10,7 +10,7 @@ void sbk::core::database::add_object_to_database(const std::shared_ptr<database_
         return;
     }
 
-    sbk_id objectID              = object->get_database_id();
+    sbk_id objectID        = object->get_database_id();
     std::string objectName = std::string(object->get_database_name());
 
     if (objectID == SB_INVALID_ID)
@@ -21,7 +21,7 @@ void sbk::core::database::add_object_to_database(const std::shared_ptr<database_
 
     if (objectName.empty())
     {
-        objectName = create_new_name(object->get_type());
+        objectName           = create_new_name(object->get_type());
         object->m_objectName = objectName;
     }
 
@@ -129,7 +129,8 @@ std::string sbk::core::database::create_new_name(const rttr::type& type)
 {
     static std::atomic<int> serialNumberGenerator = 0;
 
-    const std::string typeName = type.is_valid() ? sbk::util::type_helper::get_display_name_from_type(type).data() : "Object";
+    const std::string typeName =
+        type.is_valid() ? sbk::util::type_helper::get_display_name_from_type(type).data() : "Object";
 
     return fmt::format("{} {}", typeName, serialNumberGenerator.fetch_add(1));
 }

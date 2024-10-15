@@ -70,10 +70,10 @@ bool ParentNodeOwner::createParent(const node_base& thisNode, voice* owningVoice
     {
         case SB_NODE_NULL:
         {
-             const sbk::core::database_ptr<bus>& masterBus = sbk::engine::system::get()->get_master_bus();
+            const sbk::core::database_ptr<bus>& masterBus = sbk::engine::system::get()->get_master_bus();
 
-             if (masterBus.lookup())
-             {
+            if (masterBus.lookup())
+            {
                 if (masterBus.id() != thisNode.get_database_id())
                 {
                     parent = masterBus->lockAndCopy();
@@ -85,11 +85,11 @@ bool ParentNodeOwner::createParent(const node_base& thisNode, voice* owningVoice
 
                     createdParent = parent->init(initData);
                 }
-             }
-             else
-             {
+            }
+            else
+            {
                 SPDLOG_ERROR("Master Bus was invalid when creating node graph");
-             }
+            }
             break;
         }
         case SB_NODE_MIDDLE:

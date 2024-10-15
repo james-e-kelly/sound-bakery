@@ -11,7 +11,7 @@ namespace sbk::engine
 
     /**
      * @brief Wraps all events, objects, and sounds needed to package a soundbank.
-    */
+     */
     struct SB_CLASS soundbank_dependencies
     {
         std::vector<std::shared_ptr<sbk::engine::event>> events;
@@ -23,12 +23,13 @@ namespace sbk::engine
         std::vector<const char*> encodedSoundPaths;
         std::vector<sc_encoding_format> encodingFormats;
 
-        std::vector<std::string> encodedSoundPathsStrings;  //< used to keep sound paths alive while passing to Sound Chef
+        std::vector<std::string> encodedSoundPathsStrings;  //< used to keep sound paths alive while passing to Sound
+                                                            //Chef
     };
 
     /**
      * @brief Packages events and dependent objects and sounds.
-    */
+     */
     class SB_CLASS soundbank : public sbk::core::database_object
     {
         REGISTER_REFLECTION(soundbank, sbk::core::database_object)

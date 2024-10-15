@@ -11,7 +11,8 @@ void sbk::engine::sound_container::gather_children_for_play(gather_children_cont
 
 bool sbk::engine::sound_container::can_add_parent_type(const rttr::type& parentType) const
 {
-    return sbk::engine::node_base::can_add_parent_type(parentType) && parentType != sbk::engine::sound_container::type();
+    return sbk::engine::node_base::can_add_parent_type(parentType) &&
+           parentType != sbk::engine::sound_container::type();
 }
 
 sbk::engine::sound* sbk::engine::sound_container::get_sound() const

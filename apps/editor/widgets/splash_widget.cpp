@@ -116,8 +116,7 @@ void splash_widget::render()
     {
         ImGui::Image((ImTextureID)m_splashImageID, ImVec2(m_splashImageWidth, m_splashImageHeight));
 
-        ImGui::ProgressBar(-1.0f * (float)ImGui::GetTime(), ImVec2(m_splashImageWidth, 0.0f),
-                           "Loading...");
+        ImGui::ProgressBar(-1.0f * (float)ImGui::GetTime(), ImVec2(m_splashImageWidth, 0.0f), "Loading...");
 
         ImGui::EndPopup();
     }

@@ -1,8 +1,8 @@
 #include "project_nodes_widget.h"
 
 #include "app/app.h"
-#include "gluten/theme/theme.h"
 #include "gluten/theme/carbon_theme_g100.h"
+#include "gluten/theme/theme.h"
 #include "gluten/utils/imgui_util_functions.h"
 #include "gluten/utils/imgui_util_structures.h"
 #include "imgui.h"
@@ -49,8 +49,8 @@ void project_nodes_widget::render_page(const std::vector<SB_OBJECT_CATEGORY>& ca
 
             ImGui::SetNextItemOpen(true, ImGuiCond_Once);
 
-
-            if (ImGui::TreeNodeEx(categoryName.data(), ImGuiTreeNodeFlags_NavLeftJumpsBackHere | ImGuiTreeNodeFlags_SpanFullWidth))
+            if (ImGui::TreeNodeEx(categoryName.data(),
+                                  ImGuiTreeNodeFlags_NavLeftJumpsBackHere | ImGuiTreeNodeFlags_SpanFullWidth))
             {
                 if (ImGui::BeginPopupContextItem("TopNodeContext"))
                 {
@@ -79,7 +79,6 @@ void project_nodes_widget::render_category(SB_OBJECT_CATEGORY category)
     const std::unordered_set<sbk::core::object*> categoryObjects =
         sbk::engine::system::get()->get_objects_of_category(category);
 
-
     ImDrawList* draw_list = ImGui::GetWindowDrawList();
 
     float x1             = ImGui::GetCurrentWindow()->WorkRect.Min.x;
@@ -89,9 +88,9 @@ void project_nodes_widget::render_category(SB_OBJECT_CATEGORY category)
     float line_height    = ImGui::GetTextLineHeight() + item_spacing_y;
 
     float y0 = ImGui::GetCursorScreenPos().y + (float)(int)item_offset_y;
-   
+
     const auto pos = ImGui::GetCursorPos();
-    
+
     numNodesRendered = categoryObjects.size();
 
     ImGuiListClipper clipper;
@@ -100,8 +99,11 @@ void project_nodes_widget::render_category(SB_OBJECT_CATEGORY category)
     {
         for (int row_n = clipper.DisplayStart; row_n < clipper.DisplayEnd; ++row_n)
         {
-            ImU32 col = (row_n & 1) ? ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::background)
-                                    : gluten::theme::ColorWithMultipliedValue(ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::backgroundSelected), 0.22f);
+            ImU32 col =
+                (row_n & 1)
+                    ? ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::background)
+                    : gluten::theme::ColorWithMultipliedValue(
+                          ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::backgroundSelected), 0.22f);
             if ((col & IM_COL32_A_MASK) == 0)
                 continue;
             float y1 = y0 + (line_height * static_cast<float>(row_n));
@@ -146,8 +148,8 @@ void project_nodes_widget::render_single_node(rttr::type type, rttr::instance in
 
             handle_open_node(object);
 
-            ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_None |
-                                       ImGuiTreeNodeFlags_NavLeftJumpsBackHere | ImGuiTreeNodeFlags_SpanFullWidth;
+            ImGuiTreeNodeFlags flags =
+                ImGuiTreeNodeFlags_None | ImGuiTreeNodeFlags_NavLeftJumpsBackHere | ImGuiTreeNodeFlags_SpanFullWidth;
 
             if (hasChildren || object->getType() == sbk::engine::named_parameter::type())
             {

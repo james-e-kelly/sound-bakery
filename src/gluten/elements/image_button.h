@@ -24,4 +24,4 @@ namespace gluten
         button m_button;
         image m_image;
     };
-}
+}  // namespace gluten

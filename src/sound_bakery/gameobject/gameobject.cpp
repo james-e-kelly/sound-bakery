@@ -28,8 +28,8 @@ void sbk::engine::game_object::post_event(event* event)
     {
         for (const action& action : event->m_actions)
         {
-            sbk::engine::container* container   = nullptr;
-            sbk::engine::event* childEvent      = nullptr;
+            sbk::engine::container* container    = nullptr;
+            sbk::engine::event* childEvent       = nullptr;
             sbk::engine::game_object* gameObject = nullptr;
 
             if (const sbk::core::database_ptr<sbk::core::database_object>& destination = action.m_destination;

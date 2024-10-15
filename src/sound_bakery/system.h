@@ -31,9 +31,9 @@ namespace sbk
 
         /**
          * @brief Manager of the whole sound Bakery.
-         * 
-         * The system tracks all objects created during sound Bakery's lifetime. 
-         * 
+         *
+         * The system tracks all objects created during sound Bakery's lifetime.
+         *
          * It owns all loaded Soundbanks, listener game object, and busses.
          */
         class SB_CLASS system final : public sc_system,
@@ -70,7 +70,10 @@ namespace sbk
 
             std::shared_ptr<concurrencpp::manual_executor> game_thread_executer() const { return m_gameThreadExecuter; }
 
-            [[nodiscard]] sbk::engine::game_object* get_listener_game_object() const { return m_listenerGameObject.get(); }
+            [[nodiscard]] sbk::engine::game_object* get_listener_game_object() const
+            {
+                return m_listenerGameObject.get();
+            }
             [[nodiscard]] sbk::engine::bus* get_master_bus() const { return m_masterBus.get(); }
 
             void set_master_bus(const std::shared_ptr<sbk::engine::bus>& masterBus);

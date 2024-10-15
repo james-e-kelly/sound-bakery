@@ -1,11 +1,10 @@
 #include "renderer_subsystem.h"
 
-#include "gluten/subsystems/widget_subsystem.h"
-#include "gluten/widgets/root_widget.h"
-#include "gluten/theme/theme.h"
-#include "gluten/theme/carbon_theme_g100.h"
-
 #include "app/app.h"
+#include "gluten/subsystems/widget_subsystem.h"
+#include "gluten/theme/carbon_theme_g100.h"
+#include "gluten/theme/theme.h"
+#include "gluten/widgets/root_widget.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
@@ -52,14 +51,15 @@ renderer_subsystem::window_guard::window_guard(int width, int height, const std:
         glfwMakeContextCurrent(currentContext);
     }
 
-
     glfwSetWindowUserPointer(m_window, gluten::app::get());
-    glfwSetTitlebarHitTestCallback(m_window,
+    glfwSetTitlebarHitTestCallback(
+        m_window,
         [](GLFWwindow* window, int x, int y, int* hit)
         {
             if (gluten::app* const app = (gluten::app*)glfwGetWindowUserPointer(window))
             {
-                if (gluten::widget_subsystem* const widgetSubsystem = app->get_subsystem_by_class<gluten::widget_subsystem>())
+                if (gluten::widget_subsystem* const widgetSubsystem =
+                        app->get_subsystem_by_class<gluten::widget_subsystem>())
                 {
                     if (gluten::widget* const rootWidget = widgetSubsystem->get_root_widget())
                     {
@@ -98,7 +98,7 @@ renderer_subsystem::window_guard& renderer_subsystem::window_guard::operator=(wi
     return *this;
 }
 
-void renderer_subsystem::window_guard::set_title(const std::string& title) 
+void renderer_subsystem::window_guard::set_title(const std::string& title)
 {
     if (m_window && !title.empty())
     {
@@ -137,9 +137,8 @@ void renderer_subsystem::set_default_window_hints()
     glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
     glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);
     glfwWindowHint(GLFW_TITLEBAR, GLFW_FALSE);
-    //glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
+    // glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
 }
-
 
 int renderer_subsystem::init_glfw()
 {
@@ -158,7 +157,7 @@ int renderer_subsystem::init_imgui()
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImPlot::CreateContext();
-    
+
     ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;   // Enable Gamepad Controls
@@ -185,7 +184,8 @@ int renderer_subsystem::init()
             assert(logoFile.size() > 0);
 
             int width, height;
-            gluten::image::data_ptr windowIconImageData = image::load_image_data((unsigned char*)logoFile.begin(), logoFile.size(), width, height);
+            gluten::image::data_ptr windowIconImageData =
+                image::load_image_data((unsigned char*)logoFile.begin(), logoFile.size(), width, height);
 
             GLFWimage windowIconImage;
             windowIconImage.pixels = windowIconImageData.get();
@@ -252,7 +252,7 @@ void renderer_subsystem::exit()
 
 void renderer_subsystem::set_window_title(const std::string& title) { m_window.set_title(title); }
 
-void gluten::renderer_subsystem::toggle_minimised() 
+void gluten::renderer_subsystem::toggle_minimised()
 {
     if (is_minimised())
     {
@@ -264,7 +264,7 @@ void gluten::renderer_subsystem::toggle_minimised()
     }
 }
 
-void gluten::renderer_subsystem::toggle_maximised() 
+void gluten::renderer_subsystem::toggle_maximised()
 {
     if (is_maximized())
     {

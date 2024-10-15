@@ -6,35 +6,35 @@
 namespace gluten
 {
     template <typename T>
-    concept valid_slider = requires(T a) 
-    { 
-        std::same_as<T, float> || std::same_as<T, int> || std::same_as<T, double>;
-    };
+    concept valid_slider = requires(T a) { std::same_as<T, float> || std::same_as<T, int> || std::same_as<T, double>; };
 
     template <valid_slider T>
-	class slider : public element
-	{
+    class slider : public element
+    {
     public:
         slider() = delete;
-        slider(const char* label, T* value, T min, T max) : element(anchor_preset::stretch_full), m_label(label), m_value(value), m_min(min), m_max(max) {}
+        slider(const char* label, T* value, T min, T max)
+            : element(anchor_preset::stretch_full), m_label(label), m_value(value), m_min(min), m_max(max)
+        {
+        }
 
-        bool render_element(const ImRect& elementBox) override 
-        { 
+        bool render_element(const ImRect& elementBox) override
+        {
             ImGui::SetNextItemWidth(elementBox.GetSize().x);
             return render_slider<T>(elementBox);
         }
 
-        template<valid_slider U>
-        bool render_slider(const ImRect& elementBox) {}
+        template <valid_slider U>
+        bool render_slider(const ImRect& elementBox)
+        {
+        }
 
-        
-
-	private:
+    private:
         const char* m_label = nullptr;
         T* m_value;
         const T m_min;
         const T m_max;
-	};
+    };
 
     template <>
     template <>
@@ -56,4 +56,4 @@ namespace gluten
     {
         return ImGui::SliderInt(m_label, m_value, m_min, m_max);
     }
-}
+}  // namespace gluten

@@ -105,9 +105,9 @@ gluten::element::element(const anchor_preset& anchorPreset) { m_anchor.set_achor
 
 gluten::element::~element() { ImGui::SetWindowFontScale(1.0f); }
 
-void gluten::element::set_font_size(float size) 
-{ 
-    const float currentFontSize = ImGui::GetFontSize(); 
+void gluten::element::set_font_size(float size)
+{
+    const float currentFontSize = ImGui::GetFontSize();
 
     const float scale = size / currentFontSize;
 
@@ -145,7 +145,7 @@ ImRect gluten::element::get_element_rect_local() const
 }
 
 bool gluten::element::render(const ImRect& parent)
-{ 
+{
     pre_render_element();
 
     if (m_scale.has_value())
@@ -155,17 +155,18 @@ bool gluten::element::render(const ImRect& parent)
 
     const ImRect elementBox =
         get_element_box_from_parent(parent, m_minSize, get_element_content_size(), m_alignment, m_padding, m_anchor);
-    m_currentRect         = elementBox;
+    m_currentRect = elementBox;
 
     if (s_debug)
     {
         ImDrawList* const foregroundDrawList = ImGui::GetForegroundDrawList();
-        foregroundDrawList->AddRect(elementBox.Min, elementBox.Max, ImGui::ColorConvertFloat4ToU32(gluten::theme::red50));
+        foregroundDrawList->AddRect(elementBox.Min, elementBox.Max,
+                                    ImGui::ColorConvertFloat4ToU32(gluten::theme::red50));
     }
 
     ImGui::SetCursorScreenPos(elementBox.Min);
 
-    const bool activated = render_element(elementBox); 
+    const bool activated = render_element(elementBox);
 
     const bool hovered = ImGui::IsItemHovered();
 
@@ -179,17 +180,17 @@ bool gluten::element::render(const ImRect& parent)
         {
             backgroundDrawList->AddRectFilled(elementBox.Min, elementBox.Max, m_backgroundColor.value());
 
-            ImVec2 bottomLeft = elementBox.GetBL();
+            ImVec2 bottomLeft  = elementBox.GetBL();
             ImVec2 bottomRight = elementBox.GetBR();
             bottomLeft.x       = (int)bottomLeft.x;
             bottomLeft.y       = (int)bottomLeft.y;
-            bottomRight.x       = (int)bottomRight.x;
-            bottomRight.y       = (int)bottomRight.y;
+            bottomRight.x      = (int)bottomRight.x;
+            bottomRight.y      = (int)bottomRight.y;
 
             const ImGuiStyle& style = ImGui::GetStyle();
             ImGui::GetCurrentWindow()->DrawList->AddLine(bottomLeft, bottomRight,
-                                        ImGui::ColorConvertFloat4ToU32(style.Colors[ImGuiCol_Border]),
-                                        style.WindowBorderSize);
+                                                         ImGui::ColorConvertFloat4ToU32(style.Colors[ImGuiCol_Border]),
+                                                         style.WindowBorderSize);
         }
     }
 
@@ -205,26 +206,26 @@ bool gluten::element::render_window()
 void gluten::element::set_element_max_size(const ImVec2& maxSize) { m_maxSize = maxSize; }
 
 ImVec2 gluten::element::get_anchor_start_position(const ImVec2& containerPosition,
-                                 const ImVec2& containerSize,
-                                 const anchor_info& anchor)
+                                                  const ImVec2& containerSize,
+                                                  const anchor_info& anchor)
 {
     const float xPositionWithOffset = containerPosition.x + anchor.minOffset.x;
-    const float xSizeOfAnchor      = containerSize.x * anchor.min.x;
+    const float xSizeOfAnchor       = containerSize.x * anchor.min.x;
     const float xPosition           = xPositionWithOffset + xSizeOfAnchor;
 
     const float yPositionWithOffset = containerPosition.y + anchor.minOffset.y;
-    const float ySizeOfAnchor      = containerSize.y * anchor.min.y;
+    const float ySizeOfAnchor       = containerSize.y * anchor.min.y;
     const float yPosition           = yPositionWithOffset + ySizeOfAnchor;
 
     return ImVec2(xPosition, yPosition);
 }
 
-ImVec2 gluten::element::get_anchor_end_position(const ImVec2& startPosition, 
+ImVec2 gluten::element::get_anchor_end_position(const ImVec2& startPosition,
                                                 const ImVec2& containerPosition,
                                                 const ImVec2& containerSize,
                                                 const anchor_info& anchor)
 {
-    
+
     const ImVec2 anchorMax = anchor.max - anchor.min;
 
     const float xSizeOfAnchor = containerSize.x * anchorMax.x;
@@ -237,11 +238,11 @@ ImVec2 gluten::element::get_anchor_end_position(const ImVec2& startPosition,
 }
 
 ImRect gluten::element::get_element_start_position(const ImVec2& anchorStartPosition,
-                                                                       const ImVec2& anchorEndPosition,
-                                                                       const ImVec2& minSize,
-                                                                       const ImVec2& desiredSize,
-                                                                       const ImVec2& alignment, 
-                                                                       const ImVec2& padding)
+                                                   const ImVec2& anchorEndPosition,
+                                                   const ImVec2& minSize,
+                                                   const ImVec2& desiredSize,
+                                                   const ImVec2& alignment,
+                                                   const ImVec2& padding)
 {
     const ImVec2 desiredEnd = anchorStartPosition + desiredSize;
     const ImVec2 minEnd     = anchorStartPosition + minSize;
@@ -269,8 +270,8 @@ ImRect gluten::element::get_element_start_position(const ImVec2& anchorStartPosi
 ImRect gluten::element::get_element_box_from_parent(const ImRect& parent,
                                                     const ImVec2& minSize,
                                                     const ImVec2& desiredSize,
-                                                    const ImVec2& alignment, 
-                                                    const ImVec2& padding, 
+                                                    const ImVec2& alignment,
+                                                    const ImVec2& padding,
                                                     const anchor_info& anchor)
 {
     const ImVec2 anchorStart = get_anchor_start_position(parent.Min, parent.GetSize(), anchor);

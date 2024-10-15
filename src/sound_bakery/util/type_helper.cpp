@@ -261,8 +261,7 @@ bool type_helper::isTypePlayable(const rttr::type& type)
 
     if (type.is_valid())
     {
-        result = type.is_derived_from<sbk::engine::container>() 
-            || type.is_derived_from<sbk::engine::sound>() ||
+        result = type.is_derived_from<sbk::engine::container>() || type.is_derived_from<sbk::engine::sound>() ||
                  type.is_derived_from<sbk::engine::event>();
     }
 

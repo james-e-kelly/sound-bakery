@@ -2,7 +2,6 @@
 
 #include "gluten/managers/manager.h"
 #include "gluten/subsystems/subsystem.h"
-
 #include "imgui.h"
 
 namespace gluten

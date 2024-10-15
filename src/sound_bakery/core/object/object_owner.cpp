@@ -74,7 +74,7 @@ std::shared_ptr<sbk::core::object> sbk::core::object_owner::create_runtime_objec
 std::shared_ptr<sbk::core::object> sbk::core::object_owner::load_object(YAML::Node& node)
 {
     const std::string loadedTypeName = node["ObjectType"].as<std::string>();
-    const rttr::type type = rttr::type::get_by_name(loadedTypeName);
+    const rttr::type type            = rttr::type::get_by_name(loadedTypeName);
 
     if (type.is_derived_from<sbk::core::database_object>())
     {
@@ -143,7 +143,8 @@ void sbk::core::object_owner::remove_object(const std::shared_ptr<object>& objec
 {
     if (object)
     {
-        for (std::vector<std::shared_ptr<sbk::core::object>>::iterator iter = m_objects.begin(); iter != m_objects.end(); ++iter)
+        for (std::vector<std::shared_ptr<sbk::core::object>>::iterator iter = m_objects.begin();
+             iter != m_objects.end(); ++iter)
         {
             if (*iter == object)
             {

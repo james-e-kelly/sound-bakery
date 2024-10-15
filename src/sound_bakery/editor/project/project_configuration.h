@@ -21,9 +21,9 @@ namespace sbk::editor
          */
         project_configuration(const std::filesystem::directory_entry& projectDirectory, const std::string& projectName);
 
-        static constexpr std::string_view projectExtension        = "bakery";
-        static constexpr std::string_view projectExtensionWithDot = ".bakery";
-        static constexpr std::string_view outputBankExtension     = "bnk";
+        static constexpr std::string_view projectExtension           = "bakery";
+        static constexpr std::string_view projectExtensionWithDot    = ".bakery";
+        static constexpr std::string_view outputBankExtension        = "bnk";
         static constexpr std::string_view outputBankExtensionWithDot = ".bnk";
 
         [[nodiscard]] std::filesystem::path source_folder() const { return m_projectFolder / "Source"; }

@@ -1,10 +1,10 @@
 #include "app.h"
 
+#include "IconsFontAwesome6.h"
+#include "IconsFontaudio.h"
 #include "subsystems/renderer_subsystem.h"
 #include "subsystems/widget_subsystem.h"
 
-#include "IconsFontAwesome6.h"
-#include "IconsFontaudio.h"
 #include <cmrc/cmrc.hpp>
 
 CMRC_DECLARE(sbk::Fonts);
@@ -141,18 +141,23 @@ void gluten::app::load_fonts()
 
     ImGuiIO& io = ImGui::GetIO();
 
-    m_fonts[fonts::regular] = io.Fonts->AddFontFromMemoryTTF((void*)mainFontFile.begin(), mainFontFile.size(), baseFontSize, &fontConfig);
+    m_fonts[fonts::regular] =
+        io.Fonts->AddFontFromMemoryTTF((void*)mainFontFile.begin(), mainFontFile.size(), baseFontSize, &fontConfig);
 
-    m_fonts[fonts::regular_audio_icons] = io.Fonts->AddFontFromMemoryTTF((void*)mainFontFile.begin(), mainFontFile.size(), baseFontSize, &fontConfig);
+    m_fonts[fonts::regular_audio_icons] =
+        io.Fonts->AddFontFromMemoryTTF((void*)mainFontFile.begin(), mainFontFile.size(), baseFontSize, &fontConfig);
     io.Fonts->AddFontFromMemoryTTF((void*)audioFontFile.begin(), audioFontFile.size(), iconFontSize * 1.3f,
                                    &iconFontsConfig, fontAudioIconRanges);
 
-    m_fonts[fonts::regular_font_awesome] = io.Fonts->AddFontFromMemoryTTF((void*)mainFontFile.begin(), mainFontFile.size(), baseFontSize, &fontConfig);
+    m_fonts[fonts::regular_font_awesome] =
+        io.Fonts->AddFontFromMemoryTTF((void*)mainFontFile.begin(), mainFontFile.size(), baseFontSize, &fontConfig);
     io.Fonts->AddFontFromMemoryTTF((void*)fontAwesomeFontFile.begin(), fontAwesomeFontFile.size(), iconFontSize,
                                    &iconFontsConfig, fontAwesomeIconRanges);
 
-    m_fonts[fonts::light] = io.Fonts->AddFontFromMemoryTTF((void*)lightFontFile.begin(), lightFontFile.size(), baseFontSize, &fontConfig);
-    m_fonts[fonts::title] = io.Fonts->AddFontFromMemoryTTF((void*)titleFontFile.begin(), titleFontFile.size(), baseFontSize * 1.2f, &fontConfig);
+    m_fonts[fonts::light] =
+        io.Fonts->AddFontFromMemoryTTF((void*)lightFontFile.begin(), lightFontFile.size(), baseFontSize, &fontConfig);
+    m_fonts[fonts::title] = io.Fonts->AddFontFromMemoryTTF((void*)titleFontFile.begin(), titleFontFile.size(),
+                                                           baseFontSize * 1.2f, &fontConfig);
 }
 
 void gluten::app::request_exit() { m_isRequestingExit = true; }

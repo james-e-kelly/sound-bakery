@@ -1,14 +1,14 @@
 #pragma once
 
+#include "sound_bakery/core/core_include.h"
 #include "sound_chef/sound_chef.h"
 #include "sound_chef/sound_chef_encoder.h"
-#include "sound_bakery/core/core_include.h"
 
 namespace sbk::engine
 {
     /**
      * @brief Data for converting a sound to an encoded format.
-    */
+     */
     struct SB_CLASS encoding_sound
     {
         std::filesystem::path rawSoundPath;

@@ -16,8 +16,9 @@ namespace sbk::core
         std::shared_ptr<object> load_object(YAML::Node& node);
 
         /**
-         * @param addToDatabase to automatically track the object. If set to false, the user is responsible for adding the object to the database.
-        */
+         * @param addToDatabase to automatically track the object. If set to false, the user is responsible for adding
+         * the object to the database.
+         */
         std::shared_ptr<database_object> create_database_object(const rttr::type& type, bool addToDatabase = true);
 
         template <typename T>

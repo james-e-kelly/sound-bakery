@@ -12,10 +12,7 @@ bool sbk::engine::bus::can_add_child_type(const rttr::type& childType) const
     return sbk::engine::node_base::can_add_child_type(childType) && childType.is_derived_from<sbk::engine::bus>();
 }
 
-bool sbk::engine::bus::can_add_parent() const 
-{ 
-    return sbk::engine::node_base::can_add_parent() && !m_masterBus; 
-}
+bool sbk::engine::bus::can_add_parent() const { return sbk::engine::node_base::can_add_parent() && !m_masterBus; }
 
 bool sbk::engine::bus::can_add_parent_type(const rttr::type& parentType) const
 {
