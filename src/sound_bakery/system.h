@@ -63,9 +63,16 @@ namespace sbk
             sbk::core::object_owner* current_object_owner();
 
             /**
-             * @brief Creates an instance of sound Bakery and opens the project.
+             * @brief Creates an instance of Sound Bakery and opens the project.
              */
             static sc_result open_project(const std::filesystem::path& project_file);
+
+            /**
+             * @brief Creates a project and initializes Sound Bakery.
+             */
+            static sc_result create_project(const std::filesystem::directory_entry& projectDirectory,
+                                            const std::string& projectName);
+
             static sbk::editor::project* get_project();
 
             std::shared_ptr<concurrencpp::manual_executor> game_thread_executer() const { return m_gameThreadExecuter; }

@@ -170,16 +170,16 @@ sc_result system::open_project(const std::filesystem::path& project_file)
 {
     destroy();
 
-    // Create the global logger before initializing sound Bakery
+    // Create the global logger before initializing Sound Bakery
 
     const sbk::editor::project_configuration tempProject = sbk::editor::project_configuration(project_file);
 
     auto consoleSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
     consoleSink->set_level(spdlog::level::info);
 
-    auto now    = spdlog::log_clock::now();
-    time_t tnow = spdlog::log_clock::to_time_t(now);
-    tm now_tm   = spdlog::details::os::localtime(tnow);
+    auto now          = spdlog::log_clock::now();
+    const time_t tnow = spdlog::log_clock::to_time_t(now);
+    const tm now_tm   = spdlog::details::os::localtime(tnow);
 
     auto dailySink = std::make_shared<spdlog::sinks::daily_file_sink_mt>(
         (tempProject.log_folder() / (std::string(tempProject.project_name()) + ".txt")).string(), now_tm.tm_hour,
@@ -190,12 +190,12 @@ sc_result system::open_project(const std::filesystem::path& project_file)
         (tempProject.log_folder() / (std::string(tempProject.project_name()) + ".txt")).string(), true);
     basicFileSink->set_level(spdlog::level::trace);
 
-    std::shared_ptr<spdlog::logger> logger = std::make_shared<spdlog::logger>(
+    const std::shared_ptr<spdlog::logger> logger = std::make_shared<spdlog::logger>(
         std::string("LogSoundBakery"), spdlog::sinks_init_list{consoleSink, dailySink, basicFileSink});
     logger->set_level(spdlog::level::debug);
     logger->set_pattern("[%Y-%m-%d %H:%M:%S %z][Thread %t][%l] %n: %v");
 
-    std::shared_ptr<spdlog::logger> soundChefLogger = std::make_shared<spdlog::logger>(
+    const std::shared_ptr<spdlog::logger> soundChefLogger = std::make_shared<spdlog::logger>(
         s_soundChefLoggerName, spdlog::sinks_init_list{consoleSink, dailySink, basicFileSink});
     soundChefLogger->set_level(spdlog::level::debug);
 
@@ -213,6 +213,31 @@ sc_result system::open_project(const std::filesystem::path& project_file)
     }
 
     s_system->m_project.reset();
+
+    return MA_ERROR;
+}
+
+sc_result sbk::engine::system::create_project(const std::filesystem::directory_entry& projectDirectory,
+                                              const std::string& projectName)
+{
+    const sbk::editor::project_configuration projectConfig(projectDirectory, projectName);
+
+    if (open_project(projectConfig.project_file()) == MA_SUCCESS)
+    {
+        if (s_system->m_project)
+        {
+            if (std::shared_ptr<sbk::engine::bus> masterBus =
+                    s_system->m_project->create_database_object<sbk::engine::bus>())
+            {
+                masterBus->set_database_name("Master Bus");
+                masterBus->setMasterBus(true);
+
+                s_system->m_project->save_project();
+
+                return MA_SUCCESS;
+            }
+        }
+    }
 
     return MA_ERROR;
 }

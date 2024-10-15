@@ -24,7 +24,7 @@ namespace sbk::engine
         std::vector<sc_encoding_format> encodingFormats;
 
         std::vector<std::string> encodedSoundPathsStrings;  //< used to keep sound paths alive while passing to Sound
-                                                            //Chef
+                                                            // Chef
     };
 
     /**

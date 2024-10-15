@@ -39,6 +39,8 @@ public:
 
 public:
     void init_project(const std::filesystem::path& project_file);
+    auto create_project(const std::filesystem::directory_entry& projectDirectory,
+                        const std::string& projectName) -> void;
 
     virtual void tick(double deltaTime) override;
     virtual void exit() override;
@@ -49,5 +51,7 @@ public:
     sbk::engine::sound_container* get_preview_sound_container() const;
 
 private:
+    void setup_project();
+
     selection m_selection;
 };

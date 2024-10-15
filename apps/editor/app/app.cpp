@@ -29,22 +29,15 @@ void editor_app::open_project(const std::filesystem::path& project_file)
 
 void editor_app::create_and_open_project(const std::filesystem::directory_entry& projectFolder)
 {
-    sbk::editor::project_configuration newProjectConfig(projectFolder, "Sound Bakery Project");
-
-    if (newProjectConfig.is_valid())
+    if (project_manager* projectManager = get_manager_by_class<project_manager>())
     {
-        project_manager* projectManager = get_manager_by_class<project_manager>();
-
-        if (projectManager != nullptr)
-        {
-            projectManager->exit();
-        }
-        else
-        {
-            projectManager = add_manager_class<project_manager>();
-        }
-
-        projectManager->init_project(newProjectConfig.project_file());
+        projectManager->exit();
+        projectManager->create_project(projectFolder, "Sound Bakery Project");
+    }
+    else
+    {
+        projectManager = add_manager_class<project_manager>();
+        projectManager->create_project(projectFolder, "Sound Bakery Project");
     }
 }
 
