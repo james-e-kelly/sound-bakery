@@ -111,8 +111,8 @@ FetchContent_Declare(
 
 FetchContent_Declare(
   concurrencpp
-  GIT_REPOSITORY https://github.com/David-Haim/concurrencpp.git
-  GIT_TAG        v.0.1.7
+  GIT_REPOSITORY https://github.com/aheysse/concurrencpp.git
+  GIT_TAG        master
   GIT_SHALLOW    TRUE
   GIT_PROGRESS TRUE
   OVERRIDE_FIND_PACKAGE
