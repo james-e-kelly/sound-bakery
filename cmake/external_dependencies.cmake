@@ -111,7 +111,7 @@ FetchContent_Declare(
 
 FetchContent_Declare(
   concurrencpp
-  GIT_REPOSITORY https://github.com/aheysse/concurrencpp.git
+  GIT_REPOSITORY https://github.com/james-e-kelly/concurrencpp.git
   GIT_TAG        master
   GIT_SHALLOW    TRUE
   GIT_PROGRESS TRUE
