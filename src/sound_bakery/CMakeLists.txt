@@ -164,14 +164,15 @@ FetchContent_MakeAvailable(concurrencpp)
 message(STATUS "Fetching spdlog...")
 FetchContent_MakeAvailable(spdlog)
 
-FetchContent_GetProperties(yaml)
+message(STATUS "Fetching yaml-cpp...")
+set(YAML_CPP_BUILD_CONTRIB OFF CACHE BOOL "" FORCE)
+set(YAML_CPP_FORMAT_SOURCE OFF CACHE BOOL "" FORCE)
+set(YAML_CPP_BUILD_TOOLS OFF CACHE BOOL "" FORCE)
+set(YAML_BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(yaml)
 
-if(NOT yaml_POPULATED)
-  message(STATUS "Fetching yaml-cpp...")
-  set(YAML_CPP_FORMAT_SOURCE OFF CACHE BOOL "" FORCE)
-  FetchContent_Populate(yaml)
-  add_subdirectory(${yaml_SOURCE_DIR} ${yaml_BINARY_DIR})
-endif()
+# set_target_properties(yaml-cpp PROPERTIES CXX_STANDARD 20)
+# target_compile_options(yaml-cpp PUBLIC "-stdlib=libc++")
 
 target_link_libraries(sound_bakery PUBLIC 
   SoundBakery::Delegates 

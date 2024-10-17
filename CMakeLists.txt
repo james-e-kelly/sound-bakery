@@ -22,6 +22,8 @@ endif()
 
 message(STATUS "Install path is ${CMAKE_INSTALL_PREFIX}")
 
+detect_main_project()
+
 option(SOUND_BAKERY_SHARED "Build Sound Bakery and Sound Chef as shared libraries" OFF)
 option(SOUND_BAKERY_DOCS "Build doxygen docs" OFF)
 option(SOUND_BAKERY_TESTS "Build test library" OFF)
@@ -34,8 +36,6 @@ message(STATUS "SOUND_BAKERY_DOCS=${SOUND_BAKERY_DOCS}")
 message(STATUS "SOUND_BAKERY_TESTS=${SOUND_BAKERY_TESTS}")
 message(STATUS "SOUND_BAKERY_FORMAT_SOURCE=${SOUND_BAKERY_FORMAT_SOURCE}")
 message(STATUS "SOUND_BAKERY_TIDY_SOURCE=${SOUND_BAKERY_TIDY_SOURCE}")
-
-detect_main_project()
 
 if(SOUND_BAKERY_MAIN_PROJECT)
   c_17()
