@@ -522,9 +522,9 @@ void gluten::imgui::end_menubar()
             IM_ASSERT(window->DC.NavLayersActiveMaskNext & (1 << layer));  // Sanity check
             ImGui::FocusWindow(window);
             ImGui::SetNavID(window->NavLastIds[layer], layer, 0, window->NavRectRel[layer]);
-            g.NavDisableHighlight =
+            g.NavCursorVisible =
                 true;  // Hide highlight for the current frame so we don't see the intermediary selection.
-            g.NavDisableMouseHover = g.NavMousePosDirty = true;
+            g.NavHighlightItemUnderNav = g.NavMousePosDirty = true;
             ImGui::NavMoveRequestForward(g.NavMoveDir, g.NavMoveClipDir, g.NavMoveFlags,
                                          g.NavMoveScrollFlags);  // Repeat
         }
