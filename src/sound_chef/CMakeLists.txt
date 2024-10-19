@@ -23,6 +23,7 @@ set(SOUND_CHEF_HEADERS
 
     ${CMAKE_SOURCE_DIR}/inc/sound_chef/sound_chef.h    
     ${CMAKE_SOURCE_DIR}/inc/sound_chef/sound_chef_dsp.h
+    ${CMAKE_SOURCE_DIR}/inc/sound_chef/sound_chef_version.h
 )
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Header Files" FILES ${ATLAS_HEADERS})
@@ -127,5 +128,6 @@ if(SOUND_BAKERY_TIDY_SOURCE AND SOUND_BAKERY_CLANG_TIDY_EXE AND MSVC)
   )
 endif()
 
-install(TARGETS sound_chef DESTINATION lib)
-install(FILES ${SOUND_CHEF_HEADERS} DESTINATION inc)
+install(TARGETS sound_chef DESTINATION lib/sound_chef)
+install(FILES ${SOUND_CHEF_HEADERS} DESTINATION inc/sound_chef)
+install(FILES ${miniaudio_SOURCE_DIR}/miniaudio.h DESTINATION inc/sound_chef)

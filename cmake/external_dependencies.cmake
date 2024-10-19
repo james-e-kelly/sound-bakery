@@ -10,6 +10,7 @@ FetchContent_Declare(
   GIT_SHALLOW    TRUE
   GIT_PROGRESS TRUE
   OVERRIDE_FIND_PACKAGE
+  EXCLUDE_FROM_ALL 
 )
 
     # Using TheCherno version for custom titlebar on Windows
@@ -19,6 +20,7 @@ FetchContent_Declare(
   GIT_TAG        master
   GIT_SHALLOW    TRUE
   OVERRIDE_FIND_PACKAGE
+  EXCLUDE_FROM_ALL 
 )
 
 FetchContent_Declare(
@@ -27,6 +29,7 @@ FetchContent_Declare(
   GIT_TAG        docking
   GIT_SHALLOW    TRUE
   OVERRIDE_FIND_PACKAGE
+  EXCLUDE_FROM_ALL 
 )
 
 FetchContent_Declare(
@@ -35,6 +38,7 @@ FetchContent_Declare(
     GIT_TAG master
     GIT_SHALLOW TRUE
     OVERRIDE_FIND_PACKAGE
+    EXCLUDE_FROM_ALL 
 )
 
 FetchContent_Declare(
@@ -43,6 +47,7 @@ FetchContent_Declare(
   GIT_TAG        67345b80ebb429ecc2aeda94c478b3bcc5f7888e
   GIT_SHALLOW    TRUE
   OVERRIDE_FIND_PACKAGE
+  EXCLUDE_FROM_ALL 
 )
 
 FetchContent_Declare(
@@ -51,6 +56,7 @@ FetchContent_Declare(
   GIT_TAG        main
   GIT_SHALLOW    TRUE
   OVERRIDE_FIND_PACKAGE
+  EXCLUDE_FROM_ALL
 )
 
 # Need fmt library for better cross compiler support
@@ -70,6 +76,7 @@ FetchContent_Declare(
   GIT_SHALLOW    TRUE
   GIT_PROGRESS TRUE
   OVERRIDE_FIND_PACKAGE
+  EXCLUDE_FROM_ALL 
 )
 
 FetchContent_Declare(
@@ -79,6 +86,7 @@ FetchContent_Declare(
   GIT_SHALLOW    TRUE
   GIT_PROGRESS TRUE
   OVERRIDE_FIND_PACKAGE
+  EXCLUDE_FROM_ALL 
 )
 
 FetchContent_Declare(
@@ -88,6 +96,7 @@ FetchContent_Declare(
   GIT_SHALLOW    TRUE
   GIT_PROGRESS TRUE
   OVERRIDE_FIND_PACKAGE
+  EXCLUDE_FROM_ALL 
 )
 
 
@@ -98,6 +107,7 @@ FetchContent_Declare(
   GIT_SHALLOW    TRUE
   GIT_PROGRESS TRUE
   OVERRIDE_FIND_PACKAGE
+  EXCLUDE_FROM_ALL 
 )
 
 FetchContent_Declare(
@@ -107,6 +117,7 @@ FetchContent_Declare(
   GIT_SHALLOW    TRUE
   GIT_PROGRESS TRUE
   OVERRIDE_FIND_PACKAGE
+  EXCLUDE_FROM_ALL 
 )
 
 FetchContent_Declare(
@@ -116,6 +127,7 @@ FetchContent_Declare(
   GIT_SHALLOW    TRUE
   GIT_PROGRESS TRUE
   OVERRIDE_FIND_PACKAGE
+  EXCLUDE_FROM_ALL 
 )
 
 FetchContent_Declare(
@@ -125,6 +137,7 @@ FetchContent_Declare(
   GIT_SHALLOW    TRUE
   GIT_PROGRESS TRUE
   OVERRIDE_FIND_PACKAGE
+  EXCLUDE_FROM_ALL 
 )
 
 FetchContent_Declare(
@@ -134,6 +147,7 @@ FetchContent_Declare(
   GIT_SHALLOW    TRUE
   GIT_PROGRESS TRUE
   OVERRIDE_FIND_PACKAGE
+  EXCLUDE_FROM_ALL 
 )
 
 FetchContent_Declare(
@@ -143,6 +157,7 @@ FetchContent_Declare(
   GIT_SHALLOW    TRUE
   GIT_PROGRESS TRUE
   OVERRIDE_FIND_PACKAGE
+  EXCLUDE_FROM_ALL 
 )
 
 FetchContent_Declare(
@@ -152,6 +167,7 @@ FetchContent_Declare(
   GIT_SHALLOW    TRUE
   GIT_PROGRESS TRUE
   OVERRIDE_FIND_PACKAGE
+  EXCLUDE_FROM_ALL 
 )
 
 FetchContent_Declare(
@@ -161,6 +177,7 @@ FetchContent_Declare(
   GIT_SHALLOW    TRUE
   GIT_PROGRESS TRUE
   OVERRIDE_FIND_PACKAGE
+  EXCLUDE_FROM_ALL 
 )
 
 FetchContent_Declare(
@@ -170,6 +187,7 @@ FetchContent_Declare(
   GIT_SHALLOW    TRUE
   GIT_PROGRESS TRUE
   OVERRIDE_FIND_PACKAGE
+  EXCLUDE_FROM_ALL 
 )
 
 FetchContent_Declare(
@@ -179,4 +197,5 @@ FetchContent_Declare(
   GIT_SHALLOW    TRUE
   GIT_PROGRESS TRUE
   OVERRIDE_FIND_PACKAGE
+  EXCLUDE_FROM_ALL 
 )

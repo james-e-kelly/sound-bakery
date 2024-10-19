@@ -35,4 +35,9 @@ target_link_libraries(sound_bakery PUBLIC
   yaml-cpp::yaml-cpp
 )
 
-install(TARGETS sound_bakery DESTINATION lib)
+install(TARGETS sound_bakery DESTINATION lib/sound_bakery)
+install(FILES 
+  ${CMAKE_SOURCE_DIR}/inc/sound_bakery/sound_bakery_common.h    
+  ${CMAKE_SOURCE_DIR}/inc/sound_bakery/sound_bakery_version.h 
+  ${CMAKE_SOURCE_DIR}/inc/sound_bakery/sound_bakery.h
+  DESTINATION inc/sound_bakery)
