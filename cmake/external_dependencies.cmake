@@ -171,3 +171,20 @@ FetchContent_Declare(
   GIT_PROGRESS TRUE
   OVERRIDE_FIND_PACKAGE
 )
+
+FetchContent_Declare(
+  doctest
+  GIT_REPOSITORY https://github.com/doctest/doctest.git
+  GIT_TAG        v2.4.11
+  GIT_SHALLOW    TRUE
+  GIT_PROGRESS TRUE
+  OVERRIDE_FIND_PACKAGE
+)
+
+FetchContent_Declare(
+  registertest
+  GIT_REPOSITORY https://github.com/pthom/cmake_registertest.git
+  GIT_SHALLOW TRUE
+  GIT_PROGRESS TRUE
+  OVERRIDE_FIND_PACKAGE
+)
