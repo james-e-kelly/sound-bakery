@@ -156,7 +156,7 @@ function(build_dependencies)
 endfunction()
 
 macro(setup_format_sources)
-    get_target_property(SOUND_BAKERY_ALL_FILES sound_bakery_object SOURCES)
+    get_target_property(SOUND_BAKERY_ALL_FILES sound_bakery SOURCES)
     foreach(source IN LISTS SOUND_BAKERY_ALL_FILES)
     list(APPEND SOUND_BAKERY_FORMAT_FILES "${CMAKE_CURRENT_SOURCE_DIR}/${source}")
     endforeach()
@@ -193,7 +193,7 @@ function(fix_msvc_linters)
     # CMakeSettings.json is possible but seemed a pain in its own right
     # https://discourse.cmake.org/t/cmake-cxx-clang-tidy-in-msvc/890/9
     if(SOUND_BAKERY_TIDY_SOURCE AND SOUND_BAKERY_CLANG_TIDY_EXE AND MSVC)
-        set_target_properties(sound_bakery_object PROPERTIES
+        set_target_properties(sound_bakery PROPERTIES
         VS_GLOBAL_RunCodeAnalysis false
 
         # Use visual studio core guidelines

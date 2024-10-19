@@ -180,11 +180,3 @@ FetchContent_Declare(
   GIT_PROGRESS TRUE
   OVERRIDE_FIND_PACKAGE
 )
-
-FetchContent_Declare(
-  registertest
-  GIT_REPOSITORY https://github.com/pthom/cmake_registertest.git
-  GIT_SHALLOW TRUE
-  GIT_PROGRESS TRUE
-  OVERRIDE_FIND_PACKAGE
-)
