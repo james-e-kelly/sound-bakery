@@ -34,6 +34,8 @@ if(SOUND_BAKERY_MAIN_PROJECT)
   set (CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE")
   set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+  include(CPack)
+
   setup_clang_format()
   setup_clang_tidy()
   setup_docs()
