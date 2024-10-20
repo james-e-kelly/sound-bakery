@@ -8,17 +8,6 @@
 
 using namespace sbk::engine::Profiling;
 
-static VoiceTracker* s_voiceTracker = nullptr;
-
-VoiceTracker::VoiceTracker()
-{
-    assert(!s_voiceTracker);
-
-    s_voiceTracker = this;
-}
-
-VoiceTracker* VoiceTracker::get() { return s_voiceTracker; }
-
 void VoiceTracker::update(system* system)
 {
     m_playingNodeIDs.clear();

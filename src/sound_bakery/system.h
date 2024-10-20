@@ -74,6 +74,7 @@ namespace sbk
                                             const std::string& projectName);
 
             static sbk::editor::project* get_project();
+            static sbk::engine::Profiling::VoiceTracker* get_voice_tracker();
 
             std::shared_ptr<concurrencpp::manual_executor> game_thread_executer() const { return m_gameThreadExecuter; }
 

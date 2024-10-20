@@ -14,10 +14,8 @@ namespace sbk::engine
         class SB_CLASS VoiceTracker final
         {
         public:
-            VoiceTracker();
+            VoiceTracker()  = default;
             ~VoiceTracker() = default;
-
-            static VoiceTracker* get();
 
         public:
             void update(system* system);

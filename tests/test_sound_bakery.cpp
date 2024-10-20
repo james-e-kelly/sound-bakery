@@ -13,4 +13,19 @@ TEST_SUITE("System")
         sbk::engine::system::destroy();
         REQUIRE(sbk::engine::system::get() == nullptr);
     }
+
+    TEST_CASE("Re-init")
+    {
+        REQUIRE(sbk::engine::system::create() != nullptr);
+        REQUIRE(sbk::engine::system::init() == MA_SUCCESS);
+        REQUIRE(sbk::engine::system::update() == MA_SUCCESS);
+        sbk::engine::system::destroy();
+        REQUIRE(sbk::engine::system::get() == nullptr);
+
+        REQUIRE(sbk::engine::system::create() != nullptr);
+        REQUIRE(sbk::engine::system::init() == MA_SUCCESS);
+        REQUIRE(sbk::engine::system::update() == MA_SUCCESS);
+        sbk::engine::system::destroy();
+        REQUIRE(sbk::engine::system::get() == nullptr);
+    }
 }

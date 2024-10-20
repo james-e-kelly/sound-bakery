@@ -15,6 +15,7 @@ using namespace sbk::engine;
 namespace
 {
     sbk::engine::system* s_system = nullptr;
+    bool s_registeredReflection = false;
 
     const std::string s_soundChefLoggerName("LogSoundChef");
 
@@ -83,8 +84,6 @@ system::~system()
 
     destroy_all();
 
-    sbk::reflection::unregisterReflectionTypes();
-
     sc_system_close(this);
 
     spdlog::shutdown();
@@ -121,7 +120,11 @@ sc_result system::init()
     const sc_result result = sc_system_init(s_system);
     assert(result == MA_SUCCESS);
 
-    sbk::reflection::registerReflectionTypes();
+    if (!s_registeredReflection)
+    {
+        sbk::reflection::registerReflectionTypes();
+        s_registeredReflection = true;
+    }
 
     s_system->m_listenerGameObject = s_system->create_runtime_object<sbk::engine::game_object>();
 
@@ -247,6 +250,16 @@ sbk::editor::project* system::get_project()
     if (s_system != nullptr)
     {
         return s_system->m_project.get();
+    }
+
+    return nullptr;
+}
+
+sbk::engine::Profiling::VoiceTracker* system::get_voice_tracker()
+{
+    if (s_system != nullptr)
+    {
+        return s_system->m_voiceTracker.get();
     }
 
     return nullptr;
