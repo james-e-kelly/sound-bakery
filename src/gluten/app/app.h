@@ -103,7 +103,7 @@ namespace gluten
             if (T* castedSubsytem = dynamic_cast<T*>(m_subsystems[index].get()))
             {
                 castedSubsytem->exit();
-                m_subsystems.erase(m_managers.begin() + index);
+                m_subsystems.erase(m_subsystems.begin() + index);
                 return;
             }
         }
