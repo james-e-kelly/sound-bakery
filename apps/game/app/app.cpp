@@ -21,6 +21,8 @@ void game_app::post_init()
 
     std::shared_ptr<root_widget> rootWidget = widgetSubsystem->add_widget_class<root_widget>();
     widgetSubsystem->set_root_widget(rootWidget.get());
+
+    set_application_display_title("Sound Bakery Sandbox");
 }
 
 void game_app::open_soundbank()
