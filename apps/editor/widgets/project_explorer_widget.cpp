@@ -11,8 +11,8 @@ void project_explorer_widget::start()
 {
     widget::start();
 
-    m_fileBrowserWidget  = add_child_widget<file_browser_widget>();
-    m_projectNodesWidget = add_child_widget<project_nodes_widget>();
+    m_fileBrowserWidget  = add_child_widget<file_browser_widget>(false);
+    m_projectNodesWidget = add_child_widget<project_nodes_widget>(false);
 }
 
 void project_explorer_widget::render()

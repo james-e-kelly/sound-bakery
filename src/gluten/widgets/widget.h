@@ -15,7 +15,7 @@ namespace gluten
     class widget_subsystem;
 
     // Base widget that can render ImGui UI
-    class widget
+    class widget : public std::enable_shared_from_this<widget>
     {
     public:
         widget(widget_subsystem* parentSubsystem);
@@ -29,13 +29,18 @@ namespace gluten
         virtual void end() {}
 
         template <class T>
-        T* add_child_widget()
+        [[nodiscard]] std::shared_ptr<T> add_child_widget(bool widgetOwns)
         {
-            m_childWidgets.push_back(std::make_unique<T>(this));
-            widget* widget = m_childWidgets.back().get();
+            std::shared_ptr<T> ptr = std::make_shared<T>(this);
+            if (widgetOwns)
+            {
+                m_owningChildWidgets.push_back(ptr);
+            }
+            m_childWidgets.push_back(ptr);
+            std::shared_ptr<gluten::widget> widget = std::static_pointer_cast<gluten::widget>(ptr);
             if (m_hasStarted)
                 widget->start();
-            return dynamic_cast<T*>(widget);
+            return ptr;
         }
 
         bool has_started() { return m_hasStarted; }
@@ -58,7 +63,8 @@ namespace gluten
         widget* m_parentWidget              = nullptr;
         bool m_hasStarted                   = false;
 
-        std::vector<std::unique_ptr<widget>> m_childWidgets;
+        std::vector<std::weak_ptr<widget>> m_childWidgets;
+        std::vector<std::shared_ptr<widget>> m_owningChildWidgets;
 
         friend class widget_subsystem;
 

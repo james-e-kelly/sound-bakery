@@ -54,4 +54,9 @@ private:
     void setup_project();
 
     selection m_selection;
+
+    std::shared_ptr<gluten::widget> m_projectExplorerWidget;
+    std::shared_ptr<gluten::widget> m_playerWidget;
+    std::shared_ptr<gluten::widget> m_detailsWidget;
+    std::shared_ptr<gluten::widget> m_audioMeterWidget;
 };

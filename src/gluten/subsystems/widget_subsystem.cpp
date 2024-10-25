@@ -11,35 +11,45 @@ void widget_subsystem::tick(double deltaTime)
 
     for (int index = m_widgets.size() - 1; index >= 0; index--)
     {
-        std::unique_ptr<widget>& widget = m_widgets[index];
+        std::weak_ptr<gluten::widget>& widget = m_widgets[index];
 
-        if (!widget->has_started())
+        if (std::shared_ptr<gluten::widget> sharedWidget = widget.lock())
         {
-            widget->start();
+            if (!sharedWidget->has_started())
+            {
+                sharedWidget->start();
+            }
+
+            sharedWidget->tick(deltaTime);
+
+            // We destroy before rendering
+            // Ticking gives the widget the chance to kill itself
+            // And after that we don't want to render it
+            if (sharedWidget->m_wantsDestroy)
+            {
+                sharedWidget->m_onDestroy.Broadcast(sharedWidget.get());
+                m_widgets.erase(m_widgets.begin() + index);
+                continue;
+            }
+
+            sharedWidget->render();
         }
-
-        widget->tick(deltaTime);
-
-        // We destroy before rendering
-        // Ticking gives the widget the chance to kill itself
-        // And after that we don't want to render it
-        if (widget->m_wantsDestroy)
+        else
         {
-            widget->m_onDestroy.Broadcast(widget.get());
             m_widgets.erase(m_widgets.begin() + index);
-            continue;
         }
-
-        widget->render();
     }
 }
 
 void widget_subsystem::exit()
 {
-    for (std::unique_ptr<widget>& widget : m_widgets)
+    for (std::weak_ptr<widget>& widget : m_widgets)
     {
-        widget->end();
+        if (std::shared_ptr<gluten::widget> sharedWidget = widget.lock())
+        {
+            sharedWidget->end();
+        }
     }
 }
 
-void gluten::widget_subsystem::set_root_widget(widget* rootWidget) { m_rootWidget = rootWidget; }
+void gluten::widget_subsystem::set_root_widget(widget* rootWidget) { m_rootWidget = rootWidget->shared_from_this(); }

@@ -16,6 +16,6 @@ public:
     virtual void render() override;
 
 private:
-    widget* m_fileBrowserWidget;
-    project_nodes_widget* m_projectNodesWidget;
+    std::shared_ptr<widget> m_fileBrowserWidget;
+    std::shared_ptr<project_nodes_widget> m_projectNodesWidget;
 };

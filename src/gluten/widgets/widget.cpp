@@ -14,9 +14,12 @@ void widget::start() { m_hasStarted = true; }
 
 void widget::render_children()
 {
-    for (std::unique_ptr<widget>& child : m_childWidgets)
+    for (std::weak_ptr<widget>& child : m_childWidgets)
     {
-        child->render();
+        if (std::shared_ptr<widget> sharedChild = child.lock())
+        {
+            sharedChild->render();
+        }
     }
 }
 

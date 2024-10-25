@@ -36,10 +36,18 @@ auto project_manager::create_project(const std::filesystem::directory_entry& pro
 
 void project_manager::setup_project()
 {
-    get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class_to_root<project_explorer_widget>();
-    get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class_to_root<player_widget>();
-    get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class_to_root<details_widget>();
-    get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class_to_root<audio_meter_widget>();
+    m_projectExplorerWidget = get_app()
+        ->get_subsystem_by_class<gluten::widget_subsystem>()
+        ->add_widget_class_to_root<project_explorer_widget>(false);
+    m_playerWidget = get_app()
+        ->get_subsystem_by_class<gluten::widget_subsystem>()
+        ->add_widget_class_to_root<player_widget>(false);
+    m_detailsWidget = get_app()
+        ->get_subsystem_by_class<gluten::widget_subsystem>()
+        ->add_widget_class_to_root<details_widget>(false);
+    m_audioMeterWidget = get_app()
+        ->get_subsystem_by_class<gluten::widget_subsystem>()
+        ->add_widget_class_to_root<audio_meter_widget>(false);
 
     get_app()->set_application_display_title(
         fmt::format("{} - {} {}", sbk::engine::system::get_project()->get_config().project_name(), SBK_PRODUCT_NAME,

@@ -51,7 +51,7 @@ void player_widget::start()
 {
     widget::start();
 
-    add_child_widget<audio_display_widget>();
+    add_child_widget<audio_display_widget>(true);
 }
 
 void player_widget::render()

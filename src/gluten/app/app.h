@@ -138,11 +138,12 @@ namespace gluten
     template <class T>
     void app::remove_manager_by_class()
     {
-        for (auto iter = m_managers.begin(); iter; ++iter)
+        for (int index = m_managers.size() - 1; index >= 0; --index)
         {
-            if (T* castedManager = dynamic_cast<T*>(iter->get()))
+            if (T* castedManager = dynamic_cast<T*>(m_managers[index].get()))
             {
-                m_subsystems.erase(iter);
+                castedManager->exit();
+                m_managers.erase(m_managers.begin() + index);
                 return;
             }
         }
