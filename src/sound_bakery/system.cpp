@@ -15,7 +15,7 @@ using namespace sbk::engine;
 namespace
 {
     sbk::engine::system* s_system = nullptr;
-    bool s_registeredReflection = false;
+    bool s_registeredReflection   = false;
 
     const std::string s_soundChefLoggerName("LogSoundChef");
 

@@ -184,7 +184,7 @@ namespace gluten
          */
         ImRect get_element_rect() const;
         ImRect get_element_rect_local() const;  //< If the element has rendered before, return the box local to the
-                                                //current window
+                                                // current window
 
         bool render(const ImRect& parent);
         bool render_window();  //< Render using the window as the container

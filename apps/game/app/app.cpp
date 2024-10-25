@@ -17,10 +17,10 @@ gluten::app* create_application() { return new game_app(); }
 
 void game_app::post_init() 
 {
-    gluten::widget_subsystem* const widgetSubsystem = get_subsystem_by_class<gluten::widget_subsystem>();
+    std::shared_ptr<gluten::widget_subsystem> widgetSubsystem = get_subsystem_by_class<gluten::widget_subsystem>();
 
-    root_widget* const rootWidget = widgetSubsystem->add_widget_class<root_widget>();
-    widgetSubsystem->set_root_widget(rootWidget);
+    std::shared_ptr<root_widget> const rootWidget = widgetSubsystem->add_widget_class<root_widget>();
+    widgetSubsystem->set_root_widget(rootWidget.get());
 }
 
 void game_app::open_soundbank()
@@ -41,7 +41,7 @@ retry:
         m_soundbankViewerWidget->destroy();
     }
 
-    m_soundbankViewerWidget = get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class_to_root<soundbank_viewer_widget>();
+    m_soundbankViewerWidget = get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class_to_root<soundbank_viewer_widget>(false);
     
     m_soundbankViewerWidget->set_soundbank_to_view(outPath);
 }
