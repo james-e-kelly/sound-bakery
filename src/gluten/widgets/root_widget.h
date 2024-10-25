@@ -5,6 +5,9 @@
 
 namespace gluten
 {
+    /**
+     * @brief The base widget with titlebar and open/close icons.
+     */
     class root_widget : public widget
     {
     public:

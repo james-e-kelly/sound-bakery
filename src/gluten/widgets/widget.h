@@ -2,22 +2,31 @@
 
 #include "gluten/pch.h"
 
+/**
+ * @def Macro to quickly create the basic constructors for a widget.
+ */
 #define WIDGET_CONSTRUCT(type)                                                   \
-                                                                                 \
 public:                                                                          \
     type(gluten::widget_subsystem* parentSubsystem) : widget(parentSubsystem) {} \
-                                                                                 \
     type(gluten::widget* parent) : gluten::widget(parent) {}
 
 namespace gluten
 {
-
     class widget_subsystem;
 
-    // Base widget that can render ImGui UI
+    /**
+     * @brief Base widget that can render ImGui UI.
+     * 
+     * Widgets are owned by the @see widget_subsystem, @see root_widget, or another widget.
+     * 
+     * Rendering of child/owned widgets is controlled by calling the render_children function.
+     * Not calling the function means no child widgets are rendered.
+     * The opposite is true so rendering of child widgets can be controlled precisely.
+     */
     class widget : public std::enable_shared_from_this<widget>
     {
     public:
+        widget() = delete;
         widget(widget_subsystem* parentSubsystem);
         widget(widget* parentWidget);
         virtual ~widget() {}
@@ -29,6 +38,7 @@ namespace gluten
         virtual void end() {}
 
         template <class T>
+        requires std::derived_from<T, widget>
         [[nodiscard]] std::shared_ptr<T> add_child_widget(bool widgetOwns)
         {
             std::shared_ptr<T> ptr = std::make_shared<T>(this);
@@ -51,6 +61,9 @@ namespace gluten
         MulticastDelegate<widget*> m_onDestroy;
 
     protected:
+        /**
+         * @brief Iterates over the child widgets and renders them.
+         */
         void render_children();
 
     protected:
@@ -63,8 +76,8 @@ namespace gluten
         widget* m_parentWidget              = nullptr;
         bool m_hasStarted                   = false;
 
-        std::vector<std::weak_ptr<widget>> m_childWidgets;
-        std::vector<std::shared_ptr<widget>> m_owningChildWidgets;
+        std::vector<std::weak_ptr<widget>> m_childWidgets;  //< Child widgets to iterate over
+        std::vector<std::shared_ptr<widget>> m_owningChildWidgets;  //< References to widgets that are owned. Not iterated over
 
         friend class widget_subsystem;
 

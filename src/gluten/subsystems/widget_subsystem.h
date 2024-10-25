@@ -5,6 +5,9 @@
 
 namespace gluten
 {
+    /**
+     * @brief Owns widgets and the root widget for all the UI.
+     */
     class widget_subsystem : public subsystem
     {
     public:
