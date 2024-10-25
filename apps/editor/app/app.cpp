@@ -35,7 +35,7 @@ void editor_app::post_init()
 {
     std::shared_ptr<gluten::widget_subsystem> widgetSubsystem = get_subsystem_by_class<gluten::widget_subsystem>();
 
-    std::shared_ptr<root_widget> const rootWidget = widgetSubsystem->add_widget_class<root_widget>();
+    std::shared_ptr<root_widget> rootWidget = widgetSubsystem->add_widget_class<root_widget>();
     widgetSubsystem->set_root_widget(rootWidget.get());
 
     add_manager_class<app_manager>();

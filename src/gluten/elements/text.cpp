@@ -27,12 +27,12 @@ bool gluten::text::render_element(const ImRect& parent)
     {
         ImGui::TextUnformatted(m_displayText.c_str());
 
-        if (m_font.has_value())
-        {
-            ImGui::PopFont();
-        }
     }
 
+    if (m_font.has_value())
+    {
+        ImGui::PopFont();
+    }
     return false;
 }
 
