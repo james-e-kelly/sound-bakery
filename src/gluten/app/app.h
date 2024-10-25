@@ -9,6 +9,9 @@ namespace gluten
     class app
     {
     public:
+        app() = default;
+        virtual ~app() = default;
+
         static app* get();
 
         int run(int argc, char** argv);
