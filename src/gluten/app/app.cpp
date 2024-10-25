@@ -30,7 +30,7 @@ int gluten::app::run(int argc, char** argv)
     add_subsystem_class<widget_subsystem>();
 
     // PreInit
-    for (std::unique_ptr<subsystem>& subsystem : m_subsystems)
+    for (std::shared_ptr<subsystem>& subsystem : m_subsystems)
     {
         if (int errorCode = subsystem->pre_init(argc, argv); errorCode != 0)
         {
@@ -39,7 +39,7 @@ int gluten::app::run(int argc, char** argv)
     }
 
     // Init
-    for (std::unique_ptr<subsystem>& subsystem : m_subsystems)
+    for (std::shared_ptr<subsystem>& subsystem : m_subsystems)
     {
         if (int errorCode = subsystem->init(); errorCode != 0)
         {
@@ -67,7 +67,7 @@ int gluten::app::run(int argc, char** argv)
         double deltaTime = timeDiff.count();
 
         // PreTick
-        for (std::unique_ptr<subsystem>& subsystem : m_subsystems)
+        for (std::shared_ptr<subsystem>& subsystem : m_subsystems)
         {
             subsystem->pre_tick(deltaTime);
         }
@@ -78,7 +78,7 @@ int gluten::app::run(int argc, char** argv)
         }
 
         // Tick
-        for (std::unique_ptr<subsystem>& subsystem : m_subsystems)
+        for (std::shared_ptr<subsystem>& subsystem : m_subsystems)
         {
             subsystem->tick(deltaTime);
         }
@@ -89,7 +89,7 @@ int gluten::app::run(int argc, char** argv)
         }
 
         // Rendering
-        for (std::unique_ptr<subsystem>& subsystem : m_subsystems)
+        for (std::shared_ptr<subsystem>& subsystem : m_subsystems)
         {
             subsystem->tick_rendering(deltaTime);
         }
@@ -100,7 +100,7 @@ int gluten::app::run(int argc, char** argv)
         manager->exit();
     }
 
-    for (std::unique_ptr<subsystem>& subsystem : m_subsystems)
+    for (std::shared_ptr<subsystem>& subsystem : m_subsystems)
     {
         subsystem->exit();
     }

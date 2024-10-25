@@ -108,7 +108,7 @@ int littleEndian24Bit(const void* bytes)
 
 void audio_display_widget::render()
 {
-    if (project_manager* manager = get_app()->get_manager_by_class<project_manager>())
+    if (std::shared_ptr<project_manager> manager = get_app()->get_manager_by_class<project_manager>())
     {
         if (sbk::core::object* selected = manager->get_selection().get_selected())
         {

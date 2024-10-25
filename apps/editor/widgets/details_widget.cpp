@@ -23,7 +23,7 @@ void details_widget::render()
 
     if (ImGui::Begin("Details", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
     {
-        if (project_manager* const projectManager = get_app()->get_manager_by_class<project_manager>())
+        if (std::shared_ptr<project_manager> projectManager = get_app()->get_manager_by_class<project_manager>())
         {
             if (ImGui::CollapsingHeader("Details", ImGuiTreeNodeFlags_DefaultOpen))
             {

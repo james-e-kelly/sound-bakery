@@ -17,16 +17,22 @@ namespace gluten
         virtual void post_init() = 0;
 
         template <class T>
-        T* add_subsystem_class();
+        std::shared_ptr<T> add_subsystem_class();
 
         template <class T>
-        T* get_subsystem_by_class();
+        std::shared_ptr<T> get_subsystem_by_class();
 
         template <class T>
-        T* add_manager_class();
+        void remove_subsystem_by_class();
 
         template <class T>
-        T* get_manager_by_class();
+        std::shared_ptr<T> add_manager_class();
+
+        template <class T>
+        std::shared_ptr<T> get_manager_by_class();
+
+        template <class T>
+        void remove_manager_by_class();
 
         bool is_maximized();
 
@@ -38,8 +44,8 @@ namespace gluten
     private:
         void load_fonts();
 
-        std::vector<std::unique_ptr<subsystem>> m_subsystems;
-        std::vector<std::unique_ptr<manager>> m_managers;
+        std::vector<std::shared_ptr<subsystem>> m_subsystems;
+        std::vector<std::shared_ptr<manager>> m_managers;
 
         std::chrono::high_resolution_clock::time_point m_currentTime;
         std::chrono::high_resolution_clock::time_point m_previousTime;
@@ -54,29 +60,32 @@ namespace gluten
     };
 
     template <class T>
-    T* app::add_subsystem_class()
+    std::shared_ptr<T> app::add_subsystem_class()
     {
-        m_subsystems.push_back(std::make_unique<T>(this));
-        T* subsystem = dynamic_cast<T*>(m_subsystems.back().get());
-        assert(subsystem);
+        m_subsystems.push_back(std::make_shared<T>(this));
+        std::shared_ptr<subsystem> subsystemPtr = m_subsystems.back();
+        assert(subsystemPtr);
 
         if (m_hasInit)
         {
-            subsystem->pre_init(0, NULL);
-            subsystem->init();
+            subsystemPtr->pre_init(0, NULL);
+            subsystemPtr->init();
         }
 
-        return subsystem;
+        return std::static_pointer_cast<T>(subsystemPtr);
     }
 
     template <class T>
-    T* app::get_subsystem_by_class()
+    std::shared_ptr<T> app::get_subsystem_by_class()
     {
-        for (std::unique_ptr<subsystem>& subsystem : m_subsystems)
+        for (std::shared_ptr<subsystem>& subsystemPtr : m_subsystems)
         {
-            if (T* castedSubsystem = dynamic_cast<T*>(subsystem.get()))
+            if (std::shared_ptr<T> castedSubsystem = std::static_pointer_cast<T>(subsystemPtr))
             {
-                return castedSubsystem;
+                if (dynamic_cast<T*>(subsystemPtr.get()) != nullptr)
+                {
+                    return castedSubsystem;
+                }
             }
         }
         assert(false);
@@ -84,29 +93,58 @@ namespace gluten
     }
 
     template <class T>
-    T* app::add_manager_class()
+    void app::remove_subsystem_by_class()
     {
-        m_managers.push_back(std::make_unique<T>(this));
-        T* manager = dynamic_cast<T*>(m_managers.back().get());
-
-        if (manager)
+        for (auto iter = m_subsystems.begin(); iter; ++iter)
         {
-            manager->init(this);
+            if (T* castedSubsystem = dynamic_cast<T*>(iter->get()))
+            {
+                m_subsystems.erase(iter);
+                return;
+            }
         }
-
-        return manager;
     }
 
     template <class T>
-    T* app::get_manager_by_class()
+    std::shared_ptr<T> app::add_manager_class()
     {
-        for (std::unique_ptr<manager>& manager : m_managers)
+        m_managers.push_back(std::make_shared<T>(this));
+        std::shared_ptr<manager> managerPtr = m_managers.back();
+
+        if (managerPtr)
         {
-            if (T* castedManager = dynamic_cast<T*>(manager.get()))
+            managerPtr->init(this);
+        }
+
+        return std::static_pointer_cast<T>(managerPtr);
+    }
+
+    template <class T>
+    std::shared_ptr<T> app::get_manager_by_class()
+    {
+        for (std::shared_ptr<manager>& managerPtr : m_managers)
+        {
+            if (std::shared_ptr<T> castedManager = std::static_pointer_cast<T>(managerPtr))
             {
-                return castedManager;
+                if (dynamic_cast<T*>(managerPtr.get()) != nullptr)
+                {
+                    return castedManager;
+                }
             }
         }
-        return nullptr;
+        return {};
+    }
+
+    template <class T>
+    void app::remove_manager_by_class()
+    {
+        for (auto iter = m_managers.begin(); iter; ++iter)
+        {
+            if (T* castedManager = dynamic_cast<T*>(iter->get()))
+            {
+                m_subsystems.erase(iter);
+                return;
+            }
+        }
     }
 }  // namespace gluten

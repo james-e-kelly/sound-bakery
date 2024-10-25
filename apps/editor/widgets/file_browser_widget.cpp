@@ -258,7 +258,7 @@ void file_browser_widget::render()
     {
         m_selectedFile = m_selectedFileString;
 
-        if (project_manager* manager = get_app()->get_manager_by_class<project_manager>())
+        if (std::shared_ptr<project_manager> manager = get_app()->get_manager_by_class<project_manager>())
         {
             // manager->GetPreviewSoundContainer()->set_sound(m_selectedFile);
             // manager->GetSelection().SelectAudioFile(m_selectedFile);

@@ -103,7 +103,7 @@ void gluten::element::anchor_info::set_achor_from_preset(const anchor_preset& pr
 
 gluten::element::element(const anchor_preset& anchorPreset) { m_anchor.set_achor_from_preset(anchorPreset); }
 
-gluten::element::~element() { ImGui::SetWindowFontScale(1.0f); }
+gluten::element::~element() { if (ImGui::GetCurrentContext()) ImGui::SetWindowFontScale(1.0f); }
 
 void gluten::element::set_font_size(float size)
 {

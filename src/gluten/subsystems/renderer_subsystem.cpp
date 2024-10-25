@@ -58,7 +58,7 @@ renderer_subsystem::window_guard::window_guard(int width, int height, const std:
         {
             if (gluten::app* const app = (gluten::app*)glfwGetWindowUserPointer(window))
             {
-                if (gluten::widget_subsystem* const widgetSubsystem =
+                if (std::shared_ptr<gluten::widget_subsystem> widgetSubsystem =
                         app->get_subsystem_by_class<gluten::widget_subsystem>())
                 {
                     if (gluten::widget* const rootWidget = widgetSubsystem->get_root_widget())
