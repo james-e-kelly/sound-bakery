@@ -95,11 +95,12 @@ namespace gluten
     template <class T>
     void app::remove_subsystem_by_class()
     {
-        for (auto iter = m_subsystems.begin(); iter; ++iter)
+        for (int index = m_subsystems.size() - 1; index >= 0; --index)
         {
-            if (T* castedSubsystem = dynamic_cast<T*>(iter->get()))
+            if (T* castedSubsytem = dynamic_cast<T*>(m_subsystems[index].get()))
             {
-                m_subsystems.erase(iter);
+                castedSubsytem->exit();
+                m_subsystems.erase(m_managers.begin() + index);
                 return;
             }
         }
