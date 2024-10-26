@@ -98,6 +98,11 @@ set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
 
+message(STATUS "Fetching bytesize")
+FetchContent_MakeAvailable(bytesizelib)
+add_library(bytesize INTERFACE)
+target_include_directories(bytesize INTERFACE ${bytesizelib_SOURCE_DIR})
+
 message(STATUS "Fetching CMRC for resource embedding")
 FetchContent_MakeAvailable(cmrc)
 
@@ -163,6 +168,7 @@ target_link_libraries(gluten
     glfw
     imgui
     fmt::fmt
+    bytesize
 )
 
 if(MSVC)

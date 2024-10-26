@@ -199,3 +199,13 @@ FetchContent_Declare(
   OVERRIDE_FIND_PACKAGE
   EXCLUDE_FROM_ALL 
 )
+
+FetchContent_Declare(
+  bytesizelib
+  GIT_REPOSITORY https://github.com/eudoxos/bytesize.git
+  GIT_TAG        master
+  GIT_SHALLOW    TRUE
+  GIT_PROGRESS TRUE
+  OVERRIDE_FIND_PACKAGE
+  EXCLUDE_FROM_ALL 
+)
