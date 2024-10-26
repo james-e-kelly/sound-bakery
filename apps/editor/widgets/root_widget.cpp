@@ -1,5 +1,6 @@
 #include "root_widget.h"
 
+#include "gluten/utils/imgui_util_structures.h"
 #include "IconsFontAwesome6.h"
 #include "IconsFontaudio.h"
 #include "app/app.h"
@@ -12,6 +13,8 @@ void root_widget::render_menu()
 {
     static bool showMenu  = false;
     static bool showAbout = false;
+
+    gluten::imgui::scoped_font fontAwesomeFont(get_app()->get_font(gluten::fonts::regular_font_awesome));
 
     {
         if (ImGui::BeginMenu("File"))
