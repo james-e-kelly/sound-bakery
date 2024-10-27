@@ -15,9 +15,10 @@ set(EDITOR_SOURCES
   widgets/project_explorer_widget.cpp
   widgets/project_nodes_widget.cpp
   widgets/details_widget.cpp
+  widgets/audio_meter_widget.cpp
+  widgets/log_widget.cpp
   utils/property_drawer.cpp
   utils/method_drawer.cpp
-  widgets/audio_meter_widget.cpp
 )
 
 set(EDITOR_HEADERS
@@ -32,9 +33,10 @@ set(EDITOR_HEADERS
   widgets/project_explorer_widget.h
   widgets/project_nodes_widget.h
   widgets/details_widget.h
+  widgets/audio_meter_widget.h
+  widgets/log_widget.h
   utils/property_drawer.h
   utils/method_drawer.h
-  widgets/audio_meter_widget.h
 )
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Source Files" FILES ${EDITOR_SOURCES})
