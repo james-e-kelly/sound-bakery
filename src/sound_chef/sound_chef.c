@@ -6,6 +6,7 @@
 
 #include "sound_chef/sound_chef.h"
 
+#include "clap/all.h"
 #include "extras/miniaudio_libopus.h"
 #include "extras/miniaudio_libvorbis.h"
 #include "sound_chef_encoder.h"
@@ -260,7 +261,21 @@ sc_result sc_system_log_init(sc_system* system, ma_log_callback_proc callbackPro
     return MA_SUCCESS;
 }
 
-sc_result sc_system_init(sc_system* system)
+sc_system_config SC_API sc_system_config_init_default()
+{
+    sc_system_config config;
+    SC_ZERO_OBJECT(&config);
+    return config;
+}
+
+sc_system_config SC_API sc_system_config_init(const char* pluginPath)
+{
+    sc_system_config config = sc_system_config_init_default();
+    config.pluginPath = pluginPath;
+    return config;
+}
+
+sc_result sc_system_init(sc_system* system, const sc_system_config* systemConfig)
 {
     sc_result result = MA_ERROR;
 

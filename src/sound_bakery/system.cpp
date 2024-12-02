@@ -117,7 +117,8 @@ sc_result system::init()
         return MA_DEVICE_NOT_STARTED;
     }
 
-    const sc_result result = sc_system_init(s_system);
+    const sc_system_config config = sc_system_config_init_default();
+    const sc_result result = sc_system_init(s_system, &config);
     assert(result == MA_SUCCESS);
 
     if (!s_registeredReflection)

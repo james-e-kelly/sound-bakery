@@ -35,6 +35,9 @@ extern "C"
      */
     sc_result SC_API sc_system_log_init(sc_system* system, ma_log_callback_proc logCallback);
 
+    sc_system_config SC_API sc_system_config_init_default();
+    sc_system_config SC_API sc_system_config_init(const char* pluginPath);
+
     /**
      * @brief Initialises the system.
      *
@@ -42,7 +45,7 @@ extern "C"
      * system connect to the user's audio device and is then ready for playing
      * sounds.
      */
-    sc_result SC_API sc_system_init(sc_system* system);
+    sc_result SC_API sc_system_init(sc_system* system, const sc_system_config* systemConfig);
 
     /**
      * @brief Closes the system.

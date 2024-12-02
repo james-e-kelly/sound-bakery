@@ -48,6 +48,9 @@ set(CMAKE_FOLDER extern)
 message(STATUS "Fetching miniaudio")
 FetchContent_MakeAvailable(miniaudio)
 
+message(STATUS "Fetching CLAP")
+FetchContent_MakeAvailable(clap)
+
 add_executable(audioconverter ${miniaudio_SOURCE_DIR}/tools/audioconverter/audioconverter.c)
 target_include_directories(audioconverter PRIVATE ${miniaudio_SOURCE_DIR})
 
@@ -84,6 +87,7 @@ target_include_directories(sound_chef
 )
 
 target_link_libraries(sound_chef
+    PUBLIC clap
     PRIVATE vorbis
     PRIVATE vorbisfile
     PRIVATE vorbisenc

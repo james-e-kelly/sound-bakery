@@ -209,3 +209,13 @@ FetchContent_Declare(
   OVERRIDE_FIND_PACKAGE
   EXCLUDE_FROM_ALL 
 )
+
+FetchContent_Declare(
+  clap
+  GIT_REPOSITORY https://github.com/free-audio/clap.git
+  GIT_TAG 1.2.2
+  GIT_SHALLOW TRUE
+  GIT_PROGRESS TRUE
+  OVERRIDE_FIND_PACKAGE
+  EXCLUDE_FROM_ALL
+)

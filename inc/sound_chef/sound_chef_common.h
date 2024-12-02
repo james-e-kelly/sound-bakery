@@ -83,6 +83,7 @@ typedef ma_bool32 sc_bool;
 typedef ma_result sc_result;
 
 typedef struct sc_system sc_system;
+typedef struct sc_system_config sc_system_config;
 
 typedef struct sc_sound sc_sound;
 typedef struct sc_sound sc_sound_instance;
@@ -224,6 +225,11 @@ struct sc_system
     ma_log log;
 
     sc_node_group* masterNodeGroup;
+};
+
+struct sc_system_config
+{
+    const char* pluginPath; //< Folder path containing CLAP plugins to load
 };
 
 #ifdef __cplusplus
