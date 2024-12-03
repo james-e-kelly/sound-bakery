@@ -227,6 +227,10 @@ struct sc_system
     sc_node_group* masterNodeGroup;
 };
 
+/**
+ * @brief Configuration for initializing the sc_system.
+ * @see sc_system_init
+ */
 struct sc_system_config
 {
     const char* pluginPath; //< Folder path containing CLAP plugins to load

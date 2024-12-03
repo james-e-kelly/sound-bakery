@@ -110,15 +110,14 @@ void system::destroy()
     }
 }
 
-sc_result system::init()
+sc_result system::init(const sb_system_config& config)
 {
     if (s_system == nullptr)
     {
         return MA_DEVICE_NOT_STARTED;
     }
 
-    const sc_system_config config = sc_system_config_init_default();
-    const sc_result result = sc_system_init(s_system, &config);
+    const sc_result result = sc_system_init(s_system, &config.soundChefConfig);
     assert(result == MA_SUCCESS);
 
     if (!s_registeredReflection)
@@ -207,7 +206,11 @@ sc_result system::open_project(const std::filesystem::path& project_file)
     spdlog::register_logger(soundChefLogger);
 
     create();
-    init();
+
+    const std::string pluginFolder      = tempProject.plugin_folder().string();
+    const sb_system_config systemConfig = sb_system_config_init(pluginFolder.c_str());
+
+    init(systemConfig);
 
     s_system->m_project = std::make_unique<sbk::editor::project>();
 

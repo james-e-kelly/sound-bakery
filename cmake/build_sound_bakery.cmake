@@ -4,6 +4,8 @@ macro(set_sources)
     factory.cpp
     pch.cpp
 
+    api/sound_bakery.cpp
+
     core/object/object.cpp
     core/object/object_tracker.cpp
     core/object/object_owner.cpp

@@ -219,3 +219,12 @@ FetchContent_Declare(
   OVERRIDE_FIND_PACKAGE
   EXCLUDE_FROM_ALL
 )
+
+FetchContent_Declare(
+  dirent
+  GIT_REPOSITORY https://github.com/tronkko/dirent.git
+  GIT_SHALLOW TRUE
+  GIT_PROGRESS TRUE
+  OVERRIDE_FIND_PACKAGE
+  EXCLUDE_FROM_ALL
+)

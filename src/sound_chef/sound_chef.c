@@ -10,6 +10,7 @@
 #include "extras/miniaudio_libopus.h"
 #include "extras/miniaudio_libvorbis.h"
 #include "sound_chef_encoder.h"
+#include <dirent.h>
 
 #ifndef NDEBUG
     #define DEBUG_ASSERT(condition) MA_ASSERT(condition)
@@ -214,6 +215,14 @@ static ma_decoding_backend_vtable g_ma_decoding_backend_vtable_libopus = {
 
 #pragma region System
 
+const char* get_filename_ext(const char* filename)
+{
+    const char* dot = strrchr(filename, '.');
+    if (!dot || dot == filename)
+        return "";
+    return dot + 1;
+}
+
 sc_result sc_system_create(sc_system** outSystem)
 {
     sc_result result = MA_ERROR;
@@ -322,6 +331,78 @@ sc_result sc_system_init(sc_system* system, const sc_system_config* systemConfig
             if (result == MA_SUCCESS)
             {
                 ma_log_post(&system->log, MA_LOG_LEVEL_INFO, "Initialized Master Node Group");
+            }
+
+            if (systemConfig != NULL)
+            {
+                if (systemConfig->pluginPath != NULL)
+                {
+                    DIR* const pluginDirectory = opendir(systemConfig->pluginPath);
+
+                    if (pluginDirectory != NULL)
+                    {
+                        struct dirent* directoryEntry = readdir(pluginDirectory);
+
+                        while (directoryEntry != NULL)
+                        {
+                            if (directoryEntry->d_namlen > 5)
+                            {
+                                const char* const fileExt = get_filename_ext(directoryEntry->d_name);
+
+                                const sc_bool fileIsClap = strcmp(fileExt, "clap") == 0;
+                                if (fileIsClap)
+                                {
+                                    char filePath[1024];
+                                    strcpy(filePath, systemConfig->pluginPath);
+                                    strcat(filePath, "/");
+                                    strcat(filePath, directoryEntry->d_name);
+
+                                    ma_handle pluginHandle = ma_dlopen(&system->log, filePath);
+
+                                    if (pluginHandle != NULL)
+                                    {
+                                        struct clap_plugin_entry* clapEntry =
+                                            (struct clap_entry*)ma_dlsym(&system->log, pluginHandle, "clap_entry");
+
+                                        if (clapEntry != NULL)
+                                        {
+                                            if (clapEntry->init(directoryEntry->d_name))
+                                            {
+                                                const struct clap_plugin_factory* pluginFactory =
+                                                    (const struct clap_plugin_factory*)clapEntry->get_factory(
+                                                        CLAP_PLUGIN_FACTORY_ID);
+
+                                                if (pluginFactory != NULL)
+                                                {
+                                                    const ma_uint32 pluginCount =
+                                                        pluginFactory->get_plugin_count(pluginFactory);
+
+                                                    for (ma_uint32 index = 0; index < pluginCount; ++index)
+                                                    {
+                                                        const clap_plugin_descriptor_t* const pluginDescriptor =
+                                                            pluginFactory->get_plugin_descriptor(pluginFactory, index);
+
+                                                        if (pluginDescriptor != NULL)
+                                                        {
+                                                            const char* const pluginName = pluginDescriptor->name;
+                                                            ma_log_post(&system->log, MA_LOG_LEVEL_INFO, "Found plugin");
+                                                        }
+                                                    }
+                                                }
+
+                                                clapEntry->deinit();
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            directoryEntry = readdir(pluginDirectory);
+                        }
+
+                        closedir(pluginDirectory);
+                    }
+                }
             }
         }
     }

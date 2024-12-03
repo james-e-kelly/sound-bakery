@@ -79,11 +79,15 @@ set(OP_DISABLE_DOCS ON CACHE BOOL "" FORCE)
 set(OP_DISABLE_HTTP ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(opusfile)
 
+message(STATUS "Fetching dirent")
+FetchContent_MakeAvailable(dirent)
+
 set(CMAKE_C_EXTENSIONS OFF)
 
 target_include_directories(sound_chef
     PUBLIC ${miniaudio_SOURCE_DIR}
     PRIVATE ${opusfile_SOURCE_DIR}/include
+    PRIVATE ${dirent_SOURCE_DIR}/include
 )
 
 target_link_libraries(sound_chef
