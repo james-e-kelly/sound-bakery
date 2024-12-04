@@ -363,13 +363,13 @@ sc_result sc_system_init(sc_system* system, const sc_system_config* systemConfig
 
 sc_result sc_system_close(sc_system* system)
 {
-    sc_result result = MA_ERROR;
+    sc_result result = MA_SUCCESS;
 
     if (system)
     {
         ma_engine_uninit((ma_engine*)system);
 
-        result = sc_system_release_clap_plugins(system);
+        sc_system_release_clap_plugins(system);
 
         ma_log_post(&system->log, MA_LOG_LEVEL_INFO, "Closed Sound Chef");
     }

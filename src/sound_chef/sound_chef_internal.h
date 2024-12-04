@@ -14,6 +14,10 @@
     SC_CHECK_MEM((ptr));                \
     SC_ZERO_OBJECT((ptr))
 
+ma_handle sc_dlopen(ma_log* pLog, const char* filename);
+void sc_dlclose(ma_log* pLog, ma_handle handle);
+ma_proc sc_dlsym(ma_log* pLog, ma_handle handle, const char* symbol);
+
 const char* SC_API sc_filename_get_ext(const char* filename);
 
 sc_result SC_API sc_clap_load(const char* clapFilePath, sc_clap* clapPlugin);
