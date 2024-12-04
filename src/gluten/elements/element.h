@@ -196,7 +196,7 @@ namespace gluten
         virtual auto get_element_content_size() -> ImVec2 const { return ImVec2(0, 0); }
 
         virtual auto pre_render_element() -> void {}
-        virtual auto render_element(const ImRect& elementBox) -> bool { return false; }
+        virtual auto render_element(const ImRect& elementBox) -> bool = 0;
 
         static ImVec2 get_anchor_start_position(const ImVec2& containerPosition,
                                                 const ImVec2& containerSize,
@@ -233,5 +233,14 @@ namespace gluten
 
     public:
         static inline bool s_debug = false;
+    };
+
+    class background : public element
+    {
+    public:
+        background() : element(anchor_preset::stretch_full) {}
+
+    protected:
+        auto render_element(const ImRect& elementBox) -> bool override { return false; }
     };
 }  // namespace gluten
