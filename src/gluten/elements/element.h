@@ -187,7 +187,8 @@ namespace gluten
                                                 // current window
 
         bool render(const ImRect& parent);
-        bool render_window();  //< Render using the window as the container
+        bool render_window();   //< Render using the window as the container
+        bool render_cursor();   //< Render where the draw cursor is currently
 
         void set_element_alignment(const ImVec2& alignment) { m_alignment = alignment; }
         virtual void set_element_max_size(const ImVec2& maxSize);
