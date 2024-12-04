@@ -6,10 +6,9 @@
 #include "gluten/utils/imgui_util_structures.h"
 #include "imgui.h"
 #include "managers/project_manager.h"
-#include "sound_bakery/node/container/sound_container.h"
-#include "sound_bakery/node/node.h"
 #include "utils/method_drawer.h"
 #include "utils/property_drawer.h"
+#include "elements/add_effect_button.h"
 
 void details_widget::render()
 {
@@ -32,6 +31,9 @@ void details_widget::render()
                 {
                     property_drawer::draw_object(selected->getType(), selected);
                     method_drawer::draw_object(selected->getType(), selected);
+
+                    add_effect_button addEffectButton;
+                    addEffectButton.render_cursor();
                 }
             }
         }
