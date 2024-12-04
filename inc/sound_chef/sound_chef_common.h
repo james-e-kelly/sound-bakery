@@ -7,6 +7,8 @@
 #endif
 
 #include "miniaudio.h"
+#include "stb_ds.h"
+#include "clap/clap.h"
 
 #include <assert.h>
 #include <string.h>
@@ -95,6 +97,8 @@ typedef struct sc_dsp_state sc_dsp_state;
 typedef struct sc_dsp_config sc_dsp_config;
 typedef struct sc_dsp_parameter sc_dsp_parameter;
 typedef struct sc_dsp_vtable sc_dsp_vtable;
+
+typedef struct sc_clap sc_clap;
 
 typedef enum sc_sound_mode
 {
@@ -205,6 +209,16 @@ struct sc_node_group
 };
 
 /**
+ * @brief Holds a DLL handle and plugin entry for a CLAP plugin.
+ */
+struct sc_clap
+{
+    ma_handle dynamicLibraryHandle;         //< Handle to the .clap file
+    clap_plugin_entry_t* clapEntry;         //< Entry point of the plugin
+    clap_plugin_factory_t* pluginFactory;    //< Plugin factory to poll and create plugins from
+};
+
+/**
  * @brief Object that manages the node graph, sounds, output etc.
  *
  * The sc_system is a wrapper for the ma_engine type from miniaudio.
@@ -223,6 +237,8 @@ struct sc_system
     ma_engine engine;
     ma_resource_manager resourceManager; //< We need a custom resource manager for custom decoders
     ma_log log;
+
+    sc_clap* clapPlugins; //< Dynamic array of opened CLAP plugins
 
     sc_node_group* masterNodeGroup;
 };

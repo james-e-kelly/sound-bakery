@@ -1,12 +1,12 @@
 #define MINIAUDIO_IMPLEMENTATION
+#define STB_DS_IMPLEMENTATION
 
 // Disable built-in decoding in favour of the ones from the example
 #define MA_NO_VORBIS
 #define MA_NO_OPUS
 
-#include "sound_chef/sound_chef.h"
+#include "sound_chef/sound_chef_internal.h"
 
-#include "clap/all.h"
 #include "extras/miniaudio_libopus.h"
 #include "extras/miniaudio_libvorbis.h"
 #include "sound_chef_encoder.h"
@@ -202,26 +202,7 @@ static ma_decoding_backend_vtable g_ma_decoding_backend_vtable_libopus = {
 
 #pragma endregion
 
-/**
- * @def mallocs an object, sets it to 0 and checks for errors and potentially
- * returns.
- *
- * Convinience macro for allocating memory _and_ doing checks on it.
- */
-#define SC_CREATE(ptr, t)               \
-    (ptr) = ma_malloc(sizeof(t), NULL); \
-    SC_CHECK_MEM((ptr));                \
-    MA_ZERO_OBJECT((ptr))
-
 #pragma region System
-
-const char* get_filename_ext(const char* filename)
-{
-    const char* dot = strrchr(filename, '.');
-    if (!dot || dot == filename)
-        return "";
-    return dot + 1;
-}
 
 sc_result sc_system_create(sc_system** outSystem)
 {
@@ -347,7 +328,7 @@ sc_result sc_system_init(sc_system* system, const sc_system_config* systemConfig
                         {
                             if (directoryEntry->d_namlen > 5)
                             {
-                                const char* const fileExt = get_filename_ext(directoryEntry->d_name);
+                                const char* const fileExt = sc_filename_get_ext(directoryEntry->d_name);
 
                                 const sc_bool fileIsClap = strcmp(fileExt, "clap") == 0;
                                 if (fileIsClap)
@@ -357,42 +338,10 @@ sc_result sc_system_init(sc_system* system, const sc_system_config* systemConfig
                                     strcat(filePath, "/");
                                     strcat(filePath, directoryEntry->d_name);
 
-                                    ma_handle pluginHandle = ma_dlopen(&system->log, filePath);
-
-                                    if (pluginHandle != NULL)
+                                    sc_clap clapPlugin;
+                                    if (sc_clap_load(filePath, &clapPlugin) == MA_SUCCESS)
                                     {
-                                        struct clap_plugin_entry* clapEntry =
-                                            (struct clap_entry*)ma_dlsym(&system->log, pluginHandle, "clap_entry");
-
-                                        if (clapEntry != NULL)
-                                        {
-                                            if (clapEntry->init(directoryEntry->d_name))
-                                            {
-                                                const struct clap_plugin_factory* pluginFactory =
-                                                    (const struct clap_plugin_factory*)clapEntry->get_factory(
-                                                        CLAP_PLUGIN_FACTORY_ID);
-
-                                                if (pluginFactory != NULL)
-                                                {
-                                                    const ma_uint32 pluginCount =
-                                                        pluginFactory->get_plugin_count(pluginFactory);
-
-                                                    for (ma_uint32 index = 0; index < pluginCount; ++index)
-                                                    {
-                                                        const clap_plugin_descriptor_t* const pluginDescriptor =
-                                                            pluginFactory->get_plugin_descriptor(pluginFactory, index);
-
-                                                        if (pluginDescriptor != NULL)
-                                                        {
-                                                            const char* const pluginName = pluginDescriptor->name;
-                                                            ma_log_post(&system->log, MA_LOG_LEVEL_INFO, "Found plugin");
-                                                        }
-                                                    }
-                                                }
-
-                                                clapEntry->deinit();
-                                            }
-                                        }
+                                        arrput(system->clapPlugins, clapPlugin);
                                     }
                                 }
                             }
@@ -419,7 +368,8 @@ sc_result sc_system_close(sc_system* system)
     if (system)
     {
         ma_engine_uninit((ma_engine*)system);
-        result = MA_SUCCESS;
+
+        result = sc_system_release_clap_plugins(system);
 
         ma_log_post(&system->log, MA_LOG_LEVEL_INFO, "Closed Sound Chef");
     }
