@@ -1097,3 +1097,32 @@ sc_dsp_config sc_dsp_config_init(sc_dsp_type type)
 }
 
 #pragma endregion
+
+sc_result sc_system_clap_get_count(sc_system* system, ma_uint32* count) 
+{ 
+    SC_CHECK_ARG(system != NULL); 
+    SC_CHECK_ARG(count != NULL);
+
+    *count = arrlen(system->clapPlugins);
+
+    return MA_SUCCESS;
+}
+
+sc_result sc_system_clap_get_at(sc_system* system, ma_uint32 index, sc_clap** plugin) 
+{ 
+    SC_CHECK_ARG(system != NULL); 
+    SC_CHECK_ARG(plugin != NULL);
+    SC_CHECK_ARG(index >= 0);
+
+    ma_uint32 clapCount = 0;
+    sc_system_clap_get_count(system, &clapCount);
+    SC_CHECK_ARG(index < clapCount);
+    SC_CHECK(clapCount > 0, MA_DOES_NOT_EXIST);
+
+    if (clapCount > 0)
+    {
+        *plugin = &system->clapPlugins[index];
+    }
+
+    return MA_SUCCESS;
+}

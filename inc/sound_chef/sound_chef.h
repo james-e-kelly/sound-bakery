@@ -143,6 +143,20 @@ extern "C"
 
     sc_result SC_API sc_node_group_release(sc_node_group* nodeGroup);
 
+    // CLAP
+
+    sc_result SC_API sc_system_clap_get_count(sc_system* system, ma_uint32* count);
+
+    /**
+     * @brief Get the CLAP plugin at a specified index.
+     * 
+     * Fills the plugin parameter with a pointer to a loaded CLAP plugin.
+     * 
+     * @warning Do not free the plugin pointer or unload any of the internals of the struct.
+     * @warning Do not access the pointer after the system is closed.
+     */
+    sc_result SC_API sc_system_clap_get_at(sc_system* system, ma_uint32 index, sc_clap** plugin);
+
 #ifdef __cplusplus
 }
 #endif
