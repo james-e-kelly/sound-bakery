@@ -1089,26 +1089,67 @@ sc_result sc_dsp_get_metering_info(sc_dsp* dsp, ma_uint32 channelIndex, sc_dsp_m
 #define SC_CLAP_INPUT_BUS 1
 #define SC_CLAP_OUTPUT_BUS 1
 
+static ma_uint32 sc_clap_input_events_size(const clap_input_events_t* list)
+{
+    return 0;
+}
+
+static clap_event_header_t* sc_clap_input_events_get(const clap_input_events_t* list, ma_uint32 index)
+{
+    return NULL;
+}
+
+static bool sc_clap_output_events_try_push(const clap_output_events_t* list, const clap_event_header_t* event)
+{
+    return true;
+}
+
 static void sc_clap_node_process_pcm_frames(
     ma_node* node, const float** framesIn, ma_uint32* const frameCountIn, float** framesOut, ma_uint32* frameCountOut)
 {
     sc_clap_node* const clapNode = (sc_clap_node*)node;
     clap_plugin_t* const clapPlugin    = clapNode->clapPlugin;
 
+    const ma_uint32 inputChannels = ma_node_get_input_channels(node, 0);
+    const ma_uint32 outputChannels = ma_node_get_output_channels(node, 0);
+
+    assert(inputChannels == outputChannels);
+    assert(*frameCountIn == *frameCountOut);
+
     if (clapPlugin->start_processing(clapPlugin))
     {
         clap_process_t process;
         clap_audio_buffer_t inputBuffer;
         clap_audio_buffer_t outputBuffer;
+        clap_input_events_t inputEvents;
+        clap_output_events_t outputEvents;
         SC_ZERO_OBJECT(&process);
         SC_ZERO_OBJECT(&inputBuffer);
         SC_ZERO_OBJECT(&outputBuffer);
+        SC_ZERO_OBJECT(&inputEvents);
+        SC_ZERO_OBJECT(&outputEvents);
 
-        inputBuffer.data32 = framesIn;
-        inputBuffer.channel_count = ma_node_get_input_channels(node, 0);
+        void* deinterleavedInputFrames[MA_MAX_CHANNELS];
+        void* deinterleavedOutputFrames[MA_MAX_CHANNELS];
+
+        for (int channel = 0; channel < inputChannels; ++channel)
+        {
+            deinterleavedInputFrames[channel] = ma_malloc(ma_get_bytes_per_sample(ma_format_f32) * *frameCountIn, NULL);
+            deinterleavedOutputFrames[channel] = ma_malloc(ma_get_bytes_per_sample(ma_format_f32) * *frameCountOut, NULL);
+        }
+
+        ma_deinterleave_pcm_frames(ma_format_f32, inputChannels, *frameCountIn, framesIn[0], &deinterleavedInputFrames);
+
+        inputBuffer.data32        = &deinterleavedInputFrames;
+        inputBuffer.channel_count = inputChannels;
         
-        outputBuffer.data32 = framesOut;
-        outputBuffer.channel_count = ma_node_get_output_channels(node, 0);
+        outputBuffer.data32        = &deinterleavedOutputFrames;
+        outputBuffer.channel_count = outputChannels;
+
+        inputEvents.size = sc_clap_input_events_size;
+        inputEvents.get = sc_clap_input_events_get;
+
+        outputEvents.try_push = sc_clap_output_events_try_push;
 
         process.steady_time = ma_node_graph_get_time(clapNode->baseNode.pNodeGraph);
         process.frames_count = *frameCountIn;
@@ -1116,12 +1157,26 @@ static void sc_clap_node_process_pcm_frames(
         process.audio_outputs_count = SC_CLAP_OUTPUT_BUS;
         process.audio_inputs        = &inputBuffer;
         process.audio_outputs       = &outputBuffer;
+        process.in_events           = &inputEvents;
+        process.out_events          = &outputEvents;
+
 
         const clap_process_status status = clapPlugin->process(clapPlugin, &process);
 
         if (status == CLAP_PROCESS_ERROR)
         {
             ma_silence_pcm_frames(framesOut, *frameCountOut, ma_format_f32, ma_node_get_output_channels(node, 0));
+        }
+        else
+        {
+            ma_interleave_pcm_frames(ma_format_f32, outputChannels, *frameCountOut, &deinterleavedOutputFrames, framesOut[0]);
+        }
+
+
+        for (int channel = 0; channel < inputChannels; ++channel)
+        {
+            ma_free(deinterleavedInputFrames[channel], NULL);
+            ma_free(deinterleavedOutputFrames[channel], NULL);
         }
     }
 }
