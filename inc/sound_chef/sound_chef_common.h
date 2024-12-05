@@ -241,6 +241,7 @@ struct sc_system
     ma_resource_manager resourceManager; //< We need a custom resource manager for custom decoders
     ma_log log;
 
+    clap_host_t clapHost;
     sc_clap* clapPlugins; //< Dynamic array of opened CLAP plugins
 
     sc_node_group* masterNodeGroup;

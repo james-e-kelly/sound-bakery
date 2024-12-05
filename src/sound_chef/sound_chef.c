@@ -204,6 +204,10 @@ static ma_decoding_backend_vtable g_ma_decoding_backend_vtable_libopus = {
 
 #pragma region System
 
+static void sc_system_clap_request_callback(const clap_host_t* host) {}
+static void sc_system_clap_request_process(const clap_host_t* host) {}
+static void sc_system_clap_request_restart(const clap_host_t* host) {}
+
 sc_result sc_system_create(sc_system** outSystem)
 {
     sc_result result = MA_ERROR;
@@ -313,6 +317,15 @@ sc_result sc_system_init(sc_system* system, const sc_system_config* systemConfig
             {
                 ma_log_post(&system->log, MA_LOG_LEVEL_INFO, "Initialized Master Node Group");
             }
+
+            system->clapHost.clap_version = CLAP_VERSION;
+            system->clapHost.host_data    = system;
+            system->clapHost.name         = SC_PRODUCT_NAME;
+            system->clapHost.version      = SC_VERSION_STRING;
+            system->clapHost.url          = "https://github.com/james-e-kelly/sound-bakery";
+            system->clapHost.request_callback = sc_system_clap_request_callback;
+            system->clapHost.request_process  = sc_system_clap_request_process;
+            system->clapHost.request_restart  = sc_system_clap_request_restart;
 
             if (systemConfig != NULL)
             {
@@ -542,6 +555,7 @@ sc_result sc_system_create_dsp(sc_system* system, const sc_dsp_config* config, s
 
     (*dsp)->type   = config->type;
     (*dsp)->vtable = config->vtable;
+    (*dsp)->clapFactory = config->clapFactory;
 
     result = (*dsp)->vtable->create((*dsp)->state);
 
@@ -791,6 +805,7 @@ static sc_result sc_dsp_fader_create(sc_dsp_state* state)
 static sc_result sc_dsp_fader_release(sc_dsp_state* state)
 {
     ma_sound_group_uninit((ma_sound_group*)state->userData);
+    ma_free(state->userData, NULL);
     return MA_SUCCESS;
 }
 
@@ -817,6 +832,7 @@ static sc_result sc_dsp_lowpass_create(sc_dsp_state* state)
 static sc_result sc_dsp_lowpass_release(sc_dsp_state* state)
 {
     ma_lpf_node_uninit((ma_lpf_node*)state->userData, NULL);
+    ma_free(state->userData, NULL);
     return MA_SUCCESS;
 }
 
@@ -893,6 +909,7 @@ static sc_result sc_dsp_highpass_create(sc_dsp_state* state)
 static sc_result sc_dsp_highpass_release(sc_dsp_state* state)
 {
     ma_hpf_node_uninit((ma_hpf_node*)state->userData, NULL);
+    ma_free(state->userData, NULL);
     return MA_SUCCESS;
 }
 
@@ -1029,6 +1046,7 @@ static sc_result sc_dsp_meter_create(sc_dsp_state* state)
 static sc_result sc_dsp_meter_release(sc_dsp_state* state)
 {
     sc_meter_node_uninit((sc_meter_node*)state->userData, NULL);
+    ma_free(state->userData, NULL);
     return MA_SUCCESS;
 }
 
@@ -1066,6 +1084,137 @@ sc_result sc_dsp_get_metering_info(sc_dsp* dsp, ma_uint32 channelIndex, sc_dsp_m
 
 #pragma endregion
 
+#pragma region CLAP
+
+#define SC_CLAP_INPUT_BUS 1
+#define SC_CLAP_OUTPUT_BUS 1
+
+static void sc_clap_node_process_pcm_frames(
+    ma_node* node, const float** framesIn, ma_uint32* const frameCountIn, float** framesOut, ma_uint32* frameCountOut)
+{
+    sc_clap_node* const clapNode = (sc_clap_node*)node;
+    clap_plugin_t* const clapPlugin    = clapNode->clapPlugin;
+
+    if (clapPlugin->start_processing(clapPlugin))
+    {
+        clap_process_t process;
+        clap_audio_buffer_t inputBuffer;
+        clap_audio_buffer_t outputBuffer;
+        SC_ZERO_OBJECT(&process);
+        SC_ZERO_OBJECT(&inputBuffer);
+        SC_ZERO_OBJECT(&outputBuffer);
+
+        inputBuffer.data32 = framesIn;
+        inputBuffer.channel_count = ma_node_get_input_channels(node, 0);
+        
+        outputBuffer.data32 = framesOut;
+        outputBuffer.channel_count = ma_node_get_output_channels(node, 0);
+
+        process.steady_time = ma_node_graph_get_time(clapNode->baseNode.pNodeGraph);
+        process.frames_count = frameCountIn;
+        process.audio_inputs_count  = SC_CLAP_INPUT_BUS;
+        process.audio_outputs_count = SC_CLAP_OUTPUT_BUS;
+        process.audio_inputs        = &inputBuffer;
+        process.audio_outputs       = &outputBuffer;
+
+        const clap_process_status status = clapPlugin->process(clapNode, &process);
+
+        if (status == CLAP_PROCESS_ERROR)
+        {
+            ma_silence_pcm_frames(framesOut, frameCountOut, ma_format_f32, ma_node_get_output_channels(node, 0));
+        }
+    }
+}
+
+static ma_node_vtable sc_clap_node_vtable = {sc_clap_node_process_pcm_frames, NULL, SC_CLAP_INPUT_BUS, SC_CLAP_OUTPUT_BUS, 0};
+
+static sc_result sc_clap_node_init(ma_node_graph* nodeGraph,
+                                    const ma_allocation_callbacks* allocCallbacks,
+                                    sc_clap_node* node)
+{
+    SC_CHECK_ARG(nodeGraph != NULL);
+    SC_CHECK_ARG(node != NULL);
+    SC_CHECK_ARG(node->clapPlugin != NULL);
+
+    ma_node_config baseNodeConfig  = ma_node_config_init();
+    baseNodeConfig.vtable          = &sc_clap_node_vtable;
+
+    return ma_node_init(nodeGraph, &baseNodeConfig, allocCallbacks, node);
+}
+static void sc_clap_node_uninit(sc_clap_node* node, const ma_allocation_callbacks* allocationCallbacks)
+{
+    ma_node_uninit(node, allocationCallbacks);
+}
+
+static sc_result sc_dsp_clap_create(sc_dsp_state* state)
+{
+    SC_CREATE((sc_clap_node*)state->userData, sc_clap_node);
+
+    sc_system* const system                        = state->system;
+    sc_clap_node* const clapNode = (sc_clap_node*)state->userData;
+    sc_dsp* const dsp            = (sc_dsp*)state->instance;
+    clap_plugin_factory_t* const clapFactory = dsp->clapFactory;
+    SC_CHECK_ARG(clapFactory != NULL);
+
+    const clap_plugin_descriptor_t* const clapDescriptor = clapFactory->get_plugin_descriptor(clapFactory, 0);
+    SC_CHECK(clapDescriptor != NULL, MA_ERROR);
+
+    const clap_plugin_t* clapPlugin = clapFactory->create_plugin(clapFactory, &system->clapHost, clapDescriptor->id);
+    SC_CHECK(clapPlugin != NULL, MA_ERROR);
+
+    if (!clapPlugin->init(clapPlugin))
+    {
+        clapPlugin->destroy(clapPlugin);
+        return MA_ERROR;
+    }
+
+    if (!clapPlugin->activate(clapPlugin, ma_engine_get_sample_rate(ma_engine_get_sample_rate((ma_engine*)state->system)), 1, 36))
+    {
+        clapPlugin->destroy(clapPlugin);
+        return MA_ERROR;
+    }
+
+    clapNode->clapPlugin = clapPlugin;
+
+    return sc_clap_node_init((ma_node_graph*)system, NULL, clapNode);
+}
+
+static sc_result sc_dsp_clap_release(sc_dsp_state* state)
+{
+    SC_CHECK_ARG(state != NULL);
+    SC_CHECK_ARG(state->instance != NULL);
+    SC_CHECK_ARG(state->system != NULL);
+    SC_CHECK_ARG(state->userData != NULL);
+
+    sc_clap_node* const clapNode = (sc_clap_node*)state->userData;
+    clap_plugin_t* const clapPlugin    = clapNode->clapPlugin;
+
+    clapPlugin->stop_processing(clapPlugin);
+    clapPlugin->deactivate(clapPlugin);
+    clapPlugin->destroy(clapPlugin);
+    clapNode->clapPlugin = NULL;
+
+    sc_clap_node_uninit(clapNode, NULL);
+    ma_free(state->userData, NULL);
+
+    return MA_SUCCESS;
+}
+
+static sc_result sc_dsp_clap_set_floatParam(sc_dsp_state* dspState, int index, float value) 
+{
+    return MA_NOT_IMPLEMENTED;
+}
+
+static sc_result sc_dsp_clap_get_floatParam(sc_dsp_state* dspState, int index, float* value) 
+{
+    return MA_NOT_IMPLEMENTED;
+}
+
+static sc_dsp_vtable s_clapVtable = {
+    sc_dsp_clap_create, sc_dsp_clap_release, sc_dsp_clap_set_floatParam, sc_dsp_clap_get_floatParam, NULL, 0};
+
+#pragma endregion
+
 sc_dsp_config sc_dsp_config_init(sc_dsp_type type)
 {
     sc_dsp_config result;
@@ -1091,6 +1240,8 @@ sc_dsp_config sc_dsp_config_init(sc_dsp_type type)
             break;
         case SC_DSP_TYPE_METER:
             result.vtable = &s_meterVtable;
+        case SC_DSP_TYPE_CLAP:
+            result.vtable = &s_clapVtable;
     }
 
     return result;
