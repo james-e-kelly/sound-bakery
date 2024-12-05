@@ -37,7 +37,8 @@ void node::add_effect(sc_dsp_type type)
 auto node::add_effect_clap(clap_plugin_factory_t* clapFactory) -> void
 {
     std::shared_ptr<effect_description> effect = owner()->create_database_object<effect_description>();
-    effect->set_dsp_type(SC_DSP_TYPE_CLAP);
+    effect->set_dsp_clap(clapFactory);
+    m_effectDescriptions.emplace_back(effect);
 }
 
 node_base::~node_base()

@@ -39,6 +39,19 @@ namespace sbk::engine
             }
         }
 
+        void set_dsp_clap(clap_plugin_factory* pluginFactory)
+        { 
+            m_parameterDescriptions.clear();
+
+            m_config = sc_dsp_config_init_clap(pluginFactory);
+            assert(m_config.vtable != nullptr);
+
+            for (int i = 0; i < m_config.vtable->numParams; ++i)
+            {
+                m_parameterDescriptions.emplace_back(m_config.vtable->params[i]);
+            }
+        }
+
         [[nodiscard]] std::vector<effect_parameter_description> get_parameters() const
         {
             return m_parameterDescriptions;

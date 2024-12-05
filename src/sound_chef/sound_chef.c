@@ -1136,8 +1136,12 @@ static sc_result sc_clap_node_init(ma_node_graph* nodeGraph,
     SC_CHECK_ARG(node != NULL);
     SC_CHECK_ARG(node->clapPlugin != NULL);
 
+    ma_uint32 channels = 1;
+
     ma_node_config baseNodeConfig  = ma_node_config_init();
     baseNodeConfig.vtable          = &sc_clap_node_vtable;
+    baseNodeConfig.pInputChannels  = &channels;
+    baseNodeConfig.pOutputChannels  = &channels;
 
     return ma_node_init(nodeGraph, &baseNodeConfig, allocCallbacks, node);
 }
@@ -1168,7 +1172,7 @@ static sc_result sc_dsp_clap_create(sc_dsp_state* state)
         return MA_ERROR;
     }
 
-    if (!clapPlugin->activate(clapPlugin, ma_engine_get_sample_rate(ma_engine_get_sample_rate((ma_engine*)state->system)), 1, 36))
+    if (!clapPlugin->activate(clapPlugin, ma_engine_get_sample_rate((ma_engine*)system), 1, 36))
     {
         clapPlugin->destroy(clapPlugin);
         return MA_ERROR;
@@ -1240,11 +1244,20 @@ sc_dsp_config sc_dsp_config_init(sc_dsp_type type)
             break;
         case SC_DSP_TYPE_METER:
             result.vtable = &s_meterVtable;
+            break;
         case SC_DSP_TYPE_CLAP:
             result.vtable = &s_clapVtable;
+            break;
     }
 
     return result;
+}
+
+sc_dsp_config sc_dsp_config_init_clap(clap_plugin_factory_t* pluginFactory)
+{
+    sc_dsp_config config = sc_dsp_config_init(SC_DSP_TYPE_CLAP);
+    config.clapFactory   = pluginFactory;
+    return config;
 }
 
 #pragma endregion
