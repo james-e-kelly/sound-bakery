@@ -1111,17 +1111,17 @@ static void sc_clap_node_process_pcm_frames(
         outputBuffer.channel_count = ma_node_get_output_channels(node, 0);
 
         process.steady_time = ma_node_graph_get_time(clapNode->baseNode.pNodeGraph);
-        process.frames_count = frameCountIn;
+        process.frames_count = *frameCountIn;
         process.audio_inputs_count  = SC_CLAP_INPUT_BUS;
         process.audio_outputs_count = SC_CLAP_OUTPUT_BUS;
         process.audio_inputs        = &inputBuffer;
         process.audio_outputs       = &outputBuffer;
 
-        const clap_process_status status = clapPlugin->process(clapNode, &process);
+        const clap_process_status status = clapPlugin->process(clapPlugin, &process);
 
         if (status == CLAP_PROCESS_ERROR)
         {
-            ma_silence_pcm_frames(framesOut, frameCountOut, ma_format_f32, ma_node_get_output_channels(node, 0));
+            ma_silence_pcm_frames(framesOut, *frameCountOut, ma_format_f32, ma_node_get_output_channels(node, 0));
         }
     }
 }
@@ -1136,7 +1136,7 @@ static sc_result sc_clap_node_init(ma_node_graph* nodeGraph,
     SC_CHECK_ARG(node != NULL);
     SC_CHECK_ARG(node->clapPlugin != NULL);
 
-    ma_uint32 channels = 1;
+    ma_uint32 channels = 2;
 
     ma_node_config baseNodeConfig  = ma_node_config_init();
     baseNodeConfig.vtable          = &sc_clap_node_vtable;
