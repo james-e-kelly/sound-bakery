@@ -31,6 +31,7 @@ namespace sbk::engine
             m_parameterDescriptions.clear();
 
             m_config = sc_dsp_config_init(type);
+            assert(m_config.vtable != nullptr);
 
             for (int i = 0; i < m_config.vtable->numParams; ++i)
             {

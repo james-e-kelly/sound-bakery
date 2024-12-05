@@ -76,7 +76,8 @@ namespace sbk::engine
          */
         virtual void gatherParameters(global_parameter_list& parameters);
 
-        void addEffect(sc_dsp_type type);
+        void add_effect(sc_dsp_type type);
+        auto add_effect_clap(clap_plugin_factory_t* clapFactory) -> void;
 
     protected:
         /**

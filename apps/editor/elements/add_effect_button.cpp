@@ -14,9 +14,9 @@ auto add_effect_button::render_element(const ImRect& elementBox) -> bool
 	if (std::shared_ptr<project_manager> projectManager = gluten::app::get()->get_manager_by_class<project_manager>())
     {
         selection& selection = projectManager->get_selection();
-        if (sbk::core::object* selected = selection.get_selected())
+        if (sbk::core::object* const selected = selection.get_selected())
         {
-            if (selected->getType().is_derived_from<sbk::engine::node_base>())
+            if (sbk::engine::node* const selectedNode = selected->try_convert_object<sbk::engine::node>())
             {
                 if (ImGui::Button("Add Effect..."))
                 {
@@ -35,8 +35,7 @@ auto add_effect_button::render_element(const ImRect& elementBox) -> bool
                             rttr::variant enumValue = basicDspEnumeration.name_to_value(enumValueName);
                             if (ImGui::MenuItem(enumValueName.data()))
                             {
-                                selected->try_convert_object<sbk::engine::node>()->addEffect(
-                                    enumValue.get_value<sc_dsp_type>());
+                                selectedNode->add_effect(enumValue.get_value<sc_dsp_type>());
                             }
                         }
 
@@ -51,15 +50,15 @@ auto add_effect_button::render_element(const ImRect& elementBox) -> bool
                             for (int index = 0; index < clapCount; ++index)
                             {
                                 sc_clap* clapPlugin = nullptr;
-                                if (sc_system_clap_get_at(sbk::engine::system::get(), index, &clapPlugin) ==
-                                    MA_SUCCESS)
+                                if (sc_system_clap_get_at(sbk::engine::system::get(), index, &clapPlugin) == MA_SUCCESS)
                                 {
                                     if (const clap_plugin_descriptor_t* const pluginDescriptor =
-                                            clapPlugin->pluginFactory->get_plugin_descriptor(
-                                                clapPlugin->pluginFactory, 0))
+                                            clapPlugin->pluginFactory->get_plugin_descriptor(clapPlugin->pluginFactory,
+                                                                                             0))
                                     {
                                         if (ImGui::MenuItem(pluginDescriptor->name))
                                         {
+                                            selectedNode->add_effect_clap(clapPlugin->pluginFactory);
                                         }
                                     }
                                 }
@@ -71,6 +70,8 @@ auto add_effect_button::render_element(const ImRect& elementBox) -> bool
 
                     ImGui::EndPopup();
                 }
+
+                return true;
             }
         }
     }

@@ -115,7 +115,8 @@ typedef enum sc_dsp_type
     SC_DSP_TYPE_LOWPASS,
     SC_DSP_TYPE_HIGHPASS,
     SC_DSP_TYPE_DELAY,
-    SC_DSP_TYPE_METER
+    SC_DSP_TYPE_METER,
+    SC_DSP_TYPE_CLAP        //< Wraps a CLAP plugin
 } sc_dsp_type;
 
 typedef enum sc_dsp_index
@@ -167,6 +168,7 @@ struct sc_dsp_config
 {
     sc_dsp_type type;
     sc_dsp_vtable* vtable;
+    clap_plugin_factory_t* clapFactory;
 };
 
 /**
@@ -180,6 +182,7 @@ struct sc_dsp
     sc_dsp_state* state;    //< holds the instance data for the dsp
     sc_dsp_vtable* vtable;  //< holds the functions for interacting with the underlying node type. Must be not null
     sc_dsp_type type;
+    clap_plugin_factory_t* clapFactory; //< If this is a CLAP plugin, the factory to the plugin
     sc_dsp* next;  //< when in a node group, the get_parent/next dsp. Can be null if the head node
     sc_dsp* prev;  //< when in a node group, the child/previous dsp. Can be null if the tail node
 };
