@@ -23,6 +23,18 @@ namespace sbk::core
         [[nodiscard]] std::unordered_set<object*> get_objects_of_category(const SB_OBJECT_CATEGORY& category) const;
         [[nodiscard]] std::unordered_set<object*> get_objects_of_type(const rttr::type& type) const;
 
+        [[nodiscard]] auto get_objects_count() const -> size_t
+        {
+            size_t count = 0;
+
+            for (auto& keyValuePair : m_categoryToObjects)
+            {
+                count += keyValuePair.second.size();
+            }
+
+            return count;
+        }
+
     private:
         void on_object_destroyed(object* object);
 

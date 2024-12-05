@@ -9,6 +9,7 @@ namespace sbk::engine
     class SB_CLASS bus : public node
     {
         REGISTER_REFLECTION(bus, node)
+        LEAK_DETECTOR(bus)
 
     public:
         bus() : node(), m_masterBus(false) {}

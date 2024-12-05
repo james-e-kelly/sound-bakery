@@ -83,6 +83,7 @@ system::~system()
     }
 
     destroy_all();
+    assert(get_objects_count() == 0);
 
     sc_system_close(this);
 

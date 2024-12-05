@@ -115,6 +115,7 @@ macro(set_sources)
     util/sb_pointers.h
     util/type_helper.h
     util/macros.h
+    util/leak_detector.h
 
     voice/voice.h
     voice/node_instance.h
