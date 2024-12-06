@@ -71,6 +71,7 @@ macro(set_sources)
     core/object/object.inl
     core/object/object_tracker.h
     core/object/object_owner.h
+    core/object/object_owner.inl
 
     core/database/database.h
     core/database/database_object.h

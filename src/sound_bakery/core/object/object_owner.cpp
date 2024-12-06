@@ -3,7 +3,7 @@
 #include "sound_bakery/serialization/serializer.h"
 #include "sound_bakery/system.h"
 
-std::shared_ptr<sbk::core::object> sbk::core::object_owner::create_runtime_object(const rttr::type& type)
+auto sbk::core::object_owner::create_runtime_object(const rttr::type& type) -> std::shared_ptr<sbk::core::object>
 {
     sbk::engine::system* const system = sbk::engine::system::get();
 
@@ -71,7 +71,7 @@ std::shared_ptr<sbk::core::object> sbk::core::object_owner::create_runtime_objec
     return result;
 }
 
-std::shared_ptr<sbk::core::object> sbk::core::object_owner::load_object(YAML::Node& node)
+auto sbk::core::object_owner::load_object(YAML::Node& node) -> std::shared_ptr<sbk::core::object>
 {
     const std::string loadedTypeName = node["ObjectType"].as<std::string>();
     const rttr::type type            = rttr::type::get_by_name(loadedTypeName);
@@ -106,8 +106,7 @@ std::shared_ptr<sbk::core::object> sbk::core::object_owner::load_object(YAML::No
     return {};
 }
 
-std::shared_ptr<sbk::core::database_object> sbk::core::object_owner::create_database_object(const rttr::type& type,
-                                                                                            bool addToDatabase)
+auto sbk::core::object_owner::create_database_object(const rttr::type& type, bool addToDatabase) -> std::shared_ptr<sbk::core::database_object>
 {
     sbk::engine::system* const system = sbk::engine::system::get();
 
@@ -139,7 +138,7 @@ std::shared_ptr<sbk::core::database_object> sbk::core::object_owner::create_data
     return {};
 }
 
-void sbk::core::object_owner::remove_object(const std::shared_ptr<object>& object)
+auto sbk::core::object_owner::remove_object(const std::shared_ptr<object>& object) -> void
 {
     if (object)
     {
@@ -153,4 +152,13 @@ void sbk::core::object_owner::remove_object(const std::shared_ptr<object>& objec
             }
         }
     }
+}
+
+auto sbk::core::object_owner::destroy_all() -> void { m_objects.clear(); }
+
+auto sbk::core::object_owner::get_objects() -> std::vector<std::shared_ptr<object>>& { return m_objects; }
+
+auto sbk::core::object_owner::get_objects() const -> const std::vector<std::shared_ptr<object>>&
+{
+    return m_objects;
 }
