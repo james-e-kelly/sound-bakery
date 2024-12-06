@@ -40,7 +40,7 @@ namespace sbk::engine
         }
 
         void set_dsp_clap(clap_plugin_factory* pluginFactory)
-        { 
+        {
             m_parameterDescriptions.clear();
 
             m_config = sc_dsp_config_init_clap(pluginFactory);

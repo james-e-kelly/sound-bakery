@@ -9,9 +9,9 @@
  *
  * Convinience macro for allocating memory _and_ doing checks on it.
  */
-#define SC_CREATE(ptr, t)               \
-    ptr = ma_malloc(sizeof(t), NULL);   \
-    SC_CHECK_MEM(ptr);                  \
+#define SC_CREATE(ptr, t)             \
+    ptr = ma_malloc(sizeof(t), NULL); \
+    SC_CHECK_MEM(ptr);                \
     memset(ptr, 0, sizeof(t))
 
 ma_handle sc_dlopen(ma_log* pLog, const char* filename);

@@ -6,10 +6,10 @@ namespace sbk::util
     class leaked_object_detector
     {
     public:
-        leaked_object_detector() noexcept                               { ++(get_counter().numObjects); }
-        leaked_object_detector (const leaked_object_detector&) noexcept { ++(get_counter().numObjects); }
+        leaked_object_detector() noexcept { ++(get_counter().numObjects); }
+        leaked_object_detector(const leaked_object_detector&) noexcept { ++(get_counter().numObjects); }
 
-        leaked_object_detector& operator= (const leaked_object_detector&) noexcept = default;
+        leaked_object_detector& operator=(const leaked_object_detector&) noexcept = default;
 
         ~leaked_object_detector()
         {
@@ -17,7 +17,7 @@ namespace sbk::util
             {
                 /**
                  * Deleted a dangling pointer!
-                */
+                 */
                 assert(false);
             }
         }
@@ -33,8 +33,8 @@ namespace sbk::util
                 if (numObjects.load() > 0)
                 {
                     /**
-                    * Leak Detected!!!
-                    */
+                     * Leak Detected!!!
+                     */
                     assert(false);
                 }
             }
@@ -42,10 +42,7 @@ namespace sbk::util
             std::atomic<int> numObjects;
         };
 
-        static const char* get_leaked_object_class_name()
-        {
-            return owner_class::get_type().get_name().c_str();
-        }
+        static const char* get_leaked_object_class_name() { return owner_class::get_type().get_name().c_str(); }
 
         static leak_counter& get_counter() noexcept
         {
@@ -54,8 +51,9 @@ namespace sbk::util
         }
     };
 
-}
-#define LEAK_DETECTOR(owner_class) \
-        private:                                                                            \
-        friend class sbk::util::leaked_object_detector<owner_class>;                        \
-        sbk::util::leaked_object_detector<owner_class> leakDetector;
+}  // namespace sbk::util
+#define LEAK_DETECTOR(owner_class)                               \
+                                                                 \
+private:                                                         \
+    friend class sbk::util::leaked_object_detector<owner_class>; \
+    sbk::util::leaked_object_detector<owner_class> leakDetector;

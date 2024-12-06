@@ -114,7 +114,6 @@ ma_proc sc_dlsym(ma_log* pLog, ma_handle handle, const char* symbol)
 #endif
 }
 
-
 const char* SC_API sc_filename_get_ext(const char* filename)
 {
     if (filename != NULL)
@@ -129,14 +128,14 @@ const char* SC_API sc_filename_get_ext(const char* filename)
     return "";
 }
 
-sc_result sc_clap_load(const char* clapFilePath, sc_clap* clapPlugin) 
-{ 
-	SC_CHECK_ARG(clapFilePath != NULL); 
-	SC_CHECK_ARG(clapPlugin != NULL);
+sc_result sc_clap_load(const char* clapFilePath, sc_clap* clapPlugin)
+{
+    SC_CHECK_ARG(clapFilePath != NULL);
+    SC_CHECK_ARG(clapPlugin != NULL);
 
     SC_ZERO_OBJECT(clapPlugin);
 
-	ma_handle pluginHandle = sc_dlopen(NULL, clapFilePath);
+    ma_handle pluginHandle = sc_dlopen(NULL, clapFilePath);
     SC_CHECK(pluginHandle != NULL, MA_ERROR);
 
     clap_plugin_entry_t* const clapEntry = (clap_plugin_entry_t*)sc_dlsym(NULL, pluginHandle, CLAP_ENTRY);
@@ -144,7 +143,8 @@ sc_result sc_clap_load(const char* clapFilePath, sc_clap* clapPlugin)
 
     if (clapEntry->init(clapFilePath))
     {
-        const clap_plugin_factory_t* pluginFactory = (const clap_plugin_factory_t*)clapEntry->get_factory(CLAP_PLUGIN_FACTORY_ID);
+        const clap_plugin_factory_t* pluginFactory =
+            (const clap_plugin_factory_t*)clapEntry->get_factory(CLAP_PLUGIN_FACTORY_ID);
         SC_CHECK_AND_GOTO(pluginFactory != NULL, error_clap);
 
         const ma_uint32 pluginCount = pluginFactory->get_plugin_count(pluginFactory);
@@ -169,9 +169,9 @@ error_dll:
     return MA_ERROR;
 }
 
-sc_result sc_clap_unload(sc_clap* clapPlugin) 
-{ 
-    SC_CHECK_ARG(clapPlugin != NULL); 
+sc_result sc_clap_unload(sc_clap* clapPlugin)
+{
+    SC_CHECK_ARG(clapPlugin != NULL);
     SC_CHECK_ARG(clapPlugin->dynamicLibraryHandle != NULL);
     SC_CHECK_ARG(clapPlugin->clapEntry != NULL);
     SC_CHECK_ARG(clapPlugin->pluginFactory != NULL);

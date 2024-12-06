@@ -79,7 +79,7 @@ namespace gluten
 
         std::vector<std::weak_ptr<widget>> m_childWidgets;          //< Child widgets to iterate over
         std::vector<std::shared_ptr<widget>> m_owningChildWidgets;  //< References to widgets that are owned. Not
-                                                                    //iterated over
+                                                                    // iterated over
 
         friend class widget_subsystem;
 
