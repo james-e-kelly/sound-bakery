@@ -33,24 +33,23 @@ void sbk::engine::bus::setMasterBus(bool isMaster)
     }
 }
 
-void bus::lock()
+std::shared_ptr<node_instance> bus::lockAndCopy()
 {
-    if (!m_busInstance)
+    if (m_busInstance.expired())
     {
-        m_busInstance = std::make_shared<node_instance>();
+        std::shared_ptr<node_instance> sharedBus = std::make_shared<node_instance>();
+        m_busInstance                            = sharedBus;
 
         InitNodeInstance initData;
         initData.refNode = try_convert_object<node_base>();
         initData.type    = NodeInstanceType::BUS;
 
-        m_busInstance->init(initData);
+        sharedBus->init(initData);
+
+        return sharedBus;
     }
-}
-
-void sbk::engine::bus::unlock() { m_busInstance.reset(); }
-
-std::shared_ptr<node_instance> bus::lockAndCopy()
-{
-    lock();
-    return m_busInstance;
+    else
+    {
+        return m_busInstance.lock();
+    }
 }

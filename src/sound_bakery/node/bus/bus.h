@@ -23,12 +23,10 @@ namespace sbk::engine
 
         bool isMasterBus() const { return m_masterBus; }
 
-        void lock();
-        void unlock();
         std::shared_ptr<node_instance> lockAndCopy();
 
     protected:
-        std::shared_ptr<node_instance> m_busInstance;
+        std::weak_ptr<node_instance> m_busInstance;
 
     private:
         bool m_masterBus;
