@@ -7,8 +7,10 @@ TEST_SUITE("System")
 {
     TEST_CASE("System Creation Deletion")
     {
+        sb_system_config config = sb_system_config_init_default();
+
         REQUIRE(sbk::engine::system::create() != nullptr);
-        REQUIRE(sbk::engine::system::init() == MA_SUCCESS);
+        REQUIRE(sbk::engine::system::init(config) == MA_SUCCESS);
         REQUIRE(sbk::engine::system::update() == MA_SUCCESS);
         sbk::engine::system::destroy();
         REQUIRE(sbk::engine::system::get() == nullptr);
@@ -16,14 +18,16 @@ TEST_SUITE("System")
 
     TEST_CASE("Re-init")
     {
+        sb_system_config config = sb_system_config_init_default();
+
         REQUIRE(sbk::engine::system::create() != nullptr);
-        REQUIRE(sbk::engine::system::init() == MA_SUCCESS);
+        REQUIRE(sbk::engine::system::init(config) == MA_SUCCESS);
         REQUIRE(sbk::engine::system::update() == MA_SUCCESS);
         sbk::engine::system::destroy();
         REQUIRE(sbk::engine::system::get() == nullptr);
 
         REQUIRE(sbk::engine::system::create() != nullptr);
-        REQUIRE(sbk::engine::system::init() == MA_SUCCESS);
+        REQUIRE(sbk::engine::system::init(config) == MA_SUCCESS);
         REQUIRE(sbk::engine::system::update() == MA_SUCCESS);
         sbk::engine::system::destroy();
         REQUIRE(sbk::engine::system::get() == nullptr);
