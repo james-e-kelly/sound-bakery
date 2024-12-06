@@ -30,9 +30,9 @@ namespace sbk
         class game_object;
 
         /**
-         * @brief Manager of the whole sound Bakery.
+         * @brief Manager of the whole Sound Bakery.
          *
-         * The system tracks all objects created during sound Bakery's lifetime.
+         * The system tracks all objects created during Sound Bakery's lifetime.
          *
          * It owns all loaded Soundbanks, listener game object, and busses.
          */
@@ -54,7 +54,7 @@ namespace sbk
             static system* create();
             static void destroy();
 
-            static sc_result init();
+            static sc_result init(const sb_system_config& config);
             static sc_result update();
 
             /**

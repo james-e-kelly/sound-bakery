@@ -4,6 +4,8 @@ macro(set_sources)
     factory.cpp
     pch.cpp
 
+    api/sound_bakery.cpp
+
     core/object/object.cpp
     core/object/object_tracker.cpp
     core/object/object_owner.cpp
@@ -113,6 +115,7 @@ macro(set_sources)
     util/sb_pointers.h
     util/type_helper.h
     util/macros.h
+    util/leak_detector.h
 
     voice/voice.h
     voice/node_instance.h

@@ -7,6 +7,7 @@ set(SOUND_CHEF_SOURCES
     sound_chef_bank.c
     sound_chef_dsp.c
     sound_chef_encoder.c
+    sound_chef_internal.c
 
     encoders/sound_chef_encoder_vorbis.c
     encoders/vorbis_encode_test.c
@@ -18,6 +19,7 @@ set(SOUND_CHEF_HEADERS
     sound_chef_bank.h
     sound_chef_encoder.h
     sound_chef_guide.h
+    sound_chef_internal.h
 
     encoders/sound_chef_encoder_vorbis.h
 
@@ -31,9 +33,9 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Header Files" FILES ${ATLA
 set(CMAKE_FOLDER src)
 
 if (SOUND_BAKERY_SHARED)
-  add_library(sound_chef SHARED ${SOUND_CHEF_SOURCES} ${SOUND_CHEF_HEADERS})
+  add_library(sound_chef SHARED ${SOUND_CHEF_SOURCES} ${SOUND_CHEF_HEADERS} ${stb_SOURCE_DIR}/stb_ds.h)
 else()
-  add_library(sound_chef STATIC ${SOUND_CHEF_SOURCES} ${SOUND_CHEF_HEADERS})
+  add_library(sound_chef STATIC ${SOUND_CHEF_SOURCES} ${SOUND_CHEF_HEADERS} ${stb_SOURCE_DIR}/stb_ds.h)
 endif()
 
 add_library(SoundBakery::SoundChef ALIAS sound_chef)
@@ -41,12 +43,16 @@ add_library(SoundBakery::SoundChef ALIAS sound_chef)
 target_include_directories(sound_chef
     PUBLIC ${CMAKE_SOURCE_DIR}/inc/
     PRIVATE ${CMAKE_SOURCE_DIR}/src/
+    PUBLIC ${stb_SOURCE_DIR}
 )
 
 set(CMAKE_FOLDER extern)
 
 message(STATUS "Fetching miniaudio")
 FetchContent_MakeAvailable(miniaudio)
+
+message(STATUS "Fetching CLAP")
+FetchContent_MakeAvailable(clap)
 
 add_executable(audioconverter ${miniaudio_SOURCE_DIR}/tools/audioconverter/audioconverter.c)
 target_include_directories(audioconverter PRIVATE ${miniaudio_SOURCE_DIR})
@@ -79,11 +85,21 @@ FetchContent_MakeAvailable(opusfile)
 set(CMAKE_C_EXTENSIONS OFF)
 
 target_include_directories(sound_chef
-    PUBLIC ${miniaudio_SOURCE_DIR}
-    PRIVATE ${opusfile_SOURCE_DIR}/include
+PUBLIC ${miniaudio_SOURCE_DIR}
+PRIVATE ${opusfile_SOURCE_DIR}/include
 )
 
+if (WIN32)
+  message(STATUS "Fetching dirent")
+  FetchContent_MakeAvailable(dirent)
+
+  target_include_directories(sound_chef
+    PRIVATE ${dirent_SOURCE_DIR}/include
+  )
+endif()
+
 target_link_libraries(sound_chef
+    PUBLIC clap
     PRIVATE vorbis
     PRIVATE vorbisfile
     PRIVATE vorbisenc

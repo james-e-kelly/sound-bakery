@@ -3,7 +3,7 @@
 #include "Delegates.h"
 
 #include <fmt/core.h>
-#define BYTESIZE_FMTLIB_FORMATTER 
+#define BYTESIZE_FMTLIB_FORMATTER
 #include <bytesize.hh>
 #include <stdio.h>
 #include <stdlib.h>

@@ -203,7 +203,7 @@ void root_widget::draw_titlebar()
     const ImRect buttonsRect  = root_widget_utils::get_buttons_rect(titleBarRect);
     const ImRect menuBarRect  = root_widget_utils::get_menu_bar_rect(titleBarRect);
 
-    element topBarBackground(element::anchor_preset::stretch_full);
+    background topBarBackground;
     topBarBackground.set_element_background_color(
         ImGui::ColorConvertFloat4ToU32(ImGui::GetStyleColorVec4(ImGuiCol_TitleBg)));
     topBarBackground.render(titleBarRect);

@@ -2,6 +2,7 @@
 
 #include "sound_bakery/core/object/object_owner.h"
 #include "sound_bakery/pch.h"
+#include "sound_bakery/util/leak_detector.h"
 #include "sound_bakery/util/macros.h"
 
 namespace sbk::engine
@@ -21,6 +22,7 @@ namespace sbk::core
     {
         REGISTER_REFLECTION(object)
         NOT_COPYABLE(object)
+        LEAK_DETECTOR(object)
 
     public:
         object() = default;

@@ -35,6 +35,9 @@ extern "C"
      */
     sc_result SC_API sc_system_log_init(sc_system* system, ma_log_callback_proc logCallback);
 
+    sc_system_config SC_API sc_system_config_init_default();
+    sc_system_config SC_API sc_system_config_init(const char* pluginPath);
+
     /**
      * @brief Initialises the system.
      *
@@ -42,7 +45,7 @@ extern "C"
      * system connect to the user's audio device and is then ready for playing
      * sounds.
      */
-    sc_result SC_API sc_system_init(sc_system* system);
+    sc_result SC_API sc_system_init(sc_system* system, const sc_system_config* systemConfig);
 
     /**
      * @brief Closes the system.
@@ -118,6 +121,7 @@ extern "C"
      * SC_DSP_TYPE_UNKOWN.
      */
     sc_dsp_config SC_API sc_dsp_config_init(sc_dsp_type type);
+    sc_dsp_config SC_API sc_dsp_config_init_clap(clap_plugin_factory_t* pluginFactory);
 
     sc_result SC_API sc_dsp_get_parameter_float(sc_dsp* dsp, int index, float* value);
     sc_result SC_API sc_dsp_set_parameter_float(sc_dsp* dsp, int index, float value);
@@ -139,6 +143,20 @@ extern "C"
     sc_result SC_API sc_node_group_remove_dsp(sc_node_group* nodeGroup, sc_dsp* dsp);
 
     sc_result SC_API sc_node_group_release(sc_node_group* nodeGroup);
+
+    // CLAP
+
+    sc_result SC_API sc_system_clap_get_count(sc_system* system, ma_uint32* count);
+
+    /**
+     * @brief Get the CLAP plugin at a specified index.
+     * 
+     * Fills the plugin parameter with a pointer to a loaded CLAP plugin.
+     * 
+     * @warning Do not free the plugin pointer or unload any of the internals of the struct.
+     * @warning Do not access the pointer after the system is closed.
+     */
+    sc_result SC_API sc_system_clap_get_at(sc_system* system, ma_uint32 index, sc_clap** plugin);
 
 #ifdef __cplusplus
 }

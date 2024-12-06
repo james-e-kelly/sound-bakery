@@ -26,7 +26,6 @@ bool gluten::text::render_element(const ImRect& parent)
     if (!m_displayText.empty())
     {
         ImGui::TextUnformatted(m_displayText.c_str());
-
     }
 
     if (m_font.has_value())

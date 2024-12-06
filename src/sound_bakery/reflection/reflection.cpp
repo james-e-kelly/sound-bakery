@@ -186,7 +186,7 @@ namespace sbk::reflection
             .property("Highass", &node::m_highpass)(
                 metadata(sbk::editor::METADATA_KEY::MinMax, std::pair<float, float>(0.0f, 100.0f)))
             .property("Effects", &node::m_effectDescriptions)
-            .method("Add Effect", &node::addEffect)(parameter_names("Type"));
+            .method("Add Effect", &node::add_effect)(parameter_names("Type"));
 
         registration::class_<container>("SB::Engine::Container");
 

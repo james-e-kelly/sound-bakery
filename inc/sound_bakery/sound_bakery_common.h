@@ -15,7 +15,14 @@
 
 typedef sc_result sb_result;
 
+typedef struct sb_system_config sb_system_config;
+
 typedef unsigned long long sbk_id;
 #define SB_INVALID_ID 0
+
+struct sb_system_config
+{
+    sc_system_config soundChefConfig;
+};
 
 #endif

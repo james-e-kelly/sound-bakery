@@ -7,6 +7,8 @@
 #endif
 
 #include "miniaudio.h"
+#include "stb_ds.h"
+#include "clap/clap.h"
 
 #include <assert.h>
 #include <string.h>
@@ -83,6 +85,7 @@ typedef ma_bool32 sc_bool;
 typedef ma_result sc_result;
 
 typedef struct sc_system sc_system;
+typedef struct sc_system_config sc_system_config;
 
 typedef struct sc_sound sc_sound;
 typedef struct sc_sound sc_sound_instance;
@@ -94,6 +97,8 @@ typedef struct sc_dsp_state sc_dsp_state;
 typedef struct sc_dsp_config sc_dsp_config;
 typedef struct sc_dsp_parameter sc_dsp_parameter;
 typedef struct sc_dsp_vtable sc_dsp_vtable;
+
+typedef struct sc_clap sc_clap;
 
 typedef enum sc_sound_mode
 {
@@ -110,7 +115,8 @@ typedef enum sc_dsp_type
     SC_DSP_TYPE_LOWPASS,
     SC_DSP_TYPE_HIGHPASS,
     SC_DSP_TYPE_DELAY,
-    SC_DSP_TYPE_METER
+    SC_DSP_TYPE_METER,
+    SC_DSP_TYPE_CLAP        //< Wraps a CLAP plugin
 } sc_dsp_type;
 
 typedef enum sc_dsp_index
@@ -162,6 +168,7 @@ struct sc_dsp_config
 {
     sc_dsp_type type;
     sc_dsp_vtable* vtable;
+    clap_plugin_factory_t* clapFactory;
 };
 
 /**
@@ -175,6 +182,7 @@ struct sc_dsp
     sc_dsp_state* state;    //< holds the instance data for the dsp
     sc_dsp_vtable* vtable;  //< holds the functions for interacting with the underlying node type. Must be not null
     sc_dsp_type type;
+    clap_plugin_factory_t* clapFactory; //< If this is a CLAP plugin, the factory to the plugin
     sc_dsp* next;  //< when in a node group, the get_parent/next dsp. Can be null if the head node
     sc_dsp* prev;  //< when in a node group, the child/previous dsp. Can be null if the tail node
 };
@@ -204,6 +212,16 @@ struct sc_node_group
 };
 
 /**
+ * @brief Holds a DLL handle and plugin entry for a CLAP plugin.
+ */
+struct sc_clap
+{
+    ma_handle dynamicLibraryHandle;         //< Handle to the .clap file
+    clap_plugin_entry_t* clapEntry;         //< Entry point of the plugin
+    clap_plugin_factory_t* pluginFactory;    //< Plugin factory to poll and create plugins from
+};
+
+/**
  * @brief Object that manages the node graph, sounds, output etc.
  *
  * The sc_system is a wrapper for the ma_engine type from miniaudio.
@@ -223,7 +241,19 @@ struct sc_system
     ma_resource_manager resourceManager; //< We need a custom resource manager for custom decoders
     ma_log log;
 
+    clap_host_t clapHost;
+    sc_clap* clapPlugins; //< Dynamic array of opened CLAP plugins
+
     sc_node_group* masterNodeGroup;
+};
+
+/**
+ * @brief Configuration for initializing the sc_system.
+ * @see sc_system_init
+ */
+struct sc_system_config
+{
+    const char* pluginPath; //< Folder path containing CLAP plugins to load
 };
 
 #ifdef __cplusplus

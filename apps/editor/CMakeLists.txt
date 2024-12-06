@@ -4,6 +4,7 @@ set(BUILD_FOLDER ${CMAKE_BINARY_DIR})
 
 set(EDITOR_SOURCES
   app/app.cpp
+  elements/add_effect_button.cpp
   managers/app_manager.cpp
   managers/project_manager.cpp
   widgets/imgui_extensions.cpp
@@ -23,6 +24,7 @@ set(EDITOR_SOURCES
 
 set(EDITOR_HEADERS
   app/app.h
+  elements/add_effect_button.h
   managers/app_manager.h
   managers/project_manager.h
   widgets/root_widget.h

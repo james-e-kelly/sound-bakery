@@ -209,6 +209,14 @@ bool gluten::element::render_window()
     return render(window->InnerRect);
 }
 
+bool gluten::element::render_cursor()
+{
+    const ImVec2 cursorPos   = ImGui::GetCursorScreenPos();
+    const ImVec2 elementSize = get_element_content_size();
+    const ImRect rect(cursorPos, cursorPos + elementSize);
+    return render(rect);
+}
+
 void gluten::element::set_element_max_size(const ImVec2& maxSize) { m_maxSize = maxSize; }
 
 ImVec2 gluten::element::get_anchor_start_position(const ImVec2& containerPosition,
