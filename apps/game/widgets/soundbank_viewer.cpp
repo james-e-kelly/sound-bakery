@@ -6,8 +6,10 @@
 
 void soundbank_viewer_widget::start() 
 { 
+    sb_system_config config = sb_system_config_init_default();
+
     sbk::engine::system::create(); 
-    sbk::engine::system::init();
+    sbk::engine::system::init(config);
 }
 
 void soundbank_viewer_widget::render()
