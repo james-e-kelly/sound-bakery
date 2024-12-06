@@ -46,7 +46,7 @@ sbk::engine::soundbank_dependencies sbk::engine::soundbank::gather_dependencies(
         {
             dependencies.nodes.push_back(std::static_pointer_cast<sbk::engine::node_base>(node->shared_from_this()));
 
-            if (node->getType() == sbk::engine::sound_container::type())
+            if (node->get_object_type() == sbk::engine::sound_container::type())
             {
                 if (sbk::engine::sound_container* const soundContainer =
                         node->try_convert_object<sbk::engine::sound_container>())

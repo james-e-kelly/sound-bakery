@@ -122,7 +122,7 @@ bool node_instance::play()
         return true;
     }
 
-    if (m_referencingNode->getType() == rttr::type::get<sound_container>())
+    if (m_referencingNode->get_object_type() == rttr::type::get<sound_container>())
     {
         sound_container* soundContainer  = m_referencingNode->try_convert_object<sound_container>();
         sound* engineSound               = soundContainer->get_sound();
@@ -189,7 +189,7 @@ void node_instance::update()
             m_children.childrenNodes.clear();
 
             // Sequence nodes retrigger when the current sound stops
-            if (m_referencingNode->getType() == rttr::type::get<sequence_container>())
+            if (m_referencingNode->get_object_type() == rttr::type::get<sequence_container>())
             {
                 m_children.createChildren(*m_referencingNode->try_convert_object<node_base>(), m_owningVoice, this,
                                           ++m_numTimesPlayed);

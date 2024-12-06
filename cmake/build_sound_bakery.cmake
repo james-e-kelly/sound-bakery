@@ -68,6 +68,7 @@ macro(set_sources)
     core/property.h
 
     core/object/object.h
+    core/object/object.inl
     core/object/object_tracker.h
     core/object/object_owner.h
 

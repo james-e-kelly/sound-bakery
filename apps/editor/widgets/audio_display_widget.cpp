@@ -112,7 +112,7 @@ void audio_display_widget::render()
     {
         if (sbk::core::object* selected = manager->get_selection().get_selected())
         {
-            if (selected->getType() == sbk::engine::sound::type())
+            if (selected->get_object_type() == sbk::engine::sound::type())
             {
                 static float scale = 1.0f;
                 ImGui::SliderFloat("Scale", &scale, 0.01f, 2.0f);

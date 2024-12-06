@@ -22,7 +22,7 @@ bool sbk::engine::bus::can_add_parent_type(const rttr::type& parentType) const
 
 void sbk::engine::bus::setMasterBus(bool isMaster)
 {
-    if (getType() == rttr::type::get<bus>())
+    if (get_object_type() == rttr::type::get<bus>())
     {
         m_masterBus = isMaster;
 

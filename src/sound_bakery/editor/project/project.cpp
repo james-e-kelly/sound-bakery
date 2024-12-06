@@ -222,7 +222,7 @@ void sbk::editor::project::saveObjects() const
             YAML::Emitter yaml;
             sbk::core::serialization::Serializer::saveObject(sharedObject.get(), yaml);
 
-            const std::filesystem::path filePath = m_projectConfig.type_folder(sharedObject->getType()) /
+            const std::filesystem::path filePath = m_projectConfig.type_folder(sharedObject->get_object_type()) /
                                                    m_projectConfig.get_filename_for_id(sharedObject.get());
             std::filesystem::create_directories(filePath.parent_path());
 

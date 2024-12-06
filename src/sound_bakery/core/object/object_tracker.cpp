@@ -10,7 +10,7 @@ void object_tracker::track_object(object* object)
 {
     if (object != nullptr)
     {
-        const rttr::type type             = object->getType();
+        const rttr::type type             = object->get_object_type();
         const SB_OBJECT_CATEGORY category = sbk::util::type_helper::getCategoryFromType(type);
 
         m_typeToObjects[type].emplace(object);
@@ -24,7 +24,7 @@ void object_tracker::untrack_object(object* object, std::optional<rttr::type> ty
 {
     if (object != nullptr)
     {
-        const rttr::type type             = typeOverride.has_value() ? typeOverride.value() : object->getType();
+        const rttr::type type             = typeOverride.has_value() ? typeOverride.value() : object->get_object_type();
         const SB_OBJECT_CATEGORY category = sbk::util::type_helper::getCategoryFromType(type);
 
         if (type.is_valid())

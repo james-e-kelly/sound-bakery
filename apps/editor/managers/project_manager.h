@@ -21,7 +21,7 @@ struct selection
     {
         if (m_selected)
         {
-            return m_selected->getType();
+            return m_selected->get_object_type();
         }
         return std::nullopt;
     }

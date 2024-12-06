@@ -29,8 +29,8 @@ void details_widget::render()
                 selection& selection = projectManager->get_selection();
                 if (sbk::core::object* selected = selection.get_selected())
                 {
-                    property_drawer::draw_object(selected->getType(), selected);
-                    method_drawer::draw_object(selected->getType(), selected);
+                    property_drawer::draw_object(selected->get_object_type(), selected);
+                    method_drawer::draw_object(selected->get_object_type(), selected);
 
                     add_effect_button addEffectButton;
                     addEffectButton.render_cursor();

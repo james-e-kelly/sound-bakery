@@ -28,63 +28,29 @@ namespace sbk::core
         object() = default;
         virtual ~object();
 
-        [[nodiscard]] object_owner* owner() const { return m_owner; }
-
         /**
          * @brief Gets the most derived type of this object and upcasts it to T
-         * @tparam T
-         * @return
          */
         template <typename T>
-        T* try_convert_object() noexcept
-        {
-            if (getType().is_derived_from(T::type()) || getType() == T::type())
-            {
-                return sbk::reflection::cast<T*, object*>(this);
-            }
-            return nullptr;
-        }
+        [[nodiscard]] auto try_convert_object() noexcept -> T*;
 
+        /**
+         * @brief Const version of try_convert_object.
+         */
         template <typename T>
-        const T* try_convert_object() const noexcept
-        {
-            if (getType().is_derived_from(T::type()) || getType() == T::type())
-            {
-                return sbk::reflection::cast<const T*, const object*>(this);
-            }
-            return nullptr;
-        }
+        [[nodiscard]] auto try_convert_object() const noexcept -> const T*;
 
-        rttr::type getType() const
-        {
-            if (this == nullptr)
-            {
-                return rttr::type::get<void>();
-            }
+        auto destroy() -> void;
 
-            if (!m_type.has_value())
-            {
-                m_type = get_type();
-            }
-
-            assert(m_type.has_value());
-            assert(m_type.value().is_valid());
-
-            return m_type.value();
-        }
-
-        void destroy();
-
-        [[nodiscard]] MulticastDelegate<object*>& get_on_destroy() { return m_onDestroyEvent; }
+        [[nodiscard]] auto get_object_type() const -> rttr::type;
+        [[nodiscard]] auto get_owner() const -> object_owner*;
+        [[nodiscard]] auto get_on_destroy() -> MulticastDelegate<object*>&;
 
     private:
         friend class object_owner;
 
-        void set_owner(object_owner* newOwner)
-        {
-            assert(m_owner == nullptr);
-            m_owner = newOwner;
-        }
+        auto set_owner(object_owner* newOwner) -> void;
+        auto cache_type() -> void;
 
         object_owner* m_owner = nullptr;
 
@@ -96,4 +62,6 @@ namespace sbk::core
 
         MulticastDelegate<object*> m_onDestroyEvent;
     };
+
+    #include "object.inl"
 }  // namespace sbk::core
