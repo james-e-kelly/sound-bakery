@@ -1091,7 +1091,7 @@ sc_result sc_dsp_get_metering_info(sc_dsp* dsp, ma_uint32 channelIndex, sc_dsp_m
 
 static ma_uint32 sc_clap_input_events_size(const clap_input_events_t* list) { return 0; }
 
-static clap_event_header_t* sc_clap_input_events_get(const clap_input_events_t* list, ma_uint32 index) { return NULL; }
+static const clap_event_header_t* sc_clap_input_events_get(const clap_input_events_t* list, ma_uint32 index) { return NULL; }
 
 static bool sc_clap_output_events_try_push(const clap_output_events_t* list, const clap_event_header_t* event)
 {
