@@ -339,7 +339,7 @@ sc_result sc_system_init(sc_system* system, const sc_system_config* systemConfig
 
                         while (directoryEntry != NULL)
                         {
-                            if (directoryEntry->d_namlen > 5)
+                            if (strlen(directoryEntry->d_name) > 5)
                             {
                                 const char* const fileExt = sc_filename_get_ext(directoryEntry->d_name);
 
@@ -1207,7 +1207,7 @@ static void sc_clap_node_uninit(sc_clap_node* node, const ma_allocation_callback
 
 static sc_result sc_dsp_clap_create(sc_dsp_state* state)
 {
-    SC_CREATE((sc_clap_node*)state->userData, sc_clap_node);
+    SC_CREATE(state->userData, sc_clap_node);
 
     sc_system* const system                        = state->system;
     sc_clap_node* const clapNode = (sc_clap_node*)state->userData;
