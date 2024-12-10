@@ -25,7 +25,7 @@ void sbk::engine::switch_container::gather_children_for_play(gather_children_con
 
         if (selectedChild.lookup())
         {
-            context.sounds.push_back(selectedChild.lookupRaw());
+            context.sounds.push_back(selectedChild.lookup_raw());
         }
     }
 }

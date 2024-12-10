@@ -280,7 +280,7 @@ void property_drawer::draw_readonly_variant(rttr::variant variant, bool disabled
         {
             ImGui::TextUnformatted(object->get_database_name().data());
         }
-        else if (object.hasId())
+        else if (object.has_id())
         {
             ImGui::Text("object Unloaded {%s}", rttr::variant(object.id()).to_string().c_str());
         }

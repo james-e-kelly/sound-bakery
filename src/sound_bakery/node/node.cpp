@@ -63,11 +63,11 @@ SB_NODE_STATUS sbk::engine::node_base::getNodeStatus() const noexcept
 {
     SB_NODE_STATUS status = SB_NODE_NULL;
 
-    if (m_parentNode.hasId())
+    if (m_parentNode.has_id())
     {
         status = SB_NODE_MIDDLE;
     }
-    else if (m_outputBus.hasId())
+    else if (m_outputBus.has_id())
     {
         status = SB_NODE_TOP;
     }
@@ -75,9 +75,9 @@ SB_NODE_STATUS sbk::engine::node_base::getNodeStatus() const noexcept
     return status;
 }
 
-node_base* sbk::engine::node_base::get_parent() const { return m_parentNode.lookupRaw(); }
+node_base* sbk::engine::node_base::get_parent() const { return m_parentNode.lookup_raw(); }
 
-node_base* sbk::engine::node_base::get_output_bus() const { return m_outputBus.lookupRaw(); }
+node_base* sbk::engine::node_base::get_output_bus() const { return m_outputBus.lookup_raw(); }
 
 bool sbk::engine::node_base::can_add_children() const { return true; }
 
