@@ -145,7 +145,7 @@ void sbk::editor::project::loadObjects()
         {
             if (directoryEntry.is_regular_file())
             {
-                YAML::Node node = YAML::LoadFile(directoryEntry.path().string());
+                YAML::Node node                           = YAML::LoadFile(directoryEntry.path().string());
                 std::shared_ptr<sbk::core::object> object = load_object(node);
             }
         }

@@ -19,8 +19,8 @@ namespace sbk::core
          * @param addToDatabase to automatically track the object. If set to false, the user is responsible for adding
          * the object to the database.
          */
-        [[nodiscard]] auto create_database_object(const rttr::type& type, bool addToDatabase = true)
-            -> std::shared_ptr<database_object>;
+        [[nodiscard]] auto create_database_object(const rttr::type& type,
+                                                  bool addToDatabase = true) -> std::shared_ptr<database_object>;
 
         template <typename T>
         [[nodiscard]] auto create_runtime_object() -> std::shared_ptr<T>;
@@ -39,5 +39,5 @@ namespace sbk::core
         std::vector<std::shared_ptr<object>> m_objects;
     };
 
-    #include "object_owner.inl"
+#include "object_owner.inl"
 }  // namespace sbk::core

@@ -63,5 +63,5 @@ namespace sbk::core
         MulticastDelegate<object*> m_onDestroyEvent;
     };
 
-    #include "object.inl"
+#include "object.inl"
 }  // namespace sbk::core

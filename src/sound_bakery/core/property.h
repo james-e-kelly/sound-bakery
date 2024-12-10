@@ -27,13 +27,13 @@ namespace sbk::core
         }
 
         property(property&& other) = default;
-        ~property() = default;
+        ~property()                = default;
 
         property& operator=(const property& other)
         {
             if (this != &other)
             {
-                m_value = other.m_value;
+                m_value    = other.m_value;
                 m_min      = other.m_min;
                 m_max      = other.m_max;
                 m_delegate = other.m_delegate;
@@ -60,7 +60,7 @@ namespace sbk::core
 
         [[nodiscard]] auto get() const -> T { return m_value; }
         [[nodiscard]] auto get_min() const -> T { return m_min; }
-        [[nodiscard]] auto get_max() const -> T{ return m_max; }
+        [[nodiscard]] auto get_max() const -> T { return m_max; }
         [[nodiscard]] auto get_min_max_pair() const -> std::pair<T, T> { return std::pair<T, T>(m_min, m_max); }
         [[nodiscard]] auto get_delegate() -> property_changed_delegate& { return m_delegate; }
 

@@ -9,10 +9,7 @@ sbk::core::object::~object() { m_onDestroyEvent.Broadcast(this); }
 
 auto sbk::core::object::get_owner() const -> object_owner* { return m_owner; }
 
-auto sbk::core::object::get_on_destroy() -> MulticastDelegate<object*>&
-{
-    return m_onDestroyEvent;
-}
+auto sbk::core::object::get_on_destroy() -> MulticastDelegate<object*>& { return m_onDestroyEvent; }
 
 auto sbk::core::object::set_owner(object_owner* newOwner) -> void
 {

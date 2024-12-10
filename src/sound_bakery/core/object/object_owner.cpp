@@ -106,7 +106,8 @@ auto sbk::core::object_owner::load_object(YAML::Node& node) -> std::shared_ptr<s
     return {};
 }
 
-auto sbk::core::object_owner::create_database_object(const rttr::type& type, bool addToDatabase) -> std::shared_ptr<sbk::core::database_object>
+auto sbk::core::object_owner::create_database_object(const rttr::type& type,
+                                                     bool addToDatabase) -> std::shared_ptr<sbk::core::database_object>
 {
     sbk::engine::system* const system = sbk::engine::system::get();
 
@@ -158,7 +159,4 @@ auto sbk::core::object_owner::destroy_all() -> void { m_objects.clear(); }
 
 auto sbk::core::object_owner::get_objects() -> std::vector<std::shared_ptr<object>>& { return m_objects; }
 
-auto sbk::core::object_owner::get_objects() const -> const std::vector<std::shared_ptr<object>>&
-{
-    return m_objects;
-}
+auto sbk::core::object_owner::get_objects() const -> const std::vector<std::shared_ptr<object>>& { return m_objects; }
