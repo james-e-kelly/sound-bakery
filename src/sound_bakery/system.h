@@ -43,6 +43,7 @@ namespace sbk
         {
             REGISTER_REFLECTION(system)
             NOT_COPYABLE(system)
+            LEAK_DETECTOR(system)
 
         public:
             system();

@@ -53,7 +53,6 @@ namespace sbk::util
 
 }  // namespace sbk::util
 #define LEAK_DETECTOR(owner_class)                               \
-                                                                 \
 private:                                                         \
     friend class sbk::util::leaked_object_detector<owner_class>; \
     sbk::util::leaked_object_detector<owner_class> leakDetector;
