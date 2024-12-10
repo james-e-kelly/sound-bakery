@@ -112,9 +112,6 @@ macro(set_sources)
 
     sound/sound.h
 
-    util/api_macros.h
-    util/fmod_pointers.h
-    util/sb_pointers.h
     util/type_helper.h
     util/macros.h
     util/leak_detector.h
