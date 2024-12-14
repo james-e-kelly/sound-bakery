@@ -1,7 +1,6 @@
 macro(set_sources)
     set(SOUND_BAKERY_SOURCES 
     system.cpp
-    factory.cpp
     pch.cpp
 
     api/sound_bakery.cpp
@@ -60,7 +59,6 @@ macro(set_sources)
     set(SOUND_BAKERY_HEADERS
     sound_bakery_internal.h
     system.h
-    factory.h
     pch.h
 
     core/core_include.h

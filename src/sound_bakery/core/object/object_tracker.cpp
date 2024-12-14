@@ -1,7 +1,6 @@
 #include "object_tracker.h"
 
 #include "sound_bakery/core/object/object.h"
-#include "sound_bakery/factory.h"
 #include "sound_bakery/util/type_helper.h"
 
 using namespace sbk::core;

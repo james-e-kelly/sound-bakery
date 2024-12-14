@@ -1,7 +1,6 @@
 #include "system.h"
 
 #include "sound_bakery/editor/project/project.h"
-#include "sound_bakery/factory.h"
 #include "sound_bakery/gameobject/gameobject.h"
 #include "sound_bakery/node/bus/bus.h"
 #include "sound_bakery/profiling/voice_tracker.h"

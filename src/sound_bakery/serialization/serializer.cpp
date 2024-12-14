@@ -3,7 +3,6 @@
 #include "sound_bakery/core/object/object.h"
 #include "sound_bakery/core/object/object_tracker.h"
 #include "sound_bakery/event/event.h"
-#include "sound_bakery/factory.h"
 #include "sound_bakery/node/container/sound_container.h"
 #include "sound_bakery/node/node.h"
 #include "sound_bakery/sound/sound.h"
