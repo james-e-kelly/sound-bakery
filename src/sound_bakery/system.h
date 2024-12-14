@@ -20,9 +20,9 @@ namespace sbk
 
     namespace engine
     {
-        namespace Profiling
+        namespace profiling
         {
-            class VoiceTracker;
+            class voice_tracker;
         }
 
         class bus;
@@ -49,42 +49,31 @@ namespace sbk
             system();
             ~system();
 
-            static system* get();
+            static auto create() -> system*;
+            static auto init(const sb_system_config& config) -> sc_result;
+            static auto update() -> sc_result;
+            static auto destroy() -> void;
 
-            static system* create();
-            static void destroy();
-
-            static sc_result init(const sb_system_config& config);
-            static sc_result update();
-
-            /**
-             * @brief Returns the current object owner. Either a project or soundbank runtime.
-             */
-            sbk::core::object_owner* current_object_owner();
+            [[nodiscard]] static auto get() -> system*;
+            [[nodiscard]] static auto get_project() -> sbk::editor::project*;
+            [[nodiscard]] static auto get_voice_tracker() -> sbk::engine::profiling::voice_tracker*;
+            [[nodiscard]] auto get_game_thread_executer() const -> std::shared_ptr<concurrencpp::manual_executor>;
+            [[nodiscard]] auto get_listener_game_object() const -> sbk::engine::game_object*;
+            [[nodiscard]] auto get_master_bus() const -> sbk::engine::bus*;
+            [[nodiscard]] auto get_current_object_owner() -> sbk::core::object_owner*;  //< Either project for editor or system for runtime
 
             /**
              * @brief Creates an instance of Sound Bakery and opens the project.
              */
-            static sc_result open_project(const std::filesystem::path& project_file);
+            static auto open_project(const std::filesystem::path& project_file) -> sc_result;
 
             /**
              * @brief Creates a project and initializes Sound Bakery.
              */
-            static sc_result create_project(const std::filesystem::directory_entry& projectDirectory,
-                                            const std::string& projectName);
+            static auto create_project(const std::filesystem::directory_entry& projectDirectory,
+                                       const std::string& projectName) -> sc_result;
 
-            static sbk::editor::project* get_project();
-            static sbk::engine::Profiling::VoiceTracker* get_voice_tracker();
-
-            std::shared_ptr<concurrencpp::manual_executor> game_thread_executer() const { return m_gameThreadExecuter; }
-
-            [[nodiscard]] sbk::engine::game_object* get_listener_game_object() const
-            {
-                return m_listenerGameObject.get();
-            }
-            [[nodiscard]] sbk::engine::bus* get_master_bus() const { return m_masterBus.get(); }
-
-            void set_master_bus(const std::shared_ptr<sbk::engine::bus>& masterBus);
+            auto set_master_bus(const std::shared_ptr<sbk::engine::bus>& masterBus) -> void;
 
         private:
             bool m_registeredReflection = false;
@@ -92,7 +81,7 @@ namespace sbk
             std::shared_ptr<sbk::engine::game_object> m_listenerGameObject;
             std::shared_ptr<sbk::engine::bus> m_masterBus;
             std::unique_ptr<sbk::editor::project> m_project;
-            std::unique_ptr<Profiling::VoiceTracker> m_voiceTracker;
+            std::unique_ptr<profiling::voice_tracker> m_voiceTracker;
             std::shared_ptr<concurrencpp::manual_executor> m_gameThreadExecuter;
             std::shared_ptr<spdlog::logger> m_logger;
         };

@@ -72,7 +72,7 @@ void sbk::editor::project::encode_all_media() const
                             soundPath.string().c_str(), encodedSoundFile.string().c_str(), &encoderConfig);
                         assert(result == MA_SUCCESS);
 
-                        concurrencpp::resume_on(sbk::engine::system::get()->game_thread_executer());
+                        concurrencpp::resume_on(sbk::engine::system::get()->get_game_thread_executer());
 
                         sound->setEncodedSoundName(encodedSoundFile.string());
                     });

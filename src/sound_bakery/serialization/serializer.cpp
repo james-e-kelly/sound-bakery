@@ -476,7 +476,7 @@ rttr::instance sbk::core::serialization::Serializer::createAndLoadObject(YAML::N
 
     if (sbk::engine::system* const system = sbk::engine::system::get())
     {
-        if (sbk::core::object_owner* const objectOwner = system->current_object_owner())
+        if (sbk::core::object_owner* const objectOwner = system->get_current_object_owner())
         {
             rttr::variant created = objectOwner->create_runtime_object(type);
 

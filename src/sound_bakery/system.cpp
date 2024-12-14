@@ -65,7 +65,7 @@ system::~system()
 
     // Close threads
     background_executor()->shutdown();
-    game_thread_executer()->shutdown();
+    get_game_thread_executer()->shutdown();
 
     if (m_project)
     {
@@ -131,7 +131,7 @@ sc_result system::init(const sb_system_config& config)
 
     // TODO
     // Add way of turning off profiling
-    s_system->m_voiceTracker = std::make_unique<Profiling::VoiceTracker>();
+    s_system->m_voiceTracker = std::make_unique<profiling::voice_tracker>();
 
     return result;
 }
@@ -168,7 +168,7 @@ sc_result system::update()
     return MA_SUCCESS;
 }
 
-sbk::core::object_owner* system::current_object_owner() { return m_project.get(); }
+sbk::core::object_owner* system::get_current_object_owner() { return m_project.get(); }
 
 sc_result system::open_project(const std::filesystem::path& project_file)
 {
@@ -260,7 +260,7 @@ sbk::editor::project* system::get_project()
     return nullptr;
 }
 
-sbk::engine::Profiling::VoiceTracker* system::get_voice_tracker()
+sbk::engine::profiling::voice_tracker* system::get_voice_tracker()
 {
     if (s_system != nullptr)
     {
@@ -269,6 +269,17 @@ sbk::engine::Profiling::VoiceTracker* system::get_voice_tracker()
 
     return nullptr;
 }
+
+auto sbk::engine::system::get_game_thread_executer() const -> std::shared_ptr<concurrencpp::manual_executor>
+{
+    return m_gameThreadExecuter;
+}
+
+sbk::engine::game_object* sbk::engine::system::get_listener_game_object() const
+{
+    return m_listenerGameObject.get(); }
+
+auto sbk::engine::system::get_master_bus() const -> sbk::engine::bus* { return m_masterBus.get(); }
 
 void sbk::engine::system::set_master_bus(const std::shared_ptr<sbk::engine::bus>& masterBus)
 {

@@ -6,9 +6,9 @@
 #include "sound_bakery/voice/node_instance.h"
 #include "sound_bakery/voice/voice.h"
 
-using namespace sbk::engine::Profiling;
+using namespace sbk::engine::profiling;
 
-void VoiceTracker::update(system* system)
+void voice_tracker::update(system* system)
 {
     m_playingNodeIDs.clear();
     m_nodePlayingCount.clear();
@@ -61,7 +61,7 @@ void VoiceTracker::update(system* system)
     }
 }
 
-unsigned int VoiceTracker::getPlayingCountOfObject(sbk_id id) const
+unsigned int voice_tracker::getPlayingCountOfObject(sbk_id id) const
 {
     unsigned int result = 0;
 
