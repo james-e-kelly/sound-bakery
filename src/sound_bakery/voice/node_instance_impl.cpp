@@ -8,7 +8,7 @@ using namespace sbk::engine;
 
 static void addDspToNodeGroup(sc_node_group* nodeGroup, sc_dsp** dsp, const sc_dsp_config& config)
 {
-    assert(dsp != nullptr);
+    BOOST_ASSERT(dsp != nullptr);
     sc_system_create_dsp(sbk::engine::system::get(), &config, dsp);
     sc_node_group_add_dsp(nodeGroup, *dsp, SC_DSP_INDEX_HEAD);
 }

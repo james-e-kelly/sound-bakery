@@ -227,7 +227,7 @@ void node_instance::setLowpass(float oldLowpass, float newLowpass)
 
     const double percentage    = sbk::maths::easeOutCubic(newLowpass / 100.0);
     const double lowpassCutoff = (19980 - (19980.0 * percentage)) + 20.0;
-    assert(lowpassCutoff >= 20.0);
+    BOOST_ASSERT(lowpassCutoff >= 20.0);
 
     sc_dsp_set_parameter_float(m_nodeGroup.lowpass, SC_DSP_LOWPASS_CUTOFF, static_cast<float>(lowpassCutoff));
 }
@@ -238,7 +238,7 @@ void node_instance::setHighpass(float oldHighpass, float newHighpass)
 
     const double percentage     = sbk::maths::easeInCubic(newHighpass / 100.0);
     const double highpassCutoff = (19980.0 * percentage) + 20.0;
-    assert(highpassCutoff >= 20.0);
+    BOOST_ASSERT(highpassCutoff >= 20.0);
 
     sc_dsp_set_parameter_float(m_nodeGroup.highpass, SC_DSP_HIGHPASS_CUTOFF, static_cast<float>(highpassCutoff));
 }

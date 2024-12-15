@@ -54,7 +54,7 @@ sbk::engine::soundbank_dependencies sbk::engine::soundbank::gather_dependencies(
                     if (sbk::engine::sound* const sound = soundContainer->get_sound())
                     {
                         const sbk::engine::encoding_sound encodingSound = sound->get_encoding_sound_data();
-                        assert(!encodingSound.encodedSoundPath.empty());
+                        BOOST_ASSERT(!encodingSound.encodedSoundPath.empty());
 
                         dependencies.encodedSoundPathsStrings.push_back(encodingSound.encodedSoundPath.string());
                         dependencies.encodedSoundPaths.push_back(dependencies.encodedSoundPathsStrings.back().c_str());

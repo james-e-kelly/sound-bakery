@@ -59,7 +59,7 @@ SB_OBJECT_CATEGORY type_helper::getCategoryFromType(rttr::type type)
     }
     else
     {
-        assert(false && "Could not get category for type");
+        BOOST_ASSERT(false && "Could not get category for type");
     }
 
     return category;

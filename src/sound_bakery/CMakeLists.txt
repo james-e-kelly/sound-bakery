@@ -33,6 +33,7 @@ target_link_libraries(sound_bakery PUBLIC
   concurrencpp::concurrencpp
   spdlog::spdlog
   yaml-cpp::yaml-cpp
+  Boost::assert
   Boost::serialization
 )
 

@@ -87,7 +87,7 @@ void loadSimpleProperty(YAML::Node& node,
 
     if (!node.IsDefined())
     {
-        assert(success);
+        BOOST_ASSERT(success);
         return;
     }
 
@@ -105,11 +105,11 @@ void loadSimpleProperty(YAML::Node& node,
 
     if (loadedVariant.convert(propertyType))
     {
-        assert(loadedVariant.is_valid());
-        assert(loadedVariant.get_type() == propertyType);
+        BOOST_ASSERT(loadedVariant.is_valid());
+        BOOST_ASSERT(loadedVariant.get_type() == propertyType);
 
         success = property.set_value(instance, loadedVariant);
-        assert(success);
+        BOOST_ASSERT(success);
     }
     else if (propertyType == rttr::type::get<std::string_view>())
     {
@@ -123,11 +123,11 @@ void loadSimpleProperty(YAML::Node& node,
     else if (propertyType == rttr::type::get<rttr::variant>())
     {
         success = property.set_value(instance, loadedVariant);
-        assert(success);
+        BOOST_ASSERT(success);
     }
     else
     {
-        assert(false);
+        BOOST_ASSERT(false);
     }
 
     // assert(success);
@@ -140,7 +140,7 @@ void loadProperty(YAML::Node& node, rttr::property property, rttr::instance inst
         return;
     }
 
-    assert(instance.is_valid());
+    BOOST_ASSERT(instance.is_valid());
 
     const rttr::type propertyType        = property.get_type();
     const rttr::string_view propertyName = property.get_name();
@@ -165,11 +165,11 @@ void loadProperty(YAML::Node& node, rttr::property property, rttr::instance inst
                     bool success            = property.set_value(instance, enumValue);
                     rttr::type instanceType = instance.get_type();
                     rttr::type derivedType  = instance.get_derived_type();
-                    assert(success);
+                    BOOST_ASSERT(success);
                 }
                 else
                 {
-                    assert(false);
+                    BOOST_ASSERT(false);
                 }
             }
         }
@@ -197,7 +197,7 @@ void loadProperty(YAML::Node& node, rttr::property property, rttr::instance inst
 
                 key.convert(keyType);
 
-                assert(key.is_valid());
+                BOOST_ASSERT(key.is_valid());
 
                 if (associativeView.is_key_only_type())
                 {
@@ -214,7 +214,7 @@ void loadProperty(YAML::Node& node, rttr::property property, rttr::instance inst
 
                     value.convert(valueType);
 
-                    assert(value.is_valid());
+                    BOOST_ASSERT(value.is_valid());
 
                     associativeView.insert(key, value);
                 }
@@ -281,7 +281,7 @@ void loadProperty(YAML::Node& node, rttr::property property, rttr::instance inst
                 {
                     const std::size_t currentIndex = index++;
 
-                    assert(valueType.is_class());
+                    BOOST_ASSERT(valueType.is_class());
 
                     if (currentIndex >= sequentialView.get_size() && !needToCreate)
                     {
@@ -291,7 +291,7 @@ void loadProperty(YAML::Node& node, rttr::property property, rttr::instance inst
                     rttr::variant variant =
                         needToCreate ? valueType.create_default() : sequentialView.get_value(currentIndex);
 
-                    assert(variant.is_valid());
+                    BOOST_ASSERT(variant.is_valid());
 
                     for (const rttr::property childProperty : valueType.get_properties())
                     {
@@ -302,19 +302,19 @@ void loadProperty(YAML::Node& node, rttr::property property, rttr::instance inst
                     }
 
                     const bool convert = variant.convert(valueType);
-                    assert(convert);
+                    BOOST_ASSERT(convert);
 
                     if (needToCreate)
                     {
                         const rttr::variant_sequential_view::const_iterator iterator =
                             sequentialView.insert(sequentialView.begin() + currentIndex, variant);
 
-                        assert(iterator != sequentialView.end());
+                        BOOST_ASSERT(iterator != sequentialView.end());
                     }
                     else
                     {
                         const bool set = sequentialView.set_value(currentIndex, variant);
-                        assert(set);
+                        BOOST_ASSERT(set);
                     }
                 }
             }
@@ -339,7 +339,7 @@ void loadProperty(YAML::Node& node, rttr::property property, rttr::instance inst
     }
     else
     {
-        assert(false);  // ignore the assert, just want to see what we haven't
+        BOOST_ASSERT(false);  // ignore the assert, just want to see what we haven't
                         // accounted for
         loadSimpleProperty(node, propertyType, property, instance);
     }
@@ -431,7 +431,7 @@ void yaml_serializer::packageSoundbank(sbk::engine::soundbank* soundbank, YAML::
 
         for (sbk::engine::event* event : eventsToSave)
         {
-            assert(event);
+            BOOST_ASSERT(event);
 
             Doc eventDoc(emitter);
 
@@ -440,7 +440,7 @@ void yaml_serializer::packageSoundbank(sbk::engine::soundbank* soundbank, YAML::
 
         for (sbk::engine::node_base* node : nodesToSave)
         {
-            assert(node);
+            BOOST_ASSERT(node);
 
             Doc soundDoc(emitter);
 
@@ -449,7 +449,7 @@ void yaml_serializer::packageSoundbank(sbk::engine::soundbank* soundbank, YAML::
 
         for (sbk::engine::sound* sound : soundsToSave)
         {
-            assert(sound);
+            BOOST_ASSERT(sound);
 
             Doc soundDoc(emitter);
 
@@ -542,7 +542,7 @@ bool sbk::core::serialization::yaml_serializer::saveInstance(YAML::Emitter& emit
         {
             rttr::variant propertyValue = property.get_value(instance);
 
-            assert(propertyValue.is_valid());
+            BOOST_ASSERT(propertyValue.is_valid());
 
             result &= saveVariant(emitter, property.get_name(), propertyValue);
         }
@@ -582,7 +582,7 @@ bool yaml_serializer::saveVariant(YAML::Emitter& emitter, rttr::string_view name
         }
         else
         {
-            assert(false);
+            BOOST_ASSERT(false);
         }
     }
 

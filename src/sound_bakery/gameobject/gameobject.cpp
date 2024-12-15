@@ -198,5 +198,5 @@ void sbk::engine::game_object::set_int_parameter_value(
 
     m_parameters.intParameters[parameterValue.first].set(parameterValue.second);
 
-    assert(m_parameters.intParameters[parameterValue.first].get() == parameterValue.second);
+    BOOST_ASSERT(m_parameters.intParameters[parameterValue.first].get() == parameterValue.second);
 }

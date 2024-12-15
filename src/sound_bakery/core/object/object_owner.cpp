@@ -55,10 +55,10 @@ auto sbk::core::object_owner::create_runtime_object(const rttr::type& type) -> s
     }
     else
     {
-        assert(false);
+        BOOST_ASSERT(false);
     }
 
-    assert(result);
+    BOOST_ASSERT(result);
 
     m_objects.emplace_back(result);
 
@@ -100,7 +100,7 @@ auto sbk::core::object_owner::load_object(YAML::Node& node) -> std::shared_ptr<s
     }
     else
     {
-        assert(false);
+        BOOST_ASSERT(false);
     }
 
     return {};

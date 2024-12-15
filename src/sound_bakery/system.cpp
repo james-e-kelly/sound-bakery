@@ -51,11 +51,11 @@ namespace
 
 system::system() : sc_system(), m_gameThreadExecuter(make_manual_executor())
 {
-    assert(s_system == nullptr);
+    BOOST_ASSERT(s_system == nullptr);
     s_system = this;
 
     const sc_result initLogResult = sc_system_log_init(this, miniaudio_log_callback);
-    assert(initLogResult == MA_SUCCESS);
+    BOOST_ASSERT(initLogResult == MA_SUCCESS);
 }
 
 system::~system()
@@ -82,7 +82,7 @@ system::~system()
     }
 
     destroy_all();
-    assert(get_objects_count() == 0);
+    BOOST_ASSERT(get_objects_count() == 0);
 
     sc_system_close(this);
 
@@ -118,7 +118,7 @@ sc_result system::init(const sb_system_config& config)
     }
 
     const sc_result result = sc_system_init(s_system, &config.soundChefConfig);
-    assert(result == MA_SUCCESS);
+    BOOST_ASSERT(result == MA_SUCCESS);
 
     if (!s_registeredReflection)
     {
@@ -282,6 +282,6 @@ auto sbk::engine::system::get_master_bus() const -> sbk::engine::bus* { return m
 
 void sbk::engine::system::set_master_bus(const std::shared_ptr<sbk::engine::bus>& masterBus)
 {
-    assert(!m_masterBus);
+    BOOST_ASSERT(!m_masterBus);
     m_masterBus = masterBus;
 }

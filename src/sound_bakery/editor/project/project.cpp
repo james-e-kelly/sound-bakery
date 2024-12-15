@@ -70,7 +70,7 @@ void sbk::editor::project::encode_all_media() const
                     {
                         sc_result result = sc_encoder_write_from_file(
                             soundPath.string().c_str(), encodedSoundFile.string().c_str(), &encoderConfig);
-                        assert(result == MA_SUCCESS);
+                        BOOST_ASSERT(result == MA_SUCCESS);
 
                         concurrencpp::resume_on(sbk::engine::system::get()->get_game_thread_executer());
 
@@ -189,12 +189,12 @@ void sbk::editor::project::build_soundbanks() const
                                  .string()
                                  .c_str(),
                              MA_OPEN_MODE_WRITE);
-            assert(initresult == MA_SUCCESS);
+            BOOST_ASSERT(initresult == MA_SUCCESS);
 
             const sc_result buildResult = sc_bank_build(&bank, soundbankDependencies.encodedSoundPaths.data(),
                                                         soundbankDependencies.encodingFormats.data(),
                                                         soundbankDependencies.encodedSoundPaths.size());
-            assert(buildResult == MA_SUCCESS);
+            BOOST_ASSERT(buildResult == MA_SUCCESS);
 
             sc_bank_uninit(&bank);
         }

@@ -13,7 +13,7 @@ auto sbk::core::object::get_on_destroy() -> MulticastDelegate<object*>& { return
 
 auto sbk::core::object::set_owner(object_owner* newOwner) -> void
 {
-    assert(m_owner == nullptr);
+    BOOST_ASSERT(m_owner == nullptr);
     m_owner = newOwner;
 }
 
@@ -37,8 +37,8 @@ auto sbk::core::object::get_object_type() const -> rttr::type
         m_type = get_type();
     }
 
-    assert(m_type.has_value());
-    assert(m_type.value().is_valid());
+    BOOST_ASSERT(m_type.has_value());
+    BOOST_ASSERT(m_type.value().is_valid());
 
     return m_type.value();
 }

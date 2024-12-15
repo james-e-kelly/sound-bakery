@@ -9,7 +9,7 @@
 #include "spdlog/spdlog.h"
 
 #include <atomic>
-#include <cassert>
+#include <boost/assert.hpp>
 #include <filesystem>
 #include <fstream>
 #include <iostream>

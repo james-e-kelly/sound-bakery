@@ -47,13 +47,13 @@ void sound::loadSynchronous()
         }
     }
 
-    assert(std::filesystem::exists(finalSoundPath));
+    BOOST_ASSERT(std::filesystem::exists(finalSoundPath));
 
     sc_sound* loadedSound = nullptr;
 
     sc_result result = sc_system_create_sound(sbk::engine::system::get(), finalSoundPath.string().c_str(),
                                               SC_SOUND_MODE_DEFAULT, &loadedSound);
-    assert(result == MA_SUCCESS);
+    BOOST_ASSERT(result == MA_SUCCESS);
 
     m_sound.reset(loadedSound);
 }
