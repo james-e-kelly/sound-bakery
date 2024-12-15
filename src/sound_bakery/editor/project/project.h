@@ -37,7 +37,7 @@ namespace sbk::editor
 
         void createPreviewContainer();
 
-        void buildSoundbanks() const;
+        void build_soundbanks() const;
 
         void saveSystem() const;
         void saveObjects() const;

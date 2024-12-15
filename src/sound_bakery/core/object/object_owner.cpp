@@ -81,7 +81,7 @@ auto sbk::core::object_owner::load_object(YAML::Node& node) -> std::shared_ptr<s
         std::shared_ptr<sbk::core::database_object> databaseObject = create_database_object(type, false);
         sbk::core::database_object* const databaseObjectPointer    = databaseObject.get();
 
-        sbk::core::serialization::Serializer::loadProperties(node, databaseObjectPointer);
+        sbk::core::serialization::yaml_serializer::loadProperties(node, databaseObjectPointer);
 
         if (sbk::engine::system* const system = sbk::engine::system::get())
         {
@@ -94,7 +94,7 @@ auto sbk::core::object_owner::load_object(YAML::Node& node) -> std::shared_ptr<s
     {
         std::shared_ptr<sbk::core::object> object = create_runtime_object(type);
 
-        sbk::core::serialization::Serializer::loadProperties(node, object);
+        sbk::core::serialization::yaml_serializer::loadProperties(node, object);
 
         return object;
     }

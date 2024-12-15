@@ -38,7 +38,7 @@ void sbk::editor::project::save_project() const
 {
     saveSystem();
     saveObjects();
-    buildSoundbanks();  // temp for testing
+    build_soundbanks();  // temp for testing
 }
 
 void sbk::editor::project::encode_all_media() const
@@ -127,7 +127,7 @@ void sbk::editor::project::loadSystem()
         if (p.path().extension() == ".yaml")
         {
             YAML::Node node = YAML::LoadFile(p.path().string());
-            sbk::core::serialization::Serializer::loadSystem(sbk::engine::system::get(), node);
+            sbk::core::serialization::yaml_serializer::loadSystem(sbk::engine::system::get(), node);
         }
     }
 }
@@ -163,17 +163,17 @@ void sbk::editor::project::createPreviewContainer()
     }
 }
 
-void sbk::editor::project::buildSoundbanks() const
+void sbk::editor::project::build_soundbanks() const
 {
     const std::unordered_set<sbk::core::object*> soundbankObjects =
         sbk::engine::system::get()->get_objects_of_category(SB_CATEGORY_BANK);
 
     for (const auto& soundbankObject : soundbankObjects)
     {
-        if (sbk::engine::soundbank* const soundbank = soundbankObject->try_convert_object<sbk::engine::soundbank>())
+        if (const sbk::engine::soundbank* const soundbank = soundbankObject->try_convert_object<sbk::engine::soundbank>())
         {
             /*YAML::Emitter soundbankEmitter;
-            SB::Core::Serialization::Serializer::packageSoundbank(soundbank, soundbankEmitter);
+            SB::Core::Serialization::yaml_serializer::packageSoundbank(soundbank, soundbankEmitter);
 
             const std::filesystem::path filePath =
                 m_projectConfig.objectFolder() / m_projectConfig.getIdFilename(soundbank, std::string(".bank"));
@@ -204,7 +204,7 @@ void sbk::editor::project::buildSoundbanks() const
 void sbk::editor::project::saveSystem() const
 {
     YAML::Emitter systemYaml;
-    sbk::core::serialization::Serializer::saveSystem(sbk::engine::system::get(), systemYaml);
+    sbk::core::serialization::yaml_serializer::saveSystem(sbk::engine::system::get(), systemYaml);
     saveYAML(systemYaml, m_projectConfig.project_folder() / "system.yaml");
 }
 
@@ -220,7 +220,7 @@ void sbk::editor::project::saveObjects() const
             }
 
             YAML::Emitter yaml;
-            sbk::core::serialization::Serializer::saveObject(sharedObject.get(), yaml);
+            sbk::core::serialization::yaml_serializer::saveObject(sharedObject.get(), yaml);
 
             const std::filesystem::path filePath = m_projectConfig.type_folder(sharedObject->get_object_type()) /
                                                    m_projectConfig.get_filename_for_id(sharedObject.get());

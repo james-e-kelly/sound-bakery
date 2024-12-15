@@ -349,7 +349,7 @@ void loadProperty(YAML::Node& node, rttr::property property, rttr::instance inst
 //
 // -----
 
-void Serializer::saveObject(sbk::core::object* object, YAML::Emitter& emitter)
+void yaml_serializer::saveObject(sbk::core::object* object, YAML::Emitter& emitter)
 {
     if (object != nullptr)
     {
@@ -359,7 +359,7 @@ void Serializer::saveObject(sbk::core::object* object, YAML::Emitter& emitter)
     }
 }
 
-void Serializer::saveSystem(sbk::engine::system* system, YAML::Emitter& emitter)
+void yaml_serializer::saveSystem(sbk::engine::system* system, YAML::Emitter& emitter)
 {
     if (system != nullptr)
     {
@@ -369,7 +369,7 @@ void Serializer::saveSystem(sbk::engine::system* system, YAML::Emitter& emitter)
     }
 }
 
-void Serializer::loadSystem(sbk::engine::system* system, YAML::Node& node)
+void yaml_serializer::loadSystem(sbk::engine::system* system, YAML::Node& node)
 {
     if (system != nullptr)
     {
@@ -377,7 +377,7 @@ void Serializer::loadSystem(sbk::engine::system* system, YAML::Node& node)
     }
 }
 
-void Serializer::packageSoundbank(sbk::engine::soundbank* soundbank, YAML::Emitter& emitter)
+void yaml_serializer::packageSoundbank(sbk::engine::soundbank* soundbank, YAML::Emitter& emitter)
 {
     if (soundbank != nullptr)
     {
@@ -466,9 +466,9 @@ void Serializer::packageSoundbank(sbk::engine::soundbank* soundbank, YAML::Emitt
     }
 }
 
-rttr::instance Serializer::unpackSoundbank(YAML::Node& node) { return rttr::instance(); }
+rttr::instance yaml_serializer::unpackSoundbank(YAML::Node& node) { return rttr::instance(); }
 
-rttr::instance sbk::core::serialization::Serializer::createAndLoadObject(YAML::Node& node,
+rttr::instance sbk::core::serialization::yaml_serializer::createAndLoadObject(YAML::Node& node,
                                                                          std::optional<rttr::method> onLoadedMethod)
 {
     const rttr::type type = rttr::type::get_by_name(node[s_ObjectTypeKey].as<std::string>());
@@ -488,7 +488,7 @@ rttr::instance sbk::core::serialization::Serializer::createAndLoadObject(YAML::N
     return {};
 }
 
-bool sbk::core::serialization::Serializer::loadProperties(YAML::Node& node,
+bool sbk::core::serialization::yaml_serializer::loadProperties(YAML::Node& node,
                                                           rttr::instance instance,
                                                           std::optional<rttr::method> onLoadedMethod)
 {
@@ -526,7 +526,7 @@ bool sbk::core::serialization::Serializer::loadProperties(YAML::Node& node,
 
 #pragma region Save
 
-bool sbk::core::serialization::Serializer::saveInstance(YAML::Emitter& emitter, rttr::instance instance)
+bool sbk::core::serialization::yaml_serializer::saveInstance(YAML::Emitter& emitter, rttr::instance instance)
 {
     bool result = false;
 
@@ -551,7 +551,7 @@ bool sbk::core::serialization::Serializer::saveInstance(YAML::Emitter& emitter, 
     return result;
 }
 
-bool Serializer::saveVariant(YAML::Emitter& emitter, rttr::string_view name, rttr::variant& variant)
+bool yaml_serializer::saveVariant(YAML::Emitter& emitter, rttr::string_view name, rttr::variant& variant)
 {
     bool result = false;
 
@@ -589,7 +589,7 @@ bool Serializer::saveVariant(YAML::Emitter& emitter, rttr::string_view name, rtt
     return result;
 }
 
-bool sbk::core::serialization::Serializer::saveStringVariant(YAML::Emitter& emitter,
+bool sbk::core::serialization::yaml_serializer::saveStringVariant(YAML::Emitter& emitter,
                                                              rttr::string_view name,
                                                              rttr::variant variant)
 {
@@ -635,7 +635,7 @@ bool sbk::core::serialization::Serializer::saveStringVariant(YAML::Emitter& emit
     return result;
 }
 
-bool sbk::core::serialization::Serializer::saveEnumVariant(YAML::Emitter& emitter,
+bool sbk::core::serialization::yaml_serializer::saveEnumVariant(YAML::Emitter& emitter,
                                                            rttr::string_view name,
                                                            rttr::variant variant)
 {
@@ -657,7 +657,7 @@ bool sbk::core::serialization::Serializer::saveEnumVariant(YAML::Emitter& emitte
     return result;
 }
 
-bool sbk::core::serialization::Serializer::saveAssociateContainerVariant(YAML::Emitter& emitter,
+bool sbk::core::serialization::yaml_serializer::saveAssociateContainerVariant(YAML::Emitter& emitter,
                                                                          rttr::string_view name,
                                                                          rttr::variant variant)
 {
@@ -708,7 +708,7 @@ bool sbk::core::serialization::Serializer::saveAssociateContainerVariant(YAML::E
     return result;
 }
 
-bool sbk::core::serialization::Serializer::saveSequentialContainerVariant(YAML::Emitter& emitter,
+bool sbk::core::serialization::yaml_serializer::saveSequentialContainerVariant(YAML::Emitter& emitter,
                                                                           rttr::string_view name,
                                                                           rttr::variant variant)
 {
@@ -742,7 +742,7 @@ bool sbk::core::serialization::Serializer::saveSequentialContainerVariant(YAML::
     return result;
 }
 
-bool sbk::core::serialization::Serializer::saveClassVariant(YAML::Emitter& emitter,
+bool sbk::core::serialization::yaml_serializer::saveClassVariant(YAML::Emitter& emitter,
                                                             rttr::string_view name,
                                                             rttr::variant variant)
 {

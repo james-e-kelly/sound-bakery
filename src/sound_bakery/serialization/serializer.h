@@ -23,7 +23,17 @@ namespace sbk::core::serialization
         rttr::variant saveData;
     };
 
-    class SB_CLASS Serializer final
+    /**
+     * @brief Abstract class that handles serializing object to and from the disk.
+     */
+    class SB_CLASS serializer
+    {
+    public:
+        virtual auto save_object(const std::shared_ptr<sbk::core::object>& object, const std::filesystem::path& file) -> sb_result;
+        virtual auto load_object(const std::filesystem::path& file) -> sb_result;
+    };
+
+    class SB_CLASS yaml_serializer final : public serializer
     {
     public:
         static void saveObject(sbk::core::object* object, YAML::Emitter& emitter);
