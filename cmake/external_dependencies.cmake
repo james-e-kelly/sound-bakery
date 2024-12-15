@@ -228,3 +228,9 @@ FetchContent_Declare(
   OVERRIDE_FIND_PACKAGE
   EXCLUDE_FROM_ALL
 )
+
+FetchContent_Declare(
+  boost
+  URL https://github.com/boostorg/boost/releases/download/boost-1.87.0/boost-1.87.0-cmake.tar.xz
+  EXCLUDE_FROM_ALL
+)

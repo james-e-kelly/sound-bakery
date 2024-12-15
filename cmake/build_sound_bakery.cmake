@@ -153,6 +153,9 @@ function(build_dependencies)
     set(YAML_CPP_BUILD_TOOLS OFF CACHE BOOL "" FORCE)
     set(YAML_BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
     FetchContent_MakeAvailable(yaml)
+
+    message(STATUS "Fetching boost")
+    FetchContent_MakeAvailable(boost)
 endfunction()
 
 macro(setup_format_sources)
