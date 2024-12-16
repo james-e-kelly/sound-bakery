@@ -2,7 +2,22 @@
 
 #include <rttr/type.h>
 
+#include "sound_bakery/core/object/object_owner.h"
+
 #include "yaml-cpp/yaml.h"
+
+namespace boost
+{
+    namespace serialization
+    {
+        template <class archive_class, class allocator>
+        void serialize(archive_class& archive, rttr::variant& variant, const unsigned int version)
+        {
+            archive & variant.to_float();
+        }
+
+    }  // namespace serialization
+}  // namespace boost
 
 namespace sbk::core
 {
@@ -29,8 +44,15 @@ namespace sbk::core::serialization
     class SB_CLASS serializer
     {
     public:
-        virtual auto save_object(const std::shared_ptr<sbk::core::object>& object, const std::filesystem::path& file) -> sb_result;
-        virtual auto load_object(const std::filesystem::path& file) -> sb_result;
+        virtual auto save_object(const std::shared_ptr<sbk::core::object>& object, const std::filesystem::path& file) -> sb_result = 0;
+        virtual auto load_object(sbk::core::object_owner& objectOwner, const std::filesystem::path& file) -> sb_result = 0;
+    };
+
+    class SB_CLASS binary_serializer final : public serializer
+    {
+    public:
+        auto save_object(const std::shared_ptr<sbk::core::object>& object, const std::filesystem::path& file) -> sb_result override;
+        auto load_object(sbk::core::object_owner& objectOwner, const std::filesystem::path& file) -> sb_result override;
     };
 
     class SB_CLASS yaml_serializer final : public serializer

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "sound_bakery/core/object/object_owner.h"
-#include "sound_bakery/pch.h"
 #include "sound_bakery/util/leak_detector.h"
 #include "sound_bakery/util/macros.h"
 
@@ -45,6 +44,31 @@ namespace sbk::core
         [[nodiscard]] auto get_object_type() const -> rttr::type;
         [[nodiscard]] auto get_owner() const -> object_owner*;
         [[nodiscard]] auto get_on_destroy() -> MulticastDelegate<object*>&;
+
+        template <class archive_class>
+        void serialize(archive_class& archive, const unsigned int fileVersion)
+        {
+            const rttr::type type = get_object_type();
+            BOOST_ASSERT(type.is_valid());
+
+            float test = 0.7f;
+
+            for (rttr::property property : type.get_properties())
+            {
+                if (archive_class::is_saving())
+                {
+                    archive & test;
+                    //archive & property.get_value(rttr::instance(this));
+                }
+                else if (archive_class::is_loading())
+                {
+                    archive & test;
+                    //rttr::variant loadedVariant;
+                    //archive & loadedVariant;
+                    //property.set_value(rttr::instance(this), loadedVariant);
+                }
+            }
+        }
 
     private:
         friend class object_owner;

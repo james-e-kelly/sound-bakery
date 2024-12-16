@@ -9,6 +9,8 @@
 #include "sound_bakery/soundbank/soundbank.h"
 #include "sound_bakery/system.h"
 
+#include <boost/archive/binary_iarchive.hpp>
+#include <boost/archive/binary_oarchive.hpp>
 #include <rttr/type.h>
 
 using namespace sbk::core::serialization;
@@ -766,3 +768,49 @@ bool sbk::core::serialization::yaml_serializer::saveClassVariant(YAML::Emitter& 
 }
 
 #pragma endregion
+
+auto sbk::core::serialization::binary_serializer::save_object(const std::shared_ptr<sbk::core::object>& object,
+                                                              const std::filesystem::path& file) -> sb_result
+{
+    SC_CHECK_ARG(object);
+    SC_CHECK(!file.empty(), MA_INVALID_FILE);
+    
+    std::ofstream outputStream(file);
+    boost::archive::binary_oarchive archive(outputStream);
+    archive << *object.get();
+
+    return MA_SUCCESS;
+}
+
+auto sbk::core::serialization::binary_serializer::load_object(sbk::core::object_owner& objectOwner, const std::filesystem::path& file) -> sb_result
+{
+    SC_CHECK(std::filesystem::exists(file), MA_INVALID_FILE);
+
+    std::ifstream outputStream(file);
+    boost::archive::binary_iarchive archive(outputStream);
+    
+    std::string objectTypeString;
+    archive >> objectTypeString;
+    SC_CHECK(!objectTypeString.empty(), MA_INVALID_DATA);
+
+    const rttr::type objectType = rttr::type::get_by_name(objectTypeString);
+    SC_CHECK(objectType.is_valid(), MA_INVALID_DATA);
+    
+    if (objectType.is_derived_from<sbk::core::database_object>())
+    {
+        std::shared_ptr<sbk::core::database_object> createdDatabaseObject =
+            objectOwner.create_database_object(objectType);
+        SC_CHECK(createdDatabaseObject, MA_ERROR);
+
+        archive >> *createdDatabaseObject.get();
+    }
+    else
+    {
+        std::shared_ptr<sbk::core::object> runtimeObject = objectOwner.create_runtime_object(objectType);
+        SC_CHECK(runtimeObject, MA_ERROR);
+
+        archive >> *runtimeObject.get();
+    }
+
+    return MA_SUCCESS;
+}

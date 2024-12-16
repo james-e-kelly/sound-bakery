@@ -10,6 +10,7 @@
 
 #include <atomic>
 #include <boost/assert.hpp>
+#include <boost/serialization/utility.hpp>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
