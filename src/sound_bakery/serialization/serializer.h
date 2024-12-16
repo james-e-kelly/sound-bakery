@@ -6,7 +6,20 @@
 
 #include "yaml-cpp/yaml.h"
 
+namespace boost
+{
+    namespace serialization
+    {
+        template <class archive_class>
+        void serialize(archive_class& archive, rttr::variant& variant, const unsigned int version)
+        {
+            float f = variant.to_float();
 
+            archive & f;
+        }
+
+    }  // namespace serialization
+}  // namespace boost
 
 namespace sbk::core
 {
