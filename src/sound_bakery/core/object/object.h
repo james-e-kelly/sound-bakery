@@ -3,6 +3,22 @@
 #include "sound_bakery/core/object/object_owner.h"
 #include "sound_bakery/util/leak_detector.h"
 #include "boost/core/noncopyable.hpp"
+#include "boost/serialization/nvp.hpp"
+
+namespace boost
+{
+    namespace serialization
+    {
+        template <class archive_class>
+        void serialize(archive_class& archive, rttr::variant& variant, const unsigned int version)
+        {
+            float f = variant.to_float();
+
+            archive & f;
+        }
+
+    }  // namespace serialization
+}  // namespace boost
 
 namespace sbk::engine
 {
@@ -11,6 +27,11 @@ namespace sbk::engine
 
 namespace sbk::core
 {
+    struct test_class
+    {
+        float foo = 1.2f;
+    };
+
     /**
      * @brief Base object that all sound Bakery objects should inherit
      * from.
@@ -47,25 +68,27 @@ namespace sbk::core
         template <class archive_class>
         void serialize(archive_class& archive, const unsigned int fileVersion)
         {
-            const rttr::type type = get_object_type();
+            rttr::type type = get_object_type();
             BOOST_ASSERT(type.is_valid());
 
-            float test = 0.7f;
+            test_class ts;
 
             for (rttr::property property : type.get_properties())
             {
-                if (archive_class::is_saving())
+                rttr::variant propertyVariant = property.get_value(rttr::instance(this));
+
+                archive & propertyVariant;
+
+                /*if (archive_class::is_saving())
                 {
-                    archive & test;
-                    //archive & property.get_value(rttr::instance(this));
+                    archive & property.get_value(rttr::instance(this));
                 }
                 else if (archive_class::is_loading())
                 {
-                    archive & test;
-                    //rttr::variant loadedVariant;
-                    //archive & loadedVariant;
-                    //property.set_value(rttr::instance(this), loadedVariant);
-                }
+                    rttr::variant loadedVariant;
+                    archive & loadedVariant;
+                    property.set_value(rttr::instance(this), loadedVariant);
+                }*/
             }
         }
 
