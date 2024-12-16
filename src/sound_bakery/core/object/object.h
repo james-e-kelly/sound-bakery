@@ -2,8 +2,8 @@
 
 #include "sound_bakery/core/object/object_owner.h"
 #include "sound_bakery/util/leak_detector.h"
-#include "boost/core/noncopyable.hpp"
-#include "boost/serialization/nvp.hpp"
+#include <boost/core/noncopyable.hpp>
+#include <boost/serialization/nvp.hpp>
 
 namespace sbk::engine
 {
@@ -12,11 +12,6 @@ namespace sbk::engine
 
 namespace sbk::core
 {
-    struct test_class
-    {
-        float foo = 1.2f;
-    };
-
     /**
      * @brief Base object that all sound Bakery objects should inherit
      * from.
@@ -53,27 +48,22 @@ namespace sbk::core
         template <class archive_class>
         void serialize(archive_class& archive, const unsigned int fileVersion)
         {
-            rttr::type type = get_object_type();
+            const rttr::type type = get_object_type();
             BOOST_ASSERT(type.is_valid());
-
-            test_class ts;
 
             for (rttr::property property : type.get_properties())
             {
-                rttr::variant propertyVariant = property.get_value(rttr::instance(this));
-
-                archive & propertyVariant;
-
-                /*if (archive_class::is_saving())
+                if (archive_class::is_saving())
                 {
-                    archive & property.get_value(rttr::instance(this));
+                    rttr::variant propertyVariant = property.get_value(rttr::instance(this));
+                    archive & propertyVariant;
                 }
                 else if (archive_class::is_loading())
                 {
                     rttr::variant loadedVariant;
                     archive & loadedVariant;
                     property.set_value(rttr::instance(this), loadedVariant);
-                }*/
+                }
             }
         }
 
