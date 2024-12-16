@@ -5,11 +5,6 @@
 #include <boost/core/noncopyable.hpp>
 #include <boost/serialization/nvp.hpp>
 
-namespace sbk::engine
-{
-    class system;
-}
-
 namespace sbk::core
 {
     /**
