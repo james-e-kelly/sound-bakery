@@ -56,12 +56,12 @@ namespace sbk::core
                 if (archive_class::is_saving())
                 {
                     rttr::variant propertyVariant = property.get_value(rttr::instance(this));
-                    archive & propertyVariant;
+                    archive & boost::serialization::make_nvp(property.get_name().data(), propertyVariant);
                 }
                 else if (archive_class::is_loading())
                 {
                     rttr::variant loadedVariant;
-                    archive & loadedVariant;
+                    archive & boost::serialization::make_nvp(property.get_name().data(), loadedVariant);
                     property.set_value(rttr::instance(this), loadedVariant);
                 }
             }
