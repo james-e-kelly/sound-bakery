@@ -39,10 +39,10 @@ namespace sbk
                                       public sbk::core::object_owner,
                                       public sbk::core::object_tracker,
                                       public sbk::core::database,
-                                      public concurrencpp::runtime
+                                      public concurrencpp::runtime,
+                                      public boost::noncopyable
         {
             REGISTER_REFLECTION(system)
-            NOT_COPYABLE(system)
             LEAK_DETECTOR(system)
 
         public:

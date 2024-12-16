@@ -2,7 +2,7 @@
 
 #include "sound_bakery/core/object/object_owner.h"
 #include "sound_bakery/util/leak_detector.h"
-#include "sound_bakery/util/macros.h"
+#include "boost/core/noncopyable.hpp"
 
 namespace sbk::engine
 {
@@ -17,10 +17,9 @@ namespace sbk::core
      *
      * Objects can own other objects.
      */
-    class SB_CLASS object : public object_owner, public std::enable_shared_from_this<object>
+    class SB_CLASS object : public object_owner, public std::enable_shared_from_this<object>, public boost::noncopyable
     {
         REGISTER_REFLECTION(object)
-        NOT_COPYABLE(object)
         LEAK_DETECTOR(object)
 
     public:
