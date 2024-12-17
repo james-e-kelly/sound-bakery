@@ -234,6 +234,9 @@ void sbk::editor::project::saveObjects() const
 
             sbk::core::serialization::xml_serializer xmlSerializer;
             xmlSerializer.save_object(sharedObject, filePath.replace_extension("xml"));
+
+            sbk::core::serialization::binary_serializer binarySerializer;
+            binarySerializer.save_object(sharedObject, filePath.replace_extension("bnk"));
         }
     }
 }
