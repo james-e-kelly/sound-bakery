@@ -35,6 +35,7 @@ target_link_libraries(sound_bakery PUBLIC
   yaml-cpp::yaml-cpp
   Boost::assert
   Boost::serialization
+  yaml-archive
 )
 
 install(TARGETS sound_bakery DESTINATION lib/sound_bakery)

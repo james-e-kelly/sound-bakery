@@ -156,6 +156,9 @@ function(build_dependencies)
 
     message(STATUS "Fetching boost")
     FetchContent_MakeAvailable(boost)
+
+    message(STATUS "Fetching boost-yaml")
+    FetchContent_MakeAvailable(boost-yaml)
 endfunction()
 
 macro(setup_format_sources)
