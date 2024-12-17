@@ -9,6 +9,7 @@
 #include <boost/archive/xml_iarchive.hpp>
 #include <boost/archive/xml_oarchive.hpp>
 
+#include "sound_bakery/core/object/object.h"
 #include "sound_bakery/core/object/object_owner.h"
 
 #include "yaml-cpp/yaml.h"
@@ -254,6 +255,10 @@ namespace sbk::core::serialization
 
             std::ofstream outputStream(file);
             save_archive archive(outputStream);
+
+            std::string typeString = object->get_object_type().get_name().data();
+
+            archive << boost::serialization::make_nvp("Type", typeString);
             archive << boost::serialization::make_nvp("Object", *object.get());
             return MA_SUCCESS;
         }
@@ -262,11 +267,11 @@ namespace sbk::core::serialization
         {
             SC_CHECK(std::filesystem::exists(file), MA_INVALID_FILE);
 
-            /*std::ifstream outputStream(file);
+            std::ifstream outputStream(file);
             load_archive archive(outputStream);
 
             std::string objectTypeString;
-            archive >> objectTypeString;
+            archive >> boost::serialization::make_nvp("Type", objectTypeString);
             SC_CHECK(!objectTypeString.empty(), MA_INVALID_DATA);
 
             const rttr::type objectType = rttr::type::get_by_name(objectTypeString);
@@ -286,7 +291,7 @@ namespace sbk::core::serialization
                 SC_CHECK(runtimeObject, MA_ERROR);
 
                 archive >> boost::serialization::make_nvp("Object", *runtimeObject.get());
-            }*/
+            }
 
             return MA_SUCCESS;
         }
