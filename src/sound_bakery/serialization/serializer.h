@@ -1,6 +1,7 @@
 #pragma once
 
 #include <rttr/type.h>
+#include <cstdint>
 
 #include "sound_bakery/core/object/object_owner.h"
 
@@ -10,12 +11,202 @@ namespace boost
 {
     namespace serialization
     {
+        template <class archive_class, typename T>
+        void serialize_variant(archive_class& archive, rttr::variant& variant)
+        {
+            if (archive_class::is_loading())
+            {
+                T loadedValue;
+                archive & loadedValue;
+                variant = loadedValue;
+            }
+            else
+            {
+                T valueToSave = variant.convert<T>();
+                archive & valueToSave;
+            }
+        }
+
+        template <class archive_class, typename variant_type, typename save_type>
+        void serialize_variant_with_conversion(archive_class& archive, rttr::variant& variant)
+        {
+            if (archive_class::is_loading())
+            {
+                save_type loaded;
+                archive & loaded;
+                variant_type loadedConverted(loaded);
+                variant = loadedConverted;
+            }
+            else
+            {
+                variant_type valueToSave = variant.convert<variant_type>();
+                save_type valueToSaveConverted(valueToSave);
+                archive & valueToSaveConverted;
+            }
+        }
+
         template <class archive_class>
         void serialize(archive_class& archive, rttr::variant& variant, const unsigned int version)
         {
-            float f = variant.to_float();
+            const rttr::type type = variant.get_type();
 
-            archive & f;
+            if (type.is_arithmetic())
+            {
+                if (type == rttr::type::get<bool>())
+                {
+                    serialize_variant<archive_class, bool>(archive, variant);
+                }
+                else if (type == rttr::type::get<int8_t>()) 
+                {
+                    serialize_variant<archive_class, int8_t>(archive, variant);
+                }
+                else if (type == rttr::type::get<int16_t>()) 
+                {
+                    serialize_variant<archive_class, int16_t>(archive, variant);
+                }
+                else if (type == rttr::type::get<int32_t>()) 
+                {
+                    serialize_variant<archive_class, int32_t>(archive, variant);
+                }
+                else if (type == rttr::type::get<int64_t>())
+                {
+                    serialize_variant<archive_class, int64_t>(archive, variant);
+                }
+                else if (type == rttr::type::get<uint8_t>())
+                {
+                    serialize_variant<archive_class, uint8_t>(archive, variant);
+                }
+                else if (type == rttr::type::get<uint16_t>()) 
+                {
+                    serialize_variant<archive_class, uint16_t>(archive, variant);
+                }
+                else if (type == rttr::type::get<uint32_t>()) 
+                {
+                    serialize_variant<archive_class, uint32_t>(archive, variant);
+                }
+                else if (type == rttr::type::get<uint64_t>())
+                {
+                    serialize_variant<archive_class, uint64_t>(archive, variant);
+                }
+                else if (type == rttr::type::get<float>())
+                {
+                    serialize_variant<archive_class, float>(archive, variant);
+                }
+                else if (type == rttr::type::get<double>())
+                {
+                    serialize_variant<archive_class, double>(archive, variant);
+                }
+            }
+            else if (type == rttr::type::get<std::string>())
+            {
+                serialize_variant<archive_class, std::string>(archive, variant);
+            }
+            else if (type == rttr::type::get<std::string_view>())
+            {
+                serialize_variant_with_conversion<archive_class, std::string_view, std::string>(archive, variant);
+            }
+            else if (type.is_wrapper())
+            {
+                variant = variant.extract_wrapped_value();
+                serialize(archive, variant, version);
+            }
+            else if (type.is_enumeration())
+            {
+                const rttr::enumeration enumeration = type.get_enumeration();
+
+                if (archive_class::is_loading())
+                {
+                    std::string loadedStringValue;
+                    archive & loadedStringValue;
+                    variant = enumeration.name_to_value(loadedStringValue);
+                }
+                else
+                {
+                    const rttr::string_view enumValueName = enumeration.value_to_name(variant);
+
+                    if (!enumValueName.empty())
+                    {
+                        std::string savingString = enumValueName.data();
+                        archive & savingString;
+                    }
+                }
+            }
+            //else if (type.is_associative_container())
+            //{
+            //    const rttr::variant_associative_view view = variant.create_associative_view();
+            //    const rttr::type keyType                  = view.get_key_type();
+            //    const rttr::type valueType = view.is_key_only_type() ? view.get_key_type() : view.get_value_type();
+
+            //    
+            //    if (!view.is_empty() && valueType.is_valid())
+            //    {
+            //        ChildSequence childSeq(emitter, name);
+
+            //        result = true;
+
+            //        for (const rttr::variant& item : view)
+            //        {
+            //            const std::pair<rttr::variant, rttr::variant> valuePair =
+            //                item.convert<std::pair<rttr::variant, rttr::variant>>();
+
+            //            rttr::variant key   = valuePair.first.extract_wrapped_value();
+            //            rttr::variant value = view.is_key_only_type() ? valuePair.first.extract_wrapped_value()
+            //                                                          : valuePair.second.extract_wrapped_value();
+
+            //            if (keyType.is_wrapper())
+            //            {
+            //                key.convert(keyType.get_wrapped_type());
+            //            }
+
+            //            if (valueType.is_wrapper())
+            //            {
+            //                value.convert(valueType.get_wrapped_type());
+            //            }
+
+            //            // For maps
+            //            if (view.is_key_only_type() == false)
+            //            {
+            //                result &= saveVariant(emitter, rttr::string_view(), key);
+            //            }
+
+            //            result &= saveVariant(emitter, rttr::string_view(), value);
+            //        }
+            //    }
+            //}
+            //else if (type.is_sequential_container())
+            //{
+            //    const rttr::variant_sequential_view view = variant.create_sequential_view();
+            //    const rttr::type valueType               = view.get_value_type();
+
+            //    ChildSequence childSeq(emitter, name);
+
+            //    if (!view.is_empty() && valueType.is_valid())
+            //    {
+            //        for (rttr::variant item : view)
+            //        {
+            //            if (valueType.is_wrapper())
+            //            {
+            //                item.convert(valueType.get_wrapped_type());
+            //            }
+
+            //            item.convert(valueType);
+
+            //            serialize(archive, item, version);
+            //        }
+            //    }
+            //}
+            //else if (type.is_class())
+            //{
+            //    for (rttr::property& property : type.get_properties())
+            //    {
+            //        rttr::variant propertyValue = property.get_value(variant);
+            //        serialize(archive, propertyValue, version);
+            //    }
+            //}
+            else
+            {
+                BOOST_ASSERT(false);
+            }
         }
 
     }  // namespace serialization
