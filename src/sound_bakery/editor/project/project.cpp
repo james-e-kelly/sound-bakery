@@ -143,7 +143,7 @@ void sbk::editor::project::loadObjects()
         for (const std::filesystem::directory_entry& directoryEntry :
              std::filesystem::recursive_directory_iterator(path))
         {
-            if (directoryEntry.is_regular_file())
+            if (directoryEntry.is_regular_file() && directoryEntry.path().extension() == ".yaml")
             {
                 YAML::Node node                           = YAML::LoadFile(directoryEntry.path().string());
                 std::shared_ptr<sbk::core::object> object = load_object(node);
@@ -219,14 +219,21 @@ void sbk::editor::project::saveObjects() const
                 continue;
             }
 
+            std::filesystem::path filePath = m_projectConfig.type_folder(sharedObject->get_object_type()) /
+                                                   m_projectConfig.get_filename_for_id(sharedObject.get());
+
             YAML::Emitter yaml;
             sbk::core::serialization::yaml_serializer::saveObject(sharedObject.get(), yaml);
 
-            const std::filesystem::path filePath = m_projectConfig.type_folder(sharedObject->get_object_type()) /
-                                                   m_projectConfig.get_filename_for_id(sharedObject.get());
             std::filesystem::create_directories(filePath.parent_path());
 
             saveYAML(yaml, filePath);
+
+            sbk::core::serialization::text_serializer textSerializer;
+            textSerializer.save_object(sharedObject, filePath.replace_extension("txt"));
+
+            sbk::core::serialization::xml_serializer xmlSerializer;
+            xmlSerializer.save_object(sharedObject, filePath.replace_extension("xml"));
         }
     }
 }
