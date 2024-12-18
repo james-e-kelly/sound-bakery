@@ -89,7 +89,7 @@ namespace sbk::core::serialization
             BOOST_ASSERT(type.is_class());
         }
 
-        rttr::variant child;
+        rttr::variant& child;
         rttr::type type;
 
         friend class boost::serialization::access;
@@ -118,13 +118,71 @@ namespace sbk::core::serialization
     {
         serialized_sequential_container() = delete;
         serialized_sequential_container(rttr::variant& variant)
-            : originalVariant(variant), seqView(variant.create_sequential_view()), valueType(seqView.get_value_type())
+            : originalVariant(variant), view(variant.create_sequential_view()), valueType(view.get_value_type())
         {
         }
 
         rttr::variant& originalVariant;
-        rttr::variant_sequential_view seqView;
+        rttr::variant_sequential_view view;
         rttr::type valueType;
+
+        friend class boost::serialization::access;
+
+        template <class archive_class>
+        void serialize(archive_class& archive, const unsigned int version)
+        {
+            if (archive_class::is_loading())
+            {
+                size_t size = 0;
+                archive & boost::serialization::make_nvp("Count", size);
+
+                view.set_size(size);
+
+                const bool needToCreate = size == 0;
+
+                for (size_t index = 0; index < size; ++index)
+                {
+                    rttr::variant loadedVariant;
+                    archive & boost::serialization::make_nvp("Item", loadedVariant);
+
+                    if (needToCreate)
+                    {
+                        view.insert(view.begin() + index, loadedVariant);
+                    }
+                    else
+                    {
+                        view.set_value(index, loadedVariant);
+                    }
+                }
+            }
+            else
+            {
+                size_t size = view.get_size();
+                archive & boost::serialization::make_nvp("Count", size);
+
+                for (rttr::variant item : view)
+                {
+                    archive & boost::serialization::make_nvp("Item", item);
+                }
+            }
+        }
+    };
+
+    struct SB_CLASS serialized_associative_container
+    {
+        serialized_associative_container() = delete;
+        serialized_associative_container(rttr::variant& variant)
+            : originalVariant(variant), 
+            view(variant.create_associative_view()), 
+            keyType(view.get_key_type()), 
+            valueType(view.is_key_only_type() ? view.get_key_type()
+                                                           : view.get_value_type())
+        { }
+
+        rttr::variant& originalVariant;
+        rttr::variant_associative_view view;
+        rttr::type valueType;
+        rttr::type keyType;
 
         friend class boost::serialization::access;
 
@@ -136,33 +194,43 @@ namespace sbk::core::serialization
                 size_t size = 0;
                 archive& boost::serialization::make_nvp("Count", size);
 
-                seqView.set_size(size);
+                view.clear();
 
-                const bool needToCreate = size == 0;
-
-                for (size_t index = 0; index < size; ++index)
+                for (std::size_t index = 0; index < size; ++index)
                 {
-                    rttr::variant loadedVariant;
-                    archive & boost::serialization::make_nvp("Item", loadedVariant);
-
-                    if (needToCreate)
+                    if (view.is_key_only_type())
                     {
-                        seqView.insert(seqView.begin() + index, loadedVariant);
+                        rttr::variant loadedKey;
+                        archive & boost::serialization::make_nvp("Key", loadedKey);
+                        view.insert(loadedKey);
                     }
                     else
                     {
-                        seqView.set_value(index, loadedVariant);
+                        std::pair<rttr::variant, rttr::variant> loadedPair;
+                        archive & boost::serialization::make_nvp("KeyValue", loadedPair);
+                        view.insert(loadedPair.first, loadedPair.second);
                     }
                 }
             }
             else
             {
-                size_t size = seqView.get_size();
+                size_t size = view.get_size();
                 archive & boost::serialization::make_nvp("Count", size);
 
-                for (rttr::variant item : seqView)
+                for (rttr::variant item : view)
                 {
-                    archive & boost::serialization::make_nvp("Item", item);
+                    std::pair<rttr::variant, rttr::variant> valuePair =
+                        item.convert<std::pair<rttr::variant, rttr::variant>>();
+
+                    if (view.is_key_only_type())
+                    {
+                        rttr::variant key   = valuePair.first.extract_wrapped_value();
+                        archive & boost::serialization::make_nvp("Key", key);
+                    }
+                    else
+                    {
+                        archive& boost::serialization::make_nvp("KeyValue", valuePair);
+                    }
                 }
             }
         }
@@ -394,55 +462,18 @@ namespace boost
             }            
             else if (type.is_associative_container())
             {
-            //     const rttr::variant_associative_view view = variant.create_associative_view();
-            //     const rttr::type keyType                  = view.get_key_type();
-            //     const rttr::type valueType                = view.is_key_only_type() ? view.get_key_type() : view.get_value_type();
-            //
-            //    if (!view.is_empty() && valueType.is_valid())
-            //    {
-            //        for (const rttr::variant& item : view)
-            //        {
-            //            const std::pair<rttr::variant, rttr::variant> valuePair =
-            //                item.convert<std::pair<rttr::variant, rttr::variant>>();
-
-            //            rttr::variant key   = valuePair.first.extract_wrapped_value();
-            //            rttr::variant value = view.is_key_only_type() ? valuePair.first.extract_wrapped_value()
-            //                                                          : valuePair.second.extract_wrapped_value();
-
-            //            if (keyType.is_wrapper())
-            //            {
-            //                key.convert(keyType.get_wrapped_type());
-            //            }
-
-            //            if (valueType.is_wrapper())
-            //            {
-            //                value.convert(valueType.get_wrapped_type());
-            //            }
-
-            //            // For maps
-            //            if (view.is_key_only_type() == false)
-            //            {
-            //                result &= saveVariant(emitter, rttr::string_view(), key);
-            //            }
-
-            //            result &= saveVariant(emitter, rttr::string_view(), value);
-            //        }
-            //    }
+                sbk::core::serialization::serialized_associative_container serializedAssociativeContainer(variant);
+                archive& boost::serialization::make_nvp("AssociativeContainer", serializedAssociativeContainer);
             }
             else if (type.is_sequential_container())
             {
                 sbk::core::serialization::serialized_sequential_container serializedSequentialContainer(variant);
-                archive& boost::serialization::make_nvp("SeqContainer", serializedSequentialContainer);
+                archive & boost::serialization::make_nvp("SeqContainer", serializedSequentialContainer);
             }
             else if (type.is_class())
             {
                 sbk::core::serialization::serialized_child_class childClass(variant);
                 archive & boost::serialization::make_nvp("Child", childClass);
-
-                if (archive_class::is_loading())
-                {
-                    variant = childClass.child;
-                }
             }
         }
 
