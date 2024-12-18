@@ -81,6 +81,40 @@ namespace sbk::core::serialization
         }
     };
 
+    struct SB_CLASS serialized_child_class
+    {
+        serialized_child_class() = default;
+        serialized_child_class(rttr::variant& variant) : child(variant), type(variant.get_type()) 
+        {
+            BOOST_ASSERT(type.is_class());
+            BOOST_ASSERT(type.get_properties().size() > 0);
+        }
+
+        rttr::variant child;
+        rttr::type type;
+
+        friend class boost::serialization::access;
+
+        template <class archive_class>
+        void serialize(archive_class& archive, const unsigned int version)
+        {
+            for (rttr::property property : type.get_properties())
+            {
+                if (archive_class::is_loading())
+                {
+                    rttr::variant loaded;
+                    archive & boost::serialization::make_nvp(property.get_name().data(), loaded);
+                    property.set_value(child, loaded);
+                }
+                else
+                {
+                    rttr::variant variantToSave = property.get_value(child);
+                    archive & boost::serialization::make_nvp(property.get_name().data(), variantToSave);
+                }
+            }
+        }
+    };
+
     /**
      * @brief Abstract class that handles serializing object to and from the disk.
      */
@@ -191,13 +225,13 @@ namespace boost
             if (archive_class::is_loading())
             {
                 T loadedValue;
-                archive& boost::serialization::make_nvp("Value", loadedValue);
+                archive & boost::serialization::make_nvp("Value", loadedValue);
                 variant = loadedValue;
             }
             else
             {
                 T valueToSave = variant.convert<T>();
-                archive& boost::serialization::make_nvp("Value", valueToSave);
+                archive & boost::serialization::make_nvp("Value", valueToSave);
             }
         }
 
@@ -207,7 +241,7 @@ namespace boost
             if (archive_class::is_loading())
             {
                 save_type loaded;
-                archive& boost::serialization::make_nvp("Value", loaded);
+                archive & boost::serialization::make_nvp("Value", loaded);
                 variant_type loadedConverted(loaded);
                 variant = loadedConverted;
             }
@@ -215,7 +249,7 @@ namespace boost
             {
                 variant_type valueToSave = variant.convert<variant_type>();
                 save_type valueToSaveConverted(valueToSave);
-                archive& boost::serialization::make_nvp("Value", valueToSaveConverted);
+                archive & boost::serialization::make_nvp("Value", valueToSaveConverted);
             }
         }
 
@@ -304,20 +338,15 @@ namespace boost
                         archive& boost::serialization::make_nvp("Value", savingString);
                     }
                 }
-            }
-            // else if (type.is_associative_container())
-            //{
+            }            
+            else if (type.is_associative_container())
+            {
             //     const rttr::variant_associative_view view = variant.create_associative_view();
             //     const rttr::type keyType                  = view.get_key_type();
-            //     const rttr::type valueType = view.is_key_only_type() ? view.get_key_type() : view.get_value_type();
-
+            //     const rttr::type valueType                = view.is_key_only_type() ? view.get_key_type() : view.get_value_type();
             //
             //    if (!view.is_empty() && valueType.is_valid())
             //    {
-            //        ChildSequence childSeq(emitter, name);
-
-            //        result = true;
-
             //        for (const rttr::variant& item : view)
             //        {
             //            const std::pair<rttr::variant, rttr::variant> valuePair =
@@ -346,9 +375,9 @@ namespace boost
             //            result &= saveVariant(emitter, rttr::string_view(), value);
             //        }
             //    }
-            //}
-            // else if (type.is_sequential_container())
-            //{
+            }
+            else if (type.is_sequential_container())
+            {
             //    const rttr::variant_sequential_view view = variant.create_sequential_view();
             //    const rttr::type valueType               = view.get_value_type();
 
@@ -368,15 +397,17 @@ namespace boost
             //            serialize(archive, item, version);
             //        }
             //    }
-            //}
-            // else if (type.is_class())
-            //{
-            //    for (rttr::property& property : type.get_properties())
-            //    {
-            //        rttr::variant propertyValue = property.get_value(variant);
-            //        serialize(archive, propertyValue, version);
-            //    }
-            //}
+            }
+            else if (type.is_class())
+            {
+                sbk::core::serialization::serialized_child_class childClass(variant);
+                archive & boost::serialization::make_nvp("Child", childClass);
+
+                if (archive_class::is_loading())
+                {
+                    variant = childClass.child;
+                }
+            }
         }
 
     }  // namespace serialization

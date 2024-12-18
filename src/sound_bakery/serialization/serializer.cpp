@@ -324,7 +324,7 @@ void loadProperty(YAML::Node& node, rttr::property property, rttr::instance inst
     {
         if (node.IsMap())
         {
-            rttr::variant classVariant = property.get_value(instance);
+            /*rttr::variant classVariant = property.get_value(instance);
 
             for (const rttr::property classProperty : classVariant.get_type().get_properties())
             {
@@ -332,7 +332,7 @@ void loadProperty(YAML::Node& node, rttr::property property, rttr::instance inst
                 loadProperty(classNode, classProperty, classVariant);
             }
 
-            property.set_value(instance, classVariant);
+            property.set_value(instance, classVariant);*/
         }
     }
     else

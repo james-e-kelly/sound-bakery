@@ -148,6 +148,15 @@ namespace sbk::reflection
 
         registration::class_<game_object>("SB::Engine::GameObject").constructor<>()(policy::ctor::as_raw_ptr);
 
+        registration::class_<int_property>("SB::Core::IntProperty")
+            .property("Value", &int_property::get, &int_property::set);
+
+        registration::class_<float_property>("SB::Core::FloatProperty")
+            .property("Value", &float_property::get, &float_property::set);
+
+        registration::class_<id_property>("SB::Core::IdProperty")
+            .property("Value", &id_property::get, &id_property::set);
+
         registration::class_<object>("SB::Core::object").constructor<>()(policy::ctor::as_raw_ptr);
 
         registration::class_<database_object>("SB::Core::database_object")
