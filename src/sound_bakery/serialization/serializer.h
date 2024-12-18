@@ -8,6 +8,8 @@
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/xml_iarchive.hpp>
 #include <boost/archive/xml_oarchive.hpp>
+#include <boost/archive/yaml_iarchive.hpp>
+#include <boost/archive/yaml_oarchive.hpp>
 
 #include "sound_bakery/core/object/object.h"
 #include "sound_bakery/core/object/object_owner.h"
@@ -300,6 +302,7 @@ namespace sbk::core::serialization
     using binary_serializer = boost_serializer<boost::archive::binary_iarchive, boost::archive::binary_oarchive>;
     using text_serializer = boost_serializer<boost::archive::text_iarchive, boost::archive::text_oarchive>;
     using xml_serializer = boost_serializer<boost::archive::xml_iarchive, boost::archive::xml_oarchive>;
+    using yaml_new_serializer = boost_serializer<boost::archive::yaml_iarchive, boost::archive::yaml_oarchive>;
 
     class SB_CLASS yaml_serializer final : public serializer
     {

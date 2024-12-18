@@ -237,6 +237,9 @@ void sbk::editor::project::saveObjects() const
 
             sbk::core::serialization::binary_serializer binarySerializer;
             binarySerializer.save_object(sharedObject, filePath.replace_extension("bnk"));
+
+            sbk::core::serialization::yaml_new_serializer yamlSerializer;
+            yamlSerializer.save_object(sharedObject, filePath.replace_extension("yml"));
         }
     }
 }
