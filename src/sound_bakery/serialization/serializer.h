@@ -87,7 +87,6 @@ namespace sbk::core::serialization
         serialized_child_class(rttr::variant& variant) : child(variant), type(variant.get_type()) 
         {
             BOOST_ASSERT(type.is_class());
-            BOOST_ASSERT(type.get_properties().size() > 0);
         }
 
         rttr::variant child;
@@ -110,6 +109,60 @@ namespace sbk::core::serialization
                 {
                     rttr::variant variantToSave = property.get_value(child);
                     archive & boost::serialization::make_nvp(property.get_name().data(), variantToSave);
+                }
+            }
+        }
+    };
+
+    struct SB_CLASS serialized_sequential_container
+    {
+        serialized_sequential_container() = delete;
+        serialized_sequential_container(rttr::variant& variant)
+            : originalVariant(variant), seqView(variant.create_sequential_view()), valueType(seqView.get_value_type())
+        {
+        }
+
+        rttr::variant& originalVariant;
+        rttr::variant_sequential_view seqView;
+        rttr::type valueType;
+
+        friend class boost::serialization::access;
+
+        template <class archive_class>
+        void serialize(archive_class& archive, const unsigned int version)
+        {
+            if (archive_class::is_loading())
+            {
+                size_t size = 0;
+                archive& boost::serialization::make_nvp("Count", size);
+
+                seqView.set_size(size);
+
+                const bool needToCreate = size == 0;
+
+                for (size_t index = 0; index < size; ++index)
+                {
+                    rttr::variant loadedVariant;
+                    archive & boost::serialization::make_nvp("Item", loadedVariant);
+
+                    if (needToCreate)
+                    {
+                        seqView.insert(seqView.begin() + index, loadedVariant);
+                    }
+                    else
+                    {
+                        seqView.set_value(index, loadedVariant);
+                    }
+                }
+            }
+            else
+            {
+                size_t size = seqView.get_size();
+                archive & boost::serialization::make_nvp("Count", size);
+
+                for (rttr::variant item : seqView)
+                {
+                    archive & boost::serialization::make_nvp("Item", item);
                 }
             }
         }
@@ -378,25 +431,8 @@ namespace boost
             }
             else if (type.is_sequential_container())
             {
-            //    const rttr::variant_sequential_view view = variant.create_sequential_view();
-            //    const rttr::type valueType               = view.get_value_type();
-
-            //    ChildSequence childSeq(emitter, name);
-
-            //    if (!view.is_empty() && valueType.is_valid())
-            //    {
-            //        for (rttr::variant item : view)
-            //        {
-            //            if (valueType.is_wrapper())
-            //            {
-            //                item.convert(valueType.get_wrapped_type());
-            //            }
-
-            //            item.convert(valueType);
-
-            //            serialize(archive, item, version);
-            //        }
-            //    }
+                sbk::core::serialization::serialized_sequential_container serializedSequentialContainer(variant);
+                archive& boost::serialization::make_nvp("SeqContainer", serializedSequentialContainer);
             }
             else if (type.is_class())
             {
