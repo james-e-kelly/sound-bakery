@@ -13,7 +13,7 @@ auto sbk::core::database_object::get_database_name() const -> std::string_view {
 
 auto sbk::core::database_object::set_database_id(sbk_id id) -> void
 {
-    BOOST_ASSERT_MSG(m_objectID == 0, "Shouldn't update an object's ID at runtime");
+    //BOOST_ASSERT_MSG(m_objectID == 0, "Shouldn't update an object's ID at runtime");
 
     if (id != 0)
     {

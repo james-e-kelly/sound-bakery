@@ -8,6 +8,8 @@
 #include "spdlog/async.h"
 #include "spdlog/spdlog.h"
 
+#define BOOST_SPIRIT_DEBUG
+
 #include <atomic>
 #include <boost/assert.hpp>
 #include <boost/serialization/utility.hpp>

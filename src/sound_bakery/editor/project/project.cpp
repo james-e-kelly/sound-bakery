@@ -145,8 +145,11 @@ void sbk::editor::project::loadObjects()
         {
             if (directoryEntry.is_regular_file() && directoryEntry.path().extension() == ".yaml")
             {
-                YAML::Node node                           = YAML::LoadFile(directoryEntry.path().string());
-                std::shared_ptr<sbk::core::object> object = load_object(node);
+                /*YAML::Node node                           = YAML::LoadFile(directoryEntry.path().string());
+                std::shared_ptr<sbk::core::object> object = load_object(node);*/
+
+                sbk::core::serialization::yaml_new_serializer yamlSerializer;
+                yamlSerializer.load_object(*this, directoryEntry.path());
             }
         }
     }
@@ -222,24 +225,20 @@ void sbk::editor::project::saveObjects() const
             std::filesystem::path filePath = m_projectConfig.type_folder(sharedObject->get_object_type()) /
                                                    m_projectConfig.get_filename_for_id(sharedObject.get());
 
-            YAML::Emitter yaml;
-            sbk::core::serialization::yaml_serializer::saveObject(sharedObject.get(), yaml);
 
             std::filesystem::create_directories(filePath.parent_path());
 
-            saveYAML(yaml, filePath);
-
-            sbk::core::serialization::text_serializer textSerializer;
+            /*sbk::core::serialization::text_serializer textSerializer;
             textSerializer.save_object(sharedObject, filePath.replace_extension("txt"));
 
             sbk::core::serialization::xml_serializer xmlSerializer;
             xmlSerializer.save_object(sharedObject, filePath.replace_extension("xml"));
 
             sbk::core::serialization::binary_serializer binarySerializer;
-            binarySerializer.save_object(sharedObject, filePath.replace_extension("bnk"));
+            binarySerializer.save_object(sharedObject, filePath.replace_extension("bnk"));*/
 
             sbk::core::serialization::yaml_new_serializer yamlSerializer;
-            yamlSerializer.save_object(sharedObject, filePath.replace_extension("yml"));
+            yamlSerializer.save_object(sharedObject, filePath.replace_extension("yaml"));
         }
     }
 }

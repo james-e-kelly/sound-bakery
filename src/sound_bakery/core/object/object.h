@@ -48,18 +48,21 @@ namespace sbk::core
 
             for (rttr::property property : type.get_properties())
             {
+                BOOST_VERIFY(property.is_valid());
                 std::string propertyName = property.get_name().data();
                 std::replace(propertyName.begin(), propertyName.end(), ' ', '_');
 
                 if (archive_class::is_saving())
                 {
                     rttr::variant propertyVariant = property.get_value(rttr::instance(this));
-                    archive& boost::serialization::make_nvp(propertyName.c_str(), propertyVariant);
+                    archive & boost::serialization::make_nvp(propertyName.c_str(), propertyVariant);
                 }
                 else if (archive_class::is_loading())
                 {
-                    rttr::variant loadedVariant;
-                    archive& boost::serialization::make_nvp(propertyName.c_str(), loadedVariant);
+                    rttr::variant loadedVariant = property.get_value(rttr::instance(this));
+                    BOOST_VERIFY(loadedVariant.is_valid());
+                    BOOST_VERIFY(loadedVariant.get_type().is_valid());
+                    archive & boost::serialization::make_nvp(propertyName.c_str(), loadedVariant);
                     property.set_value(rttr::instance(this), loadedVariant);
                 }
             }

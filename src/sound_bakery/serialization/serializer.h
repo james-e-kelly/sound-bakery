@@ -29,6 +29,34 @@ namespace sbk::engine
 
 namespace sbk::core::serialization
 {
+    static auto make_default_variant(const rttr::type& type) -> rttr::variant 
+    { 
+        BOOST_ASSERT(type.is_valid());
+
+        if (type.is_wrapper())
+        {
+            BOOST_ASSERT_MSG(type.get_wrapped_type().is_arithmetic(),
+                             "We only convert simple types to ensure we're not creating large objects accidentally");
+
+            rttr::variant variant = 0u;
+            variant.convert(type.get_wrapped_type());
+            BOOST_ASSERT_MSG(variant.is_valid(), "Could not convert the default value to the wrapped type");
+            variant.convert(type);
+            BOOST_ASSERT_MSG(variant.is_valid(), "Could not convert the variant to the wrapping type");
+            return variant;
+        }
+        else if (type.is_arithmetic()) // Can't construct arithmetic types
+        {
+            rttr::variant variant = 0u;
+            variant.convert(type);
+            BOOST_ASSERT_MSG(variant.is_valid(), "Could not convert the default value to type");
+            return variant;
+        }
+
+        BOOST_ASSERT_MSG(type.get_constructor({}).is_valid(), "Types must have constructors at this point");
+        return type.create_default();
+    }
+
     struct SB_CLASS serialized_version
     {
         serialized_version() = default;
@@ -86,6 +114,7 @@ namespace sbk::core::serialization
         serialized_child_class() = default;
         serialized_child_class(rttr::variant& variant) : child(variant), type(variant.get_type()) 
         {
+            BOOST_ASSERT(variant.is_valid());
             BOOST_ASSERT(type.is_class());
         }
 
@@ -101,7 +130,12 @@ namespace sbk::core::serialization
             {
                 if (archive_class::is_loading())
                 {
-                    rttr::variant loaded;
+                    rttr::variant loaded = make_default_variant(property.get_type());
+                    if (!loaded.is_valid())
+                    {
+                        BOOST_ASSERT(loaded.is_valid());
+                        loaded = make_default_variant(property.get_type());
+                    }
                     archive & boost::serialization::make_nvp(property.get_name().data(), loaded);
                     property.set_value(child, loaded);
                 }
@@ -142,7 +176,8 @@ namespace sbk::core::serialization
 
                 for (size_t index = 0; index < size; ++index)
                 {
-                    rttr::variant loadedVariant;
+                    rttr::variant loadedVariant = make_default_variant(valueType);
+                    BOOST_ASSERT(loadedVariant.is_valid());
                     archive & boost::serialization::make_nvp("Item", loadedVariant);
 
                     if (needToCreate)
@@ -200,13 +235,13 @@ namespace sbk::core::serialization
                 {
                     if (view.is_key_only_type())
                     {
-                        rttr::variant loadedKey;
+                        rttr::variant loadedKey = make_default_variant(keyType);
                         archive & boost::serialization::make_nvp("Key", loadedKey);
                         view.insert(loadedKey);
                     }
                     else
                     {
-                        std::pair<rttr::variant, rttr::variant> loadedPair;
+                        std::pair<rttr::variant, rttr::variant> loadedPair(make_default_variant(keyType), make_default_variant(valueType));
                         archive & boost::serialization::make_nvp("KeyValue", loadedPair);
                         view.insert(loadedPair.first, loadedPair.second);
                     }
@@ -378,6 +413,7 @@ namespace boost
         void serialize(archive_class& archive, rttr::variant& variant, const unsigned int version)
         {
             const rttr::type type = variant.get_type();
+            BOOST_ASSERT_MSG(type.is_valid(), "Type must be valid to load correctly");
 
             if (type.is_arithmetic())
             {
