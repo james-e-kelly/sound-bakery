@@ -24,6 +24,8 @@ auto sbk::core::database_object::set_database_id(sbk_id id) -> void
 
 auto sbk::core::database_object::set_database_name(std::string_view name) -> void
 {
+    BOOST_ASSERT_MSG(name.length() > 0, "Database names must have a length");
+    BOOST_ASSERT_MSG(name[0] != '\0', "Names can't start with closing tags");
     m_onUpdateName.Broadcast(m_objectName, name);
     m_objectName = name;
 }

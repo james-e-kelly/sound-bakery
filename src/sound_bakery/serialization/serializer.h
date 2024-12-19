@@ -52,6 +52,16 @@ namespace sbk::core::serialization
             BOOST_ASSERT_MSG(variant.is_valid(), "Could not convert the default value to type");
             return variant;
         }
+        else if (type == rttr::type::get<std::string>())
+        {
+            BOOST_ASSERT(false);
+            return rttr::variant(std::string());
+        }
+        else if (type == rttr::type::get<std::string_view>())
+        {
+            BOOST_ASSERT(false);
+            return rttr::variant(std::string_view());
+        }
 
         BOOST_ASSERT_MSG(type.get_constructor({}).is_valid(), "Types must have constructors at this point");
         return type.create_default();
@@ -391,20 +401,19 @@ namespace boost
             }
         }
 
-        template <class archive_class, typename variant_type, typename save_type>
-        void serialize_variant_with_conversion(archive_class& archive, rttr::variant& variant)
+        template <class archive_class>
+        void serialize_variant_view(archive_class& archive, rttr::variant& variant)
         {
             if (archive_class::is_loading())
             {
-                save_type loaded;
+                std::string loaded;
                 archive & boost::serialization::make_nvp("Value", loaded);
-                variant_type loadedConverted(loaded);
-                variant = loadedConverted;
+                variant = loaded;
             }
             else
             {
-                variant_type valueToSave = variant.convert<variant_type>();
-                save_type valueToSaveConverted(valueToSave);
+                std::string_view valueToSave = variant.convert<std::string_view>();
+                std::string valueToSaveConverted(valueToSave);
                 archive & boost::serialization::make_nvp("Value", valueToSaveConverted);
             }
         }
@@ -468,7 +477,7 @@ namespace boost
             }
             else if (type == rttr::type::get<std::string_view>())
             {
-                serialize_variant_with_conversion<archive_class, std::string_view, std::string>(archive, variant);
+                serialize_variant_view<archive_class>(archive, variant);
             }
             else if (type.is_wrapper())
             {
