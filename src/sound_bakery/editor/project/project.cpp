@@ -126,8 +126,8 @@ void sbk::editor::project::loadSystem()
     {
         if (p.path().extension() == ".yaml")
         {
-            YAML::Node node = YAML::LoadFile(p.path().string());
-            sbk::core::serialization::yaml_serializer::loadSystem(sbk::engine::system::get(), node);
+            sbk::core::serialization::yaml_serializer yamlSerializer;
+            yamlSerializer.load_object<sbk::core::serialization::serialized_system>(sbk::engine::system::get(), p.path());
         }
     }
 }
@@ -145,11 +145,8 @@ void sbk::editor::project::loadObjects()
         {
             if (directoryEntry.is_regular_file() && directoryEntry.path().extension() == ".yaml")
             {
-                /*YAML::Node node                           = YAML::LoadFile(directoryEntry.path().string());
-                std::shared_ptr<sbk::core::object> object = load_object(node);*/
-
-                sbk::core::serialization::yaml_new_serializer yamlSerializer;
-                yamlSerializer.load_object(*this, directoryEntry.path());
+                sbk::core::serialization::yaml_serializer yamlSerializer;
+                yamlSerializer.load_object<sbk::core::serialization::serialized_standalone_object>(this, directoryEntry.path());
             }
         }
     }
@@ -206,16 +203,15 @@ void sbk::editor::project::build_soundbanks() const
 
 void sbk::editor::project::saveSystem() const
 {
-    YAML::Emitter systemYaml;
-    sbk::core::serialization::yaml_serializer::saveSystem(sbk::engine::system::get(), systemYaml);
-    saveYAML(systemYaml, m_projectConfig.project_folder() / "system.yaml");
+    sbk::core::serialization::yaml_serializer yamlSerializer;
+    yamlSerializer.save_system(m_projectConfig.project_folder() / "system.yaml");
 }
 
 void sbk::editor::project::saveObjects() const
 {
     for (const std::weak_ptr<sbk::core::database_object>& object : sbk::engine::system::get()->get_all())
     {
-        if (const std::shared_ptr<sbk::core::database_object> sharedObject = object.lock())
+        if (std::shared_ptr<sbk::core::database_object> sharedObject = object.lock())
         {
             if (sharedObject->get_editor_hidden())
             {
@@ -229,16 +225,16 @@ void sbk::editor::project::saveObjects() const
             std::filesystem::create_directories(filePath.parent_path());
 
             /*sbk::core::serialization::text_serializer textSerializer;
-            textSerializer.save_object(sharedObject, filePath.replace_extension("txt"));
+            textSerializer.save_database_object(sharedObject, filePath.replace_extension("txt"));
 
             sbk::core::serialization::xml_serializer xmlSerializer;
-            xmlSerializer.save_object(sharedObject, filePath.replace_extension("xml"));
+            xmlSerializer.save_database_object(sharedObject, filePath.replace_extension("xml"));
 
             sbk::core::serialization::binary_serializer binarySerializer;
-            binarySerializer.save_object(sharedObject, filePath.replace_extension("bnk"));*/
+            binarySerializer.save_database_object(sharedObject, filePath.replace_extension("bnk"));*/
 
-            sbk::core::serialization::yaml_new_serializer yamlSerializer;
-            yamlSerializer.save_object(sharedObject, filePath.replace_extension("yaml"));
+            sbk::core::serialization::yaml_serializer yamlSerializer;
+            yamlSerializer.save_database_object<sbk::core::serialization::serialized_standalone_object>(sharedObject, filePath.replace_extension("yaml"));
         }
     }
 }

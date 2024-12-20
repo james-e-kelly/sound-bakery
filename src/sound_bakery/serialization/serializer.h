@@ -11,7 +11,7 @@
 #include <boost/archive/yaml_iarchive.hpp>
 #include <boost/archive/yaml_oarchive.hpp>
 
-#include "sound_bakery/core/object/object.h"
+#include "sound_bakery/core/database/database_object.h"
 #include "sound_bakery/core/object/object_owner.h"
 
 #include "yaml-cpp/yaml.h"
@@ -29,63 +29,20 @@ namespace sbk::engine
 
 namespace sbk::core::serialization
 {
-    static auto make_default_variant(const rttr::type& type) -> rttr::variant 
-    { 
-        BOOST_ASSERT(type.is_valid());
+    auto make_default_variant(const rttr::type& type) -> rttr::variant;
 
-        if (type.is_wrapper())
-        {
-            BOOST_ASSERT_MSG(type.get_wrapped_type().is_arithmetic(),
-                             "We only convert simple types to ensure we're not creating large objects accidentally");
-
-            rttr::variant variant = 0u;
-            variant.convert(type.get_wrapped_type());
-            BOOST_ASSERT_MSG(variant.is_valid(), "Could not convert the default value to the wrapped type");
-            variant.convert(type);
-            BOOST_ASSERT_MSG(variant.is_valid(), "Could not convert the variant to the wrapping type");
-            return variant;
-        }
-        else if (type.is_arithmetic()) // Can't construct arithmetic types
-        {
-            rttr::variant variant = 0u;
-            variant.convert(type);
-            BOOST_ASSERT_MSG(variant.is_valid(), "Could not convert the default value to type");
-            return variant;
-        }
-        else if (type == rttr::type::get<std::string>())
-        {
-            BOOST_ASSERT(false);
-            return rttr::variant(std::string());
-        }
-        else if (type == rttr::type::get<std::string_view>())
-        {
-            BOOST_ASSERT(false);
-            return rttr::variant(std::string_view());
-        }
-
-        BOOST_ASSERT_MSG(type.get_constructor({}).is_valid(), "Types must have constructors at this point");
-        return type.create_default();
-    }
-
+    /**
+     * @brief Stores the version of Sound Bakery.
+     * 
+     * Once loaded, can check whether the serialized version is compatible with this version.
+     */
     struct SB_CLASS serialized_version
     {
-        serialized_version() = default;
-
         unsigned int major = SBK_VERSION_MAJOR;
         unsigned int minor = SBK_VERSION_MINOR;
         unsigned int patch = SBK_VERSION_PATCH;
 
-        auto valid() const -> bool
-        { 
-            return major || minor || patch;
-        }
-
-        auto version_compatible() const -> bool
-        { 
-            return major == SBK_VERSION_MAJOR && minor == SBK_VERSION_MINOR;
-        }
-
-        friend class boost::serialization::access;
+        auto version_compatible() const -> bool { return major == SBK_VERSION_MAJOR && minor == SBK_VERSION_MINOR; }
 
         template <class archive_class>
         void serialize(archive_class& archive, const unsigned int version)
@@ -96,26 +53,100 @@ namespace sbk::core::serialization
         }
     };
 
-    struct SB_CLASS serialized_header
+    /**
+     * @brief Serializes an object type so upon loading, we create the correct type.
+     */
+    struct SB_CLASS serialized_type
     {
-        serialized_header() = default;
-        serialized_header(const std::shared_ptr<sbk::core::object>& object)
-            : type(object->get_object_type().get_name().data()), version()
-        {
-        }
+        serialized_type() = default;
+        serialized_type(const rttr::type& type) : typeString(type.get_name().data()) {}
 
-        std::string type;
-        serialized_version version;
+        std::string typeString;
 
-        auto valid() const -> bool { return !type.empty() && version.valid(); }
-
-        friend class boost::serialization::access;
+        auto get_type() const -> rttr::type { return rttr::type::get_by_name(typeString); }
 
         template <class archive_class>
         void serialize(archive_class& archive, const unsigned int fileVersion)
         {
+            archive & boost::serialization::make_nvp("Type", typeString);
+        }
+    };
+
+    /**
+     * @brief Serializes an object type and the object's data.
+     */
+    struct SB_CLASS serialized_object
+    {
+        serialized_object() = delete;
+        serialized_object(std::shared_ptr<sbk::core::database_object>& object, sbk::core::object_owner* objectOwner) 
+            : object(object), objectOwner(objectOwner) 
+        {
+            if (object)
+            {
+                type.typeString = object->get_object_type().get_name().data();
+            }
+        }
+
+        serialized_type type;
+
+        std::shared_ptr<sbk::core::database_object> object;
+        sbk::core::object_owner* objectOwner = nullptr;
+
+        template <class archive_class>
+        void serialize(archive_class& archive, const unsigned int v)
+        {
             archive & boost::serialization::make_nvp("Type", type);
+
+            if (archive_class::is_loading())
+            {
+                BOOST_ASSERT(objectOwner != nullptr);
+                object = objectOwner->create_database_object(type.get_type());
+            }
+            
+            BOOST_ASSERT(object);
+            archive& boost::serialization::make_nvp("ObjectData", *object.get());
+        }
+    };
+
+    /**
+     * @brief Header for an object that saves to a single file.
+     * 
+     * Contains version information, the object type and its property data.
+     */
+    struct SB_CLASS serialized_standalone_object
+    {
+        serialized_standalone_object() = delete;
+        serialized_standalone_object(std::shared_ptr<sbk::core::database_object>& object, sbk::core::object_owner* objectOwner)
+            : object(object, objectOwner){}
+
+        serialized_version version;
+        serialized_object object;
+
+        template <class archive_class>
+        void serialize(archive_class& archive, const unsigned int v)
+        {
             archive & boost::serialization::make_nvp("Version", version);
+            BOOST_ASSERT_MSG(version.version_compatible(), "Cross version serialization not implemented yet");
+            archive & boost::serialization::make_nvp("Object", object);
+        }
+    };
+
+    struct SB_CLASS serialized_system
+    {
+        serialized_system() = delete;
+        serialized_system(std::shared_ptr<sbk::core::database_object>& object, sbk::core::object_owner* objectOwner){}
+
+        serialized_version version;
+
+        template <class archive_class>
+        void serialize(archive_class& archive, const unsigned int v)
+        {
+            sbk::engine::system* system = sbk::engine::system::get();
+            BOOST_ASSERT(system != nullptr);
+
+            archive & boost::serialization::make_nvp("Version", version);
+            BOOST_ASSERT_MSG(version.version_compatible(), "Cross version serialization not implemented yet");
+            archive & boost::serialization::make_nvp("System", *system);
         }
     };
 
@@ -130,8 +161,6 @@ namespace sbk::core::serialization
 
         rttr::variant& child;
         rttr::type type;
-
-        friend class boost::serialization::access;
 
         template <class archive_class>
         void serialize(archive_class& archive, const unsigned int version)
@@ -169,8 +198,6 @@ namespace sbk::core::serialization
         rttr::variant& originalVariant;
         rttr::variant_sequential_view view;
         rttr::type valueType;
-
-        friend class boost::serialization::access;
 
         template <class archive_class>
         void serialize(archive_class& archive, const unsigned int version)
@@ -229,8 +256,6 @@ namespace sbk::core::serialization
         rttr::type valueType;
         rttr::type keyType;
 
-        friend class boost::serialization::access;
-
         template <class archive_class>
         void serialize(archive_class& archive, const unsigned int version)
         {
@@ -281,64 +306,50 @@ namespace sbk::core::serialization
         }
     };
 
-    /**
-     * @brief Abstract class that handles serializing object to and from the disk.
-     */
-    class SB_CLASS serializer
-    {
-    public:
-        virtual auto save_object(const std::shared_ptr<sbk::core::object>& object, const std::filesystem::path& file) -> sb_result = 0;
-        virtual auto load_object(sbk::core::object_owner& objectOwner, const std::filesystem::path& file) -> sb_result = 0;
-    };
-
     template <class load_archive, class save_archive>
-    class SB_CLASS boost_serializer : public serializer
+    class SB_CLASS boost_serializer
     {
     public:
-        auto save_object(const std::shared_ptr<sbk::core::object>& object, const std::filesystem::path& file) -> sb_result override
+        template <class serialize_class>
+        auto save_database_object(std::shared_ptr<sbk::core::database_object>& object, const std::filesystem::path& file) -> sb_result
         {
             SC_CHECK_ARG(object);
             SC_CHECK(!file.empty(), MA_INVALID_FILE);
 
             std::ofstream outputStream(file);
             save_archive archive(outputStream);
-            serialized_header header(object);
+            serialize_class serialize(object, nullptr);
 
-            archive << boost::serialization::make_nvp("Header", header);
-            archive << boost::serialization::make_nvp("Object", *object.get());
+            archive & boost::serialization::make_nvp("Data", serialize);
             return MA_SUCCESS;
         }
 
-        auto load_object(sbk::core::object_owner& objectOwner, const std::filesystem::path& file) -> sb_result override
+        auto save_system(const std::filesystem::path& file) -> sb_result
+        {
+            SC_CHECK(!file.empty(), MA_INVALID_FILE);
+
+            static std::shared_ptr<sbk::core::database_object> fakeObject;
+
+            std::ofstream outputStream(file);
+            save_archive archive(outputStream);
+            serialized_system serialize(fakeObject, nullptr);
+
+            archive & boost::serialization::make_nvp("System", serialize);
+            return MA_SUCCESS;
+        }
+
+        template <class serialize_class>
+        auto load_object(sbk::core::object_owner* objectOwner, const std::filesystem::path& file) -> sb_result
         {
             SC_CHECK(std::filesystem::exists(file), MA_INVALID_FILE);
 
+            static std::shared_ptr<sbk::core::database_object> fakeObject;
+
             std::ifstream outputStream(file);
             load_archive archive(outputStream);
+            serialize_class object(fakeObject, objectOwner);
 
-            serialized_header header;
-            archive >> boost::serialization::make_nvp("Header", header);
-            SC_CHECK(header.valid(), MA_INVALID_DATA);
-
-            const rttr::type objectType = rttr::type::get_by_name(header.type);
-            SC_CHECK(objectType.is_valid(), MA_INVALID_DATA);
-
-            if (objectType.is_derived_from<sbk::core::database_object>())
-            {
-                std::shared_ptr<sbk::core::database_object> createdDatabaseObject =
-                    objectOwner.create_database_object(objectType);
-                SC_CHECK(createdDatabaseObject, MA_ERROR);
-
-                archive >> boost::serialization::make_nvp("Object", *createdDatabaseObject.get());
-            }
-            else
-            {
-                std::shared_ptr<sbk::core::object> runtimeObject = objectOwner.create_runtime_object(objectType);
-                SC_CHECK(runtimeObject, MA_ERROR);
-
-                archive >> boost::serialization::make_nvp("Object", *runtimeObject.get());
-            }
-
+            archive & boost::serialization::make_nvp("Data", object);
             return MA_SUCCESS;
         }
     };
@@ -346,39 +357,7 @@ namespace sbk::core::serialization
     using binary_serializer = boost_serializer<boost::archive::binary_iarchive, boost::archive::binary_oarchive>;
     using text_serializer = boost_serializer<boost::archive::text_iarchive, boost::archive::text_oarchive>;
     using xml_serializer = boost_serializer<boost::archive::xml_iarchive, boost::archive::xml_oarchive>;
-    using yaml_new_serializer = boost_serializer<boost::archive::yaml_iarchive, boost::archive::yaml_oarchive>;
-
-    class SB_CLASS yaml_serializer final : public serializer
-    {
-    public:
-        static void saveObject(sbk::core::object* object, YAML::Emitter& emitter);
-        static void saveSystem(sbk::engine::system* system, YAML::Emitter& emitter);
-
-        static void packageSoundbank(sbk::engine::soundbank* soundbank, YAML::Emitter& emitter);
-        static rttr::instance unpackSoundbank(YAML::Node& node);
-
-        static void loadSystem(sbk::engine::system* system, YAML::Node& node);
-
-        static rttr::instance createAndLoadObject(
-            YAML::Node& node, std::optional<rttr::method> onLoadedMethod = std::optional<rttr::method>());
-
-        static bool loadProperties(YAML::Node& node,
-                                   rttr::instance instance,
-                                   std::optional<rttr::method> onLoadedMethod = std::optional<rttr::method>());
-
-    private:
-        static bool saveInstance(YAML::Emitter& emitter, rttr::instance instance);
-        static bool saveVariant(YAML::Emitter& emitter, rttr::string_view name, rttr::variant& variant);
-        static bool saveStringVariant(YAML::Emitter& emitter, rttr::string_view name, rttr::variant variant);
-        static bool saveEnumVariant(YAML::Emitter& emitter, rttr::string_view name, rttr::variant variant);
-        static bool saveAssociateContainerVariant(YAML::Emitter& emitter,
-                                                  rttr::string_view name,
-                                                  rttr::variant variant);
-        static bool saveSequentialContainerVariant(YAML::Emitter& emitter,
-                                                   rttr::string_view name,
-                                                   rttr::variant variant);
-        static bool saveClassVariant(YAML::Emitter& emitter, rttr::string_view name, rttr::variant variant);
-    };
+    using yaml_serializer = boost_serializer<boost::archive::yaml_iarchive, boost::archive::yaml_oarchive>;
 }  // namespace sbk::core::serialization
 
 namespace boost
@@ -402,7 +381,7 @@ namespace boost
         }
 
         template <class archive_class>
-        void serialize_variant_view(archive_class& archive, rttr::variant& variant)
+        void serialize_variant_string_view(archive_class& archive, rttr::variant& variant)
         {
             if (archive_class::is_loading())
             {
@@ -477,7 +456,7 @@ namespace boost
             }
             else if (type == rttr::type::get<std::string_view>())
             {
-                serialize_variant_view<archive_class>(archive, variant);
+                serialize_variant_string_view<archive_class>(archive, variant);
             }
             else if (type.is_wrapper())
             {
@@ -508,7 +487,7 @@ namespace boost
             else if (type.is_associative_container())
             {
                 sbk::core::serialization::serialized_associative_container serializedAssociativeContainer(variant);
-                archive& boost::serialization::make_nvp("AssociativeContainer", serializedAssociativeContainer);
+                archive & boost::serialization::make_nvp("AssociativeContainer", serializedAssociativeContainer);
             }
             else if (type.is_sequential_container())
             {

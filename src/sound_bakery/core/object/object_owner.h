@@ -13,7 +13,6 @@ namespace sbk::core
     {
     public:
         [[nodiscard]] auto create_runtime_object(const rttr::type& type) -> std::shared_ptr<object>;
-        [[nodiscard]] auto load_object(YAML::Node& node) -> std::shared_ptr<object>;
 
         /**
          * @param addToDatabase to automatically track the object. If set to false, the user is responsible for adding

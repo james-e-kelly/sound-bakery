@@ -71,41 +71,6 @@ auto sbk::core::object_owner::create_runtime_object(const rttr::type& type) -> s
     return result;
 }
 
-auto sbk::core::object_owner::load_object(YAML::Node& node) -> std::shared_ptr<sbk::core::object>
-{
-    const std::string loadedTypeName = node["ObjectType"].as<std::string>();
-    const rttr::type type            = rttr::type::get_by_name(loadedTypeName);
-
-    if (type.is_derived_from<sbk::core::database_object>())
-    {
-        std::shared_ptr<sbk::core::database_object> databaseObject = create_database_object(type, false);
-        sbk::core::database_object* const databaseObjectPointer    = databaseObject.get();
-
-        sbk::core::serialization::yaml_serializer::loadProperties(node, databaseObjectPointer);
-
-        if (sbk::engine::system* const system = sbk::engine::system::get())
-        {
-            system->add_object_to_database(databaseObject);
-        }
-
-        return databaseObject;
-    }
-    else if (type.is_derived_from<sbk::core::object>())
-    {
-        std::shared_ptr<sbk::core::object> object = create_runtime_object(type);
-
-        sbk::core::serialization::yaml_serializer::loadProperties(node, object);
-
-        return object;
-    }
-    else
-    {
-        BOOST_ASSERT(false);
-    }
-
-    return {};
-}
-
 auto sbk::core::object_owner::create_database_object(const rttr::type& type,
                                                      bool addToDatabase) -> std::shared_ptr<sbk::core::database_object>
 {

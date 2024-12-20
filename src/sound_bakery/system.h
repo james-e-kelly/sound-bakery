@@ -75,6 +75,13 @@ namespace sbk
 
             auto set_master_bus(const std::shared_ptr<sbk::engine::bus>& masterBus) -> void;
 
+            friend class boost::serialization::access;
+
+            template <class archive_class>
+            void serialize(archive_class& archive, const unsigned int version)
+            {
+            }
+
         private:
             bool m_registeredReflection = false;
 
