@@ -11,6 +11,7 @@
 #include <boost/archive/yaml_iarchive.hpp>
 #include <boost/archive/yaml_oarchive.hpp>
 
+#include "sound_bakery/system.h"
 #include "sound_bakery/core/database/database_object.h"
 #include "sound_bakery/core/object/object_owner.h"
 
@@ -100,11 +101,17 @@ namespace sbk::core::serialization
             if (archive_class::is_loading())
             {
                 BOOST_ASSERT(objectOwner != nullptr);
-                object = objectOwner->create_database_object(type.get_type());
+                object = objectOwner->create_database_object(type.get_type(), false);
             }
             
             BOOST_ASSERT(object);
-            archive& boost::serialization::make_nvp("ObjectData", *object.get());
+            archive & boost::serialization::make_nvp("ObjectData", *object.get());
+
+            if (archive_class::is_loading())
+            {
+                BOOST_ASSERT(sbk::engine::system::get() != nullptr);
+                sbk::engine::system::get()->add_object_to_database(object);
+            }
         }
     };
 

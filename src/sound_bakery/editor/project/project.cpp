@@ -25,9 +25,9 @@ bool sbk::editor::project::open_project(const std::filesystem::path& projectFile
 
     m_projectConfig = project_configuration(projectFile);
 
-    loadObjects();
+    load_objects();
     loadSystem();
-    loadSounds();
+    load_sounds();
 
     createPreviewContainer();
 
@@ -88,7 +88,7 @@ std::weak_ptr<sbk::engine::sound_container> sbk::editor::project::get_preview_co
     return m_previewSoundContainer;
 }
 
-void sbk::editor::project::loadSounds()
+void sbk::editor::project::load_sounds()
 {
     for (const std::filesystem::directory_entry& p :
          std::filesystem::recursive_directory_iterator(m_projectConfig.source_folder()))
@@ -97,7 +97,7 @@ void sbk::editor::project::loadSounds()
         {
             const std::filesystem::path filename = p.path().filename();
 
-            if (sbk::core::database* const database = sbk::engine::system::get())
+            if (const sbk::core::database* const database = sbk::engine::system::get())
             {
                 if (database->try_find(filename.stem().string()).expired())
                 {
@@ -132,7 +132,7 @@ void sbk::editor::project::loadSystem()
     }
 }
 
-void sbk::editor::project::loadObjects()
+void sbk::editor::project::load_objects()
 {
     const std::vector<std::filesystem::path> loadPaths{m_projectConfig.object_folder()};
 
