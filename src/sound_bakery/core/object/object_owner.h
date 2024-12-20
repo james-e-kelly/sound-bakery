@@ -25,7 +25,7 @@ namespace sbk::core
         [[nodiscard]] auto create_runtime_object() -> std::shared_ptr<T>;
 
         template <typename T>
-        [[nodiscard]] auto create_database_object() -> std::shared_ptr<T>;
+        [[nodiscard]] auto create_database_object(bool addToDatabase = true) -> std::shared_ptr<T>;
 
         auto remove_object(const std::shared_ptr<object>& object) -> void;
 

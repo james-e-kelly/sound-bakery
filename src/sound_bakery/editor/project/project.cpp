@@ -170,8 +170,15 @@ void sbk::editor::project::build_soundbanks() const
 
     for (const auto& soundbankObject : soundbankObjects)
     {
-        if (const sbk::engine::soundbank* const soundbank = soundbankObject->try_convert_object<sbk::engine::soundbank>())
+        if (sbk::engine::soundbank* const soundbank = soundbankObject->try_convert_object<sbk::engine::soundbank>())
         {
+            std::shared_ptr<sbk::core::database_object> sharedDatabaseObject = soundbank->casted_shared_from_this<sbk::core::database_object>();
+
+            sbk::core::serialization::yaml_serializer yamlSerializer;
+            yamlSerializer.save_database_object<sbk::core::serialization::serialized_soundbank>(
+                sharedDatabaseObject,
+                m_projectConfig.build_folder() / (std::string(soundbank->get_database_name()) + ".bnk"));
+
             /*YAML::Emitter soundbankEmitter;
             SB::Core::Serialization::yaml_serializer::packageSoundbank(soundbank, soundbankEmitter);
 
@@ -180,7 +187,7 @@ void sbk::editor::project::build_soundbanks() const
 
             saveYAML(soundbankEmitter, filePath);*/
 
-            sbk::engine::soundbank_dependencies soundbankDependencies = soundbank->gather_dependencies();
+            /*sbk::engine::soundbank_dependencies soundbankDependencies = soundbank->gather_dependencies();
 
             sc_bank bank;
             const sc_result initresult =
@@ -196,7 +203,7 @@ void sbk::editor::project::build_soundbanks() const
                                                         soundbankDependencies.encodedSoundPaths.size());
             BOOST_ASSERT(buildResult == MA_SUCCESS);
 
-            sc_bank_uninit(&bank);
+            sc_bank_uninit(&bank);*/
         }
     }
 }

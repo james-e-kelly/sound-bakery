@@ -14,6 +14,7 @@
 #include "sound_bakery/system.h"
 #include "sound_bakery/core/database/database_object.h"
 #include "sound_bakery/core/object/object_owner.h"
+#include "sound_bakery/soundbank/soundbank.h"
 
 #include "yaml-cpp/yaml.h"
 
@@ -154,6 +155,88 @@ namespace sbk::core::serialization
             archive & boost::serialization::make_nvp("Version", version);
             BOOST_ASSERT_MSG(version.version_compatible(), "Cross version serialization not implemented yet");
             archive & boost::serialization::make_nvp("System", *system);
+        }
+    };
+
+    template <class object_class>
+    struct SB_CLASS serialized_object_vector
+    {
+        serialized_object_vector() = delete;
+        serialized_object_vector(sbk::core::object_owner* objectOwner) : objectOwner(objectOwner) {}
+        serialized_object_vector(const std::vector<std::shared_ptr<object_class>>& objects)
+            : objects(objects) {}
+
+        sbk::core::object_owner* objectOwner = nullptr;
+        std::size_t count = 0;
+        std::vector<std::shared_ptr<object_class>> objects;
+
+        template <class archive_class>
+        void serialize(archive_class& archive, const unsigned int v)
+        {
+            count = objects.size();
+
+            archive & boost::serialization::make_nvp("Count", count);
+            
+            for (std::size_t index = 0; index < count; ++count)
+            {
+                if (archive_class::is_loading())
+                {
+                    BOOST_ASSERT(objectOwner != nullptr);
+                    std::shared_ptr<object_class> object = objectOwner->create_database_object<object_class>(false);
+                    archive & boost::serialization::make_nvp("Object", *object.get());
+                }
+                else
+                {
+                    archive & boost::serialization::make_nvp("Object", *objects[index].get());
+                }
+            }
+        }
+    };
+
+    struct SB_CLASS serialized_soundbank
+    {
+        serialized_soundbank() = delete;
+        serialized_soundbank(std::shared_ptr<sbk::core::database_object>& object, sbk::core::object_owner* objectOwner)
+            : serializedSoundbank(object, objectOwner)
+        {
+        }
+
+        serialized_version version;
+        serialized_object serializedSoundbank;
+
+        template <class archive_class>
+        void serialize(archive_class& archive, const unsigned int v)
+        {
+            archive & boost::serialization::make_nvp("Version", version);
+            BOOST_ASSERT_MSG(version.version_compatible(), "Cross version serialization not implemented yet");
+
+            archive & boost::serialization::make_nvp("Soundbank", serializedSoundbank);
+            BOOST_ASSERT_MSG(serializedSoundbank.object->get_object_type().is_derived_from<sbk::engine::soundbank>(), "Must be saving a soundbank type");
+
+            sbk::engine::soundbank* soundbank = serializedSoundbank.object->try_convert_object<sbk::engine::soundbank>();
+
+            if (archive_class::is_loading())
+            {
+                serialized_object_vector<sbk::engine::sound> serializedSounds(soundbank);
+                serialized_object_vector<sbk::engine::node_base> serializedNodes(soundbank);
+                serialized_object_vector<sbk::engine::event> serializedEvents(soundbank);
+
+                archive& boost::serialization::make_nvp("Sounds", serializedSounds);
+                archive& boost::serialization::make_nvp("Nodes", serializedNodes);
+                archive& boost::serialization::make_nvp("Events", serializedEvents);
+            }
+            else
+            {
+                sbk::engine::soundbank_dependencies soundbankDependencies = soundbank->gather_dependencies();
+
+                serialized_object_vector<sbk::engine::sound> serializedSounds(soundbankDependencies.sounds);
+                serialized_object_vector<sbk::engine::node_base> serializedNodes(soundbankDependencies.nodes);
+                serialized_object_vector<sbk::engine::event> serializedEvents(soundbankDependencies.events);
+
+                archive& boost::serialization::make_nvp("Sounds", serializedSounds);
+                archive& boost::serialization::make_nvp("Nodes", serializedNodes);
+                archive& boost::serialization::make_nvp("Events", serializedEvents);
+            }
         }
     };
 

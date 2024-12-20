@@ -21,7 +21,7 @@ auto object_owner::create_runtime_object() -> std::shared_ptr<T>
 }
 
 template <typename T>
-auto object_owner::create_database_object() -> std::shared_ptr<T>
+auto object_owner::create_database_object(bool addToDatabase) -> std::shared_ptr<T>
 {
     if (!rttr::type::get<T>().is_derived_from(rttr::type::get<sbk::core::database_object>()))
     {
@@ -29,7 +29,7 @@ auto object_owner::create_database_object() -> std::shared_ptr<T>
         return {};
     }
 
-    if (std::shared_ptr<database_object> object = create_database_object(rttr::type::get<T>()))
+    if (std::shared_ptr<database_object> object = create_database_object(rttr::type::get<T>(), addToDatabase))
     {
         if (std::shared_ptr<T> castedObject = std::static_pointer_cast<T>(object))
         {

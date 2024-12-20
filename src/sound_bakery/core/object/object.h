@@ -22,6 +22,9 @@ namespace sbk::core
         object() = default;
         virtual ~object();
 
+        template <typename T>
+        [[nodiscard]] auto casted_shared_from_this() -> std::shared_ptr<T>;
+        
         /**
          * @brief Gets the most derived type of this object and upcasts it to T
          */
