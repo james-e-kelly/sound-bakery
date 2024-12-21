@@ -27,6 +27,8 @@ namespace sbk::core
         template <typename T>
         [[nodiscard]] auto create_database_object(bool addToDatabase = true) -> std::shared_ptr<T>;
 
+        auto add_reference_to_object(std::shared_ptr<database_object>& object) -> void;
+
         auto remove_object(const std::shared_ptr<object>& object) -> void;
 
         auto destroy_all() -> void;

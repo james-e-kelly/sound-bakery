@@ -86,10 +86,12 @@ namespace sbk::core::serialization
             if (object)
             {
                 type.typeString = object->get_object_type().get_name().data();
+                id              = object->get_database_id();
             }
         }
 
         serialized_type type;
+        sbk_id id;
 
         std::shared_ptr<sbk::core::database_object> object;
         sbk::core::object_owner* objectOwner = nullptr;
@@ -98,11 +100,23 @@ namespace sbk::core::serialization
         void serialize(archive_class& archive, const unsigned int v)
         {
             archive & boost::serialization::make_nvp("Type", type);
+            archive & boost::serialization::make_nvp("ID", id);
 
             if (archive_class::is_loading())
             {
                 BOOST_ASSERT(objectOwner != nullptr);
-                object = objectOwner->create_database_object(type.get_type(), false);
+                std::weak_ptr<sbk::core::database_object> foundObject = sbk::engine::system::get()->try_find(id);
+
+                if (foundObject.expired())
+                {
+                    object = objectOwner->create_database_object(type.get_type(), false);
+                    object->set_flags(object_flag_loading);
+                }
+                else
+                {
+                    object = foundObject.lock();
+                    objectOwner->add_reference_to_object(object);
+                }
             }
             
             BOOST_ASSERT(object);
@@ -111,6 +125,7 @@ namespace sbk::core::serialization
             if (archive_class::is_loading())
             {
                 BOOST_ASSERT(sbk::engine::system::get() != nullptr);
+                object->clear_flags(object_flag_loading);
                 sbk::engine::system::get()->add_object_to_database(object);
             }
         }
@@ -446,6 +461,8 @@ namespace sbk::core::serialization
     using xml_serializer = boost_serializer<boost::archive::xml_iarchive, boost::archive::xml_oarchive>;
     using yaml_serializer = boost_serializer<boost::archive::yaml_iarchive, boost::archive::yaml_oarchive>;
 }  // namespace sbk::core::serialization
+
+BOOST_CLASS_VERSION(sbk::core::serialization::serialized_object, 1)
 
 namespace boost
 {

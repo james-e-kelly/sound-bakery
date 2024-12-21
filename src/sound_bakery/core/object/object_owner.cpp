@@ -104,6 +104,14 @@ auto sbk::core::object_owner::create_database_object(const rttr::type& type,
     return {};
 }
 
+auto sbk::core::object_owner::add_reference_to_object(std::shared_ptr<database_object>& object) -> void
+{
+    if (object)
+    {
+        m_objects.push_back(object);
+    }
+}
+
 auto sbk::core::object_owner::remove_object(const std::shared_ptr<object>& object) -> void
 {
     if (object)

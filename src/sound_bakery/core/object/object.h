@@ -7,6 +7,12 @@
 
 namespace sbk::core
 {
+    enum object_flags
+    {
+        object_flag_none    = 0x00000000, 
+        object_flag_loading = 0x00000001  //< Serializing is loading property data
+    };
+
     /**
      * @brief Base object that all sound Bakery objects should inherit
      * from.
@@ -43,6 +49,11 @@ namespace sbk::core
         [[nodiscard]] auto get_owner() const -> object_owner*;
         [[nodiscard]] auto get_on_destroy() -> MulticastDelegate<object*>&;
 
+        [[nodiscard]] auto get_flags() const -> object_flags;
+        [[nodiscard]] auto set_flags(object_flags flagsToSet) -> void;
+        [[nodiscard]] auto clear_flags(object_flags flagsToClear) -> void;
+        [[nodiscard]] auto has_flag(object_flags flagsToCheck) -> bool;
+
         template <class archive_class>
         void serialize(archive_class& archive, const unsigned int fileVersion)
         {
@@ -72,11 +83,18 @@ namespace sbk::core
                     {
                         std::string loadedString = loadedVariant.convert<std::string>();
                         std::string_view loadedStringView = loadedString;
-                        property.set_value(rttr::instance(this), loadedStringView);
+
+                        if (has_flag(object_flag_loading))
+                        {
+                            property.set_value(rttr::instance(this), loadedStringView);
+                        }
                     }
                     else
                     {
-                        property.set_value(rttr::instance(this), loadedVariant);
+                        if (has_flag(object_flag_loading))
+                        {
+                            property.set_value(rttr::instance(this), loadedVariant);
+                        }
                     }
                 }
             }
@@ -89,6 +107,7 @@ namespace sbk::core
         auto cache_type() -> void;
 
         object_owner* m_owner = nullptr;
+        object_flags m_flags  = object_flag_none;
 
         /**
          * @brief Cache of this object's type so it can be grabbed during

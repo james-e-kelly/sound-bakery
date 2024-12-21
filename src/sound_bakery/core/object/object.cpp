@@ -50,3 +50,23 @@ void sbk::core::object::destroy()
         m_owner->remove_object(shared_from_this());
     }
 }
+
+auto sbk::core::object::get_flags() const -> object_flags
+{ 
+    return m_flags; 
+}
+
+auto sbk::core::object::set_flags(object_flags flagsToSet) -> void 
+{
+    m_flags = static_cast<object_flags>(m_flags | flagsToSet);
+}
+
+auto sbk::core::object::clear_flags(object_flags flagsToClear) -> void 
+{ 
+    m_flags = static_cast<object_flags>(m_flags & ~flagsToClear);
+}
+
+auto sbk::core::object::has_flag(object_flags flagsToCheck) -> bool
+{
+    return (m_flags & flagsToCheck) == flagsToCheck;
+}
