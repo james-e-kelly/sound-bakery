@@ -164,7 +164,7 @@ namespace sbk::core::serialization
         serialized_object_vector() = delete;
         serialized_object_vector(sbk::core::object_owner* objectOwner) : objectOwner(objectOwner) {}
         serialized_object_vector(const std::vector<std::shared_ptr<object_class>>& objects)
-            : objects(objects) {}
+            : objects(objects), count(objects.size()), objectOwner(nullptr) {}
 
         sbk::core::object_owner* objectOwner = nullptr;
         std::size_t count = 0;
@@ -173,8 +173,6 @@ namespace sbk::core::serialization
         template <class archive_class>
         void serialize(archive_class& archive, const unsigned int v)
         {
-            count = objects.size();
-
             archive & boost::serialization::make_nvp("Count", count);
             
             for (std::size_t index = 0; index < count; ++count)
@@ -257,14 +255,13 @@ namespace sbk::core::serialization
         {
             for (rttr::property property : type.get_properties())
             {
+                BOOST_ASSERT(property.is_valid());
+                BOOST_ASSERT(property.get_type().is_valid());
+
                 if (archive_class::is_loading())
                 {
                     rttr::variant loaded = make_default_variant(property.get_type());
-                    if (!loaded.is_valid())
-                    {
-                        BOOST_ASSERT(loaded.is_valid());
-                        loaded = make_default_variant(property.get_type());
-                    }
+                    BOOST_ASSERT(loaded.is_valid());
                     archive & boost::serialization::make_nvp(property.get_name().data(), loaded);
                     property.set_value(child, loaded);
                 }

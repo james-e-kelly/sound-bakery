@@ -121,6 +121,13 @@ auto sbk::core::serialization::make_default_variant(const rttr::type& type) -> r
         BOOST_ASSERT_MSG(variant.is_valid(), "Could not convert the default value to type");
         return variant;
     }
+    else if (type.is_enumeration())
+    {
+        rttr::enumeration enumeration = type.get_enumeration();
+        rttr::array_range<rttr::variant> values = enumeration.get_values();
+        BOOST_ASSERT_MSG(!values.empty(), "Enums must have values so we can create a default one");
+        return *values.begin();
+    }
     else if (type == rttr::type::get<std::string>())
     {
         BOOST_ASSERT(false);
