@@ -175,7 +175,7 @@ namespace sbk::core::serialization
         {
             archive & boost::serialization::make_nvp("Count", count);
             
-            for (std::size_t index = 0; index < count; ++count)
+            for (std::size_t index = 0; index < count; ++index)
             {
                 if (archive_class::is_loading())
                 {
