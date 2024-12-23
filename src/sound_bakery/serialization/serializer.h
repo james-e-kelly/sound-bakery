@@ -91,7 +91,7 @@ namespace sbk::core::serialization
         }
 
         serialized_type type;
-        sbk_id id;
+        sbk_id id = 0;
 
         std::shared_ptr<sbk::core::database_object> object;
         sbk::core::object_owner* objectOwner = nullptr;
