@@ -93,6 +93,8 @@ namespace sbk::core
                     {
                         if (has_flag(object_flag_loading))
                         {
+                            loadedVariant.convert(property.get_type());
+                            BOOST_ASSERT(loadedVariant.get_type() == property.get_type());
                             property.set_value(rttr::instance(this), loadedVariant);
                         }
                     }

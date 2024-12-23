@@ -230,7 +230,7 @@ namespace sbk::core::serialization
                 std::size_t size                                = buffer.size();
 
                 archive & boost::serialization::make_nvp("Size", size);
-                archive & boost::serialization::make_nvp("Sound", boost::serialization::make_binary_object(buffer.data(), size));
+                archive & boost::serialization::make_nvp("Data", boost::serialization::make_binary_object(buffer.data(), size));
             }
             else
             {
@@ -238,7 +238,7 @@ namespace sbk::core::serialization
                 archive & boost::serialization::make_nvp("Size", size);
 
                 sbk::engine::raw_sound_ptr rawSound(std::malloc(size));
-                archive & boost::serialization::make_nvp("Sound", boost::serialization::make_binary_object(rawSound.get(), size));
+                archive & boost::serialization::make_nvp("Data", boost::serialization::make_binary_object(rawSound.get(), size));
 
                 sound->set_raw_sound_data(rawSound);
             }
@@ -358,6 +358,8 @@ namespace sbk::core::serialization
                     rttr::variant loaded = make_default_variant(property.get_type());
                     BOOST_ASSERT(loaded.is_valid());
                     archive & boost::serialization::make_nvp(property.get_name().data(), loaded);
+                    loaded.convert(property.get_type());
+                    BOOST_ASSERT(loaded.get_type() == property.get_type());
                     property.set_value(child, loaded);
                 }
                 else
@@ -399,6 +401,7 @@ namespace sbk::core::serialization
                     BOOST_ASSERT(loadedVariant.is_valid());
                     archive & boost::serialization::make_nvp("Item", loadedVariant);
 
+                    loadedVariant.convert((rttr::type)valueType);
                     if (needToCreate)
                     {
                         view.insert(view.begin() + index, loadedVariant);
@@ -454,12 +457,15 @@ namespace sbk::core::serialization
                     {
                         rttr::variant loadedKey = make_default_variant(keyType);
                         archive & boost::serialization::make_nvp("Key", loadedKey);
+                        loadedKey.convert((rttr::type)keyType);
                         view.insert(loadedKey);
                     }
                     else
                     {
                         std::pair<rttr::variant, rttr::variant> loadedPair(make_default_variant(keyType), make_default_variant(valueType));
                         archive & boost::serialization::make_nvp("KeyValue", loadedPair);
+                        loadedPair.first.convert((rttr::type)keyType);
+                        loadedPair.second.convert((rttr::type)valueType);
                         view.insert(loadedPair.first, loadedPair.second);
                     }
                 }
