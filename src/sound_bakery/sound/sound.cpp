@@ -7,9 +7,7 @@ using namespace sbk::engine;
 
 DEFINE_REFLECTION(sbk::engine::sound)
 
-sound::sound() : m_streaming(false) {}
-
-void sound::loadSynchronous()
+void sound::load_synchronous()
 {
     std::filesystem::path finalSoundPath;
 
@@ -58,27 +56,27 @@ void sound::loadSynchronous()
     m_sound.reset(loadedSound);
 }
 
-void sound::loadAsynchronous() { loadSynchronous(); }
+void sound::load_asynchronous() { load_synchronous(); }
 
-void sound::setSoundName(std::string soundName)
+void sound::set_sound_name(std::string soundName)
 {
     rawSoundPath = soundName;
-    loadSynchronous();
+    load_synchronous();
 }
 
-std::string sound::getSoundName() const { return rawSoundPath.string().c_str(); }
+std::string sound::get_sound_name() const { return rawSoundPath.string().c_str(); }
 
-void sound::setEncodedSoundName(std::string encodedSoundName)
+void sound::set_encoded_sound_name(std::string encodedSoundName)
 {
     encodedSoundPath = encodedSoundName;
-    loadSynchronous();
+    load_synchronous();
 }
 
-sc_sound* sound::getSound()
+sc_sound* sound::get_sound()
 {
     if (!m_sound)
     {
-        loadSynchronous();
+        load_synchronous();
     }
 
     return m_sound.get();

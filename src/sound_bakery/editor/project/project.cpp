@@ -58,7 +58,7 @@ void sbk::editor::project::encode_all_media() const
                 const sc_encoder_config encoderConfig = sc_encoder_config_init(sc_encoding_format_vorbis, ma_format_f32,
                                                                                0, ma_standard_sample_rate_48000, 8);
 
-                std::filesystem::path soundPath = sound->getSoundName();
+                std::filesystem::path soundPath = sound->get_sound_name();
 
                 if (!std::filesystem::exists(soundPath))
                 {
@@ -74,7 +74,7 @@ void sbk::editor::project::encode_all_media() const
 
                         concurrencpp::resume_on(sbk::engine::system::get()->get_game_thread_executer());
 
-                        sound->setEncodedSoundName(encodedSoundFile.string());
+                        sound->set_encoded_sound_name(encodedSoundFile.string());
                     });
             }
         }
@@ -110,7 +110,7 @@ void sbk::editor::project::load_sounds()
                                 sbk::reflection::cast<sbk::engine::sound*, sbk::core::database_object*>(
                                     createdSound.get()))
                         {
-                            castedSound->setSoundName(p.path().string());
+                            castedSound->set_sound_name(p.path().string());
                         }
                     }
                 }

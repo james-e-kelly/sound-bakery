@@ -176,9 +176,9 @@ namespace sbk::reflection
 
         registration::class_<sound>("SB::Engine::Sound")
             .constructor<>()(policy::ctor::as_raw_ptr)
-            .property("Sound", &sound::getSoundName,
-                      &sound::setSoundName)(metadata(sbk::editor::METADATA_KEY::Payload, sbk::editor::PayloadSound))
-            .property("Encoded Sound", &sound::getEncodedSoundName, &sound::setEncodedSoundName)(
+            .property("Sound", &sound::get_sound_name,
+                      &sound::set_sound_name)(metadata(sbk::editor::METADATA_KEY::Payload, sbk::editor::PayloadSound))
+            .property("Encoded Sound", &sound::get_encoded_sound_name, &sound::set_encoded_sound_name)(
                 metadata(sbk::editor::METADATA_KEY::Payload, sbk::editor::PayloadSound))
             .property("Encoding Format", &sound::m_encodingFormat);
 

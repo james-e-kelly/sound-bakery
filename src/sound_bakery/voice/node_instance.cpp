@@ -126,7 +126,7 @@ bool node_instance::play()
     {
         sound_container* soundContainer  = m_referencingNode->try_convert_object<sound_container>();
         sound* engineSound               = soundContainer->get_sound();
-        sc_sound* sound                  = engineSound != nullptr ? engineSound->getSound() : nullptr;
+        sc_sound* sound                  = engineSound != nullptr ? engineSound->get_sound() : nullptr;
         sc_sound_instance* soundInstance = nullptr;
 
         sc_result playSoundResult = sc_system_play_sound(sbk::engine::system::get(), sound, &soundInstance,

@@ -9,95 +9,6 @@
 #include "sound_bakery/soundbank/soundbank.h"
 #include "sound_bakery/system.h"
 
-//void yaml_serializer::packageSoundbank(sbk::engine::soundbank* soundbank, YAML::Emitter& emitter)
-//{
-//    if (soundbank != nullptr)
-//    {
-//        std::vector<sbk::engine::event*> eventsToSave;
-//        std::vector<sbk::engine::node_base*> nodesToSave;
-//        std::vector<sbk::engine::sound*> soundsToSave;
-//
-//        for (auto& event : soundbank->get_events())
-//        {
-//            if (event.lookup())
-//            {
-//                eventsToSave.push_back(event.raw());
-//
-//                for (auto& action : event->m_actions)
-//                {
-//                    if (action.m_type != sbk::engine::SB_ACTION_PLAY)
-//                    {
-//                        continue;
-//                    }
-//
-//                    if (!action.m_destination.lookup())
-//                    {
-//                        continue;
-//                    }
-//
-//                    sbk::engine::node_base* const nodeBase =
-//                        action.m_destination->try_convert_object<sbk::engine::node_base>();
-//
-//                    assert(nodeBase);
-//
-//                    nodeBase->gatherAllDescendants(nodesToSave);
-//                    nodeBase->gatherAllParents(nodesToSave);
-//                }
-//            }
-//        }
-//
-//        for (auto& node : nodesToSave)
-//        {
-//            if (node->get_object_type() == sbk::engine::sound_container::type())
-//            {
-//                if (sbk::engine::sound_container* const soundContainer =
-//                        node->try_convert_object<sbk::engine::sound_container>())
-//                {
-//                    if (sbk::engine::sound* const sound = soundContainer->get_sound())
-//                    {
-//                        soundsToSave.push_back(sound);
-//                    }
-//                }
-//            }
-//        }
-//
-//        for (sbk::engine::event* event : eventsToSave)
-//        {
-//            BOOST_ASSERT(event);
-//
-//            Doc eventDoc(emitter);
-//
-//            saveInstance(emitter, event);
-//        }
-//
-//        for (sbk::engine::node_base* node : nodesToSave)
-//        {
-//            BOOST_ASSERT(node);
-//
-//            Doc soundDoc(emitter);
-//
-//            saveInstance(emitter, node);
-//        }
-//
-//        for (sbk::engine::sound* sound : soundsToSave)
-//        {
-//            BOOST_ASSERT(sound);
-//
-//            Doc soundDoc(emitter);
-//
-//            saveInstance(emitter, sound);
-//
-//            ma_data_source* dataSource = ma_sound_get_data_source(&sound->getSound()->sound);
-//        }
-//
-//        {
-//            Doc doc(emitter);
-//
-//            saveInstance(emitter, soundbank);
-//        }
-//    }
-//}
-
 auto sbk::core::serialization::make_default_variant(const rttr::type& type) -> rttr::variant
 {
     BOOST_ASSERT(type.is_valid());
@@ -141,4 +52,18 @@ auto sbk::core::serialization::make_default_variant(const rttr::type& type) -> r
 
     BOOST_ASSERT_MSG(type.get_constructor({}).is_valid(), "Types must have constructors at this point");
     return type.create_default();
+}
+
+auto sbk::core::serialization::read_binary_file(const std::filesystem::path& file) -> std::vector<uint8_t> 
+{
+    std::ifstream fileStream(file);
+
+    fileStream.seekg(0, std::ios_base::end);
+    std::streampos length = fileStream.tellg();
+    fileStream.seekg(0, std::ios_base::beg);
+
+    std::vector<uint8_t> buffer(length);
+    fileStream.read((char*)buffer.data(), length);
+
+    return buffer;
 }

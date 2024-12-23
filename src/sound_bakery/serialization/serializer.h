@@ -10,10 +10,12 @@
 #include <boost/archive/xml_oarchive.hpp>
 #include <boost/archive/yaml_iarchive.hpp>
 #include <boost/archive/yaml_oarchive.hpp>
+#include <boost/serialization/binary_object.hpp>
 
 #include "sound_bakery/system.h"
 #include "sound_bakery/core/database/database_object.h"
 #include "sound_bakery/core/object/object_owner.h"
+#include "sound_bakery/sound/sound.h"
 #include "sound_bakery/soundbank/soundbank.h"
 
 #include "yaml-cpp/yaml.h"
@@ -32,6 +34,7 @@ namespace sbk::engine
 namespace sbk::core::serialization
 {
     auto make_default_variant(const rttr::type& type) -> rttr::variant;
+    auto read_binary_file(const std::filesystem::path& file) -> std::vector<uint8_t>;
 
     /**
      * @brief Stores the version of Sound Bakery.
@@ -201,6 +204,81 @@ namespace sbk::core::serialization
                 else
                 {
                     archive & boost::serialization::make_nvp("Object", *objects[index].get());
+                }
+            }
+        }
+    };
+
+    struct SB_CLASS serialized_sound
+    {
+        serialized_sound() = delete;
+        serialized_sound(std::shared_ptr<sbk::engine::sound>& sound) : sound(sound) {}
+
+        std::shared_ptr<sbk::engine::sound>& sound;
+
+        template <class archive_class>
+        void serialize(archive_class& archive, const unsigned int v)
+        {
+            BOOST_ASSERT(sound);
+
+            if (archive_class::is_saving())
+            {
+                const sbk::engine::encoding_sound encodingSound = sound->get_encoding_sound_data();
+                const std::vector<uint8_t> buffer               = read_binary_file(encodingSound.encodedSoundPath);
+                std::size_t size                                = buffer.size();
+
+                archive & boost::serialization::make_nvp("Size", size);
+                archive & boost::serialization::make_nvp("Sound", boost::serialization::make_binary_object(buffer.data(), size));
+            }
+            else
+            {
+                std::size_t size = 0;
+                archive & boost::serialization::make_nvp("Size", size);
+
+                sbk::engine::raw_sound_ptr rawSound(std::malloc(size));
+                archive & boost::serialization::make_nvp("Sound", boost::serialization::make_binary_object(rawSound.get(), size));
+
+                sound->set_raw_sound_data(rawSound);
+            }
+        }
+    };
+
+    template<>
+    struct SB_CLASS serialized_object_vector<sbk::engine::sound>
+    {
+        serialized_object_vector() = delete;
+        serialized_object_vector(sbk::core::object_owner* objectOwner) : objectOwner(objectOwner) {}
+        serialized_object_vector(const std::vector<std::shared_ptr<sbk::engine::sound>>& objects)
+            : objects(objects), count(objects.size()), objectOwner(nullptr)
+        {
+        }
+
+        sbk::core::object_owner* objectOwner = nullptr;
+        std::size_t count                    = 0;
+        std::vector<std::shared_ptr<sbk::engine::sound>> objects;
+
+        template <class archive_class>
+        void serialize(archive_class& archive, const unsigned int v)
+        {
+            archive& boost::serialization::make_nvp("Count", count);
+
+            for (std::size_t index = 0; index < count; ++index)
+            {
+                if (archive_class::is_loading())
+                {
+                    BOOST_ASSERT(objectOwner != nullptr);
+                    std::shared_ptr<sbk::engine::sound> object = objectOwner->create_database_object<sbk::engine::sound>(false);
+                    archive & boost::serialization::make_nvp("Object", *object.get());
+
+                    serialized_sound serializedSound(object);
+                    archive & boost::serialization::make_nvp("RawSound", serializedSound);
+                }
+                else
+                {
+                    archive& boost::serialization::make_nvp("Object", *objects[index].get());
+                    
+                    serialized_sound serializedSound(objects[index]);
+                    archive & boost::serialization::make_nvp("RawSound", serializedSound);
                 }
             }
         }
