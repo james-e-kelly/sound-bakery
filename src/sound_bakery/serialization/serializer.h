@@ -83,7 +83,7 @@ namespace sbk::core::serialization
     struct SB_CLASS serialized_object
     {
         serialized_object() = delete;
-        serialized_object(std::shared_ptr<sbk::core::database_object>& object, sbk::core::object_owner* objectOwner) 
+        serialized_object(const std::shared_ptr<sbk::core::database_object>& object, sbk::core::object_owner* objectOwner) 
             : object(object), objectOwner(objectOwner) 
         {
             if (object)
@@ -142,7 +142,7 @@ namespace sbk::core::serialization
     struct SB_CLASS serialized_standalone_object
     {
         serialized_standalone_object() = delete;
-        serialized_standalone_object(std::shared_ptr<sbk::core::database_object>& object, sbk::core::object_owner* objectOwner)
+        serialized_standalone_object(const std::shared_ptr<sbk::core::database_object>& object, sbk::core::object_owner* objectOwner)
             : object(object, objectOwner){}
 
         serialized_version version;
@@ -160,7 +160,7 @@ namespace sbk::core::serialization
     struct SB_CLASS serialized_system
     {
         serialized_system() = delete;
-        serialized_system(std::shared_ptr<sbk::core::database_object>& object, sbk::core::object_owner* objectOwner){}
+        serialized_system(const std::shared_ptr<sbk::core::database_object>& object, sbk::core::object_owner* objectOwner){}
 
         serialized_version version;
 
@@ -197,13 +197,13 @@ namespace sbk::core::serialization
             {
                 if (archive_class::is_loading())
                 {
-                    BOOST_ASSERT(objectOwner != nullptr);
-                    std::shared_ptr<object_class> object = objectOwner->create_database_object<object_class>(false);
-                    archive & boost::serialization::make_nvp("Object", *object.get());
+                    serialized_object serializedObject({}, objectOwner);
+                    archive & boost::serialization::make_nvp("Object", serializedObject);
                 }
                 else
                 {
-                    archive & boost::serialization::make_nvp("Object", *objects[index].get());
+                    serialized_object serializedObject(objects[index], objectOwner);
+                    archive & boost::serialization::make_nvp("Object", serializedObject);
                 }
             }
         }
@@ -212,9 +212,11 @@ namespace sbk::core::serialization
     struct SB_CLASS serialized_sound
     {
         serialized_sound() = delete;
-        serialized_sound(std::shared_ptr<sbk::engine::sound>& sound) : sound(sound) {}
+        serialized_sound(const std::shared_ptr<sbk::engine::sound>& sound) : sound(sound) {}
+        serialized_sound(const std::shared_ptr<sbk::core::database_object>& databaseSound)
+            : sound(std::static_pointer_cast<sbk::engine::sound, sbk::core::database_object>(databaseSound)) {}
 
-        std::shared_ptr<sbk::engine::sound>& sound;
+        std::shared_ptr<sbk::engine::sound> sound;
 
         template <class archive_class>
         void serialize(archive_class& archive, const unsigned int v)
@@ -266,16 +268,16 @@ namespace sbk::core::serialization
             {
                 if (archive_class::is_loading())
                 {
-                    BOOST_ASSERT(objectOwner != nullptr);
-                    std::shared_ptr<sbk::engine::sound> object = objectOwner->create_database_object<sbk::engine::sound>(false);
-                    archive & boost::serialization::make_nvp("Object", *object.get());
-
-                    serialized_sound serializedSound(object);
+                    serialized_object serializedObject({}, objectOwner);
+                    archive & boost::serialization::make_nvp("Object", serializedObject);
+                    
+                    serialized_sound serializedSound(serializedObject.object);
                     archive & boost::serialization::make_nvp("RawSound", serializedSound);
                 }
                 else
                 {
-                    archive& boost::serialization::make_nvp("Object", *objects[index].get());
+                    serialized_object serializedObject(objects[index], objectOwner);
+                    archive & boost::serialization::make_nvp("Object", serializedObject);
                     
                     serialized_sound serializedSound(objects[index]);
                     archive & boost::serialization::make_nvp("RawSound", serializedSound);
@@ -508,11 +510,9 @@ namespace sbk::core::serialization
         {
             SC_CHECK(!file.empty(), MA_INVALID_FILE);
 
-            static std::shared_ptr<sbk::core::database_object> fakeObject;
-
             std::ofstream outputStream(file);
             save_archive archive(outputStream);
-            serialized_system serialize(fakeObject, nullptr);
+            serialized_system serialize({}, nullptr);
 
             archive & boost::serialization::make_nvp("System", serialize);
             return MA_SUCCESS;
@@ -523,11 +523,9 @@ namespace sbk::core::serialization
         {
             SC_CHECK(std::filesystem::exists(file), MA_INVALID_FILE);
 
-            static std::shared_ptr<sbk::core::database_object> fakeObject;
-
             std::ifstream outputStream(file);
             load_archive archive(outputStream);
-            serialize_class object(fakeObject, objectOwner);
+            serialize_class object({}, objectOwner);
 
             archive & boost::serialization::make_nvp("Data", object);
             return MA_SUCCESS;
