@@ -46,6 +46,14 @@ namespace sbk
             LEAK_DETECTOR(system)
 
         public:
+            enum class operating_mode
+            {
+                unkown, //< Unkown/unset
+                editor, //< We have a project
+                runtime //< We are loading soundbanks
+            };
+
+        public:
             system();
             ~system();
 
@@ -55,6 +63,7 @@ namespace sbk
             static auto destroy() -> void;
 
             [[nodiscard]] static auto get() -> system*;
+            [[nodiscard]] static auto get_operating_mode() -> operating_mode;
             [[nodiscard]] static auto get_project() -> sbk::editor::project*;
             [[nodiscard]] static auto get_voice_tracker() -> sbk::engine::profiling::voice_tracker*;
             [[nodiscard]] auto get_game_thread_executer() const -> std::shared_ptr<concurrencpp::manual_executor>;
@@ -72,6 +81,8 @@ namespace sbk
              */
             static auto create_project(const std::filesystem::directory_entry& projectDirectory,
                                        const std::string& projectName) -> sc_result;
+
+            static auto load_soundbank(const std::filesystem::path& file) -> sb_result;
 
             auto set_master_bus(const std::shared_ptr<sbk::engine::bus>& masterBus) -> void;
 

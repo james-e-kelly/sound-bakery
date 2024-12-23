@@ -9,51 +9,65 @@ DEFINE_REFLECTION(sbk::engine::sound)
 
 void sound::load_synchronous()
 {
-    std::filesystem::path finalSoundPath;
-
-    bool useRawSound = true;
-
-    // Prefer encoded media
-    if (!encodedSoundPath.empty())
-    {
-        // Absolute path. Needs to be relative
-        if (std::filesystem::exists(encodedSoundPath))
-        {
-            finalSoundPath   = encodedSoundPath;
-            encodedSoundPath = std::filesystem::relative(
-                encodedSoundPath, sbk::engine::system::get_project()->get_config().encoded_folder());
-        }
-        else
-        {
-            finalSoundPath = sbk::engine::system::get_project()->get_config().encoded_folder() / encodedSoundPath;
-        }
-
-        useRawSound = !std::filesystem::exists(finalSoundPath);
-    }
-
-    if (useRawSound && !rawSoundPath.empty())
-    {
-        if (std::filesystem::exists(rawSoundPath))
-        {
-            finalSoundPath = rawSoundPath;
-            rawSoundPath   = std::filesystem::relative(rawSoundPath,
-                                                       sbk::engine::system::get_project()->get_config().source_folder());
-        }
-        else
-        {
-            finalSoundPath = sbk::engine::system::get_project()->get_config().source_folder() / rawSoundPath;
-        }
-    }
-
-    BOOST_ASSERT(std::filesystem::exists(finalSoundPath));
-
     sc_sound* loadedSound = nullptr;
 
-    sc_result result = sc_system_create_sound(sbk::engine::system::get(), finalSoundPath.string().c_str(),
-                                              SC_SOUND_MODE_DEFAULT, &loadedSound);
-    BOOST_ASSERT(result == MA_SUCCESS);
+    switch (sbk::engine::system::get_operating_mode())
+    {
+        case sbk::engine::system::operating_mode::editor:
+        {
+            auto get_sound_file = [](const std::filesystem::path& file, const std::filesystem::path& containingFolder) -> std::filesystem::path 
+            {
+                if (!file.empty())
+                {
+                    if (std::filesystem::exists(file))
+                    {
+                        return file;
+                    }
+                    else
+                    {
+                        const std::filesystem::path convertedRelativeFile = containingFolder / file;
 
-    m_sound.reset(loadedSound);
+                        if (std::filesystem::exists(convertedRelativeFile))
+                        {
+                            return convertedRelativeFile;
+                        }
+                    }
+                }
+                return {};
+            };
+
+            std::filesystem::path finalSoundPath = get_sound_file(encodedSoundPath, sbk::engine::system::get_project()->get_config().encoded_folder());
+
+            if (finalSoundPath.empty())
+            {
+                finalSoundPath = get_sound_file(rawSoundPath, sbk::engine::system::get_project()->get_config().source_folder());
+            }
+            BOOST_ASSERT(std::filesystem::exists(finalSoundPath));
+
+            sc_result result = sc_system_create_sound(sbk::engine::system::get(), finalSoundPath.string().c_str(), SC_SOUND_MODE_DEFAULT, &loadedSound);
+            BOOST_ASSERT(result == MA_SUCCESS);
+            break;
+        }
+        case sbk::engine::system::operating_mode::runtime:
+        {
+            if (m_memorySoundData)
+            {
+                sc_result result =
+                    sc_system_create_sound_memory(sbk::engine::system::get(), m_memorySoundData.get(),
+                                                  m_memorySoundDataSize, SC_SOUND_MODE_DEFAULT, &loadedSound);
+                BOOST_ASSERT(result == MA_SUCCESS);
+            }
+            break;
+        }
+        case sbk::engine::system::operating_mode::unkown:
+            BOOST_ASSERT(false);
+            break;
+    }
+
+    if (loadedSound)
+    {
+        m_sound.reset(loadedSound);
+    }
 }
 
 void sound::load_asynchronous() { load_synchronous(); }

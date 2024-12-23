@@ -5,6 +5,7 @@
 #include "sound_bakery/node/bus/bus.h"
 #include "sound_bakery/profiling/voice_tracker.h"
 #include "sound_bakery/reflection/reflection.h"
+#include "sound_bakery/serialization/serializer.h"
 #include "spdlog/sinks/daily_file_sink.h"
 #include "spdlog/sinks/rotating_file_sink.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
@@ -90,6 +91,24 @@ system::~system()
 }
 
 sbk::engine::system* system::get() { return s_system; }
+
+auto sbk::engine::system::get_operating_mode() -> operating_mode
+{
+    if (s_system)
+    {
+        if (s_system->m_project)
+        {
+            return operating_mode::editor;
+        }
+
+        if (s_system->get_objects_count())
+        {
+            return operating_mode::runtime;
+        }
+    }
+
+    return operating_mode::unkown;
+}
 
 sbk::engine::system* system::create()
 {
@@ -247,6 +266,15 @@ sc_result sbk::engine::system::create_project(const std::filesystem::directory_e
     }
 
     return MA_ERROR;
+}
+
+auto sbk::engine::system::load_soundbank(const std::filesystem::path& file) -> sb_result
+{
+    SC_CHECK_ARG(std::filesystem::exists(file));
+    SC_CHECK(s_system != nullptr, MA_DEVICE_NOT_STARTED);
+
+    sbk::core::serialization::binary_serializer binarySerializer;
+    return binarySerializer.load_object<sbk::core::serialization::serialized_soundbank>(s_system, file);
 }
 
 sbk::editor::project* system::get_project()

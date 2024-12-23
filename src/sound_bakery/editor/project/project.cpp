@@ -174,36 +174,14 @@ void sbk::editor::project::build_soundbanks() const
         {
             std::shared_ptr<sbk::core::database_object> sharedDatabaseObject = soundbank->casted_shared_from_this<sbk::core::database_object>();
 
+            sbk::core::serialization::binary_serializer binarySerializer;
+            binarySerializer.save_database_object<sbk::core::serialization::serialized_soundbank>(
+                sharedDatabaseObject,
+                m_projectConfig.build_folder() / (std::string(soundbank->get_database_name()) + (std::string(m_projectConfig.outputBankExtensionWithDot))));
+
             sbk::core::serialization::yaml_serializer yamlSerializer;
             yamlSerializer.save_database_object<sbk::core::serialization::serialized_soundbank>(
-                sharedDatabaseObject,
-                m_projectConfig.build_folder() / (std::string(soundbank->get_database_name()) + ".bnk"));
-
-            /*YAML::Emitter soundbankEmitter;
-            SB::Core::Serialization::yaml_serializer::packageSoundbank(soundbank, soundbankEmitter);
-
-            const std::filesystem::path filePath =
-                m_projectConfig.objectFolder() / m_projectConfig.getIdFilename(soundbank, std::string(".bank"));
-
-            saveYAML(soundbankEmitter, filePath);*/
-
-            /*sbk::engine::soundbank_dependencies soundbankDependencies = soundbank->gather_dependencies();
-
-            sc_bank bank;
-            const sc_result initresult =
-                sc_bank_init(&bank,
-                             (m_projectConfig.build_folder() / (std::string(soundbank->get_database_name()) + ".bnk"))
-                                 .string()
-                                 .c_str(),
-                             MA_OPEN_MODE_WRITE);
-            BOOST_ASSERT(initresult == MA_SUCCESS);
-
-            const sc_result buildResult = sc_bank_build(&bank, soundbankDependencies.encodedSoundPaths.data(),
-                                                        soundbankDependencies.encodingFormats.data(),
-                                                        soundbankDependencies.encodedSoundPaths.size());
-            BOOST_ASSERT(buildResult == MA_SUCCESS);
-
-            sc_bank_uninit(&bank);*/
+                sharedDatabaseObject, m_projectConfig.build_folder() / ((std::string(soundbank->get_database_name()) + ".yaml")));
         }
     }
 }

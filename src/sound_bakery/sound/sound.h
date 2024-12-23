@@ -44,9 +44,10 @@ namespace sbk::engine
         auto set_encoded_sound_name(std::string path) -> void;
         auto get_encoded_sound_name() const -> std::string { return encodedSoundPath.string(); }
         auto set_is_streaming(bool streaming) -> void { m_streaming = streaming; }
-        auto set_raw_sound_data(raw_sound_ptr& data) -> void
+        auto set_raw_sound_data(raw_sound_ptr& data, std::size_t size) -> void
         {  
             m_memorySoundData = std::move(data);
+            m_memorySoundDataSize = size;
         }
 
         auto get_sound_name() const -> std::string;
@@ -57,6 +58,7 @@ namespace sbk::engine
     private:
         std::unique_ptr<sc_sound, SC_SOUND_DELETER> m_sound;
         raw_sound_ptr m_memorySoundData;
+        std::size_t m_memorySoundDataSize = 0;
 
         std::filesystem::path rawSoundPath;
         std::filesystem::path encodedSoundPath;

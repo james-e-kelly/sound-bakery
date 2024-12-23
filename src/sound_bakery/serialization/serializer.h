@@ -15,6 +15,7 @@
 #include "sound_bakery/system.h"
 #include "sound_bakery/core/database/database_object.h"
 #include "sound_bakery/core/object/object_owner.h"
+#include "sound_bakery/event/event.h"
 #include "sound_bakery/sound/sound.h"
 #include "sound_bakery/soundbank/soundbank.h"
 
@@ -202,7 +203,9 @@ namespace sbk::core::serialization
                 }
                 else
                 {
-                    serialized_object serializedObject(objects[index], objectOwner);
+                    std::shared_ptr<sbk::core::database_object> convertedObject =
+                        std::static_pointer_cast<sbk::core::database_object, object_class>(objects[index]);
+                    serialized_object serializedObject(convertedObject, objectOwner);
                     archive & boost::serialization::make_nvp("Object", serializedObject);
                 }
             }
@@ -240,7 +243,7 @@ namespace sbk::core::serialization
                 sbk::engine::raw_sound_ptr rawSound(std::malloc(size));
                 archive & boost::serialization::make_nvp("Data", boost::serialization::make_binary_object(rawSound.get(), size));
 
-                sound->set_raw_sound_data(rawSound);
+                sound->set_raw_sound_data(rawSound, size);
             }
         }
     };
@@ -289,7 +292,7 @@ namespace sbk::core::serialization
     struct SB_CLASS serialized_soundbank
     {
         serialized_soundbank() = delete;
-        serialized_soundbank(std::shared_ptr<sbk::core::database_object>& object, sbk::core::object_owner* objectOwner)
+        serialized_soundbank(const std::shared_ptr<sbk::core::database_object>& object, sbk::core::object_owner* objectOwner)
             : serializedSoundbank(object, objectOwner)
         {
         }
@@ -494,7 +497,10 @@ namespace sbk::core::serialization
         }
     };
 
-    template <class load_archive, class save_archive>
+    template <class load_archive,
+              class save_archive,
+              std::ios_base::openmode inputMode,
+              std::ios_base::openmode outputMode>
     class SB_CLASS boost_serializer
     {
     public:
@@ -504,7 +510,7 @@ namespace sbk::core::serialization
             SC_CHECK_ARG(object);
             SC_CHECK(!file.empty(), MA_INVALID_FILE);
 
-            std::ofstream outputStream(file);
+            std::ofstream outputStream(file, outputMode);
             save_archive archive(outputStream);
             serialize_class serialize(object, nullptr);
 
@@ -516,7 +522,7 @@ namespace sbk::core::serialization
         {
             SC_CHECK(!file.empty(), MA_INVALID_FILE);
 
-            std::ofstream outputStream(file);
+            std::ofstream outputStream(file, outputMode);
             save_archive archive(outputStream);
             serialized_system serialize({}, nullptr);
 
@@ -529,8 +535,8 @@ namespace sbk::core::serialization
         {
             SC_CHECK(std::filesystem::exists(file), MA_INVALID_FILE);
 
-            std::ifstream outputStream(file);
-            load_archive archive(outputStream);
+            std::ifstream inputStream(file, inputMode);
+            load_archive archive(inputStream);
             serialize_class object({}, objectOwner);
 
             archive & boost::serialization::make_nvp("Data", object);
@@ -538,10 +544,10 @@ namespace sbk::core::serialization
         }
     };
 
-    using binary_serializer = boost_serializer<boost::archive::binary_iarchive, boost::archive::binary_oarchive>;
-    using text_serializer = boost_serializer<boost::archive::text_iarchive, boost::archive::text_oarchive>;
-    using xml_serializer = boost_serializer<boost::archive::xml_iarchive, boost::archive::xml_oarchive>;
-    using yaml_serializer = boost_serializer<boost::archive::yaml_iarchive, boost::archive::yaml_oarchive>;
+    using binary_serializer = boost_serializer<boost::archive::binary_iarchive, boost::archive::binary_oarchive, std::ios_base::in | std::ios_base::binary, std::ios_base::out | std::ios_base::binary>;
+    using text_serializer = boost_serializer<boost::archive::text_iarchive, boost::archive::text_oarchive, std::ios_base::in, std::ios_base::out>;
+    using xml_serializer = boost_serializer<boost::archive::xml_iarchive, boost::archive::xml_oarchive, std::ios_base::in, std::ios_base::out>;
+    using yaml_serializer = boost_serializer<boost::archive::yaml_iarchive, boost::archive::yaml_oarchive, std::ios_base::in, std::ios_base::out>;
 }  // namespace sbk::core::serialization
 
 BOOST_CLASS_VERSION(sbk::core::serialization::serialized_object, 1)
