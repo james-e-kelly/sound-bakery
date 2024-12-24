@@ -6,7 +6,7 @@
 
 #include "imgui.h"
 
-void soundbank_viewer_widget::start() 
+void soundbank_viewer_widget::start_implementation()
 { 
     sb_system_config config = sb_system_config_init_default();
 
@@ -14,7 +14,7 @@ void soundbank_viewer_widget::start()
     sbk::engine::system::init(config);
 }
 
-void soundbank_viewer_widget::render()
+void soundbank_viewer_widget::render_implementation()
 {
     static sc_sound* sound = nullptr;
     static sc_sound_instance* soundInstance = nullptr;
@@ -36,7 +36,7 @@ void soundbank_viewer_widget::render()
     ImGui::End();
 }
 
-void soundbank_viewer_widget::end()
+void soundbank_viewer_widget::end_implementation() 
 {
     sbk::engine::system::destroy();
 }

@@ -14,8 +14,8 @@ namespace gluten
         root_widget(widget_subsystem* parentSubsystem) : widget(parentSubsystem) {}
 
     public:
-        void start() override;
-        void render() override;
+        void start_implementation() override;
+        void render_implementation() override;
         virtual void render_menu();
 
         bool is_hovering_titlebar() { return m_hoveringTitlebar; }

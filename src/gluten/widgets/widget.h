@@ -33,10 +33,10 @@ namespace gluten
         virtual ~widget() {}
 
     public:
-        virtual void start();
-        virtual void tick(double deltaTime) {}
-        virtual void render() {}
-        virtual void end() {}
+        auto start() -> void;
+        auto tick(double deltaTime) -> void;
+        auto render() -> void;
+        auto end() -> void;
 
         template <class T>
             requires std::derived_from<T, widget>
@@ -58,10 +58,14 @@ namespace gluten
 
         void destroy();
 
-    public:
         MulticastDelegate<widget*> m_onDestroy;
 
     protected:
+        auto virtual start_implementation() -> void {}
+        auto virtual tick_implementation(double deltaTime) -> void {}
+        auto virtual render_implementation() -> void {}
+        auto virtual end_implementation() -> void {}
+
         /**
          * @brief Iterates over the child widgets and renders them.
          */
@@ -76,6 +80,7 @@ namespace gluten
         widget_subsystem* m_parentSubsystem = nullptr;
         widget* m_parentWidget              = nullptr;
         bool m_hasStarted                   = false;
+        bool m_hasEnded                     = false;
 
         std::vector<std::weak_ptr<widget>> m_childWidgets;          //< Child widgets to iterate over
         std::vector<std::shared_ptr<widget>> m_owningChildWidgets;  //< References to widgets that are owned. Not
