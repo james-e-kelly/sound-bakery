@@ -55,7 +55,7 @@ namespace sbk::engine
         [[nodiscard]] local_parameter_list get_local_parameters() const { return m_parameters; }
 
     private:
-        std::vector<std::unique_ptr<voice>> m_voices;
+        std::vector<std::shared_ptr<voice>> m_voices;
         local_parameter_list m_parameters;
     };
 }  // namespace sbk::engine

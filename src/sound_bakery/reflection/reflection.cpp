@@ -14,6 +14,7 @@
 #include "sound_bakery/sound/sound.h"
 #include "sound_bakery/soundbank/soundbank.h"
 #include "sound_bakery/system.h"
+#include "sound_bakery/voice/voice.h"
 #include "sound_chef/sound_chef_encoder.h"
 
 #include <rttr/registration>
@@ -149,6 +150,7 @@ namespace sbk::reflection
         registration::class_<system>("SB::Engine::system");
 
         registration::class_<game_object>("SB::Engine::GameObject").constructor<>()(policy::ctor::as_raw_ptr);
+        registration::class_<voice>("SB::Engine::Voice").constructor<>()(policy::ctor::as_raw_ptr);
 
         registration::class_<int_property>("SB::Core::IntProperty")
             .constructor<>()

@@ -7,6 +7,8 @@
 
 using namespace sbk::engine;
 
+DEFINE_REFLECTION(voice)
+
 void sbk::engine::voice::play_container(container* container)
 {
     destroy_all();
@@ -136,3 +138,8 @@ node_instance* sbk::engine::voice::node_instance_at(std::size_t index) const
 }
 
 bool sbk::engine::voice::is_playing() const { return !get_objects().empty(); }
+
+game_object* sbk::engine::voice::get_owning_game_object() const
+{
+    return static_cast<sbk::core::object*>(get_owner())->try_convert_object<sbk::engine::game_object>();
+}

@@ -14,10 +14,9 @@ namespace sbk::engine
      */
     class SB_CLASS voice : public sbk::core::object
     {
-    public:
-        voice() = delete;
-        voice(game_object* owningObject) : m_owningGameObject(owningObject) {}
+        REGISTER_REFLECTION(voice, sbk::core::object)
 
+    public:
         void play_container(container* container);
 
         void update();
@@ -30,10 +29,9 @@ namespace sbk::engine
 
         [[nodiscard]] bool is_playing() const;
 
-        game_object* get_owning_game_object() const { return m_owningGameObject; }
+        game_object* get_owning_game_object() const;
 
     private:
-        game_object* m_owningGameObject = nullptr;
         sbk::core::database_ptr<container> m_playingContainer;
     };
 }  // namespace sbk::engine

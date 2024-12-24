@@ -12,7 +12,8 @@ voice* game_object::play_container(container* container)
 {
     if (container)
     {
-        std::unique_ptr<voice>& voice = m_voices.emplace_back(std::make_unique<sbk::engine::voice>(this));
+        std::shared_ptr<voice> voice = create_runtime_object<sbk::engine::voice>();
+        m_voices.push_back(voice);
         voice->play_container(container);
         return voice.get();
     }
@@ -88,7 +89,7 @@ void sbk::engine::game_object::stop_container(container* container)
 {
     for (std::size_t i = m_voices.size(); i--;)
     {
-        if (const std::unique_ptr<voice>& voice = m_voices[i])
+        if (const std::shared_ptr<voice>& voice = m_voices[i])
         {
             if (voice->playing_container(container))
             {
@@ -105,7 +106,7 @@ void game_object::update()
 {
     if (m_voices.size())
     {
-        std::vector<std::unique_ptr<voice>>::iterator iter;
+        std::vector<std::shared_ptr<voice>>::iterator iter;
         for (iter = m_voices.begin(); iter != m_voices.end();)
         {
             iter->get()->update();
