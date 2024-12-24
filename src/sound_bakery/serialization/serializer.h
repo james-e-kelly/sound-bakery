@@ -13,6 +13,7 @@
 #include <boost/serialization/binary_object.hpp>
 
 #include "sound_bakery/system.h"
+#include "sound_bakery/node/bus/bus.h"
 #include "sound_bakery/core/database/database_object.h"
 #include "sound_bakery/core/object/object_owner.h"
 #include "sound_bakery/event/event.h"
@@ -320,6 +321,19 @@ namespace sbk::core::serialization
                 archive& boost::serialization::make_nvp("Sounds", serializedSounds);
                 archive& boost::serialization::make_nvp("Nodes", serializedNodes);
                 archive& boost::serialization::make_nvp("Events", serializedEvents);
+
+                if (soundbank->get_master_soundbank())
+                {
+                    serialized_object_vector<sbk::engine::bus> serializedBusses(soundbank);
+                    serialized_object_vector<sbk::engine::int_parameter> serializedIntParameters(soundbank);
+                    serialized_object_vector<sbk::engine::float_parameter> serializedFloatParameters(soundbank);
+                    serialized_object_vector<sbk::engine::named_parameter> serializedNamedParameters(soundbank);
+                    
+                    archive & boost::serialization::make_nvp("Busses", serializedBusses);
+                    archive & boost::serialization::make_nvp("IntParameters", serializedIntParameters);
+                    archive & boost::serialization::make_nvp("FloatParameters", serializedFloatParameters);
+                    archive & boost::serialization::make_nvp("NamedParameters", serializedNamedParameters);
+                }
             }
             else
             {
@@ -329,9 +343,22 @@ namespace sbk::core::serialization
                 serialized_object_vector<sbk::engine::node_base> serializedNodes(soundbankDependencies.nodes);
                 serialized_object_vector<sbk::engine::event> serializedEvents(soundbankDependencies.events);
 
-                archive& boost::serialization::make_nvp("Sounds", serializedSounds);
-                archive& boost::serialization::make_nvp("Nodes", serializedNodes);
-                archive& boost::serialization::make_nvp("Events", serializedEvents);
+                archive & boost::serialization::make_nvp("Sounds", serializedSounds);
+                archive & boost::serialization::make_nvp("Nodes", serializedNodes);
+                archive & boost::serialization::make_nvp("Events", serializedEvents);
+
+                if (soundbank->get_master_soundbank())
+                {
+                    serialized_object_vector<sbk::engine::bus> serializedBusses(soundbankDependencies.busses);
+                    serialized_object_vector<sbk::engine::int_parameter> serializedIntParameters(soundbankDependencies.intParameters);
+                    serialized_object_vector<sbk::engine::float_parameter> serializedFloatParameters(soundbankDependencies.floatParameters);
+                    serialized_object_vector<sbk::engine::named_parameter> serializedNamedParameters(soundbankDependencies.namedParameters);
+                    
+                    archive & boost::serialization::make_nvp("Busses", serializedBusses);
+                    archive & boost::serialization::make_nvp("IntParameters", serializedIntParameters);
+                    archive & boost::serialization::make_nvp("FloatParameters", serializedFloatParameters);
+                    archive & boost::serialization::make_nvp("NamedParameters", serializedNamedParameters);
+                }
             }
         }
     };

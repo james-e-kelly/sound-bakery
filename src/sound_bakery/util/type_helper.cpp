@@ -41,6 +41,7 @@ SB_OBJECT_CATEGORY type_helper::getCategoryFromType(rttr::type type)
         category = SB_CATEGORY_SOUND;
     }
     else if (type == rttr::type::get<sbk::engine::float_parameter>() ||
+             type == rttr::type::get<sbk::engine::int_parameter>() ||
              type == rttr::type::get<sbk::engine::named_parameter>())
     {
         category = SB_CATEGORY_PARAMETER;

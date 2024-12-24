@@ -10,9 +10,9 @@
 #include "utils/property_drawer.h"
 #include "elements/add_effect_button.h"
 
-void details_widget::render()
+void details_widget::render_implementation()
 {
-    widget::render();
+    widget::render_implementation();
 
     const gluten::imgui::scoped_style noItemSpacing(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
     const gluten::imgui::scoped_style headerBorder(ImGuiStyleVar_FrameBorderSize, 1.0f);

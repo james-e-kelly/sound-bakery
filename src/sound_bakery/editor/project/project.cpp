@@ -172,6 +172,7 @@ void sbk::editor::project::build_soundbanks() const
     {
         if (sbk::engine::soundbank* const soundbank = soundbankObject->try_convert_object<sbk::engine::soundbank>())
         {
+            soundbank->set_master_soundbank(true);  //< TODO: Testing making every soundbank the master
             std::shared_ptr<sbk::core::database_object> sharedDatabaseObject = soundbank->casted_shared_from_this<sbk::core::database_object>();
 
             sbk::core::serialization::binary_serializer binarySerializer;

@@ -250,7 +250,8 @@ namespace sbk::reflection
 
         registration::class_<soundbank>("SB::Engine::Soundbank")
             .constructor<>()(policy::ctor::as_raw_ptr)
-            .property("Events", &soundbank::m_events);
+            .property("Events", &soundbank::m_events)
+            .property("Master", &soundbank::m_masterSoundbank);
 
         registration::class_<node_instance>("SB::Engine::NodeInstance").constructor<>()(policy::ctor::as_raw_ptr);
 

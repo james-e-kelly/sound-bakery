@@ -10,8 +10,8 @@ public:
     player_widget(widget* parentWidget) : widget(parentWidget) {}
 
 public:
-    virtual void render() override;
-    virtual void start() override;
+    virtual void render_implementation() override;
+    virtual void start_implementation() override;
 
 private:
     void play_selected();

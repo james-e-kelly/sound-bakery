@@ -15,9 +15,9 @@ namespace SplashScreenUtils
     static const char* splashScreenName = "SplashScreen";
 }
 
-void splash_widget::start()
+void splash_widget::start_implementation()
 {
-    widget::start();
+    widget::start_implementation();
 
     const cmrc::embedded_filesystem embeddedfilesystem = cmrc::sbk::Images::get_filesystem();
 
@@ -61,7 +61,7 @@ void splash_widget::show_splash_screen()
 
 void splash_widget::close_splash_screen() { m_wantsToShow = false; }
 
-void splash_widget::tick(double deltaTime)
+void splash_widget::tick_implementation(double deltaTime)
 {
     if (m_wantsToShow)
     {
@@ -100,7 +100,7 @@ void splash_widget::tick(double deltaTime)
     }
 }
 
-void splash_widget::render()
+void splash_widget::render_implementation()
 {
     if (m_wantsToShow && !ImGui::IsPopupOpen(SplashScreenUtils::splashScreenName))
     {
