@@ -11,6 +11,7 @@ class soundbank_viewer_widget : public gluten::widget
 
 public:
     void start_implementation() override;
+    void tick_implementation(double deltaTime) override;
     void render_implementation() override;
     void end_implementation() override;
 

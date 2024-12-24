@@ -14,11 +14,13 @@ void soundbank_viewer_widget::start_implementation()
     sbk::engine::system::init(config);
 }
 
+void soundbank_viewer_widget::tick_implementation(double deltaTime)
+{
+    sbk::engine::system::update();
+}
+
 void soundbank_viewer_widget::render_implementation()
 {
-    static sc_sound* sound = nullptr;
-    static sc_sound_instance* soundInstance = nullptr;
-
     if (ImGui::Begin("Soundbank Viewer"))
     {
         for (sbk::core::object* object : sbk::engine::system::get()->get_objects_of_category(SB_CATEGORY_EVENT))
@@ -28,6 +30,24 @@ void soundbank_viewer_widget::render_implementation()
                 if (ImGui::Button(event->get_database_name().data()))
                 {
                     sbk::engine::system::get()->get_listener_game_object()->post_event(event);
+                }
+            }
+        }
+
+        for (auto& typesToObjects : sbk::engine::system::get()->get_all_type_to_objects())
+        {
+            if (ImGui::CollapsingHeader(typesToObjects.first.get_name().data()))
+            {
+                for (auto& object : typesToObjects.second)
+                {
+                    if (const sbk::core::database_object* const databaseObject = object->try_convert_object<sbk::core::database_object>())
+                    {
+                        ImGui::TextUnformatted(databaseObject->get_database_name().data());
+                    }
+                    else
+                    {
+                        ImGui::TextUnformatted("No Name");
+                    }
                 }
             }
         }

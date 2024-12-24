@@ -24,6 +24,13 @@ auto widget::tick(double deltaTime) -> void
     if (m_hasStarted)
     {
         tick_implementation(deltaTime);
+        for (std::weak_ptr<widget>& child : m_childWidgets)
+        {
+            if (std::shared_ptr<widget> sharedChild = child.lock())
+            {
+                sharedChild->tick(deltaTime);
+            }
+        }
     }
 }
 
@@ -32,6 +39,7 @@ auto widget::render() -> void
     if (m_hasStarted)
     {
         render_implementation();
+        render_children();
     }
 }
 
