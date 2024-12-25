@@ -28,9 +28,6 @@ namespace sbk::engine
 
         [[nodiscard]] bool is_playing() const noexcept;
 
-        [[nodiscard]] std::size_t voice_count() const noexcept;
-        [[nodiscard]] voice* get_voice(std::size_t index) const;
-
         /**
          * @brief Finds the parameter value on this gameobject.
          *
@@ -55,7 +52,6 @@ namespace sbk::engine
         [[nodiscard]] local_parameter_list get_local_parameters() const { return m_parameters; }
 
     private:
-        std::vector<std::shared_ptr<voice>> m_voices;
         local_parameter_list m_parameters;
     };
 }  // namespace sbk::engine

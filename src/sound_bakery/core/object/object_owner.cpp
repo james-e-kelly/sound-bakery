@@ -112,7 +112,8 @@ auto sbk::core::object_owner::add_reference_to_object(std::shared_ptr<database_o
     }
 }
 
-auto sbk::core::object_owner::remove_object(const std::shared_ptr<object>& object) -> void
+auto sbk::core::object_owner::remove_object(const std::shared_ptr<object>& object)
+    -> std::vector<std::shared_ptr<sbk::core::object>>::iterator
 {
     if (object)
     {
@@ -121,11 +122,11 @@ auto sbk::core::object_owner::remove_object(const std::shared_ptr<object>& objec
         {
             if (*iter == object)
             {
-                m_objects.erase(iter);
-                return;
+                return m_objects.erase(iter);
             }
         }
     }
+    return m_objects.end();
 }
 
 auto sbk::core::object_owner::destroy_all() -> void { m_objects.clear(); }
@@ -133,3 +134,5 @@ auto sbk::core::object_owner::destroy_all() -> void { m_objects.clear(); }
 auto sbk::core::object_owner::get_objects() -> std::vector<std::shared_ptr<object>>& { return m_objects; }
 
 auto sbk::core::object_owner::get_objects() const -> const std::vector<std::shared_ptr<object>>& { return m_objects; }
+
+auto sbk::core::object_owner::get_objects_size() const -> std::size_t { return m_objects.size(); }
