@@ -23,9 +23,9 @@ node_instance::~node_instance()
     }
 }
 
-bool sbk::engine::node_instance::init(const InitNodeInstance& initData)
+bool sbk::engine::node_instance::init(const init_node_instance& initData)
 {
-    if (m_state != NodeInstanceState::UNINIT)
+    if (m_state != node_instance_state::UNINIT)
     {
         return true;
     }
@@ -39,7 +39,7 @@ bool sbk::engine::node_instance::init(const InitNodeInstance& initData)
     m_referencingNode =
         rttr::wrapper_mapper<sbk::core::database_ptr<node_base>>::convert<node>(initData.refNode, converted).shared();
 
-    if (!m_nodeGroup.initNodeGroup(*initData.refNode.raw()))
+    if (!m_nodeGroup.init_node_group(*initData.refNode.raw()))
     {
         return false;
     }
@@ -86,12 +86,12 @@ bool sbk::engine::node_instance::init(const InitNodeInstance& initData)
                 }
             }
 
-            success = m_parent.createParent(*initData.refNode.raw(), m_owningVoice);
+            success = m_parent.create_parent(*initData.refNode.raw(), m_owningVoice);
             break;
         }
         case NodeInstanceType::MAIN:
         {
-            success = m_parent.createParent(*initData.refNode.raw(), m_owningVoice);
+            success = m_parent.create_parent(*initData.refNode.raw(), m_owningVoice);
             success &= m_children.createChildren(*initData.refNode.raw(), m_owningVoice, this, ++m_numTimesPlayed);
             break;
         }
@@ -109,7 +109,7 @@ bool sbk::engine::node_instance::init(const InitNodeInstance& initData)
 
     if (success)
     {
-        m_state = NodeInstanceState::STOPPED;
+        m_state = node_instance_state::IDLE;
     }
 
     return success;
@@ -117,7 +117,7 @@ bool sbk::engine::node_instance::init(const InitNodeInstance& initData)
 
 bool node_instance::play()
 {
-    if (isPlaying())
+    if (is_playing())
     {
         return true;
     }
@@ -131,10 +131,11 @@ bool node_instance::play()
 
         sc_result playSoundResult = sc_system_play_sound(sbk::engine::system::get(), sound, &soundInstance,
                                                          m_nodeGroup.nodeGroup.get(), MA_FALSE);
-
+        
+        BOOST_ASSERT(playSoundResult == MA_SUCCESS);
         if (playSoundResult == MA_SUCCESS)
         {
-            m_state = NodeInstanceState::PLAYING;
+            m_state = node_instance_state::PLAYING;
             m_soundInstance.reset(soundInstance);
         }
     }
@@ -152,11 +153,11 @@ bool node_instance::play()
 
         if (playingCount > 0)
         {
-            m_state = NodeInstanceState::PLAYING;
+            m_state = node_instance_state::PLAYING;
         }
     }
 
-    return isPlaying();
+    return is_playing();
 }
 
 void node_instance::update()
@@ -165,7 +166,7 @@ void node_instance::update()
     {
         if (ma_sound_at_end(&m_soundInstance->sound) == MA_TRUE)
         {
-            m_state = NodeInstanceState::STOPPED;
+            m_state = node_instance_state::STOPPED;
             m_soundInstance.release();
         }
     }
@@ -177,7 +178,7 @@ void node_instance::update()
         {
             child->update();
 
-            if (!child->isPlaying())
+            if (!child->is_playing())
             {
                 ++stoppedChildren;
             }
@@ -185,7 +186,7 @@ void node_instance::update()
 
         if (stoppedChildren == m_children.childrenNodes.size())
         {
-            m_state = NodeInstanceState::STOPPED;
+            m_state = node_instance_state::STOPPED;
             m_children.childrenNodes.clear();
 
             // Sequence nodes retrigger when the current sound stops
@@ -198,6 +199,16 @@ void node_instance::update()
         }
     }
 }
+
+auto sbk::engine::node_instance::is_playing() const -> bool
+{
+    return m_state == node_instance_state::PLAYING || 
+        m_state == node_instance_state::STOPPING;
+}
+
+auto sbk::engine::node_instance::is_stopped() const -> bool { return m_state == node_instance_state::STOPPED; }
+
+auto sbk::engine::node_instance::get_state() const -> node_instance_state { return m_state; }
 
 //////////////////////////////////////////////////////////////////////////////////
 

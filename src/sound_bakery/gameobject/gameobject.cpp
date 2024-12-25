@@ -111,7 +111,7 @@ void game_object::update()
         {
             voice->update();
 
-            if (voice->is_playing())
+            if (!voice->is_playing())
             {
                 iter = remove_object(*iter);
             }

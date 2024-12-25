@@ -471,9 +471,22 @@ sc_result sc_system_play_sound(
 
     if (sound->memoryDecoder != NULL)
     {
-        const ma_result initResult = ma_sound_init_from_data_source((ma_engine*)system, sound->memoryDecoder,
-                                                                    sound->mode, NULL, &(*instance)->sound);
-        SC_CHECK_RESULT(initResult);
+        if ((*instance)->memoryDecoder == NULL)
+        {
+            SC_CREATE((*instance)->memoryDecoder, ma_decoder);
+
+            ma_decoder_config decoderConfig      = ma_decoder_config_init_default();
+            decoderConfig.customBackendCount     = system->resourceManager.config.customDecodingBackendCount;
+            decoderConfig.ppCustomBackendVTables = system->resourceManager.config.ppCustomDecodingBackendVTables;
+
+            const ma_result decoderInitResult = ma_decoder_init_memory(sound->memoryDecoder->data.memory.pData,
+                                                                       sound->memoryDecoder->data.memory.dataSize,
+                                                                       &decoderConfig, (*instance)->memoryDecoder);
+
+            const ma_result initResult = ma_sound_init_from_data_source((ma_engine*)system, (*instance)->memoryDecoder,
+                                                                        sound->mode, NULL, &(*instance)->sound);
+            SC_CHECK_RESULT(initResult);
+        }
     }
     else
     {

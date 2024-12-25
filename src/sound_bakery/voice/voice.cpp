@@ -17,7 +17,7 @@ void sbk::engine::voice::play_container(container* container)
 
     const std::shared_ptr<node_instance> voiceInstance = create_runtime_object<node_instance>();
 
-    InitNodeInstance initData;
+    init_node_instance initData;
     initData.refNode     = container->try_convert_object<node_base>();
     initData.type        = sbk::engine::NodeInstanceType::MAIN;
     initData.owningVoice = this;
@@ -34,24 +34,20 @@ void sbk::engine::voice::play_container(container* container)
 
 void voice::update()
 {
-    if (!get_objects().empty())
+    for (auto iter = std::begin(get_objects()); iter != std::end(get_objects());)
     {
-        std::vector<std::shared_ptr<sbk::core::object>>::iterator iter;
-        for (iter = get_objects().begin(); iter != get_objects().end();)
+        if (sbk::engine::node_instance* const nodeInstance =
+                iter->get()->try_convert_object<sbk::engine::node_instance>())
         {
-            if (sbk::engine::node_instance* const nodeInstance =
-                    iter->get()->try_convert_object<sbk::engine::node_instance>())
-            {
-                nodeInstance->update();
+            nodeInstance->update();
 
-                if (!nodeInstance->isPlaying())
-                {
-                    iter = get_objects().erase(iter);
-                }
-                else
-                {
-                    ++iter;
-                }
+            if (nodeInstance->is_stopped())
+            {
+                iter = remove_object(*iter);
+            }
+            else
+            {
+                ++iter;
             }
         }
     }
@@ -137,7 +133,7 @@ node_instance* sbk::engine::voice::node_instance_at(std::size_t index) const
     return get_objects()[index]->try_convert_object<sbk::engine::node_instance>();
 }
 
-bool sbk::engine::voice::is_playing() const { return !get_objects().empty(); }
+bool sbk::engine::voice::is_playing() const { return get_objects().size(); }
 
 game_object* sbk::engine::voice::get_owning_game_object() const
 {

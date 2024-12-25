@@ -17,9 +17,9 @@ namespace sbk::engine
     /**
      * @brief Owns a node group and applies DSP effects to it.
      */
-    struct SB_CLASS NodeGroupInstance
+    struct SB_CLASS node_group_instance
     {
-        bool initNodeGroup(const node_base& node);
+        bool init_node_group(const node_base& node);
 
         sc_dsp* lowpass  = nullptr;
         sc_dsp* highpass = nullptr;
@@ -29,9 +29,9 @@ namespace sbk::engine
     /**
      * @brief Owns a get_parent node instance.
      */
-    struct SB_CLASS ParentNodeOwner
+    struct SB_CLASS parent_node_owner
     {
-        bool createParent(const node_base& thisNode, voice* owningVoice);
+        bool create_parent(const node_base& thisNode, voice* owningVoice);
 
         std::shared_ptr<node_instance> parent;
     };
@@ -39,7 +39,7 @@ namespace sbk::engine
     /**
      * @brief Owns a list of child node instances.
      */
-    struct SB_CLASS ChildrenNodeOwner
+    struct SB_CLASS children_node_owner
     {
         bool createChildren(const node_base& thisNode,
                             voice* owningVoice,
@@ -56,19 +56,20 @@ namespace sbk::engine
         MAIN
     };
 
-    enum class NodeInstanceState
+    enum class node_instance_state
     {
         UNINIT,
 
-        STOPPED,
-        STOPPING,
-        PAUSED,
-        VIRTUAL,
+        IDLE,       //< Initialized but not started
+        STOPPED,    //< Stopped/finished
+        STOPPING,   //<
+        PAUSED,     //< Explicitly paused and awaiting a start
+        VIRTUAL,    //< Not processing but playing
 
-        PLAYING
+        PLAYING     //< Actively playing
     };
 
-    struct SB_CLASS InitNodeInstance
+    struct SB_CLASS init_node_instance
     {
         /**
          * @brief Node to reference
@@ -105,15 +106,14 @@ namespace sbk::engine
     public:
         ~node_instance();
 
-        bool init(const InitNodeInstance& initData);
+        bool init(const init_node_instance& initData);
         bool play();
 
         void update();
 
-        bool isPlaying() const
-        {
-            return m_state == NodeInstanceState::PLAYING || m_state == NodeInstanceState::STOPPING;
-        }
+        auto is_playing() const -> bool;
+        auto is_stopped() const -> bool;
+        auto get_state() const -> node_instance_state;
 
         std::shared_ptr<node> getReferencingNode() const noexcept { return m_referencingNode; }
         node_instance* get_parent() const noexcept { return m_parent.parent.get(); }
@@ -127,10 +127,10 @@ namespace sbk::engine
 
         std::shared_ptr<node> m_referencingNode = nullptr;
         voice* m_owningVoice                    = nullptr;
-        NodeInstanceState m_state               = NodeInstanceState::UNINIT;
-        NodeGroupInstance m_nodeGroup;
-        ParentNodeOwner m_parent;
-        ChildrenNodeOwner m_children;
+        node_instance_state m_state               = node_instance_state::UNINIT;
+        node_group_instance m_nodeGroup;
+        parent_node_owner m_parent;
+        children_node_owner m_children;
         std::unique_ptr<sc_sound_instance, SC_SOUND_INSTANCE_DELETER> m_soundInstance;
         unsigned int m_numTimesPlayed = 0;
 
