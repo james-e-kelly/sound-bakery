@@ -1,7 +1,9 @@
 #pragma once
 
 #include "sound_bakery/core/core_include.h"
-#include "sound_bakery/system.h"
+
+#include <boost/msm/back/state_machine.hpp>
+#include <boost/msm/front/state_machine_def.hpp>
 
 namespace sbk::engine
 {

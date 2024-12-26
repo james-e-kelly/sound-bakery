@@ -1,6 +1,7 @@
 #include "sound_bakery/gameobject/gameobject.h"
 #include "sound_bakery/node/bus/bus.h"
 #include "sound_bakery/node/container/container.h"
+#include "sound_bakery/system.h"
 #include "sound_bakery/voice/node_instance.h"
 #include "sound_bakery/voice/voice.h"
 

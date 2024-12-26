@@ -35,6 +35,7 @@ target_link_libraries(sound_bakery PUBLIC
   yaml-cpp::yaml-cpp
   Boost::assert
   Boost::serialization
+  Boost::msm
   yaml-archive
 )
 
