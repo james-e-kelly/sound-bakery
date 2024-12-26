@@ -99,14 +99,44 @@ namespace sbk::engine
         node_instance* parentForChildren = nullptr;
     };
 
+    struct event_init {};
+    struct event_play {};
+    struct event_pause {};
+    struct event_stop { float stopTime = 0.0f; };
+    struct event_virtualise{};
+    struct event_devirtualise {};
+
     /**
      * @brief NodeInstances represent runtime versions of Nodes, either
      * containers or busses
      */
-    class SB_CLASS node_instance : public sbk::core::object
+    class SB_CLASS node_instance : public sbk::core::object, public boost::msm::front::state_machine_def<node_instance>
     {
     public:
         ~node_instance();
+
+        struct state_uninit : public boost::msm::front::state<>{};
+        struct state_init : public boost::msm::front::state<>{};
+        struct state_playing : public boost::msm::front::state<>{};
+        struct state_stopped : public boost::msm::front::state<>{};
+
+        void action_init(const event_init& init);
+        void action_play(const event_play& play);
+        void action_pause(const event_pause& pause);
+        void action_stop(const event_stop& stop);
+        void action_virtualise(const event_virtualise& virtualise);
+        void action_devirtualuse(const event_devirtualise& devirtualise);
+
+        typedef state_uninit initial_state; // the initial state of the player SM
+
+        // Start, Event, Next, Action, Guard
+        struct transition_table : boost::mpl::vector
+            <
+                a_row<state_uninit, event_init, state_init, &node_instance::action_init>,
+                a_row<state_init, event_play, state_playing, &node_instance::action_play>,
+                a_row<state_playing, event_stop, state_stopped, &node_instance::action_stop>
+            >
+        {};
 
         bool init(const init_node_instance& initData);
         bool play();
