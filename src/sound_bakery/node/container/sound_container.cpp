@@ -6,7 +6,7 @@ DEFINE_REFLECTION(sbk::engine::sound_container)
 
 void sbk::engine::sound_container::gather_children_for_play(gather_children_context& context) const
 {
-    context.sounds.push_back(this);
+    context.sounds.push_back(const_cast<sbk::engine::sound_container*>(this));
 }
 
 bool sbk::engine::sound_container::can_add_parent_type(const rttr::type& parentType) const

@@ -47,6 +47,7 @@ namespace sbk::core
 
         [[nodiscard]] auto get_object_type() const -> rttr::type;
         [[nodiscard]] auto get_owner() const -> object_owner*;
+        [[nodiscard]] auto get_owner_object() const -> object*;
         [[nodiscard]] auto get_on_destroy() -> MulticastDelegate<object*>&;
 
         [[nodiscard]] auto get_flags() const -> object_flags;

@@ -22,7 +22,7 @@ namespace sbk::engine
         /**
          * @brief Vector of containers that should play this iteration.
          */
-        std::vector<const container*> sounds;
+        std::vector<container*> sounds;
 
         /**
          * @brief List of parameters that are local to this gathering.
@@ -38,7 +38,7 @@ namespace sbk::engine
          *
          * For sequences, this can be higher.
          */
-        unsigned int numTimesPlayed;
+        unsigned int numTimesPlayed = 0;
     };
 
     /**

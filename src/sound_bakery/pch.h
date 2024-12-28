@@ -7,6 +7,7 @@
 #include "sound_bakery_internal.h"
 #include "spdlog/async.h"
 #include "spdlog/spdlog.h"
+#include "ztd/out_ptr.hpp"
 
 #define BOOST_SPIRIT_DEBUG
 

@@ -241,3 +241,12 @@ FetchContent_Declare(
   GIT_PROGRESS TRUE
   EXCLUDE_FROM_ALL
 )
+
+FetchContent_Declare(
+  out_ptr
+  GIT_REPOSITORY https://github.com/soasis/out_ptr.git
+  GIT_TAG main
+  GIT_SHALLOW TRUE
+  GIT_PROGRESS TRUE
+  EXCLUDE_FROM_ALL
+)

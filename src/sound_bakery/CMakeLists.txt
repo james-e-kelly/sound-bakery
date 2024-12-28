@@ -36,6 +36,7 @@ target_link_libraries(sound_bakery PUBLIC
   Boost::assert
   Boost::serialization
   Boost::msm
+  ztd::out_ptr
   yaml-archive
 )
 

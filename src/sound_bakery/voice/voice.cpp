@@ -17,10 +17,9 @@ void sbk::engine::voice::play_container(container* container)
 
     const std::shared_ptr<node_instance> voiceInstance = create_runtime_object<node_instance>();
 
-    init_node_instance initData;
+    event_init initData;
     initData.refNode     = container->try_convert_object<node_base>();
-    initData.type        = sbk::engine::NodeInstanceType::MAIN;
-    initData.owningVoice = this;
+    initData.type        = sbk::engine::node_instance_type::main;
 
     if (voiceInstance->init(initData))
     {
@@ -80,7 +79,7 @@ bool sbk::engine::voice::playing_container(container* container) const noexcept
             return false;
         }
 
-        if (nodeInstance->getReferencingNode()->get_database_id() == id)
+        if (nodeInstance->get_referencing_node()->get_database_id() == id)
         {
             return true;
         }
@@ -89,7 +88,7 @@ bool sbk::engine::voice::playing_container(container* container) const noexcept
 
         while (parentNodeInstance)
         {
-            if (parentNodeInstance->getReferencingNode()->get_database_id() == id)
+            if (parentNodeInstance->get_referencing_node()->get_database_id() == id)
             {
                 return true;
             }
