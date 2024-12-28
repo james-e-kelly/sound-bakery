@@ -65,25 +65,28 @@ namespace sbk::engine
     {
         float deltaTime = 0.0f;
     };
+    
+    struct flag_playing{};
+    struct flag_stopped{};
 
     struct SB_CLASS node_instance_fsm : public boost::msm::front::state_machine_def<node_instance_fsm>
     {
         ~node_instance_fsm();
 
-        struct state_uninit : public boost::msm::front::state<>
-        {
-        };
-        struct state_init : public boost::msm::front::state<>
-        {
-        };
+
+        struct state_uninit : public boost::msm::front::state<>{};
+        struct state_init : public boost::msm::front::state<>{};
         struct state_playing : public boost::msm::front::state<>
         {
-        };
-        struct state_stopped : public boost::msm::front::state<>
-        {
+            typedef boost::mpl::vector1<flag_playing> flag_list;
         };
         struct state_virtual : public boost::msm::front::state<>
         {
+            typedef boost::mpl::vector1<flag_playing> flag_list;
+        };
+        struct state_stopped : public boost::msm::front::state<>
+        {
+            typedef boost::mpl::vector1<flag_stopped> flag_list;
         };
 
         auto action_init(const event_init& init) -> void;
@@ -190,8 +193,7 @@ namespace sbk::engine
         auto init(const event_init& init) -> sb_result;
         auto play() -> sb_result;
         auto stop(float fadeTime = 0.0f) -> sb_result;
-
-        void update();
+        auto update() -> sb_result;
 
         auto is_playing() const -> bool;
         auto is_stopped() const -> bool;

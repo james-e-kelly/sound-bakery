@@ -109,34 +109,37 @@ auto sbk::engine::node_instance::init(const event_init& init) -> sb_result
 { 
     m_stateMachine.m_owner = this;
     m_stateMachine.start();
-    m_stateMachine.process_event(init); 
+    return m_stateMachine.process_event(init) ? MA_SUCCESS : MA_ERROR; 
 }
 
 auto sbk::engine::node_instance::play() -> sb_result
 {
     m_stateMachine.process_event(event_play());
+    return MA_SUCCESS;
 }
 
-void sbk::engine::node_instance::update()
+auto sbk::engine::node_instance::update() -> sb_result
 {
     m_stateMachine.process_event(event_update());
+    return MA_SUCCESS;
 }
 
 auto sbk::engine::node_instance::stop(float fadeTime) -> sb_result
 {
     m_stateMachine.process_event(event_stop{.stopTime = fadeTime});
+    return MA_SUCCESS;
 }
 
 // QUERIES
 
 auto sbk::engine::node_instance::is_playing() const -> bool
 {
-    
+    return m_stateMachine.is_flag_active<flag_playing>();
 }
 
 auto sbk::engine::node_instance::is_stopped() const -> bool
-{
-
+{ 
+    return m_stateMachine.is_flag_active<flag_stopped>(); 
 }
 
 auto sbk::engine::node_instance::get_referencing_node() const noexcept -> std::shared_ptr<node>
