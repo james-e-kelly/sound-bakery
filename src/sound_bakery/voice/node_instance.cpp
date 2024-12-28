@@ -107,6 +107,7 @@ auto sbk::engine::node_instance_fsm::guard_init(const event_init& init) -> bool
 
 auto sbk::engine::node_instance::init(const event_init& init) -> sb_result 
 { 
+    m_stateMachine.m_gameObject = init.m_owningGameObject;
     m_stateMachine.m_owner = this;
     m_stateMachine.start();
     return m_stateMachine.process_event(init) ? MA_SUCCESS : MA_ERROR; 
@@ -217,9 +218,12 @@ void sbk::engine::node_instance_fsm::init_parent()
             break;
     }
 
-    event_init initData{.refNode = nodeToReference, .type = node_instance_type::bus};
-    m_parent = m_owner->create_runtime_object<sbk::engine::node_instance>();
-    m_parent->init(initData);
+    if (nodeToReference && nodeToReference->get_database_id() != m_referencingNode->get_database_id())
+    {
+        event_init initData{.refNode = nodeToReference, .type = node_instance_type::bus, .m_owningGameObject = m_gameObject};
+        m_parent = m_owner->create_runtime_object<sbk::engine::node_instance>();
+        m_parent->init(initData);
+    }
 }
 
 void sbk::engine::node_instance_fsm::init_child()
@@ -228,9 +232,7 @@ void sbk::engine::node_instance_fsm::init_child()
     {
         gather_children_context context;
         context.numTimesPlayed = m_numTimesPlayed;
-        context.parameters = m_owner->try_convert_object<sbk::engine::voice>()
-                                 ->get_owning_game_object()
-                                 ->get_local_parameters();
+        context.parameters = m_gameObject->get_local_parameters();
 
         container->gather_children_for_play(context);
 
@@ -238,7 +240,7 @@ void sbk::engine::node_instance_fsm::init_child()
 
         for (sbk::engine::container* const child : context.sounds)
         {
-            if (child)
+            if (child && child->get_database_id() != m_referencingNode->get_database_id())
             {
                 m_children.push_back(m_owner->create_runtime_object<sbk::engine::node_instance>());
 
@@ -246,7 +248,8 @@ void sbk::engine::node_instance_fsm::init_child()
                 childInit.parentForChildren = m_owner;
                 childInit.type              = node_instance_type::child;
                 childInit.refNode           = child->get_database_id();
-
+                childInit.m_owningGameObject = m_gameObject;
+                
                 m_children.back()->init(childInit);
             }
         }

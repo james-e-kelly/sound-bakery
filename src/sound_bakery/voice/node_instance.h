@@ -13,14 +13,8 @@
 
 namespace sbk::engine
 {
-    class bus;
-    class container;
-    class node;
-    class node_base;
     class node_instance;
-    class sound;
-    class sound_container;
-    class voice;
+    class game_object;
 
     /**
      * @brief Owns a node group and applies DSP effects to it.
@@ -44,6 +38,7 @@ namespace sbk::engine
         sbk::core::database_ptr<node_base> refNode;
         node_instance_type type          = node_instance_type::main;
         node_instance* parentForChildren = nullptr;
+        sbk::engine::game_object* m_owningGameObject = nullptr;
     };
     struct event_play
     {
@@ -72,7 +67,6 @@ namespace sbk::engine
     struct SB_CLASS node_instance_fsm : public boost::msm::front::state_machine_def<node_instance_fsm>
     {
         ~node_instance_fsm();
-
 
         struct state_uninit : public boost::msm::front::state<>{};
         struct state_init : public boost::msm::front::state<>{};
@@ -164,8 +158,7 @@ namespace sbk::engine
         auto init_node_group(const event_init& init) -> sb_result;
         void init_callbacks();
 
-        static auto add_dsp_to_node_group(sc_node_group* nodeGroup, sc_dsp** dsp, const sc_dsp_config& config)
-            -> sb_result;
+        static auto add_dsp_to_node_group(sc_node_group* nodeGroup, sc_dsp** dsp, const sc_dsp_config& config) -> sb_result;
 
         auto set_volume(float oldVolume, float newVolume) -> void;
         auto set_pitch(float oldPitch, float newPitch) -> void;
@@ -174,6 +167,7 @@ namespace sbk::engine
 
         std::shared_ptr<node> m_referencingNode;
         class sbk::engine::node_instance* m_owner = nullptr;
+        sbk::engine::game_object* m_gameObject = nullptr;
         node_group_instance m_nodeGroup;
         std::shared_ptr<node_instance> m_parent;
         std::vector<std::shared_ptr<node_instance>> m_children;

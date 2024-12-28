@@ -20,6 +20,7 @@ void sbk::engine::voice::play_container(container* container)
     event_init initData;
     initData.refNode     = container->try_convert_object<node_base>();
     initData.type        = sbk::engine::node_instance_type::main;
+    initData.m_owningGameObject = get_owning_game_object();
 
     if (voiceInstance->init(initData))
     {
