@@ -11,7 +11,7 @@
 
 DEFINE_REFLECTION(sbk::engine::node_instance)
 
-sbk::engine::node_instance::~node_instance()
+sbk::engine::node_instance_fsm::~node_instance_fsm()
 {
     if (m_referencingNode != nullptr)
     {
@@ -24,7 +24,7 @@ sbk::engine::node_instance::~node_instance()
 
 // ACTIONS //
 
-auto sbk::engine::node_instance::action_init(const event_init& init) -> void
+auto sbk::engine::node_instance_fsm::action_init(const event_init& init) -> void
 {
     m_referencingNode = std::static_pointer_cast<sbk::engine::node>(init.refNode.shared());
     init_node_group(init);
@@ -60,7 +60,7 @@ auto sbk::engine::node_instance::action_init(const event_init& init) -> void
     }
 }
 
-auto sbk::engine::node_instance::action_play(const event_play& play) -> void
+auto sbk::engine::node_instance_fsm::action_play(const event_play& play) -> void
 {
     if (m_referencingNode->get_object_type() == rttr::type::get<sound_container>())
     {
@@ -79,59 +79,16 @@ auto sbk::engine::node_instance::action_play(const event_play& play) -> void
     }
 }
 
-auto sbk::engine::node_instance::action_stop(const event_stop& stop) -> void
+auto sbk::engine::node_instance_fsm::action_stop(const event_stop& stop) -> void
 { 
     m_soundInstance.release(); 
     m_children.clear();
     m_parent.reset();
 }
 
-auto sbk::engine::node_instance::action_update(const event_update& update) -> void
-{
-    if (m_soundInstance)
-    {
-        if (ma_sound_at_end(&m_soundInstance->sound) == MA_TRUE)
-        {
-            //m_stateMachine.process_event(event_stop());
-        }
-    }
-    else if (!m_children.empty())
-    {
-        unsigned int stoppedChildren = 0;
-
-        for (const auto& child : m_children)
-        {
-            child->update();
-
-            if (!child->is_playing())
-            {
-                ++stoppedChildren;
-            }
-        }
-
-        const bool allChildrenHaveStopped = stoppedChildren == m_children.size();
-
-        if (allChildrenHaveStopped)
-        {
-            // Sequence nodes retrigger when the current sound stops
-            if (m_referencingNode->get_object_type() == rttr::type::get<sequence_container>())
-            {
-                m_children.clear();
-                ++m_numTimesPlayed;
-                init_child();
-                //m_stateMachine.process_event(event_play());
-            }
-            else
-            {
-                //m_stateMachine.process_event(event_stop());
-            }
-        }
-    }
-}
-
 // GUARDS //
 
-auto sbk::engine::node_instance::guard_init(const event_init& init) -> bool
+auto sbk::engine::node_instance_fsm::guard_init(const event_init& init) -> bool
 {
     if (!init.refNode.lookup())
     {
@@ -150,22 +107,24 @@ auto sbk::engine::node_instance::guard_init(const event_init& init) -> bool
 
 auto sbk::engine::node_instance::init(const event_init& init) -> sb_result 
 { 
-    //m_stateMachine.process_event(init); 
+    m_stateMachine.m_owner = this;
+    m_stateMachine.start();
+    m_stateMachine.process_event(init); 
 }
 
 auto sbk::engine::node_instance::play() -> sb_result
 {
-    //m_stateMachine.process_event(event_play());
+    m_stateMachine.process_event(event_play());
 }
 
 void sbk::engine::node_instance::update()
 {
-    //m_stateMachine.process_event(event_update());
+    m_stateMachine.process_event(event_update());
 }
 
 auto sbk::engine::node_instance::stop(float fadeTime) -> sb_result
 {
-    //m_stateMachine.process_event(event_stop{.stopTime = fadeTime});
+    m_stateMachine.process_event(event_stop{.stopTime = fadeTime});
 }
 
 // QUERIES
@@ -182,19 +141,19 @@ auto sbk::engine::node_instance::is_stopped() const -> bool
 
 auto sbk::engine::node_instance::get_referencing_node() const noexcept -> std::shared_ptr<node>
 {
-    return m_referencingNode;
+    return m_stateMachine.m_referencingNode;
 }
 
-auto sbk::engine::node_instance::get_parent() const noexcept -> node_instance* { return m_parent.get(); }
+auto sbk::engine::node_instance::get_parent() const noexcept -> node_instance* { return m_stateMachine.m_parent.get(); }
 
 auto sbk::engine::node_instance::get_bus() const noexcept -> sc_node_group*
 {
-    return m_nodeGroup.nodeGroup.get();
+    return m_stateMachine.m_nodeGroup.nodeGroup.get();
 }
 
 // INIT //
 
-auto sbk::engine::node_instance::add_dsp_to_node_group(sc_node_group* nodeGroup,
+auto sbk::engine::node_instance_fsm::add_dsp_to_node_group(sc_node_group* nodeGroup,
                                                        sc_dsp** dsp,
                                                        const sc_dsp_config& config) -> sb_result
 {
@@ -206,7 +165,7 @@ auto sbk::engine::node_instance::add_dsp_to_node_group(sc_node_group* nodeGroup,
     return MA_SUCCESS;
 }
 
-auto sbk::engine::node_instance::init_node_group(const event_init& init) -> sb_result
+auto sbk::engine::node_instance_fsm::init_node_group(const event_init& init) -> sb_result
 {
     SC_CHECK_RESULT(sc_system_create_node_group(sbk::engine::system::get(), ztd::out_ptr::out_ptr(m_nodeGroup.nodeGroup)));
     SC_CHECK_RESULT(add_dsp_to_node_group(m_nodeGroup.nodeGroup.get(), &m_nodeGroup.lowpass, sc_dsp_config_init(SC_DSP_TYPE_LOWPASS)));
@@ -235,7 +194,7 @@ auto sbk::engine::node_instance::init_node_group(const event_init& init) -> sb_r
     return MA_SUCCESS;
 }
 
-void sbk::engine::node_instance::init_parent()
+void sbk::engine::node_instance_fsm::init_parent()
 {
     sbk::engine::node_base* nodeToReference = nullptr;
 
@@ -256,18 +215,17 @@ void sbk::engine::node_instance::init_parent()
     }
 
     event_init initData{.refNode = nodeToReference, .type = node_instance_type::bus};
-    m_parent = get_owner()->create_runtime_object<sbk::engine::node_instance>();
+    m_parent = m_owner->create_runtime_object<sbk::engine::node_instance>();
     m_parent->init(initData);
 }
 
-void sbk::engine::node_instance::init_child()
+void sbk::engine::node_instance_fsm::init_child()
 {
     if (const container* const container = m_referencingNode->try_convert_object<sbk::engine::container>())
     {
         gather_children_context context;
         context.numTimesPlayed = m_numTimesPlayed;
-        context.parameters     = get_owner_object()
-                                 ->try_convert_object<sbk::engine::voice>()
+        context.parameters = m_owner->try_convert_object<sbk::engine::voice>()
                                  ->get_owning_game_object()
                                  ->get_local_parameters();
 
@@ -279,10 +237,10 @@ void sbk::engine::node_instance::init_child()
         {
             if (child)
             {
-                m_children.push_back(get_owner()->create_runtime_object<sbk::engine::node_instance>());
+                m_children.push_back(m_owner->create_runtime_object<sbk::engine::node_instance>());
 
                 event_init childInit;
-                childInit.parentForChildren = this;
+                childInit.parentForChildren = m_owner;
                 childInit.type              = node_instance_type::child;
                 childInit.refNode           = child->get_database_id();
 
@@ -292,12 +250,12 @@ void sbk::engine::node_instance::init_child()
     }
 }
 
-void sbk::engine::node_instance::init_callbacks()
+void sbk::engine::node_instance_fsm::init_callbacks()
 {
-    m_referencingNode->m_volume.get_delegate().AddRaw(this, &node_instance::set_volume);
-    m_referencingNode->m_pitch.get_delegate().AddRaw(this, &node_instance::set_pitch);
-    m_referencingNode->m_lowpass.get_delegate().AddRaw(this, &node_instance::set_lowpass);
-    m_referencingNode->m_highpass.get_delegate().AddRaw(this, &node_instance::set_highpass);
+    m_referencingNode->m_volume.get_delegate().AddRaw(this, &node_instance_fsm::set_volume);
+    m_referencingNode->m_pitch.get_delegate().AddRaw(this, &node_instance_fsm::set_pitch);
+    m_referencingNode->m_lowpass.get_delegate().AddRaw(this, &node_instance_fsm::set_lowpass);
+    m_referencingNode->m_highpass.get_delegate().AddRaw(this, &node_instance_fsm::set_highpass);
 
     set_volume(0.0F, m_referencingNode->m_volume.get());
     set_pitch(0.0F, m_referencingNode->m_pitch.get());
@@ -307,7 +265,7 @@ void sbk::engine::node_instance::init_callbacks()
 
 // CALLBACKS //
 
-void sbk::engine::node_instance::set_volume(float oldVolume, float newVolume)
+void sbk::engine::node_instance_fsm::set_volume(float oldVolume, float newVolume)
 {
     (void)oldVolume;
 
@@ -317,7 +275,7 @@ void sbk::engine::node_instance::set_volume(float oldVolume, float newVolume)
     }
 }
 
-void sbk::engine::node_instance::set_pitch(float oldPitch, float newPitch)
+void sbk::engine::node_instance_fsm::set_pitch(float oldPitch, float newPitch)
 {
     (void)oldPitch;
 
@@ -327,7 +285,7 @@ void sbk::engine::node_instance::set_pitch(float oldPitch, float newPitch)
     }
 }
 
-void sbk::engine::node_instance::set_lowpass(float oldLowpass, float newLowpass)
+void sbk::engine::node_instance_fsm::set_lowpass(float oldLowpass, float newLowpass)
 {
     (void)oldLowpass;
 
@@ -338,7 +296,7 @@ void sbk::engine::node_instance::set_lowpass(float oldLowpass, float newLowpass)
     sc_dsp_set_parameter_float(m_nodeGroup.lowpass, SC_DSP_LOWPASS_CUTOFF, static_cast<float>(lowpassCutoff));
 }
 
-void sbk::engine::node_instance::set_highpass(float oldHighpass, float newHighpass)
+void sbk::engine::node_instance_fsm::set_highpass(float oldHighpass, float newHighpass)
 {
     (void)oldHighpass;
 
