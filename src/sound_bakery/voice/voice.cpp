@@ -22,7 +22,7 @@ void sbk::engine::voice::play_container(container* container)
     initData.type        = sbk::engine::node_instance_type::main;
     initData.m_owningGameObject = get_owning_game_object();
 
-    if (voiceInstance->init(initData))
+    if (voiceInstance->init(initData) == MA_SUCCESS)
     {
         voiceInstance->play();
     }
