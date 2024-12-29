@@ -161,6 +161,9 @@ function(build_dependencies)
 
     message(STATUS "Fetching out_ptr")
     FetchContent_MakeAvailable(out_ptr)
+
+    message(STATUS "Fetching Tracy")
+    FetchContent_MakeAvailable(tracy)
 endfunction()
 
 macro(setup_format_sources)

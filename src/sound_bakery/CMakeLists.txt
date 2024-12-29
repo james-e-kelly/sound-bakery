@@ -38,6 +38,7 @@ target_link_libraries(sound_bakery PUBLIC
   Boost::msm
   ztd::out_ptr
   yaml-archive
+  Tracy::TracyClient
 )
 
 install(TARGETS sound_bakery DESTINATION lib/sound_bakery)
