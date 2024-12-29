@@ -107,7 +107,7 @@ namespace sbk::core::serialization
             archive & boost::serialization::make_nvp("Type", type);
             archive & boost::serialization::make_nvp("ID", id);
 
-            if (archive_class::is_loading())
+            if (typename archive_class::is_loading())
             {
                 BOOST_ASSERT(objectOwner != nullptr);
                 std::weak_ptr<sbk::core::database_object> foundObject = sbk::engine::system::get()->try_find(id);
@@ -127,7 +127,7 @@ namespace sbk::core::serialization
             BOOST_ASSERT(object);
             archive & boost::serialization::make_nvp("ObjectData", *object.get());
 
-            if (archive_class::is_loading())
+            if (typename archive_class::is_loading())
             {
                 BOOST_ASSERT(sbk::engine::system::get() != nullptr);
                 object->clear_flags(object_flag_loading);
@@ -197,7 +197,7 @@ namespace sbk::core::serialization
             
             for (std::size_t index = 0; index < count; ++index)
             {
-                if (archive_class::is_loading())
+                if (typename archive_class::is_loading())
                 {
                     serialized_object serializedObject({}, objectOwner);
                     archive & boost::serialization::make_nvp("Object", serializedObject);
@@ -227,7 +227,7 @@ namespace sbk::core::serialization
         {
             BOOST_ASSERT(sound);
 
-            if (archive_class::is_saving())
+            if (typename archive_class::is_saving())
             {
                 const sbk::engine::encoding_sound encodingSound = sound->get_encoding_sound_data();
                 const std::vector<uint8_t> buffer               = read_binary_file(encodingSound.encodedSoundPath);
@@ -270,7 +270,7 @@ namespace sbk::core::serialization
 
             for (std::size_t index = 0; index < count; ++index)
             {
-                if (archive_class::is_loading())
+                if (typename archive_class::is_loading())
                 {
                     serialized_object serializedObject({}, objectOwner);
                     archive & boost::serialization::make_nvp("Object", serializedObject);
@@ -312,7 +312,7 @@ namespace sbk::core::serialization
 
             sbk::engine::soundbank* soundbank = serializedSoundbank.object->try_convert_object<sbk::engine::soundbank>();
 
-            if (archive_class::is_loading())
+            if (typename archive_class::is_loading())
             {
                 serialized_object_vector<sbk::engine::sound> serializedSounds(soundbank);
                 serialized_object_vector<sbk::engine::node_base> serializedNodes(soundbank);
@@ -383,7 +383,7 @@ namespace sbk::core::serialization
                 BOOST_ASSERT(property.is_valid());
                 BOOST_ASSERT(property.get_type().is_valid());
 
-                if (archive_class::is_loading())
+                if (typename archive_class::is_loading())
                 {
                     rttr::variant loaded = make_default_variant(property.get_type());
                     BOOST_ASSERT(loaded.is_valid());
@@ -416,7 +416,7 @@ namespace sbk::core::serialization
         template <class archive_class>
         void serialize(archive_class& archive, const unsigned int version)
         {
-            if (archive_class::is_loading())
+            if (typename archive_class::is_loading())
             {
                 size_t size = 0;
                 archive & boost::serialization::make_nvp("Count", size);
@@ -474,7 +474,7 @@ namespace sbk::core::serialization
         template <class archive_class>
         void serialize(archive_class& archive, const unsigned int version)
         {
-            if (archive_class::is_loading())
+            if (typename archive_class::is_loading())
             {
                 size_t size = 0;
                 archive& boost::serialization::make_nvp("Count", size);
@@ -586,7 +586,7 @@ namespace boost
         template <class archive_class, typename T>
         void serialize_variant(archive_class& archive, rttr::variant& variant)
         {
-            if (archive_class::is_loading())
+            if (typename archive_class::is_loading())
             {
                 T loadedValue;
                 archive & boost::serialization::make_nvp("Value", loadedValue);
@@ -602,7 +602,7 @@ namespace boost
         template <class archive_class>
         void serialize_variant_string_view(archive_class& archive, rttr::variant& variant)
         {
-            if (archive_class::is_loading())
+            if (typename archive_class::is_loading())
             {
                 std::string loaded;
                 archive & boost::serialization::make_nvp("Value", loaded);
@@ -686,7 +686,7 @@ namespace boost
             {
                 const rttr::enumeration enumeration = type.get_enumeration();
 
-                if (archive_class::is_loading())
+                if (typename archive_class::is_loading())
                 {
                     std::string loadedStringValue;
                     archive& boost::serialization::make_nvp("Value", loadedStringValue);
