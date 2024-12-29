@@ -76,6 +76,8 @@ namespace gluten
         widget* get_parent_widget() const;
         widget_subsystem* get_parent_subsystem() const;
 
+        bool m_autoRenderChildren = true;
+
     private:
         widget_subsystem* m_parentSubsystem = nullptr;
         widget* m_parentWidget              = nullptr;

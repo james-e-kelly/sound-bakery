@@ -39,7 +39,11 @@ auto widget::render() -> void
     if (m_hasStarted)
     {
         render_implementation();
-        render_children();
+
+        if (m_autoRenderChildren)
+        {
+            render_children();
+        }
     }
 }
 

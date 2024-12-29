@@ -172,6 +172,8 @@ void root_widget::render_implementation()
         ImGui::End();
     }
 
+    render_children();
+
     ImGui::End();
 }
 

@@ -11,7 +11,7 @@ namespace gluten
     class root_widget : public widget
     {
     public:
-        root_widget(widget_subsystem* parentSubsystem) : widget(parentSubsystem) {}
+        root_widget(widget_subsystem* parentSubsystem) : widget(parentSubsystem) { m_autoRenderChildren = false; }
 
     public:
         void start_implementation() override;
