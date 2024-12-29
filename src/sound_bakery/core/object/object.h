@@ -67,12 +67,12 @@ namespace sbk::core
                 std::string propertyName = property.get_name().data();
                 std::replace(propertyName.begin(), propertyName.end(), ' ', '_');
 
-                if (archive_class::is_saving())
+                if (typename archive_class::is_saving())
                 {
                     rttr::variant propertyVariant = property.get_value(rttr::instance(this));
                     archive & boost::serialization::make_nvp(propertyName.c_str(), propertyVariant);
                 }
-                else if (archive_class::is_loading())
+                else if (typename archive_class::is_loading())
                 {
                     rttr::variant loadedVariant = property.get_value(rttr::instance(this));
                     BOOST_VERIFY(loadedVariant.is_valid());
