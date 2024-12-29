@@ -31,13 +31,13 @@ namespace sbk::editor
         [[nodiscard]] std::weak_ptr<sbk::engine::sound_container> get_preview_container() const;
 
     private:
-        void loadSounds();
+        void load_sounds();
         void loadSystem();
-        void loadObjects();
+        void load_objects();
 
         void createPreviewContainer();
 
-        void buildSoundbanks() const;
+        void build_soundbanks() const;
 
         void saveSystem() const;
         void saveObjects() const;

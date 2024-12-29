@@ -12,8 +12,8 @@ public:
     project_explorer_widget(widget* parentWidget) : widget(parentWidget) {}
 
 public:
-    virtual void start() override;
-    virtual void render() override;
+    virtual void start_implementation() override;
+    virtual void render_implementation() override;
 
 private:
     std::shared_ptr<widget> m_fileBrowserWidget;

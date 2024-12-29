@@ -47,14 +47,14 @@ struct playable_selection
 
 static playable_selection s_lastPlayableSelection;
 
-void player_widget::start()
+void player_widget::start_implementation()
 {
-    widget::start();
+    widget::start_implementation();
 
     add_child_widget<audio_display_widget>(true);
 }
 
-void player_widget::render()
+void player_widget::render_implementation()
 {
     const gluten::imgui::scoped_font audioFont(get_app()->get_font(gluten::fonts::regular_audio_icons));
     const gluten::imgui::scoped_style morePadding(ImGuiStyleVar_WindowPadding, gluten::theme::carbon_g100::paddingVec);

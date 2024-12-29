@@ -18,7 +18,7 @@ namespace sbk::util
                 /**
                  * Deleted a dangling pointer!
                  */
-                assert(false);
+                BOOST_ASSERT(false);
             }
         }
 
@@ -35,7 +35,7 @@ namespace sbk::util
                     /**
                      * Leak Detected!!!
                      */
-                    assert(false);
+                    BOOST_ASSERT(false);
                 }
             }
 

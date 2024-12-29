@@ -10,7 +10,58 @@ widget::widget(widget_subsystem* parentSubsystem) : m_parentSubsystem(parentSubs
 
 widget::widget(widget* parentWidget) : m_parentWidget(parentWidget) {}
 
-void widget::start() { m_hasStarted = true; }
+auto widget::start() -> void
+{ 
+    if (!m_hasStarted)
+    {
+        start_implementation();
+        m_hasStarted = true; 
+    }
+}
+
+auto widget::tick(double deltaTime) -> void
+{
+    if (m_hasStarted)
+    {
+        tick_implementation(deltaTime);
+        for (std::weak_ptr<widget>& child : m_childWidgets)
+        {
+            if (std::shared_ptr<widget> sharedChild = child.lock())
+            {
+                sharedChild->tick(deltaTime);
+            }
+        }
+    }
+}
+
+auto widget::render() -> void
+{
+    if (m_hasStarted)
+    {
+        render_implementation();
+
+        if (m_autoRenderChildren)
+        {
+            render_children();
+        }
+    }
+}
+
+void gluten::widget::end()
+{
+    if (m_hasStarted && !m_hasEnded)
+    {
+        end_implementation();
+        for (std::weak_ptr<widget>& child : m_childWidgets)
+        {
+            if (std::shared_ptr<widget> sharedChild = child.lock())
+            {
+                sharedChild->end();
+            }
+        }
+        m_hasEnded = true;
+    }
+}
 
 void widget::render_children()
 {

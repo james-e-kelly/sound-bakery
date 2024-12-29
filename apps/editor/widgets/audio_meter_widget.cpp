@@ -67,7 +67,7 @@ namespace audio_meter_utils
     constexpr const char* channel_labels[] = {"L", "R", "C", "RL", "RR", "ML", "MR"};
 }  // namespace audio_meter_utils
 
-void audio_meter_widget::start()
+void audio_meter_widget::start_implementation()
 {
     m_rmsVolumes.fill(audio_meter_utils::rendered_min_volume);
 
@@ -77,7 +77,7 @@ void audio_meter_widget::start()
     }
 }
 
-void audio_meter_widget::render()
+void audio_meter_widget::render_implementation()
 {
     if (ImGui::Begin("Meter"))
     {

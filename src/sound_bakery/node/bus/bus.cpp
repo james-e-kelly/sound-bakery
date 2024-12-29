@@ -40,9 +40,9 @@ std::shared_ptr<node_instance> bus::lockAndCopy()
         std::shared_ptr<node_instance> sharedBus = std::make_shared<node_instance>();
         m_busInstance                            = sharedBus;
 
-        InitNodeInstance initData;
+        event_init initData;
         initData.refNode = try_convert_object<node_base>();
-        initData.type    = NodeInstanceType::BUS;
+        initData.type    = node_instance_type::bus;
 
         sharedBus->init(initData);
 

@@ -103,9 +103,9 @@ namespace root_widget_utils
 
 static bool showUserGuide = false;
 
-void root_widget::start()
+void root_widget::start_implementation()
 {
-    widget::start();
+    widget::start_implementation();
 
     const cmrc::embedded_filesystem embeddedfilesystem = cmrc::sbk::icon_images::get_filesystem();
     const cmrc::file logoFile                          = embeddedfilesystem.open("sound-bakery-logo.png");
@@ -143,7 +143,7 @@ void root_widget::start()
         theme::ColorWithMultipliedValue(ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::background), 2.f));
 }
 
-void root_widget::render()
+void root_widget::render_implementation()
 {
     set_root_window_to_viewport();
 

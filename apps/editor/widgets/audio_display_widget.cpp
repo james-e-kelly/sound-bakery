@@ -106,7 +106,7 @@ int littleEndian24Bit(const void* bytes)
 //    return result / maxValue;
 //}
 
-void audio_display_widget::render()
+void audio_display_widget::render_implementation()
 {
     if (std::shared_ptr<project_manager> manager = get_app()->get_manager_by_class<project_manager>())
     {

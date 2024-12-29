@@ -195,7 +195,7 @@ namespace sbk::engine
             }
             else
             {
-                assert(false);
+                BOOST_ASSERT(false);
             }
         }
 

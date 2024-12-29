@@ -33,6 +33,11 @@ target_link_libraries(sound_bakery PUBLIC
   concurrencpp::concurrencpp
   spdlog::spdlog
   yaml-cpp::yaml-cpp
+  Boost::assert
+  Boost::serialization
+  Boost::msm
+  ztd::out_ptr
+  yaml-archive
 )
 
 install(TARGETS sound_bakery DESTINATION lib/sound_bakery)

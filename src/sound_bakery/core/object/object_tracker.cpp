@@ -57,6 +57,28 @@ std::unordered_set<object*> object_tracker::get_objects_of_type(const rttr::type
     return {};
 }
 
+auto object_tracker::get_objects_count() const -> size_t
+{
+    size_t count = 0;
+
+    for (auto& keyValuePair : m_categoryToObjects)
+    {
+        count += keyValuePair.second.size();
+    }
+
+    return count;
+}
+
+auto object_tracker::get_all_category_to_objects() const -> const std::unordered_map<SB_OBJECT_CATEGORY, std::unordered_set<object*>>&
+{
+    return m_categoryToObjects;
+}
+
+auto object_tracker::get_all_type_to_objects() const -> const std::unordered_map<rttr::type, std::unordered_set<object*>>&
+{
+    return m_typeToObjects;
+}
+
 void object_tracker::on_object_destroyed(object* object)
 {
     if (object != nullptr)

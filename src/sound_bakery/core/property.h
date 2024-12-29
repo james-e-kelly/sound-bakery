@@ -16,9 +16,9 @@ namespace sbk::core
         property(T value) : m_value(value), m_min(value), m_max(value + 1) {}
         property(T value, T min, T max) : m_value(value), m_min(min), m_max(max)
         {
-            assert(value >= min);
-            assert(value <= max);
-            assert(min < max);
+            BOOST_ASSERT(value >= min);
+            BOOST_ASSERT(value <= max);
+            BOOST_ASSERT(min < max);
         }
 
         property(const property& other)

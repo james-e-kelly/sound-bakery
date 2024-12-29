@@ -51,7 +51,6 @@ macro(set_sources)
 
     voice/voice.cpp
     voice/node_instance.cpp
-    voice/node_instance_impl.cpp
     )
 
     source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Source Files" FILES ${SOUND_BAKERY_SOURCES})
@@ -153,6 +152,15 @@ function(build_dependencies)
     set(YAML_CPP_BUILD_TOOLS OFF CACHE BOOL "" FORCE)
     set(YAML_BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
     FetchContent_MakeAvailable(yaml)
+
+    message(STATUS "Fetching boost")
+    FetchContent_MakeAvailable(boost)
+
+    message(STATUS "Fetching boost-yaml")
+    FetchContent_MakeAvailable(boost-yaml)
+
+    message(STATUS "Fetching out_ptr")
+    FetchContent_MakeAvailable(out_ptr)
 endfunction()
 
 macro(setup_format_sources)

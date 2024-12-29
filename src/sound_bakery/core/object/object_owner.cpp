@@ -55,10 +55,10 @@ auto sbk::core::object_owner::create_runtime_object(const rttr::type& type) -> s
     }
     else
     {
-        assert(false);
+        BOOST_ASSERT(false);
     }
 
-    assert(result);
+    BOOST_ASSERT(result);
 
     m_objects.emplace_back(result);
 
@@ -69,41 +69,6 @@ auto sbk::core::object_owner::create_runtime_object(const rttr::type& type) -> s
     result->cache_type();
 
     return result;
-}
-
-auto sbk::core::object_owner::load_object(YAML::Node& node) -> std::shared_ptr<sbk::core::object>
-{
-    const std::string loadedTypeName = node["ObjectType"].as<std::string>();
-    const rttr::type type            = rttr::type::get_by_name(loadedTypeName);
-
-    if (type.is_derived_from<sbk::core::database_object>())
-    {
-        std::shared_ptr<sbk::core::database_object> databaseObject = create_database_object(type, false);
-        sbk::core::database_object* const databaseObjectPointer    = databaseObject.get();
-
-        sbk::core::serialization::Serializer::loadProperties(node, databaseObjectPointer);
-
-        if (sbk::engine::system* const system = sbk::engine::system::get())
-        {
-            system->add_object_to_database(databaseObject);
-        }
-
-        return databaseObject;
-    }
-    else if (type.is_derived_from<sbk::core::object>())
-    {
-        std::shared_ptr<sbk::core::object> object = create_runtime_object(type);
-
-        sbk::core::serialization::Serializer::loadProperties(node, object);
-
-        return object;
-    }
-    else
-    {
-        assert(false);
-    }
-
-    return {};
 }
 
 auto sbk::core::object_owner::create_database_object(const rttr::type& type,
@@ -139,7 +104,16 @@ auto sbk::core::object_owner::create_database_object(const rttr::type& type,
     return {};
 }
 
-auto sbk::core::object_owner::remove_object(const std::shared_ptr<object>& object) -> void
+auto sbk::core::object_owner::add_reference_to_object(std::shared_ptr<database_object>& object) -> void
+{
+    if (object)
+    {
+        m_objects.push_back(object);
+    }
+}
+
+auto sbk::core::object_owner::remove_object(const std::shared_ptr<object>& object)
+    -> std::vector<std::shared_ptr<sbk::core::object>>::iterator
 {
     if (object)
     {
@@ -148,11 +122,11 @@ auto sbk::core::object_owner::remove_object(const std::shared_ptr<object>& objec
         {
             if (*iter == object)
             {
-                m_objects.erase(iter);
-                return;
+                return m_objects.erase(iter);
             }
         }
     }
+    return m_objects.end();
 }
 
 auto sbk::core::object_owner::destroy_all() -> void { m_objects.clear(); }
@@ -160,3 +134,5 @@ auto sbk::core::object_owner::destroy_all() -> void { m_objects.clear(); }
 auto sbk::core::object_owner::get_objects() -> std::vector<std::shared_ptr<object>>& { return m_objects; }
 
 auto sbk::core::object_owner::get_objects() const -> const std::vector<std::shared_ptr<object>>& { return m_objects; }
+
+auto sbk::core::object_owner::get_objects_size() const -> std::size_t { return m_objects.size(); }

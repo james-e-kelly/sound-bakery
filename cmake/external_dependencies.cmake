@@ -228,3 +228,25 @@ FetchContent_Declare(
   OVERRIDE_FIND_PACKAGE
   EXCLUDE_FROM_ALL
 )
+
+FetchContent_Declare(
+  boost
+  URL https://github.com/boostorg/boost/releases/download/boost-1.87.0/boost-1.87.0-cmake.tar.xz
+)
+
+FetchContent_Declare(
+  boost-yaml
+  GIT_REPOSITORY https://github.com/james-e-kelly/yaml-archive.git
+  GIT_SHALLOW    TRUE
+  GIT_PROGRESS TRUE
+  EXCLUDE_FROM_ALL
+)
+
+FetchContent_Declare(
+  out_ptr
+  GIT_REPOSITORY https://github.com/soasis/out_ptr.git
+  GIT_TAG main
+  GIT_SHALLOW TRUE
+  GIT_PROGRESS TRUE
+  EXCLUDE_FROM_ALL
+)

@@ -227,16 +227,16 @@ void file_browser_widget::show_directory_browser_list() noexcept
     }
 }
 
-void file_browser_widget::start()
+void file_browser_widget::start_implementation()
 {
-    widget::start();
+    widget::start_implementation();
 
     m_currentDirectory = sbk::engine::system::get_project()->get_config().source_folder();
     m_topDir           = m_currentDirectory;
     m_selectedItemID   = std::numeric_limits<uint32_t>::max();
 }
 
-void file_browser_widget::render()
+void file_browser_widget::render_implementation()
 {
     show_nav_menu();
     ImGui::Separator();

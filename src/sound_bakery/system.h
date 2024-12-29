@@ -39,11 +39,19 @@ namespace sbk
                                       public sbk::core::object_owner,
                                       public sbk::core::object_tracker,
                                       public sbk::core::database,
-                                      public concurrencpp::runtime
+                                      public concurrencpp::runtime,
+                                      public boost::noncopyable
         {
             REGISTER_REFLECTION(system)
-            NOT_COPYABLE(system)
             LEAK_DETECTOR(system)
+
+        public:
+            enum class operating_mode
+            {
+                unkown, //< Unkown/unset
+                editor, //< We have a project
+                runtime //< We are loading soundbanks
+            };
 
         public:
             system();
@@ -55,6 +63,7 @@ namespace sbk
             static auto destroy() -> void;
 
             [[nodiscard]] static auto get() -> system*;
+            [[nodiscard]] static auto get_operating_mode() -> operating_mode;
             [[nodiscard]] static auto get_project() -> sbk::editor::project*;
             [[nodiscard]] static auto get_voice_tracker() -> sbk::engine::profiling::voice_tracker*;
             [[nodiscard]] auto get_game_thread_executer() const -> std::shared_ptr<concurrencpp::manual_executor>;
@@ -73,7 +82,16 @@ namespace sbk
             static auto create_project(const std::filesystem::directory_entry& projectDirectory,
                                        const std::string& projectName) -> sc_result;
 
+            static auto load_soundbank(const std::filesystem::path& file) -> sb_result;
+
             auto set_master_bus(const std::shared_ptr<sbk::engine::bus>& masterBus) -> void;
+
+            friend class boost::serialization::access;
+
+            template <class archive_class>
+            void serialize(archive_class& archive, const unsigned int version)
+            {
+            }
 
         private:
             bool m_registeredReflection = false;

@@ -13,12 +13,11 @@ void voice_tracker::update(system* system)
     m_playingNodeIDs.clear();
     m_nodePlayingCount.clear();
 
-    // @TODO Fix listener game object
-    if (const game_object* const listener = nullptr /* system->get_listener_game_object() */)
+    if (const game_object* const listener = system->get_listener_game_object())
     {
-        for (std::size_t i = 0; i < listener->voice_count(); ++i)
+        for (const std::shared_ptr<sbk::core::object>& object : listener->get_objects())
         {
-            if (const voice* const voice = listener->get_voice(i))
+            if (const sbk::engine::voice* const voice = object->try_convert_object<sbk::engine::voice>())
             {
                 std::unordered_set<const node_instance*> trackedNodes;
 
@@ -30,7 +29,7 @@ void voice_tracker::update(system* system)
                         {
                             trackedNodes.insert(nodeInstance);
 
-                            if (const std::shared_ptr<node> node = nodeInstance->getReferencingNode())
+                            if (const std::shared_ptr<node> node = nodeInstance->get_referencing_node())
                             {
                                 m_playingNodeIDs.insert(node->get_database_id());
                                 m_nodePlayingCount[node->get_database_id()]++;
@@ -44,7 +43,7 @@ void voice_tracker::update(system* system)
 
                                 while (parent)
                                 {
-                                    if (const std::shared_ptr<node> node = parent->getReferencingNode())
+                                    if (const std::shared_ptr<node> node = parent->get_referencing_node())
                                     {
                                         m_playingNodeIDs.insert(node->get_database_id());
                                         m_nodePlayingCount[node->get_database_id()]++;
