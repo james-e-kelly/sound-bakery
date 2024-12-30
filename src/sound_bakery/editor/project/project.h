@@ -3,8 +3,6 @@
 #include "sound_bakery/core/core_include.h"
 #include "sound_bakery/editor/project/project_configuration.h"
 
-#include "yaml-cpp/yaml.h"
-
 namespace sbk::engine
 {
     class sound_container;
