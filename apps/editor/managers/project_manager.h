@@ -4,8 +4,6 @@
 #include "sound_bakery/core/database/database_object.h"
 #include "sound_bakery/system.h"
 
-#include "yaml-cpp/yaml.h"
-
 namespace sbk::engine
 {
     class sound_container;
