@@ -146,13 +146,6 @@ function(build_dependencies)
     message(STATUS "Fetching spdlog...")
     FetchContent_MakeAvailable(spdlog)
 
-    message(STATUS "Fetching yaml-cpp...")
-    set(YAML_CPP_BUILD_CONTRIB OFF CACHE BOOL "" FORCE)
-    set(YAML_CPP_FORMAT_SOURCE OFF CACHE BOOL "" FORCE)
-    set(YAML_CPP_BUILD_TOOLS OFF CACHE BOOL "" FORCE)
-    set(YAML_BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
-    FetchContent_MakeAvailable(yaml)
-
     message(STATUS "Fetching boost")
     FetchContent_MakeAvailable(boost)
 
