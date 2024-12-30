@@ -39,7 +39,6 @@ namespace sbk::editor
 
         void saveSystem() const;
         void saveObjects() const;
-        void saveYAML(const YAML::Emitter& emitter, const std::filesystem::path& filePath) const;
 
         project_configuration m_projectConfig;
         std::weak_ptr<sbk::engine::sound_container> m_previewSoundContainer;
