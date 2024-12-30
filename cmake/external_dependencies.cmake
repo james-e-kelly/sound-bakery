@@ -2,7 +2,7 @@
 
 include(FetchContent)
 
-    # Resource Embedding
+# Resource Embedding
 FetchContent_Declare(
   cmrc
   GIT_REPOSITORY https://github.com/vector-of-bool/cmrc.git
@@ -13,7 +13,7 @@ FetchContent_Declare(
   EXCLUDE_FROM_ALL 
 )
 
-    # Using TheCherno version for custom titlebar on Windows
+# Using TheCherno version for custom titlebar on Windows
 FetchContent_Declare(
   glfw
   GIT_REPOSITORY https://github.com/TheCherno/glfw.git
@@ -104,16 +104,6 @@ FetchContent_Declare(
   rttr
   GIT_REPOSITORY https://github.com/KarateKidzz/rttr.git
   GIT_TAG        master
-  GIT_SHALLOW    TRUE
-  GIT_PROGRESS TRUE
-  OVERRIDE_FIND_PACKAGE
-  EXCLUDE_FROM_ALL 
-)
-
-FetchContent_Declare(
-  yaml
-  GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
-  GIT_TAG        0.8.0
   GIT_SHALLOW    TRUE
   GIT_PROGRESS TRUE
   OVERRIDE_FIND_PACKAGE
@@ -232,6 +222,7 @@ FetchContent_Declare(
 FetchContent_Declare(
   boost
   URL https://github.com/boostorg/boost/releases/download/boost-1.87.0/boost-1.87.0-cmake.tar.xz
+  EXCLUDE_FROM_ALL
 )
 
 FetchContent_Declare(

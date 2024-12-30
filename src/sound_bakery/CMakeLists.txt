@@ -32,7 +32,6 @@ target_link_libraries(sound_bakery PUBLIC
   RTTR::Core_Lib
   concurrencpp::concurrencpp
   spdlog::spdlog
-  yaml-cpp::yaml-cpp
   Boost::assert
   Boost::serialization
   Boost::msm

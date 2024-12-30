@@ -20,8 +20,6 @@
 #include "sound_bakery/sound/sound.h"
 #include "sound_bakery/soundbank/soundbank.h"
 
-#include "yaml-cpp/yaml.h"
-
 namespace sbk::core
 {
     class object;

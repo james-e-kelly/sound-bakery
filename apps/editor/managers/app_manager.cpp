@@ -6,8 +6,6 @@
 #include "nfd.h"  // native file dialog
 #include "sound_bakery/editor/project/project.h"
 
-#include "yaml-cpp/yaml.h"
-
 void app_manager::init(gluten::app* app)
 {
     app->set_application_display_title(SBK_PRODUCT_NAME " " SBK_VERSION_STRING);

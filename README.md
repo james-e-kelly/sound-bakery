@@ -92,4 +92,19 @@ For more details, check out our [contributing guidelines](CONTRIBUTING.md).
 Sound Bakery is licensed under the MIT License. See the LICENSE file for more information.
 
 ## Acknowledgements
-A big thank you to the creators of miniaudio, concurrencpp, ImGui, rttr, tracy, and spdlog for their incredible libraries that make Sound Bakery possible.
+Sound Bakery relies on some amazing open-source libraries. Thank you to the following libraries, creators, contributors and maintainers.
+
+| Audio | Rendering/Editor | Code | Testing/Documentation |
+| ----- | ---------------- | ---- | --------------------- |
+| [miniaudio](https://github.com/mackron/miniaudio.git) | [Dear ImGui](https://github.com/ocornut/imgui.git) | [boost](https://www.boost.org) | [doctest](https://github.com/doctest/doctest.git) |
+| [ogg](https://github.com/xiph/ogg.git) | [GLFW](https://www.glfw.org) | [yaml-archive](https://github.com/james-e-kelly/yaml-archive.git) | [Doxygen](https://www.doxygen.nl) |
+| [vorbis](https://github.com/xiph/vorbis.git) | [ImPlot](https://github.com/epezent/implot.git) | [concurrencpp](https://github.com/james-e-kelly/concurrencpp.git) | [Doxygen Awesome](https://github.com/jothepro/doxygen-awesome-css.git) |
+| [opus](https://github.com/xiph/opus.git) | [Native File Dialog](https://github.com/mlabbe/nativefiledialog.git) | [{fmt}](https://github.com/fmtlib/fmt.git) | |
+| [CLAP](https://github.com/free-audio/clap.git) | [IconFontCppHeaders](https://github.com/juliettef/IconFontCppHeaders.git) | [spdlog](https://github.com/gabime/spdlog.git) | |
+| | | [rttr](https://github.com/KarateKidzz/rttr.git) | |
+| | | [CMakeRC](https://github.com/vector-of-bool/cmrc.git) | |
+| | | [Cpp Delegates](https://github.com/KarateKidzz/CppDelegates.git) | |
+| | | [stb](https://github.com/nothings/stb.git) | |
+| | | [bytesize](https://github.com/eudoxos/bytesize.git) | |
+| | | [dirent](https://github.com/tronkko/dirent.git) | |
+| | | [out_ptr](https://github.com/soasis/out_ptr.git) | |
