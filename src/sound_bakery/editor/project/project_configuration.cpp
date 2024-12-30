@@ -19,18 +19,8 @@ sbk::editor::project_configuration::project_configuration(const std::filesystem:
 
     if (projectDoesNotExist && folderExists && folderIsEmpty)
     {
-        YAML::Emitter projectYAML;
-
-        projectYAML << YAML::BeginDoc;
-        projectYAML << YAML::BeginMap;
-        projectYAML << YAML::Key << "Sound Bakery Version" << YAML::Value << SBK_VERSION_STRING;
-        projectYAML << YAML::EndMap;
-        projectYAML << YAML::EndDoc;
-
-        {
-            std::ofstream outputStream(m_projectFile.c_str(), std::ios_base::trunc);
-            outputStream << projectYAML.c_str();
-        }
+        std::ofstream outputStream(m_projectFile.c_str(), std::ios_base::trunc);
+        outputStream << "Empty";
 
         std::filesystem::create_directory(source_folder());
         std::filesystem::create_directory(object_folder());
