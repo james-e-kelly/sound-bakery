@@ -12,14 +12,13 @@ voice* game_object::play_container(container* container)
 {
     if (container)
     {
-        std::unique_ptr<voice>& voice = m_voices.emplace_back(std::make_unique<sbk::engine::voice>(this));
-        voice->play_container(container);
-        return voice.get();
+        if (std::shared_ptr<voice> voice = create_runtime_object<sbk::engine::voice>())
+        {
+            voice->play_container(container);
+            return voice.get();
+        }
     }
-    else
-    {
-        return nullptr;
-    }
+    return nullptr;
 }
 
 void sbk::engine::game_object::post_event(event* event)
@@ -28,8 +27,8 @@ void sbk::engine::game_object::post_event(event* event)
     {
         for (const action& action : event->m_actions)
         {
-            sbk::engine::container* container   = nullptr;
-            sbk::engine::event* childEvent      = nullptr;
+            sbk::engine::container* container    = nullptr;
+            sbk::engine::event* childEvent       = nullptr;
             sbk::engine::game_object* gameObject = nullptr;
 
             if (const sbk::core::database_ptr<sbk::core::database_object>& destination = action.m_destination;
@@ -74,11 +73,11 @@ void sbk::engine::game_object::post_event(event* event)
 
 void sbk::engine::game_object::stop_voice(voice* voice)
 {
-    for (std::size_t i = m_voices.size(); i--;)
+    for (auto iter = get_objects().begin(); iter != get_objects().end(); ++iter)
     {
-        if (m_voices[i].get() == voice)
+        if (iter->get() == voice)
         {
-            m_voices.erase(m_voices.begin() + i);
+            remove_object(*iter);
             break;
         }
     }
@@ -86,33 +85,35 @@ void sbk::engine::game_object::stop_voice(voice* voice)
 
 void sbk::engine::game_object::stop_container(container* container)
 {
-    for (std::size_t i = m_voices.size(); i--;)
+    for (auto iter = get_objects().begin(); iter != get_objects().end(); ++iter)
     {
-        if (const std::unique_ptr<voice>& voice = m_voices[i])
+        if (const sbk::engine::voice* const voice = iter->get()->try_convert_object<sbk::engine::voice>())
         {
             if (voice->playing_container(container))
             {
-                m_voices.erase(m_voices.begin() + i);
+                remove_object(*iter);
                 break;
             }
         }
     }
 }
 
-void game_object::stop_all() { m_voices.clear(); }
+void game_object::stop_all() 
+{ 
+    destroy_all();   //< Assuming we only own voices 
+}
 
 void game_object::update()
 {
-    if (m_voices.size())
+    for (auto iter = get_objects().begin(); iter != get_objects().end();)
     {
-        std::vector<std::unique_ptr<voice>>::iterator iter;
-        for (iter = m_voices.begin(); iter != m_voices.end();)
+        if (sbk::engine::voice* voice = iter->get()->try_convert_object<sbk::engine::voice>())
         {
-            iter->get()->update();
+            voice->update();
 
-            if (!iter->get()->is_playing())
+            if (!voice->is_playing())
             {
-                iter = m_voices.erase(iter);
+                iter = remove_object(*iter);
             }
             else
             {
@@ -122,18 +123,7 @@ void game_object::update()
     }
 }
 
-bool sbk::engine::game_object::is_playing() const noexcept { return voice_count(); }
-
-std::size_t sbk::engine::game_object::voice_count() const noexcept { return m_voices.size(); }
-
-voice* sbk::engine::game_object::get_voice(std::size_t index) const
-{
-    if (index >= 0 && index < m_voices.size())
-    {
-        return m_voices[index].get();
-    }
-    return nullptr;
-}
+bool sbk::engine::game_object::is_playing() const noexcept { return get_objects_size(); }
 
 float sbk::engine::game_object::get_float_parameter_value(
     const sbk::core::database_ptr<float_parameter>& parameter) const
@@ -198,5 +188,5 @@ void sbk::engine::game_object::set_int_parameter_value(
 
     m_parameters.intParameters[parameterValue.first].set(parameterValue.second);
 
-    assert(m_parameters.intParameters[parameterValue.first].get() == parameterValue.second);
+    BOOST_ASSERT(m_parameters.intParameters[parameterValue.first].get() == parameterValue.second);
 }

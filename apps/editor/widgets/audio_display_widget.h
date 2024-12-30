@@ -16,7 +16,7 @@ public:
     audio_display_widget(widget* parent) : widget(parent) {}
 
 public:
-    virtual void render() override;
+    virtual void render_implementation() override;
 
 private:
     bool has_cache();

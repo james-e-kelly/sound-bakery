@@ -4,8 +4,6 @@
 #include "sound_bakery/core/database/database_object.h"
 #include "sound_bakery/system.h"
 
-#include "yaml-cpp/yaml.h"
-
 namespace sbk::engine
 {
     class sound_container;
@@ -21,7 +19,7 @@ struct selection
     {
         if (m_selected)
         {
-            return m_selected->getType();
+            return m_selected->get_object_type();
         }
         return std::nullopt;
     }
@@ -39,6 +37,8 @@ public:
 
 public:
     void init_project(const std::filesystem::path& project_file);
+    auto create_project(const std::filesystem::directory_entry& projectDirectory,
+                        const std::string& projectName) -> void;
 
     virtual void tick(double deltaTime) override;
     virtual void exit() override;
@@ -49,5 +49,12 @@ public:
     sbk::engine::sound_container* get_preview_sound_container() const;
 
 private:
+    void setup_project();
+
     selection m_selection;
+
+    std::shared_ptr<gluten::widget> m_projectExplorerWidget;
+    std::shared_ptr<gluten::widget> m_playerWidget;
+    std::shared_ptr<gluten::widget> m_detailsWidget;
+    std::shared_ptr<gluten::widget> m_audioMeterWidget;
 };

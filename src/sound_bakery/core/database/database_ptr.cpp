@@ -6,16 +6,16 @@
 
 using namespace sbk::core;
 
-std::weak_ptr<database_object> sbk::core::findObject(sbk_id id)
+std::weak_ptr<database_object> sbk::core::find_object(sbk_id id)
 {
-    if (database* const objectOwner = sbk::engine::system::get())
+    if (const database* const objectOwner = sbk::engine::system::get())
     {
         return objectOwner->try_find(id);
     }
     return {};
 }
 
-bool sbk::core::objectIdIsChildOfParent(sbk_id childToCheck, sbk_id parent)
+bool sbk::core::object_id_is_child_of_parent(sbk_id childToCheck, sbk_id parent)
 {
     sbk::core::database_ptr<database_object> parentPtr(parent);
 
@@ -30,7 +30,7 @@ bool sbk::core::objectIdIsChildOfParent(sbk_id childToCheck, sbk_id parent)
     return false;
 }
 
-sbk_id sbk::core::getParentIdFromId(sbk_id id)
+sbk_id sbk::core::get_parent_id_from_id(sbk_id id)
 {
     if (id != 0)
     {

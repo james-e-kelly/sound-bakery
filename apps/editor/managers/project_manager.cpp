@@ -1,11 +1,10 @@
 #include "project_manager.h"
 
-#include "App/App.h"
+#include "app/app.h"
 #include "gluten/subsystems/widget_subsystem.h"
 #include "sound_bakery/core/database/database.h"
 #include "sound_bakery/core/object/object_tracker.h"
 #include "sound_bakery/editor/project/project.h"
-#include "sound_bakery/factory.h"
 #include "sound_bakery/node/container/sound_container.h"
 #include "sound_bakery/serialization/serializer.h"
 #include "sound_bakery/sound/sound.h"
@@ -19,12 +18,35 @@
 
 void project_manager::init_project(const std::filesystem::path& project_file)
 {
-    sbk::engine::system::open_project(project_file);
+    if (sbk::engine::system::open_project(project_file) == MA_SUCCESS)
+    {
+        setup_project();
+    }
+}
 
-    get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class_to_root<project_explorer_widget>();
-    get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class_to_root<player_widget>();
-    get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class_to_root<details_widget>();
-    get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class_to_root<audio_meter_widget>();
+auto project_manager::create_project(const std::filesystem::directory_entry& projectDirectory,
+                                     const std::string& projectName) -> void
+{
+    if (sbk::engine::system::create_project(projectDirectory, projectName) == MA_SUCCESS)
+    {
+        setup_project();
+    }
+}
+
+void project_manager::setup_project()
+{
+    m_projectExplorerWidget = get_app()
+        ->get_subsystem_by_class<gluten::widget_subsystem>()
+        ->add_widget_class_to_root<project_explorer_widget>(false);
+    m_playerWidget = get_app()
+        ->get_subsystem_by_class<gluten::widget_subsystem>()
+        ->add_widget_class_to_root<player_widget>(false);
+    m_detailsWidget = get_app()
+        ->get_subsystem_by_class<gluten::widget_subsystem>()
+        ->add_widget_class_to_root<details_widget>(false);
+    m_audioMeterWidget = get_app()
+        ->get_subsystem_by_class<gluten::widget_subsystem>()
+        ->add_widget_class_to_root<audio_meter_widget>(false);
 
     get_app()->set_application_display_title(
         fmt::format("{} - {} {}", sbk::engine::system::get_project()->get_config().project_name(), SBK_PRODUCT_NAME,

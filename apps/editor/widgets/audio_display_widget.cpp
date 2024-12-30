@@ -106,13 +106,13 @@ int littleEndian24Bit(const void* bytes)
 //    return result / maxValue;
 //}
 
-void audio_display_widget::render()
+void audio_display_widget::render_implementation()
 {
-    if (project_manager* manager = get_app()->get_manager_by_class<project_manager>())
+    if (std::shared_ptr<project_manager> manager = get_app()->get_manager_by_class<project_manager>())
     {
         if (sbk::core::object* selected = manager->get_selection().get_selected())
         {
-            if (selected->getType() == sbk::engine::sound::type())
+            if (selected->get_object_type() == sbk::engine::sound::type())
             {
                 static float scale = 1.0f;
                 ImGui::SliderFloat("Scale", &scale, 0.01f, 2.0f);

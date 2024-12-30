@@ -10,8 +10,8 @@ class audio_meter_widget : public gluten::widget
 public:
     WIDGET_CONSTRUCT(audio_meter_widget)
 
-    void start() override;
-    void render() override;
+    void start_implementation() override;
+    void render_implementation() override;
 
 private:
     sc_dsp* m_meterDsp = nullptr;

@@ -18,7 +18,7 @@ namespace sbk::engine
 
     /**
      * @brief Generic node that can have a get_parent and own children.
-    */
+     */
     class SB_CLASS node_base : public sbk::core::database_object
     {
     public:
@@ -32,12 +32,13 @@ namespace sbk::engine
 
         SB_NODE_STATUS getNodeStatus() const noexcept;
 
-        virtual bool can_add_children() const;  //< Can any children be added to this node?
-        virtual bool can_add_child_type(const rttr::type& childType) const; //< Can this type be added to the child?
+        virtual bool can_add_children() const;                               //< Can any children be added to this node?
+        virtual bool can_add_child_type(const rttr::type& childType) const;  //< Can this type be added to the child?
         bool can_add_child(const sbk::core::database_ptr<node_base>& child) const;  //< Can this runtime child be added?
 
-        virtual bool can_add_parent() const;    //< Can any parents be added to this node?
-        virtual bool can_add_parent_type(const rttr::type& parentType) const;   //< Can this type be added as a get_parent?
+        virtual bool can_add_parent() const;  //< Can any parents be added to this node?
+        virtual bool can_add_parent_type(const rttr::type& parentType) const;  //< Can this type be added as a
+                                                                               // get_parent?
 
         void addChild(const sbk::core::database_ptr<node_base>& child);
         void removeChild(const sbk::core::database_ptr<node_base>& child);
@@ -75,7 +76,8 @@ namespace sbk::engine
          */
         virtual void gatherParameters(global_parameter_list& parameters);
 
-        void addEffect(sc_dsp_type type);
+        void add_effect(sc_dsp_type type);
+        auto add_effect_clap(clap_plugin_factory_t* clapFactory) -> void;
 
     protected:
         /**

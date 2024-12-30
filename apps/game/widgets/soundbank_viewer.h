@@ -10,9 +10,10 @@ class soundbank_viewer_widget : public gluten::widget
     WIDGET_CONSTRUCT(soundbank_viewer_widget)
 
 public:
-    void start() override;
-    void render() override;
-    void end() override;
+    void start_implementation() override;
+    void tick_implementation(double deltaTime) override;
+    void render_implementation() override;
+    void end_implementation() override;
 
     void set_soundbank_to_view(const std::filesystem::path& soundbankFilePath);
 

@@ -78,6 +78,12 @@ extern "C"
         sc_meter meter;
     } sc_meter_node;
 
+    typedef struct sc_clap_node
+    {
+        ma_node_base baseNode;
+        clap_plugin_t* clapPlugin;
+    } sc_clap_node;
+
 #ifdef __cplusplus
 }
 #endif

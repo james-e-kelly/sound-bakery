@@ -4,7 +4,6 @@
 #include "sound_bakery/core/database/database.h"
 #include "sound_bakery/core/database/database_ptr.h"
 #include "sound_bakery/core/object/object_tracker.h"
-#include "sound_bakery/util/fmod_pointers.h"
 #include "spdlog/sinks/basic_file_sink.h"
 
 namespace sbk
@@ -21,59 +20,78 @@ namespace sbk
 
     namespace engine
     {
-        namespace Profiling
+        namespace profiling
         {
-            class VoiceTracker;
+            class voice_tracker;
         }
 
         class bus;
         class game_object;
 
         /**
-         * @brief Manager of the whole sound Bakery.
-         * 
-         * The system tracks all objects created during sound Bakery's lifetime. 
-         * 
+         * @brief Manager of the whole Sound Bakery.
+         *
+         * The system tracks all objects created during Sound Bakery's lifetime.
+         *
          * It owns all loaded Soundbanks, listener game object, and busses.
          */
         class SB_CLASS system final : public sc_system,
                                       public sbk::core::object_owner,
                                       public sbk::core::object_tracker,
                                       public sbk::core::database,
-                                      public concurrencpp::runtime
+                                      public concurrencpp::runtime,
+                                      public boost::noncopyable
         {
             REGISTER_REFLECTION(system)
-            NOT_COPYABLE(system)
+            LEAK_DETECTOR(system)
+
+        public:
+            enum class operating_mode
+            {
+                unkown, //< Unkown/unset
+                editor, //< We have a project
+                runtime //< We are loading soundbanks
+            };
 
         public:
             system();
             ~system();
 
-            static system* get();
+            static auto create() -> system*;
+            static auto init(const sb_system_config& config) -> sc_result;
+            static auto update() -> sc_result;
+            static auto destroy() -> void;
 
-            static system* create();
-            static void destroy();
-
-            static sc_result init();
-            static sc_result update();
+            [[nodiscard]] static auto get() -> system*;
+            [[nodiscard]] static auto get_operating_mode() -> operating_mode;
+            [[nodiscard]] static auto get_project() -> sbk::editor::project*;
+            [[nodiscard]] static auto get_voice_tracker() -> sbk::engine::profiling::voice_tracker*;
+            [[nodiscard]] auto get_game_thread_executer() const -> std::shared_ptr<concurrencpp::manual_executor>;
+            [[nodiscard]] auto get_listener_game_object() const -> sbk::engine::game_object*;
+            [[nodiscard]] auto get_master_bus() const -> sbk::engine::bus*;
+            [[nodiscard]] auto get_current_object_owner() -> sbk::core::object_owner*;  //< Either project for editor or system for runtime
 
             /**
-             * @brief Returns the current object owner. Either a project or soundbank runtime.
+             * @brief Creates an instance of Sound Bakery and opens the project.
              */
-            sbk::core::object_owner* current_object_owner();
+            static auto open_project(const std::filesystem::path& project_file) -> sc_result;
 
             /**
-             * @brief Creates an instance of sound Bakery and opens the project.
+             * @brief Creates a project and initializes Sound Bakery.
              */
-            static sc_result open_project(const std::filesystem::path& project_file);
-            static sbk::editor::project* get_project();
+            static auto create_project(const std::filesystem::directory_entry& projectDirectory,
+                                       const std::string& projectName) -> sc_result;
 
-            std::shared_ptr<concurrencpp::manual_executor> game_thread_executer() const { return m_gameThreadExecuter; }
+            static auto load_soundbank(const std::filesystem::path& file) -> sb_result;
 
-            [[nodiscard]] sbk::engine::game_object* get_listener_game_object() const { return m_listenerGameObject.get(); }
-            [[nodiscard]] sbk::engine::bus* get_master_bus() const { return m_masterBus.get(); }
+            auto set_master_bus(const std::shared_ptr<sbk::engine::bus>& masterBus) -> void;
 
-            void set_master_bus(const std::shared_ptr<sbk::engine::bus>& masterBus);
+            friend class boost::serialization::access;
+
+            template <class archive_class>
+            void serialize(archive_class& archive, const unsigned int version)
+            {
+            }
 
         private:
             bool m_registeredReflection = false;
@@ -81,7 +99,7 @@ namespace sbk
             std::shared_ptr<sbk::engine::game_object> m_listenerGameObject;
             std::shared_ptr<sbk::engine::bus> m_masterBus;
             std::unique_ptr<sbk::editor::project> m_project;
-            std::unique_ptr<Profiling::VoiceTracker> m_voiceTracker;
+            std::unique_ptr<profiling::voice_tracker> m_voiceTracker;
             std::shared_ptr<concurrencpp::manual_executor> m_gameThreadExecuter;
             std::shared_ptr<spdlog::logger> m_logger;
         };

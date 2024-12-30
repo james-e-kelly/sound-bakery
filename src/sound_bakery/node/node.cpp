@@ -27,10 +27,17 @@ void sbk::engine::node::gatherParameters(global_parameter_list& parameters)
     }
 }
 
-void node::addEffect(sc_dsp_type type)
+void node::add_effect(sc_dsp_type type)
 {
-    std::shared_ptr<effect_description> effect = owner()->create_database_object<effect_description>();
+    std::shared_ptr<effect_description> effect = get_owner()->create_database_object<effect_description>();
     effect->set_dsp_type(type);
+    m_effectDescriptions.emplace_back(effect);
+}
+
+auto node::add_effect_clap(clap_plugin_factory_t* clapFactory) -> void
+{
+    std::shared_ptr<effect_description> effect = get_owner()->create_database_object<effect_description>();
+    effect->set_dsp_clap(clapFactory);
     m_effectDescriptions.emplace_back(effect);
 }
 
@@ -45,7 +52,10 @@ node_base::~node_base()
     }
 }
 
-void sbk::engine::node_base::set_parent_node(const sbk::core::database_ptr<node_base>& parent) { m_parentNode = parent; }
+void sbk::engine::node_base::set_parent_node(const sbk::core::database_ptr<node_base>& parent)
+{
+    m_parentNode = parent;
+}
 
 void sbk::engine::node_base::set_output_bus(const sbk::core::database_ptr<node_base>& bus) { m_outputBus = bus; }
 
@@ -53,11 +63,11 @@ SB_NODE_STATUS sbk::engine::node_base::getNodeStatus() const noexcept
 {
     SB_NODE_STATUS status = SB_NODE_NULL;
 
-    if (m_parentNode.hasId())
+    if (m_parentNode.has_id())
     {
         status = SB_NODE_MIDDLE;
     }
-    else if (m_outputBus.hasId())
+    else if (m_outputBus.has_id())
     {
         status = SB_NODE_TOP;
     }
@@ -65,14 +75,11 @@ SB_NODE_STATUS sbk::engine::node_base::getNodeStatus() const noexcept
     return status;
 }
 
-node_base* sbk::engine::node_base::get_parent() const { return m_parentNode.lookupRaw(); }
+node_base* sbk::engine::node_base::get_parent() const { return m_parentNode.lookup_raw(); }
 
-node_base* sbk::engine::node_base::get_output_bus() const { return m_outputBus.lookupRaw(); }
+node_base* sbk::engine::node_base::get_output_bus() const { return m_outputBus.lookup_raw(); }
 
-bool sbk::engine::node_base::can_add_children() const
-{ 
-    return true; 
-}
+bool sbk::engine::node_base::can_add_children() const { return true; }
 
 bool sbk::engine::node_base::can_add_child_type(const rttr::type& childType) const
 {
@@ -83,8 +90,8 @@ bool sbk::engine::node_base::can_add_child(const sbk::core::database_ptr<node_ba
 {
     if (child.lookup())
     {
-        const bool canAddChildren = can_add_children();
-        const bool canAddType     = can_add_child_type(child->get_type());
+        const bool canAddChildren         = can_add_children();
+        const bool canAddType             = can_add_child_type(child->get_type());
         const bool childIsNotAlreadyChild = !m_childNodes.contains(child);
         const bool childIsNotSelf         = child.id() != get_database_id();
 
@@ -93,10 +100,7 @@ bool sbk::engine::node_base::can_add_child(const sbk::core::database_ptr<node_ba
     return false;
 }
 
-bool sbk::engine::node_base::can_add_parent() const
-{ 
-    return true; 
-}
+bool sbk::engine::node_base::can_add_parent() const { return true; }
 
 bool sbk::engine::node_base::can_add_parent_type(const rttr::type& parentType) const
 {

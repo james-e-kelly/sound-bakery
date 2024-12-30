@@ -11,21 +11,21 @@ namespace sbk::core
     class SB_CLASS database_object : public object
     {
         REGISTER_REFLECTION(database_object, object)
+        LEAK_DETECTOR(database_object)
 
     public:
-        sbk_id get_database_id() const;
-        void set_database_id(sbk_id id);
+        [[nodiscard]] auto get_database_id() const -> sbk_id;
+        [[nodiscard]] auto get_database_name() const -> std::string_view;
+        [[nodiscard]] auto get_editor_hidden() const -> bool;
 
-        std::string_view get_database_name() const;
-        void set_database_name(std::string_view name);
-
-        bool get_editor_hidden() const { return editorHidden; }
-        void set_editor_hidden(bool hidden) { editorHidden = hidden; }
+        auto set_database_id(sbk_id id) -> void;
+        auto set_database_name(std::string_view name) -> void;
+        auto set_editor_hidden(bool hidden) -> void;
 
         operator sbk_id() const { return m_objectID; }
 
-        [[nodiscard]] MulticastDelegate<sbk_id, sbk_id>& get_on_update_id();
-        [[nodiscard]] MulticastDelegate<std::string_view, std::string_view>& get_on_update_name();
+        [[nodiscard]] auto get_on_update_id() -> MulticastDelegate<sbk_id, sbk_id>&;
+        [[nodiscard]] auto get_on_update_name() -> MulticastDelegate<std::string_view, std::string_view>&;
 
     private:
         MulticastDelegate<sbk_id, sbk_id> m_onUpdateID;

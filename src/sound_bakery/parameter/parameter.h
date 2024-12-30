@@ -119,9 +119,9 @@ namespace sbk::engine
 
     /**
      * @brief Holds discrete named integer values.
-     * 
+     *
      * Each named_parameter_value is a database object, therefore holding a unique ID.
-     * 
+     *
      * The named_parameter stores the unique id as its parameter value.
      */
     class SB_CLASS named_parameter : public parameter<sbk_id>
@@ -151,7 +151,8 @@ namespace sbk::engine
 
             if (!name.empty())
             {
-                if (const std::shared_ptr<named_parameter_value> parameterValue = create_database_object<named_parameter_value>())
+                if (const std::shared_ptr<named_parameter_value> parameterValue =
+                        create_database_object<named_parameter_value>())
                 {
                     parameterValue->set_database_name(name);
                     parameterValue->parentParameter = this;
@@ -194,7 +195,7 @@ namespace sbk::engine
             }
             else
             {
-                assert(false);
+                BOOST_ASSERT(false);
             }
         }
 

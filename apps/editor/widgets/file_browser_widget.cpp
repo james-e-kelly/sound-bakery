@@ -227,16 +227,16 @@ void file_browser_widget::show_directory_browser_list() noexcept
     }
 }
 
-void file_browser_widget::start()
+void file_browser_widget::start_implementation()
 {
-    widget::start();
+    widget::start_implementation();
 
     m_currentDirectory = sbk::engine::system::get_project()->get_config().source_folder();
     m_topDir           = m_currentDirectory;
     m_selectedItemID   = std::numeric_limits<uint32_t>::max();
 }
 
-void file_browser_widget::render()
+void file_browser_widget::render_implementation()
 {
     show_nav_menu();
     ImGui::Separator();
@@ -258,7 +258,7 @@ void file_browser_widget::render()
     {
         m_selectedFile = m_selectedFileString;
 
-        if (project_manager* manager = get_app()->get_manager_by_class<project_manager>())
+        if (std::shared_ptr<project_manager> manager = get_app()->get_manager_by_class<project_manager>())
         {
             // manager->GetPreviewSoundContainer()->set_sound(m_selectedFile);
             // manager->GetSelection().SelectAudioFile(m_selectedFile);

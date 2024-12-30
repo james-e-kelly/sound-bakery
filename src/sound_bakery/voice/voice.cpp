@@ -7,6 +7,8 @@
 
 using namespace sbk::engine;
 
+DEFINE_REFLECTION(voice)
+
 void sbk::engine::voice::play_container(container* container)
 {
     destroy_all();
@@ -15,12 +17,12 @@ void sbk::engine::voice::play_container(container* container)
 
     const std::shared_ptr<node_instance> voiceInstance = create_runtime_object<node_instance>();
 
-    InitNodeInstance initData;
+    event_init initData;
     initData.refNode     = container->try_convert_object<node_base>();
-    initData.type        = sbk::engine::NodeInstanceType::MAIN;
-    initData.owningVoice = this;
+    initData.type        = sbk::engine::node_instance_type::main;
+    initData.m_owningGameObject = get_owning_game_object();
 
-    if (voiceInstance->init(initData))
+    if (voiceInstance->init(initData) == MA_SUCCESS)
     {
         voiceInstance->play();
     }
@@ -32,24 +34,20 @@ void sbk::engine::voice::play_container(container* container)
 
 void voice::update()
 {
-    if (!get_objects().empty())
+    for (auto iter = std::begin(get_objects()); iter != std::end(get_objects());)
     {
-        std::vector<std::shared_ptr<sbk::core::object>>::iterator iter;
-        for (iter = get_objects().begin(); iter != get_objects().end();)
+        if (sbk::engine::node_instance* const nodeInstance =
+                iter->get()->try_convert_object<sbk::engine::node_instance>())
         {
-            if (sbk::engine::node_instance* const nodeInstance =
-                    iter->get()->try_convert_object<sbk::engine::node_instance>())
-            {
-                nodeInstance->update();
+            nodeInstance->update();
 
-                if (!nodeInstance->isPlaying())
-                {
-                    iter = get_objects().erase(iter);
-                }
-                else
-                {
-                    ++iter;
-                }
+            if (nodeInstance->is_stopped())
+            {
+                iter = remove_object(*iter);
+            }
+            else
+            {
+                ++iter;
             }
         }
     }
@@ -82,7 +80,7 @@ bool sbk::engine::voice::playing_container(container* container) const noexcept
             return false;
         }
 
-        if (nodeInstance->getReferencingNode()->get_database_id() == id)
+        if (nodeInstance->get_referencing_node()->get_database_id() == id)
         {
             return true;
         }
@@ -91,7 +89,7 @@ bool sbk::engine::voice::playing_container(container* container) const noexcept
 
         while (parentNodeInstance)
         {
-            if (parentNodeInstance->getReferencingNode()->get_database_id() == id)
+            if (parentNodeInstance->get_referencing_node()->get_database_id() == id)
             {
                 return true;
             }
@@ -113,7 +111,8 @@ const std::vector<std::shared_ptr<node_instance>> sbk::engine::voice::get_voices
     {
         if (get_objects()[index])
         {
-            if (std::shared_ptr<sbk::engine::node_instance> nodeInstance = std::static_pointer_cast<sbk::engine::node_instance>(get_objects()[index]))
+            if (std::shared_ptr<sbk::engine::node_instance> nodeInstance =
+                    std::static_pointer_cast<sbk::engine::node_instance>(get_objects()[index]))
             {
                 nodeInstances.push_back(nodeInstance);
             }
@@ -123,12 +122,20 @@ const std::vector<std::shared_ptr<node_instance>> sbk::engine::voice::get_voices
     return nodeInstances;
 }
 
-std::size_t sbk::engine::voice::num_voices() const 
+std::size_t sbk::engine::voice::num_voices() const
 {
     // Just assuming all owned objects are node instances
-    return get_objects().size(); 
+    return get_objects().size();
 }
 
-node_instance* sbk::engine::voice::node_instance_at(std::size_t index) const { return get_objects()[index]->try_convert_object<sbk::engine::node_instance>(); }
+node_instance* sbk::engine::voice::node_instance_at(std::size_t index) const
+{
+    return get_objects()[index]->try_convert_object<sbk::engine::node_instance>();
+}
 
-bool sbk::engine::voice::is_playing() const { return !get_objects().empty(); }
+bool sbk::engine::voice::is_playing() const { return get_objects().size(); }
+
+game_object* sbk::engine::voice::get_owning_game_object() const
+{
+    return static_cast<sbk::core::object*>(get_owner())->try_convert_object<sbk::engine::game_object>();
+}

@@ -1,10 +1,10 @@
 #include "app.h"
 
+#include "IconsFontAwesome6.h"
+#include "IconsFontaudio.h"
 #include "subsystems/renderer_subsystem.h"
 #include "subsystems/widget_subsystem.h"
 
-#include "IconsFontAwesome6.h"
-#include "IconsFontaudio.h"
 #include <cmrc/cmrc.hpp>
 
 CMRC_DECLARE(sbk::Fonts);
@@ -30,7 +30,7 @@ int gluten::app::run(int argc, char** argv)
     add_subsystem_class<widget_subsystem>();
 
     // PreInit
-    for (std::unique_ptr<subsystem>& subsystem : m_subsystems)
+    for (std::shared_ptr<subsystem>& subsystem : m_subsystems)
     {
         if (int errorCode = subsystem->pre_init(argc, argv); errorCode != 0)
         {
@@ -39,7 +39,7 @@ int gluten::app::run(int argc, char** argv)
     }
 
     // Init
-    for (std::unique_ptr<subsystem>& subsystem : m_subsystems)
+    for (std::shared_ptr<subsystem>& subsystem : m_subsystems)
     {
         if (int errorCode = subsystem->init(); errorCode != 0)
         {
@@ -67,7 +67,7 @@ int gluten::app::run(int argc, char** argv)
         double deltaTime = timeDiff.count();
 
         // PreTick
-        for (std::unique_ptr<subsystem>& subsystem : m_subsystems)
+        for (std::shared_ptr<subsystem>& subsystem : m_subsystems)
         {
             subsystem->pre_tick(deltaTime);
         }
@@ -78,7 +78,7 @@ int gluten::app::run(int argc, char** argv)
         }
 
         // Tick
-        for (std::unique_ptr<subsystem>& subsystem : m_subsystems)
+        for (std::shared_ptr<subsystem>& subsystem : m_subsystems)
         {
             subsystem->tick(deltaTime);
         }
@@ -89,7 +89,7 @@ int gluten::app::run(int argc, char** argv)
         }
 
         // Rendering
-        for (std::unique_ptr<subsystem>& subsystem : m_subsystems)
+        for (std::shared_ptr<subsystem>& subsystem : m_subsystems)
         {
             subsystem->tick_rendering(deltaTime);
         }
@@ -100,7 +100,7 @@ int gluten::app::run(int argc, char** argv)
         manager->exit();
     }
 
-    for (std::unique_ptr<subsystem>& subsystem : m_subsystems)
+    for (std::shared_ptr<subsystem>& subsystem : m_subsystems)
     {
         subsystem->exit();
     }
@@ -141,18 +141,23 @@ void gluten::app::load_fonts()
 
     ImGuiIO& io = ImGui::GetIO();
 
-    m_fonts[fonts::regular] = io.Fonts->AddFontFromMemoryTTF((void*)mainFontFile.begin(), mainFontFile.size(), baseFontSize, &fontConfig);
+    m_fonts[fonts::regular] =
+        io.Fonts->AddFontFromMemoryTTF((void*)mainFontFile.begin(), mainFontFile.size(), baseFontSize, &fontConfig);
 
-    m_fonts[fonts::regular_audio_icons] = io.Fonts->AddFontFromMemoryTTF((void*)mainFontFile.begin(), mainFontFile.size(), baseFontSize, &fontConfig);
+    m_fonts[fonts::regular_audio_icons] =
+        io.Fonts->AddFontFromMemoryTTF((void*)mainFontFile.begin(), mainFontFile.size(), baseFontSize, &fontConfig);
     io.Fonts->AddFontFromMemoryTTF((void*)audioFontFile.begin(), audioFontFile.size(), iconFontSize * 1.3f,
                                    &iconFontsConfig, fontAudioIconRanges);
 
-    m_fonts[fonts::regular_font_awesome] = io.Fonts->AddFontFromMemoryTTF((void*)mainFontFile.begin(), mainFontFile.size(), baseFontSize, &fontConfig);
+    m_fonts[fonts::regular_font_awesome] =
+        io.Fonts->AddFontFromMemoryTTF((void*)mainFontFile.begin(), mainFontFile.size(), baseFontSize, &fontConfig);
     io.Fonts->AddFontFromMemoryTTF((void*)fontAwesomeFontFile.begin(), fontAwesomeFontFile.size(), iconFontSize,
                                    &iconFontsConfig, fontAwesomeIconRanges);
 
-    m_fonts[fonts::light] = io.Fonts->AddFontFromMemoryTTF((void*)lightFontFile.begin(), lightFontFile.size(), baseFontSize, &fontConfig);
-    m_fonts[fonts::title] = io.Fonts->AddFontFromMemoryTTF((void*)titleFontFile.begin(), titleFontFile.size(), baseFontSize * 1.2f, &fontConfig);
+    m_fonts[fonts::light] =
+        io.Fonts->AddFontFromMemoryTTF((void*)lightFontFile.begin(), lightFontFile.size(), baseFontSize, &fontConfig);
+    m_fonts[fonts::title] = io.Fonts->AddFontFromMemoryTTF((void*)titleFontFile.begin(), titleFontFile.size(),
+                                                           baseFontSize * 1.2f, &fontConfig);
 }
 
 void gluten::app::request_exit() { m_isRequestingExit = true; }

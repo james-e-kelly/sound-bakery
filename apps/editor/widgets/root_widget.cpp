@@ -1,5 +1,6 @@
 #include "root_widget.h"
 
+#include "gluten/utils/imgui_util_structures.h"
 #include "IconsFontAwesome6.h"
 #include "IconsFontaudio.h"
 #include "app/app.h"
@@ -10,8 +11,10 @@
 
 void root_widget::render_menu()
 {
-    static bool showMenu = false;
-    bool showAbout       = false;
+    static bool showMenu  = false;
+    static bool showAbout = false;
+
+    gluten::imgui::scoped_font fontAwesomeFont(get_app()->get_font(gluten::fonts::regular_font_awesome));
 
     {
         if (ImGui::BeginMenu("File"))
@@ -84,7 +87,7 @@ void root_widget::render_menu()
             }
 
             ImGui::Separator();
-            if (ImGui::MenuItem("About Atlas"))
+            if (ImGui::MenuItem("About " SBK_PRODUCT_NAME "..."))
             {
                 showAbout = true;
             }
@@ -95,35 +98,33 @@ void root_widget::render_menu()
 
     if (showAbout)
     {
-        ImGui::OpenPopup("About");
-    }
-
-    if (ImGui::BeginPopupModal("About", NULL, ImGuiWindowFlags_AlwaysAutoResize))
-    {
-        static std::string aboutText("Atlas is an open source audio middleware alternatie to Wwise and "
-                                     "FMOD.\nWritten by James Kelly.");
-
-        auto windowWidth = ImGui::GetWindowSize().x;
-        auto textWidth   = ImGui::CalcTextSize(aboutText.c_str()).x;
-
-        ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f);
-        ImGui::Text("%s", aboutText.c_str());
-
-        if (ImGui::Button("Close"))
-        {
-            ImGui::CloseCurrentPopup();
-        }
-
-        ImGui::EndPopup();
+        render_about_window(showAbout);
     }
 
     if (showMenu)
     {
-        //        ImGui::ShowUserGuide();
         ImGui::ShowDemoWindow();
-        //        ImGui::ShowAboutWindow();
-        //        ImGui::ShowDebugLogWindow();
     }
 
     gluten::root_widget::render_menu();
+}
+
+void root_widget::render_about_window(bool& showAbout)
+{
+    if (ImGui::Begin("About " SBK_PRODUCT_NAME, &showAbout, ImGuiWindowFlags_AlwaysAutoResize))
+    {
+        ImGui::Text("%s %s", SBK_PRODUCT_NAME, SBK_VERSION_STRING_FULL);
+
+        ImGui::TextLinkOpenURL("Homepage", "https://github.com/james-e-kelly/sound-bakery");
+        ImGui::SameLine();
+        ImGui::TextLinkOpenURL("Documentation", "https://soundbakery.jameskelly.audio");
+        ImGui::SameLine();
+        ImGui::TextLinkOpenURL("Releases", "https://github.com/james-e-kelly/sound-bakery/releases");
+
+        ImGui::Separator();
+        ImGui::Text(SBK_PRODUCT_DESCRIPTION);
+        ImGui::Text(SBK_PRODUCT_NAME " is licensed under the MIT License, see LICENSE for more information.");
+
+        ImGui::End();
+    }
 }

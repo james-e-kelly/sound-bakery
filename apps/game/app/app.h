@@ -12,5 +12,5 @@ public:
     void open_soundbank();
 
 private:
-    soundbank_viewer_widget* m_soundbankViewerWidget = nullptr;
+    std::shared_ptr<soundbank_viewer_widget> m_soundbankViewerWidget;
 };

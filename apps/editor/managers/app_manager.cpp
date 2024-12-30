@@ -5,18 +5,15 @@
 #include "imgui.h"
 #include "nfd.h"  // native file dialog
 #include "sound_bakery/editor/project/project.h"
-#include "widgets/splash_widget.h"
-
-#include "yaml-cpp/yaml.h"
 
 void app_manager::init(gluten::app* app)
 {
     app->set_application_display_title(SBK_PRODUCT_NAME " " SBK_VERSION_STRING);
 
-    splash_widget* splashWidget =
+    m_splashWidget =
         app->get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class<splash_widget>();
 
-    splashWidget->show_splash_screen();
+    m_splashWidget->show_splash_screen();
 }
 
 void app_manager::create_new_project()

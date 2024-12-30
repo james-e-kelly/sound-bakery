@@ -7,18 +7,17 @@
 #include "widgets/file_browser_widget.h"
 #include "widgets/project_nodes_widget.h"
 
-void project_explorer_widget::start()
+void project_explorer_widget::start_implementation()
 {
-    widget::start();
+    widget::start_implementation();
 
-    m_fileBrowserWidget  = add_child_widget<file_browser_widget>();
-    m_projectNodesWidget = add_child_widget<project_nodes_widget>();
+    m_fileBrowserWidget  = add_child_widget<file_browser_widget>(false);
+    m_projectNodesWidget = add_child_widget<project_nodes_widget>(false);
 }
 
-void project_explorer_widget::render()
+void project_explorer_widget::render_implementation()
 {
     gluten::imgui::scoped_font audioFont(get_app()->get_font(gluten::fonts::regular_audio_icons));
-
 
     if (ImGui::Begin("Project Explorer"))
     {

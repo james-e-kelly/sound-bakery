@@ -14,9 +14,9 @@
 
 #define FOURCC(a, b, c, d) ((ma_uint32)(((d) << 24) | ((c) << 16) | ((b) << 8) | (a)))
 
-#define SC_BANK_ID              (FOURCC('S', 'C', 'B', 'K'))
-#define SC_BANK_AUDIO_CHUNK_ID  (FOURCC('S', 'C', 'A', 'C'))
-#define SC_BANK_SUB_ID          (FOURCC('S', 'C', 'F', 'E'))
+#define SC_BANK_ID             (FOURCC('S', 'C', 'B', 'K'))
+#define SC_BANK_AUDIO_CHUNK_ID (FOURCC('S', 'C', 'A', 'C'))
+#define SC_BANK_SUB_ID         (FOURCC('S', 'C', 'F', 'E'))
 
 #ifdef __cplusplus
 extern "C"

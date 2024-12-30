@@ -1,65 +1,53 @@
 #include "soundbank_viewer.h"
 
+#include "sound_bakery/event/event.h"
+#include "sound_bakery/gameobject/gameobject.h"
 #include "sound_chef/sound_chef_bank.h"
 
 #include "imgui.h"
 
-void soundbank_viewer_widget::start() 
+void soundbank_viewer_widget::start_implementation()
 { 
+    sb_system_config config = sb_system_config_init_default();
+
     sbk::engine::system::create(); 
-    sbk::engine::system::init();
+    sbk::engine::system::init(config);
 }
 
-void soundbank_viewer_widget::render()
+void soundbank_viewer_widget::tick_implementation(double deltaTime)
 {
-    static sc_sound* sound = nullptr;
-    static sc_sound_instance* soundInstance = nullptr;
+    sbk::engine::system::update();
+}
 
+void soundbank_viewer_widget::render_implementation()
+{
     if (ImGui::Begin("Soundbank Viewer"))
     {
-        if (m_bank.riff != nullptr)
+        for (sbk::core::object* object : sbk::engine::system::get()->get_objects_of_category(SB_CATEGORY_EVENT))
         {
-            ImGui::TextUnformatted(std::to_string(m_bank.riff->id).c_str());
-            ImGui::TextUnformatted(std::to_string(m_bank.riff->size).c_str());
-            ImGui::TextUnformatted(std::to_string(m_bank.riff->numOfSubchunks).c_str());
-
-            ImGui::TextUnformatted("---");
-
-            if (m_bank.riff->subChunks != nullptr)
+            if (sbk::engine::event* event = object->try_convert_object<sbk::engine::event>())
             {
-                for (std::size_t subChunkIndex = 0; subChunkIndex < m_bank.riff->numOfSubchunks; ++subChunkIndex)
+                if (ImGui::Button(event->get_database_name().data()))
                 {
-                    ImGui::PushID(subChunkIndex);
+                    sbk::engine::system::get()->get_listener_game_object()->post_event(event);
+                }
+            }
+        }
 
-                    ImGui::TextUnformatted(std::to_string(m_bank.riff->subChunks[subChunkIndex]->id).c_str());
-                    ImGui::TextUnformatted(std::to_string(m_bank.riff->subChunks[subChunkIndex]->size).c_str());
-                    ImGui::TextUnformatted(m_bank.riff->subChunks[subChunkIndex]->name);
-
-                    if (ImGui::Button("Play"))
+        for (auto& typesToObjects : sbk::engine::system::get()->get_all_type_to_objects())
+        {
+            if (ImGui::CollapsingHeader(typesToObjects.first.get_name().data()))
+            {
+                for (auto& object : typesToObjects.second)
+                {
+                    if (const sbk::core::database_object* const databaseObject = object->try_convert_object<sbk::core::database_object>())
                     {
-                        if (soundInstance != nullptr)
-                        {
-                            sc_sound_instance_release(soundInstance);
-                            soundInstance = nullptr;
-                        }
-
-                        if (sound != nullptr)
-                        {
-                            sc_sound_release(sound);
-                            sound = nullptr;
-                        }
-
-                        sc_system_create_sound_memory(
-                            sbk::engine::system::get(), m_bank.riff->subChunks[subChunkIndex]->data,
-                            m_bank.riff->subChunks[subChunkIndex]->size - SC_BANK_FILE_NAME_BUFFER_SIZE,
-                            SC_SOUND_MODE_DEFAULT, &sound);
-
-                        sc_system_play_sound(sbk::engine::system::get(), sound, &soundInstance, NULL, MA_FALSE);
+                        ImGui::TextUnformatted(databaseObject->get_database_name().data());
                     }
-
-                    ImGui::TextUnformatted("--");
-
-                    ImGui::PopID();
+                    else
+                    {
+                        ImGui::TextUnformatted("No Name");
+                    }
                 }
             }
         }
@@ -68,21 +56,12 @@ void soundbank_viewer_widget::render()
     ImGui::End();
 }
 
-void soundbank_viewer_widget::end()
+void soundbank_viewer_widget::end_implementation() 
 {
-    sc_bank_uninit(&m_bank);
-
     sbk::engine::system::destroy();
 }
 
 void soundbank_viewer_widget::set_soundbank_to_view(const std::filesystem::path& soundbankFilePath)
 {
-    const sc_result initResult = sc_bank_init(&m_bank, soundbankFilePath.string().c_str(), MA_OPEN_MODE_READ);
-
-    if (initResult == MA_SUCCESS)
-    {
-        const sc_result readResult = sc_bank_read(&m_bank);
-        assert(readResult == MA_SUCCESS);
-        (void)readResult;
-    }
+    sbk::engine::system::load_soundbank(soundbankFilePath);
 }

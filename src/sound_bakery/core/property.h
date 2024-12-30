@@ -12,45 +12,28 @@ namespace sbk::core
     public:
         using property_changed_delegate = MulticastDelegate<T, T>;
 
-        property() : m_property(T()), m_min(0), m_max(1) {}
-
-        property(T value) : m_property(value), m_min(value), m_max(value + 1) {}
-
-        property(T value, T min, T max) : m_property(value), m_min(min), m_max(max)
+        property() : m_value(T()), m_min(0), m_max(1) {}
+        property(T value) : m_value(value), m_min(value), m_max(value + 1) {}
+        property(T value, T min, T max) : m_value(value), m_min(min), m_max(max)
         {
-            assert(value >= min);
-            assert(value <= max);
-            assert(min < max);
+            BOOST_ASSERT(value >= min);
+            BOOST_ASSERT(value <= max);
+            BOOST_ASSERT(min < max);
         }
 
-        /**
-         * @brief Copy constructor.
-         */
         property(const property& other)
-            : m_property(other.m_property), m_min(other.m_min), m_max(other.m_max), m_delegate(other.m_delegate)
+            : m_value(other.m_value), m_min(other.m_min), m_max(other.m_max), m_delegate(other.m_delegate)
         {
         }
 
-        /**
-         * @brief Move constructor.
-         * @param other
-         */
         property(property&& other) = default;
+        ~property()                = default;
 
-        ~property() = default;
-
-        /**
-         * @brief Assignment operator.
-         *
-         * Copys all values from other to this Property, including the delegate.
-         * @param other Property to copy from.
-         * @return
-         */
         property& operator=(const property& other)
         {
             if (this != &other)
             {
-                m_property = other.m_property;
+                m_value    = other.m_value;
                 m_min      = other.m_min;
                 m_max      = other.m_max;
                 m_delegate = other.m_delegate;
@@ -61,26 +44,28 @@ namespace sbk::core
 
         property& operator=(property&& other) = default;
 
-        void set(T value)
+        auto set(T value) -> bool
         {
-            if (value != m_property)
+            if (value != m_value)
             {
                 if (value >= m_min && value <= m_max)
                 {
-                    m_delegate.Broadcast(m_property, value);
-                    m_property = value;
+                    m_delegate.Broadcast(m_value, value);
+                    m_value = value;
+                    return true;
                 }
             }
+            return false;
         }
 
-        [[nodiscard]] T get() const { return m_property; }
-        property_changed_delegate& get_delegate() { return m_delegate; }
-        [[nodiscard]] T get_min() const { return m_min; }
-        [[nodiscard]] T get_max() const { return m_max; }
-        [[nodiscard]] std::pair<T, T> get_min_max_pair() const { return std::pair<T, T>(m_min, m_max); }
+        [[nodiscard]] auto get() const -> T { return m_value; }
+        [[nodiscard]] auto get_min() const -> T { return m_min; }
+        [[nodiscard]] auto get_max() const -> T { return m_max; }
+        [[nodiscard]] auto get_min_max_pair() const -> std::pair<T, T> { return std::pair<T, T>(m_min, m_max); }
+        [[nodiscard]] auto get_delegate() -> property_changed_delegate& { return m_delegate; }
 
     private:
-        T m_property;
+        T m_value;
         T m_min;
         T m_max;
         property_changed_delegate m_delegate;

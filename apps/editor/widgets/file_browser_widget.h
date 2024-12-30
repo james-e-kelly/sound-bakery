@@ -16,8 +16,8 @@ class file_browser_widget : public gluten::widget
     WIDGET_CONSTRUCT(file_browser_widget)
 
 public:
-    virtual void start() override;
-    virtual void render() override;
+    virtual void start_implementation() override;
+    virtual void render_implementation() override;
 
     const std::string& get_selected_filename() const { return m_selectedFileString; }
 

@@ -2,7 +2,7 @@
 
 #include "sound_bakery/util/type_helper.h"
 
-void sbk::core::database::add_object_to_database(const std::shared_ptr<database_object>& object)
+auto sbk::core::database::add_object_to_database(const std::shared_ptr<database_object>& object) -> void
 {
     if (!object)
     {
@@ -10,7 +10,7 @@ void sbk::core::database::add_object_to_database(const std::shared_ptr<database_
         return;
     }
 
-    sbk_id objectID              = object->get_database_id();
+    sbk_id objectID        = object->get_database_id();
     std::string objectName = std::string(object->get_database_name());
 
     if (objectID == SB_INVALID_ID)
@@ -21,7 +21,7 @@ void sbk::core::database::add_object_to_database(const std::shared_ptr<database_
 
     if (objectName.empty())
     {
-        objectName = create_new_name(object->get_type());
+        objectName           = create_new_name(object->get_type());
         object->m_objectName = objectName;
     }
 
@@ -46,7 +46,7 @@ void sbk::core::database::add_object_to_database(const std::shared_ptr<database_
     object->get_on_update_name().AddRaw(this, &sbk::core::database::update_name);
 }
 
-void sbk::core::database::remove_object_from_database(sbk_id objectID)
+auto sbk::core::database::remove_object_from_database(sbk_id objectID) -> void
 {
     if (objectID == SB_INVALID_ID)
     {
@@ -73,7 +73,7 @@ void sbk::core::database::remove_object_from_database(sbk_id objectID)
     }
 }
 
-std::weak_ptr<sbk::core::database_object> sbk::core::database::try_find(sbk_id objectID) const
+auto sbk::core::database::try_find(sbk_id objectID) const -> std::weak_ptr<sbk::core::database_object>
 {
     std::weak_ptr<sbk::core::database_object> result;
 
@@ -85,7 +85,7 @@ std::weak_ptr<sbk::core::database_object> sbk::core::database::try_find(sbk_id o
     return result;
 }
 
-std::weak_ptr<sbk::core::database_object> sbk::core::database::try_find(std::string_view name) const
+auto sbk::core::database::try_find(std::string_view name) const -> std::weak_ptr<sbk::core::database_object>
 {
     std::weak_ptr<sbk::core::database_object> result;
 
@@ -97,7 +97,7 @@ std::weak_ptr<sbk::core::database_object> sbk::core::database::try_find(std::str
     return result;
 }
 
-std::vector<std::weak_ptr<sbk::core::database_object>> sbk::core::database::get_all() const
+auto sbk::core::database::get_all() const -> std::vector<std::weak_ptr<sbk::core::database_object>>
 {
     std::vector<std::weak_ptr<sbk::core::database_object>> result;
     result.reserve(m_idToPointerMap.size());
@@ -110,13 +110,13 @@ std::vector<std::weak_ptr<sbk::core::database_object>> sbk::core::database::get_
     return result;
 }
 
-void sbk::core::database::clear_database() noexcept
+auto sbk::core::database::clear_database() noexcept -> void
 {
     m_idToPointerMap.clear();
     m_nameToIdMap.clear();
 }
 
-sbk_id sbk::core::database::create_new_id()
+auto sbk::core::database::create_new_id() -> sbk_id
 {
     static std::random_device s_randomDevice;
     static std::mt19937_64 s_engine(s_randomDevice());
@@ -125,16 +125,17 @@ sbk_id sbk::core::database::create_new_id()
     return s_uniformDistribution(s_engine);
 }
 
-std::string sbk::core::database::create_new_name(const rttr::type& type)
+auto sbk::core::database::create_new_name(const rttr::type& type) -> std::string
 {
     static std::atomic<int> serialNumberGenerator = 0;
 
-    const std::string typeName = type.is_valid() ? sbk::util::type_helper::get_display_name_from_type(type).data() : "Object";
+    const std::string typeName =
+        type.is_valid() ? sbk::util::type_helper::get_display_name_from_type(type).data() : "Object";
 
     return fmt::format("{} {}", typeName, serialNumberGenerator.fetch_add(1));
 }
 
-void sbk::core::database::update_id(sbk_id oldID, sbk_id newID)
+auto sbk::core::database::update_id(sbk_id oldID, sbk_id newID) -> void
 {
     if (oldID == SB_INVALID_ID)
     {
@@ -157,7 +158,7 @@ void sbk::core::database::update_id(sbk_id oldID, sbk_id newID)
     }
 }
 
-void sbk::core::database::update_name(std::string_view oldName, std::string_view newName)
+auto sbk::core::database::update_name(std::string_view oldName, std::string_view newName) -> void
 {
     if (oldName.empty())
     {
@@ -178,7 +179,7 @@ void sbk::core::database::update_name(std::string_view oldName, std::string_view
     }
 }
 
-void sbk::core::database::on_object_destroyed(object* object)
+auto sbk::core::database::on_object_destroyed(object* object) -> void
 {
     if (object != nullptr)
     {

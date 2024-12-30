@@ -2,7 +2,7 @@
 
 include(FetchContent)
 
-    # Resource Embedding
+# Resource Embedding
 FetchContent_Declare(
   cmrc
   GIT_REPOSITORY https://github.com/vector-of-bool/cmrc.git
@@ -10,15 +10,17 @@ FetchContent_Declare(
   GIT_SHALLOW    TRUE
   GIT_PROGRESS TRUE
   OVERRIDE_FIND_PACKAGE
+  EXCLUDE_FROM_ALL 
 )
 
-    # Using TheCherno version for custom titlebar on Windows
+# Using TheCherno version for custom titlebar on Windows
 FetchContent_Declare(
   glfw
   GIT_REPOSITORY https://github.com/TheCherno/glfw.git
   GIT_TAG        master
   GIT_SHALLOW    TRUE
   OVERRIDE_FIND_PACKAGE
+  EXCLUDE_FROM_ALL 
 )
 
 FetchContent_Declare(
@@ -27,6 +29,7 @@ FetchContent_Declare(
   GIT_TAG        docking
   GIT_SHALLOW    TRUE
   OVERRIDE_FIND_PACKAGE
+  EXCLUDE_FROM_ALL 
 )
 
 FetchContent_Declare(
@@ -35,6 +38,7 @@ FetchContent_Declare(
     GIT_TAG master
     GIT_SHALLOW TRUE
     OVERRIDE_FIND_PACKAGE
+    EXCLUDE_FROM_ALL 
 )
 
 FetchContent_Declare(
@@ -43,6 +47,7 @@ FetchContent_Declare(
   GIT_TAG        67345b80ebb429ecc2aeda94c478b3bcc5f7888e
   GIT_SHALLOW    TRUE
   OVERRIDE_FIND_PACKAGE
+  EXCLUDE_FROM_ALL 
 )
 
 FetchContent_Declare(
@@ -51,6 +56,7 @@ FetchContent_Declare(
   GIT_TAG        main
   GIT_SHALLOW    TRUE
   OVERRIDE_FIND_PACKAGE
+  EXCLUDE_FROM_ALL
 )
 
 # Need fmt library for better cross compiler support
@@ -70,6 +76,7 @@ FetchContent_Declare(
   GIT_SHALLOW    TRUE
   GIT_PROGRESS TRUE
   OVERRIDE_FIND_PACKAGE
+  EXCLUDE_FROM_ALL 
 )
 
 FetchContent_Declare(
@@ -79,6 +86,7 @@ FetchContent_Declare(
   GIT_SHALLOW    TRUE
   GIT_PROGRESS TRUE
   OVERRIDE_FIND_PACKAGE
+  EXCLUDE_FROM_ALL 
 )
 
 FetchContent_Declare(
@@ -88,6 +96,7 @@ FetchContent_Declare(
   GIT_SHALLOW    TRUE
   GIT_PROGRESS TRUE
   OVERRIDE_FIND_PACKAGE
+  EXCLUDE_FROM_ALL 
 )
 
 
@@ -98,24 +107,17 @@ FetchContent_Declare(
   GIT_SHALLOW    TRUE
   GIT_PROGRESS TRUE
   OVERRIDE_FIND_PACKAGE
-)
-
-FetchContent_Declare(
-  yaml
-  GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
-  GIT_TAG        0.8.0
-  GIT_SHALLOW    TRUE
-  GIT_PROGRESS TRUE
-  OVERRIDE_FIND_PACKAGE
+  EXCLUDE_FROM_ALL 
 )
 
 FetchContent_Declare(
   concurrencpp
-  GIT_REPOSITORY https://github.com/David-Haim/concurrencpp.git
-  GIT_TAG        v.0.1.7
+  GIT_REPOSITORY https://github.com/james-e-kelly/concurrencpp.git
+  GIT_TAG        master
   GIT_SHALLOW    TRUE
   GIT_PROGRESS TRUE
   OVERRIDE_FIND_PACKAGE
+  EXCLUDE_FROM_ALL 
 )
 
 FetchContent_Declare(
@@ -125,6 +127,7 @@ FetchContent_Declare(
   GIT_SHALLOW    TRUE
   GIT_PROGRESS TRUE
   OVERRIDE_FIND_PACKAGE
+  EXCLUDE_FROM_ALL 
 )
 
 FetchContent_Declare(
@@ -134,6 +137,7 @@ FetchContent_Declare(
   GIT_SHALLOW    TRUE
   GIT_PROGRESS TRUE
   OVERRIDE_FIND_PACKAGE
+  EXCLUDE_FROM_ALL 
 )
 
 FetchContent_Declare(
@@ -143,6 +147,7 @@ FetchContent_Declare(
   GIT_SHALLOW    TRUE
   GIT_PROGRESS TRUE
   OVERRIDE_FIND_PACKAGE
+  EXCLUDE_FROM_ALL 
 )
 
 FetchContent_Declare(
@@ -152,6 +157,7 @@ FetchContent_Declare(
   GIT_SHALLOW    TRUE
   GIT_PROGRESS TRUE
   OVERRIDE_FIND_PACKAGE
+  EXCLUDE_FROM_ALL 
 )
 
 FetchContent_Declare(
@@ -161,6 +167,7 @@ FetchContent_Declare(
   GIT_SHALLOW    TRUE
   GIT_PROGRESS TRUE
   OVERRIDE_FIND_PACKAGE
+  EXCLUDE_FROM_ALL 
 )
 
 FetchContent_Declare(
@@ -170,4 +177,67 @@ FetchContent_Declare(
   GIT_SHALLOW    TRUE
   GIT_PROGRESS TRUE
   OVERRIDE_FIND_PACKAGE
+  EXCLUDE_FROM_ALL 
+)
+
+FetchContent_Declare(
+  doctest
+  GIT_REPOSITORY https://github.com/doctest/doctest.git
+  GIT_TAG        v2.4.11
+  GIT_SHALLOW    TRUE
+  GIT_PROGRESS TRUE
+  OVERRIDE_FIND_PACKAGE
+  EXCLUDE_FROM_ALL 
+)
+
+FetchContent_Declare(
+  bytesizelib
+  GIT_REPOSITORY https://github.com/eudoxos/bytesize.git
+  GIT_TAG        master
+  GIT_SHALLOW    TRUE
+  GIT_PROGRESS TRUE
+  OVERRIDE_FIND_PACKAGE
+  EXCLUDE_FROM_ALL 
+)
+
+FetchContent_Declare(
+  clap
+  GIT_REPOSITORY https://github.com/free-audio/clap.git
+  GIT_TAG 1.2.2
+  GIT_SHALLOW TRUE
+  GIT_PROGRESS TRUE
+  OVERRIDE_FIND_PACKAGE
+  EXCLUDE_FROM_ALL
+)
+
+FetchContent_Declare(
+  dirent
+  GIT_REPOSITORY https://github.com/tronkko/dirent.git
+  GIT_SHALLOW TRUE
+  GIT_PROGRESS TRUE
+  OVERRIDE_FIND_PACKAGE
+  EXCLUDE_FROM_ALL
+)
+
+FetchContent_Declare(
+  boost
+  URL https://github.com/boostorg/boost/releases/download/boost-1.87.0/boost-1.87.0-cmake.tar.xz
+  EXCLUDE_FROM_ALL
+)
+
+FetchContent_Declare(
+  boost-yaml
+  GIT_REPOSITORY https://github.com/james-e-kelly/yaml-archive.git
+  GIT_SHALLOW    TRUE
+  GIT_PROGRESS TRUE
+  EXCLUDE_FROM_ALL
+)
+
+FetchContent_Declare(
+  out_ptr
+  GIT_REPOSITORY https://github.com/soasis/out_ptr.git
+  GIT_TAG main
+  GIT_SHALLOW TRUE
+  GIT_PROGRESS TRUE
+  EXCLUDE_FROM_ALL
 )
