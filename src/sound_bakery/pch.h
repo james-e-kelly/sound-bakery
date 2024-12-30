@@ -30,6 +30,8 @@
 #include <variant>
 #include <vector>
 
+#include "yaml-cpp/yaml.h"
+
 /**
  * @def Registers this type's get_parent classes (if any) and marks its private members visible to reflection.
  */
