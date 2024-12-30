@@ -1,21 +1,16 @@
 #include "menu_bar.h"
 
-#include "gluten/utils/imgui_util_structures.h"
 #include "gluten/theme/carbon_theme_g100.h"
+#include "gluten/utils/imgui_util_structures.h"
 
 namespace menu_bar_utils
 {
     constexpr const char* menubar_id = "##menubar";
 }
 
-gluten::menu_bar::menu_bar()
-    : element(anchor_preset::stretch_full)
-{}
+gluten::menu_bar::menu_bar() : element(anchor_preset::stretch_full) {}
 
-gluten::menu_bar::~menu_bar() 
-{ 
-    end_menu_bar(); 
-}
+gluten::menu_bar::~menu_bar() { end_menu_bar(); }
 
 auto gluten::menu_bar::render_element(const ImRect& elementBox) -> bool
 {
@@ -35,9 +30,9 @@ auto gluten::menu_bar::render_element(const ImRect& elementBox) -> bool
         window->DC.NavLayerCurrent  = ImGuiNavLayer_Menu;
         window->DC.MenuBarAppending = true;
 
-        const float height = elementBox.GetSize().y;
-        const float halfHeight = height / 2.0f;
-        const float textHeight = ImGui::GetTextLineHeight();
+        const float height         = elementBox.GetSize().y;
+        const float halfHeight     = height / 2.0f;
+        const float textHeight     = ImGui::GetTextLineHeight();
         const float textHalfHeight = textHeight / 2.0f;
 
         const float desiredY = elementBox.Min.y + halfHeight - textHalfHeight;
@@ -52,7 +47,7 @@ auto gluten::menu_bar::render_element(const ImRect& elementBox) -> bool
     return true;
 }
 
-void gluten::menu_bar::end_menu_bar() 
+void gluten::menu_bar::end_menu_bar()
 {
     if (m_hasEnded)
     {
@@ -92,9 +87,9 @@ void gluten::menu_bar::end_menu_bar()
                 IM_ASSERT(window->DC.NavLayersActiveMaskNext & (1 << layer));  // Sanity check
                 ImGui::FocusWindow(window);
                 ImGui::SetNavID(window->NavLastIds[layer], layer, 0, window->NavRectRel[layer]);
-                g.NavDisableHighlight =
-                    true;  // Hide highlight for the current frame so we don't see the intermediary selection.
-                g.NavDisableMouseHover = g.NavMousePosDirty = true;
+                g.NavCursorVisible =
+                    false;  // Hide highlight for the current frame so we don't see the intermediary selection.
+                g.NavHighlightItemUnderNav = g.NavMousePosDirty = true;
                 ImGui::NavMoveRequestForward(g.NavMoveDir, g.NavMoveClipDir, g.NavMoveFlags,
                                              g.NavMoveScrollFlags);  // Repeat
             }

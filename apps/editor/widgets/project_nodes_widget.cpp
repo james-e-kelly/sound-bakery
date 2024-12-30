@@ -1,8 +1,8 @@
 #include "project_nodes_widget.h"
 
 #include "app/app.h"
-#include "gluten/theme/theme.h"
 #include "gluten/theme/carbon_theme_g100.h"
+#include "gluten/theme/theme.h"
 #include "gluten/utils/imgui_util_functions.h"
 #include "gluten/utils/imgui_util_structures.h"
 #include "imgui.h"
@@ -12,7 +12,6 @@
 #include "sound_bakery/core/object/object_tracker.h"
 #include "sound_bakery/editor/editor_defines.h"
 #include "sound_bakery/editor/project/project.h"
-#include "sound_bakery/factory.h"
 #include "sound_bakery/node/bus/bus.h"
 #include "sound_bakery/node/container/sound_container.h"
 #include "sound_bakery/parameter/parameter.h"
@@ -49,8 +48,8 @@ void project_nodes_widget::render_page(const std::vector<SB_OBJECT_CATEGORY>& ca
 
             ImGui::SetNextItemOpen(true, ImGuiCond_Once);
 
-
-            if (ImGui::TreeNodeEx(categoryName.data(), ImGuiTreeNodeFlags_NavLeftJumpsBackHere | ImGuiTreeNodeFlags_SpanFullWidth))
+            if (ImGui::TreeNodeEx(categoryName.data(),
+                                  ImGuiTreeNodeFlags_NavLeftJumpsBackHere | ImGuiTreeNodeFlags_SpanFullWidth))
             {
                 if (ImGui::BeginPopupContextItem("TopNodeContext"))
                 {
@@ -79,7 +78,6 @@ void project_nodes_widget::render_category(SB_OBJECT_CATEGORY category)
     const std::unordered_set<sbk::core::object*> categoryObjects =
         sbk::engine::system::get()->get_objects_of_category(category);
 
-
     ImDrawList* draw_list = ImGui::GetWindowDrawList();
 
     float x1             = ImGui::GetCurrentWindow()->WorkRect.Min.x;
@@ -89,9 +87,9 @@ void project_nodes_widget::render_category(SB_OBJECT_CATEGORY category)
     float line_height    = ImGui::GetTextLineHeight() + item_spacing_y;
 
     float y0 = ImGui::GetCursorScreenPos().y + (float)(int)item_offset_y;
-   
+
     const auto pos = ImGui::GetCursorPos();
-    
+
     numNodesRendered = categoryObjects.size();
 
     ImGuiListClipper clipper;
@@ -100,8 +98,11 @@ void project_nodes_widget::render_category(SB_OBJECT_CATEGORY category)
     {
         for (int row_n = clipper.DisplayStart; row_n < clipper.DisplayEnd; ++row_n)
         {
-            ImU32 col = (row_n & 1) ? ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::background)
-                                    : gluten::theme::ColorWithMultipliedValue(ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::backgroundSelected), 0.22f);
+            ImU32 col =
+                (row_n & 1)
+                    ? ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::background)
+                    : gluten::theme::ColorWithMultipliedValue(
+                          ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::backgroundSelected), 0.22f);
             if ((col & IM_COL32_A_MASK) == 0)
                 continue;
             float y1 = y0 + (line_height * static_cast<float>(row_n));
@@ -115,7 +116,7 @@ void project_nodes_widget::render_category(SB_OBJECT_CATEGORY category)
     {
         if (object)
         {
-            const rttr::type type = object->getType();
+            const rttr::type type = object->get_object_type();
 
             sbk::engine::node_base* const nodeBase = object->try_convert_object<sbk::engine::node_base>();
 
@@ -146,10 +147,10 @@ void project_nodes_widget::render_single_node(rttr::type type, rttr::instance in
 
             handle_open_node(object);
 
-            ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_None |
-                                       ImGuiTreeNodeFlags_NavLeftJumpsBackHere | ImGuiTreeNodeFlags_SpanFullWidth;
+            ImGuiTreeNodeFlags flags =
+                ImGuiTreeNodeFlags_None | ImGuiTreeNodeFlags_NavLeftJumpsBackHere | ImGuiTreeNodeFlags_SpanFullWidth;
 
-            if (hasChildren || object->getType() == sbk::engine::named_parameter::type())
+            if (hasChildren || object->get_object_type() == sbk::engine::named_parameter::type())
             {
                 flags |= ImGuiTreeNodeFlags_OpenOnArrow;
             }
@@ -162,7 +163,7 @@ void project_nodes_widget::render_single_node(rttr::type type, rttr::instance in
 
             const bool opened = ImGui::TreeNodeEx(fmt::format("##{}", object->get_database_name()).c_str(), flags);
 
-            if (std::string_view payloadString = sbk::util::type_helper::getPayloadFromType(object->getType());
+            if (std::string_view payloadString = sbk::util::type_helper::getPayloadFromType(object->get_object_type());
                 payloadString.size())
             {
                 if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
@@ -237,8 +238,7 @@ void project_nodes_widget::render_single_node(rttr::type type, rttr::instance in
                 {
                     ImGui::Text(ICON_FAD_FILTER_BELL " %s", object->get_database_name().data());
 
-                    if (unsigned int playingCount =
-                            sbk::engine::Profiling::VoiceTracker::get()->getPlayingCountOfObject(
+                    if (unsigned int playingCount = sbk::engine::system::get_voice_tracker()->getPlayingCountOfObject(
                                 object->get_database_id()))
                     {
                         ImGui::SameLine();
@@ -325,7 +325,7 @@ bool project_nodes_widget::render_node_context_menu(rttr::type type, rttr::insta
             {
                 const SB_OBJECT_CATEGORY category = sbk::util::type_helper::getCategoryFromType(type);
 
-                if (object->getType().is_derived_from(sbk::engine::node_base::type()))
+                if (object->get_object_type().is_derived_from(sbk::engine::node_base::type()))
                 {
                     render_create_parent_or_child_menu(category, instance, node_creation_type::NewParent);
 
@@ -339,7 +339,7 @@ bool project_nodes_widget::render_node_context_menu(rttr::type type, rttr::insta
                     ImGui::Separator();
                 }
 
-                if (object->getType() == sbk::engine::named_parameter::type())
+                if (object->get_object_type() == sbk::engine::named_parameter::type())
                 {
                     if (ImGui::MenuItem("Create New Value"))
                     {

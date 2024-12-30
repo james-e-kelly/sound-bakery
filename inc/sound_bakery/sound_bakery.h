@@ -58,6 +58,9 @@ typedef enum SB_OBJECT_CATEGORY
 
 void SB_API SB_System_Test();
 
+sb_system_config SB_API sb_system_config_init_default();
+sb_system_config SB_API sb_system_config_init(const char* pluginPath);
+
 #ifdef __cplusplus
 }
 #endif

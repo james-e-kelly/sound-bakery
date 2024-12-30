@@ -5,6 +5,9 @@
 
 namespace gluten
 {
+    /**
+     * @brief Owns widgets and the root widget for all the UI.
+     */
     class widget_subsystem : public subsystem
     {
     public:
@@ -15,26 +18,30 @@ namespace gluten
         virtual void exit() override;
 
         void set_root_widget(widget* rootWidget);
-        widget* get_root_widget() const { return m_rootWidget; }
+        widget* get_root_widget() const { return m_rootWidget.get(); }
 
     public:
         template <class T>
-        T* add_widget_class()
+        [[nodiscard]] std::shared_ptr<T> add_widget_class()
         {
-            m_widgets.push_back(std::make_unique<T>(this));
-            return dynamic_cast<T*>(m_widgets.back().get());
+            std::shared_ptr<T> ptr = std::make_shared<T>(this);
+            m_widgets.push_back(ptr);
+            return ptr;
         }
 
+        /**
+         * @brief Add a new widget to the root and decide whether the root widget owns the widget or the caller.
+         */
         template <class T>
-        T* add_widget_class_to_root()
+        [[nodiscard]] std::shared_ptr<T> add_widget_class_to_root(bool rootOwnsChild)
         {
             assert(m_rootWidget);
 
-            return m_rootWidget->add_child_widget<T>();
+            return m_rootWidget->add_child_widget<T>(rootOwnsChild);
         }
 
     private:
-        std::vector<std::unique_ptr<widget>> m_widgets;
-        widget* m_rootWidget = nullptr;
+        std::vector<std::weak_ptr<widget>> m_widgets;
+        std::shared_ptr<widget> m_rootWidget;
     };
 }  // namespace gluten

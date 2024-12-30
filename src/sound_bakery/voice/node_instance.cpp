@@ -1,5 +1,6 @@
 #include "node_instance.h"
 
+#include "sound_bakery/gameobject/gameobject.h"
 #include "sound_bakery/maths/easing.h"
 #include "sound_bakery/node/bus/bus.h"
 #include "sound_bakery/node/container/sequence_container.h"
@@ -8,11 +9,9 @@
 #include "sound_bakery/system.h"
 #include "sound_bakery/voice/voice.h"
 
-using namespace sbk::engine;
-
 DEFINE_REFLECTION(sbk::engine::node_instance)
 
-node_instance::~node_instance()
+sbk::engine::node_instance_fsm::~node_instance_fsm()
 {
     if (m_referencingNode != nullptr)
     {
@@ -23,185 +22,256 @@ node_instance::~node_instance()
     }
 }
 
-bool sbk::engine::node_instance::init(const InitNodeInstance& initData)
+// ACTIONS //
+
+auto sbk::engine::node_instance_fsm::action_init(const event_init& init) -> void
 {
-    if (m_state != NodeInstanceState::UNINIT)
+    m_referencingNode = std::static_pointer_cast<sbk::engine::node>(init.refNode.shared());
+    init_node_group(init);
+    init_callbacks();
+
+    switch (init.type)
     {
-        return true;
-    }
-
-    if (!initData.refNode.lookup())
-    {
-        return false;
-    }
-
-    bool converted = false;
-    m_referencingNode =
-        rttr::wrapper_mapper<sbk::core::database_ptr<node_base>>::convert<node>(initData.refNode, converted).shared();
-
-    if (!m_nodeGroup.initNodeGroup(*initData.refNode.raw()))
-    {
-        return false;
-    }
-
-    m_owningVoice = initData.owningVoice;
-
-    m_referencingNode->m_volume.get_delegate().AddRaw(this, &node_instance::setVolume);
-    m_referencingNode->m_pitch.get_delegate().AddRaw(this, &node_instance::setPitch);
-    m_referencingNode->m_lowpass.get_delegate().AddRaw(this, &node_instance::setLowpass);
-    m_referencingNode->m_highpass.get_delegate().AddRaw(this, &node_instance::setHighpass);
-
-    setVolume(0.0F, m_referencingNode->m_volume.get());
-    setPitch(0.0F, m_referencingNode->m_pitch.get());
-    setLowpass(0.0F, m_referencingNode->m_lowpass.get());
-    setHighpass(0.0F, m_referencingNode->m_highpass.get());
-
-    bool success = false;
-
-    switch (initData.type)
-    {
-        case NodeInstanceType::CHILD:
+        case node_instance_type::child:
         {
-            if (initData.refNode->getChildCount() == 0)
-            {
-                success = true;
-            }
-            else
-            {
-                success = m_children.createChildren(*initData.refNode.raw(), m_owningVoice, this, ++m_numTimesPlayed);
-            }
-
+            init_child();
             break;
         }
-        case NodeInstanceType::BUS:
+        case node_instance_type::bus:
         {
-            if (const bus* const bus = initData.refNode->try_convert_object<sbk::engine::bus>())
-            {
-                // Checks nullptr as master busses are technically busses without an output, even if they're not marked
-                // as masters
-                if (bus->isMasterBus() || bus->get_parent() == nullptr)
-                {
-                    success = true;
-                    break;
-                }
-            }
-
-            success = m_parent.createParent(*initData.refNode.raw(), m_owningVoice);
+            init_parent();
             break;
         }
-        case NodeInstanceType::MAIN:
+        case node_instance_type::main:
         {
-            success = m_parent.createParent(*initData.refNode.raw(), m_owningVoice);
-            success &= m_children.createChildren(*initData.refNode.raw(), m_owningVoice, this, ++m_numTimesPlayed);
+            init_parent();
+            init_child();
             break;
         }
     }
 
-    if (m_parent.parent)
+    if (m_parent)
     {
-        sc_node_group_set_parent(m_nodeGroup.nodeGroup.get(), m_parent.parent->getBus());
+        sc_node_group_set_parent(m_nodeGroup.nodeGroup.get(), m_parent->get_bus());
     }
-    else if (initData.parentForChildren)
+    else if (init.parentForChildren)
     {
-        sc_node_group_set_parent(m_nodeGroup.nodeGroup.get(), initData.parentForChildren->getBus());
+        sc_node_group_set_parent(m_nodeGroup.nodeGroup.get(), init.parentForChildren->get_bus());
     }
-    // else, should be connected to master bus by default
-
-    if (success)
-    {
-        m_state = NodeInstanceState::STOPPED;
-    }
-
-    return success;
 }
 
-bool node_instance::play()
+auto sbk::engine::node_instance_fsm::action_play(const event_play& play) -> void
 {
-    if (isPlaying())
+    if (m_referencingNode->get_object_type() == rttr::type::get<sound_container>())
     {
-        return true;
-    }
+        sbk::engine::sound_container* const soundContainer  = m_referencingNode->try_convert_object<sound_container>();
+        sbk::engine::sound* const engineSound               = soundContainer->get_sound();
+        sc_sound* const sound                               = engineSound != nullptr ? engineSound->get_sound() : nullptr;
 
-    if (m_referencingNode->getType() == rttr::type::get<sound_container>())
-    {
-        sound_container* soundContainer   = m_referencingNode->try_convert_object<sound_container>();
-        sound* engineSound               = soundContainer->get_sound();
-        sc_sound* sound                  = engineSound != nullptr ? engineSound->getSound() : nullptr;
-        sc_sound_instance* soundInstance = nullptr;
-
-        sc_result playSoundResult = sc_system_play_sound(sbk::engine::system::get(), sound, &soundInstance,
+        const sc_result playSoundResult = sc_system_play_sound(sbk::engine::system::get(), sound, ztd::out_ptr::out_ptr(m_soundInstance),
                                                          m_nodeGroup.nodeGroup.get(), MA_FALSE);
 
-        if (playSoundResult == MA_SUCCESS)
-        {
-            m_state = NodeInstanceState::PLAYING;
-            m_soundInstance.reset(soundInstance);
-        }
+        BOOST_ASSERT(playSoundResult == MA_SUCCESS);
     }
     else
     {
-        unsigned int playingCount = 0;
-
-        for (const auto& child : m_children.childrenNodes)
-        {
-            if (child->play())
-            {
-                ++playingCount;
-            }
-        }
-
-        if (playingCount > 0)
-        {
-            m_state = NodeInstanceState::PLAYING;
-        }
+        std::for_each(m_children.begin(), m_children.end(), [](const auto& child) { child->play(); });
     }
-
-    return isPlaying();
 }
 
-void node_instance::update()
+auto sbk::engine::node_instance_fsm::action_stop(const event_stop& stop) -> void
+{ 
+    m_soundInstance.release(); 
+    m_children.clear();
+    m_parent.reset();
+}
+
+// GUARDS //
+
+auto sbk::engine::node_instance_fsm::guard_init(const event_init& init) -> bool
 {
-    if (m_soundInstance)
+    if (!init.refNode.lookup())
     {
-        if (ma_sound_at_end(&m_soundInstance->sound) == MA_TRUE)
-        {
-            m_state = NodeInstanceState::STOPPED;
-            m_soundInstance.release();
-        }
+        return false;
     }
-    else if (!m_children.childrenNodes.empty())
+
+    if (!init.refNode->get_object_type().is_derived_from<sbk::engine::node>())
     {
-        unsigned int stoppedChildren = 0;
+        return false;
+    }
 
-        for (const auto& child : m_children.childrenNodes)
+    return true;
+}
+
+// API //
+
+auto sbk::engine::node_instance::init(const event_init& init) -> sb_result 
+{ 
+    m_stateMachine.m_gameObject = init.m_owningGameObject;
+    m_stateMachine.m_owner = this;
+    m_stateMachine.start();
+    return m_stateMachine.process_event(init) ? MA_SUCCESS : MA_ERROR; 
+}
+
+auto sbk::engine::node_instance::play() -> sb_result
+{
+    m_stateMachine.process_event(event_play());
+    return MA_SUCCESS;
+}
+
+auto sbk::engine::node_instance::update() -> sb_result
+{
+    m_stateMachine.process_event(event_update());
+    return MA_SUCCESS;
+}
+
+auto sbk::engine::node_instance::stop(float fadeTime) -> sb_result
+{
+    m_stateMachine.process_event(event_stop{.stopTime = fadeTime});
+    return MA_SUCCESS;
+}
+
+// QUERIES
+
+auto sbk::engine::node_instance::is_playing() const -> bool
+{
+    return m_stateMachine.is_flag_active<flag_playing>();
+}
+
+auto sbk::engine::node_instance::is_stopped() const -> bool
+{ 
+    return m_stateMachine.is_flag_active<flag_stopped>(); 
+}
+
+auto sbk::engine::node_instance::get_referencing_node() const noexcept -> std::shared_ptr<node>
+{
+    return m_stateMachine.m_referencingNode;
+}
+
+auto sbk::engine::node_instance::get_parent() const noexcept -> node_instance* { return m_stateMachine.m_parent.get(); }
+
+auto sbk::engine::node_instance::get_bus() const noexcept -> sc_node_group*
+{
+    return m_stateMachine.m_nodeGroup.nodeGroup.get();
+}
+
+// INIT //
+
+auto sbk::engine::node_instance_fsm::add_dsp_to_node_group(sc_node_group* nodeGroup,
+                                                       sc_dsp** dsp,
+                                                       const sc_dsp_config& config) -> sb_result
+{
+    SC_CHECK_ARG(nodeGroup != nullptr);
+    SC_CHECK_ARG(dsp != nullptr);
+    SC_CHECK_ARG(config.vtable != nullptr);
+    SC_CHECK_RESULT(sc_system_create_dsp(sbk::engine::system::get(), &config, dsp));
+    SC_CHECK_RESULT(sc_node_group_add_dsp(nodeGroup, *dsp, SC_DSP_INDEX_HEAD));
+    return MA_SUCCESS;
+}
+
+auto sbk::engine::node_instance_fsm::init_node_group(const event_init& init) -> sb_result
+{
+    SC_CHECK_RESULT(sc_system_create_node_group(sbk::engine::system::get(), ztd::out_ptr::out_ptr(m_nodeGroup.nodeGroup)));
+    SC_CHECK_RESULT(add_dsp_to_node_group(m_nodeGroup.nodeGroup.get(), &m_nodeGroup.lowpass, sc_dsp_config_init(SC_DSP_TYPE_LOWPASS)));
+    SC_CHECK_RESULT(add_dsp_to_node_group(m_nodeGroup.nodeGroup.get(), &m_nodeGroup.highpass, sc_dsp_config_init(SC_DSP_TYPE_HIGHPASS)));
+
+    for (const sbk::core::database_ptr<sbk::engine::effect_description>& desc : m_referencingNode->m_effectDescriptions)
+    {
+        if (desc.lookup())
         {
-            child->update();
+            sc_dsp* dsp = nullptr;
+            add_dsp_to_node_group(m_nodeGroup.nodeGroup.get(), &dsp, *desc->get_config());
 
-            if (!child->isPlaying())
+            int index = 0;
+            for (const sbk::engine::effect_parameter_description& parameter : desc->get_parameters())
             {
-                ++stoppedChildren;
+                switch (parameter.m_parameter.type)
+                {
+                    case SC_DSP_PARAMETER_TYPE_FLOAT:
+                        sc_dsp_set_parameter_float(dsp, index++, parameter.m_parameter.floatParameter.value);
+                        break;
+                }
             }
         }
+    }
 
-        if (stoppedChildren == m_children.childrenNodes.size())
+    return MA_SUCCESS;
+}
+
+void sbk::engine::node_instance_fsm::init_parent()
+{
+    sbk::engine::node_base* nodeToReference = nullptr;
+
+    switch (m_referencingNode->getNodeStatus())
+    {
+        case SB_NODE_TOP:
+            nodeToReference = m_referencingNode->get_output_bus();
+            BOOST_ASSERT_MSG(nodeToReference, "Output bus must be valid");
+            break;
+        case SB_NODE_MIDDLE:
+            nodeToReference = m_referencingNode->get_parent();
+            BOOST_ASSERT_MSG(nodeToReference, "Parent must be valid");
+            break;
+        case SB_NODE_NULL:
+            nodeToReference = sbk::engine::system::get()->get_master_bus();
+            BOOST_ASSERT_MSG(nodeToReference, "Master Bus invalid");
+            break;
+    }
+
+    if (nodeToReference && nodeToReference->get_database_id() != m_referencingNode->get_database_id())
+    {
+        event_init initData{.refNode = nodeToReference, .type = node_instance_type::bus, .m_owningGameObject = m_gameObject};
+        m_parent = m_owner->create_runtime_object<sbk::engine::node_instance>();
+        m_parent->init(initData);
+    }
+}
+
+void sbk::engine::node_instance_fsm::init_child()
+{
+    if (const container* const container = m_referencingNode->try_convert_object<sbk::engine::container>())
+    {
+        gather_children_context context;
+        context.numTimesPlayed = m_numTimesPlayed;
+        context.parameters = m_gameObject->get_local_parameters();
+
+        container->gather_children_for_play(context);
+
+        m_children.reserve(context.sounds.size());
+
+        for (sbk::engine::container* const child : context.sounds)
         {
-            m_state = NodeInstanceState::STOPPED;
-            m_children.childrenNodes.clear();
-
-            // Sequence nodes retrigger when the current sound stops
-            if (m_referencingNode->getType() == rttr::type::get<sequence_container>())
+            if (child && child->get_database_id() != m_referencingNode->get_database_id())
             {
-                m_children.createChildren(*m_referencingNode->try_convert_object<node_base>(), m_owningVoice, this,
-                                          ++m_numTimesPlayed);
-                play();
+                m_children.push_back(m_owner->create_runtime_object<sbk::engine::node_instance>());
+
+                event_init childInit;
+                childInit.parentForChildren = m_owner;
+                childInit.type              = node_instance_type::child;
+                childInit.refNode           = child->get_database_id();
+                childInit.m_owningGameObject = m_gameObject;
+                
+                m_children.back()->init(childInit);
             }
         }
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////////
+void sbk::engine::node_instance_fsm::init_callbacks()
+{
+    m_referencingNode->m_volume.get_delegate().AddRaw(this, &node_instance_fsm::set_volume);
+    m_referencingNode->m_pitch.get_delegate().AddRaw(this, &node_instance_fsm::set_pitch);
+    m_referencingNode->m_lowpass.get_delegate().AddRaw(this, &node_instance_fsm::set_lowpass);
+    m_referencingNode->m_highpass.get_delegate().AddRaw(this, &node_instance_fsm::set_highpass);
 
-void node_instance::setVolume(float oldVolume, float newVolume)
+    set_volume(0.0F, m_referencingNode->m_volume.get());
+    set_pitch(0.0F, m_referencingNode->m_pitch.get());
+    set_lowpass(0.0F, m_referencingNode->m_lowpass.get());
+    set_highpass(0.0F, m_referencingNode->m_highpass.get());
+}
+
+// CALLBACKS //
+
+void sbk::engine::node_instance_fsm::set_volume(float oldVolume, float newVolume)
 {
     (void)oldVolume;
 
@@ -211,7 +281,7 @@ void node_instance::setVolume(float oldVolume, float newVolume)
     }
 }
 
-void node_instance::setPitch(float oldPitch, float newPitch)
+void sbk::engine::node_instance_fsm::set_pitch(float oldPitch, float newPitch)
 {
     (void)oldPitch;
 
@@ -221,24 +291,24 @@ void node_instance::setPitch(float oldPitch, float newPitch)
     }
 }
 
-void node_instance::setLowpass(float oldLowpass, float newLowpass)
+void sbk::engine::node_instance_fsm::set_lowpass(float oldLowpass, float newLowpass)
 {
     (void)oldLowpass;
 
     const double percentage    = sbk::maths::easeOutCubic(newLowpass / 100.0);
     const double lowpassCutoff = (19980 - (19980.0 * percentage)) + 20.0;
-    assert(lowpassCutoff >= 20.0);
+    BOOST_ASSERT(lowpassCutoff >= 20.0);
 
     sc_dsp_set_parameter_float(m_nodeGroup.lowpass, SC_DSP_LOWPASS_CUTOFF, static_cast<float>(lowpassCutoff));
 }
 
-void node_instance::setHighpass(float oldHighpass, float newHighpass)
+void sbk::engine::node_instance_fsm::set_highpass(float oldHighpass, float newHighpass)
 {
     (void)oldHighpass;
 
     const double percentage     = sbk::maths::easeInCubic(newHighpass / 100.0);
     const double highpassCutoff = (19980.0 * percentage) + 20.0;
-    assert(highpassCutoff >= 20.0);
+    BOOST_ASSERT(highpassCutoff >= 20.0);
 
     sc_dsp_set_parameter_float(m_nodeGroup.highpass, SC_DSP_HIGHPASS_CUTOFF, static_cast<float>(highpassCutoff));
 }

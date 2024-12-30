@@ -14,6 +14,7 @@
 #include "sound_bakery/sound/sound.h"
 #include "sound_bakery/soundbank/soundbank.h"
 #include "sound_bakery/system.h"
+#include "sound_bakery/voice/voice.h"
 #include "sound_chef/sound_chef_encoder.h"
 
 #include <rttr/registration>
@@ -125,11 +126,11 @@ namespace sbk::reflection
         registration::enumeration<SB_ACTION_TYPE>("SB_ACTION_TYPE")(value("Play", SB_ACTION_PLAY),
                                                                     value("Stop", SB_ACTION_STOP));
 
-        registration::enumeration<sc_encoding_format>("Encoding Format")
-            (value("WAV", sc_encoding_format_wav), 
-            value("ADPCM", sc_encoding_format_adpcm),
-            value("Vorbis", sc_encoding_format_vorbis),
-            value("Opus", sc_encoding_format_opus));
+        registration::enumeration<sc_encoding_format>("Encoding Format")(
+            value("WAV", sc_encoding_format_wav), value("ADPCM", sc_encoding_format_adpcm),
+            value("Vorbis", sc_encoding_format_vorbis), value("Opus", sc_encoding_format_opus));
+
+        registration::class_<sc_dsp_parameter>("sc_dsp_parameter").constructor<>();
 
         registration::class_<action>("SB::Engine::Action")
             .constructor<>()(policy::ctor::as_object)
@@ -149,6 +150,19 @@ namespace sbk::reflection
         registration::class_<system>("SB::Engine::system");
 
         registration::class_<game_object>("SB::Engine::GameObject").constructor<>()(policy::ctor::as_raw_ptr);
+        registration::class_<voice>("SB::Engine::Voice").constructor<>()(policy::ctor::as_raw_ptr);
+
+        registration::class_<int_property>("SB::Core::IntProperty")
+            .constructor<>()
+            .property("Value", &int_property::get, &int_property::set);
+
+        registration::class_<float_property>("SB::Core::FloatProperty")
+            .constructor<>()
+            .property("Value", &float_property::get, &float_property::set);
+
+        registration::class_<id_property>("SB::Core::IdProperty")
+            .constructor<>()
+            .property("Value", &id_property::get, &id_property::set);
 
         registration::class_<object>("SB::Core::object").constructor<>()(policy::ctor::as_raw_ptr);
 
@@ -164,9 +178,9 @@ namespace sbk::reflection
 
         registration::class_<sound>("SB::Engine::Sound")
             .constructor<>()(policy::ctor::as_raw_ptr)
-            .property("Sound", &sound::getSoundName,
-                      &sound::setSoundName)(metadata(sbk::editor::METADATA_KEY::Payload, sbk::editor::PayloadSound))
-            .property("Encoded Sound", &sound::getEncodedSoundName, &sound::setEncodedSoundName)(
+            .property("Sound", &sound::get_sound_name,
+                      &sound::set_sound_name)(metadata(sbk::editor::METADATA_KEY::Payload, sbk::editor::PayloadSound))
+            .property("Encoded Sound", &sound::get_encoded_sound_name, &sound::set_encoded_sound_name)(
                 metadata(sbk::editor::METADATA_KEY::Payload, sbk::editor::PayloadSound))
             .property("Encoding Format", &sound::m_encodingFormat);
 
@@ -188,7 +202,7 @@ namespace sbk::reflection
             .property("Highass", &node::m_highpass)(
                 metadata(sbk::editor::METADATA_KEY::MinMax, std::pair<float, float>(0.0f, 100.0f)))
             .property("Effects", &node::m_effectDescriptions)
-            .method("Add Effect", &node::addEffect)(parameter_names("Type"));
+            .method("Add Effect", &node::add_effect)(parameter_names("Type"));
 
         registration::class_<container>("SB::Engine::Container");
 
@@ -213,7 +227,8 @@ namespace sbk::reflection
 
         registration::class_<bus>("SB::Engine::Bus")
             .constructor<>()(policy::ctor::as_raw_ptr)
-            .property("IsMasterBus", &bus::isMasterBus, &bus::setMasterBus)(metadata(sbk::editor::METADATA_KEY::Readonly, true));
+            .property("IsMasterBus", &bus::isMasterBus,
+                      &bus::setMasterBus)(metadata(sbk::editor::METADATA_KEY::Readonly, true));
 
         registration::class_<aux_bus>("SB::Engine::AuxBus").constructor<>()(policy::ctor::as_raw_ptr);
 
@@ -237,7 +252,8 @@ namespace sbk::reflection
 
         registration::class_<soundbank>("SB::Engine::Soundbank")
             .constructor<>()(policy::ctor::as_raw_ptr)
-            .property("Events", &soundbank::m_events);
+            .property("Events", &soundbank::m_events)
+            .property("Master", &soundbank::m_masterSoundbank);
 
         registration::class_<node_instance>("SB::Engine::NodeInstance").constructor<>()(policy::ctor::as_raw_ptr);
 

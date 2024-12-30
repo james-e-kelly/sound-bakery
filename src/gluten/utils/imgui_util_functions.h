@@ -25,5 +25,6 @@ namespace gluten::imgui
 
     bool button_centered(const char* label, const ImVec2& size = ImVec2(0, 0));
 
-    void draw_border(ImRect rect, float thickness = 1.0f, float rounding = 0.0f, float offsetX = 0.0f, float offsetY = 0.0f);
-}
+    void draw_border(
+        ImRect rect, float thickness = 1.0f, float rounding = 0.0f, float offsetX = 0.0f, float offsetY = 0.0f);
+}  // namespace gluten::imgui

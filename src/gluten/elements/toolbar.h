@@ -4,15 +4,13 @@
 
 namespace gluten
 {
-	class toolbar : public layout
-	{
+    class toolbar : public layout
+    {
     public:
         toolbar() = default;
         toolbar(const layout_type& type);
 
-
-
     protected:
         auto render_element(const ImRect& elementBox) -> bool override;
-	};
-}
+    };
+}  // namespace gluten

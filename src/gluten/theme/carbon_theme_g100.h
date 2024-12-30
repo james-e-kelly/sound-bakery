@@ -153,13 +153,13 @@ namespace gluten::theme::carbon_g100
     constexpr ImVec4 focusInverse = blue60;
 
     // Misc
-    constexpr ImVec4 interactive = blue50;
-    constexpr ImVec4 interactiveHover = blue40;
+    constexpr ImVec4 interactive       = blue50;
+    constexpr ImVec4 interactiveHover  = blue40;
     constexpr ImVec4 interactiveActive = blue60;
-    constexpr ImVec4 highlight   = blue80;
-    constexpr ImVec4 overlay     = adjust_alpha(black, 0.65f);
-    constexpr ImVec4 toggleOff   = gray60;
-    constexpr ImVec4 shadow      = adjust_alpha(black, 0.8f);
+    constexpr ImVec4 highlight         = blue80;
+    constexpr ImVec4 overlay           = adjust_alpha(black, 0.65f);
+    constexpr ImVec4 toggleOff         = gray60;
+    constexpr ImVec4 shadow            = adjust_alpha(black, 0.8f);
 
     constexpr ImVec4 missingColorColor = magenta50;
 
@@ -169,8 +169,8 @@ namespace gluten::theme::carbon_g100
     constexpr ImVec2 paddingVec                 = ImVec2(padding, padding);
     constexpr ImVec2 verticalPaddingVec         = ImVec2(0, padding);
 
-    inline void apply_colours() 
-    { 
+    inline void apply_colours()
+    {
         ImGuiStyle* style = &ImGui::GetStyle();
 
         // Text
@@ -178,32 +178,32 @@ namespace gluten::theme::carbon_g100
         style->Colors[ImGuiCol_TextDisabled] = textDisabled;
 
         // Backgrounds
-        style->Colors[ImGuiCol_MenuBarBg] = background;    // Menu Bar (close buttons etc.)
-        style->Colors[ImGuiCol_WindowBg]  = layer01;    // Main windows background
-        style->Colors[ImGuiCol_ChildBg]   = background;
-        style->Colors[ImGuiCol_FrameBg]   = layer02;
-        style->Colors[ImGuiCol_PopupBg]        = layer02;
-        style->Colors[ImGuiCol_ScrollbarBg]    = background;
-        style->Colors[ImGuiCol_DockingEmptyBg] = background;
-        style->Colors[ImGuiCol_TableRowBg]     = missingColorColor;
-        style->Colors[ImGuiCol_TableRowBgAlt]  = missingColorColor;
-        style->Colors[ImGuiCol_TableHeaderBg]  = missingColorColor;
-        style->Colors[ImGuiCol_TextSelectedBg] = fieldHover01;
+        style->Colors[ImGuiCol_MenuBarBg]         = background;  // Menu Bar (close buttons etc.)
+        style->Colors[ImGuiCol_WindowBg]          = layer01;     // Main windows background
+        style->Colors[ImGuiCol_ChildBg]           = background;
+        style->Colors[ImGuiCol_FrameBg]           = layer02;
+        style->Colors[ImGuiCol_PopupBg]           = layer02;
+        style->Colors[ImGuiCol_ScrollbarBg]       = background;
+        style->Colors[ImGuiCol_DockingEmptyBg]    = background;
+        style->Colors[ImGuiCol_TableRowBg]        = missingColorColor;
+        style->Colors[ImGuiCol_TableRowBgAlt]     = missingColorColor;
+        style->Colors[ImGuiCol_TableHeaderBg]     = missingColorColor;
+        style->Colors[ImGuiCol_TextSelectedBg]    = fieldHover01;
         style->Colors[ImGuiCol_NavWindowingDimBg] = layer01;
         style->Colors[ImGuiCol_ModalWindowDimBg]  = layer01;
 
         // Tabs are both tabs inside a window
         // and also when windows are docked, they are tabbed
-        style->Colors[ImGuiCol_Tab]                 = field02;              // actual tab
-        style->Colors[ImGuiCol_TabHovered]          = field01;              // actual tab and dock tab
-        style->Colors[ImGuiCol_TabActive]           = field01;           // actual tab and dock tab
-        style->Colors[ImGuiCol_TabSelectedOverline] = interactive;          // top line over dock tab
-        style->Colors[ImGuiCol_TabSelected]         = field01;           // actual tab and dock tab
+        style->Colors[ImGuiCol_Tab]                 = field02;      // actual tab
+        style->Colors[ImGuiCol_TabHovered]          = field01;      // actual tab and dock tab
+        style->Colors[ImGuiCol_TabActive]           = field01;      // actual tab and dock tab
+        style->Colors[ImGuiCol_TabSelectedOverline] = interactive;  // top line over dock tab
+        style->Colors[ImGuiCol_TabSelected]         = field01;      // actual tab and dock tab
 
         style->Colors[ImGuiCol_TabUnfocused]       = missingColorColor;
         style->Colors[ImGuiCol_TabUnfocusedActive] = missingColorColor;
 
-        style->Colors[ImGuiCol_TabDimmedSelected] = background;                // selected dock tab
+        style->Colors[ImGuiCol_TabDimmedSelected] = background;  // selected dock tab
         style->Colors[ImGuiCol_TabDimmed]         = field01;
 
         // Window Titles
@@ -211,7 +211,7 @@ namespace gluten::theme::carbon_g100
         style->Colors[ImGuiCol_TitleBgActive]    = background;
         style->Colors[ImGuiCol_TitleBgCollapsed] = background;
 
-        style->Colors[ImGuiCol_FrameBgHovered]   = fieldHover01;
+        style->Colors[ImGuiCol_FrameBgHovered] = fieldHover01;
         style->Colors[ImGuiCol_FrameBgActive]  = fieldHover01;
 
         // Borders around elements / tabs
@@ -275,7 +275,7 @@ namespace gluten::theme::carbon_g100
         style->Alpha         = 1.0f;
         style->DisabledAlpha = 0.5f;
 
-        style->WindowPadding = ImVec2(padding * 0.5f, 0.0f);    // 1.5 chosen just on looks
+        style->WindowPadding = ImVec2(padding * 0.5f, 0.0f);  // 1.5 chosen just on looks
         style->FramePadding  = ImVec2(padding, padding * 1.5f);
 
         style->WindowRounding    = rounding;
@@ -323,4 +323,4 @@ namespace gluten::theme::carbon_g100
         style->CurveTessellationTol;
         style->CircleTessellationMaxError;
     }
-}
+}  // namespace gluten::theme::carbon_g100

@@ -10,15 +10,15 @@ namespace gluten::theme
         return ImVec4(color.x, color.y, color.z, alpha);
     }
 
-    consteval ImVec4 hex_to_imgui_imvec4(const unsigned long& hex) 
-    { 
+    consteval ImVec4 hex_to_imgui_imvec4(const unsigned long& hex)
+    {
         const float s = 1.0f / 255.0f;
 
         // The RGB order is backwards here -> BGR
         // Also, set alpha to 1 as the carbon hex values don't hold alpha and therefore
         // everything would get set to 0
         return ImVec4(((hex >> IM_COL32_B_SHIFT) & 0xFF) * s, ((hex >> IM_COL32_G_SHIFT) & 0xFF) * s,
-                              ((hex >> IM_COL32_R_SHIFT) & 0xFF) * s, 1.0f);
+                      ((hex >> IM_COL32_R_SHIFT) & 0xFF) * s, 1.0f);
     }
 
     constexpr ImVec4 black      = hex_to_imgui_imvec4(0x000000);
@@ -292,4 +292,4 @@ namespace gluten::theme
     constexpr ImVec4 warmGray80Hover  = hex_to_imgui_imvec4(0x4c4848);
     constexpr ImVec4 warmGray90Hover  = hex_to_imgui_imvec4(0x343232);
     constexpr ImVec4 warmGray100Hover = hex_to_imgui_imvec4(0x2c2626);
-}
+}  // namespace gluten::theme

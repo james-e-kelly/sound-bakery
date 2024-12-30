@@ -1,9 +1,9 @@
 #include "property_drawer.h"
 
-#include "imgui.h"
 #include "gluten/theme/carbon_theme_g100.h"
 #include "gluten/utils/imgui_util_functions.h"
 #include "gluten/utils/imgui_util_structures.h"
+#include "imgui.h"
 #include "sound_bakery/core/object/object.h"
 #include "sound_bakery/editor/editor_defines.h"
 #include "sound_bakery/node/node.h"
@@ -280,7 +280,7 @@ void property_drawer::draw_readonly_variant(rttr::variant variant, bool disabled
         {
             ImGui::TextUnformatted(object->get_database_name().data());
         }
-        else if (object.hasId())
+        else if (object.has_id())
         {
             ImGui::Text("object Unloaded {%s}", rttr::variant(object.id()).to_string().c_str());
         }

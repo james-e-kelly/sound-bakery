@@ -30,7 +30,7 @@ namespace gluten
         void render_spacer_percent(float horizontalPercent, float verticalPercent);
 
         bool render_layout_element_full(element* element);
-        
+
         bool render_layout_element_pixels(element* element, float horizontalPixels, float verticalPixels);
         bool render_layout_element_pixels_horizontal(element* element, float horizontalPixels);
         bool render_layout_element_pixels_vertical(element* element, float verticalPixels);
@@ -41,7 +41,7 @@ namespace gluten
 
         void reset_layout(const ImRect& parent);
 
-        void finish_layout();   //< Resets cursor so future elements are drawn after this layout area
+        void finish_layout();  //< Resets cursor so future elements are drawn after this layout area
 
         ImVec2 get_current_layout_pos() const
         {
@@ -55,7 +55,10 @@ namespace gluten
 
         bool render_element(const ImRect& info) override { return false; }
 
-        bool render_layout_element_internal(const ImRect& thisBox, element* element, float horizontalPixels, float verticalPixels);
+        bool render_layout_element_internal(const ImRect& thisBox,
+                                            element* element,
+                                            float horizontalPixels,
+                                            float verticalPixels);
 
         layout_type m_layoutType = layout_type::left_to_right;
 
@@ -64,4 +67,4 @@ namespace gluten
         bool m_firstLayout = true;
         float m_spacing    = 0.0f;
     };
-}
+}  // namespace gluten

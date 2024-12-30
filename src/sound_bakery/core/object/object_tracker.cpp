@@ -1,7 +1,6 @@
 #include "object_tracker.h"
 
 #include "sound_bakery/core/object/object.h"
-#include "sound_bakery/factory.h"
 #include "sound_bakery/util/type_helper.h"
 
 using namespace sbk::core;
@@ -10,7 +9,7 @@ void object_tracker::track_object(object* object)
 {
     if (object != nullptr)
     {
-        const rttr::type type             = object->getType();
+        const rttr::type type             = object->get_object_type();
         const SB_OBJECT_CATEGORY category = sbk::util::type_helper::getCategoryFromType(type);
 
         m_typeToObjects[type].emplace(object);
@@ -24,7 +23,7 @@ void object_tracker::untrack_object(object* object, std::optional<rttr::type> ty
 {
     if (object != nullptr)
     {
-        const rttr::type type             = typeOverride.has_value() ? typeOverride.value() : object->getType();
+        const rttr::type type             = typeOverride.has_value() ? typeOverride.value() : object->get_object_type();
         const SB_OBJECT_CATEGORY category = sbk::util::type_helper::getCategoryFromType(type);
 
         if (type.is_valid())
@@ -56,6 +55,28 @@ std::unordered_set<object*> object_tracker::get_objects_of_type(const rttr::type
     }
 
     return {};
+}
+
+auto object_tracker::get_objects_count() const -> size_t
+{
+    size_t count = 0;
+
+    for (auto& keyValuePair : m_categoryToObjects)
+    {
+        count += keyValuePair.second.size();
+    }
+
+    return count;
+}
+
+auto object_tracker::get_all_category_to_objects() const -> const std::unordered_map<SB_OBJECT_CATEGORY, std::unordered_set<object*>>&
+{
+    return m_categoryToObjects;
+}
+
+auto object_tracker::get_all_type_to_objects() const -> const std::unordered_map<rttr::type, std::unordered_set<object*>>&
+{
+    return m_typeToObjects;
 }
 
 void object_tracker::on_object_destroyed(object* object)

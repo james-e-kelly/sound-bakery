@@ -2,13 +2,10 @@
 
 #include "gluten/app/app.h"
 
-gluten::text::text(const std::string& displayText) : m_displayText(displayText) 
-{
-}
+gluten::text::text(const std::string& displayText) : m_displayText(displayText) {}
 
 gluten::text::text(const std::string& displayText, const ImVec2& alignment, const anchor_preset& anchorPreset)
-    : element(anchorPreset), 
-    m_displayText(displayText)
+    : element(anchorPreset), m_displayText(displayText)
 {
     m_alignment = alignment;
 }
@@ -29,13 +26,12 @@ bool gluten::text::render_element(const ImRect& parent)
     if (!m_displayText.empty())
     {
         ImGui::TextUnformatted(m_displayText.c_str());
-
-        if (m_font.has_value())
-        {
-            ImGui::PopFont();
-        }
     }
 
+    if (m_font.has_value())
+    {
+        ImGui::PopFont();
+    }
     return false;
 }
 

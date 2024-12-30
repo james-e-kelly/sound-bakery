@@ -11,12 +11,10 @@ public:
     void show_splash_screen();
     void close_splash_screen();
 
-public:
-    virtual void tick(double deltaTime) override;
-    virtual void render() override;
-
 protected:
-    virtual void start() override;
+    virtual void start_implementation() override;
+    virtual void tick_implementation(double deltaTime) override;
+    virtual void render_implementation() override;
 
 private:
     bool m_wantsToShow         = false;

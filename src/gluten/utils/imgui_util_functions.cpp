@@ -2,15 +2,9 @@
 
 #include "gluten/utils/imgui_util_structures.h"
 
-void gluten::imgui::shift_cursor_x(float distance) 
-{ 
-    ImGui::SetCursorPosX(ImGui::GetCursorPosX() + distance); 
-}
+void gluten::imgui::shift_cursor_x(float distance) { ImGui::SetCursorPosX(ImGui::GetCursorPosX() + distance); }
 
-void gluten::imgui::shift_cursor_y(float distance) 
-{ 
-    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + distance); 
-}
+void gluten::imgui::shift_cursor_y(float distance) { ImGui::SetCursorPosY(ImGui::GetCursorPosY() + distance); }
 
 void gluten::imgui::shift_cursor(float x, float y)
 {
@@ -18,15 +12,9 @@ void gluten::imgui::shift_cursor(float x, float y)
     ImGui::SetCursorPos(ImVec2(cursor.x + x, cursor.y + y));
 }
 
-void gluten::imgui::indent_cursor()
-{ 
-    shift_cursor_x(ImGui::GetStyle().IndentSpacing);
-}
+void gluten::imgui::indent_cursor() { shift_cursor_x(ImGui::GetStyle().IndentSpacing); }
 
-ImRect gluten::imgui::get_item_rect() 
-{ 
-    return ImRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax()); 
-}
+ImRect gluten::imgui::get_item_rect() { return ImRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax()); }
 
 ImRect gluten::imgui::rect_expanded(const ImRect& rect, float x, float y)
 {
@@ -48,10 +36,7 @@ ImRect gluten::imgui::rect_offset(const ImRect& rect, float x, float y)
     return result;
 }
 
-ImRect gluten::imgui::rect_offset(const ImRect& rect, ImVec2 xy) 
-{
-    return rect_offset(rect, xy.x, xy.y); 
-}
+ImRect gluten::imgui::rect_offset(const ImRect& rect, ImVec2 xy) { return rect_offset(rect, xy.x, xy.y); }
 
 void gluten::imgui::render_window_outer_borders(ImGuiWindow* window)
 {
@@ -98,10 +83,10 @@ void gluten::imgui::render_window_outer_borders(ImGuiWindow* window)
     if (border_held != -1)
     {
         const gluten::imgui::resize_border_def& def = resize_border[border_held];
-        ImRect border_r                 = GetResizeBorderRect(window, border_held, rounding, 0.0f);
-        ImVec2 p1                       = ImLerp(border_r.Min, border_r.Max, def.SegmentN1);
-        const float offsetX             = def.InnerDir.x * rounding;
-        const float offsetY             = def.InnerDir.y * rounding;
+        ImRect border_r                             = GetResizeBorderRect(window, border_held, rounding, 0.0f);
+        ImVec2 p1                                   = ImLerp(border_r.Min, border_r.Max, def.SegmentN1);
+        const float offsetX                         = def.InnerDir.x * rounding;
+        const float offsetY                         = def.InnerDir.y * rounding;
         p1.x += 0.5f + offsetX;
         p1.y += 0.5f + offsetY;
 
@@ -537,9 +522,9 @@ void gluten::imgui::end_menubar()
             IM_ASSERT(window->DC.NavLayersActiveMaskNext & (1 << layer));  // Sanity check
             ImGui::FocusWindow(window);
             ImGui::SetNavID(window->NavLastIds[layer], layer, 0, window->NavRectRel[layer]);
-            g.NavDisableHighlight =
+            g.NavCursorVisible =
                 true;  // Hide highlight for the current frame so we don't see the intermediary selection.
-            g.NavDisableMouseHover = g.NavMousePosDirty = true;
+            g.NavHighlightItemUnderNav = g.NavMousePosDirty = true;
             ImGui::NavMoveRequestForward(g.NavMoveDir, g.NavMoveClipDir, g.NavMoveFlags,
                                          g.NavMoveScrollFlags);  // Repeat
         }
@@ -552,8 +537,8 @@ void gluten::imgui::end_menubar()
     ImGui::PopClipRect();
     ImGui::PopID();
     window->DC.MenuBarOffset.x =
-        window->DC.CursorPos.x - window->Pos.x;  // Save left_to_right position so next append can reuse it. This is kinda
-                                                 // equivalent to a per-layer CursorPos.
+        window->DC.CursorPos.x - window->Pos.x;  // Save left_to_right position so next append can reuse it. This is
+                                                 // kinda equivalent to a per-layer CursorPos.
     g.GroupStack.back().EmitItem = false;
     ImGui::EndGroup();  // Restore position on layer 0
     window->DC.LayoutType       = ImGuiLayoutType_Vertical;
@@ -575,8 +560,7 @@ bool gluten::imgui::button_centered(const char* label, const ImVec2& size)
     return ImGui::Button(label);
 }
 
-void gluten::imgui::draw_border(
-    ImRect rect, float thickness, float rounding, float offsetX, float offsetY)
+void gluten::imgui::draw_border(ImRect rect, float thickness, float rounding, float offsetX, float offsetY)
 {
     ImVec2 min = rect.Min;
     min.x -= thickness;

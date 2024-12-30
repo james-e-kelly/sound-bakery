@@ -1,18 +1,21 @@
 #pragma once
 
-#include "gluten/widgets/widget.h"
 #include "gluten/elements/image_button.h"
+#include "gluten/widgets/widget.h"
 
 namespace gluten
 {
+    /**
+     * @brief The base widget with titlebar and open/close icons.
+     */
     class root_widget : public widget
     {
     public:
-        root_widget(widget_subsystem* parentSubsystem) : widget(parentSubsystem) {}
+        root_widget(widget_subsystem* parentSubsystem) : widget(parentSubsystem) { m_autoRenderChildren = false; }
 
     public:
-        void start() override;
-        void render() override;
+        void start_implementation() override;
+        void render_implementation() override;
         virtual void render_menu();
 
         bool is_hovering_titlebar() { return m_hoveringTitlebar; }

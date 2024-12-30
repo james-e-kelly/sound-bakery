@@ -41,6 +41,7 @@ SB_OBJECT_CATEGORY type_helper::getCategoryFromType(rttr::type type)
         category = SB_CATEGORY_SOUND;
     }
     else if (type == rttr::type::get<sbk::engine::float_parameter>() ||
+             type == rttr::type::get<sbk::engine::int_parameter>() ||
              type == rttr::type::get<sbk::engine::named_parameter>())
     {
         category = SB_CATEGORY_PARAMETER;
@@ -59,7 +60,7 @@ SB_OBJECT_CATEGORY type_helper::getCategoryFromType(rttr::type type)
     }
     else
     {
-        assert(false && "Could not get category for type");
+        BOOST_ASSERT(false && "Could not get category for type");
     }
 
     return category;
@@ -261,8 +262,7 @@ bool type_helper::isTypePlayable(const rttr::type& type)
 
     if (type.is_valid())
     {
-        result = type.is_derived_from<sbk::engine::container>() 
-            || type.is_derived_from<sbk::engine::sound>() ||
+        result = type.is_derived_from<sbk::engine::container>() || type.is_derived_from<sbk::engine::sound>() ||
                  type.is_derived_from<sbk::engine::event>();
     }
 

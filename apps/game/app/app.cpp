@@ -1,4 +1,4 @@
-#include "App.h"
+#include "app.h"
 
 #include "gluten/subsystems/widget_subsystem.h"
 #include "sound_bakery/editor/project/project.h"
@@ -17,10 +17,12 @@ gluten::app* create_application() { return new game_app(); }
 
 void game_app::post_init() 
 {
-    gluten::widget_subsystem* const widgetSubsystem = get_subsystem_by_class<gluten::widget_subsystem>();
+    std::shared_ptr<gluten::widget_subsystem> widgetSubsystem = get_subsystem_by_class<gluten::widget_subsystem>();
 
-    root_widget* const rootWidget = widgetSubsystem->add_widget_class<root_widget>();
-    widgetSubsystem->set_root_widget(rootWidget);
+    std::shared_ptr<root_widget> rootWidget = widgetSubsystem->add_widget_class<root_widget>();
+    widgetSubsystem->set_root_widget(rootWidget.get());
+
+    set_application_display_title("Sound Bakery Sandbox");
 }
 
 void game_app::open_soundbank()
@@ -36,12 +38,7 @@ retry:
 
     assert(std::filesystem::exists(outPath));
 
-    if (m_soundbankViewerWidget)
-    {
-        m_soundbankViewerWidget->destroy();
-    }
-
-    m_soundbankViewerWidget = get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class_to_root<soundbank_viewer_widget>();
-    
+    m_soundbankViewerWidget.reset();
+    m_soundbankViewerWidget = get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class_to_root<soundbank_viewer_widget>(false);
     m_soundbankViewerWidget->set_soundbank_to_view(outPath);
 }

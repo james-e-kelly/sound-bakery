@@ -7,6 +7,8 @@ class root_widget : public gluten::root_widget
 public:
     root_widget(gluten::widget_subsystem* parentSubsystem) : gluten::root_widget(parentSubsystem) {}
 
-public:
-    virtual void render_menu() override;
+    void render_menu() override;
+
+private:
+    void render_about_window(bool& showAbout);
 };

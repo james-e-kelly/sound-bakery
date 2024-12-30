@@ -3,8 +3,6 @@
 #include "sound_bakery/core/core_include.h"
 #include "sound_bakery/editor/project/project_configuration.h"
 
-#include "yaml-cpp/yaml.h"
-
 namespace sbk::engine
 {
     class sound_container;
@@ -31,13 +29,13 @@ namespace sbk::editor
         [[nodiscard]] std::weak_ptr<sbk::engine::sound_container> get_preview_container() const;
 
     private:
-        void loadSounds();
+        void load_sounds();
         void loadSystem();
-        void loadObjects();
+        void load_objects();
 
         void createPreviewContainer();
 
-        void buildSoundbanks() const;
+        void build_soundbanks() const;
 
         void saveSystem() const;
         void saveObjects() const;

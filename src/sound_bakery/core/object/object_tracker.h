@@ -22,6 +22,9 @@ namespace sbk::core
 
         [[nodiscard]] std::unordered_set<object*> get_objects_of_category(const SB_OBJECT_CATEGORY& category) const;
         [[nodiscard]] std::unordered_set<object*> get_objects_of_type(const rttr::type& type) const;
+        [[nodiscard]] auto get_objects_count() const -> size_t;
+        [[nodiscard]] auto get_all_category_to_objects() const -> const std::unordered_map<SB_OBJECT_CATEGORY, std::unordered_set<object*>>&;
+        [[nodiscard]] auto get_all_type_to_objects() const -> const std::unordered_map<rttr::type, std::unordered_set<object*>>&;
 
     private:
         void on_object_destroyed(object* object);

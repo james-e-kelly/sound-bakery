@@ -1,6 +1,7 @@
 #pragma once
 
 #include "gluten/managers/manager.h"
+#include "widgets/splash_widget.h"
 
 namespace gluten
 {
@@ -25,4 +26,7 @@ public:
      * Opens a file dialogue and opens the project is found.
      */
     void open_project();
+
+private:
+    std::shared_ptr<splash_widget> m_splashWidget;
 };
