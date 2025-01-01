@@ -116,7 +116,6 @@ message(STATUS "Fetching implot")
 FetchContent_MakeAvailable(implot)
 
 include(build_nfd)
-build_nfd()
 
 message(STATUS "Fetching audio fonts")
 FetchContent_MakeAvailable(fonts)
@@ -149,7 +148,7 @@ target_include_directories(imgui
     ${implot_SOURCE_DIR}
 )
 
-target_link_libraries(imgui
+target_link_libraries(imgui PUBLIC
   glfw
   OpenGL::GL
 )

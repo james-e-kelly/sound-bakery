@@ -43,8 +43,8 @@ FetchContent_Declare(
 
 FetchContent_Declare(
   nfd
-  GIT_REPOSITORY https://github.com/mlabbe/nativefiledialog.git
-  GIT_TAG        67345b80ebb429ecc2aeda94c478b3bcc5f7888e
+  GIT_REPOSITORY https://github.com/btzy/nativefiledialog-extended.git
+  GIT_TAG        v1.2.1
   GIT_SHALLOW    TRUE
   OVERRIDE_FIND_PACKAGE
   EXCLUDE_FROM_ALL 
@@ -244,8 +244,8 @@ FetchContent_Declare(
 
 FetchContent_Declare(
   tracy
-  GIT_REPOSITORY https://github.com/wolfpld/tracy.git
-  GIT_TAG v0.11.1
+  GIT_REPOSITORY https://github.com/james-e-kelly/tracy.git
+  GIT_TAG master
   GIT_SHALLOW TRUE
   GIT_PROGRESS TRUE
   EXCLUDE_FROM_ALL
