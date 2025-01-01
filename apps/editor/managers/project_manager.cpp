@@ -15,6 +15,7 @@
 #include "widgets/details_widget.h"
 #include "widgets/play_controls_widget.h"
 #include "widgets/project_explorer_widget.h"
+#include "widgets/profiler_widget.h"
 
 void project_manager::init_project(const std::filesystem::path& project_file)
 {
@@ -47,6 +48,9 @@ void project_manager::setup_project()
     m_audioMeterWidget = get_app()
         ->get_subsystem_by_class<gluten::widget_subsystem>()
         ->add_widget_class_to_root<audio_meter_widget>(false);
+    m_profilerWidget = get_app()
+        ->get_subsystem_by_class<gluten::widget_subsystem>()
+        ->add_widget_class_to_root<profiler_widget>(false);
 
     get_app()->set_application_display_title(
         fmt::format("{} - {} {}", sbk::engine::system::get_project()->get_config().project_name(), SBK_PRODUCT_NAME,

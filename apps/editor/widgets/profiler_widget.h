@@ -15,4 +15,5 @@ protected:
 
 private:
     std::unique_ptr<tracy::View> m_tracy;
+    tracy::Config m_tracyConfig;
 };
