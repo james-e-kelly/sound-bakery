@@ -61,7 +61,7 @@ system::system() : sc_system(), m_gameThreadExecuter(make_manual_executor())
 
 system::~system()
 {
-    SPDLOG_DEBUG("Closing Sound Bakery");
+    SBK_INFO("Closing Sound Bakery");
 
     // Close threads
     background_executor()->shutdown();
@@ -135,6 +135,8 @@ sc_result system::init(const sb_system_config& config)
     {
         return MA_DEVICE_NOT_STARTED;
     }
+
+    SBK_INFO("Initializing Sound Bakery");
 
     const sc_result result = sc_system_init(s_system, &config.soundChefConfig);
     BOOST_ASSERT(result == MA_SUCCESS);

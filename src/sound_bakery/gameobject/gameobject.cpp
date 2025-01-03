@@ -25,6 +25,8 @@ void sbk::engine::game_object::post_event(event* event)
 {
     if (event)
     {
+        SBK_INFO("Posting Event");
+
         for (const action& action : event->m_actions)
         {
             sbk::engine::container* container    = nullptr;

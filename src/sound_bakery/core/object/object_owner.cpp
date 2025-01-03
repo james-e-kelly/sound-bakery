@@ -9,19 +9,19 @@ auto sbk::core::object_owner::create_runtime_object(const rttr::type& type) -> s
 
     if (!system)
     {
-        SPDLOG_CRITICAL("Cannot create object. System is invalid");
+        SBK_CRITICAL("Cannot create object. System is invalid");
         return {};
     }
 
     if (!type.is_valid())
     {
-        SPDLOG_ERROR("Cannot create object. Object type is invalid");
+        SBK_ERROR("Cannot create object. Object type is invalid");
         return {};
     }
 
     if (!type.is_derived_from(rttr::type::get<sbk::core::object>()))
     {
-        SPDLOG_ERROR("Cannot create object. Objects must derive from the base object type");
+        SBK_ERROR("Cannot create object. Objects must derive from the base object type");
         return {};
     }
 
@@ -29,7 +29,7 @@ auto sbk::core::object_owner::create_runtime_object(const rttr::type& type) -> s
 
     if (!constructor.is_valid())
     {
-        SPDLOG_ERROR("Objects in Sound Bakery must be constructable. Define this in the reflection file");
+        SBK_ERROR("Objects in Sound Bakery must be constructable. Define this in the reflection file");
         return {};
     }
 
@@ -37,7 +37,7 @@ auto sbk::core::object_owner::create_runtime_object(const rttr::type& type) -> s
 
     if (!variant.is_valid() || !variant.get_type().is_valid() || !variant.get_type().get_raw_type().is_valid())
     {
-        SPDLOG_ERROR("Failed to create object");
+        SBK_ERROR("Failed to create object");
         return {};
     }
 
@@ -78,13 +78,13 @@ auto sbk::core::object_owner::create_database_object(const rttr::type& type,
 
     if (system == nullptr)
     {
-        SPDLOG_CRITICAL("Cannot create object. System is invalid");
+        SBK_CRITICAL("Cannot create object. System is invalid");
         return {};
     }
 
     if (!type.is_derived_from(rttr::type::get<sbk::core::database_object>()))
     {
-        SPDLOG_ERROR("Cannot create object. Database objects must derive from the base database object type");
+        SBK_ERROR("Cannot create object. Database objects must derive from the base database object type");
         return {};
     }
 

@@ -8,6 +8,7 @@
 #include "spdlog/async.h"
 #include "spdlog/spdlog.h"
 #include "tracy/Tracy.hpp"
+#include "tracy/TracyC.h"
 #include "ztd/out_ptr.hpp"
 
 #define BOOST_SPIRIT_DEBUG
@@ -47,3 +48,19 @@ public:                             \
  */
 #define DEFINE_REFLECTION(T) \
     rttr::type T::type() { return rttr::type::get<T>(); }
+
+#define SBK_INFO(message)                               \
+    SPDLOG_INFO(message);                               \
+    TracyMessageC(message, sizeof(message), 0xffffff);
+
+#define SBK_WARN(message)                               \
+    SPDLOG_WARN(message);                               \
+    TracyMessageC(message, sizeof(message), 0xff4500);
+
+#define SBK_ERROR(message)                              \
+    SPDLOG_ERROR(message);                              \
+    TracyMessageC(message, sizeof(message), 0xff0000);
+
+#define SBK_CRITICAL(message)                           \
+    SPDLOG_CRITICAL(message);                           \
+    TracyMessageC(message, sizeof(message), 0x8b0000);
