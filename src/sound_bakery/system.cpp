@@ -12,6 +12,34 @@
 
 using namespace sbk::engine;
 
+void* sbk_malloc(std::size_t size, void* userData) throw(std::bad_alloc)
+{
+    void* pointer = std::malloc(size);
+    TracyAlloc(pointer, size);
+    return pointer;
+}
+
+void* sbk_realloc(void* pointer, std::size_t size, void* userData) 
+{ 
+    return std::realloc(pointer, size); 
+}
+
+void sbk_free(void* pointer, void* userData) 
+{ 
+    TracyFree(pointer);
+    std::free(pointer); 
+}
+
+void* operator new(std ::size_t size) throw(std::bad_alloc)
+{ 
+    return sbk_malloc(size, nullptr);
+}
+
+void operator delete(void* pointer) throw() 
+{ 
+    sbk_free(pointer, nullptr); 
+}
+
 namespace
 {
     sbk::engine::system* s_system = nullptr;
@@ -138,7 +166,13 @@ sc_result system::init(const sb_system_config& config)
 
     SBK_INFO("Initializing Sound Bakery");
 
-    const sc_result result = sc_system_init(s_system, &config.soundChefConfig);
+    sb_system_config configCopy = config;
+    configCopy.soundChefConfig.allocationCallbacks.pUserData = s_system;
+    configCopy.soundChefConfig.allocationCallbacks.onMalloc = sbk_malloc;
+    configCopy.soundChefConfig.allocationCallbacks.onRealloc = sbk_realloc;
+    configCopy.soundChefConfig.allocationCallbacks.onFree = sbk_free;
+
+    const sc_result result = sc_system_init(s_system, &configCopy.soundChefConfig);
     BOOST_ASSERT(result == MA_SUCCESS);
 
     if (!s_registeredReflection)
