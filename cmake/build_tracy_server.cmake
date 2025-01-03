@@ -74,3 +74,4 @@ add_library(sbk_tracy_profiler STATIC ${PROFILER_FILES} ${COMMON_FILES} ${SERVER
 add_library(sbk::tracy_profiler ALIAS sbk_tracy_profiler)
 target_link_libraries(sbk_tracy_profiler PUBLIC TracyServer imgui nfd)
 target_include_directories(sbk_tracy_profiler PUBLIC ${tracy_SOURCE_DIR}/profiler/src/profiler)
+target_compile_definitions(sbk_tracy_profiler PUBLIC TRACY_NO_ROOT_WINDOW)
