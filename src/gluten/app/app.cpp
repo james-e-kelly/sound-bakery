@@ -94,7 +94,7 @@ int gluten::app::run(int argc, char** argv)
             subsystem->tick_rendering(deltaTime);
         }
 
-        FrameMarkNamed("GlutenUpdate");
+        FrameMark;
     }
 
     for (auto& manager : m_managers)

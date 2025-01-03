@@ -57,10 +57,15 @@ void project_manager::setup_project()
                     SBK_VERSION_STRING));
 }
 
-void project_manager::tick(double deltaTime) { sbk::engine::system::update(); }
+void project_manager::tick(double deltaTime)
+{
+    ZoneScoped;
+    sbk::engine::system::update();
+}
 
 void project_manager::exit()
 {
+    ZoneScoped;
     sbk::engine::system::destroy();
 
     get_app()->set_application_display_title(SBK_PRODUCT_NAME " " SBK_VERSION_STRING);
