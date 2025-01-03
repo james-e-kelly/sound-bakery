@@ -168,6 +168,7 @@ target_link_libraries(gluten
     imgui
     fmt::fmt
     bytesize
+    Tracy::TracyClient
 )
 
 if(MSVC)

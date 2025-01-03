@@ -156,6 +156,8 @@ sc_result system::init(const sb_system_config& config)
 
 sc_result system::update()
 {
+    FrameMarkStart("SoundBakeryUpdate");
+
     if (s_system == nullptr)
     {
         return MA_DEVICE_NOT_STARTED;
@@ -182,6 +184,8 @@ sc_result system::update()
         });
 
     s_system->m_gameThreadExecuter->loop(32);
+
+    FrameMarkEnd("SoundBakeryUpdate");
 
     return MA_SUCCESS;
 }

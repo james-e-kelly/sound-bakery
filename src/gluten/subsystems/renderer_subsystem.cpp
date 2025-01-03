@@ -201,6 +201,8 @@ int renderer_subsystem::init()
 
 void renderer_subsystem::pre_tick(double deltaTime)
 {
+    ZoneScoped;
+
     if (glfwWindowShouldClose(m_window))
     {
         get_app()->request_exit();
@@ -215,10 +217,12 @@ void renderer_subsystem::pre_tick(double deltaTime)
     }
 }
 
-void renderer_subsystem::tick(double deltaTime) {}
+void renderer_subsystem::tick(double deltaTime) { ZoneScoped; }
 
 void renderer_subsystem::tick_rendering(double deltaTime)
 {
+    ZoneScoped;
+
     static ImVec4 clear_color = gluten::theme::carbon_g100::background;
 
     // Rendering
@@ -240,6 +244,8 @@ void renderer_subsystem::tick_rendering(double deltaTime)
 
 void renderer_subsystem::exit()
 {
+    ZoneScoped;
+
     ImGui::GetIO().Fonts->Clear();
 
     ImGui_ImplOpenGL3_Shutdown();
