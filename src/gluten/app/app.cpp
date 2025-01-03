@@ -4,6 +4,7 @@
 #include "IconsFontaudio.h"
 #include "subsystems/renderer_subsystem.h"
 #include "subsystems/widget_subsystem.h"
+//#include "Fontawesome"
 
 #include <cmrc/cmrc.hpp>
 
@@ -126,7 +127,7 @@ void gluten::app::load_fonts()
     const cmrc::file mainFontFile        = embeddedfilesystem.open("Montserrat-Regular.ttf");
     const cmrc::file titleFontFile       = embeddedfilesystem.open("Montserrat-Black.ttf");
     const cmrc::file audioFontFile       = embeddedfilesystem.open("fontaudio/font/" FONT_ICON_FILE_NAME_FAD);
-    const cmrc::file fontAwesomeFontFile = embeddedfilesystem.open("Font-Awesome/webfonts/" FONT_ICON_FILE_NAME_FAR);
+    const cmrc::file fontAwesomeFontFile = embeddedfilesystem.open("Font-Awesome/webfonts/" FONT_ICON_FILE_NAME_FAS);
 
     assert(mainFontFile.size() > 0);
 
