@@ -17,6 +17,7 @@ namespace profiling_strings
 {
     static const char* const s_updateName           = "SoundBakeryUpdate";
     static const char* const s_gameObjectPlotName   = "Number Of Game Objects";
+    static const char* const s_voicePlotName        = "Number Of Voices";
     static const char* const s_nodeInstancePlotName = "Number Of Node Instances";
 }  // namespace profiling_strings
 
@@ -219,11 +220,11 @@ sc_result system::update()
 
     TracyPlotConfig(profiling_strings::s_gameObjectPlotName, tracy::PlotFormatType::Number, true, false, 0);
     TracyPlotConfig(profiling_strings::s_nodeInstancePlotName, tracy::PlotFormatType::Number, true, false, 0);
+    TracyPlotConfig(profiling_strings::s_voicePlotName, tracy::PlotFormatType::Number, true, false, 0);
 
-    TracyPlot(profiling_strings::s_gameObjectPlotName,
-              (int64_t)s_system->get_objects_of_type(sbk::engine::game_object::type()).size());
-    TracyPlot(profiling_strings::s_nodeInstancePlotName,
-              (int64_t)s_system->get_objects_of_type(sbk::engine::node_instance::type()).size());
+    TracyPlot(profiling_strings::s_gameObjectPlotName, (int64_t)s_system->get_objects_of_type(sbk::engine::game_object::type()).size());
+    TracyPlot(profiling_strings::s_voicePlotName, (int64_t)s_system->get_objects_of_type(sbk::engine::voice::type()).size());
+    TracyPlot(profiling_strings::s_nodeInstancePlotName, (int64_t)s_system->get_objects_of_type(sbk::engine::node_instance::type()).size());
 
     FrameMarkEnd(profiling_strings::s_updateName);
 
