@@ -190,9 +190,11 @@ sc_result system::init(const sb_system_config& config)
     return result;
 }
 
+static const char* const s_updateName = "SoundBakeryUpdate";
+
 sc_result system::update()
 {
-    FrameMarkStart("SoundBakeryUpdate");
+    FrameMarkStart(s_updateName);
 
     if (s_system == nullptr)
     {
@@ -221,7 +223,7 @@ sc_result system::update()
 
     s_system->m_gameThreadExecuter->loop(32);
 
-    FrameMarkEnd("SoundBakeryUpdate");
+    FrameMarkEnd(s_updateName);
 
     return MA_SUCCESS;
 }

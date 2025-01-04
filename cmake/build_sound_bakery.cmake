@@ -155,6 +155,11 @@ function(build_dependencies)
     message(STATUS "Fetching out_ptr")
     FetchContent_MakeAvailable(out_ptr)
 
+    set(TRACY_ENABLE "" ON)
+    set(TRACY_ON_DEMAND "" ON)
+    set(TRACY_NO_VSYNC_CAPTURE "" ON)
+    set(TRACY_NO_FRAME_IMAGE "" ON)
+
     message(STATUS "Fetching Tracy")
     FetchContent_MakeAvailable(tracy)
 endfunction()

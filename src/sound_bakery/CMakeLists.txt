@@ -15,7 +15,6 @@ add_library(SoundBakery::SoundBakery ALIAS sound_bakery)
 set_target_properties(sound_bakery PROPERTIES LANGUAGE CXX)
 target_precompile_headers(sound_bakery PRIVATE ${PCH_HEADER})
 target_compile_options(sound_bakery PRIVATE ${PROJECT_WARNING_FLAGS})
-target_compile_definitions(sound_bakery PRIVATE TRACY_ENABLE TRACY_ON_DEMAND TRACY_NO_VSYNC_CAPTURE TRACY_NO_FRAME_IMAGE)
 target_include_directories(sound_bakery
     PUBLIC ${CMAKE_SOURCE_DIR}/src/
     PUBLIC ${CMAKE_SOURCE_DIR}/inc/
