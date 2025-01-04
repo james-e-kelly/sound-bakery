@@ -121,6 +121,7 @@ auto sbk::engine::node_instance::play() -> sb_result
 
 auto sbk::engine::node_instance::update() -> sb_result
 {
+    ZoneScoped;
     m_stateMachine.process_event(event_update());
     return MA_SUCCESS;
 }

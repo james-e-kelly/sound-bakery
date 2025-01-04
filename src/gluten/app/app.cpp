@@ -67,10 +67,12 @@ int gluten::app::run(int argc, char** argv)
 
         double deltaTime = timeDiff.count();
 
-        // PreTick
-        for (std::shared_ptr<subsystem>& subsystem : m_subsystems)
         {
-            subsystem->pre_tick(deltaTime);
+            ZoneScopedN("PreTick");
+            for (std::shared_ptr<subsystem>& subsystem : m_subsystems)
+            {
+                subsystem->pre_tick(deltaTime);
+            }
         }
 
         if (m_isRequestingExit)
@@ -78,21 +80,28 @@ int gluten::app::run(int argc, char** argv)
             break;
         }
 
-        // Tick
-        for (std::shared_ptr<subsystem>& subsystem : m_subsystems)
         {
-            subsystem->tick(deltaTime);
+            ZoneScopedN("SubsystemTick");
+            for (std::shared_ptr<subsystem>& subsystem : m_subsystems)
+            {
+                subsystem->tick(deltaTime);
+            }
         }
 
-        for (auto& manager : m_managers)
         {
-            manager->tick(deltaTime);
+            ZoneScopedN("ManagerTick");
+            for (auto& manager : m_managers)
+            {
+                manager->tick(deltaTime);
+            }
         }
 
-        // Rendering
-        for (std::shared_ptr<subsystem>& subsystem : m_subsystems)
         {
-            subsystem->tick_rendering(deltaTime);
+            ZoneScopedN("RenderingTick");
+            for (std::shared_ptr<subsystem>& subsystem : m_subsystems)
+            {
+                subsystem->tick_rendering(deltaTime);
+            }
         }
 
         FrameMark;

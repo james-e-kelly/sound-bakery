@@ -94,6 +94,8 @@ namespace sbk::engine
             template <class event_class, class state_machine_class, class source_state_class, class target_state_class>
             void operator()(event_class const& update, state_machine_class& stateMachine, source_state_class&, target_state_class&)
             {
+                ZoneScoped;
+
                 if (stateMachine.m_soundInstance)
                 {
                     if (ma_sound_at_end(&stateMachine.m_soundInstance->sound) == MA_TRUE)

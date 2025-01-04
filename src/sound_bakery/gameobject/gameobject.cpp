@@ -107,6 +107,8 @@ void game_object::stop_all()
 
 void game_object::update()
 {
+    ZoneScoped;
+
     for (auto iter = get_objects().begin(); iter != get_objects().end();)
     {
         if (sbk::engine::voice* voice = iter->get()->try_convert_object<sbk::engine::voice>())

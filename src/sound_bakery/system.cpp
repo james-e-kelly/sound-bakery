@@ -78,6 +78,13 @@ namespace
     }
 }  // namespace
 
+namespace profiling_strings
+{
+    static const char* const s_updateName           = "SoundBakeryUpdate";
+    static const char* const s_gameObjectPlotName   = "Number Of Game Objects";
+    static const char* const s_nodeInstancePlotName = "Number Of Node Instances";
+}
+
 system::system() : sc_system(), m_gameThreadExecuter(make_manual_executor())
 {
     BOOST_ASSERT(s_system == nullptr);
@@ -190,11 +197,10 @@ sc_result system::init(const sb_system_config& config)
     return result;
 }
 
-static const char* const s_updateName = "SoundBakeryUpdate";
-
 sc_result system::update()
 {
-    FrameMarkStart(s_updateName);
+    FrameMarkStart(profiling_strings::s_updateName);
+    ZoneScoped;
 
     if (s_system == nullptr)
     {
@@ -223,7 +229,15 @@ sc_result system::update()
 
     s_system->m_gameThreadExecuter->loop(32);
 
-    FrameMarkEnd(s_updateName);
+    TracyPlotConfig(profiling_strings::s_gameObjectPlotName, tracy::PlotFormatType::Number, true, false, 0);
+    TracyPlotConfig(profiling_strings::s_nodeInstancePlotName, tracy::PlotFormatType::Number, true, false, 0);
+
+    TracyPlot(profiling_strings::s_gameObjectPlotName,
+              (int64_t)s_system->get_objects_of_type(sbk::engine::game_object::type()).size());
+    TracyPlot(profiling_strings::s_nodeInstancePlotName,
+              (int64_t)s_system->get_objects_of_type(sbk::engine::node_instance::type()).size());
+
+    FrameMarkEnd(profiling_strings::s_updateName);
 
     return MA_SUCCESS;
 }
