@@ -2,6 +2,20 @@
 
 #include "sound_bakery/serialization/serializer.h"
 #include "sound_bakery/system.h"
+#include "sound_bakery/util/type_helper.h"
+
+struct object_deleter
+{
+    void operator()(sbk::core::object* object)
+    {
+        if (object)
+        {
+            const SB_OBJECT_CATEGORY objectCategory = sbk::util::type_helper::getCategoryFromType(object->get_object_type());
+            object->~object();
+            sbk::engine::free(object, objectCategory);
+        }
+    }
+};
 
 auto sbk::core::object_owner::create_runtime_object(const rttr::type& type) -> std::shared_ptr<sbk::core::object>
 {
@@ -41,17 +55,14 @@ auto sbk::core::object_owner::create_runtime_object(const rttr::type& type) -> s
         return {};
     }
 
-    std::shared_ptr<sbk::core::object> result;
+    BOOST_ASSERT(variant.get_type().is_pointer());
 
-    // If shared_ptr
-    if (variant.get_type().is_wrapper())
-    {
-        result = variant.convert<std::shared_ptr<sbk::core::object>>();
-    }
+    std::shared_ptr<sbk::core::object> result;
+    
     // If raw
-    else if (variant.get_type().is_pointer())
+    if (variant.get_type().is_pointer())
     {
-        result = std::shared_ptr<sbk::core::object>(variant.convert<sbk::core::object*>());
+        result = std::shared_ptr<sbk::core::object>(variant.convert<sbk::core::object*>(), object_deleter());
     }
     else
     {

@@ -6,38 +6,61 @@
 #include "sound_bakery/profiling/voice_tracker.h"
 #include "sound_bakery/reflection/reflection.h"
 #include "sound_bakery/serialization/serializer.h"
+#include "sound_bakery/util/type_helper.h"
 #include "spdlog/sinks/daily_file_sink.h"
 #include "spdlog/sinks/rotating_file_sink.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 
 using namespace sbk::engine;
 
-void* sbk_malloc(std::size_t size, void* userData) throw(std::bad_alloc)
+namespace profiling_strings
 {
+    static const char* const s_updateName           = "SoundBakeryUpdate";
+    static const char* const s_gameObjectPlotName   = "Number Of Game Objects";
+    static const char* const s_nodeInstancePlotName = "Number Of Node Instances";
+}  // namespace profiling_strings
+
+void* sbk::engine::malloc(std::size_t size, SB_OBJECT_CATEGORY category)
+{ 
     void* pointer = std::malloc(size);
-    TracyAlloc(pointer, size);
+    TracyAllocN(pointer, size, sbk::util::type_helper::getObjectCategoryName(category).data());
     return pointer;
 }
 
-void* sbk_realloc(void* pointer, std::size_t size, void* userData) 
+void* sbk::engine::realloc(void* pointer, std::size_t size)
 { 
     return std::realloc(pointer, size); 
 }
 
-void sbk_free(void* pointer, void* userData) 
-{ 
-    TracyFree(pointer);
-    std::free(pointer); 
+void sbk::engine::free(void* pointer, SB_OBJECT_CATEGORY category)
+{
+    TracyFreeN(pointer, sbk::util::type_helper::getObjectCategoryName(category).data());
+    std::free(pointer);
 }
 
-void* operator new(std ::size_t size) throw(std::bad_alloc)
-{ 
-    return sbk_malloc(size, nullptr);
+void* ma_malloc(std::size_t size, void* userData)
+{
+    return sbk::engine::malloc(size, SB_CATEGORY_UNKNOWN);
 }
 
-void operator delete(void* pointer) throw() 
+void* ma_realloc(void* pointer, std::size_t size, void* userData) 
 { 
-    sbk_free(pointer, nullptr); 
+    return sbk::engine::realloc(pointer, size);
+}
+
+void ma_free(void* pointer, void* userData) 
+{ 
+    sbk::engine::free(pointer, SB_CATEGORY_UNKNOWN);
+}
+
+void* operator new(std::size_t size, SB_OBJECT_CATEGORY category) throw()
+{
+    return sbk::engine::malloc(size, category);
+}
+
+void operator delete(void* pointer, SB_OBJECT_CATEGORY category)
+{ 
+    sbk::engine::free(pointer, category); 
 }
 
 namespace
@@ -77,13 +100,6 @@ namespace
         }
     }
 }  // namespace
-
-namespace profiling_strings
-{
-    static const char* const s_updateName           = "SoundBakeryUpdate";
-    static const char* const s_gameObjectPlotName   = "Number Of Game Objects";
-    static const char* const s_nodeInstancePlotName = "Number Of Node Instances";
-}
 
 system::system() : sc_system(), m_gameThreadExecuter(make_manual_executor())
 {
@@ -175,9 +191,9 @@ sc_result system::init(const sb_system_config& config)
 
     sb_system_config configCopy = config;
     configCopy.soundChefConfig.allocationCallbacks.pUserData = s_system;
-    configCopy.soundChefConfig.allocationCallbacks.onMalloc = sbk_malloc;
-    configCopy.soundChefConfig.allocationCallbacks.onRealloc = sbk_realloc;
-    configCopy.soundChefConfig.allocationCallbacks.onFree = sbk_free;
+    configCopy.soundChefConfig.allocationCallbacks.onMalloc = ma_malloc;
+    configCopy.soundChefConfig.allocationCallbacks.onRealloc = ma_realloc;
+    configCopy.soundChefConfig.allocationCallbacks.onFree = ma_free;
 
     const sc_result result = sc_system_init(s_system, &configCopy.soundChefConfig);
     BOOST_ASSERT(result == MA_SUCCESS);

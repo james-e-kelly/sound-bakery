@@ -6,6 +6,9 @@
 #include "sound_bakery/core/object/object_tracker.h"
 #include "spdlog/sinks/basic_file_sink.h"
 
+void* operator new(std::size_t size, SB_OBJECT_CATEGORY category);
+void operator delete(void* pointer, SB_OBJECT_CATEGORY category);
+
 namespace sbk
 {
     namespace core
@@ -27,6 +30,10 @@ namespace sbk
 
         class bus;
         class game_object;
+
+        void* malloc(std::size_t size, SB_OBJECT_CATEGORY category);
+        void* realloc(void* pointer, std::size_t size);
+        void free(void* pointer, SB_OBJECT_CATEGORY category);
 
         /**
          * @brief Manager of the whole Sound Bakery.
