@@ -13,6 +13,8 @@ macro(set_sources)
     core/database/database_object.cpp
     core/database/database_ptr.cpp
 
+    core/memory.cpp
+
     core/property.cpp
 
     editor/project/project.cpp
@@ -55,7 +57,7 @@ macro(set_sources)
 
     source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Source Files" FILES ${SOUND_BAKERY_SOURCES})
 
-    set(SOUND_BAKERY_HEADERS
+set(SOUND_BAKERY_HEADERS
     sound_bakery_internal.h
     system.h
     pch.h
@@ -73,6 +75,8 @@ macro(set_sources)
     core/database/database.h
     core/database/database_object.h
     core/database/database_ptr.h
+
+    core/memory.h
 
     editor/editor_defines.h
     editor/project/project.h

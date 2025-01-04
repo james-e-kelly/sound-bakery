@@ -1,6 +1,7 @@
 #pragma once
 
 #include "sound_bakery/core/object/object_owner.h"
+#include "sound_bakery/core/memory.h"
 #include "sound_bakery/util/leak_detector.h"
 #include <boost/core/noncopyable.hpp>
 #include <boost/serialization/nvp.hpp>
@@ -101,6 +102,17 @@ namespace sbk::core
                     }
                 }
             }
+        }
+
+        void* operator new(std::size_t size)
+        {
+            BOOST_ASSERT_MSG(false, "Objects should not be created with default new");
+            return nullptr;
+        }
+
+        void* operator new(std::size_t size, SB_OBJECT_CATEGORY category)
+        {
+            return sbk::memory::malloc(size, category);
         }
 
     private:

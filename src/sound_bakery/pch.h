@@ -20,6 +20,7 @@
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <new>
 #include <optional>
 #include <random>
 #include <set>

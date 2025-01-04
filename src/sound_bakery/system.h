@@ -6,9 +6,6 @@
 #include "sound_bakery/core/object/object_tracker.h"
 #include "spdlog/sinks/basic_file_sink.h"
 
-void* operator new(std::size_t size, SB_OBJECT_CATEGORY category);
-void operator delete(void* pointer, SB_OBJECT_CATEGORY category);
-
 namespace sbk
 {
     namespace core

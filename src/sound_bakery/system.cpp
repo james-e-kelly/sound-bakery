@@ -20,47 +20,19 @@ namespace profiling_strings
     static const char* const s_nodeInstancePlotName = "Number Of Node Instances";
 }  // namespace profiling_strings
 
-void* sbk::engine::malloc(std::size_t size, SB_OBJECT_CATEGORY category)
-{ 
-    void* pointer = std::malloc(size);
-    TracyAllocN(pointer, size, sbk::util::type_helper::getObjectCategoryName(category).data());
-    return pointer;
-}
-
-void* sbk::engine::realloc(void* pointer, std::size_t size)
-{ 
-    return std::realloc(pointer, size); 
-}
-
-void sbk::engine::free(void* pointer, SB_OBJECT_CATEGORY category)
-{
-    TracyFreeN(pointer, sbk::util::type_helper::getObjectCategoryName(category).data());
-    std::free(pointer);
-}
-
 void* ma_malloc(std::size_t size, void* userData)
 {
-    return sbk::engine::malloc(size, SB_CATEGORY_UNKNOWN);
+    return sbk::memory::malloc(size, SB_CATEGORY_UNKNOWN);
 }
 
 void* ma_realloc(void* pointer, std::size_t size, void* userData) 
 { 
-    return sbk::engine::realloc(pointer, size);
+    return sbk::memory::realloc(pointer, size);
 }
 
 void ma_free(void* pointer, void* userData) 
 { 
-    sbk::engine::free(pointer, SB_CATEGORY_UNKNOWN);
-}
-
-void* operator new(std::size_t size, SB_OBJECT_CATEGORY category) throw()
-{
-    return sbk::engine::malloc(size, category);
-}
-
-void operator delete(void* pointer, SB_OBJECT_CATEGORY category)
-{ 
-    sbk::engine::free(pointer, category); 
+    sbk::memory::free(pointer, SB_CATEGORY_UNKNOWN);
 }
 
 namespace
