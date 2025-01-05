@@ -23,6 +23,8 @@ voice* game_object::play_container(container* container)
 
 void sbk::engine::game_object::post_event(event* event)
 {
+    ZoneScoped;
+
     if (event)
     {
         SBK_INFO("Posting Event");
@@ -75,6 +77,7 @@ void sbk::engine::game_object::post_event(event* event)
 
 void sbk::engine::game_object::stop_voice(voice* voice)
 {
+    ZoneScoped;
     for (auto iter = get_objects().begin(); iter != get_objects().end(); ++iter)
     {
         if (iter->get() == voice)
@@ -87,6 +90,7 @@ void sbk::engine::game_object::stop_voice(voice* voice)
 
 void sbk::engine::game_object::stop_container(container* container)
 {
+    ZoneScoped;
     for (auto iter = get_objects().begin(); iter != get_objects().end(); ++iter)
     {
         if (const sbk::engine::voice* const voice = iter->get()->try_convert_object<sbk::engine::voice>())
@@ -102,13 +106,13 @@ void sbk::engine::game_object::stop_container(container* container)
 
 void game_object::stop_all() 
 { 
+    ZoneScoped;
     destroy_all();   //< Assuming we only own voices 
 }
 
 void game_object::update()
 {
     ZoneScoped;
-
     for (auto iter = get_objects().begin(); iter != get_objects().end();)
     {
         if (sbk::engine::voice* voice = iter->get()->try_convert_object<sbk::engine::voice>())

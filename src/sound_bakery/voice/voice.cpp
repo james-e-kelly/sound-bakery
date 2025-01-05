@@ -11,6 +11,7 @@ DEFINE_REFLECTION(voice)
 
 void sbk::engine::voice::play_container(container* container)
 {
+    ZoneScoped;
     destroy_all();
 
     m_playingContainer = container;
@@ -35,7 +36,6 @@ void sbk::engine::voice::play_container(container* container)
 void voice::update()
 {
     ZoneScoped;
-
     for (auto iter = std::begin(get_objects()); iter != std::end(get_objects());)
     {
         if (sbk::engine::node_instance* const nodeInstance =

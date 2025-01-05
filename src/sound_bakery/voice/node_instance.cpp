@@ -26,6 +26,7 @@ sbk::engine::node_instance_fsm::~node_instance_fsm()
 
 auto sbk::engine::node_instance_fsm::action_init(const event_init& init) -> void
 {
+    ZoneScoped;
     m_referencingNode = std::static_pointer_cast<sbk::engine::node>(init.refNode.shared());
     init_node_group(init);
     init_callbacks();
@@ -62,6 +63,7 @@ auto sbk::engine::node_instance_fsm::action_init(const event_init& init) -> void
 
 auto sbk::engine::node_instance_fsm::action_play(const event_play& play) -> void
 {
+    ZoneScoped;
     if (m_referencingNode->get_object_type() == rttr::type::get<sound_container>())
     {
         sbk::engine::sound_container* const soundContainer  = m_referencingNode->try_convert_object<sound_container>();
@@ -81,7 +83,9 @@ auto sbk::engine::node_instance_fsm::action_play(const event_play& play) -> void
 
 auto sbk::engine::node_instance_fsm::action_stop(const event_stop& stop) -> void
 { 
-    m_soundInstance.release(); 
+    ZoneScoped;
+    BOOST_ASSERT(m_soundInstance.get());
+    m_soundInstance.reset(); 
     m_children.clear();
     m_parent.reset();
 }
@@ -90,6 +94,7 @@ auto sbk::engine::node_instance_fsm::action_stop(const event_stop& stop) -> void
 
 auto sbk::engine::node_instance_fsm::guard_init(const event_init& init) -> bool
 {
+    ZoneScoped;
     if (!init.refNode.lookup())
     {
         return false;
@@ -107,6 +112,7 @@ auto sbk::engine::node_instance_fsm::guard_init(const event_init& init) -> bool
 
 auto sbk::engine::node_instance::init(const event_init& init) -> sb_result 
 { 
+    ZoneScoped;
     m_stateMachine.m_gameObject = init.m_owningGameObject;
     m_stateMachine.m_owner = this;
     m_stateMachine.start();
@@ -162,6 +168,7 @@ auto sbk::engine::node_instance_fsm::add_dsp_to_node_group(sc_node_group* nodeGr
                                                        sc_dsp** dsp,
                                                        const sc_dsp_config& config) -> sb_result
 {
+    ZoneScoped;
     SC_CHECK_ARG(nodeGroup != nullptr);
     SC_CHECK_ARG(dsp != nullptr);
     SC_CHECK_ARG(config.vtable != nullptr);
@@ -172,6 +179,7 @@ auto sbk::engine::node_instance_fsm::add_dsp_to_node_group(sc_node_group* nodeGr
 
 auto sbk::engine::node_instance_fsm::init_node_group(const event_init& init) -> sb_result
 {
+    ZoneScoped;
     SC_CHECK_RESULT(sc_system_create_node_group(sbk::engine::system::get(), ztd::out_ptr::out_ptr(m_nodeGroup.nodeGroup)));
     SC_CHECK_RESULT(add_dsp_to_node_group(m_nodeGroup.nodeGroup.get(), &m_nodeGroup.lowpass, sc_dsp_config_init(SC_DSP_TYPE_LOWPASS)));
     SC_CHECK_RESULT(add_dsp_to_node_group(m_nodeGroup.nodeGroup.get(), &m_nodeGroup.highpass, sc_dsp_config_init(SC_DSP_TYPE_HIGHPASS)));
@@ -201,6 +209,7 @@ auto sbk::engine::node_instance_fsm::init_node_group(const event_init& init) -> 
 
 void sbk::engine::node_instance_fsm::init_parent()
 {
+    ZoneScoped;
     sbk::engine::node_base* nodeToReference = nullptr;
 
     switch (m_referencingNode->getNodeStatus())
@@ -229,6 +238,7 @@ void sbk::engine::node_instance_fsm::init_parent()
 
 void sbk::engine::node_instance_fsm::init_child()
 {
+    ZoneScoped;
     if (const container* const container = m_referencingNode->try_convert_object<sbk::engine::container>())
     {
         gather_children_context context;
@@ -259,6 +269,7 @@ void sbk::engine::node_instance_fsm::init_child()
 
 void sbk::engine::node_instance_fsm::init_callbacks()
 {
+    ZoneScoped;
     m_referencingNode->m_volume.get_delegate().AddRaw(this, &node_instance_fsm::set_volume);
     m_referencingNode->m_pitch.get_delegate().AddRaw(this, &node_instance_fsm::set_pitch);
     m_referencingNode->m_lowpass.get_delegate().AddRaw(this, &node_instance_fsm::set_lowpass);
