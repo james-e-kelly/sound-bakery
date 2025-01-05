@@ -250,3 +250,12 @@ FetchContent_Declare(
   GIT_PROGRESS TRUE
   EXCLUDE_FROM_ALL
 )
+
+FetchContent_Declare(
+  sbk_rpmalloc_content
+  GIT_REPOSITORY https://github.com/mjansson/rpmalloc.git
+  GIT_TAG 1.4.5
+  GIT_SHALLOW TRUE
+  GIT_PROGRESS TRUE
+  EXCLUDE_FROM_ALL
+)

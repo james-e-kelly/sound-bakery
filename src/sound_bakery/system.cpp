@@ -10,6 +10,7 @@
 #include "spdlog/sinks/daily_file_sink.h"
 #include "spdlog/sinks/rotating_file_sink.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
+#include "rpmalloc/rpmalloc.h"
 
 using namespace sbk::engine;
 
@@ -19,6 +20,8 @@ namespace profiling_strings
     static const char* const s_gameObjectPlotName   = "Number Of Game Objects";
     static const char* const s_voicePlotName        = "Number Of Voices";
     static const char* const s_nodeInstancePlotName = "Number Of Node Instances";
+    static const char* const s_totalMemory          = "Total Memory";
+    static const char* const s_currentMemory        = "Current Memory";
 }  // namespace profiling_strings
 
 void* ma_malloc(std::size_t size, void* userData)
@@ -225,6 +228,15 @@ sc_result system::update()
     TracyPlot(profiling_strings::s_gameObjectPlotName, (int64_t)s_system->get_objects_of_type(sbk::engine::game_object::type()).size());
     TracyPlot(profiling_strings::s_voicePlotName, (int64_t)s_system->get_objects_of_type(sbk::engine::voice::type()).size());
     TracyPlot(profiling_strings::s_nodeInstancePlotName, (int64_t)s_system->get_objects_of_type(sbk::engine::node_instance::type()).size());
+
+    rpmalloc_global_statistics_t stats;
+    rpmalloc_global_statistics(&stats);
+
+    TracyPlotConfig(profiling_strings::s_totalMemory, tracy::PlotFormatType::Memory, true, true, 0);
+    TracyPlot(profiling_strings::s_totalMemory,(int64_t) stats.mapped_total);
+
+    TracyPlotConfig(profiling_strings::s_currentMemory, tracy::PlotFormatType::Memory, true, true, 0);
+    TracyPlot(profiling_strings::s_currentMemory, (int64_t)stats.mapped);
 
     FrameMarkEnd(profiling_strings::s_updateName);
 

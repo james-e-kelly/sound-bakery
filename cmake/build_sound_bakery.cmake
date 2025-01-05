@@ -166,6 +166,14 @@ function(build_dependencies)
 
     message(STATUS "Fetching Tracy")
     FetchContent_MakeAvailable(tracy)
+
+    message(STATUS "Fetching rpmalloc")
+    FetchContent_MakeAvailable(sbk_rpmalloc_content)
+
+    add_library(sbk_rpmalloc STATIC ${sbk_rpmalloc_content_SOURCE_DIR}/rpmalloc/rpmalloc.c)
+    target_include_directories(sbk_rpmalloc PUBLIC ${sbk_rpmalloc_content_SOURCE_DIR})
+    target_compile_definitions(sbk_rpmalloc PUBLIC ENABLE_STATISTICS)
+    add_library(sbk::rpmalloc ALIAS sbk_rpmalloc)
 endfunction()
 
 macro(setup_format_sources)

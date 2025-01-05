@@ -38,6 +38,8 @@ target_link_libraries(sound_bakery PUBLIC
   ztd::out_ptr
   yaml-archive
   Tracy::TracyClient
+  PRIVATE
+  sbk::rpmalloc
 )
 
 install(TARGETS sound_bakery DESTINATION lib/sound_bakery)
