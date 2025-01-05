@@ -277,8 +277,10 @@ rttr::enumeration type_helper::getObjectCategoryEnum()
 rttr::string_view type_helper::getObjectCategoryName(const SB_OBJECT_CATEGORY& objectCategory)
 {
     static const rttr::enumeration objectCategoryEnum = getObjectCategoryEnum();
+    static const rttr::string_view defaultName        = "Unknown";
 
-    return objectCategoryEnum.value_to_name(objectCategory);
+    rttr::string_view name = objectCategoryEnum.value_to_name(objectCategory);
+    return name.data() ? name : defaultName;
 }
 
 sbk::core::object* type_helper::getObjectFromInstance(const rttr::instance& instance)
