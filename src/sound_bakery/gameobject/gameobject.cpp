@@ -8,7 +8,7 @@ using namespace sbk::engine;
 
 DEFINE_REFLECTION(sbk::engine::game_object)
 
-voice* game_object::play_container(container* container)
+auto game_object::play_container(container* container, const pass_key<sbk::engine::system>& passkey) -> voice*
 {
     if (container)
     {
@@ -21,7 +21,7 @@ voice* game_object::play_container(container* container)
     return nullptr;
 }
 
-void sbk::engine::game_object::post_event(event* event)
+auto sbk::engine::game_object::post_event(event* event, const pass_key<sbk::engine::system>& passkey) -> void
 {
     ZoneScoped;
 
@@ -48,24 +48,24 @@ void sbk::engine::game_object::post_event(event* event)
                 case SB_ACTION_PLAY:
                     if (container)
                     {
-                        play_container(container);
+                        play_container(container, passkey);
                     }
                     else if (childEvent)
                     {
-                        post_event(childEvent);
+                        post_event(childEvent, passkey);
                     }
                     break;
                 case SB_ACTION_STOP:
                     if (container)
                     {
-                        stop_container(container);
+                        stop_container(container, passkey);
                     }
                     else if (childEvent)
                     {
                     }
                     else if (gameObject)
                     {
-                        gameObject->stop_all();
+                        gameObject->stop_all(passkey);
                     }
                     break;
                 default:
@@ -75,7 +75,7 @@ void sbk::engine::game_object::post_event(event* event)
     }
 }
 
-void sbk::engine::game_object::stop_voice(voice* voice)
+void sbk::engine::game_object::stop_voice(voice* voice, const pass_key<sbk::engine::system>& passkey)
 {
     ZoneScoped;
     for (auto iter = get_objects().begin(); iter != get_objects().end(); ++iter)
@@ -88,7 +88,7 @@ void sbk::engine::game_object::stop_voice(voice* voice)
     }
 }
 
-void sbk::engine::game_object::stop_container(container* container)
+void sbk::engine::game_object::stop_container(container* container, const pass_key<sbk::engine::system>& passkey)
 {
     ZoneScoped;
     for (auto iter = get_objects().begin(); iter != get_objects().end(); ++iter)
@@ -104,7 +104,7 @@ void sbk::engine::game_object::stop_container(container* container)
     }
 }
 
-void game_object::stop_all() 
+void game_object::stop_all(const pass_key<sbk::engine::system>& passkey)
 { 
     ZoneScoped;
     destroy_all();   //< Assuming we only own voices 

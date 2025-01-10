@@ -143,6 +143,12 @@ namespace sbk::engine
 
         typedef state_uninit initial_state;  // the initial state of the player SM
 
+        template <class FSM, class Event>
+        void no_transition(Event const& event, FSM& stateMachine, int state)
+        {
+            SBK_INFO(fmt::format("No transition from state {} on event {}", state, typeid(event).name()).c_str());
+        }
+
         struct transition_table : boost::mpl::vector
             <
                   // Start, Event, Next, Action, Guard

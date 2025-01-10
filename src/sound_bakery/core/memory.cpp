@@ -51,3 +51,12 @@ void sbk::memory::free(void* pointer, SB_OBJECT_CATEGORY category)
     rpfree(pointer);
 }
 
+auto sbk::memory::thread_start(std::string_view threadName) -> void 
+{ 
+    rpmalloc_thread_initialize(); 
+}
+
+auto sbk::memory::thread_end(std::string_view threadName) -> void
+{
+    rpmalloc_thread_finalize(1);
+}

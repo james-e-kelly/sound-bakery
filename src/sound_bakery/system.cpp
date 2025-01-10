@@ -77,10 +77,19 @@ namespace
     }
 }  // namespace
 
-system::system() : sc_system(), m_gameThreadExecuter(make_manual_executor())
+system::system()
+    : sc_system()
 {
     BOOST_ASSERT(s_system == nullptr);
     s_system = this;
+
+    concurrencpp::runtime_options runtimeOptions;
+    runtimeOptions.thread_started_callback = [](std::string_view threadName) -> void { sbk::memory::thread_start(threadName); };
+    runtimeOptions.thread_terminated_callback = [](std::string_view threadName) -> void { sbk::memory::thread_end(threadName); };
+
+    m_threadRuntime             = std::make_unique<concurrencpp::runtime>(runtimeOptions);
+    m_gameThreadExecuter        = std::make_shared<concurrencpp::manual_executor>();
+    m_studioThreadExecuter      = std::make_shared<concurrencpp::worker_thread_executor>(runtimeOptions.thread_started_callback, runtimeOptions.thread_terminated_callback);
 
     const sc_result initLogResult = sc_system_log_init(this, miniaudio_log_callback);
     BOOST_ASSERT(initLogResult == MA_SUCCESS);
@@ -91,8 +100,9 @@ system::~system()
     SBK_INFO("Closing Sound Bakery");
 
     // Close threads
-    background_executor()->shutdown();
+    get_background_thread_executer()->shutdown();
     get_game_thread_executer()->shutdown();
+    get_system_thread_executer()->shutdown();
 
     if (m_project)
     {
@@ -180,7 +190,7 @@ sc_result system::init(const sb_system_config& config)
         s_registeredReflection = true;
     }
 
-    s_system->m_listenerGameObject = s_system->create_runtime_object<sbk::engine::game_object>();
+    s_system->m_listenerGameObject = s_system->create_database_object<sbk::engine::game_object>();
 
     // TODO
     // Add way of turning off profiling
@@ -244,6 +254,89 @@ sc_result system::update()
 }
 
 sbk::core::object_owner* system::get_current_object_owner() { return m_project.get(); }
+
+auto sbk::engine::system::post_event(const char* eventName, sbk_id gameObjectID) -> sb_result
+{
+    ZoneScoped;
+    SC_CHECK(s_system != nullptr, MA_DEVICE_NOT_STARTED);
+    SC_CHECK_ARG(eventName);
+    
+    std::weak_ptr<sbk::core::database_object> event = s_system->try_find(eventName);
+    SC_CHECK(!event.expired(), MA_DOES_NOT_EXIST);
+
+    std::weak_ptr<sbk::core::database_object> gameObject = get_game_object(gameObjectID);
+    SC_CHECK(!gameObject.expired(), MA_DOES_NOT_EXIST);
+
+    s_system->get_system_thread_executer()->post([event, gameObject]() 
+        {
+            if (std::shared_ptr<sbk::engine::game_object> sharedGameObject =
+                std::static_pointer_cast<sbk::engine::game_object>(gameObject.lock()))
+            {
+                if (std::shared_ptr<sbk::engine::event> sharedEvent =
+                    std::static_pointer_cast<sbk::engine::event>(event.lock()))
+                {
+                    sharedGameObject->post_event(sharedEvent.get(), pass_key<sbk::engine::system>());
+                }
+            }
+        }
+    );
+
+    return MA_SUCCESS;
+}
+
+auto sbk::engine::system::post_container(sbk_id containerID, sbk_id gameObjectID) -> sb_result
+{
+    ZoneScoped;
+    SC_CHECK(s_system != nullptr, MA_DEVICE_NOT_STARTED);
+    SC_CHECK_ARG(containerID != 0);
+
+    std::weak_ptr<sbk::core::database_object> container = s_system->try_find(containerID);
+    SC_CHECK(!container.expired(), MA_DOES_NOT_EXIST);
+
+    std::weak_ptr<sbk::core::database_object> gameObject = get_game_object(gameObjectID);
+    SC_CHECK(!gameObject.expired(), MA_DOES_NOT_EXIST);
+
+    s_system->get_system_thread_executer()->post(
+        [container, gameObject]()
+        {
+            if (std::shared_ptr<sbk::engine::game_object> sharedGameObject =
+                    std::static_pointer_cast<sbk::engine::game_object>(gameObject.lock()))
+            {
+                if (std::shared_ptr<sbk::engine::container> sharedContainer =
+                        std::static_pointer_cast<sbk::engine::container>(container.lock()))
+                {
+                    sharedGameObject->play_container(sharedContainer.get(), pass_key<sbk::engine::system>());
+                }
+            }
+        });
+
+    return MA_SUCCESS;
+}
+
+auto sbk::engine::system::stop_all(sbk_id gameObjectID) -> sb_result
+{
+    ZoneScoped;
+    SC_CHECK(s_system != nullptr, MA_DEVICE_NOT_STARTED);
+
+    std::weak_ptr<sbk::core::database_object> gameObject = get_game_object(gameObjectID);
+    SC_CHECK(!gameObject.expired(), MA_DOES_NOT_EXIST);
+
+    s_system->get_system_thread_executer()->post([gameObject]()
+        {
+            if (std::shared_ptr<sbk::engine::game_object> sharedGameObject =
+                    std::static_pointer_cast<sbk::engine::game_object>(gameObject.lock()))
+            {
+                sharedGameObject->stop_all(pass_key<sbk::engine::system>());
+            }
+        });
+
+    return MA_SUCCESS;
+}
+
+auto sbk::engine::system::get_game_object(sbk_id gameObjectID) -> std::weak_ptr<sbk::core::database_object>
+{
+    return gameObjectID == 0 ? std::static_pointer_cast<sbk::core::database_object, sbk::engine::game_object>(s_system->m_listenerGameObject) : s_system->try_find(gameObjectID);
+}
 
 sc_result system::open_project(const std::filesystem::path& project_file)
 {
@@ -357,6 +450,16 @@ sbk::engine::profiling::voice_tracker* system::get_voice_tracker()
 auto sbk::engine::system::get_game_thread_executer() const -> std::shared_ptr<concurrencpp::manual_executor>
 {
     return m_gameThreadExecuter;
+}
+
+auto sbk::engine::system::get_system_thread_executer() const -> std::shared_ptr<concurrencpp::worker_thread_executor>
+{
+    return m_studioThreadExecuter;
+}
+
+auto sbk::engine::system::get_background_thread_executer() const -> std::shared_ptr<concurrencpp::thread_pool_executor>
+{
+    return m_threadRuntime ? m_threadRuntime->background_executor() : std::shared_ptr<concurrencpp::thread_pool_executor>{};
 }
 
 sbk::engine::game_object* sbk::engine::system::get_listener_game_object() const

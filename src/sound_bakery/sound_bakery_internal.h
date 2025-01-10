@@ -3,6 +3,16 @@
 
 #include "sound_bakery/sound_bakery.h"
 
+template <class T>
+class pass_key
+{
+private:
+    friend T;
+    pass_key() {}
+    pass_key(const pass_key&) {}
+    pass_key& operator=(const pass_key&) = delete;
+};
+
 struct SC_SOUND_DELETER
 {
     void operator()(sc_sound* sound) { sc_sound_release(sound); }

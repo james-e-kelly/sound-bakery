@@ -43,7 +43,6 @@ namespace sbk
                                       public sbk::core::object_owner,
                                       public sbk::core::object_tracker,
                                       public sbk::core::database,
-                                      public concurrencpp::runtime,
                                       public boost::noncopyable
         {
             REGISTER_REFLECTION(system)
@@ -66,11 +65,18 @@ namespace sbk
             static auto update() -> sc_result;
             static auto destroy() -> void;
 
+            static auto post_event(const char* eventName, sbk_id gameObjectID) -> sb_result;
+            static auto post_container(sbk_id containerID, sbk_id gameObjectID) -> sb_result;
+            
+            static auto stop_all(sbk_id gameObjectID) -> sb_result;
+
             [[nodiscard]] static auto get() -> system*;
             [[nodiscard]] static auto get_operating_mode() -> operating_mode;
             [[nodiscard]] static auto get_project() -> sbk::editor::project*;
             [[nodiscard]] static auto get_voice_tracker() -> sbk::engine::profiling::voice_tracker*;
             [[nodiscard]] auto get_game_thread_executer() const -> std::shared_ptr<concurrencpp::manual_executor>;
+            [[nodiscard]] auto get_system_thread_executer() const -> std::shared_ptr<concurrencpp::worker_thread_executor>;
+            [[nodiscard]] auto get_background_thread_executer() const -> std::shared_ptr<concurrencpp::thread_pool_executor>;
             [[nodiscard]] auto get_listener_game_object() const -> sbk::engine::game_object*;
             [[nodiscard]] auto get_master_bus() const -> sbk::engine::bus*;
             [[nodiscard]] auto get_current_object_owner() -> sbk::core::object_owner*;  //< Either project for editor or system for runtime
@@ -98,13 +104,17 @@ namespace sbk
             }
 
         private:
+            static auto get_game_object(sbk_id gameObjectID) -> std::weak_ptr<sbk::core::database_object>;
+
             bool m_registeredReflection = false;
 
             std::shared_ptr<sbk::engine::game_object> m_listenerGameObject;
             std::shared_ptr<sbk::engine::bus> m_masterBus;
             std::unique_ptr<sbk::editor::project> m_project;
             std::unique_ptr<profiling::voice_tracker> m_voiceTracker;
+            std::unique_ptr<concurrencpp::runtime> m_threadRuntime;
             std::shared_ptr<concurrencpp::manual_executor> m_gameThreadExecuter;
+            std::shared_ptr<concurrencpp::worker_thread_executor> m_studioThreadExecuter;
             std::shared_ptr<spdlog::logger> m_logger;
         };
     }  // namespace engine
