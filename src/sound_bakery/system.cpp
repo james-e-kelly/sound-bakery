@@ -13,6 +13,7 @@
 #include "rpmalloc/rpmalloc.h"
 
 using namespace sbk::engine;
+using namespace std::chrono_literals;
 
 namespace profiling_strings
 {
@@ -89,7 +90,9 @@ system::system()
 
     m_threadRuntime             = std::make_unique<concurrencpp::runtime>(runtimeOptions);
     m_gameThreadExecuter        = std::make_shared<concurrencpp::manual_executor>();
-    m_studioThreadExecuter      = std::make_shared<concurrencpp::worker_thread_executor>(runtimeOptions.thread_started_callback, runtimeOptions.thread_terminated_callback);
+    m_studioThreadExecuter      = std::make_shared<concurrencpp::manual_executor>();
+    m_workerThread = std::make_shared<concurrencpp::worker_thread_executor>(runtimeOptions.thread_started_callback,
+                                                                            runtimeOptions.thread_terminated_callback);
 
     const sc_result initLogResult = sc_system_log_init(this, miniaudio_log_callback);
     BOOST_ASSERT(initLogResult == MA_SUCCESS);
@@ -100,6 +103,8 @@ system::~system()
     SBK_INFO("Closing Sound Bakery");
 
     // Close threads
+    m_studioThreadTimer.cancel();
+    m_workerThread->shutdown();
     get_background_thread_executer()->shutdown();
     get_game_thread_executer()->shutdown();
     get_system_thread_executer()->shutdown();
@@ -196,6 +201,9 @@ sc_result system::init(const sb_system_config& config)
     // Add way of turning off profiling
     s_system->m_voiceTracker = std::make_unique<profiling::voice_tracker>();
 
+    s_system->m_studioThreadTimer = s_system->m_threadRuntime->timer_queue()->make_timer(0ms, 20ms, s_system->m_workerThread,
+                                                         [] { s_system->update_async(); });
+
     return result;
 }
 
@@ -213,21 +221,6 @@ sc_result system::update()
     {
         s_system->m_voiceTracker->update(s_system);
     }
-
-    std::unordered_set<sbk::core::object*> objects = s_system->get_objects_of_type(sbk::engine::game_object::type());
-
-    std::for_each(
-        objects.begin(), objects.end(),
-        [](sbk::core::object* const object)
-        {
-            if (object != nullptr)
-            {
-                if (sbk::engine::game_object* const gameObject = object->try_convert_object<sbk::engine::game_object>())
-                {
-                    gameObject->update();
-                }
-            }
-        });
 
     s_system->m_gameThreadExecuter->loop(32);
 
@@ -251,6 +244,24 @@ sc_result system::update()
     FrameMarkEnd(profiling_strings::s_updateName);
 
     return MA_SUCCESS;
+}
+
+auto sbk::engine::system::update_async() -> void
+{
+    ZoneScoped;
+
+    m_studioThreadExecuter->loop(m_studioThreadExecuter->size());
+
+    for (auto& object : s_system->get_objects_of_type(sbk::engine::game_object::type()))
+    {
+        if (object)
+        {
+            if (sbk::engine::game_object* const gameObject = object->try_convert_object<sbk::engine::game_object>())
+            {
+                gameObject->update();
+            }
+        }
+    }
 }
 
 sbk::core::object_owner* system::get_current_object_owner() { return m_project.get(); }
@@ -452,7 +463,7 @@ auto sbk::engine::system::get_game_thread_executer() const -> std::shared_ptr<co
     return m_gameThreadExecuter;
 }
 
-auto sbk::engine::system::get_system_thread_executer() const -> std::shared_ptr<concurrencpp::worker_thread_executor>
+auto sbk::engine::system::get_system_thread_executer() const -> std::shared_ptr<concurrencpp::manual_executor>
 {
     return m_studioThreadExecuter;
 }

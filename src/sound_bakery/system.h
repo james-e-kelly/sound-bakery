@@ -75,7 +75,7 @@ namespace sbk
             [[nodiscard]] static auto get_project() -> sbk::editor::project*;
             [[nodiscard]] static auto get_voice_tracker() -> sbk::engine::profiling::voice_tracker*;
             [[nodiscard]] auto get_game_thread_executer() const -> std::shared_ptr<concurrencpp::manual_executor>;
-            [[nodiscard]] auto get_system_thread_executer() const -> std::shared_ptr<concurrencpp::worker_thread_executor>;
+            [[nodiscard]] auto get_system_thread_executer() const -> std::shared_ptr<concurrencpp::manual_executor>;
             [[nodiscard]] auto get_background_thread_executer() const -> std::shared_ptr<concurrencpp::thread_pool_executor>;
             [[nodiscard]] auto get_listener_game_object() const -> sbk::engine::game_object*;
             [[nodiscard]] auto get_master_bus() const -> sbk::engine::bus*;
@@ -104,6 +104,8 @@ namespace sbk
             }
 
         private:
+            auto update_async() -> void;
+
             static auto get_game_object(sbk_id gameObjectID) -> std::weak_ptr<sbk::core::database_object>;
 
             bool m_registeredReflection = false;
@@ -114,7 +116,9 @@ namespace sbk
             std::unique_ptr<profiling::voice_tracker> m_voiceTracker;
             std::unique_ptr<concurrencpp::runtime> m_threadRuntime;
             std::shared_ptr<concurrencpp::manual_executor> m_gameThreadExecuter;
-            std::shared_ptr<concurrencpp::worker_thread_executor> m_studioThreadExecuter;
+            std::shared_ptr<concurrencpp::manual_executor> m_studioThreadExecuter;
+            std::shared_ptr<concurrencpp::worker_thread_executor> m_workerThread;
+            concurrencpp::timer m_studioThreadTimer;
             std::shared_ptr<spdlog::logger> m_logger;
         };
     }  // namespace engine
