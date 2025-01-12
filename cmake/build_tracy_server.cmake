@@ -3,7 +3,7 @@ FetchContent_MakeAvailable(tracy)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_subdirectory(${tracy_SOURCE_DIR}/profiler ${tracy_BINARY_DIR}/profiler)
+add_subdirectory(${tracy_SOURCE_DIR}/profiler ${tracy_BINARY_DIR}/profiler EXCLUDE_FROM_ALL)
 
 set(SERVER_FILES
     TracyAchievementData.cpp
