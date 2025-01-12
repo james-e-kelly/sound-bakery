@@ -174,6 +174,7 @@ function(build_dependencies)
     target_include_directories(sbk_rpmalloc PUBLIC ${sbk_rpmalloc_content_SOURCE_DIR})
     target_compile_definitions(sbk_rpmalloc PUBLIC ENABLE_STATISTICS)
     add_library(sbk::rpmalloc ALIAS sbk_rpmalloc)
+    set_target_properties(sbk_rpmalloc PROPERTIES C_EXTENSIONS ON)
 endfunction()
 
 macro(setup_format_sources)
