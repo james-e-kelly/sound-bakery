@@ -3,9 +3,78 @@ FetchContent_MakeAvailable(tracy)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_subdirectory(${tracy_SOURCE_DIR}/profiler ${tracy_BINARY_DIR}/profiler EXCLUDE_FROM_ALL)
+CPMAddPackage(
+    NAME PPQSort
+    GITHUB_REPOSITORY foxtran/PPQSort
+    GIT_TAG master
+    EXCLUDE_FROM_ALL TRUE
+)
 
+CPMAddPackage(
+    NAME capstone
+    GITHUB_REPOSITORY capstone-engine/capstone
+    GIT_TAG next
+    OPTIONS
+        "CAPSTONE_X86_ATT_DISABLE ON"
+        "CAPSTONE_ALPHA_SUPPORT OFF"
+        "CAPSTONE_HPPA_SUPPORT OFF"
+        "CAPSTONE_LOONGARCH_SUPPORT OFF"
+        "CAPSTONE_M680X_SUPPORT OFF"
+        "CAPSTONE_M68K_SUPPORT OFF"
+        "CAPSTONE_MIPS_SUPPORT OFF"
+        "CAPSTONE_MOS65XX_SUPPORT OFF"
+        "CAPSTONE_PPC_SUPPORT OFF"
+        "CAPSTONE_SPARC_SUPPORT OFF"
+        "CAPSTONE_SYSTEMZ_SUPPORT OFF"
+        "CAPSTONE_XCORE_SUPPORT OFF"
+        "CAPSTONE_TRICORE_SUPPORT OFF"
+        "CAPSTONE_TMS320C64X_SUPPORT OFF"
+        "CAPSTONE_M680X_SUPPORT OFF"
+        "CAPSTONE_EVM_SUPPORT OFF"
+        "CAPSTONE_WASM_SUPPORT OFF"
+        "CAPSTONE_BPF_SUPPORT OFF"
+        "CAPSTONE_RISCV_SUPPORT OFF"
+        "CAPSTONE_SH_SUPPORT OFF"
+        "CAPSTONE_XTENSA_SUPPORT OFF"
+        "CAPSTONE_BUILD_MACOS_THIN ON"
+    EXCLUDE_FROM_ALL TRUE
+)
+
+set(ZSTD_DIR "${tracy_SOURCE_DIR}/zstd")
 set(TRACY_COMMON_DIR ${tracy_SOURCE_DIR}/public/common)
+set(TRACY_SERVER_DIR ${tracy_SOURCE_DIR}/server)
+
+set(ZSTD_SOURCES
+    decompress/zstd_ddict.c
+    decompress/zstd_decompress_block.c
+    decompress/huf_decompress.c
+    decompress/zstd_decompress.c
+    common/zstd_common.c
+    common/error_private.c
+    common/xxhash.c
+    common/entropy_common.c
+    common/debug.c
+    common/threading.c
+    common/pool.c
+    common/fse_decompress.c
+    compress/zstd_ldm.c
+    compress/zstd_compress_superblock.c
+    compress/zstd_opt.c
+    compress/zstd_compress_sequences.c
+    compress/fse_compress.c
+    compress/zstd_double_fast.c
+    compress/zstd_compress.c
+    compress/zstd_compress_literals.c
+    compress/hist.c
+    compress/zstdmt_compress.c
+    compress/zstd_lazy.c
+    compress/huf_compress.c
+    compress/zstd_fast.c
+    dictBuilder/zdict.c
+    dictBuilder/cover.c
+    dictBuilder/divsufsort.c
+    dictBuilder/fastcover.c
+)
 
 set(TRACY_COMMON_SOURCES
     tracy_lz4.cpp
@@ -14,10 +83,6 @@ set(TRACY_COMMON_SOURCES
     TracyStackFrames.cpp
     TracySystem.cpp
 )
-
-list(TRANSFORM TRACY_COMMON_SOURCES PREPEND "${TRACY_COMMON_DIR}/")
-
-set(TRACY_SERVER_DIR ${tracy_SOURCE_DIR}/server)
 
 set(TRACY_SERVER_SOURCES
     TracyMemory.cpp
@@ -29,12 +94,6 @@ set(TRACY_SERVER_SOURCES
     TracyThreadCompress.cpp
     TracyWorker.cpp
 )
-
-list(TRANSFORM TRACY_SERVER_SOURCES PREPEND "${TRACY_SERVER_DIR}/")
-
-add_library(sbk_tracy_server STATIC EXCLUDE_FROM_ALL ${TRACY_COMMON_SOURCES} ${TRACY_SERVER_SOURCES})
-target_include_directories(sbk_tracy_server PUBLIC ${TRACY_COMMON_DIR} ${TRACY_SERVER_DIR})
-target_link_libraries(sbk_tracy_server PUBLIC TracyCapstone TracyZstd PPQSort::PPQSort)
 
 set(SERVER_FILES
     TracyAchievementData.cpp
@@ -92,7 +151,21 @@ set(SERVER_FILES
     TracyView_ZoneTimeline.cpp
     TracyWeb.cpp
 )
+
 list(TRANSFORM SERVER_FILES PREPEND ${tracy_SOURCE_DIR}/profiler/src/profiler/)
+list(TRANSFORM TRACY_COMMON_SOURCES PREPEND "${TRACY_COMMON_DIR}/")
+list(TRANSFORM TRACY_SERVER_SOURCES PREPEND "${TRACY_SERVER_DIR}/")
+list(TRANSFORM ZSTD_SOURCES PREPEND "${ZSTD_DIR}/")
+
+set_property(SOURCE ${ZSTD_DIR}/decompress/huf_decompress_amd64.S APPEND PROPERTY COMPILE_OPTIONS "-x" "assembler-with-cpp")
+
+add_library(TracyZstd STATIC ${ZSTD_SOURCES})
+target_include_directories(TracyZstd PUBLIC ${ZSTD_DIR})
+target_compile_definitions(TracyZstd PRIVATE ZSTD_DISABLE_ASM)
+
+add_library(sbk_tracy_server STATIC ${TRACY_COMMON_SOURCES} ${TRACY_SERVER_SOURCES})
+target_include_directories(sbk_tracy_server PUBLIC ${TRACY_COMMON_DIR} ${TRACY_SERVER_DIR} ${capstone_SOURCE_DIR}/include/capstone)
+target_link_libraries(sbk_tracy_server PUBLIC capstone_static TracyZstd PPQSort::PPQSort)
 
 if(SELF_PROFILE)
     add_definitions(-DTRACY_ENABLE)
@@ -102,7 +175,7 @@ if(SELF_PROFILE)
 endif()
 
 add_library(sbk_tracy_profiler STATIC ${PROFILER_FILES} ${COMMON_FILES} ${SERVER_FILES} ${tracy_SOURCE_DIR}/profiler/src/ini.c)
-add_library(sbk::tracy_profiler ALIAS sbk_tracy_profiler)
 target_link_libraries(sbk_tracy_profiler PUBLIC sbk_tracy_server imgui nfd)
 target_include_directories(sbk_tracy_profiler PUBLIC ${tracy_SOURCE_DIR}/profiler/src/profiler)
 target_compile_definitions(sbk_tracy_profiler PUBLIC TRACY_NO_ROOT_WINDOW)
+add_library(sbk::tracy_profiler ALIAS sbk_tracy_profiler)

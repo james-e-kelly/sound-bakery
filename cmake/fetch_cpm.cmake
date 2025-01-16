@@ -10,4 +10,5 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(cpm)
 
+set(CPM_DIRECTORY ${cpm_SOURCE_DIR}/cmake)
 include(${cpm_SOURCE_DIR}/cmake/CPM.cmake)
