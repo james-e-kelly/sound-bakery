@@ -5,6 +5,37 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_subdirectory(${tracy_SOURCE_DIR}/profiler ${tracy_BINARY_DIR}/profiler EXCLUDE_FROM_ALL)
 
+set(TRACY_COMMON_DIR ${tracy_SOURCE_DIR}/public/common)
+
+set(TRACY_COMMON_SOURCES
+    tracy_lz4.cpp
+    tracy_lz4hc.cpp
+    TracySocket.cpp
+    TracyStackFrames.cpp
+    TracySystem.cpp
+)
+
+list(TRANSFORM TRACY_COMMON_SOURCES PREPEND "${TRACY_COMMON_DIR}/")
+
+set(TRACY_SERVER_DIR ${tracy_SOURCE_DIR}/server)
+
+set(TRACY_SERVER_SOURCES
+    TracyMemory.cpp
+    TracyMmap.cpp
+    TracyPrint.cpp
+    TracySysUtil.cpp
+    TracyTaskDispatch.cpp
+    TracyTextureCompression.cpp
+    TracyThreadCompress.cpp
+    TracyWorker.cpp
+)
+
+list(TRANSFORM TRACY_SERVER_SOURCES PREPEND "${TRACY_SERVER_DIR}/")
+
+add_library(sbk_tracy_server STATIC EXCLUDE_FROM_ALL ${TRACY_COMMON_SOURCES} ${TRACY_SERVER_SOURCES})
+target_include_directories(sbk_tracy_server PUBLIC ${TRACY_COMMON_DIR} ${TRACY_SERVER_DIR})
+target_link_libraries(sbk_tracy_server PUBLIC TracyCapstone TracyZstd PPQSort::PPQSort)
+
 set(SERVER_FILES
     TracyAchievementData.cpp
     TracyAchievements.cpp
@@ -72,6 +103,6 @@ endif()
 
 add_library(sbk_tracy_profiler STATIC ${PROFILER_FILES} ${COMMON_FILES} ${SERVER_FILES} ${tracy_SOURCE_DIR}/profiler/src/ini.c)
 add_library(sbk::tracy_profiler ALIAS sbk_tracy_profiler)
-target_link_libraries(sbk_tracy_profiler PUBLIC TracyServer imgui nfd)
+target_link_libraries(sbk_tracy_profiler PUBLIC sbk_tracy_server imgui nfd)
 target_include_directories(sbk_tracy_profiler PUBLIC ${tracy_SOURCE_DIR}/profiler/src/profiler)
 target_compile_definitions(sbk_tracy_profiler PUBLIC TRACY_NO_ROOT_WINDOW)
