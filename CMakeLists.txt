@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.28) # Version set to have EXCLUDE_FROM_ALL available in FetchContent_Declare
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+include(fetch_cpm)
 include(build_sound_bakery_project)
 
 project("Sound Bakery" VERSION 0.2.0 DESCRIPTION "An open-source audio middleware tool with an authoring application and programmer's API")
