@@ -7,6 +7,8 @@ using namespace gluten;
 
 void widget_subsystem::tick(double deltaTime)
 {
+    ZoneScoped;
+
     assert(m_widgets.size() > 0);
 
     for (int index = m_widgets.size() - 1; index >= 0; index--)
@@ -43,6 +45,8 @@ void widget_subsystem::tick(double deltaTime)
 
 void widget_subsystem::exit()
 {
+    ZoneScoped;
+
     for (std::weak_ptr<widget>& widget : m_widgets)
     {
         if (std::shared_ptr<gluten::widget> sharedWidget = widget.lock())

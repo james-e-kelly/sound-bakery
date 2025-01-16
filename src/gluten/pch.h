@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Delegates.h"
+#include "tracy/Tracy.hpp"
 
 #include <fmt/core.h>
 #define BYTESIZE_FMTLIB_FORMATTER

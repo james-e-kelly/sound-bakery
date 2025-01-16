@@ -159,7 +159,7 @@ sc_result sc_bank_build(sc_bank* bank,
         finalData[index]     = inputFileData;
         finalDataSize[index] = inputFileDataSize + SC_BANK_FILE_NAME_BUFFER_SIZE;
         memcpy(finalFilenames + (index * SC_BANK_FILE_NAME_BUFFER_SIZE), filename,
-               strnlen(filename, SC_BANK_FILE_NAME_BUFFER_SIZE));
+               strlen(filename));
         totalDataSize += SC_CHUNK_MIN_SIZE + SC_BANK_FILE_NAME_BUFFER_SIZE + inputFileDataSize;
 
         ++filesRead;

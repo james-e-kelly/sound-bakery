@@ -298,6 +298,7 @@ sc_result sc_system_init(sc_system* system, const sc_system_config* systemConfig
         engineConfig.channels         = 2;
         engineConfig.sampleRate       = ma_standard_sample_rate_48000;
         engineConfig.pLog             = &system->log;
+        engineConfig.allocationCallbacks = systemConfig->allocationCallbacks;
 
         result = ma_engine_init(&engineConfig, engine);
 
@@ -420,9 +421,10 @@ sc_result sc_system_create_sound(sc_system* system, const char* fileName, sc_sou
     SC_CHECK_ARG(fileName != NULL);
     SC_CHECK_ARG(sound != NULL);
 
-    SC_CREATE(*sound, sc_sound);
+    SC_CREATE(*sound, sc_sound, system);
 
     (*sound)->mode = mode;
+    (*sound)->owningSystem = system;
 
     return ma_sound_init_from_file((ma_engine*)system, fileName, get_flags_from_mode(mode), NULL, NULL,
                                    &(*sound)->sound);
@@ -436,10 +438,11 @@ sc_result sc_system_create_sound_memory(
     SC_CHECK_ARG(dataSize > 0);
     SC_CHECK_ARG(sound != NULL);
 
-    SC_CREATE(*sound, sc_sound);
-    SC_CREATE((*sound)->memoryDecoder, ma_decoder);
+    SC_CREATE(*sound, sc_sound, system);
+    SC_CREATE((*sound)->memoryDecoder, ma_decoder, system);
 
     (*sound)->mode = mode;
+    (*sound)->owningSystem = system;
 
     ma_decoder_config decoderConfig      = ma_decoder_config_init_default();
     decoderConfig.customBackendCount     = system->resourceManager.config.customDecodingBackendCount;
@@ -450,7 +453,7 @@ sc_result sc_system_create_sound_memory(
     if (decoderInitResult != MA_SUCCESS)
     {
         ma_decoder_uninit((*sound)->memoryDecoder);
-        ma_free((*sound)->memoryDecoder, NULL);
+        SC_FREE((*sound)->memoryDecoder, system);
         (*sound)->memoryDecoder = NULL;
         return decoderInitResult;
     }
@@ -466,14 +469,15 @@ sc_result sc_system_play_sound(
     SC_CHECK_ARG(sound != NULL);
     SC_CHECK_ARG(instance != NULL);
 
-    SC_CREATE(*instance, sc_sound_instance);
+    SC_CREATE(*instance, sc_sound_instance, system);
     (*instance)->mode = sound->mode;
+    (*instance)->owningSystem = sound->owningSystem;
 
     if (sound->memoryDecoder != NULL)
     {
         if ((*instance)->memoryDecoder == NULL)
         {
-            SC_CREATE((*instance)->memoryDecoder, ma_decoder);
+            SC_CREATE((*instance)->memoryDecoder, ma_decoder, system);
 
             ma_decoder_config decoderConfig      = ma_decoder_config_init_default();
             decoderConfig.customBackendCount     = system->resourceManager.config.customDecodingBackendCount;
@@ -525,7 +529,7 @@ sc_result sc_system_create_node_group(sc_system* system, sc_node_group** nodeGro
 
     sc_result result = MA_ERROR;
 
-    SC_CREATE(*nodeGroup, sc_node_group);
+    SC_CREATE(*nodeGroup, sc_node_group, system);
 
     // Always create a fader/sound_group by default
     sc_dsp_config faderConfig = sc_dsp_config_init(SC_DSP_TYPE_FADER);
@@ -555,11 +559,11 @@ sc_result sc_system_create_dsp(sc_system* system, const sc_dsp_config* config, s
 
     sc_result result = MA_ERROR;
 
-    *dsp = (sc_dsp*)ma_malloc(sizeof(sc_dsp), NULL);
+    *dsp = (sc_dsp*)ma_malloc(sizeof(sc_dsp), &system->engine.allocationCallbacks);
     SC_CHECK_MEM(*dsp);
     MA_ZERO_OBJECT(*dsp);
 
-    (*dsp)->state = ma_malloc(sizeof(sc_dsp_state), NULL);
+    (*dsp)->state = ma_malloc(sizeof(sc_dsp_state), &system->engine.allocationCallbacks);
     SC_CHECK_MEM_FREE((*dsp)->state, *dsp);
     MA_ZERO_OBJECT((*dsp)->state);
 
@@ -595,10 +599,10 @@ sc_result sc_sound_release(sc_sound* sound)
     if (sound->memoryDecoder != NULL)
     {
         ma_decoder_uninit(sound->memoryDecoder);
-        ma_free(sound->memoryDecoder, NULL);
+        SC_FREE(sound->memoryDecoder, sound->owningSystem);
     }
 
-    ma_free(sound, NULL);
+    SC_FREE(sound, sound->owningSystem);
 
     return MA_SUCCESS;
 }
@@ -617,7 +621,7 @@ sc_result sc_sound_instance_release(sc_sound_instance* instance)
 {
     SC_CHECK_ARG(instance != NULL);
     ma_sound_uninit(&instance->sound);
-    ma_free(instance, NULL);
+    SC_FREE(instance, instance->owningSystem);
     return MA_SUCCESS;
 }
 
@@ -655,9 +659,11 @@ sc_result sc_dsp_release(sc_dsp* dsp)
     SC_CHECK_ARG(dsp->vtable->release != NULL);
     SC_CHECK_ARG(dsp->state != NULL);
 
+    const ma_allocation_callbacks* allocCallbacks = &((sc_system*)dsp->state->system)->engine.allocationCallbacks;
+
     sc_result result = dsp->vtable->release(dsp->state);
-    ma_free(dsp->state, NULL);
-    ma_free(dsp, NULL);
+    ma_free(dsp->state, allocCallbacks);
+    ma_free(dsp, allocCallbacks);
 
     return result;
 }
@@ -776,6 +782,8 @@ sc_result sc_node_group_release(sc_node_group* nodeGroup)
 {
     SC_CHECK_ARG(nodeGroup != NULL);
 
+    const sc_system* system = (sc_system*)nodeGroup->fader->state->system;
+
     sc_dsp* iDSP = nodeGroup->tail;
 
     while (iDSP != NULL)
@@ -784,8 +792,7 @@ sc_result sc_node_group_release(sc_node_group* nodeGroup)
         iDSP              = toFreeDSP->next;
         sc_dsp_release(toFreeDSP);
     }
-
-    ma_free(nodeGroup, NULL);
+    SC_FREE(nodeGroup, system);
 
     return MA_SUCCESS;
 }
@@ -805,7 +812,7 @@ enum
 
 static sc_result sc_dsp_fader_create(sc_dsp_state* state)
 {
-    state->userData = ma_malloc(sizeof(ma_sound_group), NULL);
+    state->userData = ma_malloc(sizeof(ma_sound_group), &((sc_system*)state->system)->engine.allocationCallbacks);
     if (state->userData == NULL)
     {
         return MA_OUT_OF_MEMORY;
@@ -818,7 +825,7 @@ static sc_result sc_dsp_fader_create(sc_dsp_state* state)
 static sc_result sc_dsp_fader_release(sc_dsp_state* state)
 {
     ma_sound_group_uninit((ma_sound_group*)state->userData);
-    ma_free(state->userData, NULL);
+    SC_FREE(state->userData, (sc_system*)state->system);
     return MA_SUCCESS;
 }
 
@@ -830,7 +837,7 @@ static sc_dsp_vtable s_faderVtable = {sc_dsp_fader_create, sc_dsp_fader_release}
 
 static sc_result sc_dsp_lowpass_create(sc_dsp_state* state)
 {
-    state->userData = ma_malloc(sizeof(ma_lpf_node), NULL);
+    state->userData = ma_malloc(sizeof(ma_lpf_node), &((sc_system*)state->system)->engine.allocationCallbacks);
     if (state->userData == NULL)
     {
         return MA_OUT_OF_MEMORY;
@@ -845,7 +852,7 @@ static sc_result sc_dsp_lowpass_create(sc_dsp_state* state)
 static sc_result sc_dsp_lowpass_release(sc_dsp_state* state)
 {
     ma_lpf_node_uninit((ma_lpf_node*)state->userData, NULL);
-    ma_free(state->userData, NULL);
+    SC_FREE(state->userData, (sc_system*)state->system);
     return MA_SUCCESS;
 }
 
@@ -907,7 +914,7 @@ static sc_dsp_vtable s_lowpassVtable = {
 
 static sc_result sc_dsp_highpass_create(sc_dsp_state* state)
 {
-    state->userData = ma_malloc(sizeof(ma_hpf_node), NULL);
+    state->userData = ma_malloc(sizeof(ma_hpf_node), &((sc_system*)state->system)->engine.allocationCallbacks);
     if (state->userData == NULL)
     {
         return MA_OUT_OF_MEMORY;
@@ -922,7 +929,7 @@ static sc_result sc_dsp_highpass_create(sc_dsp_state* state)
 static sc_result sc_dsp_highpass_release(sc_dsp_state* state)
 {
     ma_hpf_node_uninit((ma_hpf_node*)state->userData, NULL);
-    ma_free(state->userData, NULL);
+    SC_FREE(state->userData, (sc_system*)state->system);
     return MA_SUCCESS;
 }
 
@@ -1047,7 +1054,7 @@ static void sc_meter_node_uninit(sc_meter_node* node, const ma_allocation_callba
 
 static sc_result sc_dsp_meter_create(sc_dsp_state* state)
 {
-    state->userData = ma_malloc(sizeof(sc_meter_node), NULL);
+    state->userData = ma_malloc(sizeof(sc_meter_node), &((sc_system*)state->system)->engine.allocationCallbacks);
     if (state->userData == NULL)
     {
         return MA_OUT_OF_MEMORY;
@@ -1059,7 +1066,7 @@ static sc_result sc_dsp_meter_create(sc_dsp_state* state)
 static sc_result sc_dsp_meter_release(sc_dsp_state* state)
 {
     sc_meter_node_uninit((sc_meter_node*)state->userData, NULL);
-    ma_free(state->userData, NULL);
+    SC_FREE(state->userData, (sc_system*)state->system);
     return MA_SUCCESS;
 }
 
@@ -1141,9 +1148,8 @@ static void sc_clap_node_process_pcm_frames(
 
         for (int channel = 0; channel < inputChannels; ++channel)
         {
-            deinterleavedInputFrames[channel] = ma_malloc(ma_get_bytes_per_sample(ma_format_f32) * *frameCountIn, NULL);
-            deinterleavedOutputFrames[channel] =
-                ma_malloc(ma_get_bytes_per_sample(ma_format_f32) * *frameCountOut, NULL);
+            deinterleavedInputFrames[channel] = ma_malloc(ma_get_bytes_per_sample(ma_format_f32) * *frameCountIn, &((ma_engine*)clapNode->baseNode.pNodeGraph)->allocationCallbacks);
+            deinterleavedOutputFrames[channel] = ma_malloc(ma_get_bytes_per_sample(ma_format_f32) * *frameCountOut, &((ma_engine*)clapNode->baseNode.pNodeGraph)->allocationCallbacks);
         }
 
         ma_deinterleave_pcm_frames(ma_format_f32, inputChannels, *frameCountIn, framesIn[0], &deinterleavedInputFrames);
@@ -1182,8 +1188,8 @@ static void sc_clap_node_process_pcm_frames(
 
         for (int channel = 0; channel < inputChannels; ++channel)
         {
-            ma_free(deinterleavedInputFrames[channel], NULL);
-            ma_free(deinterleavedOutputFrames[channel], NULL);
+            ma_free(deinterleavedInputFrames[channel], &((ma_engine*)clapNode->baseNode.pNodeGraph)->allocationCallbacks);
+            ma_free(deinterleavedOutputFrames[channel], &((ma_engine*)clapNode->baseNode.pNodeGraph)->allocationCallbacks);
         }
     }
 }
@@ -1215,7 +1221,7 @@ static void sc_clap_node_uninit(sc_clap_node* node, const ma_allocation_callback
 
 static sc_result sc_dsp_clap_create(sc_dsp_state* state)
 {
-    SC_CREATE(state->userData, sc_clap_node);
+    SC_CREATE(state->userData, sc_clap_node, (sc_system*)state->system);
 
     sc_system* const system                  = state->system;
     sc_clap_node* const clapNode             = (sc_clap_node*)state->userData;
@@ -1261,8 +1267,8 @@ static sc_result sc_dsp_clap_release(sc_dsp_state* state)
     clapPlugin->destroy(clapPlugin);
     clapNode->clapPlugin = NULL;
 
-    sc_clap_node_uninit(clapNode, NULL);
-    ma_free(state->userData, NULL);
+    sc_clap_node_uninit(clapNode, &((sc_system*)state->system)->engine.allocationCallbacks);
+    SC_FREE(state->userData, (sc_system*)state->system);
 
     return MA_SUCCESS;
 }

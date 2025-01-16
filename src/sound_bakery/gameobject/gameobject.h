@@ -2,6 +2,7 @@
 
 #include "sound_bakery/core/core_include.h"
 #include "sound_bakery/parameter/parameter.h"
+#include "sound_bakery/system.h"
 #include "sound_bakery/voice/voice.h"
 
 namespace sbk::engine
@@ -10,19 +11,19 @@ namespace sbk::engine
     class event;
     class voice;
 
-    class SB_CLASS game_object : public sbk::core::object
+    class SB_CLASS game_object : public sbk::core::database_object
     {
-        REGISTER_REFLECTION(game_object, sbk::core::object)
+        REGISTER_REFLECTION(game_object, sbk::core::database_object)
 
     public:
         game_object() = default;
 
-        voice* play_container(container* container);
-        void post_event(event* event);
+        auto play_container(container* container, const pass_key<sbk::engine::system>& passkey) -> voice*;
+        auto post_event(event* event, const pass_key<sbk::engine::system>& passkey) -> void;
 
-        void stop_voice(voice* voice);
-        void stop_container(container* container);
-        void stop_all();
+        auto stop_voice(voice* voice, const pass_key<sbk::engine::system>& passkey) -> void;
+        auto stop_container(container* container, const pass_key<sbk::engine::system>& passkey) -> void;
+        auto stop_all(const pass_key<sbk::engine::system>& passkey) -> void;
 
         void update();
 

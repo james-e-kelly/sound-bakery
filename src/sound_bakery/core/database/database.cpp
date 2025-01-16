@@ -6,7 +6,7 @@ auto sbk::core::database::add_object_to_database(const std::shared_ptr<database_
 {
     if (!object)
     {
-        SPDLOG_ERROR("Cannot add object to database. Object was null");
+        SBK_ERROR("Cannot add object to database. Object was null");
         return;
     }
 
@@ -27,13 +27,13 @@ auto sbk::core::database::add_object_to_database(const std::shared_ptr<database_
 
     if (auto iter = m_idToPointerMap.find(objectID); iter != m_idToPointerMap.end())
     {
-        SPDLOG_ERROR("Cannot add object to database. Object ID already mapped");
+        SBK_ERROR("Cannot add object to database. Object ID already mapped");
         return;
     }
 
     if (auto iter = m_nameToIdMap.find(objectName); iter != m_nameToIdMap.end())
     {
-        SPDLOG_ERROR("Cannot add object to database. Object name already mapped");
+        SBK_ERROR("Cannot add object to database. Object name already mapped");
         m_idToPointerMap.erase(objectID);
         return;
     }
@@ -50,7 +50,7 @@ auto sbk::core::database::remove_object_from_database(sbk_id objectID) -> void
 {
     if (objectID == SB_INVALID_ID)
     {
-        SPDLOG_ERROR("Cannot remove object from database. Object ID is 0!");
+        SBK_ERROR("Cannot remove object from database. Object ID is 0!");
         return;
     }
 
@@ -139,13 +139,13 @@ auto sbk::core::database::update_id(sbk_id oldID, sbk_id newID) -> void
 {
     if (oldID == SB_INVALID_ID)
     {
-        SPDLOG_ERROR("Cannot update database ID. Old ID is invalid");
+        SBK_ERROR("Cannot update database ID. Old ID is invalid");
         return;
     }
 
     if (newID == SB_INVALID_ID)
     {
-        SPDLOG_ERROR("Cannot update database ID. New ID is invalid");
+        SBK_ERROR("Cannot update database ID. New ID is invalid");
         return;
     }
 
@@ -162,13 +162,13 @@ auto sbk::core::database::update_name(std::string_view oldName, std::string_view
 {
     if (oldName.empty())
     {
-        SPDLOG_ERROR("Cannot update database name. Object name is invalid");
+        SBK_ERROR("Cannot update database name. Object name is invalid");
         return;
     }
 
     if (newName.empty())
     {
-        SPDLOG_ERROR("Cannot update database name. New name is invalid");
+        SBK_ERROR("Cannot update database name. New name is invalid");
         return;
     }
 

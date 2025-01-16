@@ -13,6 +13,8 @@ macro(set_sources)
     core/database/database_object.cpp
     core/database/database_ptr.cpp
 
+    core/memory.cpp
+
     core/property.cpp
 
     editor/project/project.cpp
@@ -55,7 +57,7 @@ macro(set_sources)
 
     source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Source Files" FILES ${SOUND_BAKERY_SOURCES})
 
-    set(SOUND_BAKERY_HEADERS
+set(SOUND_BAKERY_HEADERS
     sound_bakery_internal.h
     system.h
     pch.h
@@ -73,6 +75,8 @@ macro(set_sources)
     core/database/database.h
     core/database/database_object.h
     core/database/database_ptr.h
+
+    core/memory.h
 
     editor/editor_defines.h
     editor/project/project.h
@@ -154,6 +158,23 @@ function(build_dependencies)
 
     message(STATUS "Fetching out_ptr")
     FetchContent_MakeAvailable(out_ptr)
+
+    set(TRACY_ENABLE "" ON)
+    set(TRACY_ON_DEMAND "" ON)
+    set(TRACY_NO_VSYNC_CAPTURE "" ON)
+    set(TRACY_NO_FRAME_IMAGE "" ON)
+
+    message(STATUS "Fetching Tracy")
+    FetchContent_MakeAvailable(tracy)
+
+    message(STATUS "Fetching rpmalloc")
+    FetchContent_MakeAvailable(sbk_rpmalloc_content)
+
+    add_library(sbk_rpmalloc STATIC ${sbk_rpmalloc_content_SOURCE_DIR}/rpmalloc/rpmalloc.c)
+    target_include_directories(sbk_rpmalloc PUBLIC ${sbk_rpmalloc_content_SOURCE_DIR})
+    target_compile_definitions(sbk_rpmalloc PUBLIC ENABLE_STATISTICS)
+    add_library(sbk::rpmalloc ALIAS sbk_rpmalloc)
+    set_target_properties(sbk_rpmalloc PROPERTIES C_EXTENSIONS ON)
 endfunction()
 
 macro(setup_format_sources)

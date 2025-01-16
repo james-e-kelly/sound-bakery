@@ -23,6 +23,6 @@ add_library(SoundBakery::Delegates ALIAS delegates)
 
 set(CMAKE_FOLDER src)
 
-add_subdirectory(gluten)
 add_subdirectory(sound_chef)
 add_subdirectory(sound_bakery)
+add_subdirectory(gluten)

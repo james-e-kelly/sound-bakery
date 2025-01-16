@@ -12,6 +12,8 @@ widget::widget(widget* parentWidget) : m_parentWidget(parentWidget) {}
 
 auto widget::start() -> void
 { 
+    ZoneScoped;
+
     if (!m_hasStarted)
     {
         start_implementation();
@@ -21,6 +23,8 @@ auto widget::start() -> void
 
 auto widget::tick(double deltaTime) -> void
 {
+    ZoneScoped;
+
     if (m_hasStarted)
     {
         tick_implementation(deltaTime);
@@ -36,6 +40,8 @@ auto widget::tick(double deltaTime) -> void
 
 auto widget::render() -> void
 {
+    ZoneScoped;
+
     if (m_hasStarted)
     {
         render_implementation();
@@ -49,6 +55,8 @@ auto widget::render() -> void
 
 void gluten::widget::end()
 {
+    ZoneScoped;
+
     if (m_hasStarted && !m_hasEnded)
     {
         end_implementation();
@@ -65,6 +73,8 @@ void gluten::widget::end()
 
 void widget::render_children()
 {
+    ZoneScoped;
+
     for (std::weak_ptr<widget>& child : m_childWidgets)
     {
         if (std::shared_ptr<widget> sharedChild = child.lock())

@@ -9,6 +9,8 @@ DEFINE_REFLECTION(sbk::engine::sound)
 
 void sound::load_synchronous()
 {
+    ZoneScoped;
+
     sc_sound* loadedSound = nullptr;
 
     switch (sbk::engine::system::get_operating_mode())

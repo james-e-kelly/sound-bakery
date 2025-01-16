@@ -4,6 +4,7 @@
 #include "IconsFontaudio.h"
 #include "subsystems/renderer_subsystem.h"
 #include "subsystems/widget_subsystem.h"
+//#include "Fontawesome"
 
 #include <cmrc/cmrc.hpp>
 
@@ -66,10 +67,12 @@ int gluten::app::run(int argc, char** argv)
 
         double deltaTime = timeDiff.count();
 
-        // PreTick
-        for (std::shared_ptr<subsystem>& subsystem : m_subsystems)
         {
-            subsystem->pre_tick(deltaTime);
+            ZoneScopedN("PreTick");
+            for (std::shared_ptr<subsystem>& subsystem : m_subsystems)
+            {
+                subsystem->pre_tick(deltaTime);
+            }
         }
 
         if (m_isRequestingExit)
@@ -77,22 +80,31 @@ int gluten::app::run(int argc, char** argv)
             break;
         }
 
-        // Tick
-        for (std::shared_ptr<subsystem>& subsystem : m_subsystems)
         {
-            subsystem->tick(deltaTime);
+            ZoneScopedN("SubsystemTick");
+            for (std::shared_ptr<subsystem>& subsystem : m_subsystems)
+            {
+                subsystem->tick(deltaTime);
+            }
         }
 
-        for (auto& manager : m_managers)
         {
-            manager->tick(deltaTime);
+            ZoneScopedN("ManagerTick");
+            for (auto& manager : m_managers)
+            {
+                manager->tick(deltaTime);
+            }
         }
 
-        // Rendering
-        for (std::shared_ptr<subsystem>& subsystem : m_subsystems)
         {
-            subsystem->tick_rendering(deltaTime);
+            ZoneScopedN("RenderingTick");
+            for (std::shared_ptr<subsystem>& subsystem : m_subsystems)
+            {
+                subsystem->tick_rendering(deltaTime);
+            }
         }
+
+        FrameMark;
     }
 
     for (auto& manager : m_managers)
@@ -124,7 +136,7 @@ void gluten::app::load_fonts()
     const cmrc::file mainFontFile        = embeddedfilesystem.open("Montserrat-Regular.ttf");
     const cmrc::file titleFontFile       = embeddedfilesystem.open("Montserrat-Black.ttf");
     const cmrc::file audioFontFile       = embeddedfilesystem.open("fontaudio/font/" FONT_ICON_FILE_NAME_FAD);
-    const cmrc::file fontAwesomeFontFile = embeddedfilesystem.open("Font-Awesome/webfonts/" FONT_ICON_FILE_NAME_FAR);
+    const cmrc::file fontAwesomeFontFile = embeddedfilesystem.open("Font-Awesome/webfonts/" FONT_ICON_FILE_NAME_FAS);
 
     assert(mainFontFile.size() > 0);
 

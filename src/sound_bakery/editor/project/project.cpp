@@ -41,7 +41,7 @@ void sbk::editor::project::save_project() const
 
 void sbk::editor::project::encode_all_media() const
 {
-    std::shared_ptr<concurrencpp::thread_pool_executor> threadPool = sbk::engine::system::get()->background_executor();
+    std::shared_ptr<concurrencpp::thread_pool_executor> threadPool = sbk::engine::system::get()->get_background_thread_executer();
 
     if (sbk::core::object_tracker* const objectTracker = sbk::engine::system::get())
     {

@@ -29,7 +29,7 @@ void soundbank_viewer_widget::render_implementation()
             {
                 if (ImGui::Button(event->get_database_name().data()))
                 {
-                    sbk::engine::system::get()->get_listener_game_object()->post_event(event);
+                    sbk::engine::system::post_event(event->get_database_name().data(), 0);
                 }
             }
         }
