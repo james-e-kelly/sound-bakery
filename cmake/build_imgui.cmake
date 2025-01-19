@@ -1,6 +1,9 @@
 message(STATUS "Fetching imgui")
 FetchContent_MakeAvailable(imgui)
 
+message(STATUS "Fetching implot")
+FetchContent_MakeAvailable(implot)
+
 add_library(imgui STATIC
   ${imgui_SOURCE_DIR}/imgui.cpp
   ${imgui_SOURCE_DIR}/imgui_demo.cpp
@@ -31,9 +34,6 @@ set(OpenGL_GL_PREFERENCE "GLVND")
 
 message(STATUS "Fetching glfw")
 FetchContent_MakeAvailable(glfw)
-
-message(STATUS "Fetching implot")
-FetchContent_MakeAvailable(implot)
 
 target_link_libraries(imgui PUBLIC
   glfw

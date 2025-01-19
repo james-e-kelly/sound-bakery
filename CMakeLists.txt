@@ -1,5 +1,3 @@
-include(${CMAKE_SOURCE_DIR}/cmake/setup_init.cmake)
-
 cmake_minimum_required(VERSION 3.28) # Version set to have EXCLUDE_FROM_ALL available in FetchContent_Declare
 
 project(
@@ -8,6 +6,8 @@ project(
   DESCRIPTION "An open-source audio middleware tool with an authoring application and programmer's API"
   HOMEPAGE_URL "https://soundbakery.jameskelly.audio"
 )
+
+include(${CMAKE_SOURCE_DIR}/cmake/setup_init.cmake)
 
 option(SOUND_BAKERY_EDITOR "Build the Sound Bakery editor" ${SOUND_BAKERY_MAIN_PROJECT})
 option(SOUND_BAKERY_SHARED "Build Sound Bakery and Sound Chef as shared libraries" OFF)
