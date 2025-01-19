@@ -164,7 +164,7 @@ FetchContent_Declare(
   opus
   GIT_REPOSITORY https://github.com/xiph/opus.git
   GIT_TAG        v1.5.2
-  GIT_SHALLOW    TRUE
+  GIT_SHALLOW    OFF
   GIT_PROGRESS TRUE
   OVERRIDE_FIND_PACKAGE
   EXCLUDE_FROM_ALL 
@@ -174,7 +174,7 @@ FetchContent_Declare(
   opusfile
   GIT_REPOSITORY https://github.com/KarateKidzz/opusfile.git
   GIT_TAG        master
-  GIT_SHALLOW    TRUE
+  GIT_SHALLOW    OFF
   GIT_PROGRESS TRUE
   OVERRIDE_FIND_PACKAGE
   EXCLUDE_FROM_ALL 

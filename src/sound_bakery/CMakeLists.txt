@@ -10,6 +10,9 @@ else()
   add_library(sound_bakery STATIC ${SOUND_BAKERY_SOURCES} ${SOUND_BAKERY_HEADERS} ${PCH_SOURCE})
 endif()
 
+c_17(sound_bakery)
+cxx_20(sound_bakery)
+
 add_library(SoundBakery::SoundBakery ALIAS sound_bakery)
 
 set_target_properties(sound_bakery PROPERTIES LANGUAGE CXX)

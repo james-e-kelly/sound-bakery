@@ -71,6 +71,9 @@ add_library(gluten STATIC
   ${stb_SOURCE_DIR}/stb_image.h
 )
 
+c_17(gluten)
+cxx_20(gluten)
+
 add_library(SoundBakery::Gluten ALIAS gluten)
 
 target_include_directories(gluten
@@ -168,13 +171,7 @@ target_link_libraries(gluten
     Tracy::TracyClient
 )
 
-if(MSVC)
-  target_compile_options(gluten PRIVATE /W4)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus")
-else()
-  target_compile_options(gluten PRIVATE -Wall -Wextra -Wpedantic)
-endif()
+target_compile_options(gluten PRIVATE ${PROJECT_WARNING_FLAGS})
 
 set(CMAKE_FOLDER src)
 

@@ -38,6 +38,10 @@ else()
   add_library(sound_chef STATIC ${SOUND_CHEF_SOURCES} ${SOUND_CHEF_HEADERS} ${stb_SOURCE_DIR}/stb_ds.h)
 endif()
 
+c_17(sound_chef)
+cxx_20(sound_chef)
+target_compile_options(sound_chef PRIVATE ${PROJECT_WARNING_FLAGS})
+
 add_library(SoundBakery::SoundChef ALIAS sound_chef)
 
 target_include_directories(sound_chef

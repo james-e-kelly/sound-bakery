@@ -14,60 +14,41 @@
 # the License.
 
 # Set the compiler standard to C++11
-macro(cxx_11)
-  set(CMAKE_CXX_STANDARD 11)
-  set(CMAKE_CXX_STANDARD_REQUIRED ON)
-  set(CMAKE_CXX_EXTENSIONS OFF)
-
-  if(MSVC_VERSION GREATER_EQUAL "1900" AND CMAKE_VERSION LESS 3.10)
-    include(CheckCXXCompilerFlag)
-    check_cxx_compiler_flag("/std:c++11" _cpp_11_flag_supported)
-    if(_cpp_11_flag_supported)
-      add_compile_options("/std:c++11")
-    endif()
-  endif()
+macro(cxx_11 TARGET_NAME)
+  set_target_properties(${TARGET_NAME} PROPERTIES
+  CXX_STANDARD 11
+  CXX_STANDARD_REQUIRED ON
+  CXX_EXTENSIONS OFF)
 endmacro()
 
 # Set the compiler standard to C++14
-macro(cxx_14)
-  set(CMAKE_CXX_STANDARD 14)
-  set(CMAKE_CXX_STANDARD_REQUIRED ON)
-  set(CMAKE_CXX_EXTENSIONS OFF)
-
-  if(MSVC_VERSION GREATER_EQUAL "1900" AND CMAKE_VERSION LESS 3.10)
-    include(CheckCXXCompilerFlag)
-    check_cxx_compiler_flag("/std:c++14" _cpp_14_flag_supported)
-    if(_cpp_14_flag_supported)
-      add_compile_options("/std:c++14")
-    endif()
-  endif()
+macro(cxx_14 TARGET_NAME)
+  set_target_properties(${TARGET_NAME} PROPERTIES
+  CXX_STANDARD 14
+  CXX_STANDARD_REQUIRED ON
+  CXX_EXTENSIONS OFF)
 endmacro()
 
 # Set the compiler standard to C++17
 macro(cxx_17)
-  set(CMAKE_CXX_STANDARD 17)
-  set(CMAKE_CXX_STANDARD_REQUIRED ON)
-  set(CMAKE_CXX_EXTENSIONS OFF)
-
-  if(MSVC_VERSION GREATER_EQUAL "1900" AND CMAKE_VERSION LESS 3.10)
-    include(CheckCXXCompilerFlag)
-    check_cxx_compiler_flag("/std:c++17" _cpp_17_flag_supported)
-    if(_cpp_17_flag_supported)
-      add_compile_options("/std:c++17")
-    endif()
-  endif()
+  set_target_properties(${TARGET_NAME} PROPERTIES
+  CXX_STANDARD 17
+  CXX_STANDARD_REQUIRED ON
+  CXX_EXTENSIONS OFF)
 endmacro()
 
 # Set the compiler standard to C++20
 macro(cxx_20)
-  set(CMAKE_CXX_STANDARD 20)
-  set(CMAKE_CXX_STANDARD_REQUIRED ON)
-  set(CMAKE_CXX_EXTENSIONS OFF)
+  set_target_properties(${TARGET_NAME} PROPERTIES
+  CXX_STANDARD 20
+  CXX_STANDARD_REQUIRED ON
+  CXX_EXTENSIONS OFF)
 endmacro()
 
 # Set the compiler standard to C++23
 macro(cxx_23)
-  set(CMAKE_CXX_STANDARD 23)
-  set(CMAKE_CXX_STANDARD_REQUIRED ON)
-  set(CMAKE_CXX_EXTENSIONS OFF)
+  set_target_properties(${TARGET_NAME} PROPERTIES
+  CXX_STANDARD 23
+  CXX_STANDARD_REQUIRED ON
+  CXX_EXTENSIONS OFF)
 endmacro()

@@ -1,8 +1,6 @@
 set(CMAKE_FOLDER extern)
 FetchContent_MakeAvailable(tracy)
 
-set(CMAKE_CXX_STANDARD 20)
-
 CPMAddPackage(
     NAME PPQSort
     GITHUB_REPOSITORY foxtran/PPQSort
@@ -162,10 +160,14 @@ set_property(SOURCE ${ZSTD_DIR}/decompress/huf_decompress_amd64.S APPEND PROPERT
 add_library(TracyZstd STATIC ${ZSTD_SOURCES})
 target_include_directories(TracyZstd PUBLIC ${ZSTD_DIR})
 target_compile_definitions(TracyZstd PRIVATE ZSTD_DISABLE_ASM)
+c_17(TracyZstd)
+cxx_20(TracyZstd)
 
 add_library(sbk_tracy_server STATIC ${TRACY_COMMON_SOURCES} ${TRACY_SERVER_SOURCES})
 target_include_directories(sbk_tracy_server PUBLIC ${TRACY_COMMON_DIR} ${TRACY_SERVER_DIR} ${capstone_SOURCE_DIR}/include/capstone)
 target_link_libraries(sbk_tracy_server PUBLIC capstone_static TracyZstd PPQSort::PPQSort)
+c_17(sbk_tracy_server)
+cxx_20(sbk_tracy_server)
 
 if(SELF_PROFILE)
     add_definitions(-DTRACY_ENABLE)
@@ -179,3 +181,5 @@ target_link_libraries(sbk_tracy_profiler PUBLIC sbk_tracy_server imgui nfd)
 target_include_directories(sbk_tracy_profiler PUBLIC ${tracy_SOURCE_DIR}/profiler/src/profiler)
 target_compile_definitions(sbk_tracy_profiler PUBLIC TRACY_NO_ROOT_WINDOW)
 add_library(sbk::tracy_profiler ALIAS sbk_tracy_profiler)
+c_17(sbk_tracy_profiler)
+cxx_20(sbk_tracy_profiler)
