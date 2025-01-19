@@ -10,5 +10,6 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(cpm)
 
+set(CPM_VERSION 1.0.0 CACHE INTERNAL "" FORCE)
 set(CPM_DIRECTORY ${cpm_SOURCE_DIR}/cmake)
 include(${cpm_SOURCE_DIR}/cmake/CPM.cmake)

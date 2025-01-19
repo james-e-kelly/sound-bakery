@@ -103,9 +103,6 @@ FetchContent_MakeAvailable(bytesizelib)
 add_library(bytesize INTERFACE)
 target_include_directories(bytesize INTERFACE ${bytesizelib_SOURCE_DIR})
 
-message(STATUS "Fetching CMRC for resource embedding")
-FetchContent_MakeAvailable(cmrc)
-
 message(STATUS "Fetching glfw")
 FetchContent_MakeAvailable(glfw)
 
