@@ -106,52 +106,14 @@ FetchContent_MakeAvailable(bytesizelib)
 add_library(bytesize INTERFACE)
 target_include_directories(bytesize INTERFACE ${bytesizelib_SOURCE_DIR})
 
-message(STATUS "Fetching glfw")
-FetchContent_MakeAvailable(glfw)
-
-message(STATUS "Fetching imgui")
-FetchContent_MakeAvailable(imgui)
-
-message(STATUS "Fetching implot")
-FetchContent_MakeAvailable(implot)
-
 include(build_nfd)
+include(build_imgui)
 
 message(STATUS "Fetching audio fonts")
 FetchContent_MakeAvailable(fonts)
 
 message(STATUS "Fetching fmt")
 FetchContent_MakeAvailable(fmt)
-
-find_package(OpenGL REQUIRED)
-set(OpenGL_GL_PREFERENCE "GLVND")
-
-add_library(imgui STATIC
-  ${imgui_SOURCE_DIR}/imgui.cpp
-  ${imgui_SOURCE_DIR}/imgui_demo.cpp
-  ${imgui_SOURCE_DIR}/imgui_draw.cpp
-  ${imgui_SOURCE_DIR}/imgui_tables.cpp
-  ${imgui_SOURCE_DIR}/imgui_widgets.cpp
-  ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
-  ${imgui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
-  ${implot_SOURCE_DIR}/implot.h
-  ${implot_SOURCE_DIR}/implot_internal.h
-  ${implot_SOURCE_DIR}/implot.cpp
-  ${implot_SOURCE_DIR}/implot_items.cpp
-  ${implot_SOURCE_DIR}/implot_demo.cpp
-)
-
-target_include_directories(imgui
-  PUBLIC
-    ${imgui_SOURCE_DIR}
-    ${imgui_SOURCE_DIR}/backends
-    ${implot_SOURCE_DIR}
-)
-
-target_link_libraries(imgui PUBLIC
-  glfw
-  OpenGL::GL
-)
 
 target_include_directories(gluten PUBLIC
   ${fonts_SOURCE_DIR}
