@@ -30,7 +30,7 @@ macro(cxx_14 TARGET_NAME)
 endmacro()
 
 # Set the compiler standard to C++17
-macro(cxx_17)
+macro(cxx_17 TARGET_NAME)
   set_target_properties(${TARGET_NAME} PROPERTIES
   CXX_STANDARD 17
   CXX_STANDARD_REQUIRED ON
@@ -38,7 +38,7 @@ macro(cxx_17)
 endmacro()
 
 # Set the compiler standard to C++20
-macro(cxx_20)
+macro(cxx_20 TARGET_NAME)
   set_target_properties(${TARGET_NAME} PROPERTIES
   CXX_STANDARD 20
   CXX_STANDARD_REQUIRED ON
@@ -46,7 +46,7 @@ macro(cxx_20)
 endmacro()
 
 # Set the compiler standard to C++23
-macro(cxx_23)
+macro(cxx_23 TARGET_NAME)
   set_target_properties(${TARGET_NAME} PROPERTIES
   CXX_STANDARD 23
   CXX_STANDARD_REQUIRED ON

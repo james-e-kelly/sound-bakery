@@ -17,3 +17,4 @@ SET(FONT_AUDIO_FONTS
 )
 
 cmrc_add_resource_library(sound_bakery_fonts ${RAW_FONTS} ${FONT_AWESOME_FONTS} ${FONT_AUDIO_FONTS} ALIAS SoundBakery::Fonts NAMESPACE sbk::Fonts)
+cxx_17(sound_bakery_fonts)
