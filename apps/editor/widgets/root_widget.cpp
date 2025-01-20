@@ -9,7 +9,7 @@
 #include "managers/project_manager.h"
 #include "sound_bakery/editor/project/project.h"
 
-void root_widget::render_menu()
+auto root_widget::render_menu_implementation() -> void
 {
     static bool showMenu  = false;
     static bool showAbout = false;
@@ -17,7 +17,7 @@ void root_widget::render_menu()
     gluten::imgui::scoped_font fontAwesomeFont(get_app()->get_font(gluten::fonts::regular_font_awesome));
 
     {
-        if (ImGui::BeginMenu("File"))
+        if (ImGui::BeginMenu(s_fileMenuName))
         {
             if (ImGui::MenuItem(ICON_FA_FILE " New...", "Ctrl+N"))
             {
@@ -54,13 +54,13 @@ void root_widget::render_menu()
             ImGui::EndMenu();
         }
 
-        if (ImGui::BeginMenu("Options"))
+        if (ImGui::BeginMenu(s_optionsMenuName))
         {
 
             ImGui::EndMenu();
         }
 
-        if (ImGui::BeginMenu("Actions"))
+        if (ImGui::BeginMenu(s_actionsMenuName))
         {
 
             if (ImGui::MenuItem("Open Demo Window", nullptr, &showMenu))
@@ -75,7 +75,7 @@ void root_widget::render_menu()
             ImGui::EndMenu();
         }
 
-        if (ImGui::BeginMenu("Help"))
+        if (ImGui::BeginMenu(s_helpMenuName))
         {
             if (ImGui::MenuItem("View Documentation"))
             {
@@ -106,7 +106,7 @@ void root_widget::render_menu()
         ImGui::ShowDemoWindow();
     }
 
-    gluten::root_widget::render_menu();
+    gluten::root_widget::render_menu_implementation();
 }
 
 void root_widget::render_about_window(bool& showAbout)

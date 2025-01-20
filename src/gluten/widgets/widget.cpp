@@ -53,6 +53,44 @@ auto widget::render() -> void
     }
 }
 
+auto widget::render_menu() -> void
+{
+    ZoneScoped;
+
+    if (m_hasStarted)
+    {
+        if (ImGui::BeginMenu(s_fileMenuName))
+        {
+            ImGui::EndMenu();
+        }
+
+        if (ImGui::BeginMenu(s_optionsMenuName))
+        {
+            ImGui::EndMenu();
+        }
+
+        if (ImGui::BeginMenu(s_windowsMenuName))
+        {
+            ImGui::EndMenu();
+        }
+
+        if (ImGui::BeginMenu(s_helpMenuName))
+        {
+            ImGui::EndMenu();
+        }
+
+        render_menu_implementation();
+
+        for (std::weak_ptr<widget>& child : m_childWidgets)
+        {
+            if (std::shared_ptr<widget> sharedChild = child.lock())
+            {
+                sharedChild->render_menu();
+            }
+        }
+    }
+}
+
 void gluten::widget::end()
 {
     ZoneScoped;

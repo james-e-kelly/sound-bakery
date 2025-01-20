@@ -263,7 +263,7 @@ void root_widget::draw_titlebar()
     ImGui::SetCursorScreenPos(titleBarRect.GetBL());
 }
 
-void root_widget::render_menu()
+auto root_widget::render_menu_implementation() -> void
 {
     static bool showMetricsWindow  = false;
     static bool showDebugLogWindow = false;
@@ -273,7 +273,7 @@ void root_widget::render_menu()
     static bool showDemo           = false;
     static bool showPlotDemo       = false;
 
-    if (ImGui::BeginMenu("Help"))
+    if (ImGui::BeginMenu(s_helpMenuName))
     {
         ImGui::Separator();
 

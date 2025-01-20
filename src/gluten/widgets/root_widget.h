@@ -16,7 +16,7 @@ namespace gluten
     public:
         void start_implementation() override;
         void render_implementation() override;
-        virtual void render_menu();
+        auto render_menu_implementation() -> void override;
 
         bool is_hovering_titlebar() { return m_hoveringTitlebar; }
 

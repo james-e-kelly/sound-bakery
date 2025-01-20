@@ -36,6 +36,7 @@ namespace gluten
         auto start() -> void;
         auto tick(double deltaTime) -> void;
         auto render() -> void;
+        auto render_menu() -> void;
         auto end() -> void;
 
         template <class T>
@@ -60,10 +61,17 @@ namespace gluten
 
         MulticastDelegate<widget*> m_onDestroy;
 
+        static inline const char* const s_fileMenuName = "File";
+        static inline const char* const s_optionsMenuName = "Options";
+        static inline const char* const s_actionsMenuName = "Actions";
+        static inline const char* const s_windowsMenuName = "Windows";
+        static inline const char* const s_helpMenuName = "Help";
+
     protected:
         auto virtual start_implementation() -> void {}
         auto virtual tick_implementation(double deltaTime) -> void {}
         auto virtual render_implementation() -> void {}
+        auto virtual render_menu_implementation() -> void {}
         auto virtual end_implementation() -> void {}
 
         /**
