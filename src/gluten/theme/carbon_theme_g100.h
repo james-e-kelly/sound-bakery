@@ -10,11 +10,11 @@ namespace gluten::theme::carbon_g100
     constexpr ImVec4 background              = gray100;
     constexpr ImVec4 backgroundInverse       = gray10;
     constexpr ImVec4 backgroundBrand         = blue60;
-    constexpr ImVec4 backgroundActive        = adjust_alpha(gray50, 0.4);
-    constexpr ImVec4 backgroundHover         = adjust_alpha(gray50, 0.16);
+    constexpr ImVec4 backgroundActive        = adjust_alpha(gray50, 0.4f);
+    constexpr ImVec4 backgroundHover         = adjust_alpha(gray50, 0.16f);
     constexpr ImVec4 backgroundInverseHover  = gray10Hover;
-    constexpr ImVec4 backgroundSelected      = adjust_alpha(gray50, 0.24);
-    constexpr ImVec4 backgroundSelectedHover = adjust_alpha(gray50, 0.32);
+    constexpr ImVec4 backgroundSelected      = adjust_alpha(gray50, 0.24f);
+    constexpr ImVec4 backgroundSelectedHover = adjust_alpha(gray50, 0.32f);
 
     // Layer
     // layer-01
