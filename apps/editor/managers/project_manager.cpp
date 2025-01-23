@@ -52,6 +52,12 @@ void project_manager::setup_project()
         ->get_subsystem_by_class<gluten::widget_subsystem>()
         ->add_widget_class_to_root<profiler_widget>(false);
 
+    m_projectExplorerWidget->set_visible_in_toolbar(true, false);
+    m_playerWidget->set_visible_in_toolbar(true, false);
+    m_detailsWidget->set_visible_in_toolbar(true, false);
+    m_audioMeterWidget->set_visible_in_toolbar(true, false);
+    m_profilerWidget->set_visible_in_toolbar(true, false);
+
     get_app()->set_application_display_title(
         fmt::format("{} - {} {}", sbk::engine::system::get_project()->get_config().project_name(), SBK_PRODUCT_NAME,
                     SBK_VERSION_STRING));

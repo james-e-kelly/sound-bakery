@@ -38,6 +38,7 @@ namespace gluten
         auto render() -> void;
         auto render_menu() -> void;
         auto end() -> void;
+        auto set_visible_in_toolbar(bool visibleInToolBar, bool defaultRender) -> void;
 
         template <class T>
             requires std::derived_from<T, widget>
@@ -51,7 +52,9 @@ namespace gluten
             m_childWidgets.push_back(ptr);
             std::shared_ptr<gluten::widget> widget = std::static_pointer_cast<gluten::widget>(ptr);
             if (m_hasStarted)
+            {
                 widget->start();
+            }
             return ptr;
         }
 
@@ -91,6 +94,9 @@ namespace gluten
         widget* m_parentWidget              = nullptr;
         bool m_hasStarted                   = false;
         bool m_hasEnded                     = false;
+        std::string m_widgetName            = "Widget";
+        bool m_inToolbar                    = false;
+        bool m_renderingFromToolbar         = false;
 
         std::vector<std::weak_ptr<widget>> m_childWidgets;          //< Child widgets to iterate over
         std::vector<std::shared_ptr<widget>> m_owningChildWidgets;  //< References to widgets that are owned. Not

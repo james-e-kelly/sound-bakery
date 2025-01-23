@@ -42,13 +42,18 @@ auto widget::render() -> void
 {
     ZoneScoped;
 
-    if (m_hasStarted)
+    const bool renderWidget = m_inToolbar ? m_renderingFromToolbar : true;
+    
+    if (renderWidget)
     {
-        render_implementation();
-
-        if (m_autoRenderChildren)
+        if (m_hasStarted)
         {
-            render_children();
+            render_implementation();
+
+            if (m_autoRenderChildren)
+            {
+                render_children();
+            }
         }
     }
 }
@@ -71,6 +76,10 @@ auto widget::render_menu() -> void
 
         if (ImGui::BeginMenu(s_windowsMenuName))
         {
+            if (m_inToolbar)
+            {
+                ImGui::MenuItem(m_widgetName.c_str(), nullptr, &m_renderingFromToolbar);
+            }
             ImGui::EndMenu();
         }
 
@@ -107,6 +116,12 @@ void gluten::widget::end()
         }
         m_hasEnded = true;
     }
+}
+
+auto gluten::widget::set_visible_in_toolbar(bool visibleInToolBar, bool defaultRender) -> void
+{
+    m_inToolbar = visibleInToolBar;
+    m_renderingFromToolbar = defaultRender;
 }
 
 void widget::render_children()

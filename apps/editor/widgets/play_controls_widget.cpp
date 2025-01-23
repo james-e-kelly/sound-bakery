@@ -51,7 +51,7 @@ void player_widget::start_implementation()
 {
     widget::start_implementation();
 
-    add_child_widget<audio_display_widget>(true);
+    add_child_widget<audio_display_widget>(true)->set_visible_in_toolbar(true, false);
 }
 
 void player_widget::render_implementation()

@@ -13,6 +13,9 @@ void project_explorer_widget::start_implementation()
 
     m_fileBrowserWidget  = add_child_widget<file_browser_widget>(false);
     m_projectNodesWidget = add_child_widget<project_nodes_widget>(false);
+
+    m_fileBrowserWidget->set_visible_in_toolbar(true, false);
+    m_projectNodesWidget->set_visible_in_toolbar(true, false);
 }
 
 void project_explorer_widget::render_implementation()
