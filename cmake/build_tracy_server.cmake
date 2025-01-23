@@ -11,7 +11,7 @@ CPMAddPackage(
 CPMAddPackage(
     NAME capstone
     GITHUB_REPOSITORY capstone-engine/capstone
-    GIT_TAG next
+    GIT_TAG 9907b22d33693f3beb4b8b7ba261fbdd219afee3    # Using this version as a future update adds CPack even when it's a subproject
     OPTIONS
         "CAPSTONE_X86_ATT_DISABLE ON"
         "CAPSTONE_ALPHA_SUPPORT OFF"
