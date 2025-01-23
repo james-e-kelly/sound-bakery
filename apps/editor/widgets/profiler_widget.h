@@ -6,7 +6,7 @@
 
 class profiler_widget : public gluten::widget
 {
-    WIDGET_CONSTRUCT(profiler_widget)
+    WIDGET_CONSTRUCT(profiler_widget, "Profiler Widget")
 
 protected:
     auto start_implementation() -> void override;

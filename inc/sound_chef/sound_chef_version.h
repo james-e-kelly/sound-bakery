@@ -7,8 +7,8 @@
 #define SC_VERSION_MAJOR       0
 #define SC_VERSION_MINOR       2
 #define SC_VERSION_PATCH       0
-#define SC_VERSION_COMMIT_ID   "bf2f0e8a7ef6f202a9f6941c6fa2a14c4d6d6fb5"
+#define SC_VERSION_COMMIT_ID   "bcd7549ccfe6d508f1ea9db25bdb9bf6d22026fb"
 #define SC_VERSION_STRING      "0.2.0"
-#define SC_VERSION_STRING_FULL "0.2.0+bf2f0e8a7ef6f202a9f6941c6fa2a14c4d6d6fb5"
+#define SC_VERSION_STRING_FULL "0.2.0+bcd7549ccfe6d508f1ea9db25bdb9bf6d22026fb"
 
 #endif // SC_VERSION_H

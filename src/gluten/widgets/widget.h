@@ -5,11 +5,11 @@
 /**
  * @def Macro to quickly create the basic constructors for a widget.
  */
-#define WIDGET_CONSTRUCT(type)                                                   \
-                                                                                 \
-public:                                                                          \
-    type(gluten::widget_subsystem* parentSubsystem) : widget(parentSubsystem) {} \
-    type(gluten::widget* parent) : gluten::widget(parent) {}
+#define WIDGET_CONSTRUCT(type, name)                                                    \
+                                                                                        \
+public:                                                                                 \
+    type(gluten::widget_subsystem* parentSubsystem) : widget(parentSubsystem, name) {}  \
+    type(gluten::widget* parent) : gluten::widget(parent, name) {}
 
 namespace gluten
 {
@@ -28,8 +28,8 @@ namespace gluten
     {
     public:
         widget() = delete;
-        widget(widget_subsystem* parentSubsystem);
-        widget(widget* parentWidget);
+        widget(widget_subsystem* parentSubsystem, const std::string& name);
+        widget(widget* parentWidget, const std::string& name);
         virtual ~widget() {}
 
     public:

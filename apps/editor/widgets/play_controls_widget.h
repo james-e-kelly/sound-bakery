@@ -5,11 +5,8 @@
 class player_widget : public gluten::widget
 {
 public:
-    player_widget(gluten::widget_subsystem* parentSubsystem) : widget(parentSubsystem) {}
+    WIDGET_CONSTRUCT(player_widget, "Player Widget")
 
-    player_widget(widget* parentWidget) : widget(parentWidget) {}
-
-public:
     virtual void render_implementation() override;
     virtual void start_implementation() override;
 

@@ -6,9 +6,9 @@
 
 using namespace gluten;
 
-widget::widget(widget_subsystem* parentSubsystem) : m_parentSubsystem(parentSubsystem) {}
+widget::widget(widget_subsystem* parentSubsystem, const std::string& name) : m_parentSubsystem(parentSubsystem), m_widgetName(name) {}
 
-widget::widget(widget* parentWidget) : m_parentWidget(parentWidget) {}
+widget::widget(widget* parentWidget, const std::string& name) : m_parentWidget(parentWidget), m_widgetName(name) {}
 
 auto widget::start() -> void
 { 

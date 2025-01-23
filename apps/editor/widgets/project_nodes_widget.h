@@ -20,9 +20,9 @@ enum class node_creation_type
 class project_nodes_widget : public gluten::widget
 {
 public:
-    project_nodes_widget(gluten::widget_subsystem* parentSubsystem) : widget(parentSubsystem), m_renameID(0) {}
+    project_nodes_widget(gluten::widget_subsystem* parentSubsystem) : widget(parentSubsystem, "Project Nodes Widget"), m_renameID(0) {}
 
-    project_nodes_widget(widget* parentWidget) : widget(parentWidget), m_renameID(0) {}
+    project_nodes_widget(widget* parentWidget) : widget(parentWidget, "Project Nodes Widget"), m_renameID(0) {}
 
 public:
     void render_page(const std::vector<SB_OBJECT_CATEGORY>& categories);
