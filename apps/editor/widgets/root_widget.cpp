@@ -8,6 +8,7 @@
 #include "managers/app_manager.h"
 #include "managers/project_manager.h"
 #include "sound_bakery/editor/project/project.h"
+#include "widgets/play_controls_widget.h"
 
 auto root_widget::render_menu_implementation() -> void
 {
@@ -56,6 +57,24 @@ auto root_widget::render_menu_implementation() -> void
 
         if (ImGui::BeginMenu(s_optionsMenuName))
         {
+
+            ImGui::EndMenu();
+        }
+
+        if (ImGui::BeginMenu(s_layoutsMenuName))
+        {
+            if (get_child_widget_count())
+            {
+                if (ImGui::MenuItem("Designer"))
+                {
+                    set_children_visible(false);
+
+                    if (auto playerWidget = get_widget_by_class(rttr::type::get<player_widget>()).lock())
+                    {
+                        playerWidget->set_visibile(true);
+                    }
+                }
+            }
 
             ImGui::EndMenu();
         }

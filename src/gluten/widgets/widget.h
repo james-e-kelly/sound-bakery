@@ -38,27 +38,20 @@ namespace gluten
         auto render() -> void;
         auto render_menu() -> void;
         auto end() -> void;
+
         auto set_visible_in_toolbar(bool visibleInToolBar, bool defaultRender) -> void;
+        auto set_visibile(bool visible) -> void;
+        auto set_children_visible(bool visible) -> void;
+
+        auto get_widget_by_class(const rttr::type& type) -> std::weak_ptr<widget>;
+        auto get_child_widget_count() const -> std::size_t;
 
         template <class T>
             requires std::derived_from<T, widget>
-        [[nodiscard]] std::shared_ptr<T> add_child_widget(bool widgetOwns)
-        {
-            std::shared_ptr<T> ptr = std::make_shared<T>(this);
-            if (widgetOwns)
-            {
-                m_owningChildWidgets.push_back(ptr);
-            }
-            m_childWidgets.push_back(ptr);
-            std::shared_ptr<gluten::widget> widget = std::static_pointer_cast<gluten::widget>(ptr);
-            if (m_hasStarted)
-            {
-                widget->start();
-            }
-            return ptr;
-        }
-
-        bool has_started() { return m_hasStarted; }
+        [[nodiscard]] std::shared_ptr<T> add_child_widget(bool widgetOwns);
+        
+        auto has_started() const -> bool;
+        auto is_visible() const -> bool;
 
         void destroy();
 
@@ -68,6 +61,7 @@ namespace gluten
         static inline const char* const s_optionsMenuName = "Options";
         static inline const char* const s_actionsMenuName = "Actions";
         static inline const char* const s_windowsMenuName = "Windows";
+        static inline const char* const s_layoutsMenuName = "Layouts";
         static inline const char* const s_helpMenuName = "Help";
 
     protected:
@@ -96,9 +90,10 @@ namespace gluten
         bool m_hasEnded                     = false;
         std::string m_widgetName            = "Widget";
         bool m_inToolbar                    = false;
-        bool m_renderingFromToolbar         = false;
+        bool m_visible                      = true;
+        bool m_visibleFromToolbar           = false;
 
-        std::vector<std::weak_ptr<widget>> m_childWidgets;          //< Child widgets to iterate over
+        std::map<rttr::type, std::weak_ptr<widget>> m_childWidgets; //< Child widgets to iterate over
         std::vector<std::shared_ptr<widget>> m_owningChildWidgets;  //< References to widgets that are owned. Not
                                                                     // iterated over
 
@@ -106,4 +101,22 @@ namespace gluten
 
         bool m_wantsDestroy = false;
     };
+
+    template <class T>
+        requires std::derived_from<T, widget>
+    [[nodiscard]] std::shared_ptr<T> widget::add_child_widget(bool widgetOwns)
+    {
+        std::shared_ptr<T> ptr = std::make_shared<T>(this);
+        if (widgetOwns)
+        {
+            m_owningChildWidgets.push_back(ptr);
+        }
+        m_childWidgets.insert({rttr::type::get<T>(), ptr});
+        std::shared_ptr<gluten::widget> widget = std::static_pointer_cast<gluten::widget>(ptr);
+        if (m_hasStarted)
+        {
+            widget->start();
+        }
+        return ptr;
+    }
 }  // namespace gluten

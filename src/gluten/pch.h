@@ -1,5 +1,6 @@
 #pragma once
 
+#include <rttr/type>
 #include "Delegates.h"
 #include "tracy/Tracy.hpp"
 

@@ -28,9 +28,9 @@ auto widget::tick(double deltaTime) -> void
     if (m_hasStarted)
     {
         tick_implementation(deltaTime);
-        for (std::weak_ptr<widget>& child : m_childWidgets)
+        for (auto& child : m_childWidgets)
         {
-            if (std::shared_ptr<widget> sharedChild = child.lock())
+            if (std::shared_ptr<widget> sharedChild = child.second.lock())
             {
                 sharedChild->tick(deltaTime);
             }
@@ -42,9 +42,7 @@ auto widget::render() -> void
 {
     ZoneScoped;
 
-    const bool renderWidget = m_inToolbar ? m_renderingFromToolbar : true;
-    
-    if (renderWidget)
+    if (is_visible())
     {
         if (m_hasStarted)
         {
@@ -78,8 +76,13 @@ auto widget::render_menu() -> void
         {
             if (m_inToolbar)
             {
-                ImGui::MenuItem(m_widgetName.c_str(), nullptr, &m_renderingFromToolbar);
+                ImGui::MenuItem(m_widgetName.c_str(), nullptr, &m_visibleFromToolbar);
             }
+            ImGui::EndMenu();
+        }
+
+        if (ImGui::BeginMenu(s_layoutsMenuName))
+        {
             ImGui::EndMenu();
         }
 
@@ -90,9 +93,9 @@ auto widget::render_menu() -> void
 
         render_menu_implementation();
 
-        for (std::weak_ptr<widget>& child : m_childWidgets)
+        for (auto& child : m_childWidgets)
         {
-            if (std::shared_ptr<widget> sharedChild = child.lock())
+            if (std::shared_ptr<widget> sharedChild = child.second.lock())
             {
                 sharedChild->render_menu();
             }
@@ -107,9 +110,9 @@ void gluten::widget::end()
     if (m_hasStarted && !m_hasEnded)
     {
         end_implementation();
-        for (std::weak_ptr<widget>& child : m_childWidgets)
+        for (auto& child : m_childWidgets)
         {
-            if (std::shared_ptr<widget> sharedChild = child.lock())
+            if (std::shared_ptr<widget> sharedChild = child.second.lock())
             {
                 sharedChild->end();
             }
@@ -121,16 +124,47 @@ void gluten::widget::end()
 auto gluten::widget::set_visible_in_toolbar(bool visibleInToolBar, bool defaultRender) -> void
 {
     m_inToolbar = visibleInToolBar;
-    m_renderingFromToolbar = defaultRender;
+    m_visibleFromToolbar = defaultRender;
 }
+
+auto gluten::widget::set_visibile(bool visible) -> void
+{
+    m_visible = true;
+    if (m_inToolbar)
+    {
+        m_visibleFromToolbar = true;
+    }
+}
+
+auto gluten::widget::set_children_visible(bool visible) -> void
+{
+    for (auto& child : m_childWidgets)
+    {
+        if (auto sharedChild = child.second.lock())
+        {
+            sharedChild->set_visibile(visible);
+        }
+    }
+}
+
+auto gluten::widget::get_widget_by_class(const rttr::type& type) -> std::weak_ptr<widget>
+{
+    if (auto search = m_childWidgets.find(type); search != m_childWidgets.end())
+    {
+        return search->second;
+    }
+    return {};
+}
+
+auto gluten::widget::get_child_widget_count() const -> std::size_t { return m_childWidgets.size(); }
 
 void widget::render_children()
 {
     ZoneScoped;
 
-    for (std::weak_ptr<widget>& child : m_childWidgets)
+    for (auto& child : m_childWidgets)
     {
-        if (std::shared_ptr<widget> sharedChild = child.lock())
+        if (std::shared_ptr<widget> sharedChild = child.second.lock())
         {
             sharedChild->render();
         }
@@ -152,5 +186,12 @@ gluten::app* widget::get_app() const
 widget* widget::get_parent_widget() const { return m_parentWidget; }
 
 widget_subsystem* widget::get_parent_subsystem() const { return m_parentSubsystem; }
+
+ auto gluten::widget::has_started() const -> bool { return m_hasStarted; }
+
+auto gluten::widget::is_visible() const -> bool
+{
+    return m_inToolbar ? m_visible && m_visibleFromToolbar : m_visible;
+}
 
 void widget::destroy() { m_wantsDestroy = true; }
