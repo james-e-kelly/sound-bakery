@@ -29,6 +29,7 @@ namespace gluten
 
         auto split_three_columns() -> void;
         auto split_three_columns_large_main() -> void;
+        auto split_one_large_column_one_side() -> void;
 
         auto assign_widget_to_node(const rttr::type& widgetType, ImGuiID idToAssignTo) -> void;
     };
