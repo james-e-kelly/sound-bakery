@@ -8,6 +8,7 @@
 #include "managers/app_manager.h"
 #include "managers/project_manager.h"
 #include "sound_bakery/editor/project/project.h"
+#include "widgets/audio_meter_widget.h"
 #include "widgets/details_widget.h"
 #include "widgets/play_controls_widget.h"
 #include "widgets/project_explorer_widget.h"
@@ -18,11 +19,15 @@ auto root_widget::start_implementation() -> void
 
     add_layout(gluten::widget_layout("Designer", [this](gluten::dockspace_refresh& refresh) 
         {
-            refresh.split_three_columns();
+            refresh.split_three_columns_large_main();
+
+            ImGuiID bottomLeftID = 0;
+            ImGui::DockBuilderSplitNode(refresh.leftColumnID, ImGuiDir_Down, 0.2f, &bottomLeftID, &refresh.leftColumnID);
 
             refresh.assign_widget_to_node(rttr::type::get<project_explorer_widget>(), refresh.leftColumnID);
             refresh.assign_widget_to_node(rttr::type::get<details_widget>(), refresh.centerColumnID);
-            refresh.assign_widget_to_node(rttr::type::get<player_widget>(), refresh.rightColumnID);
+            refresh.assign_widget_to_node(rttr::type::get<audio_meter_widget>(), refresh.rightColumnID);
+            refresh.assign_widget_to_node(rttr::type::get<player_widget>(), bottomLeftID);
         }));
 }
 
