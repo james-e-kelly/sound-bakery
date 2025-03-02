@@ -129,10 +129,13 @@ auto gluten::widget::set_visible_in_toolbar(bool visibleInToolBar, bool defaultR
 
 auto gluten::widget::set_visibile(bool visible) -> void
 {
-    m_visible = visible;
     if (m_inToolbar)
     {
         m_visibleFromToolbar = visible;
+    }
+    else
+    {
+        m_visible = visible;
     }
 }
 

@@ -47,11 +47,11 @@ void project_manager::setup_project()
             m_audioMeterWidget = widgetSubsystem->add_widget_class_to_root<audio_meter_widget>(false);
             m_profilerWidget = widgetSubsystem->add_widget_class_to_root<profiler_widget>(false);
 
-            m_projectExplorerWidget->set_visible_in_toolbar(true, false);
-            m_playerWidget->set_visible_in_toolbar(true, false);
-            m_detailsWidget->set_visible_in_toolbar(true, false);
-            m_audioMeterWidget->set_visible_in_toolbar(true, false);
-            m_profilerWidget->set_visible_in_toolbar(true, false);
+            m_projectExplorerWidget->set_visible_in_toolbar(true, true);
+            m_playerWidget->set_visible_in_toolbar(true, true);
+            m_detailsWidget->set_visible_in_toolbar(true, true);
+            m_audioMeterWidget->set_visible_in_toolbar(true, true);
+            m_profilerWidget->set_visible_in_toolbar(true, true);
 
             if (gluten::root_widget* const rootWidget = widgetSubsystem->get_root_widget())
             {

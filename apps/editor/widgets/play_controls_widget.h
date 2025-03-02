@@ -5,7 +5,7 @@
 class player_widget : public gluten::widget
 {
 public:
-    WIDGET_CONSTRUCT(player_widget, "###Player Widget")
+    WIDGET_CONSTRUCT(player_widget, "Player###Player Widget")
 
     virtual void render_implementation() override;
     virtual void start_implementation() override;
