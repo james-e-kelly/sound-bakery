@@ -129,10 +129,10 @@ auto gluten::widget::set_visible_in_toolbar(bool visibleInToolBar, bool defaultR
 
 auto gluten::widget::set_visibile(bool visible) -> void
 {
-    m_visible = true;
+    m_visible = visible;
     if (m_inToolbar)
     {
-        m_visibleFromToolbar = true;
+        m_visibleFromToolbar = visible;
     }
 }
 
@@ -147,7 +147,7 @@ auto gluten::widget::set_children_visible(bool visible) -> void
     }
 }
 
-auto gluten::widget::get_widget_by_class(const rttr::type& type) -> std::weak_ptr<widget>
+auto gluten::widget::get_widget_by_class(const rttr::type& type) const -> std::weak_ptr<widget>
 {
     if (auto search = m_childWidgets.find(type); search != m_childWidgets.end())
     {
@@ -157,6 +157,8 @@ auto gluten::widget::get_widget_by_class(const rttr::type& type) -> std::weak_pt
 }
 
 auto gluten::widget::get_child_widget_count() const -> std::size_t { return m_childWidgets.size(); }
+
+auto gluten::widget::get_widget_name() const -> std::string_view { return m_widgetName; }
 
 void widget::render_children()
 {

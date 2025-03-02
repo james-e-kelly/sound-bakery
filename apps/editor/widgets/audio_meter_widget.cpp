@@ -79,7 +79,7 @@ void audio_meter_widget::start_implementation()
 
 void audio_meter_widget::render_implementation()
 {
-    if (ImGui::Begin("Meter"))
+    if (ImGui::Begin(get_widget_name().data()))
     {
         const ImVec2 windowSize = ImGui::GetWindowSize();
 

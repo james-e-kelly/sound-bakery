@@ -2,6 +2,7 @@
 
 #include <rttr/type>
 #include "Delegates.h"
+#include "imgui.h"
 #include "tracy/Tracy.hpp"
 
 #include <fmt/core.h>

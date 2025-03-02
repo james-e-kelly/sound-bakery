@@ -16,6 +16,7 @@
 #include "widgets/play_controls_widget.h"
 #include "widgets/project_explorer_widget.h"
 #include "widgets/profiler_widget.h"
+#include "widgets/root_widget.h"
 
 void project_manager::init_project(const std::filesystem::path& project_file)
 {
@@ -36,31 +37,32 @@ auto project_manager::create_project(const std::filesystem::directory_entry& pro
 
 void project_manager::setup_project()
 {
-    m_projectExplorerWidget = get_app()
-        ->get_subsystem_by_class<gluten::widget_subsystem>()
-        ->add_widget_class_to_root<project_explorer_widget>(false);
-    m_playerWidget = get_app()
-        ->get_subsystem_by_class<gluten::widget_subsystem>()
-        ->add_widget_class_to_root<player_widget>(false);
-    m_detailsWidget = get_app()
-        ->get_subsystem_by_class<gluten::widget_subsystem>()
-        ->add_widget_class_to_root<details_widget>(false);
-    m_audioMeterWidget = get_app()
-        ->get_subsystem_by_class<gluten::widget_subsystem>()
-        ->add_widget_class_to_root<audio_meter_widget>(false);
-    m_profilerWidget = get_app()
-        ->get_subsystem_by_class<gluten::widget_subsystem>()
-        ->add_widget_class_to_root<profiler_widget>(false);
+    if (gluten::app* const app = get_app())
+    {
+        if (const auto widgetSubsystem = app->get_subsystem_by_class<gluten::widget_subsystem>())
+        {
+            m_projectExplorerWidget = widgetSubsystem->add_widget_class_to_root<project_explorer_widget>(false);
+            m_playerWidget = widgetSubsystem->add_widget_class_to_root<player_widget>(false);
+            m_detailsWidget = widgetSubsystem->add_widget_class_to_root<details_widget>(false);
+            m_audioMeterWidget = widgetSubsystem->add_widget_class_to_root<audio_meter_widget>(false);
+            m_profilerWidget = widgetSubsystem->add_widget_class_to_root<profiler_widget>(false);
 
-    m_projectExplorerWidget->set_visible_in_toolbar(true, false);
-    m_playerWidget->set_visible_in_toolbar(true, false);
-    m_detailsWidget->set_visible_in_toolbar(true, false);
-    m_audioMeterWidget->set_visible_in_toolbar(true, false);
-    m_profilerWidget->set_visible_in_toolbar(true, false);
+            m_projectExplorerWidget->set_visible_in_toolbar(true, false);
+            m_playerWidget->set_visible_in_toolbar(true, false);
+            m_detailsWidget->set_visible_in_toolbar(true, false);
+            m_audioMeterWidget->set_visible_in_toolbar(true, false);
+            m_profilerWidget->set_visible_in_toolbar(true, false);
 
-    get_app()->set_application_display_title(
-        fmt::format("{} - {} {}", sbk::engine::system::get_project()->get_config().project_name(), SBK_PRODUCT_NAME,
-                    SBK_VERSION_STRING));
+            if (gluten::root_widget* const rootWidget = widgetSubsystem->get_root_widget())
+            {
+                rootWidget->set_layout(rootWidget->get_default_layout());
+            }
+        }
+
+        app->set_application_display_title(
+            fmt::format("{} - {} {}", sbk::engine::system::get_project()->get_config().project_name(), SBK_PRODUCT_NAME,
+                        SBK_VERSION_STRING));
+    }
 }
 
 void project_manager::tick(double deltaTime)

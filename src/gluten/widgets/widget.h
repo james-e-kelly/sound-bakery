@@ -43,8 +43,9 @@ namespace gluten
         auto set_visibile(bool visible) -> void;
         auto set_children_visible(bool visible) -> void;
 
-        auto get_widget_by_class(const rttr::type& type) -> std::weak_ptr<widget>;
+        auto get_widget_by_class(const rttr::type& type) const -> std::weak_ptr<widget>;
         auto get_child_widget_count() const -> std::size_t;
+        auto get_widget_name() const -> std::string_view;
 
         template <class T>
             requires std::derived_from<T, widget>
