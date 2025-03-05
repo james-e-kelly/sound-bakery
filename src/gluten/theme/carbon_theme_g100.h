@@ -307,7 +307,6 @@ namespace gluten::theme::carbon_g100
         style->GrabMinSize              = 12.0f;
         style->LogSliderDeadzone;
         style->TabBorderSize             = 0.0f;
-        style->TabMinWidthForCloseButton = 0.0f;
         style->TabBarBorderSize          = 1.0f;
         style->TableAngledHeadersAngle   = 45.0f;
         style->ColorButtonPosition;
