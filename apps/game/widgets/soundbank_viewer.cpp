@@ -21,7 +21,7 @@ void soundbank_viewer_widget::tick_implementation(double deltaTime)
 
 void soundbank_viewer_widget::render_implementation()
 {
-    if (ImGui::Begin("Soundbank Viewer"))
+    if (ImGui::Begin(get_widget_name().data()))
     {
         for (sbk::core::object* object : sbk::engine::system::get()->get_objects_of_category(SB_CATEGORY_EVENT))
         {

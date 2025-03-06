@@ -7,7 +7,7 @@
 
 class soundbank_viewer_widget : public gluten::widget
 {
-    WIDGET_CONSTRUCT(soundbank_viewer_widget)
+    WIDGET_CONSTRUCT(soundbank_viewer_widget, "Soundbank Viewer")
 
 public:
     void start_implementation() override;

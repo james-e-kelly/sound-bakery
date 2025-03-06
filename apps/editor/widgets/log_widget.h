@@ -4,5 +4,5 @@
 
 class log_widget : public gluten::widget
 {
-    WIDGET_CONSTRUCT(log_widget)
+    WIDGET_CONSTRUCT(log_widget, "Log Widget")
 };

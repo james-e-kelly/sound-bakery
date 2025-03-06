@@ -131,6 +131,7 @@ target_link_libraries(gluten
     fmt::fmt
     bytesize
     Tracy::TracyClient
+    RTTR::Core_Lib
 )
 
 target_compile_options(gluten PRIVATE ${PROJECT_WARNING_FLAGS})

@@ -5,9 +5,7 @@
 class details_widget : public gluten::widget
 {
 public:
-    details_widget(gluten::widget_subsystem* parentSubsystem) : widget(parentSubsystem) {}
-
-    details_widget(widget* parent) : widget(parent) {}
+    WIDGET_CONSTRUCT(details_widget, "Details Widget")
 
 public:
     virtual void render_implementation() override;

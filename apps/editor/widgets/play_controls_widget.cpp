@@ -51,7 +51,7 @@ void player_widget::start_implementation()
 {
     widget::start_implementation();
 
-    add_child_widget<audio_display_widget>(true);
+    add_child_widget<audio_display_widget>(true)->set_visible_in_toolbar(true, false);
 }
 
 void player_widget::render_implementation()
@@ -59,7 +59,7 @@ void player_widget::render_implementation()
     const gluten::imgui::scoped_font audioFont(get_app()->get_font(gluten::fonts::regular_audio_icons));
     const gluten::imgui::scoped_style morePadding(ImGuiStyleVar_WindowPadding, gluten::theme::carbon_g100::paddingVec);
 
-    ImGui::Begin(fmt::format("{} - Player###Player", s_lastPlayableSelection.get_name()).c_str());
+    ImGui::Begin(fmt::format("{} - {}", s_lastPlayableSelection.get_name(), get_widget_name().data()).c_str());
 
     const selection& selection                   = get_app()->get_manager_by_class<project_manager>()->get_selection();
     const std::optional<rttr::type> selectedType = selection.selected_type();

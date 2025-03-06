@@ -49,7 +49,7 @@ auto profiler_widget::render_implementation() -> void
     }
     else
     {
-        if (ImGui::Begin("Profiler Connection"))
+        if (ImGui::Begin(get_widget_name().data()))
         {
             ImGui::TextUnformatted("Client Address");
             bool connectClicked = ImGui::InputTextWithHint("###connectionAddress", "Enter address", profiler_utils::connectionAddress,

@@ -116,7 +116,7 @@ bool gluten::imgui::update_window_manual_resize(ImGuiWindow* window, ImVec2& new
     {
         ImGuiContext& g = *GImGui;
         ImVec2 new_size = size_desired;
-        if (g.NextWindowData.Flags & ImGuiNextWindowDataFlags_HasSizeConstraint)
+        if (g.NextWindowData.HasFlags & ImGuiNextWindowDataFlags_HasSizeConstraint)
         {
             // Using -1,-1 on either X/Y axis to preserve the current size.
             ImRect cr = g.NextWindowData.SizeConstraintRect;
