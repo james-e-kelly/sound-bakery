@@ -5,7 +5,7 @@
 #include "IconsFontaudio.h"
 #include "imgui.h"
 
-void root_widget::render_menu()
+void root_widget::render_menu_implementation()
 {
     if (ImGui::BeginMenu("File"))
     {
@@ -22,6 +22,4 @@ void root_widget::render_menu()
 
         ImGui::EndMenu();
     }
-
-    gluten::root_widget::render_menu();
 }

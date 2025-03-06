@@ -5,7 +5,7 @@ auto object_owner::create_runtime_object() -> std::shared_ptr<T>
 {
     if (!rttr::type::get<T>().is_derived_from(rttr::type::get<sbk::core::object>()))
     {
-        SPDLOG_ERROR("Cannot create object. Objects must derive from the base object type");
+        SBK_ERROR("Cannot create object. Objects must derive from the base object type");
         return {};
     }
 
@@ -25,7 +25,7 @@ auto object_owner::create_database_object(bool addToDatabase) -> std::shared_ptr
 {
     if (!rttr::type::get<T>().is_derived_from(rttr::type::get<sbk::core::database_object>()))
     {
-        SPDLOG_ERROR("Cannot create object. Database objects must derive from the base database object type");
+        SBK_ERROR("Cannot create object. Database objects must derive from the base database object type");
         return {};
     }
 

@@ -13,7 +13,7 @@ enum class ButtonState
 
 class file_browser_widget : public gluten::widget
 {
-    WIDGET_CONSTRUCT(file_browser_widget)
+    WIDGET_CONSTRUCT(file_browser_widget, "File Browser Widget")
 
 public:
     virtual void start_implementation() override;

@@ -10,6 +10,9 @@ else()
   add_library(sound_bakery STATIC ${SOUND_BAKERY_SOURCES} ${SOUND_BAKERY_HEADERS} ${PCH_SOURCE})
 endif()
 
+c_17(sound_bakery)
+cxx_20(sound_bakery)
+
 add_library(SoundBakery::SoundBakery ALIAS sound_bakery)
 
 set_target_properties(sound_bakery PROPERTIES LANGUAGE CXX)
@@ -37,6 +40,9 @@ target_link_libraries(sound_bakery PUBLIC
   Boost::msm
   ztd::out_ptr
   yaml-archive
+  Tracy::TracyClient
+  PRIVATE
+  sbk::rpmalloc
 )
 
 install(TARGETS sound_bakery DESTINATION lib/sound_bakery)

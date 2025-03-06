@@ -11,11 +11,8 @@ namespace sbk::engine
 class audio_display_widget : public gluten::widget
 {
 public:
-    audio_display_widget(gluten::widget_subsystem* parentSubsystem) : widget(parentSubsystem) {}
+    WIDGET_CONSTRUCT(audio_display_widget, "Audio Display Widget")
 
-    audio_display_widget(widget* parent) : widget(parent) {}
-
-public:
     virtual void render_implementation() override;
 
 private:

@@ -26,6 +26,8 @@ add_executable(game
   ${GAME_HEADERS}
 )
 
+cxx_20(game)
+
 target_include_directories(game
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
 )

@@ -5,7 +5,7 @@
 class splash_widget : public gluten::widget
 {
 public:
-    splash_widget(gluten::widget_subsystem* parentSubsystem) : widget(parentSubsystem) {}
+    splash_widget(gluten::widget_subsystem* parentSubsystem) : widget(parentSubsystem, "Splash Widget") {}
 
 public:
     void show_splash_screen();

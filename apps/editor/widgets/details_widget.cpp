@@ -20,7 +20,7 @@ void details_widget::render_implementation()
     const gluten::imgui::scoped_color borderShadowIsLayer1(ImGuiCol_BorderShadow, gluten::theme::carbon_g100::layer01);
     const gluten::imgui::scoped_color frameBackgroundIsDark(ImGuiCol_FrameBg, gluten::theme::carbon_g100::background);
 
-    if (ImGui::Begin("Details", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+    if (ImGui::Begin(get_widget_name().data(), nullptr, ImGuiWindowFlags_AlwaysAutoResize))
     {
         if (std::shared_ptr<project_manager> projectManager = get_app()->get_manager_by_class<project_manager>())
         {

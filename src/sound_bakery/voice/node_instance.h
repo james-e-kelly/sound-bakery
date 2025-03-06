@@ -94,6 +94,8 @@ namespace sbk::engine
             template <class event_class, class state_machine_class, class source_state_class, class target_state_class>
             void operator()(event_class const& update, state_machine_class& stateMachine, source_state_class&, target_state_class&)
             {
+                ZoneScoped;
+
                 if (stateMachine.m_soundInstance)
                 {
                     if (ma_sound_at_end(&stateMachine.m_soundInstance->sound) == MA_TRUE)
@@ -140,6 +142,12 @@ namespace sbk::engine
         auto guard_init(const event_init& init) -> bool;
 
         typedef state_uninit initial_state;  // the initial state of the player SM
+
+        template <class FSM, class Event>
+        void no_transition(Event const& event, FSM& stateMachine, int state)
+        {
+            SBK_INFO(fmt::format("No transition from state {} on event {}", state, typeid(event).name()).c_str());
+        }
 
         struct transition_table : boost::mpl::vector
             <

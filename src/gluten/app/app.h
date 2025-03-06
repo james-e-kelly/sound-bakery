@@ -6,6 +6,11 @@
 
 namespace gluten
 {
+    /**
+     * @brief Manages application lifetime and object owning.
+     * 
+     * The app class is intended to pass application behaviour to manager and subsystem classes.
+     */
     class app
     {
     public:

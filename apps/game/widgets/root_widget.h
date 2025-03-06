@@ -8,5 +8,5 @@ public:
     root_widget(gluten::widget_subsystem* parentSubsystem) : gluten::root_widget(parentSubsystem) {}
 
 public:
-    virtual void render_menu() override;
+    virtual void render_menu_implementation() override;
 };

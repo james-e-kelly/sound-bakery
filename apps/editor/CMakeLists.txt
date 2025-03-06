@@ -18,6 +18,7 @@ set(EDITOR_SOURCES
   widgets/details_widget.cpp
   widgets/audio_meter_widget.cpp
   widgets/log_widget.cpp
+  widgets/profiler_widget.cpp
   utils/property_drawer.cpp
   utils/method_drawer.cpp
 )
@@ -37,6 +38,7 @@ set(EDITOR_HEADERS
   widgets/details_widget.h
   widgets/audio_meter_widget.h
   widgets/log_widget.h
+  widgets/profiler_widget.h
   utils/property_drawer.h
   utils/method_drawer.h
 )
@@ -52,6 +54,8 @@ add_executable(editor
   ${EDITOR_SOURCES}
   ${EDITOR_HEADERS}
 )
+
+cxx_20(editor)
 
 target_include_directories(editor
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
@@ -81,10 +85,13 @@ set_source_files_properties(
   PROPERTIES MACOSX_PACKAGE_LOCATION Resources/images
 )
 
+include(build_tracy_server)
+
 target_link_libraries(editor
     PRIVATE
     SoundBakery::Gluten
     SoundBakery::SoundBakery
+    sbk::tracy_profiler
 )
 
 if(MSVC)

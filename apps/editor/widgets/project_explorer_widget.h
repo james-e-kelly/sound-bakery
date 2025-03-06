@@ -7,11 +7,8 @@ class project_nodes_widget;
 class project_explorer_widget : public gluten::widget
 {
 public:
-    project_explorer_widget(gluten::widget_subsystem* parentSubsystem) : widget(parentSubsystem) {}
+    WIDGET_CONSTRUCT(project_explorer_widget, "Project Explorer Widget")
 
-    project_explorer_widget(widget* parentWidget) : widget(parentWidget) {}
-
-public:
     virtual void start_implementation() override;
     virtual void render_implementation() override;
 

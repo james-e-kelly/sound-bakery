@@ -21,8 +21,6 @@ bool sbk::editor::project::open_project(const std::filesystem::path& projectFile
         return false;
     }
 
-    YAML::Node projectYAML = YAML::LoadFile(projectFile.string());
-
     m_projectConfig = project_configuration(projectFile);
 
     load_objects();
@@ -43,7 +41,7 @@ void sbk::editor::project::save_project() const
 
 void sbk::editor::project::encode_all_media() const
 {
-    std::shared_ptr<concurrencpp::thread_pool_executor> threadPool = sbk::engine::system::get()->background_executor();
+    std::shared_ptr<concurrencpp::thread_pool_executor> threadPool = sbk::engine::system::get()->get_background_thread_executer();
 
     if (sbk::core::object_tracker* const objectTracker = sbk::engine::system::get())
     {
@@ -223,10 +221,4 @@ void sbk::editor::project::saveObjects() const
             yamlSerializer.save_database_object<sbk::core::serialization::serialized_standalone_object>(sharedObject, filePath.replace_extension("yaml"));
         }
     }
-}
-
-void sbk::editor::project::saveYAML(const YAML::Emitter& emitter, const std::filesystem::path& filePath) const
-{
-    std::ofstream outputStream(filePath);
-    outputStream << emitter.c_str();
 }

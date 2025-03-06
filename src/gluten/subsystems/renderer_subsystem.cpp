@@ -163,6 +163,7 @@ int renderer_subsystem::init_imgui()
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;   // Enable Gamepad Controls
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;      // Enable Docking
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;    // Enable Multi-Viewport / Platform
+    io.IniFilename = nullptr;
 
     theme::carbon_g100::apply_styles();
     theme::carbon_g100::apply_colours();
@@ -201,6 +202,8 @@ int renderer_subsystem::init()
 
 void renderer_subsystem::pre_tick(double deltaTime)
 {
+    ZoneScoped;
+
     if (glfwWindowShouldClose(m_window))
     {
         get_app()->request_exit();
@@ -215,10 +218,12 @@ void renderer_subsystem::pre_tick(double deltaTime)
     }
 }
 
-void renderer_subsystem::tick(double deltaTime) {}
+void renderer_subsystem::tick(double deltaTime) { ZoneScoped; }
 
 void renderer_subsystem::tick_rendering(double deltaTime)
 {
+    ZoneScoped;
+
     static ImVec4 clear_color = gluten::theme::carbon_g100::background;
 
     // Rendering
@@ -240,6 +245,8 @@ void renderer_subsystem::tick_rendering(double deltaTime)
 
 void renderer_subsystem::exit()
 {
+    ZoneScoped;
+
     ImGui::GetIO().Fonts->Clear();
 
     ImGui_ImplOpenGL3_Shutdown();

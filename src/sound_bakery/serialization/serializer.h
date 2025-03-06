@@ -47,7 +47,7 @@ namespace sbk::core::serialization
         unsigned int minor = SBK_VERSION_MINOR;
         unsigned int patch = SBK_VERSION_PATCH;
 
-        auto version_compatible() const -> bool { return major == SBK_VERSION_MAJOR && minor == SBK_VERSION_MINOR; }
+        auto version_compatible() const -> bool { return SBK_VERSION_MAJOR == major && SBK_VERSION_MINOR >= minor; }
 
         template <class archive_class>
         void serialize(archive_class& archive, const unsigned int version)

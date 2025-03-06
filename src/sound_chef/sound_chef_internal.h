@@ -9,10 +9,14 @@
  *
  * Convinience macro for allocating memory _and_ doing checks on it.
  */
-#define SC_CREATE(ptr, t)             \
-    ptr = ma_malloc(sizeof(t), NULL); \
-    SC_CHECK_MEM(ptr);                \
+#define SC_CREATE(ptr, t, system)                                       \
+    ptr = ma_malloc(sizeof(t), &(system)->engine.allocationCallbacks);  \
+    SC_CHECK_MEM(ptr);                                                  \
     memset(ptr, 0, sizeof(t))
+
+#define SC_FREE(ptr, system)                                \
+    assert(system != NULL);                                 \
+    ma_free(ptr, &(system)->engine.allocationCallbacks);
 
 ma_handle sc_dlopen(ma_log* pLog, const char* filename);
 void sc_dlclose(ma_log* pLog, ma_handle handle);

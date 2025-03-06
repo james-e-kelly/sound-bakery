@@ -18,10 +18,12 @@ void app_manager::init(gluten::app* app)
 
 void app_manager::create_new_project()
 {
+    NFD_Init();
+
     nfdchar_t* outPath = NULL;
 
 retry:
-    nfdresult_t pickFolderResult = NFD_PickFolder(std::filesystem::current_path().string().c_str(), &outPath);
+    nfdresult_t pickFolderResult = NFD_PickFolder(&outPath, std::filesystem::current_path().string().c_str());
 
     switch (pickFolderResult)
     {
@@ -44,13 +46,19 @@ retry:
     {
         static_cast<editor_app*>(get_app())->create_and_open_project(projectDirectory);
     }
+
+    NFD_FreePath(outPath);
+    NFD_Quit();
 }
 
 void app_manager::open_project()
 {
+    NFD_Init();
+
     nfdchar_t* outPath = NULL;
 retry:
-    nfdresult_t result = NFD_OpenDialog(sbk::editor::project_configuration::projectExtension.data(), NULL, &outPath);
+    nfdu8filteritem_t filter{.name = "Project", .spec = sbk::editor::project_configuration::projectExtension.data()};
+    nfdresult_t result = NFD_OpenDialog(&outPath, &filter, 1, NULL);
 
     if (result == NFD_ERROR)
         goto retry;
@@ -62,4 +70,7 @@ retry:
     const std::filesystem::path project_file(outPath);
 
     static_cast<editor_app*>(get_app())->open_project(project_file);
+
+    NFD_FreePath(outPath);
+    NFD_Quit();
 }

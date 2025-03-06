@@ -27,9 +27,12 @@ void game_app::post_init()
 
 void game_app::open_soundbank()
 {
+    NFD_Init();
+
     nfdchar_t* outPath = NULL;
 retry:
-    nfdresult_t result = NFD_OpenDialog(sbk::editor::project_configuration::outputBankExtension.data(), NULL, &outPath);
+    nfdu8filteritem_t filter{.name = "Soundbank", .spec = sbk::editor::project_configuration::outputBankExtension.data()};
+    nfdresult_t result = NFD_OpenDialog(&outPath, &filter, 1, NULL);
 
     if (result == NFD_ERROR)
         goto retry;
@@ -41,4 +44,7 @@ retry:
     m_soundbankViewerWidget.reset();
     m_soundbankViewerWidget = get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class_to_root<soundbank_viewer_widget>(false);
     m_soundbankViewerWidget->set_soundbank_to_view(outPath);
+
+    NFD_FreePath(outPath);
+    NFD_Quit();
 }

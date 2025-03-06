@@ -29,7 +29,7 @@ struct playable_selection
     {
         if (selectedObject != nullptr && object != selectedObject)
         {
-            sbk::engine::system::get()->get_listener_game_object()->stop_all();
+            sbk::engine::system::stop_all(0);
         }
 
         selectedObject = object;
@@ -51,7 +51,7 @@ void player_widget::start_implementation()
 {
     widget::start_implementation();
 
-    add_child_widget<audio_display_widget>(true);
+    add_child_widget<audio_display_widget>(true)->set_visible_in_toolbar(true, false);
 }
 
 void player_widget::render_implementation()
@@ -59,7 +59,7 @@ void player_widget::render_implementation()
     const gluten::imgui::scoped_font audioFont(get_app()->get_font(gluten::fonts::regular_audio_icons));
     const gluten::imgui::scoped_style morePadding(ImGuiStyleVar_WindowPadding, gluten::theme::carbon_g100::paddingVec);
 
-    ImGui::Begin(fmt::format("{} - Player###Player", s_lastPlayableSelection.get_name()).c_str());
+    ImGui::Begin(fmt::format("{} - {}", s_lastPlayableSelection.get_name(), get_widget_name().data()).c_str());
 
     const selection& selection                   = get_app()->get_manager_by_class<project_manager>()->get_selection();
     const std::optional<rttr::type> selectedType = selection.selected_type();
@@ -189,7 +189,7 @@ void player_widget::play_selected()
     if (sbk::engine::container* container =
             s_lastPlayableSelection.selectedObject->try_convert_object<sbk::engine::container>())
     {
-        sbk::engine::system::get()->get_listener_game_object()->play_container(container);
+        sbk::engine::system::post_container(container->get_database_id(), 0);
     }
     else if (sbk::engine::sound* sound =
                  s_lastPlayableSelection.selectedObject->try_convert_object<sbk::engine::sound>())
@@ -199,17 +199,17 @@ void player_widget::play_selected()
         {
             previewContainer->set_sound(sound);
 
-            sbk::engine::system::get()->get_listener_game_object()->play_container(previewContainer);
+            sbk::engine::system::post_container(previewContainer->get_database_id(), 0);
         }
     }
     else if (sbk::engine::event* event =
                  s_lastPlayableSelection.selectedObject->try_convert_object<sbk::engine::event>())
     {
-        sbk::engine::system::get()->get_listener_game_object()->post_event(event);
+        sbk::engine::system::post_event(event->get_database_name().data(), 0);
     }
 }
 
-void player_widget::stop_selected() { sbk::engine::system::get()->get_listener_game_object()->stop_all(); }
+void player_widget::stop_selected() { sbk::engine::system::stop_all(0); }
 
 void player_widget::toggle_play_selected()
 {

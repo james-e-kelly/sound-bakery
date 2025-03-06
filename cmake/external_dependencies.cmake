@@ -43,8 +43,8 @@ FetchContent_Declare(
 
 FetchContent_Declare(
   nfd
-  GIT_REPOSITORY https://github.com/mlabbe/nativefiledialog.git
-  GIT_TAG        67345b80ebb429ecc2aeda94c478b3bcc5f7888e
+  GIT_REPOSITORY https://github.com/btzy/nativefiledialog-extended.git
+  GIT_TAG        v1.2.1
   GIT_SHALLOW    TRUE
   OVERRIDE_FIND_PACKAGE
   EXCLUDE_FROM_ALL 
@@ -164,7 +164,7 @@ FetchContent_Declare(
   opus
   GIT_REPOSITORY https://github.com/xiph/opus.git
   GIT_TAG        v1.5.2
-  GIT_SHALLOW    TRUE
+  GIT_SHALLOW    OFF
   GIT_PROGRESS TRUE
   OVERRIDE_FIND_PACKAGE
   EXCLUDE_FROM_ALL 
@@ -174,7 +174,7 @@ FetchContent_Declare(
   opusfile
   GIT_REPOSITORY https://github.com/KarateKidzz/opusfile.git
   GIT_TAG        master
-  GIT_SHALLOW    TRUE
+  GIT_SHALLOW    OFF
   GIT_PROGRESS TRUE
   OVERRIDE_FIND_PACKAGE
   EXCLUDE_FROM_ALL 
@@ -222,6 +222,7 @@ FetchContent_Declare(
 FetchContent_Declare(
   boost
   URL https://github.com/boostorg/boost/releases/download/boost-1.87.0/boost-1.87.0-cmake.tar.xz
+  EXCLUDE_FROM_ALL
 )
 
 FetchContent_Declare(
@@ -236,6 +237,24 @@ FetchContent_Declare(
   out_ptr
   GIT_REPOSITORY https://github.com/soasis/out_ptr.git
   GIT_TAG main
+  GIT_SHALLOW TRUE
+  GIT_PROGRESS TRUE
+  EXCLUDE_FROM_ALL
+)
+
+FetchContent_Declare(
+  tracy
+  GIT_REPOSITORY https://github.com/james-e-kelly/tracy.git
+  GIT_TAG master
+  GIT_SHALLOW TRUE
+  GIT_PROGRESS TRUE
+  EXCLUDE_FROM_ALL
+)
+
+FetchContent_Declare(
+  sbk_rpmalloc_content
+  GIT_REPOSITORY https://github.com/mjansson/rpmalloc.git
+  GIT_TAG 1.4.5
   GIT_SHALLOW TRUE
   GIT_PROGRESS TRUE
   EXCLUDE_FROM_ALL

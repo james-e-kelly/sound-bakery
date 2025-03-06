@@ -192,6 +192,7 @@ struct sc_sound
     ma_sound sound;
     sc_sound_mode mode;
     ma_decoder* memoryDecoder;
+    sc_system* owningSystem;
 };
 
 /**
@@ -254,6 +255,7 @@ struct sc_system
 struct sc_system_config
 {
     const char* pluginPath; //< Folder path containing CLAP plugins to load
+    ma_allocation_callbacks allocationCallbacks;
 };
 
 #ifdef __cplusplus

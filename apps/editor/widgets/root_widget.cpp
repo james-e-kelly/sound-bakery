@@ -8,8 +8,39 @@
 #include "managers/app_manager.h"
 #include "managers/project_manager.h"
 #include "sound_bakery/editor/project/project.h"
+#include "widgets/audio_meter_widget.h"
+#include "widgets/profiler_widget.h"
+#include "widgets/details_widget.h"
+#include "widgets/play_controls_widget.h"
+#include "widgets/project_explorer_widget.h"
 
-void root_widget::render_menu()
+auto root_widget::start_implementation() -> void 
+{
+    gluten::root_widget::start_implementation();
+
+    add_layout(gluten::widget_layout("Designer", [this](gluten::dockspace_refresh& refresh) 
+        {
+            refresh.split_three_columns_large_main();
+
+            ImGuiID bottomLeftID = 0;
+            ImGui::DockBuilderSplitNode(refresh.leftColumnID, ImGuiDir_Down, 0.2f, &bottomLeftID, &refresh.leftColumnID);
+
+            refresh.assign_widget_to_node(rttr::type::get<project_explorer_widget>(), refresh.leftColumnID);
+            refresh.assign_widget_to_node(rttr::type::get<details_widget>(), refresh.centerColumnID);
+            refresh.assign_widget_to_node(rttr::type::get<audio_meter_widget>(), refresh.rightColumnID);
+            refresh.assign_widget_to_node(rttr::type::get<player_widget>(), bottomLeftID);
+        }));
+
+    add_layout(gluten::widget_layout("Profiler", [this](gluten::dockspace_refresh& refresh)
+        {
+            refresh.split_one_large_column_one_side();
+
+            refresh.assign_widget_to_node(rttr::type::get<profiler_widget>(), refresh.leftColumnID);
+            refresh.assign_widget_to_node(rttr::type::get<audio_meter_widget>(), refresh.rightColumnID);
+        }));
+}
+
+auto root_widget::render_menu_implementation() -> void
 {
     static bool showMenu  = false;
     static bool showAbout = false;
@@ -17,7 +48,7 @@ void root_widget::render_menu()
     gluten::imgui::scoped_font fontAwesomeFont(get_app()->get_font(gluten::fonts::regular_font_awesome));
 
     {
-        if (ImGui::BeginMenu("File"))
+        if (ImGui::BeginMenu(s_fileMenuName))
         {
             if (ImGui::MenuItem(ICON_FA_FILE " New...", "Ctrl+N"))
             {
@@ -54,15 +85,8 @@ void root_widget::render_menu()
             ImGui::EndMenu();
         }
 
-        if (ImGui::BeginMenu("Options"))
+        if (ImGui::BeginMenu(s_actionsMenuName))
         {
-
-            ImGui::EndMenu();
-        }
-
-        if (ImGui::BeginMenu("Actions"))
-        {
-
             if (ImGui::MenuItem("Open Demo Window", nullptr, &showMenu))
             {
             }
@@ -75,7 +99,7 @@ void root_widget::render_menu()
             ImGui::EndMenu();
         }
 
-        if (ImGui::BeginMenu("Help"))
+        if (ImGui::BeginMenu(s_helpMenuName))
         {
             if (ImGui::MenuItem("View Documentation"))
             {
@@ -106,7 +130,7 @@ void root_widget::render_menu()
         ImGui::ShowDemoWindow();
     }
 
-    gluten::root_widget::render_menu();
+    gluten::root_widget::render_menu_implementation();
 }
 
 void root_widget::render_about_window(bool& showAbout)

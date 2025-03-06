@@ -165,7 +165,7 @@ namespace gluten
 
         element() = default;
         element(const anchor_preset& anchorPreset);
-        ~element();
+        virtual ~element();
 
         void set_font_size(float size);
         void set_element_scale(float scale);
