@@ -22,6 +22,4 @@ void root_widget::render_menu_implementation()
 
         ImGui::EndMenu();
     }
-
-    gluten::root_widget::render_menu();
 }
