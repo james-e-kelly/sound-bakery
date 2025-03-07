@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.28) # Version set to have EXCLUDE_FROM_ALL avai
 
 project(
   "Sound Bakery" 
-  VERSION 0.2.0 
+  VERSION 0.3.0 
   DESCRIPTION "An open-source audio middleware tool with an authoring application and programmer's API"
   HOMEPAGE_URL "https://soundbakery.jameskelly.audio"
 )
