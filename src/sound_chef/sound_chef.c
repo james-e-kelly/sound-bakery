@@ -5,9 +5,9 @@
 #define MA_NO_VORBIS
 #define MA_NO_OPUS
 
+#include "sound_chef/sound_chef_internal.h"
 #include "extras/miniaudio_libopus.h"
 #include "extras/miniaudio_libvorbis.h"
-#include "sound_chef/sound_chef_internal.h"
 #include "sound_chef_encoder.h"
 
 #include <dirent.h>
