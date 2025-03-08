@@ -49,6 +49,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.auto_release.outputs.upload_url }}
-          asset_path: $GITHUB_WORKSPACE/win
+          asset_path: $GITHUB_WORKSPACE/win-dist.zip
           asset_name: win-dist.zip
           asset_content_type: application/zip
