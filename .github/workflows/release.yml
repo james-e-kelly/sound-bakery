@@ -42,13 +42,13 @@ jobs:
           path: win
       - name: Zip Windows Dist
         run: |
-          zip win-dist $GITHUB_WORKSPACE/win/**/*.*
+          zip -r win-dist.zip $GITHUB_WORKSPACE/win
       - name: Upload Windows Dist
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.auto_release.outputs.upload_url }}
-          asset_path: $GITHUB_WORKSPACE/win-dist.zip
+          asset_path: ./win-dist.zip
           asset_name: win-dist.zip
           asset_content_type: application/zip
