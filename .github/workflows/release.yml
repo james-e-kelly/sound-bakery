@@ -40,15 +40,66 @@ jobs:
         with:
           name: windows-dist
           path: win
+      - name: Download Mac Dist
+        uses: actions/download-artifact@v4.1.5
+        with:
+          name: mac-dist
+          path: mac
+      - name: Download Linux Clang Dist
+        uses: actions/download-artifact@v4.1.5
+        with:
+          name: linux-clang-dist
+          path: linux-clang
+      - name: Download Linux GCC Dist
+        uses: actions/download-artifact@v4.1.5
+        with:
+          name: linux-gcc-dist
+          path: linux-gcc
       - name: Zip Windows Dist
         run: |
-          zip win-dist $GITHUB_WORKSPACE/win/**/*.*
+          zip -r win-dist.zip ./win
+      - name: Zip Mac Dist
+        run: |
+          zip -r mac-dist.zip ./mac
+      - name: Zip Linux Clang Dist
+        run: |
+          zip -r linux-clang-dist.zip ./linux-clang
+      - name: Zip Linux GCC Dist
+        run: |
+          zip -r linux-gcc-dist.zip ./linux-gcc
       - name: Upload Windows Dist
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.auto_release.outputs.upload_url }}
-          asset_path: $GITHUB_WORKSPACE/wind
+          asset_path: ./win-dist.zip
           asset_name: win-dist.zip
+          asset_content_type: application/zip
+      - name: Upload Mac Dist
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.auto_release.outputs.upload_url }}
+          asset_path: ./mac-dist.zip
+          asset_name: mac-dist.zip
+          asset_content_type: application/zip
+      - name: Upload Linux Clang Dist
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.auto_release.outputs.upload_url }}
+          asset_path: ./linux-clang-dist.zip
+          asset_name: linux-clang-dist.zip
+          asset_content_type: application/zip
+      - name: Upload Linux GCC Dist
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.auto_release.outputs.upload_url }}
+          asset_path: ./linux-gcc-dist.zip
+          asset_name: linux-gcc-dist.zip
           asset_content_type: application/zip
