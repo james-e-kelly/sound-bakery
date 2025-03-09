@@ -36,7 +36,6 @@ void sbk::editor::project::save_project() const
 {
     saveSystem();
     saveObjects();
-    build_soundbanks();  // temp for testing
 }
 
 void sbk::editor::project::encode_all_media() const

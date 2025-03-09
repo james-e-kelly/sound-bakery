@@ -74,6 +74,17 @@ auto root_widget::render_menu_implementation() -> void
                 if (ImGui::MenuItem(ICON_FAD_SAVEAS " Save As...", "Shift+Ctrl+S"))
                 {
                 }
+
+                ImGui::Separator();
+                if (ImGui::MenuItem("Convert Files", nullptr, nullptr))
+                {
+                    sbk::engine::system::get_project()->encode_all_media();
+                }
+
+                if (ImGui::MenuItem("Build Soundbanks", nullptr, nullptr))
+                {
+                    sbk::engine::system::get_project()->build_soundbanks();
+                }
             }
 
             ImGui::Separator();
@@ -85,15 +96,19 @@ auto root_widget::render_menu_implementation() -> void
             ImGui::EndMenu();
         }
 
-        if (ImGui::BeginMenu(s_actionsMenuName))
+        if (ImGui::BeginMenu(s_editMenuName))
         {
-            if (ImGui::MenuItem("Open Demo Window", nullptr, &showMenu))
+            if (get_app()->get_manager_by_class<project_manager>())
             {
-            }
+                ImGui::BeginDisabled(true);
+                if (ImGui::MenuItem("Undo", "Ctrl+Z"))
+                {
+                }
 
-            if (ImGui::MenuItem("Convert Files", nullptr, nullptr))
-            {
-                sbk::engine::system::get_project()->encode_all_media();
+                if (ImGui::MenuItem("Redo", "Ctrl+Shift+Z"))
+                {
+                }
+                ImGui::EndDisabled();
             }
 
             ImGui::EndMenu();

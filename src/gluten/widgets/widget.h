@@ -59,7 +59,7 @@ namespace gluten
         MulticastDelegate<widget*> m_onDestroy;
 
         static inline const char* const s_fileMenuName = "File";
-        static inline const char* const s_optionsMenuName = "Options";
+        static inline const char* const s_editMenuName = "Edit";
         static inline const char* const s_actionsMenuName = "Actions";
         static inline const char* const s_windowsMenuName = "Windows";
         static inline const char* const s_layoutsMenuName = "Layouts";

@@ -67,7 +67,7 @@ auto widget::render_menu() -> void
             ImGui::EndMenu();
         }
 
-        if (ImGui::BeginMenu(s_optionsMenuName))
+        if (ImGui::BeginMenu(s_editMenuName))
         {
             ImGui::EndMenu();
         }
