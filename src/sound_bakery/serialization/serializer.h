@@ -228,7 +228,9 @@ namespace sbk::core::serialization
             if (typename archive_class::is_saving())
             {
                 const sbk::engine::encoding_sound encodingSound = sound->get_encoding_sound_data();
-                const std::vector<uint8_t> buffer               = read_binary_file(encodingSound.encodedSoundPath);
+                const bool validFile = std::filesystem::exists(encodingSound.encodedSoundPath) &&
+                                       std::filesystem::is_regular_file(encodingSound.encodedSoundPath);
+                const std::vector<uint8_t> buffer = validFile ? read_binary_file(encodingSound.encodedSoundPath) : std::vector<uint8_t>();
                 std::size_t size                                = buffer.size();
 
                 archive & boost::serialization::make_nvp("Size", size);
