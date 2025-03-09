@@ -62,9 +62,10 @@ auto root_widget::render_menu_implementation() -> void
 
             if (get_app()->get_manager_by_class<project_manager>())
             {
+                gluten::imgui::scoped_font fontAudio(get_app()->get_font(gluten::fonts::regular_audio_icons));
+
                 ImGui::Separator();
 
-                ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[0]);
                 if (ImGui::MenuItem(ICON_FAD_SAVE " Save", "Ctrl+S"))
                 {
                     get_app()->get_manager_by_class<project_manager>()->save_project();
@@ -73,7 +74,6 @@ auto root_widget::render_menu_implementation() -> void
                 if (ImGui::MenuItem(ICON_FAD_SAVEAS " Save As...", "Shift+Ctrl+S"))
                 {
                 }
-                ImGui::PopFont();
             }
 
             ImGui::Separator();
