@@ -19,6 +19,7 @@ set(EDITOR_SOURCES
   widgets/audio_meter_widget.cpp
   widgets/log_widget.cpp
   widgets/profiler_widget.cpp
+  widgets/new_project_widget.cpp
   utils/property_drawer.cpp
   utils/method_drawer.cpp
 )
@@ -39,6 +40,7 @@ set(EDITOR_HEADERS
   widgets/audio_meter_widget.h
   widgets/log_widget.h
   widgets/profiler_widget.h
+  widgets/new_project_widget.h
   utils/property_drawer.h
   utils/method_drawer.h
 )

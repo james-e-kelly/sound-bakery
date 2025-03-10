@@ -153,10 +153,10 @@ namespace gluten
 
         struct anchor_info
         {
-            ImVec2 min;  //< Start of the element in the range of 0-1
-            ImVec2 max;  //< End of the element in the range of 0-1
-            ImVec2 minOffset;
-            ImVec2 maxOffset;
+            ImVec2 min;  //< Start of the element in the range of 0-1 percentage
+            ImVec2 max;  //< End of the element in the range of 0-1 percentage
+            ImVec2 minOffset;   //< Pixel offset of the min/element start
+            ImVec2 maxOffset;   //< Pixel offset of the max/element end
 
             std::optional<anchor_preset> anchorPreset;  //< Possible preset, if using one
 

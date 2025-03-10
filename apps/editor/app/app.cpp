@@ -22,12 +22,12 @@ void editor_app::open_project(const std::filesystem::path& project_file)
     }
 }
 
-void editor_app::create_and_open_project(const std::filesystem::directory_entry& projectFolder)
+void editor_app::create_and_open_project(const std::filesystem::directory_entry& projectFolder, const std::string_view& projectName)
 {
     remove_manager_by_class<project_manager>();
     if (std::shared_ptr<project_manager> projectManager = add_manager_class<project_manager>())
     {
-        projectManager->create_project(projectFolder, "Sound Bakery Project");
+        projectManager->create_project(projectFolder, projectName.data());
     }
 }
 

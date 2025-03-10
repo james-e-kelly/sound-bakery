@@ -2,6 +2,7 @@
 
 #include "gluten/managers/manager.h"
 #include "widgets/splash_widget.h"
+#include "widgets/new_project_widget.h"
 
 namespace gluten
 {
@@ -29,4 +30,5 @@ public:
 
 private:
     std::shared_ptr<splash_widget> m_splashWidget;
+    std::shared_ptr<new_project_widget> m_newProjectWidget;
 };

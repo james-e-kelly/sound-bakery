@@ -10,45 +10,23 @@ void app_manager::init(gluten::app* app)
 {
     app->set_application_display_title(SBK_PRODUCT_NAME " " SBK_VERSION_STRING);
 
-    m_splashWidget =
-        app->get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class<splash_widget>();
+    if (app)
+    {
+        if (const auto widgetSubsystem = app->get_subsystem_by_class<gluten::widget_subsystem>())
+        {
+            m_splashWidget     = widgetSubsystem->add_widget_class<splash_widget>();
+            m_newProjectWidget = widgetSubsystem->add_widget_class<new_project_widget>();
 
-    m_splashWidget->show_splash_screen();
+            m_splashWidget->show_splash_screen();
+
+            m_newProjectWidget->set_visibile(false);
+        }
+    }
 }
 
 void app_manager::create_new_project()
 {
-    NFD_Init();
-
-    nfdchar_t* outPath = NULL;
-
-retry:
-    nfdresult_t pickFolderResult = NFD_PickFolder(&outPath, std::filesystem::current_path().string().c_str());
-
-    switch (pickFolderResult)
-    {
-        case NFD_OKAY:
-            break;
-
-        case NFD_CANCEL:
-            return;
-            break;
-
-        case NFD_ERROR:
-        default:
-            goto retry;
-            break;
-    }
-
-    std::filesystem::directory_entry projectDirectory(outPath);
-
-    if (std::filesystem::exists(projectDirectory))
-    {
-        static_cast<editor_app*>(get_app())->create_and_open_project(projectDirectory);
-    }
-
-    NFD_FreePath(outPath);
-    NFD_Quit();
+    m_newProjectWidget->open_new_project_popup();
 }
 
 void app_manager::open_project()
