@@ -4,6 +4,7 @@
 #include "managers/app_manager.h"
 #include "managers/project_manager.h"
 #include "sound_bakery/editor/project/project.h"
+#include "sound_bakery/sound/sound.h"
 #include "widgets/root_widget.h"
 
 namespace PathHelpers
@@ -56,8 +57,25 @@ auto editor_app::on_file_drop(const std::vector<std::string>& paths) -> void
             }
             else if (filePath.extension() == ".wav")
             {
-                
+                if (sbk::editor::project* const project = sbk::engine::system::get_project())
+                {
+                    const std::filesystem::path newFilePath = project->get_config().source_folder() / filePath.filename();
+
+                    std::filesystem::copy_file(filePath, newFilePath);
+                    if (std::shared_ptr<sbk::engine::sound> createdSound =
+                            project->create_database_object<sbk::engine::sound>())
+                    {
+                        createdSound->set_database_name(newFilePath.filename().stem().string());
+                        createdSound->set_sound_name(
+                            std::filesystem::relative(newFilePath, project->get_config().source_folder()).string());
+                    }
+                }
             }
         }
+    }
+
+    if (const sbk::editor::project* const project = sbk::engine::system::get_project())
+    {
+        project->save_project();
     }
 }
