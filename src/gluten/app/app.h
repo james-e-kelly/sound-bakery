@@ -49,6 +49,8 @@ namespace gluten
 
         ImFont* get_font(const fonts& font) { return m_fonts[font]; }
 
+        virtual auto on_file_drop(const std::vector<std::string>& paths) -> void {}
+
     private:
         void load_fonts();
 

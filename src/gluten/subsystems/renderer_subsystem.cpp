@@ -35,6 +35,22 @@ static void glfw_error_callback(int error, const char* description)
 
 using namespace gluten;
 
+static void drop_callback(GLFWwindow* window, int count, const char** paths)
+{
+    std::vector<std::string> storedPaths;
+    storedPaths.reserve(count);
+
+    for (int pathIndex = 0; pathIndex < count; ++pathIndex)
+    {
+        storedPaths.push_back(paths[pathIndex]);
+    }
+
+    if (gluten::app* const app = (gluten::app*)glfwGetWindowUserPointer(window))
+    {
+        app->on_file_drop(storedPaths);
+    }
+}
+
 renderer_subsystem::window_guard::window_guard(int width, int height, const std::string& windowName)
 {
     m_window = glfwCreateWindow(width, height, windowName.c_str(), NULL, NULL);
@@ -71,6 +87,8 @@ renderer_subsystem::window_guard::window_guard(int width, int height, const std:
                 }
             }
         });
+
+    glfwSetDropCallback(m_window, drop_callback);
 
     ImGui_ImplGlfw_InitForOpenGL(m_window, true);
 
@@ -210,11 +228,10 @@ void renderer_subsystem::pre_tick(double deltaTime)
     }
     else
     {
-        glfwPollEvents();
-
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
+        glfwPollEvents();   // Is this risky to poll afterwards? We're doing this so callbacks happen inside a frame and ImGui is valid
     }
 }
 

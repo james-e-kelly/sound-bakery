@@ -40,3 +40,24 @@ void editor_app::post_init()
 
     add_manager_class<app_manager>();
 }
+
+auto editor_app::on_file_drop(const std::vector<std::string>& paths) -> void
+{
+    for (const std::string& path : paths)
+    {
+        std::filesystem::path filePath(path);
+
+        if (std::filesystem::exists(filePath))
+        {
+            if (filePath.extension() == sbk::editor::project_configuration::projectExtensionWithDot)
+            {
+                open_project(filePath);
+                return;
+            }
+            else if (filePath.extension() == ".wav")
+            {
+                
+            }
+        }
+    }
+}

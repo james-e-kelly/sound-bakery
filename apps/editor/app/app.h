@@ -9,4 +9,6 @@ public:
     void create_and_open_project(const std::filesystem::directory_entry& projectFolder, const std::string_view& projectName);
 
     void post_init() override;
+
+    auto on_file_drop(const std::vector<std::string>& paths) -> void override;
 };
