@@ -16,6 +16,7 @@
 #include "sound_bakery/node/container/sound_container.h"
 #include "sound_bakery/parameter/parameter.h"
 #include "sound_bakery/profiling/voice_tracker.h"
+#include "sound_bakery/sound/sound.h"
 #include "sound_bakery/system.h"
 #include "sound_bakery/util/type_helper.h"
 #include "widgets/file_browser_widget.h"
@@ -336,6 +337,21 @@ bool project_nodes_widget::render_node_context_menu(rttr::type type, rttr::insta
                         render_create_parent_or_child_menu(category, instance, node_creation_type::NewChild);
                     }
 
+                    ImGui::Separator();
+                }
+
+                if (object->get_object_type().is_derived_from(sbk::engine::sound::type()))
+                {
+                    if (ImGui::MenuItem("Create Sound Node"))
+                    {
+                        if (std::shared_ptr<sbk::engine::sound_container> createdSoundNode =
+                            object->get_owner_object()->create_database_object<sbk::engine::sound_container>())
+                        {
+                            createdSoundNode->set_database_name(object->get_database_name());
+                            createdSoundNode->set_sound(object->try_convert_object<sbk::engine::sound>());
+                            get_app()->get_manager_by_class<project_manager>()->get_selection().selected_object(createdSoundNode.get());
+                        }
+                    }
                     ImGui::Separator();
                 }
 
