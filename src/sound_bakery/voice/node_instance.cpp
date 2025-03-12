@@ -84,7 +84,6 @@ auto sbk::engine::node_instance_fsm::action_play(const event_play& play) -> void
 auto sbk::engine::node_instance_fsm::action_stop(const event_stop& stop) -> void
 { 
     ZoneScoped;
-    BOOST_ASSERT(m_soundInstance.get());
     m_soundInstance.reset(); 
     m_children.clear();
     m_parent.reset();
