@@ -15,6 +15,11 @@
 
 using namespace sbk::util;
 
+bool type_comparator::operator()(const rttr::type lhs, const rttr::type rhs) const
+{
+    return std::strcmp(lhs.get_name().data(), rhs.get_name().data()) < 0;
+}
+
 SB_OBJECT_CATEGORY type_helper::getCategoryFromType(rttr::type type)
 {
     SB_OBJECT_CATEGORY category = SB_CATEGORY_UNKNOWN;
@@ -66,9 +71,9 @@ SB_OBJECT_CATEGORY type_helper::getCategoryFromType(rttr::type type)
     return category;
 }
 
-std::unordered_set<rttr::type> type_helper::getTypesFromCategory(SB_OBJECT_CATEGORY category)
+std::set<rttr::type, type_comparator> type_helper::getTypesFromCategory(SB_OBJECT_CATEGORY category)
 {
-    std::unordered_set<rttr::type> result;
+    std::set<rttr::type, type_comparator> result;
 
     switch (category)
     {

@@ -397,7 +397,8 @@ void project_nodes_widget::render_create_parent_or_child_menu(SB_OBJECT_CATEGORY
 {
     m_renameID = 0;
 
-    const std::unordered_set<rttr::type> categoryTypes = sbk::util::type_helper::getTypesFromCategory(category);
+    const std::set<rttr::type, sbk::util::type_comparator> categoryTypes =
+        sbk::util::type_helper::getTypesFromCategory(category);
 
     sbk::engine::node* const castedNode = sbk::util::type_helper::getNodeFromInstance(node);
 

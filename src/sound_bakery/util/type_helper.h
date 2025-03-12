@@ -10,12 +10,17 @@ namespace sbk::engine
 
 namespace sbk::util
 {
+    struct SB_CLASS type_comparator
+    {
+        bool operator()(const rttr::type lhs, const rttr::type rhs) const;
+    };
+
     class SB_CLASS type_helper final
     {
     public:
         static SB_OBJECT_CATEGORY getCategoryFromType(rttr::type type);
 
-        static std::unordered_set<rttr::type> getTypesFromCategory(SB_OBJECT_CATEGORY category);
+        static std::set<rttr::type, type_comparator> getTypesFromCategory(SB_OBJECT_CATEGORY category);
 
         static rttr::string_view get_display_name_from_type(rttr::type type);
 
