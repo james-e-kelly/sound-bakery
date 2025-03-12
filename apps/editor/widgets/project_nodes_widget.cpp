@@ -75,8 +75,8 @@ static int numNodesRendered = 0;
 
 void project_nodes_widget::render_category(SB_OBJECT_CATEGORY category)
 {
-    const std::unordered_set<sbk::core::object*> categoryObjects =
-        sbk::engine::system::get()->get_objects_of_category(category);
+    const std::set<sbk::core::object*, sbk::core::object_ptr_comparator> categoryObjects =
+        sbk::engine::system::get()->convert_to_ordered(sbk::engine::system::get()->get_objects_of_category(category));
 
     ImDrawList* draw_list = ImGui::GetWindowDrawList();
 

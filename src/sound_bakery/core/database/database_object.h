@@ -37,5 +37,6 @@ namespace sbk::core
         bool editorHidden = false;  //< If true, the object won't render in the editor or be saved
 
         friend class database;
+        friend class object_ptr_comparator;
     };
 }  // namespace sbk::core

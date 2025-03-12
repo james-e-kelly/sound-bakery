@@ -1,9 +1,25 @@
 #include "object_tracker.h"
 
 #include "sound_bakery/core/object/object.h"
+#include "sound_bakery/core/database/database_object.h"
 #include "sound_bakery/util/type_helper.h"
 
 using namespace sbk::core;
+
+bool object_ptr_comparator::operator()(const object* lhs, const object* rhs) const 
+{
+    if (lhs && rhs)
+    {
+        if (const database_object* const databaseLHS = lhs->try_convert_object<database_object>())
+        {
+            if (const database_object* const databaseRHS = rhs->try_convert_object<database_object>())
+            {
+                return std::strcmp(databaseLHS->get_database_name().data(), databaseRHS->get_database_name().data()) < 0;
+            }
+        }
+    }
+    return lhs < rhs;
+}
 
 void object_tracker::track_object(object* object)
 {
@@ -77,6 +93,17 @@ auto object_tracker::get_all_category_to_objects() const -> const std::unordered
 auto object_tracker::get_all_type_to_objects() const -> const std::unordered_map<rttr::type, std::unordered_set<object*>>&
 {
     return m_typeToObjects;
+}
+
+auto object_tracker::convert_to_ordered(const std::unordered_set<object*>& unordered) const
+    -> std::set<object*, object_ptr_comparator>
+{
+    std::set<object*, object_ptr_comparator> result;
+    for (object* object : unordered)
+    {
+        result.insert(object);
+    }
+    return result;
 }
 
 void object_tracker::on_object_destroyed(object* object)

@@ -4,6 +4,11 @@
 
 namespace sbk::core
 {
+    struct object_ptr_comparator
+    {
+        bool operator()(const object* lhs, const object* rhs) const;
+    };
+
     /**
      * @brief Tracks object categories and types.
      *
@@ -25,6 +30,9 @@ namespace sbk::core
         [[nodiscard]] auto get_objects_count() const -> size_t;
         [[nodiscard]] auto get_all_category_to_objects() const -> const std::unordered_map<SB_OBJECT_CATEGORY, std::unordered_set<object*>>&;
         [[nodiscard]] auto get_all_type_to_objects() const -> const std::unordered_map<rttr::type, std::unordered_set<object*>>&;
+
+        [[nodiscard]] auto convert_to_ordered(const std::unordered_set<object*>& unordered) const
+            -> std::set<object*, object_ptr_comparator>;
 
     private:
         void on_object_destroyed(object* object);
