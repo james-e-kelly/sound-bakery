@@ -25,6 +25,7 @@ namespace gluten
 
         void toggle_minimised();
         void toggle_maximised();
+        void set_maximised();
 
         bool is_minimised() const;
         bool is_maximized() const;

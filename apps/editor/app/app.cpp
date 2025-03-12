@@ -40,6 +40,9 @@ void editor_app::post_init()
     widgetSubsystem->set_root_widget(rootWidget.get());
 
     add_manager_class<app_manager>();
+
+    std::shared_ptr<gluten::renderer_subsystem> renderedSubsystem = get_subsystem_by_class<gluten::renderer_subsystem>();
+    renderedSubsystem->set_maximised();
 }
 
 auto editor_app::on_file_drop(const std::vector<std::string>& paths) -> void

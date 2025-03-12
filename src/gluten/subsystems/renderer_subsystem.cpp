@@ -300,6 +300,8 @@ void gluten::renderer_subsystem::toggle_maximised()
     }
 }
 
+void gluten::renderer_subsystem::set_maximised() { glfwMaximizeWindow(m_window.m_window); }
+
 bool gluten::renderer_subsystem::is_minimised() const
 {
     return (bool)glfwGetWindowAttrib(m_window.m_window, GLFW_ICONIFIED);
