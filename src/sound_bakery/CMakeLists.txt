@@ -4,21 +4,30 @@ set_sources()
 
 configure_file (${CMAKE_CURRENT_SOURCE_DIR}/sound_bakery_version.h.in ${CMAKE_SOURCE_DIR}/inc/sound_bakery/sound_bakery_version.h @ONLY)
 
-if (SOUND_BAKERY_SHARED)
-  add_library(sound_bakery SHARED ${SOUND_BAKERY_SOURCES} ${SOUND_BAKERY_HEADERS} ${PCH_SOURCE})
-else()
-  add_library(sound_bakery STATIC ${SOUND_BAKERY_SOURCES} ${SOUND_BAKERY_HEADERS} ${PCH_SOURCE})
-endif()
+add_library(sound_bakery_shared SHARED ${SOUND_BAKERY_SOURCES} ${SOUND_BAKERY_HEADERS} ${PCH_SOURCE})
+add_library(sound_bakery_static STATIC ${SOUND_BAKERY_SOURCES} ${SOUND_BAKERY_HEADERS} ${PCH_SOURCE})
 
-c_17(sound_bakery)
-cxx_20(sound_bakery)
+c_17(sound_bakery_shared)
+c_17(sound_bakery_static)
 
-add_library(SoundBakery::SoundBakery ALIAS sound_bakery)
+cxx_20(sound_bakery_shared)
+cxx_20(sound_bakery_static)
 
-set_target_properties(sound_bakery PROPERTIES LANGUAGE CXX)
-target_precompile_headers(sound_bakery PRIVATE ${PCH_HEADER})
-target_compile_options(sound_bakery PRIVATE ${PROJECT_WARNING_FLAGS})
-target_include_directories(sound_bakery
+set_target_properties(sound_bakery_shared PROPERTIES LANGUAGE CXX)
+set_target_properties(sound_bakery_static PROPERTIES LANGUAGE CXX)
+
+target_precompile_headers(sound_bakery_shared PRIVATE ${PCH_HEADER})
+target_precompile_headers(sound_bakery_static PRIVATE ${PCH_HEADER})
+
+target_compile_options(sound_bakery_shared PRIVATE ${PROJECT_WARNING_FLAGS})
+target_compile_options(sound_bakery_static PRIVATE ${PROJECT_WARNING_FLAGS})
+
+target_include_directories(sound_bakery_shared
+    PUBLIC ${CMAKE_SOURCE_DIR}/src/
+    PUBLIC ${CMAKE_SOURCE_DIR}/inc/
+)
+
+target_include_directories(sound_bakery_static
     PUBLIC ${CMAKE_SOURCE_DIR}/src/
     PUBLIC ${CMAKE_SOURCE_DIR}/inc/
 )
@@ -29,9 +38,9 @@ setup_format_sources()
 setup_linter_targets()
 fix_msvc_linters()
 
-target_link_libraries(sound_bakery PUBLIC 
+target_link_libraries(sound_bakery_static PUBLIC 
   SoundBakery::Delegates 
-  SoundBakery::SoundChef
+  SoundBakery::SoundChef_Static
   RTTR::Core_Lib
   concurrencpp::concurrencpp
   spdlog::spdlog
@@ -45,9 +54,29 @@ target_link_libraries(sound_bakery PUBLIC
   sbk::rpmalloc
 )
 
-install(TARGETS sound_bakery DESTINATION lib/sound_bakery)
+target_link_libraries(sound_bakery_shared PUBLIC 
+  SoundBakery::Delegates 
+  SoundBakery::SoundChef_Shared
+  RTTR::Core_Lib
+  concurrencpp::concurrencpp
+  spdlog::spdlog
+  Boost::assert
+  Boost::serialization
+  Boost::msm
+  ztd::out_ptr
+  yaml-archive
+  Tracy::TracyClient
+  PRIVATE
+  sbk::rpmalloc
+)
+
+install(TARGETS sound_bakery_shared DESTINATION lib/sound_bakery)
+install(TARGETS sound_bakery_static DESTINATION lib/sound_bakery)
 install(FILES 
   ${CMAKE_SOURCE_DIR}/inc/sound_bakery/sound_bakery_common.h    
   ${CMAKE_SOURCE_DIR}/inc/sound_bakery/sound_bakery_version.h 
   ${CMAKE_SOURCE_DIR}/inc/sound_bakery/sound_bakery.h
   DESTINATION inc/sound_bakery)
+
+add_library(SoundBakery::SoundBakery_Shared ALIAS sound_bakery_shared)
+add_library(SoundBakery::SoundBakery_Static ALIAS sound_bakery_static)

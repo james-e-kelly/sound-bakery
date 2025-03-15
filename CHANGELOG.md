@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Editor opens in fullscreen upon start
 - Editor strings are shown in alphabetical order instead of random
+- The sound_bakery and sound_chef libraries are replaced in favour of xxx_shared and xxx_static libraries
 
 ### Fixed
 

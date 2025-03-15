@@ -92,7 +92,7 @@ include(build_tracy_server)
 target_link_libraries(editor
     PRIVATE
     SoundBakery::Gluten
-    SoundBakery::SoundBakery
+    SoundBakery::SoundBakery_Static
     sbk::tracy_profiler
 )
 

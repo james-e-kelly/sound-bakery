@@ -32,19 +32,27 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Header Files" FILES ${ATLA
 
 set(CMAKE_FOLDER src)
 
-if (SOUND_BAKERY_SHARED)
-  add_library(sound_chef SHARED ${SOUND_CHEF_SOURCES} ${SOUND_CHEF_HEADERS} ${stb_SOURCE_DIR}/stb_ds.h)
-else()
-  add_library(sound_chef STATIC ${SOUND_CHEF_SOURCES} ${SOUND_CHEF_HEADERS} ${stb_SOURCE_DIR}/stb_ds.h)
-endif()
+add_library(sound_chef_shared SHARED ${SOUND_CHEF_SOURCES} ${SOUND_CHEF_HEADERS} ${stb_SOURCE_DIR}/stb_ds.h)
+add_library(sound_chef_static STATIC ${SOUND_CHEF_SOURCES} ${SOUND_CHEF_HEADERS} ${stb_SOURCE_DIR}/stb_ds.h)
 
-c_17(sound_chef)
-cxx_20(sound_chef)
-target_compile_options(sound_chef PRIVATE ${PROJECT_WARNING_FLAGS})
+c_17(sound_chef_shared)
+c_17(sound_chef_static)
+cxx_20(sound_chef_shared)
+cxx_20(sound_chef_static)
 
-add_library(SoundBakery::SoundChef ALIAS sound_chef)
+target_compile_options(sound_chef_shared PRIVATE ${PROJECT_WARNING_FLAGS})
+target_compile_options(sound_chef_static PRIVATE ${PROJECT_WARNING_FLAGS})
 
-target_include_directories(sound_chef
+add_library(SoundBakery::SoundChef_Shared ALIAS sound_chef_shared)
+add_library(SoundBakery::SoundChef_Static ALIAS sound_chef_static)
+
+target_include_directories(sound_chef_shared
+    PUBLIC ${CMAKE_SOURCE_DIR}/inc/
+    PRIVATE ${CMAKE_SOURCE_DIR}/src/
+    PUBLIC ${stb_SOURCE_DIR}
+)
+
+target_include_directories(sound_chef_static
     PUBLIC ${CMAKE_SOURCE_DIR}/inc/
     PRIVATE ${CMAKE_SOURCE_DIR}/src/
     PUBLIC ${stb_SOURCE_DIR}
@@ -88,7 +96,12 @@ FetchContent_MakeAvailable(opusfile)
 
 set(CMAKE_C_EXTENSIONS OFF)
 
-target_include_directories(sound_chef
+target_include_directories(sound_chef_shared
+PUBLIC ${miniaudio_SOURCE_DIR}
+PRIVATE ${opusfile_SOURCE_DIR}/include
+)
+
+target_include_directories(sound_chef_static
 PUBLIC ${miniaudio_SOURCE_DIR}
 PRIVATE ${opusfile_SOURCE_DIR}/include
 )
@@ -97,12 +110,24 @@ if (WIN32)
   message(STATUS "Fetching dirent")
   FetchContent_MakeAvailable(dirent)
 
-  target_include_directories(sound_chef
+  target_include_directories(sound_chef_shared
+    PRIVATE ${dirent_SOURCE_DIR}/include
+  )
+
+  target_include_directories(sound_chef_static
     PRIVATE ${dirent_SOURCE_DIR}/include
   )
 endif()
 
-target_link_libraries(sound_chef
+target_link_libraries(sound_chef_shared
+    PUBLIC clap
+    PRIVATE vorbis
+    PRIVATE vorbisfile
+    PRIVATE vorbisenc
+    PRIVATE Opus::opus
+    PRIVATE OpusFile::opusfile)
+
+target_link_libraries(sound_chef_static
     PUBLIC clap
     PRIVATE vorbis
     PRIVATE vorbisfile
@@ -111,12 +136,14 @@ target_link_libraries(sound_chef
     PRIVATE OpusFile::opusfile)
 
 if(MSVC)
-  target_compile_options(sound_chef PRIVATE /W4)
+  target_compile_options(sound_chef_shared PRIVATE /W4)
+  target_compile_options(sound_chef_static PRIVATE /W4)
 else()
-  target_compile_options(sound_chef PRIVATE -Wall -Wextra -Wpedantic)
+  target_compile_options(sound_chef_shared PRIVATE -Wall -Wextra -Wpedantic)
+  target_compile_options(sound_chef_static PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
-get_target_property(SOUND_CHEF_ALL_FILES sound_chef SOURCES)
+get_target_property(SOUND_CHEF_ALL_FILES sound_chef_shared SOURCES)
 foreach(source IN LISTS SOUND_CHEF_ALL_FILES)
     list(APPEND SOUND_CHEF_FORMAT_FILES "${CMAKE_CURRENT_SOURCE_DIR}/${source}")
 endforeach()
@@ -137,7 +164,7 @@ endif()
 # CMakeSettings.json is possible but seemed a pain in its own right
 # https://discourse.cmake.org/t/cmake-cxx-clang-tidy-in-msvc/890/9
 if(SOUND_BAKERY_TIDY_SOURCE AND SOUND_BAKERY_CLANG_TIDY_EXE AND MSVC)
-  set_target_properties(sound_chef PROPERTIES
+  set_target_properties(sound_chef_shared PROPERTIES
     VS_GLOBAL_RunCodeAnalysis true
 
     # Use visual studio core guidelines
@@ -148,6 +175,7 @@ if(SOUND_BAKERY_TIDY_SOURCE AND SOUND_BAKERY_CLANG_TIDY_EXE AND MSVC)
   )
 endif()
 
-install(TARGETS sound_chef DESTINATION lib/sound_chef)
+install(TARGETS sound_chef_shared DESTINATION lib/sound_chef)
+install(TARGETS sound_chef_static DESTINATION lib/sound_chef)
 install(FILES ${SOUND_CHEF_HEADERS} DESTINATION inc/sound_chef)
 install(FILES ${miniaudio_SOURCE_DIR}/miniaudio.h DESTINATION inc/sound_chef)

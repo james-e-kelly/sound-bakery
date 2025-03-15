@@ -49,7 +49,7 @@ set_target_properties(game PROPERTIES
 target_link_libraries(game
     PRIVATE
     SoundBakery::Gluten
-    SoundBakery::SoundBakery
+    SoundBakery::SoundBakery_Static
 )
 
 if(MSVC)
