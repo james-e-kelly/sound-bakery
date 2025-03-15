@@ -114,7 +114,7 @@ ma_proc sc_dlsym(ma_log* pLog, ma_handle handle, const char* symbol)
 #endif
 }
 
-const char* SC_API sc_filename_get_ext(const char* filename)
+const char* sc_filename_get_ext(const char* filename)
 {
     if (filename != NULL)
     {

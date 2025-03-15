@@ -255,14 +255,14 @@ sc_result sc_system_log_init(sc_system* system, ma_log_callback_proc callbackPro
     return MA_SUCCESS;
 }
 
-sc_system_config SC_API sc_system_config_init_default()
+sc_system_config sc_system_config_init_default()
 {
     sc_system_config config;
     SC_ZERO_OBJECT(&config);
     return config;
 }
 
-sc_system_config SC_API sc_system_config_init(const char* pluginPath)
+sc_system_config sc_system_config_init(const char* pluginPath)
 {
     sc_system_config config = sc_system_config_init_default();
     config.pluginPath       = pluginPath;
@@ -607,7 +607,7 @@ sc_result sc_sound_release(sc_sound* sound)
     return MA_SUCCESS;
 }
 
-sc_result SC_API sc_sound_instance_is_playing(sc_sound_instance* instance, sc_bool* isPlaying)
+sc_result sc_sound_instance_is_playing(sc_sound_instance* instance, sc_bool* isPlaying)
 {
     SC_CHECK_ARG(instance != NULL);
     SC_CHECK_ARG(isPlaying != NULL);
