@@ -3,13 +3,27 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.3.0]
+## [Unreleased]
 
 ### Added
 
-- Editor - Add profiling with Tracy
-- Editor - Add layouts
-- Editor - When opening a project, a default layout is loaded
+- Raw sounds have a "Create Sound Node" right-click option
+- Drag & Dropping .wav files copies them to the project
+- Drag & Dropping .bakery files opens the project
+- The editor has a new "Create New Project" dialog window
+
+### Changed
+
+- Editor opens in fullscreen upon start
+- Editor strings are shown in alphabetical order instead of random
+
+### Fixed
+
+- Fixed assert failing when a parent node is stopping a child
+- Fixed saving sounds when no encoded sound exists
+- Fixed the editor save icons displaying a question mark
+
+## [0.3.0]
 
 ### Added
 
