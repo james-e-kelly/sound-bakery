@@ -152,7 +152,7 @@ void root_widget::render_about_window(bool& showAbout)
 {
     if (ImGui::Begin("About " SBK_PRODUCT_NAME, &showAbout, ImGuiWindowFlags_AlwaysAutoResize))
     {
-        ImGui::Text("%s %s", SBK_PRODUCT_NAME, SBK_VERSION_STRING_FULL);
+        ImGui::Text("%s %s", SBK_PRODUCT_NAME, SBK_VERSION_STRING);
 
         ImGui::TextLinkOpenURL("Homepage", "https://github.com/james-e-kelly/sound-bakery");
         ImGui::SameLine();

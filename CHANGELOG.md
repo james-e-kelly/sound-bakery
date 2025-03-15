@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Drag & Dropping .bakery files opens the project
 - The editor has a new "Create New Project" dialog window
 
+### Removed
+
+- Removed the Git commit ID from builds and version files
+
 ### Changed
 
 - Editor opens in fullscreen upon start
