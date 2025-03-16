@@ -152,14 +152,14 @@ auto sbk::engine::system::get_operating_mode() -> operating_mode
     return operating_mode::unkown;
 }
 
-sbk::engine::system* system::create()
+auto system::create() -> sb_result
 {
     if (s_system == nullptr)
     {
         s_system = new system();
     }
 
-    return s_system;
+    return s_system ? MA_SUCCESS : MA_ERROR;
 }
 
 void system::destroy()
@@ -171,7 +171,7 @@ void system::destroy()
     }
 }
 
-sc_result system::init(const sb_system_config& config)
+auto system::init(const sb_system_config& config) -> sb_result
 {
     if (s_system == nullptr)
     {
@@ -207,7 +207,7 @@ sc_result system::init(const sb_system_config& config)
     return result;
 }
 
-sc_result system::update()
+auto system::update() -> sb_result
 {
     FrameMarkStart(profiling_strings::s_updateName);
     ZoneScoped;

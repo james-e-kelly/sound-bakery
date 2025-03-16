@@ -60,9 +60,9 @@ namespace sbk
             system();
             ~system();
 
-            static auto create() -> system*;
-            static auto init(const sb_system_config& config) -> sc_result;
-            static auto update() -> sc_result;
+            static auto create() -> sb_result;
+            static auto init(const sb_system_config& config) -> sb_result;
+            static auto update() -> sb_result;
             static auto destroy() -> void;
 
             static auto post_event(const char* eventName, sbk_id gameObjectID) -> sb_result;

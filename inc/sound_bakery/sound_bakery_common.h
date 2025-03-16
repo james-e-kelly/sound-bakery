@@ -25,4 +25,52 @@ struct sb_system_config
     sc_system_config soundChefConfig;
 };
 
+/**
+ * @brief Defines groups of objects that are rendered together/in the same tree
+ */
+typedef enum SB_OBJECT_CATEGORY
+{
+    /**
+     * @brief Unkown category
+     */
+    SB_CATEGORY_UNKNOWN,
+    /**
+     * @brief Sound file
+     */
+    SB_CATEGORY_SOUND,
+    /**
+     * @brief Every sound, random, blend etc.
+     */
+    SB_CATEGORY_NODE,
+    /**
+     * @brief Bus or aux busses
+     */
+    SB_CATEGORY_BUS,
+    /**
+     * @brief Music nodes like music segments
+     */
+    SB_CATEGORY_MUSIC,
+    /**
+     * @brief Events
+     */
+    SB_CATEGORY_EVENT,
+    /**
+     * @brief Soundbanks
+     */
+    SB_CATEGORY_BANK,
+    /**
+     * @brief Parameter types
+     */
+    SB_CATEGORY_PARAMETER,
+    /**
+     * @brief Any identifiable object not categorised above
+     */
+    SB_CATEGORY_DATABASE_OBJECT,
+    /**
+     * @brief Any runtime object
+     */
+    SB_CATEGORY_RUNTIME_OBJECT,
+    SB_CATEGORY_NUM
+} SB_OBJECT_CATEGORY;
+
 #endif
