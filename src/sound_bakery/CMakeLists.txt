@@ -2,7 +2,7 @@ message(STATUS "Adding Sound Bakery")
 include(build_sound_bakery) # Split into separate files to make it easier to read
 set_sources()
 
-configure_file (${CMAKE_CURRENT_SOURCE_DIR}/sound_bakery_version.h.in ${CMAKE_SOURCE_DIR}/inc/sound_bakery/sound_bakery_version.h @ONLY)
+configure_file (${CMAKE_CURRENT_SOURCE_DIR}/sound_bakery_version.h.in ${CMAKE_CURRENT_SOURCE_DIR}/inc/sound_bakery/sound_bakery_version.h @ONLY)
 
 add_library(sound_bakery_shared SHARED ${SOUND_BAKERY_SOURCES} ${SOUND_BAKERY_HEADERS} ${PCH_SOURCE})
 add_library(sound_bakery_static STATIC ${SOUND_BAKERY_SOURCES} ${SOUND_BAKERY_HEADERS} ${PCH_SOURCE})
