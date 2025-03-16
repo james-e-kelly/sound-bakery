@@ -1,6 +1,6 @@
 message(STATUS "Adding Sound Chef")
 
-configure_file (${CMAKE_CURRENT_SOURCE_DIR}/sound_chef_version.h.in ${CMAKE_CURRENT_SOURCE_DIR}/inc/sound_chef/sound_chef_version.h @ONLY)
+configure_file (${CMAKE_CURRENT_SOURCE_DIR}/sound_chef_version.h.in ${PROJECT_SOURCE_DIR}/inc/sound_chef/sound_chef_version.h @ONLY)
 
 set(SOUND_CHEF_SOURCES 
     sound_chef.c
@@ -23,10 +23,10 @@ set(SOUND_CHEF_HEADERS
 
     encoders/sound_chef_encoder_vorbis.h
 
-    ${CMAKE_SOURCE_DIR}/inc/sound_chef/sound_chef.h    
-    ${CMAKE_SOURCE_DIR}/inc/sound_chef/sound_chef_common.h    
-    ${CMAKE_SOURCE_DIR}/inc/sound_chef/sound_chef_dsp.h
-    ${CMAKE_SOURCE_DIR}/inc/sound_chef/sound_chef_version.h
+    ${PROJECT_SOURCE_DIR}/inc/sound_chef/sound_chef.h    
+    ${PROJECT_SOURCE_DIR}/inc/sound_chef/sound_chef_common.h    
+    ${PROJECT_SOURCE_DIR}/inc/sound_chef/sound_chef_dsp.h
+    ${PROJECT_SOURCE_DIR}/inc/sound_chef/sound_chef_version.h
 )
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Header Files" FILES ${ATLAS_HEADERS})
@@ -48,14 +48,14 @@ add_library(SoundBakery::SoundChef_Shared ALIAS sound_chef_shared)
 add_library(SoundBakery::SoundChef_Static ALIAS sound_chef_static)
 
 target_include_directories(sound_chef_shared
-    PUBLIC ${CMAKE_SOURCE_DIR}/inc/
-    PRIVATE ${CMAKE_SOURCE_DIR}/src/
+    PUBLIC ${PROJECT_SOURCE_DIR}/inc/
+    PRIVATE ${PROJECT_SOURCE_DIR}/src/
     PUBLIC ${stb_SOURCE_DIR}
 )
 
 target_include_directories(sound_chef_static
-    PUBLIC ${CMAKE_SOURCE_DIR}/inc/
-    PRIVATE ${CMAKE_SOURCE_DIR}/src/
+    PUBLIC ${PROJECT_SOURCE_DIR}/inc/
+    PRIVATE ${PROJECT_SOURCE_DIR}/src/
     PUBLIC ${stb_SOURCE_DIR}
 )
 

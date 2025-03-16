@@ -2,7 +2,7 @@ message(STATUS "Adding Sound Bakery")
 include(build_sound_bakery) # Split into separate files to make it easier to read
 set_sources()
 
-configure_file (${CMAKE_CURRENT_SOURCE_DIR}/sound_bakery_version.h.in ${CMAKE_CURRENT_SOURCE_DIR}/inc/sound_bakery/sound_bakery_version.h @ONLY)
+configure_file (${CMAKE_CURRENT_SOURCE_DIR}/sound_bakery_version.h.in ${PROJECT_SOURCE_DIR}/inc/sound_bakery/sound_bakery_version.h @ONLY)
 
 add_library(sound_bakery_shared SHARED ${SOUND_BAKERY_SOURCES} ${SOUND_BAKERY_HEADERS} ${PCH_SOURCE})
 add_library(sound_bakery_static STATIC ${SOUND_BAKERY_SOURCES} ${SOUND_BAKERY_HEADERS} ${PCH_SOURCE})
@@ -23,13 +23,13 @@ target_compile_options(sound_bakery_shared PRIVATE ${PROJECT_WARNING_FLAGS})
 target_compile_options(sound_bakery_static PRIVATE ${PROJECT_WARNING_FLAGS})
 
 target_include_directories(sound_bakery_shared
-    PUBLIC ${CMAKE_SOURCE_DIR}/src/
-    PUBLIC ${CMAKE_SOURCE_DIR}/inc/
+    PUBLIC ${PROJECT_SOURCE_DIR}/src/
+    PUBLIC ${PROJECT_SOURCE_DIR}/inc/
 )
 
 target_include_directories(sound_bakery_static
-    PUBLIC ${CMAKE_SOURCE_DIR}/src/
-    PUBLIC ${CMAKE_SOURCE_DIR}/inc/
+    PUBLIC ${PROJECT_SOURCE_DIR}/src/
+    PUBLIC ${PROJECT_SOURCE_DIR}/inc/
 )
 
 build_dependencies()
@@ -73,9 +73,9 @@ target_link_libraries(sound_bakery_shared PUBLIC
 install(TARGETS sound_bakery_shared DESTINATION lib/sound_bakery)
 install(TARGETS sound_bakery_static DESTINATION lib/sound_bakery)
 install(FILES 
-  ${CMAKE_SOURCE_DIR}/inc/sound_bakery/sound_bakery_common.h    
-  ${CMAKE_SOURCE_DIR}/inc/sound_bakery/sound_bakery_version.h 
-  ${CMAKE_SOURCE_DIR}/inc/sound_bakery/sound_bakery.h
+  ${PROJECT_SOURCE_DIR}/inc/sound_bakery/sound_bakery_common.h    
+  ${PROJECT_SOURCE_DIR}/inc/sound_bakery/sound_bakery_version.h 
+  ${PROJECT_SOURCE_DIR}/inc/sound_bakery/sound_bakery.h
   DESTINATION inc/sound_bakery)
 
 add_library(SoundBakery::SoundBakery_Shared ALIAS sound_bakery_shared)
