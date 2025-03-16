@@ -1,4 +1,3 @@
-include(setup_installation)
 include(setup_cpack)
 include(setup_docs)
 
