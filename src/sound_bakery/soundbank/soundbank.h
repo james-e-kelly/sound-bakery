@@ -40,11 +40,11 @@ namespace sbk::engine
 
         soundbank_dependencies gather_dependencies() const;
 
-        auto set_master_soundbank(bool master) -> void { m_masterSoundbank = master; }
-        auto get_master_soundbank() const -> bool { return m_masterSoundbank; }
+        auto set_init_soundbank(bool master) -> void { m_initSoundbank = master; }
+        auto get_master_soundbank() const -> bool { return m_initSoundbank; }
 
     private:
         std::vector<sbk::core::database_ptr<event>> m_events;
-        bool m_masterSoundbank = false; //< Determines whether we package bussess, parameters, etc.
+        bool m_initSoundbank = false; //< Determines whether we package bussess, parameters, etc.
     };
 }  // namespace sbk::engine

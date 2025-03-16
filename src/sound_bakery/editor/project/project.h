@@ -24,7 +24,7 @@ namespace sbk::editor
         void save_project() const;
 
         void encode_all_media() const;
-        void build_soundbanks() const;
+        void build_soundbanks();
 
         [[nodiscard]] const project_configuration& get_config() const;
         [[nodiscard]] std::weak_ptr<sbk::engine::sound_container> get_preview_container() const;

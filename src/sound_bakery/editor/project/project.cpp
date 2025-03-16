@@ -160,16 +160,23 @@ void sbk::editor::project::createPreviewContainer()
     }
 }
 
-void sbk::editor::project::build_soundbanks() const
+void sbk::editor::project::build_soundbanks()
 {
-    const std::unordered_set<sbk::core::object*> soundbankObjects =
+    std::unordered_set<sbk::core::object*> soundbankObjects =
         sbk::engine::system::get()->get_objects_of_category(SB_CATEGORY_BANK);
+
+    std::shared_ptr<sbk::engine::soundbank> initSoundbank = create_database_object<sbk::engine::soundbank>(false);
+    initSoundbank->set_editor_hidden(true);
+    initSoundbank->set_database_name(m_projectConfig.initBankName);
+    initSoundbank->set_init_soundbank(true);
+    remove_object(initSoundbank);   // Delete after this scope
+
+    soundbankObjects.insert(initSoundbank.get());
 
     for (const auto& soundbankObject : soundbankObjects)
     {
         if (sbk::engine::soundbank* const soundbank = soundbankObject->try_convert_object<sbk::engine::soundbank>())
         {
-            soundbank->set_master_soundbank(true);  //< TODO: Testing making every soundbank the master
             std::shared_ptr<sbk::core::database_object> sharedDatabaseObject = soundbank->casted_shared_from_this<sbk::core::database_object>();
 
             sbk::core::serialization::binary_serializer binarySerializer;

@@ -25,6 +25,7 @@ namespace sbk::editor
         static constexpr std::string_view projectExtensionWithDot    = ".bakery";
         static constexpr std::string_view outputBankExtension        = "bnk";
         static constexpr std::string_view outputBankExtensionWithDot = ".bnk";
+        static constexpr std::string_view initBankName               = "Init";
 
         [[nodiscard]] std::filesystem::path source_folder() const { return m_projectFolder / "Source"; }
         [[nodiscard]] std::filesystem::path object_folder() const { return m_projectFolder / "Objects"; }

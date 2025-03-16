@@ -19,7 +19,7 @@ sbk::engine::soundbank_dependencies sbk::engine::soundbank::gather_dependencies(
 {
     sbk::engine::soundbank_dependencies dependencies;
 
-    if (m_masterSoundbank)
+    if (m_initSoundbank)
     {
         auto busPointers = sbk::engine::system::get()->get_objects_of_category(SB_CATEGORY_BUS);
         auto intParameterPointers = sbk::engine::system::get()->get_objects_of_type(sbk::engine::int_parameter::type());
