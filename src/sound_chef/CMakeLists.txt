@@ -24,6 +24,7 @@ set(SOUND_CHEF_HEADERS
     encoders/sound_chef_encoder_vorbis.h
 
     ${CMAKE_SOURCE_DIR}/inc/sound_chef/sound_chef.h    
+    ${CMAKE_SOURCE_DIR}/inc/sound_chef/sound_chef_common.h    
     ${CMAKE_SOURCE_DIR}/inc/sound_chef/sound_chef_dsp.h
     ${CMAKE_SOURCE_DIR}/inc/sound_chef/sound_chef_version.h
 )
@@ -177,5 +178,8 @@ endif()
 
 install(TARGETS sound_chef_shared DESTINATION lib/sound_chef)
 install(TARGETS sound_chef_static DESTINATION lib/sound_chef)
+
 install(FILES ${SOUND_CHEF_HEADERS} DESTINATION inc/sound_chef)
 install(FILES ${miniaudio_SOURCE_DIR}/miniaudio.h DESTINATION inc/sound_chef)
+install(FILES ${stb_SOURCE_DIR}/stb_ds.h DESTINATION inc/sound_chef)
+install(DIRECTORY ${clap_SOURCE_DIR}/include/clap DESTINATION inc/sound_chef)
