@@ -7,7 +7,7 @@ project(
   HOMEPAGE_URL "https://soundbakery.jameskelly.audio"
 )
 
-include(${CMAKE_SOURCE_DIR}/cmake/setup_init.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/setup_init.cmake)
 
 option(SOUND_BAKERY_EDITOR "Build the Sound Bakery editor" ${SOUND_BAKERY_MAIN_PROJECT})
 option(SOUND_BAKERY_SHARED "Build Sound Bakery and Sound Chef as shared libraries" OFF)
