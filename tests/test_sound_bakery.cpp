@@ -9,7 +9,7 @@ TEST_SUITE("System")
     {
         sb_system_config config = sb_system_config_init_default();
 
-        REQUIRE(sbk::engine::system::create() != nullptr);
+        REQUIRE(sbk::engine::system::create() == MA_SUCCESS);
         REQUIRE(sbk::engine::system::init(config) == MA_SUCCESS);
         REQUIRE(sbk::engine::system::update() == MA_SUCCESS);
         sbk::engine::system::destroy();
@@ -20,13 +20,13 @@ TEST_SUITE("System")
     {
         sb_system_config config = sb_system_config_init_default();
 
-        REQUIRE(sbk::engine::system::create() != nullptr);
+        REQUIRE(sbk::engine::system::create() == MA_SUCCESS);
         REQUIRE(sbk::engine::system::init(config) == MA_SUCCESS);
         REQUIRE(sbk::engine::system::update() == MA_SUCCESS);
         sbk::engine::system::destroy();
         REQUIRE(sbk::engine::system::get() == nullptr);
 
-        REQUIRE(sbk::engine::system::create() != nullptr);
+        REQUIRE(sbk::engine::system::create() == MA_SUCCESS);
         REQUIRE(sbk::engine::system::init(config) == MA_SUCCESS);
         REQUIRE(sbk::engine::system::update() == MA_SUCCESS);
         sbk::engine::system::destroy();
