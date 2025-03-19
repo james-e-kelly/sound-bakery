@@ -15,9 +15,34 @@ std::shared_ptr<T> object_ptr_to_shared_ptr(sbk::core::object* ptr)
     return ptr->casted_shared_from_this<T>();
 }
 
+auto sbk::engine::soundbank_database::fill_runtime_database() -> void
+{ 
+    if (sbk::engine::system* const system = sbk::engine::system::get())
+    {
+        for (const soundbank_database_entry& entry : database)
+        {
+            system->add_object_to_database(entry.assetID, entry.assetName);
+        }
+    }
+}
+
+
 sbk::engine::soundbank_dependencies sbk::engine::soundbank::gather_dependencies() const
 {
     sbk::engine::soundbank_dependencies dependencies;
+
+    if (m_lookupSoundbank)
+    {
+        for (const std::weak_ptr<sbk::core::database_object> databaseObject : sbk::engine::system::get()->get_all())
+        {
+            if (const std::shared_ptr<sbk::core::database_object> sharedDatabaseObject = databaseObject.lock())
+            {
+                dependencies.lookupDatabase.database.push_back(
+                    soundbank_database_entry{.assetName = std::string(sharedDatabaseObject->get_database_name()),
+                                             .assetID   = sharedDatabaseObject->get_database_id()});
+            }
+        }
+    }
 
     if (m_initSoundbank)
     {

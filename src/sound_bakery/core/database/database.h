@@ -15,6 +15,7 @@ namespace sbk::core
     {
     public:
         auto add_object_to_database(const std::shared_ptr<database_object>& object) -> void;
+        auto add_object_to_database(sbk_id id, std::string_view name) -> void;
         auto remove_object_from_database(sbk_id objectID) -> void;
 
         [[nodiscard]] auto try_find(sbk_id objectID) const -> std::weak_ptr<database_object>;

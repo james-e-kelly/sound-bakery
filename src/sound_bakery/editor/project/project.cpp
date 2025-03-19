@@ -27,7 +27,7 @@ bool sbk::editor::project::open_project(const std::filesystem::path& projectFile
     loadSystem();
     load_sounds();
 
-    createPreviewContainer();
+    create_preview_container();
 
     return true;
 }
@@ -149,7 +149,7 @@ void sbk::editor::project::load_objects()
     }
 }
 
-void sbk::editor::project::createPreviewContainer()
+void sbk::editor::project::create_preview_container()
 {
     if (auto previewContainer = create_database_object<sbk::engine::sound_container>())
     {
@@ -169,6 +169,7 @@ void sbk::editor::project::build_soundbanks()
     initSoundbank->set_editor_hidden(true);
     initSoundbank->set_database_name(m_projectConfig.initBankName);
     initSoundbank->set_init_soundbank(true);
+    initSoundbank->set_lookup_soundbank(true);
     remove_object(initSoundbank);   // Delete after this scope
 
     soundbankObjects.insert(initSoundbank.get());

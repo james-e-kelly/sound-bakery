@@ -11,6 +11,7 @@
 #include <boost/archive/yaml_iarchive.hpp>
 #include <boost/archive/yaml_oarchive.hpp>
 #include <boost/serialization/binary_object.hpp>
+#include <boost/serialization/vector.hpp>
 
 #include "sound_bakery/system.h"
 #include "sound_bakery/node/bus/bus.h"
@@ -33,6 +34,16 @@ namespace sbk::engine
 
 namespace sbk::core::serialization
 {
+    enum sound_bakery_serialization_version
+    {
+        sbk_ver_start = 1,
+        sbk_ver_soundbanks_lookup = 2,  //< Soundbanks can contain lookup info for integrations to get a list of all objects
+
+        /** ADD NEW VERSIONS ABOVE */
+        sbk_ver_plus_one,
+        sbk_ver_cur = sbk_ver_plus_one - 1
+    };
+
     auto make_default_variant(const rttr::type& type) -> rttr::variant;
     auto read_binary_file(const std::filesystem::path& file) -> std::vector<uint8_t>;
 
@@ -298,14 +309,14 @@ namespace sbk::core::serialization
         {
         }
 
-        serialized_version version;
+        serialized_version serializedVersion;
         serialized_object serializedSoundbank;
 
         template <class archive_class>
-        void serialize(archive_class& archive, const unsigned int v)
+        void serialize(archive_class& archive, const unsigned int version)
         {
-            archive & boost::serialization::make_nvp("Version", version);
-            BOOST_ASSERT_MSG(version.version_compatible(), "Cross version serialization not implemented yet");
+            archive & boost::serialization::make_nvp("Version", serializedVersion);
+            BOOST_ASSERT_MSG(serializedVersion.version_compatible(), "Cross version serialization not implemented yet");
 
             archive & boost::serialization::make_nvp("Soundbank", serializedSoundbank);
             BOOST_ASSERT_MSG(serializedSoundbank.object->get_object_type().is_derived_from<sbk::engine::soundbank>(), "Must be saving a soundbank type");
@@ -322,7 +333,7 @@ namespace sbk::core::serialization
                 archive& boost::serialization::make_nvp("Nodes", serializedNodes);
                 archive& boost::serialization::make_nvp("Events", serializedEvents);
 
-                if (soundbank->get_master_soundbank())
+                if (soundbank->is_init_soundbank())
                 {
                     serialized_object_vector<sbk::engine::bus> serializedBusses(soundbank);
                     serialized_object_vector<sbk::engine::int_parameter> serializedIntParameters(soundbank);
@@ -333,6 +344,15 @@ namespace sbk::core::serialization
                     archive & boost::serialization::make_nvp("IntParameters", serializedIntParameters);
                     archive & boost::serialization::make_nvp("FloatParameters", serializedFloatParameters);
                     archive & boost::serialization::make_nvp("NamedParameters", serializedNamedParameters);
+                }
+
+                if (version >= sbk_ver_soundbanks_lookup)
+                {
+                    if (soundbank->is_lookup_soundbank())
+                    {
+                        sbk::engine::soundbank_database database;
+                        archive & boost::serialization::make_nvp("Database", database);
+                    }
                 }
             }
             else
@@ -347,7 +367,7 @@ namespace sbk::core::serialization
                 archive & boost::serialization::make_nvp("Nodes", serializedNodes);
                 archive & boost::serialization::make_nvp("Events", serializedEvents);
 
-                if (soundbank->get_master_soundbank())
+                if (soundbank->is_init_soundbank())
                 {
                     serialized_object_vector<sbk::engine::bus> serializedBusses(soundbankDependencies.busses);
                     serialized_object_vector<sbk::engine::int_parameter> serializedIntParameters(soundbankDependencies.intParameters);
@@ -358,6 +378,11 @@ namespace sbk::core::serialization
                     archive & boost::serialization::make_nvp("IntParameters", serializedIntParameters);
                     archive & boost::serialization::make_nvp("FloatParameters", serializedFloatParameters);
                     archive & boost::serialization::make_nvp("NamedParameters", serializedNamedParameters);
+                }
+
+                if (soundbank->is_lookup_soundbank())
+                {
+                    archive & boost::serialization::make_nvp("Database", soundbankDependencies.lookupDatabase);
                 }
             }
         }
@@ -577,7 +602,15 @@ namespace sbk::core::serialization
     using yaml_serializer = boost_serializer<boost::archive::yaml_iarchive, boost::archive::yaml_oarchive, std::ios_base::in, std::ios_base::out>;
 }  // namespace sbk::core::serialization
 
-BOOST_CLASS_VERSION(sbk::core::serialization::serialized_object, 1)
+BOOST_CLASS_VERSION(sbk::core::serialization::serialized_type, sbk::core::serialization::sbk_ver_cur)
+BOOST_CLASS_VERSION(sbk::core::serialization::serialized_object, sbk::core::serialization::sbk_ver_cur)
+BOOST_CLASS_VERSION(sbk::core::serialization::serialized_standalone_object, sbk::core::serialization::sbk_ver_cur)
+BOOST_CLASS_VERSION(sbk::core::serialization::serialized_system, sbk::core::serialization::sbk_ver_cur)
+BOOST_CLASS_VERSION(sbk::core::serialization::serialized_sound, sbk::core::serialization::sbk_ver_cur)
+BOOST_CLASS_VERSION(sbk::core::serialization::serialized_soundbank, sbk::core::serialization::sbk_ver_cur)
+BOOST_CLASS_VERSION(sbk::core::serialization::serialized_child_class, sbk::core::serialization::sbk_ver_cur)
+BOOST_CLASS_VERSION(sbk::core::serialization::serialized_sequential_container, sbk::core::serialization::sbk_ver_cur)
+BOOST_CLASS_VERSION(sbk::core::serialization::serialized_associative_container, sbk::core::serialization::sbk_ver_cur)
 
 namespace boost
 {

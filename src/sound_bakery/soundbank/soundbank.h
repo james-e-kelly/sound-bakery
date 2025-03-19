@@ -13,6 +13,35 @@ namespace sbk::engine
     class float_parameter;
     class named_parameter;
 
+    struct SB_CLASS soundbank_database_entry
+    {
+        std::string assetName;
+        sbk_id assetID;
+
+        template <class archive_class>
+        void serialize(archive_class& archive, const unsigned int version)
+        {
+            archive & boost::serialization::make_nvp("AssetName", assetName);
+            archive & boost::serialization::make_nvp("AssetID", assetID);
+        }
+    };
+
+    /**
+     * @brief Contains 
+     */
+    struct SB_CLASS soundbank_database
+    {
+        std::vector<soundbank_database_entry> database;
+
+        auto fill_runtime_database() -> void;   //< Fill the sbk::engine::system database with the information serialized here
+        
+        template <class archive_class>
+        void serialize(archive_class& archive, const unsigned int version)
+        {
+            archive & boost::serialization::make_nvp("LookupDatabase", database);
+        }
+    };
+
     /**
      * @brief Wraps all events, objects, and sounds needed to package a soundbank.
      */
@@ -26,6 +55,8 @@ namespace sbk::engine
         std::vector<std::shared_ptr<sbk::engine::int_parameter>> intParameters;
         std::vector<std::shared_ptr<sbk::engine::float_parameter>> floatParameters;
         std::vector<std::shared_ptr<sbk::engine::named_parameter>> namedParameters;
+
+        soundbank_database lookupDatabase;
     };
 
     /**
@@ -40,11 +71,15 @@ namespace sbk::engine
 
         soundbank_dependencies gather_dependencies() const;
 
-        auto set_init_soundbank(bool master) -> void { m_initSoundbank = master; }
-        auto get_master_soundbank() const -> bool { return m_initSoundbank; }
+        auto set_init_soundbank(bool init) -> void { m_initSoundbank = init; }
+        auto set_lookup_soundbank(bool lookup) -> void { m_lookupSoundbank = lookup; }
+
+        auto is_init_soundbank() const -> bool { return m_initSoundbank; }
+        auto is_lookup_soundbank() const -> bool { return m_lookupSoundbank; }
 
     private:
         std::vector<sbk::core::database_ptr<event>> m_events;
         bool m_initSoundbank = false; //< Determines whether we package bussess, parameters, etc.
+        bool m_lookupSoundbank = false; //< Determines whether this bank contains string -> id lookup information
     };
 }  // namespace sbk::engine

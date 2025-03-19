@@ -13,7 +13,7 @@ auto sbk::core::database::add_object_to_database(const std::shared_ptr<database_
     sbk_id objectID        = object->get_database_id();
     std::string objectName = std::string(object->get_database_name());
 
-    if (objectID == SB_INVALID_ID)
+    if (objectID == SBK_INVALID_ID)
     {
         objectID           = create_new_id();
         object->m_objectID = objectID;  // calling the function would trigger the callbacks
@@ -46,9 +46,39 @@ auto sbk::core::database::add_object_to_database(const std::shared_ptr<database_
     object->get_on_update_name().AddRaw(this, &sbk::core::database::update_name);
 }
 
+auto sbk::core::database::add_object_to_database(sbk_id id, std::string_view name) -> void 
+{
+    if (id == SBK_INVALID_ID)
+    {
+        SBK_ERROR("Cannot add invalid ID to database");
+        return;
+    }
+
+    if (name.empty())
+    {
+        SBK_ERROR("Cannot add invalid name to database");
+        return;
+    }
+
+    if (auto iter = m_idToPointerMap.find(id); iter != m_idToPointerMap.end())
+    {
+        SBK_WARN("Cannot add object to database. Object ID already mapped");
+        return;
+    }
+
+    if (auto iter = m_nameToIdMap.find(std::string(name)); iter != m_nameToIdMap.end())
+    {
+        SBK_WARN("Cannot add object to database. Object name already mapped");
+        m_idToPointerMap.erase(id);
+        return;
+    }
+
+    m_nameToIdMap[std::string(name)] = id;
+}
+
 auto sbk::core::database::remove_object_from_database(sbk_id objectID) -> void
 {
-    if (objectID == SB_INVALID_ID)
+    if (objectID == SBK_INVALID_ID)
     {
         SBK_ERROR("Cannot remove object from database. Object ID is 0!");
         return;
@@ -137,13 +167,13 @@ auto sbk::core::database::create_new_name(const rttr::type& type) -> std::string
 
 auto sbk::core::database::update_id(sbk_id oldID, sbk_id newID) -> void
 {
-    if (oldID == SB_INVALID_ID)
+    if (oldID == SBK_INVALID_ID)
     {
         SBK_ERROR("Cannot update database ID. Old ID is invalid");
         return;
     }
 
-    if (newID == SB_INVALID_ID)
+    if (newID == SBK_INVALID_ID)
     {
         SBK_ERROR("Cannot update database ID. New ID is invalid");
         return;

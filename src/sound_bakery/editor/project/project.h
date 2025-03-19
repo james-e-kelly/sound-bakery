@@ -34,7 +34,7 @@ namespace sbk::editor
         void loadSystem();
         void load_objects();
 
-        void createPreviewContainer();
+        void create_preview_container();
 
         void saveSystem() const;
         void saveObjects() const;
