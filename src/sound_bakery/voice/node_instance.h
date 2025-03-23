@@ -136,6 +136,10 @@ namespace sbk::engine
                         }
                     }
                 }
+                else
+                {
+                    stateMachine.process_event(event_stop());
+                }
             }
         };
 
