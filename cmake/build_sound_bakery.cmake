@@ -65,6 +65,7 @@ set(SOUND_BAKERY_HEADERS
     core/core_include.h
     core/core_fwd.h
     core/property.h
+    core/string.h
 
     core/object/object.h
     core/object/object.inl

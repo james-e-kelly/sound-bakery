@@ -162,7 +162,7 @@ void project_nodes_widget::render_single_node(rttr::type type, rttr::instance in
 
             static ImGuiID previousFocusID = 0;
 
-            const bool opened = ImGui::TreeNodeEx(fmt::format("##{}", object->get_database_name()).c_str(), flags);
+            const bool opened = ImGui::TreeNodeEx(fmt::format("##{}", object->get_object_name()).c_str(), flags);
 
             if (std::string_view payloadString = sbk::util::type_helper::getPayloadFromType(object->get_object_type());
                 payloadString.size())
@@ -173,7 +173,7 @@ void project_nodes_widget::render_single_node(rttr::type type, rttr::instance in
 
                     ImGui::SetDragDropPayload(payloadString.data(), &dragID, sizeof(sbk_id), ImGuiCond_Once);
 
-                    ImGui::TextUnformatted(object->get_database_name().data());
+                    ImGui::TextUnformatted(object->get_object_name().data());
 
                     ImGui::EndDragDropSource();
                 }
@@ -237,7 +237,7 @@ void project_nodes_widget::render_single_node(rttr::type type, rttr::instance in
                 }
                 else
                 {
-                    ImGui::Text(ICON_FAD_FILTER_BELL " %s", object->get_database_name().data());
+                    ImGui::Text(ICON_FAD_FILTER_BELL " %s", object->get_object_name().data());
 
                     if (unsigned int playingCount = sbk::engine::system::get_voice_tracker()->getPlayingCountOfObject(
                                 object->get_database_id()))
@@ -304,7 +304,7 @@ void project_nodes_widget::render_rename_object(sbk::core::database_object* cons
     if (ImGui::InputText("###rename", m_renameString, 255,
                          ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_EnterReturnsTrue))
     {
-        object->set_database_name(m_renameString);
+        object->set_object_name(m_renameString);
         m_renameID        = 0;
         m_renameString[0] = '\0';
     }
@@ -347,7 +347,7 @@ bool project_nodes_widget::render_node_context_menu(rttr::type type, rttr::insta
                         if (std::shared_ptr<sbk::engine::sound_container> createdSoundNode =
                             object->get_owner_object()->create_database_object<sbk::engine::sound_container>())
                         {
-                            createdSoundNode->set_database_name(object->get_database_name());
+                            createdSoundNode->set_object_name(object->get_database_name());
                             createdSoundNode->set_sound(object->try_convert_object<sbk::engine::sound>());
                             get_app()->get_manager_by_class<project_manager>()->get_selection().selected_object(createdSoundNode.get());
                         }
@@ -504,7 +504,7 @@ std::string_view project_nodes_widget::create_parent_or_child_menu_name(node_cre
 void project_nodes_widget::setup_rename_node(sbk::core::database_object* object)
 {
     m_renameID                = object->get_database_id();
-    std::string_view nodeName = object->get_database_name();
+    std::string_view nodeName = object->get_object_name();
     nodeName.copy(m_renameString, 255);
     m_renameString[nodeName.length()] = '\0';
 }

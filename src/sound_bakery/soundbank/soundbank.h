@@ -15,7 +15,7 @@ namespace sbk::engine
 
     struct SB_CLASS soundbank_database_entry
     {
-        std::string assetName;
+        sbk::core::database_name assetName;
         sbk_id assetID;
 
         template <class archive_class>

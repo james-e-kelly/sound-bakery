@@ -38,7 +38,7 @@ sbk::engine::soundbank_dependencies sbk::engine::soundbank::gather_dependencies(
             if (const std::shared_ptr<sbk::core::database_object> sharedDatabaseObject = databaseObject.lock())
             {
                 dependencies.lookupDatabase.database.push_back(
-                    soundbank_database_entry{.assetName = std::string(sharedDatabaseObject->get_database_name()),
+                    soundbank_database_entry{.assetName = sharedDatabaseObject->get_database_name(),
                                              .assetID   = sharedDatabaseObject->get_database_id()});
             }
         }

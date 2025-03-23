@@ -55,6 +55,11 @@ namespace sbk::engine
         sbk::core::database_ptr<node_base> m_outputBus;
         std::unordered_set<sbk::core::database_ptr<node_base>> m_childNodes;
 
+    private:
+        auto on_parent_update_database_name(const sbk::core::database_name& oldName,
+                                            const sbk::core::database_name& newName) -> void;
+        DelegateHandle m_onParentUpdateNameDelegate;
+
         REGISTER_REFLECTION(node_base, sbk::core::database_object)
     };
 

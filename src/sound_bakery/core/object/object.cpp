@@ -5,6 +5,11 @@
 
 DEFINE_REFLECTION(sbk::core::object)
 
+sbk::core::object::object() : m_objectName("New Object", "?,.#~@<>|*:\"\\") 
+{
+
+}
+
 sbk::core::object::~object() { m_onDestroyEvent.Broadcast(this); }
 
 auto sbk::core::object::get_owner() const -> object_owner* { return m_owner; }
@@ -45,6 +50,11 @@ auto sbk::core::object::get_object_type() const -> rttr::type
     return m_type.value();
 }
 
+auto sbk::core::object::get_object_name() const -> std::string_view
+{
+    return m_objectName;
+}
+
 void sbk::core::object::destroy()
 {
     if (m_owner)
@@ -71,4 +81,20 @@ auto sbk::core::object::clear_flags(object_flags flagsToClear) -> void
 auto sbk::core::object::has_flag(object_flags flagsToCheck) -> bool
 {
     return (m_flags & flagsToCheck) == flagsToCheck;
+}
+
+auto sbk::core::object::set_object_name(std::string_view name) -> bool
+{ 
+    if (m_objectName.test_set(name))
+    {
+        m_onUpdateName.Broadcast(m_objectName.get(), name);
+        m_objectName.set(name, true);
+        return true;
+    }
+    return false;
+}
+
+auto sbk::core::object::get_on_update_name() -> MulticastDelegate<std::string_view, std::string_view>&
+{
+    return m_onUpdateName;
 }

@@ -96,12 +96,12 @@ void sbk::editor::project::load_sounds()
 
             if (const sbk::core::database* const database = sbk::engine::system::get())
             {
-                if (database->try_find(filename.stem().string()).expired())
+                if (database->try_find(sbk::core::database_name(sbk::engine::sound::type().get_name().data(), filename.stem().string())).expired())
                 {
                     if (const std::shared_ptr<sbk::core::database_object> createdSound =
                             create_database_object<sbk::engine::sound>())
                     {
-                        createdSound->set_database_name(filename.stem().string());
+                        createdSound->set_object_name(filename.stem().string());
 
                         if (sbk::engine::sound* const castedSound =
                                 sbk::reflection::cast<sbk::engine::sound*, sbk::core::database_object*>(
@@ -153,7 +153,7 @@ void sbk::editor::project::create_preview_container()
 {
     if (auto previewContainer = create_database_object<sbk::engine::sound_container>())
     {
-        previewContainer->set_database_name("Preview Node");
+        previewContainer->set_object_name("Preview Node");
         previewContainer->set_editor_hidden(true);
 
         m_previewSoundContainer = previewContainer;
@@ -167,7 +167,7 @@ void sbk::editor::project::build_soundbanks()
 
     std::shared_ptr<sbk::engine::soundbank> initSoundbank = create_database_object<sbk::engine::soundbank>(false);
     initSoundbank->set_editor_hidden(true);
-    initSoundbank->set_database_name(m_projectConfig.initBankName);
+    initSoundbank->set_object_name(m_projectConfig.initBankName);
     initSoundbank->set_init_soundbank(true);
     initSoundbank->set_lookup_soundbank(true);
     remove_object(initSoundbank);   // Delete after this scope
@@ -183,11 +183,11 @@ void sbk::editor::project::build_soundbanks()
             sbk::core::serialization::binary_serializer binarySerializer;
             binarySerializer.save_database_object<sbk::core::serialization::serialized_soundbank>(
                 sharedDatabaseObject,
-                m_projectConfig.build_folder() / (std::string(soundbank->get_database_name()) + (std::string(m_projectConfig.outputBankExtensionWithDot))));
+                m_projectConfig.build_folder() / (std::string(soundbank->get_object_name()) + (std::string(m_projectConfig.outputBankExtensionWithDot))));
 
             sbk::core::serialization::yaml_serializer yamlSerializer;
             yamlSerializer.save_database_object<sbk::core::serialization::serialized_soundbank>(
-                sharedDatabaseObject, m_projectConfig.build_folder() / ((std::string(soundbank->get_database_name()) + ".yaml")));
+                sharedDatabaseObject, m_projectConfig.build_folder() / ((std::string(soundbank->get_object_name()) + ".yaml")));
         }
     }
 }

@@ -27,9 +27,9 @@ void soundbank_viewer_widget::render_implementation()
         {
             if (sbk::engine::event* event = object->try_convert_object<sbk::engine::event>())
             {
-                if (ImGui::Button(event->get_database_name().data()))
+                if (ImGui::Button(event->get_database_name()))
                 {
-                    sbk::engine::system::post_event(event->get_database_name().data(), 0);
+                    sbk::engine::system::post_event(event->get_database_name(), 0);
                 }
             }
         }
@@ -42,7 +42,7 @@ void soundbank_viewer_widget::render_implementation()
                 {
                     if (const sbk::core::database_object* const databaseObject = object->try_convert_object<sbk::core::database_object>())
                     {
-                        ImGui::TextUnformatted(databaseObject->get_database_name().data());
+                        ImGui::TextUnformatted(databaseObject->get_database_name());
                     }
                     else
                     {

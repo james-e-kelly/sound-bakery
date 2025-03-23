@@ -4,7 +4,7 @@
 
 namespace sbk::core
 {
-    struct object_ptr_comparator
+    struct SB_CLASS object_ptr_comparator
     {
         bool operator()(const object* lhs, const object* rhs) const;
     };

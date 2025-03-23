@@ -39,7 +39,7 @@ struct playable_selection
     {
         if (selectedObject != nullptr)
         {
-            return std::string(selectedObject->try_convert_object<sbk::core::database_object>()->get_database_name());
+            return std::string(selectedObject->try_convert_object<sbk::core::database_object>()->get_object_name());
         }
         return "No Selection";
     }
@@ -205,7 +205,7 @@ void player_widget::play_selected()
     else if (sbk::engine::event* event =
                  s_lastPlayableSelection.selectedObject->try_convert_object<sbk::engine::event>())
     {
-        sbk::engine::system::post_event(event->get_database_name().data(), 0);
+        sbk::engine::system::post_event(event->get_database_name(), 0);
     }
 }
 

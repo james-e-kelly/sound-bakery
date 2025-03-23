@@ -8,9 +8,9 @@ namespace sbk::editor
 
     enum class METADATA_KEY
     {
-        Payload,
+        payload,
         MinMax,
-        Readonly
+        readonly
     };
 
     inline std::string PayloadObject        = "OBJECT";

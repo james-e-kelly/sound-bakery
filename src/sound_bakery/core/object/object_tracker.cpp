@@ -14,7 +14,7 @@ bool object_ptr_comparator::operator()(const object* lhs, const object* rhs) con
         {
             if (const database_object* const databaseRHS = rhs->try_convert_object<database_object>())
             {
-                return std::strcmp(databaseLHS->get_database_name().data(), databaseRHS->get_database_name().data()) < 0;
+                return database_name_comparator{}(databaseLHS->get_database_name(), databaseRHS->get_database_name());
             }
         }
     }

@@ -44,7 +44,7 @@ bool property_drawer::draw_property(rttr::property property, rttr::instance inst
 
     if (!readonly)
     {
-        readonly = property.get_metadata(sbk::editor::METADATA_KEY::Readonly).to_bool();
+        readonly = property.get_metadata(sbk::editor::METADATA_KEY::readonly).to_bool();
     }
 
     ImGui::PushID(property.get_name().data());
@@ -61,7 +61,7 @@ bool property_drawer::draw_property(rttr::property property, rttr::instance inst
     {
         draw_readonly_variant(propertyValue);
     }
-    else if (const rttr::variant payloadString = property.get_metadata(sbk::editor::METADATA_KEY::Payload);
+    else if (const rttr::variant payloadString = property.get_metadata(sbk::editor::METADATA_KEY::payload);
              payloadString.is_valid())
     {
         edited = draw_payload_drop(propertyValue, payloadString);
@@ -217,6 +217,11 @@ bool property_drawer::draw_variant(rttr::variant& variant, rttr::string_view nam
         {
             draw_readonly_variant(variant);
         }
+        else if (type == rttr::type::get<sbk::core::database_name>())
+        {
+            const sbk::core::database_name databaseName = variant.convert<sbk::core::database_name>();
+            draw_readonly_variant(databaseName.databaseName);
+        }
         else
         {
             if (type.get_properties().size())
@@ -278,7 +283,7 @@ void property_drawer::draw_readonly_variant(rttr::variant variant, bool disabled
 
         if (object.lookup())
         {
-            ImGui::TextUnformatted(object->get_database_name().data());
+            ImGui::TextUnformatted(object->get_object_name().data());
         }
         else if (object.has_id())
         {

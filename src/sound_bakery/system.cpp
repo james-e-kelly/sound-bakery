@@ -272,7 +272,7 @@ auto sbk::engine::system::post_event(const char* eventName, sbk_id gameObjectID)
     SC_CHECK(s_system != nullptr, MA_DEVICE_NOT_STARTED);
     SC_CHECK_ARG(eventName);
     
-    std::weak_ptr<sbk::core::database_object> event = s_system->try_find(eventName);
+    std::weak_ptr<sbk::core::database_object> event = s_system->try_find(sbk::core::database_name(eventName));
     SC_CHECK(!event.expired(), MA_DOES_NOT_EXIST);
 
     std::weak_ptr<sbk::core::database_object> gameObject = get_game_object(gameObjectID);
@@ -416,7 +416,7 @@ sc_result sbk::engine::system::create_project(const std::filesystem::directory_e
             if (std::shared_ptr<sbk::engine::bus> masterBus =
                     s_system->m_project->create_database_object<sbk::engine::bus>())
             {
-                masterBus->set_database_name("Master Bus");
+                masterBus->set_object_name("Master Bus");
                 masterBus->setMasterBus(true);
 
                 s_system->m_project->save_project();

@@ -2,6 +2,7 @@
 
 #include "sound_bakery/core/object/object_owner.h"
 #include "sound_bakery/core/memory.h"
+#include "sound_bakery/core/string.h"
 #include "sound_bakery/util/leak_detector.h"
 #include <boost/core/noncopyable.hpp>
 #include <boost/serialization/nvp.hpp>
@@ -26,7 +27,7 @@ namespace sbk::core
         LEAK_DETECTOR(object)
 
     public:
-        object() = default;
+        object();
         virtual ~object();
 
         template <typename T>
@@ -47,14 +48,18 @@ namespace sbk::core
         auto destroy() -> void;
 
         [[nodiscard]] auto get_object_type() const -> rttr::type;
+        [[nodiscard]] auto get_object_name() const -> std::string_view;
         [[nodiscard]] auto get_owner() const -> object_owner*;
         [[nodiscard]] auto get_owner_object() const -> object*;
         [[nodiscard]] auto get_on_destroy() -> MulticastDelegate<object*>&;
+        [[nodiscard]] auto get_on_update_name() -> MulticastDelegate<std::string_view, std::string_view>&;
 
         [[nodiscard]] auto get_flags() const -> object_flags;
         [[nodiscard]] auto set_flags(object_flags flagsToSet) -> void;
         [[nodiscard]] auto clear_flags(object_flags flagsToClear) -> void;
         [[nodiscard]] auto has_flag(object_flags flagsToCheck) -> bool;
+
+        auto set_object_name(std::string_view name) -> bool;
 
         template <class archive_class>
         void serialize(archive_class& archive, const unsigned int fileVersion)
@@ -75,6 +80,11 @@ namespace sbk::core
                 }
                 else if (typename archive_class::is_loading())
                 {
+                    if (property.is_readonly())
+                    {
+                        continue;
+                    }
+
                     rttr::variant loadedVariant = property.get_value(rttr::instance(this));
                     BOOST_VERIFY(loadedVariant.is_valid());
                     BOOST_VERIFY(loadedVariant.get_type().is_valid());
@@ -128,12 +138,16 @@ namespace sbk::core
 
     private:
         friend class object_owner;
+        friend class database;
 
         auto set_owner(object_owner* newOwner) -> void;
         auto cache_type() -> void;
 
+        string m_objectName;
         object_owner* m_owner = nullptr;
         object_flags m_flags  = object_flag_none;
+
+        MulticastDelegate<std::string_view, std::string_view> m_onUpdateName;
 
         /**
          * @brief Cache of this object's type so it can be grabbed during

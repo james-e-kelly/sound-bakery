@@ -154,7 +154,7 @@ namespace sbk::engine
                 if (const std::shared_ptr<named_parameter_value> parameterValue =
                         create_database_object<named_parameter_value>())
                 {
-                    parameterValue->set_database_name(name);
+                    parameterValue->set_object_name(name);
                     parameterValue->parentParameter = this;
 
                     result = parameterValue;

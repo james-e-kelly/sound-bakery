@@ -15,11 +15,11 @@ namespace sbk::core
     {
     public:
         auto add_object_to_database(const std::shared_ptr<database_object>& object) -> void;
-        auto add_object_to_database(sbk_id id, std::string_view name) -> void;
+        auto add_object_to_database(sbk_id id, const database_name& name) -> void;
         auto remove_object_from_database(sbk_id objectID) -> void;
 
         [[nodiscard]] auto try_find(sbk_id objectID) const -> std::weak_ptr<database_object>;
-        [[nodiscard]] auto try_find(std::string_view name) const -> std::weak_ptr<database_object>;
+        [[nodiscard]] auto try_find(const database_name& name) const -> std::weak_ptr<database_object>;
         [[nodiscard]] auto get_all() const -> std::vector<std::weak_ptr<database_object>>;
 
         void clear_database() noexcept;
@@ -29,10 +29,10 @@ namespace sbk::core
         static auto create_new_name(const rttr::type& type) -> std::string;
 
         auto update_id(sbk_id oldID, sbk_id newID) -> void;
-        auto update_name(std::string_view oldName, std::string_view newName) -> void;
+        auto update_database_name(const database_name& oldName, const database_name& newName) -> void;
         auto on_object_destroyed(object* object) -> void;
 
         std::unordered_map<sbk_id, std::weak_ptr<database_object>> m_idToPointerMap;
-        std::unordered_map<std::string, sbk_id> m_nameToIdMap;
+        std::unordered_map<database_name, sbk_id> m_nameToIdMap;
     };
 }  // namespace sbk::core

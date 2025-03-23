@@ -14,6 +14,9 @@
 #define BOOST_SPIRIT_DEBUG
 
 #include <atomic>
+#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/regex.hpp>
+#include <boost/range/algorithm.hpp>
 #include <boost/assert.hpp>
 #include <boost/serialization/utility.hpp>
 #include <filesystem>
