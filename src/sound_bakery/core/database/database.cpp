@@ -101,7 +101,7 @@ auto sbk::core::database::remove_object_from_database(sbk_id objectID) -> void
     }
 }
 
-auto sbk::core::database::try_find(sbk_id objectID) const -> std::weak_ptr<sbk::core::database_object>
+auto sbk::core::database::try_find_database_object(sbk_id objectID) const -> std::weak_ptr<sbk::core::database_object>
 {
     std::weak_ptr<sbk::core::database_object> result;
 
@@ -113,19 +113,19 @@ auto sbk::core::database::try_find(sbk_id objectID) const -> std::weak_ptr<sbk::
     return result;
 }
 
-auto sbk::core::database::try_find(const database_name& name) const -> std::weak_ptr<sbk::core::database_object>
+auto sbk::core::database::try_find_database_object(const database_name& name) const -> std::weak_ptr<sbk::core::database_object>
 {
     std::weak_ptr<sbk::core::database_object> result;
 
     if (auto iter = m_nameToIdMap.find(name); iter != m_nameToIdMap.end())
     {
-        result = try_find(iter->second);
+        result = try_find_database_object(iter->second);
     }
 
     return result;
 }
 
-auto sbk::core::database::get_all() const -> std::vector<std::weak_ptr<sbk::core::database_object>>
+auto sbk::core::database::get_all_database_objects() const -> std::vector<std::weak_ptr<sbk::core::database_object>>
 {
     std::vector<std::weak_ptr<sbk::core::database_object>> result;
     result.reserve(m_idToPointerMap.size());
@@ -133,6 +133,19 @@ auto sbk::core::database::get_all() const -> std::vector<std::weak_ptr<sbk::core
     for (const auto& i : m_idToPointerMap)
     {
         result.push_back(i.second);
+    }
+
+    return result;
+}
+
+auto sbk::core::database::get_all_database_names() const -> std::vector<database_name>
+{
+    std::vector<database_name> result;
+    result.reserve(m_nameToIdMap.size());
+
+    for (const auto& iter : m_nameToIdMap)
+    {
+        result.push_back(iter.first);
     }
 
     return result;

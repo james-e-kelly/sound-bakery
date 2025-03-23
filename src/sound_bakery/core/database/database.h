@@ -18,9 +18,10 @@ namespace sbk::core
         auto add_object_to_database(sbk_id id, const database_name& name) -> void;
         auto remove_object_from_database(sbk_id objectID) -> void;
 
-        [[nodiscard]] auto try_find(sbk_id objectID) const -> std::weak_ptr<database_object>;
-        [[nodiscard]] auto try_find(const database_name& name) const -> std::weak_ptr<database_object>;
-        [[nodiscard]] auto get_all() const -> std::vector<std::weak_ptr<database_object>>;
+        [[nodiscard]] auto try_find_database_object(sbk_id objectID) const -> std::weak_ptr<database_object>;
+        [[nodiscard]] auto try_find_database_object(const database_name& name) const -> std::weak_ptr<database_object>;
+        [[nodiscard]] auto get_all_database_objects() const -> std::vector<std::weak_ptr<database_object>>;
+        [[nodiscard]] auto get_all_database_names() const -> std::vector<database_name>;
 
         void clear_database() noexcept;
 

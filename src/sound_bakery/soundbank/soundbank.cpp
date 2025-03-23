@@ -33,7 +33,7 @@ sbk::engine::soundbank_dependencies sbk::engine::soundbank::gather_dependencies(
 
     if (m_lookupSoundbank)
     {
-        for (const std::weak_ptr<sbk::core::database_object> databaseObject : sbk::engine::system::get()->get_all())
+        for (const std::weak_ptr<sbk::core::database_object> databaseObject : sbk::engine::system::get()->get_all_database_objects())
         {
             if (const std::shared_ptr<sbk::core::database_object> sharedDatabaseObject = databaseObject.lock())
             {

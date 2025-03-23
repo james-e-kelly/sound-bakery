@@ -10,7 +10,7 @@ std::weak_ptr<database_object> sbk::core::find_object(sbk_id id)
 {
     if (const database* const objectOwner = sbk::engine::system::get())
     {
-        return objectOwner->try_find(id);
+        return objectOwner->try_find_database_object(id);
     }
     return {};
 }

@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed saving sounds when no encoded sound exists
 - Fixed the editor save icons displaying a question mark
 - Sound nodes without sounds don't trigger an assert and correctly stop
+- The listener game object is correctly hidden and unserialized
 
 ## [0.3.0]
 

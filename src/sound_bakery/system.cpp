@@ -196,6 +196,8 @@ auto system::init(const sb_system_config& config) -> sb_result
     }
 
     s_system->m_listenerGameObject = s_system->create_database_object<sbk::engine::game_object>();
+    s_system->m_listenerGameObject->set_object_name("Listener");
+    s_system->m_listenerGameObject->set_editor_hidden(true);
 
     // TODO
     // Add way of turning off profiling
@@ -272,7 +274,7 @@ auto sbk::engine::system::post_event(const char* eventName, sbk_id gameObjectID)
     SC_CHECK(s_system != nullptr, MA_DEVICE_NOT_STARTED);
     SC_CHECK_ARG(eventName);
     
-    std::weak_ptr<sbk::core::database_object> event = s_system->try_find(sbk::core::database_name(eventName));
+    std::weak_ptr<sbk::core::database_object> event = s_system->try_find_database_object(sbk::core::database_name(eventName));
     SC_CHECK(!event.expired(), MA_DOES_NOT_EXIST);
 
     std::weak_ptr<sbk::core::database_object> gameObject = get_game_object(gameObjectID);
@@ -301,7 +303,7 @@ auto sbk::engine::system::post_container(sbk_id containerID, sbk_id gameObjectID
     SC_CHECK(s_system != nullptr, MA_DEVICE_NOT_STARTED);
     SC_CHECK_ARG(containerID != 0);
 
-    std::weak_ptr<sbk::core::database_object> container = s_system->try_find(containerID);
+    std::weak_ptr<sbk::core::database_object> container = s_system->try_find_database_object(containerID);
     SC_CHECK(!container.expired(), MA_DOES_NOT_EXIST);
 
     std::weak_ptr<sbk::core::database_object> gameObject = get_game_object(gameObjectID);
@@ -346,7 +348,7 @@ auto sbk::engine::system::stop_all(sbk_id gameObjectID) -> sb_result
 
 auto sbk::engine::system::get_game_object(sbk_id gameObjectID) -> std::weak_ptr<sbk::core::database_object>
 {
-    return gameObjectID == 0 ? std::static_pointer_cast<sbk::core::database_object, sbk::engine::game_object>(s_system->m_listenerGameObject) : s_system->try_find(gameObjectID);
+    return gameObjectID == 0 ? std::static_pointer_cast<sbk::core::database_object, sbk::engine::game_object>(s_system->m_listenerGameObject) : s_system->try_find_database_object(gameObjectID);
 }
 
 sc_result system::open_project(const std::filesystem::path& project_file)

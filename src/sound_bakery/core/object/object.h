@@ -69,6 +69,11 @@ namespace sbk::core
 
             for (rttr::property property : type.get_properties())
             {
+                if (property.is_readonly())
+                {
+                    continue;
+                }
+
                 BOOST_VERIFY(property.is_valid());
                 std::string propertyName = property.get_name().data();
                 std::replace(propertyName.begin(), propertyName.end(), ' ', '_');
@@ -80,11 +85,6 @@ namespace sbk::core
                 }
                 else if (typename archive_class::is_loading())
                 {
-                    if (property.is_readonly())
-                    {
-                        continue;
-                    }
-
                     rttr::variant loadedVariant = property.get_value(rttr::instance(this));
                     BOOST_VERIFY(loadedVariant.is_valid());
                     BOOST_VERIFY(loadedVariant.get_type().is_valid());

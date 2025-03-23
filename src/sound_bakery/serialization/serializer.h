@@ -38,6 +38,7 @@ namespace sbk::core::serialization
     {
         sbk_ver_start = 1,
         sbk_ver_soundbanks_lookup = 2,  //< Soundbanks can contain lookup info for integrations to get a list of all objects
+        sbk_ver_new_type_names = 3,
 
         /** ADD NEW VERSIONS ABOVE */
         sbk_ver_plus_one,
@@ -119,7 +120,7 @@ namespace sbk::core::serialization
             if (typename archive_class::is_loading())
             {
                 BOOST_ASSERT(objectOwner != nullptr);
-                std::weak_ptr<sbk::core::database_object> foundObject = sbk::engine::system::get()->try_find(id);
+                std::weak_ptr<sbk::core::database_object> foundObject = sbk::engine::system::get()->try_find_database_object(id);
 
                 if (foundObject.expired())
                 {

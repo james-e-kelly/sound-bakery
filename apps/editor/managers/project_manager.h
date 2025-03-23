@@ -58,4 +58,5 @@ private:
     std::shared_ptr<gluten::widget> m_playerWidget;
     std::shared_ptr<gluten::widget> m_detailsWidget;
     std::shared_ptr<gluten::widget> m_audioMeterWidget;
+    std::shared_ptr<gluten::widget> m_databaseWidget;
 };

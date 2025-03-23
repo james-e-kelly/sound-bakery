@@ -96,7 +96,7 @@ void sbk::editor::project::load_sounds()
 
             if (const sbk::core::database* const database = sbk::engine::system::get())
             {
-                if (database->try_find(sbk::core::database_name(sbk::engine::sound::type().get_name().data(), filename.stem().string())).expired())
+                if (database->try_find_database_object(sbk::core::database_name(sbk::engine::sound::type().get_name().data(), filename.stem().string())).expired())
                 {
                     if (const std::shared_ptr<sbk::core::database_object> createdSound =
                             create_database_object<sbk::engine::sound>())
@@ -200,7 +200,7 @@ void sbk::editor::project::saveSystem() const
 
 void sbk::editor::project::saveObjects() const
 {
-    for (const std::weak_ptr<sbk::core::database_object>& object : sbk::engine::system::get()->get_all())
+    for (const std::weak_ptr<sbk::core::database_object>& object : sbk::engine::system::get()->get_all_database_objects())
     {
         if (std::shared_ptr<sbk::core::database_object> sharedObject = object.lock())
         {

@@ -17,6 +17,7 @@
 #include "widgets/project_explorer_widget.h"
 #include "widgets/profiler_widget.h"
 #include "widgets/root_widget.h"
+#include "widgets/database_widget.h"
 
 void project_manager::init_project(const std::filesystem::path& project_file)
 {
@@ -46,12 +47,14 @@ void project_manager::setup_project()
             m_detailsWidget = widgetSubsystem->add_widget_class_to_root<details_widget>(false);
             m_audioMeterWidget = widgetSubsystem->add_widget_class_to_root<audio_meter_widget>(false);
             m_profilerWidget = widgetSubsystem->add_widget_class_to_root<profiler_widget>(false);
+            m_databaseWidget        = widgetSubsystem->add_widget_class_to_root<database_widget>(false);
 
             m_projectExplorerWidget->set_visible_in_toolbar(true, true);
             m_playerWidget->set_visible_in_toolbar(true, true);
             m_detailsWidget->set_visible_in_toolbar(true, true);
             m_audioMeterWidget->set_visible_in_toolbar(true, true);
             m_profilerWidget->set_visible_in_toolbar(true, true);
+            m_databaseWidget->set_visible_in_toolbar(true, false);
 
             if (gluten::root_widget* const rootWidget = widgetSubsystem->get_root_widget())
             {
