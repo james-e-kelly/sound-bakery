@@ -66,14 +66,20 @@ auto sbk::engine::node_instance_fsm::action_play(const event_play& play) -> void
     ZoneScoped;
     if (m_referencingNode->get_object_type() == rttr::type::get<sound_container>())
     {
-        sbk::engine::sound_container* const soundContainer  = m_referencingNode->try_convert_object<sound_container>();
+        const sbk::engine::sound_container* const soundContainer  = m_referencingNode->try_convert_object<sound_container>();
         sbk::engine::sound* const engineSound               = soundContainer->get_sound();
         sc_sound* const sound                               = engineSound != nullptr ? engineSound->get_sound() : nullptr;
 
-        const sc_result playSoundResult = sc_system_play_sound(sbk::engine::system::get(), sound, ztd::out_ptr::out_ptr(m_soundInstance),
+        if (sound)
+        {
+            const sc_result playSoundResult = sc_system_play_sound(sbk::engine::system::get(), sound, ztd::out_ptr::out_ptr(m_soundInstance),
                                                          m_nodeGroup.nodeGroup.get(), MA_FALSE);
-
-        BOOST_ASSERT(playSoundResult == MA_SUCCESS);
+            BOOST_ASSERT(playSoundResult == MA_SUCCESS);
+        }
+        else
+        {
+            SBK_WARN("No sound to play");
+        }
     }
     else
     {
