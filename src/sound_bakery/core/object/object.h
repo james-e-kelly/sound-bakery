@@ -2,7 +2,7 @@
 
 #include "sound_bakery/core/object/object_owner.h"
 #include "sound_bakery/core/memory.h"
-#include "sound_bakery/core/string.h"
+#include "sound_bakery/core/name.h"
 #include "sound_bakery/util/leak_detector.h"
 #include <boost/core/noncopyable.hpp>
 #include <boost/serialization/nvp.hpp>
@@ -143,7 +143,7 @@ namespace sbk::core
         auto set_owner(object_owner* newOwner) -> void;
         auto cache_type() -> void;
 
-        string m_objectName;
+        name m_objectName;
         object_owner* m_owner = nullptr;
         object_flags m_flags  = object_flag_none;
 

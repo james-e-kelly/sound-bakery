@@ -14,7 +14,7 @@ macro(set_sources)
     core/database/database_ptr.cpp
 
     core/memory.cpp
-
+    core/name.cpp
     core/property.cpp
 
     editor/project/project.cpp
@@ -65,7 +65,7 @@ set(SOUND_BAKERY_HEADERS
     core/core_include.h
     core/core_fwd.h
     core/property.h
-    core/string.h
+    core/name.h
 
     core/object/object.h
     core/object/object.inl
