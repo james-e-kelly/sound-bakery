@@ -76,7 +76,7 @@ auto widget::render_menu() -> void
         {
             if (m_inToolbar)
             {
-                ImGui::MenuItem(m_widgetName.c_str(), nullptr, &m_visibleFromToolbar);
+                ImGui::MenuItem(m_widgetName.c_str(), nullptr, &m_visible);
             }
             ImGui::EndMenu();
         }
@@ -124,19 +124,12 @@ void gluten::widget::end()
 auto gluten::widget::set_visible_in_toolbar(bool visibleInToolBar, bool defaultRender) -> void
 {
     m_inToolbar = visibleInToolBar;
-    m_visibleFromToolbar = defaultRender;
+    m_visible = defaultRender;
 }
 
 auto gluten::widget::set_visibile(bool visible) -> void
 {
-    if (m_inToolbar)
-    {
-        m_visibleFromToolbar = visible;
-    }
-    else
-    {
-        m_visible = visible;
-    }
+    m_visible = visible;
 }
 
 auto gluten::widget::set_children_visible(bool visible) -> void
@@ -196,7 +189,7 @@ widget_subsystem* widget::get_parent_subsystem() const { return m_parentSubsyste
 
 auto gluten::widget::is_visible() const -> bool
 {
-    return m_inToolbar ? m_visible && m_visibleFromToolbar : m_visible;
+    return m_visible;
 }
 
 void widget::destroy() { m_wantsDestroy = true; }

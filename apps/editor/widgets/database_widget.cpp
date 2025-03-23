@@ -4,7 +4,7 @@
 
 auto database_widget::render_implementation() -> void
 {
-    if (ImGui::Begin(get_widget_name().data()))
+    if (ImGui::Begin(get_widget_name().data(), &m_visible))
     {
         if (ImGui::BeginTable(
                 "Database", 2,

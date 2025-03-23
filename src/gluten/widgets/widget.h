@@ -82,7 +82,8 @@ namespace gluten
         widget* get_parent_widget() const;
         widget_subsystem* get_parent_subsystem() const;
 
-        bool m_autoRenderChildren = true;
+        bool m_autoRenderChildren           = true;
+        bool m_visible                      = true;
 
     private:
         widget_subsystem* m_parentSubsystem = nullptr;
@@ -91,8 +92,6 @@ namespace gluten
         bool m_hasEnded                     = false;
         std::string m_widgetName            = "Widget";
         bool m_inToolbar                    = false;
-        bool m_visible                      = true;
-        bool m_visibleFromToolbar           = false;
 
         std::map<rttr::type, std::weak_ptr<widget>> m_childWidgets; //< Child widgets to iterate over
         std::vector<std::shared_ptr<widget>> m_owningChildWidgets;  //< References to widgets that are owned. Not
