@@ -78,7 +78,7 @@ auto sbk::core::object::clear_flags(object_flags flagsToClear) -> void
     m_flags = static_cast<object_flags>(m_flags & ~flagsToClear);
 }
 
-auto sbk::core::object::has_flag(object_flags flagsToCheck) -> bool
+auto sbk::core::object::has_flag(object_flags flagsToCheck) const -> bool
 {
     return (m_flags & flagsToCheck) == flagsToCheck;
 }

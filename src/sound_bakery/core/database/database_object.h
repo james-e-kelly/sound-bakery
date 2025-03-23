@@ -32,6 +32,7 @@ namespace sbk::core
         [[nodiscard]] auto get_database_path(std::string& path) const -> void;  //< Get the absolute path name of the object
         [[nodiscard]] auto get_database_name() const -> database_name;          //< Get a unique name that uses the type, path, and name
         [[nodiscard]] auto get_editor_hidden() const -> bool;
+        [[nodiscard]] virtual auto get_is_export() const -> bool;           //< Whether this object should be exported and made public to integrations. In Unreal, any object exported will end up as a UAsset
 
         auto set_database_id(sbk_id id) -> void;
         auto set_editor_hidden(bool hidden) -> void;

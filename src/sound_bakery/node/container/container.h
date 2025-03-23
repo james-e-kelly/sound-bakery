@@ -50,6 +50,7 @@ namespace sbk::engine
     public:
         container() : node() {}
 
+        virtual auto get_is_export() const -> bool override { return false; }
         bool can_add_child_type(const rttr::type& childType) const override;
 
         /**

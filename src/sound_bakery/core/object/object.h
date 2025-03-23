@@ -57,7 +57,7 @@ namespace sbk::core
         [[nodiscard]] auto get_flags() const -> object_flags;
         [[nodiscard]] auto set_flags(object_flags flagsToSet) -> void;
         [[nodiscard]] auto clear_flags(object_flags flagsToClear) -> void;
-        [[nodiscard]] auto has_flag(object_flags flagsToCheck) -> bool;
+        [[nodiscard]] auto has_flag(object_flags flagsToCheck) const -> bool;
 
         auto set_object_name(std::string_view name) -> bool;
 

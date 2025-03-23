@@ -94,6 +94,11 @@ auto sbk::core::database_object::set_database_id(sbk_id id) -> void
 
 auto sbk::core::database_object::get_editor_hidden() const -> bool { return editorHidden; }
 
+auto sbk::core::database_object::get_is_export() const -> bool
+{
+    return !has_flag(object_flag_loading);
+}
+
 auto sbk::core::database_object::set_editor_hidden(bool hidden) -> void { editorHidden = hidden; }
 
 auto sbk::core::database_object::get_on_update_id() -> MulticastDelegate<sbk_id, sbk_id>& { return m_onUpdateID; }

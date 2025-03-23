@@ -18,6 +18,8 @@ namespace sbk::engine
     public:
         game_object() = default;
 
+        virtual auto get_is_export() const -> bool override { return false; }
+
         auto play_container(container* container, const pass_key<sbk::engine::system>& passkey) -> voice*;
         auto post_event(event* event, const pass_key<sbk::engine::system>& passkey) -> void;
 
