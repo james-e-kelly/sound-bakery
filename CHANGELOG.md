@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The sound_bakery and sound_chef libraries are replaced in favour of xxx_shared and xxx_static libraries
 - Object names are moved from the database_object class to the object class
 - **BREAKING**: Public type names have changed and Sound Bakery will not be able to load old files
+- C types with "sb_" prefix renamed to "sbk_"
 
 ### Fixed
 

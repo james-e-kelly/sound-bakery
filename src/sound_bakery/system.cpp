@@ -152,7 +152,7 @@ auto sbk::engine::system::get_operating_mode() -> operating_mode
     return operating_mode::unkown;
 }
 
-auto system::create() -> sb_result
+auto system::create() -> sbk_result
 {
     if (s_system == nullptr)
     {
@@ -171,7 +171,7 @@ void system::destroy()
     }
 }
 
-auto system::init(const sb_system_config& config) -> sb_result
+auto system::init(const sbk_system_config& config) -> sbk_result
 {
     if (s_system == nullptr)
     {
@@ -180,7 +180,7 @@ auto system::init(const sb_system_config& config) -> sb_result
 
     SBK_INFO("Initializing Sound Bakery");
 
-    sb_system_config configCopy = config;
+    sbk_system_config configCopy = config;
     configCopy.soundChefConfig.allocationCallbacks.pUserData = s_system;
     configCopy.soundChefConfig.allocationCallbacks.onMalloc = ma_malloc;
     configCopy.soundChefConfig.allocationCallbacks.onRealloc = ma_realloc;
@@ -209,7 +209,7 @@ auto system::init(const sb_system_config& config) -> sb_result
     return result;
 }
 
-auto system::update() -> sb_result
+auto system::update() -> sbk_result
 {
     FrameMarkStart(profiling_strings::s_updateName);
     ZoneScoped;
@@ -268,7 +268,7 @@ auto sbk::engine::system::update_async() -> void
 
 sbk::core::object_owner* system::get_current_object_owner() { return m_project.get(); }
 
-auto sbk::engine::system::post_event(const char* eventName, sbk_id gameObjectID) -> sb_result
+auto sbk::engine::system::post_event(const char* eventName, sbk_id gameObjectID) -> sbk_result
 {
     ZoneScoped;
     SC_CHECK(s_system != nullptr, MA_DEVICE_NOT_STARTED);
@@ -297,7 +297,7 @@ auto sbk::engine::system::post_event(const char* eventName, sbk_id gameObjectID)
     return MA_SUCCESS;
 }
 
-auto sbk::engine::system::post_container(sbk_id containerID, sbk_id gameObjectID) -> sb_result
+auto sbk::engine::system::post_container(sbk_id containerID, sbk_id gameObjectID) -> sbk_result
 {
     ZoneScoped;
     SC_CHECK(s_system != nullptr, MA_DEVICE_NOT_STARTED);
@@ -326,7 +326,7 @@ auto sbk::engine::system::post_container(sbk_id containerID, sbk_id gameObjectID
     return MA_SUCCESS;
 }
 
-auto sbk::engine::system::stop_all(sbk_id gameObjectID) -> sb_result
+auto sbk::engine::system::stop_all(sbk_id gameObjectID) -> sbk_result
 {
     ZoneScoped;
     SC_CHECK(s_system != nullptr, MA_DEVICE_NOT_STARTED);
@@ -390,7 +390,7 @@ sc_result system::open_project(const std::filesystem::path& project_file)
     create();
 
     const std::string pluginFolder      = tempProject.plugin_folder().string();
-    const sb_system_config systemConfig = sb_system_config_init(pluginFolder.c_str());
+    const sbk_system_config systemConfig = sbk_system_config_init(pluginFolder.c_str());
 
     init(systemConfig);
 
@@ -431,13 +431,14 @@ sc_result sbk::engine::system::create_project(const std::filesystem::directory_e
     return MA_ERROR;
 }
 
-auto sbk::engine::system::load_soundbank(const std::filesystem::path& file) -> sb_result
+auto sbk::engine::system::load_soundbank(const std::filesystem::path& file, sbk_id& outID) -> sbk_result
 {
     SC_CHECK_ARG(std::filesystem::exists(file));
     SC_CHECK(s_system != nullptr, MA_DEVICE_NOT_STARTED);
 
     sbk::core::serialization::binary_serializer binarySerializer;
-    return binarySerializer.load_object<sbk::core::serialization::serialized_soundbank>(s_system, file);
+    outID = binarySerializer.load_object<sbk::core::serialization::serialized_soundbank>(s_system, file);
+    return outID != SBK_INVALID_ID ? MA_SUCCESS : MA_ERROR;
 }
 
 sbk::editor::project* system::get_project()

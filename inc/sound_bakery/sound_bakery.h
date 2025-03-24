@@ -8,13 +8,15 @@ extern "C"
 {
 #endif
 
-sb_system_config SB_API sb_system_config_init_default();
-sb_system_config SB_API sb_system_config_init(const char* pluginPath);
+sbk_system_config SB_API sbk_system_config_init_default();
+sbk_system_config SB_API sbk_system_config_init(const char* pluginPath);
 
-sb_result SB_API sb_system_create();
-sb_result SB_API sb_system_init(sb_system_config config);
-sb_result SB_API sb_system_update();
-sb_result SB_API sb_system_destroy();
+sbk_result SB_API sbk_system_create();
+sbk_result SB_API sbk_system_init(sbk_system_config config);
+sbk_result SB_API sbk_system_update();
+sbk_result SB_API sbk_system_destroy();
+
+sbk_result SB_API sbk_system_load_soundbank(const char* soundbankFilePath, sbk_soundbank** outSoundbank);
 
 #ifdef __cplusplus
 }

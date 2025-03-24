@@ -115,7 +115,7 @@ auto sbk::engine::node_instance_fsm::guard_init(const event_init& init) -> bool
 
 // API //
 
-auto sbk::engine::node_instance::init(const event_init& init) -> sb_result 
+auto sbk::engine::node_instance::init(const event_init& init) -> sbk_result 
 { 
     ZoneScoped;
     m_stateMachine.m_gameObject = init.m_owningGameObject;
@@ -124,20 +124,20 @@ auto sbk::engine::node_instance::init(const event_init& init) -> sb_result
     return m_stateMachine.process_event(init) ? MA_SUCCESS : MA_ERROR; 
 }
 
-auto sbk::engine::node_instance::play() -> sb_result
+auto sbk::engine::node_instance::play() -> sbk_result
 {
     m_stateMachine.process_event(event_play());
     return MA_SUCCESS;
 }
 
-auto sbk::engine::node_instance::update() -> sb_result
+auto sbk::engine::node_instance::update() -> sbk_result
 {
     ZoneScoped;
     m_stateMachine.process_event(event_update());
     return MA_SUCCESS;
 }
 
-auto sbk::engine::node_instance::stop(float fadeTime) -> sb_result
+auto sbk::engine::node_instance::stop(float fadeTime) -> sbk_result
 {
     m_stateMachine.process_event(event_stop{.stopTime = fadeTime});
     return MA_SUCCESS;
@@ -171,7 +171,7 @@ auto sbk::engine::node_instance::get_bus() const noexcept -> sc_node_group*
 
 auto sbk::engine::node_instance_fsm::add_dsp_to_node_group(sc_node_group* nodeGroup,
                                                        sc_dsp** dsp,
-                                                       const sc_dsp_config& config) -> sb_result
+                                                       const sc_dsp_config& config) -> sbk_result
 {
     ZoneScoped;
     SC_CHECK_ARG(nodeGroup != nullptr);
@@ -182,7 +182,7 @@ auto sbk::engine::node_instance_fsm::add_dsp_to_node_group(sc_node_group* nodeGr
     return MA_SUCCESS;
 }
 
-auto sbk::engine::node_instance_fsm::init_node_group(const event_init& init) -> sb_result
+auto sbk::engine::node_instance_fsm::init_node_group(const event_init& init) -> sbk_result
 {
     ZoneScoped;
     SC_CHECK_RESULT(sc_system_create_node_group(sbk::engine::system::get(), ztd::out_ptr::out_ptr(m_nodeGroup.nodeGroup)));

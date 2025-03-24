@@ -9,18 +9,28 @@
 
 #include "sound_chef/sound_chef.h"
 #include "sound_bakery/sound_bakery_version.h"
+#include <stdint.h>
 
 #define SB_API SC_API
 #define SB_CLASS SC_CLASS
 
-typedef sc_result sb_result;
+typedef sc_result sbk_result;
 
-typedef struct sb_system_config sb_system_config;
+typedef struct sbk_system_config sbk_system_config;
 
-typedef unsigned long long sbk_id;
+/* Object Types */
+/* Sound Bakery C types are wrappers/facades. */ 
+/* Each pointer maps to a sbk_id. The sbk_id is used to look up the object */
+typedef struct sbk_system sbk_system;
+typedef struct sbk_soundbank sbk_soundbank;
+
+typedef uint64_t sbk_id;
 #define SBK_INVALID_ID 0
 
-struct sb_system_config
+static_assert(sizeof(void*) == sizeof(sbk_id));
+static_assert(sizeof(sbk_id) == sizeof(uintptr_t));
+
+struct sbk_system_config
 {
     sc_system_config soundChefConfig;
 };

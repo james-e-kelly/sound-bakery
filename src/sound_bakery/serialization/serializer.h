@@ -105,6 +105,11 @@ namespace sbk::core::serialization
             }
         }
 
+        operator sbk_id() const
+        {
+            return id;
+        }
+
         serialized_type type;
         sbk_id id = 0;
 
@@ -160,6 +165,8 @@ namespace sbk::core::serialization
         serialized_version version;
         serialized_object object;
 
+        operator sbk_id() const { return object.id; }
+
         template <class archive_class>
         void serialize(archive_class& archive, const unsigned int v)
         {
@@ -175,6 +182,8 @@ namespace sbk::core::serialization
         serialized_system(const std::shared_ptr<sbk::core::database_object>& object, sbk::core::object_owner* objectOwner){}
 
         serialized_version version;
+
+        operator sbk_id() const { return 0; }
 
         template <class archive_class>
         void serialize(archive_class& archive, const unsigned int v)
@@ -312,6 +321,8 @@ namespace sbk::core::serialization
 
         serialized_version serializedVersion;
         serialized_object serializedSoundbank;
+
+        operator sbk_id() const { return serializedSoundbank.id; }
 
         template <class archive_class>
         void serialize(archive_class& archive, const unsigned int version)
@@ -558,7 +569,7 @@ namespace sbk::core::serialization
     {
     public:
         template <class serialize_class>
-        auto save_database_object(std::shared_ptr<sbk::core::database_object>& object, const std::filesystem::path& file) -> sb_result
+        auto save_database_object(std::shared_ptr<sbk::core::database_object>& object, const std::filesystem::path& file) -> sbk_result
         {
             SC_CHECK_ARG(object);
             SC_CHECK(!file.empty(), MA_INVALID_FILE);
@@ -571,7 +582,7 @@ namespace sbk::core::serialization
             return MA_SUCCESS;
         }
 
-        auto save_system(const std::filesystem::path& file) -> sb_result
+        auto save_system(const std::filesystem::path& file) -> sbk_result
         {
             SC_CHECK(!file.empty(), MA_INVALID_FILE);
 
@@ -584,7 +595,7 @@ namespace sbk::core::serialization
         }
 
         template <class serialize_class>
-        auto load_object(sbk::core::object_owner* objectOwner, const std::filesystem::path& file) -> sb_result
+        auto load_object(sbk::core::object_owner* objectOwner, const std::filesystem::path& file) -> sbk_id
         {
             SC_CHECK(std::filesystem::exists(file), MA_INVALID_FILE);
 
@@ -593,7 +604,7 @@ namespace sbk::core::serialization
             serialize_class object({}, objectOwner);
 
             archive & boost::serialization::make_nvp("Data", object);
-            return MA_SUCCESS;
+            return static_cast<sbk_id>(object);
         }
     };
 

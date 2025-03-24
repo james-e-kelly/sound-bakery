@@ -8,7 +8,7 @@
 
 void soundbank_viewer_widget::start_implementation()
 { 
-    sb_system_config config = sb_system_config_init_default();
+    sbk_system_config config = sbk_system_config_init_default();
 
     sbk::engine::system::create(); 
     sbk::engine::system::init(config);
@@ -63,5 +63,6 @@ void soundbank_viewer_widget::end_implementation()
 
 void soundbank_viewer_widget::set_soundbank_to_view(const std::filesystem::path& soundbankFilePath)
 {
-    sbk::engine::system::load_soundbank(soundbankFilePath);
+    sbk_id id;
+    sbk::engine::system::load_soundbank(soundbankFilePath, id);
 }

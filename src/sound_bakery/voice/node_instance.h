@@ -167,10 +167,10 @@ namespace sbk::engine
 
         void init_parent();
         void init_child();
-        auto init_node_group(const event_init& init) -> sb_result;
+        auto init_node_group(const event_init& init) -> sbk_result;
         void init_callbacks();
 
-        static auto add_dsp_to_node_group(sc_node_group* nodeGroup, sc_dsp** dsp, const sc_dsp_config& config) -> sb_result;
+        static auto add_dsp_to_node_group(sc_node_group* nodeGroup, sc_dsp** dsp, const sc_dsp_config& config) -> sbk_result;
 
         auto set_volume(float oldVolume, float newVolume) -> void;
         auto set_pitch(float oldPitch, float newPitch) -> void;
@@ -196,10 +196,10 @@ namespace sbk::engine
         REGISTER_REFLECTION(node_instance, sbk::core::object)
 
     public:
-        auto init(const event_init& init) -> sb_result;
-        auto play() -> sb_result;
-        auto stop(float fadeTime = 0.0f) -> sb_result;
-        auto update() -> sb_result;
+        auto init(const event_init& init) -> sbk_result;
+        auto play() -> sbk_result;
+        auto stop(float fadeTime = 0.0f) -> sbk_result;
+        auto update() -> sbk_result;
 
         auto is_playing() const -> bool;
         auto is_stopped() const -> bool;

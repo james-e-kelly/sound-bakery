@@ -7,7 +7,7 @@ TEST_SUITE("System")
 {
     TEST_CASE("System Creation Deletion")
     {
-        sb_system_config config = sb_system_config_init_default();
+        sbk_system_config config = sbk_system_config_init_default();
 
         REQUIRE(sbk::engine::system::create() == MA_SUCCESS);
         REQUIRE(sbk::engine::system::init(config) == MA_SUCCESS);
@@ -18,7 +18,7 @@ TEST_SUITE("System")
 
     TEST_CASE("Re-init")
     {
-        sb_system_config config = sb_system_config_init_default();
+        sbk_system_config config = sbk_system_config_init_default();
 
         REQUIRE(sbk::engine::system::create() == MA_SUCCESS);
         REQUIRE(sbk::engine::system::init(config) == MA_SUCCESS);

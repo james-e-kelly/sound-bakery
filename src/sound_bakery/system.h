@@ -60,15 +60,15 @@ namespace sbk
             system();
             ~system();
 
-            static auto create() -> sb_result;
-            static auto init(const sb_system_config& config) -> sb_result;
-            static auto update() -> sb_result;
+            static auto create() -> sbk_result;
+            static auto init(const sbk_system_config& config) -> sbk_result;
+            static auto update() -> sbk_result;
             static auto destroy() -> void;
 
-            static auto post_event(const char* eventName, sbk_id gameObjectID) -> sb_result;
-            static auto post_container(sbk_id containerID, sbk_id gameObjectID) -> sb_result;
+            static auto post_event(const char* eventName, sbk_id gameObjectID) -> sbk_result;
+            static auto post_container(sbk_id containerID, sbk_id gameObjectID) -> sbk_result;
             
-            static auto stop_all(sbk_id gameObjectID) -> sb_result;
+            static auto stop_all(sbk_id gameObjectID) -> sbk_result;
 
             [[nodiscard]] static auto get() -> system*;
             [[nodiscard]] static auto get_operating_mode() -> operating_mode;
@@ -92,7 +92,7 @@ namespace sbk
             static auto create_project(const std::filesystem::directory_entry& projectDirectory,
                                        const std::string& projectName) -> sc_result;
 
-            static auto load_soundbank(const std::filesystem::path& file) -> sb_result;
+            static auto load_soundbank(const std::filesystem::path& file, sbk_id& outID) -> sbk_result;
 
             auto set_master_bus(const std::shared_ptr<sbk::engine::bus>& masterBus) -> void;
 
