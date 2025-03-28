@@ -59,6 +59,8 @@ add_executable(editor
   ${EDITOR_HEADERS}
 )
 
+set_target_properties(editor PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/$<CONFIG>)
+
 cxx_20(editor)
 
 target_include_directories(editor

@@ -16,6 +16,8 @@ cxx_20(sound_bakery_static)
 set_target_properties(sound_bakery_shared PROPERTIES LANGUAGE CXX)
 set_target_properties(sound_bakery_static PROPERTIES LANGUAGE CXX)
 
+set_target_properties(sound_bakery_shared PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/$<CONFIG>)
+
 target_precompile_headers(sound_bakery_shared PRIVATE ${PCH_HEADER})
 target_precompile_headers(sound_bakery_static PRIVATE ${PCH_HEADER})
 

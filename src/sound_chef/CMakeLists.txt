@@ -41,6 +41,8 @@ c_17(sound_chef_static)
 cxx_20(sound_chef_shared)
 cxx_20(sound_chef_static)
 
+set_target_properties(sound_chef_shared PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/$<CONFIG>)
+
 target_compile_options(sound_chef_shared PRIVATE ${PROJECT_WARNING_FLAGS})
 target_compile_options(sound_chef_static PRIVATE ${PROJECT_WARNING_FLAGS})
 

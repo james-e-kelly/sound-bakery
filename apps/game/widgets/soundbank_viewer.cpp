@@ -64,5 +64,6 @@ void soundbank_viewer_widget::end_implementation()
 void soundbank_viewer_widget::set_soundbank_to_view(const std::filesystem::path& soundbankFilePath)
 {
     sbk_id id;
-    sbk::engine::system::load_soundbank(soundbankFilePath, id);
+    sbk_soundbank* soundbank = nullptr;
+    sbk_system_load_soundbank(soundbankFilePath.string().c_str(), &soundbank);
 }

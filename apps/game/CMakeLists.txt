@@ -26,6 +26,8 @@ add_executable(game
   ${GAME_HEADERS}
 )
 
+set_target_properties(game PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/$<CONFIG>)
+
 cxx_20(game)
 
 target_include_directories(game
@@ -49,7 +51,7 @@ set_target_properties(game PROPERTIES
 target_link_libraries(game
     PRIVATE
     SoundBakery::Gluten
-    SoundBakery::SoundBakery_Static
+    SoundBakery::SoundBakery_Shared
 )
 
 if(MSVC)
