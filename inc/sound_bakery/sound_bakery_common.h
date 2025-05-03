@@ -14,8 +14,6 @@
 #define SB_API SC_API
 #define SB_CLASS SC_CLASS
 
-typedef sc_result sbk_result;
-
 typedef struct sbk_system_config sbk_system_config;
 
 /* Object Types */

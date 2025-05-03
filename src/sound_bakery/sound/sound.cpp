@@ -46,7 +46,7 @@ void sound::load_synchronous()
             }
             BOOST_ASSERT(std::filesystem::exists(finalSoundPath));
 
-            sc_result result = sc_system_create_sound(sbk::engine::system::get(), finalSoundPath.string().c_str(), SC_SOUND_MODE_DEFAULT, &loadedSound);
+            sbk_result result = sc_system_create_sound(sbk::engine::system::get(), finalSoundPath.string().c_str(), SC_SOUND_MODE_DEFAULT, &loadedSound);
             BOOST_ASSERT(result == MA_SUCCESS);
             break;
         }
@@ -54,7 +54,7 @@ void sound::load_synchronous()
         {
             if (m_memorySoundData)
             {
-                sc_result result =
+                sbk_result result =
                     sc_system_create_sound_memory(sbk::engine::system::get(), m_memorySoundData.get(),
                                                   m_memorySoundDataSize, SC_SOUND_MODE_DEFAULT, &loadedSound);
                 BOOST_ASSERT(result == MA_SUCCESS);

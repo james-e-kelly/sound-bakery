@@ -151,6 +151,18 @@ auto sbk::core::database::get_all_database_names() const -> std::vector<database
     return result;
 }
 
+auto sbk::core::database::get_database_object_count() const -> size_t
+{
+    return m_idToPointerMap.size();
+}
+
+auto sbk::core::database::get_database_object_at(size_t index) const -> std::weak_ptr<database_object>
+{
+    std::unordered_map<sbk_id, std::weak_ptr<database_object>>::const_iterator iter = m_idToPointerMap.begin();
+    std::advance(iter, index);
+    return iter != m_idToPointerMap.cend() ? iter->second : std::weak_ptr<database_object>();
+}
+
 auto sbk::core::database::clear_database() noexcept -> void
 {
     m_idToPointerMap.clear();

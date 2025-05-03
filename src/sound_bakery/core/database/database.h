@@ -22,6 +22,8 @@ namespace sbk::core
         [[nodiscard]] auto try_find_database_object(const database_name& name) const -> std::weak_ptr<database_object>;
         [[nodiscard]] auto get_all_database_objects() const -> std::vector<std::weak_ptr<database_object>>;
         [[nodiscard]] auto get_all_database_names() const -> std::vector<database_name>;
+        [[nodiscard]] auto get_database_object_count() const -> size_t;
+        [[nodiscard]] auto get_database_object_at(size_t index) const -> std::weak_ptr<database_object>;
 
         void clear_database() noexcept;
 

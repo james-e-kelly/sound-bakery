@@ -46,7 +46,39 @@ sbk_result sbk_system_update()
 sbk_result sbk_system_destroy()
 { 
     sbk::engine::system::destroy();
-    return MA_SUCCESS;
+    return SBK_SUCCESS;
+}
+
+sbk_result sbk_system_get_object_count(uint64_t* count)
+{
+    SC_CHECK_ARG(count != NULL);
+    sbk::engine::system* const system = sbk::engine::system::get();
+    SC_CHECK(system != NULL, SBK_ERR_BAKERY_UNINITIALIZED);
+
+    *count = system->get_database_object_count();
+    return SBK_SUCCESS;
+}
+
+sbk_result sbk_system_get_object_info(uint64_t index, sbk_id* id, char* name, uint64_t nameSize, uint64_t* actualNameSize)
+{
+    SC_CHECK_ARG(index != NULL);
+    SC_CHECK_ARG(name != NULL);
+    SC_CHECK_ARG(nameSize > 0);
+    SC_CHECK_ARG(actualNameSize != NULL);
+
+    sbk::engine::system* const system = sbk::engine::system::get();
+    SC_CHECK(system != NULL, SBK_ERR_BAKERY_UNINITIALIZED);
+
+    if (const std::shared_ptr<sbk::core::database_object> object = system->get_database_object_at(index).lock())
+    {
+        const sbk_id objectID        = object->get_database_id();
+        const std::string objectName = object->get_database_name();
+
+        *id = objectID;
+        *actualNameSize = objectName.copy(name, nameSize);
+        return SBK_SUCCESS;
+    }
+    return SBK_ERR_BAKERY_OBJECT_NOT_FOUND;
 }
 
 sbk_result sbk_system_load_soundbank(const char* soundbankFilePath, sbk_soundbank** outSoundbank)

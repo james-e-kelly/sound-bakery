@@ -72,7 +72,7 @@ auto sbk::engine::node_instance_fsm::action_play(const event_play& play) -> void
 
         if (sound)
         {
-            const sc_result playSoundResult = sc_system_play_sound(sbk::engine::system::get(), sound, ztd::out_ptr::out_ptr(m_soundInstance),
+            const sbk_result playSoundResult = sc_system_play_sound(sbk::engine::system::get(), sound, ztd::out_ptr::out_ptr(m_soundInstance),
                                                          m_nodeGroup.nodeGroup.get(), MA_FALSE);
             BOOST_ASSERT(playSoundResult == MA_SUCCESS);
         }
@@ -121,26 +121,26 @@ auto sbk::engine::node_instance::init(const event_init& init) -> sbk_result
     m_stateMachine.m_gameObject = init.m_owningGameObject;
     m_stateMachine.m_owner = this;
     m_stateMachine.start();
-    return m_stateMachine.process_event(init) ? MA_SUCCESS : MA_ERROR; 
+    return m_stateMachine.process_event(init) ? SBK_SUCCESS : SBK_ERR_BAKERY; 
 }
 
 auto sbk::engine::node_instance::play() -> sbk_result
 {
     m_stateMachine.process_event(event_play());
-    return MA_SUCCESS;
+    return SBK_SUCCESS;
 }
 
 auto sbk::engine::node_instance::update() -> sbk_result
 {
     ZoneScoped;
     m_stateMachine.process_event(event_update());
-    return MA_SUCCESS;
+    return SBK_SUCCESS;
 }
 
 auto sbk::engine::node_instance::stop(float fadeTime) -> sbk_result
 {
     m_stateMachine.process_event(event_stop{.stopTime = fadeTime});
-    return MA_SUCCESS;
+    return SBK_SUCCESS;
 }
 
 // QUERIES
@@ -179,7 +179,7 @@ auto sbk::engine::node_instance_fsm::add_dsp_to_node_group(sc_node_group* nodeGr
     SC_CHECK_ARG(config.vtable != nullptr);
     SC_CHECK_RESULT(sc_system_create_dsp(sbk::engine::system::get(), &config, dsp));
     SC_CHECK_RESULT(sc_node_group_add_dsp(nodeGroup, *dsp, SC_DSP_INDEX_HEAD));
-    return MA_SUCCESS;
+    return SBK_SUCCESS;
 }
 
 auto sbk::engine::node_instance_fsm::init_node_group(const event_init& init) -> sbk_result
@@ -209,7 +209,7 @@ auto sbk::engine::node_instance_fsm::init_node_group(const event_init& init) -> 
         }
     }
 
-    return MA_SUCCESS;
+    return SBK_SUCCESS;
 }
 
 void sbk::engine::node_instance_fsm::init_parent()

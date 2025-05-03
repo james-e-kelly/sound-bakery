@@ -65,7 +65,7 @@ void sbk::editor::project::encode_all_media() const
                 threadPool->post(
                     [sound, encoderConfig, encodedSoundFile, soundPath]
                     {
-                        sc_result result = sc_encoder_write_from_file(
+                        sbk_result result = sc_encoder_write_from_file(
                             soundPath.string().c_str(), encodedSoundFile.string().c_str(), &encoderConfig);
                         BOOST_ASSERT(result == MA_SUCCESS);
 

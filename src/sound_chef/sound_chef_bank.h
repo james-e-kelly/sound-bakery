@@ -57,14 +57,14 @@ extern "C"
         ma_vfs_file outputFile;  //< bank file used during read and write
     };
 
-    sc_result SC_API sc_bank_init(sc_bank* bank, const char* outputFile, ma_open_mode_flags openFlags);
-    sc_result SC_API sc_bank_uninit(sc_bank* bank);
+    sbk_result SC_API sc_bank_init(sc_bank* bank, const char* outputFile, ma_open_mode_flags openFlags);
+    sbk_result SC_API sc_bank_uninit(sc_bank* bank);
 
-    sc_result SC_API sc_bank_build(sc_bank* bank,
+    sbk_result SC_API sc_bank_build(sc_bank* bank,
                                    const char** inputFiles,
                                    sc_encoding_format* inputFileFormats,
                                    ma_uint32 inputFilesSize);
-    sc_result SC_API sc_bank_read(sc_bank* bank);
+    sbk_result SC_API sc_bank_read(sc_bank* bank);
 
 #ifdef __cplusplus
 }

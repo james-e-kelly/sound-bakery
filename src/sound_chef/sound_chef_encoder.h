@@ -37,24 +37,24 @@ extern "C"
                                                     ma_uint32 sampleRate,
                                                     ma_uint8 quality);
 
-    sc_result SC_API sc_encoder_init(ma_encoder_write_proc onWrite,
+    sbk_result SC_API sc_encoder_init(ma_encoder_write_proc onWrite,
                                      ma_encoder_seek_proc onSeek,
                                      void* userData,
                                      const sc_encoder_config* config,
                                      sc_encoder* encoder);
 
-    sc_result SC_API sc_encoder_init_file(const char* filePath, const sc_encoder_config* config, sc_encoder* encoder);
+    sbk_result SC_API sc_encoder_init_file(const char* filePath, const sc_encoder_config* config, sc_encoder* encoder);
 
-    sc_result SC_API sc_encoder_write_pcm_frames(sc_encoder* encoder,
+    sbk_result SC_API sc_encoder_write_pcm_frames(sc_encoder* encoder,
                                                  const void* framesIn,
                                                  ma_uint64 frameCount,
                                                  ma_uint64* framesWritten);
 
-    sc_result SC_API sc_encoder_uninit(sc_encoder* encoder);
+    sbk_result SC_API sc_encoder_uninit(sc_encoder* encoder);
 
     //
 
-    sc_result SC_API sc_encoder_write_from_file(const char* decodeFilePath,
+    sbk_result SC_API sc_encoder_write_from_file(const char* decodeFilePath,
                                                 const char* encodeFilePath,
                                                 const sc_encoder_config* config);
 

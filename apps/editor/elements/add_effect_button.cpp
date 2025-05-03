@@ -45,12 +45,12 @@ auto add_effect_button::render_element(const ImRect& elementBox) -> bool
                     if (ImGui::BeginMenu("CLAP"))
                     {
                         ma_uint32 clapCount = 0;
-                        if (sc_system_clap_get_count(sbk::engine::system::get(), &clapCount) == MA_SUCCESS)
+                        if (sc_system_clap_get_count(sbk::engine::system::get(), &clapCount) == SBK_SUCCESS)
                         {
                             for (int index = 0; index < clapCount; ++index)
                             {
                                 sc_clap* clapPlugin = nullptr;
-                                if (sc_system_clap_get_at(sbk::engine::system::get(), index, &clapPlugin) == MA_SUCCESS)
+                                if (sc_system_clap_get_at(sbk::engine::system::get(), index, &clapPlugin) == SBK_SUCCESS)
                                 {
                                     if (const clap_plugin_descriptor_t* const pluginDescriptor =
                                             clapPlugin->pluginFactory->get_plugin_descriptor(clapPlugin->pluginFactory,

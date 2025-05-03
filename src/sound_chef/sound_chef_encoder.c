@@ -35,7 +35,7 @@ sc_encoder_config sc_encoder_config_init(
     return config;
 }
 
-sc_result sc_encoder_init(ma_encoder_write_proc onWrite,
+sbk_result sc_encoder_init(ma_encoder_write_proc onWrite,
                           ma_encoder_seek_proc onSeek,
                           void* userData,
                           const sc_encoder_config* config,
@@ -93,7 +93,7 @@ sc_result sc_encoder_init(ma_encoder_write_proc onWrite,
     return result;
 }
 
-sc_result sc_encoder_uninit(sc_encoder* encoder)
+sbk_result sc_encoder_uninit(sc_encoder* encoder)
 {
     SC_CHECK_ARG(encoder != NULL);
 
@@ -111,7 +111,7 @@ sc_result sc_encoder_uninit(sc_encoder* encoder)
     return MA_SUCCESS;
 }
 
-sc_result sc_encoder_init_file(const char* filePath, const sc_encoder_config* config, sc_encoder* encoder)
+sbk_result sc_encoder_init_file(const char* filePath, const sc_encoder_config* config, sc_encoder* encoder)
 {
     SC_CHECK_ARG(filePath != NULL);
     SC_CHECK_ARG(config != NULL);
@@ -142,7 +142,7 @@ sc_result sc_encoder_init_file(const char* filePath, const sc_encoder_config* co
     return MA_SUCCESS;
 }
 
-sc_result sc_encoder_write_pcm_frames(sc_encoder* encoder,
+sbk_result sc_encoder_write_pcm_frames(sc_encoder* encoder,
                                       const void* framesIn,
                                       ma_uint64 frameCount,
                                       ma_uint64* framesWritten)
@@ -157,7 +157,7 @@ sc_result sc_encoder_write_pcm_frames(sc_encoder* encoder,
 
 //
 
-sc_result sc_encoder_write_from_file(const char* decodeFilePath,
+sbk_result sc_encoder_write_from_file(const char* decodeFilePath,
                                      const char* encodeFilePath,
                                      const sc_encoder_config* config)
 {
@@ -182,7 +182,7 @@ sc_result sc_encoder_write_from_file(const char* decodeFilePath,
     }
 
     sc_encoder encoder;
-    sc_result encoderInitResult = sc_encoder_init_file(encodeFilePath, &configCopy, &encoder);
+    sbk_result encoderInitResult = sc_encoder_init_file(encodeFilePath, &configCopy, &encoder);
     SC_CHECK_RESULT(encoderInitResult);
 
     const ma_uint64 desiredFrameCount = 1024;
@@ -193,7 +193,7 @@ sc_result sc_encoder_write_from_file(const char* decodeFilePath,
     for (;;)
     {
         ma_uint64 framesRead = 0;
-        sc_result readResult = ma_decoder_read_pcm_frames(&decoder, outConvertedBuffer, desiredFrameCount, &framesRead);
+        sbk_result readResult = ma_decoder_read_pcm_frames(&decoder, outConvertedBuffer, desiredFrameCount, &framesRead);
 
         if (framesRead == 0 || readResult == MA_AT_END)
         {
@@ -201,7 +201,7 @@ sc_result sc_encoder_write_from_file(const char* decodeFilePath,
         }
 
         ma_uint64 framesEncoded = 0;
-        sc_result encodeResult  = sc_encoder_write_pcm_frames(&encoder, outConvertedBuffer, framesRead, &framesEncoded);
+        sbk_result encodeResult  = sc_encoder_write_pcm_frames(&encoder, outConvertedBuffer, framesRead, &framesEncoded);
         assert(encodeResult == MA_SUCCESS);
 
         // Out of data

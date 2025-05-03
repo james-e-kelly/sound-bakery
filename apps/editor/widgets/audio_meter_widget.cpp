@@ -116,7 +116,7 @@ void audio_meter_widget::render_implementation()
                 for (std::size_t index = 0; index < channels; ++index)
                 {
                     float channelVolume = 0;
-                    if (sc_dsp_get_metering_info(m_meterDsp, index, SC_DSP_METER_RMS, &channelVolume) == MA_SUCCESS)
+                    if (sc_dsp_get_metering_info(m_meterDsp, index, SC_DSP_METER_RMS, &channelVolume) == SBK_SUCCESS)
                     {
                         const float convertedVolume =
                             std::clamp(ma_volume_linear_to_db(channelVolume) + audio_meter_utils::volume_offset,

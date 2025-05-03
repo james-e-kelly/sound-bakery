@@ -41,24 +41,6 @@
     #define SC_CLASS
 #endif
 
-#define SC_CHECK(condition, result) \
-    if ((condition) == MA_FALSE)    \
-    return (result)
-#define SC_CHECK_RESULT(result) \
-    if ((result) != MA_SUCCESS) \
-    return (result)
-#define SC_CHECK_ARG(condition)  \
-    if ((condition) == MA_FALSE) \
-    return MA_INVALID_ARGS
-#define SC_CHECK_MEM(ptr) \
-    if ((ptr) == NULL)    \
-    return MA_OUT_OF_MEMORY
-#define SC_CHECK_MEM_FREE(ptr, freePtr) \
-    if ((ptr) == NULL)                  \
-    {                                   \
-        ma_free((freePtr), NULL);       \
-        return MA_OUT_OF_MEMORY;        \
-    }
 #define SC_CHECK_AND_GOTO(condition, dest) \
     if ((condition) == MA_FALSE)           \
     goto dest
@@ -82,7 +64,52 @@ extern "C"
 #include "sound_chef/sound_chef_version.h"
 
 typedef ma_bool32 sc_bool;
-typedef ma_result sc_result;
+
+typedef enum
+{
+    // < 0: miniaudio Errors
+    SBK_SUCCESS = MA_SUCCESS,
+
+    // 1-100: User Errors
+    SBK_ERR_USER = 1,               //< Generic user error
+    SBK_ERR_INVALID_PARAMETER,      //< Invalid parameter given to the function
+
+    // 101-200: Sound Chef Errors
+    SBK_ERR_CHEF = 100,             //< Generic Sound Chef error
+    SBK_ERR_CHEF_UNITIALIZED,
+
+    // 201-300: Sound Bakery Errors
+    SBK_ERR_BAKERY = 200,           //< Generic Sound Bakery error
+    SBK_ERR_BAKERY_UNINITIALIZED,   //< The system object is not created or not initialized
+    SBK_ERR_BAKERY_SERIALIZATION,   //< An error happened during serialization
+    SBK_ERR_BAKERY_OBJECT_NOT_FOUND,//< An object with the ID or name was not found
+
+    // 300-301: System Errors
+    SBK_ERR_SYSTEM,                 //< Generic System error
+    SBK_ERR_OUT_OF_MEMORY,         
+    SBK_ERR_INVALID_FILE,
+
+    SBK_ERROR_MAX
+} sbk_result;
+
+#define SC_CHECK(condition, result) \
+    if ((condition) == MA_FALSE)    \
+    return (result)
+#define SC_CHECK_RESULT(result) \
+    if ((result) != SBK_SUCCESS) \
+    return (result)
+#define SC_CHECK_ARG(condition)  \
+    if ((condition) == MA_FALSE) \
+    return SBK_ERR_INVALID_PARAMETER
+#define SC_CHECK_MEM(ptr) \
+    if ((ptr) == NULL)    \
+    return SBK_ERR_OUT_OF_MEMORY
+#define SC_CHECK_MEM_FREE(ptr, freePtr) \
+    if ((ptr) == NULL)                  \
+    {                                   \
+        ma_free((freePtr), NULL);       \
+        return SBK_ERR_OUT_OF_MEMORY;       \
+    }
 
 typedef struct sc_system sc_system;
 typedef struct sc_system_config sc_system_config;
@@ -134,10 +161,10 @@ typedef enum sc_encoding_format
     sc_encoding_format_opus
 } sc_encoding_format;
 
-typedef sc_result(SC_CALL* SC_DSP_CREATE_CALLBACK)(sc_dsp_state* dspState);
-typedef sc_result(SC_CALL* SC_DSP_RELEASE_CALLBACK)(sc_dsp_state* dspState);
-typedef sc_result(SC_CALL* SC_DSP_SET_PARAM_FLOAT_CALLBACK)(sc_dsp_state* dspState, int index, float value);
-typedef sc_result(SC_CALL* SC_DSP_GET_PARAM_FLOAT_CALLBACK)(sc_dsp_state* dspState, int index, float* value);
+typedef sbk_result(SC_CALL* SC_DSP_CREATE_CALLBACK)(sc_dsp_state* dspState);
+typedef sbk_result(SC_CALL* SC_DSP_RELEASE_CALLBACK)(sc_dsp_state* dspState);
+typedef sbk_result(SC_CALL* SC_DSP_SET_PARAM_FLOAT_CALLBACK)(sc_dsp_state* dspState, int index, float value);
+typedef sbk_result(SC_CALL* SC_DSP_GET_PARAM_FLOAT_CALLBACK)(sc_dsp_state* dspState, int index, float* value);
 
 struct sc_dsp_vtable
 {

@@ -572,32 +572,32 @@ namespace sbk::core::serialization
         auto save_database_object(std::shared_ptr<sbk::core::database_object>& object, const std::filesystem::path& file) -> sbk_result
         {
             SC_CHECK_ARG(object);
-            SC_CHECK(!file.empty(), MA_INVALID_FILE);
+            SC_CHECK(!file.empty(), SBK_ERR_INVALID_FILE);
 
             std::ofstream outputStream(file, outputMode);
             save_archive archive(outputStream);
             serialize_class serialize(object, nullptr);
 
             archive & boost::serialization::make_nvp("Data", serialize);
-            return MA_SUCCESS;
+            return SBK_SUCCESS;
         }
 
         auto save_system(const std::filesystem::path& file) -> sbk_result
         {
-            SC_CHECK(!file.empty(), MA_INVALID_FILE);
+            SC_CHECK(!file.empty(), SBK_ERR_INVALID_FILE);
 
             std::ofstream outputStream(file, outputMode);
             save_archive archive(outputStream);
             serialized_system serialize({}, nullptr);
 
             archive & boost::serialization::make_nvp("System", serialize);
-            return MA_SUCCESS;
+            return SBK_SUCCESS;
         }
 
         template <class serialize_class>
         auto load_object(sbk::core::object_owner* objectOwner, const std::filesystem::path& file) -> sbk_id
         {
-            SC_CHECK(std::filesystem::exists(file), MA_INVALID_FILE);
+            SC_CHECK(std::filesystem::exists(file), SBK_ERR_INVALID_FILE);
 
             std::ifstream inputStream(file, inputMode);
             load_archive archive(inputStream);

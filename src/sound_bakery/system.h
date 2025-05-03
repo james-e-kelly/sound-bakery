@@ -84,13 +84,13 @@ namespace sbk
             /**
              * @brief Creates an instance of Sound Bakery and opens the project.
              */
-            static auto open_project(const std::filesystem::path& project_file) -> sc_result;
+            static auto open_project(const std::filesystem::path& project_file) -> sbk_result;
 
             /**
              * @brief Creates a project and initializes Sound Bakery.
              */
             static auto create_project(const std::filesystem::directory_entry& projectDirectory,
-                                       const std::string& projectName) -> sc_result;
+                                       const std::string& projectName) -> sbk_result;
 
             static auto load_soundbank(const std::filesystem::path& file, sbk_id& outID) -> sbk_result;
 

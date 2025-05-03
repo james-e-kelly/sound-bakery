@@ -94,8 +94,8 @@ system::system()
     m_workerThread = std::make_shared<concurrencpp::worker_thread_executor>(runtimeOptions.thread_started_callback,
                                                                             runtimeOptions.thread_terminated_callback);
 
-    const sc_result initLogResult = sc_system_log_init(this, miniaudio_log_callback);
-    BOOST_ASSERT(initLogResult == MA_SUCCESS);
+    const sbk_result initLogResult = sc_system_log_init(this, miniaudio_log_callback);
+    BOOST_ASSERT(initLogResult == SBK_SUCCESS);
 }
 
 system::~system()
@@ -159,7 +159,7 @@ auto system::create() -> sbk_result
         s_system = new system();
     }
 
-    return s_system ? MA_SUCCESS : MA_ERROR;
+    return s_system ? SBK_SUCCESS : SBK_ERR_OUT_OF_MEMORY;
 }
 
 void system::destroy()
@@ -175,7 +175,7 @@ auto system::init(const sbk_system_config& config) -> sbk_result
 {
     if (s_system == nullptr)
     {
-        return MA_DEVICE_NOT_STARTED;
+        return SBK_ERR_BAKERY_UNINITIALIZED;
     }
 
     SBK_INFO("Initializing Sound Bakery");
@@ -186,8 +186,8 @@ auto system::init(const sbk_system_config& config) -> sbk_result
     configCopy.soundChefConfig.allocationCallbacks.onRealloc = ma_realloc;
     configCopy.soundChefConfig.allocationCallbacks.onFree = ma_free;
 
-    const sc_result result = sc_system_init(s_system, &configCopy.soundChefConfig);
-    BOOST_ASSERT(result == MA_SUCCESS);
+    const sbk_result result = sc_system_init(s_system, &configCopy.soundChefConfig);
+    BOOST_ASSERT(result == SBK_SUCCESS);
 
     if (!s_registeredReflection)
     {
@@ -216,7 +216,7 @@ auto system::update() -> sbk_result
 
     if (s_system == nullptr)
     {
-        return MA_DEVICE_NOT_STARTED;
+        return SBK_ERR_BAKERY_UNINITIALIZED;
     }
 
     if (s_system->m_voiceTracker)
@@ -245,7 +245,7 @@ auto system::update() -> sbk_result
 
     FrameMarkEnd(profiling_strings::s_updateName);
 
-    return MA_SUCCESS;
+    return SBK_SUCCESS;
 }
 
 auto sbk::engine::system::update_async() -> void
@@ -271,14 +271,14 @@ sbk::core::object_owner* system::get_current_object_owner() { return m_project.g
 auto sbk::engine::system::post_event(const char* eventName, sbk_id gameObjectID) -> sbk_result
 {
     ZoneScoped;
-    SC_CHECK(s_system != nullptr, MA_DEVICE_NOT_STARTED);
+    SC_CHECK(s_system != nullptr, SBK_ERR_BAKERY_UNINITIALIZED);
     SC_CHECK_ARG(eventName);
     
     std::weak_ptr<sbk::core::database_object> event = s_system->try_find_database_object(sbk::core::database_name(eventName));
-    SC_CHECK(!event.expired(), MA_DOES_NOT_EXIST);
+    SC_CHECK(!event.expired(), SBK_ERR_BAKERY_OBJECT_NOT_FOUND);
 
     std::weak_ptr<sbk::core::database_object> gameObject = get_game_object(gameObjectID);
-    SC_CHECK(!gameObject.expired(), MA_DOES_NOT_EXIST);
+    SC_CHECK(!gameObject.expired(), SBK_ERR_BAKERY_OBJECT_NOT_FOUND);
 
     s_system->get_system_thread_executer()->post([event, gameObject]() 
         {
@@ -294,20 +294,20 @@ auto sbk::engine::system::post_event(const char* eventName, sbk_id gameObjectID)
         }
     );
 
-    return MA_SUCCESS;
+    return SBK_SUCCESS;
 }
 
 auto sbk::engine::system::post_container(sbk_id containerID, sbk_id gameObjectID) -> sbk_result
 {
     ZoneScoped;
-    SC_CHECK(s_system != nullptr, MA_DEVICE_NOT_STARTED);
+    SC_CHECK(s_system != nullptr, SBK_ERR_BAKERY_UNINITIALIZED);
     SC_CHECK_ARG(containerID != 0);
 
     std::weak_ptr<sbk::core::database_object> container = s_system->try_find_database_object(containerID);
-    SC_CHECK(!container.expired(), MA_DOES_NOT_EXIST);
+    SC_CHECK(!container.expired(), SBK_ERR_BAKERY_OBJECT_NOT_FOUND);
 
     std::weak_ptr<sbk::core::database_object> gameObject = get_game_object(gameObjectID);
-    SC_CHECK(!gameObject.expired(), MA_DOES_NOT_EXIST);
+    SC_CHECK(!gameObject.expired(), SBK_ERR_BAKERY_OBJECT_NOT_FOUND);
 
     s_system->get_system_thread_executer()->post(
         [container, gameObject]()
@@ -323,16 +323,16 @@ auto sbk::engine::system::post_container(sbk_id containerID, sbk_id gameObjectID
             }
         });
 
-    return MA_SUCCESS;
+    return SBK_SUCCESS;
 }
 
 auto sbk::engine::system::stop_all(sbk_id gameObjectID) -> sbk_result
 {
     ZoneScoped;
-    SC_CHECK(s_system != nullptr, MA_DEVICE_NOT_STARTED);
+    SC_CHECK(s_system != nullptr, SBK_ERR_BAKERY_UNINITIALIZED);
 
     std::weak_ptr<sbk::core::database_object> gameObject = get_game_object(gameObjectID);
-    SC_CHECK(!gameObject.expired(), MA_DOES_NOT_EXIST);
+    SC_CHECK(!gameObject.expired(), SBK_ERR_BAKERY_OBJECT_NOT_FOUND);
 
     s_system->get_system_thread_executer()->post([gameObject]()
         {
@@ -343,7 +343,7 @@ auto sbk::engine::system::stop_all(sbk_id gameObjectID) -> sbk_result
             }
         });
 
-    return MA_SUCCESS;
+    return SBK_SUCCESS;
 }
 
 auto sbk::engine::system::get_game_object(sbk_id gameObjectID) -> std::weak_ptr<sbk::core::database_object>
@@ -351,7 +351,7 @@ auto sbk::engine::system::get_game_object(sbk_id gameObjectID) -> std::weak_ptr<
     return gameObjectID == 0 ? std::static_pointer_cast<sbk::core::database_object, sbk::engine::game_object>(s_system->m_listenerGameObject) : s_system->try_find_database_object(gameObjectID);
 }
 
-sc_result system::open_project(const std::filesystem::path& project_file)
+sbk_result system::open_project(const std::filesystem::path& project_file)
 {
     destroy();
 
@@ -398,20 +398,20 @@ sc_result system::open_project(const std::filesystem::path& project_file)
 
     if (s_system->m_project->open_project(project_file))
     {
-        return MA_SUCCESS;
+        return SBK_SUCCESS;
     }
 
     s_system->m_project.reset();
 
-    return MA_ERROR;
+    return SBK_ERR_BAKERY;
 }
 
-sc_result sbk::engine::system::create_project(const std::filesystem::directory_entry& projectDirectory,
+sbk_result sbk::engine::system::create_project(const std::filesystem::directory_entry& projectDirectory,
                                               const std::string& projectName)
 {
     const sbk::editor::project_configuration projectConfig(projectDirectory, projectName);
 
-    if (open_project(projectConfig.project_file()) == MA_SUCCESS)
+    if (open_project(projectConfig.project_file()) == SBK_SUCCESS)
     {
         if (s_system->m_project)
         {
@@ -423,22 +423,22 @@ sc_result sbk::engine::system::create_project(const std::filesystem::directory_e
 
                 s_system->m_project->save_project();
 
-                return MA_SUCCESS;
+                return SBK_SUCCESS;
             }
         }
     }
 
-    return MA_ERROR;
+    return SBK_ERR_BAKERY;
 }
 
 auto sbk::engine::system::load_soundbank(const std::filesystem::path& file, sbk_id& outID) -> sbk_result
 {
     SC_CHECK_ARG(std::filesystem::exists(file));
-    SC_CHECK(s_system != nullptr, MA_DEVICE_NOT_STARTED);
+    SC_CHECK(s_system != nullptr, SBK_ERR_BAKERY_UNINITIALIZED);
 
     sbk::core::serialization::binary_serializer binarySerializer;
     outID = binarySerializer.load_object<sbk::core::serialization::serialized_soundbank>(s_system, file);
-    return outID != SBK_INVALID_ID ? MA_SUCCESS : MA_ERROR;
+    return outID != SBK_INVALID_ID ? SBK_SUCCESS : SBK_ERR_BAKERY_SERIALIZATION;
 }
 
 sbk::editor::project* system::get_project()

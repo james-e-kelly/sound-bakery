@@ -29,10 +29,10 @@ ma_proc sc_dlsym(ma_log* pLog, ma_handle handle, const char* symbol);
 
 SC_CLASS const char* SC_CALL sc_filename_get_ext(const char* filename);
 
-sc_result SC_API sc_clap_load(const char* clapFilePath, sc_clap* clapPlugin);
-sc_result SC_API sc_clap_unload(sc_clap* clapPlugin);
+sbk_result SC_API sc_clap_load(const char* clapFilePath, sc_clap* clapPlugin);
+sbk_result SC_API sc_clap_unload(sc_clap* clapPlugin);
 
-sc_result SC_API sc_system_release_clap_plugins(sc_system* system);
+sbk_result SC_API sc_system_release_clap_plugins(sc_system* system);
 
 #ifdef __cplusplus
 }

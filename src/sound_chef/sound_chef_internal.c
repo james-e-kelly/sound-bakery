@@ -128,7 +128,7 @@ const char* sc_filename_get_ext(const char* filename)
     return "";
 }
 
-sc_result sc_clap_load(const char* clapFilePath, sc_clap* clapPlugin)
+sbk_result sc_clap_load(const char* clapFilePath, sc_clap* clapPlugin)
 {
     SC_CHECK_ARG(clapFilePath != NULL);
     SC_CHECK_ARG(clapPlugin != NULL);
@@ -169,7 +169,7 @@ error_dll:
     return MA_ERROR;
 }
 
-sc_result sc_clap_unload(sc_clap* clapPlugin)
+sbk_result sc_clap_unload(sc_clap* clapPlugin)
 {
     SC_CHECK_ARG(clapPlugin != NULL);
     SC_CHECK_ARG(clapPlugin->dynamicLibraryHandle != NULL);
@@ -184,14 +184,14 @@ sc_result sc_clap_unload(sc_clap* clapPlugin)
     return MA_SUCCESS;
 }
 
-sc_result sc_system_release_clap_plugins(sc_system* system)
+sbk_result sc_system_release_clap_plugins(sc_system* system)
 {
     SC_CHECK_ARG(system != NULL);
     SC_CHECK_ARG(system->clapPlugins != NULL);
 
     for (int index = 0; index < arrlen(system->clapPlugins); ++index)
     {
-        const sc_result unloadResult = sc_clap_unload(&system->clapPlugins[index]);
+        const sbk_result unloadResult = sc_clap_unload(&system->clapPlugins[index]);
         assert(unloadResult == MA_SUCCESS);
     }
 

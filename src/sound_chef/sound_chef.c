@@ -208,9 +208,9 @@ static void sc_system_clap_request_callback(const clap_host_t* host) {}
 static void sc_system_clap_request_process(const clap_host_t* host) {}
 static void sc_system_clap_request_restart(const clap_host_t* host) {}
 
-sc_result sc_system_create(sc_system** outSystem)
+sbk_result sc_system_create(sc_system** outSystem)
 {
-    sc_result result = MA_ERROR;
+    sbk_result result = MA_ERROR;
 
     if (outSystem)
     {
@@ -224,9 +224,9 @@ sc_result sc_system_create(sc_system** outSystem)
     return result;
 }
 
-sc_result sc_system_release(sc_system* system)
+sbk_result sc_system_release(sc_system* system)
 {
-    sc_result result = MA_ERROR;
+    sbk_result result = MA_ERROR;
 
     if (system)
     {
@@ -239,7 +239,7 @@ sc_result sc_system_release(sc_system* system)
     return result;
 }
 
-sc_result sc_system_log_init(sc_system* system, ma_log_callback_proc callbackProc)
+sbk_result sc_system_log_init(sc_system* system, ma_log_callback_proc callbackProc)
 {
     SC_CHECK_ARG(system != NULL);
     SC_CHECK_ARG(callbackProc != NULL);
@@ -269,9 +269,9 @@ sc_system_config sc_system_config_init(const char* pluginPath)
     return config;
 }
 
-sc_result sc_system_init(sc_system* system, const sc_system_config* systemConfig)
+sbk_result sc_system_init(sc_system* system, const sc_system_config* systemConfig)
 {
-    sc_result result = MA_ERROR;
+    sbk_result result = MA_ERROR;
 
     if (system)
     {
@@ -375,9 +375,9 @@ sc_result sc_system_init(sc_system* system, const sc_system_config* systemConfig
     return result;
 }
 
-sc_result sc_system_close(sc_system* system)
+sbk_result sc_system_close(sc_system* system)
 {
-    sc_result result = MA_SUCCESS;
+    sbk_result result = MA_SUCCESS;
 
     if (system)
     {
@@ -415,7 +415,7 @@ static ma_uint32 get_flags_from_mode(sc_sound_mode mode)
     return flags;
 }
 
-sc_result sc_system_create_sound(sc_system* system, const char* fileName, sc_sound_mode mode, sc_sound** sound)
+sbk_result sc_system_create_sound(sc_system* system, const char* fileName, sc_sound_mode mode, sc_sound** sound)
 {
     SC_CHECK_ARG(system != NULL);
     SC_CHECK_ARG(fileName != NULL);
@@ -430,7 +430,7 @@ sc_result sc_system_create_sound(sc_system* system, const char* fileName, sc_sou
                                    &(*sound)->sound);
 }
 
-sc_result sc_system_create_sound_memory(
+sbk_result sc_system_create_sound_memory(
     sc_system* system, void* data, size_t dataSize, sc_sound_mode mode, sc_sound** sound)
 {
     SC_CHECK_ARG(system != NULL);
@@ -462,7 +462,7 @@ sc_result sc_system_create_sound_memory(
                                           &(*sound)->sound);
 }
 
-sc_result sc_system_play_sound(
+sbk_result sc_system_play_sound(
     sc_system* system, sc_sound* sound, sc_sound_instance** instance, sc_node_group* parent, sc_bool paused)
 {
     SC_CHECK_ARG(system != NULL);
@@ -520,14 +520,14 @@ sc_result sc_system_play_sound(
     return MA_SUCCESS;
 }
 
-sc_result sc_system_create_node_group(sc_system* system, sc_node_group** nodeGroup)
+sbk_result sc_system_create_node_group(sc_system* system, sc_node_group** nodeGroup)
 {
     SC_CHECK_ARG(system != NULL);
     SC_CHECK_ARG(nodeGroup != NULL);
 
     sc_node_group* const master = system->masterNodeGroup;
 
-    sc_result result = MA_ERROR;
+    sbk_result result = MA_ERROR;
 
     SC_CREATE(*nodeGroup, sc_node_group, system);
 
@@ -548,7 +548,7 @@ sc_result sc_system_create_node_group(sc_system* system, sc_node_group** nodeGro
     return result;
 }
 
-sc_result sc_system_create_dsp(sc_system* system, const sc_dsp_config* config, sc_dsp** dsp)
+sbk_result sc_system_create_dsp(sc_system* system, const sc_dsp_config* config, sc_dsp** dsp)
 {
     SC_CHECK_ARG(system != NULL);
     SC_CHECK_ARG(config != NULL);
@@ -557,7 +557,7 @@ sc_result sc_system_create_dsp(sc_system* system, const sc_dsp_config* config, s
     SC_CHECK_ARG(config->vtable->release != NULL);
     SC_CHECK_ARG(dsp != NULL);
 
-    sc_result result = MA_ERROR;
+    sbk_result result = MA_ERROR;
 
     *dsp = (sc_dsp*)ma_malloc(sizeof(sc_dsp), &system->engine.allocationCallbacks);
     SC_CHECK_MEM(*dsp);
@@ -591,7 +591,7 @@ sc_result sc_system_create_dsp(sc_system* system, const sc_dsp_config* config, s
 
 #pragma region Sound
 
-sc_result sc_sound_release(sc_sound* sound)
+sbk_result sc_sound_release(sc_sound* sound)
 {
     SC_CHECK_ARG(sound != NULL);
     ma_sound_uninit(&sound->sound);
@@ -607,7 +607,7 @@ sc_result sc_sound_release(sc_sound* sound)
     return MA_SUCCESS;
 }
 
-sc_result sc_sound_instance_is_playing(sc_sound_instance* instance, sc_bool* isPlaying)
+sbk_result sc_sound_instance_is_playing(sc_sound_instance* instance, sc_bool* isPlaying)
 {
     SC_CHECK_ARG(instance != NULL);
     SC_CHECK_ARG(isPlaying != NULL);
@@ -617,7 +617,7 @@ sc_result sc_sound_instance_is_playing(sc_sound_instance* instance, sc_bool* isP
     return MA_SUCCESS;
 }
 
-sc_result sc_sound_instance_release(sc_sound_instance* instance)
+sbk_result sc_sound_instance_release(sc_sound_instance* instance)
 {
     SC_CHECK_ARG(instance != NULL);
     ma_sound_uninit(&instance->sound);
@@ -629,7 +629,7 @@ sc_result sc_sound_instance_release(sc_sound_instance* instance)
 
 #pragma region DSP
 
-sc_result sc_dsp_get_parameter_float(sc_dsp* dsp, int index, float* value)
+sbk_result sc_dsp_get_parameter_float(sc_dsp* dsp, int index, float* value)
 {
     SC_CHECK_ARG(dsp != NULL);
     SC_CHECK_ARG(dsp->vtable != NULL);
@@ -641,7 +641,7 @@ sc_result sc_dsp_get_parameter_float(sc_dsp* dsp, int index, float* value)
     return dsp->vtable->getFloat(dsp->state, index, value);
 }
 
-sc_result sc_dsp_set_parameter_float(sc_dsp* dsp, int index, float value)
+sbk_result sc_dsp_set_parameter_float(sc_dsp* dsp, int index, float value)
 {
     SC_CHECK_ARG(dsp != NULL);
     SC_CHECK_ARG(dsp->vtable != NULL);
@@ -652,7 +652,7 @@ sc_result sc_dsp_set_parameter_float(sc_dsp* dsp, int index, float value)
     return dsp->vtable->setFloat(dsp->state, index, value);
 }
 
-sc_result sc_dsp_release(sc_dsp* dsp)
+sbk_result sc_dsp_release(sc_dsp* dsp)
 {
     SC_CHECK_ARG(dsp != NULL);
     SC_CHECK_ARG(dsp->vtable != NULL);
@@ -661,7 +661,7 @@ sc_result sc_dsp_release(sc_dsp* dsp)
 
     const ma_allocation_callbacks* allocCallbacks = &((sc_system*)dsp->state->system)->engine.allocationCallbacks;
 
-    sc_result result = dsp->vtable->release(dsp->state);
+    sbk_result result = dsp->vtable->release(dsp->state);
     ma_free(dsp->state, allocCallbacks);
     ma_free(dsp, allocCallbacks);
 
@@ -672,7 +672,7 @@ sc_result sc_dsp_release(sc_dsp* dsp)
 
 #pragma region Node Group
 
-sc_result sc_node_group_add_dsp(sc_node_group* nodeGroup, sc_dsp* dsp, sc_dsp_index index)
+sbk_result sc_node_group_add_dsp(sc_node_group* nodeGroup, sc_dsp* dsp, sc_dsp_index index)
 {
     SC_CHECK(index == SC_DSP_INDEX_HEAD, MA_NOT_IMPLEMENTED);
     SC_CHECK_ARG(nodeGroup != NULL);
@@ -682,7 +682,7 @@ sc_result sc_node_group_add_dsp(sc_node_group* nodeGroup, sc_dsp* dsp, sc_dsp_in
     SC_CHECK(dsp->next == NULL,
              MA_NOT_IMPLEMENTED);  // don't have detatch logic
 
-    sc_result result = MA_ERROR;
+    sbk_result result = MA_ERROR;
 
     switch ((int)index)
     {
@@ -734,7 +734,7 @@ sc_result sc_node_group_add_dsp(sc_node_group* nodeGroup, sc_dsp* dsp, sc_dsp_in
     return result;
 }
 
-sc_result sc_node_group_set_parent(sc_node_group* nodeGroup, sc_node_group* parent)
+sbk_result sc_node_group_set_parent(sc_node_group* nodeGroup, sc_node_group* parent)
 {
     SC_CHECK_ARG(nodeGroup != NULL);
     SC_CHECK_ARG(parent != NULL);
@@ -742,7 +742,7 @@ sc_result sc_node_group_set_parent(sc_node_group* nodeGroup, sc_node_group* pare
     return ma_node_attach_output_bus(nodeGroup->head->state->userData, 0, parent->tail->state->userData, 0);
 }
 
-sc_result sc_node_group_set_parent_endpoint(sc_node_group* nodeGroup)
+sbk_result sc_node_group_set_parent_endpoint(sc_node_group* nodeGroup)
 {
     SC_CHECK_ARG(nodeGroup != NULL);
 
@@ -755,7 +755,7 @@ sc_result sc_node_group_set_parent_endpoint(sc_node_group* nodeGroup)
     return ma_node_attach_output_bus(nodeGroup->head->state->userData, 0, endPoint, 0);
 }
 
-sc_result sc_node_group_get_dsp(sc_node_group* nodeGroup, sc_dsp_type type, sc_dsp** dsp)
+sbk_result sc_node_group_get_dsp(sc_node_group* nodeGroup, sc_dsp_type type, sc_dsp** dsp)
 {
     SC_CHECK_ARG(nodeGroup != NULL);
     SC_CHECK_ARG(dsp != NULL);
@@ -778,7 +778,7 @@ sc_result sc_node_group_get_dsp(sc_node_group* nodeGroup, sc_dsp_type type, sc_d
     return MA_SUCCESS;
 }
 
-sc_result sc_node_group_release(sc_node_group* nodeGroup)
+sbk_result sc_node_group_release(sc_node_group* nodeGroup)
 {
     SC_CHECK_ARG(nodeGroup != NULL);
 
@@ -810,7 +810,7 @@ enum
 
 #pragma region Fader
 
-static sc_result sc_dsp_fader_create(sc_dsp_state* state)
+static sbk_result sc_dsp_fader_create(sc_dsp_state* state)
 {
     state->userData = ma_malloc(sizeof(ma_sound_group), &((sc_system*)state->system)->engine.allocationCallbacks);
     if (state->userData == NULL)
@@ -822,7 +822,7 @@ static sc_result sc_dsp_fader_create(sc_dsp_state* state)
     return ma_sound_group_init_ex((ma_engine*)state->system, &config, (ma_sound_group*)state->userData);
 }
 
-static sc_result sc_dsp_fader_release(sc_dsp_state* state)
+static sbk_result sc_dsp_fader_release(sc_dsp_state* state)
 {
     ma_sound_group_uninit((ma_sound_group*)state->userData);
     SC_FREE(state->userData, (sc_system*)state->system);
@@ -835,7 +835,7 @@ static sc_dsp_vtable s_faderVtable = {sc_dsp_fader_create, sc_dsp_fader_release}
 
 #pragma region Lowpass
 
-static sc_result sc_dsp_lowpass_create(sc_dsp_state* state)
+static sbk_result sc_dsp_lowpass_create(sc_dsp_state* state)
 {
     state->userData = ma_malloc(sizeof(ma_lpf_node), &((sc_system*)state->system)->engine.allocationCallbacks);
     if (state->userData == NULL)
@@ -849,18 +849,18 @@ static sc_result sc_dsp_lowpass_create(sc_dsp_state* state)
     return ma_lpf_node_init((ma_node_graph*)state->system, &config, NULL, (ma_lpf_node*)state->userData);
 }
 
-static sc_result sc_dsp_lowpass_release(sc_dsp_state* state)
+static sbk_result sc_dsp_lowpass_release(sc_dsp_state* state)
 {
     ma_lpf_node_uninit((ma_lpf_node*)state->userData, NULL);
     SC_FREE(state->userData, (sc_system*)state->system);
     return MA_SUCCESS;
 }
 
-static sc_result sc_dsp_lowpass_set_param_float(sc_dsp_state* state, int index, float value)
+static sbk_result sc_dsp_lowpass_set_param_float(sc_dsp_state* state, int index, float value)
 {
     (void)value;
 
-    sc_result result = MA_ERROR;
+    sbk_result result = MA_ERROR;
 
     ma_format format     = ma_format_f32;
     ma_uint32 channels   = ma_node_get_output_channels(state->userData, 0);
@@ -882,12 +882,12 @@ static sc_result sc_dsp_lowpass_set_param_float(sc_dsp_state* state, int index, 
     return result;
 }
 
-static sc_result sc_dsp_lowpass_get_param_float(sc_dsp_state* const state, int index, float* const value)
+static sbk_result sc_dsp_lowpass_get_param_float(sc_dsp_state* const state, int index, float* const value)
 {
     (void)state;
     (void)value;
 
-    sc_result result = MA_ERROR;
+    sbk_result result = MA_ERROR;
 
     switch (index)
     {
@@ -912,7 +912,7 @@ static sc_dsp_vtable s_lowpassVtable = {
 
 #pragma region Highpass
 
-static sc_result sc_dsp_highpass_create(sc_dsp_state* state)
+static sbk_result sc_dsp_highpass_create(sc_dsp_state* state)
 {
     state->userData = ma_malloc(sizeof(ma_hpf_node), &((sc_system*)state->system)->engine.allocationCallbacks);
     if (state->userData == NULL)
@@ -926,18 +926,18 @@ static sc_result sc_dsp_highpass_create(sc_dsp_state* state)
     return ma_hpf_node_init((ma_node_graph*)state->system, &config, NULL, (ma_hpf_node*)state->userData);
 }
 
-static sc_result sc_dsp_highpass_release(sc_dsp_state* state)
+static sbk_result sc_dsp_highpass_release(sc_dsp_state* state)
 {
     ma_hpf_node_uninit((ma_hpf_node*)state->userData, NULL);
     SC_FREE(state->userData, (sc_system*)state->system);
     return MA_SUCCESS;
 }
 
-static sc_result sc_dsp_highpass_set_param_float(sc_dsp_state* state, int index, float value)
+static sbk_result sc_dsp_highpass_set_param_float(sc_dsp_state* state, int index, float value)
 {
     (void)value;
 
-    sc_result result = MA_ERROR;
+    sbk_result result = MA_ERROR;
 
     ma_format format     = ma_format_f32;
     ma_uint32 channels   = ma_node_get_output_channels(state->userData, 0);
@@ -959,12 +959,12 @@ static sc_result sc_dsp_highpass_set_param_float(sc_dsp_state* state, int index,
     return result;
 }
 
-static sc_result sc_dsp_highpass_get_param_float(sc_dsp_state* state, int index, float* const value)
+static sbk_result sc_dsp_highpass_get_param_float(sc_dsp_state* state, int index, float* const value)
 {
     (void)state;
     (void)value;
 
-    sc_result result = MA_ERROR;
+    sbk_result result = MA_ERROR;
 
     switch (index)
     {
@@ -1036,7 +1036,7 @@ static ma_node_vtable sc_meter_node_vtable = {sc_meter_node_process_pcm_frames, 
 
 static ma_uint32 channels = 2;
 
-static sc_result sc_meter_node_init(ma_node_graph* nodeGraph,
+static sbk_result sc_meter_node_init(ma_node_graph* nodeGraph,
                                     const ma_allocation_callbacks* allocCallbacks,
                                     sc_meter_node* node)
 {
@@ -1052,7 +1052,7 @@ static void sc_meter_node_uninit(sc_meter_node* node, const ma_allocation_callba
     ma_node_uninit(node, allocationCallbacks);
 }
 
-static sc_result sc_dsp_meter_create(sc_dsp_state* state)
+static sbk_result sc_dsp_meter_create(sc_dsp_state* state)
 {
     state->userData = ma_malloc(sizeof(sc_meter_node), &((sc_system*)state->system)->engine.allocationCallbacks);
     if (state->userData == NULL)
@@ -1063,7 +1063,7 @@ static sc_result sc_dsp_meter_create(sc_dsp_state* state)
     return sc_meter_node_init((ma_node_graph*)state->system, NULL, (sc_meter_node*)state->userData);
 }
 
-static sc_result sc_dsp_meter_release(sc_dsp_state* state)
+static sbk_result sc_dsp_meter_release(sc_dsp_state* state)
 {
     sc_meter_node_uninit((sc_meter_node*)state->userData, NULL);
     SC_FREE(state->userData, (sc_system*)state->system);
@@ -1072,7 +1072,7 @@ static sc_result sc_dsp_meter_release(sc_dsp_state* state)
 
 static sc_dsp_vtable s_meterVtable = {sc_dsp_meter_create, sc_dsp_meter_release, NULL, NULL, NULL, 0};
 
-sc_result sc_dsp_get_metering_info(sc_dsp* dsp, ma_uint32 channelIndex, sc_dsp_meter meterType, float* value)
+sbk_result sc_dsp_get_metering_info(sc_dsp* dsp, ma_uint32 channelIndex, sc_dsp_meter meterType, float* value)
 {
     SC_CHECK_ARG(dsp != NULL);
     SC_CHECK_ARG(dsp->type == SC_DSP_TYPE_METER);
@@ -1197,7 +1197,7 @@ static void sc_clap_node_process_pcm_frames(
 static ma_node_vtable sc_clap_node_vtable = {sc_clap_node_process_pcm_frames, NULL, SC_CLAP_INPUT_BUS,
                                              SC_CLAP_OUTPUT_BUS, 0};
 
-static sc_result sc_clap_node_init(ma_node_graph* nodeGraph,
+static sbk_result sc_clap_node_init(ma_node_graph* nodeGraph,
                                    const ma_allocation_callbacks* allocCallbacks,
                                    sc_clap_node* node)
 {
@@ -1219,7 +1219,7 @@ static void sc_clap_node_uninit(sc_clap_node* node, const ma_allocation_callback
     ma_node_uninit(node, allocationCallbacks);
 }
 
-static sc_result sc_dsp_clap_create(sc_dsp_state* state)
+static sbk_result sc_dsp_clap_create(sc_dsp_state* state)
 {
     SC_CREATE(state->userData, sc_clap_node, (sc_system*)state->system);
 
@@ -1252,7 +1252,7 @@ static sc_result sc_dsp_clap_create(sc_dsp_state* state)
     return sc_clap_node_init((ma_node_graph*)system, NULL, clapNode);
 }
 
-static sc_result sc_dsp_clap_release(sc_dsp_state* state)
+static sbk_result sc_dsp_clap_release(sc_dsp_state* state)
 {
     SC_CHECK_ARG(state != NULL);
     SC_CHECK_ARG(state->instance != NULL);
@@ -1273,12 +1273,12 @@ static sc_result sc_dsp_clap_release(sc_dsp_state* state)
     return MA_SUCCESS;
 }
 
-static sc_result sc_dsp_clap_set_floatParam(sc_dsp_state* dspState, int index, float value)
+static sbk_result sc_dsp_clap_set_floatParam(sc_dsp_state* dspState, int index, float value)
 {
     return MA_NOT_IMPLEMENTED;
 }
 
-static sc_result sc_dsp_clap_get_floatParam(sc_dsp_state* dspState, int index, float* value)
+static sbk_result sc_dsp_clap_get_floatParam(sc_dsp_state* dspState, int index, float* value)
 {
     return MA_NOT_IMPLEMENTED;
 }
@@ -1331,7 +1331,7 @@ sc_dsp_config sc_dsp_config_init_clap(clap_plugin_factory_t* pluginFactory)
 
 #pragma endregion
 
-sc_result sc_system_clap_get_count(sc_system* system, ma_uint32* count)
+sbk_result sc_system_clap_get_count(sc_system* system, ma_uint32* count)
 {
     SC_CHECK_ARG(system != NULL);
     SC_CHECK_ARG(count != NULL);
@@ -1341,7 +1341,7 @@ sc_result sc_system_clap_get_count(sc_system* system, ma_uint32* count)
     return MA_SUCCESS;
 }
 
-sc_result sc_system_clap_get_at(sc_system* system, ma_uint32 index, sc_clap** plugin)
+sbk_result sc_system_clap_get_at(sc_system* system, ma_uint32 index, sc_clap** plugin)
 {
     SC_CHECK_ARG(system != NULL);
     SC_CHECK_ARG(plugin != NULL);
