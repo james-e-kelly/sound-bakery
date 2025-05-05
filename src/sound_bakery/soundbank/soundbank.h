@@ -39,6 +39,11 @@ namespace sbk::engine
         void serialize(archive_class& archive, const unsigned int version)
         {
             archive & boost::serialization::make_nvp("LookupDatabase", database);
+
+            if (typename archive_class::is_loading())
+            {
+                fill_runtime_database();
+            }
         }
     };
 
