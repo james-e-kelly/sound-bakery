@@ -19,7 +19,7 @@ struct sc_encoder_vorbis
     sc_bool hasWrittenHeader;
 };
 
-static sbk_result ma_encoder_vorbis_write_stream(ma_encoder* encoder)
+static ma_result ma_encoder_vorbis_write_stream(ma_encoder* encoder)
 {
     SC_CHECK_ARG(encoder != NULL);
 
@@ -50,7 +50,7 @@ static sbk_result ma_encoder_vorbis_write_stream(ma_encoder* encoder)
     return MA_SUCCESS;
 }
 
-static sbk_result sc_encoder_vorbis_write_header(ma_encoder* encoder)
+static ma_result sc_encoder_vorbis_write_header(ma_encoder* encoder)
 {
     SC_CHECK_ARG(encoder != NULL);
 
@@ -74,7 +74,7 @@ static sbk_result sc_encoder_vorbis_write_header(ma_encoder* encoder)
     return ma_encoder_vorbis_write_stream(encoder);
 }
 
-sbk_result sc_encoder_vorbis_on_init(ma_encoder* encoder)
+ma_result sc_encoder_vorbis_on_init(ma_encoder* encoder)
 {
     SC_CHECK_ARG(encoder != NULL);
 
@@ -107,7 +107,7 @@ sbk_result sc_encoder_vorbis_on_init(ma_encoder* encoder)
     return MA_SUCCESS;
 }
 
-sbk_result sc_encoder_vorbis_write_pcm_frames(ma_encoder* encoder,
+ma_result sc_encoder_vorbis_write_pcm_frames(ma_encoder* encoder,
                                              const void* framesIn,
                                              ma_uint64 frameCount,
                                              ma_uint64* framesWritten)

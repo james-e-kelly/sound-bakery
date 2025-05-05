@@ -88,6 +88,7 @@ typedef enum
     SBK_ERR_SYSTEM,                 //< Generic System error
     SBK_ERR_OUT_OF_MEMORY,         
     SBK_ERR_INVALID_FILE,
+    SBK_ERR_NULL,                   //< Found a null pointer where there shouldn't be one
 
     SBK_ERROR_MAX
 } sbk_result;
@@ -96,7 +97,7 @@ typedef enum
     if ((condition) == MA_FALSE)    \
     return (result)
 #define SC_CHECK_RESULT(result) \
-    if ((result) != SBK_SUCCESS) \
+    if (((sbk_result)result) != SBK_SUCCESS) \
     return (result)
 #define SC_CHECK_ARG(condition)  \
     if ((condition) == MA_FALSE) \

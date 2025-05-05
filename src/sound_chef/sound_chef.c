@@ -210,31 +210,31 @@ static void sc_system_clap_request_restart(const clap_host_t* host) {}
 
 sbk_result sc_system_create(sc_system** outSystem)
 {
-    sbk_result result = MA_ERROR;
+    sbk_result result = SBK_ERR_CHEF;
 
     if (outSystem)
     {
         *outSystem = (sc_system*)ma_malloc(sizeof(sc_system), NULL);
 
-        result = *outSystem ? MA_SUCCESS : MA_ERROR;
+        result = *outSystem ? SBK_SUCCESS : SBK_ERR_OUT_OF_MEMORY;
     }
 
-    DEBUG_ASSERT(result == MA_SUCCESS);
+    DEBUG_ASSERT(result == SBK_SUCCESS);
 
     return result;
 }
 
 sbk_result sc_system_release(sc_system* system)
 {
-    sbk_result result = MA_ERROR;
+    sbk_result result = SBK_ERR_CHEF;
 
     if (system)
     {
         ma_free(system, NULL);
-        result = MA_SUCCESS;
+        result = SBK_SUCCESS;
     }
 
-    DEBUG_ASSERT(result == MA_SUCCESS);
+    DEBUG_ASSERT(result == SBK_SUCCESS);
 
     return result;
 }
@@ -252,7 +252,7 @@ sbk_result sc_system_log_init(sc_system* system, ma_log_callback_proc callbackPr
 
     ma_log_post(&system->log, MA_LOG_LEVEL_INFO, "Initialized Sound Chef Logging");
 
-    return MA_SUCCESS;
+    return SBK_SUCCESS;
 }
 
 sc_system_config sc_system_config_init_default()
@@ -271,7 +271,8 @@ sc_system_config sc_system_config_init(const char* pluginPath)
 
 sbk_result sc_system_init(sc_system* system, const sc_system_config* systemConfig)
 {
-    sbk_result result = MA_ERROR;
+    ma_result maResult = MA_ERROR;
+    sbk_result result = SBK_ERR_CHEF;
 
     if (system)
     {
@@ -289,8 +290,8 @@ sbk_result sc_system_init(sc_system* system, const sc_system_config* systemConfi
                      vtables. */
         resourceManagerConfig.pLog = &system->log;
 
-        result = ma_resource_manager_init(&resourceManagerConfig, &system->resourceManager);
-        SC_CHECK_RESULT(result);
+        maResult = ma_resource_manager_init(&resourceManagerConfig, &system->resourceManager);
+        SC_CHECK_RESULT(maResult);
 
         ma_engine_config engineConfig = ma_engine_config_init();
         engineConfig.pResourceManager = &system->resourceManager;
@@ -300,9 +301,9 @@ sbk_result sc_system_init(sc_system* system, const sc_system_config* systemConfi
         engineConfig.pLog             = &system->log;
         engineConfig.allocationCallbacks = systemConfig->allocationCallbacks;
 
-        result = ma_engine_init(&engineConfig, engine);
+        maResult = ma_engine_init(&engineConfig, engine);
 
-        if (result == MA_SUCCESS)
+        if (maResult == MA_SUCCESS)
         {
             ma_log_post(&system->log, MA_LOG_LEVEL_INFO, "Initialized Sound Chef");
 
@@ -314,7 +315,7 @@ sbk_result sc_system_init(sc_system* system, const sc_system_config* systemConfi
             result                          = sc_system_create_dsp(system, &meterConfig, &meterDSP);
             result = sc_node_group_add_dsp(system->masterNodeGroup, meterDSP, SC_DSP_INDEX_HEAD);
 
-            if (result == MA_SUCCESS)
+            if (result == SBK_SUCCESS)
             {
                 ma_log_post(&system->log, MA_LOG_LEVEL_INFO, "Initialized Master Node Group");
             }
@@ -370,7 +371,8 @@ sbk_result sc_system_init(sc_system* system, const sc_system_config* systemConfi
         }
     }
 
-    DEBUG_ASSERT(result == MA_SUCCESS);
+    DEBUG_ASSERT(result == SBK_SUCCESS);
+    DEBUG_ASSERT(maResult == SBK_SUCCESS);
 
     return result;
 }
@@ -426,7 +428,7 @@ sbk_result sc_system_create_sound(sc_system* system, const char* fileName, sc_so
     (*sound)->mode = mode;
     (*sound)->owningSystem = system;
 
-    return ma_sound_init_from_file((ma_engine*)system, fileName, get_flags_from_mode(mode), NULL, NULL,
+    return (sbk_result)ma_sound_init_from_file((ma_engine*)system, fileName, get_flags_from_mode(mode), NULL, NULL,
                                    &(*sound)->sound);
 }
 
@@ -458,7 +460,7 @@ sbk_result sc_system_create_sound_memory(
         return decoderInitResult;
     }
 
-    return ma_sound_init_from_data_source((ma_engine*)system, (*sound)->memoryDecoder, get_flags_from_mode(mode), NULL,
+    return (sbk_result)ma_sound_init_from_data_source((ma_engine*)system, (*sound)->memoryDecoder, get_flags_from_mode(mode), NULL,
                                           &(*sound)->sound);
 }
 
@@ -517,7 +519,7 @@ sbk_result sc_system_play_sound(
         SC_CHECK_RESULT(startResult);
     }
 
-    return MA_SUCCESS;
+    return SBK_SUCCESS;
 }
 
 sbk_result sc_system_create_node_group(sc_system* system, sc_node_group** nodeGroup)
@@ -527,7 +529,7 @@ sbk_result sc_system_create_node_group(sc_system* system, sc_node_group** nodeGr
 
     sc_node_group* const master = system->masterNodeGroup;
 
-    sbk_result result = MA_ERROR;
+    sbk_result result = SBK_ERR_CHEF;
 
     SC_CREATE(*nodeGroup, sc_node_group, system);
 
@@ -543,7 +545,7 @@ sbk_result sc_system_create_node_group(sc_system* system, sc_node_group** nodeGr
         sc_node_group_set_parent(*nodeGroup, master);
     }
 
-    DEBUG_ASSERT(result == MA_SUCCESS);
+    DEBUG_ASSERT(result == SBK_SUCCESS);
 
     return result;
 }
@@ -557,7 +559,7 @@ sbk_result sc_system_create_dsp(sc_system* system, const sc_dsp_config* config, 
     SC_CHECK_ARG(config->vtable->release != NULL);
     SC_CHECK_ARG(dsp != NULL);
 
-    sbk_result result = MA_ERROR;
+    sbk_result result = SBK_ERR_CHEF;
 
     *dsp = (sc_dsp*)ma_malloc(sizeof(sc_dsp), &system->engine.allocationCallbacks);
     SC_CHECK_MEM(*dsp);
@@ -576,13 +578,13 @@ sbk_result sc_system_create_dsp(sc_system* system, const sc_dsp_config* config, 
 
     result = (*dsp)->vtable->create((*dsp)->state);
 
-    if (result != MA_SUCCESS)
+    if (result != SBK_SUCCESS)
     {
         sc_dsp_release(*dsp);
         *dsp = NULL;
     }
 
-    DEBUG_ASSERT(result == MA_SUCCESS);
+    DEBUG_ASSERT(result == SBK_SUCCESS);
 
     return result;
 }
@@ -604,7 +606,7 @@ sbk_result sc_sound_release(sc_sound* sound)
 
     SC_FREE(sound, sound->owningSystem);
 
-    return MA_SUCCESS;
+    return SBK_SUCCESS;
 }
 
 sbk_result sc_sound_instance_is_playing(sc_sound_instance* instance, sc_bool* isPlaying)
@@ -614,7 +616,7 @@ sbk_result sc_sound_instance_is_playing(sc_sound_instance* instance, sc_bool* is
 
     *isPlaying = ma_sound_is_playing(&instance->sound);
 
-    return MA_SUCCESS;
+    return SBK_SUCCESS;
 }
 
 sbk_result sc_sound_instance_release(sc_sound_instance* instance)
@@ -622,7 +624,7 @@ sbk_result sc_sound_instance_release(sc_sound_instance* instance)
     SC_CHECK_ARG(instance != NULL);
     ma_sound_uninit(&instance->sound);
     SC_FREE(instance, instance->owningSystem);
-    return MA_SUCCESS;
+    return SBK_SUCCESS;
 }
 
 #pragma endregion
@@ -682,7 +684,7 @@ sbk_result sc_node_group_add_dsp(sc_node_group* nodeGroup, sc_dsp* dsp, sc_dsp_i
     SC_CHECK(dsp->next == NULL,
              MA_NOT_IMPLEMENTED);  // don't have detatch logic
 
-    sbk_result result = MA_ERROR;
+    sbk_result result = SBK_ERR_CHEF;
 
     switch ((int)index)
     {
@@ -729,7 +731,7 @@ sbk_result sc_node_group_add_dsp(sc_node_group* nodeGroup, sc_dsp* dsp, sc_dsp_i
             break;
     }
 
-    DEBUG_ASSERT(result == MA_SUCCESS);
+    DEBUG_ASSERT(result == SBK_SUCCESS);
 
     return result;
 }
@@ -747,7 +749,7 @@ sbk_result sc_node_group_set_parent_endpoint(sc_node_group* nodeGroup)
     SC_CHECK_ARG(nodeGroup != NULL);
 
     sc_system* const system = (sc_system*)nodeGroup->fader->state->system;
-    SC_CHECK(system != NULL, MA_BAD_ADDRESS);
+    SC_CHECK(system != NULL, SBK_ERR_NULL);
 
     ma_node* const endPoint = ma_node_graph_get_endpoint((ma_node_graph*)system);
     SC_CHECK(endPoint != NULL, MA_BAD_ADDRESS);
@@ -759,7 +761,7 @@ sbk_result sc_node_group_get_dsp(sc_node_group* nodeGroup, sc_dsp_type type, sc_
 {
     SC_CHECK_ARG(nodeGroup != NULL);
     SC_CHECK_ARG(dsp != NULL);
-    SC_CHECK(nodeGroup->tail != NULL, MA_INVALID_DATA);
+    SC_CHECK(nodeGroup->tail != NULL, SBK_ERR_NULL);
 
     *dsp = NULL;
 
@@ -794,7 +796,7 @@ sbk_result sc_node_group_release(sc_node_group* nodeGroup)
     }
     SC_FREE(nodeGroup, system);
 
-    return MA_SUCCESS;
+    return SBK_SUCCESS;
 }
 
 #pragma endregion
@@ -815,7 +817,7 @@ static sbk_result sc_dsp_fader_create(sc_dsp_state* state)
     state->userData = ma_malloc(sizeof(ma_sound_group), &((sc_system*)state->system)->engine.allocationCallbacks);
     if (state->userData == NULL)
     {
-        return MA_OUT_OF_MEMORY;
+        return SBK_ERR_OUT_OF_MEMORY;
     }
 
     ma_sound_group_config config = ma_sound_group_config_init_2((ma_engine*)state->system);
@@ -826,7 +828,7 @@ static sbk_result sc_dsp_fader_release(sc_dsp_state* state)
 {
     ma_sound_group_uninit((ma_sound_group*)state->userData);
     SC_FREE(state->userData, (sc_system*)state->system);
-    return MA_SUCCESS;
+    return SBK_SUCCESS;
 }
 
 static sc_dsp_vtable s_faderVtable = {sc_dsp_fader_create, sc_dsp_fader_release};
@@ -840,7 +842,7 @@ static sbk_result sc_dsp_lowpass_create(sc_dsp_state* state)
     state->userData = ma_malloc(sizeof(ma_lpf_node), &((sc_system*)state->system)->engine.allocationCallbacks);
     if (state->userData == NULL)
     {
-        return MA_OUT_OF_MEMORY;
+        return SBK_ERR_OUT_OF_MEMORY;
     }
 
     ma_lpf_node_config config = ma_lpf_node_config_init(ma_engine_get_channels((ma_engine*)state->system),
@@ -853,14 +855,14 @@ static sbk_result sc_dsp_lowpass_release(sc_dsp_state* state)
 {
     ma_lpf_node_uninit((ma_lpf_node*)state->userData, NULL);
     SC_FREE(state->userData, (sc_system*)state->system);
-    return MA_SUCCESS;
+    return SBK_SUCCESS;
 }
 
 static sbk_result sc_dsp_lowpass_set_param_float(sc_dsp_state* state, int index, float value)
 {
     (void)value;
 
-    sbk_result result = MA_ERROR;
+    sbk_result result = SBK_ERR_CHEF;
 
     ma_format format     = ma_format_f32;
     ma_uint32 channels   = ma_node_get_output_channels(state->userData, 0);
@@ -887,7 +889,7 @@ static sbk_result sc_dsp_lowpass_get_param_float(sc_dsp_state* const state, int 
     (void)state;
     (void)value;
 
-    sbk_result result = MA_ERROR;
+    sbk_result result = SBK_ERR_CHEF;
 
     switch (index)
     {
@@ -917,7 +919,7 @@ static sbk_result sc_dsp_highpass_create(sc_dsp_state* state)
     state->userData = ma_malloc(sizeof(ma_hpf_node), &((sc_system*)state->system)->engine.allocationCallbacks);
     if (state->userData == NULL)
     {
-        return MA_OUT_OF_MEMORY;
+        return SBK_ERR_OUT_OF_MEMORY;
     }
 
     ma_hpf_node_config config = ma_hpf_node_config_init(ma_engine_get_channels((ma_engine*)state->system),
@@ -937,7 +939,7 @@ static sbk_result sc_dsp_highpass_set_param_float(sc_dsp_state* state, int index
 {
     (void)value;
 
-    sbk_result result = MA_ERROR;
+    sbk_result result = SBK_ERR_CHEF;
 
     ma_format format     = ma_format_f32;
     ma_uint32 channels   = ma_node_get_output_channels(state->userData, 0);
@@ -964,7 +966,7 @@ static sbk_result sc_dsp_highpass_get_param_float(sc_dsp_state* state, int index
     (void)state;
     (void)value;
 
-    sbk_result result = MA_ERROR;
+    sbk_result result = SBK_ERR_CHEF;
 
     switch (index)
     {

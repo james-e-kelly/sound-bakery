@@ -193,7 +193,7 @@ sbk_result sc_encoder_write_from_file(const char* decodeFilePath,
     for (;;)
     {
         ma_uint64 framesRead = 0;
-        sbk_result readResult = ma_decoder_read_pcm_frames(&decoder, outConvertedBuffer, desiredFrameCount, &framesRead);
+        ma_result readResult = ma_decoder_read_pcm_frames(&decoder, outConvertedBuffer, desiredFrameCount, &framesRead);
 
         if (framesRead == 0 || readResult == MA_AT_END)
         {
