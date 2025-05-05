@@ -170,7 +170,7 @@ void sbk::editor::project::build_soundbanks()
     initSoundbank->set_object_name(m_projectConfig.initBankName);
     initSoundbank->set_init_soundbank(true);
     initSoundbank->set_lookup_soundbank(true);
-    remove_object(initSoundbank);   // Delete after this scope
+    remove_object(initSoundbank);   // Will delete when going out of this scope
 
     soundbankObjects.insert(initSoundbank.get());
 
