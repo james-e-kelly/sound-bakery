@@ -153,7 +153,7 @@ auto sbk::core::database::get_all_database_names() const -> std::vector<database
 
 auto sbk::core::database::get_database_object_count() const -> size_t
 {
-    return m_idToPointerMap.size();
+    return std::max<std::size_t>(m_idToPointerMap.size(), m_nameToIdMap.size());
 }
 
 auto sbk::core::database::get_database_object_at(size_t index) const -> std::weak_ptr<database_object>
