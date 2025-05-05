@@ -165,7 +165,7 @@ void sbk::editor::project::build_soundbanks()
     std::unordered_set<sbk::core::object*> soundbankObjects =
         sbk::engine::system::get()->get_objects_of_category(SB_CATEGORY_BANK);
 
-    std::shared_ptr<sbk::engine::soundbank> initSoundbank = create_database_object<sbk::engine::soundbank>(false);
+    std::shared_ptr<sbk::engine::soundbank> initSoundbank = create_database_object<sbk::engine::soundbank>();
     initSoundbank->set_editor_hidden(true);
     initSoundbank->set_object_name(m_projectConfig.initBankName);
     initSoundbank->set_init_soundbank(true);
