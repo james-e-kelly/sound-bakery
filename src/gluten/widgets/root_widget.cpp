@@ -255,8 +255,11 @@ void root_widget::draw_titlebar()
         ImGui::ColorConvertFloat4ToU32(ImGui::GetStyleColorVec4(ImGuiCol_TitleBg)));
     topBarBackground.render(titleBarRect);
 
-    m_windowIcon->set_element_frame_padding();
-    m_windowIcon->render(logoRect);
+    if (m_renderLogo)
+    {
+        m_windowIcon->set_element_frame_padding();
+        m_windowIcon->render(logoRect);
+    }
 
     gluten::text titleText(std::string(get_app()->get_application_display_title()), ImVec2(0.5f, 0.5f),
                            element::anchor_preset::center_middle);
