@@ -77,7 +77,7 @@ cxx_20(gluten)
 add_library(SoundBakery::Gluten ALIAS gluten)
 
 target_include_directories(gluten
-    PUBLIC ${CMAKE_SOURCE_DIR}/src
+    PUBLIC ${PROJECT_SOURCE_DIR}/src
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
     PRIVATE ${stb_SOURCE_DIR}
 )
