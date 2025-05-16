@@ -68,6 +68,8 @@ namespace gluten
         auto set_layout(widget_layout& layout) -> void;
         auto get_default_layout() -> gluten::widget_layout&;
 
+        bool m_renderLogo = true;
+
     private:
         /**
          * @brief Hides children, clears the dockspace and finishes the dockspace builder upon destruction of the returned object.
