@@ -30,6 +30,8 @@ int gluten::app::run(int argc, char** argv)
     add_subsystem_class<renderer_subsystem>();
     add_subsystem_class<widget_subsystem>();
 
+    pre_init();
+
     // PreInit
     for (std::shared_ptr<subsystem>& subsystem : m_subsystems)
     {
