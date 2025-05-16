@@ -62,36 +62,39 @@ auto widget::render_menu() -> void
 
     if (m_hasStarted)
     {
-        if (ImGui::BeginMenu(s_fileMenuName))
+        if (s_renderMenu)
         {
-            ImGui::EndMenu();
-        }
-
-        if (ImGui::BeginMenu(s_editMenuName))
-        {
-            ImGui::EndMenu();
-        }
-
-        if (ImGui::BeginMenu(s_windowsMenuName))
-        {
-            if (m_inToolbar)
+            if (ImGui::BeginMenu(s_fileMenuName))
             {
-                ImGui::MenuItem(m_widgetName.c_str(), nullptr, &m_visible);
+                ImGui::EndMenu();
             }
-            ImGui::EndMenu();
+        
+            if (ImGui::BeginMenu(s_editMenuName))
+            {
+                ImGui::EndMenu();
+            }
+        
+            if (ImGui::BeginMenu(s_windowsMenuName))
+            {
+                if (m_inToolbar)
+                {
+                    ImGui::MenuItem(m_widgetName.c_str(), nullptr, &m_visible);
+                }
+                ImGui::EndMenu();
+            }
+        
+            if (ImGui::BeginMenu(s_layoutsMenuName))
+            {
+                ImGui::EndMenu();
+            }
+        
+            if (ImGui::BeginMenu(s_helpMenuName))
+            {
+                ImGui::EndMenu();
+            }
+        
+            render_menu_implementation();
         }
-
-        if (ImGui::BeginMenu(s_layoutsMenuName))
-        {
-            ImGui::EndMenu();
-        }
-
-        if (ImGui::BeginMenu(s_helpMenuName))
-        {
-            ImGui::EndMenu();
-        }
-
-        render_menu_implementation();
 
         for (auto& child : m_childWidgets)
         {
