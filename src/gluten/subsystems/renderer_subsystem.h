@@ -30,6 +30,9 @@ namespace gluten
         bool is_minimised() const;
         bool is_maximized() const;
 
+        int m_startWindowWidth = 1920;
+        int m_startWindowHeight = 1080;
+
     private:
         int init_glfw();
         int init_imgui();
