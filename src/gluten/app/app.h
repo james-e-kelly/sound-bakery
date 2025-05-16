@@ -22,6 +22,7 @@ namespace gluten
         int run(int argc, char** argv);
         void request_exit();
 
+        virtual void pre_init() {}
         virtual void post_init() = 0;
 
         template <class T>
