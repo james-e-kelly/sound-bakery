@@ -196,7 +196,7 @@ int renderer_subsystem::init()
         if (init_imgui() == 0)
         {
             // Create window with graphics context
-            m_window = window_guard(1920, 1080, "Sound Bakery");
+            m_window = window_guard(m_startWindowWidth, m_startWindowHeight, "Sound Bakery");
 
             const cmrc::embedded_filesystem embeddedfilesystem = cmrc::sbk::icon_images::get_filesystem();
             const cmrc::file logoFile                          = embeddedfilesystem.open("sound-bakery-logo.png");
