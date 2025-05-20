@@ -18,6 +18,14 @@ auto widget::start() -> void
     {
         start_implementation();
         m_hasStarted = true; 
+
+         for (auto& child : m_childWidgets)
+         {
+             if (std::shared_ptr<widget> sharedChild = child.second.lock())
+             {
+                 sharedChild->start();
+             }
+         }
     }
 }
 
