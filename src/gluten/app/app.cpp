@@ -125,7 +125,7 @@ int gluten::app::run(int argc, char** argv)
 void gluten::app::load_fonts()
 {
     // Load Fonts
-    const float baseFontSize = 18.0f;
+    const float baseFontSize = 16.0f;
     const float iconFontSize = baseFontSize * 2.0f / 3.0f;  // FontAwesome fonts need to have their sizes reduced
                                                             // by 2.0f/3.0f in order to align correctly
 
