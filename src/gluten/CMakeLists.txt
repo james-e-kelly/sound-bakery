@@ -115,12 +115,16 @@ FetchContent_MakeAvailable(fonts)
 message(STATUS "Fetching fmt")
 FetchContent_MakeAvailable(fmt)
 
+message(STATUS "Fetching platform folders")
+FetchContent_MakeAvailable(platform-folders)
+
 target_include_directories(gluten PUBLIC
   ${fonts_SOURCE_DIR}
 )
 
 target_link_libraries(gluten
     PUBLIC
+    concurrencpp::concurrencpp 
     SoundBakery::Delegates 
     SoundBakery::Fonts
     SoundBakery::Images
@@ -132,6 +136,7 @@ target_link_libraries(gluten
     bytesize
     Tracy::TracyClient
     RTTR::Core_Lib
+    sago::platform_folders
 )
 
 target_compile_options(gluten PRIVATE ${PROJECT_WARNING_FLAGS})

@@ -2,6 +2,7 @@
 
 #include "gluten/managers/manager.h"
 #include "gluten/subsystems/subsystem.h"
+#include "concurrencpp/concurrencpp.h"
 #include "imgui.h"
 
 namespace gluten
@@ -11,7 +12,7 @@ namespace gluten
      * 
      * The app class is intended to pass application behaviour to manager and subsystem classes.
      */
-    class app
+    class app : public concurrencpp::runtime
     {
     public:
         app()          = default;
@@ -21,9 +22,6 @@ namespace gluten
 
         int run(int argc, char** argv);
         void request_exit();
-
-        virtual void pre_init() {}
-        virtual void post_init() = 0;
 
         template <class T>
         std::shared_ptr<T> add_subsystem_class();
@@ -52,7 +50,19 @@ namespace gluten
 
         virtual auto on_file_drop(const std::vector<std::string>& paths) -> void {}
 
+    protected:
+        /**
+         * @brief Runs after subsystems are created and before any init functions are called.
+         * 
+         * Use this function to create the root widget, managers, more subsystems or general initialization.
+         */
+        virtual void pre_init() {}
+
     private:
+        auto start() -> void;
+        auto tick() -> void;
+        auto tick_begin() -> void;
+        auto tick_end() -> void;
         void load_fonts();
 
         std::vector<std::shared_ptr<subsystem>> m_subsystems;
@@ -68,6 +78,8 @@ namespace gluten
 
         bool m_hasInit          = false;
         bool m_isRequestingExit = false;
+
+        double m_deltaTime = 0.0;
     };
 
     template <class T>

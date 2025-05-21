@@ -31,6 +31,13 @@ namespace gluten
         virtual int init() { return 0; }
 
         /**
+         * @brief Runs after init and on the first tick.
+         * 
+         * Use this for first time logic like setting initial layouts.
+         */
+        virtual auto start() -> void {}
+
+        /**
          * @brief Runs before to tick to get if the app should close or set up a new frame
          *
          */

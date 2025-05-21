@@ -259,3 +259,10 @@ FetchContent_Declare(
   GIT_PROGRESS TRUE
   EXCLUDE_FROM_ALL
 )
+
+FetchContent_Declare(
+  platform-folders
+  GIT_REPOSITORY https://github.com/sago007/PlatformFolders.git
+  GIT_TAG master
+  EXCLUDE_FROM_ALL
+)

@@ -10,6 +10,14 @@ auto widget_subsystem::get_root_widget() const -> root_widget*
     return dynamic_cast<root_widget*>(m_rootWidget.get()); 
 }
 
+void widget_subsystem::start()
+{
+    if (root_widget* const rootWidget = get_root_widget())
+    {
+        rootWidget->set_layout(rootWidget->get_default_layout());
+    }
+}
+
 void widget_subsystem::tick(double deltaTime)
 {
     ZoneScoped;
@@ -62,3 +70,8 @@ void widget_subsystem::exit()
 }
 
 void gluten::widget_subsystem::set_root_widget(widget* rootWidget) { m_rootWidget = rootWidget->shared_from_this(); }
+
+auto gluten::widget_subsystem::set_root_widget(const std::shared_ptr<widget>& rootWidget) -> void
+{
+    m_rootWidget = rootWidget;
+}

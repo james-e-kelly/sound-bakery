@@ -14,10 +14,12 @@ namespace gluten
         widget_subsystem(app* appOwner) : subsystem(appOwner) {}
 
     public:
+        virtual void start() override;
         virtual void tick(double deltaTime) override;
         virtual void exit() override;
 
         void set_root_widget(widget* rootWidget);
+        auto set_root_widget(const std::shared_ptr<widget>& rootWidget) -> void;
         auto get_root_widget() const -> class root_widget*;
 
     public:

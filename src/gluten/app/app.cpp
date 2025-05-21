@@ -52,61 +52,16 @@ int gluten::app::run(int argc, char** argv)
 
     load_fonts();
 
-    post_init();
-
     m_currentTime  = std::chrono::high_resolution_clock::now();
     m_previousTime = std::chrono::high_resolution_clock::now();
 
     m_hasInit = true;
 
-    // Tick
+    start();
+
     while (!m_isRequestingExit)
     {
-        m_currentTime = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double> timeDiff =
-            std::chrono::duration_cast<std::chrono::duration<double>>(m_currentTime - m_previousTime);
-        m_previousTime = m_currentTime;
-
-        double deltaTime = timeDiff.count();
-
-        {
-            ZoneScopedN("PreTick");
-            for (std::shared_ptr<subsystem>& subsystem : m_subsystems)
-            {
-                subsystem->pre_tick(deltaTime);
-            }
-        }
-
-        if (m_isRequestingExit)
-        {
-            break;
-        }
-
-        {
-            ZoneScopedN("SubsystemTick");
-            for (std::shared_ptr<subsystem>& subsystem : m_subsystems)
-            {
-                subsystem->tick(deltaTime);
-            }
-        }
-
-        {
-            ZoneScopedN("ManagerTick");
-            for (auto& manager : m_managers)
-            {
-                manager->tick(deltaTime);
-            }
-        }
-
-        {
-            ZoneScopedN("RenderingTick");
-            for (std::shared_ptr<subsystem>& subsystem : m_subsystems)
-            {
-                subsystem->tick_rendering(deltaTime);
-            }
-        }
-
-        FrameMark;
+        tick();
     }
 
     for (auto& manager : m_managers)
@@ -120,6 +75,74 @@ int gluten::app::run(int argc, char** argv)
     }
 
     return 0;
+}
+
+auto gluten::app::start() -> void
+{
+    tick_begin();
+    for (std::shared_ptr<subsystem>& subsystem : m_subsystems)
+    {
+        subsystem->start();
+    }
+    tick_end();
+}
+
+auto gluten::app::tick() -> void
+{
+    tick_begin();
+    tick_end(); 
+}
+
+auto gluten::app::tick_begin() -> void
+{
+    m_currentTime = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> timeDiff =
+        std::chrono::duration_cast<std::chrono::duration<double>>(m_currentTime - m_previousTime);
+    m_previousTime = m_currentTime;
+
+    double deltaTime = timeDiff.count();
+
+    {
+        ZoneScopedN("PreTick");
+        for (std::shared_ptr<subsystem>& subsystem : m_subsystems)
+        {
+            subsystem->pre_tick(deltaTime);
+        }
+    }
+
+    if (m_isRequestingExit)
+    {
+        return;
+    }
+
+    {
+        ZoneScopedN("SubsystemTick");
+        for (std::shared_ptr<subsystem>& subsystem : m_subsystems)
+        {
+            subsystem->tick(m_deltaTime);
+        }
+    }
+
+    {
+        ZoneScopedN("ManagerTick");
+        for (auto& manager : m_managers)
+        {
+            manager->tick(m_deltaTime);
+        }
+    }
+}
+
+auto gluten::app::tick_end() -> void
+{
+    {
+        ZoneScopedN("RenderingTick");
+        for (std::shared_ptr<subsystem>& subsystem : m_subsystems)
+        {
+            subsystem->tick_rendering(m_deltaTime);
+        }
+    }
+
+    FrameMark;
 }
 
 void gluten::app::load_fonts()
