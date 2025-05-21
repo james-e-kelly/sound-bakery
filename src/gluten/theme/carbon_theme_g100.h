@@ -223,7 +223,7 @@ namespace gluten::theme::carbon_g100
         style->Colors[ImGuiCol_ScrollbarGrabHovered] = layerHover03;
         style->Colors[ImGuiCol_ScrollbarGrabActive]  = layerActive03;
 
-        style->Colors[ImGuiCol_CheckMark]        = missingColorColor;
+        style->Colors[ImGuiCol_CheckMark]        = interactive;
         style->Colors[ImGuiCol_SliderGrab]       = field03;
         style->Colors[ImGuiCol_SliderGrabActive] = fieldHover03;
 
