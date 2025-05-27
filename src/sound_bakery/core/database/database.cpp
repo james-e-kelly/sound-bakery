@@ -159,7 +159,10 @@ auto sbk::core::database::get_database_object_count() const -> size_t
 auto sbk::core::database::get_database_object_at(size_t index) const -> std::weak_ptr<database_object>
 {
     std::unordered_map<sbk_id, std::weak_ptr<database_object>>::const_iterator iter = m_idToPointerMap.begin();
-    std::advance(iter, index);
+    if (iter != m_idToPointerMap.cend() && index < m_idToPointerMap.size())
+    {
+        std::advance(iter, index);
+    }
     return iter != m_idToPointerMap.cend() ? iter->second : std::weak_ptr<database_object>();
 }
 
