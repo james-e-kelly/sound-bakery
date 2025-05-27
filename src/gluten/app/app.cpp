@@ -8,7 +8,7 @@
 
 #include <cmrc/cmrc.hpp>
 
-CMRC_DECLARE(sbk::Fonts);
+CMRC_DECLARE(sbk::fonts);
 
 namespace PathHelpers
 {
@@ -57,6 +57,8 @@ int gluten::app::run(int argc, char** argv)
 
     m_hasInit = true;
 
+    post_init();
+
     start();
 
     while (!m_isRequestingExit)
@@ -100,13 +102,13 @@ auto gluten::app::tick_begin() -> void
         std::chrono::duration_cast<std::chrono::duration<double>>(m_currentTime - m_previousTime);
     m_previousTime = m_currentTime;
 
-    double deltaTime = timeDiff.count();
+    m_deltaTime = timeDiff.count();
 
     {
         ZoneScopedN("PreTick");
         for (std::shared_ptr<subsystem>& subsystem : m_subsystems)
         {
-            subsystem->pre_tick(deltaTime);
+            subsystem->pre_tick(m_deltaTime);
         }
     }
 
@@ -155,7 +157,7 @@ void gluten::app::load_fonts()
     static const ImWchar fontAwesomeIconRanges[] = {ICON_MIN_FA, ICON_MAX_16_FA, 0};
     static const ImWchar fontAudioIconRanges[]   = {ICON_MIN_FAD, ICON_MAX_16_FAD, 0};
 
-    const cmrc::embedded_filesystem embeddedfilesystem = cmrc::sbk::Fonts::get_filesystem();
+    const cmrc::embedded_filesystem embeddedfilesystem = cmrc::sbk::fonts::get_filesystem();
 
     const cmrc::file lightFontFile       = embeddedfilesystem.open("Montserrat-Light.ttf");
     const cmrc::file mainFontFile        = embeddedfilesystem.open("Montserrat-Regular.ttf");

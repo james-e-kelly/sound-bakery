@@ -58,6 +58,11 @@ namespace gluten
          */
         virtual void pre_init() {}
 
+        /**
+         * @brief Runs after all init functions were called and before start.
+         */
+        virtual void post_init() {}
+
     private:
         auto start() -> void;
         auto tick() -> void;
