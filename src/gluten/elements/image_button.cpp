@@ -9,7 +9,6 @@ auto gluten::image_button::get_element_content_size() -> ImVec2 const { return m
 
 bool gluten::image_button::render_element(const ImRect& parent)
 {
-    const ImVec2 cursorBegin   = ImGui::GetCursorScreenPos();
     const bool buttonActivated = m_button.render_element(parent);
     m_image.render_element(parent);
     return buttonActivated;
