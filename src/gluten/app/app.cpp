@@ -184,6 +184,11 @@ void gluten::app::load_fonts()
     io.Fonts->AddFontFromMemoryTTF((void*)audioFontFile.begin(), audioFontFile.size(), iconFontSize * 1.3f,
                                    &iconFontsConfig, fontAudioIconRanges);
 
+    m_fonts[fonts::regular_lucide_icons] =
+        io.Fonts->AddFontFromMemoryTTF((void*)mainFontFile.begin(), mainFontFile.size(), baseFontSize, &fontConfig);
+    io.Fonts->AddFontFromMemoryTTF((void*)lucideFontFile.begin(), lucideFontFile.size(), iconFontSize * 1.3f,
+                                   &iconFontsConfig, lucideIconRanges);
+
     m_fonts[fonts::regular_font_awesome] =
         io.Fonts->AddFontFromMemoryTTF((void*)mainFontFile.begin(), mainFontFile.size(), baseFontSize, &fontConfig);
     io.Fonts->AddFontFromMemoryTTF((void*)fontAwesomeFontFile.begin(), fontAwesomeFontFile.size(), iconFontSize,
