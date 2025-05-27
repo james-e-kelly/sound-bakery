@@ -14,7 +14,10 @@ void widget_subsystem::start()
 {
     if (root_widget* const rootWidget = get_root_widget())
     {
-        rootWidget->set_layout(rootWidget->get_default_layout());
+        if (rootWidget->has_layouts())
+        {
+            rootWidget->set_layout(rootWidget->get_default_layout());
+        }
     }
 }
 

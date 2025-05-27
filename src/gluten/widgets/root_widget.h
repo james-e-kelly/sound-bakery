@@ -51,6 +51,8 @@ namespace gluten
 
     /**
      * @brief The base widget with titlebar and open/close icons.
+     * 
+     * Holds the dockspace and widgets can be docked inside this.
      */
     class root_widget : public widget
     {
@@ -67,6 +69,7 @@ namespace gluten
         auto add_layout(const widget_layout& layout) -> void;
         auto set_layout(widget_layout& layout) -> void;
         auto get_default_layout() -> gluten::widget_layout&;
+        auto has_layouts() -> bool;
 
         bool m_renderLogo = true;
 

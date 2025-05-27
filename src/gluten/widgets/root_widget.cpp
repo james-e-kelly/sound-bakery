@@ -433,3 +433,8 @@ auto gluten::root_widget::get_default_layout() -> gluten::widget_layout&
     static gluten::widget_layout empty;
     return empty;
 }
+
+auto gluten::root_widget::has_layouts() -> bool
+{
+    return !m_layouts.empty();
+}
