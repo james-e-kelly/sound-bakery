@@ -2,6 +2,7 @@
 
 #include "IconsFontAwesome6.h"
 #include "IconsFontaudio.h"
+#include "IconsLucide.h"
 #include "subsystems/renderer_subsystem.h"
 #include "subsystems/widget_subsystem.h"
 //#include "Fontawesome"
@@ -9,13 +10,6 @@
 #include <cmrc/cmrc.hpp>
 
 CMRC_DECLARE(sbk::fonts);
-
-namespace PathHelpers
-{
-    static const char* ResourcesFolder = "Resources";
-}
-
-using namespace gluten;
 
 static gluten::app* s_app = nullptr;
 
@@ -156,6 +150,7 @@ void gluten::app::load_fonts()
 
     static const ImWchar fontAwesomeIconRanges[] = {ICON_MIN_FA, ICON_MAX_16_FA, 0};
     static const ImWchar fontAudioIconRanges[]   = {ICON_MIN_FAD, ICON_MAX_16_FAD, 0};
+    static const ImWchar lucideIconRanges[]      = {ICON_MIN_LC, ICON_MAX_16_LC, 0};
 
     const cmrc::embedded_filesystem embeddedfilesystem = cmrc::sbk::fonts::get_filesystem();
 
@@ -164,6 +159,7 @@ void gluten::app::load_fonts()
     const cmrc::file titleFontFile       = embeddedfilesystem.open("Montserrat-Black.ttf");
     const cmrc::file audioFontFile       = embeddedfilesystem.open("fontaudio/font/" FONT_ICON_FILE_NAME_FAD);
     const cmrc::file fontAwesomeFontFile = embeddedfilesystem.open("Font-Awesome/webfonts/" FONT_ICON_FILE_NAME_FAS);
+    const cmrc::file lucideFontFile      = embeddedfilesystem.open("Lucide.ttf");
 
     assert(mainFontFile.size() > 0);
 
@@ -172,11 +168,11 @@ void gluten::app::load_fonts()
     iconFontsConfig.MergeMode            = true;
     iconFontsConfig.PixelSnapH           = true;
     iconFontsConfig.GlyphMinAdvanceX     = iconFontSize;
-    iconFontsConfig.RasterizerDensity    = 2.0f;
+    iconFontsConfig.RasterizerDensity    = 1.0f;
 
     ImFontConfig fontConfig;
     fontConfig.FontDataOwnedByAtlas = false;  // the memory is statically owned by the virtual filesystem
-    fontConfig.RasterizerDensity    = 2.0f;
+    fontConfig.RasterizerDensity    = 1.0f;
 
     ImGuiIO& io = ImGui::GetIO();
 

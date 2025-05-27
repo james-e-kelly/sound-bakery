@@ -34,7 +34,7 @@ static const char* rootDockspaceName    = "RootWindow";
 namespace root_widget_utils
 {
     constexpr float fontSize      = 20.0f;
-    constexpr float titleFontSize = 22.0f;
+    constexpr float titleFontSize = 24.0f;
 
     static float titleBarHeight()
     {
