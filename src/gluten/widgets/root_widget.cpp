@@ -34,7 +34,7 @@ static const char* rootDockspaceName    = "RootWindow";
 namespace root_widget_utils
 {
     constexpr float fontSize      = 20.0f;
-    constexpr float titleFontSize = 22.0f;
+    constexpr float titleFontSize = 24.0f;
 
     static float titleBarHeight()
     {
@@ -437,4 +437,9 @@ auto gluten::root_widget::get_default_layout() -> gluten::widget_layout&
     }
     static gluten::widget_layout empty;
     return empty;
+}
+
+auto gluten::root_widget::has_layouts() -> bool
+{
+    return !m_layouts.empty();
 }

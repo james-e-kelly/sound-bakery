@@ -31,6 +31,7 @@ namespace gluten
         regular,
         regular_font_awesome,
         regular_audio_icons,
+        regular_lucide_icons,
         light,
         title
     };

@@ -158,6 +158,10 @@ bool gluten::element::render(const ImRect& parent)
     {
         ImGui::SetWindowFontScale(m_scale.value());
     }
+    else
+    {
+        ImGui::SetWindowFontScale(1.0f);
+    }
 
     const ImRect elementBox =
         get_element_box_from_parent(parent, m_minSize, get_element_content_size(), m_alignment, m_padding, m_anchor);

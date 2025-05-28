@@ -3,6 +3,7 @@
 #include "gluten/utils/imgui_util_structures.h"
 #include "IconsFontAwesome6.h"
 #include "IconsFontaudio.h"
+#include "IconsLucide.h"
 #include "app/app.h"
 #include "imgui.h"
 #include "managers/app_manager.h"
@@ -45,43 +46,41 @@ auto root_widget::render_menu_implementation() -> void
     static bool showMenu  = false;
     static bool showAbout = false;
 
-    gluten::imgui::scoped_font fontAwesomeFont(get_app()->get_font(gluten::fonts::regular_font_awesome));
+    gluten::imgui::scoped_font fontLucide(get_app()->get_font(gluten::fonts::regular_lucide_icons));
 
     {
         if (ImGui::BeginMenu(s_fileMenuName))
         {
-            if (ImGui::MenuItem(ICON_FA_FILE " New...", "Ctrl+N"))
+            if (ImGui::MenuItem(ICON_LC_FILE " New...", "Ctrl+N"))
             {
                 get_app()->get_manager_by_class<app_manager>()->create_new_project();
             }
 
-            if (ImGui::MenuItem(ICON_FA_FOLDER_OPEN " Open...", "Ctrl+O"))
+            if (ImGui::MenuItem(ICON_LC_FOLDER_OPEN " Open...", "Ctrl+O"))
             {
                 get_app()->get_manager_by_class<app_manager>()->open_project();
             }
 
             if (get_app()->get_manager_by_class<project_manager>())
             {
-                gluten::imgui::scoped_font fontAudio(get_app()->get_font(gluten::fonts::regular_audio_icons));
-
                 ImGui::Separator();
 
-                if (ImGui::MenuItem(ICON_FAD_SAVE " Save", "Ctrl+S"))
+                if (ImGui::MenuItem(ICON_LC_SAVE " Save", "Ctrl+S"))
                 {
                     get_app()->get_manager_by_class<project_manager>()->save_project();
                 }
 
-                if (ImGui::MenuItem(ICON_FAD_SAVEAS " Save As...", "Shift+Ctrl+S"))
+                if (ImGui::MenuItem(ICON_LC_SAVE_ALL " Save As...", "Shift+Ctrl+S"))
                 {
                 }
 
                 ImGui::Separator();
-                if (ImGui::MenuItem("Convert Files", nullptr, nullptr))
+                if (ImGui::MenuItem(ICON_LC_HAMMER " Convert Files", nullptr, nullptr))
                 {
                     sbk::engine::system::get_project()->encode_all_media();
                 }
 
-                if (ImGui::MenuItem("Build Soundbanks", nullptr, nullptr))
+                if (ImGui::MenuItem(ICON_LC_WRENCH " Build Soundbanks", nullptr, nullptr))
                 {
                     sbk::engine::system::get_project()->build_soundbanks();
                 }
@@ -101,11 +100,11 @@ auto root_widget::render_menu_implementation() -> void
             if (get_app()->get_manager_by_class<project_manager>())
             {
                 ImGui::BeginDisabled(true);
-                if (ImGui::MenuItem("Undo", "Ctrl+Z"))
+                if (ImGui::MenuItem(ICON_LC_UNDO " Undo", "Ctrl+Z"))
                 {
                 }
 
-                if (ImGui::MenuItem("Redo", "Ctrl+Shift+Z"))
+                if (ImGui::MenuItem(ICON_LC_REDO " Redo", "Ctrl+Shift+Z"))
                 {
                 }
                 ImGui::EndDisabled();
@@ -116,7 +115,7 @@ auto root_widget::render_menu_implementation() -> void
 
         if (ImGui::BeginMenu(s_helpMenuName))
         {
-            if (ImGui::MenuItem("View Documentation"))
+            if (ImGui::MenuItem(ICON_LC_BOOK_OPEN_TEXT " View Documentation"))
             {
                 ImGuiContext* const context = ImGui::GetCurrentContext();
                 if (context->PlatformIO.Platform_OpenInShellFn != NULL)
@@ -126,7 +125,7 @@ auto root_widget::render_menu_implementation() -> void
             }
 
             ImGui::Separator();
-            if (ImGui::MenuItem("About " SBK_PRODUCT_NAME "..."))
+            if (ImGui::MenuItem(ICON_LC_BOOK_HEART " About " SBK_PRODUCT_NAME "..."))
             {
                 showAbout = true;
             }

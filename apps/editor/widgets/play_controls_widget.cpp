@@ -1,6 +1,6 @@
 #include "play_controls_widget.h"
 
-#include "IconsFontaudio.h"
+#include "IconsLucide.h"
 #include "app/app.h"
 #include "audio_display_widget.h"
 #include "gluten/elements/image_button.h"
@@ -56,7 +56,7 @@ void player_widget::start_implementation()
 
 void player_widget::render_implementation()
 {
-    const gluten::imgui::scoped_font audioFont(get_app()->get_font(gluten::fonts::regular_audio_icons));
+    const gluten::imgui::scoped_font font(get_app()->get_font(gluten::fonts::regular_lucide_icons));
     const gluten::imgui::scoped_style morePadding(ImGuiStyleVar_WindowPadding, gluten::theme::carbon_g100::paddingVec);
 
     ImGui::Begin(fmt::format("{} - {}", s_lastPlayableSelection.get_name(), get_widget_name().data()).c_str());
@@ -84,9 +84,9 @@ void player_widget::render_implementation()
     toolbar.set_layout_spacing(6.0f);
     toolbar.render_window();
 
-    gluten::toolbar_button playButton(ICON_FAD_PLAY);
-    gluten::toolbar_button stopButton(ICON_FAD_STOP);
-    gluten::toolbar_button pauseButton(ICON_FAD_PAUSE);
+    gluten::toolbar_button playButton(ICON_LC_PLAY);
+    gluten::toolbar_button stopButton(ICON_LC_SQUARE);
+    gluten::toolbar_button pauseButton(ICON_LC_PAUSE);
 
     if (toolbar.render_layout_element_pixels(&playButton, 64.0f, 64.0f))
     {

@@ -43,10 +43,10 @@ void project_manager::setup_project()
         if (const auto widgetSubsystem = app->get_subsystem_by_class<gluten::widget_subsystem>())
         {
             m_projectExplorerWidget = widgetSubsystem->add_widget_class_to_root<project_explorer_widget>(false);
-            m_playerWidget = widgetSubsystem->add_widget_class_to_root<player_widget>(false);
-            m_detailsWidget = widgetSubsystem->add_widget_class_to_root<details_widget>(false);
-            m_audioMeterWidget = widgetSubsystem->add_widget_class_to_root<audio_meter_widget>(false);
-            m_profilerWidget = widgetSubsystem->add_widget_class_to_root<profiler_widget>(false);
+            m_playerWidget          = widgetSubsystem->add_widget_class_to_root<player_widget>(false);
+            m_detailsWidget         = widgetSubsystem->add_widget_class_to_root<details_widget>(false);
+            m_audioMeterWidget      = widgetSubsystem->add_widget_class_to_root<audio_meter_widget>(false);
+            m_profilerWidget        = widgetSubsystem->add_widget_class_to_root<profiler_widget>(false);
             m_databaseWidget        = widgetSubsystem->add_widget_class_to_root<database_widget>(false);
 
             m_projectExplorerWidget->set_visible_in_toolbar(true, true);
