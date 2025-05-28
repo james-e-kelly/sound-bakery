@@ -140,6 +140,11 @@ auto gluten::dockspace_refresh::split_one_large_column_one_side() -> void
     ImGui::DockBuilderSplitNode(dockspaceID, ImGuiDir_Left, 0.8f, &leftColumnID, &rightColumnID);
 }
 
+auto gluten::dockspace_refresh::split_two_rows() -> void
+{ 
+    ImGui::DockBuilderSplitNode(dockspaceID, ImGuiDir_Down, 0.5f, &bottomRowID, &topRowID);
+}
+
 auto gluten::dockspace_refresh::assign_widget_to_node(const rttr::type& widgetType, ImGuiID idToAssignTo) -> void
 {
     if (auto widget = owningWidget->get_widget_by_class(widgetType).lock())

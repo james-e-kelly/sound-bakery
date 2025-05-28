@@ -18,6 +18,8 @@ namespace gluten
         ImGuiID leftColumnID = 0;
         ImGuiID centerColumnID = 0;
         ImGuiID rightColumnID = 0;
+        ImGuiID topRowID = 0;
+        ImGuiID bottomRowID = 0;
 
         dockspace_refresh() = delete;
         dockspace_refresh(ImGuiID id, widget* widget) : dockspaceID(id), owningWidget(widget) { assert(owningWidget); }
@@ -30,6 +32,7 @@ namespace gluten
         auto split_three_columns() -> void;
         auto split_three_columns_large_main() -> void;
         auto split_one_large_column_one_side() -> void;
+        auto split_two_rows() -> void;
 
         auto assign_widget_to_node(const rttr::type& widgetType, ImGuiID idToAssignTo) -> void;
     };
