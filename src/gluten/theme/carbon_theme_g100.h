@@ -275,7 +275,7 @@ namespace gluten::theme::carbon_g100
         style->Alpha         = 1.0f;
         style->DisabledAlpha = 0.5f;
 
-        style->WindowPadding = ImVec2(padding * 0.5f, 0.0f);  // 1.5 chosen just on looks
+        style->WindowPadding = ImVec2(padding, 0.0f);
         style->FramePadding  = ImVec2(padding, padding * 1.5f);
 
         style->WindowRounding    = rounding;
