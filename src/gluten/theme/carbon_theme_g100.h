@@ -203,8 +203,8 @@ namespace gluten::theme::carbon_g100
         style->Colors[ImGuiCol_TabUnfocused]       = missingColorColor;
         style->Colors[ImGuiCol_TabUnfocusedActive] = missingColorColor;
 
-        style->Colors[ImGuiCol_TabDimmedSelected] = background;  // selected dock tab
-        style->Colors[ImGuiCol_TabDimmed]         = field01;
+        style->Colors[ImGuiCol_TabDimmedSelected] = field01;  // selected dock tab
+        style->Colors[ImGuiCol_TabDimmed]         = background;
 
         // Window Titles
         style->Colors[ImGuiCol_TitleBg]          = background;
@@ -243,7 +243,7 @@ namespace gluten::theme::carbon_g100
 
         style->Colors[ImGuiCol_PlotLines]            = missingColorColor;
         style->Colors[ImGuiCol_PlotLinesHovered]     = missingColorColor;
-        style->Colors[ImGuiCol_PlotHistogram]        = missingColorColor;
+        style->Colors[ImGuiCol_PlotHistogram]        = interactive;    // slider
         style->Colors[ImGuiCol_PlotHistogramHovered] = missingColorColor;
 
         // Separators
