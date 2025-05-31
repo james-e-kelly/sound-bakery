@@ -128,7 +128,7 @@ auto sbk::core::object_owner::remove_object(const std::shared_ptr<object>& objec
     return m_objects.end();
 }
 
-auto sbk::core::object_owner::destroy_all() -> void { m_objects.clear(); }
+auto sbk::core::object_owner::remove_all() -> void { m_objects.clear(); }
 
 auto sbk::core::object_owner::get_objects() -> std::vector<std::shared_ptr<object>>& { return m_objects; }
 

@@ -124,7 +124,7 @@ system::~system()
         m_masterBus.reset();
     }
 
-    destroy_all();
+    remove_all();
     BOOST_ASSERT(get_objects_count() == 0);
 
     sc_system_close(this);

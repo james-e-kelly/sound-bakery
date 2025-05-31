@@ -107,7 +107,7 @@ void sbk::engine::game_object::stop_container(container* container, const pass_k
 void game_object::stop_all(const pass_key<sbk::engine::system>& passkey)
 { 
     ZoneScoped;
-    destroy_all();   //< Assuming we only own voices 
+    remove_all();   //< Assuming we only own voices 
 }
 
 void game_object::update()

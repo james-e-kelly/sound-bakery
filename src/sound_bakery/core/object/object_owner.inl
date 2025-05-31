@@ -1,6 +1,17 @@
 #pragma once
 
 template <typename T>
+auto object_owner::create_raw_object() -> std::shared_ptr<T>
+{
+    std::shared_ptr<T> result = std::make_shared<T>();
+
+    m_objects.emplace_back(result);
+
+    result->set_owner(this);
+    result->cache_type();
+}
+
+template <typename T>
 auto object_owner::create_runtime_object() -> std::shared_ptr<T>
 {
     if (!rttr::type::get<T>().is_derived_from(rttr::type::get<sbk::core::object>()))

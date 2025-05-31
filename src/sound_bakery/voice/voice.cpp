@@ -12,7 +12,7 @@ DEFINE_REFLECTION(voice)
 void sbk::engine::voice::play_container(container* container)
 {
     ZoneScoped;
-    destroy_all();
+    remove_all();
 
     m_playingContainer = container;
 
@@ -29,7 +29,7 @@ void sbk::engine::voice::play_container(container* container)
     }
     else
     {
-        destroy_all();
+        remove_all();
     }
 }
 
