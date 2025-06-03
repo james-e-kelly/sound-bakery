@@ -16,6 +16,7 @@ set(IMAGE_FILES
 set(GLUTEN_SOURCES
   app_entry.cpp 
   app/app.cpp
+  data/data_source.cpp
   elements/element.cpp
   elements/button.cpp
   elements/image_button.cpp

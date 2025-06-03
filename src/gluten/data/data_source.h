@@ -10,11 +10,7 @@
 
 namespace gluten
 {
-    std::filesystem::path get_config_file(const rttr::type& type)
-    {
-        const std::string typeFileName = type.get_name().to_string() + ".xml";
-        return std::filesystem::path(sago::getConfigHome()) / "JamesKelly" / "SoundBakery" / typeFileName;
-    }
+    std::filesystem::path get_config_file(const rttr::type& type);
 
     constexpr const char* dataSourceSerializeName = "DataSource";
 
