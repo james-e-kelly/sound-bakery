@@ -28,13 +28,13 @@ namespace gluten
                 const std::filesystem::path configFile = get_config_file(rttr::type::get<T>());
                 std::filesystem::create_directories(configFile.parent_path());
 
-                std::ofstream outputStream(configFile, std::ios_base::on);
+                std::ofstream outputStream(configFile, std::ios_base::out);
                 boost::archive::xml_oarchive archive(outputStream);
 
                 // Need a better way of checking if a type can be serialized
                 try
                 {
-                    archive & boost::serialization::make_nvp(dataSourceSerializeName, *data.get());
+                    archive & boost::serialization::make_nvp(dataSourceSerializeName, *data);
                 }
                 catch (...) {}
                 
@@ -55,10 +55,20 @@ namespace gluten
             m_localData = static_get_data();
         }
 
-        auto get_data() -> T*
+        auto get_data() const -> T*
         {
             assert(m_localData);
             return m_localData.get();
+        }
+
+        auto operator->() const -> T*
+        {
+            return get_data();
+        }
+
+        auto operator*() const -> T
+        {
+            return *get_data();
         }
 
         static auto static_get_data() -> std::shared_ptr<T>
