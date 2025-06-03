@@ -16,6 +16,7 @@ set(IMAGE_FILES
 set(GLUTEN_SOURCES
   app_entry.cpp 
   app/app.cpp
+  data/data_source.cpp
   elements/element.cpp
   elements/button.cpp
   elements/image_button.cpp
@@ -37,6 +38,7 @@ set(GLUTEN_SOURCES
 
 set(GLUTEN_HEADERS
   app/app.h
+  data/data_source.h
   elements/element.h
   elements/button.h
   elements/image_button.h
@@ -124,6 +126,7 @@ target_include_directories(gluten PUBLIC
 
 target_link_libraries(gluten
     PUBLIC
+    Boost::serialization
     concurrencpp::concurrencpp 
     SoundBakery::Delegates 
     SoundBakery::Fonts
