@@ -73,6 +73,7 @@ namespace gluten
             if (m_weakData.expired())
             {
                 result = std::shared_ptr<T>(new T, data_source_deleter<T>());
+                m_weakData = result;
 
                 const std::filesystem::path configFile = get_config_file(rttr::type::get<T>());
                 if (std::filesystem::exists(configFile))
