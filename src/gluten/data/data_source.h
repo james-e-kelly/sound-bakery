@@ -6,7 +6,6 @@
 #include <boost/archive/xml_oarchive.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <rttr/type>
-#include "platform_folders.h"
 
 namespace gluten
 {
