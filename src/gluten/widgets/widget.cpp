@@ -35,12 +35,32 @@ auto widget::tick(double deltaTime) -> void
 
     if (m_hasStarted)
     {
-        tick_implementation(deltaTime);
-        for (auto& child : m_childWidgets)
+        bool doTick = false;
+
+        if (m_tickFrequency > 0.0)
         {
-            if (std::shared_ptr<widget> sharedChild = child.second.lock())
+            m_timeSinceLastTick += deltaTime;
+
+            if (m_timeSinceLastTick >= m_tickFrequency)
             {
-                sharedChild->tick(deltaTime);
+                m_timeSinceLastTick = 0.0;
+                doTick              = true;
+            }
+        }
+        else
+        {
+            doTick = true;
+        }
+
+        if (doTick)
+        {
+            tick_implementation(deltaTime);
+            for (auto& child : m_childWidgets)
+            {
+                if (std::shared_ptr<widget> sharedChild = child.second.lock())
+                {
+                    sharedChild->tick(deltaTime);
+                }
             }
         }
     }
@@ -166,6 +186,12 @@ auto gluten::widget::get_widget_by_class(const rttr::type& type) const -> std::w
 auto gluten::widget::get_child_widget_count() const -> std::size_t { return m_childWidgets.size(); }
 
 auto gluten::widget::get_widget_name() const -> std::string_view { return m_widgetName; }
+
+auto gluten::widget::set_tick_frequency(double tickFrequency) -> void
+{
+    m_tickFrequency = tickFrequency;
+    m_timeSinceLastTick = 0.0;
+}
 
 void widget::render_children()
 {
