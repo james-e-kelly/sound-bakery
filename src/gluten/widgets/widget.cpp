@@ -43,6 +43,7 @@ auto widget::tick(double deltaTime) -> void
 
             if (m_timeSinceLastTick >= m_tickFrequency)
             {
+                deltaTime           = m_timeSinceLastTick;
                 m_timeSinceLastTick = 0.0;
                 doTick              = true;
             }
