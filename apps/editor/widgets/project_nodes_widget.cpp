@@ -76,8 +76,8 @@ static int numNodesRendered = 0;
 
 void project_nodes_widget::render_category(SB_OBJECT_CATEGORY category)
 {
-    const std::set<sbk::core::object*, sbk::core::object_ptr_comparator> categoryObjects =
-        sbk::engine::system::get()->convert_to_ordered(sbk::engine::system::get()->get_objects_of_category(category));
+    std::vector<sbk::core::object*> categoryObjects = sbk::engine::system::get()->get_objects_of_category(category).get();
+    std::sort(categoryObjects.begin(), categoryObjects.end(), sbk::core::object_ptr_comparator{});
 
     ImDrawList* draw_list = ImGui::GetWindowDrawList();
 
@@ -262,7 +262,7 @@ void project_nodes_widget::render_single_node(rttr::type type, rttr::instance in
                         for (const sbk::core::database_ptr<sbk::engine::named_parameter_value>& value :
                              intParameter->get_values())
                         {
-                            if (value.lookup())
+                            if (value.lookup().get())
                             {
                                 render_single_node(type, rttr::instance(value.raw()));
                             }
@@ -345,7 +345,7 @@ bool project_nodes_widget::render_node_context_menu(rttr::type type, rttr::insta
                     if (ImGui::MenuItem("Create Sound Node"))
                     {
                         if (std::shared_ptr<sbk::engine::sound_container> createdSoundNode =
-                            object->get_owner_object()->create_database_object<sbk::engine::sound_container>())
+                            object->get_owner_object()->create_database_object<sbk::engine::sound_container>().get())
                         {
                             createdSoundNode->set_object_name(object->get_database_name());
                             createdSoundNode->set_sound(object->try_convert_object<sbk::engine::sound>());
@@ -431,7 +431,7 @@ void project_nodes_widget::render_create_parent_or_child_menu(SB_OBJECT_CATEGORY
             if (ImGui::MenuItem(typeIndexName.data()))
             {
                 std::shared_ptr<sbk::core::database_object> const newObject =
-                    sbk::engine::system::get()->get_project()->create_database_object(type);
+                    sbk::engine::system::get()->get_project()->create_database_object(type).get();
 
                 assert(newObject);
 

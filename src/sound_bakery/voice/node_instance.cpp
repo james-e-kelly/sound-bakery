@@ -100,7 +100,7 @@ auto sbk::engine::node_instance_fsm::action_stop(const event_stop& stop) -> void
 auto sbk::engine::node_instance_fsm::guard_init(const event_init& init) -> bool
 {
     ZoneScoped;
-    if (!init.refNode.lookup())
+    if (!init.refNode.lookup().get())
     {
         return false;
     }
@@ -191,7 +191,7 @@ auto sbk::engine::node_instance_fsm::init_node_group(const event_init& init) -> 
 
     for (const sbk::core::database_ptr<sbk::engine::effect_description>& desc : m_referencingNode->m_effectDescriptions)
     {
-        if (desc.lookup())
+        if (desc.lookup().get())
         {
             sc_dsp* dsp = nullptr;
             add_dsp_to_node_group(m_nodeGroup.nodeGroup.get(), &dsp, *desc->get_config());
@@ -236,7 +236,7 @@ void sbk::engine::node_instance_fsm::init_parent()
     if (nodeToReference && nodeToReference->get_database_id() != m_referencingNode->get_database_id())
     {
         event_init initData{.refNode = nodeToReference, .type = node_instance_type::bus, .m_owningGameObject = m_gameObject};
-        m_parent = m_owner->create_runtime_object<sbk::engine::node_instance>();
+        m_parent = m_owner->create_runtime_object<sbk::engine::node_instance>().get();
         m_parent->init(initData);
     }
 }
@@ -258,7 +258,7 @@ void sbk::engine::node_instance_fsm::init_child()
         {
             if (child && child->get_database_id() != m_referencingNode->get_database_id())
             {
-                m_children.push_back(m_owner->create_runtime_object<sbk::engine::node_instance>());
+                m_children.push_back(m_owner->create_runtime_object<sbk::engine::node_instance>().get());
 
                 event_init childInit;
                 childInit.parentForChildren = m_owner;

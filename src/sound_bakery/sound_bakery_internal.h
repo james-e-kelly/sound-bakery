@@ -3,6 +3,25 @@
 
 #include "sound_bakery/sound_bakery.h"
 
+#define SC_CO_CHECK(condition, result) \
+    if ((condition) == MA_FALSE)    \
+    co_return (result)
+#define SC_CO_CHECK_RESULT(result)              \
+    if (((sbk_result)result) != SBK_SUCCESS) \
+    co_return (result)
+#define SC_CO_CHECK_ARG(condition)  \
+    if ((condition) == MA_FALSE) \
+    co_return SBK_ERR_INVALID_PARAMETER
+#define SC_CO_CHECK_MEM(ptr) \
+    if ((ptr) == NULL)    \
+    co_return SBK_ERR_OUT_OF_MEMORY
+#define SC_CO_CHECK_MEM_FREE(ptr, freePtr) \
+    if ((ptr) == NULL)                  \
+    {                                   \
+        ma_free((freePtr), NULL);       \
+        co_return SBK_ERR_OUT_OF_MEMORY;   \
+    }
+
 template <class T>
 class pass_key
 {

@@ -16,7 +16,7 @@ namespace profiler_utils
 
 static auto tracy_mainthread_callback(const std::function<void()>& function, bool forceDelay) -> void 
 {
-    sbk::engine::system::get()->get_game_thread_executer()->post(function);
+    sbk::engine::system::get()->get_game_thread_executor()->post(function);
 }
 
 static auto tracy_set_title(const char* title) -> void

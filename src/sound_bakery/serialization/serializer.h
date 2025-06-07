@@ -125,17 +125,25 @@ namespace sbk::core::serialization
             if (typename archive_class::is_loading())
             {
                 BOOST_ASSERT(objectOwner != nullptr);
-                std::weak_ptr<sbk::core::database_object> foundObject = sbk::engine::system::get()->try_find_database_object(id);
+                std::weak_ptr<sbk::core::database_object> foundObject = sbk::engine::system::get()->try_find_database_object(id).get();
 
                 if (foundObject.expired())
                 {
-                    object = objectOwner->create_database_object(type.get_type(), false);
-                    object->set_flags(object_flag_loading);
+                    object = objectOwner->create_database_object(type.get_type(), false).get();
+                    if (object)
+                    {
+                        object->set_flags(object_flag_loading);
+                    }
+                    else
+                    {
+                        SBK_ERROR("Could not create the database object and cannot save");
+                        return;
+                    }
                 }
                 else
                 {
                     object = foundObject.lock();
-                    objectOwner->add_reference_to_object(object);
+                    objectOwner->add_reference_to_object(object).get();
                 }
             }
             
@@ -146,7 +154,7 @@ namespace sbk::core::serialization
             {
                 BOOST_ASSERT(sbk::engine::system::get() != nullptr);
                 object->clear_flags(object_flag_loading);
-                sbk::engine::system::get()->add_object_to_database(object);
+                sbk::engine::system::get()->add_object_to_database(object).get();
             }
         }
     };
@@ -569,42 +577,48 @@ namespace sbk::core::serialization
     {
     public:
         template <class serialize_class>
-        auto save_database_object(std::shared_ptr<sbk::core::database_object>& object, const std::filesystem::path& file) -> sbk_result
+        auto save_database_object(std::shared_ptr<sbk::core::database_object> object, std::filesystem::path file) -> concurrencpp::result<sbk_result>
         {
-            SC_CHECK_ARG(object);
-            SC_CHECK(!file.empty(), SBK_ERR_INVALID_FILE);
+            SC_CO_CHECK_ARG(object);
+            SC_CO_CHECK(!file.empty(), SBK_ERR_INVALID_FILE);
+
+            co_await concurrencpp::resume_on(sbk::engine::system::get()->get_background_thread_executor());
 
             std::ofstream outputStream(file, outputMode);
             save_archive archive(outputStream);
             serialize_class serialize(object, nullptr);
 
             archive & boost::serialization::make_nvp("Data", serialize);
-            return SBK_SUCCESS;
+            co_return SBK_SUCCESS;
         }
 
-        auto save_system(const std::filesystem::path& file) -> sbk_result
+        auto save_system(std::filesystem::path file) -> concurrencpp::result<sbk_result>
         {
-            SC_CHECK(!file.empty(), SBK_ERR_INVALID_FILE);
+            SC_CO_CHECK(!file.empty(), SBK_ERR_INVALID_FILE);
+
+            co_await concurrencpp::resume_on(sbk::engine::system::get()->get_background_thread_executor());
 
             std::ofstream outputStream(file, outputMode);
             save_archive archive(outputStream);
             serialized_system serialize({}, nullptr);
 
             archive & boost::serialization::make_nvp("System", serialize);
-            return SBK_SUCCESS;
+            co_return SBK_SUCCESS;
         }
 
         template <class serialize_class>
-        auto load_object(sbk::core::object_owner* objectOwner, const std::filesystem::path& file) -> sbk_id
+        auto load_object(sbk::core::object_owner* objectOwner, std::filesystem::path file) -> concurrencpp::result<sbk_id>
         {
-            SC_CHECK(std::filesystem::exists(file), SBK_ERR_INVALID_FILE);
+            SC_CO_CHECK(std::filesystem::exists(file), SBK_ERR_INVALID_FILE);
+
+            co_await concurrencpp::resume_on(sbk::engine::system::get()->get_background_thread_executor());
 
             std::ifstream inputStream(file, inputMode);
             load_archive archive(inputStream);
             serialize_class object({}, objectOwner);
 
             archive & boost::serialization::make_nvp("Data", object);
-            return static_cast<sbk_id>(object);
+            co_return static_cast<sbk_id>(object);
         }
     };
 

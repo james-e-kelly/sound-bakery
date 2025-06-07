@@ -203,7 +203,7 @@ function(setup_linter_targets)
 
     if (SOUND_BAKERY_TIDY_SOURCE AND SOUND_BAKERY_CLANG_TIDY_EXE)
         add_custom_target(tidy_sound_bakery
-        COMMAND clang-tidy -fix --fix-errors --format-style=file --fix-notes -p ${CMAKE_BINARY_DIR} ${SOUND_BAKERY_TIDY_SOURCES}
+        COMMAND clang-tidy --format-style=file -p ${CMAKE_BINARY_DIR} ${SOUND_BAKERY_TIDY_SOURCES}
         COMMAND_EXPAND_LISTS
         COMMENT "Running clang-tidy -fix"
         VERBATIM

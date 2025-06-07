@@ -18,28 +18,33 @@ namespace sbk::editor
     class SB_CLASS project : public sbk::core::object_owner
     {
     public:
-        bool open_project(const std::filesystem::path& projectFile);
+        auto open_project(const std::filesystem::path& projectFile) -> concurrencpp::result<bool>;
         void create_project(const std::filesystem::path& projectFile) {}
 
         void save_project() const;
 
-        void encode_all_media() const;
-        void build_soundbanks();
+        auto encode_all_media() const -> concurrencpp::result<void>;
+        auto build_soundbanks() -> concurrencpp::result<void>;
 
         [[nodiscard]] const project_configuration& get_config() const;
         [[nodiscard]] std::weak_ptr<sbk::engine::sound_container> get_preview_container() const;
 
     private:
-        void load_sounds();
-        void loadSystem();
-        void load_objects();
+        auto load_sounds() -> concurrencpp::result<void>;
+        auto load_system() -> concurrencpp::result<void>;
+        auto load_objects() -> concurrencpp::result<void>;
 
-        void create_preview_container();
+        static auto load_single_sound(sbk::editor::project* project, std::filesystem::path filePath) -> concurrencpp::result<void>;
+        static auto load_single_object(sbk::editor::project* project, std::filesystem::path filePath) -> concurrencpp::result<void>;
 
-        void saveSystem() const;
-        void saveObjects() const;
+        auto create_preview_container() -> void;
+
+        auto save_system() const -> concurrencpp::result<void>;
+        auto save_objects() const -> concurrencpp::result<void>;
 
         project_configuration m_projectConfig;
         std::weak_ptr<sbk::engine::sound_container> m_previewSoundContainer;
+
+        mutable concurrencpp::async_lock m_projectLock;
     };
 }  // namespace sbk::editor

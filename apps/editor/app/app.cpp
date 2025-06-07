@@ -66,7 +66,7 @@ auto editor_app::on_file_drop(const std::vector<std::string>& paths) -> void
 
                     std::filesystem::copy_file(filePath, newFilePath);
                     if (std::shared_ptr<sbk::engine::sound> createdSound =
-                            project->create_database_object<sbk::engine::sound>())
+                            project->create_database_object<sbk::engine::sound>().get())
                     {
                         createdSound->set_object_name(newFilePath.filename().stem().string());
                         createdSound->set_sound_name(

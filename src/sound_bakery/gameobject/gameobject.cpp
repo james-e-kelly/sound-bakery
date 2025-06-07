@@ -12,7 +12,7 @@ auto game_object::play_container(container* container, const pass_key<sbk::engin
 {
     if (container)
     {
-        if (std::shared_ptr<voice> voice = create_runtime_object<sbk::engine::voice>())
+        if (const std::shared_ptr<voice> voice = create_runtime_object<sbk::engine::voice>().get())
         {
             voice->play_container(container);
             return voice.get();
@@ -36,7 +36,7 @@ auto sbk::engine::game_object::post_event(event* event, const pass_key<sbk::engi
             sbk::engine::game_object* gameObject = nullptr;
 
             if (const sbk::core::database_ptr<sbk::core::database_object>& destination = action.m_destination;
-                destination.lookup())
+                destination.lookup().get())
             {
                 container  = destination->try_convert_object<sbk::engine::container>();
                 childEvent = destination->try_convert_object<sbk::engine::event>();
@@ -78,30 +78,33 @@ auto sbk::engine::game_object::post_event(event* event, const pass_key<sbk::engi
 void sbk::engine::game_object::stop_voice(voice* voice, const pass_key<sbk::engine::system>& passkey)
 {
     ZoneScoped;
-    for (auto iter = get_objects().begin(); iter != get_objects().end(); ++iter)
-    {
-        if (iter->get() == voice)
+    
+    iterate_referenced_objects([voice](std::shared_ptr<object> object)
         {
-            remove_object(*iter);
-            break;
-        }
-    }
+            if (object.get() == voice)
+            {
+                return sbk::core::object_iterate_action::destroy_and_stop;
+            }
+            return sbk::core::object_iterate_action::next;
+        });
 }
 
 void sbk::engine::game_object::stop_container(container* container, const pass_key<sbk::engine::system>& passkey)
 {
     ZoneScoped;
-    for (auto iter = get_objects().begin(); iter != get_objects().end(); ++iter)
-    {
-        if (const sbk::engine::voice* const voice = iter->get()->try_convert_object<sbk::engine::voice>())
+
+    iterate_referenced_objects([container](std::shared_ptr<object> object)
         {
-            if (voice->playing_container(container))
+            if (const sbk::engine::voice* const voice = object->try_convert_object<sbk::engine::voice>())
             {
-                remove_object(*iter);
-                break;
+                if (voice->playing_container(container))
+                {
+                    return sbk::core::object_iterate_action::destroy_and_stop;
+                }
             }
-        }
-    }
+
+            return sbk::core::object_iterate_action::next;
+        });
 }
 
 void game_object::stop_all(const pass_key<sbk::engine::system>& passkey)
@@ -113,25 +116,23 @@ void game_object::stop_all(const pass_key<sbk::engine::system>& passkey)
 void game_object::update()
 {
     ZoneScoped;
-    for (auto iter = get_objects().begin(); iter != get_objects().end();)
-    {
-        if (sbk::engine::voice* voice = iter->get()->try_convert_object<sbk::engine::voice>())
-        {
-            voice->update();
 
-            if (!voice->is_playing())
+    iterate_referenced_objects([](std::shared_ptr<object> object)
+        {
+            if (sbk::engine::voice* voice = object->try_convert_object<sbk::engine::voice>())
             {
-                iter = remove_object(*iter);
+                voice->update();
+
+                if (!voice->is_playing())
+                {
+                    return sbk::core::object_iterate_action::destroy_and_next;
+                }
             }
-            else
-            {
-                ++iter;
-            }
-        }
-    }
+            return sbk::core::object_iterate_action::next;
+        });
 }
 
-bool sbk::engine::game_object::is_playing() const noexcept { return get_objects_size(); }
+bool sbk::engine::game_object::is_playing() const noexcept { return get_referenced_objects_size().get(); }
 
 float sbk::engine::game_object::get_float_parameter_value(
     const sbk::core::database_ptr<float_parameter>& parameter) const
@@ -146,7 +147,7 @@ float sbk::engine::game_object::get_float_parameter_value(
     }
     else
     {
-        if (parameter.lookup())
+        if (parameter.lookup().get())
         {
             result = parameter.raw()->get();
         }
@@ -168,7 +169,7 @@ sbk_id sbk::engine::game_object::get_int_parameter_value(
     }
     else
     {
-        if (parameter.lookup())
+        if (parameter.lookup().get())
         {
             result = parameter.raw()->get();
         }
@@ -188,8 +189,8 @@ void sbk::engine::game_object::set_int_parameter_value(
     if (m_parameters.intParameters.find(parameterValue.first) == m_parameters.intParameters.cend())
     {
         const sbk::core::database_ptr<named_parameter_value> parameterValuePtr(parameterValue.second);
-        parameterValuePtr.lookup();
-        parameterValuePtr->parentParameter.lookup();
+        parameterValuePtr.lookup().get();
+        parameterValuePtr->parentParameter.lookup().get();
 
         m_parameters.intParameters.insert(parameterValuePtr->parentParameter->create_local_parameter_from_this());
     }

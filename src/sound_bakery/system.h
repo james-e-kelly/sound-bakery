@@ -28,10 +28,6 @@ namespace sbk
         class bus;
         class game_object;
 
-        void* malloc(std::size_t size, SB_OBJECT_CATEGORY category);
-        void* realloc(void* pointer, std::size_t size);
-        void free(void* pointer, SB_OBJECT_CATEGORY category);
-
         /**
          * @brief Manager of the whole Sound Bakery.
          *
@@ -74,9 +70,11 @@ namespace sbk
             [[nodiscard]] static auto get_operating_mode() -> operating_mode;
             [[nodiscard]] static auto get_project() -> sbk::editor::project*;
             [[nodiscard]] static auto get_voice_tracker() -> sbk::engine::profiling::voice_tracker*;
-            [[nodiscard]] auto get_game_thread_executer() const -> std::shared_ptr<concurrencpp::manual_executor>;
-            [[nodiscard]] auto get_system_thread_executer() const -> std::shared_ptr<concurrencpp::manual_executor>;
-            [[nodiscard]] auto get_background_thread_executer() const -> std::shared_ptr<concurrencpp::thread_pool_executor>;
+            [[nodiscard]] auto get_game_thread_executor() const -> std::shared_ptr<concurrencpp::manual_executor>;              //< Executor that runs tasks on the game thread (or host) when update is called
+            [[nodiscard]] auto get_system_thread_executor() const -> std::shared_ptr<concurrencpp::manual_executor>;            //< System commands executor. Executed at specific points in the audio render
+            [[nodiscard]] auto get_thread_pool_executor() const -> std::shared_ptr<concurrencpp::thread_pool_executor>;         //< Thread pool for doing general concurrenct work. All work must use co_await and never block with calls like get
+            [[nodiscard]] auto get_background_thread_executor() const -> std::shared_ptr<concurrencpp::thread_pool_executor>;   //< General thread pool for blocking tasks like I/O
+            [[nodiscard]] auto get_database_executor() const -> std::shared_ptr<concurrencpp::worker_thread_executor>;          //< Sequential executor for the database so the database doesn't need locks
             [[nodiscard]] auto get_listener_game_object() const -> sbk::engine::game_object*;
             [[nodiscard]] auto get_master_bus() const -> sbk::engine::bus*;
             [[nodiscard]] auto get_current_object_owner() -> sbk::core::object_owner*;  //< Either project for editor or system for runtime
@@ -103,10 +101,18 @@ namespace sbk
             {
             }
 
-        private:
-            auto update_async() -> void;
+            static auto operator new(std::size_t size) -> void*;
+            static auto operator delete(void* ptr) -> void;
 
-            static auto get_game_object(sbk_id gameObjectID) -> std::weak_ptr<sbk::core::database_object>;
+        private:
+            auto update_async() -> concurrencpp::result<void>;
+            auto update_commands() -> concurrencpp::result<void>;
+            auto update_objects() -> concurrencpp::result<void>;
+            auto update_profiling() -> concurrencpp::result<void>;
+
+            static auto get_game_object(sbk_id gameObjectID) -> concurrencpp::result<std::weak_ptr<sbk::core::database_object>>;
+
+            auto close_system() -> void;
 
             bool m_registeredReflection = false;
 

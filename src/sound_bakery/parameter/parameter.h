@@ -152,7 +152,7 @@ namespace sbk::engine
             if (!name.empty())
             {
                 if (const std::shared_ptr<named_parameter_value> parameterValue =
-                        create_database_object<named_parameter_value>())
+                        create_database_object<named_parameter_value>().get())
                 {
                     parameterValue->set_object_name(name);
                     parameterValue->parentParameter = this;
@@ -208,7 +208,7 @@ namespace sbk::engine
         [[nodiscard]] sbk::core::database_ptr<named_parameter_value> get_selected_value() const
         {
             sbk::core::database_ptr<named_parameter_value> selected(get());
-            selected.lookup();
+            selected.lookup().get();
             return selected;
         }
 

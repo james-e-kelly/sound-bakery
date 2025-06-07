@@ -6,47 +6,54 @@
 
 using namespace sbk::core;
 
-std::weak_ptr<database_object> sbk::core::find_object(sbk_id id)
+namespace
 {
-    if (const database* const objectOwner = sbk::engine::system::get())
+    auto sbk::core::find_object(sbk_id id) -> concurrencpp::result<std::weak_ptr<database_object>>
     {
-        return objectOwner->try_find_database_object(id);
-    }
-    return {};
-}
+        co_await concurrencpp::resume_on(get_database_ptr_executor());
 
-bool sbk::core::object_id_is_child_of_parent(sbk_id childToCheck, sbk_id parent)
-{
-    sbk::core::database_ptr<database_object> parentPtr(parent);
-
-    if (parentPtr.lookup())
-    {
-        if (sbk::engine::node_base* nodeBase = parentPtr->try_convert_object<sbk::engine::node_base>())
+        if (const database* const objectOwner = sbk::engine::system::get())
         {
-            return nodeBase->hasChild(childToCheck);
+            co_return co_await objectOwner->try_find_database_object(id);
         }
+        co_return std::weak_ptr<database_object>{};
     }
 
-    return false;
-}
-
-sbk_id sbk::core::get_parent_id_from_id(sbk_id id)
-{
-    if (id != 0)
+    auto SB_API object_id_is_child_of_parent(const sbk_id childToCheck, const sbk_id parent) -> concurrencpp::result<bool>
     {
-        const sbk::core::database_ptr<database_object> databasePtr(id);
-
-        if (databasePtr.lookup())
+        if (const sbk::core::database_ptr<database_object> parentPtr(parent); co_await parentPtr.lookup())
         {
-            if (sbk::engine::node_base* nodeBase = databasePtr->try_convert_object<sbk::engine::node_base>())
+            if (const std::shared_ptr<sbk::engine::node_base> nodeBase =
+                    co_await parentPtr.shared_converted<sbk::engine::node_base>())
             {
-                if (sbk::engine::node_base* parent = nodeBase->get_parent())
+                co_return nodeBase->hasChild(database_ptr<sbk::engine::node_base>(childToCheck));
+            }
+        }
+
+        co_return false;
+    }
+
+    auto sbk::core::get_parent_id_from_id(const sbk_id id) -> concurrencpp::result<sbk_id>
+    {
+        if (id != 0)
+        {
+            if (const sbk::core::database_ptr<database_object> databasePtr(id); co_await databasePtr.lookup())
+            {
+                if (const std::shared_ptr<sbk::engine::node_base> nodeBase = co_await databasePtr.shared_converted<sbk::engine::node_base>())
                 {
-                    return parent->get_database_id();
+                    if (const sbk::engine::node_base* parent = nodeBase->get_parent())
+                    {
+                        co_return parent->get_database_id();
+                    }
                 }
             }
         }
+
+        co_return 0;
     }
 
-    return 0;
+    auto sbk::core::get_database_ptr_executor() -> std::shared_ptr<concurrencpp::thread_pool_executor>
+    {
+        return sbk::engine::system::get()->get_thread_pool_executor();
+    }
 }

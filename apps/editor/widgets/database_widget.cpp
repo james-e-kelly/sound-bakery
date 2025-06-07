@@ -10,7 +10,7 @@ auto database_widget::render_implementation() -> void
                 "Database", 2,
                 ImGuiTableFlags_Resizable | ImGuiTableFlags_BordersInnerH | ImGuiTableFlags_SizingStretchProp))
         {
-            std::vector<sbk::core::database_name> names = sbk::engine::system::get()->get_all_database_names();
+            std::vector<sbk::core::database_name> names = sbk::engine::system::get()->get_all_database_names().get();
             std::sort(names.begin(), names.end(), sbk::core::database_name_comparator());
 
             for (const sbk::core::database_name& name : names)
@@ -20,7 +20,7 @@ auto database_widget::render_implementation() -> void
                 ImGui::TableNextColumn();
 
                 std::weak_ptr<sbk::core::database_object> foundObject =
-                    sbk::engine::system::get()->try_find_database_object(name);
+                    sbk::engine::system::get()->try_find_database_object(name).get();
                 if (foundObject.expired())
                 {
                     ImGui::TextUnformatted("Object Not Found");

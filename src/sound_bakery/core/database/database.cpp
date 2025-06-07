@@ -1,14 +1,17 @@
 #include "database.h"
 
+#include "sound_bakery/system.h"
 #include "sound_bakery/util/type_helper.h"
 
-auto sbk::core::database::add_object_to_database(const std::shared_ptr<database_object>& object) -> void
+auto sbk::core::database::add_object_to_database(std::shared_ptr<database_object> object) -> concurrencpp::result<void>
 {
     if (!object)
     {
         SBK_ERROR("Cannot add object to database. Object was null");
-        return;
+        co_return;
     }
+
+    co_await concurrencpp::resume_on(sbk::engine::system::get()->get_database_executor());
 
     sbk_id objectID        = object->get_database_id();
     database_name objectName = object->get_database_name();
@@ -24,10 +27,10 @@ auto sbk::core::database::add_object_to_database(const std::shared_ptr<database_
     if (auto iter = m_idToPointerMap.find(objectID); iter != m_idToPointerMap.end())
     {
         SBK_ERROR("Cannot add object to database. Object ID already mapped");
-        return;
+        co_return;
     }
 
-    std::unordered_map<database_name, sbk_id>::iterator iter = m_nameToIdMap.find(objectName);
+    auto iter = m_nameToIdMap.find(objectName);
 
     while (iter != m_nameToIdMap.end())
     {
@@ -39,54 +42,60 @@ auto sbk::core::database::add_object_to_database(const std::shared_ptr<database_
     m_idToPointerMap[objectID] = object;
     m_nameToIdMap[objectName]  = objectID;
 
+    SBK_INFO(fmt::format("Adding {} to database", objectName.databaseName).c_str());
+
     object->get_on_destroy().AddRaw(this, &sbk::core::database::on_object_destroyed);
     object->get_on_update_id().AddRaw(this, &sbk::core::database::update_id);
     object->get_on_update_database_name().AddRaw(this, &sbk::core::database::update_database_name);
 }
 
-auto sbk::core::database::add_object_to_database(sbk_id id, const database_name& name) -> void
+auto sbk::core::database::add_object_to_database(sbk_id id, database_name name) -> concurrencpp::result<void>
 {
     if (id == SBK_INVALID_ID)
     {
         SBK_ERROR("Cannot add invalid ID to database");
-        return;
+        co_return;
     }
 
     if (!name.valid())
     {
         SBK_ERROR("Cannot add invalid name to database");
-        return;
+        co_return;
     }
 
-    if (auto iter = m_idToPointerMap.find(id); iter != m_idToPointerMap.end())
+    co_await concurrencpp::resume_on(sbk::engine::system::get()->get_database_executor());
+
+    if (const auto iter = m_idToPointerMap.find(id); iter != m_idToPointerMap.end())
     {
         SBK_WARN("Cannot add object to database. Object ID already mapped");
-        return;
+        co_return;
     }
 
-    if (auto iter = m_nameToIdMap.find(name); iter != m_nameToIdMap.end())
+    if (const auto iter = m_nameToIdMap.find(name); iter != m_nameToIdMap.end())
     {
         SBK_WARN("Cannot add object to database. Object name already mapped");
         m_idToPointerMap.erase(id);
-        return;
+        co_return;
     }
 
     m_nameToIdMap[name] = id;
 }
 
-auto sbk::core::database::remove_object_from_database(sbk_id objectID) -> void
+auto sbk::core::database::remove_object_from_database(sbk_id objectID) -> concurrencpp::result<void>
 {
     if (objectID == SBK_INVALID_ID)
     {
         SBK_ERROR("Cannot remove object from database. Object ID is 0!");
-        return;
+        co_return;
     }
+
+    co_await concurrencpp::resume_on(sbk::engine::system::get()->get_database_executor());
 
     if (const auto idIter = m_idToPointerMap.find(objectID); idIter != m_idToPointerMap.end())
     {
         if (const std::shared_ptr<sbk::core::database_object> object = idIter->second.lock())
         {
-            if (auto nameIter = m_nameToIdMap.find(object->get_database_name());
+            if (const auto nameIter = m_nameToIdMap.find(object->get_database_name());
                 nameIter != m_nameToIdMap.end())
             {
                 m_nameToIdMap.erase(nameIter);
@@ -101,73 +110,87 @@ auto sbk::core::database::remove_object_from_database(sbk_id objectID) -> void
     }
 }
 
-auto sbk::core::database::try_find_database_object(sbk_id objectID) const -> std::weak_ptr<sbk::core::database_object>
+auto sbk::core::database::try_find_database_object(sbk_id objectID) const -> concurrencpp::result<std::weak_ptr<sbk::core::database_object>>
 {
+    co_await concurrencpp::resume_on(sbk::engine::system::get()->get_database_executor());
+
     std::weak_ptr<sbk::core::database_object> result;
 
-    if (auto iter = m_idToPointerMap.find(objectID); iter != m_idToPointerMap.end())
+    if (const auto iter = m_idToPointerMap.find(objectID); iter != m_idToPointerMap.end())
     {
         result = iter->second;
     }
 
-    return result;
+    co_return result;
 }
 
-auto sbk::core::database::try_find_database_object(const database_name& name) const -> std::weak_ptr<sbk::core::database_object>
+auto sbk::core::database::try_find_database_object(database_name name) const -> concurrencpp::result<std::weak_ptr<sbk::core::database_object>>
 {
+    co_await concurrencpp::resume_on(sbk::engine::system::get()->get_database_executor());
+
     std::weak_ptr<sbk::core::database_object> result;
 
-    if (auto iter = m_nameToIdMap.find(name); iter != m_nameToIdMap.end())
+    if (const auto iter = m_nameToIdMap.find(name); iter != m_nameToIdMap.end())
     {
-        result = try_find_database_object(iter->second);
+        result = co_await try_find_database_object(iter->second);
     }
 
-    return result;
+    co_return result;
 }
 
-auto sbk::core::database::get_all_database_objects() const -> std::vector<std::weak_ptr<sbk::core::database_object>>
+auto sbk::core::database::get_all_database_objects() const -> concurrencpp::result<std::vector<std::weak_ptr<sbk::core::database_object>>>
 {
+    co_await concurrencpp::resume_on(sbk::engine::system::get()->get_database_executor());
+
     std::vector<std::weak_ptr<sbk::core::database_object>> result;
     result.reserve(m_idToPointerMap.size());
 
-    for (const auto& i : m_idToPointerMap)
+    for (const auto& iter : m_idToPointerMap)
     {
-        result.push_back(i.second);
+        result.push_back(iter.second);
     }
 
-    return result;
+    co_return result;
 }
 
-auto sbk::core::database::get_all_database_names() const -> std::vector<database_name>
+auto sbk::core::database::get_all_database_names() const -> concurrencpp::result<std::vector<database_name>>
 {
+    co_await concurrencpp::resume_on(sbk::engine::system::get()->get_database_executor());
+
     std::vector<database_name> result;
     result.reserve(m_nameToIdMap.size());
 
-    for (const auto& iter : m_nameToIdMap)
+    for (const auto& key : m_nameToIdMap | std::views::keys)
     {
-        result.push_back(iter.first);
+        result.push_back(key);
     }
 
-    return result;
+    co_return result;
 }
 
-auto sbk::core::database::get_database_object_count() const -> size_t
+auto sbk::core::database::get_database_object_count() const -> concurrencpp::result<size_t>
 {
-    return std::max<std::size_t>(m_idToPointerMap.size(), m_nameToIdMap.size());
+    co_await concurrencpp::resume_on(sbk::engine::system::get()->get_database_executor());
+
+    co_return std::max<std::size_t>(m_idToPointerMap.size(), m_nameToIdMap.size());
 }
 
-auto sbk::core::database::get_database_object_at(size_t index) const -> std::weak_ptr<database_object>
+auto sbk::core::database::get_database_object_at(size_t index) const -> concurrencpp::result<std::weak_ptr<database_object>>
 {
-    std::unordered_map<sbk_id, std::weak_ptr<database_object>>::const_iterator iter = m_idToPointerMap.begin();
+    co_await concurrencpp::resume_on(sbk::engine::system::get()->get_database_executor());
+
+    auto iter = m_idToPointerMap.cbegin();
     if (iter != m_idToPointerMap.cend() && index < m_idToPointerMap.size())
     {
         std::advance(iter, index);
     }
-    return iter != m_idToPointerMap.cend() ? iter->second : std::weak_ptr<database_object>();
+    co_return iter != m_idToPointerMap.cend() ? iter->second : std::weak_ptr<database_object>();
 }
 
-auto sbk::core::database::clear_database() noexcept -> void
+auto sbk::core::database::clear_database() -> concurrencpp::result<void>
 {
+    co_await concurrencpp::resume_on(sbk::engine::system::get()->get_database_executor());
+
     m_idToPointerMap.clear();
     m_nameToIdMap.clear();
 }
@@ -183,13 +206,13 @@ auto sbk::core::database::create_new_id() -> sbk_id
 
 auto sbk::core::database::create_new_name(const rttr::type& type) -> std::string
 {
-    static std::atomic<int> serialNumberGenerator = 0;
+    static std::atomic<int> s_serialNumberGenerator = 0;
 
     BOOST_ASSERT(type.is_valid());
     const std::string typeName =
         type.is_valid() ? sbk::util::type_helper::get_display_name_from_type(type).data() : "Object";
 
-    return fmt::format("{}_{}", typeName, serialNumberGenerator.fetch_add(1));
+    return fmt::format("{}_{}", typeName, s_serialNumberGenerator.fetch_add(1));
 }
 
 auto sbk::core::database::update_id(sbk_id oldID, sbk_id newID) -> void
@@ -206,13 +229,16 @@ auto sbk::core::database::update_id(sbk_id oldID, sbk_id newID) -> void
         return;
     }
 
-    if (const auto iter = m_idToPointerMap.find(oldID); iter != m_idToPointerMap.end())
-    {
-        const std::weak_ptr<sbk::core::database_object> object = iter->second;
+    sbk::engine::system::get()->get_database_executor()->submit([this, oldID, newID]() -> void
+        {
+            if (const auto iter = m_idToPointerMap.find(oldID); iter != m_idToPointerMap.end())
+            {
+                const std::weak_ptr<sbk::core::database_object>& object = iter->second;
 
-        m_idToPointerMap.erase(iter);
-        m_idToPointerMap[newID] = object;
-    }
+                m_idToPointerMap.erase(iter);
+                m_idToPointerMap[newID] = object;
+            }
+        });
 }
 
 auto sbk::core::database::update_database_name(const database_name& oldName, const database_name& newName) -> void
@@ -229,21 +255,29 @@ auto sbk::core::database::update_database_name(const database_name& oldName, con
         return;
     }
 
-    if (const auto iter = m_nameToIdMap.find(oldName); iter != m_nameToIdMap.end())
-    {
-        const sbk_id id = iter->second;
-        m_nameToIdMap.erase(iter);
-        m_nameToIdMap[newName] = id;
-    }
+    sbk::engine::system::get()->get_database_executor()->submit([this, oldName = oldName, newName = newName]() -> void
+        {
+            if (const auto iter = m_nameToIdMap.find(oldName); iter != m_nameToIdMap.end())
+            {
+                const sbk_id id = iter->second;
+                m_nameToIdMap.erase(iter);
+                m_nameToIdMap[newName] = id;
+
+                SBK_INFO(fmt::format("Renamed {} to {}", oldName.databaseName, newName.databaseName).c_str());
+            }
+        });
 }
 
 auto sbk::core::database::on_object_destroyed(object* object) -> void
 {
     if (object != nullptr)
     {
-        if (database_object* databaseObject = object->try_convert_object<database_object>())
+        if (const database_object* const databaseObject = object->try_convert_object<database_object>())
         {
-            remove_object_from_database(databaseObject->get_database_id());
+            sbk::engine::system::get()->get_database_executor()->submit([this, objectID = databaseObject->get_database_id()]() -> void
+                {
+                    remove_object_from_database(objectID);
+                });
         }
     }
 }
