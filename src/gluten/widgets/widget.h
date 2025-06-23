@@ -47,6 +47,8 @@ namespace gluten
         auto get_child_widget_count() const -> std::size_t;
         auto get_widget_name() const -> std::string_view;
 
+        auto set_tick_frequency(double tickFrequency) -> void;
+
         template <class T>
             requires std::derived_from<T, widget>
         [[nodiscard]] std::shared_ptr<T> add_child_widget(bool widgetOwns);
@@ -94,6 +96,8 @@ namespace gluten
         bool m_hasEnded                     = false;
         std::string m_widgetName            = "Widget";
         bool m_inToolbar                    = false;
+        double m_tickFrequency              = 0.0;
+        double m_timeSinceLastTick          = 0.0;
 
         std::map<rttr::type, std::weak_ptr<widget>> m_childWidgets; //< Child widgets to iterate over
         std::vector<std::shared_ptr<widget>> m_owningChildWidgets;  //< References to widgets that are owned. Not
