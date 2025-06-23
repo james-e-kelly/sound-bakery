@@ -2,16 +2,13 @@
 
 #include "sound_bakery/system.h"
 
-namespace
+static sbk_id convert_pointer_to_id(void* ptr)
 {
-    sbk_id convert_pointer_to_id(void* ptr)
-    {
-        return reinterpret_cast<sbk_id>(ptr);
-    }
+    return reinterpret_cast<sbk_id>(ptr);
 }
 
-template <class T>
-static auto convert_id_to_pointer(sbk_id id) -> T*
+template<class T>
+static T* convert_id_to_pointer(sbk_id id)
 {
     return reinterpret_cast<T*>(id);
 }
@@ -58,7 +55,7 @@ sbk_result sbk_system_get_object_count(uint64_t* count)
     sbk::engine::system* const system = sbk::engine::system::get();
     SC_CHECK(system != NULL, SBK_ERR_BAKERY_UNINITIALIZED);
 
-    *count = system->get_database_object_count().get();
+    *count = system->get_database_object_count();
     return SBK_SUCCESS;
 }
 
@@ -72,7 +69,7 @@ sbk_result sbk_system_get_object_info(uint64_t index, sbk_id* id, char* name, ui
     sbk::engine::system* const system = sbk::engine::system::get();
     SC_CHECK(system != NULL, SBK_ERR_BAKERY_UNINITIALIZED);
 
-    if (const std::shared_ptr<sbk::core::database_object> object = system->get_database_object_at(index).get().lock())
+    if (const std::shared_ptr<sbk::core::database_object> object = system->get_database_object_at(index).lock())
     {
         const sbk_id objectID        = object->get_database_id();
         const std::string objectName = object->get_database_name();

@@ -29,14 +29,14 @@ void sbk::engine::node::gatherParameters(global_parameter_list& parameters)
 
 void node::add_effect(sc_dsp_type type)
 {
-    std::shared_ptr<effect_description> effect = get_owner()->create_database_object<effect_description>().get();
+    std::shared_ptr<effect_description> effect = get_owner()->create_database_object<effect_description>();
     effect->set_dsp_type(type);
     m_effectDescriptions.emplace_back(effect);
 }
 
 auto node::add_effect_clap(clap_plugin_factory_t* clapFactory) -> void
 {
-    std::shared_ptr<effect_description> effect = get_owner()->create_database_object<effect_description>().get();
+    std::shared_ptr<effect_description> effect = get_owner()->create_database_object<effect_description>();
     effect->set_dsp_clap(clapFactory);
     m_effectDescriptions.emplace_back(effect);
 }
@@ -56,7 +56,7 @@ void sbk::engine::node_base::set_parent_node(const sbk::core::database_ptr<node_
 {
     if (m_onParentUpdateNameDelegate.IsValid())
     {
-        if (const std::shared_ptr<node_base> currentParent = m_parentNode.shared().get())
+        if (std::shared_ptr<node_base> currentParent = m_parentNode.shared())
         {
             currentParent->get_on_update_name().Remove(m_onParentUpdateNameDelegate);
         }
@@ -64,7 +64,7 @@ void sbk::engine::node_base::set_parent_node(const sbk::core::database_ptr<node_
 
     m_parentNode = parent;
 
-    if (const std::shared_ptr<node_base> newParent = m_parentNode.shared().get())
+    if (std::shared_ptr<node_base> newParent = m_parentNode.shared())
     {
         m_onParentUpdateNameDelegate = newParent->get_on_update_database_name().AddRaw(this, &node_base::on_parent_update_database_name);
     }
@@ -101,7 +101,7 @@ bool sbk::engine::node_base::can_add_child_type(const rttr::type& childType) con
 
 bool sbk::engine::node_base::can_add_child(const sbk::core::database_ptr<node_base>& child) const
 {
-    if (child.lookup().get())
+    if (child.lookup())
     {
         const bool canAddChildren         = can_add_children();
         const bool canAddType             = can_add_child_type(child->get_type());
@@ -124,14 +124,14 @@ void sbk::engine::node_base::addChild(const sbk::core::database_ptr<node_base>& 
 {
     if (can_add_child(child))
     {
-        if (child.lookup().get() && child->get_parent())
+        if (child.lookup() && child->get_parent())
         {
             child->get_parent()->removeChild(child);
         }
 
         m_childNodes.insert(child);
 
-        if (child.lookup().get())
+        if (child.lookup())
         {
             child->set_parent_node(this);
         }
@@ -155,7 +155,7 @@ std::vector<node_base*> sbk::engine::node_base::getChildren() const
 
     for (auto& child : m_childNodes)
     {
-        if (child.lookup().get())
+        if (child.lookup())
         {
             children.push_back(child.raw());
         }

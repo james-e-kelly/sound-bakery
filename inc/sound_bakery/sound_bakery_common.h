@@ -78,10 +78,6 @@ typedef enum SB_OBJECT_CATEGORY
      * @brief Any runtime object
      */
     SB_CATEGORY_RUNTIME_OBJECT,
-    /*
-     * @brief System object or an owning object
-     */
-    SB_CATEGORY_SYSTEM,
     SB_CATEGORY_NUM
 } SB_OBJECT_CATEGORY;
 

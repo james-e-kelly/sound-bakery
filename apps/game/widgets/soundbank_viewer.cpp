@@ -23,7 +23,7 @@ void soundbank_viewer_widget::render_implementation()
 {
     if (ImGui::Begin(get_widget_name().data()))
     {
-        for (sbk::core::object* object : sbk::engine::system::get()->get_objects_of_category(SB_CATEGORY_EVENT).get())
+        for (sbk::core::object* object : sbk::engine::system::get()->get_objects_of_category(SB_CATEGORY_EVENT))
         {
             if (sbk::engine::event* event = object->try_convert_object<sbk::engine::event>())
             {

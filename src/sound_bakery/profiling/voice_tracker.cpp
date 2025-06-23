@@ -15,7 +15,7 @@ void voice_tracker::update(system* system)
 
     if (const game_object* const listener = system->get_listener_game_object())
     {
-        for (const std::shared_ptr<sbk::core::object>& object : listener->get_referenced_objects().get())
+        for (const std::shared_ptr<sbk::core::object>& object : listener->get_objects())
         {
             if (const sbk::engine::voice* const voice = object->try_convert_object<sbk::engine::voice>())
             {

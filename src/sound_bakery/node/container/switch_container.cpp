@@ -13,7 +13,7 @@ void sbk::engine::switch_container::gather_children_for_play(gather_children_con
     {
         selectedValue = sbk::core::database_ptr<named_parameter_value>(findLocalValue->second.get());
     }
-    else if (m_switchParameter.lookup().get())
+    else if (m_switchParameter.lookup())
     {
         selectedValue = m_switchParameter->get_selected_value();
     }
@@ -23,7 +23,7 @@ void sbk::engine::switch_container::gather_children_for_play(gather_children_con
         sbk::core::child_ptr<container> selectedChild(*this);
         selectedChild = foundIter->second;
 
-        if (selectedChild.lookup().get())
+        if (selectedChild.lookup())
         {
             context.sounds.push_back(selectedChild.lookup_raw());
         }
@@ -59,7 +59,7 @@ void sbk::engine::switch_container::populateChildKeys()
 {
     m_switchToChild.clear();
 
-    if (m_switchParameter.lookup().get())
+    if (m_switchParameter.lookup())
     {
         for (const sbk::core::database_ptr<named_parameter_value>& value : m_switchParameter->get_values())
         {

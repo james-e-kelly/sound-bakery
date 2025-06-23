@@ -33,7 +33,7 @@ sbk::engine::soundbank_dependencies sbk::engine::soundbank::gather_dependencies(
 
     if (m_lookupSoundbank)
     {
-        for (const std::weak_ptr<sbk::core::database_object> databaseObject : sbk::engine::system::get()->get_all_database_objects().get())
+        for (const std::weak_ptr<sbk::core::database_object> databaseObject : sbk::engine::system::get()->get_all_database_objects())
         {
             if (const std::shared_ptr<sbk::core::database_object> sharedDatabaseObject = databaseObject.lock())
             {
@@ -49,10 +49,10 @@ sbk::engine::soundbank_dependencies sbk::engine::soundbank::gather_dependencies(
 
     if (m_initSoundbank)
     {
-        auto busPointers = sbk::engine::system::get()->get_objects_of_category(SB_CATEGORY_BUS).get();
-        auto intParameterPointers = sbk::engine::system::get()->get_objects_of_type(sbk::engine::int_parameter::type()).get();
-        auto floatParameterPointers = sbk::engine::system::get()->get_objects_of_type(sbk::engine::float_parameter::type()).get();
-        auto namedParameterPointers = sbk::engine::system::get()->get_objects_of_type(sbk::engine::named_parameter::type()).get();
+        auto busPointers = sbk::engine::system::get()->get_objects_of_category(SB_CATEGORY_BUS);
+        auto intParameterPointers = sbk::engine::system::get()->get_objects_of_type(sbk::engine::int_parameter::type());
+        auto floatParameterPointers = sbk::engine::system::get()->get_objects_of_type(sbk::engine::float_parameter::type());
+        auto namedParameterPointers = sbk::engine::system::get()->get_objects_of_type(sbk::engine::named_parameter::type());
 
         std::transform(busPointers.begin(), busPointers.end(), std::back_inserter(dependencies.busses), object_ptr_to_shared_ptr<sbk::engine::bus>);
         std::transform(intParameterPointers.begin(), intParameterPointers.end(), std::back_inserter(dependencies.intParameters), object_ptr_to_shared_ptr<sbk::engine::int_parameter>);
@@ -64,7 +64,7 @@ sbk::engine::soundbank_dependencies sbk::engine::soundbank::gather_dependencies(
 
     for (auto& event : get_events())
     {
-        if (event.lookup().get())
+        if (event.lookup())
         {
             dependencies.events.push_back(event.shared());
 
@@ -75,7 +75,7 @@ sbk::engine::soundbank_dependencies sbk::engine::soundbank::gather_dependencies(
                     continue;
                 }
 
-                if (!action.m_destination.lookup().get())
+                if (!action.m_destination.lookup())
                 {
                     continue;
                 }

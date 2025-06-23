@@ -7,10 +7,9 @@ namespace sbk::core
 {
     class database_object;
 
-    auto SB_API find_object(sbk_id id) -> concurrencpp::result<std::weak_ptr<database_object>>;
-    auto SB_API object_id_is_child_of_parent(sbk_id childToCheck, sbk_id parent) -> concurrencpp::result<bool>;
-    auto SB_API get_parent_id_from_id(sbk_id id) -> concurrencpp::result<sbk_id>;
-    auto SB_API get_database_ptr_executor() -> std::shared_ptr<concurrencpp::thread_pool_executor>;
+    std::weak_ptr<database_object> SB_API find_object(sbk_id id);
+    bool SB_API object_id_is_child_of_parent(sbk_id childToCheck, sbk_id parent);
+    sbk_id SB_API get_parent_id_from_id(sbk_id id);
 
     /** Lazy Pointer
      * Lazy pointers store an Indentifier to an object and use it to find the
@@ -23,23 +22,23 @@ namespace sbk::core
     class database_ptr
     {
     public:
-        using TThisType             = database_ptr<TObject>;
-        using TIdentifierType       = sbk_id;
-        using TAtomicIdentifierType = std::atomic<TIdentifierType>;
-        using TObjectPtr            = TObject*;
-        using TObjectRef            = TObject&;
-        using TObjectWeak           = std::weak_ptr<database_object>;
-        using TObjectShared         = std::shared_ptr<TObject>;
-        using TPtrType              = std::weak_ptr<database_object>;
+        using TThisType       = database_ptr<TObject>;
+        using TIdentifierType = sbk_id;
+        using TObjectPtr      = TObject*;
+        using TObjectRef      = TObject&;
+        using TObjectWeak     = std::weak_ptr<database_object>;
+        using TObjectShared   = std::shared_ptr<TObject>;
+        using TPtrType        = std::weak_ptr<database_object>;
 
-        static_assert(!std::is_pointer_v<TObject>);
+        static_assert(!std::is_pointer<TObject>::value);
 
     public:
         /**
          * @brief Creates an empty and null LazyPtr
          */
-        database_ptr() = default;
-        database_ptr(const TThisType& other) : m_objectID(other.m_objectID.load(std::memory_order_relaxed)), m_objectPtr(other.m_objectPtr) {}
+        database_ptr() : m_objectID(), m_objectPtr(), m_null(true) {}
+
+        database_ptr(const TThisType& other) = default;
         database_ptr(TThisType&& other)      = default;
 
         /**
@@ -47,15 +46,16 @@ namespace sbk::core
          * construction
          * @param id ID of the object to reference
          */
-        explicit database_ptr(TIdentifierType id) : m_objectID(id), m_objectPtr() {}
+        database_ptr(sbk_id id) : m_objectID(id), m_objectPtr(), m_null(true) {}
 
         /**
          * @brief Create a valid LazyPtr
          * @param object
          */
-        explicit database_ptr(const TObjectShared& object)
+        database_ptr(const TObjectShared& object)
             : m_objectID(object ? static_cast<TIdentifierType>(*object) : 0),
-              m_objectPtr(object)
+              m_objectPtr(object),
+              m_null(object.use_count() == 0)
         {
         }
 
@@ -63,9 +63,10 @@ namespace sbk::core
          * @brief Create a valid LazyPtr
          * @param object
          */
-        explicit database_ptr(const TObjectPtr& object)
+        database_ptr(const TObjectPtr& object)
             : m_objectID(object ? static_cast<TIdentifierType>(*object) : 0),
-              m_objectPtr(find_object(id()).get())
+              m_objectPtr(find_object(id())),
+              m_null(object == nullptr)
         {
         }
 
@@ -73,7 +74,7 @@ namespace sbk::core
          * @brief Create an empty and null LazyPtr
          * @param nullptr_t
          */
-        explicit database_ptr(std::nullptr_t) : m_objectID(), m_objectPtr() {}
+        database_ptr(std::nullptr_t) : m_objectID(), m_objectPtr(), m_null(true) {}
 
         ~database_ptr() = default;
 
@@ -81,44 +82,45 @@ namespace sbk::core
         /**
          * @brief Get ID of the referenced object
          */
-        auto id() const noexcept -> TIdentifierType { return m_objectID.load(std::memory_order_relaxed); }
+        auto id() const noexcept -> sbk_id { return m_objectID; }
 
-        auto shared() const noexcept -> concurrencpp::result<TObjectShared>
+        auto shared() const noexcept -> TObjectShared
         {
-            co_await lookup();
+            lookup();
 
             if (m_objectPtr.expired())
             {
-                co_return std::shared_ptr<TObject>();
+                return std::shared_ptr<TObject>();
             }
             else
             {
-                co_return std::static_pointer_cast<TObject>(m_objectPtr.lock());
+                return std::static_pointer_cast<TObject>(m_objectPtr.lock());
             }
-        }
-
-        template<typename U>
-        auto shared_converted() const noexcept -> concurrencpp::result<std::shared_ptr<U>>
-        {
-            if (const TObjectShared thisShared = co_await shared())
-            {
-                co_return std::static_pointer_cast<U>(thisShared);
-            }
-            co_return std::shared_ptr<U>();
         }
 
         auto weak() const noexcept -> TObjectWeak { return m_objectPtr; }
 
         /**
+         * @brief Get raw pointer of the referenced object
+         */
+        auto raw() const noexcept -> TObjectPtr { return shared().get(); }
+
+        auto lookup_raw() const noexcept -> TObjectPtr
+        {
+            lookup();
+            return raw();
+        }
+
+        /**
          * @brief Returns true if we hold a valid ID and can search for an
          * object at runtime
          */
-        auto has_id() const noexcept -> bool { return id() != TIdentifierType(); }
+        auto has_id() const noexcept -> bool { return m_objectID != TIdentifierType(); }
 
         /**
          * @brief Returns true if the object pointer is not set
          */
-        auto null() const noexcept -> bool { return m_objectPtr.expired(); }
+        auto null() const noexcept -> bool { return m_null || m_objectPtr.expired(); }
 
         /**
          * @brief Returns true if we hold an ID but haven't found the live
@@ -130,6 +132,7 @@ namespace sbk::core
          * @brief Returns true if we previously referenced an object that has
          * been destroyed
          */
+        auto stale() const noexcept -> bool { return !m_null && m_objectPtr.expired(); }
 
         /**
          * @brief Returns true if we hold an ID and a valid pointer to the
@@ -141,32 +144,33 @@ namespace sbk::core
          * @brief Find the live object referenced by the ID and store it
          * @return true if the object was found and we're a valid ptr
          */
-        [[nodiscard]] auto lookup() const noexcept -> concurrencpp::result<bool>
+        auto lookup() const noexcept -> bool
         {
             if (pending())
             {
-                m_objectPtr = co_await find_object(id());
+                m_objectPtr = find_object(id());
+                m_null      = m_objectPtr.expired();
             }
-            co_return valid();
+            return valid();
         }
 
         /**
          * @brief Clear all references
          */
-        [[nodiscard]] auto reset(TObjectPtr object = nullptr) -> concurrencpp::result<void>
+        auto reset(TObjectPtr object = nullptr) -> void
         {
-            m_objectID.store(object ? static_cast<TIdentifierType>(*object) : TIdentifierType(), std::memory_order_relaxed);
+            m_objectID = object ? static_cast<TIdentifierType>(*object) : TIdentifierType();
             m_objectPtr.reset();
+            m_null = true;
 
-            co_await lookup();
+            lookup();
         }
 
-        auto operator=(TObjectShared object) -> TThisType&
+        TThisType& operator=(TObjectShared object)
         {
-            if (const TIdentifierType otherId = object ? static_cast<TIdentifierType>(*object.get()) : TIdentifierType();
-                id() != otherId)
+            if (raw() != object.get())
             {
-                reset(object.get()).get();
+                reset(object.get());
             }
             return *this;
         }
@@ -177,12 +181,11 @@ namespace sbk::core
          * @param object to assign to
          * @return this
          */
-        auto operator=(TObjectPtr object) -> TThisType&
+        TThisType& operator=(TObjectPtr object)
         {
-            if (const TIdentifierType otherId = object ? static_cast<TIdentifierType>(*object) : TIdentifierType();
-                id() != otherId)
+            if (raw() != object)
             {
-                reset(object.get()).get();
+                reset(object);
             }
             return *this;
         }
@@ -191,8 +194,9 @@ namespace sbk::core
         {
             if (id() != other.id())
             {
-                m_objectID.store(other.id(), std::memory_order_relaxed);
+                m_objectID  = other.id();
                 m_objectPtr = other.weak();
+                m_null      = other.null();
             }
 
             return *this;
@@ -202,8 +206,9 @@ namespace sbk::core
         {
             if (id() != other.id())
             {
-                m_objectID.store(other.id(), std::memory_order_relaxed);
+                m_objectID  = other.id();
                 m_objectPtr = other.weak();
+                m_null      = other.null();
             }
 
             return *this;
@@ -212,16 +217,23 @@ namespace sbk::core
         /**
          * @brief Returns true if this LazyPtr references a valid object
          */
-        explicit operator bool() const { return valid(); }
+        operator bool() const { return valid(); }
 
         /**
          * @brief Returns true if this LazyPtr is invalid
          */
-        auto operator!() const -> bool { return !valid(); }
+        bool operator!() const { return !valid(); }
+
+        /**
+         * @brief Access the raw object
+         * @return raw object
+         */
+        TObjectPtr operator->() const { return raw(); }
 
     protected:
-        TAtomicIdentifierType m_objectID;
+        sbk_id m_objectID;
         mutable TPtrType m_objectPtr = TPtrType();
+        mutable bool m_null;
     };
 
     /**
@@ -274,14 +286,14 @@ namespace sbk::core
          */
         child_ptr() = default;
 
-        child_ptr(const TThisType& other) : database_ptr<TObject>(other), m_ownerID(other.m_ownerID.load(std::memory_order_relaxed))
+        child_ptr(const TThisType& other) : database_ptr<TObject>(other), m_ownerID(other.m_ownerID)
         {
             // If we don't have an owner, try finding it now
             // We can't do any other checks because we were empty before this copy
             // Because we can't do checks, we're just hoping the passed in object is valid
             if (m_ownerID == 0)
             {
-                m_ownerID = get_parent_id_from_id(other.m_objectID.load(std::memory_order_relaxed));
+                m_ownerID = get_parent_id_from_id(other.m_objectID);
             }
         }
 
@@ -296,21 +308,18 @@ namespace sbk::core
          *
          * @param owner to check for child objects on
          */
-        explicit child_ptr(const database_object& owner) : database_ptr<TObject>(), m_ownerID(owner.get_database_id()) {}
+        child_ptr(const database_object& owner) : database_ptr<TObject>(), m_ownerID(owner.get_database_id()) {}
 
         /**
          * @brief Construct a new child_ptr that points to the ID.
          *
          * Tries to find the owner from the ID.
          */
-        explicit child_ptr(typename database_ptr<TObject>::TIdentifierType id)
-            : database_ptr<TObject>(id), m_ownerID(get_parent_id_from_id(id))
-        {
-        }
+        child_ptr(sbk_id id) : database_ptr<TObject>(id), m_ownerID(get_parent_id_from_id(id)) {}
 
         TThisType& operator=(typename database_ptr<TObject>::TIdentifierType id)
         {
-            set_id(id);
+            setID(id);
 
             return *this;
         }
@@ -322,42 +331,33 @@ namespace sbk::core
             return *this;
         }
 
-        auto operator=(const TThisType& other) -> TThisType&
+        TThisType& operator=(const TThisType& other)
         {
-            if (this == &other)
+            if (database_ptr<TObject>::id() != other.id())
             {
-                return *this;
-            }
-
-            const typename database_ptr<TObject>::TIdentifierType thisId = database_ptr<TObject>::id();
-            const typename database_ptr<TObject>::TIdentifierType otherId = other.id();
-
-            if (thisId != otherId)
-            {
-                if (m_ownerID == 0)
+                if (m_ownerID == 0 && database_ptr<TObject>::m_objectID != 0)
                 {
-                    if (thisId != 0)
-                    {
-                        m_ownerID = get_parent_id_from_id(thisId);
-                    }
+                    m_ownerID = get_parent_id_from_id(database_ptr<TObject>::m_objectID);
                 }
 
                 // If we don't have an owner, we don't care about checking children
                 // We can completely copy other
                 if (m_ownerID == 0)
                 {
-                    database_ptr<TObject>::m_objectID.store(other.id());
+                    database_ptr<TObject>::m_objectID  = other.id();
                     database_ptr<TObject>::m_objectPtr = other.weak();
-                    m_ownerID.store(other.m_ownerID, std::memory_order_relaxed);
+                    database_ptr<TObject>::m_null      = other.null();
+                    m_ownerID                          = other.m_ownerID;
                 }
                 // If owner isn't trying to be changed, we can just check children and update the pointed to ID
                 else if (m_ownerID == other.m_ownerID || other.m_ownerID == 0)
                 {
                     // Do child check
-                    if (object_id_is_child_of_parent(thisId, m_ownerID))
+                    if (object_id_is_child_of_parent(other.m_objectID, m_ownerID))
                     {
-                        database_ptr<TObject>::m_objectID.store(otherId);
+                        database_ptr<TObject>::m_objectID  = other.id();
                         database_ptr<TObject>::m_objectPtr = other.weak();
+                        database_ptr<TObject>::m_null      = other.null();
                     }
                 }
                 // else: don't allow changing owner IDs once they're set
@@ -366,15 +366,8 @@ namespace sbk::core
             return *this;
         }
 
-        auto owner_id() const -> typename database_ptr<TObject>::TIdentifierType
+        void setID(typename database_ptr<TObject>::TIdentifierType id = 0)
         {
-            return m_ownerID.load(std::memory_order_relaxed);
-        }
-
-        void set_id(typename database_ptr<TObject>::TIdentifierType otherId = 0)
-        {
-            const typename database_ptr<TObject>::TIdentifierType id = database_ptr<TObject>::id();
-
             // Fill our get_parent ID if we didn't have it already
             if (m_ownerID == 0 && database_ptr<TObject>::m_objectID != 0)
             {
@@ -385,6 +378,7 @@ namespace sbk::core
             {
                 database_ptr<TObject>::m_objectID = 0;
                 database_ptr<TObject>::m_objectPtr.reset();
+                database_ptr<TObject>::m_null = true;
             }
             else
             {
@@ -392,41 +386,42 @@ namespace sbk::core
                 {
                     database_ptr<TObject>::m_objectID = id;
                     database_ptr<TObject>::m_objectPtr.reset();
+                    database_ptr<TObject>::m_null = true;
                 }
             }
         }
 
         void reset(typename database_ptr<TObject>::TObjectPtr object = nullptr)
         {
-            const typename database_ptr<TObject>::TIdentifierType ownerID = owner_id();
-            const typename database_ptr<TObject>::TIdentifierType objectID = database_ptr<TObject>::id();
-
             // Fill our get_parent ID if we didn't have it already
-            if (ownerID == 0 && objectID != 0)
+            if (m_ownerID == 0 && database_ptr<TObject>::m_objectID != 0)
             {
-                m_ownerID.store(get_parent_id_from_id(objectID), std::memory_order_relaxed);
+                m_ownerID = get_parent_id_from_id(database_ptr<TObject>::m_objectID);
             }
 
             // Reset pointed to values but retain the owner ID
             if (object == nullptr)
             {
-                database_ptr<TObject>::m_objectID.store(0, std::memory_order_relaxed);
+                database_ptr<TObject>::m_objectID = 0;
                 database_ptr<TObject>::m_objectPtr.reset();
+                database_ptr<TObject>::m_null = true;
             }
             // Point to new object if it's a child of our owner
             else
             {
-                if (sbk_id newObjectID = static_cast<typename database_ptr<TObject>::TIdentifierType>(*object);
-                    ownerID == 0 || object_id_is_child_of_parent(newObjectID, ownerID))
+                sbk_id newObjectID = static_cast<typename database_ptr<TObject>::TIdentifierType>(*object);
+
+                if (m_ownerID == 0 || object_id_is_child_of_parent(newObjectID, m_ownerID))
                 {
-                    database_ptr<TObject>::m_objectID.store(newObjectID, std::memory_order_relaxed);
+                    database_ptr<TObject>::m_objectID = newObjectID;
                     database_ptr<TObject>::m_objectPtr.reset();
+                    database_ptr<TObject>::m_null = true;
                 }
             }
         }
 
     private:
-        typename database_ptr<TObject>::TAtomicIdentifierType m_ownerID;
+        typename database_ptr<TObject>::TIdentifierType m_ownerID = 0;
     };
 }  // namespace sbk::core
 

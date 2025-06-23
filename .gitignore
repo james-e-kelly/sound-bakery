@@ -11,8 +11,6 @@ CTestTestfile.cmake
 _deps
 .vscode
 build/
-cmake-build-debug/
-cmake-build-release/
 dist/
 generated_docs/
 doxygen/

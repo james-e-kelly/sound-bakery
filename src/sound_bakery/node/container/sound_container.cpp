@@ -17,7 +17,7 @@ bool sbk::engine::sound_container::can_add_parent_type(const rttr::type& parentT
 
 sbk::engine::sound* sbk::engine::sound_container::get_sound() const
 {
-    if (m_sound.lookup().get())
+    if (m_sound.lookup())
     {
         return m_sound.raw();
     }

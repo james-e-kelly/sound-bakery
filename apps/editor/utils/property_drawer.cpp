@@ -281,7 +281,7 @@ void property_drawer::draw_readonly_variant(rttr::variant variant, bool disabled
     {
         sbk::core::database_ptr<sbk::core::database_object> object(variant.convert<sbk_id>());
 
-        if (object.lookup().get())
+        if (object.lookup())
         {
             ImGui::TextUnformatted(object->get_object_name().data());
         }

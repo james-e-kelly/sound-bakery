@@ -1,6 +1,5 @@
 #include "object_tracker.h"
 
-#include "sound_bakery/system.h"
 #include "sound_bakery/core/object/object.h"
 #include "sound_bakery/core/database/database_object.h"
 #include "sound_bakery/util/type_helper.h"
@@ -22,26 +21,21 @@ bool object_ptr_comparator::operator()(const object* lhs, const object* rhs) con
     return lhs < rhs;
 }
 
-auto object_tracker::track_object(object* object) -> concurrencpp::result<void>
+void object_tracker::track_object(object* object)
 {
     if (object != nullptr)
     {
         const rttr::type type             = object->get_object_type();
         const SB_OBJECT_CATEGORY category = sbk::util::type_helper::getCategoryFromType(type);
 
-        {
-            const concurrencpp::scoped_async_lock typeToObjectsLock = co_await m_typeToObjectsMapLock.lock(sbk::engine::system::get()->get_thread_pool_executor());
-            const concurrencpp::scoped_async_lock categoryToObjectsLock = co_await m_categoryToObjectsMapLock.lock(sbk::engine::system::get()->get_thread_pool_executor());
-
-            m_typeToObjects[type].emplace(object);
-            m_categoryToObjects[category].emplace(object);
-        }
+        m_typeToObjects[type].emplace(object);
+        m_categoryToObjects[category].emplace(object);
 
         object->get_on_destroy().AddRaw(this, &object_tracker::on_object_destroyed);
     }
 }
 
-auto object_tracker::untrack_object(object* object, std::optional<rttr::type> typeOverride) -> concurrencpp::result<void>
+void object_tracker::untrack_object(object* object, std::optional<rttr::type> typeOverride)
 {
     if (object != nullptr)
     {
@@ -50,100 +44,59 @@ auto object_tracker::untrack_object(object* object, std::optional<rttr::type> ty
 
         if (type.is_valid())
         {
-            const concurrencpp::scoped_async_lock typeToObjectsLock = co_await m_typeToObjectsMapLock.lock(sbk::engine::system::get()->get_thread_pool_executor());
             m_typeToObjects[type].erase(object);
         }
 
-        {
-            const concurrencpp::scoped_async_lock categoryToObjectsLock = co_await m_categoryToObjectsMapLock.lock(sbk::engine::system::get()->get_thread_pool_executor());
-            m_categoryToObjects[category].erase(object);
-        }
+        m_categoryToObjects[category].erase(object);
 
         object->get_on_destroy().RemoveObject(this);
     }
 }
 
-auto object_tracker::get_objects_of_category(const SB_OBJECT_CATEGORY& category) const -> concurrencpp::result<std::vector<object*>>
+std::unordered_set<object*> object_tracker::get_objects_of_category(const SB_OBJECT_CATEGORY& category) const
 {
-    const concurrencpp::scoped_async_lock categoryToObjectsLock = co_await m_categoryToObjectsMapLock.lock(sbk::engine::system::get()->get_thread_pool_executor());
-
     if (m_categoryToObjects.find(category) != m_categoryToObjects.cend())
     {
-        const std::unordered_set<object*>& categoryObjects = m_categoryToObjects.at(category);
-
-        std::vector<object*> objects;
-        objects.reserve(categoryObjects.size());
-
-        std::transform(categoryObjects.begin(), categoryObjects.end(), std::back_inserter(objects),
-                       [](const auto& iter) { return iter; });
-
-        co_return objects;
+        return m_categoryToObjects.at(category);
     }
 
-    co_return std::vector<object*>{};
+    return {};
 }
 
-auto object_tracker::get_objects_of_type(const rttr::type& type) const -> concurrencpp::result<std::vector<object*>>
+std::unordered_set<object*> object_tracker::get_objects_of_type(const rttr::type& type) const
 {
-    const concurrencpp::scoped_async_lock typeToObjectsLock = co_await m_typeToObjectsMapLock.lock(sbk::engine::system::get()->get_thread_pool_executor());
-
     if (m_typeToObjects.find(type) != m_typeToObjects.cend())
     {
-        const std::unordered_set<object*>& typeObjects = m_typeToObjects.at(type);
-
-        std::vector<object*> objects;
-        objects.reserve(typeObjects.size());
-
-        std::transform(typeObjects.begin(), typeObjects.end(), std::back_inserter(objects), [](const auto& iter) { return iter; });
-
-        co_return objects;
+        return m_typeToObjects.at(type);
     }
 
-    co_return std::vector<object*>{};
+    return {};
 }
 
-auto object_tracker::get_objects_of_type_size(const rttr::type& type) const -> concurrencpp::result<std::size_t>
-{
-    const concurrencpp::scoped_async_lock typeToObjectsLock = co_await m_typeToObjectsMapLock.lock(sbk::engine::system::get()->get_thread_pool_executor());
-
-    if (m_typeToObjects.find(type) != m_typeToObjects.cend())
-    {
-        co_return m_typeToObjects.at(type).size();
-    }
-
-    co_return 0;
-}
-
-auto object_tracker::get_objects_size() const -> concurrencpp::result<size_t>
+auto object_tracker::get_objects_count() const -> size_t
 {
     size_t count = 0;
-
-    const concurrencpp::scoped_async_lock categoryToObjectsLock = co_await m_categoryToObjectsMapLock.lock(sbk::engine::system::get()->get_thread_pool_executor());
 
     for (auto& keyValuePair : m_categoryToObjects)
     {
         count += keyValuePair.second.size();
     }
 
-    co_return count;
+    return count;
 }
 
-auto object_tracker::get_all_tracked_objects() const -> concurrencpp::result<std::vector<object*>> 
+auto object_tracker::get_all_category_to_objects() const -> const std::unordered_map<SB_OBJECT_CATEGORY, std::unordered_set<object*>>&
 {
-    const concurrencpp::scoped_async_lock typeToObjectsLock = co_await m_typeToObjectsMapLock.lock(sbk::engine::system::get()->get_thread_pool_executor());
-
-    std::vector<object*> objects;
-    objects.reserve(m_typeToObjects.size());
-
-    for (const auto& categoryIter : m_typeToObjects)
-    {
-        objects.reserve(objects.capacity() + categoryIter.second.size());
-        
-        std::transform(categoryIter.second.begin(), categoryIter.second.end(), std::back_inserter(objects), [](const auto& object) { return object; });
-    }
+    return m_categoryToObjects;
 }
 
-auto object_tracker::convert_to_ordered(const std::unordered_set<object*>& unordered) -> std::set<object*, object_ptr_comparator>
+auto object_tracker::get_all_type_to_objects() const -> const std::unordered_map<rttr::type, std::unordered_set<object*>>&
+{
+    return m_typeToObjects;
+}
+
+auto object_tracker::convert_to_ordered(const std::unordered_set<object*>& unordered) const
+    -> std::set<object*, object_ptr_comparator>
 {
     std::set<object*, object_ptr_comparator> result;
     for (object* object : unordered)

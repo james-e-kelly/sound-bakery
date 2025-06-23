@@ -2,7 +2,7 @@
 #define SBK_VERSION_H
 
 #define SBK_PRODUCT_NAME        "Sound Bakery"
-#define SBK_PRODUCT_DESCRIPTION "An open-source audio middleware tool with an authoring application and programmer's API"
+#define SBK_PRODUCT_DESCRIPTION ""
 
 #define SBK_VERSION_MAJOR       0
 #define SBK_VERSION_MINOR       3

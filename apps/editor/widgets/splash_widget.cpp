@@ -93,7 +93,7 @@ void splash_widget::tick_implementation(double deltaTime)
             previousRoundedTime = roundedTime;
         }
 
-        if (m_timeShowingScreen >= 0.2)
+        if (m_timeShowingScreen >= 2.0)
         {
             destroy();
         }

@@ -59,7 +59,7 @@ void sbk::core::object::destroy()
 {
     if (m_owner)
     {
-        m_owner->remove_reference_to_object(shared_from_this());
+        m_owner->remove_object(shared_from_this());
     }
 }
 
