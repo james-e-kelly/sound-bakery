@@ -21,6 +21,8 @@ namespace gluten
     public:
         virtual void init(app* app) {}
 
+        virtual void start() {}
+
         /**
          * @brief Called every frame regardless of if the app is closing
          *

@@ -71,6 +71,7 @@ namespace gluten
 
         auto add_layout(const widget_layout& layout) -> void;
         auto set_layout(widget_layout& layout) -> void;
+        [[nodiscard]] auto set_manual_layout() -> dockspace_refresh;
         auto get_default_layout() -> gluten::widget_layout&;
         auto has_layouts() -> bool;
 

@@ -11,6 +11,15 @@ public:                                                                         
     type(gluten::widget_subsystem* parentSubsystem) : widget(parentSubsystem, name) {}  \
     type(gluten::widget* parent) : gluten::widget(parent, name) {}
 
+/**
+ * @def Macro to quickly create the basic constructors for a widget that is a subtype of a widget.
+ */
+#define WIDGET_CONSTRUCT_PARENT(type, name, parentType)                                     \
+                                                                                            \
+public:                                                                                     \
+    type(gluten::widget_subsystem* parentSubsystem) : parentType(parentSubsystem, name) {}  \
+    type(gluten::widget* parent) : parentType(parent, name) {}
+
 namespace gluten
 {
     class widget_subsystem;
@@ -117,7 +126,15 @@ namespace gluten
         {
             m_owningChildWidgets.push_back(ptr);
         }
-        m_childWidgets.insert({rttr::type::get<T>(), ptr});
+        const rttr::type type = rttr::type::get<T>();
+        if (m_childWidgets.contains(type))
+        {
+            m_childWidgets[type] = ptr;
+        }
+        else
+        {
+            m_childWidgets.insert({rttr::type::get<T>(), ptr});
+        }
         std::shared_ptr<gluten::widget> widget = std::static_pointer_cast<gluten::widget>(ptr);
         if (m_hasStarted)
         {

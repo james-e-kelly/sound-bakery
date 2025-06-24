@@ -12,6 +12,7 @@ add_library(imgui STATIC
   ${imgui_SOURCE_DIR}/imgui_widgets.cpp
   ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
   ${imgui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
+  ${imgui_SOURCE_DIR}/misc/cpp/imgui_stdlib.cpp
   ${implot_SOURCE_DIR}/implot.h
   ${implot_SOURCE_DIR}/implot_internal.h
   ${implot_SOURCE_DIR}/implot.cpp
@@ -26,6 +27,7 @@ target_include_directories(imgui
   PUBLIC
     ${imgui_SOURCE_DIR}
     ${imgui_SOURCE_DIR}/backends
+    ${imgui_SOURCE_DIR}/misc/cpp
     ${implot_SOURCE_DIR}
 )
 

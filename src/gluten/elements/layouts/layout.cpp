@@ -40,6 +40,39 @@ bool gluten::layout::render_layout_element_full(element* element)
     return render_layout_element_internal(elementBox, element, elementBox.GetSize().x, elementBox.GetSize().y);
 }
 
+bool gluten::layout::render_layout_element_remaining(element* element) 
+{ 
+    const ImRect elementBox = get_element_rect(); 
+
+    if (m_currentLayoutPos.has_value())
+    {
+        const ImVec2 currentLayoutPos = m_currentLayoutPos.value();
+
+        ImVec2 sizeRemain(0.0f, 0.0f);
+
+        switch (m_layoutType)
+        {
+            case gluten::layout::layout_type::left_to_right:
+            case gluten::layout::layout_type::top_to_bottom:
+                sizeRemain = ImVec2(elementBox.Max.x - currentLayoutPos.x, elementBox.Max.y - currentLayoutPos.y);
+                break;
+            case gluten::layout::layout_type::bottom_to_top:
+            case gluten::layout::layout_type::right_to_left:
+                sizeRemain = ImVec2(currentLayoutPos.x - elementBox.Min.x, currentLayoutPos.y - elementBox.Min.y);
+                break;
+            default:
+                break;
+        }
+
+        return render_layout_element_internal(elementBox, element, sizeRemain.x, sizeRemain.y);
+    }
+    else
+    {
+        // Don't render if there is nothing "remaining"
+        return false;
+    }
+}
+
 bool gluten::layout::render_layout_element_pixels(element* element, float horizontalPixels, float verticalPixels)
 {
     const ImRect elementBox = get_element_rect();
@@ -142,6 +175,11 @@ bool gluten::layout::render_layout_element_internal(const ImRect& thisBox,
             ImDrawList* const foregroundDrawList = ImGui::GetForegroundDrawList();
             foregroundDrawList->AddRect(currentLayoutPos, currentLayoutPos + sizeGivenToElement,
                                         ImGui::ColorConvertFloat4ToU32(gluten::theme::purple50));
+        }
+
+        if (has_element_scale())
+        {
+            element->set_element_scale(element->get_element_scale() * get_element_scale());
         }
 
         activated = element->render({currentLayoutPos, currentLayoutPos + sizeGivenToElement});

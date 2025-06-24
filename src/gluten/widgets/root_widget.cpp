@@ -153,6 +153,10 @@ auto gluten::dockspace_refresh::assign_widget_to_node(const rttr::type& widgetTy
 
         widget->set_visibile(true);
     }
+    else
+    {
+        assert(false);
+    }
 }
 
 void root_widget::start_implementation()
@@ -427,6 +431,11 @@ auto gluten::root_widget::set_layout(widget_layout& layout) -> void
 {
     dockspace_refresh refresh = refresh_dockspace();
     layout.onRefreshDockspace(refresh);
+}
+
+auto gluten::root_widget::set_manual_layout() -> dockspace_refresh
+{
+    return refresh_dockspace();
 }
 
 auto gluten::root_widget::get_default_layout() -> gluten::widget_layout&

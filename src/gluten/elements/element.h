@@ -170,6 +170,9 @@ namespace gluten
         void set_font_size(float size);
         void set_element_scale(float scale);
 
+        auto has_element_scale() const -> bool;
+        auto get_element_scale() const -> float { return has_element_scale() ? m_scale.value() : 1.0f; }
+
         void set_element_background_color(ImU32 color);
         void set_element_hover_color(ImU32 color);
 

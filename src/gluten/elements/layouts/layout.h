@@ -23,13 +23,14 @@ namespace gluten
         layout(const layout_type& layoutType, const anchor_preset& anchorPreset);
         layout(const anchor_preset& anchorPreset);  //< New layout with left_to_right layout and defined anchor preset
 
-        void set_layout_type(const layout_type& type);
-        void set_layout_spacing(float spacing);
+        void set_layout_type(const layout_type& type);  //< Set the type of layout (direction the children are laid out in)
+        void set_layout_spacing(float spacing);         //< Adds a gap between child elements
 
-        void render_spacer_pixels(float horizonalPixels, float verticalPixels);
-        void render_spacer_percent(float horizontalPercent, float verticalPercent);
+        void render_spacer_pixels(float horizonalPixels, float verticalPixels);     //< Render a "blank" element with a set size in pixels
+        void render_spacer_percent(float horizontalPercent, float verticalPercent); //< Render a "blank" element with a set size as a percentage of this layout's size
 
-        bool render_layout_element_full(element* element);
+        bool render_layout_element_full(element* element);      //< Render an element and give it the size of this layout as the box to render inside
+        bool render_layout_element_remaining(element* element); //< Render an element and give it the remaining space in the layout
 
         bool render_layout_element_pixels(element* element, float horizontalPixels, float verticalPixels);
         bool render_layout_element_pixels_horizontal(element* element, float horizontalPixels);

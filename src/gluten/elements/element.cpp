@@ -122,6 +122,8 @@ void gluten::element::set_font_size(float size)
 
 void gluten::element::set_element_scale(float scale) { m_scale = scale; }
 
+auto gluten::element::has_element_scale() const -> bool { return m_scale.has_value(); }
+
 void gluten::element::set_element_background_color(ImU32 color) { m_backgroundColor = color; }
 
 void gluten::element::set_element_hover_color(ImU32 color) { m_hoverColor = color; }
@@ -229,11 +231,11 @@ ImVec2 gluten::element::get_anchor_start_position(const ImVec2& containerPositio
 {
     const float xPositionWithOffset = containerPosition.x + anchor.minOffset.x;
     const float xSizeOfAnchor       = containerSize.x * anchor.min.x;
-    const float xPosition           = xPositionWithOffset + xSizeOfAnchor;
+    const float xPosition           = std::max(xPositionWithOffset + xSizeOfAnchor, containerPosition.x);
 
     const float yPositionWithOffset = containerPosition.y + anchor.minOffset.y;
     const float ySizeOfAnchor       = containerSize.y * anchor.min.y;
-    const float yPosition           = yPositionWithOffset + ySizeOfAnchor;
+    const float yPosition           = std::max(yPositionWithOffset + ySizeOfAnchor, containerPosition.y);
 
     return ImVec2(xPosition, yPosition);
 }
@@ -247,10 +249,10 @@ ImVec2 gluten::element::get_anchor_end_position(const ImVec2& startPosition,
     const ImVec2 anchorMax = anchor.max - anchor.min;
 
     const float xSizeOfAnchor = containerSize.x * anchorMax.x;
-    const float xPosition     = startPosition.x + xSizeOfAnchor + anchor.maxOffset.x;
+    const float xPosition     = std::min(startPosition.x + xSizeOfAnchor + anchor.maxOffset.x, startPosition.x + containerSize.x);
 
     const float ySizeOfAnchor = containerSize.y * anchorMax.y;
-    const float yPosition     = startPosition.y + ySizeOfAnchor + anchor.maxOffset.y;
+    const float yPosition     = std::min(startPosition.y + ySizeOfAnchor + anchor.maxOffset.y, startPosition.y + containerSize.y);
 
     return ImVec2(xPosition, yPosition);
 }

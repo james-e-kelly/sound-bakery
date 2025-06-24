@@ -5,6 +5,7 @@
 #include "IconsLucide.h"
 #include "subsystems/renderer_subsystem.h"
 #include "subsystems/widget_subsystem.h"
+#include "nfd.h"
 //#include "Fontawesome"
 
 #include <cmrc/cmrc.hpp>
@@ -79,6 +80,11 @@ auto gluten::app::start() -> void
     for (std::shared_ptr<subsystem>& subsystem : m_subsystems)
     {
         subsystem->start();
+    }
+
+    for (std::shared_ptr<manager>& manager : m_managers)
+    {
+        manager->start();
     }
     tick_end();
 }
@@ -208,4 +214,73 @@ void gluten::app::set_application_display_title(const std::string& title)
 {
     m_applicationDisplayTitle = title;
     get_subsystem_by_class<renderer_subsystem>()->set_window_title(title);
+}
+
+auto gluten::app::open_select_folder_dialog() -> std::filesystem::path
+{
+    NFD_Init();
+
+    std::filesystem::path result;
+    nfdchar_t* outPath = NULL;
+
+retry:
+    nfdresult_t pickFolderResult = NFD_PickFolder(&outPath, std::filesystem::current_path().string().c_str());
+
+    switch (pickFolderResult)
+    {
+        case NFD_OKAY:
+            result              = outPath;
+            break;
+
+        case NFD_CANCEL:
+            result.clear();
+            break;
+
+        case NFD_ERROR:
+        default:
+            goto retry;
+            break;
+    }
+
+    NFD_FreePath(outPath);
+    NFD_Quit();
+
+    return result;
+}
+
+auto gluten::app::open_select_file_dialog(const std::string& name, const std::string& fileExtensionNoDots) -> std::filesystem::path
+{
+    std::filesystem::path result;
+
+    NFD_Init();
+
+    nfdchar_t* outPath = NULL;
+retry:
+    nfdu8filteritem_t filter{.name = name.c_str(), .spec = fileExtensionNoDots.c_str()};
+    nfdresult_t openResult = NFD_OpenDialog(&outPath, &filter, 1, NULL);
+
+    switch (openResult)
+    {
+        case NFD_OKAY:
+            result = outPath;
+            break;
+
+        case NFD_CANCEL:
+            result.clear();
+            break;
+
+        case NFD_ERROR:
+        default:
+            goto retry;
+            break;
+    }
+
+    assert(std::filesystem::exists(outPath));
+
+    result = outPath;
+
+    NFD_FreePath(outPath);
+    NFD_Quit();
+
+    return result;
 }

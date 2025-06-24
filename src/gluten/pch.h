@@ -1,5 +1,7 @@
 #pragma once
 
+#include "utils/boost_serialization_extensions.h"
+
 #include <rttr/type>
 #include "Delegates.h"
 #include "imgui.h"

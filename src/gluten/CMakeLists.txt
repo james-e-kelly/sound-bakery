@@ -34,6 +34,8 @@ set(GLUTEN_SOURCES
   theme/walnut_icon.embed
   widgets/widget.cpp
   widgets/root_widget.cpp
+  widgets/popup_widget.cpp
+  widgets/window_widget.cpp
 )
 
 set(GLUTEN_HEADERS
@@ -57,8 +59,11 @@ set(GLUTEN_HEADERS
   theme/carbon_theme_g100.h
   utils/imgui_util_functions.h
   utils/imgui_util_structures.h
+  utils/boost_serialization_extensions.h
   widgets/widget.h
   widgets/root_widget.h
+  widgets/popup_widget.h
+  widgets/window_widget.h
 )
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Source Files" FILES ${GLUTEN_SOURCES})

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <boost/archive/xml_iarchive.hpp>
+#include <boost/archive/xml_oarchive.hpp>
 #include "gluten/managers/manager.h"
 #include "gluten/subsystems/subsystem.h"
 #include "concurrencpp/concurrencpp.h"
@@ -7,6 +9,8 @@
 
 namespace gluten
 {
+    static inline constexpr const char* g_serializedEntryName = "data";
+
     /**
      * @brief Manages application lifetime and object owning.
      * 
@@ -49,6 +53,27 @@ namespace gluten
         ImFont* get_font(const fonts& font) { return m_fonts[font]; }
 
         virtual auto on_file_drop(const std::vector<std::string>& paths) -> void {}
+
+        static auto open_select_folder_dialog() -> std::filesystem::path;
+        static auto open_select_file_dialog(const std::string& name, const std::string& fileExtensionNoDots) -> std::filesystem::path;
+
+        template<typename T>
+        static auto save_data_to_disk(const std::filesystem::path& file, const T& data) -> void
+        {
+            std::ofstream outputStream(file, std::ios_base::out);
+            boost::archive::xml_oarchive archive(outputStream);
+
+            archive & boost::serialization::make_nvp(g_serializedEntryName, data);
+        }
+
+        template <typename T>
+        static auto load_data_from_disk(const std::filesystem::path& file, T& data) -> void
+        {
+            std::ifstream inputStream(file, std::ios_base::in);
+            boost::archive::xml_iarchive archive(inputStream);
+
+            archive & boost::serialization::make_nvp(g_serializedEntryName, data);
+        }
 
     protected:
         /**
