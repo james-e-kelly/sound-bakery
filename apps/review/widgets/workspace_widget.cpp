@@ -13,6 +13,8 @@ namespace
     constexpr float leftToobarWidth             = 100.0f;
     constexpr float leftToolbarButtonHeight     = leftToobarWidth;
     constexpr float leftToolbarHalfButtonHeight = leftToolbarButtonHeight / 2.0f;
+
+    constexpr float itemListWidth = leftToobarWidth * 5.0f;
 }
 
 auto workspace_widget::start_implementation() -> void
@@ -27,19 +29,63 @@ auto workspace_widget::start_implementation() -> void
 
 auto workspace_widget::render_window_implementation() -> void
 {
-    const ImVec2 windowSize = ImGui::GetCurrentWindow()->WorkRect.GetSize();
-    const ImVec2 leftToolbarSize(leftToobarWidth, windowSize.y);
-    ImVec2 nextCursorPos = ImGui::GetCursorPos();
-    nextCursorPos.x += leftToobarWidth;
+    gluten::imgui::scoped_style noGaps(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, 0.0f));
 
-    gluten::imgui::scoped_color toolbarBackgroundColor(ImGuiCol_ChildBg, gluten::theme::carbon_g100::field02);
+    render_left_toolbar();
+    
+    ImGui::SameLine();
 
-    if (ImGui::BeginChild("LeftToolbar", leftToolbarSize))
+    switch (m_activeView)
     {
-        gluten::layout buttonsLayout(gluten::layout::layout_type::top_to_bottom, gluten::element::anchor_preset::stretch_full);
+        case workspace_widget::reviews_view:
+            render_list();
+            ImGui::SameLine();
+            render_content();
+            break;
+        case workspace_widget::users_view:
+            ImGui::TextUnformatted("Users");
+            break;
+        default:
+            break;
+    }
+}
+
+void workspace_widget::render_list()
+{
+    gluten::imgui::scoped_color backgroundColor(ImGuiCol_ChildBg, gluten::theme::carbon_g100::field02);
+
+    if (ImGui::BeginChild("ItemsList", ImVec2(itemListWidth, 0), ImGuiChildFlags_ResizeX))
+    {
+        ImGui::TextUnformatted("Item List");
+        ImGui::Separator();
+    }
+    ImGui::EndChild();
+}
+
+void workspace_widget::render_content()
+{
+    gluten::imgui::scoped_color backgroundColor(ImGuiCol_ChildBg, gluten::theme::carbon_g100::field03);
+
+    if (ImGui::BeginChild("Content"))
+    {
+        ImGui::TextUnformatted("Content");
+    }
+    ImGui::EndChild();
+}
+
+void workspace_widget::render_left_toolbar()
+{
+    gluten::imgui::scoped_color toolbarBackgroundColor(ImGuiCol_ChildBg, gluten::theme::carbon_g100::field01);
+
+    if (ImGui::BeginChild("LeftToolbar", ImVec2(leftToobarWidth, 0)))
+    {
+        gluten::layout buttonsLayout(gluten::layout::layout_type::top_to_bottom,
+                                     gluten::element::anchor_preset::stretch_full);
+        buttonsLayout.get_element_anchor().max.x += 0.1f;
         buttonsLayout.render_window();
 
-        gluten::icon_button reviewsButton("##ReviewsButton", ICON_LC_CHART_NO_AXES_GANTT, gluten::fonts::regular_lucide_icons);
+        gluten::icon_button reviewsButton("##ReviewsButton", ICON_LC_CHART_NO_AXES_GANTT,
+                                          gluten::fonts::regular_lucide_icons);
         gluten::icon_button usersButton("##UsersButton", ICON_LC_USERS, gluten::fonts::regular_lucide_icons);
 
         reviewsButton.set_element_min_size(ImVec2(leftToolbarButtonHeight, leftToolbarButtonHeight));
@@ -48,11 +94,11 @@ auto workspace_widget::render_window_implementation() -> void
         reviewsButton.set_element_scale(3.0f);
         usersButton.set_element_scale(3.0f);
 
-        reviewsButton.set_element_hover_color(gluten::theme::carbon_g100::fieldHover02);
-        usersButton.set_element_hover_color(gluten::theme::carbon_g100::fieldHover02);
+        reviewsButton.set_element_hover_color(gluten::theme::carbon_g100::fieldHover01);
+        usersButton.set_element_hover_color(gluten::theme::carbon_g100::fieldHover01);
 
-        reviewsButton.set_element_active_color(gluten::theme::carbon_g100::field01);
-        usersButton.set_element_active_color(gluten::theme::carbon_g100::field01);
+        reviewsButton.set_element_active_color(gluten::theme::carbon_g100::layerActive01);
+        usersButton.set_element_active_color(gluten::theme::carbon_g100::layerActive01);
 
         reviewsButton.set_element_active(m_activeView == reviews_view);
         usersButton.set_element_active(m_activeView == users_view);
@@ -68,20 +114,6 @@ auto workspace_widget::render_window_implementation() -> void
         }
     }
     ImGui::EndChild();
-
-    ImGui::SetCursorPos(nextCursorPos);
-
-    switch (m_activeView)
-    {
-        case workspace_widget::reviews_view:
-            ImGui::TextUnformatted("Reviews");
-            break;
-        case workspace_widget::users_view:
-            ImGui::TextUnformatted("Users");
-            break;
-        default:
-            break;
-    }
 }
 
 auto workspace_widget::render_menu_implementation() -> void
