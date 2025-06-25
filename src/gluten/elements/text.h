@@ -7,6 +7,8 @@ namespace gluten
     class text : public element
     {
     public:
+        friend class icon_button;
+
         text() = default;
         text(const std::string& displayText);
         text(const std::string& displayText, const ImVec2& alignment, const anchor_preset& anchorPreset);

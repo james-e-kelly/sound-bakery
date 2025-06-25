@@ -175,6 +175,11 @@ namespace gluten
 
         void set_element_background_color(ImU32 color);
         void set_element_hover_color(ImU32 color);
+        void set_element_hover_color(ImVec4 color);
+        void set_element_active_color(ImU32 color);
+        void set_element_active_color(ImVec4 color);
+
+        void set_element_active(bool active);
 
         void set_element_padding(const ImVec2& padding);
         void set_element_window_padding();
@@ -232,7 +237,10 @@ namespace gluten
 
         std::optional<ImU32> m_backgroundColor;
         std::optional<ImU32> m_hoverColor;
+        std::optional<ImU32> m_activeColor;
         mutable std::optional<ImRect> m_currentRect;
+
+        bool m_active = false;
 
         std::optional<float> m_scale;
 

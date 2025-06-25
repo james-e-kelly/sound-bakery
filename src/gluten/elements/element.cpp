@@ -128,6 +128,26 @@ void gluten::element::set_element_background_color(ImU32 color) { m_backgroundCo
 
 void gluten::element::set_element_hover_color(ImU32 color) { m_hoverColor = color; }
 
+void gluten::element::set_element_hover_color(ImVec4 color)
+{
+    set_element_hover_color(ImGui::ColorConvertFloat4ToU32(color));
+}
+
+void gluten::element::set_element_active_color(ImU32 color)
+{
+    m_activeColor = color;
+}
+
+void gluten::element::set_element_active_color(ImVec4 color)
+{
+    set_element_active_color(ImGui::ColorConvertFloat4ToU32(color));
+}
+
+void gluten::element::set_element_active(bool active)
+{
+    m_active = active;
+}
+
 void gluten::element::set_element_padding(const ImVec2& padding) { m_padding = padding; }
 
 void gluten::element::set_element_window_padding() { m_padding = ImGui::GetStyle().WindowPadding; }
@@ -182,13 +202,25 @@ bool gluten::element::render(const ImRect& parent)
 
     const bool hovered = ImGui::IsItemHovered();
 
-    if (ImDrawList* const backgroundDrawList = ImGui::GetBackgroundDrawList())
+    ImDrawList* const windowDrawList = ImGui::GetWindowDrawList();
+
+    if ((activated || m_active) && m_activeColor.has_value())
     {
-        if (hovered && m_hoverColor.has_value())
+        if (windowDrawList)
         {
-            backgroundDrawList->AddRectFilled(elementBox.Min, elementBox.Max, m_hoverColor.value());
+            ImGui::GetWindowDrawList()->AddRectFilled(elementBox.Min, elementBox.Max, m_activeColor.value());
         }
-        else if (m_backgroundColor.has_value())
+    }
+    else if (hovered && m_hoverColor.has_value())
+    {
+        if (windowDrawList)
+        {
+            ImGui::GetWindowDrawList()->AddRectFilled(elementBox.Min, elementBox.Max, m_hoverColor.value());
+        }
+    }
+    else if (m_backgroundColor.has_value())
+    {
+        if (ImDrawList* const backgroundDrawList = ImGui::GetBackgroundDrawList())
         {
             backgroundDrawList->AddRectFilled(elementBox.Min, elementBox.Max, m_backgroundColor.value());
 
@@ -200,9 +232,9 @@ bool gluten::element::render(const ImRect& parent)
             bottomRight.y      = (int)bottomRight.y;
 
             const ImGuiStyle& style = ImGui::GetStyle();
-            ImGui::GetCurrentWindow()->DrawList->AddLine(bottomLeft, bottomRight,
-                                                         ImGui::ColorConvertFloat4ToU32(style.Colors[ImGuiCol_Border]),
-                                                         style.WindowBorderSize);
+            ImGui::GetCurrentWindow()->DrawList->AddLine(
+                bottomLeft, bottomRight, ImGui::ColorConvertFloat4ToU32(style.Colors[ImGuiCol_Border]),
+                style.WindowBorderSize);
         }
     }
 
