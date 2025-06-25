@@ -204,7 +204,7 @@ bool gluten::element::render(const ImRect& parent)
 
     ImDrawList* const windowDrawList = ImGui::GetWindowDrawList();
 
-    if ((activated || m_active) && m_activeColor.has_value())
+    if ((activated || m_active) && !hovered && m_activeColor.has_value())
     {
         if (windowDrawList)
         {
