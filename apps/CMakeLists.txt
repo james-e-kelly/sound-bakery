@@ -3,5 +3,5 @@ if (${SOUND_BAKERY_EDITOR})
     
     add_subdirectory(editor)
     add_subdirectory(game)
-    add_subdirectory(sound_check)
+    add_subdirectory(review)
 endif()

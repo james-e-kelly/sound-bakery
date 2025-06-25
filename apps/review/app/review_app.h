@@ -4,7 +4,7 @@
 
 class workspace_manager;
 
-class sound_check_app final : public gluten::app
+class review_app final : public gluten::app
 {
 protected:
     virtual auto pre_init() -> void;
