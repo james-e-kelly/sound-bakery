@@ -223,6 +223,8 @@ bool gluten::element::render_cursor()
     return render(rect);
 }
 
+void gluten::element::set_element_min_size(const ImVec2& minSize) { m_minSize = minSize; }
+
 void gluten::element::set_element_max_size(const ImVec2& maxSize) { m_maxSize = maxSize; }
 
 ImVec2 gluten::element::get_anchor_start_position(const ImVec2& containerPosition,

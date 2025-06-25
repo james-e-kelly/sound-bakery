@@ -194,6 +194,7 @@ namespace gluten
         bool render_cursor();  //< Render where the draw cursor is currently
 
         void set_element_alignment(const ImVec2& alignment) { m_alignment = alignment; }
+        virtual void set_element_min_size(const ImVec2& minSize);
         virtual void set_element_max_size(const ImVec2& maxSize);
 
     protected:

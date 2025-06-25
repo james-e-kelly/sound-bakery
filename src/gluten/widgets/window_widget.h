@@ -10,10 +10,16 @@ namespace gluten
         window_widget(widget* parent, const std::string& name) : widget(parent, name) {}
         window_widget(widget_subsystem* parentSubsystem, const std::string& name) : widget(parentSubsystem, name) { }
 
+        auto set_window_flags(ImGuiWindowFlags flags) -> void;
+        auto set_window_class(const ImGuiWindowClass& windowClass) -> void; 
+
     protected:
         virtual auto render_window_implementation() -> void {}
 
     private:
         virtual auto render_implementation() -> void override final;
+
+        ImGuiWindowFlags m_windowFlags = ImGuiWindowFlags_None;
+        ImGuiWindowClass m_windowClass;
     };
 }  // namespace gluten
