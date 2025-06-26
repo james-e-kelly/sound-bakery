@@ -36,7 +36,7 @@ namespace gluten
 
                 if (ImGuiWindow* const window = context.CurrentWindow)
                 {
-                    if (ImDrawList* const drawList = ImGui::GetForegroundDrawList())
+                    if (ImDrawList* const drawList = ImGui::GetWindowDrawList())
                     {
                         const ImVec2 textPos(window->DC.CursorPos.x,
                                              window->DC.CursorPos.y + window->DC.CurrLineTextBaseOffset);
@@ -44,7 +44,6 @@ namespace gluten
                                           m_displayText.c_str());
                     }
                 }
-                // ImGui::TextUnformatted(m_displayText.c_str());
             }
 
             if (m_font.has_value())
@@ -72,10 +71,20 @@ namespace gluten
         button& get_button() { return m_button; }
         icon& get_text() { return m_text; }
 
-        auto set_element_min_size(const ImVec2& minSize) -> element& override;
-        auto set_element_max_size(const ImVec2& maxSize) -> element& override;
+        auto set_element_min_size(const ImVec2& minSize) -> element&;
+        auto set_element_max_size(const ImVec2& maxSize) -> element&;
         auto set_element_scale(float scale) -> element&;
         auto set_icon_alignment(const ImVec2& alignment) -> element&;
+        auto set_element_active(bool active) -> element& override;
+
+        // Override colors
+        // Only the button should get hover colors
+        // Never this element itself
+        auto set_element_background_color(ImU32 color) -> element& override;
+        auto set_element_hover_color(ImU32 color) -> element& override;
+        auto set_element_hover_color(ImVec4 color) -> element& override;
+        auto set_element_active_color(ImU32 color) -> element& override;
+        auto set_element_active_color(ImVec4 color) -> element& override;
 
     private:
         button m_button;

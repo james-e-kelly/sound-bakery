@@ -171,22 +171,21 @@ namespace gluten
         auto has_element_scale() const -> bool;
         auto get_element_scale() const -> float;
 
-        auto set_font_size(float size) -> element&;
-        auto set_element_scale(float scale) -> element&;
-        auto set_element_background_color(ImU32 color) -> element&;
-        auto set_element_hover_color(ImU32 color) -> element&;
-        auto set_element_hover_color(ImVec4 color) -> element&;
-        auto set_element_active_color(ImU32 color) -> element&;
-        auto set_element_active_color(ImVec4 color) -> element&;
-        auto set_element_active(bool active) -> element&;
-        auto set_element_padding(const ImVec2& padding) -> element&;
-        auto set_element_window_padding() -> element&;
-        auto set_element_frame_padding() -> element&;
-        auto set_element_alignment(const ImVec2& alignment) -> element&;
-        auto set_element_anchor_preset(const anchor_preset& preset) -> element&;
-
-        virtual auto set_element_min_size(const ImVec2& minSize) -> element&;
-        virtual auto set_element_max_size(const ImVec2& maxSize) -> element&;
+        auto virtual set_font_size(float size) -> element&;
+        auto virtual set_element_scale(float scale) -> element&;
+        auto virtual set_element_background_color(ImU32 color) -> element&;
+        auto virtual set_element_hover_color(ImU32 color) -> element&;
+        auto virtual set_element_hover_color(ImVec4 color) -> element&;
+        auto virtual set_element_active_color(ImU32 color) -> element&;
+        auto virtual set_element_active_color(ImVec4 color) -> element&;
+        auto virtual set_element_active(bool active) -> element&;
+        auto virtual set_element_padding(const ImVec2& padding) -> element&;
+        auto virtual set_element_window_padding() -> element&;
+        auto virtual set_element_frame_padding() -> element&;
+        auto virtual set_element_alignment(const ImVec2& alignment) -> element&;
+        auto virtual set_element_anchor_preset(const anchor_preset& preset) -> element&;
+        auto virtual set_element_min_size(const ImVec2& minSize) -> element&;
+        auto virtual set_element_max_size(const ImVec2& maxSize) -> element&;
 
         anchor_info& get_element_anchor();
 
