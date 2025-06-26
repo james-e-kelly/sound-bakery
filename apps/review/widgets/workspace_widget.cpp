@@ -71,6 +71,7 @@ void workspace_widget::render_list()
                 .set_element_anchor_preset(gluten::element::anchor_preset::left_middle)
                 .set_element_alignment(ImVec2(0.5f, 0.5f))
                 .set_element_scale(4.0f)
+                .set_element_translation(ImVec2(10.0f, 0.0f))
                 .render(topToolbar.get_element_rect());
 
             ImGui::SetCursorPos(topToolbar.get_element_rect().GetBL());

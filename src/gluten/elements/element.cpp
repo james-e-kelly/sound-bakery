@@ -11,6 +11,8 @@ static ImVec2 operator+=(const ImVec2& lhs, const ImVec2& rhs) { return ImVec2(l
 static ImVec2 operator*(const ImVec2& lhs, const ImVec2& rhs) { return ImVec2(lhs.x * rhs.x, lhs.y * rhs.y); }
 static ImVec2 operator*(const ImVec2& lhs, float rhs) { return ImVec2(lhs.x * rhs, lhs.y * rhs); }
 
+static ImRect operator+(const ImRect& lhs, const ImVec2& rhs) { return ImRect(lhs.Min + rhs, lhs.Max + rhs); }
+
 static bool operator>(const ImVec2& lhs, const ImVec2& rhs) { return lhs.x > rhs.x || lhs.y > rhs.y; }
 
 static ImVec2 max_from_vec(const ImVec2& lhs, const ImVec2& rhs)
@@ -218,7 +220,7 @@ bool gluten::element::render(const ImRect& parent)
     }
 
     const ImRect elementBox =
-        get_element_box_from_parent(parent, m_minSize, get_element_content_size(), m_alignment, m_padding, m_anchor);
+        get_element_box_from_parent(parent, m_minSize, get_element_content_size(), m_alignment, m_padding, m_anchor) + m_translation;
     m_currentRect = elementBox;
 
     ImDrawList* const foregroundDrawList = ImGui::GetForegroundDrawList();
@@ -236,14 +238,19 @@ bool gluten::element::render(const ImRect& parent)
         ImVec2 rightMiddle = leftMiddle;
         rightMiddle.x += elementBox.GetSize().x;
 
+        foregroundDrawList->AddLine(leftMiddle, rightMiddle,
+                                    ImGui::ColorConvertFloat4ToU32(gluten::theme::orange50));
+    }
+
+    if (s_debugHorizontal)
+    {
         ImVec2 topCenter = elementBox.GetTL();
         topCenter.x += elementBox.GetSize().x / 2.0f;
 
         ImVec2 bottomCenter = topCenter;
         bottomCenter.y += elementBox.GetSize().y;
 
-        foregroundDrawList->AddLine(leftMiddle, rightMiddle,
-                                    ImGui::ColorConvertFloat4ToU32(gluten::theme::orange50));
+        foregroundDrawList->AddLine(bottomCenter, topCenter, ImGui::ColorConvertFloat4ToU32(gluten::theme::orange50));
     }
 
     ImGui::SetCursorScreenPos(elementBox.Min);
@@ -326,6 +333,12 @@ auto gluten::element::set_element_min_size(const ImVec2& minSize) -> element&
 auto gluten::element::set_element_max_size(const ImVec2& maxSize) -> element& 
 { 
     m_maxSize = maxSize; 
+    return *this;
+}
+
+auto gluten::element::set_element_translation(const ImVec2& translation) -> element&
+{
+    m_translation = translation;
     return *this;
 }
 

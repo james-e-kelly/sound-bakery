@@ -186,6 +186,7 @@ namespace gluten
         auto virtual set_element_anchor_preset(const anchor_preset& preset) -> element&;
         auto virtual set_element_min_size(const ImVec2& minSize) -> element&;
         auto virtual set_element_max_size(const ImVec2& maxSize) -> element&;
+        auto virtual set_element_translation(const ImVec2& translation) -> element&;
 
         anchor_info& get_element_anchor();
 
@@ -229,6 +230,7 @@ namespace gluten
 
         anchor_info m_anchor;
 
+        ImVec2 m_translation;
         ImVec2 m_minSize;
         ImVec2 m_maxSize = ImVec2(std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
         ImVec2 m_alignment;  //< defines the pivot point of the element in each axis from 0-1

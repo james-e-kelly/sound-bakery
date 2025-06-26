@@ -38,7 +38,7 @@ namespace gluten
                 {
                     if (ImDrawList* const drawList = ImGui::GetWindowDrawList())
                     {
-                        const ImVec2 textPos(window->DC.CursorPos.x,
+                        const ImVec2 textPos(window->DC.CursorPos.x - 4.0f,
                                              window->DC.CursorPos.y + window->DC.CurrLineTextBaseOffset);
                         drawList->AddText(context.Font, context.FontSize, textPos, ImGui::GetColorU32(ImGuiCol_Text),
                                           m_displayText.c_str());
