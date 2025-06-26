@@ -167,23 +167,26 @@ namespace gluten
         element(const anchor_preset& anchorPreset);
         virtual ~element();
 
-        void set_font_size(float size);
-        void set_element_scale(float scale);
 
         auto has_element_scale() const -> bool;
-        auto get_element_scale() const -> float { return has_element_scale() ? m_scale.value() : 1.0f; }
+        auto get_element_scale() const -> float;
 
-        void set_element_background_color(ImU32 color);
-        void set_element_hover_color(ImU32 color);
-        void set_element_hover_color(ImVec4 color);
-        void set_element_active_color(ImU32 color);
-        void set_element_active_color(ImVec4 color);
+        auto set_font_size(float size) -> element&;
+        auto set_element_scale(float scale) -> element&;
+        auto set_element_background_color(ImU32 color) -> element&;
+        auto set_element_hover_color(ImU32 color) -> element&;
+        auto set_element_hover_color(ImVec4 color) -> element&;
+        auto set_element_active_color(ImU32 color) -> element&;
+        auto set_element_active_color(ImVec4 color) -> element&;
+        auto set_element_active(bool active) -> element&;
+        auto set_element_padding(const ImVec2& padding) -> element&;
+        auto set_element_window_padding() -> element&;
+        auto set_element_frame_padding() -> element&;
+        auto set_element_alignment(const ImVec2& alignment) -> element&;
+        auto set_element_anchor_preset(const anchor_preset& preset) -> element&;
 
-        void set_element_active(bool active);
-
-        void set_element_padding(const ImVec2& padding);
-        void set_element_window_padding();
-        void set_element_frame_padding();
+        virtual auto set_element_min_size(const ImVec2& minSize) -> element&;
+        virtual auto set_element_max_size(const ImVec2& maxSize) -> element&;
 
         anchor_info& get_element_anchor();
 
@@ -198,15 +201,12 @@ namespace gluten
         bool render_window();  //< Render using the window as the container
         bool render_cursor();  //< Render where the draw cursor is currently
 
-        void set_element_alignment(const ImVec2& alignment) { m_alignment = alignment; }
-        virtual void set_element_min_size(const ImVec2& minSize);
-        virtual void set_element_max_size(const ImVec2& maxSize);
 
     protected:
         virtual auto get_element_content_size() -> ImVec2 const { return ImVec2(0, 0); }
 
         virtual auto pre_render_element() -> void {}
-        virtual auto render_element(const ImRect& elementBox) -> bool = 0;
+        virtual auto render_element(const ImRect& elementBox) -> bool { return false; }
 
         static ImVec2 get_anchor_start_position(const ImVec2& containerPosition,
                                                 const ImVec2& containerSize,

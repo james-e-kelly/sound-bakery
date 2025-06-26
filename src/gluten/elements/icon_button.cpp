@@ -21,16 +21,18 @@ bool gluten::icon_button::render_element(const ImRect& parent)
     return buttonActivated;
 }
 
-void gluten::icon_button::set_element_min_size(const ImVec2& minSize)
+auto gluten::icon_button::set_element_min_size(const ImVec2& minSize) -> element&
 {
     element::set_element_min_size(minSize);
     m_button.set_element_min_size(minSize);
     m_text.set_element_min_size(minSize);
+    return *this;
 }
 
-void gluten::icon_button::set_element_max_size(const ImVec2& maxSize)
+auto gluten::icon_button::set_element_max_size(const ImVec2& maxSize) -> element&
 {
     element::set_element_max_size(maxSize);
     m_button.set_element_max_size(maxSize);
     m_text.set_element_max_size(maxSize);
+    return *this;
 }

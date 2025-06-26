@@ -111,48 +111,80 @@ gluten::element::~element()
     }
 }
 
-void gluten::element::set_font_size(float size)
+auto gluten::element::set_font_size(float size) -> element&
 {
     const float currentFontSize = ImGui::GetFontSize();
 
     const float scale = size / currentFontSize;
 
     set_element_scale(scale);
+
+    return *this;
 }
 
-void gluten::element::set_element_scale(float scale) { m_scale = scale; }
+auto gluten::element::set_element_scale(float scale) -> element& 
+{ 
+    m_scale = scale; 
+    return *this;
+}
 
 auto gluten::element::has_element_scale() const -> bool { return m_scale.has_value(); }
 
-void gluten::element::set_element_background_color(ImU32 color) { m_backgroundColor = color; }
+auto gluten::element::get_element_scale() const -> float { return has_element_scale() ? m_scale.value() : 1.0f; }
 
-void gluten::element::set_element_hover_color(ImU32 color) { m_hoverColor = color; }
+auto gluten::element::set_element_background_color(ImU32 color) -> element& 
+{ 
+    m_backgroundColor = color; 
+    return *this;
+}
 
-void gluten::element::set_element_hover_color(ImVec4 color)
+auto gluten::element::set_element_hover_color(ImU32 color) -> element& 
+{ 
+    m_hoverColor = color; 
+    return *this;
+}
+
+auto gluten::element::set_element_hover_color(ImVec4 color) -> element&
 {
     set_element_hover_color(ImGui::ColorConvertFloat4ToU32(color));
+    return *this;
 }
 
-void gluten::element::set_element_active_color(ImU32 color)
+auto gluten::element::set_element_active_color(ImU32 color) -> element& 
 {
     m_activeColor = color;
+    return *this;
 }
 
-void gluten::element::set_element_active_color(ImVec4 color)
+auto gluten::element::set_element_active_color(ImVec4 color) -> element&
 {
     set_element_active_color(ImGui::ColorConvertFloat4ToU32(color));
+    return *this;
 }
 
-void gluten::element::set_element_active(bool active)
+auto gluten::element::set_element_active(bool active) -> element& 
 {
     m_active = active;
+    return *this;
 }
 
-void gluten::element::set_element_padding(const ImVec2& padding) { m_padding = padding; }
+auto gluten::element::set_element_padding(const ImVec2& padding) -> element& 
+{ 
+    m_padding = padding; 
+    return *this;
+}
 
-void gluten::element::set_element_window_padding() { m_padding = ImGui::GetStyle().WindowPadding; }
+auto gluten::element::set_element_window_padding() -> element& 
+{ 
+    m_padding = ImGui::GetStyle().WindowPadding; 
+    return *this;
+}
 
-void gluten::element::set_element_frame_padding() { m_padding = ImGui::GetStyle().FramePadding; }
+auto gluten::element::set_element_frame_padding() -> element& 
+{ 
+    m_padding = ImGui::GetStyle().FramePadding; 
+    return *this;
+}
 
 gluten::element::anchor_info& gluten::element::get_element_anchor() { return m_anchor; }
 
@@ -255,9 +287,29 @@ bool gluten::element::render_cursor()
     return render(rect);
 }
 
-void gluten::element::set_element_min_size(const ImVec2& minSize) { m_minSize = minSize; }
+auto gluten::element::set_element_alignment(const ImVec2& alignment) -> element& 
+{ 
+    m_alignment = alignment; 
+    return *this;
+}
 
-void gluten::element::set_element_max_size(const ImVec2& maxSize) { m_maxSize = maxSize; }
+auto gluten::element::set_element_anchor_preset(const anchor_preset& preset) -> element&
+{
+    get_element_anchor().set_achor_from_preset(preset);
+    return *this;
+}
+
+auto gluten::element::set_element_min_size(const ImVec2& minSize) -> element& 
+{ 
+    m_minSize = minSize; 
+    return *this;
+}
+
+auto gluten::element::set_element_max_size(const ImVec2& maxSize) -> element& 
+{ 
+    m_maxSize = maxSize; 
+    return *this;
+}
 
 ImVec2 gluten::element::get_anchor_start_position(const ImVec2& containerPosition,
                                                   const ImVec2& containerSize,

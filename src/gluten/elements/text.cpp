@@ -10,8 +10,17 @@ gluten::text::text(const std::string& displayText, const ImVec2& alignment, cons
     m_alignment = alignment;
 }
 
-void gluten::text::set_text(const std::string& displayText) { m_displayText = displayText; }
-void gluten::text::set_font(const fonts& font) { m_font = font; }
+auto gluten::text::set_text(const std::string& displayText) -> text& 
+{ 
+    m_displayText = displayText; 
+    return *this;
+}
+
+auto gluten::text::set_font(const fonts& font) -> text& 
+{ 
+    m_font = font; 
+    return *this;
+}
 
 auto gluten::text::pre_render_element() -> void
 {

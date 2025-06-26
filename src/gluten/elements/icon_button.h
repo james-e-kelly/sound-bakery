@@ -16,8 +16,8 @@ namespace gluten
         button& get_button() { return m_button; }
         text& get_text() { return m_text; }
 
-        void set_element_min_size(const ImVec2& minSize) override;
-        void set_element_max_size(const ImVec2& maxSize) override;
+        auto set_element_min_size(const ImVec2& minSize) -> element& override;
+        auto set_element_max_size(const ImVec2& maxSize) -> element& override;
 
     private:
         button m_button;

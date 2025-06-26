@@ -14,9 +14,10 @@ bool gluten::image_button::render_element(const ImRect& parent)
     return buttonActivated;
 }
 
-void gluten::image_button::set_element_max_size(const ImVec2& maxSize)
+auto gluten::image_button::set_element_max_size(const ImVec2& maxSize) -> element&
 {
     element::set_element_max_size(maxSize);
     m_button.set_element_max_size(maxSize);
     m_image.set_element_max_size(maxSize);
+    return *this;
 }

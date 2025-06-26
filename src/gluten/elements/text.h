@@ -13,8 +13,8 @@ namespace gluten
         text(const std::string& displayText);
         text(const std::string& displayText, const ImVec2& alignment, const anchor_preset& anchorPreset);
 
-        void set_text(const std::string& displayText);
-        void set_font(const fonts& font);
+        auto set_text(const std::string& displayText) -> text&;
+        auto set_font(const fonts& font) -> text&;
 
         auto get_element_content_size() -> ImVec2 const override;
 

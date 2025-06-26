@@ -149,11 +149,6 @@ auto gluten::app::tick_end() -> void
 
 void gluten::app::load_fonts()
 {
-    // Load Fonts
-    const float baseFontSize = 16.0f;
-    const float iconFontSize = baseFontSize * 2.0f / 3.0f;  // FontAwesome fonts need to have their sizes reduced
-                                                            // by 2.0f/3.0f in order to align correctly
-
     static const ImWchar fontAwesomeIconRanges[] = {ICON_MIN_FA, ICON_MAX_16_FA, 0};
     static const ImWchar fontAudioIconRanges[]   = {ICON_MIN_FAD, ICON_MAX_16_FAD, 0};
     static const ImWchar lucideIconRanges[]      = {ICON_MIN_LC, ICON_MAX_16_LC, 0};
@@ -173,7 +168,7 @@ void gluten::app::load_fonts()
     iconFontsConfig.FontDataOwnedByAtlas = false;
     iconFontsConfig.MergeMode            = true;
     iconFontsConfig.PixelSnapH           = true;
-    iconFontsConfig.GlyphMinAdvanceX     = iconFontSize;
+    iconFontsConfig.GlyphMinAdvanceX     = g_baseIconFontSize;
     iconFontsConfig.RasterizerDensity    = 1.0f;
 
     ImFontConfig fontConfig;
@@ -183,27 +178,27 @@ void gluten::app::load_fonts()
     ImGuiIO& io = ImGui::GetIO();
 
     m_fonts[fonts::regular] =
-        io.Fonts->AddFontFromMemoryTTF((void*)mainFontFile.begin(), mainFontFile.size(), baseFontSize, &fontConfig);
+        io.Fonts->AddFontFromMemoryTTF((void*)mainFontFile.begin(), mainFontFile.size(), g_baseFontSize, &fontConfig);
 
     m_fonts[fonts::regular_audio_icons] =
-        io.Fonts->AddFontFromMemoryTTF((void*)mainFontFile.begin(), mainFontFile.size(), baseFontSize, &fontConfig);
-    io.Fonts->AddFontFromMemoryTTF((void*)audioFontFile.begin(), audioFontFile.size(), iconFontSize * 1.3f,
+        io.Fonts->AddFontFromMemoryTTF((void*)mainFontFile.begin(), mainFontFile.size(), g_baseFontSize, &fontConfig);
+    io.Fonts->AddFontFromMemoryTTF((void*)audioFontFile.begin(), audioFontFile.size(), g_baseIconFontSize * 1.3f,
                                    &iconFontsConfig, fontAudioIconRanges);
 
     m_fonts[fonts::regular_lucide_icons] =
-        io.Fonts->AddFontFromMemoryTTF((void*)mainFontFile.begin(), mainFontFile.size(), baseFontSize, &fontConfig);
-    io.Fonts->AddFontFromMemoryTTF((void*)lucideFontFile.begin(), lucideFontFile.size(), iconFontSize * 1.3f,
+        io.Fonts->AddFontFromMemoryTTF((void*)mainFontFile.begin(), mainFontFile.size(), g_baseFontSize, &fontConfig);
+    io.Fonts->AddFontFromMemoryTTF((void*)lucideFontFile.begin(), lucideFontFile.size(), g_baseIconFontSize * 1.3f,
                                    &iconFontsConfig, lucideIconRanges);
 
     m_fonts[fonts::regular_font_awesome] =
-        io.Fonts->AddFontFromMemoryTTF((void*)mainFontFile.begin(), mainFontFile.size(), baseFontSize, &fontConfig);
-    io.Fonts->AddFontFromMemoryTTF((void*)fontAwesomeFontFile.begin(), fontAwesomeFontFile.size(), iconFontSize,
+        io.Fonts->AddFontFromMemoryTTF((void*)mainFontFile.begin(), mainFontFile.size(), g_baseFontSize, &fontConfig);
+    io.Fonts->AddFontFromMemoryTTF((void*)fontAwesomeFontFile.begin(), fontAwesomeFontFile.size(), g_baseIconFontSize,
                                    &iconFontsConfig, fontAwesomeIconRanges);
 
     m_fonts[fonts::light] =
-        io.Fonts->AddFontFromMemoryTTF((void*)lightFontFile.begin(), lightFontFile.size(), baseFontSize, &fontConfig);
+        io.Fonts->AddFontFromMemoryTTF((void*)lightFontFile.begin(), lightFontFile.size(), g_baseFontSize, &fontConfig);
     m_fonts[fonts::title] = io.Fonts->AddFontFromMemoryTTF((void*)titleFontFile.begin(), titleFontFile.size(),
-                                                           baseFontSize * 1.2f, &fontConfig);
+                                                           g_baseFontSize * 1.2f, &fontConfig);
 }
 
 void gluten::app::request_exit() { m_isRequestingExit = true; }

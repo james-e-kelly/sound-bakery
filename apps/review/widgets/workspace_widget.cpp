@@ -54,6 +54,25 @@ void workspace_widget::render_list()
 
     if (ImGui::BeginChild("ItemsList", ImVec2(itemListWidth, 0), ImGuiChildFlags_ResizeX))
     {
+        gluten::element topToolbar(gluten::element::anchor_preset::stretch_top);
+        topToolbar.get_element_anchor().maxOffset.y = leftToobarWidth;
+        topToolbar.render_window();
+
+        gluten::text titleText("Projects", ImVec2(0.5f, 0.5f), gluten::element::anchor_preset::center_middle);
+        titleText
+            .set_font(gluten::fonts::title)
+            .set_font_size(24.0f)
+            .render(topToolbar.get_element_rect());
+
+        gluten::icon_button backButton("##BackButton", ICON_LC_ARROW_BIG_LEFT, gluten::fonts::regular_lucide_icons);
+        backButton
+            .set_element_anchor_preset(gluten::element::anchor_preset::left_middle)
+            .set_element_min_size(ImVec2(25.0f, 25.0f))
+            .set_element_scale(3.0f)
+            .render(topToolbar.get_element_rect());
+
+        ImGui::SetCursorPos(topToolbar.get_element_rect().GetBL());
+
         ImGui::TextUnformatted("Item List");
         ImGui::Separator();
     }
