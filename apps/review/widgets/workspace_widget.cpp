@@ -19,8 +19,6 @@ namespace
 
 auto workspace_widget::start_implementation() -> void
 {
-    set_window_flags(ImGuiWindowFlags_NoDecoration);
-
     ImGuiWindowClass windowClass;
     windowClass.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoTabBar;
 
