@@ -365,6 +365,8 @@ auto root_widget::render_menu_implementation() -> void
             ImGui::Separator();
 
             ImGui::MenuItem("Debug Item Rects", NULL, &element::s_debug);
+            ImGui::MenuItem("Debug Item Vertical", NULL, &element::s_debugVertical);
+            ImGui::MenuItem("Debug Item Horizontal", NULL, &element::s_debugHorizontal);
 
             ImGui::EndMenu();
         }

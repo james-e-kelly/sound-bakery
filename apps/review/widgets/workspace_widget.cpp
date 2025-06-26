@@ -61,14 +61,15 @@ void workspace_widget::render_list()
         gluten::text titleText("Projects", ImVec2(0.5f, 0.5f), gluten::element::anchor_preset::center_middle);
         titleText
             .set_font(gluten::fonts::title)
-            .set_font_size(24.0f)
+            .set_font_size(gluten::g_baseFontSize * 2.0f)
             .render(topToolbar.get_element_rect());
 
         gluten::icon_button backButton("##BackButton", ICON_LC_ARROW_BIG_LEFT, gluten::fonts::regular_lucide_icons);
         backButton
+            .set_icon_alignment(ImVec2(0.0f, 0.5f))
             .set_element_anchor_preset(gluten::element::anchor_preset::left_middle)
-            .set_element_min_size(ImVec2(25.0f, 25.0f))
-            .set_element_scale(3.0f)
+            .set_element_alignment(ImVec2(0.5f, 0.5f))
+            .set_element_scale(4.0f)
             .render(topToolbar.get_element_rect());
 
         ImGui::SetCursorPos(topToolbar.get_element_rect().GetBL());
@@ -101,24 +102,21 @@ void workspace_widget::render_left_toolbar()
         buttonsLayout.get_element_anchor().max.x += 0.1f;
         buttonsLayout.render_window();
 
-        gluten::icon_button reviewsButton("##ReviewsButton", ICON_LC_CHART_NO_AXES_GANTT,
-                                          gluten::fonts::regular_lucide_icons);
+        gluten::icon_button reviewsButton("##ReviewsButton", ICON_LC_CHART_NO_AXES_GANTT, gluten::fonts::regular_lucide_icons);
+        reviewsButton
+            //.set_element_min_size(ImVec2(leftToolbarButtonHeight, leftToolbarButtonHeight))
+            .set_element_scale(3.0f)
+            .set_element_hover_color(gluten::theme::carbon_g100::fieldHover01)
+            .set_element_active_color(gluten::theme::carbon_g100::layerActive01)
+            .set_element_active(m_activeView == reviews_view);
+
         gluten::icon_button usersButton("##UsersButton", ICON_LC_USERS, gluten::fonts::regular_lucide_icons);
-
-        reviewsButton.set_element_min_size(ImVec2(leftToolbarButtonHeight, leftToolbarButtonHeight));
-        usersButton.set_element_min_size(ImVec2(leftToolbarButtonHeight, leftToolbarButtonHeight));
-
-        reviewsButton.set_element_scale(3.0f);
-        usersButton.set_element_scale(3.0f);
-
-        reviewsButton.set_element_hover_color(gluten::theme::carbon_g100::fieldHover01);
-        usersButton.set_element_hover_color(gluten::theme::carbon_g100::fieldHover01);
-
-        reviewsButton.set_element_active_color(gluten::theme::carbon_g100::layerActive01);
-        usersButton.set_element_active_color(gluten::theme::carbon_g100::layerActive01);
-
-        reviewsButton.set_element_active(m_activeView == reviews_view);
-        usersButton.set_element_active(m_activeView == users_view);
+        usersButton
+            //.set_element_min_size(ImVec2(leftToolbarButtonHeight, leftToolbarButtonHeight))
+            .set_element_scale(3.0f)
+            .set_element_hover_color(gluten::theme::carbon_g100::fieldHover01)
+            .set_element_active_color(gluten::theme::carbon_g100::layerActive01)
+            .set_element_active(m_activeView == users_view);
 
         if (buttonsLayout.render_layout_element_pixels_vertical(&reviewsButton, leftToolbarButtonHeight))
         {
@@ -141,6 +139,8 @@ auto workspace_widget::render_menu_implementation() -> void
         {
             get_app()->get_manager_by_class<workspace_manager>()->close_workspace();
         }
+        ImGui::SliderFloat("Fake Size", &gluten::fakeIconSize, 1.0f, 30.0f);
+
         ImGui::EndMenu();
     }
 }

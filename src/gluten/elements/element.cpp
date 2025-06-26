@@ -221,11 +221,29 @@ bool gluten::element::render(const ImRect& parent)
         get_element_box_from_parent(parent, m_minSize, get_element_content_size(), m_alignment, m_padding, m_anchor);
     m_currentRect = elementBox;
 
+    ImDrawList* const foregroundDrawList = ImGui::GetForegroundDrawList();
     if (s_debug)
     {
-        ImDrawList* const foregroundDrawList = ImGui::GetForegroundDrawList();
         foregroundDrawList->AddRect(elementBox.Min, elementBox.Max,
                                     ImGui::ColorConvertFloat4ToU32(gluten::theme::red50));
+    }
+
+    if (s_debugVertical)
+    {
+        ImVec2 leftMiddle = elementBox.GetTL();
+        leftMiddle.y += elementBox.GetSize().y / 2.0f;
+
+        ImVec2 rightMiddle = leftMiddle;
+        rightMiddle.x += elementBox.GetSize().x;
+
+        ImVec2 topCenter = elementBox.GetTL();
+        topCenter.x += elementBox.GetSize().x / 2.0f;
+
+        ImVec2 bottomCenter = topCenter;
+        bottomCenter.y += elementBox.GetSize().y;
+
+        foregroundDrawList->AddLine(leftMiddle, rightMiddle,
+                                    ImGui::ColorConvertFloat4ToU32(gluten::theme::orange50));
     }
 
     ImGui::SetCursorScreenPos(elementBox.Min);

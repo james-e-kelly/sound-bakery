@@ -5,6 +5,62 @@
 
 namespace gluten
 {
+    static inline float fakeIconSize = 10.f;
+
+    class icon : public element
+    {
+    public:
+        friend class icon_button;
+
+        icon() = default;
+        icon(const std::string& displayText) : m_displayText(displayText) {}
+        icon(const std::string& displayText, const ImVec2& alignment, const anchor_preset& anchorPreset)
+            : element(anchorPreset), m_displayText(displayText)
+        {
+        }
+
+        auto get_element_content_size() -> ImVec2 const override;
+
+        auto set_font(fonts font) -> icon& 
+        { 
+            m_font = font;
+            return *this;
+        }
+
+    protected:
+        auto render_element(const ImRect& parent) -> bool override
+        {
+            if (!m_displayText.empty())
+            {
+                ImGuiContext& context = *GImGui;
+
+                if (ImGuiWindow* const window = context.CurrentWindow)
+                {
+                    if (ImDrawList* const drawList = ImGui::GetForegroundDrawList())
+                    {
+                        const ImVec2 textPos(window->DC.CursorPos.x,
+                                             window->DC.CursorPos.y + window->DC.CurrLineTextBaseOffset);
+                        drawList->AddText(context.Font, context.FontSize, textPos, ImGui::GetColorU32(ImGuiCol_Text),
+                                          m_displayText.c_str());
+                    }
+                }
+                // ImGui::TextUnformatted(m_displayText.c_str());
+            }
+
+            if (m_font.has_value())
+            {
+                ImGui::PopFont();
+            }
+            return false;
+        }
+
+        auto pre_render_element() -> void override;
+
+    private:
+        std::string m_displayText;
+        std::optional<fonts> m_font;
+    };
+
     class icon_button : public element
     {
     public:
@@ -14,13 +70,15 @@ namespace gluten
         bool render_element(const ImRect& parent) override;
 
         button& get_button() { return m_button; }
-        text& get_text() { return m_text; }
+        icon& get_text() { return m_text; }
 
         auto set_element_min_size(const ImVec2& minSize) -> element& override;
         auto set_element_max_size(const ImVec2& maxSize) -> element& override;
+        auto set_element_scale(float scale) -> element&;
+        auto set_icon_alignment(const ImVec2& alignment) -> element&;
 
     private:
         button m_button;
-        text m_text;
+        icon m_text;
     };
 }  // namespace gluten

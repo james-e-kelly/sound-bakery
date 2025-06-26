@@ -245,7 +245,9 @@ namespace gluten
         std::optional<float> m_scale;
 
     public:
-        static inline bool s_debug = false;
+        static inline bool s_debug              = false;
+        static inline bool s_debugVertical      = false;
+        static inline bool s_debugHorizontal    = false;
     };
 
     class background : public element
