@@ -68,10 +68,25 @@ void workspace_widget::render_list()
             gluten::icon_button backButton("##BackButton", ICON_LC_ARROW_BIG_LEFT, gluten::fonts::regular_lucide_icons);
             backButton
                 .set_icon_alignment(ImVec2(0.0f, 0.5f))
+                .set_button_alignment(ImVec2(0.0f, 0.5f))
+                .set_element_background_color(gluten::theme::carbon_g100::field03)
+                .set_element_hover_color(gluten::theme::carbon_g100::fieldHover01)
+                .set_element_active_color(gluten::theme::carbon_g100::layerActive01)
                 .set_element_anchor_preset(gluten::element::anchor_preset::left_middle)
-                .set_element_alignment(ImVec2(0.5f, 0.5f))
                 .set_element_scale(4.0f)
                 .set_element_translation(ImVec2(10.0f, 0.0f))
+                .render(topToolbar.get_element_rect());
+
+            gluten::icon_button newButton("##NewButton", ICON_LC_PLUS, gluten::fonts::regular_lucide_icons);
+            newButton
+                .set_icon_alignment(ImVec2(1.0f, 0.5f))
+                .set_button_alignment(ImVec2(1.0f, 0.5f))
+                .set_element_background_color(gluten::theme::carbon_g100::field03)
+                .set_element_hover_color(gluten::theme::carbon_g100::fieldHover01)
+                .set_element_active_color(gluten::theme::carbon_g100::layerActive01)
+                .set_element_anchor_preset(gluten::element::anchor_preset::right_middle)
+                .set_element_scale(4.0f)
+                .set_element_translation(ImVec2(-10.0f, 0.0f))
                 .render(topToolbar.get_element_rect());
 
             ImGui::SetCursorPos(topToolbar.get_element_rect().GetBL());

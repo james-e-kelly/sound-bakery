@@ -74,13 +74,15 @@ namespace gluten
         auto set_element_min_size(const ImVec2& minSize) -> element&;
         auto set_element_max_size(const ImVec2& maxSize) -> element&;
         auto set_element_scale(float scale) -> element&;
-        auto set_icon_alignment(const ImVec2& alignment) -> element&;
+        auto set_icon_alignment(const ImVec2& alignment) -> icon_button&;
+        auto set_button_alignment(const ImVec2& alignment) -> icon_button&;
         auto set_element_active(bool active) -> element& override;
 
         // Override colors
         // Only the button should get hover colors
         // Never this element itself
         auto set_element_background_color(ImU32 color) -> element& override;
+        auto set_element_background_color(ImVec4 color) -> element& override;
         auto set_element_hover_color(ImU32 color) -> element& override;
         auto set_element_hover_color(ImVec4 color) -> element& override;
         auto set_element_active_color(ImU32 color) -> element& override;

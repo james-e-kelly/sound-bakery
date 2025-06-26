@@ -174,6 +174,7 @@ namespace gluten
         auto virtual set_font_size(float size) -> element&;
         auto virtual set_element_scale(float scale) -> element&;
         auto virtual set_element_background_color(ImU32 color) -> element&;
+        auto virtual set_element_background_color(ImVec4 color) -> element&;
         auto virtual set_element_hover_color(ImU32 color) -> element&;
         auto virtual set_element_hover_color(ImVec4 color) -> element&;
         auto virtual set_element_active_color(ImU32 color) -> element&;

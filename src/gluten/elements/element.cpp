@@ -140,6 +140,12 @@ auto gluten::element::set_element_background_color(ImU32 color) -> element&
     return *this;
 }
 
+auto gluten::element::set_element_background_color(ImVec4 color) -> element&
+{
+    set_element_background_color(ImGui::ColorConvertFloat4ToU32(color));
+    return *this;
+}
+
 auto gluten::element::set_element_hover_color(ImU32 color) -> element& 
 { 
     m_hoverColor = color; 
@@ -279,7 +285,7 @@ bool gluten::element::render(const ImRect& parent)
     {
         if (ImDrawList* const backgroundDrawList = ImGui::GetBackgroundDrawList())
         {
-            backgroundDrawList->AddRectFilled(elementBox.Min, elementBox.Max, m_backgroundColor.value());
+            windowDrawList->AddRectFilled(elementBox.Min, elementBox.Max, m_backgroundColor.value());
 
             ImVec2 bottomLeft  = elementBox.GetBL();
             ImVec2 bottomRight = elementBox.GetBR();
