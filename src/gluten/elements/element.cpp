@@ -273,6 +273,10 @@ bool gluten::element::render(const ImRect& parent)
 
     ImGui::SetCursorScreenPos(elementBox.Min);
 
+    ImGui::Dummy(elementBox.GetSize());
+    
+    ImGui::SetCursorScreenPos(elementBox.Min);
+
     const bool activated = render_element(elementBox);
 
     const bool hovered = ImGui::IsItemHovered();
