@@ -38,7 +38,9 @@ protected:
         if (m_backgroundColor.has_value())
         {
             gluten::background background;
-            background.set_element_background_color(m_backgroundColor.value());
+            background
+                .set_element_background_color(m_backgroundColor.value())
+                .set_element_hover_color(gluten::theme::carbon_g100::fieldHover03);
             m_backgroundColor.reset();
             background.render(elementRect);
         }
@@ -168,7 +170,7 @@ void workspace_widget::render_list()
 
             project_element projectElement("Project 1", "Project 1 description", 2, 5);
             project_element projectElement2("Project 2", "Project 2 description", 0, 1);
-            project_element projectElement3("Project 3", "Project 2 description", 0, 0);
+            project_element projectElement3("Project 3", "Project 3 description", 0, 0);
 
             itemsLayout.render_layout_element_pixels_vertical(&projectElement, 100.0f);
             itemsLayout.render_layout_element_pixels_vertical(&projectElement2, 100.0f);
