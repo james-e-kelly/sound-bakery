@@ -38,7 +38,7 @@ bool gluten::text::render_element(const ImRect& parent)
 
         if (ImGuiWindow* const window = context.CurrentWindow)
         {
-            if (ImDrawList* const drawList = ImGui::GetForegroundDrawList())
+            if (ImDrawList* const drawList = ImGui::GetWindowDrawList())
             {
                 const ImVec2 textPos(window->DC.CursorPos.x, window->DC.CursorPos.y + window->DC.CurrLineTextBaseOffset);
                 drawList->AddText(context.Font, context.FontSize, textPos, ImGui::GetColorU32(ImGuiCol_Text), m_displayText.c_str());
