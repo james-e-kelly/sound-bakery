@@ -18,9 +18,9 @@ bool gluten::icon_button::render_element(const ImRect& parent)
 {
     ImGui::BeginGroup();
     m_button.set_element_min_size(m_text.get_element_content_size());
-    m_button.set_element_scale(get_element_scale());
+    m_button.set_element_content_scale(get_element_scale());
     const bool buttonActivated = m_button.render(parent);
-    m_text.set_element_scale(get_element_scale());
+    m_text.set_element_content_scale(get_element_scale());
     m_text.render(parent);
     ImGui::EndGroup();
     return buttonActivated;
@@ -42,11 +42,11 @@ auto gluten::icon_button::set_element_max_size(const ImVec2& maxSize) -> element
     return *this;
 }
 
-auto gluten::icon_button::set_element_scale(float scale) -> element&
+auto gluten::icon_button::set_element_content_scale(float scale) -> element&
 {
-    element::set_element_scale(scale);
-    m_button.set_element_scale(scale);
-    m_text.set_element_scale(scale);
+    element::set_element_content_scale(scale);
+    m_button.set_element_content_scale(scale);
+    m_text.set_element_content_scale(scale);
     return *this;
 }
 
@@ -65,6 +65,12 @@ auto gluten::icon_button::set_button_alignment(const ImVec2& alignment) -> icon_
 auto gluten::icon_button::set_element_active(bool active) -> element&
 {
     m_button.set_element_active(active);
+    return *this;
+}
+
+auto gluten::icon_button::set_button_scale(float scale) -> icon_button&
+{
+    m_button.set_element_scale(scale);
     return *this;
 }
 

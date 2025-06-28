@@ -5,8 +5,6 @@
 
 namespace gluten
 {
-    static inline float fakeIconSize = 10.f;
-
     class icon : public element
     {
     public:
@@ -30,6 +28,11 @@ namespace gluten
     protected:
         auto render_element(const ImRect& parent) -> bool override
         {
+            // Magic numbers!
+            // Needed to almost-perfectly align the icons
+            static constexpr float xOffset = 1.325f;
+            static constexpr float yOffset = 0.325f;
+
             if (!m_displayText.empty())
             {
                 ImGuiContext& context = *GImGui;
@@ -38,10 +41,16 @@ namespace gluten
                 {
                     if (ImDrawList* const drawList = ImGui::GetWindowDrawList())
                     {
-                        const ImVec2 textPos(window->DC.CursorPos.x - 4.0f,
-                                             window->DC.CursorPos.y + window->DC.CurrLineTextBaseOffset);
-                        drawList->AddText(context.Font, context.FontSize, textPos, ImGui::GetColorU32(ImGuiCol_Text),
-                                          m_displayText.c_str());
+                        const float scale = get_element_scale();
+
+                        const float scaledXPushback = xOffset * scale;
+                        const float scaledYPushback = yOffset * scale;
+
+                        const ImVec2 textPos(window->DC.CursorPos.x - scaledXPushback, window->DC.CursorPos.y + window->DC.CurrLineTextBaseOffset - scaledYPushback);
+
+                        assert(window->DC.CursorPos.x - scaledXPushback == textPos.x);
+
+                        drawList->AddText(context.Font, context.FontSize, textPos, ImGui::GetColorU32(ImGuiCol_Text), m_displayText.c_str());
                     }
                 }
             }
@@ -73,14 +82,15 @@ namespace gluten
 
         auto set_element_min_size(const ImVec2& minSize) -> element&;
         auto set_element_max_size(const ImVec2& maxSize) -> element&;
-        auto set_element_scale(float scale) -> element&;
+        auto set_element_content_scale(float scale) -> element&;
         auto set_icon_alignment(const ImVec2& alignment) -> icon_button&;
         auto set_button_alignment(const ImVec2& alignment) -> icon_button&;
-        auto set_element_active(bool active) -> element& override;
+        auto set_button_scale(float scale) -> icon_button&;
 
         // Override colors
         // Only the button should get hover colors
         // Never this element itself
+        auto set_element_active(bool active) -> element& override;
         auto set_element_background_color(ImU32 color) -> element& override;
         auto set_element_background_color(ImVec4 color) -> element& override;
         auto set_element_hover_color(ImU32 color) -> element& override;

@@ -12,6 +12,13 @@ static ImVec2 operator*(const ImVec2& lhs, const ImVec2& rhs) { return ImVec2(lh
 static ImVec2 operator*(const ImVec2& lhs, float rhs) { return ImVec2(lhs.x * rhs, lhs.y * rhs); }
 
 static ImRect operator+(const ImRect& lhs, const ImVec2& rhs) { return ImRect(lhs.Min + rhs, lhs.Max + rhs); }
+static ImRect operator*(const ImRect& lhs, const float& rhs) 
+{ 
+    ImVec2 expandSize = (lhs.GetSize() * rhs) - lhs.GetSize();
+    ImRect result(lhs);
+    result.Expand(expandSize);
+    return result;
+}
 
 static bool operator>(const ImVec2& lhs, const ImVec2& rhs) { return lhs.x > rhs.x || lhs.y > rhs.y; }
 
@@ -113,26 +120,32 @@ gluten::element::~element()
     }
 }
 
-auto gluten::element::set_font_size(float size) -> element&
+auto gluten::element::set_element_content_font_size(float size) -> element&
 {
     const float currentFontSize = ImGui::GetFontSize();
 
     const float scale = size / currentFontSize;
 
-    set_element_scale(scale);
+    set_element_content_scale(scale);
 
     return *this;
 }
 
-auto gluten::element::set_element_scale(float scale) -> element& 
+auto gluten::element::set_element_content_scale(float scale) -> element& 
 { 
-    m_scale = scale; 
+    m_contentScale = scale; 
     return *this;
 }
 
-auto gluten::element::has_element_scale() const -> bool { return m_scale.has_value(); }
+auto gluten::element::set_element_scale(float scale) -> element&
+{
+    m_scale = scale;
+    return *this;
+}
 
-auto gluten::element::get_element_scale() const -> float { return has_element_scale() ? m_scale.value() : 1.0f; }
+auto gluten::element::has_element_scale() const -> bool { return m_contentScale.has_value(); }
+
+auto gluten::element::get_element_scale() const -> float { return has_element_scale() ? m_contentScale.value() : 1.0f; }
 
 auto gluten::element::set_element_background_color(ImU32 color) -> element& 
 { 
@@ -216,17 +229,16 @@ bool gluten::element::render(const ImRect& parent)
 {
     pre_render_element();
 
-    if (m_scale.has_value())
+    if (m_contentScale.has_value())
     {
-        ImGui::SetWindowFontScale(m_scale.value());
+        ImGui::SetWindowFontScale(m_contentScale.value());
     }
     else
     {
         ImGui::SetWindowFontScale(1.0f);
     }
 
-    const ImRect elementBox =
-        get_element_box_from_parent(parent, m_minSize, get_element_content_size(), m_alignment, m_padding, m_anchor) + m_translation;
+    const ImRect elementBox = (get_element_box_from_parent(parent, m_minSize, get_element_content_size(), m_alignment, m_padding, m_anchor) * m_scale) + m_translation;
     m_currentRect = elementBox;
 
     ImDrawList* const foregroundDrawList = ImGui::GetForegroundDrawList();

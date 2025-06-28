@@ -179,7 +179,7 @@ bool gluten::layout::render_layout_element_internal(const ImRect& thisBox,
 
         if (has_element_scale())
         {
-            element->set_element_scale(element->get_element_scale() * get_element_scale());
+            element->set_element_content_scale(element->get_element_scale() * get_element_scale());
         }
 
         activated = element->render({currentLayoutPos, currentLayoutPos + sizeGivenToElement});

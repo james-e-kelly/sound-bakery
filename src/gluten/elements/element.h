@@ -171,8 +171,9 @@ namespace gluten
         auto has_element_scale() const -> bool;
         auto get_element_scale() const -> float;
 
-        auto virtual set_font_size(float size) -> element&;
-        auto virtual set_element_scale(float scale) -> element&;
+        auto virtual set_element_content_font_size(float size) -> element&;
+        auto virtual set_element_content_scale(float scale) -> element&;                //< Set the content scale. Content scale is used by text, buttons, sliders, etc.
+        auto virtual set_element_scale(float scale) -> element&;                        //< Set an element scale that scales the rendering rect.
         auto virtual set_element_background_color(ImU32 color) -> element&;
         auto virtual set_element_background_color(ImVec4 color) -> element&;
         auto virtual set_element_hover_color(ImU32 color) -> element&;
@@ -244,7 +245,8 @@ namespace gluten
 
         bool m_active = false;
 
-        std::optional<float> m_scale;
+        std::optional<float> m_contentScale;
+        float m_scale = 1.0f;
 
     public:
         static inline bool s_debug              = false;

@@ -78,7 +78,7 @@ void player_widget::render_implementation()
     }
 
     gluten::toolbar toolbar;
-    toolbar.set_element_scale(1.5f);
+    toolbar.set_element_content_scale(1.5f);
     toolbar.get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::stretch_full);
     toolbar.set_element_window_padding();
     toolbar.set_layout_spacing(6.0f);
