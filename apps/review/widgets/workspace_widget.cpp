@@ -17,6 +17,66 @@ namespace
     constexpr float itemListWidth = leftToobarWidth * 5.0f;
 }
 
+class project_element : public gluten::element
+{
+public:
+    project_element() : gluten::element(anchor_preset::stretch_full) {}
+    project_element(const std::string& projectName,
+                    const std::string& projectDescription,
+                    int openReviews,
+                    int closedReviews)
+        : gluten::element(anchor_preset::stretch_full), m_projectName(projectName), m_projectDescription(projectDescription),
+          m_openReviews(openReviews),
+          m_closedReviews(closedReviews)
+    {
+        set_element_background_color(gluten::theme::carbon_g100::field03);
+    }
+
+protected:
+    auto render_element(const ImRect& elementRect) -> bool override
+    {
+        if (m_backgroundColor.has_value())
+        {
+            gluten::background background;
+            background.set_element_background_color(m_backgroundColor.value());
+            m_backgroundColor.reset();
+            background.render(elementRect);
+        }
+
+        ImRect contentRect = elementRect;
+        contentRect.Expand(ImVec2(-5.0f, -5.0f));
+
+        gluten::text projectTitleText(m_projectName.c_str(), ImVec2(0.0f, 0.5f), anchor_preset::left_top);
+        projectTitleText
+            .set_font(gluten::fonts::title)
+            .set_element_content_font_size(20.0f)
+            .get_element_anchor().min = projectTitleText.get_element_anchor().max = ImVec2(0.0f, 0.25f);
+
+        gluten::text projectDescriptionText(m_projectDescription.c_str(), ImVec2(0.0f, 0.0f), anchor_preset::left_top);
+        projectDescriptionText.set_element_content_font_size(16.0f).get_element_anchor().min = projectTitleText.get_element_anchor().max = ImVec2(0.0f, 0.5f);
+
+        const std::string reviewText = fmt::format("{} {} {} {}", m_openReviews, ICON_LC_PENCIL, m_closedReviews, ICON_LC_CHECK);
+
+        gluten::text openReviewsText(reviewText.c_str(), ImVec2(1.0f, 0.5f), anchor_preset::right_top);
+        openReviewsText
+            .set_font(gluten::fonts::regular_lucide_icons)
+            .set_element_content_font_size(20.0f)
+            .get_element_anchor().min = openReviewsText.get_element_anchor().max = ImVec2(1.0f, 0.25f);
+
+        projectTitleText.render(contentRect);
+        projectDescriptionText.render(contentRect);
+        openReviewsText.render(contentRect);
+
+        return false;
+    }
+
+private:
+    std::string m_projectName;
+    std::string m_projectDescription;
+    int m_openReviews;
+    int m_closedReviews;
+};
+
 auto workspace_widget::start_implementation() -> void
 {
     ImGuiWindowClass windowClass;
@@ -54,7 +114,9 @@ void workspace_widget::render_list()
     gluten::imgui::scoped_color borderColor(ImGuiCol_Border, gluten::theme::carbon_g100::background);
     gluten::imgui::scoped_color separatorColor(ImGuiCol_Separator, gluten::theme::carbon_g100::background);
 
-    if (ImGui::BeginChild("ItemsList", ImVec2(itemListWidth, 0), ImGuiChildFlags_ResizeX))
+    static constexpr float buttonOffset = 20.0f;
+
+    if (ImGui::BeginChild("ItemsPanel", ImVec2(itemListWidth, 0), ImGuiChildFlags_ResizeX))
     {
         gluten::element topToolbar(gluten::element::anchor_preset::stretch_top);
         topToolbar.get_element_anchor().maxOffset.y = leftToobarWidth;
@@ -77,7 +139,7 @@ void workspace_widget::render_list()
             .set_element_active_color(gluten::theme::carbon_g100::layerActive01)
             .set_element_anchor_preset(gluten::element::anchor_preset::left_middle)
             .set_element_content_scale(2.0f)
-            .set_element_translation(ImVec2(10.0f, 0.0f))
+            .set_element_translation(ImVec2(buttonOffset, 0.0f))
             .render(topToolbar.get_element_rect());
 
         gluten::icon_button newButton("##NewButton", ICON_LC_PLUS, gluten::fonts::regular_lucide_icons);
@@ -91,12 +153,28 @@ void workspace_widget::render_list()
             .set_element_active_color(gluten::theme::carbon_g100::layerActive01)
             .set_element_anchor_preset(gluten::element::anchor_preset::right_middle)
             .set_element_content_scale(2.0f)
-            .set_element_translation(ImVec2(-10.0f, 0.0f))
+            .set_element_translation(ImVec2(-buttonOffset, 0.0f))
             .render(topToolbar.get_element_rect());
 
         ImGui::SetCursorPos(topToolbar.get_element_rect_local().GetBL());
 
         ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal, 2.0f);
+
+        if (ImGui::BeginChild("ItemsList", ImVec2(0, 0), 0, ImGuiWindowFlags_AlwaysVerticalScrollbar))
+        {
+            gluten::layout itemsLayout(gluten::layout::layout_type::top_to_bottom, gluten::element::anchor_preset::stretch_full);
+            itemsLayout.set_layout_spacing(2.0f);
+            itemsLayout.render_window();
+
+            project_element projectElement("Project 1", "Project 1 description", 2, 5);
+            project_element projectElement2("Project 2", "Project 2 description", 0, 1);
+            project_element projectElement3("Project 3", "Project 2 description", 0, 0);
+
+            itemsLayout.render_layout_element_pixels_vertical(&projectElement, 100.0f);
+            itemsLayout.render_layout_element_pixels_vertical(&projectElement2, 100.0f);
+            itemsLayout.render_layout_element_pixels_vertical(&projectElement3, 100.0f);
+        }
+        ImGui::EndChild();
     }
     ImGui::EndChild();
 }
@@ -107,7 +185,6 @@ void workspace_widget::render_content()
 
     if (ImGui::BeginChild("Content"))
     {
-        ImGui::TextUnformatted("Content");
     }
     ImGui::EndChild();
 }
