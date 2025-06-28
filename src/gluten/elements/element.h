@@ -189,6 +189,7 @@ namespace gluten
         auto virtual set_element_min_size(const ImVec2& minSize) -> element&;
         auto virtual set_element_max_size(const ImVec2& maxSize) -> element&;
         auto virtual set_element_translation(const ImVec2& translation) -> element&;
+        auto virtual set_element_border(float borderSize, float borderRounding) -> element&;
 
         anchor_info& get_element_anchor();
 
@@ -241,6 +242,8 @@ namespace gluten
         std::optional<ImU32> m_backgroundColor;
         std::optional<ImU32> m_hoverColor;
         std::optional<ImU32> m_activeColor;
+        std::optional<float> m_borderSize;
+        std::optional<float> m_borderRounding;
         mutable std::optional<ImRect> m_currentRect;
 
         bool m_active = false;

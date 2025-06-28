@@ -86,6 +86,7 @@ namespace gluten
         auto set_icon_alignment(const ImVec2& alignment) -> icon_button&;
         auto set_button_alignment(const ImVec2& alignment) -> icon_button&;
         auto set_button_scale(float scale) -> icon_button&;
+        auto set_button_border(float borderSize, float borderRounding) -> icon_button&;
 
         // Override colors
         // Only the button should get hover colors

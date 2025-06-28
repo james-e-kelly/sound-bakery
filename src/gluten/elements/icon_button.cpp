@@ -74,6 +74,12 @@ auto gluten::icon_button::set_button_scale(float scale) -> icon_button&
     return *this;
 }
 
+auto gluten::icon_button::set_button_border(float borderSize, float borderRounding) -> icon_button&
+{
+    m_button.set_element_border(borderSize, borderRounding);
+    return *this;
+}
+
 auto gluten::icon_button::set_element_background_color(ImU32 color) -> element& 
 {
     m_button.set_element_background_color(color);

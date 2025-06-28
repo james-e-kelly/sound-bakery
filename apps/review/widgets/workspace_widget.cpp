@@ -51,51 +51,52 @@ auto workspace_widget::render_window_implementation() -> void
 void workspace_widget::render_list()
 {
     gluten::imgui::scoped_color backgroundColor(ImGuiCol_ChildBg, gluten::theme::carbon_g100::field02);
+    gluten::imgui::scoped_color borderColor(ImGuiCol_Border, gluten::theme::carbon_g100::background);
+    gluten::imgui::scoped_color separatorColor(ImGuiCol_Separator, gluten::theme::carbon_g100::background);
 
     if (ImGui::BeginChild("ItemsList", ImVec2(itemListWidth, 0), ImGuiChildFlags_ResizeX))
     {
-        {
-            gluten::element topToolbar(gluten::element::anchor_preset::stretch_top);
-            topToolbar.get_element_anchor().maxOffset.y = leftToobarWidth;
-            topToolbar.render_window();
+        gluten::element topToolbar(gluten::element::anchor_preset::stretch_top);
+        topToolbar.get_element_anchor().maxOffset.y = leftToobarWidth;
+        topToolbar.render_window();
 
-            gluten::text titleText("Projects", ImVec2(0.5f, 0.5f), gluten::element::anchor_preset::center_middle);
-            titleText
-                .set_font(gluten::fonts::title)
-                .set_element_content_font_size(gluten::g_baseFontSize * 2.0f)
-                .render(topToolbar.get_element_rect());
+        gluten::text titleText("Projects", ImVec2(0.5f, 0.5f), gluten::element::anchor_preset::center_middle);
+        titleText
+            .set_font(gluten::fonts::title)
+            .set_element_content_font_size(gluten::g_baseFontSize * 2.0f)
+            .render(topToolbar.get_element_rect());
 
-            gluten::icon_button backButton("##BackButton", ICON_LC_ARROW_BIG_LEFT, gluten::fonts::regular_lucide_icons);
-            backButton
-                .set_icon_alignment(ImVec2(0.0f, 0.5f))
-                .set_button_alignment(ImVec2(0.0f, 0.5f))
-                .set_button_scale(1.2f)
-                .set_element_background_color(gluten::theme::carbon_g100::field03)
-                .set_element_hover_color(gluten::theme::carbon_g100::fieldHover03)
-                .set_element_active_color(gluten::theme::carbon_g100::layerActive01)
-                .set_element_anchor_preset(gluten::element::anchor_preset::left_middle)
-                .set_element_content_scale(2.0f)
-                .set_element_translation(ImVec2(10.0f, 0.0f))
-                .render(topToolbar.get_element_rect());
+        gluten::icon_button backButton("##BackButton", ICON_LC_ARROW_BIG_LEFT, gluten::fonts::regular_lucide_icons);
+        backButton
+            .set_icon_alignment(ImVec2(0.0f, 0.5f))
+            .set_button_alignment(ImVec2(0.0f, 0.5f))
+            .set_button_border(2.0f, 0.0f)
+            .set_button_scale(1.2f)
+            .set_element_background_color(gluten::theme::carbon_g100::field03)
+            .set_element_hover_color(gluten::theme::carbon_g100::fieldHover03)
+            .set_element_active_color(gluten::theme::carbon_g100::layerActive01)
+            .set_element_anchor_preset(gluten::element::anchor_preset::left_middle)
+            .set_element_content_scale(2.0f)
+            .set_element_translation(ImVec2(10.0f, 0.0f))
+            .render(topToolbar.get_element_rect());
 
-            gluten::icon_button newButton("##NewButton", ICON_LC_PLUS, gluten::fonts::regular_lucide_icons);
-            newButton
-                .set_icon_alignment(ImVec2(1.0f, 0.5f))
-                .set_button_alignment(ImVec2(1.0f, 0.5f))
-                .set_button_scale(1.2f)
-                .set_element_background_color(gluten::theme::carbon_g100::field03)
-                .set_element_hover_color(gluten::theme::carbon_g100::fieldHover03)
-                .set_element_active_color(gluten::theme::carbon_g100::layerActive01)
-                .set_element_anchor_preset(gluten::element::anchor_preset::right_middle)
-                .set_element_content_scale(2.0f)
-                .set_element_translation(ImVec2(-10.0f, 0.0f))
-                .render(topToolbar.get_element_rect());
+        gluten::icon_button newButton("##NewButton", ICON_LC_PLUS, gluten::fonts::regular_lucide_icons);
+        newButton
+            .set_icon_alignment(ImVec2(1.0f, 0.5f))
+            .set_button_alignment(ImVec2(1.0f, 0.5f))
+            .set_button_border(2.0f, 0.0f)
+            .set_button_scale(1.2f)
+            .set_element_background_color(gluten::theme::carbon_g100::field03)
+            .set_element_hover_color(gluten::theme::carbon_g100::fieldHover03)
+            .set_element_active_color(gluten::theme::carbon_g100::layerActive01)
+            .set_element_anchor_preset(gluten::element::anchor_preset::right_middle)
+            .set_element_content_scale(2.0f)
+            .set_element_translation(ImVec2(-10.0f, 0.0f))
+            .render(topToolbar.get_element_rect());
 
-            ImGui::SetCursorPos(topToolbar.get_element_rect().GetBL());
-        }
+        ImGui::SetCursorPos(topToolbar.get_element_rect_local().GetBL());
 
-        ImGui::TextUnformatted("Item List");
-        ImGui::Separator();
+        ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal, 2.0f);
     }
     ImGui::EndChild();
 }

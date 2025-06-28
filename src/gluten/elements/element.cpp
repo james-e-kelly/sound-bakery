@@ -279,18 +279,34 @@ bool gluten::element::render(const ImRect& parent)
 
     ImDrawList* const windowDrawList = ImGui::GetWindowDrawList();
 
+    if (windowDrawList && m_borderSize.has_value())
+    {
+        const float borderSize = m_borderSize.value();
+
+        if (borderSize > 0.0f)
+        {
+            const ImU32 borderColor = ImGui::GetColorU32(ImGuiCol_Border);
+            const float borderRounding = m_borderRounding.value_or(0.0f);
+
+            ImRect borderRect = elementBox;
+            borderRect.Expand(borderSize);
+
+            windowDrawList->AddRectFilled(borderRect.GetTL(), borderRect.GetBR(), borderColor, borderRounding);
+        }
+    }
+
     if ((activated || m_active) && !hovered && m_activeColor.has_value())
     {
         if (windowDrawList)
         {
-            ImGui::GetWindowDrawList()->AddRectFilled(elementBox.Min, elementBox.Max, m_activeColor.value());
+            windowDrawList->AddRectFilled(elementBox.Min, elementBox.Max, m_activeColor.value());
         }
     }
     else if (hovered && m_hoverColor.has_value())
     {
         if (windowDrawList)
         {
-            ImGui::GetWindowDrawList()->AddRectFilled(elementBox.Min, elementBox.Max, m_hoverColor.value());
+            windowDrawList->AddRectFilled(elementBox.Min, elementBox.Max, m_hoverColor.value());
         }
     }
     else if (m_backgroundColor.has_value())
@@ -298,18 +314,6 @@ bool gluten::element::render(const ImRect& parent)
         if (ImDrawList* const backgroundDrawList = ImGui::GetBackgroundDrawList())
         {
             windowDrawList->AddRectFilled(elementBox.Min, elementBox.Max, m_backgroundColor.value());
-
-            ImVec2 bottomLeft  = elementBox.GetBL();
-            ImVec2 bottomRight = elementBox.GetBR();
-            bottomLeft.x       = (int)bottomLeft.x;
-            bottomLeft.y       = (int)bottomLeft.y;
-            bottomRight.x      = (int)bottomRight.x;
-            bottomRight.y      = (int)bottomRight.y;
-
-            const ImGuiStyle& style = ImGui::GetStyle();
-            ImGui::GetCurrentWindow()->DrawList->AddLine(
-                bottomLeft, bottomRight, ImGui::ColorConvertFloat4ToU32(style.Colors[ImGuiCol_Border]),
-                style.WindowBorderSize);
         }
     }
 
@@ -357,6 +361,13 @@ auto gluten::element::set_element_max_size(const ImVec2& maxSize) -> element&
 auto gluten::element::set_element_translation(const ImVec2& translation) -> element&
 {
     m_translation = translation;
+    return *this;
+}
+
+auto gluten::element::set_element_border(float borderSize, float borderRounding) -> element&
+{
+    m_borderSize     = borderSize;
+    m_borderRounding = borderRounding;
     return *this;
 }
 
