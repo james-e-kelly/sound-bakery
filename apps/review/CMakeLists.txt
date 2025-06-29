@@ -16,6 +16,8 @@ set(review_SOURCES
 set(review_HEADERS
   app/review_app.h
   data/workspace_data.h
+  data/project_data.h
+  data/review_data.h
   managers/project_manager.h
   managers/review_manager.h
   managers/workspace_manager.h

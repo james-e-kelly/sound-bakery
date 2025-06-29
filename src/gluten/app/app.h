@@ -62,6 +62,8 @@ namespace gluten
         template<typename T>
         static auto save_data_to_disk(const std::filesystem::path& file, const T& data) -> void
         {
+            std::filesystem::create_directories(file.parent_path());
+
             std::ofstream outputStream(file, std::ios_base::out);
             boost::archive::xml_oarchive archive(outputStream);
 

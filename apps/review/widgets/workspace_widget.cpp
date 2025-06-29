@@ -79,6 +79,48 @@ private:
     int m_closedReviews;
 };
 
+auto create_project_popup::render_popup() -> void
+{
+    ImGui::SetWindowFontScale(1.5f);
+
+    static constexpr std::size_t textBufferSize = 512;
+
+    static char projectNameBuffer[textBufferSize];
+    static char projectDescriptionBuffer[textBufferSize];
+
+    ImGui::InputTextWithHint("Project Name", "My New Project", projectNameBuffer, textBufferSize);
+
+    ImGui::InputTextWithHint("Project Description", "2D platformer metroidvania", projectDescriptionBuffer, textBufferSize);
+
+    const std::string projectName        = projectNameBuffer;
+    const std::string projectDescription = projectDescriptionBuffer;
+
+    const bool setupValid = !projectName.empty();
+
+    ImGui::BeginDisabled(!setupValid);
+
+    if (ImGui::Button("Create"))
+    {
+        if (std::shared_ptr<workspace_manager> workspaceManager = get_app()->get_manager_by_class<workspace_manager>())
+        {
+            workspaceManager->create_project(projectName, projectDescription);
+        }
+
+        close_popup();
+    }
+
+    ImGui::EndDisabled();
+
+    ImGui::SameLine();
+
+    if (ImGui::Button("Cancel"))
+    {
+        close_popup();
+    }
+
+    ImGui::SetWindowFontScale(1.0f);
+}
+
 auto workspace_widget::start_implementation() -> void
 {
     ImGuiWindowClass windowClass;
@@ -155,8 +197,18 @@ void workspace_widget::render_list()
             .set_element_active_color(gluten::theme::carbon_g100::layerActive01)
             .set_element_anchor_preset(gluten::element::anchor_preset::right_middle)
             .set_element_content_scale(2.0f)
-            .set_element_translation(ImVec2(-buttonOffset, 0.0f))
-            .render(topToolbar.get_element_rect());
+            .set_element_translation(ImVec2(-buttonOffset, 0.0f));
+
+        if (newButton.render(topToolbar.get_element_rect()))
+        {
+            static std::shared_ptr<create_project_popup> createProjectPopup;
+            createProjectPopup = add_child_widget<create_project_popup>(this);
+
+            if (createProjectPopup)
+            {
+                createProjectPopup->open_popup();
+            }
+        }
 
         ImGui::SetCursorPos(topToolbar.get_element_rect_local().GetBL());
 
@@ -168,13 +220,11 @@ void workspace_widget::render_list()
             itemsLayout.set_layout_spacing(2.0f);
             itemsLayout.render_window();
 
-            project_element projectElement("Project 1", "Project 1 description", 2, 5);
-            project_element projectElement2("Project 2", "Project 2 description", 0, 1);
-            project_element projectElement3("Project 3", "Project 3 description", 0, 0);
-
-            itemsLayout.render_layout_element_pixels_vertical(&projectElement, 100.0f);
-            itemsLayout.render_layout_element_pixels_vertical(&projectElement2, 100.0f);
-            itemsLayout.render_layout_element_pixels_vertical(&projectElement3, 100.0f);
+            for (const auto& project : get_app()->get_manager_by_class<workspace_manager>()->get_projects())
+            {
+                project_element projectElement(project->m_projectName, project->m_projectDescription, 2, 5);
+                itemsLayout.render_layout_element_pixels_vertical(&projectElement, 100.0f);
+            }
         }
         ImGui::EndChild();
     }
