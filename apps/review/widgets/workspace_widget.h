@@ -18,6 +18,20 @@ private:
     char projectDescriptionBuffer[textBufferSize] = {0};
 };
 
+class create_review_popup : public gluten::popup_widget
+{
+    WIDGET_CONSTRUCT_PARENT(create_review_popup, "Create Review", gluten::popup_widget)
+
+protected:
+    auto render_popup() -> void override;
+
+private:
+    static inline constexpr std::size_t textBufferSize = 512;
+
+    char reviewNameBuffer[textBufferSize]        = {0};
+    char reviewDescriptionBuffer[textBufferSize] = {0};
+};
+
 class workspace_widget : public gluten::window_widget
 {
     WIDGET_CONSTRUCT_PARENT(workspace_widget, "Workspace", gluten::window_widget)

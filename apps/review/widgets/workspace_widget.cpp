@@ -120,6 +120,42 @@ auto create_project_popup::render_popup() -> void
     ImGui::SetWindowFontScale(1.0f);
 }
 
+auto create_review_popup::render_popup() -> void
+{
+    ImGui::SetWindowFontScale(1.5f);
+
+    ImGui::InputTextWithHint("Review Name", "My New Review", reviewNameBuffer, textBufferSize);
+    ImGui::InputTextWithHint("Review Description", "Adding a new sound", reviewDescriptionBuffer,
+                             textBufferSize);
+
+    const std::string reviewName        = reviewNameBuffer;
+    const std::string reviewDescription = reviewDescriptionBuffer;
+
+    const bool setupValid = !reviewName.empty();
+
+    ImGui::BeginDisabled(!setupValid);
+
+    if (ImGui::Button("Create"))
+    {
+        if (std::shared_ptr<workspace_manager> workspaceManager = get_app()->get_manager_by_class<workspace_manager>())
+        {
+        }
+
+        close_popup();
+    }
+
+    ImGui::EndDisabled();
+
+    ImGui::SameLine();
+
+    if (ImGui::Button("Cancel"))
+    {
+        close_popup();
+    }
+
+    ImGui::SetWindowFontScale(1.0f);
+}
+
 auto workspace_widget::start_implementation() -> void
 {
     ImGuiWindowClass windowClass;
@@ -219,6 +255,16 @@ auto workspace_widget::render_list() -> void
                 if (createProjectPopup)
                 {
                     createProjectPopup->open_popup();
+                }
+            }
+            else if (listingReviews)
+            {
+                static std::shared_ptr<create_review_popup> createReviewPopup;
+                createReviewPopup = add_child_widget<create_review_popup>(this);
+
+                if (createReviewPopup)
+                {
+                    createReviewPopup->open_popup();
                 }
             }
         }
