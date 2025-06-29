@@ -117,6 +117,12 @@ auto workspace_manager::create_project(const std::string& projectName, const std
 
 auto workspace_manager::select_project(const std::string& projectName) -> void
 {
+    if (projectName.empty())
+    {
+        m_selectedProject.reset();
+        return;
+    }
+
     for (const auto& project : m_projects)
     {
         if (project->m_projectName == projectName)

@@ -35,6 +35,8 @@ public:
 protected:
     auto render_element(const ImRect& elementRect) -> bool override
     {
+        gluten::imgui::scoped_id id(ImGui::GetID(m_projectName.c_str()));
+
         if (m_backgroundColor.has_value())
         {
             gluten::background background;
@@ -65,18 +67,20 @@ protected:
             .set_element_content_font_size(20.0f)
             .get_element_anchor().min = openReviewsText.get_element_anchor().max = ImVec2(1.0f, 0.25f);
 
+        gluten::button button("##ProjectElementButton", true, anchor_preset::stretch_full);
+
         projectTitleText.render(contentRect);
         projectDescriptionText.render(contentRect);
         openReviewsText.render(contentRect);
 
-        return false;
+        return button.render(elementRect);
     }
 
 private:
     std::string m_projectName;
     std::string m_projectDescription;
-    int m_openReviews;
-    int m_closedReviews;
+    int m_openReviews = 0;
+    int m_closedReviews = 0;
 };
 
 auto create_project_popup::render_popup() -> void
@@ -201,7 +205,7 @@ auto workspace_widget::render_list() -> void
         {
             if (backButton.render(topToolbar.get_element_rect()))
             {
-
+                get_app()->get_manager_by_class<workspace_manager>()->select_project({});
             }
         }
 
@@ -229,10 +233,16 @@ auto workspace_widget::render_list() -> void
             itemsLayout.set_layout_spacing(2.0f);
             itemsLayout.render_window();
 
-            for (const auto& project : get_app()->get_manager_by_class<workspace_manager>()->get_projects())
+            if (listingProjects)
             {
-                project_element projectElement(project->m_projectName, project->m_projectDescription, 2, 5);
-                itemsLayout.render_layout_element_pixels_vertical(&projectElement, 100.0f);
+                for (const auto& project : get_app()->get_manager_by_class<workspace_manager>()->get_projects())
+                {
+                    project_element projectElement(project->m_projectName, project->m_projectDescription, 2, 5);
+                    if (itemsLayout.render_layout_element_pixels_vertical(&projectElement, 100.0f))
+                    {
+                        get_app()->get_manager_by_class<workspace_manager>()->select_project(project->m_projectName);
+                    }
+                }
             }
         }
         ImGui::EndChild();
