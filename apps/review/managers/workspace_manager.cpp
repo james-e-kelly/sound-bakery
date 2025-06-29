@@ -5,13 +5,16 @@
 
 namespace
 {
-    static constexpr const char* g_workspaceExtension			= "workspace";
-    static constexpr const char* g_workspaceExtensionWithDot	= ".workspace";
+    constexpr const char* g_workspaceExtension			= "workspace";
+    constexpr const char* g_workspaceExtensionWithDot	= ".workspace";
+    constexpr const char* g_projectDirectoryName		= "Projects";
+    constexpr const char* g_userDirectoryName			= "Users";
+    constexpr const char* g_projectFileExtension		= "project";
 }
 
 auto workspace_manager::init(gluten::app* app) -> void
 {
-	if (!m_workspaceController.workspace_exists())
+    if (!m_userSettingsData->workspace_exists())
 	{
         m_introWidget = app->get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class_to_root<intro_widget>(false);
 	}
@@ -19,9 +22,9 @@ auto workspace_manager::init(gluten::app* app) -> void
 
 auto workspace_manager::start() -> void
 {
-	if (m_workspaceController.workspace_exists())
+    if (m_userSettingsData->workspace_exists())
 	{
-        open_workspace(m_workspaceController->m_workspaceFilePath);
+        open_workspace(m_userSettingsData->m_workspaceFilePath);
 	}
 
 	if (m_introWidget)
@@ -37,28 +40,74 @@ auto workspace_manager::start() -> void
 	}
 }
 
+auto workspace_manager::get_projects_directory() const -> std::filesystem::path
+{
+    return m_userSettingsData->m_workspaceFilePath.parent_path() / g_projectDirectoryName;
+}
+
+auto workspace_manager::get_user_directory() const -> std::filesystem::path
+{
+    return m_userSettingsData->m_workspaceFilePath.parent_path() / g_userDirectoryName;
+}
+
 auto workspace_manager::open_workspace(const std::filesystem::path& workspaceFile) -> void
 {
-	if (std::filesystem::exists(workspaceFile))
-	{
-        const std::string extension = workspaceFile.extension().string();
+    if (file_is_workspace(workspaceFile))
+    {
+        m_introWidget.reset();
 
-		if (extension == g_workspaceExtensionWithDot)
-		{
-            workspace_file_data fileData;
+        m_userSettingsData->m_workspaceFilePath = workspaceFile;
 
-			gluten::app::load_data_from_disk(workspaceFile, fileData);
+        workspace_data fileData;
+        gluten::app::load_data_from_disk(workspaceFile, fileData);
 
-			m_introWidget.reset();
+        m_workspaceWidget = get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class_to_root<workspace_widget>(false);
 
-			m_workspaceWidget = get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class_to_root<workspace_widget>(false);
+        gluten::dockspace_refresh refresh =
+            get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->get_root_widget()->set_manual_layout();
+        refresh.assign_widget_to_node(rttr::type::get<workspace_widget>(), refresh.dockspaceID);
+    
+        load_projects_from_workspace();
+    }
+}
 
-			gluten::dockspace_refresh refresh = get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->get_root_widget()->set_manual_layout();
-			refresh.assign_widget_to_node(rttr::type::get<workspace_widget>(), refresh.dockspaceID);
+auto workspace_manager::load_projects_from_workspace() -> void
+{
+    if (std::filesystem::exists(get_projects_directory()))
+    {
+        for (const auto& dir : std::filesystem::directory_iterator(get_projects_directory()))
+        {
+            if (dir.is_directory())
+            {
+                const std::filesystem::path projectDirectory = dir.path();
+                const std::string projectId                  = projectDirectory.stem().string();
+                const std::filesystem::path projectFile =
+                    (projectDirectory / projectId).replace_extension(g_projectFileExtension);
 
-			m_workspaceController.open_workspace(workspaceFile);
-		}
-	}
+                if (std::filesystem::exists(projectFile))
+                {
+                    project_data projectData;
+                    gluten::app::load_data_from_disk(projectFile, projectData);
+
+                    add_existing_project(projectData);
+                }
+            }
+        }
+    }
+}
+
+auto workspace_manager::create_project(const std::string& projectName, const std::string& projectDescription) -> void
+{
+    project_data projectData;
+    projectData.m_projectName        = projectName;
+    projectData.m_projectDescription = projectDescription;
+
+    const std::filesystem::path projectFile =
+        (get_projects_directory() / projectName / projectName).replace_extension(g_projectFileExtension);
+
+    gluten::app::save_data_to_disk(projectFile, projectData);
+
+    m_projects.push_back(std::make_shared<project_data>(std::move(projectData)));
 }
 
 auto workspace_manager::create_workspace(const std::string& workspaceName, const std::filesystem::path& workspaceDirectory) -> void
@@ -69,7 +118,7 @@ auto workspace_manager::create_workspace(const std::string& workspaceName, const
 
 		std::filesystem::create_directories(workspaceDirectory);
 
-		workspace_file_data fileData;
+		workspace_data fileData;
         fileData.m_workspaceName = workspaceName;
 
 		gluten::app::save_data_to_disk(workspaceFile, fileData);
@@ -80,8 +129,6 @@ auto workspace_manager::create_workspace(const std::string& workspaceName, const
 
 		gluten::dockspace_refresh refresh = get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->get_root_widget()->set_manual_layout();
 		refresh.assign_widget_to_node(rttr::type::get<workspace_widget>(), refresh.dockspaceID);
-
-		m_workspaceController.open_workspace(workspaceFile);
 	}
 }
 
@@ -96,7 +143,7 @@ auto workspace_manager::close_workspace() -> void
 		gluten::dockspace_refresh refresh = get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->get_root_widget()->set_manual_layout();
         refresh.assign_widget_to_node(rttr::type::get<intro_widget>(), refresh.dockspaceID);
 
-		m_workspaceController->m_workspaceFilePath.clear();
+        m_userSettingsData->m_workspaceFilePath.clear();
 	}
 }
 
@@ -105,12 +152,19 @@ auto workspace_manager::add_existing_project(const project_data& projectData) ->
     m_projects.push_back(std::make_shared<project_data>(std::move(projectData)));
 }
 
-auto workspace_manager::create_project(const std::string& projectName, const std::string& projectDescription) -> void
-{
-    project_data projectData{.m_projectName = projectName, .m_projectDescription = projectDescription};
-    add_existing_project(projectData);
+auto workspace_manager::get_projects() const -> std::vector<std::shared_ptr<project_data>> { return m_projects; }
 
-    m_workspaceController.create_project(projectName, projectDescription);
+auto workspace_manager::get_workspace_file() const -> std::filesystem::path
+{
+    return m_userSettingsData->m_workspaceFilePath;
 }
 
-auto workspace_manager::get_projects() const -> std::vector<std::shared_ptr<project_data>> { return m_projects; }
+auto workspace_manager::get_workspace_directory() const -> std::filesystem::path
+{
+    return m_userSettingsData->m_workspaceFilePath.parent_path();
+}
+
+auto workspace_manager::file_is_workspace(const std::filesystem::path& file) -> bool
+{
+    return std::filesystem::exists(file) && file.extension().string() == g_workspaceExtensionWithDot;
+}

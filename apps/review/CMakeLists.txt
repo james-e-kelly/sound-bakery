@@ -18,6 +18,7 @@ set(review_HEADERS
   data/workspace_data.h
   data/project_data.h
   data/review_data.h
+  data/user_settings_data.h
   managers/project_manager.h
   managers/review_manager.h
   managers/workspace_manager.h

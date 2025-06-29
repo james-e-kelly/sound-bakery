@@ -7,3 +7,14 @@
 #include "gluten/widgets/root_widget.h"
 
 #include "boost/serialization/version.hpp"
+
+using project_id_type = unsigned int;
+
+enum review_app_version
+{
+    review_app_version_start = 0,
+
+    // Add versions above this //
+    review_app_version_end,
+    review_app_version_current = review_app_version_end - 1
+};
