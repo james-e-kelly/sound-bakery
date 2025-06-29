@@ -152,7 +152,7 @@ auto workspace_widget::render_window_implementation() -> void
     }
 }
 
-void workspace_widget::render_list()
+auto workspace_widget::render_list() -> void
 {
     gluten::imgui::scoped_color backgroundColor(ImGuiCol_ChildBg, gluten::theme::carbon_g100::field02);
     gluten::imgui::scoped_color borderColor(ImGuiCol_Border, gluten::theme::carbon_g100::background);
@@ -231,7 +231,7 @@ void workspace_widget::render_list()
     ImGui::EndChild();
 }
 
-void workspace_widget::render_content()
+auto workspace_widget::render_content() -> void
 {
     gluten::imgui::scoped_color backgroundColor(ImGuiCol_ChildBg, gluten::theme::carbon_g100::field03);
 
@@ -241,7 +241,7 @@ void workspace_widget::render_content()
     ImGui::EndChild();
 }
 
-void workspace_widget::render_left_toolbar()
+auto workspace_widget::render_left_toolbar() -> void
 {
     gluten::imgui::scoped_color toolbarBackgroundColor(ImGuiCol_ChildBg, gluten::theme::carbon_g100::field01);
 
