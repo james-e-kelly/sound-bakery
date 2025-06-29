@@ -11,6 +11,7 @@ struct user_settings_data
 {
     std::filesystem::path m_workspaceFilePath;  //< Top most file that will be used to find reviews and data in
                                                 // subfolders
+    std::string m_selectedProjectName;
 
     auto workspace_exists() const -> bool
     {
@@ -21,6 +22,11 @@ struct user_settings_data
     auto serialize(archive_class& archive, const unsigned int version) -> void
     {
         archive& boost::serialization::make_nvp("Workspace", m_workspaceFilePath);
+
+        if (version >= review_app_save_selected_project)
+        {
+            archive& boost::serialization::make_nvp("SelectedProject", m_selectedProjectName);
+        }
     }
 };
 

@@ -22,7 +22,10 @@ public:
 
     auto add_existing_project(const project_data& projectData) -> void;
     auto create_project(const std::string& projectName, const std::string& projectDescription) -> void;
+    auto select_project(const std::string& projectName) -> void;
+    [[nodiscard]] auto has_selected_project() const -> bool;
 
+    [[nodiscard]] auto get_selected_project() const -> std::shared_ptr<project_data>;
     [[nodiscard]] auto get_projects() const -> std::vector<std::shared_ptr<project_data>>;
     
     [[nodiscard]] auto get_workspace_file() const -> std::filesystem::path;
@@ -44,4 +47,5 @@ private:
 
     gluten::data_source<user_settings_data> m_userSettingsData;
     std::vector<std::shared_ptr<project_data>> m_projects;
+    std::shared_ptr<project_data> m_selectedProject;
 };

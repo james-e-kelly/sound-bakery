@@ -68,6 +68,11 @@ auto workspace_manager::open_workspace(const std::filesystem::path& workspaceFil
         refresh.assign_widget_to_node(rttr::type::get<workspace_widget>(), refresh.dockspaceID);
     
         load_projects_from_workspace();
+
+        if (!m_userSettingsData->m_selectedProjectName.empty())
+        {
+            select_project(m_userSettingsData->m_selectedProjectName);
+        }
     }
 }
 
@@ -110,6 +115,20 @@ auto workspace_manager::create_project(const std::string& projectName, const std
     m_projects.push_back(std::make_shared<project_data>(std::move(projectData)));
 }
 
+auto workspace_manager::select_project(const std::string& projectName) -> void
+{
+    for (const auto& project : m_projects)
+    {
+        if (project->m_projectName == projectName)
+        {
+            m_selectedProject = project;
+            break;
+        }
+    }
+}
+
+auto workspace_manager::has_selected_project() const -> bool { return static_cast<bool>(m_selectedProject); }
+
 auto workspace_manager::create_workspace(const std::string& workspaceName, const std::filesystem::path& workspaceDirectory) -> void
 {
 	if (!workspaceName.empty() && std::filesystem::exists(workspaceDirectory))
@@ -150,6 +169,11 @@ auto workspace_manager::close_workspace() -> void
 auto workspace_manager::add_existing_project(const project_data& projectData) -> void
 {
     m_projects.push_back(std::make_shared<project_data>(std::move(projectData)));
+}
+
+auto workspace_manager::get_selected_project() const -> std::shared_ptr<project_data>
+{
+    return m_selectedProject;
 }
 
 auto workspace_manager::get_projects() const -> std::vector<std::shared_ptr<project_data>> { return m_projects; }

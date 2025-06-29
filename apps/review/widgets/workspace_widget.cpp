@@ -83,11 +83,6 @@ auto create_project_popup::render_popup() -> void
 {
     ImGui::SetWindowFontScale(1.5f);
 
-    static constexpr std::size_t textBufferSize = 512;
-
-    static char projectNameBuffer[textBufferSize];
-    static char projectDescriptionBuffer[textBufferSize];
-
     ImGui::InputTextWithHint("Project Name", "My New Project", projectNameBuffer, textBufferSize);
 
     ImGui::InputTextWithHint("Project Description", "2D platformer metroidvania", projectDescriptionBuffer, textBufferSize);
@@ -166,7 +161,10 @@ auto workspace_widget::render_list() -> void
         topToolbar.get_element_anchor().maxOffset.y = leftToobarWidth;
         topToolbar.render_window();
 
-        gluten::text titleText("Projects", ImVec2(0.5f, 0.5f), gluten::element::anchor_preset::center_middle);
+        const bool listingProjects = !get_app()->get_manager_by_class<workspace_manager>()->has_selected_project();
+        const bool listingReviews  = !listingProjects;
+
+        gluten::text titleText(listingProjects ? "Projects" : "Reviews", ImVec2(0.5f, 0.5f), gluten::element::anchor_preset::center_middle);
         titleText
             .set_font(gluten::fonts::title)
             .set_element_content_font_size(gluten::g_baseFontSize * 2.0f)
@@ -183,8 +181,8 @@ auto workspace_widget::render_list() -> void
             .set_element_active_color(gluten::theme::carbon_g100::layerActive01)
             .set_element_anchor_preset(gluten::element::anchor_preset::left_middle)
             .set_element_content_scale(2.0f)
-            .set_element_translation(ImVec2(buttonOffset, 0.0f))
-            .render(topToolbar.get_element_rect());
+            .set_element_translation(ImVec2(buttonOffset, 0.0f));
+        
 
         gluten::icon_button newButton("##NewButton", ICON_LC_PLUS, gluten::fonts::regular_lucide_icons);
         newButton
@@ -199,14 +197,25 @@ auto workspace_widget::render_list() -> void
             .set_element_content_scale(2.0f)
             .set_element_translation(ImVec2(-buttonOffset, 0.0f));
 
+        if (listingReviews)
+        {
+            if (backButton.render(topToolbar.get_element_rect()))
+            {
+
+            }
+        }
+
         if (newButton.render(topToolbar.get_element_rect()))
         {
-            static std::shared_ptr<create_project_popup> createProjectPopup;
-            createProjectPopup = add_child_widget<create_project_popup>(this);
-
-            if (createProjectPopup)
+            if (listingProjects)
             {
-                createProjectPopup->open_popup();
+                static std::shared_ptr<create_project_popup> createProjectPopup;
+                createProjectPopup = add_child_widget<create_project_popup>(this);
+
+                if (createProjectPopup)
+                {
+                    createProjectPopup->open_popup();
+                }
             }
         }
 

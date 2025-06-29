@@ -10,6 +10,12 @@ class create_project_popup : public gluten::popup_widget
 
 protected:
     auto render_popup() -> void override;
+
+private:
+    static inline constexpr std::size_t textBufferSize = 512;
+
+    char projectNameBuffer[textBufferSize] = {0};
+    char projectDescriptionBuffer[textBufferSize] = {0};
 };
 
 class workspace_widget : public gluten::window_widget

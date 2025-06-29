@@ -13,6 +13,7 @@ using project_id_type = unsigned int;
 enum review_app_version
 {
     review_app_version_start = 0,
+    review_app_save_selected_project,
 
     // Add versions above this //
     review_app_version_end,
