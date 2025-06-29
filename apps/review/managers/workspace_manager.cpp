@@ -160,6 +160,9 @@ auto workspace_manager::create_workspace(const std::string& workspaceName, const
 auto workspace_manager::close_workspace() -> void
 {
 	m_workspaceWidget.reset();
+    m_selectedProject.reset();
+    m_projects.clear();
+    m_userSettingsData->m_workspaceFilePath.clear();
 
 	if (!m_introWidget)
 	{
@@ -167,8 +170,6 @@ auto workspace_manager::close_workspace() -> void
 
 		gluten::dockspace_refresh refresh = get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->get_root_widget()->set_manual_layout();
         refresh.assign_widget_to_node(rttr::type::get<intro_widget>(), refresh.dockspaceID);
-
-        m_userSettingsData->m_workspaceFilePath.clear();
 	}
 }
 
