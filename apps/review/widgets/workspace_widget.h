@@ -1,6 +1,7 @@
 #pragma once
 
 #include "pch.h"
+#include "data/review_data.h"
 #include "gluten/widgets/window_widget.h"
 #include "gluten/widgets/popup_widget.h"
 
@@ -30,6 +31,8 @@ private:
 
     char reviewNameBuffer[textBufferSize]        = {0};
     char reviewDescriptionBuffer[textBufferSize] = {0};
+    char reviewUrlBuffer[textBufferSize] = {0};
+    new_review_data m_reviewData;
 };
 
 class workspace_widget : public gluten::window_widget

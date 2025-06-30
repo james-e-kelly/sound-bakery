@@ -15,6 +15,62 @@ namespace
     constexpr float leftToolbarHalfButtonHeight = leftToolbarButtonHeight / 2.0f;
 
     constexpr float itemListWidth = leftToobarWidth * 5.0f;
+
+    constexpr auto get_review_phase_name(review_phase phase) -> const char*
+    {
+        const char* name = nullptr;
+
+        switch (phase)
+        {
+            case review_phase::temp:
+                name = "Temp";
+                break;
+            case review_phase::first_pass:
+                name = "First Pass";
+                break;
+            case review_phase::iteration_pass:
+                name = "Iteration Pass";
+                break;
+            case review_phase::final_pass:
+                name = "Final Pass Pass";
+                break;
+            default:
+                break;
+        }
+
+        return name;
+    }
+
+    constexpr auto get_review_quality_name(review_quality quality) -> const char*
+    {
+        const char* name = nullptr;
+
+        switch (quality)
+        {
+            case review_quality::unknown:
+                name = "Unknown";
+                break;
+            case review_quality::c:
+                name = "C";
+                break;
+            case review_quality::b:
+                name = "B";
+                break;
+            case review_quality::a:
+                name = "A";
+                break;
+            case review_quality::a_plus:
+                name = "A+";
+                break;
+            case review_quality::a_plus_plus:
+                name = "A++";
+                break;
+            default:
+                break;
+        }
+
+        return name;
+    }
 }
 
 class project_element : public gluten::element
@@ -125,13 +181,55 @@ auto create_review_popup::render_popup() -> void
     ImGui::SetWindowFontScale(1.5f);
 
     ImGui::InputTextWithHint("Review Name", "My New Review", reviewNameBuffer, textBufferSize);
+    ImGui::SetItemTooltip("Write the title of the review. It can be anything from \"Adding some sounds\" to "
+                          "\"[TASK-1234][Level1] Add Looping Fire Sounds\"");
+
     ImGui::InputTextWithHint("Review Description", "Adding a new sound", reviewDescriptionBuffer,
                              textBufferSize);
+    ImGui::SetItemTooltip("Give the review a description to help describe what sounds you are adding or changing");
 
-    const std::string reviewName        = reviewNameBuffer;
-    const std::string reviewDescription = reviewDescriptionBuffer;
+    ImGui::InputTextWithHint("Review URL", "https://domain.com/task", reviewUrlBuffer, textBufferSize);
+    ImGui::SetItemTooltip("Add the Jira/ADO/HacknPlan task URL");
 
-    const bool setupValid = !reviewName.empty();
+    if (ImGui::BeginCombo("Review Phase", get_review_phase_name(m_reviewData.m_reviewPhase)))
+    {
+        for (int i = 0; i < static_cast<int>(review_phase::num); ++i)
+        {
+            review_phase phase = static_cast<review_phase>(i);
+
+            if (ImGui::Selectable(get_review_phase_name(phase)))
+            {
+                m_reviewData.m_reviewPhase = phase;
+            }
+        }
+
+        ImGui::EndCombo();
+    }
+    ImGui::SetItemTooltip("Set the review phase. Useful for giving context as a temp sound does not need as much "
+                          "vetting as a final pass sound");
+
+    if (ImGui::BeginCombo("Review Quakity", get_review_quality_name(m_reviewData.m_reviewQuality)))
+    {
+        for (int i = 0; i < static_cast<int>(review_quality::num); ++i)
+        {
+            review_quality quality = static_cast<review_quality>(i);
+
+            if (ImGui::Selectable(get_review_quality_name(quality)))
+            {
+                m_reviewData.m_reviewQuality = quality;
+            }
+        }
+
+        ImGui::EndCombo();
+    }
+    ImGui::SetItemTooltip("Set the review quality. The higher the quality, the more the asset may need reviewing. Your "
+                          "project may vary but roughly A == \"Industry Competitive\"");
+
+    m_reviewData.m_reviewName = reviewNameBuffer;
+    m_reviewData.m_reviewDescription = reviewDescriptionBuffer;
+    m_reviewData.m_reviewTaskUrl     = reviewDescriptionBuffer;
+
+    const bool setupValid = !m_reviewData.m_reviewName.empty();
 
     ImGui::BeginDisabled(!setupValid);
 
@@ -139,6 +237,7 @@ auto create_review_popup::render_popup() -> void
     {
         if (std::shared_ptr<workspace_manager> workspaceManager = get_app()->get_manager_by_class<workspace_manager>())
         {
+            
         }
 
         close_popup();

@@ -7,7 +7,8 @@ enum class review_phase
     temp,
     first_pass,
     iteration_pass,
-    final_pass
+    final_pass,
+    num
 };
 
 enum class review_quality
@@ -17,7 +18,8 @@ enum class review_quality
     b,
     a,
     a_plus,
-    a_plus_plus
+    a_plus_plus,
+    num
 };
 
 struct versionable_review_asset
@@ -29,12 +31,9 @@ struct versionable_review_asset
     template <class archive_class>
     auto serialize(archive_class& archive, const unsigned int version) -> void
     {
-        archive& boost::serialization::make_nvp("Workspace", m_workspaceFilePath);
-
-        if (version >= review_app_save_selected_project)
-        {
-            archive& boost::serialization::make_nvp("SelectedProject", m_selectedProjectName);
-        }
+        archive & boost::serialization::make_nvp("file_name", m_fileName);
+        archive & boost::serialization::make_nvp("current_version", m_currentAssetVersion);
+        archive & boost::serialization::make_nvp("file_version", m_versionsToRelativeFiles);
     }
 };
 
@@ -43,8 +42,8 @@ struct review_data
     std::string m_reviewName;
     std::string m_reviewTaskUrl;
     std::string m_reviewDescription;
-    review_phase m_reviewPhase;
-    review_quality m_reviewQuality;
+    review_phase m_reviewPhase = review_phase::first_pass;
+    review_quality m_reviewQuality = review_quality::unknown;
     std::vector<versionable_review_asset> m_relativeContextFiles;   //< Context files are also versionable in case new context is required
     std::vector<versionable_review_asset> m_reviewAssets;
 };
@@ -54,8 +53,8 @@ struct new_review_data
     std::string m_reviewName;
     std::string m_reviewTaskUrl;
     std::string m_reviewDescription;
-    review_phase m_reviewPhase;
-    review_quality m_reviewQuality;
+    review_phase m_reviewPhase = review_phase::first_pass;
+    review_quality m_reviewQuality = review_quality::unknown;
 
     std::vector<std::filesystem::path> m_absoluteContextFiles;  //< Absolute files to copy into the review folder
     std::vector<std::filesystem::path> m_absoluteReviewFiles;   //< Absolute files to copy into the review folder
