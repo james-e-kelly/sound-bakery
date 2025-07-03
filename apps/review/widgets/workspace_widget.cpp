@@ -6,6 +6,7 @@
 #include "gluten/theme/carbon_theme_g100.h"
 #include "gluten/utils/imgui_util_structures.h"
 
+#include "app/review_app.h"
 #include "managers/workspace_manager.h"
 
 namespace
@@ -139,6 +140,91 @@ private:
     int m_closedReviews = 0;
 };
 
+class file_drop_element : public gluten::element
+{
+public:
+    file_drop_element() : gluten::element(anchor_preset::left_top) {}
+
+    std::unordered_set<std::filesystem::path> m_droppedFiles;
+
+protected:
+    auto get_element_content_size() -> ImVec2 const override
+    {
+        const float xSize = ImGui::GetWindowSize().x - (ImGui::GetCurrentWindow()->WindowPadding.x * 2.0f);
+        return ImVec2(xSize, 100);
+    }
+
+    auto render_element(const ImRect& elementRect) -> bool override
+    {
+        gluten::imgui::scoped_color borderColor(ImGuiCol_Border, gluten::theme::carbon_g100::textHelper);
+
+        gluten::background background;
+        background
+            .set_element_border(2.0f, 5.0f)
+            .set_element_background_color(gluten::theme::carbon_g100::field02)
+            .set_element_hover_color(gluten::theme::carbon_g100::fieldHover02);
+
+        bool dropped = false;
+
+        if (is_target_hovered(get_element_rect()))
+        {
+            std::unordered_set<std::filesystem::path> files = review_app::get()->get_drag_drop_files();
+            std::unordered_set<std::filesystem::path> toRemove;
+
+
+            if (!files.empty())
+            {
+                dropped = true;
+
+                for (const auto& file : files)
+                {
+                    if (std::filesystem::is_directory(file))
+                    {
+                        for (auto iter : std::filesystem::recursive_directory_iterator(file))
+                        {
+                            if (iter.is_regular_file())
+                            {
+                                if (!files.contains(iter.path()))
+                                {
+                                    files.insert(iter.path());
+                                }
+                            }
+                        }
+
+                        toRemove.insert(file);
+                    }
+                }
+
+                for (const auto& removeFile : toRemove)
+                {
+                    files.erase(removeFile);
+                }
+
+                m_droppedFiles = files;
+            }
+        }
+
+        gluten::text text("Drop Here", ImVec2(0.5f, 0.5f), anchor_preset::center_middle);
+
+        background.render(elementRect);
+        text.render(elementRect);
+
+        ImVec2 elementEnd = get_element_rect_local().GetBL();
+        elementEnd.y += ImGui::GetCurrentContext()->Style.FramePadding.y;
+        
+        ImGui::SetCursorPos(elementEnd);
+
+        return dropped;
+    }
+
+private:
+    auto is_target_hovered(const ImRect& bb) -> bool const
+    {
+        return ImGui::IsMouseHoveringRect(bb.Min, bb.Max);
+    }
+};
+
+
 auto create_project_popup::render_popup() -> void
 {
     ImGui::SetWindowFontScale(1.5f);
@@ -180,6 +266,8 @@ auto create_review_popup::render_popup() -> void
 {
     ImGui::SetWindowFontScale(1.5f);
 
+    ImGui::BeginDisabled(review_app::get()->get_is_drag_dropping());
+
     ImGui::InputTextWithHint("Review Name", "My New Review", reviewNameBuffer, textBufferSize);
     ImGui::SetItemTooltip("Write the title of the review. It can be anything from \"Adding some sounds\" to "
                           "\"[TASK-1234][Level1] Add Looping Fire Sounds\"");
@@ -208,7 +296,7 @@ auto create_review_popup::render_popup() -> void
     ImGui::SetItemTooltip("Set the review phase. Useful for giving context as a temp sound does not need as much "
                           "vetting as a final pass sound");
 
-    if (ImGui::BeginCombo("Review Quakity", get_review_quality_name(m_reviewData.m_reviewQuality)))
+    if (ImGui::BeginCombo("Review Quality", get_review_quality_name(m_reviewData.m_reviewQuality)))
     {
         for (int i = 0; i < static_cast<int>(review_quality::num); ++i)
         {
@@ -224,6 +312,48 @@ auto create_review_popup::render_popup() -> void
     }
     ImGui::SetItemTooltip("Set the review quality. The higher the quality, the more the asset may need reviewing. Your "
                           "project may vary but roughly A == \"Industry Competitive\"");
+
+    ImGui::EndDisabled();
+
+    if (review_app::get()->get_is_drag_dropping())
+    {
+       file_drop_element contextFilesDrop;
+       file_drop_element reviewFilesDrop;
+
+       if (contextFilesDrop.render_cursor())
+       {
+           for (const auto& file : contextFilesDrop.m_droppedFiles)
+           {
+               if (!m_reviewData.m_absoluteContextFiles.contains(file))
+               {
+                   m_reviewData.m_absoluteContextFiles.insert(file);
+               }
+           }
+       }
+       
+       if (reviewFilesDrop.render_cursor())
+       {
+           for (const auto& file : reviewFilesDrop.m_droppedFiles)
+           {
+               if (!m_reviewData.m_absoluteReviewFiles.contains(file))
+               {
+                   m_reviewData.m_absoluteReviewFiles.insert(file);
+               }
+           }
+       }
+    }
+
+    ImGui::SetWindowFontScale(1.5f);    // Needs to be reset because the drag drop targets can reset the scale
+
+    for (const auto& file : m_reviewData.m_absoluteContextFiles)
+    {
+        ImGui::Text(file.string().c_str());
+    }
+
+    for (const auto& file : m_reviewData.m_absoluteReviewFiles)
+    {
+        ImGui::Text(file.string().c_str());
+    }
 
     m_reviewData.m_reviewName = reviewNameBuffer;
     m_reviewData.m_reviewDescription = reviewDescriptionBuffer;

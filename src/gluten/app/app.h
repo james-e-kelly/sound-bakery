@@ -92,6 +92,15 @@ namespace gluten
          */
         virtual void post_init() {}
 
+        /**
+         * @brief Runs before everything has exited and when the app is about to exit.
+         * 
+         * The subsystems and managers will still be valid at this point.
+         */
+        virtual void exit() {}
+
+        virtual void tick_implementation() {}
+
     private:
         auto start() -> void;
         auto tick() -> void;

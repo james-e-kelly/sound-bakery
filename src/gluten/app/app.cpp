@@ -61,6 +61,8 @@ int gluten::app::run(int argc, char** argv)
         tick();
     }
 
+    exit();
+
     for (auto& manager : m_managers)
     {
         manager->exit();
@@ -92,6 +94,7 @@ auto gluten::app::start() -> void
 auto gluten::app::tick() -> void
 {
     tick_begin();
+    tick_implementation();
     tick_end(); 
 }
 

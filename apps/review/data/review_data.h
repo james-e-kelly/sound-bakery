@@ -56,8 +56,8 @@ struct new_review_data
     review_phase m_reviewPhase = review_phase::first_pass;
     review_quality m_reviewQuality = review_quality::unknown;
 
-    std::vector<std::filesystem::path> m_absoluteContextFiles;  //< Absolute files to copy into the review folder
-    std::vector<std::filesystem::path> m_absoluteReviewFiles;   //< Absolute files to copy into the review folder
+    std::unordered_set<std::filesystem::path> m_absoluteContextFiles;  //< Absolute files to copy into the review folder
+    std::unordered_set<std::filesystem::path> m_absoluteReviewFiles;   //< Absolute files to copy into the review folder
 };
 
 BOOST_CLASS_VERSION(versionable_review_asset, review_app_version_current)
