@@ -187,7 +187,7 @@ namespace gluten::theme::carbon_g100
         style->Colors[ImGuiCol_DockingEmptyBg]    = background;
         style->Colors[ImGuiCol_TableRowBg]        = missingColorColor;
         style->Colors[ImGuiCol_TableRowBgAlt]     = missingColorColor;
-        style->Colors[ImGuiCol_TableHeaderBg]     = missingColorColor;
+        style->Colors[ImGuiCol_TableHeaderBg]     = field02;
         style->Colors[ImGuiCol_TextSelectedBg]    = fieldHover01;
         style->Colors[ImGuiCol_NavWindowingDimBg] = layer01;
         style->Colors[ImGuiCol_ModalWindowDimBg]  = layer01;
