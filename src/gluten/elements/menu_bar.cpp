@@ -40,6 +40,7 @@ auto gluten::menu_bar::render_element(const ImRect& elementBox) -> bool
         ImVec2 topLeft = elementBox.GetTL();
         topLeft.y      = desiredY;
         ImGui::SetCursorScreenPos(topLeft);
+        ImGui::Dummy(elementBox.GetSize());
     }
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, gluten::theme::carbon_g100::paddingVec);
