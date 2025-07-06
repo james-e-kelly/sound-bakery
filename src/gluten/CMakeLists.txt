@@ -1,5 +1,8 @@
 message(STATUS "Adding gluten")
 
+message(STATUS "Fetching imspinner")
+FetchContent_MakeAvailable(imspinner)
+
 set(BUILD_FOLDER ${CMAKE_BINARY_DIR})
 
 set(FONT_FILES
@@ -79,6 +82,7 @@ add_library(gluten STATIC
   ${GLUTEN_SOURCES}
   ${GLUTEN_HEADERS}
   ${stb_SOURCE_DIR}/stb_image.h
+  ${imspinner_SOURCE_DIR}/imspinner.h
 )
 
 c_17(gluten)
@@ -88,6 +92,7 @@ add_library(SoundBakery::Gluten ALIAS gluten)
 
 target_include_directories(gluten
     PUBLIC ${PROJECT_SOURCE_DIR}/src
+    PUBLIC ${imspinner_SOURCE_DIR}
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
     PRIVATE ${stb_SOURCE_DIR}
 )

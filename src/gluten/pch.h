@@ -5,6 +5,7 @@
 #include <rttr/type>
 #include "Delegates.h"
 #include "imgui.h"
+#include "imspinner.h"
 #include "tracy/Tracy.hpp"
 
 #include <fmt/core.h>

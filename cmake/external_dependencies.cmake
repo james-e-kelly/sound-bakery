@@ -266,3 +266,10 @@ FetchContent_Declare(
   GIT_TAG master
   EXCLUDE_FROM_ALL
 )
+
+FetchContent_Declare(
+  imspinner
+  GIT_REPOSITORY https://github.com/dalerank/imspinner.git
+  GIT_TAG master
+  EXCLUDE_FROM_ALL
+)
