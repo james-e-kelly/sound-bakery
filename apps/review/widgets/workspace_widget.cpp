@@ -144,6 +144,7 @@ class file_drop_element : public gluten::element
 {
 public:
     file_drop_element() : gluten::element(anchor_preset::left_top) {}
+    file_drop_element(const std::string& displayText) : gluten::element(anchor_preset::left_top), m_displayText(displayText) {}
 
     std::unordered_set<std::filesystem::path> m_droppedFiles;
 
@@ -170,7 +171,6 @@ protected:
         {
             std::unordered_set<std::filesystem::path> files = review_app::get()->get_drag_drop_files();
             std::unordered_set<std::filesystem::path> toRemove;
-
 
             if (!files.empty())
             {
@@ -204,7 +204,8 @@ protected:
             }
         }
 
-        gluten::text text("Drop Here", ImVec2(0.5f, 0.5f), anchor_preset::center_middle);
+        gluten::text text(m_displayText.empty() ? "Drop Here" : m_displayText.c_str(), ImVec2(0.5f, 0.5f),
+                          anchor_preset::center_middle);
 
         background.render(elementRect);
         text.render(elementRect);
@@ -222,6 +223,8 @@ private:
     {
         return ImGui::IsMouseHoveringRect(bb.Min, bb.Max);
     }
+
+    std::string m_displayText;
 };
 
 
@@ -315,10 +318,49 @@ auto create_review_popup::render_popup() -> void
 
     ImGui::EndDisabled();
 
+    {
+        gluten::imgui::scoped_color headerBg(ImGuiCol_Header, gluten::theme::carbon_g100::field03);
+
+        if (ImGui::CollapsingHeader("Context Files"))
+        {
+            for (auto iter = m_reviewData.m_absoluteContextFiles.begin();
+                 iter != m_reviewData.m_absoluteContextFiles.end();)
+            {
+                ImGui::Text(iter->string().c_str());
+                ImGui::SameLine();
+                if (ImGui::Button(fmt::format("X##{}", iter->string().c_str()).c_str()))
+                {
+                    iter = m_reviewData.m_absoluteContextFiles.erase(iter);
+                }
+                else
+                {
+                    ++iter;
+                }
+            }
+        }
+
+        if (ImGui::CollapsingHeader("Review Files"))
+        {
+            for (auto iter = m_reviewData.m_absoluteReviewFiles.begin();
+                 iter != m_reviewData.m_absoluteReviewFiles.end();)
+            {
+                ImGui::Text(iter->string().c_str());
+                ImGui::SameLine();
+                if (ImGui::Button(fmt::format("X##{}", iter->string().c_str()).c_str()))
+                {
+                    iter = m_reviewData.m_absoluteReviewFiles.erase(iter);
+                }
+                else
+                {
+                    ++iter;
+                }
+            }
+        }
+    }
     if (review_app::get()->get_is_drag_dropping())
     {
-       file_drop_element contextFilesDrop;
-       file_drop_element reviewFilesDrop;
+       file_drop_element contextFilesDrop("Context Files");
+       file_drop_element reviewFilesDrop("Review Files");
 
        if (contextFilesDrop.render_cursor())
        {
@@ -344,16 +386,6 @@ auto create_review_popup::render_popup() -> void
     }
 
     ImGui::SetWindowFontScale(1.5f);    // Needs to be reset because the drag drop targets can reset the scale
-
-    for (const auto& file : m_reviewData.m_absoluteContextFiles)
-    {
-        ImGui::Text(file.string().c_str());
-    }
-
-    for (const auto& file : m_reviewData.m_absoluteReviewFiles)
-    {
-        ImGui::Text(file.string().c_str());
-    }
 
     m_reviewData.m_reviewName = reviewNameBuffer;
     m_reviewData.m_reviewDescription = reviewDescriptionBuffer;
