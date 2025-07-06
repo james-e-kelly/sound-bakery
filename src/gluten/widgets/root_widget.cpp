@@ -331,6 +331,7 @@ auto root_widget::render_menu_implementation() -> void
     static bool showStyleEditor    = false;
     static bool showDemo           = false;
     static bool showPlotDemo       = false;
+    static bool showSpinnerDemo    = false;
 
     if (get_child_widget_count())
     {
@@ -361,6 +362,7 @@ auto root_widget::render_menu_implementation() -> void
             ImGui::MenuItem("ImGui Style Editor...", NULL, &showStyleEditor);
             ImGui::MenuItem("ImGui Demo...", NULL, &showDemo);
             ImGui::MenuItem("ImPlot Demo...", NULL, &showPlotDemo);
+            ImGui::MenuItem("ImSpinner Demo...", NULL, &showSpinnerDemo);
 
             ImGui::Separator();
 
@@ -404,6 +406,14 @@ auto root_widget::render_menu_implementation() -> void
     if (showPlotDemo)
     {
         ImPlot::ShowDemoWindow(&showPlotDemo);
+    }
+    if (showSpinnerDemo)
+    {
+        if (ImGui::Begin("ImSpinner Demo", &showSpinnerDemo))
+        {
+            ImSpinner::demoSpinners();
+        }
+        ImGui::End();
     }
 }
 

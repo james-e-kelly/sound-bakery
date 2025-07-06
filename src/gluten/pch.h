@@ -1,5 +1,7 @@
 #pragma once
 
+#define IMSPINNER_DEMO
+
 #include "utils/boost_serialization_extensions.h"
 
 #include <rttr/type>
