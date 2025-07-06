@@ -1,5 +1,6 @@
 #include "workspace_widget.h"
 
+#include "imspinner.h"
 #include "IconsLucide.h"
 #include "gluten/elements/layouts/layout.h"
 #include "gluten/elements/icon_button.h"
@@ -563,6 +564,9 @@ auto workspace_widget::render_content() -> void
 
     if (ImGui::BeginChild("Content"))
     {
+        ImSpinner::SpinnerAngEclipse("Loading", ImGui::GetFontSize() / 2.0f, 2.0f, gluten::theme::white, 8.0f);
+        ImGui::SameLine();
+        ImGui::Text(" Hello");
     }
     ImGui::EndChild();
 }
