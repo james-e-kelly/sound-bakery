@@ -4,30 +4,127 @@
 
 namespace
 {
-    constexpr const char* g_workspaceTableName = "workspace";
-    constexpr const char* g_projectsTableName = "projects";
-    constexpr const char* g_reviewsTableName = "reviews";
-    constexpr const char* g_commentsTableName = "comments";
+    constexpr const char* g_createWorkspaceTableStatement = R"sql(
+        CREATE TABLE IF NOT EXISTS workspaces (
+            id INTEGER PRIMARY KEY AUTOINCREMENT, 
+            name TEXT
+        );
+    )sql";
 
-    constexpr const char* g_idColumnName            = "id";
-    constexpr const char* g_nameColumnName          = "name";
-    constexpr const char* g_descriptionColumnName   = "description";
+    constexpr const char* g_createProjectsTableStatement = R"sql(
+        CREATE TABLE IF NOT EXISTS projects (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            description TEXT,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        );
+    )sql";
+
+    constexpr const char* g_createUsersTableStatement = R"sql(
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL UNIQUE,
+            display_name TEXT,
+            email TEXT,
+            password TEXT,   -- for now we will allow null passwords for easy logins
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        );
+    )sql";
+
+    constexpr const char* g_createReviewsTableStatement = R"sql(
+        CREATE TABLE IF NOT EXISTS reviews (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            project_id INTEGER NOT NULL,
+            name TEXT NOT NULL,
+            description TEXT,
+            status TEXT DEFAULT 'open', -- e.g. open, closed, in_progress, archives
+            phase TEXT DEFAULT 'temp', -- e.g. temp, first_pass
+            quality TEXT DEFAULT 'unknown', -- e.g. C, B, A++
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(project_id) REFERENCES projects(id)
+        );
+    )sql";
+
+    constexpr const char* g_createReviewAuthorsTableStatement = R"sql(
+        CREATE TABLE IF NOT EXISTS review_authors (
+            review_id INTEGER NOT NULL,
+            user_id INTEGER NOT NULL,
+            PRIMARY KEY (review_id, user_id),
+            FOREIGN KEY(review_id) REFERENCES reviews(id),
+            FOREIGN KEY(user_id) REFERENCES users(id)
+        );
+    )sql";
+
+    constexpr const char* g_createReviewFilesTableStatement = R"sql(
+        CREATE TABLE review_files (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            review_id INTEGER NOT NULL,
+            file_name TEXT NOT NULL,          -- logical name (e.g. "footstep_sfx")
+            file_type TEXT,                   -- audio, video, ref, etc.
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(review_id) REFERENCES reviews(id)
+        );
+    )sql";
+
+    constexpr const char* g_createVersionedReviewFilesTableStatement = R"sql(
+        CREATE TABLE versioned_review_files (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            review_file_id INTEGER NOT NULL,  -- foreign key to review_files.id
+            version INTEGER NOT NULL,          -- version number (1, 2, 3, ...)
+            file_path TEXT NOT NULL,           -- relative path to the actual file on disk
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(review_file_id) REFERENCES review_files(id),
+            UNIQUE(review_file_id, version)   -- ensure no duplicate version numbers
+        );
+    )sql";
+
+    constexpr const char* g_createCommentsTableStatement = R"sql(
+        CREATE TABLE IF NOT EXISTS comments (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            review_id INTEGER NOT NULL,
+            user_id INTEGER NOT NULL,
+            message TEXT NOT NULL,
+            audio_time REAL,               -- optional: timestamp in media
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(review_id) REFERENCES reviews(id),
+            FOREIGN KEY(user_id) REFERENCES users(id)
+        );
+    )sql";
+
+    constexpr const char* g_createVotesTableStatement = R"sql(
+        CREATE TABLE IF NOT EXISTS votes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            review_id INTEGER NOT NULL,
+            user_id INTEGER NOT NULL,
+            vote TEXT NOT NULL,            -- e.g. "approve", "reject", "needs_work"
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(review_id) REFERENCES reviews(id),
+            FOREIGN KEY(user_id) REFERENCES users(id),
+            UNIQUE(review_id, user_id)     -- ensures one vote per user per review
+        );
+    )sql";
 }
 
 review_database::review_database(const std::filesystem::path& databasePath)
     : m_database(databasePath, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE, 200)
 {
-    m_database.exec(fmt::format("CREATE TABLE IF NOT EXISTS {} ({} INTEGER PRIMARY KEY AUTOINCREMENT, {} TEXT);", g_workspaceTableName, g_idColumnName, g_nameColumnName).c_str());
-    m_database.exec(fmt::format("CREATE TABLE IF NOT EXISTS {} ({} INTEGER PRIMARY KEY AUTOINCREMENT, {} TEXT, {} TEXT);", g_projectsTableName, g_idColumnName, g_nameColumnName, g_descriptionColumnName).c_str());
+    m_database.exec(g_createWorkspaceTableStatement);
+    m_database.exec(g_createProjectsTableStatement);
+    m_database.exec(g_createReviewsTableStatement);
+    m_database.exec(g_createUsersTableStatement);
+    m_database.exec(g_createReviewAuthorsTableStatement);
+    m_database.exec(g_createReviewFilesTableStatement);
+    m_database.exec(g_createVersionedReviewFilesTableStatement);
+    m_database.exec(g_createCommentsTableStatement);
+    m_database.exec(g_createVotesTableStatement);
 }
 
 auto review_database::create_workspace(const std::string name) -> concurrencpp::result<void>
 {
     co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
 
-    SQLite::Statement insertWorkspaceName(m_database, fmt::format("INSERT INTO {} ({}) VALUES (?);", g_workspaceTableName, g_descriptionColumnName).c_str());
-    insertWorkspaceName.bind(g_nameColumnName, name);
-
+    SQLite::Statement insertWorkspaceName(m_database, "INSERT INTO workspaces (name) VALUES (?);");
+    insertWorkspaceName.bind(1, name);
     insertWorkspaceName.exec();
 }
 
@@ -35,9 +132,9 @@ auto review_database::get_workspace_name() const -> concurrencpp::result<std::st
 {
     co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
 
-    if (m_database.tableExists(g_workspaceTableName))
+    if (m_database.tableExists("workspaces"))
     {
-        SQLite::Statement query(m_database, fmt::format("SELECT {} FROM workspace LIMIT 1;", g_nameColumnName).c_str());
+        SQLite::Statement query(m_database, "SELECT name FROM workspaces LIMIT 1;");
 
         while (query.executeStep())
         {
@@ -49,18 +146,24 @@ auto review_database::get_workspace_name() const -> concurrencpp::result<std::st
     co_return std::string{};
 }
 
-auto review_database::create_project(const std::string name, const std::string description) -> concurrencpp::result<void>
+auto review_database::create_project(const std::string name, const std::string description) -> concurrencpp::result<project_data>
 {
     co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
+    
+    project_data newProjectData;
 
-    if (m_database.tableExists(g_projectsTableName))
+    if (m_database.tableExists("projects"))
     {
-        SQLite::Statement query(m_database, fmt::format("INSERT INTO {} ({}, {}) VALUES (?, ?);", g_projectsTableName, g_nameColumnName, g_descriptionColumnName).c_str());
+        SQLite::Statement query(m_database, "INSERT INTO projects (name, description) VALUES (?, ?);");
         query.bind(1, name);
         query.bind(2, description);
-
         query.exec();
+
+        newProjectData.m_id = m_database.getLastInsertRowid();
+        newProjectData.m_projectName = name;
+        newProjectData.m_projectDescription = description;
     }
+    co_return newProjectData;
 }
 
 auto review_database::get_all_projects() const -> concurrencpp::result<std::vector<project_data>>
@@ -69,9 +172,9 @@ auto review_database::get_all_projects() const -> concurrencpp::result<std::vect
 
     std::vector<project_data> result;
 
-    if (m_database.tableExists(g_projectsTableName))
+    if (m_database.tableExists("projects"))
     {
-        SQLite::Statement query(m_database, fmt::format("SELECT {}, {}, {} FROM {};", g_idColumnName, g_nameColumnName, g_descriptionColumnName, g_projectsTableName).c_str());
+        SQLite::Statement query(m_database, "SELECT id, name, description FROM projects;");
 
         while (query.executeStep())
         {

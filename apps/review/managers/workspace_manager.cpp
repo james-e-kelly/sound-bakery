@@ -78,13 +78,7 @@ auto workspace_manager::load_projects_from_workspace() -> void
 
 auto workspace_manager::create_project(const std::string& projectName, const std::string& projectDescription) -> void
 {
-    project_data projectData;
-    projectData.m_projectName        = projectName;
-    projectData.m_projectDescription = projectDescription;
-
-    m_projects.push_back(projectData);
-
-    m_database->create_project(projectName, projectDescription);
+    m_projects.push_back(m_database->create_project(projectName, projectDescription).get());
 }
 
 auto workspace_manager::select_project(const std::string& projectName) -> void
