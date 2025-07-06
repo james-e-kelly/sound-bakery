@@ -103,6 +103,8 @@ auto create_application() -> gluten::app*
 
 auto review_app::pre_init() -> void
 {
+    m_databaseThread = make_worker_thread_executor();
+
     set_application_display_title("Sound Proof");
 
     if (std::shared_ptr<gluten::widget_subsystem> widgetSubsystem = get_subsystem_by_class<gluten::widget_subsystem>())

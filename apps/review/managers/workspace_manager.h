@@ -9,12 +9,14 @@
 #include "data/user_settings_data.h"
 
 class intro_widget;
+class review_database;
 class workspace_widget;
 
 class workspace_manager : public gluten::manager	
 {
 public:
     workspace_manager(gluten::app* app) : gluten::manager(app) {}
+    ~workspace_manager();
 
     auto open_workspace(const std::filesystem::path& workspaceFile) -> void;
     auto create_workspace(const std::string& workspaceName, const std::filesystem::path& workspaceDirectory) -> void;
@@ -25,13 +27,11 @@ public:
     auto select_project(const std::string& projectName) -> void;
     [[nodiscard]] auto has_selected_project() const -> bool;
 
-    [[nodiscard]] auto get_selected_project() const -> std::shared_ptr<project_data>;
-    [[nodiscard]] auto get_projects() const -> std::vector<std::shared_ptr<project_data>>;
+    [[nodiscard]] auto get_selected_project() const -> const project_data&;
+    [[nodiscard]] auto get_projects() const -> const std::vector<project_data>&;
     
     [[nodiscard]] auto get_workspace_file() const -> std::filesystem::path;
     [[nodiscard]] auto get_workspace_directory() const -> std::filesystem::path;
-    [[nodiscard]] auto get_projects_directory() const -> std::filesystem::path;
-    [[nodiscard]] auto get_user_directory() const -> std::filesystem::path;
 
 protected:
     auto init(gluten::app* app) -> void override;
@@ -46,6 +46,7 @@ private:
     std::shared_ptr<workspace_widget> m_workspaceWidget;
 
     gluten::data_source<user_settings_data> m_userSettingsData;
-    std::vector<std::shared_ptr<project_data>> m_projects;
-    std::shared_ptr<project_data> m_selectedProject;
+    std::vector<project_data> m_projects;
+    project_data m_selectedProject;
+    std::shared_ptr<review_database> m_database;
 };

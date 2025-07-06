@@ -545,10 +545,10 @@ auto workspace_widget::render_list() -> void
             {
                 for (const auto& project : get_app()->get_manager_by_class<workspace_manager>()->get_projects())
                 {
-                    project_element projectElement(project->m_projectName, project->m_projectDescription, 2, 5);
+                    project_element projectElement(project.m_projectName, project.m_projectDescription, 2, 5);
                     if (itemsLayout.render_layout_element_pixels_vertical(&projectElement, 100.0f))
                     {
-                        get_app()->get_manager_by_class<workspace_manager>()->select_project(project->m_projectName);
+                        get_app()->get_manager_by_class<workspace_manager>()->select_project(project.m_projectName);
                     }
                 }
             }

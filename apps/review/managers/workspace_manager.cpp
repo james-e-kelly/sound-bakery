@@ -1,5 +1,6 @@
 #include "workspace_manager.h"
 
+#include "app/review_database.h"
 #include "widgets/intro_widget.h"
 #include "widgets/workspace_widget.h"
 
@@ -10,6 +11,10 @@ namespace
     constexpr const char* g_projectDirectoryName		= "Projects";
     constexpr const char* g_userDirectoryName			= "Users";
     constexpr const char* g_projectFileExtension		= "project";
+}
+
+workspace_manager::~workspace_manager()
+{
 }
 
 auto workspace_manager::init(gluten::app* app) -> void
@@ -40,16 +45,6 @@ auto workspace_manager::start() -> void
 	}
 }
 
-auto workspace_manager::get_projects_directory() const -> std::filesystem::path
-{
-    return m_userSettingsData->m_workspaceFilePath.parent_path() / g_projectDirectoryName;
-}
-
-auto workspace_manager::get_user_directory() const -> std::filesystem::path
-{
-    return m_userSettingsData->m_workspaceFilePath.parent_path() / g_userDirectoryName;
-}
-
 auto workspace_manager::open_workspace(const std::filesystem::path& workspaceFile) -> void
 {
     if (file_is_workspace(workspaceFile))
@@ -58,8 +53,8 @@ auto workspace_manager::open_workspace(const std::filesystem::path& workspaceFil
 
         m_userSettingsData->m_workspaceFilePath = workspaceFile;
 
-        workspace_data fileData;
-        gluten::app::load_data_from_disk(workspaceFile, fileData);
+        m_database = std::make_shared<review_database>(std::filesystem::path(workspaceFile).replace_extension("db"));
+        m_database->get_workspace_name().get();
 
         m_workspaceWidget = get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class_to_root<workspace_widget>(false);
 
@@ -78,27 +73,7 @@ auto workspace_manager::open_workspace(const std::filesystem::path& workspaceFil
 
 auto workspace_manager::load_projects_from_workspace() -> void
 {
-    if (std::filesystem::exists(get_projects_directory()))
-    {
-        for (const auto& dir : std::filesystem::directory_iterator(get_projects_directory()))
-        {
-            if (dir.is_directory())
-            {
-                const std::filesystem::path projectDirectory = dir.path();
-                const std::string projectId                  = projectDirectory.stem().string();
-                const std::filesystem::path projectFile =
-                    (projectDirectory / projectId).replace_extension(g_projectFileExtension);
-
-                if (std::filesystem::exists(projectFile))
-                {
-                    project_data projectData;
-                    gluten::app::load_data_from_disk(projectFile, projectData);
-
-                    add_existing_project(projectData);
-                }
-            }
-        }
-    }
+    m_projects = m_database->get_all_projects().get();
 }
 
 auto workspace_manager::create_project(const std::string& projectName, const std::string& projectDescription) -> void
@@ -107,25 +82,22 @@ auto workspace_manager::create_project(const std::string& projectName, const std
     projectData.m_projectName        = projectName;
     projectData.m_projectDescription = projectDescription;
 
-    const std::filesystem::path projectFile =
-        (get_projects_directory() / projectName / projectName).replace_extension(g_projectFileExtension);
+    m_projects.push_back(projectData);
 
-    gluten::app::save_data_to_disk(projectFile, projectData);
-
-    m_projects.push_back(std::make_shared<project_data>(std::move(projectData)));
+    m_database->create_project(projectName, projectDescription);
 }
 
 auto workspace_manager::select_project(const std::string& projectName) -> void
 {
     if (projectName.empty())
     {
-        m_selectedProject.reset();
+        m_selectedProject = project_data();
         return;
     }
 
     for (const auto& project : m_projects)
     {
-        if (project->m_projectName == projectName)
+        if (project.m_projectName == projectName)
         {
             m_selectedProject = project;
             break;
@@ -133,20 +105,17 @@ auto workspace_manager::select_project(const std::string& projectName) -> void
     }
 }
 
-auto workspace_manager::has_selected_project() const -> bool { return static_cast<bool>(m_selectedProject); }
+auto workspace_manager::has_selected_project() const -> bool { return m_selectedProject.m_id != 0; }
 
 auto workspace_manager::create_workspace(const std::string& workspaceName, const std::filesystem::path& workspaceDirectory) -> void
 {
 	if (!workspaceName.empty() && std::filesystem::exists(workspaceDirectory))
 	{
         const std::filesystem::path workspaceFile = workspaceDirectory / (workspaceName + g_workspaceExtension);
-
 		std::filesystem::create_directories(workspaceDirectory);
 
-		workspace_data fileData;
-        fileData.m_workspaceName = workspaceName;
-
-		gluten::app::save_data_to_disk(workspaceFile, fileData);
+        m_database = std::make_shared<review_database>(std::filesystem::path(workspaceFile).replace_extension("db"));
+        m_database->create_workspace(workspaceName);
 
 		m_introWidget.reset();
 
@@ -160,9 +129,10 @@ auto workspace_manager::create_workspace(const std::string& workspaceName, const
 auto workspace_manager::close_workspace() -> void
 {
 	m_workspaceWidget.reset();
-    m_selectedProject.reset();
+    m_selectedProject = project_data();
     m_projects.clear();
     m_userSettingsData->m_workspaceFilePath.clear();
+    m_database.reset();
 
 	if (!m_introWidget)
 	{
@@ -175,15 +145,15 @@ auto workspace_manager::close_workspace() -> void
 
 auto workspace_manager::add_existing_project(const project_data& projectData) -> void
 {
-    m_projects.push_back(std::make_shared<project_data>(std::move(projectData)));
+    m_projects.push_back(projectData);
 }
 
-auto workspace_manager::get_selected_project() const -> std::shared_ptr<project_data>
+auto workspace_manager::get_selected_project() const -> const project_data&
 {
     return m_selectedProject;
 }
 
-auto workspace_manager::get_projects() const -> std::vector<std::shared_ptr<project_data>> { return m_projects; }
+auto workspace_manager::get_projects() const -> const std::vector<project_data>& { return m_projects; }
 
 auto workspace_manager::get_workspace_file() const -> std::filesystem::path
 {

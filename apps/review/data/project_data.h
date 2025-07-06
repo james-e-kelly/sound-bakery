@@ -6,6 +6,7 @@
 
 struct project_data
 {
+    int m_id = 0;
     std::string m_projectName;
     std::string m_projectDescription;
 

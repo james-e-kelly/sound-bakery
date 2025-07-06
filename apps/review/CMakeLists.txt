@@ -4,6 +4,7 @@ set(BUILD_FOLDER ${CMAKE_BINARY_DIR})
 
 set(review_SOURCES
   app/review_app.cpp
+  app/review_database.cpp
   data/workspace_data.cpp
   managers/project_manager.cpp
   managers/review_manager.cpp
@@ -15,6 +16,7 @@ set(review_SOURCES
 
 set(review_HEADERS
   app/review_app.h
+  app/review_database.h
   data/workspace_data.h
   data/project_data.h
   data/review_data.h
@@ -61,10 +63,14 @@ set_target_properties(review PROPERTIES
     WIN32_EXECUTABLE TRUE
 )
 
+FetchContent_MakeAvailable(sqlitecpp)
+
 target_link_libraries(review
     PRIVATE
     SoundBakery::Gluten
     SoundBakery::SoundBakery_Shared
+    SQLiteCpp
+    sqlite3
 )
 
 if(MSVC)

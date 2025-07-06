@@ -4,6 +4,7 @@
 
 class workspace_manager;
 class review_app_drop_target;
+class review_database;
 
 static inline constexpr const char* g_externalFileDragDropType = "FILE_DRAG_DROP";
 
@@ -20,6 +21,11 @@ public:
     auto get_drag_drop_files() -> std::unordered_set<std::filesystem::path>;
     
     static auto get() -> review_app*;
+
+    auto get_database_thread_executor() const -> std::shared_ptr<concurrencpp::worker_thread_executor>
+    {
+        return m_databaseThread;
+    }
 
 protected:
     auto pre_init() -> void override;
@@ -38,4 +44,6 @@ private:
 
     bool m_isDragDropping   = false;
     bool m_isDragDropReady  = false;
+
+    std::shared_ptr<concurrencpp::worker_thread_executor> m_databaseThread;
 };
