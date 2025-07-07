@@ -25,9 +25,11 @@ namespace
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT NOT NULL UNIQUE,
             display_name TEXT,
+            title TEXT,
             email TEXT,
             password TEXT,   -- for now we will allow null passwords for easy logins
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            privilege INT NOT NULL DEFAULT 0
         );
     )sql";
 
@@ -56,7 +58,7 @@ namespace
     )sql";
 
     constexpr const char* g_createReviewFilesTableStatement = R"sql(
-        CREATE TABLE review_files (
+        CREATE TABLE IF NOT EXISTS review_files (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             review_id INTEGER NOT NULL,
             file_name TEXT NOT NULL,          -- logical name (e.g. "footstep_sfx")
@@ -67,7 +69,7 @@ namespace
     )sql";
 
     constexpr const char* g_createVersionedReviewFilesTableStatement = R"sql(
-        CREATE TABLE versioned_review_files (
+        CREATE TABLE IF NOT EXISTS versioned_review_files (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             review_file_id INTEGER NOT NULL,  -- foreign key to review_files.id
             version INTEGER NOT NULL,          -- version number (1, 2, 3, ...)
