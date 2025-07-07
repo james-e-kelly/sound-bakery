@@ -166,6 +166,29 @@ auto workspace_manager::file_is_workspace(const std::filesystem::path& file) -> 
     return std::filesystem::exists(file) && file.extension().string() == g_workspaceExtensionWithDot;
 }
 
+auto workspace_manager::select_review(int64_t reviewId) -> void
+{
+    if (reviewId == 0)
+    {
+        m_selectedReview  = review_data();
+        return;
+    }
+
+    for (const auto& review : m_reviews)
+    {
+        if (review.m_reviewId == reviewId)
+        {
+            m_selectedReview = review;
+            break;
+        }
+    }
+}
+
+auto workspace_manager::get_selected_review() const -> const review_data&
+{
+    return m_selectedReview;
+}
+
 auto workspace_manager::create_review(const new_review_data& newReview) -> void 
 {
     m_reviews.push_back(m_database->create_review(get_selected_project().m_id, newReview).get());

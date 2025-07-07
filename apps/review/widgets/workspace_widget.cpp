@@ -617,7 +617,7 @@ auto workspace_widget::render_list() -> void
                     review_element reviewElement(review);
                     if (itemsLayout.render_layout_element_pixels_vertical(&reviewElement, 100.0f))
                     {
-                        //get_app()->get_manager_by_class<workspace_manager>()->select_project(project.m_projectName);
+                        get_app()->get_manager_by_class<workspace_manager>()->select_review(review.m_reviewId);
                     }
                 }
             }
@@ -633,6 +633,25 @@ auto workspace_widget::render_content() -> void
 
     if (ImGui::BeginChild("Content"))
     {
+        gluten::background titleBarBackground;
+        titleBarBackground.set_element_background_color(gluten::theme::carbon_g100::fieldHover02)
+            .set_element_anchor_preset(gluten::element::anchor_preset::stretch_top)
+            .get_element_anchor()
+            .maxOffset.y = 100;
+
+        const review_data& selectedReview = get_app()->get_manager_by_class<workspace_manager>()->get_selected_review();
+
+        gluten::text reviewTitleText(selectedReview.m_reviewName.c_str(), ImVec2(0, 0.5f), gluten::element::anchor_preset::left_top);
+        reviewTitleText
+            .set_font(gluten::fonts::title)
+            .set_element_content_font_size(gluten::g_baseFontSize * 2.0f)
+            .set_element_translation(ImVec2(5, 50.0f));
+
+        titleBarBackground.render_window();
+        reviewTitleText.render_window();
+
+        ImGui::SetCursorPos(titleBarBackground.get_element_rect_local().GetBL());
+
         ImSpinner::SpinnerAngEclipse("Loading", ImGui::GetFontSize() / 2.0f, 2.0f, gluten::theme::white, 8.0f);
         ImGui::SameLine();
         ImGui::Text(" Hello");

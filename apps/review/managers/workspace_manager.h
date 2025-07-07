@@ -34,6 +34,8 @@ public:
     [[nodiscard]] auto get_workspace_file() const -> std::filesystem::path;
     [[nodiscard]] auto get_workspace_directory() const -> std::filesystem::path;
 
+    auto select_review(int64_t reviewId) -> void;
+    auto get_selected_review() const -> const review_data&;
     auto create_review(const new_review_data& newReview) -> void;
     auto get_all_reviews() const -> const std::vector<review_data>&;
 
@@ -53,5 +55,6 @@ private:
     std::vector<project_data> m_projects;
     std::vector<review_data> m_reviews;
     project_data m_selectedProject;
+    review_data m_selectedReview;
     std::shared_ptr<review_database> m_database;
 };
