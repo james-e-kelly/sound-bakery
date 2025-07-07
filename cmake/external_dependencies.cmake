@@ -280,3 +280,10 @@ FetchContent_Declare(
   GIT_TAG master
   EXCLUDE_FROM_ALL
 )
+
+FetchContent_Declare(
+  magicenum
+  GIT_REPOSITORY https://github.com/Neargye/magic_enum.git
+  GIT_TAG master
+  EXCLUDE_FROM_ALL
+)

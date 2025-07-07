@@ -39,9 +39,10 @@ namespace
             project_id INTEGER NOT NULL,
             name TEXT NOT NULL,
             description TEXT,
-            status TEXT DEFAULT 'open', -- e.g. open, closed, in_progress, archives
-            phase TEXT DEFAULT 'temp', -- e.g. temp, first_pass
-            quality TEXT DEFAULT 'unknown', -- e.g. C, B, A++
+            task_url TEXT,
+            status INT DEFAULT 0,
+            phase INT DEFAULT 0,
+            quality INT DEFAULT 0,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY(project_id) REFERENCES projects(id)
         );
@@ -186,6 +187,69 @@ auto review_database::get_all_projects() const -> concurrencpp::result<std::vect
             projectData.m_projectDescription    = query.getColumn(2).getString();
 
             result.push_back(std::move(projectData));
+        }
+    }
+
+    co_return result;
+}
+
+auto review_database::create_review(int64_t projectId, const new_review_data newReview) -> concurrencpp::result<review_data>
+{
+    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
+
+    review_data result;
+
+    if (!newReview.m_reviewName.empty() && projectId != 0)
+    {
+        if (m_database.tableExists("reviews"))
+        {
+            SQLite::Statement insertReviewStatement(m_database, "INSERT INTO reviews (project_id, name, task_url, description, status, phase, quality) VALUES (?, ?, ?, ?, ?, ?, ?);");
+            insertReviewStatement.bind(1, projectId);
+            insertReviewStatement.bind(2, newReview.m_reviewName);
+            insertReviewStatement.bind(3, newReview.m_reviewTaskUrl);
+            insertReviewStatement.bind(4, newReview.m_reviewDescription);
+            insertReviewStatement.bind(5, (int)review_status::open);
+            insertReviewStatement.bind(6, (int)newReview.m_reviewPhase);
+            insertReviewStatement.bind(6, (int)newReview.m_reviewQuality);
+
+            insertReviewStatement.exec();
+
+            result.m_reviewId = m_database.getLastInsertRowid();
+            result.m_reviewName = newReview.m_reviewName;
+            result.m_reviewTaskUrl = newReview.m_reviewTaskUrl;
+            result.m_reviewDescription = newReview.m_reviewDescription;
+            result.m_reviewStatus      = review_status::open;
+            result.m_reviewPhase       = newReview.m_reviewPhase;
+            result.m_reviewQuality     = newReview.m_reviewQuality;
+        }
+    }
+
+    co_return result;
+}
+
+auto review_database::get_all_reviews(int64_t projectId) const -> concurrencpp::result<std::vector<review_data>>
+{
+    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
+
+    std::vector<review_data> result;
+
+    if (m_database.tableExists("reviews") && projectId != 0)
+    {
+        SQLite::Statement query(m_database, "SELECT id, name, description, task_url, status, phase, quality FROM reviews WHERE project_id=?;");
+        query.bind(1, projectId);
+
+        while (query.executeStep())
+        {
+            review_data reviewData;
+            reviewData.m_reviewId           = query.getColumn(0).getInt();
+            reviewData.m_reviewName         = query.getColumn(1).getString();
+            reviewData.m_reviewDescription  = query.getColumn(2).getString();
+            reviewData.m_reviewTaskUrl      = query.getColumn(3).getString();
+            reviewData.m_reviewStatus       = (review_status)query.getColumn(4).getInt();
+            reviewData.m_reviewPhase        = (review_phase)query.getColumn(5).getInt();
+            reviewData.m_reviewQuality      = (review_quality)query.getColumn(6).getInt();
+
+            result.push_back(std::move(reviewData));
         }
     }
 

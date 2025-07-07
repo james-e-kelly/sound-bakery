@@ -4,6 +4,7 @@
 
 #include "gluten/data/data_source.h"
 
+#include "data/review_data.h"
 #include "data/workspace_data.h"
 #include "data/project_data.h"
 #include "data/user_settings_data.h"
@@ -33,6 +34,9 @@ public:
     [[nodiscard]] auto get_workspace_file() const -> std::filesystem::path;
     [[nodiscard]] auto get_workspace_directory() const -> std::filesystem::path;
 
+    auto create_review(const new_review_data& newReview) -> void;
+    auto get_all_reviews() const -> const std::vector<review_data>&;
+
 protected:
     auto init(gluten::app* app) -> void override;
     auto start() -> void override;
@@ -47,6 +51,7 @@ private:
 
     gluten::data_source<user_settings_data> m_userSettingsData;
     std::vector<project_data> m_projects;
+    std::vector<review_data> m_reviews;
     project_data m_selectedProject;
     std::shared_ptr<review_database> m_database;
 };

@@ -22,6 +22,13 @@ enum class review_quality
     num
 };
 
+enum class review_status
+{
+    open,
+    closed,
+    archived
+};
+
 struct versionable_review_asset
 {
     std::string m_fileName;             //< Filename for displaying
@@ -39,11 +46,13 @@ struct versionable_review_asset
 
 struct review_data
 {
+    uint64_t m_reviewId = 0;
     std::string m_reviewName;
     std::string m_reviewTaskUrl;
     std::string m_reviewDescription;
     review_phase m_reviewPhase = review_phase::first_pass;
     review_quality m_reviewQuality = review_quality::unknown;
+    review_status m_reviewStatus   = review_status::open;
     std::vector<versionable_review_asset> m_relativeContextFiles;   //< Context files are also versionable in case new context is required
     std::vector<versionable_review_asset> m_reviewAssets;
 };

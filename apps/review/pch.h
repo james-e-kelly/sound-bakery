@@ -7,6 +7,7 @@
 #include "gluten/widgets/root_widget.h"
 
 #include "boost/serialization/version.hpp"
+#include <magic_enum/magic_enum.hpp>
 
 using project_id_type = unsigned int;
 

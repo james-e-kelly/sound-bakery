@@ -64,6 +64,7 @@ set_target_properties(review PROPERTIES
 )
 
 FetchContent_MakeAvailable(sqlitecpp)
+FetchContent_MakeAvailable(magicenum)
 
 target_link_libraries(review
     PRIVATE
@@ -71,6 +72,7 @@ target_link_libraries(review
     SoundBakery::SoundBakery_Shared
     SQLiteCpp
     sqlite3
+    magic_enum::magic_enum
 )
 
 if(MSVC)

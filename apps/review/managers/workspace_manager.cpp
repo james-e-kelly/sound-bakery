@@ -86,6 +86,7 @@ auto workspace_manager::select_project(const std::string& projectName) -> void
     if (projectName.empty())
     {
         m_selectedProject = project_data();
+        m_reviews.clear();
         return;
     }
 
@@ -94,6 +95,7 @@ auto workspace_manager::select_project(const std::string& projectName) -> void
         if (project.m_projectName == projectName)
         {
             m_selectedProject = project;
+            m_reviews         = m_database->get_all_reviews(m_selectedProject.m_id).get();
             break;
         }
     }
@@ -162,4 +164,14 @@ auto workspace_manager::get_workspace_directory() const -> std::filesystem::path
 auto workspace_manager::file_is_workspace(const std::filesystem::path& file) -> bool
 {
     return std::filesystem::exists(file) && file.extension().string() == g_workspaceExtensionWithDot;
+}
+
+auto workspace_manager::create_review(const new_review_data& newReview) -> void 
+{
+    m_reviews.push_back(m_database->create_review(get_selected_project().m_id, newReview).get());
+}
+
+auto workspace_manager::get_all_reviews() const -> const std::vector<review_data>&
+{
+    return m_reviews;
 }
