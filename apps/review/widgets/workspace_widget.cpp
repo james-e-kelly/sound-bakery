@@ -670,8 +670,11 @@ auto workspace_widget::render_content() -> void
 
             verticalLayout.render_layout_element_pixels_vertical(&descriptionBox, descriptionBoxHeight);
 
+            gluten::imgui::scoped_font iconFont(gluten::app::get()->get_font(gluten::fonts::regular_lucide_icons));
+
             gluten::text descriptionTitleText(selectedReview.m_reviewName.c_str(), ImVec2(0.0f, 0.5f), gluten::element::anchor_preset::left_top);
             gluten::text descriptionDescriptionText(selectedReview.m_reviewDescription.c_str(), ImVec2(0.0f, 0.0f), gluten::element::anchor_preset::stretch_top);
+            gluten::button descriptionEditButton("Edit " ICON_LC_PENCIL_LINE, false, gluten::element::anchor_preset::right_top);
 
             descriptionTitleText.set_element_content_font_size(gluten::g_baseFontSize * 1.5f);
             descriptionTitleText.get_element_anchor().min.y = 0.1f;
@@ -680,11 +683,16 @@ auto workspace_widget::render_content() -> void
             descriptionDescriptionText.get_element_anchor().min.y = 0.2f;
             descriptionDescriptionText.get_element_anchor().max.y = 1.0f;
 
+            descriptionEditButton
+                .set_element_alignment(ImVec2(1.0f, -0.25f))
+                .set_element_translation(ImVec2(-5, 0));
+
             ImRect paddedRect = descriptionBox.get_element_rect();
             paddedRect.Expand(ImVec2(-ImGui::GetStyle().FramePadding.x, 0.0f));
 
             descriptionTitleText.render(paddedRect);
             descriptionDescriptionText.render(paddedRect);
+            descriptionEditButton.render(paddedRect);
 
             gluten::background remaining;
             remaining.set_element_padding(ImVec2(ImGui::GetStyle().FramePadding.x * 2.0f, 0.0));
