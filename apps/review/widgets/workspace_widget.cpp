@@ -14,7 +14,9 @@ namespace
 {
     constexpr float leftToobarWidth             = 100.0f;
     constexpr float leftToolbarButtonHeight     = leftToobarWidth;
+    constexpr float topHeaderHeight             = leftToobarWidth;
     constexpr float leftToolbarHalfButtonHeight = leftToolbarButtonHeight / 2.0f;
+    constexpr float descriptionBoxHeight        = topHeaderHeight * 2.0f;
 
     constexpr float itemListWidth = leftToobarWidth * 5.0f;
 
@@ -509,7 +511,7 @@ auto workspace_widget::render_window_implementation() -> void
 
 auto workspace_widget::render_list() -> void
 {
-    gluten::imgui::scoped_color backgroundColor(ImGuiCol_ChildBg, gluten::theme::carbon_g100::field02);
+    gluten::imgui::scoped_color backgroundColor(ImGuiCol_ChildBg, gluten::theme::carbon_g100::layer02);
     gluten::imgui::scoped_color borderColor(ImGuiCol_Border, gluten::theme::carbon_g100::background);
     gluten::imgui::scoped_color separatorColor(ImGuiCol_Separator, gluten::theme::carbon_g100::background);
 
@@ -629,39 +631,111 @@ auto workspace_widget::render_list() -> void
 
 auto workspace_widget::render_content() -> void
 {
-    gluten::imgui::scoped_color backgroundColor(ImGuiCol_ChildBg, gluten::theme::carbon_g100::field03);
+    gluten::imgui::scoped_color backgroundColor(ImGuiCol_ChildBg, gluten::theme::carbon_g100::layer03);
+    gluten::imgui::scoped_color borderColor(ImGuiCol_Border, gluten::theme::carbon_g100::borderStrong02);
+    gluten::imgui::scoped_color tabBg(ImGuiCol_Tab, gluten::theme::carbon_g100::field03);
+    gluten::imgui::scoped_color tabSelectedBg(ImGuiCol_TabActive, gluten::theme::carbon_g100::layerAccentActive03);
+    gluten::imgui::scoped_color tabHoverdBg(ImGuiCol_TabHovered, gluten::theme::carbon_g100::layerHover03);
+    gluten::imgui::scoped_color frameBg(ImGuiCol_FrameBg, gluten::theme::carbon_g100::layer02);
+    gluten::imgui::scoped_color frameHoveredBg(ImGuiCol_FrameBgHovered, gluten::theme::carbon_g100::layerHover02);
 
     if (ImGui::BeginChild("Content"))
     {
-        gluten::background titleBarBackground;
-        titleBarBackground.set_element_background_color(gluten::theme::carbon_g100::fieldHover02)
-            .set_element_anchor_preset(gluten::element::anchor_preset::stretch_top)
-            .get_element_anchor()
-            .maxOffset.y = 100;
+        gluten::layout verticalLayout(gluten::layout::layout_type::top_to_bottom,
+                                      gluten::element::anchor_preset::stretch_full);
+        verticalLayout.set_layout_spacing(10.0f);
+        verticalLayout.render_window();
 
+        gluten::background titleBarBackground;
+        titleBarBackground.set_element_background_color(gluten::theme::carbon_g100::fieldHover02);
+        verticalLayout.render_layout_element_pixels_vertical(&titleBarBackground, topHeaderHeight);
+
+        const project_data& selectedProject = get_app()->get_manager_by_class<workspace_manager>()->get_selected_project();
         const review_data& selectedReview = get_app()->get_manager_by_class<workspace_manager>()->get_selected_review();
 
-        gluten::text reviewTitleText(selectedReview.m_reviewName.c_str(), ImVec2(0, 0.5f), gluten::element::anchor_preset::left_top);
-        reviewTitleText
-            .set_font(gluten::fonts::title)
-            .set_element_content_font_size(gluten::g_baseFontSize * 2.0f)
-            .set_element_translation(ImVec2(5, 50.0f));
+        if (selectedReview.m_reviewId)
+        {
+            gluten::text reviewTitleText(fmt::format("{} / {}", selectedProject.m_projectName, selectedReview.m_reviewId).c_str(), ImVec2(0, 0.5f), gluten::element::anchor_preset::left_top);
+            reviewTitleText
+                .set_element_content_font_size(gluten::g_baseFontSize * 2.0f)
+                .set_element_translation(ImVec2(5, 50.0f));
 
-        titleBarBackground.render_window();
-        reviewTitleText.render_window();
+            reviewTitleText.render(titleBarBackground.get_element_rect());
 
-        ImGui::SetCursorPos(titleBarBackground.get_element_rect_local().GetBL());
+            gluten::background descriptionBox;
+            descriptionBox
+                .set_element_background_color(gluten::theme::carbon_g100::field03)
+                .set_element_border(2.0f, 0.0f)
+                .set_element_padding(ImVec2(ImGui::GetStyle().FramePadding.x * 2.0f, 0.0f));
 
-        ImSpinner::SpinnerAngEclipse("Loading", ImGui::GetFontSize() / 2.0f, 2.0f, gluten::theme::white, 8.0f);
+            verticalLayout.render_layout_element_pixels_vertical(&descriptionBox, descriptionBoxHeight);
+
+            gluten::text descriptionTitleText(selectedReview.m_reviewName.c_str(), ImVec2(0.0f, 0.5f), gluten::element::anchor_preset::left_top);
+            gluten::text descriptionDescriptionText(selectedReview.m_reviewDescription.c_str(), ImVec2(0.0f, 0.0f), gluten::element::anchor_preset::stretch_top);
+
+            descriptionTitleText.set_element_content_font_size(gluten::g_baseFontSize * 1.5f);
+            descriptionTitleText.get_element_anchor().min.y = 0.1f;
+            descriptionTitleText.get_element_anchor().max.y = 0.1f;
+
+            descriptionDescriptionText.get_element_anchor().min.y = 0.2f;
+            descriptionDescriptionText.get_element_anchor().max.y = 1.0f;
+
+            ImRect paddedRect = descriptionBox.get_element_rect();
+            paddedRect.Expand(ImVec2(-ImGui::GetStyle().FramePadding.x, 0.0f));
+
+            descriptionTitleText.render(paddedRect);
+            descriptionDescriptionText.render(paddedRect);
+
+            gluten::background remaining;
+            remaining.set_element_padding(ImVec2(ImGui::GetStyle().FramePadding.x * 2.0f, 0.0));
+            remaining.get_element_anchor().maxOffset.y -= 20.0f;
+            verticalLayout.render_layout_element_remaining(&remaining);
+
+            if (ImGui::BeginChild("ReviewContent", remaining.get_element_rect().GetSize()))
+            {
+                if (ImGui::BeginTabBar("Tabs"))
+                {
+                    if (ImGui::BeginTabItem("Files"))
+                    {
+                        ImGui::Dummy(ImVec2(0.0f, 8.0f));
+
+                        if (ImGui::BeginCombo("Review Version", "#1"))
+                        {
+                            ImGui::Selectable("#1");
+                            ImGui::Selectable("#2");
+
+                            ImGui::EndCombo();
+                        }
+
+                        ImGui::EndTabItem();
+                    }
+
+                    if (ImGui::BeginTabItem("Comments"))
+                    {
+                        ImGui::EndTabItem();
+                    }
+
+                    if (ImGui::BeginTabItem("Activity"))
+                    {
+                        ImGui::EndTabItem();
+                    }
+
+                    ImGui::EndTabBar();
+                }
+            }
+            ImGui::EndChild();
+        }
+
+        /*ImSpinner::SpinnerAngEclipse("Loading", ImGui::GetFontSize() / 2.0f, 2.0f, gluten::theme::white, 8.0f);
         ImGui::SameLine();
-        ImGui::Text(" Hello");
+        ImGui::Text(" Hello");*/
     }
     ImGui::EndChild();
 }
 
 auto workspace_widget::render_left_toolbar() -> void
 {
-    gluten::imgui::scoped_color toolbarBackgroundColor(ImGuiCol_ChildBg, gluten::theme::carbon_g100::field01);
+    gluten::imgui::scoped_color toolbarBackgroundColor(ImGuiCol_ChildBg, gluten::theme::carbon_g100::layer01);
 
     if (ImGui::BeginChild("LeftToolbar", ImVec2(leftToobarWidth, 0)))
     {

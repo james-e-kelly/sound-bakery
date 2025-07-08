@@ -86,6 +86,7 @@ auto workspace_manager::select_project(const std::string& projectName) -> void
     if (projectName.empty())
     {
         m_selectedProject = project_data();
+        m_selectedReview  = review_data();
         m_reviews.clear();
         return;
     }
