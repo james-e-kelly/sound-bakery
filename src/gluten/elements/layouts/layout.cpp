@@ -19,7 +19,11 @@ gluten::layout::layout(const anchor_preset& anchorPreset)
 {
 }
 
-void gluten::layout::set_layout_type(const layout_type& type) { m_layoutType = type; }
+gluten::layout& gluten::layout::set_layout_type(const layout_type& type) 
+{ 
+    m_layoutType = type; 
+    return *this;
+}
 
 void gluten::layout::set_layout_spacing(float spacing) { m_spacing = spacing; }
 

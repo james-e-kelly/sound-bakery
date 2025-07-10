@@ -180,6 +180,7 @@ auto workspace_widget::render_content() -> void
     gluten::imgui::scoped_color tabHoverdBg(ImGuiCol_TabHovered, gluten::theme::carbon_g100::layerHover03);
     gluten::imgui::scoped_color frameBg(ImGuiCol_FrameBg, gluten::theme::carbon_g100::layer02);
     gluten::imgui::scoped_color frameHoveredBg(ImGuiCol_FrameBgHovered, gluten::theme::carbon_g100::layerHover02);
+    gluten::imgui::scoped_font iconFont(gluten::app::get()->get_font(gluten::fonts::regular_lucide_icons));
 
     if (ImGui::BeginChild("Content"))
     {
@@ -201,39 +202,42 @@ auto workspace_widget::render_content() -> void
             reviewTitleText
                 .set_element_content_font_size(gluten::g_baseFontSize * 2.0f)
                 .set_element_translation(ImVec2(5, 50.0f));
-
             reviewTitleText.render(titleBarBackground.get_element_rect());
 
-            gluten::background descriptionBox;
+            gluten::layout descriptionBox;
             descriptionBox
+                .set_layout_type(gluten::layout::layout_type::top_to_bottom)
+                .set_element_anchor_preset(gluten::element::anchor_preset::stretch_full)
                 .set_element_background_color(gluten::theme::carbon_g100::field03)
                 .set_element_border(2.0f, 0.0f)
                 .set_element_padding(ImVec2(ImGui::GetStyle().FramePadding.x * 2.0f, 0.0f));
-
             verticalLayout.render_layout_element_pixels_vertical(&descriptionBox, descriptionBoxHeight);
 
-            gluten::imgui::scoped_font iconFont(gluten::app::get()->get_font(gluten::fonts::regular_lucide_icons));
+            ImRect paddedRect = descriptionBox.get_element_rect();
+            paddedRect.Expand(ImVec2(-ImGui::GetStyle().FramePadding.x, 0.0f));
 
-            gluten::text descriptionTitleText(selectedReview.m_reviewName.c_str(), ImVec2(0.0f, 0.5f), gluten::element::anchor_preset::left_top);
+            gluten::text descriptionTitleText(selectedReview.m_reviewName.c_str(), ImVec2(0.0f, 0.5f), gluten::element::anchor_preset::left_middle);
+            descriptionTitleText.
+                set_element_content_font_size(gluten::g_baseFontSize * 1.5f);
+            descriptionBox.render_layout_element_percent_vertical(&descriptionTitleText, 0.1f);
+
             gluten::text descriptionDescriptionText(selectedReview.m_reviewDescription.c_str(), ImVec2(0.0f, 0.0f), gluten::element::anchor_preset::stretch_top);
+            descriptionBox.render_layout_element_percent_vertical(&descriptionDescriptionText, 0.1f);
+
+            gluten::text descriptionQualityText(magic_enum::enum_name(selectedReview.m_reviewQuality).data(), ImVec2(0.0f, 0.0f),
+                                                    gluten::element::anchor_preset::stretch_top);
+            descriptionBox.render_layout_element_percent_vertical(&descriptionQualityText, 0.1f);
+
+            gluten::text descriptionPhaseText(magic_enum::enum_name(selectedReview.m_reviewPhase).data(),
+                                                ImVec2(0.0f, 0.0f), gluten::element::anchor_preset::stretch_top);
+            descriptionBox.render_layout_element_percent_vertical(&descriptionPhaseText, 0.1f);
+
             gluten::button descriptionEditButton("Edit " ICON_LC_PENCIL_LINE, false, gluten::element::anchor_preset::right_top);
-
-            descriptionTitleText.set_element_content_font_size(gluten::g_baseFontSize * 1.5f);
-            descriptionTitleText.get_element_anchor().min.y = 0.1f;
-            descriptionTitleText.get_element_anchor().max.y = 0.1f;
-
-            descriptionDescriptionText.get_element_anchor().min.y = 0.2f;
-            descriptionDescriptionText.get_element_anchor().max.y = 1.0f;
 
             descriptionEditButton
                 .set_element_alignment(ImVec2(1.0f, -0.25f))
                 .set_element_translation(ImVec2(-5, 0));
 
-            ImRect paddedRect = descriptionBox.get_element_rect();
-            paddedRect.Expand(ImVec2(-ImGui::GetStyle().FramePadding.x, 0.0f));
-
-            descriptionTitleText.render(paddedRect);
-            descriptionDescriptionText.render(paddedRect);
             if (descriptionEditButton.render(paddedRect))
             {
                 static std::shared_ptr<update_review_popup> updateProjectPopup;
