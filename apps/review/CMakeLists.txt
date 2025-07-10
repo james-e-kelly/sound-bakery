@@ -12,6 +12,8 @@ set(review_SOURCES
   widgets/review_root_widget.cpp
   widgets/intro_widget.cpp
   widgets/workspace_widget.cpp
+  widgets/create_project_popup.cpp
+  widgets/create_review_popup.cpp
 )
 
 set(review_HEADERS
@@ -21,12 +23,16 @@ set(review_HEADERS
   data/project_data.h
   data/review_data.h
   data/user_settings_data.h
+  elements/project_element.h
+  elements/review_element.h
   managers/project_manager.h
   managers/review_manager.h
   managers/workspace_manager.h
   widgets/review_root_widget.h
   widgets/intro_widget.h
   widgets/workspace_widget.h
+  widgets/create_project_popup.h
+  widgets/create_review_popup.h
 )
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Source Files" FILES ${review_SOURCES})

@@ -1,10 +1,18 @@
 #pragma once
 
+#include "IconsLucide.h"
+#include "imspinner.h"
 #include "gluten/app/app.h"
+#include "gluten/elements/icon_button.h"
+#include "gluten/elements/layouts/layout.h"
+#include "gluten/theme/carbon_theme_g100.h"
 #include "gluten/managers/manager.h"
 #include "gluten/subsystems/renderer_subsystem.h"
 #include "gluten/subsystems/widget_subsystem.h"
+#include "gluten/utils/imgui_util_structures.h"
 #include "gluten/widgets/root_widget.h"
+#include "gluten/widgets/window_widget.h"
+#include "gluten/widgets/popup_widget.h"
 
 #include "boost/serialization/version.hpp"
 #include <magic_enum/magic_enum.hpp>
