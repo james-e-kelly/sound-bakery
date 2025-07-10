@@ -29,7 +29,7 @@ public:
     [[nodiscard]] auto has_selected_project() const -> bool;
 
     [[nodiscard]] auto get_selected_project() const -> const project_data&;
-    [[nodiscard]] auto get_projects() const -> const std::vector<project_data>&;
+    [[nodiscard]] auto get_projects() const -> const std::set<project_data>&;
     
     [[nodiscard]] auto get_workspace_file() const -> std::filesystem::path;
     [[nodiscard]] auto get_workspace_directory() const -> std::filesystem::path;
@@ -38,7 +38,7 @@ public:
     auto get_selected_review() const -> const review_data&;
     auto create_review(const new_review_data& newReview) -> void;
     auto update_review(const review_data& updatedReview) -> void;
-    auto get_all_reviews() const -> const std::vector<review_data>&;
+    auto get_all_reviews() const -> const std::set<review_data>&;
 
 protected:
     auto init(gluten::app* app) -> void override;
@@ -53,8 +53,8 @@ private:
     std::shared_ptr<workspace_widget> m_workspaceWidget;
 
     gluten::data_source<user_settings_data> m_userSettingsData;
-    std::vector<project_data> m_projects;
-    std::vector<review_data> m_reviews;
+    std::set<project_data> m_projects;
+    std::set<review_data> m_reviews;
     project_data m_selectedProject;
     review_data m_selectedReview;
     std::shared_ptr<review_database> m_database;

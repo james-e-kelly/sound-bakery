@@ -55,6 +55,11 @@ struct review_data
     review_status m_reviewStatus   = review_status::open;
     std::vector<versionable_review_asset> m_relativeContextFiles;   //< Context files are also versionable in case new context is required
     std::vector<versionable_review_asset> m_reviewAssets;
+
+    bool operator<(const review_data& review) const
+    {
+        return m_reviewId < review.m_reviewId;
+    }
 };
 
 struct new_review_data

@@ -16,4 +16,9 @@ struct project_data
         archive & boost::serialization::make_nvp("project_name", m_projectName);
         archive & boost::serialization::make_nvp("project_description", m_projectDescription);
     }
+
+    bool operator<(const project_data& project) const
+    {
+        return m_id < project.m_id;
+    }
 };

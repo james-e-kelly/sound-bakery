@@ -73,12 +73,13 @@ auto workspace_manager::open_workspace(const std::filesystem::path& workspaceFil
 
 auto workspace_manager::load_projects_from_workspace() -> void
 {
-    m_projects = m_database->get_all_projects().get();
+    const std::vector<project_data> allProjects = m_database->get_all_projects().get();
+    m_projects = std::set<project_data>(allProjects.cbegin(), allProjects.cend());
 }
 
 auto workspace_manager::create_project(const std::string& projectName, const std::string& projectDescription) -> void
 {
-    m_projects.push_back(m_database->create_project(projectName, projectDescription).get());
+    m_projects.insert(m_database->create_project(projectName, projectDescription).get());
 }
 
 auto workspace_manager::select_project(const std::string& projectName) -> void
@@ -96,7 +97,9 @@ auto workspace_manager::select_project(const std::string& projectName) -> void
         if (project.m_projectName == projectName)
         {
             m_selectedProject = project;
-            m_reviews         = m_database->get_all_reviews(m_selectedProject.m_id).get();
+
+            std::vector<review_data> allReviews = m_database->get_all_reviews(m_selectedProject.m_id).get();
+            m_reviews         = std::set<review_data>(allReviews.cbegin(), allReviews.cend());
             break;
         }
     }
@@ -142,7 +145,7 @@ auto workspace_manager::close_workspace() -> void
 
 auto workspace_manager::add_existing_project(const project_data& projectData) -> void
 {
-    m_projects.push_back(projectData);
+    m_projects.insert(projectData);
 }
 
 auto workspace_manager::get_selected_project() const -> const project_data&
@@ -150,7 +153,7 @@ auto workspace_manager::get_selected_project() const -> const project_data&
     return m_selectedProject;
 }
 
-auto workspace_manager::get_projects() const -> const std::vector<project_data>& { return m_projects; }
+auto workspace_manager::get_projects() const -> const std::set<project_data>& { return m_projects; }
 
 auto workspace_manager::get_workspace_file() const -> std::filesystem::path
 {
@@ -192,13 +195,13 @@ auto workspace_manager::get_selected_review() const -> const review_data&
 
 auto workspace_manager::create_review(const new_review_data& newReview) -> void 
 {
-    m_reviews.push_back(m_database->create_review(get_selected_project().m_id, newReview).get());
+    m_reviews.insert(m_database->create_review(get_selected_project().m_id, newReview).get());
 }
 
 auto workspace_manager::update_review(const review_data& updatedReview) -> void
 {
     m_reviews.erase(std::find_if(m_reviews.begin(), m_reviews.end(), [id = updatedReview.m_reviewId](const review_data& review){ return review.m_reviewId == id; }));
-    m_reviews.push_back(m_database->update_review(updatedReview).get());
+    m_reviews.insert(m_database->update_review(updatedReview).get());
     
     if (m_selectedReview.m_reviewId == updatedReview.m_reviewId)
     {
@@ -206,7 +209,7 @@ auto workspace_manager::update_review(const review_data& updatedReview) -> void
     }
 }
 
-auto workspace_manager::get_all_reviews() const -> const std::vector<review_data>&
+auto workspace_manager::get_all_reviews() const -> const std::set<review_data>&
 {
     return m_reviews;
 }
