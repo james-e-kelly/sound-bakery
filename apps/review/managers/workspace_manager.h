@@ -37,6 +37,7 @@ public:
     auto select_review(int64_t reviewId) -> void;
     auto get_selected_review() const -> const review_data&;
     auto create_review(const new_review_data& newReview) -> void;
+    auto update_review(const review_data& updatedReview) -> void;
     auto get_all_reviews() const -> const std::vector<review_data>&;
 
 protected:

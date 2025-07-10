@@ -195,6 +195,17 @@ auto workspace_manager::create_review(const new_review_data& newReview) -> void
     m_reviews.push_back(m_database->create_review(get_selected_project().m_id, newReview).get());
 }
 
+auto workspace_manager::update_review(const review_data& updatedReview) -> void
+{
+    m_reviews.erase(std::find_if(m_reviews.begin(), m_reviews.end(), [id = updatedReview.m_reviewId](const review_data& review){ return review.m_reviewId == id; }));
+    m_reviews.push_back(m_database->update_review(updatedReview).get());
+    
+    if (m_selectedReview.m_reviewId == updatedReview.m_reviewId)
+    {
+        m_selectedReview = updatedReview;
+    }
+}
+
 auto workspace_manager::get_all_reviews() const -> const std::vector<review_data>&
 {
     return m_reviews;

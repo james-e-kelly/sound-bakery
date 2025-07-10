@@ -227,6 +227,30 @@ auto review_database::create_review(int64_t projectId, const new_review_data new
     co_return result;
 }
 
+auto review_database::update_review(const review_data review) -> concurrencpp::result<review_data>
+{
+    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
+
+    if (!review.m_reviewName.empty() && review.m_reviewId != 0)
+    {
+        if (m_database.tableExists("reviews"))
+        {
+            SQLite::Statement updateReviewStatement(m_database, "UPDATE reviews SET name = ?, task_url = ?, description = ?, status = ?, phase = ?, quality = ? WHERE id = ?;");
+            updateReviewStatement.bind(1, review.m_reviewName);
+            updateReviewStatement.bind(2, review.m_reviewTaskUrl);
+            updateReviewStatement.bind(3, review.m_reviewDescription);
+            updateReviewStatement.bind(4, (int)review.m_reviewStatus);
+            updateReviewStatement.bind(5, (int)review.m_reviewPhase);
+            updateReviewStatement.bind(6, (int)review.m_reviewQuality);
+            updateReviewStatement.bind(7, review.m_reviewId);
+
+            updateReviewStatement.exec();
+        }
+    }
+
+    co_return review;
+}
+
 auto review_database::get_all_reviews(int64_t projectId) const -> concurrencpp::result<std::vector<review_data>>
 {
     co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());

@@ -7,6 +7,7 @@
 #include "elements/review_element.h"
 #include "widgets/create_project_popup.h"
 #include "widgets/create_review_popup.h"
+#include "widgets/update_review_popup.h"
 
 namespace
 {
@@ -233,7 +234,17 @@ auto workspace_widget::render_content() -> void
 
             descriptionTitleText.render(paddedRect);
             descriptionDescriptionText.render(paddedRect);
-            descriptionEditButton.render(paddedRect);
+            if (descriptionEditButton.render(paddedRect))
+            {
+                static std::shared_ptr<update_review_popup> updateProjectPopup;
+                updateProjectPopup = add_child_widget<update_review_popup>(false);
+
+                if (updateProjectPopup)
+                {
+                    updateProjectPopup->set_review_data(selectedReview);
+                    updateProjectPopup->open_popup();
+                }
+            }
 
             gluten::background remaining;
             remaining.set_element_padding(ImVec2(ImGui::GetStyle().FramePadding.x * 2.0f, 0.0));

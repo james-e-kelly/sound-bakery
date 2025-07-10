@@ -24,6 +24,7 @@ public:
     auto get_all_projects() const -> concurrencpp::result<std::vector<project_data>>;
 
     auto create_review(int64_t projectId, const new_review_data newReview) -> concurrencpp::result<review_data>;
+    auto update_review(const review_data review) -> concurrencpp::result<review_data>;
     auto get_all_reviews(int64_t projectId) const -> concurrencpp::result<std::vector<review_data>>;
 
 private:

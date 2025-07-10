@@ -46,7 +46,7 @@ struct versionable_review_asset
 
 struct review_data
 {
-    uint64_t m_reviewId = 0;
+    int64_t m_reviewId = 0;
     std::string m_reviewName;
     std::string m_reviewTaskUrl;
     std::string m_reviewDescription;
