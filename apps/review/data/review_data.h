@@ -13,7 +13,6 @@ enum class review_phase
 
 enum class review_quality
 {
-    unknown,
     c,
     b,
     a,
@@ -51,7 +50,7 @@ struct review_data
     std::string m_reviewTaskUrl;
     std::string m_reviewDescription;
     review_phase m_reviewPhase = review_phase::first_pass;
-    review_quality m_reviewQuality = review_quality::unknown;
+    review_quality m_reviewQuality = review_quality::c;
     review_status m_reviewStatus   = review_status::open;
     std::vector<versionable_review_asset> m_relativeContextFiles;   //< Context files are also versionable in case new context is required
     std::vector<versionable_review_asset> m_reviewAssets;
@@ -68,7 +67,7 @@ struct new_review_data
     std::string m_reviewTaskUrl;
     std::string m_reviewDescription;
     review_phase m_reviewPhase = review_phase::first_pass;
-    review_quality m_reviewQuality = review_quality::unknown;
+    review_quality m_reviewQuality = review_quality::c;
 
     std::unordered_set<std::filesystem::path> m_absoluteContextFiles;  //< Absolute files to copy into the review folder
     std::unordered_set<std::filesystem::path> m_absoluteReviewFiles;   //< Absolute files to copy into the review folder

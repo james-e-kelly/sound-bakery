@@ -224,13 +224,96 @@ auto workspace_widget::render_content() -> void
             gluten::text descriptionDescriptionText(selectedReview.m_reviewDescription.c_str(), ImVec2(0.0f, 0.0f), gluten::element::anchor_preset::stretch_top);
             descriptionBox.render_layout_element_percent_vertical(&descriptionDescriptionText, 0.1f);
 
-            gluten::text descriptionQualityText(magic_enum::enum_name(selectedReview.m_reviewQuality).data(), ImVec2(0.0f, 0.0f),
-                                                    gluten::element::anchor_preset::stretch_top);
-            descriptionBox.render_layout_element_percent_vertical(&descriptionQualityText, 0.1f);
+            const ImVec4 inactivePhaseColor = gluten::theme::carbon_g100::layer03;
 
-            gluten::text descriptionPhaseText(magic_enum::enum_name(selectedReview.m_reviewPhase).data(),
-                                                ImVec2(0.0f, 0.0f), gluten::element::anchor_preset::stretch_top);
-            descriptionBox.render_layout_element_percent_vertical(&descriptionPhaseText, 0.1f);
+            {
+                static std::unordered_map<review_phase, ImVec4> phaseColours{
+                    {review_phase::temp, gluten::theme::blue60},
+                    {review_phase::first_pass, gluten::theme::green60},
+                    {review_phase::iteration_pass, gluten::theme::yellow60},
+                    {review_phase::final_pass, gluten::theme::purple60}};
+
+                static std::unordered_map<review_phase, const char*> phaseNames{
+                    {review_phase::temp, "Temp"},
+                    {review_phase::first_pass, "First Pass"},
+                    {review_phase::iteration_pass, "Iteration Pass"},
+                    {review_phase::final_pass, "Final Pass"}};
+
+                gluten::layout phaseLayout(gluten::layout::layout_type::left_to_right);
+                phaseLayout.get_element_anchor().min = ImVec2(0.0f, 0.4f);
+                phaseLayout.get_element_anchor().max = ImVec2(1.0f, 0.6f);
+                phaseLayout.render(descriptionBox.get_element_rect());
+
+                for (int i = 0; i < (int)review_phase::num; ++i)
+                {
+                    gluten::background background;
+                    background.set_element_background_color(selectedReview.m_reviewPhase == (review_phase)i
+                                                                ? phaseColours[(review_phase)i]
+                                                                : inactivePhaseColor);
+                    background.set_element_border(2.0f, 0.0f);
+                    phaseLayout.render_layout_element_percent_horizontal(&background, 1.0f / (int)review_phase::num);
+
+                    gluten::text text(phaseNames[(review_phase)i], ImVec2(0.5f, 0.5f),
+                                      gluten::element::anchor_preset::center_middle);
+                    text.render(background.get_element_rect());
+                }
+            }
+
+            {
+                static std::unordered_map<review_quality, ImVec4> qualityColours
+                {
+                    {review_quality::c, gluten::theme::blue60},
+                    {review_quality::b, gluten::theme::green60},
+                    {review_quality::a, gluten::theme::yellow60},
+                    {review_quality::a_plus, gluten::theme::purple50},
+                    {review_quality::a_plus_plus, gluten::theme::purple60}
+                };
+
+                static std::unordered_map<review_quality, const char*> qualityNames
+                {
+                    {review_quality::c, "C"},
+                    {review_quality::b, "B"},
+                    {review_quality::a, "A"},
+                    {review_quality::a_plus, "A+"},
+                    {review_quality::a_plus_plus, "A++"}
+                };
+
+                gluten::layout qualityLayout(gluten::layout::layout_type::left_to_right);
+                qualityLayout.get_element_anchor().min = ImVec2(0.0f, 0.6f);
+                qualityLayout.get_element_anchor().max = ImVec2(1.0f, 0.8f);
+                qualityLayout.render(descriptionBox.get_element_rect());
+
+                for (int i = 0; i < (int)review_quality::num; ++i)
+                {
+                    gluten::background background;
+                    background.set_element_background_color(selectedReview.m_reviewQuality == (review_quality)i ? qualityColours[(review_quality)i] : inactivePhaseColor);
+                    background.set_element_border(2.0f, 0.0f);
+                    qualityLayout.render_layout_element_percent_horizontal(&background, 1.0f / (int)review_quality::num);
+
+                    gluten::text text(qualityNames[(review_quality)i], ImVec2(0.5f, 0.5f), gluten::element::anchor_preset::center_middle);
+                    text.render(background.get_element_rect());
+                }
+            }
+
+            {
+                gluten::imgui::scoped_color frameProgressBg(ImGuiCol_FrameBg, gluten::theme::carbon_g100::layer03);
+
+                gluten::layout scrutinyLayout(gluten::layout::layout_type::left_to_right);
+                scrutinyLayout.set_element_border(2.0f, 0.0f);
+                scrutinyLayout.get_element_anchor().min = ImVec2(0.0f, 0.8f);
+                scrutinyLayout.get_element_anchor().max = ImVec2(1.0f, 1.0f);
+                scrutinyLayout.render(descriptionBox.get_element_rect());
+
+                constexpr float max = ((int)review_phase::num) * ((int)review_quality::num);
+                constexpr float third = max * 0.33f;
+                constexpr float twoThirds = max * 0.66f;
+                const float value   = ((int)selectedReview.m_reviewPhase + 1) * ((int)selectedReview.m_reviewQuality + 1);
+                const float fraction = value / max;
+
+                gluten::imgui::scoped_color progressBarColor(ImGuiCol_PlotHistogram, value >= twoThirds ? gluten::theme::red60 : value >= third ? gluten::theme::yellow60 : gluten::theme::green60);
+
+                ImGui::ProgressBar(fraction, scrutinyLayout.get_element_rect().GetSize(), "Scrutiny");
+            }
 
             gluten::button descriptionEditButton("Edit " ICON_LC_PENCIL_LINE, false, gluten::element::anchor_preset::right_top);
 
