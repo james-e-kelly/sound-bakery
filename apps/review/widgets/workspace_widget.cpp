@@ -198,102 +198,48 @@ auto workspace_widget::render_content() -> void
 
         if (selectedReview.m_reviewId)
         {
-            gluten::text reviewTitleText(fmt::format("{} / {}", selectedProject.m_projectName, selectedReview.m_reviewId).c_str(), ImVec2(0, 0.5f), gluten::element::anchor_preset::left_top);
-            reviewTitleText
+            gluten::text topTitleText(fmt::format("{} / {}", selectedProject.m_projectName, selectedReview.m_reviewId).c_str(), ImVec2(0, 0.5f), gluten::element::anchor_preset::left_top);
+            topTitleText
                 .set_element_content_font_size(gluten::g_baseFontSize * 2.0f)
                 .set_element_translation(ImVec2(5, 50.0f));
-            reviewTitleText.render(titleBarBackground.get_element_rect());
+            topTitleText.render(titleBarBackground.get_element_rect());
 
-            gluten::layout descriptionBox;
+            gluten::background descriptionBox;
             descriptionBox
-                .set_layout_type(gluten::layout::layout_type::top_to_bottom)
-                .set_element_anchor_preset(gluten::element::anchor_preset::stretch_full)
                 .set_element_background_color(gluten::theme::carbon_g100::field03)
                 .set_element_border(2.0f, 0.0f)
-                .set_element_padding(ImVec2(ImGui::GetStyle().FramePadding.x * 2.0f, 0.0f));
+                .set_element_padding(ImGui::GetStyle().FramePadding);
             verticalLayout.render_layout_element_pixels_vertical(&descriptionBox, descriptionBoxHeight);
 
-            ImRect paddedRect = descriptionBox.get_element_rect();
-            paddedRect.Expand(ImVec2(-ImGui::GetStyle().FramePadding.x, 0.0f));
+            gluten::layout innerDescriptionBox;
+            innerDescriptionBox
+                .set_layout_type(gluten::layout::layout_type::top_to_bottom)
+                .set_element_anchor_preset(gluten::element::anchor_preset::stretch_full)
+                .set_element_padding(ImGui::GetStyle().FramePadding);
+            innerDescriptionBox.render(descriptionBox.get_element_rect());
 
-            gluten::text descriptionTitleText(selectedReview.m_reviewName.c_str(), ImVec2(0.0f, 0.5f), gluten::element::anchor_preset::left_middle);
-            descriptionTitleText.
-                set_element_content_font_size(gluten::g_baseFontSize * 1.5f);
-            descriptionBox.render_layout_element_percent_vertical(&descriptionTitleText, 0.1f);
+            gluten::text titleText(fmt::format("{} {}", ICON_LC_VOLUME_2, selectedReview.m_reviewName).c_str(), ImVec2(0.0f, 0.5f), gluten::element::anchor_preset::left_middle);
+            titleText
+                .set_font(gluten::fonts::title_lucide_icons)
+                .set_element_content_font_size(gluten::g_baseFontSize * 1.1f);
+            innerDescriptionBox.render_layout_element_percent_vertical(&titleText, 0.2f);
 
-            gluten::text descriptionDescriptionText(selectedReview.m_reviewDescription.c_str(), ImVec2(0.0f, 0.0f), gluten::element::anchor_preset::stretch_top);
-            descriptionBox.render_layout_element_percent_vertical(&descriptionDescriptionText, 0.1f);
+            gluten::text descriptionText(fmt::format("{} {}", ICON_LC_MESSAGE_CIRCLE, selectedReview.m_reviewDescription).c_str(), ImVec2(0.0f, 0.0f), gluten::element::anchor_preset::stretch_top);
+            descriptionText.set_font(gluten::fonts::regular_lucide_icons);
+            innerDescriptionBox.render_layout_element_percent_vertical(&descriptionText, 0.2f);
 
-            const ImVec4 inactivePhaseColor = gluten::theme::carbon_g100::layer03;
+            innerDescriptionBox.render_layout_element_percent_vertical(nullptr, 0.2f);
 
-            {
-                static std::unordered_map<review_phase, ImVec4> phaseColours{
-                    {review_phase::temp, gluten::theme::blue60},
-                    {review_phase::first_pass, gluten::theme::green60},
-                    {review_phase::iteration_pass, gluten::theme::yellow60},
-                    {review_phase::final_pass, gluten::theme::purple60}};
+            gluten::layout phaseAndQualityLayout(gluten::layout::layout_type::left_to_right, gluten::element::anchor_preset::stretch_full);
+            innerDescriptionBox.render_layout_element_percent_vertical(&phaseAndQualityLayout, 0.2f);
 
-                static std::unordered_map<review_phase, const char*> phaseNames{
-                    {review_phase::temp, "Temp"},
-                    {review_phase::first_pass, "First Pass"},
-                    {review_phase::iteration_pass, "Iteration Pass"},
-                    {review_phase::final_pass, "Final Pass"}};
+            gluten::text phaseText(fmt::format("Phase: {}", magic_enum::enum_name(selectedReview.m_reviewPhase)).c_str(), ImVec2(0.0f, 0.0f), gluten::element::anchor_preset::stretch_top);
+            phaseText.set_font(gluten::fonts::regular_lucide_icons);
+            phaseAndQualityLayout.render_layout_element_percent_horizontal(&phaseText, 0.5f);
 
-                gluten::layout phaseLayout(gluten::layout::layout_type::left_to_right);
-                phaseLayout.get_element_anchor().min = ImVec2(0.0f, 0.4f);
-                phaseLayout.get_element_anchor().max = ImVec2(1.0f, 0.6f);
-                phaseLayout.render(descriptionBox.get_element_rect());
-
-                for (int i = 0; i < (int)review_phase::num; ++i)
-                {
-                    gluten::background background;
-                    background.set_element_background_color(selectedReview.m_reviewPhase == (review_phase)i
-                                                                ? phaseColours[(review_phase)i]
-                                                                : inactivePhaseColor);
-                    background.set_element_border(2.0f, 0.0f);
-                    phaseLayout.render_layout_element_percent_horizontal(&background, 1.0f / (int)review_phase::num);
-
-                    gluten::text text(phaseNames[(review_phase)i], ImVec2(0.5f, 0.5f),
-                                      gluten::element::anchor_preset::center_middle);
-                    text.render(background.get_element_rect());
-                }
-            }
-
-            {
-                static std::unordered_map<review_quality, ImVec4> qualityColours
-                {
-                    {review_quality::c, gluten::theme::blue60},
-                    {review_quality::b, gluten::theme::green60},
-                    {review_quality::a, gluten::theme::yellow60},
-                    {review_quality::a_plus, gluten::theme::purple50},
-                    {review_quality::a_plus_plus, gluten::theme::purple60}
-                };
-
-                static std::unordered_map<review_quality, const char*> qualityNames
-                {
-                    {review_quality::c, "C"},
-                    {review_quality::b, "B"},
-                    {review_quality::a, "A"},
-                    {review_quality::a_plus, "A+"},
-                    {review_quality::a_plus_plus, "A++"}
-                };
-
-                gluten::layout qualityLayout(gluten::layout::layout_type::left_to_right);
-                qualityLayout.get_element_anchor().min = ImVec2(0.0f, 0.6f);
-                qualityLayout.get_element_anchor().max = ImVec2(1.0f, 0.8f);
-                qualityLayout.render(descriptionBox.get_element_rect());
-
-                for (int i = 0; i < (int)review_quality::num; ++i)
-                {
-                    gluten::background background;
-                    background.set_element_background_color(selectedReview.m_reviewQuality == (review_quality)i ? qualityColours[(review_quality)i] : inactivePhaseColor);
-                    background.set_element_border(2.0f, 0.0f);
-                    qualityLayout.render_layout_element_percent_horizontal(&background, 1.0f / (int)review_quality::num);
-
-                    gluten::text text(qualityNames[(review_quality)i], ImVec2(0.5f, 0.5f), gluten::element::anchor_preset::center_middle);
-                    text.render(background.get_element_rect());
-                }
-            }
+            gluten::text qualityText(fmt::format("Quality: {}", magic_enum::enum_name(selectedReview.m_reviewQuality)).c_str(), ImVec2(0.0f, 0.0f), gluten::element::anchor_preset::stretch_top);
+            qualityText.set_font(gluten::fonts::regular_lucide_icons);
+            phaseAndQualityLayout.render_layout_element_percent_horizontal(&qualityText, 0.5f);
 
             {
                 gluten::imgui::scoped_color frameProgressBg(ImGuiCol_FrameBg, gluten::theme::carbon_g100::layer03);
@@ -321,7 +267,7 @@ auto workspace_widget::render_content() -> void
                 .set_element_alignment(ImVec2(1.0f, -0.25f))
                 .set_element_translation(ImVec2(-5, 0));
 
-            if (descriptionEditButton.render(paddedRect))
+            if (descriptionEditButton.render(innerDescriptionBox.get_element_rect()))
             {
                 static std::shared_ptr<update_review_popup> updateProjectPopup;
                 updateProjectPopup = add_child_widget<update_review_popup>(false);

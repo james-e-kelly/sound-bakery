@@ -202,6 +202,11 @@ void gluten::app::load_fonts()
         io.Fonts->AddFontFromMemoryTTF((void*)lightFontFile.begin(), lightFontFile.size(), g_baseFontSize, &fontConfig);
     m_fonts[fonts::title] = io.Fonts->AddFontFromMemoryTTF((void*)titleFontFile.begin(), titleFontFile.size(),
                                                            g_baseFontSize * 1.2f, &fontConfig);
+
+    m_fonts[fonts::title_lucide_icons] =
+        io.Fonts->AddFontFromMemoryTTF((void*)titleFontFile.begin(), titleFontFile.size(), g_baseFontSize * 1.2f, &fontConfig);
+    io.Fonts->AddFontFromMemoryTTF((void*)lucideFontFile.begin(), lucideFontFile.size(), g_baseIconFontSize * 1.3f,
+                                   &iconFontsConfig, lucideIconRanges);
 }
 
 void gluten::app::request_exit() { m_isRequestingExit = true; }

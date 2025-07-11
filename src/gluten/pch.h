@@ -38,6 +38,7 @@ namespace gluten
         regular_audio_icons,
         regular_lucide_icons,
         light,
-        title
+        title,
+        title_lucide_icons
     };
 }
