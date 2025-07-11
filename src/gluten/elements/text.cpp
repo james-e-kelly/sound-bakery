@@ -41,10 +41,9 @@ bool gluten::text::render_element(const ImRect& parent)
             if (ImDrawList* const drawList = ImGui::GetWindowDrawList())
             {
                 const ImVec2 textPos(window->DC.CursorPos.x, window->DC.CursorPos.y + window->DC.CurrLineTextBaseOffset);
-                drawList->AddText(context.Font, context.FontSize, textPos, ImGui::GetColorU32(ImGuiCol_Text), m_displayText.c_str());
+                drawList->AddText(context.Font, context.FontSize, textPos, ImGui::GetColorU32(ImGuiCol_Text), m_displayText.c_str(), nullptr, parent.GetWidth());
             }
         }
-        //ImGui::TextUnformatted(m_displayText.c_str());
     }
 
     if (m_font.has_value())
