@@ -24,6 +24,7 @@ namespace gluten
 
     private:
         std::string m_displayText;
+        std::string m_truncatedText;
         std::optional<fonts> m_font;
     };
 }  // namespace gluten

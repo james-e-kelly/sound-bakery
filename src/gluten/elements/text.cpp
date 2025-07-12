@@ -2,6 +2,30 @@
 
 #include "gluten/app/app.h"
 
+namespace
+{
+    void remove_last_word(std::string& str)
+    {
+        // Trim any whitespace, then remove the characters of the word,
+        // then remove any final whitespace
+
+        while (!str.empty() && std::isspace(str.back()))
+        {
+            str.pop_back();
+        }
+
+        while (!str.empty() && !std::isspace(str.back()))
+        {
+            str.pop_back();
+        }
+
+        while (!str.empty() && std::isspace(str.back()))
+        {
+            str.pop_back();
+        }
+    }
+}
+
 gluten::text::text(const std::string& displayText) : m_displayText(displayText) {}
 
 gluten::text::text(const std::string& displayText, const ImVec2& alignment, const anchor_preset& anchorPreset)
@@ -40,8 +64,39 @@ bool gluten::text::render_element(const ImRect& parent)
         {
             if (ImDrawList* const drawList = ImGui::GetWindowDrawList())
             {
+                const bool hasStrictHorizontalControl = std::abs(m_anchor.max.x - m_anchor.min.x) > 0.01f;
+                const bool hasStrictVerticalControl = std::abs(m_anchor.max.y - m_anchor.min.y) > 0.01f;
+
                 const ImVec2 textPos(window->DC.CursorPos.x, window->DC.CursorPos.y + window->DC.CurrLineTextBaseOffset);
-                drawList->AddText(context.Font, context.FontSize, textPos, ImGui::GetColorU32(ImGuiCol_Text), m_displayText.c_str(), nullptr, parent.GetWidth());
+                
+                if (hasStrictHorizontalControl && hasStrictVerticalControl)
+                {
+                    // TODO: Make truncation faster or cached. Without testing, this seems like a slow approach
+
+                    const float currentHeight = parent.GetHeight();
+                    
+                    m_truncatedText = m_displayText;
+
+                    ImVec2 textSize = ImGui::CalcTextSize(m_truncatedText.c_str(), nullptr, false, parent.GetWidth());
+
+                    while (textSize.y > currentHeight)
+                    {
+                        remove_last_word(m_truncatedText);
+                        const std::string sizeTestString = m_truncatedText + "...";
+                        textSize = ImGui::CalcTextSize(sizeTestString.c_str(), nullptr, false, parent.GetWidth());
+                    }
+
+                    if (m_displayText != m_truncatedText)
+                    {
+                        m_truncatedText += "...";
+                    }
+
+                    drawList->AddText(context.Font, context.FontSize, textPos, ImGui::GetColorU32(ImGuiCol_Text), m_truncatedText.c_str(), nullptr, parent.GetWidth());
+                }
+                else
+                {
+                    drawList->AddText(context.Font, context.FontSize, textPos, ImGui::GetColorU32(ImGuiCol_Text), m_displayText.c_str(), nullptr, parent.GetWidth());
+                }
             }
         }
     }
