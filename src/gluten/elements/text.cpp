@@ -4,22 +4,27 @@
 
 namespace
 {
-    void remove_last_word(std::string& str)
+    auto is_valid_character(typename const std::string::value_type& character) -> bool
+    {
+        return character >= 0 && character <= 255;
+    }
+
+    auto remove_last_word(std::string& str) -> void
     {
         // Trim any whitespace, then remove the characters of the word,
         // then remove any final whitespace
 
-        while (!str.empty() && std::isspace(str.back()))
+        while (!str.empty() && is_valid_character(str.back()) && std::isspace(str.back()))
         {
             str.pop_back();
         }
 
-        while (!str.empty() && !std::isspace(str.back()))
+        while (!str.empty() && (!is_valid_character(str.back()) || !std::isspace(str.back())))
         {
             str.pop_back();
         }
 
-        while (!str.empty() && std::isspace(str.back()))
+        while (!str.empty() && is_valid_character(str.back()) && std::isspace(str.back()))
         {
             str.pop_back();
         }
@@ -79,7 +84,7 @@ bool gluten::text::render_element(const ImRect& parent)
 
                     ImVec2 textSize = ImGui::CalcTextSize(m_truncatedText.c_str(), nullptr, false, parent.GetWidth());
 
-                    while (textSize.y > currentHeight)
+                    while (textSize.y > currentHeight && textSize.y > 0.0f && !m_truncatedText.empty())
                     {
                         remove_last_word(m_truncatedText);
                         const std::string sizeTestString = m_truncatedText + "...";
