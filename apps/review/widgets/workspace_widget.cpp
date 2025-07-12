@@ -11,7 +11,7 @@
 
 namespace
 {
-    constexpr float leftToobarWidth             = 100.0f;
+    constexpr float leftToobarWidth = gluten::g_baseFontSize * 5.0f;
     constexpr float leftToolbarButtonHeight     = leftToobarWidth;
     constexpr float topHeaderHeight             = leftToobarWidth;
     constexpr float leftToolbarHalfButtonHeight = leftToolbarButtonHeight / 2.0f;
@@ -148,7 +148,7 @@ auto workspace_widget::render_list() -> void
                 for (const auto& project : get_app()->get_manager_by_class<workspace_manager>()->get_projects())
                 {
                     project_element projectElement(project.m_projectName, project.m_projectDescription, 2, 5);
-                    if (itemsLayout.render_layout_element_pixels_vertical(&projectElement, 100.0f))
+                    if (itemsLayout.render_layout_element_pixels_vertical(&projectElement, leftToolbarButtonHeight))
                     {
                         get_app()->get_manager_by_class<workspace_manager>()->select_project(project.m_projectName);
                     }
@@ -159,7 +159,7 @@ auto workspace_widget::render_list() -> void
                 for (const auto& review : get_app()->get_manager_by_class<workspace_manager>()->get_all_reviews())
                 {
                     review_element reviewElement(review);
-                    if (itemsLayout.render_layout_element_pixels_vertical(&reviewElement, 100.0f))
+                    if (itemsLayout.render_layout_element_pixels_vertical(&reviewElement, leftToolbarButtonHeight))
                     {
                         get_app()->get_manager_by_class<workspace_manager>()->select_review(review.m_reviewId);
                     }
@@ -218,13 +218,13 @@ auto workspace_widget::render_content() -> void
                 .set_element_padding(ImGui::GetStyle().FramePadding);
             innerDescriptionBox.render(descriptionBox.get_element_rect());
 
-            gluten::text titleText(fmt::format("{} {}", ICON_LC_VOLUME_2, selectedReview.m_reviewName).c_str(), ImVec2(0.0f, 0.5f), gluten::element::anchor_preset::left_middle);
+            gluten::text titleText(fmt::format("{} {}", ICON_LC_VOLUME_2, selectedReview.m_reviewName).c_str(), ImVec2(0.0f, 0.0f), gluten::element::anchor_preset::stretch_full);
             titleText
                 .set_font(gluten::fonts::title_lucide_icons)
                 .set_element_content_font_size(gluten::g_baseFontSize * 1.1f);
             innerDescriptionBox.render_layout_element_percent_vertical(&titleText, 0.2f);
 
-            gluten::text descriptionText(fmt::format("{} {}", ICON_LC_MESSAGE_CIRCLE, selectedReview.m_reviewDescription).c_str(), ImVec2(0.0f, 0.0f), gluten::element::anchor_preset::stretch_top);
+            gluten::text descriptionText(fmt::format("{} {}", ICON_LC_MESSAGE_CIRCLE, selectedReview.m_reviewDescription).c_str(), ImVec2(0.0f, 0.0f), gluten::element::anchor_preset::stretch_full);
             descriptionText.set_font(gluten::fonts::regular_lucide_icons);
             innerDescriptionBox.render_layout_element_percent_vertical(&descriptionText, 0.2f);
 
@@ -233,11 +233,11 @@ auto workspace_widget::render_content() -> void
             gluten::layout phaseAndQualityLayout(gluten::layout::layout_type::left_to_right, gluten::element::anchor_preset::stretch_full);
             innerDescriptionBox.render_layout_element_percent_vertical(&phaseAndQualityLayout, 0.2f);
 
-            gluten::text phaseText(fmt::format("Phase: {}", magic_enum::enum_name(selectedReview.m_reviewPhase)).c_str(), ImVec2(0.0f, 0.0f), gluten::element::anchor_preset::stretch_top);
+            gluten::text phaseText(fmt::format("Phase: {}", magic_enum::enum_name(selectedReview.m_reviewPhase)).c_str(), ImVec2(0.0f, 0.0f), gluten::element::anchor_preset::stretch_full);
             phaseText.set_font(gluten::fonts::regular_lucide_icons);
             phaseAndQualityLayout.render_layout_element_percent_horizontal(&phaseText, 0.5f);
 
-            gluten::text qualityText(fmt::format("Quality: {}", magic_enum::enum_name(selectedReview.m_reviewQuality)).c_str(), ImVec2(0.0f, 0.0f), gluten::element::anchor_preset::stretch_top);
+            gluten::text qualityText(fmt::format("Quality: {}", magic_enum::enum_name(selectedReview.m_reviewQuality)).c_str(), ImVec2(0.0f, 0.0f), gluten::element::anchor_preset::stretch_full);
             qualityText.set_font(gluten::fonts::regular_lucide_icons);
             phaseAndQualityLayout.render_layout_element_percent_horizontal(&qualityText, 0.5f);
 
@@ -339,14 +339,14 @@ auto workspace_widget::render_left_toolbar() -> void
 
         gluten::icon_button reviewsButton("##ReviewsButton", ICON_LC_CHART_NO_AXES_GANTT, gluten::fonts::regular_lucide_icons);
         reviewsButton
-            .set_element_content_scale(3.0f)
+            .set_element_content_font_size(gluten::g_baseIconFontSize * (leftToolbarButtonHeight / gluten::g_baseIconFontSize) / 1.75f)
             .set_element_hover_color(gluten::theme::carbon_g100::fieldHover01)
             .set_element_active_color(gluten::theme::carbon_g100::layerActive01)
             .set_element_active(m_activeView == reviews_view);
 
         gluten::icon_button usersButton("##UsersButton", ICON_LC_USERS, gluten::fonts::regular_lucide_icons);
         usersButton
-            .set_element_content_scale(3.0f)
+            .set_element_content_font_size(gluten::g_baseIconFontSize * (leftToolbarButtonHeight / gluten::g_baseIconFontSize) / 1.75f)
             .set_element_hover_color(gluten::theme::carbon_g100::fieldHover01)
             .set_element_active_color(gluten::theme::carbon_g100::layerActive01)
             .set_element_active(m_activeView == users_view);
