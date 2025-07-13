@@ -218,18 +218,32 @@ auto workspace_widget::render_content() -> void
         gluten::layout contentAndRightPanelLayout(gluten::layout::layout_type::right_to_left, gluten::element::anchor_preset::stretch_full);
         verticalLayout.render_layout_element_remaining(&contentAndRightPanelLayout);
 
-        gluten::background rightPanelBackground;
+        gluten::layout rightPanelBackground(gluten::layout::layout_type::top_to_bottom, gluten::element::anchor_preset::stretch_full);
         rightPanelBackground.set_element_background_color(gluten::theme::carbon_g100::fieldHover03);
         contentAndRightPanelLayout.render_layout_element_pixels_horizontal(&rightPanelBackground, rightPanelWidth);
 
         gluten::background mainContentParent;
         contentAndRightPanelLayout.render_layout_element_remaining(&mainContentParent);
 
+        gluten::layout contentVerticalLayout(gluten::layout::layout_type::top_to_bottom, gluten::element::anchor_preset::stretch_full);
+        contentVerticalLayout.set_layout_spacing(10.0f);
+        contentVerticalLayout.render(mainContentParent.get_element_rect());
+
         if (selectedReview.m_reviewId)
         {
-            gluten::layout contentVerticalLayout(gluten::layout::layout_type::top_to_bottom, gluten::element::anchor_preset::stretch_full);
-            contentVerticalLayout.set_layout_spacing(10.0f);
-            contentVerticalLayout.render(mainContentParent.get_element_rect());
+            {
+                gluten::collapsing_header reviewersHeader("Reviewers");
+
+                if (rightPanelBackground.render_layout_element_pixels_vertical(&reviewersHeader, 50.0f))
+                {
+                    gluten::text reviewerText("James Kelly - Needs Review", ImVec2(0.0f, 0.0f), gluten::element::anchor_preset::stretch_top);
+                    reviewerText.set_element_frame_padding();
+                    rightPanelBackground.render_layout_element_pixels_vertical(&reviewerText, 50.0f);
+                    rightPanelBackground.render_layout_element_pixels_vertical(&reviewerText, 50.0f);
+                    rightPanelBackground.render_layout_element_pixels_vertical(&reviewerText, 50.0f);
+                    rightPanelBackground.render_layout_element_pixels_vertical(&reviewerText, 50.0f);
+                }
+            }
 
             gluten::background descriptionBox;
             contentVerticalLayout.render_layout_element_pixels_vertical(&descriptionBox, 200.0f);
@@ -283,9 +297,7 @@ auto workspace_widget::render_content() -> void
 
             gluten::button descriptionEditButton("Edit " ICON_LC_PENCIL_LINE, false, gluten::element::anchor_preset::right_top);
 
-            descriptionEditButton
-                .set_element_alignment(ImVec2(1.0f, -0.25f))
-                .set_element_translation(ImVec2(-5, 0));
+            descriptionEditButton.set_element_alignment(ImVec2(1.0f, -0.0f));
 
             if (descriptionEditButton.render(innerDescriptionBox.get_element_rect()))
             {

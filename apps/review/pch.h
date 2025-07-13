@@ -4,6 +4,7 @@
 #include "imspinner.h"
 #include "gluten/app/app.h"
 #include "gluten/elements/icon_button.h"
+#include "gluten/elements/collapsing_header.h"
 #include "gluten/elements/layouts/layout.h"
 #include "gluten/theme/carbon_theme_g100.h"
 #include "gluten/managers/manager.h"
