@@ -52,7 +52,7 @@ bool gluten::layout::render_layout_element_remaining(element* element)
     {
         const ImVec2 currentLayoutPos = m_currentLayoutPos.value();
 
-        ImVec2 sizeRemain(0.0f, 0.0f);
+        ImVec2 sizeRemain;
 
         switch (m_layoutType)
         {
@@ -88,7 +88,7 @@ bool gluten::layout::render_layout_element_pixels_horizontal(element* element, f
 {
     const ImRect elementBox = get_element_rect();
 
-    return render_layout_element_internal(elementBox, element, horizontalPixels, elementBox.GetSize().y);
+    return render_layout_element_internal(elementBox, element, horizontalPixels, elementBox.GetHeight());
 }
 
 bool gluten::layout::render_layout_element_pixels_vertical(element* element, float verticalPixels)
@@ -141,18 +141,18 @@ bool gluten::layout::render_layout_element_internal(const ImRect& thisBox,
 
     ImVec2 currentLayoutPos = m_currentLayoutPos.value();
 
-    if (firstLayoutRender)
+    switch (m_layoutType)
     {
-        // "backwards" layouts still render left to right
-        // so start one element over
-        if (m_layoutType == layout_type::right_to_left)
-        {
+        case gluten::layout::layout_type::right_to_left:
             currentLayoutPos.x -= sizeGivenToElement.x;
-        }
-        else if (m_layoutType == layout_type::bottom_to_top)
-        {
+            break;
+        case gluten::layout::layout_type::bottom_to_top:
             currentLayoutPos.y -= sizeGivenToElement.y;
-        }
+            break;
+        case gluten::layout::layout_type::left_to_right:
+        case gluten::layout::layout_type::top_to_bottom:
+        default:
+            break;
     }
 
     // If rendering would go outside the element box
@@ -194,14 +194,11 @@ bool gluten::layout::render_layout_element_internal(const ImRect& thisBox,
         case gluten::layout::layout_type::left_to_right:
             currentLayoutPos.x += sizeGivenToElement.x + m_spacing;
             break;
-        case gluten::layout::layout_type::right_to_left:
-            currentLayoutPos.x -= sizeGivenToElement.x + m_spacing;
-            break;
         case gluten::layout::layout_type::top_to_bottom:
             currentLayoutPos.y += sizeGivenToElement.y + m_spacing;
             break;
+        case gluten::layout::layout_type::right_to_left:
         case gluten::layout::layout_type::bottom_to_top:
-            currentLayoutPos.y -= sizeGivenToElement.y + m_spacing;
             break;
         default:
             break;

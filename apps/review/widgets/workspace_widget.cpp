@@ -18,6 +18,7 @@ namespace
     constexpr float descriptionBoxHeight        = topHeaderHeight * 2.0f;
 
     constexpr float itemListWidth = leftToobarWidth * 5.0f;
+    constexpr float rightPanelWidth = leftToobarWidth * 4.0f;
 }
 
 auto workspace_widget::start_implementation() -> void
@@ -26,6 +27,8 @@ auto workspace_widget::start_implementation() -> void
     windowClass.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoTabBar;
 
     set_window_class(windowClass);
+
+    m_workspaceManager = get_app()->get_manager_by_class<workspace_manager>();
 }
 
 auto workspace_widget::render_window_implementation() -> void
@@ -184,21 +187,17 @@ auto workspace_widget::render_content() -> void
 
     if (ImGui::BeginChild("Content"))
     {
-        gluten::layout verticalLayout(gluten::layout::layout_type::top_to_bottom,
-                                      gluten::element::anchor_preset::stretch_full);
-        verticalLayout.set_layout_spacing(10.0f);
+        const project_data& selectedProject = m_workspaceManager->get_selected_project();
+        const review_data& selectedReview   = m_workspaceManager->get_selected_review();
+
+        gluten::layout verticalLayout(gluten::layout::layout_type::top_to_bottom, gluten::element::anchor_preset::stretch_full);
         verticalLayout.render_window();
 
         gluten::background titleBarBackground;
         titleBarBackground.set_element_background_color(gluten::theme::carbon_g100::fieldHover02);
         verticalLayout.render_layout_element_pixels_vertical(&titleBarBackground, topHeaderHeight);
 
-        std::shared_ptr<workspace_manager> manager = get_app()->get_manager_by_class<workspace_manager>();
-
-        const project_data& selectedProject = manager->get_selected_project();
-        const review_data& selectedReview   = manager->get_selected_review();
-
-        std::string breadcrumbString = manager->get_workspace_name();
+        std::string breadcrumbString = m_workspaceManager->get_workspace_name();
 
         if (selectedProject.m_id != 0)
         {
@@ -216,13 +215,24 @@ auto workspace_widget::render_content() -> void
             .set_element_translation(ImVec2(5, 0.0f));
         breadcrumbText.render(titleBarBackground.get_element_rect());
 
+        gluten::layout contentAndRightPanelLayout(gluten::layout::layout_type::right_to_left, gluten::element::anchor_preset::stretch_full);
+        verticalLayout.render_layout_element_remaining(&contentAndRightPanelLayout);
+
+        gluten::background rightPanelBackground;
+        rightPanelBackground.set_element_background_color(gluten::theme::carbon_g100::fieldHover03);
+        contentAndRightPanelLayout.render_layout_element_pixels_horizontal(&rightPanelBackground, rightPanelWidth);
+
+        gluten::background mainContentParent;
+        contentAndRightPanelLayout.render_layout_element_remaining(&mainContentParent);
+
         if (selectedReview.m_reviewId)
         {
+            gluten::layout contentVerticalLayout(gluten::layout::layout_type::top_to_bottom, gluten::element::anchor_preset::stretch_full);
+            contentVerticalLayout.set_layout_spacing(10.0f);
+            contentVerticalLayout.render(mainContentParent.get_element_rect());
+
             gluten::background descriptionBox;
-            descriptionBox
-                .set_element_background_color(gluten::theme::carbon_g100::field03)
-                .get_element_anchor().max.x = 0.5f;
-            verticalLayout.render_layout_element_pixels_vertical(&descriptionBox, descriptionBoxHeight);
+            contentVerticalLayout.render_layout_element_pixels_vertical(&descriptionBox, 200.0f);
 
             gluten::layout innerDescriptionBox;
             innerDescriptionBox
@@ -290,9 +300,9 @@ auto workspace_widget::render_content() -> void
             }
 
             gluten::background remaining;
-            remaining.set_element_padding(ImVec2(ImGui::GetStyle().FramePadding.x * 2.0f, 0.0));
+            remaining.set_element_frame_padding();
             remaining.get_element_anchor().maxOffset.y -= 20.0f;
-            verticalLayout.render_layout_element_remaining(&remaining);
+            contentVerticalLayout.render_layout_element_remaining(&remaining);
 
             if (ImGui::BeginChild("ReviewContent", remaining.get_element_rect().GetSize()))
             {

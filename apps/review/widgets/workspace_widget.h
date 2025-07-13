@@ -2,6 +2,8 @@
 
 #include "pch.h"
 
+class workspace_manager;
+
 class workspace_widget : public gluten::window_widget
 {
     WIDGET_CONSTRUCT_PARENT(workspace_widget, "Workspace", gluten::window_widget)
@@ -23,4 +25,5 @@ private:
     };
 
     active_view m_activeView = reviews_view;
+    std::shared_ptr<workspace_manager> m_workspaceManager;
 };
