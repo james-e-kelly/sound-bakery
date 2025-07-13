@@ -6,6 +6,7 @@ set(review_SOURCES
   app/review_app.cpp
   app/review_database.cpp
   data/workspace_data.cpp
+  elements/inline_user_display_element.cpp
   managers/project_manager.cpp
   managers/review_manager.cpp
   managers/workspace_manager.cpp
@@ -26,6 +27,8 @@ set(review_HEADERS
   data/user_settings_data.h
   elements/project_element.h
   elements/review_element.h
+  elements/file_drop_element.h
+  elements/inline_user_display_element.h
   managers/project_manager.h
   managers/review_manager.h
   managers/workspace_manager.h
