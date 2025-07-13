@@ -54,6 +54,7 @@ auto workspace_manager::open_workspace(const std::filesystem::path& workspaceFil
         m_userSettingsData->m_workspaceFilePath = workspaceFile;
 
         m_database = std::make_shared<review_database>(std::filesystem::path(workspaceFile).replace_extension("db"));
+        m_database->open_workspace(workspaceFile.stem().string()).get();
         m_database->get_workspace_name().get();
 
         m_workspaceWidget = get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class_to_root<workspace_widget>(false);

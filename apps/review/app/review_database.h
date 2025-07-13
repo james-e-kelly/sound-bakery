@@ -18,6 +18,7 @@ public:
 
 public:
     auto create_workspace(const std::string name) -> concurrencpp::result<void>;
+    auto open_workspace(const std::string name) -> concurrencpp::result<void>;
     auto get_workspace_name() const -> concurrencpp::result<std::string>;
 
     auto create_project(const std::string name, const std::string description) -> concurrencpp::result<project_data>;

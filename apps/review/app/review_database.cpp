@@ -131,6 +131,15 @@ auto review_database::create_workspace(const std::string name) -> concurrencpp::
     insertWorkspaceName.exec();
 }
 
+auto review_database::open_workspace(const std::string name) -> concurrencpp::result<void>
+{
+    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
+
+    SQLite::Statement insertWorkspaceName(m_database, "INSERT OR IGNORE INTO workspaces (name) VALUES (?);");
+    insertWorkspaceName.bind(1, name);
+    insertWorkspaceName.exec();
+}
+
 auto review_database::get_workspace_name() const -> concurrencpp::result<std::string>
 {
     co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
