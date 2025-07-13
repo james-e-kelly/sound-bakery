@@ -31,6 +31,7 @@ public:
     [[nodiscard]] auto get_selected_project() const -> const project_data&;
     [[nodiscard]] auto get_projects() const -> const std::set<project_data>&;
     
+    [[nodiscard]] auto get_workspace_name() const -> std::string;
     [[nodiscard]] auto get_workspace_file() const -> std::filesystem::path;
     [[nodiscard]] auto get_workspace_directory() const -> std::filesystem::path;
 

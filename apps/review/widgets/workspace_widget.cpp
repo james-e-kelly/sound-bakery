@@ -193,17 +193,31 @@ auto workspace_widget::render_content() -> void
         titleBarBackground.set_element_background_color(gluten::theme::carbon_g100::fieldHover02);
         verticalLayout.render_layout_element_pixels_vertical(&titleBarBackground, topHeaderHeight);
 
-        const project_data& selectedProject = get_app()->get_manager_by_class<workspace_manager>()->get_selected_project();
-        const review_data& selectedReview = get_app()->get_manager_by_class<workspace_manager>()->get_selected_review();
+        std::shared_ptr<workspace_manager> manager = get_app()->get_manager_by_class<workspace_manager>();
+
+        const project_data& selectedProject = manager->get_selected_project();
+        const review_data& selectedReview   = manager->get_selected_review();
+
+        std::string breadcrumbString = manager->get_workspace_name();
+
+        if (selectedProject.m_id != 0)
+        {
+            breadcrumbString += " / " + selectedProject.m_projectName;
+        }
+
+        if (selectedReview.m_reviewId != 0)
+        {
+            breadcrumbString += " / " + selectedReview.m_reviewName;
+        }
+
+        gluten::text breadcrumbText(breadcrumbString.c_str(), ImVec2(0, -0.75f), gluten::element::anchor_preset::left_top);
+        breadcrumbText
+            .set_element_content_font_size(gluten::g_baseFontSize * 2.0f)
+            .set_element_translation(ImVec2(5, 0.0f));
+        breadcrumbText.render(titleBarBackground.get_element_rect());
 
         if (selectedReview.m_reviewId)
         {
-            gluten::text topTitleText(fmt::format("{} / {}", selectedProject.m_projectName, selectedReview.m_reviewId).c_str(), ImVec2(0, -0.75f), gluten::element::anchor_preset::left_top);
-            topTitleText
-                .set_element_content_font_size(gluten::g_baseFontSize * 2.0f)
-                .set_element_translation(ImVec2(5, 0.0f));
-            topTitleText.render(titleBarBackground.get_element_rect());
-
             gluten::background descriptionBox;
             descriptionBox
                 .set_element_background_color(gluten::theme::carbon_g100::field03)

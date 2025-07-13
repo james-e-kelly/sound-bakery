@@ -155,6 +155,11 @@ auto workspace_manager::get_selected_project() const -> const project_data&
 
 auto workspace_manager::get_projects() const -> const std::set<project_data>& { return m_projects; }
 
+auto workspace_manager::get_workspace_name() const -> std::string
+{
+    return m_database->get_workspace_name().get();
+}
+
 auto workspace_manager::get_workspace_file() const -> std::filesystem::path
 {
     return m_userSettingsData->m_workspaceFilePath;
