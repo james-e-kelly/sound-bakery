@@ -3,7 +3,7 @@ FetchContent_MakeAvailable(tracy)
 
 CPMAddPackage(
     NAME PPQSort
-    GITHUB_REPOSITORY foxtran/PPQSort
+    GITHUB_REPOSITORY GabTux/PPQSort
     GIT_TAG master
     EXCLUDE_FROM_ALL TRUE
 )
