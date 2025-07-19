@@ -79,6 +79,11 @@ namespace gluten
             archive & boost::serialization::make_nvp(g_serializedEntryName, data);
         }
 
+        auto get_tick_executor() const -> std::shared_ptr<concurrencpp::manual_executor>
+        {
+            return m_tickExecutor;
+        }
+
     protected:
         /**
          * @brief Runs after subsystems are created and before any init functions are called.
@@ -118,6 +123,8 @@ namespace gluten
         std::string m_applicationDisplayTitle;
 
         std::unordered_map<fonts, ImFont*> m_fonts;
+
+        std::shared_ptr<concurrencpp::manual_executor> m_tickExecutor;
 
         bool m_hasInit          = false;
         bool m_isRequestingExit = false;

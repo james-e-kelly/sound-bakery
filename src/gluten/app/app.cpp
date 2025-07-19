@@ -25,6 +25,8 @@ int gluten::app::run(int argc, char** argv)
     add_subsystem_class<renderer_subsystem>();
     add_subsystem_class<widget_subsystem>();
 
+    m_tickExecutor = make_manual_executor();
+
     pre_init();
 
     // PreInit
@@ -94,6 +96,7 @@ auto gluten::app::start() -> void
 auto gluten::app::tick() -> void
 {
     tick_begin();
+    m_tickExecutor->loop(m_tickExecutor->size());
     tick_implementation();
     tick_end(); 
 }
