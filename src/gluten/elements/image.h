@@ -12,6 +12,12 @@ namespace gluten
         void operator()(unsigned char* data);
     };
 
+    enum class image_render
+    {
+        square,
+        circular
+    };
+
     class image : public element
     {
     public:
@@ -28,6 +34,8 @@ namespace gluten
         auto get_width() -> int const { return m_width; }
         auto get_height() -> int const { return m_height; }
 
+        auto set_render_type(image_render render) -> void;
+
         static auto load_image_data(unsigned char* data, int dataLength, int& width, int& height) -> data_ptr;
 
     private:
@@ -37,5 +45,6 @@ namespace gluten
         uint32_t m_openGlId = 0;
         int m_width         = 0;
         int m_height        = 0;
+        image_render m_render = image_render::square;
     };
 }  // namespace gluten

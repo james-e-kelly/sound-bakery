@@ -56,10 +56,21 @@ namespace gluten
                 const float newStartX = elementRect.Min.x + (elementRectSize.x / 2) - (newImageWidth / 2);
                 const float newStartY = elementRect.Min.y + (elementRectSize.y / 2) - (newImageHeight / 2);
 
-                drawList->AddImage((ImTextureID)m_openGlId, ImVec2(newStartX, newStartY),
-                                   ImVec2(newStartX + newImageWidth, newStartY + newImageHeight));
-
-                // ImGui::DebugDrawItemRect(gluten::theme::invalidPrefab);
+                switch (m_render)
+                {
+                    case gluten::image_render::square:
+                        drawList->AddImage((ImTextureID)m_openGlId, ImVec2(newStartX, newStartY),
+                                           ImVec2(newStartX + newImageWidth, newStartY + newImageHeight));
+                        break;
+                    case gluten::image_render::circular:
+                        drawList->AddImageRounded((ImTextureID)m_openGlId, ImVec2(newStartX, newStartY),
+                                                  ImVec2(newStartX + newImageWidth, newStartY + newImageHeight), ImVec2(0, 0),
+                                                  ImVec2(1, 1), IM_COL32_WHITE,
+                                                  newImageHeight * 0.5f);
+                        break;
+                    default:
+                        break;
+                }
 
                 return true;
             }
@@ -67,6 +78,8 @@ namespace gluten
 
         return false;
     }
+
+    auto image::set_render_type(image_render render) -> void { m_render = render; }
 
     auto image::load_image_data(unsigned char* data, int dataLength, int& width, int& height) -> data_ptr
     {
