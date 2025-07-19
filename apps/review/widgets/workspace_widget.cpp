@@ -239,9 +239,16 @@ auto workspace_widget::render_content() -> void
 
                 if (rightPanelBackground.render_layout_element_pixels_vertical(&reviewersHeader, 50.0f))
                 {
-                    inline_user_display_element user;
+                    inline_user_display_element user("James Kelly", "james@jameskelly.audio");
+                    inline_user_display_element user2("Jack Tysoe", "jtysoe@climaxstudios.com");
+                    inline_user_display_element user3("Sam Packer", "spacker@climaxstudios.com");
+                    inline_user_display_element user4("Rory Burcham", "rburcham@climaxstudios.com");
+                    inline_user_display_element user5("Andrada Vaduvoiu", "avaduvoiu@climaxstudios.com");
                     rightPanelBackground.render_layout_element_pixels_vertical(&user, 50.0f);
-                    rightPanelBackground.render_layout_element_pixels_vertical(&user, 50.0f);
+                    rightPanelBackground.render_layout_element_pixels_vertical(&user2, 50.0f);
+                    rightPanelBackground.render_layout_element_pixels_vertical(&user3, 50.0f);
+                    rightPanelBackground.render_layout_element_pixels_vertical(&user4, 50.0f);
+                    rightPanelBackground.render_layout_element_pixels_vertical(&user5, 50.0f);
                 }
 
                 gluten::collapsing_header testsHeader("Tests");
