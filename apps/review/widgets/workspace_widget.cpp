@@ -220,7 +220,9 @@ auto workspace_widget::render_content() -> void
         verticalLayout.render_layout_element_remaining(&contentAndRightPanelLayout);
 
         gluten::layout rightPanelBackground(gluten::layout::layout_type::top_to_bottom, gluten::element::anchor_preset::stretch_full);
-        rightPanelBackground.set_element_background_color(gluten::theme::carbon_g100::fieldHover03);
+        rightPanelBackground
+            .set_layout_spacing(ImGui::GetStyle().FramePadding.y)
+            .set_element_background_color(gluten::theme::carbon_g100::fieldHover03);
         contentAndRightPanelLayout.render_layout_element_pixels_horizontal(&rightPanelBackground, rightPanelWidth);
 
         gluten::background mainContentParent;
@@ -238,6 +240,7 @@ auto workspace_widget::render_content() -> void
                 if (rightPanelBackground.render_layout_element_pixels_vertical(&reviewersHeader, 50.0f))
                 {
                     inline_user_display_element user;
+                    rightPanelBackground.render_layout_element_pixels_vertical(&user, 50.0f);
                     rightPanelBackground.render_layout_element_pixels_vertical(&user, 50.0f);
                 }
             }
