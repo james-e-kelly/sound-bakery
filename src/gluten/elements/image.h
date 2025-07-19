@@ -1,7 +1,7 @@
 #pragma once
 
-#include "gluten/elements/element.h"
 #include "gluten/pch.h"
+#include "gluten/elements/element.h"
 
 #include <cmrc/cmrc.hpp>
 
@@ -36,6 +36,11 @@ namespace gluten
 
         auto set_render_type(image_render render) -> void;
 
+        auto set_element_background_color(ImU32 color) -> element& override;
+        auto set_element_background_color(ImVec4 color) -> element& override;
+        auto set_element_hover_color(ImU32 color) -> element& override;
+        auto set_element_hover_color(ImVec4 color) -> element& override;
+
         static auto load_image_data(unsigned char* data, int dataLength, int& width, int& height) -> data_ptr;
 
     private:
@@ -46,5 +51,6 @@ namespace gluten
         int m_width         = 0;
         int m_height        = 0;
         image_render m_render = image_render::square;
+        background m_background;
     };
 }  // namespace gluten

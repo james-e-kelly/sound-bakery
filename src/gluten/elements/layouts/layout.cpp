@@ -25,7 +25,11 @@ gluten::layout& gluten::layout::set_layout_type(const layout_type& type)
     return *this;
 }
 
-void gluten::layout::set_layout_spacing(float spacing) { m_spacing = spacing; }
+gluten::layout& gluten::layout::set_layout_spacing(float spacing) 
+{ 
+    m_spacing = spacing; 
+    return *this;
+}
 
 void gluten::layout::render_spacer_pixels(float horizonalPixels, float verticalPixels)
 {
