@@ -21,13 +21,13 @@ auto create_review_popup::render_popup() -> void
     ImGui::InputTextWithHint("Review URL", "https://domain.com/task", reviewUrlBuffer, textBufferSize);
     ImGui::SetItemTooltip("Add the Jira/ADO/HacknPlan task URL");
 
-    if (ImGui::BeginCombo("Review Phase", magic_enum::enum_name(m_reviewData.m_reviewPhase).data()))
+    if (ImGui::BeginCombo("Review Phase", get_review_phase_string(m_reviewData.m_reviewPhase).data()))
     {
         for (int i = 0; i < static_cast<int>(review_phase::num); ++i)
         {
             review_phase phase = static_cast<review_phase>(i);
 
-            if (ImGui::Selectable(magic_enum::enum_name(phase).data()))
+            if (ImGui::Selectable(get_review_phase_string(phase).data()))
             {
                 m_reviewData.m_reviewPhase = phase;
             }
@@ -38,13 +38,13 @@ auto create_review_popup::render_popup() -> void
     ImGui::SetItemTooltip("Set the review phase. Useful for giving context as a temp sound does not need as much "
                           "vetting as a final pass sound");
 
-    if (ImGui::BeginCombo("Review Quality", magic_enum::enum_name(m_reviewData.m_reviewQuality).data()))
+    if (ImGui::BeginCombo("Review Quality", get_review_quality_string(m_reviewData.m_reviewQuality).data()))
     {
         for (int i = 0; i < static_cast<int>(review_quality::num); ++i)
         {
             review_quality quality = static_cast<review_quality>(i);
 
-            if (ImGui::Selectable(magic_enum::enum_name(quality).data()))
+            if (ImGui::Selectable(get_review_quality_string(quality).data()))
             {
                 m_reviewData.m_reviewQuality = quality;
             }

@@ -282,12 +282,12 @@ auto workspace_widget::render_content() -> void
                 .set_element_content_font_size(gluten::g_baseFontSize * 1.3f);
             innerDescriptionBox.render_layout_element_percent_vertical(&descriptionText, 0.2f);
 
-            gluten::text phaseText(fmt::format("{} {}", ICON_LC_WORKFLOW, magic_enum::enum_name(selectedReview.m_reviewPhase)).c_str(), ImVec2(0.0f, 0.0f), gluten::element::anchor_preset::stretch_full);
+            gluten::text phaseText(fmt::format("{} {}", ICON_LC_WORKFLOW, get_review_phase_string(selectedReview.m_reviewPhase)).c_str(), ImVec2(0.0f, 0.0f), gluten::element::anchor_preset::stretch_full);
             phaseText.set_font(gluten::fonts::regular_lucide_icons);
             phaseText.set_element_content_font_size(gluten::g_baseFontSize * 1.3f);
             innerDescriptionBox.render_layout_element_percent_vertical(&phaseText, 0.2f);
 
-            gluten::text qualityText(fmt::format("{} {}", ICON_LC_AWARD, magic_enum::enum_name(selectedReview.m_reviewQuality)).c_str(), ImVec2(0.0f, 0.0f), gluten::element::anchor_preset::stretch_full);
+            gluten::text qualityText(fmt::format("{} {}", ICON_LC_AWARD, get_review_quality_string(selectedReview.m_reviewQuality)).c_str(), ImVec2(0.0f, 0.0f), gluten::element::anchor_preset::stretch_full);
             qualityText.set_font(gluten::fonts::regular_lucide_icons);
             qualityText.set_element_content_font_size(gluten::g_baseFontSize * 1.3f);
             innerDescriptionBox.render_layout_element_percent_vertical(&qualityText, 0.2f);

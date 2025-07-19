@@ -11,6 +11,8 @@ enum class review_phase
     num
 };
 
+auto get_review_phase_string(review_phase phase) -> std::string;
+
 enum class review_quality
 {
     c,
@@ -21,12 +23,16 @@ enum class review_quality
     num
 };
 
+auto get_review_quality_string(review_quality quality) -> std::string;
+
 enum class review_status
 {
     open,
     closed,
     archived
 };
+
+auto get_review_status_string(review_status status) -> std::string;
 
 struct versionable_review_asset
 {
