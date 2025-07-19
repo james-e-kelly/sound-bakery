@@ -76,6 +76,15 @@ set_target_properties(review PROPERTIES
 
 FetchContent_MakeAvailable(sqlitecpp)
 FetchContent_MakeAvailable(magicenum)
+FetchContent_MakeAvailable(httplib)
+
+set(OPENSSL_ROOT_DIR ${PROJECT_SOURCE_DIR}/extern/openssl/x64)
+set(OPENSSL_USE_STATIC_LIBS TRUE)
+find_package(OpenSSL REQUIRED)
+
+target_compile_definitions(review PRIVATE CPPHTTPLIB_OPENSSL_SUPPORT)
+
+target_include_directories(review PRIVATE ${OPENSSL_ROOT_DIR}/include)
 
 target_link_libraries(review
     PRIVATE
@@ -84,6 +93,9 @@ target_link_libraries(review
     SQLiteCpp
     sqlite3
     magic_enum::magic_enum
+    httplib::httplib
+    OpenSSL::SSL
+    OpenSSL::Crypto
 )
 
 if(MSVC)

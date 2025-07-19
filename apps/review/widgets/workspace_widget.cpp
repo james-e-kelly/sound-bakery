@@ -5,6 +5,7 @@
 #include "elements/file_drop_element.h"
 #include "elements/project_element.h"
 #include "elements/review_element.h"
+#include "elements/inline_user_display_element.h"
 #include "widgets/create_project_popup.h"
 #include "widgets/create_review_popup.h"
 #include "widgets/update_review_popup.h"
@@ -236,12 +237,8 @@ auto workspace_widget::render_content() -> void
 
                 if (rightPanelBackground.render_layout_element_pixels_vertical(&reviewersHeader, 50.0f))
                 {
-                    gluten::text reviewerText("James Kelly - Needs Review", ImVec2(0.0f, 0.0f), gluten::element::anchor_preset::stretch_top);
-                    reviewerText.set_element_frame_padding();
-                    rightPanelBackground.render_layout_element_pixels_vertical(&reviewerText, 50.0f);
-                    rightPanelBackground.render_layout_element_pixels_vertical(&reviewerText, 50.0f);
-                    rightPanelBackground.render_layout_element_pixels_vertical(&reviewerText, 50.0f);
-                    rightPanelBackground.render_layout_element_pixels_vertical(&reviewerText, 50.0f);
+                    inline_user_display_element user;
+                    rightPanelBackground.render_layout_element_pixels_vertical(&user, 50.0f);
                 }
             }
 

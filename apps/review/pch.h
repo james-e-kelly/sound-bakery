@@ -14,6 +14,7 @@
 #include "gluten/widgets/root_widget.h"
 #include "gluten/widgets/window_widget.h"
 #include "gluten/widgets/popup_widget.h"
+#include "httplib.h"
 
 #include "boost/serialization/version.hpp"
 #include <magic_enum/magic_enum.hpp>
