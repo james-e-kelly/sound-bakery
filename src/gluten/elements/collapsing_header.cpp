@@ -2,9 +2,12 @@
 
 #include "gluten/elements/button.h"
 #include "gluten/elements/text.h"
+#include "gluten/utils/imgui_util_structures.h"
 
 auto gluten::collapsing_header::render_element(const ImRect& parentRect) -> bool
 {
+    gluten::imgui::scoped_id id(m_label.c_str());
+
 	gluten::background background;
     background.set_element_background_color(ImGui::GetStyleColorVec4(ImGuiCol_Header));
     background.set_element_hover_color(ImGui::GetStyleColorVec4(ImGuiCol_HeaderHovered));

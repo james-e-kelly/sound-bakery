@@ -243,6 +243,12 @@ auto workspace_widget::render_content() -> void
                     rightPanelBackground.render_layout_element_pixels_vertical(&user, 50.0f);
                     rightPanelBackground.render_layout_element_pixels_vertical(&user, 50.0f);
                 }
+
+                gluten::collapsing_header testsHeader("Tests");
+
+                if (rightPanelBackground.render_layout_element_pixels_vertical(&testsHeader, 50.0f))
+                {
+                }
             }
 
             gluten::background descriptionBox;
