@@ -244,11 +244,13 @@ auto workspace_widget::render_content() -> void
                     inline_user_display_element user3("Sam Packer", "spacker@climaxstudios.com");
                     inline_user_display_element user4("Rory Burcham", "rburcham@climaxstudios.com");
                     inline_user_display_element user5("Andrada Vaduvoiu", "avaduvoiu@climaxstudios.com");
+                    inline_user_display_element user6("James", "jkelly@climaxstudios.com");
                     rightPanelBackground.render_layout_element_pixels_vertical(&user, 50.0f);
                     rightPanelBackground.render_layout_element_pixels_vertical(&user2, 50.0f);
                     rightPanelBackground.render_layout_element_pixels_vertical(&user3, 50.0f);
                     rightPanelBackground.render_layout_element_pixels_vertical(&user4, 50.0f);
                     rightPanelBackground.render_layout_element_pixels_vertical(&user5, 50.0f);
+                    rightPanelBackground.render_layout_element_pixels_vertical(&user6, 50.0f);
                 }
 
                 gluten::collapsing_header testsHeader("Tests");
@@ -363,10 +365,6 @@ auto workspace_widget::render_content() -> void
             }
             ImGui::EndChild();
         }
-
-        /*ImSpinner::SpinnerAngEclipse("Loading", ImGui::GetFontSize() / 2.0f, 2.0f, gluten::theme::white, 8.0f);
-        ImGui::SameLine();
-        ImGui::Text(" Hello");*/
     }
     ImGui::EndChild();
 }
