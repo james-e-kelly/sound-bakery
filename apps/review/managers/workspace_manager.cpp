@@ -219,3 +219,13 @@ auto workspace_manager::get_all_reviews() const -> const std::set<review_data>&
 {
     return m_reviews;
 }
+
+auto workspace_manager::get_all_activity_for_review(int64_t reviewId) -> std::vector<activity_data>
+{
+    return m_database->get_all_activity_for_review(reviewId).get();
+}
+
+auto workspace_manager::get_activity_count_for_review(int64_t reviewId) -> std::size_t
+{
+    return m_database->get_activity_count_for_review(reviewId).get();
+}

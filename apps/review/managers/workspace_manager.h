@@ -4,6 +4,7 @@
 
 #include "gluten/data/data_source.h"
 
+#include "data/activity_data.h"
 #include "data/review_data.h"
 #include "data/workspace_data.h"
 #include "data/project_data.h"
@@ -40,6 +41,9 @@ public:
     auto create_review(const new_review_data& newReview) -> void;
     auto update_review(const review_data& updatedReview) -> void;
     auto get_all_reviews() const -> const std::set<review_data>&;
+
+    auto get_all_activity_for_review(int64_t reviewId) -> std::vector<activity_data>;
+    auto get_activity_count_for_review(int64_t reviewId) -> std::size_t;
 
 protected:
     auto init(gluten::app* app) -> void override;

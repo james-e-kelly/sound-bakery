@@ -3,6 +3,7 @@
 #include "pch.h"
 #include "SQLiteCpp/SQLiteCpp.h"
 
+#include "data/activity_data.h"
 #include "data/review_data.h"
 #include "data/project_data.h"
 
@@ -27,6 +28,9 @@ public:
     auto create_review(int64_t projectId, const new_review_data newReview) -> concurrencpp::result<review_data>;
     auto update_review(const review_data review) -> concurrencpp::result<review_data>;
     auto get_all_reviews(int64_t projectId) const -> concurrencpp::result<std::vector<review_data>>;
+
+    auto get_all_activity_for_review(int64_t reviewId) -> concurrencpp::result<std::vector<activity_data>>;
+    auto get_activity_count_for_review(int64_t reviewId) -> concurrencpp::result<std::size_t>;
 
 private:
     SQLite::Database m_database;

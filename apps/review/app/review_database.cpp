@@ -1,6 +1,7 @@
 #include "review_database.h"
 
 #include "app/review_app.h"
+#include "data/activity_data.h"
 
 namespace
 {
@@ -106,6 +107,21 @@ namespace
             UNIQUE(review_id, user_id)     -- ensures one vote per user per review
         );
     )sql";
+
+    constexpr const char* g_createActivityTableStatement = R"sql(
+        CREATE TABLE IF NOT EXISTS activity (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            review_id INTEGER,
+            project_id INTEGER,
+            user_id INTEGER,
+            activity_type INTEGER,
+            activity_text TEXT,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(review_id) REFERENCES reviews(id),
+            FOREIGN KEY(project_id) REFERENCES projects(id),
+            FOREIGN KEY(user_id) REFERENCES users(id)
+        );
+    )sql";
 }
 
 review_database::review_database(const std::filesystem::path& databasePath)
@@ -120,6 +136,7 @@ review_database::review_database(const std::filesystem::path& databasePath)
     m_database.exec(g_createVersionedReviewFilesTableStatement);
     m_database.exec(g_createCommentsTableStatement);
     m_database.exec(g_createVotesTableStatement);
+    m_database.exec(g_createActivityTableStatement);
 }
 
 auto review_database::create_workspace(const std::string name) -> concurrencpp::result<void>
@@ -174,6 +191,15 @@ auto review_database::create_project(const std::string name, const std::string d
         newProjectData.m_id = m_database.getLastInsertRowid();
         newProjectData.m_projectName = name;
         newProjectData.m_projectDescription = description;
+
+        if (m_database.tableExists("activity"))
+        {
+            SQLite::Statement addActivity(m_database, "INSERT INTO activity (project_id, activity_type, activity_text) VALUES (?, ?, ?)");
+            addActivity.bind(1, newProjectData.m_id);
+            addActivity.bind(2, (int)activity_type::project_created);
+            addActivity.bind(3, fmt::format("Created a project called {}", name));
+            addActivity.exec();
+        }
     }
     co_return newProjectData;
 }
@@ -230,6 +256,15 @@ auto review_database::create_review(int64_t projectId, const new_review_data new
             result.m_reviewStatus      = review_status::open;
             result.m_reviewPhase       = newReview.m_reviewPhase;
             result.m_reviewQuality     = newReview.m_reviewQuality;
+
+            if (m_database.tableExists("activity"))
+            {
+                SQLite::Statement addActivity(m_database, "INSERT INTO activity (review_id, activity_type, activity_text) VALUES (?, ?, ?)");
+                addActivity.bind(1, result.m_reviewId);
+                addActivity.bind(2, (int)activity_type::review_created);
+                addActivity.bind(3, fmt::format("Created a review called {}", newReview.m_reviewName));
+                addActivity.exec();
+            }
         }
     }
 
@@ -254,6 +289,15 @@ auto review_database::update_review(const review_data review) -> concurrencpp::r
             updateReviewStatement.bind(7, review.m_reviewId);
 
             updateReviewStatement.exec();
+
+            if (m_database.tableExists("activity"))
+            {
+                SQLite::Statement editActivity(m_database, "INSERT INTO activity (review_id, activity_type, activity_text) VALUES (?, ?, ?)");
+                editActivity.bind(1, review.m_reviewId);
+                editActivity.bind(2, (int)activity_type::review_edited);
+                editActivity.bind(3, fmt::format("Edited a review called {}", review.m_reviewName));
+                editActivity.exec();
+            }
         }
     }
 
@@ -283,6 +327,57 @@ auto review_database::get_all_reviews(int64_t projectId) const -> concurrencpp::
             reviewData.m_reviewQuality      = (review_quality)query.getColumn(6).getInt();
 
             result.push_back(std::move(reviewData));
+        }
+    }
+
+    co_return result;
+}
+
+auto review_database::get_all_activity_for_review(int64_t reviewId) -> concurrencpp::result<std::vector<activity_data>> 
+{
+    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
+
+    std::vector<activity_data> result;
+
+    if (m_database.tableExists("activity") && reviewId != 0)
+    {
+        SQLite::Statement query(m_database, "SELECT id, review_id, project_id, user_id, activity_type, activity_text, timestamp FROM activity WHERE review_id=?;");
+        query.bind(1, reviewId);
+
+        while (query.executeStep())
+        {
+            activity_data activityData;
+            activityData.m_activityId        = query.getColumn(0).getInt64();
+            activityData.m_reviewId          = query.getColumn(1).getInt64();
+            activityData.m_projectId         = query.getColumn(2).getInt64();
+            activityData.m_userId            = query.getColumn(3).getInt64();
+            activityData.m_activityType      = (activity_type)query.getColumn(4).getInt();
+            activityData.m_activityText      = query.getColumn(5).getString();
+            activityData.m_activityTimestamp = query.getColumn(6).getString();
+
+            result.push_back(std::move(activityData));
+        }
+    }
+
+    std::sort(result.begin(), result.end(), [](const auto& lhs, const auto& rhs) {return lhs.m_activityId > rhs.m_activityId;});
+
+    co_return result;
+}
+
+auto review_database::get_activity_count_for_review(int64_t reviewId) -> concurrencpp::result<std::size_t> 
+{
+    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
+
+    std::size_t result = 0;
+
+    if (m_database.tableExists("activity") && reviewId != 0)
+    {
+        SQLite::Statement query(m_database, "SELECT COUNT(*) FROM activity WHERE review_id=?;");
+        query.bind(1, reviewId);
+
+        if (query.executeStep())
+        {
+            result = query.getColumn(0).getInt64();
         }
     }
 

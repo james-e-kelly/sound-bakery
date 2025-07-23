@@ -1,6 +1,7 @@
 #include "workspace_widget.h"
 
 #include "app/review_app.h"
+#include "data/activity_data.h"
 #include "managers/workspace_manager.h"
 #include "elements/file_drop_element.h"
 #include "elements/project_element.h"
@@ -357,6 +358,60 @@ auto workspace_widget::render_content() -> void
 
                     if (ImGui::BeginTabItem("Activity"))
                     {
+                        static std::unordered_map<int64_t, std::vector<activity_data>> reviewsActivity;
+                        static std::unordered_map<int64_t, std::size_t> numActivitiesForReview;
+
+                        if (reviewsActivity.contains(selectedReview.m_reviewId) && numActivitiesForReview.contains(selectedReview.m_reviewId))
+                        {
+                            if (numActivitiesForReview[selectedReview.m_reviewId] == m_workspaceManager->get_activity_count_for_review(selectedReview.m_reviewId))
+                            {
+                                for (const auto& iter : reviewsActivity[selectedReview.m_reviewId])
+                                {
+                                    std::istringstream in(iter.m_activityTimestamp);
+                                    std::chrono::sys_seconds tp;
+                                    in >> std::chrono::parse("%F %T", tp);
+
+                                    auto now  = std::chrono::floor<std::chrono::seconds>(std::chrono::system_clock::now());
+                                    auto diff = now - tp;
+
+                                    using namespace std::literals::chrono_literals;
+
+                                    std::string activityTimeText;
+
+                                    if (diff < 1min)
+                                    {
+                                        activityTimeText = "less than 1 minute ago";
+                                    }
+                                    else if (diff <= 60min)
+                                    {
+                                        activityTimeText = std::to_string(duration_cast<std::chrono::minutes>(diff).count()) + " minutes ago";
+                                    }
+                                    else if (diff < 24h)
+                                    {
+                                        activityTimeText = std::to_string(duration_cast<std::chrono::hours>(diff).count()) + " hours ago";
+                                    }
+                                    else
+                                    {
+                                        auto days = duration_cast<std::chrono::duration<int, std::ratio<86400>>>(diff).count();
+                                        activityTimeText = std::to_string(days) + " day" + (days > 1 ? "s" : "") + " ago";
+                                    }
+
+                                    ImGui::Dummy(ImVec2(0, ImGui::GetStyle().FramePadding.y));
+                                    ImGui::Text(fmt::format("{} {}", iter.m_activityText, activityTimeText).c_str());
+                                }
+                            }
+                            else
+                            {
+                                reviewsActivity.erase(selectedReview.m_reviewId);
+                                numActivitiesForReview.erase(selectedReview.m_reviewId);
+                            }
+                        }
+                        else
+                        {
+                            reviewsActivity.insert({selectedReview.m_reviewId, m_workspaceManager->get_all_activity_for_review(selectedReview.m_reviewId)});
+                            numActivitiesForReview.insert({selectedReview.m_reviewId, m_workspaceManager->get_activity_count_for_review(selectedReview.m_reviewId)});
+                        }
+
                         ImGui::EndTabItem();
                     }
 
