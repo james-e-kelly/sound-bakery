@@ -449,6 +449,13 @@ auto workspace_widget::render_left_toolbar() -> void
             .set_element_active_color(gluten::theme::carbon_g100::layerActive01)
             .set_element_active(m_activeView == users_view);
 
+        gluten::icon_button settingsButton("##SettingsButton", ICON_LC_SETTINGS, gluten::fonts::regular_lucide_icons);
+        settingsButton
+            .set_element_content_font_size(gluten::g_baseIconFontSize * (leftToolbarButtonHeight / gluten::g_baseIconFontSize) / 1.75f)
+            .set_element_hover_color(gluten::theme::carbon_g100::fieldHover01)
+            .set_element_active_color(gluten::theme::carbon_g100::layerActive01)
+            .set_element_active(m_activeView == settings_view);
+
         if (buttonsLayout.render_layout_element_pixels_vertical(&reviewsButton, leftToolbarButtonHeight))
         {
             m_activeView = reviews_view;
@@ -457,6 +464,11 @@ auto workspace_widget::render_left_toolbar() -> void
         if (buttonsLayout.render_layout_element_pixels_vertical(&usersButton, leftToolbarButtonHeight))
         {
             m_activeView = users_view;
+        }
+
+        if (buttonsLayout.render_layout_element_pixels_vertical(&settingsButton, leftToolbarButtonHeight))
+        {
+            m_activeView = settings_view;
         }
     }
     ImGui::EndChild();

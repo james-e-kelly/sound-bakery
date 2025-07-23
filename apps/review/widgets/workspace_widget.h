@@ -21,7 +21,8 @@ private:
     enum active_view
     {
         reviews_view,
-        users_view
+        users_view,
+        settings_view
     };
 
     active_view m_activeView = reviews_view;
