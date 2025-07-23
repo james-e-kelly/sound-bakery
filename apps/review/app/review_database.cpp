@@ -17,7 +17,7 @@ namespace
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
             description TEXT,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
         );
     )sql";
 
@@ -29,7 +29,7 @@ namespace
             title TEXT,
             email TEXT,
             password TEXT,   -- for now we will allow null passwords for easy logins
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
             privilege INT NOT NULL DEFAULT 0
         );
     )sql";
@@ -44,7 +44,7 @@ namespace
             status INT DEFAULT 0,
             phase INT DEFAULT 0,
             quality INT DEFAULT 0,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY(project_id) REFERENCES projects(id)
         );
     )sql";
@@ -65,7 +65,7 @@ namespace
             review_id INTEGER NOT NULL,
             file_name TEXT NOT NULL,          -- logical name (e.g. "footstep_sfx")
             file_type TEXT,                   -- audio, video, ref, etc.
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY(review_id) REFERENCES reviews(id)
         );
     )sql";
@@ -76,7 +76,7 @@ namespace
             review_file_id INTEGER NOT NULL,  -- foreign key to review_files.id
             version INTEGER NOT NULL,          -- version number (1, 2, 3, ...)
             file_path TEXT NOT NULL,           -- relative path to the actual file on disk
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY(review_file_id) REFERENCES review_files(id),
             UNIQUE(review_file_id, version)   -- ensure no duplicate version numbers
         );
@@ -87,11 +87,14 @@ namespace
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             review_id INTEGER NOT NULL,
             user_id INTEGER NOT NULL,
-            message TEXT NOT NULL,
-            audio_time REAL,               -- optional: timestamp in media
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            file_id INTEGER,
+            comment TEXT NOT NULL,
+            audio_time_start REAL,  -- optional: timestamp of the start selection of the comment
+            audio_time_end REAL,    -- optional: timestamp of the end selection of the comment     
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY(review_id) REFERENCES reviews(id),
-            FOREIGN KEY(user_id) REFERENCES users(id)
+            FOREIGN KEY(user_id) REFERENCES users(id),
+            FOREIGN KEY(file_id) REFERENCES review_files(id)
         );
     )sql";
 
@@ -101,7 +104,7 @@ namespace
             review_id INTEGER NOT NULL,
             user_id INTEGER NOT NULL,
             vote TEXT NOT NULL,            -- e.g. "approve", "reject", "needs_work"
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY(review_id) REFERENCES reviews(id),
             FOREIGN KEY(user_id) REFERENCES users(id),
             UNIQUE(review_id, user_id)     -- ensures one vote per user per review
@@ -333,7 +336,7 @@ auto review_database::get_all_reviews(int64_t projectId) const -> concurrencpp::
     co_return result;
 }
 
-auto review_database::get_all_activity_for_review(int64_t reviewId) -> concurrencpp::result<std::vector<activity_data>> 
+auto review_database::get_all_activity_for_review(int64_t reviewId) const -> concurrencpp::result<std::vector<activity_data>> 
 {
     co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
 
@@ -364,7 +367,7 @@ auto review_database::get_all_activity_for_review(int64_t reviewId) -> concurren
     co_return result;
 }
 
-auto review_database::get_activity_count_for_review(int64_t reviewId) -> concurrencpp::result<std::size_t> 
+auto review_database::get_activity_count_for_review(int64_t reviewId) const -> concurrencpp::result<std::size_t> 
 {
     co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
 
@@ -374,6 +377,55 @@ auto review_database::get_activity_count_for_review(int64_t reviewId) -> concurr
     {
         SQLite::Statement query(m_database, "SELECT COUNT(*) FROM activity WHERE review_id=?;");
         query.bind(1, reviewId);
+
+        if (query.executeStep())
+        {
+            result = query.getColumn(0).getInt64();
+        }
+    }
+
+    co_return result;
+}
+
+auto review_database::get_all_comments_for_review(int64_t reviewId) const -> concurrencpp::result<std::vector<comment_data>> 
+{
+    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
+
+    std::vector<comment_data> result;
+
+    if (m_database.tableExists("comments") && reviewId != 0)
+    {
+        SQLite::Statement query(m_database, "SELECT id, review_id, user_id, comment, timestamp FROM comments WHERE review_id=?;");
+        query.bind(1, reviewId);
+
+        while (query.executeStep())
+        {
+            comment_data commentData;
+            commentData.m_commentId         = query.getColumn(0).getInt64();
+            commentData.m_reviewId          = query.getColumn(1).getInt64();
+            commentData.m_userId            = query.getColumn(2).getInt64();
+            commentData.m_comment           = query.getColumn(3).getText();
+            commentData.m_timestamp         = query.getColumn(4).getString();
+
+            result.push_back(std::move(commentData));
+        }
+    }
+
+    std::sort(result.begin(), result.end(), [](const auto& lhs, const auto& rhs) { return lhs.m_commentId > rhs.m_commentId; });
+
+    co_return result;
+}
+
+auto review_database::get_comments_count_for_review(int64_t commentId) const -> concurrencpp::result<std::size_t>
+{
+    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
+
+    std::size_t result = 0;
+
+    if (m_database.tableExists("comments") && commentId != 0)
+    {
+        SQLite::Statement query(m_database, "SELECT COUNT(*) FROM comments WHERE review_id=?;");
+        query.bind(1, commentId);
 
         if (query.executeStep())
         {

@@ -13,6 +13,43 @@ namespace
     constexpr const char* g_projectFileExtension		= "project";
 }
 
+template <typename data_type, typename key_type = int64_t>
+struct cache
+{
+    [[nodiscard]] auto contains(const key_type& key) const -> bool { return m_cache.contains(key); }
+    [[nodiscard]] auto cache_count_valid(const key_type& key, const std::size_t& currentDataSize) const -> bool
+    {
+        bool result = false;
+
+        if (contains(key))
+        {
+            if (m_cache.at(key).size() == currentDataSize)
+            {
+                result = true;
+            }
+        }
+
+        return result;
+    }
+    [[nodiscard]] auto get_cache(const key_type& key) const -> const std::vector<data_type>&
+    {
+        if (contains(key))
+        {
+            return m_cache.at(key);
+        }
+        static std::vector<data_type> invalid;
+        return invalid;
+    }
+
+    auto erase_cache(const key_type& key) -> void { m_cache.erase(key); }
+    auto add_cache(const key_type& key, const std::vector<data_type>& data) -> void
+    {
+        m_cache.insert({key, std::move(data)});
+    }
+
+    std::unordered_map<key_type, std::vector<data_type>> m_cache;
+};
+
 workspace_manager::~workspace_manager()
 {
 }
@@ -220,12 +257,38 @@ auto workspace_manager::get_all_reviews() const -> const std::set<review_data>&
     return m_reviews;
 }
 
-auto workspace_manager::get_all_activity_for_review(int64_t reviewId) -> std::vector<activity_data>
+auto workspace_manager::get_all_activity_for_review(int64_t reviewId) const -> const std::vector<activity_data>&
 {
-    return m_database->get_all_activity_for_review(reviewId).get();
+    static cache<activity_data> s_cachedActivity;
+
+    if (!s_cachedActivity.cache_count_valid(reviewId, get_activity_count_for_review(reviewId)))
+    {
+        s_cachedActivity.erase_cache(reviewId);
+        s_cachedActivity.add_cache(reviewId, m_database->get_all_activity_for_review(reviewId).get());
+    }
+
+    return s_cachedActivity.get_cache(reviewId);
 }
 
-auto workspace_manager::get_activity_count_for_review(int64_t reviewId) -> std::size_t
+auto workspace_manager::get_activity_count_for_review(int64_t reviewId) const -> std::size_t
 {
     return m_database->get_activity_count_for_review(reviewId).get();
+}
+
+auto workspace_manager::get_all_comments_for_review(int64_t reviewId) const -> const std::vector<comment_data>&
+{
+    static cache<comment_data> s_cachedComments;
+
+    if (!s_cachedComments.cache_count_valid(reviewId, get_comments_count_for_review(reviewId)))
+    {
+        s_cachedComments.erase_cache(reviewId);
+        s_cachedComments.add_cache(reviewId, m_database->get_all_comments_for_review(reviewId).get());
+    }
+    
+    return s_cachedComments.get_cache(reviewId);
+}
+
+auto workspace_manager::get_comments_count_for_review(int64_t reviewId) const -> std::size_t 
+{
+    return m_database->get_comments_count_for_review(reviewId).get();
 }

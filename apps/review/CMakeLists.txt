@@ -6,6 +6,7 @@ set(review_SOURCES
   app/review_app.cpp
   app/review_database.cpp
   data/activity_data.cpp
+  data/comment_data.cpp
   data/workspace_data.cpp
   data/review_data.cpp
   elements/inline_user_display_element.cpp
@@ -24,6 +25,7 @@ set(review_HEADERS
   app/review_app.h
   app/review_database.h
   data/activity_data.h
+  data/comment_data.h
   data/workspace_data.h
   data/project_data.h
   data/review_data.h
