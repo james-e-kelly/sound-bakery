@@ -6,6 +6,155 @@
 
 namespace gluten
 {
+    enum class anchor_preset
+    {
+        /*
+         * ---------
+         * | x     |
+         * |       |
+         * |       |
+         * ---------
+         */
+        left_top,
+        /*
+         * ---------
+         * |   x   |
+         * |       |
+         * |       |
+         * ---------
+         */
+        center_top,
+        /*
+         * ---------
+         * |     x |
+         * |       |
+         * |       |
+         * ---------
+         */
+        right_top,
+
+        /*
+         * ---------
+         * |       |
+         * | x     |
+         * |       |
+         * ---------
+         */
+        left_middle,
+        /*
+         * ---------
+         * |       |
+         * |   x   |
+         * |       |
+         * ---------
+         */
+        center_middle,
+        /*
+         * ---------
+         * |       |
+         * |     x |
+         * |       |
+         * ---------
+         */
+        right_middle,
+
+        /*
+         * ---------
+         * |       |
+         * |       |
+         * | x     |
+         * ---------
+         */
+        left_bottom,
+        /*
+         * ---------
+         * |       |
+         * |       |
+         * |   x   |
+         * ---------
+         */
+        center_bottom,
+        /*
+         * ---------
+         * |       |
+         * |       |
+         * |     x |
+         * ---------
+         */
+        right_bottom,
+
+        /*
+         * ---------
+         * |xxxxxxx|
+         * |       |
+         * |       |
+         * ---------
+         */
+        stretch_top,
+        /*
+         * ---------
+         * |       |
+         * |xxxxxxx|
+         * |       |
+         * ---------
+         */
+        stretch_middle,
+        /*
+         * ---------
+         * |       |
+         * |       |
+         * |xxxxxxx|
+         * ---------
+         */
+        stretch_bottom,
+
+        /*
+         * ---------
+         * | x     |
+         * | x     |
+         * | x     |
+         * ---------
+         */
+        stretch_left,
+        /*
+         * ---------
+         * |   x   |
+         * |   x   |
+         * |   x   |
+         * ---------
+         */
+        stretch_center,
+        /*
+         * ---------
+         * |     x |
+         * |     x |
+         * |     x |
+         * ---------
+         */
+        stretch_right,
+
+        /*
+         * ---------
+         * | x x x |
+         * | x x x |
+         * | x x x |
+         * ---------
+         */
+        stretch_full
+    };
+
+    struct anchor_info
+    {
+        ImVec2 min;        //< Start of the element in the range of 0-1 percentage
+        ImVec2 max;        //< End of the element in the range of 0-1 percentage
+        ImVec2 minOffset;  //< Pixel offset of the min/element start
+        ImVec2 maxOffset;  //< Pixel offset of the max/element end
+
+        std::optional<anchor_preset> anchorPreset;  //< Possible preset, if using one
+
+        void set_achor_from_preset(const anchor_preset& preset);
+    };
+
     /**
      * @brief Defines a UI element.
      *
@@ -14,159 +163,12 @@ namespace gluten
     class element
     {
     public:
-        enum class anchor_preset
-        {
-            /*
-             * ---------
-             * | x     |
-             * |       |
-             * |       |
-             * ---------
-             */
-            left_top,
-            /*
-             * ---------
-             * |   x   |
-             * |       |
-             * |       |
-             * ---------
-             */
-            center_top,
-            /*
-             * ---------
-             * |     x |
-             * |       |
-             * |       |
-             * ---------
-             */
-            right_top,
-
-            /*
-             * ---------
-             * |       |
-             * | x     |
-             * |       |
-             * ---------
-             */
-            left_middle,
-            /*
-             * ---------
-             * |       |
-             * |   x   |
-             * |       |
-             * ---------
-             */
-            center_middle,
-            /*
-             * ---------
-             * |       |
-             * |     x |
-             * |       |
-             * ---------
-             */
-            right_middle,
-
-            /*
-             * ---------
-             * |       |
-             * |       |
-             * | x     |
-             * ---------
-             */
-            left_bottom,
-            /*
-             * ---------
-             * |       |
-             * |       |
-             * |   x   |
-             * ---------
-             */
-            center_bottom,
-            /*
-             * ---------
-             * |       |
-             * |       |
-             * |     x |
-             * ---------
-             */
-            right_bottom,
-
-            /*
-             * ---------
-             * |xxxxxxx|
-             * |       |
-             * |       |
-             * ---------
-             */
-            stretch_top,
-            /*
-             * ---------
-             * |       |
-             * |xxxxxxx|
-             * |       |
-             * ---------
-             */
-            stretch_middle,
-            /*
-             * ---------
-             * |       |
-             * |       |
-             * |xxxxxxx|
-             * ---------
-             */
-            stretch_bottom,
-
-            /*
-             * ---------
-             * | x     |
-             * | x     |
-             * | x     |
-             * ---------
-             */
-            stretch_left,
-            /*
-             * ---------
-             * |   x   |
-             * |   x   |
-             * |   x   |
-             * ---------
-             */
-            stretch_center,
-            /*
-             * ---------
-             * |     x |
-             * |     x |
-             * |     x |
-             * ---------
-             */
-            stretch_right,
-
-            /*
-             * ---------
-             * | x x x |
-             * | x x x |
-             * | x x x |
-             * ---------
-             */
-            stretch_full
-        };
-
-        struct anchor_info
-        {
-            ImVec2 min;  //< Start of the element in the range of 0-1 percentage
-            ImVec2 max;  //< End of the element in the range of 0-1 percentage
-            ImVec2 minOffset;   //< Pixel offset of the min/element start
-            ImVec2 maxOffset;   //< Pixel offset of the max/element end
-
-            std::optional<anchor_preset> anchorPreset;  //< Possible preset, if using one
-
-            void set_achor_from_preset(const anchor_preset& preset);
-        };
+        using anchor_preset = ::gluten::anchor_preset;
+        using anchor_info = ::gluten::anchor_info;
 
         element() = default;
         element(const anchor_preset& anchorPreset);
         virtual ~element();
-
 
         auto has_element_scale() const -> bool;
         auto get_element_scale() const -> float;

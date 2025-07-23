@@ -435,3 +435,37 @@ auto review_database::get_comments_count_for_review(int64_t commentId) const -> 
 
     co_return result;
 }
+
+auto review_database::create_comment(new_comment_data newComment) -> concurrencpp::result<comment_data>
+{
+    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
+
+    constexpr float defaultAudioStartOrEnd = -1.0f;
+
+    if (!newComment.m_comment.empty() && newComment.m_reviewId != 0)
+    {
+        if (m_database.tableExists("comments"))
+        {
+            SQLite::Statement insertCommentStatement(m_database,"INSERT INTO comments (review_id, user_id, comment, audio_time_start, audio_time_end) VALUES (?, ?, ?, ?, ?);");
+
+            insertCommentStatement.bind(1, newComment.m_reviewId);
+            insertCommentStatement.bind(2, newComment.m_userId);
+            insertCommentStatement.bind(3, newComment.m_comment);
+            insertCommentStatement.bind(4, defaultAudioStartOrEnd); //< TODO
+            insertCommentStatement.bind(5, defaultAudioStartOrEnd); //< TODO
+
+            insertCommentStatement.exec();
+            
+            if (m_database.tableExists("activity"))
+            {
+                SQLite::Statement addActivity(m_database, "INSERT INTO activity (review_id, activity_type, activity_text) VALUES (?, ?, ?)");
+                addActivity.bind(1, newComment.m_reviewId);
+                addActivity.bind(2, (int)activity_type::comment_added);
+                addActivity.bind(3, fmt::format("Created a comment -> \"{}\"", newComment.m_comment));
+                addActivity.exec();
+            }
+        }
+    }
+
+    co_return comment_data{};
+}

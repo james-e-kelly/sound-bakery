@@ -4,19 +4,21 @@
 
 namespace gluten
 {
+    /**
+     * @brief Which direction/technique to layout the children
+     */
+    enum class layout_type
+    {
+        left_to_right,
+        right_to_left,
+        top_to_bottom,
+        bottom_to_top
+    };
+
     class layout : public element
     {
     public:
-        /**
-         * @brief Which direction/technique to layout the children
-         */
-        enum class layout_type
-        {
-            left_to_right,
-            right_to_left,
-            top_to_bottom,
-            bottom_to_top
-        };
+        using layout_type = ::gluten::layout_type;
 
         layout() = default;
         layout(const layout_type& layoutType);

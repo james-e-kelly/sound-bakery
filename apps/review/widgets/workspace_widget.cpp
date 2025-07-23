@@ -338,7 +338,7 @@ auto workspace_widget::render_content() -> void
                 {
                     if (ImGui::BeginTabItem("Files"))
                     {
-                        ImGui::Dummy(ImVec2(0.0f, 8.0f));
+                        ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
 
                         if (ImGui::BeginCombo("Review Version", "#1"))
                         {
@@ -353,6 +353,69 @@ auto workspace_widget::render_content() -> void
 
                     if (ImGui::BeginTabItem("Comments"))
                     {
+                        ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
+
+                        const std::vector<comment_data>& comments = m_workspaceManager->get_all_comments_for_review(selectedReview.m_reviewId);
+                        
+                        static bool newCommentOpen = false;
+
+                        ImGui::BeginDisabled(newCommentOpen);
+                        if (ImGui::Button(ICON_LC_PLUS))
+                        {
+                            newCommentOpen = true;
+                        }
+                        ImGui::EndDisabled();
+
+                        constexpr std::size_t commentBufferSize = 2045;
+                        static char buffer[commentBufferSize] = {0};
+
+                        if (newCommentOpen)
+                        {
+                            ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
+
+                            bool wantsToAdd = false;
+                            
+                            if (ImGui::GetIO().KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Enter))
+                            {
+                                wantsToAdd = true;
+                            }
+
+                            ImGui::InputTextMultiline("Comment", buffer, commentBufferSize, ImVec2(ImGui::GetWindowSize().x, 100.0f));
+
+                            ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
+
+                            wantsToAdd |= ImGui::Button("Add");
+
+                            if (wantsToAdd)
+                            {
+                                new_comment_data newComment = {0};
+                                newComment.m_reviewId       = selectedReview.m_reviewId;
+                                newComment.m_comment        = buffer;
+                                newComment.m_userId         = 1;
+
+                                m_workspaceManager->create_comment(newComment);
+
+                                buffer[0]      = '\0';
+                                newCommentOpen = false;
+                            }
+
+                            ImGui::SameLine(0.0f, 8.0f);
+
+                            if (ImGui::Button("Cancel"))
+                            {
+                                buffer[0]      = '\0';
+                                newCommentOpen = false;
+                            }
+                        }
+
+                        ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
+
+                        for (const auto& comment : comments)
+                        {
+                            ImGui::TextWrapped(comment.m_comment.c_str());
+                            ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
+                        }
+
                         ImGui::EndTabItem();
                     }
 

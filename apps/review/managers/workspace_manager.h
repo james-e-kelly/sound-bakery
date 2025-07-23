@@ -50,6 +50,7 @@ public:
     // Comments
     auto get_all_comments_for_review(int64_t reviewId) const -> const std::vector<comment_data>&;
     auto get_comments_count_for_review(int64_t reviewId) const -> std::size_t;
+    auto create_comment(const new_comment_data& newComment) -> void;
 
 protected:
     auto init(gluten::app* app) -> void override;

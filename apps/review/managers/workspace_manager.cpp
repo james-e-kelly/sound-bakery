@@ -152,7 +152,7 @@ auto workspace_manager::create_workspace(const std::string& workspaceName, const
         const std::filesystem::path workspaceFile = workspaceDirectory / (workspaceName + g_workspaceExtension);
 		std::filesystem::create_directories(workspaceDirectory);
 
-        m_database = std::make_shared<review_database>(std::filesystem::path(workspaceFile).replace_extension("db"));
+        m_database = std::make_shared<review_database>(workspaceFile);
         m_database->create_workspace(workspaceName);
 
 		m_introWidget.reset();
@@ -291,4 +291,9 @@ auto workspace_manager::get_all_comments_for_review(int64_t reviewId) const -> c
 auto workspace_manager::get_comments_count_for_review(int64_t reviewId) const -> std::size_t 
 {
     return m_database->get_comments_count_for_review(reviewId).get();
+}
+
+auto workspace_manager::create_comment(const new_comment_data& newComment) -> void
+{
+    m_database->create_comment(newComment).get();
 }
