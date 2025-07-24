@@ -414,8 +414,6 @@ auto workspace_widget::render_content() -> void
                         {
                             ImGui::TextWrapped(comment.m_comment.c_str());
 
-                            gluten::imgui::scoped_id commentId(comment.m_comment.c_str());
-
                             bool requestBreak = false;
 
                             if (ImGui::BeginPopupContextItem(comment.m_comment.c_str()))
