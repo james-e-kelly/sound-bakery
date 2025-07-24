@@ -297,3 +297,8 @@ auto workspace_manager::create_comment(const new_comment_data& newComment) -> vo
 {
     m_database->create_comment(newComment).get();
 }
+
+auto workspace_manager::delete_comment(int64_t commentId) -> void
+{
+    m_database->delete_comment(commentId).get();
+}

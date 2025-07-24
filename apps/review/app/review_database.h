@@ -41,6 +41,7 @@ public:
     auto get_all_comments_for_review(int64_t reviewId) const -> concurrencpp::result<std::vector<comment_data>>;
     auto get_comments_count_for_review(int64_t commentId) const -> concurrencpp::result<std::size_t>;
     auto create_comment(new_comment_data newComment) -> concurrencpp::result<comment_data>;
+    auto delete_comment(int64_t commentId) -> concurrencpp::result<void>;
 
 private:
     SQLite::Database m_database;

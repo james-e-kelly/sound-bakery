@@ -458,7 +458,7 @@ auto review_database::create_comment(new_comment_data newComment) -> concurrencp
             
             if (m_database.tableExists("activity"))
             {
-                SQLite::Statement addActivity(m_database, "INSERT INTO activity (review_id, activity_type, activity_text) VALUES (?, ?, ?)");
+                SQLite::Statement addActivity(m_database, "INSERT INTO activity (review_id, activity_type, activity_text) VALUES (?, ?, ?);");
                 addActivity.bind(1, newComment.m_reviewId);
                 addActivity.bind(2, (int)activity_type::comment_added);
                 addActivity.bind(3, fmt::format("Created a comment -> \"{}\"", newComment.m_comment));
@@ -468,4 +468,30 @@ auto review_database::create_comment(new_comment_data newComment) -> concurrencp
     }
 
     co_return comment_data{};
+}
+
+auto review_database::delete_comment(int64_t commentId) -> concurrencpp::result<void>
+{
+    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
+
+    if (commentId != 0)
+    {
+        if (m_database.tableExists("comments"))
+        {
+            if (m_database.tableExists("activity"))
+            {
+                SQLite::Statement addActivity(m_database, "INSERT INTO activity (review_id, activity_type, activity_text) SELECT review_id, ?, ? FROM comments WHERE id=? LIMIT 1;");
+                addActivity.bind(1, (int)activity_type::comment_deleted);
+                addActivity.bind(2, fmt::format("Removed a comment"));
+                addActivity.bind(3, commentId);
+                addActivity.exec();
+            }
+
+            SQLite::Statement insertCommentStatement(m_database, "DELETE FROM comments where id=?");
+            insertCommentStatement.bind(1, commentId);
+            insertCommentStatement.exec();
+        }
+    }
+
+    co_return;
 }

@@ -413,7 +413,31 @@ auto workspace_widget::render_content() -> void
                         for (const auto& comment : comments)
                         {
                             ImGui::TextWrapped(comment.m_comment.c_str());
+
+                            gluten::imgui::scoped_id commentId(comment.m_comment.c_str());
+
+                            bool requestBreak = false;
+
+                            if (ImGui::BeginPopupContextItem(comment.m_comment.c_str()))
+                            {
+                                if (ImGui::Selectable("Copy"))
+                                {
+                                    ImGui::SetClipboardText(comment.m_comment.c_str());
+                                }
+
+                                if (ImGui::Selectable("Delete"))
+                                {
+                                    m_workspaceManager->delete_comment(comment.m_commentId);
+                                    requestBreak = true;
+                                }
+                                ImGui::EndPopup();
+                            }
                             ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
+
+                            if (requestBreak)
+                            {
+                                break;
+                            }
                         }
 
                         ImGui::EndTabItem();

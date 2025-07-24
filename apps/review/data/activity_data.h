@@ -6,11 +6,14 @@ enum class activity_type
 {
     project_created,
     project_edited,
+    project_deleted,
     review_created,
     review_edited,
+    review_file_deleted,
     review_files_edited,
     comment_added,
-    comment_edited
+    comment_edited,
+    comment_deleted
 };
 
 auto get_activity_type_string(activity_type activityType) -> std::string;
