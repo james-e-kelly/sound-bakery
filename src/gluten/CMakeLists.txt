@@ -135,6 +135,8 @@ FetchContent_MakeAvailable(fmt)
 message(STATUS "Fetching platform folders")
 FetchContent_MakeAvailable(platform-folders)
 
+CPMAddPackage("gh:nemtrif/utfcpp@4.0.6")
+
 target_include_directories(gluten PUBLIC
   ${fonts_SOURCE_DIR}
 )
@@ -155,6 +157,7 @@ target_link_libraries(gluten
     Tracy::TracyClient
     RTTR::Core_Lib
     sago::platform_folders
+    utf8cpp
 )
 
 target_compile_options(gluten PRIVATE ${PROJECT_WARNING_FLAGS})
