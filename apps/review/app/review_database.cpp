@@ -1,7 +1,8 @@
 #include "review_database.h"
 
 #include "app/review_app.h"
-#include "data/activity_data.h"
+
+#include "sodium.h"
 
 namespace
 {
@@ -24,11 +25,11 @@ namespace
     constexpr const char* g_createUsersTableStatement = R"sql(
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT NOT NULL UNIQUE,
             display_name TEXT,
             title TEXT,
-            email TEXT,
-            password TEXT,   -- for now we will allow null passwords for easy logins
+            email TEXT NOT NULL,
+            password BLOB NOT NULL,
+            salt BLOB NOT NULL,
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
             privilege INT NOT NULL DEFAULT 0
         );
@@ -125,6 +126,25 @@ namespace
             FOREIGN KEY(user_id) REFERENCES users(id)
         );
     )sql";
+
+    constexpr std::string_view g_createSessionsTableStatement = R"sql(
+        CREATE TABLE IF NOT EXISTS sessions (
+            token TEXT PRIMARY KEY,
+            user_id INTEGER NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            expires_at INTEGER NOT NULL
+        );
+    )sql";
+
+    constexpr int32_t g_base64EncodeVariant         = sodium_base64_VARIANT_URLSAFE_NO_PADDING;
+    constexpr std::size_t g_hashOpsLimit            = crypto_pwhash_OPSLIMIT_MODERATE;
+    constexpr std::size_t g_hashMemLimit            = crypto_pwhash_MEMLIMIT_MODERATE;
+    constexpr int32_t g_hashAlgorithm               = crypto_pwhash_ALG_ARGON2ID13;
+
+    constexpr std::size_t g_passwordHashSize        = crypto_box_SEEDBYTES;
+    constexpr std::size_t g_saltSize                = crypto_box_SEEDBYTES;
+    constexpr std::size_t g_sessionTokenSize        = 32U;
+    constexpr std::size_t g_base64SessionTokenSize  = sodium_base64_ENCODED_LEN(g_sessionTokenSize, g_base64EncodeVariant);
 }
 
 review_database::review_database(const std::filesystem::path& databasePath)
@@ -140,6 +160,7 @@ review_database::review_database(const std::filesystem::path& databasePath)
     m_database.exec(g_createCommentsTableStatement);
     m_database.exec(g_createVotesTableStatement);
     m_database.exec(g_createActivityTableStatement);
+    m_database.exec(g_createSessionsTableStatement.data());
 }
 
 auto review_database::create_workspace(const std::string name) -> concurrencpp::result<void>
@@ -494,4 +515,193 @@ auto review_database::delete_comment(int64_t commentId) -> concurrencpp::result<
     }
 
     co_return;
+}
+
+auto review_database::create_user(new_user_data newUser, std::string userToken) -> concurrencpp::result<void>
+{
+    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
+
+    if (!newUser.m_email.empty() && !newUser.m_rawPassword.empty())
+    {
+        const bool firstUserCreation = userToken.empty() && user_table_is_empty();
+        const bool userLoggedIn      = !firstUserCreation && user_is_logged_in_and_has_privilege_for_action(userToken, activity_type::user_added);
+
+        if (firstUserCreation || userLoggedIn)
+        {
+            if (m_database.tableExists("users"))
+            {
+                unsigned char hashBuffer[g_passwordHashSize] = {0};
+                unsigned char saltBuffer[g_saltSize]         = {0};
+
+                randombytes_buf(saltBuffer, g_saltSize);
+
+                if (crypto_pwhash(
+                    hashBuffer,
+                    g_passwordHashSize,
+                    newUser.m_rawPassword.data(),
+                    g_rawPasswordSize,
+                    saltBuffer,
+                    g_hashOpsLimit,
+                    g_hashMemLimit,
+                    g_hashAlgorithm) == 0)
+                {
+                    SQLite::Statement insertUserStatement(m_database, "INSERT INTO users (display_name, title, email, password, salt) VALUES (?, ?, ?, ?, ?);");
+                    insertUserStatement.bind(1, newUser.m_displayName);
+                    insertUserStatement.bind(2, newUser.m_title);
+                    insertUserStatement.bind(3, newUser.m_email);
+                    insertUserStatement.bind(4, reinterpret_cast<char*>(hashBuffer));
+                    insertUserStatement.bind(5, reinterpret_cast<char*>(saltBuffer));
+                    insertUserStatement.exec();
+
+                    if (m_database.tableExists("activity"))
+                    {
+                        SQLite::Statement addActivity(m_database, "INSERT INTO activity (activity_type, activity_text) VALUES (?, ?);");
+                        addActivity.bind(1, (int)activity_type::user_added);
+                        addActivity.bind(2, fmt::format("Added {} as a user", newUser.m_email));
+                        addActivity.exec();
+                    }
+                }
+            }
+        }
+    }
+
+    co_return;
+}
+
+auto review_database::user_table_is_empty() const -> concurrencpp::result<bool>
+{
+    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
+
+    std::size_t usersCount = 0;
+
+    if (m_database.tableExists("users"))
+    {
+        SQLite::Statement getsUsersCountStatement(m_database, "SELECT COUNT(id) FROM users;");
+        getsUsersCountStatement.exec();
+
+        usersCount = getsUsersCountStatement.getColumn(0).getInt64();
+    }
+
+    co_return usersCount > 0;
+}
+
+auto review_database::user_is_logged_in_and_has_privilege_for_action(std::string userToken, activity_type activity) -> concurrencpp::result<bool>
+{
+    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
+
+    bool userWithPrivelegesIsLoggedIn = false;
+
+    if (m_database.tableExists("sessions"))
+    {
+        user_privileges requiredPriveleges = user_privileges::admin;
+
+        switch (activity)
+        {
+        case activity_type::project_created:
+        case activity_type::project_edited:
+        case activity_type::project_deleted:
+        case activity_type::user_added:
+        case activity_type::user_edited:
+        case activity_type::user_deleted:
+            requiredPriveleges = user_privileges::admin;
+            break;
+        case activity_type::review_created:
+        case activity_type::review_edited:
+        case activity_type::review_file_deleted:
+        case activity_type::review_files_edited:
+        case activity_type::comment_added:
+        case activity_type::comment_edited:
+        case activity_type::comment_deleted:
+            requiredPriveleges = user_privileges::user; // Users can do all these actions but will need additional checks like ensuring they only delete their own review
+            break;
+        default:
+            break;
+        }
+
+        SQLite::Statement statement(m_database, "SELECT users.id, users.privilege FROM sessions JOIN users ON users.id = sessions.user_id WHERE sessions.token = ? AND sessions.expires_at > strftime('%s', 'now') AND users.privilege >= ?;");
+        statement.bind(1, userToken);
+        statement.bind(2, (int)requiredPriveleges);
+        userWithPrivelegesIsLoggedIn = statement.executeStep();
+    }
+
+    co_return userWithPrivelegesIsLoggedIn;
+}
+
+auto review_database::login_user(login_request_data loginRequest) -> concurrencpp::result<logged_in_user_data>
+{
+    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
+
+    logged_in_user_data result = {0};
+
+    if (m_database.tableExists("users"))
+    {
+        SQLite::Statement statement(m_database, "SELECT id, password_hash, salt, privilege, display_name, title FROM users WHERE email = ?;");
+        statement.bind(1, loginRequest.m_email);
+
+        if (statement.executeStep())
+        {
+            const int64_t userId           = statement.getColumn(1).getInt64();
+            const std::string passwordHash = statement.getColumn(2).getString();
+            const std::string passwordSalt = statement.getColumn(3).getString();
+            const user_privileges privilege = (user_privileges)statement.getColumn(4).getInt();
+            const std::string displayName   = statement.getColumn(5).getString();
+            const std::string title         = statement.getColumn(6).getString();
+
+            BOOST_ASSERT(passwordHash.length() == crypto_box_SEEDBYTES);
+            BOOST_ASSERT(passwordSalt.length() == crypto_pwhash_SALTBYTES);
+
+            unsigned char hashBuffer[g_passwordHashSize] = { 0 };
+
+            if (crypto_pwhash(
+                hashBuffer,
+                g_passwordHashSize,
+                loginRequest.m_rawPassword.data(),
+                g_rawPasswordSize,
+                reinterpret_cast<const unsigned char*>(passwordSalt.c_str()),
+                g_hashOpsLimit,
+                g_hashMemLimit,
+                g_hashAlgorithm) == 0)
+            {
+                if (sodium_memcmp(passwordHash.c_str(), hashBuffer, g_passwordHashSize) == 0)
+                {
+                    SQLite::Statement sessionStatement(m_database, "SELECT token FROM sessions WHERE user_id = ? AND expires_at > strftime('%s', 'now')");
+                    sessionStatement.bind(1, userId);
+
+                    if (sessionStatement.executeStep())
+                    {
+                        result.m_privileges   = privilege;
+                        result.m_sessionToken = sessionStatement.getColumn(0).getText();
+                        result.m_email        = loginRequest.m_email;
+                        result.m_displayName  = displayName;
+                        result.m_title        = title;
+                    }
+                    else
+                    {
+                        unsigned char sessionToken[g_sessionTokenSize] = {0};
+                        char base64SessionToken[g_base64SessionTokenSize] = {0};
+
+                        randombytes_buf(sessionToken, g_sessionTokenSize);
+                        sodium_bin2base64(base64SessionToken, g_base64SessionTokenSize, sessionToken, g_sessionTokenSize, g_base64EncodeVariant);
+
+                        const std::time_t now    = std::time(nullptr);
+                        const std::time_t expiry = now + 7 * 24 * 60 * 60;
+
+                        SQLite::Statement newSessionStatement(m_database, "INSERT INTO sessions (token, user_id, expires_at) VALUES (?, ?, ?)");
+                        newSessionStatement.bind(1, base64SessionToken);
+                        newSessionStatement.bind(2, userId);
+                        newSessionStatement.bind(3, static_cast<int>(expiry));
+                        newSessionStatement.exec();
+
+                        result.m_privileges   = privilege;
+                        result.m_sessionToken = base64SessionToken;
+                        result.m_email        = loginRequest.m_email;
+                        result.m_displayName  = displayName;
+                        result.m_title        = title;
+                    }
+                }
+            }
+        }
+    }
+
+    co_return result;
 }

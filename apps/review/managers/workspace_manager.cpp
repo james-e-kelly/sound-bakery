@@ -302,3 +302,8 @@ auto workspace_manager::delete_comment(int64_t commentId) -> void
 {
     m_database->delete_comment(commentId).get();
 }
+
+auto workspace_manager::create_user(const new_user_data& newUser, std::optional<std::string> userToken) -> void 
+{
+    m_database->create_user(newUser, userToken.has_value() ? userToken.value() : std::string());
+}

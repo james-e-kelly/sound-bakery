@@ -13,7 +13,10 @@ enum class activity_type
     review_files_edited,
     comment_added,
     comment_edited,
-    comment_deleted
+    comment_deleted,
+    user_added,
+    user_edited,
+    user_deleted
 };
 
 auto get_activity_type_string(activity_type activityType) -> std::string;

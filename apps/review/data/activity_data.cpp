@@ -27,6 +27,15 @@ auto get_activity_type_string(activity_type activityType) -> std::string
         case activity_type::comment_edited:
             result = "Edited a comment";
             break;
+        case activity_type::user_added:
+            result = "Created a user";
+            break;
+        case activity_type::user_edited:
+            result = "Edited a user";
+            break;
+        case activity_type::user_deleted:
+            result = "Deleted a user";
+            break;
         default:
             break;
     }

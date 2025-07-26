@@ -137,6 +137,12 @@ FetchContent_MakeAvailable(platform-folders)
 
 CPMAddPackage("gh:nemtrif/utfcpp@4.0.6")
 
+CPMAddPackage(NAME sodium-cmake
+  GITHUB_REPOSITORY robinlinden/libsodium-cmake
+  GIT_TAG master
+  OPTIONS "SODIUM_DISABLE_TESTS ON"
+)
+
 target_include_directories(gluten PUBLIC
   ${fonts_SOURCE_DIR}
 )
@@ -158,6 +164,7 @@ target_link_libraries(gluten
     RTTR::Core_Lib
     sago::platform_folders
     utf8cpp
+    sodium
 )
 
 target_compile_options(gluten PRIVATE ${PROJECT_WARNING_FLAGS})

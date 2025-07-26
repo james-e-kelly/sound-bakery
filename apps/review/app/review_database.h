@@ -5,6 +5,7 @@
 
 #include "data/activity_data.h"
 #include "data/comment_data.h"
+#include "data/user_data.h"
 #include "data/review_data.h"
 #include "data/project_data.h"
 
@@ -42,6 +43,12 @@ public:
     auto get_comments_count_for_review(int64_t commentId) const -> concurrencpp::result<std::size_t>;
     auto create_comment(new_comment_data newComment) -> concurrencpp::result<comment_data>;
     auto delete_comment(int64_t commentId) -> concurrencpp::result<void>;
+
+    // Users
+    auto create_user(new_user_data newUser, std::string userToken) -> concurrencpp::result<void>;
+    auto user_table_is_empty() const -> concurrencpp::result<bool>; //< If the table is empty, we allow an admin account to be created
+    auto user_is_logged_in_and_has_privilege_for_action(std::string userToken, activity_type activity) -> concurrencpp::result<bool>;
+    auto login_user(login_request_data loginRequest) -> concurrencpp::result<logged_in_user_data>;
 
 private:
     SQLite::Database m_database;

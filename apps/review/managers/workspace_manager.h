@@ -6,6 +6,7 @@
 
 #include "data/activity_data.h"
 #include "data/comment_data.h"
+#include "data/user_data.h"
 #include "data/review_data.h"
 #include "data/workspace_data.h"
 #include "data/project_data.h"
@@ -52,6 +53,9 @@ public:
     auto get_comments_count_for_review(int64_t reviewId) const -> std::size_t;
     auto create_comment(const new_comment_data& newComment) -> void;
     auto delete_comment(int64_t commentId) -> void;
+
+    // Users
+    auto create_user(const new_user_data& newUser, std::optional<std::string> userToken) -> void;
 
 protected:
     auto init(gluten::app* app) -> void override;
