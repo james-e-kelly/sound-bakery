@@ -1,6 +1,7 @@
 #pragma once
 
 #include "gluten/pch.h"
+#include "core/leak_detector.h"
 
 namespace gluten
 {
@@ -14,6 +15,8 @@ namespace gluten
      */
     class manager
     {
+        LEAK_DETECTOR(manager)
+
     public:
         manager() = delete;
         manager(app* appOwner) : m_app(appOwner) {}

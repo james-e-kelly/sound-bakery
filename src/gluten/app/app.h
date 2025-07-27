@@ -1,5 +1,6 @@
 #pragma once
 
+#include "core/leak_detector.h"
 #include <boost/archive/xml_iarchive.hpp>
 #include <boost/archive/xml_oarchive.hpp>
 #include "gluten/managers/manager.h"
@@ -20,12 +21,11 @@ namespace gluten
      */
     class app : public concurrencpp::runtime
     {
+        LEAK_DETECTOR(app)
+
     public:
         app()          = default;
-        virtual ~app()
-        {
-            assert(false);
-        }
+        virtual ~app() = default;
 
         static app* get();
 

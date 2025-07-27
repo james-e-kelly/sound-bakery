@@ -1,4 +1,7 @@
-#include "sound_bakery/pch.h"
+#pragma once
+
+#include <atomic>
+#include <boost/assert.hpp>
 
 namespace sbk::util
 {
@@ -18,7 +21,7 @@ namespace sbk::util
                 /**
                  * Deleted a dangling pointer!
                  */
-                BOOST_ASSERT(false);
+                BOOST_ASSERT_MSG(false, "Dangling Pointer!");
             }
         }
 
@@ -35,14 +38,12 @@ namespace sbk::util
                     /**
                      * Leak Detected!!!
                      */
-                    BOOST_ASSERT(false);
+                    BOOST_ASSERT_MSG(false, "Leak Detected!");
                 }
             }
 
             std::atomic<int> numObjects;
         };
-
-        static const char* get_leaked_object_class_name() { return owner_class::get_type().get_name().c_str(); }
 
         static leak_counter& get_counter() noexcept
         {

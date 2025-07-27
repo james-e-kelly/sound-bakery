@@ -1,6 +1,7 @@
 #pragma once
 
 #include "gluten/pch.h"
+#include "core/leak_detector.h"
 #include "imgui.h"
 #include "imgui_internal.h"
 
@@ -162,6 +163,8 @@ namespace gluten
      */
     class element
     {
+        LEAK_DETECTOR(element)
+
     public:
         using anchor_preset = ::gluten::anchor_preset;
         using anchor_info = ::gluten::anchor_info;

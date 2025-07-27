@@ -1,6 +1,7 @@
 #pragma once
 
 #include "gluten/pch.h"
+#include "core/leak_detector.h"
 
 /**
  * @def Macro to quickly create the basic constructors for a widget.
@@ -35,6 +36,8 @@ namespace gluten
      */
     class widget : public std::enable_shared_from_this<widget>
     {
+        LEAK_DETECTOR(widget)
+
     public:
         widget() = delete;
         widget(widget_subsystem* parentSubsystem, const std::string& name);
