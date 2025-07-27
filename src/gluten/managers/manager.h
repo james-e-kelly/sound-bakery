@@ -20,10 +20,7 @@ namespace gluten
     public:
         manager() = delete;
         manager(app* appOwner) : m_app(appOwner) {}
-        virtual ~manager() 
-        {
-            assert(false);
-        }
+        virtual ~manager() = default;
 
     public:
         virtual void init(app* app) {}

@@ -26,5 +26,5 @@ private:
     };
 
     active_view m_activeView = reviews_view;
-    std::shared_ptr<workspace_manager> m_workspaceManager;
+    std::weak_ptr<workspace_manager> m_workspaceManager;
 };

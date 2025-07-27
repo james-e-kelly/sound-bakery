@@ -187,10 +187,12 @@ auto workspace_widget::render_content() -> void
     gluten::imgui::scoped_color frameHoveredBg(ImGuiCol_FrameBgHovered, gluten::theme::carbon_g100::layerHover02);
     gluten::imgui::scoped_font iconFont(gluten::app::get()->get_font(gluten::fonts::regular_lucide_icons));
 
-    if (ImGui::BeginChild("Content"))
+    std::shared_ptr<workspace_manager> workspaceManager = m_workspaceManager.lock();
+
+    if (ImGui::BeginChild("Content") && workspaceManager)
     {
-        const project_data& selectedProject = m_workspaceManager->get_selected_project();
-        const review_data& selectedReview   = m_workspaceManager->get_selected_review();
+        const project_data& selectedProject = workspaceManager->get_selected_project();
+        const review_data& selectedReview   = workspaceManager->get_selected_review();
 
         gluten::layout verticalLayout(gluten::layout::layout_type::top_to_bottom, gluten::element::anchor_preset::stretch_full);
         verticalLayout.render_window();
@@ -199,7 +201,7 @@ auto workspace_widget::render_content() -> void
         titleBarBackground.set_element_background_color(gluten::theme::carbon_g100::fieldHover02);
         verticalLayout.render_layout_element_pixels_vertical(&titleBarBackground, topHeaderHeight);
 
-        std::string breadcrumbString = m_workspaceManager->get_workspace_name();
+        std::string breadcrumbString = workspaceManager->get_workspace_name();
 
         if (selectedProject.m_id != 0)
         {
@@ -355,7 +357,7 @@ auto workspace_widget::render_content() -> void
                     {
                         ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
 
-                        const std::vector<comment_data>& comments = m_workspaceManager->get_all_comments_for_review(selectedReview.m_reviewId);
+                        const std::vector<comment_data>& comments = workspaceManager->get_all_comments_for_review(selectedReview.m_reviewId);
                         
                         static bool newCommentOpen = false;
 
@@ -393,7 +395,7 @@ auto workspace_widget::render_content() -> void
                                 newComment.m_comment        = buffer;
                                 newComment.m_userId         = 1;
 
-                                m_workspaceManager->create_comment(newComment);
+                                workspaceManager->create_comment(newComment);
 
                                 buffer[0]      = '\0';
                                 newCommentOpen = false;
@@ -425,7 +427,7 @@ auto workspace_widget::render_content() -> void
 
                                 if (ImGui::Selectable("Delete"))
                                 {
-                                    m_workspaceManager->delete_comment(comment.m_commentId);
+                                    workspaceManager->delete_comment(comment.m_commentId);
                                     requestBreak = true;
                                 }
                                 ImGui::EndPopup();
@@ -443,7 +445,7 @@ auto workspace_widget::render_content() -> void
 
                     if (ImGui::BeginTabItem("Activity"))
                     {
-                        const std::vector<activity_data>& reviewsActivity = m_workspaceManager->get_all_activity_for_review(selectedReview.m_reviewId);
+                        const std::vector<activity_data>& reviewsActivity = workspaceManager->get_all_activity_for_review(selectedReview.m_reviewId);
 
                         for (const auto& iter : reviewsActivity)
                         {
