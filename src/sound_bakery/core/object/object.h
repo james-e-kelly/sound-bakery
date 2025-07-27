@@ -1,9 +1,9 @@
 #pragma once
 
+#include "core/leak_detector.h"
 #include "sound_bakery/core/object/object_owner.h"
 #include "sound_bakery/core/memory.h"
 #include "sound_bakery/core/name.h"
-#include "sound_bakery/util/leak_detector.h"
 #include <boost/core/noncopyable.hpp>
 #include <boost/serialization/nvp.hpp>
 

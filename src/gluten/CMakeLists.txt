@@ -149,6 +149,7 @@ target_include_directories(gluten PUBLIC
 
 target_link_libraries(gluten
     PUBLIC
+    SoundBakery::Core
     Boost::serialization
     concurrencpp::concurrencpp 
     SoundBakery::Delegates 

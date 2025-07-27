@@ -22,7 +22,10 @@ namespace gluten
     {
     public:
         app()          = default;
-        virtual ~app() = default;
+        virtual ~app()
+        {
+            assert(false);
+        }
 
         static app* get();
 
