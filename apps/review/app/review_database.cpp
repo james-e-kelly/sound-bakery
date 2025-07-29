@@ -518,56 +518,69 @@ auto review_database::delete_comment(int64_t commentId) -> concurrencpp::result<
     co_return;
 }
 
-auto review_database::create_user(new_user_data newUser, std::string userToken) -> concurrencpp::result<void>
+auto review_database::create_user(new_user_data newUser, std::string userToken) -> concurrencpp::result<tl::expected<bool, database_error>>
 {
     co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
 
-    if (!newUser.m_email.empty() && !newUser.m_rawPassword.empty())
+    if (newUser.m_email.empty())
     {
-        const bool firstUserCreation = userToken.empty() && user_table_is_empty();
-        const bool userLoggedIn      = !firstUserCreation && user_is_logged_in_and_has_privilege_for_action(userToken, activity_type::user_added);
-
-        if (firstUserCreation || userLoggedIn)
-        {
-            if (m_database.tableExists("users"))
-            {
-                unsigned char hashBuffer[g_passwordHashSize] = {0};
-                unsigned char saltBuffer[g_saltSize]         = {0};
-
-                randombytes_buf(saltBuffer, g_saltSize);
-
-                if (crypto_pwhash(
-                    hashBuffer,
-                    g_passwordHashSize,
-                    newUser.m_rawPassword.data(),
-                    g_rawPasswordSize,
-                    saltBuffer,
-                    g_hashOpsLimit,
-                    g_hashMemLimit,
-                    g_hashAlgorithm) == 0)
-                {
-                    SQLite::Statement insertUserStatement(m_database, "INSERT INTO users (display_name, title, email, password, salt, privilege) VALUES (?, ?, ?, ?, ?, ?);");
-                    insertUserStatement.bind(1, newUser.m_displayName);
-                    insertUserStatement.bind(2, newUser.m_title);
-                    insertUserStatement.bind(3, newUser.m_email);
-                    insertUserStatement.bind(4, reinterpret_cast<char*>(hashBuffer));
-                    insertUserStatement.bind(5, reinterpret_cast<char*>(saltBuffer));
-                    insertUserStatement.bind(6, (int)newUser.m_requestedPrivileges);
-                    insertUserStatement.exec();
-
-                    if (m_database.tableExists("activity"))
-                    {
-                        SQLite::Statement addActivity(m_database, "INSERT INTO activity (activity_type, activity_text) VALUES (?, ?);");
-                        addActivity.bind(1, (int)activity_type::user_added);
-                        addActivity.bind(2, fmt::format("Added {} as a user", newUser.m_email));
-                        addActivity.exec();
-                    }
-                }
-            }
-        }
+        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::invalid_parameters, .m_errorMessage = "Email address is empty"});
     }
 
-    co_return;
+    if (newUser.m_rawPassword.empty())
+    {
+        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::invalid_parameters, .m_errorMessage = "Password is empty"});
+    }
+
+    const bool firstUserCreation = userToken.empty() && user_table_is_empty();
+    const bool userLoggedIn      = !firstUserCreation && user_is_logged_in_and_has_privilege_for_action(userToken, activity_type::user_added);
+
+    if (!firstUserCreation && !userLoggedIn)
+    {
+        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::unauthorized, .m_errorMessage = "User is unauthorized to create a user"});
+    }
+
+    if (!m_database.tableExists("users"))
+    {
+        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::missing_table, .m_errorMessage = "Users table does not exist"});
+    }
+
+    unsigned char hashBuffer[g_passwordHashSize] = {0};
+    unsigned char saltBuffer[g_saltSize]         = {0};
+
+    randombytes_buf(saltBuffer, g_saltSize);
+
+    if (crypto_pwhash(
+        hashBuffer,
+        g_passwordHashSize,
+        newUser.m_rawPassword.data(),
+        g_rawPasswordSize,
+        saltBuffer,
+        g_hashOpsLimit,
+        g_hashMemLimit,
+        g_hashAlgorithm) != 0)
+    {
+        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::error, .m_errorMessage = "Could not hash the password"});
+    }
+     
+    SQLite::Statement insertUserStatement(m_database, "INSERT INTO users (display_name, title, email, password, salt, privilege) VALUES (?, ?, ?, ?, ?, ?);");
+    insertUserStatement.bind(1, newUser.m_displayName);
+    insertUserStatement.bind(2, newUser.m_title);
+    insertUserStatement.bind(3, newUser.m_email);
+    insertUserStatement.bind(4, reinterpret_cast<char*>(hashBuffer));
+    insertUserStatement.bind(5, reinterpret_cast<char*>(saltBuffer));
+    insertUserStatement.bind(6, (int)newUser.m_requestedPrivileges);
+    insertUserStatement.exec();
+
+    if (m_database.tableExists("activity"))
+    {
+        SQLite::Statement addActivity(m_database, "INSERT INTO activity (activity_type, activity_text) VALUES (?, ?);");
+        addActivity.bind(1, (int)activity_type::user_added);
+        addActivity.bind(2, fmt::format("Added {} as a user", newUser.m_email));
+        addActivity.exec();
+    }
+
+    co_return true;
 }
 
 auto review_database::user_table_is_empty() const -> concurrencpp::result<bool>

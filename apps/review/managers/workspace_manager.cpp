@@ -335,9 +335,11 @@ auto workspace_manager::delete_comment(int64_t commentId) -> void
     m_database->delete_comment(commentId).get();
 }
 
-auto workspace_manager::create_user(const new_user_data& newUser, std::optional<std::string> userToken) -> void 
+auto workspace_manager::create_user(const new_user_data& newUser, std::optional<std::string> userToken) -> concurrencpp::result<tl::expected<bool, database_error>> 
 {
-    m_database->create_user(newUser, userToken.has_value() ? userToken.value() : std::string()).get();
+    co_await concurrencpp::resume_on(get_app()->thread_pool_executor());
+
+    co_await m_database->create_user(newUser, userToken.has_value() ? userToken.value() : std::string());
     m_userFlowPopup.reset();
 }
 

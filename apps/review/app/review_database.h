@@ -11,10 +11,11 @@
 
 enum class database_error_code
 {
-    error,          //< Generic error
-    missing_table,  //< The table does not exist
-    no_data,        //< Could not get a row or some other piece of data
-    unauthorized    //< No permission / not allowed
+    error,              //< Generic error
+    missing_table,      //< The table does not exist
+    no_data,            //< Could not get a row or some other piece of data
+    unauthorized,       //< No permission / not allowed
+    invalid_parameters  //< User supplied incorrect parameters
 };
 
 struct database_error
@@ -59,7 +60,7 @@ public:
     auto delete_comment(int64_t commentId) -> concurrencpp::result<void>;
 
     // Users
-    auto create_user(new_user_data newUser, std::string userToken) -> concurrencpp::result<void>;
+    auto create_user(new_user_data newUser, std::string userToken) -> concurrencpp::result<tl::expected<bool, database_error>>;
     auto user_table_is_empty() const -> concurrencpp::result<bool>; //< If the table is empty, we allow an admin account to be created
     auto user_is_logged_in_and_has_privilege_for_action(std::string userToken, activity_type activity) -> concurrencpp::result<bool>;
     auto login_user(login_request_data loginRequest) -> concurrencpp::result<tl::expected<logged_in_user_data, database_error>>;

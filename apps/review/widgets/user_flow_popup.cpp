@@ -25,10 +25,14 @@ auto user_flow_popup::render_popup() -> void
         return;
     }
 
-    ImGui::InputTextWithHint("Email", "john.doe@domain.com", m_emailBuffer, textBufferSize);
+    if (ImGui::InputTextWithHint("Email", "john.doe@domain.com", m_emailBuffer, textBufferSize))
+    {
+        m_errorText.empty();
+    }
+
     if (ImGui::InputText("Password", m_passwordBuffer, g_rawPasswordSize, ImGuiInputTextFlags_Password))
     {
-        m_wrongPassword = false;
+        m_errorText.clear();
     }
 
     if (m_type != user_flow_type::login_user)
@@ -63,53 +67,52 @@ auto user_flow_popup::render_popup() -> void
 
     ImGui::BeginDisabled(static_cast<bool>(m_loginResult));
 
-    if (m_loginResult)
+    switch (m_type)
     {
-        ImSpinner::SpinnerAngEclipse("##Loading", ImGui::GetFontSize() / 2.0f, 2.0f, gluten::theme::white, 8.0f);
-    }
-    else
-    {
-        switch (m_type)
-        {
-            case user_flow_type::login_user:
-                if (ImGui::Button("Login"))
-                {
-                    login_request_data loginRequest;
-                    loginRequest.m_email = m_emailBuffer;
-                    std::memcpy(loginRequest.m_rawPassword.data(), m_passwordBuffer, g_rawPasswordSize);
+        case user_flow_type::login_user:
+            if (ImGui::Button("Login"))
+            {
+                m_errorText.empty();
 
-                    m_loginResult = workspaceManager->login_user(loginRequest);
-                }
-                break;
-            case user_flow_type::new_user:
-                if (ImGui::Button("Create"))
-                {
-                    new_user_data newUser;
-                    newUser.m_displayName = m_displayNameBuffer;
-                    newUser.m_email       = m_emailBuffer;
-                    std::memcpy(newUser.m_rawPassword.data(), m_passwordBuffer, g_rawPasswordSize);
-                    newUser.m_title               = m_titleBuffer;
-                    newUser.m_requestedPrivileges = m_privileges;
+                login_request_data loginRequest;
+                loginRequest.m_email = m_emailBuffer;
+                std::memcpy(loginRequest.m_rawPassword.data(), m_passwordBuffer, g_rawPasswordSize);
 
-                    workspaceManager->create_user(newUser, m_userSettings->m_loggedInUser.m_sessionToken);
-                }
-                break;
-            case user_flow_type::new_user_and_login:
-                if (ImGui::Button("Create"))
-                {
-                    new_user_data newUser;
-                    newUser.m_displayName = m_displayNameBuffer;
-                    newUser.m_email       = m_emailBuffer;
-                    std::memcpy(newUser.m_rawPassword.data(), m_passwordBuffer, g_rawPasswordSize);
-                    newUser.m_title               = m_titleBuffer;
-                    newUser.m_requestedPrivileges = m_privileges;
+                m_loginResult = workspaceManager->login_user(loginRequest);
+            }
+            break;
+        case user_flow_type::new_user:
+            if (ImGui::Button("Create"))
+            {
+                m_errorText.empty();
 
-                    m_loginResult = workspaceManager->create_user_and_login(newUser);
-                }
-                break;
-            default:
-                break;
-        }
+                new_user_data newUser;
+                newUser.m_displayName = m_displayNameBuffer;
+                newUser.m_email       = m_emailBuffer;
+                std::memcpy(newUser.m_rawPassword.data(), m_passwordBuffer, g_rawPasswordSize);
+                newUser.m_title               = m_titleBuffer;
+                newUser.m_requestedPrivileges = m_privileges;
+
+                m_loginResult = workspaceManager->create_user(newUser, m_userSettings->m_loggedInUser.m_sessionToken);
+            }
+            break;
+        case user_flow_type::new_user_and_login:
+            if (ImGui::Button("Create"))
+            {
+                m_errorText.empty();
+
+                new_user_data newUser;
+                newUser.m_displayName = m_displayNameBuffer;
+                newUser.m_email       = m_emailBuffer;
+                std::memcpy(newUser.m_rawPassword.data(), m_passwordBuffer, g_rawPasswordSize);
+                newUser.m_title               = m_titleBuffer;
+                newUser.m_requestedPrivileges = m_privileges;
+
+                m_loginResult = workspaceManager->create_user_and_login(newUser);
+            }
+            break;
+        default:
+            break;
     }
 
     ImGui::EndDisabled();
@@ -122,9 +125,28 @@ auto user_flow_popup::render_popup() -> void
         close_popup();
     }
 
-    if (m_wrongPassword)
+    if (m_loginResult)
     {
         ImGui::SameLine();
-        ImGui::TextUnformatted("Incorrect password!");
+
+        ImSpinner::SpinnerAngEclipse("##Loading", ImGui::GetFontSize() / 2.0f, 2.0f, gluten::theme::white, 8.0f);
+
+        switch (m_loginResult.status())
+        {
+            case concurrencpp::result_status::value:
+                m_errorText = m_loginResult.get().error().m_errorMessage;
+                break;
+            case concurrencpp::result_status::exception:
+                m_errorText = "Expection occurred";
+                break;
+            default:
+                break;
+        }
+    }
+
+    if (!m_errorText.empty())
+    {
+        ImGui::SameLine();
+        ImGui::TextUnformatted(m_errorText.c_str());
     }
 }

@@ -41,7 +41,6 @@ private:
 
     gluten::data_source<user_settings_data> m_userSettings;
 
-    bool m_wrongPassword = false;
-
+    std::string m_errorText;
     concurrencpp::result<tl::expected<bool, database_error>> m_loginResult;
 };
