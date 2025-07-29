@@ -12,9 +12,12 @@ add_library(SoundBakery::Core ALIAS sound_bakery_core)
 c_17(sound_bakery_core)
 cxx_20(sound_bakery_core)
 
+CPMAddPackage("gh:TartanLlama/expected@1.2.0")
+
 target_link_libraries(sound_bakery_core PUBLIC 
   SoundBakery::Delegates 
   Boost::assert
+  tl::expected
 )
 
 target_include_directories(sound_bakery_core PUBLIC ${PROJECT_SOURCE_DIR}/src/)
