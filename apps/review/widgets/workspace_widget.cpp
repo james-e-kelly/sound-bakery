@@ -219,6 +219,11 @@ auto workspace_widget::render_content() -> void
             .set_element_translation(ImVec2(5, 0.0f));
         breadcrumbText.render(titleBarBackground.get_element_rect());
 
+        logged_in_user_element loggedInUserAvatar(m_userSettings->m_loggedInUser.m_email);
+        loggedInUserAvatar.set_element_anchor_preset(gluten::anchor_preset::stretch_right);
+        loggedInUserAvatar.get_element_anchor().minOffset.x = -titleBarBackground.get_element_rect().GetHeight();
+        loggedInUserAvatar.render(titleBarBackground.get_element_rect());
+
         gluten::layout contentAndRightPanelLayout(gluten::layout::layout_type::right_to_left, gluten::element::anchor_preset::stretch_full);
         verticalLayout.render_layout_element_remaining(&contentAndRightPanelLayout);
 

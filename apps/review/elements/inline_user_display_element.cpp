@@ -90,23 +90,44 @@ namespace
     };
 }
 
-auto inline_user_display_element::render_element(const ImRect& parentRect) -> bool
+auto inline_user_avatar_element::render_element(const ImRect& parentRect) -> bool
 {
     static avatar_resolver resolver;
 
     if (gluten::image* avatarImage = resolver.get_avatar_image(m_userEmailAddress, parentRect.GetHeight()))
     {
-        gluten::text userNameText(fmt::format("{} - Needs Review", m_userDisplayName), ImVec2(0.0f, 0.5f),
-                                  element::anchor_preset::left_middle);
-        userNameText.set_element_translation(ImVec2(parentRect.GetHeight() + ImGui::GetStyle().FramePadding.x, 0.0f));
-        userNameText.render(parentRect);
-
         avatarImage->render(parentRect);
     }
     else
     {
         ImSpinner::SpinnerAngEclipse("##Loading", ImGui::GetFontSize() / 2.0f, 2.0f, gluten::theme::white, 8.0f);
     }
+
+    return false;
+}
+
+auto logged_in_user_element::render_element(const ImRect& parentRect) -> bool
+{
+    inline_user_avatar_element avatar(m_userEmailAddress);
+    avatar.set_element_frame_padding();
+    avatar.render(parentRect);
+
+    gluten::text emailText(m_userEmailAddress, ImVec2(0.0f, 0.5f), element::anchor_preset::left_middle);
+    emailText.set_element_translation(ImVec2(-emailText.get_element_content_size().x, 0.0f));
+    emailText.render(parentRect);
+
+    return false;
+}
+
+auto inline_user_display_element::render_element(const ImRect& parentRect) -> bool
+{
+    inline_user_avatar_element avatar(m_userEmailAddress);
+    avatar.render(parentRect);
+
+    gluten::text userNameText(fmt::format("{} - Needs Review", m_userDisplayName), ImVec2(0.0f, 0.5f),
+                                element::anchor_preset::left_middle);
+    userNameText.set_element_translation(ImVec2(parentRect.GetHeight() + ImGui::GetStyle().FramePadding.x, 0.0f));
+    userNameText.render(parentRect);
 
     return false;
 }

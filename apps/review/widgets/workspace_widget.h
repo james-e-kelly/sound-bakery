@@ -2,6 +2,8 @@
 
 #include "pch.h"
 
+#include "data/user_settings_data.h"
+
 class workspace_manager;
 
 class workspace_widget : public gluten::window_widget
@@ -27,4 +29,5 @@ private:
 
     active_view m_activeView = reviews_view;
     std::weak_ptr<workspace_manager> m_workspaceManager;
+    gluten::data_source<user_settings_data> m_userSettings;
 };
