@@ -2,6 +2,7 @@
 
 #include "pch.h"
 
+#include "app/review_database.h"
 #include "data/activity_data.h"
 #include "data/comment_data.h"
 #include "data/user_data.h"
@@ -55,8 +56,8 @@ public:
 
     // Users
     auto create_user(const new_user_data& newUser, std::optional<std::string> userToken) -> void;
-    auto create_user_and_login(const new_user_data& newUser) -> bool;
-    auto login_user(const login_request_data& loginData) -> bool;
+    auto create_user_and_login(new_user_data newUser) -> concurrencpp::result<tl::expected<bool, database_error>>;
+    auto login_user(login_request_data loginData) -> concurrencpp::result<tl::expected<bool, database_error>>;
 
 protected:
     auto init(gluten::app* app) -> void override;

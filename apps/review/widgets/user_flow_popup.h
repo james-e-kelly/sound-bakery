@@ -2,6 +2,7 @@
 
 #include "pch.h"
 
+#include "app/review_database.h"
 #include "data/user_data.h"
 #include "data/user_settings_data.h"
 
@@ -41,4 +42,6 @@ private:
     gluten::data_source<user_settings_data> m_userSettings;
 
     bool m_wrongPassword = false;
+
+    concurrencpp::result<tl::expected<bool, database_error>> m_loginResult;
 };

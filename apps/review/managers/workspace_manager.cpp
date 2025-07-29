@@ -1,6 +1,5 @@
 #include "workspace_manager.h"
 
-#include "app/review_database.h"
 #include "widgets/intro_widget.h"
 #include "widgets/user_flow_popup.h"
 #include "widgets/workspace_widget.h"
@@ -342,39 +341,41 @@ auto workspace_manager::create_user(const new_user_data& newUser, std::optional<
     m_userFlowPopup.reset();
 }
 
-auto workspace_manager::create_user_and_login(const new_user_data& newUser) -> bool
+auto workspace_manager::create_user_and_login(new_user_data newUser) -> concurrencpp::result<tl::expected<bool, database_error>>
 {
-    new_user_data copiedNewUser = newUser;
+    co_await concurrencpp::resume_on(get_app()->thread_pool_executor());
 
-    if (m_database->user_table_is_empty().get())
+    if (co_await m_database->user_table_is_empty())
     {
-        copiedNewUser.m_requestedPrivileges = user_privileges::admin;
+        newUser.m_requestedPrivileges = user_privileges::admin;
     }
 
-    m_database->create_user(copiedNewUser, std::string()).get();
+    co_await m_database->create_user(newUser, std::string());
 
     login_request_data loginRequest;
     loginRequest.m_email            = newUser.m_email;
     loginRequest.m_rawPassword      = newUser.m_rawPassword;
 
-    return login_user(loginRequest);
+    co_return co_await login_user(loginRequest);
 }
 
-auto workspace_manager::login_user(const login_request_data& loginData) -> bool
+auto workspace_manager::login_user(login_request_data loginData) -> concurrencpp::result<tl::expected<bool, database_error>>
 {
-    bool result = false;
+    co_await concurrencpp::resume_on(get_app()->thread_pool_executor());
 
-    const logged_in_user_data loggedInUser = m_database->login_user(loginData).get();
+    const tl::expected<logged_in_user_data, database_error> loggedInUser = co_await m_database->login_user(loginData);
 
-    if (!loggedInUser.m_sessionToken.empty())
+    co_await concurrencpp::resume_on(get_app()->get_tick_executor());
+
+    if (loggedInUser.has_value())
     {
-        m_userSettingsData->m_loggedInUser = loggedInUser;
-
+        m_userSettingsData->m_loggedInUser = loggedInUser.value();
         m_userFlowPopup.reset();
         open_workspace_widget();
-
-        result = true;
+        co_return true;
     }
-
-    return result;
+    else
+    {
+        co_return tl::make_unexpected(loggedInUser.error());
+    }
 }

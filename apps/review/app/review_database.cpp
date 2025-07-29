@@ -630,77 +630,83 @@ auto review_database::user_is_logged_in_and_has_privilege_for_action(std::string
     co_return userWithPrivelegesIsLoggedIn;
 }
 
-auto review_database::login_user(login_request_data loginRequest) -> concurrencpp::result<logged_in_user_data>
+auto review_database::login_user(login_request_data loginRequest) -> concurrencpp::result<tl::expected<logged_in_user_data, database_error>>
 {
     co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
 
-    logged_in_user_data result;
-
-    if (m_database.tableExists("users"))
+    if (!m_database.tableExists("users"))
     {
-        SQLite::Statement statement(m_database, "SELECT id, password, salt, privilege, display_name, title FROM users WHERE email = ?;");
-        statement.bind(1, loginRequest.m_email);
+        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::missing_table, .m_errorMessage = "Missing users table"});
+    }
 
-        if (statement.executeStep())
-        {
-            const int64_t userId           = statement.getColumn(0).getInt64();
-            const std::string passwordHash = statement.getColumn(1).getString();
-            const std::string passwordSalt = statement.getColumn(2).getString();
-            const user_privileges privilege = (user_privileges)statement.getColumn(3).getInt();
-            const std::string displayName   = statement.getColumn(4).getString();
-            const std::string title         = statement.getColumn(5).getString();
+    SQLite::Statement statement(m_database, "SELECT id, password, salt, privilege, display_name, title FROM users WHERE email = ?;");
+    statement.bind(1, loginRequest.m_email);
 
-            unsigned char hashBuffer[g_passwordHashSize] = { 0 };
+    if (!statement.executeStep())
+    {
+        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::no_data, .m_errorMessage = "User does not exist"});
+    }
 
-            if (crypto_pwhash(
-                hashBuffer,
-                g_passwordHashSize,
-                loginRequest.m_rawPassword.data(),
-                g_rawPasswordSize,
-                reinterpret_cast<const unsigned char*>(passwordSalt.c_str()),
-                g_hashOpsLimit,
-                g_hashMemLimit,
-                g_hashAlgorithm) == 0)
-            {
-                if (sodium_memcmp(passwordHash.c_str(), hashBuffer, g_passwordHashSize) == 0)
-                {
-                    SQLite::Statement sessionStatement(m_database, "SELECT token FROM sessions WHERE user_id = ? AND expires_at > strftime('%s', 'now')");
-                    sessionStatement.bind(1, userId);
+    const std::string passwordHash = statement.getColumn(1).getString();
+    const std::string passwordSalt = statement.getColumn(2).getString();
 
-                    if (sessionStatement.executeStep())
-                    {
-                        result.m_privileges   = privilege;
-                        result.m_sessionToken = sessionStatement.getColumn(0).getText();
-                        result.m_email        = loginRequest.m_email;
-                        result.m_displayName  = displayName;
-                        result.m_title        = title;
-                    }
-                    else
-                    {
-                        unsigned char sessionToken[g_sessionTokenSize] = {0};
-                        char base64SessionToken[g_base64SessionTokenSize] = {0};
+    unsigned char hashBuffer[g_passwordHashSize] = { 0 };
 
-                        randombytes_buf(sessionToken, g_sessionTokenSize);
-                        sodium_bin2base64(base64SessionToken, g_base64SessionTokenSize, sessionToken, g_sessionTokenSize, g_base64EncodeVariant);
+    if (crypto_pwhash(
+        hashBuffer,
+        g_passwordHashSize,
+        loginRequest.m_rawPassword.data(),
+        g_rawPasswordSize,
+        reinterpret_cast<const unsigned char*>(passwordSalt.c_str()),
+        g_hashOpsLimit,
+        g_hashMemLimit,
+        g_hashAlgorithm) != 0)
+    {
+        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::error, .m_errorMessage = "Could not hash the password"});
+    }
 
-                        const std::time_t now    = std::time(nullptr);
-                        const std::time_t expiry = now + 7 * 24 * 60 * 60;
+    if (sodium_memcmp(passwordHash.c_str(), hashBuffer, g_passwordHashSize) != 0)
+    {
+        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::unauthorized, .m_errorMessage = "Password is incorrect"});
+    }
 
-                        SQLite::Statement newSessionStatement(m_database, "INSERT INTO sessions (token, user_id, expires_at) VALUES (?, ?, ?)");
-                        newSessionStatement.bind(1, base64SessionToken);
-                        newSessionStatement.bind(2, userId);
-                        newSessionStatement.bind(3, static_cast<int>(expiry));
-                        newSessionStatement.exec();
+    const int64_t userId           = statement.getColumn(0).getInt64();
+    const user_privileges privilege = (user_privileges)statement.getColumn(3).getInt();
+    const std::string displayName   = statement.getColumn(4).getString();
+    const std::string title         = statement.getColumn(5).getString();
+    
+    SQLite::Statement sessionStatement(m_database, "SELECT token FROM sessions WHERE user_id = ? AND expires_at > strftime('%s', 'now')");
+    sessionStatement.bind(1, userId);
+    const bool hasSessionToken = sessionStatement.executeStep();
 
-                        result.m_privileges   = privilege;
-                        result.m_sessionToken = base64SessionToken;
-                        result.m_email        = loginRequest.m_email;
-                        result.m_displayName  = displayName;
-                        result.m_title        = title;
-                    }
-                }
-            }
-        }
+    logged_in_user_data result;
+    result.m_privileges   = privilege;
+    result.m_email        = loginRequest.m_email;
+    result.m_displayName  = displayName;
+    result.m_title        = title;
+
+    if (hasSessionToken)
+    {
+        result.m_sessionToken = sessionStatement.getColumn(0).getText();
+    }
+    else
+    {
+        unsigned char sessionToken[g_sessionTokenSize] = {0};
+        char base64SessionToken[g_base64SessionTokenSize] = {0};
+
+        randombytes_buf(sessionToken, g_sessionTokenSize);
+        sodium_bin2base64(base64SessionToken, g_base64SessionTokenSize, sessionToken, g_sessionTokenSize, g_base64EncodeVariant);
+
+        const std::time_t now    = std::time(nullptr);
+        const std::time_t expiry = now + 7 * 24 * 60 * 60;
+
+        SQLite::Statement newSessionStatement(m_database, "INSERT INTO sessions (token, user_id, expires_at) VALUES (?, ?, ?)");
+        newSessionStatement.bind(1, base64SessionToken);
+        newSessionStatement.bind(2, userId);
+        newSessionStatement.bind(3, static_cast<int>(expiry));
+        newSessionStatement.exec();
+
+        result.m_sessionToken = base64SessionToken;
     }
 
     co_return result;

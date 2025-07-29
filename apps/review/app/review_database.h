@@ -9,6 +9,20 @@
 #include "data/review_data.h"
 #include "data/project_data.h"
 
+enum class database_error_code
+{
+    error,          //< Generic error
+    missing_table,  //< The table does not exist
+    no_data,        //< Could not get a row or some other piece of data
+    unauthorized    //< No permission / not allowed
+};
+
+struct database_error
+{
+    database_error_code m_errorCode = database_error_code::error;
+    std::string m_errorMessage;
+};
+
 /**
  * @brief Handles database creation, deletion, updates and so on.
  */
@@ -48,7 +62,7 @@ public:
     auto create_user(new_user_data newUser, std::string userToken) -> concurrencpp::result<void>;
     auto user_table_is_empty() const -> concurrencpp::result<bool>; //< If the table is empty, we allow an admin account to be created
     auto user_is_logged_in_and_has_privilege_for_action(std::string userToken, activity_type activity) -> concurrencpp::result<bool>;
-    auto login_user(login_request_data loginRequest) -> concurrencpp::result<logged_in_user_data>;
+    auto login_user(login_request_data loginRequest) -> concurrencpp::result<tl::expected<logged_in_user_data, database_error>>;
 
 private:
     SQLite::Database m_database;
