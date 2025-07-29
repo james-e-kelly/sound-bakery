@@ -11,6 +11,8 @@ enum class user_privileges
     admin = 2   //< Can create anything and delete anything
 };
 
+auto get_user_privileges_string(user_privileges privilege) -> std::string;
+
 /**
  * @note Raw password is memory locked and wiped during destruction
  */
@@ -39,6 +41,7 @@ struct logged_in_user_data
     {
         archive & boost::serialization::make_nvp("token", m_sessionToken);
         archive & boost::serialization::make_nvp("email", m_email);
+        archive & boost::serialization::make_nvp("privileges", m_privileges);
     }
 };
 

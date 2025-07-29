@@ -38,6 +38,7 @@ private:
     user_privileges m_privileges            = user_privileges::guest;
 
     user_flow_type m_type = user_flow_type::login_user;
+    bool m_firstUserCreation = false;
 
     gluten::data_source<user_settings_data> m_userSettings;
 

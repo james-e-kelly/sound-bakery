@@ -337,8 +337,27 @@ auto workspace_manager::delete_comment(int64_t commentId) -> void
 
 auto workspace_manager::open_create_user_popup() -> void
 {
-    open_user_flow_popup();
-    m_userFlowPopup->set_flow_type(user_flow_type::new_user);
+    // New users are only added once the workspace is open
+    if (m_workspaceWidget)
+    {
+        m_userFlowPopup = get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class_to_root<user_flow_popup>(false);
+        m_userFlowPopup->open_popup();
+        m_userFlowPopup->set_flow_type(user_flow_type::new_user);
+    }
+}
+
+auto workspace_manager::users_table_is_empty() -> concurrencpp::result<bool>
+{
+    co_await concurrencpp::resume_on(get_app()->thread_pool_executor());
+
+    co_return co_await m_database->user_table_is_empty();
+}
+
+auto workspace_manager::logged_in_user_can_create_users() -> concurrencpp::result<bool>
+{
+    co_await concurrencpp::resume_on(get_app()->thread_pool_executor());
+
+    co_return co_await m_database->user_is_logged_in_and_has_privilege_for_action(m_userSettingsData->m_loggedInUser.m_sessionToken, activity_type::user_added);
 }
 
 auto workspace_manager::create_user(const new_user_data newUser, std::optional<std::string> userToken) -> concurrencpp::result<tl::expected<bool, database_error>> 

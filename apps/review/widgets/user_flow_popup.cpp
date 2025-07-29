@@ -7,6 +7,11 @@
 auto user_flow_popup::start_implementation() -> void
 {
     sodium_mlock(m_passwordBuffer, g_rawPasswordSize);
+
+    if (std::shared_ptr<workspace_manager> workspaceManager = get_app()->get_manager_by_class<workspace_manager>())
+    {
+        m_firstUserCreation = workspaceManager->users_table_is_empty().get();
+    }
 }
 
 auto user_flow_popup::end_implementation() -> void
@@ -27,7 +32,7 @@ auto user_flow_popup::render_popup() -> void
 
     if (ImGui::InputTextWithHint("Email", "john.doe@domain.com", m_emailBuffer, textBufferSize))
     {
-        m_errorText.empty();
+        m_errorText.clear();
     }
 
     if (ImGui::InputText("Password", m_passwordBuffer, g_rawPasswordSize, ImGuiInputTextFlags_Password))
@@ -41,7 +46,34 @@ auto user_flow_popup::render_popup() -> void
 
         ImGui::InputTextWithHint("Display Name", "John", m_displayNameBuffer, textBufferSize);
         ImGui::InputTextWithHint("Title", "Sound Designer", m_titleBuffer, textBufferSize);
-        
+
+        if (ImGui::BeginCombo("Role", get_user_privileges_string(m_privileges).c_str()))
+        {
+            if (ImGui::Selectable("Guest"))
+            {
+                m_privileges = user_privileges::guest;
+            }
+            
+            const bool loggedIn = !m_userSettings->m_loggedInUser.m_sessionToken.empty();
+            const bool canCreateUsers = loggedIn && m_userSettings->m_loggedInUser.m_privileges == user_privileges::admin;
+
+            if (canCreateUsers)
+            {
+                if (ImGui::Selectable("User"))
+                {
+                    m_privileges = user_privileges::user;
+                }
+            }
+
+            if (m_firstUserCreation || canCreateUsers)
+            {
+                if (ImGui::Selectable("Admin"))
+                {
+                    m_privileges = user_privileges::admin;
+                }
+            }
+            ImGui::EndCombo();
+        }
     }
 
     const bool emailIsFilled = m_emailBuffer[0] != '\0';
@@ -72,7 +104,7 @@ auto user_flow_popup::render_popup() -> void
         case user_flow_type::login_user:
             if (ImGui::Button("Login"))
             {
-                m_errorText.empty();
+                m_errorText.clear();
 
                 login_request_data loginRequest;
                 loginRequest.m_email = m_emailBuffer;
@@ -84,7 +116,7 @@ auto user_flow_popup::render_popup() -> void
         case user_flow_type::new_user:
             if (ImGui::Button("Create"))
             {
-                m_errorText.empty();
+                m_errorText.clear();
 
                 new_user_data newUser;
                 newUser.m_displayName = m_displayNameBuffer;
@@ -99,7 +131,7 @@ auto user_flow_popup::render_popup() -> void
         case user_flow_type::new_user_and_login:
             if (ImGui::Button("Create"))
             {
-                m_errorText.empty();
+                m_errorText.clear();
 
                 new_user_data newUser;
                 newUser.m_displayName = m_displayNameBuffer;
