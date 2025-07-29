@@ -548,9 +548,21 @@ auto workspace_widget::render_menu_implementation() -> void
 {
     if (ImGui::BeginMenu(s_fileMenuName))
     {
+        if (ImGui::MenuItem("Create New User..."))
+        {
+            get_app()->get_manager_by_class<workspace_manager>()->open_create_user_popup();
+        }
+
+        ImGui::Separator();
+
         if (ImGui::MenuItem("Close Workspace"))
         {
             get_app()->get_manager_by_class<workspace_manager>()->close_workspace();
+        }
+
+        if (ImGui::MenuItem("Logout..."))
+        {
+            get_app()->get_manager_by_class<workspace_manager>()->logout();
         }
         ImGui::EndMenu();
     }

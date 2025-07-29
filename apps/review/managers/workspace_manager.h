@@ -55,9 +55,11 @@ public:
     auto delete_comment(int64_t commentId) -> void;
 
     // Users
-    auto create_user(const new_user_data& newUser, std::optional<std::string> userToken) -> concurrencpp::result<tl::expected<bool, database_error>>;
+    auto open_create_user_popup() -> void;
+    auto create_user(const new_user_data newUser, std::optional<std::string> userToken) -> concurrencpp::result<tl::expected<bool, database_error>>;
     auto create_user_and_login(new_user_data newUser) -> concurrencpp::result<tl::expected<bool, database_error>>;
     auto login_user(login_request_data loginData) -> concurrencpp::result<tl::expected<bool, database_error>>;
+    auto logout() -> void;
 
 protected:
     auto init(gluten::app* app) -> void override;

@@ -335,7 +335,13 @@ auto workspace_manager::delete_comment(int64_t commentId) -> void
     m_database->delete_comment(commentId).get();
 }
 
-auto workspace_manager::create_user(const new_user_data& newUser, std::optional<std::string> userToken) -> concurrencpp::result<tl::expected<bool, database_error>> 
+auto workspace_manager::open_create_user_popup() -> void
+{
+    open_user_flow_popup();
+    m_userFlowPopup->set_flow_type(user_flow_type::new_user);
+}
+
+auto workspace_manager::create_user(const new_user_data newUser, std::optional<std::string> userToken) -> concurrencpp::result<tl::expected<bool, database_error>> 
 {
     co_await concurrencpp::resume_on(get_app()->thread_pool_executor());
 
@@ -380,4 +386,13 @@ auto workspace_manager::login_user(login_request_data loginData) -> concurrencpp
     {
         co_return tl::make_unexpected(loggedInUser.error());
     }
+}
+
+auto workspace_manager::logout() -> void
+{
+    m_userSettingsData->m_loggedInUser = logged_in_user_data();
+    m_workspaceWidget.reset();
+    m_userFlowPopup.reset();
+
+    open_user_flow_popup();
 }
