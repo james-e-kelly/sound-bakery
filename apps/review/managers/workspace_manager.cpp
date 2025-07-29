@@ -2,6 +2,7 @@
 
 #include "app/review_database.h"
 #include "widgets/intro_widget.h"
+#include "widgets/user_flow_popup.h"
 #include "widgets/workspace_widget.h"
 
 namespace
@@ -90,21 +91,24 @@ auto workspace_manager::open_workspace(const std::filesystem::path& workspaceFil
 
         m_userSettingsData->m_workspaceFilePath = workspaceFile;
 
-        m_database = std::make_shared<review_database>(std::filesystem::path(workspaceFile).replace_extension("db"));
+        m_database = std::make_shared<review_database>(std::filesystem::path(workspaceFile));
         m_database->open_workspace(workspaceFile.stem().string()).get();
         m_database->get_workspace_name().get();
 
-        m_workspaceWidget = get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class_to_root<workspace_widget>(false);
-
-        gluten::dockspace_refresh refresh =
-            get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->get_root_widget()->set_manual_layout();
-        refresh.assign_widget_to_node(rttr::type::get<workspace_widget>(), refresh.dockspaceID);
-    
-        load_projects_from_workspace();
-
-        if (!m_userSettingsData->m_selectedProjectName.empty())
+        if (m_database->user_table_is_empty().get() || m_userSettingsData->m_loggedInUser.m_sessionToken.empty())
         {
-            select_project(m_userSettingsData->m_selectedProjectName);
+            open_user_flow_popup();
+        }
+        else
+        {
+            if (m_database->user_is_logged_in_and_has_privilege_for_action(m_userSettingsData->m_loggedInUser.m_sessionToken, activity_type::review_created).get())
+            {
+                open_workspace_widget();
+            }
+            else
+            {
+                open_user_flow_popup();
+            }
         }
     }
 }
@@ -113,6 +117,38 @@ auto workspace_manager::load_projects_from_workspace() -> void
 {
     const std::vector<project_data> allProjects = m_database->get_all_projects().get();
     m_projects = std::set<project_data>(allProjects.cbegin(), allProjects.cend());
+}
+
+auto workspace_manager::open_workspace_widget() -> void 
+{
+    m_userFlowPopup.reset();
+    m_workspaceWidget = get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class_to_root<workspace_widget>(false);
+
+    gluten::dockspace_refresh refresh = get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->get_root_widget()->set_manual_layout();
+    refresh.assign_widget_to_node(rttr::type::get<workspace_widget>(), refresh.dockspaceID);
+
+    load_projects_from_workspace();
+
+    if (!m_userSettingsData->m_selectedProjectName.empty())
+    {
+        select_project(m_userSettingsData->m_selectedProjectName);
+    }
+}
+
+auto workspace_manager::open_user_flow_popup() -> void
+{
+    m_workspaceWidget.reset();
+    m_userFlowPopup = get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class_to_root<user_flow_popup>(false);
+    m_userFlowPopup->open_popup();
+
+    if (m_database->user_table_is_empty().get())
+    {
+        m_userFlowPopup->set_flow_type(user_flow_type::new_user_and_login);
+    }
+    else if (m_userSettingsData->m_loggedInUser.m_sessionToken.empty())
+    {
+        m_userFlowPopup->set_flow_type(user_flow_type::login_user);
+    }
 }
 
 auto workspace_manager::create_project(const std::string& projectName, const std::string& projectDescription) -> void
@@ -149,7 +185,7 @@ auto workspace_manager::create_workspace(const std::string& workspaceName, const
 {
 	if (!workspaceName.empty() && std::filesystem::exists(workspaceDirectory))
 	{
-        const std::filesystem::path workspaceFile = workspaceDirectory / (workspaceName + g_workspaceExtension);
+        const std::filesystem::path workspaceFile = workspaceDirectory / (workspaceName + g_workspaceExtensionWithDot);
 		std::filesystem::create_directories(workspaceDirectory);
 
         m_database = std::make_shared<review_database>(workspaceFile);
@@ -157,10 +193,7 @@ auto workspace_manager::create_workspace(const std::string& workspaceName, const
 
 		m_introWidget.reset();
 
-		m_workspaceWidget = get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class_to_root<workspace_widget>(false);
-
-		gluten::dockspace_refresh refresh = get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->get_root_widget()->set_manual_layout();
-		refresh.assign_widget_to_node(rttr::type::get<workspace_widget>(), refresh.dockspaceID);
+		open_user_flow_popup();
 	}
 }
 
@@ -305,5 +338,43 @@ auto workspace_manager::delete_comment(int64_t commentId) -> void
 
 auto workspace_manager::create_user(const new_user_data& newUser, std::optional<std::string> userToken) -> void 
 {
-    m_database->create_user(newUser, userToken.has_value() ? userToken.value() : std::string());
+    m_database->create_user(newUser, userToken.has_value() ? userToken.value() : std::string()).get();
+    m_userFlowPopup.reset();
+}
+
+auto workspace_manager::create_user_and_login(const new_user_data& newUser) -> bool
+{
+    new_user_data copiedNewUser = newUser;
+
+    if (m_database->user_table_is_empty().get())
+    {
+        copiedNewUser.m_requestedPrivileges = user_privileges::admin;
+    }
+
+    m_database->create_user(copiedNewUser, std::string()).get();
+
+    login_request_data loginRequest;
+    loginRequest.m_email            = newUser.m_email;
+    loginRequest.m_rawPassword      = newUser.m_rawPassword;
+
+    return login_user(loginRequest);
+}
+
+auto workspace_manager::login_user(const login_request_data& loginData) -> bool
+{
+    bool result = false;
+
+    const logged_in_user_data loggedInUser = m_database->login_user(loginData).get();
+
+    if (!loggedInUser.m_sessionToken.empty())
+    {
+        m_userSettingsData->m_loggedInUser = loggedInUser;
+
+        m_userFlowPopup.reset();
+        open_workspace_widget();
+
+        result = true;
+    }
+
+    return result;
 }

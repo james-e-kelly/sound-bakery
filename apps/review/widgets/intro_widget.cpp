@@ -29,8 +29,6 @@ auto intro_widget::render_window_implementation() -> void
 	gluten::text welcomeText("Welcome to Sound Check!", ImVec2(0.5f, 0.5f), gluten::element::anchor_preset::center_middle);
 	gluten::text secondText("To get started, create or open a workspace.", ImVec2(0.5f, 0.5f), gluten::element::anchor_preset::center_middle);
 
-	welcomeText.set_element_content_scale(1.5f);
-
 	centerColumnLayout.render_layout_element_pixels_vertical(&welcomeText, 100.f);
 	centerColumnLayout.render_layout_element_pixels_vertical(&secondText, 50.f);
 
@@ -66,8 +64,6 @@ auto intro_widget::render_window_implementation() -> void
 
 auto create_workspace_popup::render_popup() -> void
 {
-    ImGui::SetWindowFontScale(1.5f);
-
 	static constexpr std::size_t textBufferSize = 512;
 
 	static char workspaceNameBuffer[textBufferSize];
@@ -112,6 +108,4 @@ auto create_workspace_popup::render_popup() -> void
 	{
         close_popup();
 	}
-
-    ImGui::SetWindowFontScale(1.0f);
 }

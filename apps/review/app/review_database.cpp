@@ -31,7 +31,8 @@ namespace
             password BLOB NOT NULL,
             salt BLOB NOT NULL,
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-            privilege INT NOT NULL DEFAULT 0
+            privilege INT NOT NULL DEFAULT 0,
+            UNIQUE(email)
         );
     )sql";
 
@@ -545,12 +546,13 @@ auto review_database::create_user(new_user_data newUser, std::string userToken) 
                     g_hashMemLimit,
                     g_hashAlgorithm) == 0)
                 {
-                    SQLite::Statement insertUserStatement(m_database, "INSERT INTO users (display_name, title, email, password, salt) VALUES (?, ?, ?, ?, ?);");
+                    SQLite::Statement insertUserStatement(m_database, "INSERT INTO users (display_name, title, email, password, salt, privilege) VALUES (?, ?, ?, ?, ?, ?);");
                     insertUserStatement.bind(1, newUser.m_displayName);
                     insertUserStatement.bind(2, newUser.m_title);
                     insertUserStatement.bind(3, newUser.m_email);
                     insertUserStatement.bind(4, reinterpret_cast<char*>(hashBuffer));
                     insertUserStatement.bind(5, reinterpret_cast<char*>(saltBuffer));
+                    insertUserStatement.bind(6, (int)newUser.m_requestedPrivileges);
                     insertUserStatement.exec();
 
                     if (m_database.tableExists("activity"))
@@ -577,12 +579,13 @@ auto review_database::user_table_is_empty() const -> concurrencpp::result<bool>
     if (m_database.tableExists("users"))
     {
         SQLite::Statement getsUsersCountStatement(m_database, "SELECT COUNT(id) FROM users;");
-        getsUsersCountStatement.exec();
-
-        usersCount = getsUsersCountStatement.getColumn(0).getInt64();
+        if (getsUsersCountStatement.executeStep())
+        {
+            usersCount = getsUsersCountStatement.getColumn(0).getInt64();
+        }
     }
 
-    co_return usersCount > 0;
+    co_return usersCount == 0;
 }
 
 auto review_database::user_is_logged_in_and_has_privilege_for_action(std::string userToken, activity_type activity) -> concurrencpp::result<bool>
@@ -631,24 +634,21 @@ auto review_database::login_user(login_request_data loginRequest) -> concurrencp
 {
     co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
 
-    logged_in_user_data result = {0};
+    logged_in_user_data result;
 
     if (m_database.tableExists("users"))
     {
-        SQLite::Statement statement(m_database, "SELECT id, password_hash, salt, privilege, display_name, title FROM users WHERE email = ?;");
+        SQLite::Statement statement(m_database, "SELECT id, password, salt, privilege, display_name, title FROM users WHERE email = ?;");
         statement.bind(1, loginRequest.m_email);
 
         if (statement.executeStep())
         {
-            const int64_t userId           = statement.getColumn(1).getInt64();
-            const std::string passwordHash = statement.getColumn(2).getString();
-            const std::string passwordSalt = statement.getColumn(3).getString();
-            const user_privileges privilege = (user_privileges)statement.getColumn(4).getInt();
-            const std::string displayName   = statement.getColumn(5).getString();
-            const std::string title         = statement.getColumn(6).getString();
-
-            BOOST_ASSERT(passwordHash.length() == crypto_box_SEEDBYTES);
-            BOOST_ASSERT(passwordSalt.length() == crypto_pwhash_SALTBYTES);
+            const int64_t userId           = statement.getColumn(0).getInt64();
+            const std::string passwordHash = statement.getColumn(1).getString();
+            const std::string passwordSalt = statement.getColumn(2).getString();
+            const user_privileges privilege = (user_privileges)statement.getColumn(3).getInt();
+            const std::string displayName   = statement.getColumn(4).getString();
+            const std::string title         = statement.getColumn(5).getString();
 
             unsigned char hashBuffer[g_passwordHashSize] = { 0 };
 

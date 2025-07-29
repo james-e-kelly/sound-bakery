@@ -2,8 +2,6 @@
 
 #include "pch.h"
 
-#include "gluten/data/data_source.h"
-
 #include "data/activity_data.h"
 #include "data/comment_data.h"
 #include "data/user_data.h"
@@ -14,6 +12,7 @@
 
 class intro_widget;
 class review_database;
+class user_flow_popup;
 class workspace_widget;
 
 class workspace_manager : public gluten::manager	
@@ -56,6 +55,8 @@ public:
 
     // Users
     auto create_user(const new_user_data& newUser, std::optional<std::string> userToken) -> void;
+    auto create_user_and_login(const new_user_data& newUser) -> bool;
+    auto login_user(const login_request_data& loginData) -> bool;
 
 protected:
     auto init(gluten::app* app) -> void override;
@@ -64,10 +65,14 @@ protected:
 private:
     static auto file_is_workspace(const std::filesystem::path& file) -> bool;
 
+    auto open_workspace_widget() -> void;
+    auto open_user_flow_popup() -> void;
+
     auto load_projects_from_workspace() -> void;
 
     std::shared_ptr<intro_widget> m_introWidget;
     std::shared_ptr<workspace_widget> m_workspaceWidget;
+    std::shared_ptr<user_flow_popup> m_userFlowPopup;
 
     gluten::data_source<user_settings_data> m_userSettingsData;
     std::set<project_data> m_projects;

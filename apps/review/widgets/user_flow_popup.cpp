@@ -1,0 +1,126 @@
+#include "user_flow_popup.h"
+
+#include "managers/workspace_manager.h"
+
+#include "sodium.h"
+
+auto user_flow_popup::start_implementation() -> void
+{
+    sodium_mlock(m_passwordBuffer, g_rawPasswordSize);
+}
+
+auto user_flow_popup::end_implementation() -> void
+{
+    sodium_munlock(m_passwordBuffer, g_rawPasswordSize);
+}
+
+auto user_flow_popup::set_flow_type(user_flow_type type) -> void { m_type = type; }
+
+auto user_flow_popup::render_popup() -> void
+{
+    std::shared_ptr<workspace_manager> workspaceManager = get_app()->get_manager_by_class<workspace_manager>();
+
+    if (!workspaceManager)
+    {
+        return;
+    }
+
+    ImGui::InputTextWithHint("Email", "john.doe@domain.com", m_emailBuffer, textBufferSize);
+    if (ImGui::InputText("Password", m_passwordBuffer, g_rawPasswordSize, ImGuiInputTextFlags_Password))
+    {
+        m_wrongPassword = false;
+    }
+
+    if (m_type != user_flow_type::login_user)
+    {
+        ImGui::Separator();
+
+        ImGui::InputTextWithHint("Display Name", "John", m_displayNameBuffer, textBufferSize);
+        ImGui::InputTextWithHint("Title", "Sound Designer", m_titleBuffer, textBufferSize);
+        
+    }
+
+    const bool emailIsFilled = m_emailBuffer[0] != '\0';
+    const bool passwordIsFilled = m_passwordBuffer[0] != '\0';
+    const bool displayNameIsFilled = m_displayNameBuffer[0] != '\0';
+    const bool titleIsFilled = m_titleBuffer[0] != '\0';
+
+    const bool detailsAreValid = emailIsFilled && passwordIsFilled;
+    const bool extraDetailsAreValid = displayNameIsFilled && titleIsFilled;
+
+    switch (m_type)
+    {
+        case user_flow_type::login_user:
+            ImGui::BeginDisabled(!detailsAreValid);
+            break;
+        case user_flow_type::new_user:
+        case user_flow_type::new_user_and_login:
+            ImGui::BeginDisabled(!detailsAreValid || !extraDetailsAreValid);
+            break;
+        default:
+            break;
+    }
+
+    switch (m_type)
+    {
+        case user_flow_type::login_user:
+            if (ImGui::Button("Login"))
+            {
+                login_request_data loginRequest;
+                loginRequest.m_email = m_emailBuffer;
+                std::memcpy(loginRequest.m_rawPassword.data(), m_passwordBuffer, g_rawPasswordSize);
+
+                if (!workspaceManager->login_user(loginRequest))
+                {
+                    m_wrongPassword = true;
+                }
+            }
+            break;
+        case user_flow_type::new_user:
+            if (ImGui::Button("Create"))
+            {
+                new_user_data newUser;
+                newUser.m_displayName = m_displayNameBuffer;
+                newUser.m_email       = m_emailBuffer;
+                std::memcpy(newUser.m_rawPassword.data(), m_passwordBuffer, g_rawPasswordSize);
+                newUser.m_title       = m_titleBuffer;
+                newUser.m_requestedPrivileges = m_privileges;
+
+                workspaceManager->create_user(newUser, m_userSettings->m_loggedInUser.m_sessionToken);
+            }
+            break;
+        case user_flow_type::new_user_and_login:
+            if (ImGui::Button("Create"))
+            {
+                new_user_data newUser;
+                newUser.m_displayName = m_displayNameBuffer;
+                newUser.m_email       = m_emailBuffer;
+                std::memcpy(newUser.m_rawPassword.data(), m_passwordBuffer, g_rawPasswordSize);
+                newUser.m_title               = m_titleBuffer;
+                newUser.m_requestedPrivileges = m_privileges;
+
+                if (!workspaceManager->create_user_and_login(newUser))
+                {
+                    m_wrongPassword = true;
+                }
+            }
+            break;
+        default:
+            break;
+    }
+
+    ImGui::EndDisabled();
+
+    ImGui::SameLine();
+
+    if (ImGui::Button("Cancel"))
+    {
+        close_popup();
+    }
+
+    if (m_wrongPassword)
+    {
+        ImGui::SameLine();
+        ImGui::TextUnformatted("Incorrect password!");
+    }
+}

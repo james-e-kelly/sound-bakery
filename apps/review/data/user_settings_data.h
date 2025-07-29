@@ -2,6 +2,8 @@
 
 #include "pch.h"
 
+#include "data/user_data.h"
+
 /**
  * @brief Cached user settings like the open workspace
  *
@@ -12,6 +14,8 @@ struct user_settings_data
     std::filesystem::path m_workspaceFilePath;  //< Top most file that will be used to find reviews and data in
                                                 // subfolders
     std::string m_selectedProjectName;
+
+    logged_in_user_data m_loggedInUser;
 
     auto workspace_exists() const -> bool
     {
@@ -25,7 +29,12 @@ struct user_settings_data
 
         if (version >= review_app_save_selected_project)
         {
-            archive& boost::serialization::make_nvp("SelectedProject", m_selectedProjectName);
+            archive & boost::serialization::make_nvp("SelectedProject", m_selectedProjectName);
+        }
+
+        if (version >= review_app_user_tokens)
+        {
+            archive & boost::serialization::make_nvp("UserLogin", m_loggedInUser);
         }
     }
 };

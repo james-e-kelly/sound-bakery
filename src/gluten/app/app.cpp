@@ -281,11 +281,12 @@ retry:
             break;
     }
 
-    assert(std::filesystem::exists(outPath));
+    if (outPath && std::filesystem::exists(outPath))
+    {
+        result = outPath;
+        NFD_FreePath(outPath);
+    }
 
-    result = outPath;
-
-    NFD_FreePath(outPath);
     NFD_Quit();
 
     return result;

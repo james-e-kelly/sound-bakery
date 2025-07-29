@@ -33,6 +33,13 @@ struct logged_in_user_data
     std::string m_email;
     std::string m_sessionToken;                             //< Sent to the server for authentication
     user_privileges m_privileges = user_privileges::guest;  //< User side privileges for quickly changing the UI. But the server will still authenticate
+
+    template <class archive_class>
+    auto serialize(archive_class& archive, const unsigned int version) -> void
+    {
+        archive & boost::serialization::make_nvp("token", m_sessionToken);
+        archive & boost::serialization::make_nvp("email", m_email);
+    }
 };
 
 /**
