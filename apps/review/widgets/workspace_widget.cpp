@@ -562,6 +562,7 @@ auto workspace_widget::render_content() -> void
             gluten::text userDisplayNameText(selectedUser.m_displayName, ImVec2(), gluten::anchor_preset::stretch_full);
             gluten::text userTitleText(selectedUser.m_title, ImVec2(), gluten::anchor_preset::stretch_full);
             gluten::text userEmailText(selectedUser.m_email, ImVec2(), gluten::anchor_preset::stretch_full);
+            gluten::text userRoleText(get_user_privileges_string(selectedUser.m_privileges), ImVec2(), gluten::anchor_preset::stretch_full);
             gluten::button editUserButton("Edit " ICON_LC_PENCIL);
             gluten::button changePasswordButton("Change Password " ICON_LC_PENCIL);
             gluten::button deleteUserButton("Delete " ICON_LC_USER_ROUND_X);
@@ -581,6 +582,7 @@ auto workspace_widget::render_content() -> void
             userDisplayNameText.set_element_padding(ImVec2(paddingSize, 0.0f));
             userTitleText.set_element_padding(ImVec2(paddingSize, 0.0f));
             userEmailText.set_element_padding(ImVec2(paddingSize, 0.0f));
+            userRoleText.set_element_padding(ImVec2(paddingSize, 0.0f));
             editUserButton.set_element_translation(ImVec2(paddingSize, 0.0f));
             changePasswordButton.set_element_translation(ImVec2(paddingSize, 0.0f));
             deleteUserButton.set_element_translation(ImVec2(paddingSize, 0.0f));
@@ -590,12 +592,20 @@ auto workspace_widget::render_content() -> void
             leftUserPanel.render_layout_element_pixels_vertical(&userDisplayNameText, textSize);
             leftUserPanel.render_layout_element_pixels_vertical(&userTitleText, textSize);
             leftUserPanel.render_layout_element_pixels_vertical(&userEmailText, textSize);
+            leftUserPanel.render_layout_element_pixels_vertical(&userRoleText, textSize);
+
+            ImGui::BeginDisabled(m_userSettings->m_loggedInUser.m_email != selectedUser.m_email && m_userSettings->m_loggedInUser.m_privileges != user_privileges::admin);
             leftUserPanel.render_layout_element_pixels_vertical(&editUserButton, buttonSize);
-            leftUserPanel.render_layout_element_pixels_vertical(&changePasswordButton, buttonSize);
 
-            gluten::imgui::scoped_color_stack deleteButtonColors(ImGuiCol_Button, gluten::theme::red60, ImGuiCol_ButtonHovered, gluten::theme::red50);
+            if (m_userSettings->m_loggedInUser.m_email == selectedUser.m_email || m_userSettings->m_loggedInUser.m_privileges == user_privileges::admin)
+            {
+                leftUserPanel.render_layout_element_pixels_vertical(&changePasswordButton, buttonSize);
 
-            leftUserPanel.render_layout_element_pixels_vertical(&deleteUserButton, buttonSize);
+                gluten::imgui::scoped_color_stack deleteButtonColors(ImGuiCol_Button, gluten::theme::red60, ImGuiCol_ButtonHovered, gluten::theme::red50, ImGuiCol_ButtonActive, gluten::theme::red70);
+                leftUserPanel.render_layout_element_pixels_vertical(&deleteUserButton, buttonSize);
+            }
+
+            ImGui::EndDisabled();
         }
     }
     ImGui::EndChild();
