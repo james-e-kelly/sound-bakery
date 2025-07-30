@@ -108,7 +108,6 @@ namespace
                 co_await concurrencpp::resume_on(review_app::get()->get_tick_executor());
 
                 std::unique_ptr<gluten::image> avatarImage = std::make_unique<gluten::image>(body.c_str(), body.length());
-                avatarImage->set_element_anchor_preset(gluten::anchor_preset::stretch_full);
                 avatarImage->set_render_type(render);
                 co_return std::move(avatarImage);
             }

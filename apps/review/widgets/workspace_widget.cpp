@@ -214,6 +214,7 @@ auto workspace_widget::render_list() -> void
                         user_element userElement(user);
                         if (itemsLayout.render_layout_element_pixels_vertical(&userElement, leftToolbarButtonHeight))
                         {
+                            workspaceManager->select_user(user.m_email);
                         }
                     }
                     break;
@@ -245,6 +246,7 @@ auto workspace_widget::render_content() -> void
     {
         const project_data& selectedProject = workspaceManager->get_selected_project();
         const review_data& selectedReview   = workspaceManager->get_selected_review();
+        const user_data& selectedUser       = workspaceManager->get_selected_user();
 
         gluten::layout verticalLayout(gluten::layout::layout_type::top_to_bottom, gluten::element::anchor_preset::stretch_full);
         verticalLayout.render_window();
@@ -547,6 +549,28 @@ auto workspace_widget::render_content() -> void
                 }
             }
             ImGui::EndChild();
+        }
+        else if (!selectedUser.m_email.empty())
+        {
+            constexpr float avatarSize = 300.0f;
+            constexpr float paddingSize = 10.0f;
+
+            gluten::layout leftUserPanel(gluten::layout_type::top_to_bottom, gluten::anchor_preset::stretch_left);
+            gluten::anchor_info& layoutAnchor = leftUserPanel.get_element_anchor();
+            layoutAnchor.maxOffset.x          = avatarSize;
+            leftUserPanel.set_element_translation(ImVec2(paddingSize, 0.0f));
+            leftUserPanel.set_element_background_color(gluten::theme::carbon_g100::layer02);
+            leftUserPanel.set_layout_spacing(paddingSize);
+            leftUserPanel.render(mainContentParent.get_element_rect());
+
+            inline_user_avatar_element userAvatar(selectedUser.m_email);
+            gluten::anchor_info& anchor = userAvatar.get_element_anchor();
+            anchor.min                  = anchor.max = ImVec2(0, 0);
+            anchor.maxOffset            = ImVec2(avatarSize, avatarSize);
+            userAvatar.set_element_padding(ImVec2(paddingSize, paddingSize));
+            userAvatar.set_avatar_render(gluten::image_render::square);
+
+            leftUserPanel.render_layout_element_pixels_vertical(&userAvatar, avatarSize);
         }
     }
     ImGui::EndChild();

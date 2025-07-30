@@ -16,6 +16,44 @@ class review_database;
 class user_flow_popup;
 class workspace_widget;
 
+
+template <typename data_type, typename key_type = int64_t>
+struct cache
+{
+    [[nodiscard]] auto contains(const key_type& key) const -> bool { return m_cache.contains(key); }
+    [[nodiscard]] auto cache_count_valid(const key_type& key, const std::size_t& currentDataSize) const -> bool
+    {
+        bool result = false;
+
+        if (contains(key))
+        {
+            if (m_cache.at(key).size() == currentDataSize)
+            {
+                result = true;
+            }
+        }
+
+        return result;
+    }
+    [[nodiscard]] auto get_cache(const key_type& key) const -> const std::vector<data_type>&
+    {
+        if (contains(key))
+        {
+            return m_cache.at(key);
+        }
+        static std::vector<data_type> invalid;
+        return invalid;
+    }
+
+    auto erase_cache(const key_type& key) -> void { m_cache.erase(key); }
+    auto add_cache(const key_type& key, const std::vector<data_type>& data) -> void
+    {
+        m_cache.insert({key, std::move(data)});
+    }
+
+    std::unordered_map<key_type, std::vector<data_type>> m_cache;
+};
+
 class workspace_manager : public gluten::manager	
 {
 public:
@@ -62,8 +100,10 @@ public:
     auto create_user_and_login(new_user_data newUser) -> concurrencpp::result<tl::expected<bool, database_error>>;
     auto login_user(login_request_data loginData) -> concurrencpp::result<tl::expected<bool, database_error>>;
     auto logout() -> void;
-    auto get_all_users() const -> const std::vector<user_data>&;
+    auto get_all_users() -> const std::vector<user_data>&;
     auto get_users_count() const -> std::size_t;
+    auto get_selected_user() const -> const user_data&;
+    auto select_user(const std::string& email) -> void;
 
 protected:
     auto init(gluten::app* app) -> void override;
@@ -86,5 +126,8 @@ private:
     std::set<review_data> m_reviews;
     project_data m_selectedProject;
     review_data m_selectedReview;
+    user_data m_selectedUser;
     std::shared_ptr<review_database> m_database;
+
+    cache<user_data> m_usersCache;
 };

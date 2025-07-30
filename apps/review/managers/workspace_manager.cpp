@@ -13,43 +13,6 @@ namespace
     constexpr const char* g_projectFileExtension		= "project";
 }
 
-template <typename data_type, typename key_type = int64_t>
-struct cache
-{
-    [[nodiscard]] auto contains(const key_type& key) const -> bool { return m_cache.contains(key); }
-    [[nodiscard]] auto cache_count_valid(const key_type& key, const std::size_t& currentDataSize) const -> bool
-    {
-        bool result = false;
-
-        if (contains(key))
-        {
-            if (m_cache.at(key).size() == currentDataSize)
-            {
-                result = true;
-            }
-        }
-
-        return result;
-    }
-    [[nodiscard]] auto get_cache(const key_type& key) const -> const std::vector<data_type>&
-    {
-        if (contains(key))
-        {
-            return m_cache.at(key);
-        }
-        static std::vector<data_type> invalid;
-        return invalid;
-    }
-
-    auto erase_cache(const key_type& key) -> void { m_cache.erase(key); }
-    auto add_cache(const key_type& key, const std::vector<data_type>& data) -> void
-    {
-        m_cache.insert({key, std::move(data)});
-    }
-
-    std::unordered_map<key_type, std::vector<data_type>> m_cache;
-};
-
 workspace_manager::~workspace_manager()
 {
 }
@@ -416,23 +379,21 @@ auto workspace_manager::logout() -> void
     open_user_flow_popup();
 }
 
-auto workspace_manager::get_all_users() const -> const std::vector<user_data>&
+auto workspace_manager::get_all_users() -> const std::vector<user_data>&
 {
-    static cache<user_data> s_cachedUsers;
-
-    if (!s_cachedUsers.cache_count_valid(0, get_users_count()))
+    if (!m_usersCache.cache_count_valid(0, get_users_count()))
     {
-        s_cachedUsers.erase_cache(0);
+        m_usersCache.erase_cache(0);
 
         const tl::expected<std::vector<user_data>, database_error> result = m_database->get_all_users(m_userSettingsData->m_loggedInUser.m_sessionToken).get();
 
         if (result.has_value())
         {
-            s_cachedUsers.add_cache(0, result.value());
+            m_usersCache.add_cache(0, result.value());
         }
     }
 
-    return s_cachedUsers.get_cache(0);
+    return m_usersCache.get_cache(0);
 }
 
 auto workspace_manager::get_users_count() const -> std::size_t
@@ -445,4 +406,27 @@ auto workspace_manager::get_users_count() const -> std::size_t
     }
 
     return 0U;
+}
+
+auto workspace_manager::get_selected_user() const -> const user_data&
+{
+    return m_selectedUser;
+}
+
+auto workspace_manager::select_user(const std::string& email) -> void
+{
+    if (email.empty())
+    {
+        m_selectedUser = user_data();
+        return;
+    }
+
+    for (const auto& user : m_usersCache.get_cache(0))
+    {
+        if (user.m_email == email)
+        {
+            m_selectedUser = user;
+            break;
+        }
+    }
 }
