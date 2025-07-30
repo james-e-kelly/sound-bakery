@@ -45,6 +45,15 @@ struct logged_in_user_data
     }
 };
 
+struct user_data
+{
+    std::string m_displayName;
+    std::string m_title;
+    std::string m_email;
+    std::string m_createdAt;
+    user_privileges m_privileges = user_privileges::guest;
+};
+
 /**
  * @note Raw password is memory locked and wiped during destruction
  */

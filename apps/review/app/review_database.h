@@ -63,7 +63,10 @@ public:
     auto create_user(new_user_data newUser, std::string userToken) -> concurrencpp::result<tl::expected<bool, database_error>>;
     auto user_table_is_empty() const -> concurrencpp::result<bool>; //< If the table is empty, we allow an admin account to be created
     auto user_is_logged_in_and_has_privilege_for_action(std::string userToken, activity_type activity) -> concurrencpp::result<bool>;
+    auto user_is_logged_in_and_has_privilege(std::string userToken, user_privileges privilege) -> concurrencpp::result<bool>;
     auto login_user(login_request_data loginRequest) -> concurrencpp::result<tl::expected<logged_in_user_data, database_error>>;
+    auto get_users_count(std::string userToken) -> concurrencpp::result<tl::expected<std::size_t, database_error>>;
+    auto get_all_users(std::string userToken) -> concurrencpp::result<tl::expected<std::vector<user_data>, database_error>>;
 
 private:
     SQLite::Database m_database;

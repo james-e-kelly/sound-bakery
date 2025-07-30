@@ -415,3 +415,34 @@ auto workspace_manager::logout() -> void
 
     open_user_flow_popup();
 }
+
+auto workspace_manager::get_all_users() const -> const std::vector<user_data>&
+{
+    static cache<user_data> s_cachedUsers;
+
+    if (!s_cachedUsers.cache_count_valid(0, get_users_count()))
+    {
+        s_cachedUsers.erase_cache(0);
+
+        const tl::expected<std::vector<user_data>, database_error> result = m_database->get_all_users(m_userSettingsData->m_loggedInUser.m_sessionToken).get();
+
+        if (result.has_value())
+        {
+            s_cachedUsers.add_cache(0, result.value());
+        }
+    }
+
+    return s_cachedUsers.get_cache(0);
+}
+
+auto workspace_manager::get_users_count() const -> std::size_t
+{
+    const tl::expected<std::size_t, database_error> result = m_database->get_users_count(m_userSettingsData->m_loggedInUser.m_sessionToken).get();
+
+    if (result.has_value())
+    {
+        return result.value();
+    }
+
+    return 0U;
+}

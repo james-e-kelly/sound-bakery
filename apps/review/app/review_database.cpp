@@ -605,38 +605,47 @@ auto review_database::user_is_logged_in_and_has_privilege_for_action(std::string
 {
     co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
 
+    user_privileges requiredPriveleges = user_privileges::admin;
+
+    switch (activity)
+    {
+    case activity_type::project_created:
+    case activity_type::project_edited:
+    case activity_type::project_deleted:
+    case activity_type::user_added:
+    case activity_type::user_edited:
+    case activity_type::user_deleted:
+        requiredPriveleges = user_privileges::admin;
+        break;
+    case activity_type::review_created:
+    case activity_type::review_edited:
+    case activity_type::review_file_deleted:
+    case activity_type::review_files_edited:
+    case activity_type::comment_added:
+    case activity_type::comment_edited:
+    case activity_type::comment_deleted:
+        requiredPriveleges = user_privileges::user; // Users can do all these actions but will need additional checks like ensuring they only delete their own review
+        break;
+    default:
+        break;
+    }
+
+    co_return co_await user_is_logged_in_and_has_privilege(userToken, requiredPriveleges);
+}
+
+auto review_database::user_is_logged_in_and_has_privilege(std::string userToken, user_privileges privilege) -> concurrencpp::result<bool>
+{
+    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
+
     bool userWithPrivelegesIsLoggedIn = false;
 
     if (m_database.tableExists("sessions"))
     {
-        user_privileges requiredPriveleges = user_privileges::admin;
-
-        switch (activity)
-        {
-        case activity_type::project_created:
-        case activity_type::project_edited:
-        case activity_type::project_deleted:
-        case activity_type::user_added:
-        case activity_type::user_edited:
-        case activity_type::user_deleted:
-            requiredPriveleges = user_privileges::admin;
-            break;
-        case activity_type::review_created:
-        case activity_type::review_edited:
-        case activity_type::review_file_deleted:
-        case activity_type::review_files_edited:
-        case activity_type::comment_added:
-        case activity_type::comment_edited:
-        case activity_type::comment_deleted:
-            requiredPriveleges = user_privileges::user; // Users can do all these actions but will need additional checks like ensuring they only delete their own review
-            break;
-        default:
-            break;
-        }
-
-        SQLite::Statement statement(m_database, "SELECT users.id, users.privilege FROM sessions JOIN users ON users.id = sessions.user_id WHERE sessions.token = ? AND sessions.expires_at > strftime('%s', 'now') AND users.privilege >= ?;");
+        SQLite::Statement statement(m_database,
+            "SELECT users.id, users.privilege FROM sessions JOIN users ON users.id = sessions.user_id WHERE "
+            "sessions.token = ? AND sessions.expires_at > strftime('%s', 'now') AND users.privilege >= ?;");
         statement.bind(1, userToken);
-        statement.bind(2, (int)requiredPriveleges);
+        statement.bind(2, (int)privilege);
         userWithPrivelegesIsLoggedIn = statement.executeStep();
     }
 
@@ -720,6 +729,69 @@ auto review_database::login_user(login_request_data loginRequest) -> concurrencp
         newSessionStatement.exec();
 
         result.m_sessionToken = base64SessionToken;
+    }
+
+    co_return result;
+}
+
+auto review_database::get_users_count(std::string userToken) -> concurrencpp::result<tl::expected<std::size_t, database_error>>
+{
+    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
+
+    if (co_await user_is_logged_in_and_has_privilege(userToken, user_privileges::user))
+    {
+        if (m_database.tableExists("users"))
+        {
+            SQLite::Statement statement(m_database, "SELECT id FROM users");
+
+            if (statement.executeStep())
+            {
+                co_return statement.getColumn(0).getUInt();
+            }
+        }
+        else
+        {
+            co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::missing_table, .m_errorMessage = "No users table"});
+        }
+    }
+    else
+    {
+        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::unauthorized, .m_errorMessage = "Not authorized to view users"});
+    }
+
+    co_return 0U;
+}
+
+auto review_database::get_all_users(std::string userToken) -> concurrencpp::result<tl::expected<std::vector<user_data>, database_error>>
+{
+    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
+    
+    std::vector<user_data> result;
+
+    if (co_await user_is_logged_in_and_has_privilege(userToken, user_privileges::user))
+    {
+        if (m_database.tableExists("users"))
+        {
+            SQLite::Statement statement(m_database, "SELECT display_name, title, email, timestamp, privilege FROM users");
+
+            while (statement.executeStep())
+            {
+                user_data user;
+                user.m_displayName = statement.getColumn(0).getText();
+                user.m_email       = statement.getColumn(1).getText();
+                user.m_createdAt   = statement.getColumn(2).getText();
+                user.m_privileges  = (user_privileges)statement.getColumn(3).getInt();
+                result.push_back(std::move(user));
+            }
+        }
+        else
+        {
+            co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::missing_table, .m_errorMessage = "No users table"});
+        }
+    }
+    else
+    {
+        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::unauthorized, .m_errorMessage = "Not authorized to view users"});
     }
 
     co_return result;

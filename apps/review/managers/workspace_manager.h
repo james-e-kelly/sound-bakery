@@ -62,6 +62,8 @@ public:
     auto create_user_and_login(new_user_data newUser) -> concurrencpp::result<tl::expected<bool, database_error>>;
     auto login_user(login_request_data loginData) -> concurrencpp::result<tl::expected<bool, database_error>>;
     auto logout() -> void;
+    auto get_all_users() const -> const std::vector<user_data>&;
+    auto get_users_count() const -> std::size_t;
 
 protected:
     auto init(gluten::app* app) -> void override;

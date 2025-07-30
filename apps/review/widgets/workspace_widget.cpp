@@ -44,12 +44,10 @@ auto workspace_widget::render_window_implementation() -> void
     switch (m_activeView)
     {
         case workspace_widget::reviews_view:
+        case workspace_widget::users_view:
             render_list();
             ImGui::SameLine();
             render_content();
-            break;
-        case workspace_widget::users_view:
-            ImGui::TextUnformatted("Users");
             break;
         default:
             break;
@@ -64,16 +62,39 @@ auto workspace_widget::render_list() -> void
 
     static constexpr float buttonOffset = 20.0f;
 
+    std::shared_ptr<workspace_manager> workspaceManager = m_workspaceManager.lock();
+
+    if (!workspaceManager)
+    {
+        return;
+    }
+
     if (ImGui::BeginChild("ItemsPanel", ImVec2(itemListWidth, 0), ImGuiChildFlags_ResizeX))
     {
         gluten::element topToolbar(gluten::element::anchor_preset::stretch_top);
         topToolbar.get_element_anchor().maxOffset.y = leftToobarWidth;
         topToolbar.render_window();
-
-        const bool listingProjects = !get_app()->get_manager_by_class<workspace_manager>()->has_selected_project();
+        
+        const bool listingProjects = !workspaceManager->has_selected_project();
         const bool listingReviews  = !listingProjects;
 
-        gluten::text titleText(listingProjects ? "Projects" : "Reviews", ImVec2(0.5f, 0.5f), gluten::element::anchor_preset::center_middle);
+        std::string titleString;
+
+        switch (m_activeView)
+        {
+            case workspace_widget::reviews_view:
+                titleString = listingProjects ? "Projects" : "Reviews";
+                break;
+            case workspace_widget::users_view:
+                titleString = "Users";
+                break;
+            case workspace_widget::settings_view:
+                break;
+            default:
+                break;
+        }
+
+        gluten::text titleText(titleString, ImVec2(0.5f, 0.5f), gluten::element::anchor_preset::center_middle);
         titleText
             .set_font(gluten::fonts::title)
             .set_element_content_font_size(gluten::g_baseFontSize * 2.0f)
@@ -110,7 +131,7 @@ auto workspace_widget::render_list() -> void
         {
             if (backButton.render(topToolbar.get_element_rect()))
             {
-                get_app()->get_manager_by_class<workspace_manager>()->select_project({});
+                workspaceManager->select_project({});
             }
         }
 
@@ -148,27 +169,47 @@ auto workspace_widget::render_list() -> void
             itemsLayout.set_layout_spacing(2.0f);
             itemsLayout.render_window();
 
-            if (listingProjects)
+            switch (m_activeView)
             {
-                for (const auto& project : get_app()->get_manager_by_class<workspace_manager>()->get_projects())
-                {
-                    project_element projectElement(project.m_projectName, project.m_projectDescription, 2, 5);
-                    if (itemsLayout.render_layout_element_pixels_vertical(&projectElement, leftToolbarButtonHeight))
+                case workspace_widget::reviews_view:
+                    if (listingProjects)
                     {
-                        get_app()->get_manager_by_class<workspace_manager>()->select_project(project.m_projectName);
+                        for (const auto& project : workspaceManager->get_projects())
+                        {
+                            project_element projectElement(project.m_projectName, project.m_projectDescription, 2, 5);
+                            if (itemsLayout.render_layout_element_pixels_vertical(&projectElement,
+                                                                                  leftToolbarButtonHeight))
+                            {
+                                workspaceManager->select_project(project.m_projectName);
+                            }
+                        }
                     }
-                }
-            }
-            else if (listingReviews)
-            {
-                for (const auto& review : get_app()->get_manager_by_class<workspace_manager>()->get_all_reviews())
-                {
-                    review_element reviewElement(review);
-                    if (itemsLayout.render_layout_element_pixels_vertical(&reviewElement, leftToolbarButtonHeight))
+                    else if (listingReviews)
                     {
-                        get_app()->get_manager_by_class<workspace_manager>()->select_review(review.m_reviewId);
+                        for (const auto& review : workspaceManager->get_all_reviews())
+                        {
+                            review_element reviewElement(review);
+                            if (itemsLayout.render_layout_element_pixels_vertical(&reviewElement,
+                                                                                  leftToolbarButtonHeight))
+                            {
+                                workspaceManager->select_review(review.m_reviewId);
+                            }
+                        }
                     }
-                }
+                    break;
+                case workspace_widget::users_view:
+                    for (const auto& user : workspaceManager->get_all_users())
+                    {
+                        gluten::text userText(user.m_displayName);
+                        if (itemsLayout.render_layout_element_pixels_vertical(&userText, leftToolbarButtonHeight))
+                        {
+                        }
+                    }
+                    break;
+                case workspace_widget::settings_view:
+                    break;
+                default:
+                    break;
             }
         }
         ImGui::EndChild();
