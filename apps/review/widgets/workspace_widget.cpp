@@ -285,7 +285,7 @@ auto workspace_widget::render_content() -> void
         rightPanelBackground
             .set_layout_spacing(ImGui::GetStyle().FramePadding.y)
             .set_element_background_color(gluten::theme::carbon_g100::fieldHover03);
-        contentAndRightPanelLayout.render_layout_element_pixels_horizontal(&rightPanelBackground, rightPanelWidth);
+        contentAndRightPanelLayout.render_layout_element_pixels_horizontal(selectedUser.m_email.empty() ? &rightPanelBackground : nullptr, rightPanelWidth);
 
         gluten::background mainContentParent;
         contentAndRightPanelLayout.render_layout_element_remaining(&mainContentParent);
@@ -619,18 +619,21 @@ auto workspace_widget::render_left_toolbar() -> void
         {
             m_activeView = reviews_view;
             workspaceManager->select_project({});
+            workspaceManager->select_user({});
         }
 
         if (buttonsLayout.render_layout_element_pixels_vertical(&usersButton, leftToolbarButtonHeight))
         {
             m_activeView = users_view;
             workspaceManager->select_project({});
+            workspaceManager->select_user({});
         }
 
         if (buttonsLayout.render_layout_element_pixels_vertical(&settingsButton, leftToolbarButtonHeight))
         {
             m_activeView = settings_view;
             workspaceManager->select_project({});
+            workspaceManager->select_user({});
         }
     }
     ImGui::EndChild();
