@@ -278,8 +278,9 @@ auto workspace_widget::render_content() -> void
                 .set_element_padding(ImGui::GetStyle().FramePadding);
             innerDescriptionBox.render(descriptionBox.get_element_rect());
 
-            gluten::text titleText(fmt::format("{} {}", ICON_LC_VOLUME_2, selectedReview.m_reviewName).c_str(), ImVec2(0.0f, 0.0f), gluten::element::anchor_preset::stretch_full);
+            gluten::text titleText(fmt::format("{}", selectedReview.m_reviewName).c_str(), ImVec2(0.0f, 0.0f), gluten::element::anchor_preset::stretch_full);
             titleText
+                .set_url(selectedReview.m_reviewTaskUrl)
                 .set_font(gluten::fonts::title_lucide_icons)
                 .set_element_content_font_size(gluten::g_baseFontSize * 1.5f);
             innerDescriptionBox.render_layout_element_percent_vertical(&titleText, 0.3f);

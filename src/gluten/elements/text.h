@@ -15,6 +15,7 @@ namespace gluten
 
         auto set_text(const std::string& displayText) -> text&;
         auto set_font(const fonts& font) -> text&;
+        auto set_url(const std::string& url) -> text&;
 
         auto get_element_content_size() -> ImVec2 const override;
 
@@ -25,6 +26,7 @@ namespace gluten
     private:
         std::string m_displayText;
         std::string m_truncatedText;
+        std::string m_url;
         std::optional<fonts> m_font;
     };
 }  // namespace gluten

@@ -51,6 +51,12 @@ auto gluten::text::set_font(const fonts& font) -> text&
     return *this;
 }
 
+auto gluten::text::set_url(const std::string& url) -> text& 
+{ 
+    m_url = url; 
+    return *this;
+}
+
 auto gluten::text::pre_render_element() -> void
 {
     if (m_font.has_value())
@@ -73,7 +79,9 @@ bool gluten::text::render_element(const ImRect& parent)
                 const bool hasStrictVerticalControl = std::abs(m_anchor.max.y - m_anchor.min.y) > 0.01f;
 
                 const ImVec2 textPos(window->DC.CursorPos.x, window->DC.CursorPos.y + window->DC.CurrLineTextBaseOffset);
-                
+
+                ImVec2 textSize;
+
                 if (hasStrictHorizontalControl && hasStrictVerticalControl)
                 {
                     // TODO: Make truncation faster or cached. Without testing, this seems like a slow approach
@@ -82,7 +90,7 @@ bool gluten::text::render_element(const ImRect& parent)
                     
                     m_truncatedText = m_displayText;
 
-                    ImVec2 textSize = ImGui::CalcTextSize(m_truncatedText.c_str(), nullptr, false, parent.GetWidth());
+                    textSize = ImGui::CalcTextSize(m_truncatedText.c_str(), nullptr, false, parent.GetWidth());
 
                     while (textSize.y > currentHeight && textSize.y > 0.0f && !m_truncatedText.empty())
                     {
@@ -96,12 +104,50 @@ bool gluten::text::render_element(const ImRect& parent)
                         m_truncatedText += "...";
                     }
 
-                    drawList->AddText(context.Font, context.FontSize, textPos, ImGui::GetColorU32(ImGuiCol_Text), m_truncatedText.c_str(), nullptr, parent.GetWidth());
+                    if (m_url.empty())
+                    {
+                        drawList->AddText(context.Font, context.FontSize, textPos, ImGui::GetColorU32(ImGuiCol_Text), m_truncatedText.c_str(), nullptr, parent.GetWidth());
+                    }
+                    else
+                    {
+                        ImGui::TextLinkOpenURL(m_truncatedText.c_str(), m_url.c_str());
+                    }
                 }
                 else
                 {
-                    drawList->AddText(context.Font, context.FontSize, textPos, ImGui::GetColorU32(ImGuiCol_Text), m_displayText.c_str(), nullptr, parent.GetWidth());
+                    textSize = ImGui::CalcTextSize(m_displayText.c_str(), nullptr, false, parent.GetWidth());
+
+                    if (m_url.empty())
+                    {
+                        drawList->AddText(context.Font, context.FontSize, textPos, ImGui::GetColorU32(ImGuiCol_Text), m_displayText.c_str(), nullptr, parent.GetWidth());
+                    }
+                    else
+                    {
+                        ImGui::TextLinkOpenURL(m_displayText.c_str(), m_url.c_str());
+                    }
                 }
+
+                /*if (!m_url.empty())
+                {
+                    bool hovered       = false;
+                    const bool pressed = ImGui::ButtonBehavior(parent, window->GetID(m_displayText.c_str()), &hovered, nullptr);
+
+                    if (pressed)
+                    {
+                        if (context.PlatformIO.Platform_OpenInShellFn != NULL)
+                        {
+                            context.PlatformIO.Platform_OpenInShellFn(&context, m_url.c_str());
+                        }
+                    }
+
+                    ImGui::SetItemTooltip(ImGui::LocalizeGetMsg(ImGuiLocKey_OpenLink_s), m_url.c_str());
+
+                    if (hovered)
+                    {
+                        const float lineY = textPos.y + context.FontBaked->Ascent * (context.FontSize / context.FontBaked->Size) + (context.Style.FramePadding.y * 0.5f);
+                        drawList->AddLine(ImVec2(parent.Min.x, lineY), ImVec2(parent.Min.x + textSize.x, lineY), ImGui::GetColorU32(ImGuiCol_TextLink));
+                    }
+                }*/
             }
         }
     }
