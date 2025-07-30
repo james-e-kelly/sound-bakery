@@ -44,3 +44,23 @@ auto gluten::popup_widget::render_implementation() -> void
         ImGui::EndPopup();
     }
 }
+
+auto gluten::confirmation_popup::render_popup() -> void
+{
+    ImGui::TextUnformatted("Are you sure?");
+
+    if (ImGui::Button("Confirm"))
+    {
+        if (m_onConfirm)
+        {
+            m_onConfirm();
+        }
+    }
+
+    ImGui::SameLine();
+
+    if (ImGui::Button("Cancel"))
+    {
+        close_popup();
+    }
+}

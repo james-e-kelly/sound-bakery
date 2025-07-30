@@ -20,4 +20,14 @@ namespace gluten
     private:
         virtual auto render_implementation() -> void override;
     };
+
+    class confirmation_popup : public popup_widget
+    {
+    public:
+        confirmation_popup(widget* parent, const std::function<void>& onConfirm) : popup_widget(parent, "Confirm") {}
+        confirmation_popup(widget_subsystem* subsystem, const std::function<void>& onConfirm) : popup_widget(subsystem, "Confirm") {}
+
+    private:
+        std::function<void> m_onConfirm;
+    };
 }  // namespace gluten
