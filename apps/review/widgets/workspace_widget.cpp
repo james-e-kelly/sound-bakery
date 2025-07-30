@@ -554,23 +554,35 @@ auto workspace_widget::render_content() -> void
         {
             constexpr float avatarSize = 300.0f;
             constexpr float paddingSize = 10.0f;
+            constexpr float textSize    = 20.0f;
 
             gluten::layout leftUserPanel(gluten::layout_type::top_to_bottom, gluten::anchor_preset::stretch_left);
+            inline_user_avatar_element userAvatar(selectedUser.m_email);
+            gluten::text userDisplayNameText(selectedUser.m_displayName, ImVec2(), gluten::anchor_preset::stretch_full);
+            gluten::text userTitleText(selectedUser.m_title, ImVec2(), gluten::anchor_preset::stretch_full);
+            gluten::text userEmailText(selectedUser.m_email, ImVec2(), gluten::anchor_preset::stretch_full);
+
             gluten::anchor_info& layoutAnchor = leftUserPanel.get_element_anchor();
             layoutAnchor.maxOffset.x          = avatarSize;
-            leftUserPanel.set_element_translation(ImVec2(paddingSize, 0.0f));
             leftUserPanel.set_element_background_color(gluten::theme::carbon_g100::layer02);
             leftUserPanel.set_layout_spacing(paddingSize);
-            leftUserPanel.render(mainContentParent.get_element_rect());
 
-            inline_user_avatar_element userAvatar(selectedUser.m_email);
             gluten::anchor_info& anchor = userAvatar.get_element_anchor();
             anchor.min                  = anchor.max = ImVec2(0, 0);
             anchor.maxOffset            = ImVec2(avatarSize, avatarSize);
             userAvatar.set_element_padding(ImVec2(paddingSize, paddingSize));
             userAvatar.set_avatar_render(gluten::image_render::square);
 
+            userDisplayNameText.set_font(gluten::fonts::title).set_element_frame_padding();
+            userDisplayNameText.set_element_padding(ImVec2(paddingSize, 0.0f));
+            userTitleText.set_element_padding(ImVec2(paddingSize, 0.0f));
+            userEmailText.set_element_padding(ImVec2(paddingSize, 0.0f));
+
+            leftUserPanel.render(mainContentParent.get_element_rect());
             leftUserPanel.render_layout_element_pixels_vertical(&userAvatar, avatarSize);
+            leftUserPanel.render_layout_element_pixels_vertical(&userDisplayNameText, textSize);
+            leftUserPanel.render_layout_element_pixels_vertical(&userTitleText, textSize);
+            leftUserPanel.render_layout_element_pixels_vertical(&userEmailText, textSize);
         }
     }
     ImGui::EndChild();
