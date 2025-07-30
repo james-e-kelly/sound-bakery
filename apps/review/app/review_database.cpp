@@ -778,9 +778,10 @@ auto review_database::get_all_users(std::string userToken) -> concurrencpp::resu
             {
                 user_data user;
                 user.m_displayName = statement.getColumn(0).getText();
-                user.m_email       = statement.getColumn(1).getText();
-                user.m_createdAt   = statement.getColumn(2).getText();
-                user.m_privileges  = (user_privileges)statement.getColumn(3).getInt();
+                user.m_title       = statement.getColumn(1).getText();
+                user.m_email       = statement.getColumn(2).getText();
+                user.m_createdAt   = statement.getColumn(3).getText();
+                user.m_privileges  = (user_privileges)statement.getColumn(4).getInt();
                 result.push_back(std::move(user));
             }
         }

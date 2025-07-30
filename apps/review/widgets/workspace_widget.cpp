@@ -6,6 +6,7 @@
 #include "elements/file_drop_element.h"
 #include "elements/project_element.h"
 #include "elements/review_element.h"
+#include "elements/user_element.h"
 #include "elements/inline_user_display_element.h"
 #include "widgets/create_project_popup.h"
 #include "widgets/create_review_popup.h"
@@ -200,8 +201,8 @@ auto workspace_widget::render_list() -> void
                 case workspace_widget::users_view:
                     for (const auto& user : workspaceManager->get_all_users())
                     {
-                        gluten::text userText(user.m_displayName);
-                        if (itemsLayout.render_layout_element_pixels_vertical(&userText, leftToolbarButtonHeight))
+                        user_element userElement(user);
+                        if (itemsLayout.render_layout_element_pixels_vertical(&userElement, leftToolbarButtonHeight))
                         {
                         }
                     }

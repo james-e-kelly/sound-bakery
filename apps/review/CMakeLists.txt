@@ -35,6 +35,7 @@ set(review_HEADERS
   data/user_settings_data.h
   elements/project_element.h
   elements/review_element.h
+  elements/user_element.h
   elements/file_drop_element.h
   elements/inline_user_display_element.h
   managers/project_manager.h
