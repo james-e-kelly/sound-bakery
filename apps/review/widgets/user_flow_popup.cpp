@@ -11,6 +11,11 @@ auto user_flow_popup::start_implementation() -> void
     if (std::shared_ptr<workspace_manager> workspaceManager = get_app()->get_manager_by_class<workspace_manager>())
     {
         m_firstUserCreation = workspaceManager->users_table_is_empty().get();
+
+        if (m_firstUserCreation)
+        {
+            m_privileges = user_privileges::admin;
+        }
     }
 }
 
@@ -47,6 +52,8 @@ auto user_flow_popup::render_popup() -> void
         ImGui::InputTextWithHint("Display Name", "John", m_displayNameBuffer, textBufferSize);
         ImGui::InputTextWithHint("Title", "Sound Designer", m_titleBuffer, textBufferSize);
 
+        ImGui::BeginDisabled(m_firstUserCreation);
+
         if (ImGui::BeginCombo("Role", get_user_privileges_string(m_privileges).c_str()))
         {
             if (ImGui::Selectable("Guest"))
@@ -74,6 +81,8 @@ auto user_flow_popup::render_popup() -> void
             }
             ImGui::EndCombo();
         }
+
+        ImGui::EndDisabled();
     }
 
     const bool emailIsFilled = m_emailBuffer[0] != '\0';
