@@ -29,6 +29,35 @@ namespace
         return oss.str();
     }
 
+    struct avatar_identifier
+    {
+        std::string m_email;
+        float m_size                  = 10.0f;
+        gluten::image_render m_render = gluten::image_render::circular;
+
+        bool operator<(const avatar_identifier& rhs) const
+        {
+            return m_email < rhs.m_email && m_size < rhs.m_size && m_render < rhs.m_render;
+        }
+
+        bool operator==(const avatar_identifier& rhs) const
+        {
+            return m_email == rhs.m_email && std::abs(m_size - rhs.m_size) < 32.0f && m_render == rhs.m_render;
+        }
+    };
+
+    struct avatar_indentifier_hasher
+    {
+        std::size_t operator()(const avatar_identifier& k) const
+        {
+            using std::hash;
+            using std::size_t;
+            using std::string;
+            return ((hash<string>()(k.m_email) ^ (hash<float>()(k.m_size) << 1)) >> 1) ^
+                   (hash<int>()((int)k.m_render) << 1);
+        }
+    };
+
     class avatar_resolver
     {
     public:
@@ -39,30 +68,32 @@ namespace
             client->enable_server_certificate_verification(false);
         }
 
-        auto get_avatar_image(const std::string& email, float size) -> gluten::image*
+        auto get_avatar_image(const std::string& email, float size, gluten::image_render render) -> gluten::image*
         {
-            if (m_cache.contains(email))
+            const avatar_identifier avatar{.m_email = email, .m_size = size, .m_render = render};
+
+            if (m_cache.contains(avatar))
             {
-                return m_cache.at(email).get();
+                return m_cache.at(avatar).get();
             }
-            else if (m_loading.contains(email))
+            else if (m_loading.contains(avatar))
             {
-                if (m_loading.at(email).status() == concurrencpp::result_status::value)
+                if (m_loading.at(avatar).status() == concurrencpp::result_status::value)
                 {
-                    m_cache.insert({email, m_loading.at(email).get()});
+                    m_cache.insert({avatar, m_loading.at(avatar).get()});
                 }
             }
             else
             {
-                concurrencpp::result<std::unique_ptr<gluten::image>> result = load(email, size);
-                m_loading.insert({email, std::move(result)});
+                concurrencpp::result<std::unique_ptr<gluten::image>> result = load(email, size, render);
+                m_loading.insert({avatar, std::move(result)});
             }
             return nullptr;
         }
 
 
     private:
-        auto load(const std::string email, float size) -> concurrencpp::result<std::unique_ptr<gluten::image>>
+        auto load(const std::string email, float size, gluten::image_render render) -> concurrencpp::result<std::unique_ptr<gluten::image>>
         {
             co_await concurrencpp::resume_on(review_app::get()->background_executor());
 
@@ -77,7 +108,8 @@ namespace
                 co_await concurrencpp::resume_on(review_app::get()->get_tick_executor());
 
                 std::unique_ptr<gluten::image> avatarImage = std::make_unique<gluten::image>(body.c_str(), body.length());
-                avatarImage->set_render_type(gluten::image_render::circular);
+                avatarImage->set_element_anchor_preset(gluten::anchor_preset::stretch_full);
+                avatarImage->set_render_type(render);
                 co_return std::move(avatarImage);
             }
             co_return std::unique_ptr<gluten::image>{};
@@ -85,16 +117,18 @@ namespace
 
         std::shared_ptr<httplib::SSLClient> client;
 
-        std::unordered_map<std::string, std::unique_ptr<gluten::image>> m_cache;
-        std::unordered_map<std::string, concurrencpp::result<std::unique_ptr<gluten::image>>> m_loading;
+        std::unordered_map<avatar_identifier, std::unique_ptr<gluten::image>, avatar_indentifier_hasher> m_cache;
+        std::unordered_map<avatar_identifier, concurrencpp::result<std::unique_ptr<gluten::image>>, avatar_indentifier_hasher> m_loading;
     };
 }
+
+auto inline_user_avatar_element::set_avatar_render(gluten::image_render render) -> void { m_render = render; }
 
 auto inline_user_avatar_element::render_element(const ImRect& parentRect) -> bool
 {
     static avatar_resolver resolver;
 
-    if (gluten::image* avatarImage = resolver.get_avatar_image(m_userEmailAddress, parentRect.GetHeight()))
+    if (gluten::image* avatarImage = resolver.get_avatar_image(m_userEmailAddress, std::abs(parentRect.GetHeight()), m_render))
     {
         avatarImage->render(parentRect);
     }
