@@ -123,7 +123,7 @@ auto create_review_popup::render_popup() -> void
 
     m_reviewData.m_reviewName = reviewNameBuffer;
     m_reviewData.m_reviewDescription = reviewDescriptionBuffer;
-    m_reviewData.m_reviewTaskUrl     = reviewDescriptionBuffer;
+    m_reviewData.m_reviewTaskUrl     = reviewUrlBuffer;
 
     const bool setupValid = !m_reviewData.m_reviewName.empty();
 
