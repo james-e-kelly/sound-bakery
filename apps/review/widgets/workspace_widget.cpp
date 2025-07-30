@@ -546,6 +546,13 @@ auto workspace_widget::render_left_toolbar() -> void
 {
     gluten::imgui::scoped_color toolbarBackgroundColor(ImGuiCol_ChildBg, gluten::theme::carbon_g100::layer01);
 
+    std::shared_ptr<workspace_manager> workspaceManager = m_workspaceManager.lock();
+
+    if (!workspaceManager)
+    {
+        return;
+    }
+
     if (ImGui::BeginChild("LeftToolbar", ImVec2(leftToobarWidth, 0)))
     {
         gluten::layout buttonsLayout(gluten::layout::layout_type::top_to_bottom,
@@ -577,16 +584,19 @@ auto workspace_widget::render_left_toolbar() -> void
         if (buttonsLayout.render_layout_element_pixels_vertical(&reviewsButton, leftToolbarButtonHeight))
         {
             m_activeView = reviews_view;
+            workspaceManager->select_project({});
         }
 
         if (buttonsLayout.render_layout_element_pixels_vertical(&usersButton, leftToolbarButtonHeight))
         {
             m_activeView = users_view;
+            workspaceManager->select_project({});
         }
 
         if (buttonsLayout.render_layout_element_pixels_vertical(&settingsButton, leftToolbarButtonHeight))
         {
             m_activeView = settings_view;
+            workspaceManager->select_project({});
         }
     }
     ImGui::EndChild();
