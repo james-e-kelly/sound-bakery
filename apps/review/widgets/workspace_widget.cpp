@@ -555,12 +555,16 @@ auto workspace_widget::render_content() -> void
             constexpr float avatarSize = 300.0f;
             constexpr float paddingSize = 10.0f;
             constexpr float textSize    = 20.0f;
+            constexpr float buttonSize  = textSize * 2.0f;
 
             gluten::layout leftUserPanel(gluten::layout_type::top_to_bottom, gluten::anchor_preset::stretch_left);
             inline_user_avatar_element userAvatar(selectedUser.m_email);
             gluten::text userDisplayNameText(selectedUser.m_displayName, ImVec2(), gluten::anchor_preset::stretch_full);
             gluten::text userTitleText(selectedUser.m_title, ImVec2(), gluten::anchor_preset::stretch_full);
             gluten::text userEmailText(selectedUser.m_email, ImVec2(), gluten::anchor_preset::stretch_full);
+            gluten::button editUserButton("Edit " ICON_LC_PENCIL);
+            gluten::button changePasswordButton("Change Password " ICON_LC_PENCIL);
+            gluten::button deleteUserButton("Delete " ICON_LC_USER_ROUND_X);
 
             gluten::anchor_info& layoutAnchor = leftUserPanel.get_element_anchor();
             layoutAnchor.maxOffset.x          = avatarSize;
@@ -577,12 +581,21 @@ auto workspace_widget::render_content() -> void
             userDisplayNameText.set_element_padding(ImVec2(paddingSize, 0.0f));
             userTitleText.set_element_padding(ImVec2(paddingSize, 0.0f));
             userEmailText.set_element_padding(ImVec2(paddingSize, 0.0f));
+            editUserButton.set_element_translation(ImVec2(paddingSize, 0.0f));
+            changePasswordButton.set_element_translation(ImVec2(paddingSize, 0.0f));
+            deleteUserButton.set_element_translation(ImVec2(paddingSize, 0.0f));
 
             leftUserPanel.render(mainContentParent.get_element_rect());
             leftUserPanel.render_layout_element_pixels_vertical(&userAvatar, avatarSize);
             leftUserPanel.render_layout_element_pixels_vertical(&userDisplayNameText, textSize);
             leftUserPanel.render_layout_element_pixels_vertical(&userTitleText, textSize);
             leftUserPanel.render_layout_element_pixels_vertical(&userEmailText, textSize);
+            leftUserPanel.render_layout_element_pixels_vertical(&editUserButton, buttonSize);
+            leftUserPanel.render_layout_element_pixels_vertical(&changePasswordButton, buttonSize);
+
+            gluten::imgui::scoped_color_stack deleteButtonColors(ImGuiCol_Button, gluten::theme::red60, ImGuiCol_ButtonHovered, gluten::theme::red50);
+
+            leftUserPanel.render_layout_element_pixels_vertical(&deleteUserButton, buttonSize);
         }
     }
     ImGui::EndChild();
