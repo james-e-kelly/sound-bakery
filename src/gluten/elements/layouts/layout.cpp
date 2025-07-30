@@ -65,8 +65,10 @@ bool gluten::layout::render_layout_element_remaining(element* element)
                 sizeRemain = ImVec2(elementBox.Max.x - currentLayoutPos.x, elementBox.Max.y - currentLayoutPos.y);
                 break;
             case gluten::layout::layout_type::bottom_to_top:
+                sizeRemain = ImVec2(elementBox.Max.x - currentLayoutPos.x, currentLayoutPos.y - elementBox.Min.y);
+                break;
             case gluten::layout::layout_type::right_to_left:
-                sizeRemain = ImVec2(currentLayoutPos.x - elementBox.Min.x, currentLayoutPos.y - elementBox.Min.y);
+                sizeRemain = ImVec2(currentLayoutPos.x - elementBox.Min.x, elementBox.Max.y - currentLayoutPos.y);
                 break;
             default:
                 break;
