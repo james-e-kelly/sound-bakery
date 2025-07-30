@@ -136,26 +136,36 @@ auto workspace_widget::render_list() -> void
             }
         }
 
-        if (newButton.render(topToolbar.get_element_rect()))
+        if (m_activeView == active_view::reviews_view || m_activeView == active_view::users_view)
         {
-            if (listingProjects)
+            if (newButton.render(topToolbar.get_element_rect()))
             {
-                static std::shared_ptr<create_project_popup> createProjectPopup;
-                createProjectPopup = add_child_widget<create_project_popup>(this);
-
-                if (createProjectPopup)
+                if (m_activeView == active_view::users_view)
                 {
-                    createProjectPopup->open_popup();
+                    workspaceManager->open_create_user_popup();
                 }
-            }
-            else if (listingReviews)
-            {
-                static std::shared_ptr<create_review_popup> createReviewPopup;
-                createReviewPopup = add_child_widget<create_review_popup>(this);
-
-                if (createReviewPopup)
+                else
                 {
-                    createReviewPopup->open_popup();
+                    if (listingProjects)
+                    {
+                        static std::shared_ptr<create_project_popup> createProjectPopup;
+                        createProjectPopup = add_child_widget<create_project_popup>(this);
+
+                        if (createProjectPopup)
+                        {
+                            createProjectPopup->open_popup();
+                        }
+                    }
+                    else if (listingReviews)
+                    {
+                        static std::shared_ptr<create_review_popup> createReviewPopup;
+                        createReviewPopup = add_child_widget<create_review_popup>(this);
+
+                        if (createReviewPopup)
+                        {
+                            createReviewPopup->open_popup();
+                        }
+                    }
                 }
             }
         }
