@@ -6,16 +6,13 @@
 
 auto create_review_popup::render_popup() -> void
 {
-    ImGui::SetWindowFontScale(1.5f);
-
     ImGui::BeginDisabled(review_app::get()->get_is_drag_dropping());
 
     ImGui::InputTextWithHint("Review Name", "My New Review", reviewNameBuffer, textBufferSize);
     ImGui::SetItemTooltip("Write the title of the review. It can be anything from \"Adding some sounds\" to "
                           "\"[TASK-1234][Level1] Add Looping Fire Sounds\"");
 
-    ImGui::InputTextWithHint("Review Description", "Adding a new sound", reviewDescriptionBuffer,
-                             textBufferSize);
+    ImGui::InputTextMultiline("Review Description", reviewDescriptionBuffer, textBufferSize);
     ImGui::SetItemTooltip("Give the review a description to help describe what sounds you are adding or changing");
 
     ImGui::InputTextWithHint("Review URL", "https://domain.com/task", reviewUrlBuffer, textBufferSize);
@@ -124,8 +121,6 @@ auto create_review_popup::render_popup() -> void
        }
     }
 
-    ImGui::SetWindowFontScale(1.5f);    // Needs to be reset because the drag drop targets can reset the scale
-
     m_reviewData.m_reviewName = reviewNameBuffer;
     m_reviewData.m_reviewDescription = reviewDescriptionBuffer;
     m_reviewData.m_reviewTaskUrl     = reviewDescriptionBuffer;
@@ -152,6 +147,4 @@ auto create_review_popup::render_popup() -> void
     {
         close_popup();
     }
-
-    ImGui::SetWindowFontScale(1.0f);
 }
