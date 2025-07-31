@@ -137,7 +137,7 @@ auto workspace_widget::render_list() -> void
             }
         }
 
-        if (m_activeView == active_view::reviews_view || m_activeView == active_view::users_view)
+        if ((m_activeView == active_view::reviews_view || m_activeView == active_view::users_view) && m_userSettings->m_loggedInUser.m_privileges > user_privileges::guest)
         {
             if (newButton.render(topToolbar.get_element_rect()))
             {
@@ -387,15 +387,18 @@ auto workspace_widget::render_content() -> void
 
             descriptionEditButton.set_element_alignment(ImVec2(1.0f, -0.0f));
 
-            if (descriptionEditButton.render(innerDescriptionBox.get_element_rect()))
+            if (m_userSettings->m_loggedInUser.m_privileges > user_privileges::guest)
             {
-                static std::shared_ptr<update_review_popup> updateProjectPopup;
-                updateProjectPopup = add_child_widget<update_review_popup>(false);
-
-                if (updateProjectPopup)
+                if (descriptionEditButton.render(innerDescriptionBox.get_element_rect()))
                 {
-                    updateProjectPopup->set_review_data(selectedReview);
-                    updateProjectPopup->open_popup();
+                    static std::shared_ptr<update_review_popup> updateProjectPopup;
+                    updateProjectPopup = add_child_widget<update_review_popup>(false);
+
+                    if (updateProjectPopup)
+                    {
+                        updateProjectPopup->set_review_data(selectedReview);
+                        updateProjectPopup->open_popup();
+                    }
                 }
             }
 
@@ -432,9 +435,12 @@ auto workspace_widget::render_content() -> void
                         static bool newCommentOpen = false;
 
                         ImGui::BeginDisabled(newCommentOpen);
-                        if (ImGui::Button(ICON_LC_PLUS))
+                        if (m_userSettings->m_loggedInUser.m_privileges > user_privileges::guest)
                         {
-                            newCommentOpen = true;
+                            if (ImGui::Button(ICON_LC_PLUS))
+                            {
+                                newCommentOpen = true;
+                            }
                         }
                         ImGui::EndDisabled();
 
