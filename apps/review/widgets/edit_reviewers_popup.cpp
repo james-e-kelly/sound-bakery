@@ -1,7 +1,6 @@
 #include "edit_reviewers_popup.h"
 
 #include "managers/workspace_manager.h"
-#include "elements/inline_user_display_element.h"
 
 namespace
 {
