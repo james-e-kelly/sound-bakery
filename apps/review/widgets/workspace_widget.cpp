@@ -315,6 +315,11 @@ auto workspace_widget::render_content() -> void
                     rightPanelBackground.render_layout_element_pixels_vertical(&user6, 50.0f);
                 }
 
+                gluten::button editReviewersButton("Edit " ICON_LC_PENCIL, false, gluten::anchor_preset::right_top);
+                editReviewersButton.set_element_alignment(ImVec2(1.0f, -0.1f));
+                editReviewersButton.set_element_translation(ImVec2(-ImGui::GetStyle().FramePadding.x, 0.0f));
+                editReviewersButton.render(reviewersHeader.get_element_rect());
+
                 gluten::collapsing_header testsHeader("Tests");
 
                 if (rightPanelBackground.render_layout_element_pixels_vertical(&testsHeader, 50.0f))
