@@ -37,11 +37,11 @@ namespace gluten
 
     bool image::render_element(const ImRect& elementRect)
     {
-        if (m_openGlId != 0 && m_width > 0 && m_height > 0)
+        if (m_openGlId != 0 && m_width > 0 && m_height > 0 && !ImGui::IsPopupOpen(nullptr, ImGuiPopupFlags_AnyPopup))
         {
             m_background.render(elementRect);
 
-            if (ImDrawList* const drawList = ImGui::GetWindowDrawList())
+            if (ImDrawList* const drawList = ImGui::GetForegroundDrawList())
             {
                 const ImVec2 elementRectSize = elementRect.GetSize();
 
