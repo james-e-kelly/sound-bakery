@@ -35,7 +35,7 @@ auto user_flow_popup::render_popup() -> void
         return;
     }
 
-    if (ImGui::InputTextWithHint("Email", "john.doe@domain.com", m_emailBuffer, textBufferSize))
+    if (ImGui::InputTextWithHint("Email", "email@domain.com", m_emailBuffer, textBufferSize))
     {
         m_errorText.clear();
     }
@@ -49,8 +49,8 @@ auto user_flow_popup::render_popup() -> void
     {
         ImGui::Separator();
 
-        ImGui::InputTextWithHint("Display Name", "John", m_displayNameBuffer, textBufferSize);
-        ImGui::InputTextWithHint("Title", "Sound Designer", m_titleBuffer, textBufferSize);
+        ImGui::InputTextWithHint("Display Name", "", m_displayNameBuffer, textBufferSize);
+        ImGui::InputTextWithHint("Job Title", "", m_titleBuffer, textBufferSize);
 
         ImGui::BeginDisabled(m_firstUserCreation);
 
