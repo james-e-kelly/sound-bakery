@@ -175,7 +175,10 @@ auto user_flow_popup::render_popup() -> void
         switch (m_loginResult.status())
         {
             case concurrencpp::result_status::value:
-                m_errorText = m_loginResult.get().error().m_errorMessage;
+                if (!m_loginResult.get().has_value())
+                {
+                    m_errorText = m_loginResult.get().error().m_errorMessage;
+                }
                 break;
             case concurrencpp::result_status::exception:
                 m_errorText = "Expection occurred";
