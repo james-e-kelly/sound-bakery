@@ -104,6 +104,7 @@ public:
     auto get_users_count() const -> std::size_t;
     auto get_selected_user() const -> const user_data&;
     auto select_user(const std::string& email) -> void;
+    auto delete_user(const std::string& email) -> void;
 
 protected:
     auto init(gluten::app* app) -> void override;

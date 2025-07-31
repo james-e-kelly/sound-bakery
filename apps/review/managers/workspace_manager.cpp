@@ -343,8 +343,8 @@ auto workspace_manager::create_user_and_login(new_user_data newUser) -> concurre
     co_await m_database->create_user(newUser, std::string());
 
     login_request_data loginRequest;
-    loginRequest.m_email            = newUser.m_email;
-    loginRequest.m_rawPassword      = newUser.m_rawPassword;
+    loginRequest.m_email = newUser.m_email;
+    loginRequest.m_rawPassword = newUser.m_rawPassword;
 
     co_return co_await login_user(loginRequest);
 }
@@ -427,6 +427,31 @@ auto workspace_manager::select_user(const std::string& email) -> void
         {
             m_selectedUser = user;
             break;
+        }
+    }
+}
+
+auto workspace_manager::delete_user(const std::string& email) -> void
+{
+    if (!email.empty())
+    {
+        const bool deletingSelf = email == m_userSettingsData->m_loggedInUser.m_email;
+
+        const tl::expected<bool, database_error> result = m_database->delete_user(email, m_userSettingsData->m_loggedInUser.m_sessionToken).get();
+
+        if (result.has_value())
+        {
+            if (result.value())
+            {
+                m_selectedProject = project_data();
+                m_selectedReview  = review_data();
+                m_selectedUser    = user_data();
+
+                if (deletingSelf)
+                {
+                    logout();
+                }
+            }
         }
     }
 }

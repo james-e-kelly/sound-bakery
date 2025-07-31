@@ -67,6 +67,7 @@ public:
     auto login_user(login_request_data loginRequest) -> concurrencpp::result<tl::expected<logged_in_user_data, database_error>>;
     auto get_users_count(std::string userToken) -> concurrencpp::result<tl::expected<std::size_t, database_error>>;
     auto get_all_users(std::string userToken) -> concurrencpp::result<tl::expected<std::vector<user_data>, database_error>>;
+    auto delete_user(std::string email, std::string userToken) -> concurrencpp::result<tl::expected<bool, database_error>>;
 
 private:
     SQLite::Database m_database;

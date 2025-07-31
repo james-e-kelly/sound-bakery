@@ -61,9 +61,9 @@ namespace gluten
 
         auto set_tick_frequency(double tickFrequency) -> void;
 
-        template <class T>
+        template <class T, typename... Args>
             requires std::derived_from<T, widget>
-        [[nodiscard]] std::shared_ptr<T> add_child_widget(bool widgetOwns);
+        [[nodiscard]] std::shared_ptr<T> add_child_widget(bool widgetOwns, Args&&... args);
         
         auto has_started() const -> bool;
         auto is_visible() const -> bool;
@@ -120,11 +120,11 @@ namespace gluten
         bool m_wantsDestroy = false;
     };
 
-    template <class T>
+    template <class T, typename... Args>
         requires std::derived_from<T, widget>
-    [[nodiscard]] std::shared_ptr<T> widget::add_child_widget(bool widgetOwns)
+    [[nodiscard]] std::shared_ptr<T> widget::add_child_widget(bool widgetOwns, Args&&... args)
     {
-        std::shared_ptr<T> ptr = std::make_shared<T>(this);
+        std::shared_ptr<T> ptr = std::make_shared<T>(this, std::forward<Args>(args)...);
         if (widgetOwns)
         {
             m_owningChildWidgets.push_back(ptr);

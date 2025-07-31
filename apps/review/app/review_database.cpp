@@ -797,3 +797,44 @@ auto review_database::get_all_users(std::string userToken) -> concurrencpp::resu
 
     co_return result;
 }
+
+auto review_database::delete_user(std::string email, std::string userToken) -> concurrencpp::result<tl::expected<bool, database_error>>
+{
+    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
+
+    if (email.empty())
+    {
+        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::invalid_parameters, .m_errorMessage = "Email address was empty"});
+    }
+
+    if (userToken.empty())
+    {
+        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::unauthorized, .m_errorMessage = "Session token was invalid"});
+    }
+
+    if (!m_database.tableExists("users"))
+    {
+        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::missing_table, .m_errorMessage = "No users table"});
+    }
+
+    if (!m_database.tableExists("sessions"))
+    {
+        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::missing_table, .m_errorMessage = "No sessions table"});
+    }
+
+    SQLite::Statement deletingSelfStatement(m_database, "SELECT users.id, users.email FROM sessions JOIN users ON users.id = sessions.user_id WHERE sessions.token = ? AND users.email = ?;");
+    deletingSelfStatement.bind(1, userToken);
+    deletingSelfStatement.bind(2, email);
+
+    const bool deletingSelf = deletingSelfStatement.executeStep();
+
+    if (deletingSelf || co_await user_is_logged_in_and_has_privilege(userToken, user_privileges::admin))
+    {
+        SQLite::Statement deleteUserStatement(m_database, "DELETE FROM users WHERE email = ?;");
+        deleteUserStatement.bind(1, email);
+        deleteUserStatement.exec();
+        co_return true;
+    }
+
+    co_return false;
+}

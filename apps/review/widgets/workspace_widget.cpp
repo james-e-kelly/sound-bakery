@@ -602,7 +602,18 @@ auto workspace_widget::render_content() -> void
                 leftUserPanel.render_layout_element_pixels_vertical(&changePasswordButton, buttonSize);
 
                 gluten::imgui::scoped_color_stack deleteButtonColors(ImGuiCol_Button, gluten::theme::red60, ImGuiCol_ButtonHovered, gluten::theme::red50, ImGuiCol_ButtonActive, gluten::theme::red70);
-                leftUserPanel.render_layout_element_pixels_vertical(&deleteUserButton, buttonSize);
+                if (leftUserPanel.render_layout_element_pixels_vertical(&deleteUserButton, buttonSize))
+                {
+                    static std::shared_ptr<gluten::confirmation_popup> confirmUserDeletionPopup;
+                    confirmUserDeletionPopup = add_child_widget<gluten::confirmation_popup>(false, "Delete User?", [weakWorkspaceManager = m_workspaceManager, email = selectedUser.m_email]() 
+                        {
+                            if (std::shared_ptr<workspace_manager> workspaceManager = weakWorkspaceManager.lock())
+                            {
+                                workspaceManager->delete_user(email);
+                            }
+                        });
+                    confirmUserDeletionPopup->open_popup();
+                }
             }
 
             ImGui::EndDisabled();

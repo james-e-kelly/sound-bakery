@@ -55,6 +55,7 @@ auto gluten::confirmation_popup::render_popup() -> void
         {
             m_onConfirm();
         }
+        close_popup();
     }
 
     ImGui::SameLine();

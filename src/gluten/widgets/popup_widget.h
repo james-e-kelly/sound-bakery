@@ -24,10 +24,16 @@ namespace gluten
     class confirmation_popup : public popup_widget
     {
     public:
-        confirmation_popup(widget* parent, const std::function<void>& onConfirm) : popup_widget(parent, "Confirm") {}
-        confirmation_popup(widget_subsystem* subsystem, const std::function<void>& onConfirm) : popup_widget(subsystem, "Confirm") {}
+        confirmation_popup(widget* parent, const std::string& title, const std::function<void()>& onConfirm) : popup_widget(parent, title), m_onConfirm(onConfirm) {}
+        confirmation_popup(widget_subsystem* subsystem, const std::function<void()>& onConfirm)
+            : popup_widget(subsystem, "Confirm"), m_onConfirm(onConfirm)
+        {
+        }
+
+    protected:
+        auto render_popup() -> void override;
 
     private:
-        std::function<void> m_onConfirm;
+        std::function<void()> m_onConfirm;
     };
 }  // namespace gluten
