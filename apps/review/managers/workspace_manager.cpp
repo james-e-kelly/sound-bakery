@@ -456,7 +456,7 @@ auto workspace_manager::delete_user(const std::string& email) -> void
     }
 }
 
-auto workspace_manager::get_users_for_review(int64_t reviewId) -> const std::vector<user_data>&
+auto workspace_manager::get_users_for_review(int64_t reviewId) -> const std::vector<reviewer_data>&
 {
     if (!m_reviewUsersCache.cache_count_valid(reviewId, get_users_count()))
     {
@@ -466,7 +466,16 @@ auto workspace_manager::get_users_for_review(int64_t reviewId) -> const std::vec
 
         if (result.has_value())
         {
-            m_reviewUsersCache.add_cache(reviewId, result.value());
+            std::vector<user_data> users = result.value();
+            std::vector<reviewer_data> reviewers;
+            reviewers.resize(users.size());
+
+            std::transform(users.begin(), users.end(), reviewers.begin(), [database = m_database, reviewId](const user_data& user) 
+                {
+                    return reviewer_data(user, database->get_user_vote_on_review(reviewId, user.m_userId).get().value());
+                });
+
+            m_reviewUsersCache.add_cache(reviewId, reviewers);
         }
     }
 

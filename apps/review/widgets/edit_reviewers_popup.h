@@ -20,8 +20,8 @@ private:
     review_data m_review;
     std::weak_ptr<workspace_manager> m_workspaceManager;
 
-    std::vector<user_data> m_allUsers;      //< For list of users to add
-    std::vector<user_data> m_newUsers;      //< What to
+    std::vector<user_data> m_allUsers; 
+    std::vector<reviewer_data> m_newUsers;  
 
     bool m_addingNewUser = false;
 };

@@ -115,7 +115,7 @@ namespace
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             review_id INTEGER NOT NULL,
             user_id INTEGER NOT NULL,
-            vote TEXT NOT NULL,            -- e.g. "approve", "reject", "needs_work"
+            vote INT NOT NULL DEFAULT 0,
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY(review_id) REFERENCES reviews(id),
             FOREIGN KEY(user_id) REFERENCES users(id),
@@ -364,6 +364,39 @@ auto review_database::get_all_reviews(int64_t projectId) const -> concurrencpp::
 
             result.push_back(std::move(reviewData));
         }
+    }
+
+    co_return result;
+}
+
+auto review_database::get_user_vote_on_review(int64_t reviewId, int64_t userId) const -> concurrencpp::result<tl::expected<review_vote, database_error>>
+{
+    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
+
+    if (userId < 0)
+    {
+        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::invalid_parameters, .m_errorMessage = "User ID is invalid"});
+    }
+
+    if (reviewId < 0)
+    {
+        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::invalid_parameters, .m_errorMessage = "Review ID is invalid"});
+    }
+
+    if (!m_database.tableExists("votes"))
+    {
+        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::missing_table, .m_errorMessage = "Votes table is empty"});
+    }
+
+    review_vote result = review_vote::no_vote;
+
+    SQLite::Statement getVoteStatement(m_database, "SELECT vote FROM votes WHERE review_id = ? AND user_id = ?;");
+    getVoteStatement.bind(1, reviewId);
+    getVoteStatement.bind(2, userId);
+
+    while (getVoteStatement.executeStep())
+    {
+        result = (review_vote)getVoteStatement.getColumn(0).getInt();
     }
 
     co_return result;

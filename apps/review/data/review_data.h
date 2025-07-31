@@ -2,6 +2,8 @@
 
 #include "pch.h"
 
+#include "data/user_data.h"
+
 enum class review_phase
 {
     temp,
@@ -33,6 +35,13 @@ enum class review_status
 };
 
 auto get_review_status_string(review_status status) -> std::string;
+
+enum class review_vote
+{
+    no_vote,
+    upvote,
+    downvote    //< We have downvotes but try not to use or show them
+};
 
 struct versionable_review_asset
 {
@@ -78,6 +87,24 @@ struct new_review_data
 
     std::unordered_set<std::filesystem::path> m_absoluteContextFiles;  //< Absolute files to copy into the review folder
     std::unordered_set<std::filesystem::path> m_absoluteReviewFiles;   //< Absolute files to copy into the review folder
+};
+
+/**
+ * @brief User data plus their vote on this review
+ */
+struct reviewer_data : public user_data
+{
+    reviewer_data() = default;
+
+    reviewer_data(const user_data& userData)
+        : user_data(userData),
+          m_vote(review_vote::no_vote) {}
+
+    reviewer_data(const user_data& userData, review_vote vote)
+        : user_data(userData),
+          m_vote(vote) {}
+
+    review_vote m_vote = review_vote::no_vote;
 };
 
 BOOST_CLASS_VERSION(versionable_review_asset, review_app_version_current)

@@ -204,6 +204,7 @@ bool gluten::layout::render_layout_element_internal(const ImRect& thisBox,
             currentLayoutPos.y += sizeGivenToElement.y + m_spacing;
             break;
         case gluten::layout::layout_type::right_to_left:
+            currentLayoutPos.x -= m_spacing;
         case gluten::layout::layout_type::bottom_to_top:
             break;
         default:

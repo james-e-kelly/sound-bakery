@@ -121,9 +121,9 @@ namespace
     };
 }
 
-auto inline_user_avatar_element::set_avatar_render(gluten::image_render render) -> void { m_render = render; }
+auto user_avatar_element::set_avatar_render(gluten::image_render render) -> void { m_render = render; }
 
-auto inline_user_avatar_element::render_element(const ImRect& parentRect) -> bool
+auto user_avatar_element::render_element(const ImRect& parentRect) -> bool
 {
     static avatar_resolver resolver;
 
@@ -141,7 +141,7 @@ auto inline_user_avatar_element::render_element(const ImRect& parentRect) -> boo
 
 auto logged_in_user_element::render_element(const ImRect& parentRect) -> bool
 {
-    inline_user_avatar_element avatar(m_userEmailAddress);
+    user_avatar_element avatar(m_userEmailAddress);
     avatar.set_element_frame_padding();
     avatar.render(parentRect);
 
@@ -152,15 +152,42 @@ auto logged_in_user_element::render_element(const ImRect& parentRect) -> bool
     return false;
 }
 
-auto inline_user_display_element::render_element(const ImRect& parentRect) -> bool
+auto reviewer_display_element::render_element(const ImRect& parentRect) -> bool
 {
-    inline_user_avatar_element avatar(m_userEmailAddress);
+    gluten::imgui::scoped_id id(m_userEmailAddress.c_str());
+
+    user_avatar_element avatar(m_userEmailAddress);
     avatar.render(parentRect);
 
-    gluten::text userNameText(fmt::format("{} - Needs Review", m_userDisplayName), ImVec2(0.0f, 0.5f),
+    gluten::text userNameText(fmt::format("{} - {}", m_userDisplayName,
+                                          m_vote == review_vote::no_vote  ? "No Vote"
+                                          : m_vote == review_vote::upvote ? "Upvoted"
+                                                                          : "Downvoted"),
+                              ImVec2(0.0f, 0.5f),
                                 element::anchor_preset::left_middle);
     userNameText.set_element_translation(ImVec2(parentRect.GetHeight() + ImGui::GetStyle().FramePadding.x, 0.0f));
     userNameText.render(parentRect);
+
+    gluten::button upvoteButton(ICON_LC_THUMBS_UP);
+    gluten::button clearVoteButton(ICON_LC_MINUS);
+    gluten::button downvoteButton(ICON_LC_THUMBS_DOWN);
+
+    gluten::layout buttonsLayout(gluten::layout_type::right_to_left, gluten::anchor_preset::stretch_right);
+    buttonsLayout.set_element_translation(ImVec2(-ImGui::GetStyle().FramePadding.x, 5.0f)); //< Slightly move the layout to make the buttons vertically align. Magic number, yes, but simple
+    buttonsLayout.set_layout_spacing(ImGui::GetStyle().FramePadding.x);
+    buttonsLayout.render(parentRect);
+
+    upvoteButton.set_element_active_color(gluten::theme::carbon_g100::supportWarning);
+    clearVoteButton.set_element_active_color(gluten::theme::carbon_g100::supportWarning);
+    downvoteButton.set_element_active_color(gluten::theme::carbon_g100::supportWarning);
+
+    upvoteButton.set_element_active(m_vote == review_vote::upvote);
+    clearVoteButton.set_element_active(m_vote == review_vote::no_vote);
+    downvoteButton.set_element_active(m_vote == review_vote::downvote);
+
+    buttonsLayout.render_layout_element_pixels_horizontal(&upvoteButton, 30.0f);
+    buttonsLayout.render_layout_element_pixels_horizontal(&clearVoteButton, 30.0f);
+    buttonsLayout.render_layout_element_pixels_horizontal(&downvoteButton, 30.0f);
 
     return false;
 }

@@ -64,10 +64,8 @@ auto edit_reviewers_popup::render_popup() -> void
 				{
 					if (ImGui::Selectable(user.m_displayName.c_str()))
 					{
-						{
-							m_newUsers.push_back(user);
-							m_addingNewUser = false;
-						}
+						m_newUsers.push_back(user);
+						m_addingNewUser = false;
 					}
 				}
 			}

@@ -302,11 +302,11 @@ auto workspace_widget::render_content() -> void
 
                 if (rightPanelBackground.render_layout_element_pixels_vertical(&reviewersHeader, 50.0f))
                 {
-                    const std::vector<user_data> reviewers = workspaceManager->get_users_for_review(selectedReview.m_reviewId);
+                    const std::vector<reviewer_data> reviewers = workspaceManager->get_users_for_review(selectedReview.m_reviewId);
 
                     for (const auto& reviewer : reviewers)
                     {
-                        inline_user_display_element user(reviewer.m_displayName, reviewer.m_email);
+                        reviewer_display_element user(reviewer);
                         rightPanelBackground.render_layout_element_pixels_vertical(&user, 50.0f);
                     }
                 }
@@ -574,7 +574,7 @@ auto workspace_widget::render_content() -> void
             constexpr float buttonSize  = textSize * 2.0f;
 
             gluten::layout leftUserPanel(gluten::layout_type::top_to_bottom, gluten::anchor_preset::stretch_left);
-            inline_user_avatar_element userAvatar(selectedUser.m_email);
+            user_avatar_element userAvatar(selectedUser.m_email);
             gluten::text userDisplayNameText(selectedUser.m_displayName, ImVec2(), gluten::anchor_preset::stretch_full);
             gluten::text userTitleText(selectedUser.m_title, ImVec2(), gluten::anchor_preset::stretch_full);
             gluten::text userEmailText(selectedUser.m_email, ImVec2(), gluten::anchor_preset::stretch_full);

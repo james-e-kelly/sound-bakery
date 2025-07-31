@@ -109,7 +109,7 @@ public:
     auto logout() -> void;
 
     // Review Users
-    auto get_users_for_review(int64_t reviewId) -> const std::vector<user_data>&;
+    auto get_users_for_review(int64_t reviewId) -> const std::vector<reviewer_data>&;
     auto set_users_for_review(int64_t reviewId, std::vector<int64_t> userIds) -> concurrencpp::result<tl::expected<bool, database_error>>;
 
 protected:
@@ -137,5 +137,6 @@ private:
     std::shared_ptr<review_database> m_database;
 
     cache<user_data> m_allUsersCache;
-    cache<user_data> m_reviewUsersCache;
+    cache<reviewer_data> m_reviewUsersCache;
+    cache<std::unordered_map<int64_t, review_vote>> m_reviewVotesCache;
 };
