@@ -742,7 +742,7 @@ auto review_database::get_users_count(std::string userToken) -> concurrencpp::re
     {
         if (m_database.tableExists("users"))
         {
-            SQLite::Statement statement(m_database, "SELECT id FROM users");
+            SQLite::Statement statement(m_database, "SELECT COUNT(id) FROM users");
 
             if (statement.executeStep())
             {
