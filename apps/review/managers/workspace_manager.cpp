@@ -381,19 +381,19 @@ auto workspace_manager::logout() -> void
 
 auto workspace_manager::get_all_users() -> const std::vector<user_data>&
 {
-    if (!m_usersCache.cache_count_valid(0, get_users_count()))
+    if (!m_allUsersCache.cache_count_valid(0, get_users_count()))
     {
-        m_usersCache.erase_cache(0);
+        m_allUsersCache.erase_cache(0);
 
         const tl::expected<std::vector<user_data>, database_error> result = m_database->get_all_users(m_userSettingsData->m_loggedInUser.m_sessionToken).get();
 
         if (result.has_value())
         {
-            m_usersCache.add_cache(0, result.value());
+            m_allUsersCache.add_cache(0, result.value());
         }
     }
 
-    return m_usersCache.get_cache(0);
+    return m_allUsersCache.get_cache(0);
 }
 
 auto workspace_manager::get_users_count() const -> std::size_t
@@ -421,7 +421,7 @@ auto workspace_manager::select_user(const std::string& email) -> void
         return;
     }
 
-    for (const auto& user : m_usersCache.get_cache(0))
+    for (const auto& user : m_allUsersCache.get_cache(0))
     {
         if (user.m_email == email)
         {
@@ -454,4 +454,28 @@ auto workspace_manager::delete_user(const std::string& email) -> void
             }
         }
     }
+}
+
+auto workspace_manager::get_users_for_review(int64_t reviewId) -> const std::vector<user_data>&
+{
+    if (!m_reviewUsersCache.cache_count_valid(reviewId, get_users_count()))
+    {
+        m_reviewUsersCache.erase_cache(reviewId);
+
+        const tl::expected<std::vector<user_data>, database_error> result = m_database->get_users_for_review(reviewId, m_userSettingsData->m_loggedInUser.m_sessionToken).get();
+
+        if (result.has_value())
+        {
+            m_reviewUsersCache.add_cache(reviewId, result.value());
+        }
+    }
+
+    return m_reviewUsersCache.get_cache(reviewId);
+}
+
+auto workspace_manager::set_users_for_review(int64_t reviewId, std::vector<int64_t> userIds) -> concurrencpp::result<tl::expected<bool, database_error>>
+{
+    m_reviewUsersCache.erase_cache(reviewId);
+
+    co_return co_await m_database->set_users_for_review(reviewId, userIds, m_userSettingsData->m_loggedInUser.m_sessionToken);
 }

@@ -98,13 +98,19 @@ public:
     auto logged_in_user_can_create_users() -> concurrencpp::result<bool>;
     auto create_user(const new_user_data newUser, std::optional<std::string> userToken) -> concurrencpp::result<tl::expected<bool, database_error>>;
     auto create_user_and_login(new_user_data newUser) -> concurrencpp::result<tl::expected<bool, database_error>>;
-    auto login_user(login_request_data loginData) -> concurrencpp::result<tl::expected<bool, database_error>>;
-    auto logout() -> void;
     auto get_all_users() -> const std::vector<user_data>&;
     auto get_users_count() const -> std::size_t;
     auto get_selected_user() const -> const user_data&;
     auto select_user(const std::string& email) -> void;
     auto delete_user(const std::string& email) -> void;
+
+    // Login / Logout
+    auto login_user(login_request_data loginData) -> concurrencpp::result<tl::expected<bool, database_error>>;
+    auto logout() -> void;
+
+    // Review Users
+    auto get_users_for_review(int64_t reviewId) -> const std::vector<user_data>&;
+    auto set_users_for_review(int64_t reviewId, std::vector<int64_t> userIds) -> concurrencpp::result<tl::expected<bool, database_error>>;
 
 protected:
     auto init(gluten::app* app) -> void override;
@@ -130,5 +136,6 @@ private:
     user_data m_selectedUser;
     std::shared_ptr<review_database> m_database;
 
-    cache<user_data> m_usersCache;
+    cache<user_data> m_allUsersCache;
+    cache<user_data> m_reviewUsersCache;
 };

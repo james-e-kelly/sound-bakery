@@ -61,6 +61,16 @@ namespace
         );
     )sql";
 
+    constexpr const char* g_createReviewersTableStatement = R"sql(
+        CREATE TABLE IF NOT EXISTS reviewers (
+            review_id INTEGER NOT NULL,
+            user_id INTEGER NOT NULL,
+            PRIMARY KEY (review_id, user_id),
+            FOREIGN KEY(review_id) REFERENCES reviews(id),
+            FOREIGN KEY(user_id) REFERENCES users(id)
+        );
+    )sql";
+
     constexpr const char* g_createReviewFilesTableStatement = R"sql(
         CREATE TABLE IF NOT EXISTS review_files (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -156,6 +166,7 @@ review_database::review_database(const std::filesystem::path& databasePath)
     m_database.exec(g_createReviewsTableStatement);
     m_database.exec(g_createUsersTableStatement);
     m_database.exec(g_createReviewAuthorsTableStatement);
+    m_database.exec(g_createReviewersTableStatement);
     m_database.exec(g_createReviewFilesTableStatement);
     m_database.exec(g_createVersionedReviewFilesTableStatement);
     m_database.exec(g_createCommentsTableStatement);
@@ -772,16 +783,17 @@ auto review_database::get_all_users(std::string userToken) -> concurrencpp::resu
     {
         if (m_database.tableExists("users"))
         {
-            SQLite::Statement statement(m_database, "SELECT display_name, title, email, timestamp, privilege FROM users");
+            SQLite::Statement statement(m_database, "SELECT id, display_name, title, email, timestamp, privilege FROM users");
 
             while (statement.executeStep())
             {
                 user_data user;
-                user.m_displayName = statement.getColumn(0).getText();
-                user.m_title       = statement.getColumn(1).getText();
-                user.m_email       = statement.getColumn(2).getText();
-                user.m_createdAt   = statement.getColumn(3).getText();
-                user.m_privileges  = (user_privileges)statement.getColumn(4).getInt();
+                user.m_userId      = statement.getColumn(0).getInt64();
+                user.m_displayName = statement.getColumn(1).getText();
+                user.m_title       = statement.getColumn(2).getText();
+                user.m_email       = statement.getColumn(3).getText();
+                user.m_createdAt   = statement.getColumn(4).getText();
+                user.m_privileges  = (user_privileges)statement.getColumn(5).getInt();
                 result.push_back(std::move(user));
             }
         }
@@ -837,4 +849,85 @@ auto review_database::delete_user(std::string email, std::string userToken) -> c
     }
 
     co_return false;
+}
+
+auto review_database::get_users_for_review(int64_t reviewId, std::string userToken) -> concurrencpp::result<tl::expected<std::vector<user_data>, database_error>>
+{
+    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
+
+    if (reviewId < 0)
+    {
+        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::invalid_parameters, .m_errorMessage = "Review Id is invalid"});
+    }
+
+    if (userToken.empty())
+    {
+        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::unauthorized, .m_errorMessage = "User token is empty"});
+    }
+
+    if (co_await user_is_logged_in_and_has_privilege(userToken, user_privileges::guest) == false)
+    {
+        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::unauthorized, .m_errorMessage = "Unauthorized"});
+    }
+
+    SQLite::Statement getUsersForReviewStatement(m_database, "SELECT user_id FROM reviewers WHERE review_id = ?;");
+    getUsersForReviewStatement.bind(1, reviewId);
+
+    std::vector<int64_t> userIds;
+
+    while (getUsersForReviewStatement.executeStep())
+    {
+        userIds.push_back(getUsersForReviewStatement.getColumn(0).getInt64());
+    }
+
+    std::vector<user_data> users;
+
+    for (const auto& userId : userIds)
+    {
+        SQLite::Statement getUserStatement(m_database, "SELECT id, display_name, title, email, timestamp, privilege FROM users WHERE id = ?;");
+        getUserStatement.bind(1, userId);
+
+        if (getUserStatement.executeStep())
+        {
+            user_data user;
+            user.m_userId      = getUserStatement.getColumn(0).getInt64();
+            user.m_displayName = getUserStatement.getColumn(1).getText();
+            user.m_title       = getUserStatement.getColumn(2).getText();
+            user.m_email       = getUserStatement.getColumn(3).getText();
+            user.m_createdAt   = getUserStatement.getColumn(4).getText();
+            user.m_privileges  = (user_privileges)getUserStatement.getColumn(5).getInt();
+            users.push_back(std::move(user));
+        }
+    }
+
+    co_return users;
+}
+
+auto review_database::set_users_for_review(int64_t reviewId, std::vector<int64_t> userIds, std::string userToken) -> bool_result
+{
+    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
+
+    if (reviewId < 0)
+    {
+        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::invalid_parameters, .m_errorMessage = "Review Id is invalid"});
+    }
+
+    if (userToken.empty())
+    {
+        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::unauthorized, .m_errorMessage = "User token is empty"});
+    }
+
+    SQLite::Statement removeAllReviewersStatement(m_database, "DELETE FROM reviewers WHERE review_id = ?;");
+    removeAllReviewersStatement.bind(1, reviewId);
+    removeAllReviewersStatement.exec();
+
+    for (const auto& userId : userIds)
+    {
+        SQLite::Statement addUserStatement(m_database, "INSERT INTO reviewers (review_id, user_id) VALUES (?, ?);");
+        addUserStatement.bind(1, reviewId);
+        addUserStatement.bind(2, userId);
+        addUserStatement.exec();
+    }
+
+    co_return true;
 }

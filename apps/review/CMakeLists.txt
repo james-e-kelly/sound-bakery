@@ -21,6 +21,7 @@ set(review_SOURCES
   widgets/create_review_popup.cpp
   widgets/update_review_popup.cpp
   widgets/user_flow_popup.cpp
+  widgets/edit_reviewers_popup.cpp
 )
 
 set(review_HEADERS
@@ -48,6 +49,7 @@ set(review_HEADERS
   widgets/create_review_popup.h
   widgets/update_review_popup.h
   widgets/user_flow_popup.h
+  widgets/edit_reviewers_popup.h
 )
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Source Files" FILES ${review_SOURCES})

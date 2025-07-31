@@ -11,6 +11,7 @@
 #include "widgets/create_project_popup.h"
 #include "widgets/create_review_popup.h"
 #include "widgets/update_review_popup.h"
+#include "widgets/edit_reviewers_popup.h"
 
 namespace
 {
@@ -301,24 +302,28 @@ auto workspace_widget::render_content() -> void
 
                 if (rightPanelBackground.render_layout_element_pixels_vertical(&reviewersHeader, 50.0f))
                 {
-                    inline_user_display_element user("James Kelly", "james@jameskelly.audio");
-                    inline_user_display_element user2("Jack Tysoe", "jtysoe@climaxstudios.com");
-                    inline_user_display_element user3("Sam Packer", "spacker@climaxstudios.com");
-                    inline_user_display_element user4("Rory Burcham", "rburcham@climaxstudios.com");
-                    inline_user_display_element user5("Andrada Vaduvoiu", "avaduvoiu@climaxstudios.com");
-                    inline_user_display_element user6("James", "jkelly@climaxstudios.com");
-                    rightPanelBackground.render_layout_element_pixels_vertical(&user, 50.0f);
-                    rightPanelBackground.render_layout_element_pixels_vertical(&user2, 50.0f);
-                    rightPanelBackground.render_layout_element_pixels_vertical(&user3, 50.0f);
-                    rightPanelBackground.render_layout_element_pixels_vertical(&user4, 50.0f);
-                    rightPanelBackground.render_layout_element_pixels_vertical(&user5, 50.0f);
-                    rightPanelBackground.render_layout_element_pixels_vertical(&user6, 50.0f);
+                    const std::vector<user_data> reviewers = workspaceManager->get_users_for_review(selectedReview.m_reviewId);
+
+                    for (const auto& reviewer : reviewers)
+                    {
+                        inline_user_display_element user(reviewer.m_displayName, reviewer.m_email);
+                        rightPanelBackground.render_layout_element_pixels_vertical(&user, 50.0f);
+                    }
                 }
 
                 gluten::button editReviewersButton("Edit " ICON_LC_PENCIL, false, gluten::anchor_preset::right_top);
                 editReviewersButton.set_element_alignment(ImVec2(1.0f, -0.1f));
                 editReviewersButton.set_element_translation(ImVec2(-ImGui::GetStyle().FramePadding.x, 0.0f));
-                editReviewersButton.render(reviewersHeader.get_element_rect());
+                
+                if (m_userSettings->m_loggedInUser.m_privileges > user_privileges::guest)
+                {
+                    if (editReviewersButton.render(reviewersHeader.get_element_rect()))
+                    {
+                        static std::shared_ptr<edit_reviewers_popup> editReviewersPopup;
+                        editReviewersPopup = add_child_widget<edit_reviewers_popup>(false, selectedReview);
+                        editReviewersPopup->open_popup();
+                    }
+                }
 
                 gluten::collapsing_header testsHeader("Tests");
 

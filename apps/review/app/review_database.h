@@ -34,6 +34,8 @@ public:
     review_database(const std::filesystem::path& databasePath);
     ~review_database() = default;
 
+    using bool_result = concurrencpp::result<tl::expected<bool, database_error>>;
+
 public:
     // Workspace
     auto create_workspace(const std::string name) -> concurrencpp::result<void>;
@@ -68,6 +70,10 @@ public:
     auto get_users_count(std::string userToken) -> concurrencpp::result<tl::expected<std::size_t, database_error>>;
     auto get_all_users(std::string userToken) -> concurrencpp::result<tl::expected<std::vector<user_data>, database_error>>;
     auto delete_user(std::string email, std::string userToken) -> concurrencpp::result<tl::expected<bool, database_error>>;
+
+    // Review Users
+    auto get_users_for_review(int64_t reviewId, std::string userToken) -> concurrencpp::result<tl::expected<std::vector<user_data>, database_error>>;
+    auto set_users_for_review(int64_t reviewId, std::vector<int64_t> userIds, std::string userToken) -> bool_result;
 
 private:
     SQLite::Database m_database;
