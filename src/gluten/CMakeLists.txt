@@ -30,6 +30,7 @@ set(GLUTEN_SOURCES
   elements/toolbar.cpp
   elements/icon_button.cpp
   elements/collapsing_header.cpp
+  elements/loading_spinner.cpp
   elements/layouts/layout.cpp
   managers/manager.cpp
   subsystems/renderer_subsystem.cpp
@@ -57,6 +58,7 @@ set(GLUTEN_HEADERS
   elements/toolbar.h
   elements/icon_button.h
   elements/collapsing_header.h
+  elements/loading_spinner.h
   elements/layouts/layout.h
   managers/manager.h
   subsystems/renderer_subsystem.h
