@@ -20,20 +20,64 @@ class workspace_widget;
 template <typename data_type, typename key_type = int64_t>
 struct cache
 {
-    [[nodiscard]] auto contains(const key_type& key) const -> bool { return m_cache.contains(key); }
-    [[nodiscard]] auto cache_count_valid(const key_type& key, const std::size_t& currentDataSize) const -> bool
-    {
-        bool result = false;
+    using data_container = std::vector<data_type>;
+    using async_get_data_size = concurrencpp::result<std::size_t>;
+    using async_get_data = concurrencpp::result<data_container>;
+    using async_get_data_expected = concurrencpp::result<tl::expected<data_container, database_error>>;
 
-        if (contains(key))
+    [[nodiscard]] auto contains(const key_type& key) const -> bool { return m_cache.contains(key); }
+
+    /**
+     * @brief Checks if the cache is invalid.
+     *
+     * @return true on cache invalidation
+     */
+    [[nodiscard]] auto check_for_cache_invalidation(const key_type& key, async_get_data_size&& asyncGetDataSize) -> bool
+    {
+        using std::size_t;
+
+        if (m_asyncGetData.contains(key))
         {
-            if (m_cache.at(key).size() == currentDataSize)
+            if (m_asyncGetData[key].status() == concurrencpp::result_status::value)
             {
-                result = true;
+                m_cache[key] = m_asyncGetData[key].get();
+                m_asyncGetData.erase(key);
+            }
+        }
+        else if (m_asyncGetDataWithExpected.contains(key))
+        {
+            if (m_asyncGetDataWithExpected[key].status() == concurrencpp::result_status::value)
+            {
+                const tl::expected<data_container, database_error> expected = m_asyncGetDataWithExpected[key].get();
+
+                if (expected.has_value())
+                {
+                    m_cache[key] = expected.value();
+                }
+
+                m_asyncGetDataWithExpected.erase(key);
+            }
+        }
+        else
+        {
+            if (m_asyncGetDataSize.contains(key))
+            {
+                if (m_asyncGetDataSize[key].status() == concurrencpp::result_status::value)
+                {
+                    const size_t currentCacheSize = m_cache[key].size();
+                    const size_t newDataSize      = m_asyncGetDataSize[key].get();
+
+                    m_cacheValid[key] = currentCacheSize == newDataSize;
+                    m_asyncGetDataSize.erase(key);
+                }
+            }
+            else
+            {
+                m_asyncGetDataSize.insert({key, std::move(asyncGetDataSize)});
             }
         }
 
-        return result;
+        return !m_cacheValid[key];   // Always return the validity bool we have on the main thread. Async functions will update this when ready
     }
     [[nodiscard]] auto get_cache(const key_type& key) const -> const std::vector<data_type>&
     {
@@ -46,12 +90,28 @@ struct cache
     }
 
     auto erase_cache(const key_type& key) -> void { m_cache.erase(key); }
-    auto add_cache(const key_type& key, const std::vector<data_type>& data) -> void
+
+    auto add_cache_sync(const key_type& key, const data_container& data)
     {
-        m_cache.insert({key, std::move(data)});
+        m_cache[key] = data;
     }
 
-    std::unordered_map<key_type, std::vector<data_type>> m_cache;
+    auto add_cache(const key_type& key, async_get_data&& asyncGetData) -> void
+    {
+        m_asyncGetData[key] = std::move(asyncGetData);
+    }
+
+    auto add_cache_handle_expected(const key_type& key, async_get_data_expected&& asyncGetData) -> void
+    {
+        m_asyncGetDataWithExpected[key] = std::move(asyncGetData);
+    }
+
+    std::unordered_map<key_type, data_container> m_cache;
+    std::unordered_map<key_type, bool> m_cacheValid;
+
+    std::unordered_map<key_type, async_get_data_size> m_asyncGetDataSize;
+    std::unordered_map<key_type, async_get_data> m_asyncGetData;
+    std::unordered_map<key_type, async_get_data_expected> m_asyncGetDataWithExpected;
 };
 
 class workspace_manager : public gluten::manager	
@@ -84,11 +144,11 @@ public:
 
     // Activity
     auto get_all_activity_for_review(int64_t reviewId) const -> const std::vector<activity_data>&;
-    auto get_activity_count_for_review(int64_t reviewId) const -> std::size_t;
+    auto get_activity_count_for_review(int64_t reviewId) const -> concurrencpp::result<std::size_t>;
 
     // Comments
-    auto get_all_comments_for_review(int64_t reviewId) const -> const std::vector<comment_data>&;
-    auto get_comments_count_for_review(int64_t reviewId) const -> std::size_t;
+    auto get_all_comments_for_review(int64_t reviewId) -> const std::vector<comment_data>&;
+    auto get_comments_count_for_review(int64_t reviewId) const -> concurrencpp::result<std::size_t>;
     auto create_comment(const new_comment_data& newComment) -> void;
     auto delete_comment(int64_t commentId) -> void;
 
@@ -99,7 +159,7 @@ public:
     auto create_user(const new_user_data newUser, std::optional<std::string> userToken) -> concurrencpp::result<tl::expected<bool, database_error>>;
     auto create_user_and_login(new_user_data newUser) -> concurrencpp::result<tl::expected<bool, database_error>>;
     auto get_all_users() -> const std::vector<user_data>&;
-    auto get_users_count() const -> std::size_t;
+    auto get_users_count() const -> concurrencpp::result<std::size_t>;
     auto get_selected_user() const -> const user_data&;
     auto select_user(const std::string& email) -> void;
     auto delete_user(const std::string& email) -> void;
@@ -139,6 +199,7 @@ private:
     user_data m_selectedUser;
     std::shared_ptr<review_database> m_database;
 
+    cache<comment_data> m_cachedComments;
     cache<user_data> m_allUsersCache;
     cache<reviewer_data> m_reviewUsersCache;
     cache<std::unordered_map<int64_t, review_vote>> m_reviewVotesCache;

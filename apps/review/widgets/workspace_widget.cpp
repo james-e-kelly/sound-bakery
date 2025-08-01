@@ -646,7 +646,8 @@ void workspace_widget::render_top_content_bar(std::shared_ptr<workspace_manager>
 {
     verticalContentLayout.render_layout_element_pixels_vertical(&topContentBarBackground, topHeaderHeight);
 
-    std::string breadcrumbString = workspaceManager->get_workspace_name();
+    static std::string workspaceName = workspaceManager->get_workspace_name();
+    std::string breadcrumbString     = workspaceName;
 
     if (selectedProject.m_id != 0)
     {
