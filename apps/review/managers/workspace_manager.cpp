@@ -475,6 +475,16 @@ auto workspace_manager::get_users_for_review(int64_t reviewId) -> const std::vec
                     return reviewer_data(user, database->get_user_vote_on_review(reviewId, user.m_userId).get().value());
                 });
 
+            std::sort(reviewers.begin(), reviewers.end(), [userSettings = m_userSettingsData](const reviewer_data& lhs, const reviewer_data& rhs) -> bool
+                {
+                    return std::strcmp(userSettings->m_loggedInUser.m_email.c_str(), lhs.m_email.c_str()) == 0;
+                });
+
+            std::sort(reviewers.begin() + 1, reviewers.end(), [](const reviewer_data& lhs, const reviewer_data& rhs) 
+                {
+                    return std::strcmp(lhs.m_displayName.c_str(), rhs.m_displayName.c_str()) < 0;
+                });
+
             m_reviewUsersCache.add_cache(reviewId, reviewers);
         }
     }
