@@ -239,6 +239,12 @@ ImVec2 gluten::layout::get_current_layout_pos_local() const
     return layoutPos - ImGui::GetWindowPos();
 }
 
+auto gluten::layout::pre_render_element() -> void
+{
+    m_firstLayout = true;
+    m_currentLayoutPos.reset();
+}
+
 void gluten::layout::setup_layout_begin(const ImRect& thisBox)
 {
     if (m_layoutType == layout_type::left_to_right || m_layoutType == layout_type::top_to_bottom)

@@ -53,6 +53,9 @@ namespace gluten
 
         ImVec2 get_current_layout_pos_local() const;
 
+    protected:
+        auto pre_render_element() -> void override;
+
     private:
         void setup_layout_begin(const ImRect& thisBox);
 
