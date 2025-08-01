@@ -964,3 +964,31 @@ auto review_database::set_users_for_review(int64_t reviewId, std::vector<int64_t
 
     co_return true;
 }
+
+auto review_database::set_user_vote_for_review(int64_t reviewId, user_id userId, review_vote vote, std::string userToken) -> bool_result
+{
+    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
+
+    if (reviewId < 0)
+    {
+        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::invalid_parameters, .m_errorMessage = "Review ID is invalid"});
+    }
+
+    if (userId < 0)
+    {
+        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::invalid_parameters, .m_errorMessage = "User ID is invalid"});
+    }
+
+    if (userToken.empty())
+    {
+        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::unauthorized, .m_errorMessage = "User token is empty"});
+    }
+
+    SQLite::Statement setVoteStatement(m_database, "INSERT OR REPLACE INTO votes (review_id, user_id, vote) VALUES (?, ?, ?);");
+    setVoteStatement.bind(1, reviewId);
+    setVoteStatement.bind(2, userId);
+    setVoteStatement.bind(3, (int)vote);
+    setVoteStatement.exec();
+
+    co_return true;
+}

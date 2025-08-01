@@ -205,6 +205,7 @@ bool gluten::layout::render_layout_element_internal(const ImRect& thisBox,
             break;
         case gluten::layout::layout_type::right_to_left:
             currentLayoutPos.x -= m_spacing;
+            break;
         case gluten::layout::layout_type::bottom_to_top:
             break;
         default:
@@ -242,6 +243,7 @@ ImVec2 gluten::layout::get_current_layout_pos_local() const
 auto gluten::layout::pre_render_element() -> void
 {
     m_firstLayout = true;
+    m_currentRect.reset();
     m_currentLayoutPos.reset();
 }
 

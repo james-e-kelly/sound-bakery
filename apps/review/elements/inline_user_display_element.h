@@ -4,6 +4,7 @@
 
 #include "gluten/elements/image.h"
 #include "data/review_data.h"
+#include "data/user_settings_data.h"
 
 class user_avatar_element : public gluten::element
 {
@@ -36,11 +37,13 @@ class reviewer_display_element : public gluten::element
 {
 public:
     reviewer_display_element() = delete;
-    reviewer_display_element(const reviewer_data& reviewUser)
+    reviewer_display_element(const reviewer_data& reviewUser, int64_t reviewId)
         : element(element::anchor_preset::stretch_full),
           m_userDisplayName(reviewUser.m_displayName),
           m_userEmailAddress(reviewUser.m_email),
-          m_vote(reviewUser.m_vote)
+          m_vote(reviewUser.m_vote),
+          m_reviewId(reviewId),
+          m_userId(reviewUser.m_userId)
     {
     }
 
@@ -51,4 +54,9 @@ private:
     std::string m_userEmailAddress;
     std::string m_userDisplayName;
     review_vote m_vote = review_vote::no_vote;
+
+    int64_t m_userId   = -1;
+    int64_t m_reviewId = -1;
+
+    gluten::data_source<user_settings_data> m_userSettings;
 };

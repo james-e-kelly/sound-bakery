@@ -3,6 +3,8 @@
 #include "windows.h"
 
 #include "app/review_app.h"
+#include "managers/workspace_manager.h"
+
 #include "boost/algorithm/string/trim.hpp"
 #include "boost/algorithm/string/case_conv.hpp"
 #include "openssl/sha.h"
@@ -156,15 +158,25 @@ auto reviewer_display_element::render_element(const ImRect& parentRect) -> bool
 {
     gluten::imgui::scoped_id id(m_userEmailAddress.c_str());
 
+    const bool renderingLoggedInUser = m_userSettings->m_loggedInUser.m_email == m_userEmailAddress;
+
     user_avatar_element avatar(m_userEmailAddress);
     avatar.render(parentRect);
 
-    gluten::text userNameText(fmt::format("{} - {}", m_userDisplayName,
+    gluten::text userNameText({}, ImVec2(0.0f, 0.5f), element::anchor_preset::left_middle);
+
+    if (renderingLoggedInUser)
+    {
+        userNameText.set_text(m_userDisplayName);
+    }
+    else
+    {
+        userNameText.set_text(fmt::format("{} - {}", m_userDisplayName,
                                           m_vote == review_vote::no_vote  ? "No Vote"
                                           : m_vote == review_vote::upvote ? "Upvoted"
-                                                                          : "Downvoted"),
-                              ImVec2(0.0f, 0.5f),
-                                element::anchor_preset::left_middle);
+                                                                          : "Downvoted"));
+    }
+
     userNameText.set_element_translation(ImVec2(parentRect.GetHeight() + ImGui::GetStyle().FramePadding.x, 0.0f));
     userNameText.render(parentRect);
 
@@ -177,17 +189,35 @@ auto reviewer_display_element::render_element(const ImRect& parentRect) -> bool
     buttonsLayout.set_layout_spacing(ImGui::GetStyle().FramePadding.x);
     buttonsLayout.render(parentRect);
 
-    upvoteButton.set_element_active_color(gluten::theme::carbon_g100::supportWarning);
+    upvoteButton.set_element_active_color(gluten::theme::carbon_g100::supportSuccess);
     clearVoteButton.set_element_active_color(gluten::theme::carbon_g100::supportWarning);
-    downvoteButton.set_element_active_color(gluten::theme::carbon_g100::supportWarning);
+    downvoteButton.set_element_active_color(gluten::theme::carbon_g100::supportError);
 
     upvoteButton.set_element_active(m_vote == review_vote::upvote);
     clearVoteButton.set_element_active(m_vote == review_vote::no_vote);
     downvoteButton.set_element_active(m_vote == review_vote::downvote);
 
-    buttonsLayout.render_layout_element_pixels_horizontal(&upvoteButton, 30.0f);
-    buttonsLayout.render_layout_element_pixels_horizontal(&clearVoteButton, 30.0f);
-    buttonsLayout.render_layout_element_pixels_horizontal(&downvoteButton, 30.0f);
+    if (renderingLoggedInUser)
+    {
+        if (std::shared_ptr<workspace_manager> workspaceManager =
+            gluten::app::get()->get_manager_by_class<workspace_manager>())
+        {
+            if (buttonsLayout.render_layout_element_pixels_horizontal(&upvoteButton, 30.0f))
+            {
+                workspaceManager->set_user_vote_for_review(m_reviewId, m_userId, review_vote::upvote);
+            }
+
+            if (buttonsLayout.render_layout_element_pixels_horizontal(&clearVoteButton, 30.0f))
+            {
+                workspaceManager->set_user_vote_for_review(m_reviewId, m_userId, review_vote::no_vote);
+            }
+            
+            if (buttonsLayout.render_layout_element_pixels_horizontal(&downvoteButton, 30.0f))
+            {
+                workspaceManager->set_user_vote_for_review(m_reviewId, m_userId, review_vote::downvote);
+            }
+        }
+    }
 
     return false;
 }

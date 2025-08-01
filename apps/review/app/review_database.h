@@ -77,6 +77,9 @@ public:
     auto get_users_for_review(int64_t reviewId, std::string userToken) -> concurrencpp::result<tl::expected<std::vector<user_data>, database_error>>;
     auto set_users_for_review(int64_t reviewId, std::vector<int64_t> userIds, std::string userToken) -> bool_result;
 
+    // Votes
+    auto set_user_vote_for_review(int64_t reviewId, user_id userId, review_vote vote, std::string userToken) -> bool_result;
+
 private:
     SQLite::Database m_database;
 };

@@ -488,3 +488,16 @@ auto workspace_manager::set_users_for_review(int64_t reviewId, std::vector<int64
 
     co_return co_await m_database->set_users_for_review(reviewId, userIds, m_userSettingsData->m_loggedInUser.m_sessionToken);
 }
+
+auto workspace_manager::set_user_vote_for_review(int64_t reviewId, int64_t userId, review_vote vote) -> concurrencpp::result<void>
+{
+    co_await concurrencpp::resume_on(gluten::app::get()->background_executor());
+
+    gluten::data_source<user_settings_data> userSettings;
+
+    co_await m_database->set_user_vote_for_review(reviewId, userId, vote, userSettings->m_loggedInUser.m_sessionToken);
+
+    co_await concurrencpp::resume_on(gluten::app::get()->get_tick_executor());
+
+    m_reviewUsersCache.erase_cache(reviewId);
+}

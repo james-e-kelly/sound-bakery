@@ -112,6 +112,9 @@ public:
     auto get_users_for_review(int64_t reviewId) -> const std::vector<reviewer_data>&;
     auto set_users_for_review(int64_t reviewId, std::vector<int64_t> userIds) -> concurrencpp::result<tl::expected<bool, database_error>>;
 
+    // Voting
+    auto set_user_vote_for_review(int64_t reviewId, int64_t userId, review_vote vote) -> concurrencpp::result<void>;
+
 protected:
     auto init(gluten::app* app) -> void override;
     auto start() -> void override;
