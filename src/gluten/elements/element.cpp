@@ -241,47 +241,13 @@ bool gluten::element::render(const ImRect& parent)
     const ImRect elementBox = (get_element_box_from_parent(parent, m_minSize, get_element_content_size(), m_alignment, m_padding, m_anchor) * m_scale) + m_translation;
     m_currentRect = elementBox;
 
-    ImDrawList* const foregroundDrawList = ImGui::GetForegroundDrawList();
-    if (s_debug)
-    {
-        foregroundDrawList->AddRect(elementBox.Min, elementBox.Max,
-                                    ImGui::ColorConvertFloat4ToU32(gluten::theme::red50));
-    }
-
-    if (s_debugVertical)
-    {
-        ImVec2 leftMiddle = elementBox.GetTL();
-        leftMiddle.y += elementBox.GetSize().y / 2.0f;
-
-        ImVec2 rightMiddle = leftMiddle;
-        rightMiddle.x += elementBox.GetSize().x;
-
-        foregroundDrawList->AddLine(leftMiddle, rightMiddle,
-                                    ImGui::ColorConvertFloat4ToU32(gluten::theme::orange50));
-    }
-
-    if (s_debugHorizontal)
-    {
-        ImVec2 topCenter = elementBox.GetTL();
-        topCenter.x += elementBox.GetSize().x / 2.0f;
-
-        ImVec2 bottomCenter = topCenter;
-        bottomCenter.y += elementBox.GetSize().y;
-
-        foregroundDrawList->AddLine(bottomCenter, topCenter, ImGui::ColorConvertFloat4ToU32(gluten::theme::orange50));
-    }
+    ImDrawList* const windowDrawList     = ImGui::GetWindowDrawList();
 
     ImGui::SetCursorScreenPos(elementBox.Min);
-
-    ImGui::Dummy(elementBox.GetSize());
-    
+    ImGui::Dummy(elementBox.GetSize());    
     ImGui::SetCursorScreenPos(elementBox.Min);
 
-    const bool activated = render_element(elementBox);
-
-    const bool hovered = ImGui::IsItemHovered();
-
-    ImDrawList* const windowDrawList = ImGui::GetWindowDrawList();
+    const bool hovered = ImGui::IsMouseHoveringRect(elementBox.Min, elementBox.Max);
 
     if (windowDrawList && m_borderSize.has_value())
     {
@@ -289,7 +255,7 @@ bool gluten::element::render(const ImRect& parent)
 
         if (borderSize > 0.0f)
         {
-            const ImU32 borderColor = ImGui::GetColorU32(ImGuiCol_Border);
+            const ImU32 borderColor    = ImGui::GetColorU32(ImGuiCol_Border);
             const float borderRounding = m_borderRounding.value_or(0.0f);
 
             ImRect borderRect = elementBox;
@@ -299,7 +265,7 @@ bool gluten::element::render(const ImRect& parent)
         }
     }
 
-    if ((activated || m_active) && !hovered && m_activeColor.has_value())
+    if (m_active && !hovered && m_activeColor.has_value())
     {
         if (windowDrawList)
         {
@@ -319,6 +285,44 @@ bool gluten::element::render(const ImRect& parent)
         {
             windowDrawList->AddRectFilled(elementBox.Min, elementBox.Max, m_backgroundColor.value());
         }
+    }
+
+    const bool activated = render_element(elementBox);
+
+    if (activated && hovered && m_activeColor.has_value())
+    {
+        if (windowDrawList)
+        {
+            windowDrawList->AddRectFilled(elementBox.Min, elementBox.Max, m_activeColor.value());
+        }
+    }
+
+    if (s_debug)
+    {
+        windowDrawList->AddRect(elementBox.Min, elementBox.Max,
+                                    ImGui::ColorConvertFloat4ToU32(gluten::theme::red50));
+    }
+
+    if (s_debugVertical)
+    {
+        ImVec2 leftMiddle = elementBox.GetTL();
+        leftMiddle.y += elementBox.GetSize().y / 2.0f;
+
+        ImVec2 rightMiddle = leftMiddle;
+        rightMiddle.x += elementBox.GetSize().x;
+
+        windowDrawList->AddLine(leftMiddle, rightMiddle, ImGui::ColorConvertFloat4ToU32(gluten::theme::orange50));
+    }
+
+    if (s_debugHorizontal)
+    {
+        ImVec2 topCenter = elementBox.GetTL();
+        topCenter.x += elementBox.GetSize().x / 2.0f;
+
+        ImVec2 bottomCenter = topCenter;
+        bottomCenter.y += elementBox.GetSize().y;
+
+        windowDrawList->AddLine(bottomCenter, topCenter, ImGui::ColorConvertFloat4ToU32(gluten::theme::orange50));
     }
 
     return activated;

@@ -180,19 +180,19 @@ bool gluten::layout::render_layout_element_internal(const ImRect& thisBox,
 
     if (element)
     {
-        if (s_debug)
-        {
-            ImDrawList* const foregroundDrawList = ImGui::GetForegroundDrawList();
-            foregroundDrawList->AddRect(currentLayoutPos, currentLayoutPos + sizeGivenToElement,
-                                        ImGui::ColorConvertFloat4ToU32(gluten::theme::purple50));
-        }
-
         if (has_element_scale())
         {
             element->set_element_content_scale(element->get_element_scale() * get_element_scale());
         }
 
         activated = element->render({currentLayoutPos, currentLayoutPos + sizeGivenToElement});
+
+        if (s_debug)
+        {
+            ImDrawList* const drawList = ImGui::GetWindowDrawList();
+            drawList->AddRect(currentLayoutPos, currentLayoutPos + sizeGivenToElement,
+                                        ImGui::ColorConvertFloat4ToU32(gluten::theme::purple50));
+        }
     }
 
     switch (m_layoutType)
