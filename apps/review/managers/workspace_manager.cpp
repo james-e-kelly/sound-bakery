@@ -1,5 +1,6 @@
 #include "workspace_manager.h"
 
+#include "app/review_app.h"
 #include "widgets/intro_widget.h"
 #include "widgets/user_flow_popup.h"
 #include "widgets/workspace_widget.h"
@@ -45,7 +46,7 @@ auto workspace_manager::start() -> void
 	}
 }
 
-auto workspace_manager::open_workspace(const std::filesystem::path& workspaceFile) -> void
+auto workspace_manager::open_workspace(const std::filesystem::path workspaceFile) -> concurrencpp::result<void>
 {
     if (file_is_workspace(workspaceFile))
     {
@@ -54,31 +55,70 @@ auto workspace_manager::open_workspace(const std::filesystem::path& workspaceFil
         m_userSettingsData->m_workspaceFilePath = workspaceFile;
 
         m_database = std::make_shared<review_database>(std::filesystem::path(workspaceFile));
-        m_database->open_workspace(workspaceFile.stem().string()).get();
-        m_database->get_workspace_name().get();
+        
+        co_await concurrencpp::resume_on(review_app::get()->thread_pool_executor());
+        co_await m_database->open_workspace(workspaceFile.stem().string());
+        co_await m_database->get_workspace_name();
 
-        if (m_database->user_table_is_empty().get() || m_userSettingsData->m_loggedInUser.m_sessionToken.empty())
+        if (co_await m_database->user_table_is_empty() || m_userSettingsData->m_loggedInUser.m_sessionToken.empty())
         {
+            co_await concurrencpp::resume_on(review_app::get()->get_tick_executor());
             open_user_flow_popup();
         }
         else
         {
-            if (m_database->user_is_logged_in_and_has_privilege_for_action(m_userSettingsData->m_loggedInUser.m_sessionToken, activity_type::review_created).get())
+            if (co_await m_database->user_is_logged_in_and_has_privilege_for_action(m_userSettingsData->m_loggedInUser.m_sessionToken, activity_type::review_created))
             {
+                co_await concurrencpp::resume_on(review_app::get()->get_tick_executor());
                 open_workspace_widget();
             }
             else
             {
+                co_await concurrencpp::resume_on(review_app::get()->get_tick_executor());
                 open_user_flow_popup();
             }
         }
     }
 }
 
-auto workspace_manager::load_projects_from_workspace() -> void
+auto workspace_manager::load_projects_from_workspace() -> concurrencpp::result<void>
 {
-    const std::vector<project_data> allProjects = m_database->get_all_projects().get();
+    co_await concurrencpp::resume_on(review_app::get()->background_executor());
+    const std::vector<project_data> allProjects = co_await m_database->get_all_projects();
+    co_await concurrencpp::resume_on(review_app::get()->get_tick_executor());
     m_projects = std::set<project_data>(allProjects.cbegin(), allProjects.cend());
+}
+
+auto workspace_manager::async_get_users_for_review(int64_t reviewId) -> concurrencpp::result<std::vector<reviewer_data>>
+{
+    co_await concurrencpp::resume_on(review_app::get()->background_executor());
+
+    const tl::expected<std::vector<user_data>, database_error> result = co_await m_database->get_users_for_review(reviewId, m_userSettingsData->m_loggedInUser.m_sessionToken);
+
+    std::vector<reviewer_data> reviewers;
+
+    if (result.has_value())
+    {
+        std::vector<user_data> users = result.value();
+        reviewers.resize(users.size());
+
+        std::transform(users.begin(), users.end(), reviewers.begin(), [database = m_database, reviewId](const user_data& user) 
+            {
+                return reviewer_data(user, database->get_user_vote_on_review(reviewId, user.m_userId).get().value());
+            });
+
+        std::sort(reviewers.begin(), reviewers.end(), [userSettings = m_userSettingsData](const reviewer_data& lhs, const reviewer_data& rhs) -> bool
+            {
+                return std::strcmp(userSettings->m_loggedInUser.m_email.c_str(), lhs.m_email.c_str()) == 0;
+            });
+
+        std::sort(reviewers.begin() + 1, reviewers.end(), [](const reviewer_data& lhs, const reviewer_data& rhs) 
+            {
+                return std::strcmp(lhs.m_displayName.c_str(), rhs.m_displayName.c_str()) < 0;
+            });
+
+    }
+    co_return reviewers;
 }
 
 auto workspace_manager::open_workspace_widget() -> void 
@@ -118,14 +158,14 @@ auto workspace_manager::create_project(const std::string& projectName, const std
     m_projects.insert(m_database->create_project(projectName, projectDescription).get());
 }
 
-auto workspace_manager::select_project(const std::string& projectName) -> void
+auto workspace_manager::select_project(const std::string projectName) -> concurrencpp::result<void>
 {
     if (projectName.empty())
     {
         m_selectedProject = project_data();
         m_selectedReview  = review_data();
         m_reviews.clear();
-        return;
+        co_return;
     }
 
     for (const auto& project : m_projects)
@@ -134,8 +174,10 @@ auto workspace_manager::select_project(const std::string& projectName) -> void
         {
             m_selectedProject = project;
 
-            std::vector<review_data> allReviews = m_database->get_all_reviews(m_selectedProject.m_id).get();
-            m_reviews         = std::set<review_data>(allReviews.cbegin(), allReviews.cend());
+            co_await concurrencpp::resume_on(review_app::get()->background_executor());
+            std::vector<review_data> allReviews = co_await m_database->get_all_reviews(m_selectedProject.m_id);
+            co_await concurrencpp::resume_on(review_app::get()->get_tick_executor());
+            m_reviews = std::set<review_data>(allReviews.cbegin(), allReviews.cend());
             break;
         }
     }
@@ -188,9 +230,9 @@ auto workspace_manager::get_selected_project() const -> const project_data&
 
 auto workspace_manager::get_projects() const -> const std::set<project_data>& { return m_projects; }
 
-auto workspace_manager::get_workspace_name() const -> std::string
+auto workspace_manager::get_workspace_name() const -> concurrencpp::result<std::string>
 {
-    return m_database->get_workspace_name().get();
+    co_return co_await m_database->get_workspace_name();
 }
 
 auto workspace_manager::get_workspace_file() const -> std::filesystem::path
@@ -252,16 +294,14 @@ auto workspace_manager::get_all_reviews() const -> const std::set<review_data>&
     return m_reviews;
 }
 
-auto workspace_manager::get_all_activity_for_review(int64_t reviewId) const -> const std::vector<activity_data>&
+auto workspace_manager::get_all_activity_for_review(int64_t reviewId) -> typename cache<activity_data>::cache_return
 {
-    static cache<activity_data> s_cachedActivity;
-
-    if (s_cachedActivity.check_for_cache_invalidation(reviewId, get_activity_count_for_review(reviewId)))
+    if (m_cachedActivity.check_for_cache_invalidation(reviewId, get_activity_count_for_review(reviewId)))
     {
-        s_cachedActivity.add_cache(reviewId, m_database->get_all_activity_for_review(reviewId));
+        m_cachedActivity.add_cache(reviewId, m_database->get_all_activity_for_review(reviewId));
     }
 
-    return s_cachedActivity.get_cache(reviewId);
+    return m_cachedActivity.get_cache(reviewId);
 }
 
 auto workspace_manager::get_activity_count_for_review(int64_t reviewId) const -> concurrencpp::result<std::size_t>
@@ -269,7 +309,7 @@ auto workspace_manager::get_activity_count_for_review(int64_t reviewId) const ->
     co_return co_await m_database->get_activity_count_for_review(reviewId);
 }
 
-auto workspace_manager::get_all_comments_for_review(int64_t reviewId) -> const std::vector<comment_data>&
+auto workspace_manager::get_all_comments_for_review(int64_t reviewId) -> cache<comment_data>::cache_return
 {
     if (m_cachedComments.check_for_cache_invalidation(reviewId, get_comments_count_for_review(reviewId)))
     {
@@ -365,7 +405,7 @@ auto workspace_manager::logout() -> void
     open_user_flow_popup();
 }
 
-auto workspace_manager::get_all_users() -> const std::vector<user_data>&
+auto workspace_manager::get_all_users() -> typename cache<user_data>::cache_return
 {
     if (m_allUsersCache.check_for_cache_invalidation(0, get_users_count()))
     {
@@ -400,12 +440,17 @@ auto workspace_manager::select_user(const std::string& email) -> void
         return;
     }
 
-    for (const auto& user : m_allUsersCache.get_cache(0))
+    const auto cachedUsers = m_allUsersCache.get_cache(0);
+
+    if (cachedUsers.has_value())
     {
-        if (user.m_email == email)
+        for (const auto& user : cachedUsers.value())
         {
-            m_selectedUser = user;
-            break;
+            if (user.m_email == email)
+            {
+                m_selectedUser = user;
+                break;
+            }
         }
     }
 }
@@ -435,35 +480,11 @@ auto workspace_manager::delete_user(const std::string& email) -> void
     }
 }
 
-auto workspace_manager::get_users_for_review(int64_t reviewId) -> const std::vector<reviewer_data>&
+auto workspace_manager::get_users_for_review(int64_t reviewId) -> typename cache<reviewer_data>::cache_return
 {
     if (m_reviewUsersCache.check_for_cache_invalidation(reviewId, get_users_count()))
     {
-        const tl::expected<std::vector<user_data>, database_error> result = m_database->get_users_for_review(reviewId, m_userSettingsData->m_loggedInUser.m_sessionToken).get();
-
-        if (result.has_value())
-        {
-            std::vector<user_data> users = result.value();
-            std::vector<reviewer_data> reviewers;
-            reviewers.resize(users.size());
-
-            std::transform(users.begin(), users.end(), reviewers.begin(), [database = m_database, reviewId](const user_data& user) 
-                {
-                    return reviewer_data(user, database->get_user_vote_on_review(reviewId, user.m_userId).get().value());
-                });
-
-            std::sort(reviewers.begin(), reviewers.end(), [userSettings = m_userSettingsData](const reviewer_data& lhs, const reviewer_data& rhs) -> bool
-                {
-                    return std::strcmp(userSettings->m_loggedInUser.m_email.c_str(), lhs.m_email.c_str()) == 0;
-                });
-
-            std::sort(reviewers.begin() + 1, reviewers.end(), [](const reviewer_data& lhs, const reviewer_data& rhs) 
-                {
-                    return std::strcmp(lhs.m_displayName.c_str(), rhs.m_displayName.c_str()) < 0;
-                });
-
-            m_reviewUsersCache.add_cache_sync(reviewId, reviewers);
-        }
+        m_reviewUsersCache.add_cache(reviewId, async_get_users_for_review(reviewId));
     }
 
     return m_reviewUsersCache.get_cache(reviewId);

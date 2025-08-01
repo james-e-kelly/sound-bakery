@@ -240,15 +240,28 @@ auto workspace_widget::render_list() -> void
                     }
                     break;
                 case workspace_widget::users_view:
-                    for (const auto& user : workspaceManager->get_all_users())
+                {
+                    const auto allUsers = workspaceManager->get_all_users();
+
+                    if (allUsers.has_value())
                     {
-                        user_element userElement(user);
-                        if (itemsLayout.render_layout_element_pixels_vertical(&userElement, leftToolbarButtonHeight))
+                        for (const auto& user : allUsers.value())
                         {
-                            workspaceManager->select_user(user.m_email);
+                            user_element userElement(user);
+                            if (itemsLayout.render_layout_element_pixels_vertical(&userElement,
+                                                                                  leftToolbarButtonHeight))
+                            {
+                                workspaceManager->select_user(user.m_email);
+                            }
                         }
                     }
+                    else
+                    {
+                        gluten::loading_spinner loadingSpinner;
+                        itemsLayout.render_layout_element_pixels_vertical(&loadingSpinner, leftToolbarButtonHeight);
+                    }
                     break;
+                }
                 case workspace_widget::settings_view:
                     break;
                 default:
@@ -392,9 +405,6 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
             {
                 ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
 
-                const std::vector<comment_data>& comments =
-                    workspaceManager->get_all_comments_for_review(selectedReview.m_reviewId);
-
                 static bool newCommentOpen = false;
 
                 ImGui::BeginDisabled(newCommentOpen);
@@ -452,32 +462,41 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
 
                 ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
 
-                for (const auto& comment : comments)
+                const auto comments = workspaceManager->get_all_comments_for_review(selectedReview.m_reviewId);
+                if (comments.has_value())
                 {
-                    ImGui::TextWrapped(comment.m_comment.c_str());
-
-                    bool requestBreak = false;
-
-                    if (ImGui::BeginPopupContextItem(comment.m_comment.c_str()))
+                    for (const auto& comment : comments.value())
                     {
-                        if (ImGui::Selectable("Copy"))
-                        {
-                            ImGui::SetClipboardText(comment.m_comment.c_str());
-                        }
+                        ImGui::TextWrapped(comment.m_comment.c_str());
 
-                        if (ImGui::Selectable("Delete"))
-                        {
-                            workspaceManager->delete_comment(comment.m_commentId);
-                            requestBreak = true;
-                        }
-                        ImGui::EndPopup();
-                    }
-                    ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
+                        bool requestBreak = false;
 
-                    if (requestBreak)
-                    {
-                        break;
+                        if (ImGui::BeginPopupContextItem(comment.m_comment.c_str()))
+                        {
+                            if (ImGui::Selectable("Copy"))
+                            {
+                                ImGui::SetClipboardText(comment.m_comment.c_str());
+                            }
+
+                            if (ImGui::Selectable("Delete"))
+                            {
+                                workspaceManager->delete_comment(comment.m_commentId);
+                                requestBreak = true;
+                            }
+                            ImGui::EndPopup();
+                        }
+                        ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
+
+                        if (requestBreak)
+                        {
+                            break;
+                        }
                     }
+                }
+                else
+                {
+                    gluten::loading_spinner loading;
+                    loading.render_cursor();
                 }
 
                 ImGui::EndTabItem();
@@ -485,44 +504,50 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
 
             if (ImGui::BeginTabItem("Activity"))
             {
-                const std::vector<activity_data>& reviewsActivity =
-                    workspaceManager->get_all_activity_for_review(selectedReview.m_reviewId);
-
-                for (const auto& iter : reviewsActivity)
+                const auto reviewsActivity = workspaceManager->get_all_activity_for_review(selectedReview.m_reviewId);
+                if (reviewsActivity.has_value())
                 {
-                    std::istringstream in(iter.m_activityTimestamp);
-                    std::chrono::sys_seconds tp;
-                    in >> std::chrono::parse("%F %T", tp);
-
-                    auto now  = std::chrono::floor<std::chrono::seconds>(std::chrono::system_clock::now());
-                    auto diff = now - tp;
-
-                    using namespace std::literals::chrono_literals;
-
-                    std::string activityTimeText;
-
-                    if (diff < 1min)
+                    for (const auto& iter : reviewsActivity.value())
                     {
-                        activityTimeText = "less than 1 minute ago";
-                    }
-                    else if (diff <= 60min)
-                    {
-                        activityTimeText =
-                            std::to_string(duration_cast<std::chrono::minutes>(diff).count()) + " minutes ago";
-                    }
-                    else if (diff < 24h)
-                    {
-                        activityTimeText =
-                            std::to_string(duration_cast<std::chrono::hours>(diff).count()) + " hours ago";
-                    }
-                    else
-                    {
-                        auto days        = duration_cast<std::chrono::duration<int, std::ratio<86400>>>(diff).count();
-                        activityTimeText = std::to_string(days) + " day" + (days > 1 ? "s" : "") + " ago";
-                    }
+                        std::istringstream in(iter.m_activityTimestamp);
+                        std::chrono::sys_seconds tp;
+                        in >> std::chrono::parse("%F %T", tp);
 
-                    ImGui::Dummy(ImVec2(0, ImGui::GetStyle().FramePadding.y));
-                    ImGui::Text(fmt::format("{} {}", iter.m_activityText, activityTimeText).c_str());
+                        auto now  = std::chrono::floor<std::chrono::seconds>(std::chrono::system_clock::now());
+                        auto diff = now - tp;
+
+                        using namespace std::literals::chrono_literals;
+
+                        std::string activityTimeText;
+
+                        if (diff < 1min)
+                        {
+                            activityTimeText = "less than 1 minute ago";
+                        }
+                        else if (diff <= 60min)
+                        {
+                            activityTimeText =
+                                std::to_string(duration_cast<std::chrono::minutes>(diff).count()) + " minutes ago";
+                        }
+                        else if (diff < 24h)
+                        {
+                            activityTimeText =
+                                std::to_string(duration_cast<std::chrono::hours>(diff).count()) + " hours ago";
+                        }
+                        else
+                        {
+                            auto days = duration_cast<std::chrono::duration<int, std::ratio<86400>>>(diff).count();
+                            activityTimeText = std::to_string(days) + " day" + (days > 1 ? "s" : "") + " ago";
+                        }
+
+                        ImGui::Dummy(ImVec2(0, ImGui::GetStyle().FramePadding.y));
+                        ImGui::Text(fmt::format("{} {}", iter.m_activityText, activityTimeText).c_str());
+                    }
+                }
+                else
+                {
+                    gluten::loading_spinner loading;
+                    loading.render_cursor();
                 }
 
                 ImGui::EndTabItem();
@@ -620,12 +645,20 @@ void workspace_widget::render_reviewers(std::shared_ptr<workspace_manager>& work
 {
     if (rightPanelBackground.render_layout_element_pixels_vertical(&reviewersHeader, 50.0f))
     {
-        const std::vector<reviewer_data>& reviewers = workspaceManager->get_users_for_review(selectedReview.m_reviewId);
-
-        for (const auto& reviewer : reviewers)
+        const auto reviewers = workspaceManager->get_users_for_review(selectedReview.m_reviewId);
+        
+        if (reviewers.has_value())
         {
-            reviewer_display_element user(reviewer, selectedReview.m_reviewId);
-            rightPanelBackground.render_layout_element_pixels_vertical(&user, 50.0f);
+            for (const auto& reviewer : reviewers.value())
+            {
+                reviewer_display_element user(reviewer, selectedReview.m_reviewId);
+                rightPanelBackground.render_layout_element_pixels_vertical(&user, 50.0f);
+            }
+        }
+        else
+        {
+            gluten::loading_spinner loading;
+            rightPanelBackground.render_layout_element_pixels_vertical(&loading, 50.0f);
         }
     }
 
@@ -646,7 +679,14 @@ void workspace_widget::render_top_content_bar(std::shared_ptr<workspace_manager>
 {
     verticalContentLayout.render_layout_element_pixels_vertical(&topContentBarBackground, topHeaderHeight);
 
-    static std::string workspaceName = workspaceManager->get_workspace_name();
+    static concurrencpp::result<std::string> workspaceNameResult = workspaceManager->get_workspace_name();
+    std::string workspaceName;
+
+    if (workspaceNameResult && workspaceNameResult.status() == concurrencpp::result_status::value)
+    {
+        workspaceName = workspaceNameResult.get();
+    }
+    
     std::string breadcrumbString     = workspaceName;
 
     if (selectedProject.m_id != 0)
@@ -730,39 +770,41 @@ auto workspace_widget::render_left_toolbar() -> void
 
 auto workspace_widget::get_votes_string(const review_data& selectedReview) const -> std::pair<std::string, int>
 {
-    const std::vector<reviewer_data>& reviewers = m_workspaceManager.lock()->get_users_for_review(selectedReview.m_reviewId);
+    const auto reviewers = m_workspaceManager.lock()->get_users_for_review(selectedReview.m_reviewId);
 
+    std::string text;
     int upvotes = 0;
     int downvotes = 0;
 
-    for (const auto& reviewer : reviewers)
+    if (reviewers.has_value())
     {
-        if (reviewer.m_vote == review_vote::upvote)
+        for (const auto& reviewer : reviewers.value())
         {
-            ++upvotes;
+            if (reviewer.m_vote == review_vote::upvote)
+            {
+                ++upvotes;
+            }
+
+            if (reviewer.m_vote == review_vote::downvote)
+            {
+                ++downvotes;
+            }
         }
 
-        if (reviewer.m_vote == review_vote::downvote)
+        for (int i = 0; i < upvotes; ++i)
         {
-            ++downvotes;
+            text += ICON_LC_THUMBS_UP;
         }
-    }
 
-    std::string text;
+        if (upvotes > 0 && downvotes > 0)
+        {
+            text += " | ";
+        }
 
-    for (int i = 0; i < upvotes; ++i)
-    {
-        text += ICON_LC_THUMBS_UP;
-    }
-
-    if (upvotes > 0 && downvotes > 0)
-    {
-        text += " | ";
-    }
-
-    for (int i = 0; i < downvotes; ++i)
-    {
-        text += ICON_LC_THUMBS_DOWN;
+        for (int i = 0; i < downvotes; ++i)
+        {
+            text += ICON_LC_THUMBS_DOWN;
+        }
     }
 
     return {text, upvotes - downvotes};

@@ -20,6 +20,7 @@ set(GLUTEN_SOURCES
   app_entry.cpp 
   app/app.cpp
   data/data_source.cpp
+  data/data_cache.cpp
   elements/element.cpp
   elements/button.cpp
   elements/image_button.cpp
@@ -48,6 +49,7 @@ set(GLUTEN_HEADERS
   app/app.h
   data/data_source.h
   data/data_controller.h
+  data/data_cache.h
   elements/element.h
   elements/button.h
   elements/image_button.h

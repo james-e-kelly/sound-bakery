@@ -15,8 +15,8 @@ auto edit_reviewers_popup::start_implementation() -> void
 	{
 		m_workspaceManager = workspaceManager;
 
-		m_newUsers = workspaceManager->get_users_for_review(m_review.m_reviewId);
-        m_allUsers = workspaceManager->get_all_users();
+		m_newUsers = workspaceManager->get_users_for_review(m_review.m_reviewId).value();
+        m_allUsers = workspaceManager->get_all_users().value();
 		
 		std::sort(m_newUsers.begin(), m_newUsers.end(), [](const auto& lhs, const auto& rhs) -> bool
 			{

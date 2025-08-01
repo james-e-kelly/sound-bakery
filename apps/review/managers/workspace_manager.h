@@ -16,11 +16,17 @@ class review_database;
 class user_flow_popup;
 class workspace_widget;
 
+enum class cache_error
+{
+    loading,        //< The cache is loading
+    does_not_exist  //< No cache data
+};
 
 template <typename data_type, typename key_type = int64_t>
 struct cache
 {
     using data_container = std::vector<data_type>;
+    using cache_return = tl::expected<data_container, cache_error>;
     using async_get_data_size = concurrencpp::result<std::size_t>;
     using async_get_data = concurrencpp::result<data_container>;
     using async_get_data_expected = concurrencpp::result<tl::expected<data_container, database_error>>;
@@ -79,22 +85,25 @@ struct cache
 
         return !m_cacheValid[key];   // Always return the validity bool we have on the main thread. Async functions will update this when ready
     }
-    [[nodiscard]] auto get_cache(const key_type& key) const -> const std::vector<data_type>&
+
+    [[nodiscard]] auto get_cache(const key_type& key) const -> cache_return
     {
         if (contains(key))
         {
+            if (m_asyncGetDataSize.contains(key) || m_asyncGetDataWithExpected.contains(key))
+            {
+                return tl::make_unexpected(cache_error::loading);
+            }
+
             return m_cache.at(key);
         }
-        static std::vector<data_type> invalid;
-        return invalid;
+        else
+        {
+            return tl::make_unexpected(cache_error::does_not_exist);
+        }
     }
 
     auto erase_cache(const key_type& key) -> void { m_cache.erase(key); }
-
-    auto add_cache_sync(const key_type& key, const data_container& data)
-    {
-        m_cache[key] = data;
-    }
 
     auto add_cache(const key_type& key, async_get_data&& asyncGetData) -> void
     {
@@ -120,19 +129,19 @@ public:
     workspace_manager(gluten::app* app) : gluten::manager(app) {}
     ~workspace_manager();
 
-    auto open_workspace(const std::filesystem::path& workspaceFile) -> void;
+    auto open_workspace(const std::filesystem::path workspaceFile) -> concurrencpp::result<void>;
     auto create_workspace(const std::string& workspaceName, const std::filesystem::path& workspaceDirectory) -> void;
     auto close_workspace() -> void;
 
     auto add_existing_project(const project_data& projectData) -> void;
     auto create_project(const std::string& projectName, const std::string& projectDescription) -> void;
-    auto select_project(const std::string& projectName) -> void;
+    auto select_project(const std::string projectName) -> concurrencpp::result<void>;
     [[nodiscard]] auto has_selected_project() const -> bool;
 
     [[nodiscard]] auto get_selected_project() const -> const project_data&;
     [[nodiscard]] auto get_projects() const -> const std::set<project_data>&;
     
-    [[nodiscard]] auto get_workspace_name() const -> std::string;
+    [[nodiscard]] auto get_workspace_name() const -> concurrencpp::result<std::string>;
     [[nodiscard]] auto get_workspace_file() const -> std::filesystem::path;
     [[nodiscard]] auto get_workspace_directory() const -> std::filesystem::path;
 
@@ -143,11 +152,11 @@ public:
     auto get_all_reviews() const -> const std::set<review_data>&;
 
     // Activity
-    auto get_all_activity_for_review(int64_t reviewId) const -> const std::vector<activity_data>&;
+    auto get_all_activity_for_review(int64_t reviewId) -> typename cache<activity_data>::cache_return;
     auto get_activity_count_for_review(int64_t reviewId) const -> concurrencpp::result<std::size_t>;
 
     // Comments
-    auto get_all_comments_for_review(int64_t reviewId) -> const std::vector<comment_data>&;
+    auto get_all_comments_for_review(int64_t reviewId) -> cache<comment_data>::cache_return;
     auto get_comments_count_for_review(int64_t reviewId) const -> concurrencpp::result<std::size_t>;
     auto create_comment(const new_comment_data& newComment) -> void;
     auto delete_comment(int64_t commentId) -> void;
@@ -158,7 +167,7 @@ public:
     auto logged_in_user_can_create_users() -> concurrencpp::result<bool>;
     auto create_user(const new_user_data newUser, std::optional<std::string> userToken) -> concurrencpp::result<tl::expected<bool, database_error>>;
     auto create_user_and_login(new_user_data newUser) -> concurrencpp::result<tl::expected<bool, database_error>>;
-    auto get_all_users() -> const std::vector<user_data>&;
+    auto get_all_users() -> typename cache<user_data>::cache_return;
     auto get_users_count() const -> concurrencpp::result<std::size_t>;
     auto get_selected_user() const -> const user_data&;
     auto select_user(const std::string& email) -> void;
@@ -169,7 +178,7 @@ public:
     auto logout() -> void;
 
     // Review Users
-    auto get_users_for_review(int64_t reviewId) -> const std::vector<reviewer_data>&;
+    auto get_users_for_review(int64_t reviewId) -> typename cache<reviewer_data>::cache_return;
     auto set_users_for_review(int64_t reviewId, std::vector<int64_t> userIds) -> concurrencpp::result<tl::expected<bool, database_error>>;
 
     // Voting
@@ -182,10 +191,12 @@ protected:
 private:
     static auto file_is_workspace(const std::filesystem::path& file) -> bool;
 
+    auto async_get_users_for_review(int64_t reviewId) -> concurrencpp::result<std::vector<reviewer_data>>;
+
     auto open_workspace_widget() -> void;
     auto open_user_flow_popup() -> void;
 
-    auto load_projects_from_workspace() -> void;
+    auto load_projects_from_workspace() -> concurrencpp::result<void>;
 
     std::shared_ptr<intro_widget> m_introWidget;
     std::shared_ptr<workspace_widget> m_workspaceWidget;
@@ -203,4 +214,5 @@ private:
     cache<user_data> m_allUsersCache;
     cache<reviewer_data> m_reviewUsersCache;
     cache<std::unordered_map<int64_t, review_vote>> m_reviewVotesCache;
+    cache<activity_data> m_cachedActivity;
 };
