@@ -43,7 +43,6 @@ auto workspace_widget::start_implementation() -> void
         .set_element_translation(ImVec2(5, 0.0f));
     rightPanelBackground.set_layout_spacing(ImGui::GetStyle().FramePadding.y)
         .set_element_background_color(gluten::theme::carbon_g100::fieldHover03);
-    contentVerticalLayout.set_layout_spacing(10.0f);
     editReviewersButton.set_element_alignment(ImVec2(1.0f, -0.1f));
     editReviewersButton.set_element_translation(ImVec2(-ImGui::GetStyle().FramePadding.x, 0.0f));
     innerDescriptionBox.set_layout_type(gluten::layout::layout_type::top_to_bottom)
@@ -56,6 +55,10 @@ auto workspace_widget::start_implementation() -> void
         .set_element_content_font_size(gluten::g_baseFontSize * 1.3f);
     qualityText.set_font(gluten::fonts::regular_lucide_icons);
     qualityText.set_element_content_font_size(gluten::g_baseFontSize * 1.3f);
+    votesText.set_font(gluten::fonts::regular_lucide_icons);
+    votesText.set_element_content_font_size(gluten::g_baseFontSize * 1.3f);
+    votesIconText.set_font(gluten::fonts::regular_lucide_icons);
+    votesIconText.set_element_content_font_size(gluten::g_baseFontSize * 1.3f);
     phaseText.set_font(gluten::fonts::regular_lucide_icons);
     phaseText.set_element_content_font_size(gluten::g_baseFontSize * 1.3f);
     scrutinyLayout.set_element_anchor_preset(gluten::element::anchor_preset::stretch_full);
@@ -540,13 +543,37 @@ void workspace_widget::render_review_description(const review_data& selectedRevi
     titleText.set_url(selectedReview.m_reviewTaskUrl);
     descriptionText.set_text(fmt::format("{} {}", ICON_LC_MESSAGE_CIRCLE, selectedReview.m_reviewDescription));
     phaseText.set_text(fmt::format("{} {}", ICON_LC_WORKFLOW, get_review_phase_string(selectedReview.m_reviewPhase)));
-    qualityText.set_text(
-        fmt::format("{} {}", ICON_LC_AWARD, get_review_quality_string(selectedReview.m_reviewQuality)));
+    qualityText.set_text(fmt::format("{} {}", ICON_LC_AWARD, get_review_quality_string(selectedReview.m_reviewQuality)));
 
-    innerDescriptionBox.render_layout_element_percent_vertical(&titleText, 0.3f);
-    innerDescriptionBox.render_layout_element_percent_vertical(&descriptionText, 0.2f);
-    innerDescriptionBox.render_layout_element_percent_vertical(&phaseText, 0.2f);
-    innerDescriptionBox.render_layout_element_percent_vertical(&qualityText, 0.2f);
+    std::pair<std::string, int> votes = get_votes_string(selectedReview);
+    votesText.set_text(fmt::format("     {}", votes.first));
+
+    innerDescriptionBox.render_layout_element_percent_vertical(&titleText, 0.2f);
+    innerDescriptionBox.render_layout_element_percent_vertical(&descriptionText, 0.16f);
+    innerDescriptionBox.render_layout_element_percent_vertical(&phaseText, 0.16f);
+    innerDescriptionBox.render_layout_element_percent_vertical(&qualityText, 0.16f);
+    
+    innerDescriptionBox.render_layout_element_percent_vertical(&votesIconText, 0.16f);
+    
+    {
+        ImVec4 votesColor;
+
+        if (votes.second > 0)
+        {
+            votesColor = gluten::theme::carbon_g100::supportSuccess;
+        }
+        else if (votes.second == 0)
+        {
+            votesColor = gluten::theme::carbon_g100::supportCautionMinor;
+        }
+        else
+        {
+            votesColor = gluten::theme::carbon_g100::supportError;
+        }
+
+        gluten::imgui::scoped_color votesTextColor(ImGuiCol_Text, votesColor);
+        votesText.render(votesIconText.get_element_rect());
+    }
 
     gluten::imgui::scoped_color frameProgressBg(ImGuiCol_FrameBg, gluten::theme::carbon_g100::layer03);
 
@@ -593,7 +620,7 @@ void workspace_widget::render_reviewers(std::shared_ptr<workspace_manager>& work
 {
     if (rightPanelBackground.render_layout_element_pixels_vertical(&reviewersHeader, 50.0f))
     {
-        const std::vector<reviewer_data> reviewers = workspaceManager->get_users_for_review(selectedReview.m_reviewId);
+        const std::vector<reviewer_data>& reviewers = workspaceManager->get_users_for_review(selectedReview.m_reviewId);
 
         for (const auto& reviewer : reviewers)
         {
@@ -698,6 +725,46 @@ auto workspace_widget::render_left_toolbar() -> void
         }
     }
     ImGui::EndChild();
+}
+
+auto workspace_widget::get_votes_string(const review_data& selectedReview) const -> std::pair<std::string, int>
+{
+    const std::vector<reviewer_data>& reviewers = m_workspaceManager.lock()->get_users_for_review(selectedReview.m_reviewId);
+
+    int upvotes = 0;
+    int downvotes = 0;
+
+    for (const auto& reviewer : reviewers)
+    {
+        if (reviewer.m_vote == review_vote::upvote)
+        {
+            ++upvotes;
+        }
+
+        if (reviewer.m_vote == review_vote::downvote)
+        {
+            ++downvotes;
+        }
+    }
+
+    std::string text;
+
+    for (int i = 0; i < upvotes; ++i)
+    {
+        text += ICON_LC_THUMBS_UP;
+    }
+
+    if (upvotes > 0 && downvotes > 0)
+    {
+        text += " | ";
+    }
+
+    for (int i = 0; i < downvotes; ++i)
+    {
+        text += ICON_LC_THUMBS_DOWN;
+    }
+
+    return {text, upvotes - downvotes};
 }
 
 auto workspace_widget::render_menu_implementation() -> void

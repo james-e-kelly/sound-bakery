@@ -29,6 +29,8 @@ private:
     auto render_list() -> void;
     auto render_left_toolbar() -> void;
 
+    auto get_votes_string(const review_data &selectedReview) const -> std::pair<std::string, int>;
+
     enum active_view
     {
         reviews_view,
@@ -47,21 +49,28 @@ private:
     gluten::layout contentVerticalLayout = gluten::layout(gluten::layout::layout_type::top_to_bottom, gluten::element::anchor_preset::stretch_full);
     gluten::layout buttonsLayout = gluten::layout(gluten::layout::layout_type::top_to_bottom, gluten::element::anchor_preset::stretch_full);
     gluten::layout leftUserPanel = gluten::layout(gluten::layout_type::top_to_bottom, gluten::anchor_preset::stretch_left);
-    gluten::background topContentBarBackground;
-    gluten::background mainContentParent;
-    gluten::text breadcrumbText = gluten::text({}, ImVec2(0, -0.75f), gluten::element::anchor_preset::left_top);
-    gluten::text titleText = gluten::text({}, ImVec2(0.0f, 0.0f), gluten::element::anchor_preset::stretch_full);
-    gluten::text descriptionText = gluten::text({}, ImVec2(0.0f, 0.0f), gluten::element::anchor_preset::stretch_full);
-    gluten::text phaseText = gluten::text({}, ImVec2(0.0f, 0.0f), gluten::element::anchor_preset::stretch_full);
-    gluten::text qualityText = gluten::text({}, ImVec2(0.0f, 0.0f), gluten::element::anchor_preset::stretch_full);
-    gluten::collapsing_header reviewersHeader = gluten::collapsing_header("Reviewers");
-    gluten::collapsing_header testsHeader = gluten::collapsing_header("Tests");
-    gluten::background descriptionBox;
     gluten::layout innerDescriptionBox;
     gluten::layout scrutinyLayout;
+
+    gluten::background topContentBarBackground;
+    gluten::background mainContentParent;
+
+    gluten::text breadcrumbText     = gluten::text({}, ImVec2(0, -0.75f), gluten::element::anchor_preset::left_top);
+    gluten::text titleText          = gluten::text({}, ImVec2(0.0f, 0.0f), gluten::element::anchor_preset::stretch_full);
+    gluten::text descriptionText    = gluten::text({}, ImVec2(0.0f, 0.0f), gluten::element::anchor_preset::stretch_full);
+    gluten::text phaseText          = gluten::text({}, ImVec2(0.0f, 0.0f), gluten::element::anchor_preset::stretch_full);
+    gluten::text qualityText        = gluten::text({}, ImVec2(0.0f, 0.0f), gluten::element::anchor_preset::stretch_full);
+    gluten::text votesText          = gluten::text({}, ImVec2(0.0f, 0.0f), gluten::element::anchor_preset::stretch_full);
+    gluten::text votesIconText      = gluten::text(ICON_LC_VOTE, ImVec2(0.0f, 0.0f), gluten::element::anchor_preset::stretch_full);
+
+    gluten::collapsing_header reviewersHeader = gluten::collapsing_header("Reviewers");
+    gluten::collapsing_header testsHeader = gluten::collapsing_header("Tests");
+
+    gluten::background descriptionBox;
+    gluten::background reviewContent;
+
     gluten::button editReviewersButton = gluten::button("Edit " ICON_LC_PENCIL, false, gluten::anchor_preset::right_top);
     gluten::button descriptionEditButton = gluten::button("Edit " ICON_LC_PENCIL_LINE, false, gluten::element::anchor_preset::right_top);
-    gluten::background reviewContent;
     gluten::button editUserButton = gluten::button("Edit " ICON_LC_PENCIL);
     gluten::button changePasswordButton = gluten::button("Change Password " ICON_LC_PENCIL);
     gluten::button deleteUserButton = gluten::button("Delete " ICON_LC_USER_ROUND_X);
