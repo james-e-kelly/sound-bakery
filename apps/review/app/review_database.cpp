@@ -156,6 +156,12 @@ namespace
     constexpr std::size_t g_saltSize                = crypto_box_SEEDBYTES;
     constexpr std::size_t g_sessionTokenSize        = 32U;
     constexpr std::size_t g_base64SessionTokenSize  = sodium_base64_ENCODED_LEN(g_sessionTokenSize, g_base64EncodeVariant);
+
+    //#define REVIEW_TEST_DATABASE_BLOCKS
+
+#ifdef REVIEW_TEST_DATABASE_BLOCKS
+    constexpr std::chrono::milliseconds g_blockDelay = std::chrono::seconds(5);
+#endif
 }
 
 review_database::review_database(const std::filesystem::path& databasePath)
@@ -179,6 +185,10 @@ auto review_database::create_workspace(const std::string name) -> concurrencpp::
 {
     co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
 
+#ifdef REVIEW_TEST_DATABASE_BLOCKS
+    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
+#endif
+
     SQLite::Statement insertWorkspaceName(m_database, "INSERT INTO workspaces (name) VALUES (?);");
     insertWorkspaceName.bind(1, name);
     insertWorkspaceName.exec();
@@ -188,6 +198,10 @@ auto review_database::open_workspace(const std::string name) -> concurrencpp::re
 {
     co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
 
+#ifdef REVIEW_TEST_DATABASE_BLOCKS
+    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
+#endif
+
     SQLite::Statement insertWorkspaceName(m_database, "INSERT OR IGNORE INTO workspaces (name) VALUES (?);");
     insertWorkspaceName.bind(1, name);
     insertWorkspaceName.exec();
@@ -196,6 +210,10 @@ auto review_database::open_workspace(const std::string name) -> concurrencpp::re
 auto review_database::get_workspace_name() const -> concurrencpp::result<std::string>
 {
     co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
+
+#ifdef REVIEW_TEST_DATABASE_BLOCKS
+    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
+#endif
 
     if (m_database.tableExists("workspaces"))
     {
@@ -215,6 +233,10 @@ auto review_database::create_project(const std::string name, const std::string d
 {
     co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
     
+#ifdef REVIEW_TEST_DATABASE_BLOCKS
+    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
+#endif
+
     project_data newProjectData;
 
     if (m_database.tableExists("projects"))
@@ -244,6 +266,10 @@ auto review_database::get_all_projects() const -> concurrencpp::result<std::vect
 {
     co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
 
+#ifdef REVIEW_TEST_DATABASE_BLOCKS
+    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
+#endif
+
     std::vector<project_data> result;
 
     if (m_database.tableExists("projects"))
@@ -267,6 +293,10 @@ auto review_database::get_all_projects() const -> concurrencpp::result<std::vect
 auto review_database::create_review(int64_t projectId, const new_review_data newReview) -> concurrencpp::result<review_data>
 {
     co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
+
+#ifdef REVIEW_TEST_DATABASE_BLOCKS
+    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
+#endif
 
     review_data result;
 
@@ -311,6 +341,10 @@ auto review_database::update_review(const review_data review) -> concurrencpp::r
 {
     co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
 
+#ifdef REVIEW_TEST_DATABASE_BLOCKS
+    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
+#endif
+
     if (!review.m_reviewName.empty() && review.m_reviewId != 0)
     {
         if (m_database.tableExists("reviews"))
@@ -344,6 +378,10 @@ auto review_database::get_all_reviews(int64_t projectId) const -> concurrencpp::
 {
     co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
 
+#ifdef REVIEW_TEST_DATABASE_BLOCKS
+    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
+#endif
+
     std::vector<review_data> result;
 
     if (m_database.tableExists("reviews") && projectId != 0)
@@ -372,6 +410,10 @@ auto review_database::get_all_reviews(int64_t projectId) const -> concurrencpp::
 auto review_database::get_user_vote_on_review(int64_t reviewId, int64_t userId) const -> concurrencpp::result<tl::expected<review_vote, database_error>>
 {
     co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
+
+#ifdef REVIEW_TEST_DATABASE_BLOCKS
+    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
+#endif
 
     if (userId < 0)
     {
@@ -406,6 +448,10 @@ auto review_database::get_all_activity_for_review(int64_t reviewId) const -> con
 {
     co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
 
+#ifdef REVIEW_TEST_DATABASE_BLOCKS
+    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
+#endif
+
     std::vector<activity_data> result;
 
     if (m_database.tableExists("activity") && reviewId != 0)
@@ -437,6 +483,10 @@ auto review_database::get_activity_count_for_review(int64_t reviewId) const -> c
 {
     co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
 
+#ifdef REVIEW_TEST_DATABASE_BLOCKS
+    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
+#endif
+
     std::size_t result = 0;
 
     if (m_database.tableExists("activity") && reviewId != 0)
@@ -456,6 +506,10 @@ auto review_database::get_activity_count_for_review(int64_t reviewId) const -> c
 auto review_database::get_all_comments_for_review(int64_t reviewId) const -> concurrencpp::result<std::vector<comment_data>> 
 {
     co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
+
+#ifdef REVIEW_TEST_DATABASE_BLOCKS
+    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
+#endif
 
     std::vector<comment_data> result;
 
@@ -486,6 +540,10 @@ auto review_database::get_comments_count_for_review(int64_t commentId) const -> 
 {
     co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
 
+#ifdef REVIEW_TEST_DATABASE_BLOCKS
+    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
+#endif
+
     std::size_t result = 0;
 
     if (m_database.tableExists("comments") && commentId != 0)
@@ -505,6 +563,10 @@ auto review_database::get_comments_count_for_review(int64_t commentId) const -> 
 auto review_database::create_comment(new_comment_data newComment) -> concurrencpp::result<comment_data>
 {
     co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
+
+#ifdef REVIEW_TEST_DATABASE_BLOCKS
+    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
+#endif
 
     constexpr float defaultAudioStartOrEnd = -1.0f;
 
@@ -540,6 +602,10 @@ auto review_database::delete_comment(int64_t commentId) -> concurrencpp::result<
 {
     co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
 
+#ifdef REVIEW_TEST_DATABASE_BLOCKS
+    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
+#endif
+
     if (commentId != 0)
     {
         if (m_database.tableExists("comments"))
@@ -565,6 +631,10 @@ auto review_database::delete_comment(int64_t commentId) -> concurrencpp::result<
 auto review_database::create_user(new_user_data newUser, std::string userToken) -> concurrencpp::result<tl::expected<bool, database_error>>
 {
     co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
+
+#ifdef REVIEW_TEST_DATABASE_BLOCKS
+    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
+#endif
 
     if (newUser.m_email.empty())
     {
@@ -631,6 +701,10 @@ auto review_database::user_table_is_empty() const -> concurrencpp::result<bool>
 {
     co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
 
+#ifdef REVIEW_TEST_DATABASE_BLOCKS
+    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
+#endif
+
     std::size_t usersCount = 0;
 
     if (m_database.tableExists("users"))
@@ -648,6 +722,10 @@ auto review_database::user_table_is_empty() const -> concurrencpp::result<bool>
 auto review_database::user_is_logged_in_and_has_privilege_for_action(std::string userToken, activity_type activity) -> concurrencpp::result<bool>
 {
     co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
+
+#ifdef REVIEW_TEST_DATABASE_BLOCKS
+    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
+#endif
 
     user_privileges requiredPriveleges = user_privileges::admin;
 
@@ -681,6 +759,10 @@ auto review_database::user_is_logged_in_and_has_privilege(std::string userToken,
 {
     co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
 
+#ifdef REVIEW_TEST_DATABASE_BLOCKS
+    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
+#endif
+
     bool userWithPrivelegesIsLoggedIn = false;
 
     if (m_database.tableExists("sessions"))
@@ -699,6 +781,10 @@ auto review_database::user_is_logged_in_and_has_privilege(std::string userToken,
 auto review_database::login_user(login_request_data loginRequest) -> concurrencpp::result<tl::expected<logged_in_user_data, database_error>>
 {
     co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
+
+#ifdef REVIEW_TEST_DATABASE_BLOCKS
+    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
+#endif
 
     if (!m_database.tableExists("users"))
     {
@@ -782,6 +868,10 @@ auto review_database::get_users_count(std::string userToken) -> concurrencpp::re
 {
     co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
 
+#ifdef REVIEW_TEST_DATABASE_BLOCKS
+    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
+#endif
+
     if (co_await user_is_logged_in_and_has_privilege(userToken, user_privileges::user))
     {
         if (m_database.tableExists("users"))
@@ -810,6 +900,10 @@ auto review_database::get_all_users(std::string userToken) -> concurrencpp::resu
 {
     co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
     
+#ifdef REVIEW_TEST_DATABASE_BLOCKS
+    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
+#endif
+
     std::vector<user_data> result;
 
     if (co_await user_is_logged_in_and_has_privilege(userToken, user_privileges::user))
@@ -846,6 +940,10 @@ auto review_database::get_all_users(std::string userToken) -> concurrencpp::resu
 auto review_database::delete_user(std::string email, std::string userToken) -> concurrencpp::result<tl::expected<bool, database_error>>
 {
     co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
+
+#ifdef REVIEW_TEST_DATABASE_BLOCKS
+    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
+#endif
 
     if (email.empty())
     {
@@ -887,6 +985,10 @@ auto review_database::delete_user(std::string email, std::string userToken) -> c
 auto review_database::get_users_for_review(int64_t reviewId, std::string userToken) -> concurrencpp::result<tl::expected<std::vector<user_data>, database_error>>
 {
     co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
+
+#ifdef REVIEW_TEST_DATABASE_BLOCKS
+    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
+#endif
 
     if (reviewId < 0)
     {
@@ -940,6 +1042,10 @@ auto review_database::set_users_for_review(int64_t reviewId, std::vector<int64_t
 {
     co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
 
+#ifdef REVIEW_TEST_DATABASE_BLOCKS
+    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
+#endif
+
     if (reviewId < 0)
     {
         co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::invalid_parameters, .m_errorMessage = "Review Id is invalid"});
@@ -968,6 +1074,10 @@ auto review_database::set_users_for_review(int64_t reviewId, std::vector<int64_t
 auto review_database::set_user_vote_for_review(int64_t reviewId, user_id userId, review_vote vote, std::string userToken) -> bool_result
 {
     co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
+
+#ifdef REVIEW_TEST_DATABASE_BLOCKS
+    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
+#endif
 
     if (reviewId < 0)
     {
