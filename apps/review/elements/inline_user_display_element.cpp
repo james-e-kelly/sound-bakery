@@ -172,7 +172,7 @@ auto reviewer_display_element::render_element(const ImRect& parentRect) -> bool
     else
     {
         userNameText.set_text(fmt::format("{}   {}", m_userDisplayName,
-                                          m_vote == review_vote::no_vote  ? ICON_LC_MINUS
+                                          m_vote == review_vote::no_vote  ? ""
                                           : m_vote == review_vote::upvote ? ICON_LC_THUMBS_UP
                                                                           : ICON_LC_THUMBS_DOWN));
     }
