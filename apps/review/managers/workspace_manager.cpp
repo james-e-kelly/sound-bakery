@@ -232,6 +232,7 @@ auto workspace_manager::get_all_projects() -> typename global_cache_type<project
     if (m_cachedProjects.get_cache_needs_filling(key))
     {
         m_cachedProjects.set_async_fill_cache(key, m_database->get_all_projects());
+        m_selectedProject = project_data();
     }
 
     return m_cachedProjects.get_cached_data(gluten::token_cache_key<std::string>(m_userSettingsData->m_loggedInUser.m_sessionToken));
@@ -309,6 +310,7 @@ auto workspace_manager::get_all_reviews() -> default_cache_type<review_data>::ca
     if (m_cachedReviews.get_cache_needs_filling(key))
     {
         m_cachedReviews.set_async_fill_cache(key, m_database->get_all_reviews(m_selectedProject.m_id));
+        m_selectedReview = review_data();
     }
 
     return m_cachedReviews.get_cached_data({m_selectedProject.m_id, m_userSettingsData->m_loggedInUser.m_sessionToken});
@@ -446,6 +448,7 @@ auto workspace_manager::get_all_users() -> typename global_cache_type<user_data>
     if (m_cachedUsers.get_cache_needs_filling(key))
     {
         m_cachedUsers.set_async_fill_cache(key, transform_database_result_to_cache_result(m_database->get_all_users(key.m_token)));
+        m_selectedUser = user_data();
     }
 
     return m_cachedUsers.get_cached_data(key);
@@ -483,6 +486,8 @@ auto workspace_manager::delete_user(const std::string& email) -> concurrencpp::r
 {
     if (!email.empty())
     {
+        m_selectedUser = user_data();
+
         const gluten::token_cache_key key(m_userSettingsData->m_loggedInUser.m_sessionToken);
 
         m_cachedUsers.get_raw_data(key).erase(
@@ -504,7 +509,6 @@ auto workspace_manager::delete_user(const std::string& email) -> concurrencpp::r
 
                 m_selectedProject = project_data();
                 m_selectedReview  = review_data();
-                m_selectedUser    = user_data();
 
                 m_cachedUsers.set_cache_expired(key);
 
