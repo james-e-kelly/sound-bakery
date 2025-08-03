@@ -232,9 +232,16 @@ auto workspace_manager::get_all_projects() -> typename global_cache_type<project
     return m_cachedProjects.get_cached_data(gluten::token_cache_key<std::string>(m_userSettingsData->m_loggedInUser.m_sessionToken));
 }
 
-auto workspace_manager::get_workspace_name() const -> concurrencpp::result<std::string>
+auto workspace_manager::get_workspace_name() -> typename string_cache_type::cache_result
 {
-    co_return co_await m_database->get_workspace_name();
+    const gluten::token_cache_key key(m_userSettingsData->m_loggedInUser.m_sessionToken);
+
+    if (m_cachedWorkspaceName.get_cache_needs_filling(key))
+    {
+        m_cachedWorkspaceName.set_async_fill_cache(key, m_database->get_workspace_name());
+    }
+
+    return m_cachedWorkspaceName.get_cached_data(key);
 }
 
 auto workspace_manager::get_workspace_file() const -> std::filesystem::path

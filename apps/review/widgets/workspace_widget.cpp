@@ -699,28 +699,30 @@ void workspace_widget::render_top_content_bar(std::shared_ptr<workspace_manager>
 {
     verticalContentLayout.render_layout_element_pixels_vertical(&topContentBarBackground, topHeaderHeight);
 
-    static concurrencpp::result<std::string> workspaceNameResult = workspaceManager->get_workspace_name();
-    std::string workspaceName;
+    const auto& workspaceName = workspaceManager->get_workspace_name();
 
-    if (workspaceNameResult && workspaceNameResult.status() == concurrencpp::result_status::value)
+    if (workspaceName.m_state == gluten::cache_state::has_data)
     {
-        workspaceName = workspaceNameResult.get();
-    }
-    
-    std::string breadcrumbString     = workspaceName;
+        std::string breadcrumbString = workspaceName.m_cache;
 
-    if (selectedProject.m_id != 0)
+        if (selectedProject.m_id != 0)
+        {
+            breadcrumbString += " / " + selectedProject.m_projectName;
+        }
+
+        if (selectedReview.m_reviewId != 0)
+        {
+            breadcrumbString += " / " + selectedReview.m_reviewName;
+        }
+
+        breadcrumbText.set_text(breadcrumbString);
+        breadcrumbText.render(topContentBarBackground.get_element_rect());
+    }
+    else
     {
-        breadcrumbString += " / " + selectedProject.m_projectName;
+        gluten::loading_spinner loading;
+        loading.render(topContentBarBackground.get_element_rect());
     }
-
-    if (selectedReview.m_reviewId != 0)
-    {
-        breadcrumbString += " / " + selectedReview.m_reviewName;
-    }
-
-    breadcrumbText.set_text(breadcrumbString);
-    breadcrumbText.render(topContentBarBackground.get_element_rect());
 
     logged_in_user_element loggedInUserAvatar(m_userSettings->m_loggedInUser.m_email);
     loggedInUserAvatar.set_element_anchor_preset(gluten::anchor_preset::stretch_right);

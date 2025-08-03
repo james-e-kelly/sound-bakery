@@ -26,11 +26,13 @@ public:
     template<typename data_type>
     using global_cache_type = gluten::data_cache<std::vector<data_type>, gluten::token_cache_key<std::string>, gluten::token_cache_key_hasher<std::string>>;
 
+    using string_cache_type = gluten::data_cache<std::string, gluten::token_cache_key<std::string>, gluten::token_cache_key_hasher<std::string>>;
+
     workspace_manager(gluten::app* app) : gluten::manager(app) {}
     ~workspace_manager();
 
     // Workspace
-    [[nodiscard]] auto get_workspace_name() const -> concurrencpp::result<std::string>;
+    [[nodiscard]] auto get_workspace_name() -> typename string_cache_type::cache_result;
     [[nodiscard]] auto get_workspace_file() const -> std::filesystem::path;
     [[nodiscard]] auto get_workspace_directory() const -> std::filesystem::path;
     auto open_workspace(const std::filesystem::path workspaceFile) -> concurrencpp::result<void>;
@@ -110,4 +112,5 @@ private:
     default_cache_type<activity_data> m_cachedActivity;
     default_cache_type<review_data> m_cachedReviews;
     global_cache_type<project_data> m_cachedProjects;
+    string_cache_type m_cachedWorkspaceName;
 };
