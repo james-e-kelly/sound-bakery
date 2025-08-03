@@ -46,7 +46,19 @@ auto user_flow_popup::render_popup() -> void
 
     if (ImGui::InputTextWithHint("Email", "email@domain.com", m_emailBuffer, textBufferSize))
     {
-        m_errorText.clear();
+        const std::string emailString = m_emailBuffer;
+        const std::regex emailValidRegex("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}");
+
+        if (std::regex_match(emailString.begin(), emailString.end(), emailValidRegex))
+        {
+            m_emailIsValid = true;
+            m_errorText.clear();
+        }
+        else
+        {
+            m_emailIsValid = false;
+            m_errorText = "Invalid email address";
+        }
     }
 
     if (ImGui::InputText("Password", m_passwordBuffer, g_rawPasswordSize, ImGuiInputTextFlags_Password))
@@ -99,7 +111,7 @@ auto user_flow_popup::render_popup() -> void
     const bool displayNameIsFilled = m_displayNameBuffer[0] != '\0';
     const bool titleIsFilled = m_titleBuffer[0] != '\0';
 
-    const bool detailsAreValid = emailIsFilled && passwordIsFilled;
+    const bool detailsAreValid = m_emailIsValid && emailIsFilled && passwordIsFilled;
     const bool extraDetailsAreValid = displayNameIsFilled && titleIsFilled;
 
     switch (m_type)

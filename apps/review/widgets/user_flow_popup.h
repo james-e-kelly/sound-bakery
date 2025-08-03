@@ -43,5 +43,6 @@ private:
     gluten::data_source<user_settings_data> m_userSettings;
 
     std::string m_errorText;
+    bool m_emailIsValid = false;
     concurrencpp::result<tl::expected<bool, database_error>> m_loginResult;
 };
