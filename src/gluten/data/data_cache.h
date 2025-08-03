@@ -131,11 +131,9 @@ namespace gluten
          */
         [[nodiscard]] auto get_cache_state(const key_type& key) const -> cache_state
         {
-            cache_state state = cache_state::no_data;
-
             if (m_asyncCache.contains(key))
             {
-                state = cache_state::loading;
+                m_cache[key].m_state = cache_state::loading;
             }
             else if (m_cache.contains(key))
             {
@@ -144,14 +142,10 @@ namespace gluten
 
                 if ((now - m_cache[key].m_createdAt) > expirySeconds)
                 {
-                    state = cache_state::expired;
-                }
-                else
-                {
-                    state = m_cache[key].m_state;
+                    m_cache[key].m_state = cache_state::expired;
                 }
             }
-            return state;
+            return m_cache[key].m_state;
         }
 
         /**
