@@ -216,26 +216,46 @@ auto workspace_widget::render_list() -> void
                 case workspace_widget::reviews_view:
                     if (listingProjects)
                     {
-                        for (const auto& project : workspaceManager->get_projects())
+                        const auto& allProjects = workspaceManager->get_all_projects();
+
+                        if (allProjects.m_state == gluten::cache_state::has_data)
                         {
-                            project_element projectElement(project.m_projectName, project.m_projectDescription, 2, 5);
-                            if (itemsLayout.render_layout_element_pixels_vertical(&projectElement,
-                                                                                  leftToolbarButtonHeight))
+                            for (const auto& project : allProjects.m_cache)
                             {
-                                workspaceManager->select_project(project.m_projectName);
+                                project_element projectElement(project.m_projectName, project.m_projectDescription, 2, 5);
+                                if (itemsLayout.render_layout_element_pixels_vertical(&projectElement,
+                                                                                      leftToolbarButtonHeight))
+                                {
+                                    workspaceManager->select_project(project.m_projectName);
+                                }
                             }
+                        }
+                        else
+                        {
+                            gluten::loading_spinner loadingSpinner;
+                            itemsLayout.render_layout_element_pixels_vertical(&loadingSpinner, leftToolbarButtonHeight);
                         }
                     }
                     else if (listingReviews)
                     {
-                        for (const auto& review : workspaceManager->get_all_reviews())
+                        const auto& allReviews = workspaceManager->get_all_reviews();
+
+                        if (allReviews.m_state == gluten::cache_state::has_data)
                         {
-                            review_element reviewElement(review);
-                            if (itemsLayout.render_layout_element_pixels_vertical(&reviewElement,
-                                                                                  leftToolbarButtonHeight))
+                            for (const auto& review : allReviews.m_cache)
                             {
-                                workspaceManager->select_review(review.m_reviewId);
+                                review_element reviewElement(review);
+                                if (itemsLayout.render_layout_element_pixels_vertical(&reviewElement,
+                                                                                      leftToolbarButtonHeight))
+                                {
+                                    workspaceManager->select_review(review.m_reviewId);
+                                }
                             }
+                        }
+                        else
+                        {
+                            gluten::loading_spinner loadingSpinner;
+                            itemsLayout.render_layout_element_pixels_vertical(&loadingSpinner, leftToolbarButtonHeight);
                         }
                     }
                     break;

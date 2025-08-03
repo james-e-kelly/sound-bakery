@@ -81,21 +81,13 @@ auto workspace_manager::open_workspace(const std::filesystem::path workspaceFile
     }
 }
 
-auto workspace_manager::load_projects_from_workspace() -> concurrencpp::result<void>
-{
-    co_await concurrencpp::resume_on(review_app::get()->background_executor());
-    const std::vector<project_data> allProjects = co_await m_database->get_all_projects();
-    co_await concurrencpp::resume_on(review_app::get()->get_tick_executor());
-    m_projects = std::set<project_data>(allProjects.cbegin(), allProjects.cend());
-}
-
 auto workspace_manager::async_get_users_for_review(int64_t reviewId) -> concurrencpp::result<std::vector<reviewer_data>>
 {
-    co_await concurrencpp::resume_on(review_app::get()->background_executor());
-
     const tl::expected<std::vector<user_data>, database_error> result = co_await m_database->get_users_for_review(reviewId, m_userSettingsData->m_loggedInUser.m_sessionToken);
 
     std::vector<reviewer_data> reviewers;
+
+    assert(result.has_value());
 
     if (result.has_value())
     {
@@ -104,6 +96,8 @@ auto workspace_manager::async_get_users_for_review(int64_t reviewId) -> concurre
 
         if (!users.empty() && !reviewers.empty())
         {
+            co_await concurrencpp::resume_on(review_app::get()->thread_pool_executor());
+
             std::transform(users.begin(), users.end(), reviewers.begin(), [database = m_database, reviewId](const user_data& user) 
                 {
                     return reviewer_data(user, database->get_user_vote_on_review(reviewId, user.m_userId).get().value());
@@ -132,8 +126,6 @@ auto workspace_manager::open_workspace_widget() -> void
     gluten::dockspace_refresh refresh = get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->get_root_widget()->set_manual_layout();
     refresh.assign_widget_to_node(rttr::type::get<workspace_widget>(), refresh.dockspaceID);
 
-    load_projects_from_workspace();
-
     if (!m_userSettingsData->m_selectedProjectName.empty())
     {
         select_project(m_userSettingsData->m_selectedProjectName);
@@ -158,7 +150,8 @@ auto workspace_manager::open_user_flow_popup() -> void
 
 auto workspace_manager::create_project(const std::string& projectName, const std::string& projectDescription) -> void
 {
-    m_projects.insert(m_database->create_project(projectName, projectDescription).get());
+    m_database->create_project(projectName, projectDescription);
+    m_cachedProjects.set_cache_expired(m_userSettingsData->m_loggedInUser.m_sessionToken);
 }
 
 auto workspace_manager::select_project(const std::string projectName) -> concurrencpp::result<void>
@@ -167,20 +160,21 @@ auto workspace_manager::select_project(const std::string projectName) -> concurr
     {
         m_selectedProject = project_data();
         m_selectedReview  = review_data();
-        m_reviews.clear();
         co_return;
     }
 
-    for (const auto& project : m_projects)
+    for (const auto& project : m_cachedProjects.get_cached_data(gluten::token_cache_key(m_userSettingsData->m_loggedInUser.m_sessionToken)).m_cache)
     {
         if (project.m_projectName == projectName)
         {
             m_selectedProject = project;
 
-            co_await concurrencpp::resume_on(review_app::get()->background_executor());
-            std::vector<review_data> allReviews = co_await m_database->get_all_reviews(m_selectedProject.m_id);
-            co_await concurrencpp::resume_on(review_app::get()->get_tick_executor());
-            m_reviews = std::set<review_data>(allReviews.cbegin(), allReviews.cend());
+            const gluten::key_and_token_cache_key key(m_selectedProject.m_id, m_userSettingsData->m_loggedInUser.m_sessionToken);
+
+            if (m_cachedReviews.get_cache_needs_filling(key))
+            {
+                m_cachedReviews.set_async_fill_cache(key, m_database->get_all_reviews(key.m_key));
+            }
             break;
         }
     }
@@ -208,7 +202,7 @@ auto workspace_manager::close_workspace() -> void
 {
 	m_workspaceWidget.reset();
     m_selectedProject = project_data();
-    m_projects.clear();
+    m_cachedProjects.clear();
     m_userSettingsData->m_workspaceFilePath.clear();
     m_database.reset();
 
@@ -221,17 +215,22 @@ auto workspace_manager::close_workspace() -> void
 	}
 }
 
-auto workspace_manager::add_existing_project(const project_data& projectData) -> void
-{
-    m_projects.insert(projectData);
-}
-
 auto workspace_manager::get_selected_project() const -> const project_data&
 {
     return m_selectedProject;
 }
 
-auto workspace_manager::get_projects() const -> const std::set<project_data>& { return m_projects; }
+auto workspace_manager::get_all_projects() -> typename global_cache_type<project_data>::cache_result
+{
+    const gluten::token_cache_key key(m_userSettingsData->m_loggedInUser.m_sessionToken);
+
+    if (m_cachedProjects.get_cache_needs_filling(key))
+    {
+        m_cachedProjects.set_async_fill_cache(key, m_database->get_all_projects());
+    }
+
+    return m_cachedProjects.get_cached_data(gluten::token_cache_key<std::string>(m_userSettingsData->m_loggedInUser.m_sessionToken));
+}
 
 auto workspace_manager::get_workspace_name() const -> concurrencpp::result<std::string>
 {
@@ -261,7 +260,7 @@ auto workspace_manager::select_review(int64_t reviewId) -> void
         return;
     }
 
-    for (const auto& review : m_reviews)
+    for (const auto& review : m_cachedReviews.get_cached_data(gluten::key_and_token_cache_key<int64_t, std::string>(m_selectedProject.m_id, m_userSettingsData->m_loggedInUser.m_sessionToken)).m_cache)
     {
         if (review.m_reviewId == reviewId)
         {
@@ -278,13 +277,12 @@ auto workspace_manager::get_selected_review() const -> const review_data&
 
 auto workspace_manager::create_review(const new_review_data& newReview) -> void 
 {
-    m_reviews.insert(m_database->create_review(get_selected_project().m_id, newReview).get());
+    m_database->create_review(get_selected_project().m_id, newReview);
 }
 
 auto workspace_manager::update_review(const review_data& updatedReview) -> void
 {
-    m_reviews.erase(std::find_if(m_reviews.begin(), m_reviews.end(), [id = updatedReview.m_reviewId](const review_data& review){ return review.m_reviewId == id; }));
-    m_reviews.insert(m_database->update_review(updatedReview).get());
+    m_cachedReviews.set_cache_expired({m_selectedProject.m_id, m_userSettingsData->m_loggedInUser.m_sessionToken});
     
     if (m_selectedReview.m_reviewId == updatedReview.m_reviewId)
     {
@@ -292,9 +290,16 @@ auto workspace_manager::update_review(const review_data& updatedReview) -> void
     }
 }
 
-auto workspace_manager::get_all_reviews() const -> const std::set<review_data>&
+auto workspace_manager::get_all_reviews() -> default_cache_type<review_data>::cache_result
 {
-    return m_reviews;
+    const gluten::key_and_token_cache_key key(m_selectedProject.m_id, m_userSettingsData->m_loggedInUser.m_sessionToken);
+
+    if (m_cachedReviews.get_cache_needs_filling(key))
+    {
+        m_cachedReviews.set_async_fill_cache(key, m_database->get_all_reviews(m_selectedProject.m_id));
+    }
+
+    return m_cachedReviews.get_cached_data({m_selectedProject.m_id, m_userSettingsData->m_loggedInUser.m_sessionToken});
 }
 
 template<typename data_type>
@@ -415,7 +420,7 @@ auto workspace_manager::logout() -> void
     open_user_flow_popup();
 }
 
-auto workspace_manager::get_all_users() -> typename users_cache_type<user_data>::cache_result
+auto workspace_manager::get_all_users() -> typename global_cache_type<user_data>::cache_result
 {
     const gluten::token_cache_key key(m_userSettingsData->m_loggedInUser.m_sessionToken);
 

@@ -183,9 +183,19 @@ namespace gluten
                 async_cache_result& asyncResult = m_asyncCache[key];
                 if (asyncResult && asyncResult.status() == concurrencpp::result_status::value)
                 {
-                    m_cache[key] = asyncResult.get();
-                    m_cache[key].m_state = cache_state::has_data;
-                    m_asyncCache.erase(key);
+                    switch (asyncResult.status())
+                    {
+                        case concurrencpp::result_status::value:
+                            m_cache[key] = asyncResult.get();
+                            m_cache[key].m_state = cache_state::has_data;
+                            m_asyncCache.erase(key);
+                            break;
+                        case concurrencpp::result_status::exception:
+                            BOOST_ASSERT_MSG(false, "Async data threw an exception");
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
 
@@ -198,6 +208,15 @@ namespace gluten
         auto set_cache_expired(const key_type& key) -> void
         {
             m_cache[key].m_state = cache_state::expired;
+        }
+
+        /**
+         * @brief Empty everything.
+         */
+        auto clear() -> void
+        {
+            m_asyncCache.clear();
+            m_cache.clear();
         }
 
     private:

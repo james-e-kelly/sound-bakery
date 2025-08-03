@@ -157,10 +157,10 @@ namespace
     constexpr std::size_t g_sessionTokenSize        = 32U;
     constexpr std::size_t g_base64SessionTokenSize  = sodium_base64_ENCODED_LEN(g_sessionTokenSize, g_base64EncodeVariant);
 
-    //#define REVIEW_TEST_DATABASE_BLOCKS
+    #define REVIEW_TEST_DATABASE_BLOCKS
 
 #ifdef REVIEW_TEST_DATABASE_BLOCKS
-    constexpr std::chrono::milliseconds g_blockDelay = std::chrono::seconds(5);
+    constexpr std::chrono::milliseconds g_blockDelay = std::chrono::seconds(2);
 #endif
 }
 

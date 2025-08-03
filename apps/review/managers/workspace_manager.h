@@ -22,33 +22,34 @@ public:
     template<typename data_type>
     using default_cache_type = gluten::data_cache<std::vector<data_type>, gluten::key_and_token_cache_key<int64_t, std::string>, gluten::key_and_token_cache_key_hasher<int64_t, std::string>>;
 
+    // Cache type that doesn't need any lookup. The logged in user is the only key
     template<typename data_type>
-    using users_cache_type = gluten::data_cache<std::vector<data_type>, gluten::token_cache_key<std::string>, gluten::token_cache_key_hasher<std::string>>;
+    using global_cache_type = gluten::data_cache<std::vector<data_type>, gluten::token_cache_key<std::string>, gluten::token_cache_key_hasher<std::string>>;
 
     workspace_manager(gluten::app* app) : gluten::manager(app) {}
     ~workspace_manager();
 
-    auto open_workspace(const std::filesystem::path workspaceFile) -> concurrencpp::result<void>;
-    auto create_workspace(const std::string& workspaceName, const std::filesystem::path& workspaceDirectory) -> void;
-    auto close_workspace() -> void;
-
-    auto add_existing_project(const project_data& projectData) -> void;
-    auto create_project(const std::string& projectName, const std::string& projectDescription) -> void;
-    auto select_project(const std::string projectName) -> concurrencpp::result<void>;
-    [[nodiscard]] auto has_selected_project() const -> bool;
-
-    [[nodiscard]] auto get_selected_project() const -> const project_data&;
-    [[nodiscard]] auto get_projects() const -> const std::set<project_data>&;
-    
+    // Workspace
     [[nodiscard]] auto get_workspace_name() const -> concurrencpp::result<std::string>;
     [[nodiscard]] auto get_workspace_file() const -> std::filesystem::path;
     [[nodiscard]] auto get_workspace_directory() const -> std::filesystem::path;
+    auto open_workspace(const std::filesystem::path workspaceFile) -> concurrencpp::result<void>;
+    auto create_workspace(const std::string& workspaceName, const std::filesystem::path& workspaceDirectory) -> void;
+    auto close_workspace() -> void;
+    
+    // Projects
+    [[nodiscard]] auto get_selected_project() const -> const project_data&;
+    [[nodiscard]] auto get_all_projects() -> typename global_cache_type<project_data>::cache_result;
+    [[nodiscard]] auto has_selected_project() const -> bool;
+    auto create_project(const std::string& projectName, const std::string& projectDescription) -> void;
+    auto select_project(const std::string projectName) -> concurrencpp::result<void>;
 
+    // Reviews
     auto select_review(int64_t reviewId) -> void;
     auto get_selected_review() const -> const review_data&;
     auto create_review(const new_review_data& newReview) -> void;
     auto update_review(const review_data& updatedReview) -> void;
-    auto get_all_reviews() const -> const std::set<review_data>&;
+    auto get_all_reviews() -> default_cache_type<review_data>::cache_result;
 
     // Activity
     auto get_all_activity_for_review(int64_t reviewId) -> typename default_cache_type<activity_data>::cache_result;
@@ -64,7 +65,7 @@ public:
     auto logged_in_user_can_create_users() -> concurrencpp::result<bool>;
     auto create_user(const new_user_data newUser, std::optional<std::string> userToken) -> concurrencpp::result<tl::expected<bool, database_error>>;
     auto create_user_and_login(new_user_data newUser) -> concurrencpp::result<tl::expected<bool, database_error>>;
-    auto get_all_users() -> typename users_cache_type<user_data>::cache_result;
+    auto get_all_users() -> typename global_cache_type<user_data>::cache_result;
     auto get_selected_user() const -> const user_data&;
     auto select_user(const std::string& email) -> void;
     auto delete_user(const std::string& email) -> void;
@@ -92,15 +93,11 @@ private:
     auto open_workspace_widget() -> void;
     auto open_user_flow_popup() -> void;
 
-    auto load_projects_from_workspace() -> concurrencpp::result<void>;
-
     std::shared_ptr<intro_widget> m_introWidget;
     std::shared_ptr<workspace_widget> m_workspaceWidget;
     std::shared_ptr<user_flow_popup> m_userFlowPopup;
 
     gluten::data_source<user_settings_data> m_userSettingsData;
-    std::set<project_data> m_projects;
-    std::set<review_data> m_reviews;
     project_data m_selectedProject;
     review_data m_selectedReview;
     user_data m_selectedUser;
@@ -108,8 +105,9 @@ private:
 
     // Caches
     default_cache_type<comment_data> m_cachedComments;
-    users_cache_type<user_data> m_allUsersCache;
+    global_cache_type<user_data> m_allUsersCache;
     default_cache_type<reviewer_data> m_reviewUsersCache;
     default_cache_type<activity_data> m_cachedActivity;
-    //default_cache_type<std::unordered_map<int64_t, review_vote>> m_reviewVotesCache;
+    default_cache_type<review_data> m_cachedReviews;
+    global_cache_type<project_data> m_cachedProjects;
 };
