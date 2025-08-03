@@ -137,17 +137,23 @@ auto workspace_manager::open_workspace_widget() -> void
     }
 }
 
-auto workspace_manager::open_user_flow_popup() -> void
+auto workspace_manager::open_user_flow_popup() -> concurrencpp::result<void>
 {
+    co_await concurrencpp::resume_on(get_app()->get_tick_executor());
+
     m_workspaceWidget.reset();
     m_userFlowPopup = get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class_to_root<user_flow_popup>(false);
     m_userFlowPopup->open_popup();
 
-    if (m_database->user_table_is_empty().get())
+    if (co_await m_database->user_table_is_empty())
     {
+        co_await concurrencpp::resume_on(get_app()->get_tick_executor());
         m_userFlowPopup->set_flow_type(user_flow_type::new_user_and_login);
     }
-    else if (m_userSettingsData->m_loggedInUser.m_sessionToken.empty())
+    
+    co_await concurrencpp::resume_on(get_app()->get_tick_executor());
+
+    if (m_userSettingsData->m_loggedInUser.m_sessionToken.empty())
     {
         m_userFlowPopup->set_flow_type(user_flow_type::login_user);
     }

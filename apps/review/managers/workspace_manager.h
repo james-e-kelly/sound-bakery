@@ -93,7 +93,7 @@ private:
     auto async_get_users_for_review(int64_t reviewId) -> concurrencpp::result<std::vector<reviewer_data>>;
 
     auto open_workspace_widget() -> void;
-    auto open_user_flow_popup() -> void;
+    auto open_user_flow_popup() -> concurrencpp::result<void>;
 
     std::shared_ptr<intro_widget> m_introWidget;
     std::shared_ptr<workspace_widget> m_workspaceWidget;
