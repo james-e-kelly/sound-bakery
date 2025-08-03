@@ -70,7 +70,7 @@ public:
     auto get_all_users() -> typename global_cache_type<user_data>::cache_result;
     auto get_selected_user() const -> const user_data&;
     auto select_user(const std::string& email) -> void;
-    auto delete_user(const std::string& email) -> void;
+    auto delete_user(const std::string& email) -> concurrencpp::result<void>;
 
     // Login / Logout
     auto login_user(login_request_data loginData) -> concurrencpp::result<tl::expected<bool, database_error>>;
@@ -107,7 +107,7 @@ private:
 
     // Caches
     default_cache_type<comment_data> m_cachedComments;
-    global_cache_type<user_data> m_allUsersCache;
+    global_cache_type<user_data> m_cachedUsers;
     default_cache_type<reviewer_data> m_reviewUsersCache;
     default_cache_type<activity_data> m_cachedActivity;
     default_cache_type<review_data> m_cachedReviews;

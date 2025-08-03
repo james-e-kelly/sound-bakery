@@ -390,7 +390,10 @@ auto workspace_manager::logged_in_user_can_create_users() -> concurrencpp::resul
 auto workspace_manager::create_user(const new_user_data newUser, std::optional<std::string> userToken) -> concurrencpp::result<tl::expected<bool, database_error>> 
 {
     co_await m_database->create_user(newUser, userToken.has_value() ? userToken.value() : std::string());
+
+    co_await concurrencpp::resume_on(get_app()->get_tick_executor());
     m_userFlowPopup.reset();
+    m_cachedUsers.set_cache_expired(m_userSettingsData->m_loggedInUser.m_sessionToken);
 }
 
 auto workspace_manager::create_user_and_login(new_user_data newUser) -> concurrencpp::result<tl::expected<bool, database_error>>
@@ -441,12 +444,12 @@ auto workspace_manager::get_all_users() -> typename global_cache_type<user_data>
 {
     const gluten::token_cache_key key(m_userSettingsData->m_loggedInUser.m_sessionToken);
 
-    if (m_allUsersCache.get_cache_needs_filling(key))
+    if (m_cachedUsers.get_cache_needs_filling(key))
     {
-        m_allUsersCache.set_async_fill_cache(key, transform_database_result_to_cache_result(m_database->get_all_users(key.m_token)));
+        m_cachedUsers.set_async_fill_cache(key, transform_database_result_to_cache_result(m_database->get_all_users(key.m_token)));
     }
 
-    return m_allUsersCache.get_cached_data(key);
+    return m_cachedUsers.get_cached_data(key);
 }
 
 auto workspace_manager::get_selected_user() const -> const user_data&
@@ -462,7 +465,7 @@ auto workspace_manager::select_user(const std::string& email) -> void
         return;
     }
 
-    const auto& cachedUsers = m_allUsersCache.get_cached_data(gluten::token_cache_key(m_userSettingsData->m_loggedInUser.m_sessionToken));
+    const auto& cachedUsers = m_cachedUsers.get_cached_data(gluten::token_cache_key(m_userSettingsData->m_loggedInUser.m_sessionToken));
 
     if (cachedUsers.m_state == gluten::cache_state::has_data)
     {
@@ -477,21 +480,34 @@ auto workspace_manager::select_user(const std::string& email) -> void
     }
 }
 
-auto workspace_manager::delete_user(const std::string& email) -> void
+auto workspace_manager::delete_user(const std::string& email) -> concurrencpp::result<void>
 {
     if (!email.empty())
     {
+        const gluten::token_cache_key key(m_userSettingsData->m_loggedInUser.m_sessionToken);
+
+        m_cachedUsers.get_raw_data(key).erase(
+            std::find_if(m_cachedUsers.get_raw_data(key).begin(), m_cachedUsers.get_raw_data(key).end(),
+            [email](const user_data& user) -> bool 
+            {
+                return email == user.m_email;
+            }));
+
         const bool deletingSelf = email == m_userSettingsData->m_loggedInUser.m_email;
 
-        const tl::expected<bool, database_error> result = m_database->delete_user(email, m_userSettingsData->m_loggedInUser.m_sessionToken).get();
+        const tl::expected<bool, database_error> result = co_await m_database->delete_user(email, m_userSettingsData->m_loggedInUser.m_sessionToken);
 
         if (result.has_value())
         {
             if (result.value())
             {
+                co_await concurrencpp::resume_on(review_app::get()->get_tick_executor());
+
                 m_selectedProject = project_data();
                 m_selectedReview  = review_data();
                 m_selectedUser    = user_data();
+
+                m_cachedUsers.set_cache_expired(key);
 
                 if (deletingSelf)
                 {

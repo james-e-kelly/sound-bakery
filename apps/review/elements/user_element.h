@@ -17,7 +17,7 @@ public:
 protected:
     auto render_element(const ImRect& elementRect) -> bool override
     {
-        gluten::imgui::scoped_id id(ImGui::GetID(m_user.m_displayName.c_str()));
+        gluten::imgui::scoped_id id(ImGui::GetID(m_user.m_email.c_str()));
 
         if (m_backgroundColor.has_value())
         {
