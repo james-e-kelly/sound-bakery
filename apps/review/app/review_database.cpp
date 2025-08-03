@@ -799,7 +799,7 @@ auto review_database::login_user(login_request_data loginRequest) -> concurrencp
         co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::no_data, .m_errorMessage = "User does not exist"});
     }
 
-    const std::string passwordHash = statement.getColumn(1).getString();
+    const std::string passwordHash = (const char*)statement.getColumn(1).getBlob();
     const std::string passwordSalt = statement.getColumn(2).getString();
 
     unsigned char hashBuffer[g_passwordHashSize] = { 0 };
