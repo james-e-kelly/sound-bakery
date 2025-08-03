@@ -545,9 +545,17 @@ auto workspace_manager::set_user_vote_for_review(int64_t reviewId, int64_t userI
 {
     gluten::data_source<user_settings_data> userSettings;
 
+    auto& rawReviewUsers = m_reviewUsersCache.get_raw_data({reviewId, userSettings->m_loggedInUser.m_sessionToken});
+
+    auto foundReviewer = std::find_if(rawReviewUsers.begin(), rawReviewUsers.end(), [userId](const reviewer_data& reviewer) 
+        {
+            return reviewer.m_userId == userId;
+        });
+
+    if (foundReviewer != rawReviewUsers.end())
+    {
+        foundReviewer->m_vote = vote;
+    }
+
     co_await m_database->set_user_vote_for_review(reviewId, userId, vote, userSettings->m_loggedInUser.m_sessionToken);
-
-    co_await concurrencpp::resume_on(gluten::app::get()->get_tick_executor());
-
-    m_reviewUsersCache.set_cache_expired(gluten::key_and_token_cache_key(reviewId, userSettings->m_loggedInUser.m_sessionToken));
 }
