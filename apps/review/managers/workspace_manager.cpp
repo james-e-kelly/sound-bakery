@@ -348,12 +348,16 @@ auto workspace_manager::get_all_comments_for_review(int64_t reviewId) -> typenam
 
 auto workspace_manager::create_comment(const new_comment_data& newComment) -> void
 {
-    m_database->create_comment(newComment).get();
+    m_database->create_comment(newComment);
+    m_cachedComments.set_cache_expired({m_selectedProject.m_id, m_userSettingsData->m_loggedInUser.m_sessionToken});
+    m_cachedActivity.set_cache_expired({m_selectedReview.m_reviewId, m_userSettingsData->m_loggedInUser.m_sessionToken});
 }
 
 auto workspace_manager::delete_comment(int64_t commentId) -> void
 {
-    m_database->delete_comment(commentId).get();
+    m_database->delete_comment(commentId);
+    m_cachedComments.set_cache_expired({m_selectedProject.m_id, m_userSettingsData->m_loggedInUser.m_sessionToken});
+    m_cachedActivity.set_cache_expired({m_selectedReview.m_reviewId, m_userSettingsData->m_loggedInUser.m_sessionToken});
 }
 
 auto workspace_manager::open_create_user_popup() -> void

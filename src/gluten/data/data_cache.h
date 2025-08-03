@@ -219,6 +219,11 @@ namespace gluten
             m_cache.clear();
         }
 
+        [[nodiscard]] auto get_raw_data(const key_type& key) -> data_type&
+        {
+            return m_cache[key].m_cache;
+        }
+
     private:
         mutable std::unordered_map<key_type, cached_data, key_hasher> m_cache;      //< The cache, ready to be used by the caller
         std::unordered_map<key_type, async_cache_result, key_hasher> m_asyncCache;  //< The async request to fill the cache
