@@ -16,116 +16,15 @@ class review_database;
 class user_flow_popup;
 class workspace_widget;
 
-enum class cache_error
-{
-    loading,        //< The cache is loading
-    does_not_exist  //< No cache data
-};
-
-template <typename data_type, typename key_type = int64_t>
-struct cache
-{
-    using data_container = std::vector<data_type>;
-    using cache_return = tl::expected<data_container, cache_error>;
-    using async_get_data_size = concurrencpp::result<std::size_t>;
-    using async_get_data = concurrencpp::result<data_container>;
-    using async_get_data_expected = concurrencpp::result<tl::expected<data_container, database_error>>;
-
-    [[nodiscard]] auto contains(const key_type& key) const -> bool { return m_cache.contains(key); }
-
-    /**
-     * @brief Checks if the cache is invalid.
-     *
-     * @return true on cache invalidation
-     */
-    [[nodiscard]] auto check_for_cache_invalidation(const key_type& key, async_get_data_size&& asyncGetDataSize) -> bool
-    {
-        using std::size_t;
-
-        if (m_asyncGetData.contains(key))
-        {
-            if (m_asyncGetData[key].status() == concurrencpp::result_status::value)
-            {
-                m_cache[key] = m_asyncGetData[key].get();
-                m_asyncGetData.erase(key);
-            }
-        }
-        else if (m_asyncGetDataWithExpected.contains(key))
-        {
-            if (m_asyncGetDataWithExpected[key].status() == concurrencpp::result_status::value)
-            {
-                const tl::expected<data_container, database_error> expected = m_asyncGetDataWithExpected[key].get();
-
-                if (expected.has_value())
-                {
-                    m_cache[key] = expected.value();
-                }
-
-                m_asyncGetDataWithExpected.erase(key);
-            }
-        }
-        else
-        {
-            if (m_asyncGetDataSize.contains(key))
-            {
-                if (m_asyncGetDataSize[key].status() == concurrencpp::result_status::value)
-                {
-                    const size_t currentCacheSize = m_cache[key].size();
-                    const size_t newDataSize      = m_asyncGetDataSize[key].get();
-
-                    m_cacheValid[key] = currentCacheSize == newDataSize;
-                    m_asyncGetDataSize.erase(key);
-                }
-            }
-            else
-            {
-                m_asyncGetDataSize.insert({key, std::move(asyncGetDataSize)});
-            }
-        }
-
-        return !m_cacheValid[key];   // Always return the validity bool we have on the main thread. Async functions will update this when ready
-    }
-
-    [[nodiscard]] auto get_cache(const key_type& key) const -> cache_return
-    {
-        if (contains(key))
-        {
-            if (m_asyncGetDataSize.contains(key) || m_asyncGetDataWithExpected.contains(key))
-            {
-                return tl::make_unexpected(cache_error::loading);
-            }
-
-            return m_cache.at(key);
-        }
-        else
-        {
-            return tl::make_unexpected(cache_error::does_not_exist);
-        }
-    }
-
-    auto erase_cache(const key_type& key) -> void { m_cache.erase(key); }
-
-    auto add_cache(const key_type& key, async_get_data&& asyncGetData) -> void
-    {
-        m_asyncGetData[key] = std::move(asyncGetData);
-    }
-
-    auto add_cache_handle_expected(const key_type& key, async_get_data_expected&& asyncGetData) -> void
-    {
-        m_asyncGetDataWithExpected[key] = std::move(asyncGetData);
-    }
-
-    std::unordered_map<key_type, data_container> m_cache;
-    std::unordered_map<key_type, bool> m_cacheValid;
-
-    std::unordered_map<key_type, async_get_data_size> m_asyncGetDataSize;
-    std::unordered_map<key_type, async_get_data> m_asyncGetData;
-    std::unordered_map<key_type, async_get_data_expected> m_asyncGetDataWithExpected;
-};
-
 class workspace_manager : public gluten::manager	
 {
 public:
+    template<typename data_type>
+    using default_cache_type = gluten::data_cache<std::vector<data_type>, gluten::key_and_token_cache_key<int64_t, std::string>, gluten::key_and_token_cache_key_hasher<int64_t, std::string>>;
+
+    template<typename data_type>
+    using users_cache_type = gluten::data_cache<std::vector<data_type>, gluten::token_cache_key<std::string>, gluten::token_cache_key_hasher<std::string>>;
+
     workspace_manager(gluten::app* app) : gluten::manager(app) {}
     ~workspace_manager();
 
@@ -152,12 +51,10 @@ public:
     auto get_all_reviews() const -> const std::set<review_data>&;
 
     // Activity
-    auto get_all_activity_for_review(int64_t reviewId) -> typename cache<activity_data>::cache_return;
-    auto get_activity_count_for_review(int64_t reviewId) const -> concurrencpp::result<std::size_t>;
+    auto get_all_activity_for_review(int64_t reviewId) -> typename default_cache_type<activity_data>::cache_result;
 
     // Comments
-    auto get_all_comments_for_review(int64_t reviewId) -> cache<comment_data>::cache_return;
-    auto get_comments_count_for_review(int64_t reviewId) const -> concurrencpp::result<std::size_t>;
+    auto get_all_comments_for_review(int64_t reviewId) -> typename default_cache_type<comment_data>::cache_result;
     auto create_comment(const new_comment_data& newComment) -> void;
     auto delete_comment(int64_t commentId) -> void;
 
@@ -167,8 +64,7 @@ public:
     auto logged_in_user_can_create_users() -> concurrencpp::result<bool>;
     auto create_user(const new_user_data newUser, std::optional<std::string> userToken) -> concurrencpp::result<tl::expected<bool, database_error>>;
     auto create_user_and_login(new_user_data newUser) -> concurrencpp::result<tl::expected<bool, database_error>>;
-    auto get_all_users() -> typename cache<user_data>::cache_return;
-    auto get_users_count() const -> concurrencpp::result<std::size_t>;
+    auto get_all_users() -> typename users_cache_type<user_data>::cache_result;
     auto get_selected_user() const -> const user_data&;
     auto select_user(const std::string& email) -> void;
     auto delete_user(const std::string& email) -> void;
@@ -178,7 +74,7 @@ public:
     auto logout() -> void;
 
     // Review Users
-    auto get_users_for_review(int64_t reviewId) -> typename cache<reviewer_data>::cache_return;
+    auto get_users_for_review(int64_t reviewId) -> typename default_cache_type<reviewer_data>::cache_result;
     auto set_users_for_review(int64_t reviewId, std::vector<int64_t> userIds) -> concurrencpp::result<tl::expected<bool, database_error>>;
 
     // Voting
@@ -210,9 +106,10 @@ private:
     user_data m_selectedUser;
     std::shared_ptr<review_database> m_database;
 
-    cache<comment_data> m_cachedComments;
-    cache<user_data> m_allUsersCache;
-    cache<reviewer_data> m_reviewUsersCache;
-    cache<std::unordered_map<int64_t, review_vote>> m_reviewVotesCache;
-    cache<activity_data> m_cachedActivity;
+    // Caches
+    default_cache_type<comment_data> m_cachedComments;
+    users_cache_type<user_data> m_allUsersCache;
+    default_cache_type<reviewer_data> m_reviewUsersCache;
+    default_cache_type<activity_data> m_cachedActivity;
+    //default_cache_type<std::unordered_map<int64_t, review_vote>> m_reviewVotesCache;
 };

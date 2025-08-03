@@ -14,19 +14,6 @@ auto edit_reviewers_popup::start_implementation() -> void
 	if (std::shared_ptr<workspace_manager> workspaceManager = get_app()->get_manager_by_class<workspace_manager>())
 	{
 		m_workspaceManager = workspaceManager;
-
-		m_newUsers = workspaceManager->get_users_for_review(m_review.m_reviewId).value();
-        m_allUsers = workspaceManager->get_all_users().value();
-		
-		std::sort(m_newUsers.begin(), m_newUsers.end(), [](const auto& lhs, const auto& rhs) -> bool
-			{
-                return std::strcmp(lhs.m_displayName.c_str(), rhs.m_displayName.c_str()) <= 0;
-			});
-
-		std::sort(m_allUsers.begin(), m_allUsers.end(), [](const auto& lhs, const auto& rhs) -> bool
-			{
-                return std::strcmp(lhs.m_displayName.c_str(), rhs.m_displayName.c_str()) <= 0;
-			});
 	}
 }
 
@@ -36,59 +23,84 @@ auto edit_reviewers_popup::render_popup() -> void
 
 	ImGui::Dummy(ImVec2(400.0f, 0.0f));
 
-	for (auto iter = m_newUsers.begin(); iter != m_newUsers.end(); )
+	const std::shared_ptr<workspace_manager> workspaceManager = m_workspaceManager.lock();
+
+	if (!workspaceManager)
 	{
-		gluten::imgui::scoped_id scopedId(iter->m_userId);
-        ImGui::TextUnformatted(iter->m_displayName.c_str());
-		ImGui::SameLine();
-		if (ImGui::Button(ICON_LC_X))
-		{
-			iter = m_newUsers.erase(iter);
-		}
-		else
-		{
-			++iter;
-		}
+		return;
 	}
 
-	if (m_addingNewUser)
+	const typename workspace_manager::users_cache_type<user_data>::cache_result& allUsers = workspaceManager->get_all_users();
+	const typename workspace_manager::default_cache_type<reviewer_data>::cache_result& reviewers = workspaceManager->get_users_for_review(m_review.m_reviewId);
+
+	if (!m_newReviewers.has_value() && reviewers.m_state == gluten::cache_state::has_data)
 	{
-		if (ImGui::BeginCombo("New Reviewer", nullptr))
+        m_newReviewers = reviewers.m_cache;
+	}
+
+	if (m_newReviewers.has_value())
+	{
+        for (auto iter = m_newReviewers.value().begin(); iter != m_newReviewers.value().end();)
 		{
-			for (const auto& user : m_allUsers)
+			gluten::imgui::scoped_id scopedId(iter->m_userId);
+			ImGui::TextUnformatted(iter->m_displayName.c_str());
+			ImGui::SameLine();
+			if (ImGui::Button(ICON_LC_X))
 			{
-				if (const auto iter = std::find_if(m_newUsers.begin(), m_newUsers.end(), [newId = user.m_userId](const auto& user) -> bool
-					{
-						return newId == user.m_userId;
-					}); iter == m_newUsers.end())
+                iter = m_newReviewers.value().erase(iter);
+			}
+			else
+			{
+				++iter;
+			}
+		}
+
+		if (m_addingNewUser)
+		{
+			if (ImGui::BeginCombo("New Reviewer", nullptr))
+			{
+				for (const auto& user : allUsers.m_cache)
 				{
-					if (ImGui::Selectable(user.m_displayName.c_str()))
+					if (const auto iter = std::find_if(m_newReviewers.value().begin(), m_newReviewers.value().end(), [newId = user.m_userId](const auto& user) -> bool
+						{
+							return newId == user.m_userId;
+						}); iter == m_newReviewers.value().end())
 					{
-						m_newUsers.push_back(user);
-						m_addingNewUser = false;
+						if (ImGui::Selectable(user.m_displayName.c_str()))
+						{
+							m_newReviewers.value().push_back(user);
+							m_addingNewUser = false;
+						}
 					}
 				}
+				ImGui::EndCombo();
 			}
-            ImGui::EndCombo();
 		}
+
+		if (m_newReviewers.value().size() != allUsers.m_cache.size())
+		{
+			if (ImGui::Button(ICON_LC_PLUS))
+			{
+				m_addingNewUser = true;
+			}
+		}
+	}
+	else
+	{
+		gluten::loading_spinner reviewersLoading;
+        reviewersLoading.render_cursor();
 	}
 
-	if (m_newUsers.size() != m_allUsers.size())
-	{
-		if (ImGui::Button(ICON_LC_PLUS))
-		{
-			m_addingNewUser = true;
-		}
-	}
+	ImGui::BeginDisabled(!m_newReviewers.has_value());
 
 	if (ImGui::Button("Save"))
 	{
 		if (std::shared_ptr<workspace_manager> workspaceManager = m_workspaceManager.lock())
 		{
 			std::vector<int64_t> userIds;
-			userIds.resize(m_newUsers.size());
+			userIds.resize(m_newReviewers.value().size());
 
-			std::transform(m_newUsers.begin(), m_newUsers.end(), userIds.begin(), [](const user_data& user) 
+			std::transform(m_newReviewers.value().begin(), m_newReviewers.value().end(), userIds.begin(), [](const user_data& user) 
 				{
 					return user.m_userId;
 				});
@@ -98,6 +110,8 @@ auto edit_reviewers_popup::render_popup() -> void
 
 		close_popup();
 	}
+
+	ImGui::EndDisabled();
 
 	ImGui::SameLine();
 

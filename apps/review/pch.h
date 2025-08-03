@@ -4,6 +4,7 @@
 #include "imspinner.h"
 #include "gluten/app/app.h"
 #include "gluten/data/data_source.h"
+#include "gluten/data/data_cache.h"
 #include "gluten/elements/icon_button.h"
 #include "gluten/elements/collapsing_header.h"
 #include "gluten/elements/loading_spinner.h"

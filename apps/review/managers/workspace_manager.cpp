@@ -102,20 +102,23 @@ auto workspace_manager::async_get_users_for_review(int64_t reviewId) -> concurre
         std::vector<user_data> users = result.value();
         reviewers.resize(users.size());
 
-        std::transform(users.begin(), users.end(), reviewers.begin(), [database = m_database, reviewId](const user_data& user) 
-            {
-                return reviewer_data(user, database->get_user_vote_on_review(reviewId, user.m_userId).get().value());
-            });
+        if (!users.empty() && !reviewers.empty())
+        {
+            std::transform(users.begin(), users.end(), reviewers.begin(), [database = m_database, reviewId](const user_data& user) 
+                {
+                    return reviewer_data(user, database->get_user_vote_on_review(reviewId, user.m_userId).get().value());
+                });
 
-        std::sort(reviewers.begin(), reviewers.end(), [userSettings = m_userSettingsData](const reviewer_data& lhs, const reviewer_data& rhs) -> bool
-            {
-                return std::strcmp(userSettings->m_loggedInUser.m_email.c_str(), lhs.m_email.c_str()) == 0;
-            });
+            std::sort(reviewers.begin(), reviewers.end(), [userSettings = m_userSettingsData](const reviewer_data& lhs, const reviewer_data& rhs) -> bool
+                {
+                    return std::strcmp(userSettings->m_loggedInUser.m_email.c_str(), lhs.m_email.c_str()) == 0;
+                });
 
-        std::sort(reviewers.begin() + 1, reviewers.end(), [](const reviewer_data& lhs, const reviewer_data& rhs) 
-            {
-                return std::strcmp(lhs.m_displayName.c_str(), rhs.m_displayName.c_str()) < 0;
-            });
+            std::sort(reviewers.begin() + 1, reviewers.end(), [](const reviewer_data& lhs, const reviewer_data& rhs) 
+                {
+                    return std::strcmp(lhs.m_displayName.c_str(), rhs.m_displayName.c_str()) < 0;
+                });
+        }
 
     }
     co_return reviewers;
@@ -294,34 +297,41 @@ auto workspace_manager::get_all_reviews() const -> const std::set<review_data>&
     return m_reviews;
 }
 
-auto workspace_manager::get_all_activity_for_review(int64_t reviewId) -> typename cache<activity_data>::cache_return
+template<typename data_type>
+static auto transform_database_result_to_cache_result(concurrencpp::result<tl::expected<data_type, database_error>> databaseResult) -> concurrencpp::result<data_type>
 {
-    if (m_cachedActivity.check_for_cache_invalidation(reviewId, get_activity_count_for_review(reviewId)))
+    const auto result = co_await databaseResult;
+
+    if (result.has_value())
     {
-        m_cachedActivity.add_cache(reviewId, m_database->get_all_activity_for_review(reviewId));
+        co_return result.value();
     }
 
-    return m_cachedActivity.get_cache(reviewId);
+    co_return data_type();
 }
 
-auto workspace_manager::get_activity_count_for_review(int64_t reviewId) const -> concurrencpp::result<std::size_t>
+auto workspace_manager::get_all_activity_for_review(int64_t reviewId) -> typename default_cache_type<activity_data>::cache_result
 {
-    co_return co_await m_database->get_activity_count_for_review(reviewId);
-}
+    const gluten::key_and_token_cache_key key(reviewId, m_userSettingsData->m_loggedInUser.m_sessionToken);
 
-auto workspace_manager::get_all_comments_for_review(int64_t reviewId) -> cache<comment_data>::cache_return
-{
-    if (m_cachedComments.check_for_cache_invalidation(reviewId, get_comments_count_for_review(reviewId)))
+    if (m_cachedActivity.get_cache_needs_filling(key))
     {
-        m_cachedComments.add_cache(reviewId, m_database->get_all_comments_for_review(reviewId));
+        m_cachedActivity.set_async_fill_cache(key, m_database->get_all_activity_for_review(reviewId));
+    }
+
+    return m_cachedActivity.get_cached_data(key);
+}
+
+auto workspace_manager::get_all_comments_for_review(int64_t reviewId) -> typename default_cache_type<comment_data>::cache_result
+{
+    const gluten::key_and_token_cache_key key(reviewId, m_userSettingsData->m_loggedInUser.m_sessionToken);
+
+    if (m_cachedComments.get_cache_needs_filling(key))
+    {
+        m_cachedComments.set_async_fill_cache(key, m_database->get_all_comments_for_review(reviewId));
     }
     
-    return m_cachedComments.get_cache(reviewId);
-}
-
-auto workspace_manager::get_comments_count_for_review(int64_t reviewId) const -> concurrencpp::result<std::size_t>
-{
-    co_return co_await m_database->get_comments_count_for_review(reviewId);
+    return m_cachedComments.get_cached_data(key);
 }
 
 auto workspace_manager::create_comment(const new_comment_data& newComment) -> void
@@ -405,26 +415,16 @@ auto workspace_manager::logout() -> void
     open_user_flow_popup();
 }
 
-auto workspace_manager::get_all_users() -> typename cache<user_data>::cache_return
+auto workspace_manager::get_all_users() -> typename users_cache_type<user_data>::cache_result
 {
-    if (m_allUsersCache.check_for_cache_invalidation(0, get_users_count()))
+    const gluten::token_cache_key key(m_userSettingsData->m_loggedInUser.m_sessionToken);
+
+    if (m_allUsersCache.get_cache_needs_filling(key))
     {
-        m_allUsersCache.add_cache_handle_expected(0, m_database->get_all_users(m_userSettingsData->m_loggedInUser.m_sessionToken));
+        m_allUsersCache.set_async_fill_cache(key, transform_database_result_to_cache_result(m_database->get_all_users(key.m_token)));
     }
 
-    return m_allUsersCache.get_cache(0);
-}
-
-auto workspace_manager::get_users_count() const -> concurrencpp::result<std::size_t>
-{
-    const tl::expected<std::size_t, database_error> result = co_await m_database->get_users_count(m_userSettingsData->m_loggedInUser.m_sessionToken);
-
-    if (result.has_value())
-    {
-        co_return result.value();
-    }
-
-    co_return 0U;
+    return m_allUsersCache.get_cached_data(key);
 }
 
 auto workspace_manager::get_selected_user() const -> const user_data&
@@ -440,11 +440,11 @@ auto workspace_manager::select_user(const std::string& email) -> void
         return;
     }
 
-    const auto cachedUsers = m_allUsersCache.get_cache(0);
+    const auto& cachedUsers = m_allUsersCache.get_cached_data(gluten::token_cache_key(m_userSettingsData->m_loggedInUser.m_sessionToken));
 
-    if (cachedUsers.has_value())
+    if (cachedUsers.m_state == gluten::cache_state::has_data)
     {
-        for (const auto& user : cachedUsers.value())
+        for (const auto& user : cachedUsers.m_cache)
         {
             if (user.m_email == email)
             {
@@ -480,19 +480,22 @@ auto workspace_manager::delete_user(const std::string& email) -> void
     }
 }
 
-auto workspace_manager::get_users_for_review(int64_t reviewId) -> typename cache<reviewer_data>::cache_return
+auto workspace_manager::get_users_for_review(int64_t reviewId) -> typename default_cache_type<reviewer_data>::cache_result
 {
-    if (m_reviewUsersCache.check_for_cache_invalidation(reviewId, get_users_count()))
+    const gluten::key_and_token_cache_key key(reviewId, m_userSettingsData->m_loggedInUser.m_sessionToken);
+
+    if (m_reviewUsersCache.get_cache_needs_filling(key))
     {
-        m_reviewUsersCache.add_cache(reviewId, async_get_users_for_review(reviewId));
+        m_reviewUsersCache.set_async_fill_cache(key, async_get_users_for_review(reviewId));
     }
 
-    return m_reviewUsersCache.get_cache(reviewId);
+    return m_reviewUsersCache.get_cached_data(key);
 }
 
 auto workspace_manager::set_users_for_review(int64_t reviewId, std::vector<int64_t> userIds) -> concurrencpp::result<tl::expected<bool, database_error>>
 {
-    m_reviewUsersCache.erase_cache(reviewId);
+    const gluten::key_and_token_cache_key key(reviewId, m_userSettingsData->m_loggedInUser.m_sessionToken);
+    m_reviewUsersCache.set_cache_expired(key);
 
     co_return co_await m_database->set_users_for_review(reviewId, userIds, m_userSettingsData->m_loggedInUser.m_sessionToken);
 }
@@ -505,5 +508,5 @@ auto workspace_manager::set_user_vote_for_review(int64_t reviewId, int64_t userI
 
     co_await concurrencpp::resume_on(gluten::app::get()->get_tick_executor());
 
-    m_reviewUsersCache.erase_cache(reviewId);
+    m_reviewUsersCache.set_cache_expired(gluten::key_and_token_cache_key(reviewId, userSettings->m_loggedInUser.m_sessionToken));
 }

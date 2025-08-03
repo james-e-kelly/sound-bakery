@@ -241,11 +241,11 @@ auto workspace_widget::render_list() -> void
                     break;
                 case workspace_widget::users_view:
                 {
-                    const auto allUsers = workspaceManager->get_all_users();
+                    const auto& allUsers = workspaceManager->get_all_users();
 
-                    if (allUsers.has_value())
+                    if (allUsers.m_state == gluten::cache_state::has_data)
                     {
-                        for (const auto& user : allUsers.value())
+                        for (const auto& user : allUsers.m_cache)
                         {
                             user_element userElement(user);
                             if (itemsLayout.render_layout_element_pixels_vertical(&userElement,
@@ -462,10 +462,10 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
 
                 ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
 
-                const auto comments = workspaceManager->get_all_comments_for_review(selectedReview.m_reviewId);
-                if (comments.has_value())
+                const auto& comments = workspaceManager->get_all_comments_for_review(selectedReview.m_reviewId);
+                if (comments.m_state == gluten::cache_state::has_data)
                 {
-                    for (const auto& comment : comments.value())
+                    for (const auto& comment : comments.m_cache)
                     {
                         ImGui::TextWrapped(comment.m_comment.c_str());
 
@@ -504,10 +504,10 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
 
             if (ImGui::BeginTabItem("Activity"))
             {
-                const auto reviewsActivity = workspaceManager->get_all_activity_for_review(selectedReview.m_reviewId);
-                if (reviewsActivity.has_value())
+                const auto& reviewsActivity = workspaceManager->get_all_activity_for_review(selectedReview.m_reviewId);
+                if (reviewsActivity.m_state == gluten::cache_state::has_data)
                 {
-                    for (const auto& iter : reviewsActivity.value())
+                    for (const auto& iter : reviewsActivity.m_cache)
                     {
                         std::istringstream in(iter.m_activityTimestamp);
                         std::chrono::sys_seconds tp;
@@ -645,11 +645,11 @@ void workspace_widget::render_reviewers(std::shared_ptr<workspace_manager>& work
 {
     if (rightPanelBackground.render_layout_element_pixels_vertical(&reviewersHeader, 50.0f))
     {
-        const auto reviewers = workspaceManager->get_users_for_review(selectedReview.m_reviewId);
+        const auto& reviewers = workspaceManager->get_users_for_review(selectedReview.m_reviewId);
         
-        if (reviewers.has_value())
+        if (reviewers.m_state == gluten::cache_state::has_data)
         {
-            for (const auto& reviewer : reviewers.value())
+            for (const auto& reviewer : reviewers.m_cache)
             {
                 reviewer_display_element user(reviewer, selectedReview.m_reviewId);
                 rightPanelBackground.render_layout_element_pixels_vertical(&user, 50.0f);
@@ -776,9 +776,9 @@ auto workspace_widget::get_votes_string(const review_data& selectedReview) const
     int upvotes = 0;
     int downvotes = 0;
 
-    if (reviewers.has_value())
+    if (reviewers.m_state == gluten::cache_state::has_data)
     {
-        for (const auto& reviewer : reviewers.value())
+        for (const auto& reviewer : reviewers.m_cache)
         {
             if (reviewer.m_vote == review_vote::upvote)
             {
