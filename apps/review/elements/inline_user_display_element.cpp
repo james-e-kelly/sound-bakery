@@ -74,25 +74,13 @@ namespace
         {
             const avatar_identifier avatar{.m_email = email, .m_size = size, .m_render = render};
 
-            if (m_cache.contains(avatar))
+            if (m_cache.get_cache_needs_filling(avatar))
             {
-                return m_cache.at(avatar).get();
+                m_cache.set_async_fill_cache(avatar, load(email, size, render));
             }
-            else if (m_loading.contains(avatar))
-            {
-                if (m_loading.at(avatar).status() == concurrencpp::result_status::value)
-                {
-                    m_cache.insert({avatar, m_loading.at(avatar).get()});
-                }
-            }
-            else
-            {
-                concurrencpp::result<std::unique_ptr<gluten::image>> result = load(email, size, render);
-                m_loading.insert({avatar, std::move(result)});
-            }
-            return nullptr;
-        }
 
+            return m_cache.get_cached_data(avatar).m_cache.get();
+        }
 
     private:
         auto load(const std::string email, float size, gluten::image_render render) -> concurrencpp::result<std::unique_ptr<gluten::image>>
@@ -118,8 +106,7 @@ namespace
 
         std::shared_ptr<httplib::SSLClient> client;
 
-        std::unordered_map<avatar_identifier, std::unique_ptr<gluten::image>, avatar_indentifier_hasher> m_cache;
-        std::unordered_map<avatar_identifier, concurrencpp::result<std::unique_ptr<gluten::image>>, avatar_indentifier_hasher> m_loading;
+        gluten::data_cache<std::unique_ptr<gluten::image>, avatar_identifier, avatar_indentifier_hasher> m_cache;
     };
 }
 
