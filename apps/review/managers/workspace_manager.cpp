@@ -48,11 +48,15 @@ auto workspace_manager::start() -> void
 
 auto workspace_manager::open_workspace(const std::filesystem::path workspaceFile) -> concurrencpp::result<void>
 {
+    co_await concurrencpp::resume_on(get_app()->get_tick_executor());
+
     if (file_is_workspace(workspaceFile))
     {
         m_introWidget.reset();
 
         m_userSettingsData->m_workspaceFilePath = workspaceFile;
+
+        const std::shared_ptr<gluten::loading_popup> loadingPopup = get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class_to_root<gluten::loading_popup>(false);
 
         m_database = std::make_shared<review_database>(std::filesystem::path(workspaceFile));
         
@@ -78,6 +82,8 @@ auto workspace_manager::open_workspace(const std::filesystem::path workspaceFile
                 open_user_flow_popup();
             }
         }
+
+        co_await concurrencpp::resume_on(get_app()->get_tick_executor());
     }
 }
 

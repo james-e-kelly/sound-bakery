@@ -1,5 +1,6 @@
 #include "popup_widget.h"
 
+#include "gluten/elements/loading_spinner.h"
 #include "gluten/theme/carbon_theme_g100.h"
 #include "gluten/utils/imgui_util_structures.h"
 
@@ -37,7 +38,7 @@ auto gluten::popup_widget::render_implementation() -> void
     ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
     ImGui::SetNextWindowSize(ImVec2(800, 250), ImGuiCond_Appearing);
 
-    if (ImGui::BeginPopupModal(get_widget_name().data(), &m_visible, ImGuiWindowFlags_AlwaysAutoResize))
+    if (ImGui::BeginPopupModal(get_widget_name().data(), m_closable ? &m_visible : nullptr, ImGuiWindowFlags_AlwaysAutoResize))
     {
         render_popup();
 
@@ -64,4 +65,17 @@ auto gluten::confirmation_popup::render_popup() -> void
     {
         close_popup();
     }
+}
+
+auto gluten::loading_popup::start_implementation() -> void 
+{ 
+    set_visibile(true); 
+    set_closable(false);
+}
+
+auto gluten::loading_popup::render_popup() -> void
+{
+    constexpr float progressBarWidth = 400.0f;
+
+    ImGui::ProgressBar(-1.0f * (float)ImGui::GetTime(), ImVec2(progressBarWidth, 0.0f), "Loading...");
 }

@@ -17,8 +17,15 @@ namespace gluten
         virtual auto start_implementation() -> void override;
         virtual auto render_popup() -> void = 0;
 
+        auto set_closable(bool closable) -> void
+        {
+            m_closable = closable;
+        }
+
     private:
         virtual auto render_implementation() -> void override;
+        
+        bool m_closable = true;
     };
 
     class confirmation_popup : public popup_widget
@@ -35,5 +42,14 @@ namespace gluten
 
     private:
         std::function<void()> m_onConfirm;
+    };
+
+    class loading_popup : public popup_widget
+    {
+        WIDGET_CONSTRUCT_PARENT(loading_popup, "Loading...", popup_widget)
+
+    protected:
+        auto start_implementation() -> void override;
+        auto render_popup() -> void override;
     };
 }  // namespace gluten
