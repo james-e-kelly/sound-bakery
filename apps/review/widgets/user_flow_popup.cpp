@@ -2,21 +2,12 @@
 
 #include "managers/workspace_manager.h"
 
+#include "gluten/widgets/popup_widget.h"
 #include "sodium.h"
 
 auto user_flow_popup::start_implementation() -> void
 {
     sodium_mlock(m_passwordBuffer, g_rawPasswordSize);
-
-    if (std::shared_ptr<workspace_manager> workspaceManager = get_app()->get_manager_by_class<workspace_manager>())
-    {
-        m_firstUserCreation = workspaceManager->users_table_is_empty().get();
-
-        if (m_firstUserCreation)
-        {
-            m_privileges = user_privileges::admin;
-        }
-    }
 }
 
 auto user_flow_popup::end_implementation() -> void
@@ -33,6 +24,24 @@ auto user_flow_popup::render_popup() -> void
     if (!workspaceManager)
     {
         return;
+    }
+
+    const auto& allUsers = workspaceManager->get_all_users();
+
+    switch (allUsers.m_state)
+    {
+        case gluten::cache_state::loading:
+            ImGui::ProgressBar(-1.0f * (float)ImGui::GetTime(), ImVec2(gluten::loading_popup::s_progressBarWidth, 0.0f), "Waiting for users to load...");
+            return;
+            break;
+        default:
+            m_firstUserCreation = allUsers.m_cache.empty();
+            break;
+    }
+
+    if (m_firstUserCreation)
+    {
+        m_privileges = user_privileges::admin;
     }
 
     if (ImGui::InputTextWithHint("Email", "email@domain.com", m_emailBuffer, textBufferSize))

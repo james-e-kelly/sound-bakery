@@ -48,6 +48,9 @@ namespace gluten
     {
         WIDGET_CONSTRUCT_PARENT(loading_popup, "Loading...", popup_widget)
 
+    public:
+        static inline const float s_progressBarWidth = 400.0f;
+
     protected:
         auto start_implementation() -> void override;
         auto render_popup() -> void override;

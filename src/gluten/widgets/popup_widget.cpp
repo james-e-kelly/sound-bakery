@@ -69,13 +69,10 @@ auto gluten::confirmation_popup::render_popup() -> void
 
 auto gluten::loading_popup::start_implementation() -> void 
 { 
-    set_visibile(true); 
     set_closable(false);
 }
 
 auto gluten::loading_popup::render_popup() -> void
 {
-    constexpr float progressBarWidth = 400.0f;
-
-    ImGui::ProgressBar(-1.0f * (float)ImGui::GetTime(), ImVec2(progressBarWidth, 0.0f), "Loading...");
+    ImGui::ProgressBar(-1.0f * (float)ImGui::GetTime(), ImVec2(s_progressBarWidth, 0.0f), "Loading...");
 }
