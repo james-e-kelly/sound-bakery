@@ -52,6 +52,7 @@ public:
     auto create_review(const new_frontend_review_data newReview) -> concurrencpp::result<void>;
     auto update_review(const review_data& updatedReview) -> void;
     auto get_all_reviews() -> typename default_cache_type<review_data>::cache_result;
+    auto delete_review(int64_t reviewId) -> concurrencpp::result<void>;
 
     // Activity
     auto get_all_activity_for_review(int64_t reviewId) -> typename default_cache_type<activity_data>::cache_result;

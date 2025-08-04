@@ -444,6 +444,61 @@ auto review_database::get_user_vote_on_review(int64_t reviewId, int64_t userId) 
     co_return result;
 }
 
+auto review_database::delete_review(int64_t reviewId, std::string userToken) -> concurrencpp::result<tl::expected<bool, database_error>>
+{
+    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
+
+#ifdef REVIEW_TEST_DATABASE_BLOCKS
+    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
+#endif
+
+    if (reviewId < 0)
+    {
+        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::invalid_parameters, .m_errorMessage = "Review ID is invalid"});
+    }
+
+    if (userToken.empty())
+    {
+        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::unauthorized, .m_errorMessage = "Session token is invalid"});
+    }
+
+    if (!co_await user_is_logged_in_and_has_privilege_for_action(userToken, activity_type::review_deleted))
+    {
+        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::unauthorized, .m_errorMessage = "User is unauthorized to delete a review"});
+    }
+
+    // TOOD: Reviews need to be authored by someone so we can delete reviews only if the user created it (or is an admin)
+
+    if (!m_database.tableExists("reviews"))
+    {
+        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::missing_table, .m_errorMessage = "No reviews table"});
+    }
+
+    if (!m_database.tableExists("activity"))
+    {
+        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::missing_table, .m_errorMessage = "No activity table"});
+    }
+
+    if (!m_database.tableExists("comments"))
+    {
+        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::missing_table, .m_errorMessage = "No comments table"});
+    }
+
+    SQLite::Statement deleteReviewStatement(m_database, "DELETE FROM reviews WHERE id = ?;");
+    deleteReviewStatement.bind(1, reviewId);
+    deleteReviewStatement.exec();
+
+    SQLite::Statement deleteCommentsStatement(m_database, "DELETE FROM comments WHERE review_id = ?;");
+    deleteCommentsStatement.bind(1, reviewId);
+    deleteCommentsStatement.exec();
+
+    SQLite::Statement deleteActivityStatement(m_database, "DELETE FROM activity WHERE review_id = ?;");
+    deleteActivityStatement.bind(1, reviewId);
+    deleteActivityStatement.exec();
+
+    co_return true;
+}
+
 auto review_database::get_all_activity_for_review(int64_t reviewId) const -> concurrencpp::result<std::vector<activity_data>> 
 {
     co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());

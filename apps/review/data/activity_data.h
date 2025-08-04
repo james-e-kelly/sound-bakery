@@ -9,6 +9,7 @@ enum class activity_type
     project_deleted,
     review_created,
     review_edited,
+    review_deleted,
     review_file_deleted,
     review_files_edited,
     comment_added,

@@ -333,6 +333,22 @@ auto workspace_manager::get_all_reviews() -> typename default_cache_type<review_
     return m_cachedReviews.get_cached_data({m_selectedProject.m_id, m_userSettingsData->m_loggedInUser.m_sessionToken});
 }
 
+auto workspace_manager::delete_review(int64_t reviewId) -> concurrencpp::result<void>
+{
+    const gluten::key_and_token_cache_key key(m_selectedProject.m_id, m_userSettingsData->m_loggedInUser.m_sessionToken);
+
+    m_selectedReview = review_data();
+    auto& rawReviews = m_cachedReviews.get_raw_data(key);
+    rawReviews.erase(std::find_if(rawReviews.begin(), rawReviews.end(), [reviewId](const review_data& review) 
+        {
+            return reviewId == review.m_reviewId;
+        }));
+
+    co_await m_database->delete_review(reviewId, m_userSettingsData->m_loggedInUser.m_sessionToken);
+
+    m_cachedReviews.set_cache_expired(key);
+}
+
 template<typename data_type>
 static auto transform_database_result_to_cache_result(concurrencpp::result<tl::expected<data_type, database_error>> databaseResult) -> concurrencpp::result<data_type>
 {

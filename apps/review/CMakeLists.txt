@@ -11,6 +11,7 @@ set(review_SOURCES
   data/workspace_data.cpp
   data/review_data.cpp
   elements/inline_user_display_element.cpp
+  elements/review_element.cpp
   managers/project_manager.cpp
   managers/review_manager.cpp
   managers/workspace_manager.cpp

@@ -52,6 +52,7 @@ public:
     auto update_review(const review_data review) -> concurrencpp::result<review_data>;
     auto get_all_reviews(int64_t projectId) const -> concurrencpp::result<std::vector<review_data>>;
     auto get_user_vote_on_review(int64_t reviewId, int64_t userId) const -> concurrencpp::result<tl::expected<review_vote, database_error>>;
+    auto delete_review(int64_t reviewId, std::string userToken) -> concurrencpp::result<tl::expected<bool, database_error>>;
 
     // Activity
     auto get_all_activity_for_review(int64_t reviewId) const -> concurrencpp::result<std::vector<activity_data>>;
