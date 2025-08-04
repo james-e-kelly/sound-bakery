@@ -386,18 +386,32 @@ auto workspace_manager::get_all_comments_for_review(int64_t reviewId) -> typenam
     return m_cachedComments.get_cached_data(key);
 }
 
-auto workspace_manager::create_comment(const new_comment_data& newComment) -> void
+auto workspace_manager::create_comment(const new_comment_data& newComment) -> concurrencpp::result<void>
 {
-    m_database->create_comment(newComment);
-    m_cachedComments.set_cache_expired({m_selectedProject.m_id, m_userSettingsData->m_loggedInUser.m_sessionToken});
-    m_cachedActivity.set_cache_expired({m_selectedReview.m_reviewId, m_userSettingsData->m_loggedInUser.m_sessionToken});
+    const gluten::key_and_token_cache_key key(m_selectedReview.m_reviewId, m_userSettingsData->m_loggedInUser.m_sessionToken);
+    
+    auto& rawComments = m_cachedComments.get_raw_data(key);
+    rawComments.insert(rawComments.begin(), comment_data(newComment));
+
+    co_await m_database->create_comment(newComment);
+
+    m_cachedComments.set_cache_expired(key);
+    m_cachedActivity.set_cache_expired(key);
 }
 
-auto workspace_manager::delete_comment(int64_t commentId) -> void
+auto workspace_manager::delete_comment(int64_t commentId) -> concurrencpp::result<void>
 {
-    m_database->delete_comment(commentId);
-    m_cachedComments.set_cache_expired({m_selectedProject.m_id, m_userSettingsData->m_loggedInUser.m_sessionToken});
-    m_cachedActivity.set_cache_expired({m_selectedReview.m_reviewId, m_userSettingsData->m_loggedInUser.m_sessionToken});
+    const gluten::key_and_token_cache_key key(m_selectedReview.m_reviewId, m_userSettingsData->m_loggedInUser.m_sessionToken);
+
+    auto& rawComments = m_cachedComments.get_raw_data(key);
+    rawComments.erase(std::find_if(rawComments.begin(), rawComments.end(),
+                                   [commentId](const comment_data& comment)
+                                   { return commentId == comment.m_commentId; }));
+
+    co_await m_database->delete_comment(commentId);
+
+    m_cachedComments.set_cache_expired(key);
+    m_cachedActivity.set_cache_expired(key);
 }
 
 auto workspace_manager::open_create_user_popup() -> void

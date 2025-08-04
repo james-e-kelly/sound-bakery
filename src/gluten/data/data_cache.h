@@ -108,7 +108,11 @@ namespace gluten
          */
         struct cached_data
         {
-            cached_data() = default;
+            cached_data()
+                : m_createdAt(std::chrono::steady_clock::now()) 
+            {
+            }
+
             cached_data(data_type data) : m_cache(std::move(data)), m_createdAt(std::chrono::steady_clock::now())
             {
             }
@@ -116,6 +120,13 @@ namespace gluten
             data_type m_cache;
             cache_state m_state = cache_state::no_data;
             std::chrono::steady_clock::time_point m_createdAt;
+
+            auto has_data() const -> bool
+            {
+                // Expired and has_data should both look the same to the end user
+                // A loading spinner looks slow but data instatly changing looks fast
+                return m_state != cache_state::no_data && m_state != cache_state::loading;
+            }
 
             bool operator==(const cached_data& rhs)
             {
@@ -133,7 +144,13 @@ namespace gluten
         {
             if (m_asyncCache.contains(key))
             {
-                m_cache[key].m_state = cache_state::loading;
+                // Mark the cache as loading only on the first time
+                // If the cache becomes expired, we make it look like the data
+                // is still there and just load in the background
+                if (m_cache[key].m_state == cache_state::no_data || m_cache[key].m_state == cache_state::loading)
+                {
+                    m_cache[key].m_state = cache_state::loading;
+                }
             }
             else if (m_cache.contains(key))
             {
@@ -154,7 +171,7 @@ namespace gluten
         [[nodiscard]] auto get_cache_needs_filling(const key_type& key) const -> bool
         {
             const cache_state state = get_cache_state(key);
-            return state == cache_state::no_data || state == cache_state::expired;
+            return (state == cache_state::no_data || state == cache_state::expired) && !m_asyncCache.contains(key);
         }
 
         /**
@@ -178,7 +195,7 @@ namespace gluten
          */
         [[nodiscard]] auto get_cached_data(const key_type& key) -> cache_result
         {
-            if (get_cache_state(key) == cache_state::loading)
+            if (m_asyncCache.contains(key))
             {
                 async_cache_result& asyncResult = m_asyncCache[key];
                 if (asyncResult && asyncResult.status() == concurrencpp::result_status::value)

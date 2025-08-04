@@ -59,8 +59,8 @@ public:
 
     // Comments
     auto get_all_comments_for_review(int64_t reviewId) -> typename default_cache_type<comment_data>::cache_result;
-    auto create_comment(const new_comment_data& newComment) -> void;
-    auto delete_comment(int64_t commentId) -> void;
+    auto create_comment(const new_comment_data& newComment) -> concurrencpp::result<void>;
+    auto delete_comment(int64_t commentId) -> concurrencpp::result<void>;
 
     // Users
     auto open_create_user_popup() -> void;

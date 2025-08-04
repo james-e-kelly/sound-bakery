@@ -218,7 +218,7 @@ auto workspace_widget::render_list() -> void
                     {
                         const auto& allProjects = workspaceManager->get_all_projects();
 
-                        if (allProjects.m_state == gluten::cache_state::has_data)
+                        if (allProjects.has_data())
                         {
                             for (const auto& project : allProjects.m_cache)
                             {
@@ -240,7 +240,7 @@ auto workspace_widget::render_list() -> void
                     {
                         const auto& allReviews = workspaceManager->get_all_reviews();
 
-                        if (allReviews.m_state == gluten::cache_state::has_data)
+                        if (allReviews.has_data())
                         {
                             for (const auto& review : allReviews.m_cache)
                             {
@@ -263,7 +263,7 @@ auto workspace_widget::render_list() -> void
                 {
                     const auto& allUsers = workspaceManager->get_all_users();
 
-                    if (allUsers.m_state == gluten::cache_state::has_data)
+                    if (allUsers.has_data())
                     {
                         for (const auto& user : allUsers.m_cache)
                         {
@@ -541,7 +541,7 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
                 ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
 
                 const auto& comments = workspaceManager->get_all_comments_for_review(selectedReview.m_reviewId);
-                if (comments.m_state == gluten::cache_state::has_data)
+                if (comments.has_data())
                 {
                     for (const auto& comment : comments.m_cache)
                     {
@@ -583,7 +583,7 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
             if (ImGui::BeginTabItem("Activity"))
             {
                 const auto& reviewsActivity = workspaceManager->get_all_activity_for_review(selectedReview.m_reviewId);
-                if (reviewsActivity.m_state == gluten::cache_state::has_data)
+                if (reviewsActivity.has_data())
                 {
                     for (const auto& iter : reviewsActivity.m_cache)
                     {
@@ -725,7 +725,7 @@ void workspace_widget::render_reviewers(std::shared_ptr<workspace_manager>& work
     {
         const auto& reviewers = workspaceManager->get_users_for_review(selectedReview.m_reviewId);
         
-        if (reviewers.m_state == gluten::cache_state::has_data)
+        if (reviewers.has_data())
         {
             for (const auto& reviewer : reviewers.m_cache)
             {
@@ -759,7 +759,7 @@ void workspace_widget::render_top_content_bar(std::shared_ptr<workspace_manager>
 
     const auto& workspaceName = workspaceManager->get_workspace_name();
 
-    if (workspaceName.m_state == gluten::cache_state::has_data)
+    if (workspaceName.has_data())
     {
         std::string breadcrumbString = workspaceName.m_cache;
 
@@ -856,7 +856,7 @@ auto workspace_widget::get_votes_string(const review_data& selectedReview) const
     int upvotes = 0;
     int downvotes = 0;
 
-    if (reviewers.m_state == gluten::cache_state::has_data)
+    if (reviewers.has_data())
     {
         for (const auto& reviewer : reviewers.m_cache)
         {
