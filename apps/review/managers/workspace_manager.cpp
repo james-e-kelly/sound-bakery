@@ -312,7 +312,7 @@ auto workspace_manager::update_review(const review_data& updatedReview) -> void
     }
 }
 
-auto workspace_manager::get_all_reviews() -> default_cache_type<review_data>::cache_result
+auto workspace_manager::get_all_reviews() -> typename default_cache_type<review_data>::cache_result
 {
     const gluten::key_and_token_cache_key key(m_selectedProject.m_id, m_userSettingsData->m_loggedInUser.m_sessionToken);
 
