@@ -157,6 +157,8 @@ namespace
     constexpr std::size_t g_sessionTokenSize        = 32U;
     constexpr std::size_t g_base64SessionTokenSize  = sodium_base64_ENCODED_LEN(g_sessionTokenSize, g_base64EncodeVariant);
 
+    constexpr std::string_view g_reviewsPathName = "Reviews";
+
     #define REVIEW_TEST_DATABASE_BLOCKS
 
 #ifdef REVIEW_TEST_DATABASE_BLOCKS
@@ -331,6 +333,39 @@ auto review_database::create_review(int64_t projectId, const new_transit_review_
                 addActivity.bind(3, fmt::format("Created a review called {}", newReview.m_reviewName));
                 addActivity.exec();
             }
+
+            // Do file stuff on a background thread as we don't need to sync the database right now
+            co_await concurrencpp::resume_on(gluten::app::get()->background_executor());
+
+            const std::filesystem::path databasePath = std::filesystem::path(m_database.getFilename()).parent_path();
+            const std::filesystem::path reviewsPath = databasePath / g_reviewsPathName;
+            const std::filesystem::path thisReviewPath = reviewsPath / std::to_string(result.m_reviewId);
+
+            for (const auto& rawContextFile : newReview.m_contextFiles)
+            {
+                const std::filesystem::path thisFilePath = thisReviewPath / std::filesystem::path(rawContextFile.m_fileName).stem();
+                const std::filesystem::path currentVersionFilePath = thisFilePath / "v1";
+                const std::filesystem::path currentVersionFile     = currentVersionFilePath / rawContextFile.m_fileName;
+
+                std::filesystem::create_directories(currentVersionFilePath);
+
+                std::ofstream stream(currentVersionFile.string(), std::ios::binary | std::ios::out);
+                stream.write(reinterpret_cast<const char*>(rawContextFile.m_fileData.data()), rawContextFile.m_fileData.size());
+            }
+
+            for (const auto& rawReviewFile : newReview.m_reviewFiles)
+            {
+                const std::filesystem::path thisFilePath = thisReviewPath / std::filesystem::path(rawReviewFile.m_fileName).stem();
+                const std::filesystem::path currentVersionFilePath = thisFilePath / "v1";
+                const std::filesystem::path currentVersionFile     = currentVersionFilePath / rawReviewFile.m_fileName;
+
+                std::filesystem::create_directories(currentVersionFilePath);
+
+                std::ofstream stream(currentVersionFile.string(), std::ios::binary | std::ios::out);
+                stream.write(reinterpret_cast<const char*>(rawReviewFile.m_fileData.data()), rawReviewFile.m_fileData.size());
+            }
+
+            
         }
     }
 

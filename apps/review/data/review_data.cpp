@@ -82,8 +82,9 @@ new_transit_review_data::new_transit_review_data(const new_frontend_review_data&
 {
     for (const auto& contextFile : frontendData.m_absoluteContextFiles)
     {
-        std::ifstream stream(contextFile.string(), std::ios::binary | std::ios::ate);
+        std::ifstream stream(contextFile.string(), std::ios::binary | std::ios::ate | std::ios::in);
         const std::streamsize fileSize = stream.tellg();
+        stream.seekg(0);
         std::vector<uint8_t> fileData(fileSize);
         stream.read(reinterpret_cast<char*>(fileData.data()), fileSize);
 
@@ -95,8 +96,9 @@ new_transit_review_data::new_transit_review_data(const new_frontend_review_data&
 
     for (const auto& reviewFile : frontendData.m_absoluteContextFiles)
     {
-        std::ifstream stream(reviewFile.string(), std::ios::binary | std::ios::ate);
+        std::ifstream stream(reviewFile.string(), std::ios::binary | std::ios::ate | std::ios::in);
         const std::streamsize fileSize = stream.tellg();
+        stream.seekg(0);
         std::vector<uint8_t> fileData(fileSize);
         stream.read(reinterpret_cast<char*>(fileData.data()), fileSize);
 
