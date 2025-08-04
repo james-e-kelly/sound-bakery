@@ -4,8 +4,6 @@
 
 auto create_project_popup::render_popup() -> void
 {
-    ImGui::SetWindowFontScale(1.5f);
-
     ImGui::InputTextWithHint("Project Name", "My New Project", projectNameBuffer, textBufferSize);
 
     ImGui::InputTextWithHint("Project Description", "2D platformer metroidvania", projectDescriptionBuffer, textBufferSize);
@@ -35,6 +33,4 @@ auto create_project_popup::render_popup() -> void
     {
         close_popup();
     }
-
-    ImGui::SetWindowFontScale(1.0f);
 }
