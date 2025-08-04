@@ -192,6 +192,8 @@ namespace gluten
                             break;
                         case concurrencpp::result_status::exception:
                             BOOST_ASSERT_MSG(false, "Async data threw an exception");
+                            m_cache[key].m_state = cache_state::no_data;
+                            m_asyncCache.erase(key);
                             break;
                         default:
                             break;
