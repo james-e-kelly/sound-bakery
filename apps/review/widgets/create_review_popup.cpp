@@ -163,6 +163,14 @@ auto create_review_popup::render_popup() -> void
                 break;
             }
             case concurrencpp::result_status::exception:
+                try
+                {
+                    m_asyncCreateReviewResult.get();
+                }
+                catch (std::exception exception)
+                {
+                    BOOST_ASSERT_MSG(false, exception.what());
+                }
                 break;
             default:
                 break;

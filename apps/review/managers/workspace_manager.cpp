@@ -303,7 +303,7 @@ auto workspace_manager::create_review(const new_frontend_review_data newReview) 
 
     new_transit_review_data newBackendReviewData(newReview);
 
-    co_await m_database->create_review(get_selected_project().m_id, newBackendReviewData);
+    const auto createReviewResult = co_await m_database->create_review(get_selected_project().m_id, newBackendReviewData);
 
     co_await concurrencpp::resume_on(get_app()->get_tick_executor());
 

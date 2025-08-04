@@ -43,17 +43,22 @@ enum class review_vote
     downvote    //< We have downvotes but try not to use or show them
 };
 
+enum class review_file_type
+{
+    context,
+    review,
+    comment
+};
+
 struct versionable_review_asset
 {
     std::string m_fileName;             //< Filename for displaying
-    std::size_t m_currentAssetVersion;  //< The current version of the asset. Also the number of versions this file has
     std::map<std::size_t, std::filesystem::path> m_versionsToRelativeFiles; //< Relative paths of each version of the asset
 
     template <class archive_class>
     auto serialize(archive_class& archive, const unsigned int version) -> void
     {
         archive & boost::serialization::make_nvp("file_name", m_fileName);
-        archive & boost::serialization::make_nvp("current_version", m_currentAssetVersion);
         archive & boost::serialization::make_nvp("file_version", m_versionsToRelativeFiles);
     }
 };

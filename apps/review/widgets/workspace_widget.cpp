@@ -410,12 +410,70 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
             {
                 ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
 
-                if (ImGui::BeginCombo("Review Version", "#1"))
+                static std::unordered_map<int64_t, std::size_t> m_reviewToSelectedVersionMap;
+
+                if (!m_reviewToSelectedVersionMap.contains(selectedReview.m_reviewId))
                 {
-                    ImGui::Selectable("#1");
-                    ImGui::Selectable("#2");
+                    m_reviewToSelectedVersionMap[selectedReview.m_reviewId] = 1;
+                }
+
+                const std::size_t maxVersions = std::max(selectedReview.m_relativeContextFiles.size(), selectedReview.m_reviewAssets.size()) + 1;
+
+                if (ImGui::BeginCombo("Review Version", fmt::format("#{}", m_reviewToSelectedVersionMap[selectedReview.m_reviewId]).c_str()))
+                {
+                    for (std::size_t versionIndex = 1; versionIndex < maxVersions; ++versionIndex)
+                    {
+                        if (ImGui::Selectable(fmt::format("#{}", versionIndex).c_str()))
+                        {
+                            m_reviewToSelectedVersionMap[selectedReview.m_reviewId] = versionIndex;
+                        }
+                    }
 
                     ImGui::EndCombo();
+                }
+
+                ImGui::TextUnformatted("Context Files");
+
+                for (const auto& contextFile : selectedReview.m_relativeContextFiles)
+                {
+                    if (contextFile.m_fileName.empty())
+                    {
+                        continue;
+                    }
+
+                    const std::size_t selectedVersion = std::min(m_reviewToSelectedVersionMap[selectedReview.m_reviewId], contextFile.m_versionsToRelativeFiles.size());
+                    const std::string fileName           = contextFile.m_fileName;
+
+                    ImGui::TextUnformatted(fileName.c_str());
+
+                    if (contextFile.m_versionsToRelativeFiles.contains(selectedVersion))
+                    {
+                        const std::filesystem::path filePath = contextFile.m_versionsToRelativeFiles.at(selectedVersion);
+                        ImGui::TextUnformatted(filePath.string().c_str());
+                    }
+                }
+
+                ImGui::Separator();
+
+                ImGui::TextUnformatted("Review Files");
+
+                for (const auto& reviewFile : selectedReview.m_reviewAssets)
+                {
+                    if (reviewFile.m_fileName.empty())
+                    {
+                        continue;
+                    }
+
+                    const std::size_t selectedVersion = std::min(m_reviewToSelectedVersionMap[selectedReview.m_reviewId], reviewFile.m_versionsToRelativeFiles.size());
+                    const std::string fileName           = reviewFile.m_fileName;
+
+                    ImGui::TextUnformatted(fileName.c_str());
+
+                    if (reviewFile.m_versionsToRelativeFiles.contains(selectedVersion))
+                    {
+                        const std::filesystem::path filePath = reviewFile.m_versionsToRelativeFiles.at(selectedVersion);
+                        ImGui::TextUnformatted(filePath.string().c_str());
+                    }
                 }
 
                 ImGui::EndTabItem();

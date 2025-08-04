@@ -94,7 +94,7 @@ new_transit_review_data::new_transit_review_data(const new_frontend_review_data&
         m_contextFiles.push_back(reviewFileData);
     }
 
-    for (const auto& reviewFile : frontendData.m_absoluteContextFiles)
+    for (const auto& reviewFile : frontendData.m_absoluteReviewFiles)
     {
         std::ifstream stream(reviewFile.string(), std::ios::binary | std::ios::ate | std::ios::in);
         const std::streamsize fileSize = stream.tellg();
