@@ -77,16 +77,50 @@ struct review_data
     }
 };
 
-struct new_review_data
+/**
+ * @brief Basic data for a new review.
+ * 
+ * Contains no information about files as the representation of that data depends on whether we are the frontend or backend.
+ */
+struct new_review_data_base
 {
     std::string m_reviewName;
     std::string m_reviewTaskUrl;
     std::string m_reviewDescription;
     review_phase m_reviewPhase = review_phase::first_pass;
     review_quality m_reviewQuality = review_quality::c;
+};
 
+/**
+ * @brief Review data specifically for the frontend.
+ * 
+ * Files are kept as just paths to the file and are not streamed into memory.
+ */
+struct new_frontend_review_data : public new_review_data_base
+{
     std::unordered_set<std::filesystem::path> m_absoluteContextFiles;  //< Absolute files to copy into the review folder
     std::unordered_set<std::filesystem::path> m_absoluteReviewFiles;   //< Absolute files to copy into the review folder
+};
+
+struct review_file_data
+{
+    std::string m_fileName;             //< my_file.wav, some_other_file.mp3, my_video.mp4, my_compressed_file.ogg, etc.
+    std::vector<uint8_t> m_fileData;    //< Raw bytes of the file
+};
+
+/**
+ * @brief Review data that will be passed over the network and received by the server.
+ * 
+ * All files are stored as arrays of bytes. Once received by the database, it can recreate the files on disk.
+ * 
+ * Review files are then referenced as file paths again.
+ */
+struct new_transit_review_data : public new_review_data_base
+{
+    new_transit_review_data(const new_frontend_review_data& frontendData);
+
+    std::vector<review_file_data> m_contextFiles;  //< Absolute files to copy into the review folder
+    std::vector<review_file_data> m_reviewFiles;   //< Absolute files to copy into the review folder
 };
 
 /**
@@ -109,4 +143,4 @@ struct reviewer_data : public user_data
 
 BOOST_CLASS_VERSION(versionable_review_asset, review_app_version_current)
 BOOST_CLASS_VERSION(review_data, review_app_version_current)
-BOOST_CLASS_VERSION(new_review_data, review_app_version_current)
+BOOST_CLASS_VERSION(new_frontend_review_data, review_app_version_current)

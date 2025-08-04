@@ -290,7 +290,7 @@ auto review_database::get_all_projects() const -> concurrencpp::result<std::vect
     co_return result;
 }
 
-auto review_database::create_review(int64_t projectId, const new_review_data newReview) -> concurrencpp::result<review_data>
+auto review_database::create_review(int64_t projectId, const new_transit_review_data newReview) -> concurrencpp::result<review_data>
 {
     co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
 

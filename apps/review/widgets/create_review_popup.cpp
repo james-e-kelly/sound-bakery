@@ -6,6 +6,7 @@
 
 auto create_review_popup::render_popup() -> void
 {
+    ImGui::BeginDisabled(static_cast<bool>(m_asyncCreateReviewResult));
     ImGui::BeginDisabled(review_app::get()->get_is_drag_dropping());
 
     ImGui::InputTextWithHint("Review Name", "My New Review", reviewNameBuffer, textBufferSize);
@@ -133,10 +134,9 @@ auto create_review_popup::render_popup() -> void
     {
         if (std::shared_ptr<workspace_manager> workspaceManager = get_app()->get_manager_by_class<workspace_manager>())
         {
-            workspaceManager->create_review(m_reviewData);
+            m_asyncCreateReviewResult = workspaceManager->create_review(m_reviewData);
+            set_closable(false);
         }
-
-        close_popup();
     }
 
     ImGui::EndDisabled();
@@ -147,4 +147,27 @@ auto create_review_popup::render_popup() -> void
     {
         close_popup();
     }
+
+    if (m_asyncCreateReviewResult)
+    {
+        ImGui::SameLine();
+
+        ImSpinner::SpinnerAngEclipse("##Loading", ImGui::GetFontSize() / 2.0f, 2.0f, gluten::theme::white, 8.0f);
+
+        switch (m_asyncCreateReviewResult.status())
+        {
+            case concurrencpp::result_status::value:
+            {
+                m_asyncCreateReviewResult.get();
+                close_popup();
+                break;
+            }
+            case concurrencpp::result_status::exception:
+                break;
+            default:
+                break;
+        }
+    }
+
+    ImGui::EndDisabled();
 }

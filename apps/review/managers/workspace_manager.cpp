@@ -297,9 +297,17 @@ auto workspace_manager::get_selected_review() const -> const review_data&
     return m_selectedReview;
 }
 
-auto workspace_manager::create_review(const new_review_data& newReview) -> void 
+auto workspace_manager::create_review(const new_frontend_review_data newReview) -> concurrencpp::result<void> 
 {
-    m_database->create_review(get_selected_project().m_id, newReview);
+    co_await concurrencpp::resume_on(get_app()->background_executor());
+
+    new_transit_review_data newBackendReviewData(newReview);
+
+    co_await m_database->create_review(get_selected_project().m_id, newBackendReviewData);
+
+    co_await concurrencpp::resume_on(get_app()->get_tick_executor());
+
+    m_cachedReviews.set_cache_expired({m_selectedProject.m_id, m_userSettingsData->m_loggedInUser.m_sessionToken});
 }
 
 auto workspace_manager::update_review(const review_data& updatedReview) -> void

@@ -49,7 +49,7 @@ public:
     // Reviews
     auto select_review(int64_t reviewId) -> void;
     auto get_selected_review() const -> const review_data&;
-    auto create_review(const new_review_data& newReview) -> void;
+    auto create_review(const new_frontend_review_data newReview) -> concurrencpp::result<void>;
     auto update_review(const review_data& updatedReview) -> void;
     auto get_all_reviews() -> typename default_cache_type<review_data>::cache_result;
 

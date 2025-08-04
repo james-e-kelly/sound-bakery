@@ -15,5 +15,7 @@ private:
     char reviewNameBuffer[textBufferSize]        = {0};
     char reviewDescriptionBuffer[textBufferSize] = {0};
     char reviewUrlBuffer[textBufferSize] = {0};
-    new_review_data m_reviewData;
+    new_frontend_review_data m_reviewData;
+
+    concurrencpp::result<void> m_asyncCreateReviewResult;
 };

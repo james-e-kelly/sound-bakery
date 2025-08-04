@@ -77,3 +77,32 @@ auto get_review_status_string(review_status status) -> std::string
 
     return result;
 }
+
+new_transit_review_data::new_transit_review_data(const new_frontend_review_data& frontendData) : new_review_data_base(frontendData) 
+{
+    for (const auto& contextFile : frontendData.m_absoluteContextFiles)
+    {
+        std::ifstream stream(contextFile.string(), std::ios::binary | std::ios::ate);
+        const std::streamsize fileSize = stream.tellg();
+        std::vector<uint8_t> fileData(fileSize);
+        stream.read(reinterpret_cast<char*>(fileData.data()), fileSize);
+
+        const std::string fileName = contextFile.filename().string();
+
+        review_file_data reviewFileData{.m_fileName = fileName, .m_fileData = fileData};
+        m_contextFiles.push_back(reviewFileData);
+    }
+
+    for (const auto& reviewFile : frontendData.m_absoluteContextFiles)
+    {
+        std::ifstream stream(reviewFile.string(), std::ios::binary | std::ios::ate);
+        const std::streamsize fileSize = stream.tellg();
+        std::vector<uint8_t> fileData(fileSize);
+        stream.read(reinterpret_cast<char*>(fileData.data()), fileSize);
+
+        const std::string fileName = reviewFile.filename().string();
+
+        review_file_data reviewFileData{.m_fileName = fileName, .m_fileData = fileData};
+        m_reviewFiles.push_back(reviewFileData);
+    }
+}
