@@ -284,6 +284,9 @@ auto workspace_manager::select_review(int64_t reviewId) -> void
         if (review.m_reviewId == reviewId)
         {
             m_selectedReview = review;
+            get_all_comments_for_review(m_selectedReview.m_reviewId);
+            get_all_activity_for_review(m_selectedReview.m_reviewId);
+            get_users_for_review(m_selectedReview.m_reviewId);
             break;
         }
     }
