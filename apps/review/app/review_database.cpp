@@ -56,8 +56,8 @@ namespace
             review_id INTEGER NOT NULL,
             user_id INTEGER NOT NULL,
             PRIMARY KEY (review_id, user_id),
-            FOREIGN KEY(review_id) REFERENCES reviews(id),
-            FOREIGN KEY(user_id) REFERENCES users(id)
+            FOREIGN KEY(review_id) REFERENCES reviews(id) ON DELETE CASCADE,
+            FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
         );
     )sql";
 
@@ -66,8 +66,8 @@ namespace
             review_id INTEGER NOT NULL,
             user_id INTEGER NOT NULL,
             PRIMARY KEY (review_id, user_id),
-            FOREIGN KEY(review_id) REFERENCES reviews(id),
-            FOREIGN KEY(user_id) REFERENCES users(id)
+            FOREIGN KEY(review_id) REFERENCES reviews(id) ON DELETE CASCADE,
+            FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
         );
     )sql";
 
@@ -78,7 +78,7 @@ namespace
             file_name TEXT NOT NULL,            -- logical name (e.g. "footstep_sfx")
             file_type INT,                      -- context, review, comment
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY(review_id) REFERENCES reviews(id),
+            FOREIGN KEY(review_id) REFERENCES reviews(id) ON DELETE CASCADE,
             UNIQUE(review_id, file_name, file_type) -- Variations/versions are added in the versioned_review_files
         );
     )sql";
@@ -90,7 +90,7 @@ namespace
             version INTEGER NOT NULL,           -- version number (1, 2, 3, ...)
             file_path TEXT NOT NULL,            -- relative path to the actual file on disk
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY(review_file_id) REFERENCES review_files(id),
+            FOREIGN KEY(review_file_id) REFERENCES review_files(id) ON DELETE CASCADE,
             UNIQUE(review_file_id, file_path, version)     -- ensure no duplicate version numbers
         );
     )sql";
@@ -105,9 +105,9 @@ namespace
             audio_time_start REAL,  -- optional: timestamp of the start selection of the comment
             audio_time_end REAL,    -- optional: timestamp of the end selection of the comment     
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY(review_id) REFERENCES reviews(id),
-            FOREIGN KEY(user_id) REFERENCES users(id),
-            FOREIGN KEY(file_id) REFERENCES review_files(id)
+            FOREIGN KEY(review_id) REFERENCES reviews(id) ON DELETE CASCADE,
+            FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
+            FOREIGN KEY(file_id) REFERENCES review_files(id) ON DELETE CASCADE
         );
     )sql";
 
@@ -118,8 +118,8 @@ namespace
             user_id INTEGER NOT NULL,
             vote INT NOT NULL DEFAULT 0,
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY(review_id) REFERENCES reviews(id),
-            FOREIGN KEY(user_id) REFERENCES users(id),
+            FOREIGN KEY(review_id) REFERENCES reviews(id) ON DELETE CASCADE,
+            FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
             UNIQUE(review_id, user_id)     -- ensures one vote per user per review
         );
     )sql";
@@ -133,9 +133,9 @@ namespace
             activity_type INTEGER,
             activity_text TEXT,
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY(review_id) REFERENCES reviews(id),
-            FOREIGN KEY(project_id) REFERENCES projects(id),
-            FOREIGN KEY(user_id) REFERENCES users(id)
+            FOREIGN KEY(review_id) REFERENCES reviews(id) ON DELETE CASCADE,
+            FOREIGN KEY(project_id) REFERENCES projects(id) ON DELETE CASCADE,
+            FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
         );
     )sql";
 
@@ -144,7 +144,8 @@ namespace
             token TEXT PRIMARY KEY,
             user_id INTEGER NOT NULL,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            expires_at INTEGER NOT NULL
+            expires_at INTEGER NOT NULL,
+            FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
         );
     )sql";
 
@@ -170,6 +171,9 @@ namespace
 review_database::review_database(const std::filesystem::path& databasePath)
     : m_database(databasePath, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE, 200)
 {
+    SQLite::Statement enableForeignKeysStatement(m_database, "PRAGMA foreign_keys = ON;");
+    enableForeignKeysStatement.exec();
+
     m_database.exec(g_createWorkspaceTableStatement);
     m_database.exec(g_createProjectsTableStatement);
     m_database.exec(g_createReviewsTableStatement);
@@ -646,17 +650,20 @@ auto review_database::delete_review(int64_t reviewId, std::string userToken) -> 
         co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::missing_table, .m_errorMessage = "No comments table"});
     }
 
+    if (!m_database.tableExists("review_files"))
+    {
+        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::missing_table, .m_errorMessage = "No review_files table"});
+    }
+
+    if (!m_database.tableExists("versioned_review_files"))
+    {
+        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::missing_table, .m_errorMessage = "No versioned_review_files table"});
+    }
+        
+    // Cascading delete removes all other data referencing this
     SQLite::Statement deleteReviewStatement(m_database, "DELETE FROM reviews WHERE id = ?;");
     deleteReviewStatement.bind(1, reviewId);
     deleteReviewStatement.exec();
-
-    SQLite::Statement deleteCommentsStatement(m_database, "DELETE FROM comments WHERE review_id = ?;");
-    deleteCommentsStatement.bind(1, reviewId);
-    deleteCommentsStatement.exec();
-
-    SQLite::Statement deleteActivityStatement(m_database, "DELETE FROM activity WHERE review_id = ?;");
-    deleteActivityStatement.bind(1, reviewId);
-    deleteActivityStatement.exec();
 
     co_return true;
 }
