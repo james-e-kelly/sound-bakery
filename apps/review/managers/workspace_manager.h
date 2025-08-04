@@ -51,7 +51,7 @@ public:
     auto get_selected_review() const -> const review_data&;
     auto create_review(const new_review_data& newReview) -> void;
     auto update_review(const review_data& updatedReview) -> void;
-    auto get_all_reviews() -> default_cache_type<review_data>::cache_result;
+    auto get_all_reviews() -> typename default_cache_type<review_data>::cache_result;
 
     // Activity
     auto get_all_activity_for_review(int64_t reviewId) -> typename default_cache_type<activity_data>::cache_result;
