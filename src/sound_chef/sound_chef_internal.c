@@ -28,7 +28,6 @@ ma_handle sc_dlopen(ma_log* pLog, const char* filename)
               ((defined(WINAPI_FAMILY_PHONE_APP) && WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP)))
     handle = (ma_handle)LoadLibraryA(filename);
         #else
-    /* *sigh* It appears there is no ANSI version of LoadPackagedLibrary()... */
     WCHAR filenameW[4096];
     if (MultiByteToWideChar(CP_UTF8, 0, filename, -1, filenameW, sizeof(filenameW)) == 0)
     {
