@@ -12,9 +12,11 @@ set(review_SOURCES
   data/review_data.cpp
   elements/inline_user_display_element.cpp
   elements/review_element.cpp
+  glad/src/gl.cpp
   managers/project_manager.cpp
   managers/review_manager.cpp
   managers/workspace_manager.cpp
+  subsystems/video_subsystem.cpp
   widgets/review_root_widget.cpp
   widgets/intro_widget.cpp
   widgets/workspace_widget.cpp
@@ -40,9 +42,12 @@ set(review_HEADERS
   elements/user_element.h
   elements/file_drop_element.h
   elements/inline_user_display_element.h
+  glad/include/glad/gl.h
+  glad/include/KHR/khrplatform.h
   managers/project_manager.h
   managers/review_manager.h
   managers/workspace_manager.h
+  subsystems/video_subsystem.h
   widgets/review_root_widget.h
   widgets/intro_widget.h
   widgets/workspace_widget.h
@@ -103,6 +108,7 @@ cxx_20(review)
 target_include_directories(review
     PRIVATE 
     ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/glad/include
     ${MPV_INCLUDE_DIRS}
 )
 
@@ -153,6 +159,8 @@ if(USE_MPV_WIN_BUILD)
         $<TARGET_FILE_DIR:review>
   )
 endif()
+
+target_compile_definitions(review PRIVATE "MPV_CPLUGIN_DYNAMIC_SYM")
 
 if(MSVC)
   target_compile_options(review PRIVATE /W4)

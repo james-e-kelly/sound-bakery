@@ -273,6 +273,17 @@ void renderer_subsystem::exit()
     glfwTerminate();
 }
 
+auto gluten::renderer_subsystem::glfw_get_proc_address(const char* procName) -> GLFWglproc
+{
+    return glfwGetProcAddress(procName);
+}
+
+auto gluten::renderer_subsystem::glfw_get_proc_address_with_context(void* context, const char* procName) -> GLFWglproc
+{
+    (void)context;
+    return glfw_get_proc_address(procName);
+}
+
 void renderer_subsystem::set_window_title(const std::string& title) { m_window.set_title(title); }
 
 void gluten::renderer_subsystem::toggle_minimised()

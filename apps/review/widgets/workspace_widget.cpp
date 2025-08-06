@@ -8,6 +8,7 @@
 #include "elements/review_element.h"
 #include "elements/user_element.h"
 #include "elements/inline_user_display_element.h"
+#include "subsystems/video_subsystem.h"
 #include "widgets/create_project_popup.h"
 #include "widgets/create_review_popup.h"
 #include "widgets/update_review_popup.h"
@@ -451,6 +452,7 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
                         const std::filesystem::path filePath = contextFile.m_versionsToRelativeFiles.at(selectedVersion);
                         ImGui::TextUnformatted(filePath.string().c_str());
                     }
+
                 }
 
                 ImGui::Separator();
@@ -473,7 +475,23 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
                     {
                         const std::filesystem::path filePath = reviewFile.m_versionsToRelativeFiles.at(selectedVersion);
                         ImGui::TextUnformatted(filePath.string().c_str());
+                        
+                        if (std::shared_ptr<video_subsystem> videoSubsystem =
+                            get_app()->get_subsystem_by_class<video_subsystem>())
+                        {
+                            static bool loaded = false;
+
+                            if (!loaded)
+                            {
+                                loaded = true;
+
+                                videoSubsystem->load_video(workspaceManager->get_workspace_directory() / filePath);
+                            }
+
+                            ImGui::Image((ImTextureID)videoSubsystem->get_video_texture(), ImVec2(192.0f, 108.0f));
+                        }
                     }
+
                 }
 
                 ImGui::EndTabItem();

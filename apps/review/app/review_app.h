@@ -2,6 +2,7 @@
 
 #include "gluten/app/app.h"
 
+class video_subsystem;
 class workspace_manager;
 class review_app_drop_target;
 class review_database;
@@ -39,6 +40,7 @@ private:
         m_isDragDropping = dragDropping;
     }
 
+    std::shared_ptr<video_subsystem> m_videoManager;
     std::shared_ptr<workspace_manager> m_workspaceManager;
     std::unique_ptr<review_app_drop_target> m_dropTarget;
 
