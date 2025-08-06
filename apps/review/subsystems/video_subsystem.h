@@ -26,12 +26,14 @@ protected:
 private:
     auto set_video_play_position(mpv_handle* handle, double playPosition) -> concurrencpp::result<void>;
     auto set_video_duration(mpv_handle* handle, double duration) -> concurrencpp::result<void>;
+    auto set_video_end(mpv_handle* handle) -> concurrencpp::result<void>;
 
     auto wait_for_mpv_events(mpv_handle* handle) -> concurrencpp::result<void>;
 
     struct mpv_context
     {
         mpv_context();
+        ~mpv_context();
 
         mpv_handle* m_mpvHandle                = nullptr;
         mpv_render_context* m_mpvRenderContext = nullptr;

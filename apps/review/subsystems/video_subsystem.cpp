@@ -37,6 +37,8 @@ video_subsystem::mpv_context::mpv_context()
     mpv_set_property_string(m_mpvHandle, "vo", "libmpv");
     mpv_initialize(m_mpvHandle);
     mpv_request_log_messages(m_mpvHandle, "info");
+    mpv_observe_property(m_mpvHandle, 0, "duration", MPV_FORMAT_DOUBLE);
+    mpv_observe_property(m_mpvHandle, 0, "time-pos", MPV_FORMAT_DOUBLE);
 
     mpv_render_context_create(&m_mpvRenderContext, m_mpvHandle, g_mpvRenderParams);
 
@@ -61,6 +63,24 @@ video_subsystem::mpv_context::mpv_context()
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+video_subsystem::mpv_context::~mpv_context()
+{
+    if (m_waitEventResult)
+    {
+        m_waitEventResult.get();
+    }
+
+    if (m_mpvRenderContext)
+    {
+        mpv_render_context_free(m_mpvRenderContext);
+    }
+
+    if (m_mpvHandle)
+    {
+        mpv_terminate_destroy(m_mpvHandle);
+    }
 }
 
 /**
@@ -125,6 +145,7 @@ auto video_subsystem::pre_init(int ArgC, char* ArgV[]) -> int
     LOAD_MPV_SYMBOL(mpv_set_property_string)
     LOAD_MPV_SYMBOL(mpv_request_log_messages)
     LOAD_MPV_SYMBOL(mpv_wait_event)
+    LOAD_MPV_SYMBOL(mpv_observe_property)
 
     LOAD_MPV_SYMBOL(mpv_render_context_create)
     LOAD_MPV_SYMBOL(mpv_render_context_render)
@@ -210,18 +231,6 @@ auto video_subsystem::tick_rendering(double deltaTime) -> void
 
 auto video_subsystem::exit() -> void
 {
-    for (auto& context : m_mpvContexts)
-    {
-        if (context.second)
-        {
-            concurrencpp::result<void>& result = context.second->m_waitEventResult;
-            result.get();
-
-            mpv_render_context_free(context.second->m_mpvRenderContext);
-            mpv_terminate_destroy(context.second->m_mpvHandle);
-        }
-    }
-
     m_mpvContexts.clear();
     m_videoFileToContexts.clear();
 
@@ -249,6 +258,21 @@ auto video_subsystem::set_video_duration(mpv_handle* handle, double duration) ->
     if (m_mpvContexts.contains(handle))
     {
         m_mpvContexts.at(handle)->m_videoDuration = duration;
+    }
+}
+
+auto video_subsystem::set_video_end(mpv_handle* handle) -> concurrencpp::result<void> 
+{
+    co_await concurrencpp::resume_on(get_app()->get_tick_executor());
+
+    if (m_mpvContexts.contains(handle))
+    {
+        m_mpvContexts.erase(handle);
+
+        m_videoFileToContexts.erase(std::find_if(m_videoFileToContexts.begin(), m_videoFileToContexts.end(), [handle](const auto& pair) 
+            {
+                return pair.second == handle;
+            }));
     }
 }
 
@@ -296,6 +320,10 @@ auto video_subsystem::wait_for_mpv_events(mpv_handle* handle) -> concurrencpp::r
                     set_video_duration(handle, time);
                 }
             }
+        }
+        else if (event->event_id == MPV_EVENT_END_FILE)
+        {
+            set_video_end(handle);
         }
         else if (event->event_id == MPV_EVENT_SHUTDOWN)
         {
