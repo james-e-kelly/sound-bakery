@@ -12,6 +12,7 @@ set(review_SOURCES
   data/review_data.cpp
   elements/inline_user_display_element.cpp
   elements/review_element.cpp
+  elements/video_element.cpp
   glad/src/gl.cpp
   managers/project_manager.cpp
   managers/review_manager.cpp
@@ -42,6 +43,7 @@ set(review_HEADERS
   elements/user_element.h
   elements/file_drop_element.h
   elements/inline_user_display_element.h
+  elements/video_element.h
   glad/include/glad/gl.h
   glad/include/KHR/khrplatform.h
   managers/project_manager.h

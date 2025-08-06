@@ -23,6 +23,7 @@ namespace gluten
     public:
         using data_ptr = std::unique_ptr<unsigned char, image_destroyer>;
 
+        image(uint32_t imageText, int width, int height);
         image(const cmrc::embedded_filesystem& filesystem, const std::string& filePath);
         image(const void* data, std::size_t dataSize);
         ~image();

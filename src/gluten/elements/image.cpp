@@ -12,8 +12,12 @@
 
 namespace gluten
 {
-
     void image_destroyer::operator()(unsigned char* data) { stbi_image_free(data); }
+
+    image::image(uint32_t imageTexture, int width, int height) : m_openGlId(imageTexture), m_width(width), m_height(height)
+    {
+
+    }
 
     image::image(const cmrc::embedded_filesystem& filesystem, const std::string& filePath)
     {

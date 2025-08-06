@@ -100,7 +100,7 @@ auto video_subsystem::load_video(const std::filesystem::path& absoluteFilePath) 
     std::unique_ptr<mpv_context> mpvContext = std::make_unique<mpv_context>();
 
     const std::string file = absoluteFilePath.string();
-    const char* cmd[]      = {"loadfile", file.c_str(), "replace", "pause=yes", nullptr};
+    const char* cmd[]      = {"loadfile", file.c_str(), "replace", nullptr};
     mpv_command(mpvContext->m_mpvHandle, cmd);
 
     m_videoFileToContexts.insert({file, mpvContext->m_mpvHandle});

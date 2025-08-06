@@ -51,6 +51,7 @@ private:
     gluten::layout leftUserPanel = gluten::layout(gluten::layout_type::top_to_bottom, gluten::anchor_preset::stretch_left);
     gluten::layout innerDescriptionBox;
     gluten::layout scrutinyLayout;
+    gluten::layout m_reviewFilesLayout;
 
     gluten::background topContentBarBackground;
     gluten::background mainContentParent;
