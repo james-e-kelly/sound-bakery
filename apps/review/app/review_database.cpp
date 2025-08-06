@@ -164,7 +164,7 @@ namespace
     #define REVIEW_TEST_DATABASE_BLOCKS
 
 #ifdef REVIEW_TEST_DATABASE_BLOCKS
-    constexpr std::chrono::milliseconds g_blockDelay = std::chrono::seconds(2);
+    constexpr std::chrono::milliseconds g_blockDelay = std::chrono::seconds(1);
 #endif
 }
 
