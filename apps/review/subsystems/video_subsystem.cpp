@@ -132,7 +132,7 @@ auto video_subsystem::init() -> int
 
     const int renderContextCreateResult = mpv_render_context_create(&m_mpvRenderContext, m_mpvHandle, params);
 
-    if (renderContextCreateResult != 0)
+    if (renderContextCreateResult != 0 || m_mpvRenderContext != nullptr)
     {
         return renderContextCreateResult;
     }
