@@ -7,7 +7,7 @@ namespace gluten
 {
     class app;
 
-    class subsystem
+    class subsystem : public std::enable_shared_from_this<subsystem>
     {
         LEAK_DETECTOR(subsystem)
 

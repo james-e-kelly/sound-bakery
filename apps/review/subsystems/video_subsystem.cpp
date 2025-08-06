@@ -6,22 +6,67 @@
 #include "glad/include/glad/gl.h"
 
 #ifdef _WIN32
-#include <ostream>
-#include <Windows.h>
-#include <string>
-#include <sstream>
+    #define WIN32_LEAN_AND_MEAN
+    #include <Windows.h>
+    #undef WIN32_LEAN_AND_MEAN
 #endif
 
 namespace
 {
-    constexpr std::string_view g_mpvDllFilename = "libmpv-2.dll";
+    constexpr std::string_view g_mpvDllFilename     = "libmpv-2.dll";
+    constexpr int32_t g_mpvAdvancedControl          = 1;
 
-    GLuint videoTexture = 0;
-    GLuint videoFBO     = 0;
-    int width = 192, height = 108;  // set to your expected video resolution
+    mpv_opengl_init_params openglInitParams = 
+    {
+        .get_proc_address = (void* (*)(void*, const char*)) &gluten::renderer_subsystem::glfw_get_proc_address_with_context,
+        .get_proc_address_ctx = nullptr,
+    };
+
+    mpv_render_param g_mpvRenderParams[]  = 
+    {
+        {MPV_RENDER_PARAM_API_TYPE, const_cast<char*>(MPV_RENDER_API_TYPE_OPENGL)},
+        {MPV_RENDER_PARAM_OPENGL_INIT_PARAMS, &openglInitParams},
+        {MPV_RENDER_PARAM_ADVANCED_CONTROL, (void*)&g_mpvAdvancedControl},
+        {MPV_RENDER_PARAM_INVALID, nullptr},
+    };
 }
 
-#define LOAD_MPV_FUNC(name) \
+video_subsystem::mpv_context::mpv_context()
+{
+    m_mpvHandle = mpv_create();
+    mpv_set_property_string(m_mpvHandle, "vo", "libmpv");
+    mpv_initialize(m_mpvHandle);
+    mpv_request_log_messages(m_mpvHandle, "info");
+
+    mpv_render_context_create(&m_mpvRenderContext, m_mpvHandle, g_mpvRenderParams);
+
+    mpv_render_context_set_update_callback(m_mpvRenderContext,
+        [](void* context)
+        {
+            mpv_context* const mpvContext = reinterpret_cast<mpv_context*>(context);
+            mpvContext->m_needsRender.store(true);
+        }, this);
+
+    glGenTextures(1, &videoTexture);
+    assert(videoTexture != 0);
+
+    glBindTexture(GL_TEXTURE_2D, videoTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_displaySize.x, m_displaySize.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glGenFramebuffers(1, &videoFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, videoFBO);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, videoTexture, 0);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+/**
+ * @def Loads an mpv symbol pointer so functions can be used.
+ */
+#define LOAD_MPV_SYMBOL(name) \
     name = (decltype(name))sc_dlsym(nullptr, m_mpvLibraryHandle, #name);    \
     if (!name)                                                              \
     {                                                                       \
@@ -30,44 +75,34 @@ namespace
 
 video_subsystem::~video_subsystem() { BOOST_ASSERT_MSG(m_mpvLibraryHandle == nullptr, "mpv was not released"); }
 
-static auto loop_mpv_events(mpv_handle* handle) -> concurrencpp::result<void>
+auto video_subsystem::load_video(const std::filesystem::path& absoluteFilePath) -> void
 {
-    co_await concurrencpp::resume_on(gluten::app::get()->background_executor());
+    std::unique_ptr<mpv_context> mpvContext = std::make_unique<mpv_context>();
 
-    while (true)
-    {
-        mpv_event* ev;
-        while ((ev = mpv_wait_event(handle, 0))->event_id != MPV_EVENT_NONE)
-        {
-            if (ev->event_id == MPV_EVENT_LOG_MESSAGE)
-            {
-                auto* msg = (mpv_event_log_message*)ev->data;
-                const auto string = fmt::format("[{}] {}", msg->prefix, msg->text);
-                std::cout << string << std::endl;
-                OutputDebugString(string.c_str());
-            }
-
-            if (ev->event_id == MPV_EVENT_SHUTDOWN)
-            {
-                break;
-            }
-        }
-
-        using namespace std::literals::chrono_literals;
-        gluten::app::get()->timer_queue()->make_delay_object(100ms, gluten::app::get()->background_executor());
-    }
-}
-
-auto video_subsystem::load_video(const std::filesystem::path& absoluteFilePath) const -> void
-{
     const std::string file = absoluteFilePath.string();
     const char* cmd[] = {"loadfile", file.c_str(), nullptr};
-    mpv_command(m_mpvHandle, cmd);
+    mpv_command(mpvContext->m_mpvHandle, cmd);
+
+    m_videoFileToContexts.insert({file, mpvContext->m_mpvHandle});
+    m_mpvContexts.insert({mpvContext->m_mpvHandle, std::move(mpvContext)});
 }
 
-auto video_subsystem::get_video_texture() const -> uint32_t
+auto video_subsystem::get_video_texture(const std::string& fileName) const -> uint32_t
 {
-    return videoTexture;
+    if (m_videoFileToContexts.contains(fileName))
+    {
+        const mpv_handle* const& handle = m_videoFileToContexts.at(fileName);
+
+        if (handle && m_mpvContexts.contains(handle))
+        {
+            if (m_mpvContexts.at(handle))
+            {
+                return m_mpvContexts.at(handle)->videoTexture;
+            }
+        }
+    }
+
+    return 0U;
 }
 
 auto video_subsystem::pre_init(int ArgC, char* ArgV[]) -> int
@@ -81,21 +116,21 @@ auto video_subsystem::pre_init(int ArgC, char* ArgV[]) -> int
         return 1;
     }
 
-    LOAD_MPV_FUNC(mpv_create)
-    LOAD_MPV_FUNC(mpv_initialize)
-    LOAD_MPV_FUNC(mpv_destroy)
-    LOAD_MPV_FUNC(mpv_terminate_destroy)
-    LOAD_MPV_FUNC(mpv_command)
-    LOAD_MPV_FUNC(mpv_get_property)
-    LOAD_MPV_FUNC(mpv_set_property_string)
-    LOAD_MPV_FUNC(mpv_request_log_messages)
-    LOAD_MPV_FUNC(mpv_wait_event)
+    LOAD_MPV_SYMBOL(mpv_create)
+    LOAD_MPV_SYMBOL(mpv_initialize)
+    LOAD_MPV_SYMBOL(mpv_destroy)
+    LOAD_MPV_SYMBOL(mpv_terminate_destroy)
+    LOAD_MPV_SYMBOL(mpv_command)
+    LOAD_MPV_SYMBOL(mpv_get_property)
+    LOAD_MPV_SYMBOL(mpv_set_property_string)
+    LOAD_MPV_SYMBOL(mpv_request_log_messages)
+    LOAD_MPV_SYMBOL(mpv_wait_event)
 
-    LOAD_MPV_FUNC(mpv_render_context_create)
-    LOAD_MPV_FUNC(mpv_render_context_render)
-    LOAD_MPV_FUNC(mpv_render_context_set_update_callback)
-    LOAD_MPV_FUNC(mpv_render_context_free)
-    LOAD_MPV_FUNC(mpv_render_context_update)
+    LOAD_MPV_SYMBOL(mpv_render_context_create)
+    LOAD_MPV_SYMBOL(mpv_render_context_render)
+    LOAD_MPV_SYMBOL(mpv_render_context_set_update_callback)
+    LOAD_MPV_SYMBOL(mpv_render_context_free)
+    LOAD_MPV_SYMBOL(mpv_render_context_update)
 
     return 0;
 }
@@ -104,8 +139,6 @@ typedef void* (*GLAddrLoadFunc)(const char* name);
 
 static GLAddrLoadFunc GetGLAddrFunc() { return (GLAddrLoadFunc)gluten::renderer_subsystem::glfw_get_proc_address; }
 
-static std::atomic<bool> s_renderFrame;
-
 auto video_subsystem::init() -> int
 {
     if (!gladLoadGL((GLADloadfunc)GetGLAddrFunc()))
@@ -113,133 +146,162 @@ auto video_subsystem::init() -> int
         return 1;
     }
 
-    m_mpvHandle = mpv_create();
-
-    if (!m_mpvHandle)
-    {
-        return 1;
-    }
-
-    mpv_set_property_string(m_mpvHandle, "vo", "libmpv");
-
-    const int initResult = mpv_initialize(m_mpvHandle);
-
-    if (initResult != 0)
-    {
-        return initResult;
-    }
-
-    mpv_request_log_messages(m_mpvHandle, "debug");
-    loop_mpv_events(m_mpvHandle);
-
-    mpv_opengl_init_params openglInitParams = 
-    {
-        .get_proc_address     = (void*(*)(void*, const char*)) &gluten::renderer_subsystem::glfw_get_proc_address_with_context,
-        .get_proc_address_ctx = nullptr,
-    };
-
-    const int advandedControl = 1;
-
-    mpv_render_param params[] = {
-        {MPV_RENDER_PARAM_API_TYPE, const_cast<char*>(MPV_RENDER_API_TYPE_OPENGL)},
-        {MPV_RENDER_PARAM_OPENGL_INIT_PARAMS, &openglInitParams},
-        {MPV_RENDER_PARAM_ADVANCED_CONTROL, (void*)&advandedControl},
-        {MPV_RENDER_PARAM_INVALID, nullptr},
-    };
-
-    const int renderContextCreateResult = mpv_render_context_create(&m_mpvRenderContext, m_mpvHandle, params);
-
-    if (renderContextCreateResult != 0 || m_mpvRenderContext == nullptr)
-    {
-        return renderContextCreateResult;
-    }
-
-    mpv_render_context_set_update_callback(m_mpvRenderContext, [](void* ctx)
-        { 
-            s_renderFrame.store(true);
-        }, nullptr);
-
-    glGenTextures(1, &videoTexture);
-    assert(videoTexture != 0);
-
-    glBindTexture(GL_TEXTURE_2D, videoTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    glGenFramebuffers(1, &videoFBO);
-    glBindFramebuffer(GL_FRAMEBUFFER, videoFBO);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, videoTexture, 0);
-
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-    {
-        return 1;
-    }
-
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glBindTexture(GL_TEXTURE_2D, 0);
-
     return 0;
 }
 
 auto video_subsystem::tick(double deltaTime) -> void
 {
+    static double elapsed = 0.0;
+
+    if ((elapsed += deltaTime) > 0.05)
+    {
+        for (auto& context : m_mpvContexts)
+        {
+            if (context.second && (!context.second->m_waitEventResult || context.second->m_waitEventResult.status() == concurrencpp::result_status::value))
+            {
+                context.second->m_waitEventResult = wait_for_mpv_events(context.second->m_mpvHandle);
+            }
+        }
+    }
 }
 
 auto video_subsystem::tick_rendering(double deltaTime) -> void
 {
-    if (s_renderFrame.load())
+    for (auto& mpvContext : m_mpvContexts)
     {
-        glBindFramebuffer(GL_FRAMEBUFFER, videoFBO);
-        glViewport(0, 0, width, height);
-        glClearColor(0, 0, 0, 1);
-        glClear(GL_COLOR_BUFFER_BIT);
+        std::unique_ptr<mpv_context>& mpvContextPtr = mpvContext.second;
 
-        mpv_opengl_fbo fbo = {
-            .fbo             = static_cast<int>(videoFBO),
-            .w               = width,
-            .h               = height,
-            .internal_format = GL_RGBA,
-        };
-
-        const uint64_t updateResult = mpv_render_context_update(m_mpvRenderContext);
-
-        if (updateResult == MPV_RENDER_UPDATE_FRAME)
+        if (!mpvContextPtr)
         {
-            const int flipY          = 0;
-            mpv_render_param params[] = {{MPV_RENDER_PARAM_OPENGL_FBO, &fbo},
-                                         {MPV_RENDER_PARAM_FLIP_Y, (void*)&flipY},
-                                         {MPV_RENDER_PARAM_INVALID, nullptr}};
-
-            const int renderErrorCode = mpv_render_context_render(m_mpvRenderContext, params);
-            assert(renderErrorCode == 0);
+            continue;
         }
 
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    }
+        if (mpvContextPtr->m_needsRender.exchange(false))
+        {
+            glBindFramebuffer(GL_FRAMEBUFFER, mpvContextPtr->videoFBO);
+            glViewport(0, 0, mpvContextPtr->m_displaySize.x, mpvContextPtr->m_displaySize.y);
+            glClearColor(0, 0, 0, 1);
+            glClear(GL_COLOR_BUFFER_BIT);
 
-    //ImGui::Image(reinterpret_cast<ImTextureID>(static_cast<uintptr_t>(videoTexture)),
-    //             ImVec2((float)width, (float)height), ImVec2(0, 1),  // flip vertically
-    //             ImVec2(1, 0));
+            mpv_opengl_fbo fbo = {
+                .fbo             = static_cast<int>(mpvContextPtr->videoFBO),
+                .w               = static_cast<int>(mpvContextPtr->m_displaySize.x),
+                .h               = static_cast<int>(mpvContextPtr->m_displaySize.y),
+                .internal_format = GL_RGBA,
+            };
+
+            const uint64_t updateResult = mpv_render_context_update(mpvContextPtr->m_mpvRenderContext);
+
+            if (updateResult == MPV_RENDER_UPDATE_FRAME)
+            {
+                const int flipY           = 0;
+                mpv_render_param params[] = {{MPV_RENDER_PARAM_OPENGL_FBO, &fbo},
+                                             {MPV_RENDER_PARAM_FLIP_Y, (void*)&flipY},
+                                             {MPV_RENDER_PARAM_INVALID, nullptr}};
+
+                const int renderErrorCode = mpv_render_context_render(mpvContextPtr->m_mpvRenderContext, params);
+                assert(renderErrorCode == 0);
+            }
+
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        }
+    }
 }
 
 auto video_subsystem::exit() -> void
 {
-    if (m_mpvRenderContext)
+    for (auto& context : m_mpvContexts)
     {
-        mpv_render_context_free(m_mpvRenderContext);
-        m_mpvRenderContext = nullptr;
+        if (context.second)
+        {
+            concurrencpp::result<void>& result = context.second->m_waitEventResult;
+            result.get();
+
+            mpv_render_context_free(context.second->m_mpvRenderContext);
+            mpv_terminate_destroy(context.second->m_mpvHandle);
+        }
     }
 
-    if (m_mpvHandle)
-    {
-        mpv_terminate_destroy(m_mpvHandle);
-        m_mpvHandle = nullptr;
-    }
+    m_mpvContexts.clear();
+    m_videoFileToContexts.clear();
 
     if (m_mpvLibraryHandle)
     {
         sc_dlclose(nullptr, m_mpvLibraryHandle);
         m_mpvLibraryHandle = nullptr;
     }
+}
+
+auto video_subsystem::set_video_play_position(mpv_handle* handle, double playPosition) -> concurrencpp::result<void>
+{
+    co_await concurrencpp::resume_on(get_app()->get_tick_executor());
+
+    if (m_mpvContexts.contains(handle))
+    {
+        m_mpvContexts.at(handle)->m_playPosition = playPosition;
+    }
+}
+
+auto video_subsystem::set_video_duration(mpv_handle* handle, double duration) -> concurrencpp::result<void>
+{
+    co_await concurrencpp::resume_on(get_app()->get_tick_executor());
+
+    if (m_mpvContexts.contains(handle))
+    {
+        m_mpvContexts.at(handle)->m_videoDuration = duration;
+    }
+}
+
+auto video_subsystem::wait_for_mpv_events(mpv_handle* handle) -> concurrencpp::result<void>
+{
+    if (handle == nullptr)
+    {
+        co_return;
+    }
+
+    co_await concurrencpp::resume_on(get_app()->thread_pool_executor());
+
+    for (const mpv_event* event = mpv_wait_event(handle, 0); event != nullptr; event = mpv_wait_event(handle, 0))
+    {
+        if (event == nullptr || event->data == nullptr)
+        {
+            break;
+        }
+
+        if (event->event_id == MPV_EVENT_LOG_MESSAGE)
+        {
+            mpv_event_log_message* logMessage = static_cast<mpv_event_log_message*>(event->data);
+            const std::string logString       = fmt::format("[{}] {}", logMessage->prefix, logMessage->text);
+            OutputDebugString(logString.c_str());
+        }
+        else if (event->event_id == MPV_EVENT_FILE_LOADED)
+        {
+        }
+        else if (event->event_id == MPV_EVENT_PROPERTY_CHANGE)
+        {
+            const mpv_event_property* property = (mpv_event_property*)event->data;
+            if (strcmp(property->name, "time-pos") == 0)
+            {
+                if (property->format == MPV_FORMAT_DOUBLE)
+                {
+                    const double time = *static_cast<double*>(property->data);
+                    set_video_play_position(handle, time);
+                }
+            }
+            else if (strcmp(property->name, "duration") == 0)
+            {
+                if (property->format == MPV_FORMAT_DOUBLE)
+                {
+                    double time = *static_cast<double*>(property->data);
+                    set_video_duration(handle, time);
+                }
+            }
+        }
+        else if (event->event_id == MPV_EVENT_SHUTDOWN)
+        {
+            break;
+        }
+    }
+
+    co_return;
 }

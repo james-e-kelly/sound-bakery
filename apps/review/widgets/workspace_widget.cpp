@@ -488,10 +488,9 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
                                 videoSubsystem->load_video(workspaceManager->get_workspace_directory() / filePath);
                             }
 
-                            ImGui::Image((ImTextureID)videoSubsystem->get_video_texture(), ImVec2(192.0f, 108.0f));
+                            ImGui::Image((ImTextureID)videoSubsystem->get_video_texture((workspaceManager->get_workspace_directory() /filePath).string()), ImVec2(1920 / 2, 1080 / 2));
                         }
                     }
-
                 }
 
                 ImGui::EndTabItem();
