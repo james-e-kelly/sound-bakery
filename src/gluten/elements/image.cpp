@@ -43,7 +43,7 @@ namespace gluten
     {
         if (m_openGlId != 0 && m_width > 0 && m_height > 0)
         {
-            m_background.render(elementRect);
+            //m_background.render(elementRect);
 
             if (ImDrawList* const drawList = ImGui::GetWindowDrawList())
             {
@@ -86,30 +86,6 @@ namespace gluten
     }
 
     auto image::set_render_type(image_render render) -> void { m_render = render; }
-
-    auto image::set_element_background_color(ImU32 color) -> element&
-    {
-        m_background.set_element_background_color(color);
-        return *this;
-    }
-
-    auto image::set_element_background_color(ImVec4 color) -> element&
-    {
-        m_background.set_element_background_color(color);
-        return *this;
-    }
-
-    auto image::set_element_hover_color(ImU32 color) -> element&
-    {
-        m_background.set_element_hover_color(color);
-        return *this;
-    }
-
-    auto image::set_element_hover_color(ImVec4 color) -> element&
-    {
-        m_background.set_element_hover_color(color);
-        return *this;
-    }
 
     auto image::load_image_data(unsigned char* data, int dataLength, int& width, int& height) -> data_ptr
     {
