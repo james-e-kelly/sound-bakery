@@ -62,12 +62,6 @@ auto gluten::icon_button::set_button_alignment(const ImVec2& alignment) -> icon_
     return *this;
 }
 
-auto gluten::icon_button::set_element_active(bool active) -> element&
-{
-    m_button.set_element_active(active);
-    return *this;
-}
-
 auto gluten::icon_button::set_button_scale(float scale) -> icon_button&
 {
     m_button.set_element_scale(scale);
@@ -77,42 +71,6 @@ auto gluten::icon_button::set_button_scale(float scale) -> icon_button&
 auto gluten::icon_button::set_button_border(float borderSize, float borderRounding) -> icon_button&
 {
     m_button.set_element_border(borderSize, borderRounding);
-    return *this;
-}
-
-auto gluten::icon_button::set_element_background_color(ImU32 color) -> element& 
-{
-    m_button.set_element_background_color(color);
-    return *this;
-}
-
-auto gluten::icon_button::set_element_background_color(ImVec4 color) -> element&
-{
-    m_button.set_element_background_color(color);
-    return *this;
-}
-
-auto gluten::icon_button::set_element_hover_color(ImU32 color) -> element& 
-{
-    m_button.set_element_hover_color(color);
-    return *this;
-}
-
-auto gluten::icon_button::set_element_hover_color(ImVec4 color) -> element& 
-{
-    m_button.set_element_hover_color(color);
-    return *this;
-}
-
-auto gluten::icon_button::set_element_active_color(ImU32 color) -> element& 
-{
-    m_button.set_element_active_color(color);
-    return *this;
-}
-
-auto gluten::icon_button::set_element_active_color(ImVec4 color) -> element& 
-{
-    m_button.set_element_active_color(color);
     return *this;
 }
 

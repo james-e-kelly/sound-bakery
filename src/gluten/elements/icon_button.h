@@ -88,17 +88,6 @@ namespace gluten
         auto set_button_scale(float scale) -> icon_button&;
         auto set_button_border(float borderSize, float borderRounding) -> icon_button&;
 
-        // Override colors
-        // Only the button should get hover colors
-        // Never this element itself
-        auto set_element_active(bool active) -> element& override;
-        auto set_element_background_color(ImU32 color) -> element& override;
-        auto set_element_background_color(ImVec4 color) -> element& override;
-        auto set_element_hover_color(ImU32 color) -> element& override;
-        auto set_element_hover_color(ImVec4 color) -> element& override;
-        auto set_element_active_color(ImU32 color) -> element& override;
-        auto set_element_active_color(ImVec4 color) -> element& override;
-
     private:
         button m_button;
         icon m_text;

@@ -102,18 +102,17 @@ auto video_subsystem::load_video(const std::filesystem::path& absoluteFilePath) 
     const std::string file = absoluteFilePath.string();
     const char* cmd[]      = {"loadfile", file.c_str(), "replace", nullptr};
     mpv_command(mpvContext->m_mpvHandle, cmd);
+    mpv_command_string(mpvContext->m_mpvHandle, "set pause yes");
 
     m_videoFileToContexts.insert({file, mpvContext->m_mpvHandle});
     m_mpvContexts.insert({mpvContext->m_mpvHandle, std::move(mpvContext)});
 }
 
-auto video_subsystem::get_video_texture(const std::string& fileName) const -> uint32_t
+auto video_subsystem::get_video_texture(const std::filesystem::path& file) const -> uint32_t
 {
-    if (m_videoFileToContexts.contains(fileName))
+    if (mpv_handle* handle = get_mpv_handle_from_file(file))
     {
-        const mpv_handle* const& handle = m_videoFileToContexts.at(fileName);
-
-        if (handle && m_mpvContexts.contains(handle))
+        if (m_mpvContexts.contains(handle))
         {
             if (m_mpvContexts.at(handle))
             {
@@ -123,6 +122,24 @@ auto video_subsystem::get_video_texture(const std::string& fileName) const -> ui
     }
 
     return 0U;
+}
+
+auto video_subsystem::play_video(const std::filesystem::path& absoluteFilePath) -> void
+{
+    mpv_handle* handle = get_mpv_handle_from_file(absoluteFilePath);
+    if (handle)
+    {
+        mpv_command_string(handle, "set pause no");
+    }
+}
+
+auto video_subsystem::pause_video(const std::filesystem::path& absoluteFilePath) -> void
+{
+    mpv_handle* handle = get_mpv_handle_from_file(absoluteFilePath);
+    if (handle)
+    {
+        mpv_command_string(handle, "set pause yes");
+    }
 }
 
 auto video_subsystem::pre_init(int ArgC, char* ArgV[]) -> int
@@ -146,6 +163,7 @@ auto video_subsystem::pre_init(int ArgC, char* ArgV[]) -> int
     LOAD_MPV_SYMBOL(mpv_request_log_messages)
     LOAD_MPV_SYMBOL(mpv_wait_event)
     LOAD_MPV_SYMBOL(mpv_observe_property)
+    LOAD_MPV_SYMBOL(mpv_command_string)
 
     LOAD_MPV_SYMBOL(mpv_render_context_create)
     LOAD_MPV_SYMBOL(mpv_render_context_render)
@@ -332,4 +350,14 @@ auto video_subsystem::wait_for_mpv_events(mpv_handle* handle) -> concurrencpp::r
     }
 
     co_return;
+}
+
+auto video_subsystem::get_mpv_handle_from_file(const std::filesystem::path& absoluteFilePath) const -> mpv_handle*
+{
+    if (m_videoFileToContexts.contains(absoluteFilePath.string()))
+    {
+        return m_videoFileToContexts.at(absoluteFilePath.string());
+    }
+
+    return 0U;
 }

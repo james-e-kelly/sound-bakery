@@ -490,8 +490,8 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
                             get_app()->get_subsystem_by_class<video_subsystem>())
                         {
                             video_element videoElement(workspaceManager->get_workspace_directory() / filePath);
-                            m_reviewFilesLayout.render_layout_element_percent_horizontal(&videoElement, 0.5f);
-                            m_reviewFilesLayout.render_layout_element_percent_horizontal(&videoElement, 0.5f);
+                            m_reviewFilesLayout.render_layout_element_percent_horizontal(&videoElement, 0.75f);
+                            //m_reviewFilesLayout.render_layout_element_percent_horizontal(&videoElement, 0.75f);
                         }
                     }
                 }

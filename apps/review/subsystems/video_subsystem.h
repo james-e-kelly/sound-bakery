@@ -14,7 +14,10 @@ public:
     ~video_subsystem();
 
     auto load_video(const std::filesystem::path& absoluteFilePath) -> void;
-    auto get_video_texture(const std::string& fileName) const -> uint32_t;
+    auto get_video_texture(const std::filesystem::path& file) const -> uint32_t;
+
+    auto play_video(const std::filesystem::path& absoluteFilePath) -> void;
+    auto pause_video(const std::filesystem::path& absoluteFilePath) -> void;
 
 protected:
     auto pre_init(int ArgC, char* ArgV[]) -> int override;
@@ -29,6 +32,8 @@ private:
     auto set_video_end(mpv_handle* handle) -> concurrencpp::result<void>;
 
     auto wait_for_mpv_events(mpv_handle* handle) -> concurrencpp::result<void>;
+
+    auto get_mpv_handle_from_file(const std::filesystem::path& absoluteFilePath) const -> mpv_handle*;
 
     struct mpv_context
     {
@@ -54,8 +59,8 @@ private:
         concurrencpp::result<void> m_waitEventResult;   //< Storing as a result so we can wait on it at the end to close everything out
     };
 
-    std::unordered_map<const mpv_handle*, std::unique_ptr<mpv_context>> m_mpvContexts;
-    std::unordered_map<std::string, const mpv_handle*> m_videoFileToContexts;
+    std::unordered_map<mpv_handle*, std::unique_ptr<mpv_context>> m_mpvContexts;
+    std::unordered_map<std::string, mpv_handle*> m_videoFileToContexts;
 
     ma_handle m_mpvLibraryHandle = nullptr;
 };
