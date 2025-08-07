@@ -65,6 +65,7 @@ auto workspace_widget::start_implementation() -> void
     phaseText.set_element_content_font_size(gluten::g_baseFontSize * 1.3f);
     scrutinyLayout.set_element_anchor_preset(gluten::element::anchor_preset::stretch_full);
     descriptionEditButton.set_element_alignment(ImVec2(1.0f, -0.0f));
+    m_reviewFilesLayout.set_layout_spacing(20.0f);
 }
 
 auto workspace_widget::render_window_implementation() -> void
@@ -437,7 +438,7 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
                 ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
 
                 const ImVec2 currentCursorPos = ImGui::GetCursorScreenPos();
-                const float width             = reviewContent.get_element_rect().GetSize().x;
+                const float width             = reviewContent.get_element_rect().GetSize().x - 25.0f;
                 const float height            = 0.0f;
                 ImRect reviewFilesRect(currentCursorPos, ImVec2(currentCursorPos.x + width, currentCursorPos.y + height));
                 m_reviewFilesLayout.render(reviewFilesRect);
@@ -489,7 +490,8 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
                             get_app()->get_subsystem_by_class<video_subsystem>())
                         {
                             video_element videoElement(workspaceManager->get_workspace_directory() / filePath);
-                            m_reviewFilesLayout.render_layout_element_percent_horizontal(&videoElement, 1.0f);
+                            m_reviewFilesLayout.render_layout_element_percent_horizontal(&videoElement, 0.5f);
+                            m_reviewFilesLayout.render_layout_element_percent_horizontal(&videoElement, 0.5f);
                         }
                     }
                 }

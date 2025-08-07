@@ -23,6 +23,7 @@ namespace gluten
     public:
         using data_ptr = std::unique_ptr<unsigned char, image_destroyer>;
 
+        image() = default;
         image(uint32_t imageText, int width, int height);
         image(const cmrc::embedded_filesystem& filesystem, const std::string& filePath);
         image(const void* data, std::size_t dataSize);
@@ -31,9 +32,15 @@ namespace gluten
         bool render_element(const ImRect& parent) override;
         void release();
 
-        auto get_element_content_size(const ImVec2& parentSize) -> ImVec2 const override { return ImVec2(get_width(), get_height()); }
+        auto get_element_content_size(const ImVec2& parentSize) -> ImVec2 const override;
         auto get_width() -> int const { return m_width; }
         auto get_height() -> int const { return m_height; }
+
+        auto set_image_size(const ImVec2& size) -> void
+        {
+            m_width = size.x;
+            m_height = size.y;
+        }
 
         auto set_render_type(image_render render) -> void;
 

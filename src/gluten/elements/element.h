@@ -165,6 +165,8 @@ namespace gluten
     {
         LEAK_DETECTOR(element)
 
+        friend class layout;
+
     public:
         using anchor_preset = ::gluten::anchor_preset;
         using anchor_info = ::gluten::anchor_info;

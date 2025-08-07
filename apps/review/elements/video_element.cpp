@@ -20,16 +20,18 @@ video_element::video_element(const std::filesystem::path& videoFile)
         }
 
 		m_videoTexture = videoSubsystem->get_video_texture(m_videoFile.string());
+
+        m_videoImage = gluten::image(m_videoTexture, 1920, 1080);
 	}
 }
 
 auto video_element::render_element(const ImRect& elementRect) -> bool
 {
-    if (m_videoTexture > 0)
-    {
-	    gluten::image videoImage(m_videoTexture, 1920, 1080);
-        //videoImage.set_element_anchor_preset(gluten::anchor_preset::stretch_top);
-        return videoImage.render(elementRect);
-    }
-    return false;
+    return m_videoImage.render(elementRect);
+}
+
+auto video_element::get_element_content_size(const ImVec2& parentSize) -> ImVec2 const
+{
+    const ImVec2 videoSize = m_videoImage.get_element_content_size(parentSize);
+    return ImVec2(videoSize.x, videoSize.y + 40.0f);
 }

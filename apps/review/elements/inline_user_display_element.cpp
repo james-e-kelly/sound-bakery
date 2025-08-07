@@ -99,6 +99,7 @@ namespace
 
                 std::unique_ptr<gluten::image> avatarImage = std::make_unique<gluten::image>(body.c_str(), body.length());
                 avatarImage->set_render_type(render);
+                avatarImage->set_image_size(ImVec2(size, size));
                 co_return std::move(avatarImage);
             }
             co_return std::unique_ptr<gluten::image>{};

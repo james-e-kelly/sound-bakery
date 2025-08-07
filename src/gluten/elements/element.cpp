@@ -238,7 +238,7 @@ bool gluten::element::render(const ImRect& parent)
         ImGui::SetWindowFontScale(1.0f);
     }
 
-    const ImRect elementBox = (get_element_box_from_parent(parent, m_minSize, get_element_content_size(), m_alignment, m_padding, m_anchor) * m_scale) + m_translation;
+    const ImRect elementBox = (get_element_box_from_parent(parent, m_minSize, get_element_content_size(parent.GetSize()), m_alignment, m_padding, m_anchor) * m_scale) + m_translation;
     m_currentRect = elementBox;
 
     ImDrawList* const windowDrawList     = ImGui::GetWindowDrawList();

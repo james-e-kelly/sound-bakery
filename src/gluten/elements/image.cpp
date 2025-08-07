@@ -47,31 +47,21 @@ namespace gluten
             if (ImDrawList* const drawList = ImGui::GetWindowDrawList())
             {
                 const ImVec2 elementRectSize = elementRect.GetSize();
-
-                const float imageWidthRatio  = std::clamp(elementRectSize.x, m_minSize.x, m_maxSize.x) / m_width;
-                const float imageHeightRatio = std::clamp(elementRectSize.y, m_minSize.y, m_maxSize.y) / m_height;
-                const float lengthWithLeastAmountOfSpace = std::min(imageWidthRatio, imageHeightRatio);
-
-                const float newImageWidth  = m_width * lengthWithLeastAmountOfSpace;
-                const float newImageHeight = m_height * lengthWithLeastAmountOfSpace;
-
-                const float widthMovementAfterResize  = newImageWidth - m_width;
-                const float heightMovementAfterResize = newImageHeight - m_height;
-
-                const float newStartX = elementRect.Min.x + (elementRectSize.x / 2) - (newImageWidth / 2);
-                const float newStartY = elementRect.Min.y + (elementRectSize.y / 2) - (newImageHeight / 2);
+                const ImVec2 imageSize = get_element_content_size(elementRect.GetSize());
+                
+                const float newStartX = elementRect.Min.x + (elementRectSize.x / 2) - (imageSize.x / 2);
+                const float newStartY = elementRect.Min.y + (elementRectSize.y / 2) - (imageSize.y / 2);
 
                 switch (m_render)
                 {
                     case gluten::image_render::square:
                         drawList->AddImage((ImTextureID)m_openGlId, ImVec2(newStartX, newStartY),
-                                           ImVec2(newStartX + newImageWidth, newStartY + newImageHeight));
+                                           ImVec2(newStartX + imageSize.x, newStartY + imageSize.y));
                         break;
                     case gluten::image_render::circular:
                         drawList->AddImageRounded((ImTextureID)m_openGlId, ImVec2(newStartX, newStartY),
-                                                  ImVec2(newStartX + newImageWidth, newStartY + newImageHeight), ImVec2(0, 0),
-                                                  ImVec2(1, 1), IM_COL32_WHITE,
-                                                  newImageHeight * 0.5f);
+                                                  ImVec2(newStartX + imageSize.x, newStartY + imageSize.y),
+                                                  ImVec2(0, 0), ImVec2(1, 1), IM_COL32_WHITE, imageSize.y * 0.5f);
                         break;
                     default:
                         break;
@@ -82,6 +72,23 @@ namespace gluten
         }
 
         return false;
+    }
+
+    auto image::get_element_content_size(const ImVec2& parentSize) -> ImVec2 const
+    {
+        if (parentSize.x <= 0.0 && parentSize.y <= 0.0f)
+        {
+            return ImVec2(m_width, m_height);
+        }
+
+        const float imageWidthRatio              = std::clamp(parentSize.x, m_minSize.x, m_maxSize.x) / m_width;
+        const float imageHeightRatio             = std::clamp(parentSize.y, m_minSize.y, m_maxSize.y) / m_height;
+        const float lengthWithLeastAmountOfSpace = parentSize.x <= 0.0f ? imageHeightRatio : parentSize.y <= 0.0f ? imageWidthRatio : std::min(imageWidthRatio, imageHeightRatio);
+
+        const float newImageWidth  = m_width * lengthWithLeastAmountOfSpace;
+        const float newImageHeight = m_height * lengthWithLeastAmountOfSpace;
+
+        return ImVec2(newImageWidth, newImageHeight);
     }
 
     auto image::set_render_type(image_render render) -> void { m_render = render; }
