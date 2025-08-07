@@ -47,5 +47,6 @@ namespace gluten
         int m_width         = 0;
         int m_height        = 0;
         image_render m_render = image_render::square;
+        bool m_ownsTexture    = true;
     };
 }  // namespace gluten

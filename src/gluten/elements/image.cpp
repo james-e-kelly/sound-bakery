@@ -14,7 +14,8 @@ namespace gluten
 {
     void image_destroyer::operator()(unsigned char* data) { stbi_image_free(data); }
 
-    image::image(uint32_t imageTexture, int width, int height) : m_openGlId(imageTexture), m_width(width), m_height(height)
+    image::image(uint32_t imageTexture, int width, int height)
+        : m_openGlId(imageTexture), m_width(width), m_height(height), m_ownsTexture(false)
     {
 
     }
@@ -117,7 +118,7 @@ namespace gluten
 
     void image::release()
     {
-        if (m_openGlId != 0)
+        if (m_ownsTexture && m_openGlId != 0)
         {
             glDeleteTextures(1, &m_openGlId);
         }
