@@ -135,7 +135,7 @@ bool gluten::layout::render_layout_element_internal(const ImRect& thisBox,
 {
     bool activated = false;
 
-    const ImVec2 requestedElementSize = element ? element->get_element_content_size(thisBox.GetSize()) : ImVec2();
+    const ImVec2 requestedElementSize = element ? element->get_element_content_size(ImVec2(horizontalPixels, verticalPixels)) : ImVec2();
 
     const ImVec2 sizeGivenToElement = ImVec2(std::max<float>(horizontalPixels, requestedElementSize.x), std::max<float>(verticalPixels, requestedElementSize.y));
 
