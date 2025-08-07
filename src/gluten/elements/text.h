@@ -17,7 +17,7 @@ namespace gluten
         auto set_font(const fonts& font) -> text&;
         auto set_url(const std::string& url) -> text&;
 
-        auto get_element_content_size() -> ImVec2 const override;
+        auto get_element_content_size(const ImVec2& parentSize) -> ImVec2 const override;
 
     protected:
         auto render_element(const ImRect& parent) -> bool override;

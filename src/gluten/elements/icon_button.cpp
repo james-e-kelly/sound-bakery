@@ -17,7 +17,7 @@ gluten::icon_button::icon_button(const char* buttonID, const char* icon, fonts f
 bool gluten::icon_button::render_element(const ImRect& parent)
 {
     ImGui::BeginGroup();
-    m_button.set_element_min_size(m_text.get_element_content_size());
+    m_button.set_element_min_size(m_text.get_element_content_size(parent.GetSize()));
     m_button.set_element_content_scale(get_element_scale());
     const bool buttonActivated = m_button.render(parent);
     m_text.set_element_content_scale(get_element_scale());
@@ -116,7 +116,7 @@ auto gluten::icon_button::set_element_active_color(ImVec4 color) -> element&
     return *this;
 }
 
-auto gluten::icon::get_element_content_size() -> ImVec2 const
+auto gluten::icon::get_element_content_size(const ImVec2& parentSize) -> ImVec2 const
 {
     const float scale = get_element_scale();
     return ImVec2(g_baseIconFontSize * scale, g_baseIconFontSize * scale); 

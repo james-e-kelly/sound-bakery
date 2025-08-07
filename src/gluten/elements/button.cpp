@@ -34,7 +34,7 @@ bool gluten::button::render_element(const ImRect& elementRect)
     return activated;
 }
 
-auto gluten::button::get_element_content_size() -> ImVec2 const
+auto gluten::button::get_element_content_size(const ImVec2& parentSize) -> ImVec2 const
 {
     const ImVec2 textSize = ImGui::CalcTextSize(m_name, nullptr, true);
     const ImVec2 padding  = ImGui::GetStyle().FramePadding;

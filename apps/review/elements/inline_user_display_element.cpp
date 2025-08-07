@@ -135,7 +135,7 @@ auto logged_in_user_element::render_element(const ImRect& parentRect) -> bool
     avatar.render(parentRect);
 
     gluten::text emailText(m_userEmailAddress, ImVec2(0.0f, 0.5f), element::anchor_preset::left_middle);
-    emailText.set_element_translation(ImVec2(-emailText.get_element_content_size().x, 0.0f));
+    emailText.set_element_translation(ImVec2(-emailText.get_element_content_size(parentRect.GetSize()).x, 0.0f));
     emailText.render(parentRect);
 
     return false;

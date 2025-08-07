@@ -31,7 +31,7 @@ namespace gluten
         bool render_element(const ImRect& parent) override;
         void release();
 
-        auto get_element_content_size() -> ImVec2 const override { return ImVec2(get_width(), get_height()); }
+        auto get_element_content_size(const ImVec2& parentSize) -> ImVec2 const override { return ImVec2(get_width(), get_height()); }
         auto get_width() -> int const { return m_width; }
         auto get_height() -> int const { return m_height; }
 

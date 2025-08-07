@@ -16,7 +16,7 @@ namespace gluten
         bool render_element(const ImRect& parent) override;
 
     protected:
-        auto get_element_content_size() -> ImVec2 const override;
+        auto get_element_content_size(const ImVec2& parentSize) -> ImVec2 const override;
 
     private:
         const char* m_name     = nullptr;

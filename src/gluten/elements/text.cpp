@@ -159,4 +159,4 @@ bool gluten::text::render_element(const ImRect& parent)
     return false;
 }
 
-auto gluten::text::get_element_content_size() -> ImVec2 const { return ImGui::CalcTextSize(m_displayText.c_str()); }
+auto gluten::text::get_element_content_size(const ImVec2& parentSize) -> ImVec2 const { return ImGui::CalcTextSize(m_displayText.c_str()); }

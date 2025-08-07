@@ -211,7 +211,7 @@ namespace gluten
 
 
     protected:
-        virtual auto get_element_content_size() -> ImVec2 const { return ImVec2(0, 0); }
+        virtual auto get_element_content_size(const ImVec2& parentSize = ImVec2(0,0)) -> ImVec2 const { return ImVec2(0, 0); }
 
         virtual auto pre_render_element() -> void {}
         virtual auto render_element(const ImRect& elementBox) -> bool { return false; }

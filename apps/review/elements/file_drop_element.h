@@ -9,7 +9,7 @@ public:
     std::unordered_set<std::filesystem::path> m_droppedFiles;
 
 protected:
-    auto get_element_content_size() -> ImVec2 const override
+    auto get_element_content_size(const ImVec2& parentSize) -> ImVec2 const override
     {
         const float xSize = ImGui::GetWindowSize().x - (ImGui::GetCurrentWindow()->WindowPadding.x * 2.0f);
         return ImVec2(xSize, 100);

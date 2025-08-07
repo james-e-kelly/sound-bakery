@@ -18,7 +18,7 @@ namespace gluten
 
         auto set_element_max_size(const ImVec2& maxSize) -> element&;
 
-        auto get_element_content_size() -> ImVec2 const override;
+        auto get_element_content_size(const ImVec2& parentSize) -> ImVec2 const override;
 
     private:
         button m_button;
