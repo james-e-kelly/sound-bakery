@@ -434,9 +434,15 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
                     ImGui::EndCombo();
                 }
 
-                //m_reviewFilesLayout.render_cursor();
+                ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
 
-                ImGui::TextUnformatted("Context Files");
+                const ImVec2 currentCursorPos = ImGui::GetCursorScreenPos();
+                const float width             = reviewContent.get_element_rect().GetSize().x;
+                const float height            = 0.0f;
+                ImRect reviewFilesRect(currentCursorPos, ImVec2(currentCursorPos.x + width, currentCursorPos.y + height));
+                m_reviewFilesLayout.render(reviewFilesRect);
+
+                /*ImGui::TextUnformatted("Context Files");
 
                 for (const auto& contextFile : selectedReview.m_relativeContextFiles)
                 {
@@ -460,7 +466,7 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
 
                 ImGui::Separator();
 
-                ImGui::TextUnformatted("Review Files");
+                ImGui::TextUnformatted("Review Files");*/
 
                 for (const auto& reviewFile : selectedReview.m_reviewAssets)
                 {
@@ -472,18 +478,18 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
                     const std::size_t selectedVersion = std::min(m_reviewToSelectedVersionMap[selectedReview.m_reviewId], reviewFile.m_versionsToRelativeFiles.size());
                     const std::string fileName           = reviewFile.m_fileName;
 
-                    ImGui::TextUnformatted(fileName.c_str());
+                    //ImGui::TextUnformatted(fileName.c_str());
 
                     if (reviewFile.m_versionsToRelativeFiles.contains(selectedVersion))
                     {
                         const std::filesystem::path filePath = reviewFile.m_versionsToRelativeFiles.at(selectedVersion);
-                        ImGui::TextUnformatted(filePath.string().c_str());
+                        //ImGui::TextUnformatted(filePath.string().c_str());
                         
                         if (std::shared_ptr<video_subsystem> videoSubsystem =
                             get_app()->get_subsystem_by_class<video_subsystem>())
                         {
                             video_element videoElement(workspaceManager->get_workspace_directory() / filePath);
-                            videoElement.render_cursor();
+                            m_reviewFilesLayout.render_layout_element_percent_horizontal(&videoElement, 1.0f);
                         }
                     }
                 }
