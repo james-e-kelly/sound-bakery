@@ -19,6 +19,9 @@ public:
     auto play_video(const std::filesystem::path& absoluteFilePath) -> void;
     auto pause_video(const std::filesystem::path& absoluteFilePath) -> void;
 
+    auto get_video_play_position(const std::filesystem::path& absoluteFilePath) -> double;
+    auto get_video_duration(const std::filesystem::path& absoluteFilePath) -> double;
+
 protected:
     auto pre_init(int ArgC, char* ArgV[]) -> int override;
     auto init() -> int override;

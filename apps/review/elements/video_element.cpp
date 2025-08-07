@@ -78,8 +78,8 @@ auto video_element::render_element(const ImRect& elementRect) -> bool
 
     const float remainingWidthMinusFinalText = elementRect.GetWidth() - (g_videoButtonsWidth * 4.0f) - g_gapBetweenButtonsAndText;
 
-    const double videoPosition = 0.0;
-    const double videoDuration = 16.0;
+    const double videoPosition = videoSubsystem->get_video_play_position(m_videoFile);
+    const double videoDuration = videoSubsystem->get_video_duration(m_videoFile);
     const double videoPercent  = videoPosition / videoDuration;
 
     m_videoPositionText.set_text("00:00");
@@ -106,7 +106,6 @@ auto video_element::render_element(const ImRect& elementRect) -> bool
         const float progressHandleEndX   = progressHandleStartX + g_progressHandleWidth;
         const float progressHandleStartY = progressLineStart.y - (g_progressHandleHeight / 2.0f);
         const float progressHandleEndY   = progressHandleStartY + g_progressHandleHeight;
-
 
         drawList->AddRectFilled(ImVec2(progressHandleStartX, progressHandleStartY), ImVec2(progressHandleEndX, progressHandleEndY), ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::interactive));
     }

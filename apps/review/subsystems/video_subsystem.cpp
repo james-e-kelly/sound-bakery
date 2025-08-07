@@ -142,6 +142,36 @@ auto video_subsystem::pause_video(const std::filesystem::path& absoluteFilePath)
     }
 }
 
+auto video_subsystem::get_video_play_position(const std::filesystem::path& absoluteFilePath) -> double
+{
+    mpv_handle* handle = get_mpv_handle_from_file(absoluteFilePath);
+
+    if (m_mpvContexts.contains(handle))
+    {
+        if (const auto& context = m_mpvContexts.at(handle))
+        {
+            return context->m_playPosition;
+        }
+    }
+
+    return 0.0;
+}
+
+auto video_subsystem::get_video_duration(const std::filesystem::path& absoluteFilePath) -> double
+{
+    mpv_handle* handle = get_mpv_handle_from_file(absoluteFilePath);
+
+    if (m_mpvContexts.contains(handle))
+    {
+        if (const auto& context = m_mpvContexts.at(handle))
+        {
+            return context->m_videoDuration;
+        }
+    }
+
+    return 0.1; // Ensure there is slightly more duration than play position to stop divide by zeroes
+}
+
 auto video_subsystem::pre_init(int ArgC, char* ArgV[]) -> int
 {
     std::setlocale(LC_NUMERIC, "C");
