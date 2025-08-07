@@ -161,7 +161,7 @@ namespace
 
     constexpr std::string_view g_reviewsPathName = "Reviews";
 
-    #define REVIEW_TEST_DATABASE_BLOCKS
+    //#define REVIEW_TEST_DATABASE_BLOCKS
 
 #ifdef REVIEW_TEST_DATABASE_BLOCKS
     constexpr std::chrono::milliseconds g_blockDelay = std::chrono::seconds(1);
