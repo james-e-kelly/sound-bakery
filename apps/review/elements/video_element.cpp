@@ -82,8 +82,8 @@ auto video_element::render_element(const ImRect& elementRect) -> bool
     const double videoDuration = videoSubsystem->get_video_duration(m_videoFile);
     const double videoPercent  = videoPosition / videoDuration;
 
-    m_videoPositionText.set_text("00:00");
-    m_videoDurationText.set_text("16:00");
+    m_videoPositionText.set_text(fmt::format("{:02d}:{:02d}", static_cast<int>(videoPosition) / 60, static_cast<int>(videoPosition) % 60));
+    m_videoDurationText.set_text(fmt::format("{:02d}:{:02d}", static_cast<int>(videoDuration) / 60, static_cast<int>(videoDuration) % 60));
 
     m_videoControlsLayout.render_layout_element_pixels_horizontal(nullptr, g_gapBetweenButtonsAndText);
     m_videoControlsLayout.render_layout_element_pixels_horizontal(&m_videoPositionText, g_videoButtonsWidth);
