@@ -23,6 +23,8 @@ public:
     auto get_video_duration(const std::filesystem::path& absoluteFilePath) -> double;
 
     auto set_video_play_position(const std::filesystem::path& absoluteFilePath, double position) -> void;
+    auto set_video_next_frame(const std::filesystem::path& absoluteFilePath) -> void;
+    auto set_video_prev_frame(const std::filesystem::path& absoluteFilePath) -> void;
 
 protected:
     auto pre_init(int ArgC, char* ArgV[]) -> int override;

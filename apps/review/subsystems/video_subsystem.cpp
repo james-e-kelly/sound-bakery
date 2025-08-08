@@ -180,6 +180,24 @@ auto video_subsystem::set_video_play_position(const std::filesystem::path& absol
     }
 }
 
+auto video_subsystem::set_video_next_frame(const std::filesystem::path& absoluteFilePath) -> void
+{
+    if (mpv_handle* handle = get_mpv_handle_from_file(absoluteFilePath))
+    {
+        const char* cmd[] = {"frame-step", nullptr};
+        mpv_command(handle, cmd);
+    }
+}
+
+auto video_subsystem::set_video_prev_frame(const std::filesystem::path& absoluteFilePath) -> void
+{
+    if (mpv_handle* handle = get_mpv_handle_from_file(absoluteFilePath))
+    {
+        const char* cmd[] = {"frame-back-step", nullptr};
+        mpv_command(handle, cmd);
+    }
+}
+
 auto video_subsystem::pre_init(int ArgC, char* ArgV[]) -> int
 {
     std::setlocale(LC_NUMERIC, "C");

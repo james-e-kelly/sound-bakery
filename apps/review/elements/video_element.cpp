@@ -41,6 +41,11 @@ video_element::video_element(const std::filesystem::path& videoFile)
     m_playButton.set_element_active_color(gluten::theme::carbon_g100::backgroundActive);
     m_pauseButton.set_element_active_color(gluten::theme::carbon_g100::backgroundActive);
 
+    m_previousFrameButton.set_element_hover_color(gluten::theme::carbon_g100::backgroundHover);
+    m_nextFrameButton.set_element_hover_color(gluten::theme::carbon_g100::backgroundHover);
+    m_previousFrameButton.set_element_active_color(gluten::theme::carbon_g100::backgroundActive);
+    m_nextFrameButton.set_element_active_color(gluten::theme::carbon_g100::backgroundActive);
+
     m_videoPositionText.set_element_alignment(ImVec2(-0.f, -0.75f));
     m_videoDurationText.set_element_alignment(ImVec2(-0.f, -0.75f));
 }
@@ -76,7 +81,21 @@ auto video_element::render_element(const ImRect& elementRect) -> bool
         videoSubsystem->pause_video(m_videoFile);
     }
 
-    const float remainingWidthMinusFinalText = elementRect.GetWidth() - (g_videoButtonsWidth * 4.0f) - g_gapBetweenButtonsAndText;
+    if (m_videoControlsLayout.render_layout_element_pixels_horizontal(&m_previousFrameButton, g_videoButtonsWidth))
+    {
+        videoSubsystem->set_video_prev_frame(m_videoFile);
+    }
+
+    ImGui::SetItemTooltip("Previous Frame");
+
+    if (m_videoControlsLayout.render_layout_element_pixels_horizontal(&m_nextFrameButton, g_videoButtonsWidth))
+    {
+        videoSubsystem->set_video_next_frame(m_videoFile);
+    }
+    
+    ImGui::SetItemTooltip("Next Frame");
+
+    const float remainingWidthMinusFinalText = elementRect.GetWidth() - (g_videoButtonsWidth * 6.0f) - g_gapBetweenButtonsAndText;
 
     const double videoPosition = videoSubsystem->get_video_play_position(m_videoFile);
     const double videoDuration = videoSubsystem->get_video_duration(m_videoFile);
@@ -93,11 +112,11 @@ auto video_element::render_element(const ImRect& elementRect) -> bool
     if (ImDrawList* const drawList = ImGui::GetWindowDrawList())
     {
         ImVec2 progressLineStart = videoControlsRect.Min;
-        progressLineStart.x += (g_videoButtonsWidth * 3.0f) + g_gapBetweenButtonsAndText + g_progressLinePadding;
+        progressLineStart.x += (g_videoButtonsWidth * 5.0f) + g_gapBetweenButtonsAndText + g_progressLinePadding;
         progressLineStart.y += g_videoControlsHeight / 2.0f;
 
         ImVec2 progressLineEnd = progressLineStart;
-        progressLineEnd.x += elementRect.GetWidth() - (g_videoButtonsWidth * 4.0f) - g_gapBetweenButtonsAndText - (g_progressLinePadding * 2.0f);
+        progressLineEnd.x += elementRect.GetWidth() - (g_videoButtonsWidth * 6.0f) - g_gapBetweenButtonsAndText - (g_progressLinePadding * 2.0f);
 
         drawList->AddLine(
             ImVec2(progressLineStart.x + (ImGui::GetStyle().GrabMinSize / 2.0f), progressLineStart.y), 
@@ -118,13 +137,14 @@ auto video_element::render_element(const ImRect& elementRect) -> bool
         const bool hovered = ImGui::ItemHoverable(grabRect, videoGrabHandleId, ImGuiSliderFlags_NoInput);
 
         const bool clicked     = hovered && ImGui::IsMouseClicked(0, ImGuiInputFlags_None, videoGrabHandleId);
-        const bool make_active = (clicked || ImGui::GetCurrentContext()->NavActivateId == videoGrabHandleId);
-        if (make_active && clicked)
+        const bool makeActive = (clicked || ImGui::GetCurrentContext()->NavActivateId == videoGrabHandleId);
+
+        if (makeActive && clicked)
         {
             ImGui::SetKeyOwner(ImGuiKey_MouseLeft, videoGrabHandleId);
         }
 
-        if (make_active)
+        if (makeActive)
         {
             ImGui::SetActiveID(videoGrabHandleId, ImGui::GetCurrentWindow());
             ImGui::SetFocusID(videoGrabHandleId, ImGui::GetCurrentWindow());
