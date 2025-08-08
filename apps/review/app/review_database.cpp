@@ -722,7 +722,7 @@ auto review_database::get_all_comments_for_review(int64_t reviewId) const -> con
 
     if (m_database.tableExists("comments") && reviewId != 0)
     {
-        SQLite::Statement query(m_database, "SELECT id, review_id, user_id, comment, timestamp, audio_time_start, audio_time_end FROM comments WHERE review_id=?;");
+        SQLite::Statement query(m_database, "SELECT id, review_id, user_id, comment, timestamp, audio_time_start, audio_time_end, file_id FROM comments WHERE review_id=?;");
         query.bind(1, reviewId);
 
         while (query.executeStep())
@@ -735,6 +735,7 @@ auto review_database::get_all_comments_for_review(int64_t reviewId) const -> con
             commentData.m_timestamp         = query.getColumn(4).getString();
             commentData.m_timeStart         = query.getColumn(5).getDouble();
             commentData.m_timeEnd           = query.getColumn(6).getDouble();
+            commentData.m_fileId            = query.getColumn(7).getInt64();
 
             result.push_back(std::move(commentData));
         }
@@ -759,13 +760,14 @@ auto review_database::create_comment(new_comment_data newComment) -> concurrencp
     {
         if (m_database.tableExists("comments"))
         {
-            SQLite::Statement insertCommentStatement(m_database,"INSERT INTO comments (review_id, user_id, comment, audio_time_start, audio_time_end) VALUES (?, ?, ?, ?, ?);");
+            SQLite::Statement insertCommentStatement(m_database,"INSERT INTO comments (review_id, user_id, comment, audio_time_start, audio_time_end, file_id) VALUES (?, ?, ?, ?, ?, ?);");
 
             insertCommentStatement.bind(1, newComment.m_reviewId);
             insertCommentStatement.bind(2, newComment.m_userId);
             insertCommentStatement.bind(3, newComment.m_comment);
-            insertCommentStatement.bind(4, defaultAudioStartOrEnd); //< TODO
-            insertCommentStatement.bind(5, defaultAudioStartOrEnd); //< TODO
+            insertCommentStatement.bind(4, newComment.m_timeStart);
+            insertCommentStatement.bind(5, newComment.m_timeEnd);
+            insertCommentStatement.bind(6, newComment.m_fileId);
 
             insertCommentStatement.exec();
             

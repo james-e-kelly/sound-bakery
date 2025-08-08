@@ -13,6 +13,8 @@ namespace
     constexpr float g_progressHandleWidth      = 10.0f;
     constexpr float g_progressHandleHeight     = g_videoControlsHeight / 2.0f;
     constexpr float g_minimumVideoPosition     = 0.0;
+    constexpr float g_commentBubbleRadius      = 10.0f;
+    constexpr float g_commentBubbleDiamter     = g_commentBubbleRadius * 2.0f;
 }
 
 video_element::video_element(const std::filesystem::path& videoFile, int64_t fileId)
@@ -68,14 +70,53 @@ auto video_element::render_element(const ImRect& elementRect) -> bool
 
     m_videoImage.render(elementRect);
 
+    m_videoPosition = videoSubsystem->get_video_play_position(m_videoFile);
+    m_videoDuration = videoSubsystem->get_video_duration(m_videoFile);
+    m_videoPercent  = m_videoPosition / m_videoDuration;
+
     render_layouts(elementRect);
-    render_comments(videoSubsystem);
+    render_comments();
     render_controls(videoSubsystem);
 }
 
-auto video_element::render_comments(std::shared_ptr<video_subsystem>& videoSubsystem) -> void
+auto video_element::render_comments() -> void
 {
+    if (std::shared_ptr<workspace_manager> workspaceManager =
+            gluten::app::get()->get_manager_by_class<workspace_manager>())
+    {
+        if (ImDrawList* const drawList = ImGui::GetWindowDrawList())
+        {
+            ImVec2 leftMiddle = m_videoCommentsLayout.get_element_rect().GetTL();
+            leftMiddle.x += g_commentBubbleDiamter;
+            leftMiddle.y += g_videoControlsHeight / 2.0f;
 
+            ImVec2 rightMiddle = m_videoCommentsLayout.get_element_rect().GetTR();
+            rightMiddle.x -= g_commentBubbleDiamter;
+            rightMiddle.y += g_videoControlsHeight / 2.0f;
+
+            drawList->AddLine(leftMiddle, rightMiddle,
+                              ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::textPrimary), 1.0f);
+
+            const auto& comments = workspaceManager->get_all_comments_for_review(workspaceManager->get_selected_review().m_reviewId);
+
+            if (comments.has_data())
+            {
+                for (const auto& comment : comments.m_cache)
+                {
+                    if (comment.m_fileId == m_fileId)
+                    {
+                        if (comment.m_timeStart >= 0.0)
+                        {
+                            const float commentTimelineWidth = rightMiddle.x - leftMiddle.x;
+                            const float commentPosition = leftMiddle.x + (commentTimelineWidth * (comment.m_timeStart / m_videoDuration));
+
+                            drawList->AddCircleFilled(ImVec2(commentPosition, leftMiddle.y), g_commentBubbleRadius, ImGui::ColorConvertFloat4ToU32(gluten::theme::purple50));
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 auto video_element::render_controls(std::shared_ptr<video_subsystem>& videoSubsystem) -> void
@@ -114,20 +155,17 @@ auto video_element::render_controls(std::shared_ptr<video_subsystem>& videoSubsy
             newComment.m_fileId   = m_fileId;
             newComment.m_userId   = userSettingsData->m_loggedInUser.m_userId;
             newComment.m_comment  = "Comment for a video";
+            newComment.m_timeStart = m_videoPosition;
 
             workspaceManager->create_comment(newComment);
         }
     }
     ImGui::SetItemTooltip("Add Comment At Time");
 
-    double videoPosition       = videoSubsystem->get_video_play_position(m_videoFile);
-    const double videoDuration = videoSubsystem->get_video_duration(m_videoFile);
-    const double videoPercent  = videoPosition / videoDuration;
-
     m_videoPositionText.set_text(
-        fmt::format("{:02d}:{:02d}", static_cast<int>(videoPosition) / 60, static_cast<int>(videoPosition) % 60));
+        fmt::format("{:02d}:{:02d}", static_cast<int>(m_videoPosition) / 60, static_cast<int>(m_videoPosition) % 60));
     m_videoDurationText.set_text(
-        fmt::format("{:02d}:{:02d}", static_cast<int>(videoDuration) / 60, static_cast<int>(videoDuration) % 60));
+        fmt::format("{:02d}:{:02d}", static_cast<int>(m_videoDuration) / 60, static_cast<int>(m_videoDuration) % 60));
 
     m_videoControlsLayout.render_layout_element_pixels_horizontal(nullptr, g_gapBetweenButtonsAndText);
     m_videoControlsLayout.render_layout_element_pixels_horizontal(&m_videoPositionText, g_videoButtonsWidth);
@@ -175,11 +213,11 @@ auto video_element::render_controls(std::shared_ptr<video_subsystem>& videoSubsy
         }
 
         ImRect outDrag;
-        if (ImGui::SliderBehavior(grabRect, videoGrabHandleId, ImGuiDataType_Double, &videoPosition,
-                                  &g_minimumVideoPosition, &videoDuration, "%f", ImGuiSliderFlags_None, &outDrag))
+        if (ImGui::SliderBehavior(grabRect, videoGrabHandleId, ImGuiDataType_Double, &m_videoPosition,
+                                  &g_minimumVideoPosition, &m_videoDuration, "%f", ImGuiSliderFlags_None, &outDrag))
         {
             ImGui::MarkItemEdited(videoGrabHandleId);
-            videoSubsystem->set_video_play_position(m_videoFile, videoPosition);
+            videoSubsystem->set_video_play_position(m_videoFile, m_videoPosition);
         }
 
         if (outDrag.Max.x > outDrag.Min.x)
@@ -208,7 +246,7 @@ auto video_element::render_layouts(const ImRect& elementRect) -> void
     {
         drawList->AddLine(m_videoCommentsLayout.get_element_rect().GetBL(),
                           m_videoCommentsLayout.get_element_rect().GetBR(),
-                          ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::textPrimary), 1.0f);
+                          ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::borderSubtle00), 1.0f);
     }
 }
 

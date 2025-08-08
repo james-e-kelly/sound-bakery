@@ -13,7 +13,7 @@ protected:
     auto render_element(const ImRect& elementRect) -> bool override;
     auto render_controls(std::shared_ptr<video_subsystem>& videoSubsystem) -> void;
     auto render_layouts(const ImRect& elementRect) -> void;
-    auto render_comments(std::shared_ptr<video_subsystem>& videoSubsystem) -> void;
+    auto render_comments() -> void;
     auto get_element_content_size(const ImVec2& parentSize) -> ImVec2 const override;
 
 private:
@@ -21,6 +21,9 @@ private:
     static inline std::weak_ptr<video_subsystem> m_videoSubsystem;
     uint32_t m_videoTexture = 0;
     int64_t m_fileId       = -1;
+    double m_videoPosition  = 0.0;
+    double m_videoDuration  = 1.0;
+    double m_videoPercent   = 0.0;
 
     gluten::image m_videoImage;
     gluten::background m_videoControlsBackground;
