@@ -143,10 +143,6 @@ auto video_element::render_element(const ImRect& elementRect) -> bool
         {
             drawList->AddRectFilled(outDrag.Min, outDrag.Max,ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::interactive), 0.0f);
         }
-
-        ImGui::SetCursorScreenPos(elementRect.Max);
-        ImGui::Text("%f, %s, %s, %s", edit, hovered ? "hovered" : "not hovered", clicked ? "clicked" : "not clicked",
-                    make_active ? "active" : "inactive");
     }
 }
 
