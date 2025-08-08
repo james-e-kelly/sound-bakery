@@ -99,15 +99,53 @@ auto video_element::render_element(const ImRect& elementRect) -> bool
         ImVec2 progressLineEnd = progressLineStart;
         progressLineEnd.x += elementRect.GetWidth() - (g_videoButtonsWidth * 4.0f) - g_gapBetweenButtonsAndText - (g_progressLinePadding * 2.0f);
 
-        drawList->AddLine(progressLineStart, progressLineEnd, ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::textPrimary), g_progressLineThickness);
+        drawList->AddLine(
+            ImVec2(progressLineStart.x + (ImGui::GetStyle().GrabMinSize / 2.0f), progressLineStart.y), 
+            ImVec2(progressLineEnd.x - (ImGui::GetStyle().GrabMinSize / 2.0f), progressLineEnd.y),
+            ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::textPrimary),
+            g_progressLineThickness);
 
-        const float progressX = progressLineStart.x + ((progressLineEnd.x - progressLineStart.x) * videoPercent);
-        const float progressHandleStartX = progressX - (g_progressHandleWidth / 2.0f);
-        const float progressHandleEndX   = progressHandleStartX + g_progressHandleWidth;
-        const float progressHandleStartY = progressLineStart.y - (g_progressHandleHeight / 2.0f);
-        const float progressHandleEndY   = progressHandleStartY + g_progressHandleHeight;
+        double edit = videoPosition;
+        double min  = 0.0;
+        double max  = videoDuration;
 
-        drawList->AddRectFilled(ImVec2(progressHandleStartX, progressHandleStartY), ImVec2(progressHandleEndX, progressHandleEndY), ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::interactive));
+        const ImGuiID videoGrabHandleId = ImGui::GetID("##VideoDragHandle");
+        ImGui::KeepAliveID(videoGrabHandleId);
+
+        ImRect grabRect(progressLineStart.x, progressLineStart.y - (g_videoControlsHeight / 3.0f), progressLineEnd.x,
+               progressLineEnd.y + (g_videoControlsHeight / 3.0f));
+
+        const bool hovered = ImGui::ItemHoverable(grabRect, videoGrabHandleId, ImGuiSliderFlags_NoInput);
+
+        const bool clicked     = hovered && ImGui::IsMouseClicked(0, ImGuiInputFlags_None, videoGrabHandleId);
+        const bool make_active = (clicked || ImGui::GetCurrentContext()->NavActivateId == videoGrabHandleId);
+        if (make_active && clicked)
+        {
+            ImGui::SetKeyOwner(ImGuiKey_MouseLeft, videoGrabHandleId);
+        }
+
+        if (make_active)
+        {
+            ImGui::SetActiveID(videoGrabHandleId, ImGui::GetCurrentWindow());
+            ImGui::SetFocusID(videoGrabHandleId, ImGui::GetCurrentWindow());
+            ImGui::FocusWindow(ImGui::GetCurrentWindow());
+            ImGui::GetCurrentContext()->ActiveIdUsingNavDirMask |= (1 << ImGuiDir_Left) | (1 << ImGuiDir_Right);
+        }
+
+        ImRect outDrag;
+        if (ImGui::SliderBehavior(grabRect, videoGrabHandleId, ImGuiDataType_Double, &edit, &min, &max, "%f", ImGuiSliderFlags_None, &outDrag))
+        {
+            ImGui::MarkItemEdited(videoGrabHandleId);
+        }
+
+        if (outDrag.Max.x > outDrag.Min.x)
+        {
+            drawList->AddRectFilled(outDrag.Min, outDrag.Max,ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::interactive), 0.0f);
+        }
+
+        ImGui::SetCursorScreenPos(elementRect.Max);
+        ImGui::Text("%f, %s, %s, %s", edit, hovered ? "hovered" : "not hovered", clicked ? "clicked" : "not clicked",
+                    make_active ? "active" : "inactive");
     }
 }
 
