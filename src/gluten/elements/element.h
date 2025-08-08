@@ -165,8 +165,6 @@ namespace gluten
     {
         LEAK_DETECTOR(element)
 
-        friend class layout;
-
     public:
         using anchor_preset = ::gluten::anchor_preset;
         using anchor_info = ::gluten::anchor_info;
@@ -211,9 +209,9 @@ namespace gluten
         bool render_window();  //< Render using the window as the container
         bool render_cursor();  //< Render where the draw cursor is currently
 
+        virtual auto get_element_content_size(const ImVec2& parentSize = ImVec2(0,0)) -> ImVec2 const { return ImVec2(0, 0); }
 
     protected:
-        virtual auto get_element_content_size(const ImVec2& parentSize = ImVec2(0,0)) -> ImVec2 const { return ImVec2(0, 0); }
 
         virtual auto pre_render_element() -> void {}
         virtual auto render_element(const ImRect& elementBox) -> bool { return false; }

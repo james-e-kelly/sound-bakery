@@ -76,17 +76,16 @@ namespace gluten
         icon_button(const char* buttonID, const char* icon, fonts font);
 
         bool render_element(const ImRect& parent) override;
+        auto get_element_content_size(const ImVec2& parentSize) -> const ImVec2 override
+        {
+            ImVec2 scaledParentSize = parentSize;
+            scaledParentSize.x *= get_element_scale();
+            scaledParentSize.y *= get_element_scale();
+            return m_text.get_element_content_size(scaledParentSize);
+        }
 
         button& get_button() { return m_button; }
         icon& get_text() { return m_text; }
-
-        auto set_element_min_size(const ImVec2& minSize) -> element&;
-        auto set_element_max_size(const ImVec2& maxSize) -> element&;
-        auto set_element_content_scale(float scale) -> element&;
-        auto set_icon_alignment(const ImVec2& alignment) -> icon_button&;
-        auto set_button_alignment(const ImVec2& alignment) -> icon_button&;
-        auto set_button_scale(float scale) -> icon_button&;
-        auto set_button_border(float borderSize, float borderRounding) -> icon_button&;
 
     private:
         button m_button;

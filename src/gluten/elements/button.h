@@ -14,8 +14,6 @@ namespace gluten
         button(const char* name, bool invisible = false, const anchor_preset& anchorPreset = anchor_preset::left_top);
 
         bool render_element(const ImRect& parent) override;
-
-    protected:
         auto get_element_content_size(const ImVec2& parentSize) -> ImVec2 const override;
 
     private:

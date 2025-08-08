@@ -6,7 +6,8 @@ gluten::icon_button::icon_button(const char* buttonID, const char* icon, fonts f
     : m_button(buttonID, true), m_text(icon)
 {
     set_element_anchor_preset(anchor_preset::stretch_full);
-    m_button.get_element_anchor().set_achor_from_preset(anchor_preset::stretch_full);
+    
+    m_button.set_element_anchor_preset(anchor_preset::stretch_full);
 
     m_text
         .set_font(font)
@@ -18,60 +19,11 @@ bool gluten::icon_button::render_element(const ImRect& parent)
 {
     ImGui::BeginGroup();
     m_button.set_element_min_size(m_text.get_element_content_size(parent.GetSize()));
-    m_button.set_element_content_scale(get_element_scale());
     const bool buttonActivated = m_button.render(parent);
     m_text.set_element_content_scale(get_element_scale());
     m_text.render(parent);
     ImGui::EndGroup();
     return buttonActivated;
-}
-
-auto gluten::icon_button::set_element_min_size(const ImVec2& minSize) -> element&
-{
-    element::set_element_min_size(minSize);
-    m_button.set_element_min_size(minSize);
-    m_text.set_element_min_size(minSize);
-    return *this;
-}
-
-auto gluten::icon_button::set_element_max_size(const ImVec2& maxSize) -> element&
-{
-    element::set_element_max_size(maxSize);
-    m_button.set_element_max_size(maxSize);
-    m_text.set_element_max_size(maxSize);
-    return *this;
-}
-
-auto gluten::icon_button::set_element_content_scale(float scale) -> element&
-{
-    element::set_element_content_scale(scale);
-    m_button.set_element_content_scale(scale);
-    m_text.set_element_content_scale(scale);
-    return *this;
-}
-
-auto gluten::icon_button::set_icon_alignment(const ImVec2& alignment) -> icon_button&
-{
-    m_text.set_element_alignment(alignment);
-    return *this;
-}
-
-auto gluten::icon_button::set_button_alignment(const ImVec2& alignment) -> icon_button&
-{
-    m_button.set_element_alignment(alignment);
-    return *this;
-}
-
-auto gluten::icon_button::set_button_scale(float scale) -> icon_button&
-{
-    m_button.set_element_scale(scale);
-    return *this;
-}
-
-auto gluten::icon_button::set_button_border(float borderSize, float borderRounding) -> icon_button&
-{
-    m_button.set_element_border(borderSize, borderRounding);
-    return *this;
 }
 
 auto gluten::icon::get_element_content_size(const ImVec2& parentSize) -> ImVec2 const
