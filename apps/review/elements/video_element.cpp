@@ -136,6 +136,7 @@ auto video_element::render_element(const ImRect& elementRect) -> bool
         if (ImGui::SliderBehavior(grabRect, videoGrabHandleId, ImGuiDataType_Double, &edit, &min, &max, "%f", ImGuiSliderFlags_None, &outDrag))
         {
             ImGui::MarkItemEdited(videoGrabHandleId);
+            videoSubsystem->set_video_play_position(m_videoFile, edit);
         }
 
         if (outDrag.Max.x > outDrag.Min.x)

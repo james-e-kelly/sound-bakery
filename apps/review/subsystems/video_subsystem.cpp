@@ -172,6 +172,14 @@ auto video_subsystem::get_video_duration(const std::filesystem::path& absoluteFi
     return 0.1; // Ensure there is slightly more duration than play position to stop divide by zeroes
 }
 
+auto video_subsystem::set_video_play_position(const std::filesystem::path& absoluteFilePath, double position) -> void
+{
+    if (mpv_handle* handle = get_mpv_handle_from_file(absoluteFilePath))
+    {
+        mpv_set_property(handle, "time-pos", MPV_FORMAT_DOUBLE, &position);
+    }
+}
+
 auto video_subsystem::pre_init(int ArgC, char* ArgV[]) -> int
 {
     std::setlocale(LC_NUMERIC, "C");
@@ -189,6 +197,7 @@ auto video_subsystem::pre_init(int ArgC, char* ArgV[]) -> int
     LOAD_MPV_SYMBOL(mpv_terminate_destroy)
     LOAD_MPV_SYMBOL(mpv_command)
     LOAD_MPV_SYMBOL(mpv_get_property)
+    LOAD_MPV_SYMBOL(mpv_set_property)
     LOAD_MPV_SYMBOL(mpv_set_property_string)
     LOAD_MPV_SYMBOL(mpv_request_log_messages)
     LOAD_MPV_SYMBOL(mpv_wait_event)
