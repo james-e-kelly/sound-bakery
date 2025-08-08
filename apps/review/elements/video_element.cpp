@@ -1,5 +1,6 @@
 #include "video_element.h"
 
+#include "managers/workspace_manager.h"
 #include "subsystems/video_subsystem.h"
 
 namespace
@@ -13,8 +14,8 @@ namespace
     constexpr float g_progressHandleHeight     = g_videoControlsHeight / 2.0f;
 }
 
-video_element::video_element(const std::filesystem::path& videoFile)
-    : gluten::element(gluten::anchor_preset::stretch_full), m_videoFile(videoFile)
+video_element::video_element(const std::filesystem::path& videoFile, int64_t fileId)
+    : gluten::element(gluten::anchor_preset::stretch_full), m_videoFile(videoFile), m_fileId(fileId)
 {
 	if (m_videoSubsystem.expired())
     {
@@ -36,15 +37,19 @@ video_element::video_element(const std::filesystem::path& videoFile)
 	}
 
     m_videoControlsBackground.set_element_background_color(gluten::theme::carbon_g100::background);
-    m_playButton.set_element_hover_color(gluten::theme::carbon_g100::backgroundHover);
-    m_pauseButton.set_element_hover_color(gluten::theme::carbon_g100::backgroundHover);
+        m_addCommentButton.set_element_background_color(gluten::theme::carbon_g100::layer01);
+
     m_playButton.set_element_active_color(gluten::theme::carbon_g100::backgroundActive);
     m_pauseButton.set_element_active_color(gluten::theme::carbon_g100::backgroundActive);
-
-    m_previousFrameButton.set_element_hover_color(gluten::theme::carbon_g100::backgroundHover);
-    m_nextFrameButton.set_element_hover_color(gluten::theme::carbon_g100::backgroundHover);
     m_previousFrameButton.set_element_active_color(gluten::theme::carbon_g100::backgroundActive);
     m_nextFrameButton.set_element_active_color(gluten::theme::carbon_g100::backgroundActive);
+    m_addCommentButton.set_element_active_color(gluten::theme::carbon_g100::layerActive01);
+
+    m_playButton.set_element_hover_color(gluten::theme::carbon_g100::backgroundHover);
+    m_pauseButton.set_element_hover_color(gluten::theme::carbon_g100::backgroundHover);
+    m_previousFrameButton.set_element_hover_color(gluten::theme::carbon_g100::backgroundHover);
+    m_nextFrameButton.set_element_hover_color(gluten::theme::carbon_g100::backgroundHover);
+    m_addCommentButton.set_element_hover_color(gluten::theme::carbon_g100::layerHover01);
 
     m_videoPositionText.set_element_alignment(ImVec2(-0.f, -0.75f));
     m_videoDurationText.set_element_alignment(ImVec2(-0.f, -0.75f));
@@ -85,17 +90,32 @@ auto video_element::render_element(const ImRect& elementRect) -> bool
     {
         videoSubsystem->set_video_prev_frame(m_videoFile);
     }
-
     ImGui::SetItemTooltip("Previous Frame");
 
     if (m_videoControlsLayout.render_layout_element_pixels_horizontal(&m_nextFrameButton, g_videoButtonsWidth))
     {
         videoSubsystem->set_video_next_frame(m_videoFile);
     }
-    
     ImGui::SetItemTooltip("Next Frame");
 
-    const float remainingWidthMinusFinalText = elementRect.GetWidth() - (g_videoButtonsWidth * 6.0f) - g_gapBetweenButtonsAndText;
+    if (m_videoControlsLayout.render_layout_element_pixels_horizontal(&m_addCommentButton, g_videoButtonsWidth))
+    {
+        if (std::shared_ptr<workspace_manager> workspaceManager = gluten::app::get()->get_manager_by_class<workspace_manager>())
+        {
+            gluten::data_source<user_settings_data> userSettingsData;
+
+            new_comment_data newComment;
+            newComment.m_reviewId = workspaceManager->get_selected_review().m_reviewId;
+            newComment.m_fileId   = m_fileId;
+            newComment.m_userId   = userSettingsData->m_loggedInUser.m_userId;
+            newComment.m_comment  = "Comment for a video";
+
+            workspaceManager->create_comment(newComment);
+        }
+    }
+    ImGui::SetItemTooltip("Add Comment At Time");
+
+    const float remainingWidthMinusFinalText = elementRect.GetWidth() - (g_videoButtonsWidth * 7.0f) - g_gapBetweenButtonsAndText;
 
     const double videoPosition = videoSubsystem->get_video_play_position(m_videoFile);
     const double videoDuration = videoSubsystem->get_video_duration(m_videoFile);
@@ -112,11 +132,11 @@ auto video_element::render_element(const ImRect& elementRect) -> bool
     if (ImDrawList* const drawList = ImGui::GetWindowDrawList())
     {
         ImVec2 progressLineStart = videoControlsRect.Min;
-        progressLineStart.x += (g_videoButtonsWidth * 5.0f) + g_gapBetweenButtonsAndText + g_progressLinePadding;
+        progressLineStart.x += (g_videoButtonsWidth * 6.0f) + g_gapBetweenButtonsAndText + g_progressLinePadding;
         progressLineStart.y += g_videoControlsHeight / 2.0f;
 
         ImVec2 progressLineEnd = progressLineStart;
-        progressLineEnd.x += elementRect.GetWidth() - (g_videoButtonsWidth * 6.0f) - g_gapBetweenButtonsAndText - (g_progressLinePadding * 2.0f);
+        progressLineEnd.x += elementRect.GetWidth() - (g_videoButtonsWidth * 7.0f) - g_gapBetweenButtonsAndText - (g_progressLinePadding * 2.0f);
 
         drawList->AddLine(
             ImVec2(progressLineStart.x + (ImGui::GetStyle().GrabMinSize / 2.0f), progressLineStart.y), 

@@ -52,6 +52,7 @@ enum class review_file_type
 
 struct versionable_review_asset
 {
+    int64_t m_fileId;                   //< Database ID of the file
     std::string m_fileName;             //< Filename for displaying
     std::map<std::size_t, std::filesystem::path> m_versionsToRelativeFiles; //< Relative paths of each version of the asset
 

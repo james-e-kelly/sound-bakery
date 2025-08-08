@@ -30,6 +30,7 @@ struct new_user_data
 
 struct logged_in_user_data
 {
+    int64_t m_userId = -1;
     std::string m_displayName;
     std::string m_title;
     std::string m_email;
@@ -39,6 +40,7 @@ struct logged_in_user_data
     template <class archive_class>
     auto serialize(archive_class& archive, const unsigned int version) -> void
     {
+        archive & boost::serialization::make_nvp("id", m_userId);
         archive & boost::serialization::make_nvp("token", m_sessionToken);
         archive & boost::serialization::make_nvp("email", m_email);
         archive & boost::serialization::make_nvp("privileges", m_privileges);

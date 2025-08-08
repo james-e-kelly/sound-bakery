@@ -403,7 +403,7 @@ auto review_database::create_review(int64_t projectId, const new_transit_review_
             // Back to database thread to insert all the files
             co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
 
-            for (const auto& contextFile : result.m_relativeContextFiles)
+            for (auto& contextFile : result.m_relativeContextFiles)
             {
                 if (uniqueContextFilesNames.contains(contextFile.m_fileName))
                 {
@@ -417,6 +417,8 @@ auto review_database::create_review(int64_t projectId, const new_transit_review_
                 insertReviewFileStatement.bind(2, contextFile.m_fileName);
                 insertReviewFileStatement.bind(3, (int)review_file_type::context);
                 insertReviewFileStatement.exec();
+
+                contextFile.m_fileId = m_database.getLastInsertRowid();
                 
                 SQLite::Statement insertVersionedReviewFileStatement(m_database, "INSERT INTO versioned_review_files (review_file_id, version, file_path) VALUES (?, ?, ?);");
                 insertVersionedReviewFileStatement.bind(1, m_database.getLastInsertRowid());
@@ -425,7 +427,7 @@ auto review_database::create_review(int64_t projectId, const new_transit_review_
                 insertVersionedReviewFileStatement.exec();
             }
 
-            for (const auto& reviewFile : result.m_reviewAssets)
+            for (auto& reviewFile : result.m_reviewAssets)
             {
                 if (uniqueReviewFilesNames.contains(reviewFile.m_fileName))
                 {
@@ -439,6 +441,8 @@ auto review_database::create_review(int64_t projectId, const new_transit_review_
                 insertReviewFileStatement.bind(2, reviewFile.m_fileName);
                 insertReviewFileStatement.bind(3, (int)review_file_type::review);
                 insertReviewFileStatement.exec();
+
+                reviewFile.m_fileId = m_database.getLastInsertRowid();
 
                 SQLite::Statement insertVersionedReviewFileStatement(m_database, "INSERT INTO versioned_review_files (review_file_id, version, file_path) VALUES (?, ?, ?);");
                 insertVersionedReviewFileStatement.bind(1, m_database.getLastInsertRowid());
@@ -539,14 +543,17 @@ auto review_database::get_all_reviews(int64_t projectId) const -> concurrencpp::
                     switch ((review_file_type)getFilesStatement.getColumn(2).getInt())
                     {
                         case review_file_type::context:
+                            contextFilesMap[fileId].m_fileId   = fileId;
                             contextFilesMap[fileId].m_fileName = fileName;
                             contextFilesMap[fileId].m_versionsToRelativeFiles.insert({fileVersion, relativeFilePath});
                             break;
                         case review_file_type::review:
+                            reviewFilesMap[fileId].m_fileId   = fileId;
                             reviewFilesMap[fileId].m_fileName = fileName;
                             reviewFilesMap[fileId].m_versionsToRelativeFiles.insert({fileVersion, relativeFilePath});
                             break;
                         case review_file_type::comment:
+                            commentFilesMap[fileId].m_fileId   = fileId;
                             commentFilesMap[fileId].m_fileName = fileName;
                             commentFilesMap[fileId].m_versionsToRelativeFiles.insert({fileVersion, relativeFilePath});
                             break;
@@ -1056,6 +1063,7 @@ auto review_database::login_user(login_request_data loginRequest) -> concurrencp
     const bool hasSessionToken = sessionStatement.executeStep();
 
     logged_in_user_data result;
+    result.m_userId       = userId;
     result.m_privileges   = privilege;
     result.m_email        = loginRequest.m_email;
     result.m_displayName  = displayName;

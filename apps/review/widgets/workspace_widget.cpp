@@ -461,7 +461,7 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
 
                         if (contextFile.m_versionsToRelativeFiles.contains(selectedVersion))
                         {
-                            video_element videoElement(workspaceManager->get_workspace_directory() / contextFile.m_versionsToRelativeFiles.at(selectedVersion));
+                            video_element videoElement(workspaceManager->get_workspace_directory() / contextFile.m_versionsToRelativeFiles.at(selectedVersion), contextFile.m_fileId);
                             m_reviewFilesLayout.render_layout_element_percent_horizontal(&videoElement, 0.75f);
                         }
                     }
@@ -477,12 +477,12 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
 
                         if (reviewFile.m_versionsToRelativeFiles.contains(selectedVersion))
                         {
-                            video_element videoElement(workspaceManager->get_workspace_directory() / reviewFile.m_versionsToRelativeFiles.at(selectedVersion));
+                            video_element videoElement(workspaceManager->get_workspace_directory() / reviewFile.m_versionsToRelativeFiles.at(selectedVersion), reviewFile.m_fileId);
                             m_reviewFilesLayout.render_layout_element_percent_horizontal(&videoElement, 0.75f);
                         }
                     }
 
-                 ImGui::EndChild();
+                    ImGui::EndChild();
                 }
 
                 ImGui::EndTabItem();
