@@ -433,19 +433,22 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
                     ImGui::EndCombo();
                 }
 
+                ImGui::SameLine(0.0f, 10.0f);
+
+                if (ImGui::Button(ICON_LC_PLUS " Version"))
+                {
+
+                }
+
                 ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
 
                 if (ImGui::BeginChild("FilesChild", ImVec2(), ImGuiChildFlags_None,
                                         ImGuiWindowFlags_AlwaysVerticalScrollbar))
                 {
-
                     const ImVec2 currentCursorPos = ImGui::GetCursorScreenPos();
                     const float width             = reviewContent.get_element_rect().GetSize().x - 25.0f;
-                    const float height            = 0.0f;
-                    ImRect reviewFilesRect(currentCursorPos, ImVec2(currentCursorPos.x + width, currentCursorPos.y + height));
+                    ImRect reviewFilesRect(currentCursorPos, ImVec2(currentCursorPos.x + width, currentCursorPos.y));
                     m_reviewFilesLayout.render(reviewFilesRect);
-
-                    /*ImGui::TextUnformatted("Context Files");
 
                     for (const auto& contextFile : selectedReview.m_relativeContextFiles)
                     {
@@ -455,21 +458,13 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
                         }
 
                         const std::size_t selectedVersion = std::min(m_reviewToSelectedVersionMap[selectedReview.m_reviewId], contextFile.m_versionsToRelativeFiles.size());
-                        const std::string fileName           = contextFile.m_fileName;
-
-                        ImGui::TextUnformatted(fileName.c_str());
 
                         if (contextFile.m_versionsToRelativeFiles.contains(selectedVersion))
                         {
-                            const std::filesystem::path filePath = contextFile.m_versionsToRelativeFiles.at(selectedVersion);
-                            ImGui::TextUnformatted(filePath.string().c_str());
+                            video_element videoElement(workspaceManager->get_workspace_directory() / contextFile.m_versionsToRelativeFiles.at(selectedVersion));
+                            m_reviewFilesLayout.render_layout_element_percent_horizontal(&videoElement, 0.75f);
                         }
-
                     }
-
-                    ImGui::Separator();
-
-                    ImGui::TextUnformatted("Review Files");*/
 
                     for (const auto& reviewFile : selectedReview.m_reviewAssets)
                     {
@@ -479,22 +474,11 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
                         }
 
                         const std::size_t selectedVersion = std::min(m_reviewToSelectedVersionMap[selectedReview.m_reviewId], reviewFile.m_versionsToRelativeFiles.size());
-                        const std::string fileName           = reviewFile.m_fileName;
-
-                        //ImGui::TextUnformatted(fileName.c_str());
 
                         if (reviewFile.m_versionsToRelativeFiles.contains(selectedVersion))
                         {
-                            const std::filesystem::path filePath = reviewFile.m_versionsToRelativeFiles.at(selectedVersion);
-                            //ImGui::TextUnformatted(filePath.string().c_str());
-                        
-                            if (std::shared_ptr<video_subsystem> videoSubsystem =
-                                get_app()->get_subsystem_by_class<video_subsystem>())
-                            {
-                                video_element videoElement(workspaceManager->get_workspace_directory() / filePath);
-                                m_reviewFilesLayout.render_layout_element_percent_horizontal(&videoElement, 0.75f);
-                                //m_reviewFilesLayout.render_layout_element_percent_horizontal(&videoElement, 0.75f);
-                            }
+                            video_element videoElement(workspaceManager->get_workspace_directory() / reviewFile.m_versionsToRelativeFiles.at(selectedVersion));
+                            m_reviewFilesLayout.render_layout_element_percent_horizontal(&videoElement, 0.75f);
                         }
                     }
 
