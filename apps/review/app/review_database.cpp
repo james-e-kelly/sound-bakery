@@ -710,30 +710,6 @@ auto review_database::get_all_activity_for_review(int64_t reviewId) const -> con
     co_return result;
 }
 
-auto review_database::get_activity_count_for_review(int64_t reviewId) const -> concurrencpp::result<std::size_t> 
-{
-    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
-
-#ifdef REVIEW_TEST_DATABASE_BLOCKS
-    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
-#endif
-
-    std::size_t result = 0;
-
-    if (m_database.tableExists("activity") && reviewId != 0)
-    {
-        SQLite::Statement query(m_database, "SELECT COUNT(*) FROM activity WHERE review_id=?;");
-        query.bind(1, reviewId);
-
-        if (query.executeStep())
-        {
-            result = query.getColumn(0).getInt64();
-        }
-    }
-
-    co_return result;
-}
-
 auto review_database::get_all_comments_for_review(int64_t reviewId) const -> concurrencpp::result<std::vector<comment_data>> 
 {
     co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
@@ -746,7 +722,7 @@ auto review_database::get_all_comments_for_review(int64_t reviewId) const -> con
 
     if (m_database.tableExists("comments") && reviewId != 0)
     {
-        SQLite::Statement query(m_database, "SELECT id, review_id, user_id, comment, timestamp FROM comments WHERE review_id=?;");
+        SQLite::Statement query(m_database, "SELECT id, review_id, user_id, comment, timestamp, audio_time_start, audio_time_end FROM comments WHERE review_id=?;");
         query.bind(1, reviewId);
 
         while (query.executeStep())
@@ -757,6 +733,8 @@ auto review_database::get_all_comments_for_review(int64_t reviewId) const -> con
             commentData.m_userId            = query.getColumn(2).getInt64();
             commentData.m_comment           = query.getColumn(3).getText();
             commentData.m_timestamp         = query.getColumn(4).getString();
+            commentData.m_timeStart         = query.getColumn(5).getDouble();
+            commentData.m_timeEnd           = query.getColumn(6).getDouble();
 
             result.push_back(std::move(commentData));
         }

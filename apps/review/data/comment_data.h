@@ -8,6 +8,8 @@ struct base_comment_data
     int64_t m_reviewId = 0;
     int64_t m_fileId   = 0;
     std::string m_comment;
+    double m_timeStart = -1.0;
+    double m_timeEnd   = -1.0;
 };
 
 struct comment_data : public base_comment_data
