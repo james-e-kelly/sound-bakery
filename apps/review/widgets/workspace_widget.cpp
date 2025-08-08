@@ -403,7 +403,7 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
 {
     contentVerticalLayout.render_layout_element_remaining(&reviewContent);
 
-    if (ImGui::BeginChild("ReviewContent", reviewContent.get_element_rect().GetSize()))
+    if (ImGui::BeginChild("ReviewContent", reviewContent.get_element_rect().GetSize(), 0, ImGuiWindowFlags_NoScrollbar))
     {
         if (ImGui::BeginTabBar("Tabs"))
         {
@@ -435,63 +435,70 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
 
                 ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
 
-                const ImVec2 currentCursorPos = ImGui::GetCursorScreenPos();
-                const float width             = reviewContent.get_element_rect().GetSize().x - 25.0f;
-                const float height            = 0.0f;
-                ImRect reviewFilesRect(currentCursorPos, ImVec2(currentCursorPos.x + width, currentCursorPos.y + height));
-                m_reviewFilesLayout.render(reviewFilesRect);
-
-                /*ImGui::TextUnformatted("Context Files");
-
-                for (const auto& contextFile : selectedReview.m_relativeContextFiles)
+                if (ImGui::BeginChild("FilesChild", ImVec2(), ImGuiChildFlags_None,
+                                        ImGuiWindowFlags_AlwaysVerticalScrollbar))
                 {
-                    if (contextFile.m_fileName.empty())
+
+                    const ImVec2 currentCursorPos = ImGui::GetCursorScreenPos();
+                    const float width             = reviewContent.get_element_rect().GetSize().x - 25.0f;
+                    const float height            = 0.0f;
+                    ImRect reviewFilesRect(currentCursorPos, ImVec2(currentCursorPos.x + width, currentCursorPos.y + height));
+                    m_reviewFilesLayout.render(reviewFilesRect);
+
+                    /*ImGui::TextUnformatted("Context Files");
+
+                    for (const auto& contextFile : selectedReview.m_relativeContextFiles)
                     {
-                        continue;
-                    }
-
-                    const std::size_t selectedVersion = std::min(m_reviewToSelectedVersionMap[selectedReview.m_reviewId], contextFile.m_versionsToRelativeFiles.size());
-                    const std::string fileName           = contextFile.m_fileName;
-
-                    ImGui::TextUnformatted(fileName.c_str());
-
-                    if (contextFile.m_versionsToRelativeFiles.contains(selectedVersion))
-                    {
-                        const std::filesystem::path filePath = contextFile.m_versionsToRelativeFiles.at(selectedVersion);
-                        ImGui::TextUnformatted(filePath.string().c_str());
-                    }
-
-                }
-
-                ImGui::Separator();
-
-                ImGui::TextUnformatted("Review Files");*/
-
-                for (const auto& reviewFile : selectedReview.m_reviewAssets)
-                {
-                    if (reviewFile.m_fileName.empty())
-                    {
-                        continue;
-                    }
-
-                    const std::size_t selectedVersion = std::min(m_reviewToSelectedVersionMap[selectedReview.m_reviewId], reviewFile.m_versionsToRelativeFiles.size());
-                    const std::string fileName           = reviewFile.m_fileName;
-
-                    //ImGui::TextUnformatted(fileName.c_str());
-
-                    if (reviewFile.m_versionsToRelativeFiles.contains(selectedVersion))
-                    {
-                        const std::filesystem::path filePath = reviewFile.m_versionsToRelativeFiles.at(selectedVersion);
-                        //ImGui::TextUnformatted(filePath.string().c_str());
-                        
-                        if (std::shared_ptr<video_subsystem> videoSubsystem =
-                            get_app()->get_subsystem_by_class<video_subsystem>())
+                        if (contextFile.m_fileName.empty())
                         {
-                            video_element videoElement(workspaceManager->get_workspace_directory() / filePath);
-                            m_reviewFilesLayout.render_layout_element_percent_horizontal(&videoElement, 0.75f);
-                            //m_reviewFilesLayout.render_layout_element_percent_horizontal(&videoElement, 0.75f);
+                            continue;
+                        }
+
+                        const std::size_t selectedVersion = std::min(m_reviewToSelectedVersionMap[selectedReview.m_reviewId], contextFile.m_versionsToRelativeFiles.size());
+                        const std::string fileName           = contextFile.m_fileName;
+
+                        ImGui::TextUnformatted(fileName.c_str());
+
+                        if (contextFile.m_versionsToRelativeFiles.contains(selectedVersion))
+                        {
+                            const std::filesystem::path filePath = contextFile.m_versionsToRelativeFiles.at(selectedVersion);
+                            ImGui::TextUnformatted(filePath.string().c_str());
+                        }
+
+                    }
+
+                    ImGui::Separator();
+
+                    ImGui::TextUnformatted("Review Files");*/
+
+                    for (const auto& reviewFile : selectedReview.m_reviewAssets)
+                    {
+                        if (reviewFile.m_fileName.empty())
+                        {
+                            continue;
+                        }
+
+                        const std::size_t selectedVersion = std::min(m_reviewToSelectedVersionMap[selectedReview.m_reviewId], reviewFile.m_versionsToRelativeFiles.size());
+                        const std::string fileName           = reviewFile.m_fileName;
+
+                        //ImGui::TextUnformatted(fileName.c_str());
+
+                        if (reviewFile.m_versionsToRelativeFiles.contains(selectedVersion))
+                        {
+                            const std::filesystem::path filePath = reviewFile.m_versionsToRelativeFiles.at(selectedVersion);
+                            //ImGui::TextUnformatted(filePath.string().c_str());
+                        
+                            if (std::shared_ptr<video_subsystem> videoSubsystem =
+                                get_app()->get_subsystem_by_class<video_subsystem>())
+                            {
+                                video_element videoElement(workspaceManager->get_workspace_directory() / filePath);
+                                m_reviewFilesLayout.render_layout_element_percent_horizontal(&videoElement, 0.75f);
+                                //m_reviewFilesLayout.render_layout_element_percent_horizontal(&videoElement, 0.75f);
+                            }
                         }
                     }
+
+                 ImGui::EndChild();
                 }
 
                 ImGui::EndTabItem();
@@ -513,86 +520,92 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
                 }
                 ImGui::EndDisabled();
 
-                constexpr std::size_t commentBufferSize = 2045;
-                static char buffer[commentBufferSize]   = {0};
-
-                if (newCommentOpen)
+                if (ImGui::BeginChild("CommentsChild", ImVec2(), ImGuiChildFlags_None,
+                                      ImGuiWindowFlags_AlwaysVerticalScrollbar))
                 {
-                    ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
 
-                    bool wantsToAdd = false;
+                    constexpr std::size_t commentBufferSize = 2045;
+                    static char buffer[commentBufferSize]   = {0};
 
-                    if (ImGui::GetIO().KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Enter))
+                    if (newCommentOpen)
                     {
-                        wantsToAdd = true;
-                    }
-
-                    ImGui::InputTextMultiline("Comment", buffer, commentBufferSize,
-                                              ImVec2(ImGui::GetWindowSize().x, 100.0f));
-
-                    ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
-
-                    wantsToAdd |= ImGui::Button("Add");
-
-                    if (wantsToAdd)
-                    {
-                        new_comment_data newComment = {0};
-                        newComment.m_reviewId       = selectedReview.m_reviewId;
-                        newComment.m_comment        = buffer;
-                        newComment.m_userId         = 1;
-
-                        workspaceManager->create_comment(newComment);
-
-                        buffer[0]      = '\0';
-                        newCommentOpen = false;
-                    }
-
-                    ImGui::SameLine(0.0f, 8.0f);
-
-                    if (ImGui::Button("Cancel"))
-                    {
-                        buffer[0]      = '\0';
-                        newCommentOpen = false;
-                    }
-                }
-
-                ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
-
-                const auto& comments = workspaceManager->get_all_comments_for_review(selectedReview.m_reviewId);
-                if (comments.has_data())
-                {
-                    for (const auto& comment : comments.m_cache)
-                    {
-                        ImGui::TextWrapped(comment.m_comment.c_str());
-
-                        bool requestBreak = false;
-
-                        if (ImGui::BeginPopupContextItem(comment.m_comment.c_str()))
-                        {
-                            if (ImGui::Selectable("Copy"))
-                            {
-                                ImGui::SetClipboardText(comment.m_comment.c_str());
-                            }
-
-                            if (ImGui::Selectable("Delete"))
-                            {
-                                workspaceManager->delete_comment(comment.m_commentId);
-                                requestBreak = true;
-                            }
-                            ImGui::EndPopup();
-                        }
                         ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
 
-                        if (requestBreak)
+                        bool wantsToAdd = false;
+
+                        if (ImGui::GetIO().KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Enter))
                         {
-                            break;
+                            wantsToAdd = true;
+                        }
+
+                        ImGui::InputTextMultiline("Comment", buffer, commentBufferSize,
+                                                  ImVec2(ImGui::GetWindowSize().x, 100.0f));
+
+                        ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
+
+                        wantsToAdd |= ImGui::Button("Add");
+
+                        if (wantsToAdd)
+                        {
+                            new_comment_data newComment = {0};
+                            newComment.m_reviewId       = selectedReview.m_reviewId;
+                            newComment.m_comment        = buffer;
+                            newComment.m_userId         = 1;
+
+                            workspaceManager->create_comment(newComment);
+
+                            buffer[0]      = '\0';
+                            newCommentOpen = false;
+                        }
+
+                        ImGui::SameLine(0.0f, 8.0f);
+
+                        if (ImGui::Button("Cancel"))
+                        {
+                            buffer[0]      = '\0';
+                            newCommentOpen = false;
                         }
                     }
-                }
-                else
-                {
-                    gluten::loading_spinner loading;
-                    loading.render_cursor();
+
+                    ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
+
+                    const auto& comments = workspaceManager->get_all_comments_for_review(selectedReview.m_reviewId);
+                    if (comments.has_data())
+                    {
+                        for (const auto& comment : comments.m_cache)
+                        {
+                            ImGui::TextWrapped(comment.m_comment.c_str());
+
+                            bool requestBreak = false;
+
+                            if (ImGui::BeginPopupContextItem(comment.m_comment.c_str()))
+                            {
+                                if (ImGui::Selectable("Copy"))
+                                {
+                                    ImGui::SetClipboardText(comment.m_comment.c_str());
+                                }
+
+                                if (ImGui::Selectable("Delete"))
+                                {
+                                    workspaceManager->delete_comment(comment.m_commentId);
+                                    requestBreak = true;
+                                }
+                                ImGui::EndPopup();
+                            }
+                            ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
+
+                            if (requestBreak)
+                            {
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        gluten::loading_spinner loading;
+                        loading.render_cursor();
+                    }
+                    ImGui::EndChild();
                 }
 
                 ImGui::EndTabItem();
@@ -600,50 +613,57 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
 
             if (ImGui::BeginTabItem("Activity"))
             {
-                const auto& reviewsActivity = workspaceManager->get_all_activity_for_review(selectedReview.m_reviewId);
-                if (reviewsActivity.has_data())
+                if (ImGui::BeginChild("ActivityChild", ImVec2(), ImGuiChildFlags_None,
+                                      ImGuiWindowFlags_AlwaysVerticalScrollbar))
                 {
-                    for (const auto& iter : reviewsActivity.m_cache)
+
+                    const auto& reviewsActivity =
+                        workspaceManager->get_all_activity_for_review(selectedReview.m_reviewId);
+                    if (reviewsActivity.has_data())
                     {
-                        std::istringstream in(iter.m_activityTimestamp);
-                        std::chrono::sys_seconds tp;
-                        in >> std::chrono::parse("%F %T", tp);
-
-                        auto now  = std::chrono::floor<std::chrono::seconds>(std::chrono::system_clock::now());
-                        auto diff = now - tp;
-
-                        using namespace std::literals::chrono_literals;
-
-                        std::string activityTimeText;
-
-                        if (diff < 1min)
+                        for (const auto& iter : reviewsActivity.m_cache)
                         {
-                            activityTimeText = "less than 1 minute ago";
-                        }
-                        else if (diff <= 60min)
-                        {
-                            activityTimeText =
-                                std::to_string(duration_cast<std::chrono::minutes>(diff).count()) + " minutes ago";
-                        }
-                        else if (diff < 24h)
-                        {
-                            activityTimeText =
-                                std::to_string(duration_cast<std::chrono::hours>(diff).count()) + " hours ago";
-                        }
-                        else
-                        {
-                            auto days = duration_cast<std::chrono::duration<int, std::ratio<86400>>>(diff).count();
-                            activityTimeText = std::to_string(days) + " day" + (days > 1 ? "s" : "") + " ago";
-                        }
+                            std::istringstream in(iter.m_activityTimestamp);
+                            std::chrono::sys_seconds tp;
+                            in >> std::chrono::parse("%F %T", tp);
 
-                        ImGui::Dummy(ImVec2(0, ImGui::GetStyle().FramePadding.y));
-                        ImGui::Text(fmt::format("{} {}", iter.m_activityText, activityTimeText).c_str());
+                            auto now  = std::chrono::floor<std::chrono::seconds>(std::chrono::system_clock::now());
+                            auto diff = now - tp;
+
+                            using namespace std::literals::chrono_literals;
+
+                            std::string activityTimeText;
+
+                            if (diff < 1min)
+                            {
+                                activityTimeText = "less than 1 minute ago";
+                            }
+                            else if (diff <= 60min)
+                            {
+                                activityTimeText =
+                                    std::to_string(duration_cast<std::chrono::minutes>(diff).count()) + " minutes ago";
+                            }
+                            else if (diff < 24h)
+                            {
+                                activityTimeText =
+                                    std::to_string(duration_cast<std::chrono::hours>(diff).count()) + " hours ago";
+                            }
+                            else
+                            {
+                                auto days = duration_cast<std::chrono::duration<int, std::ratio<86400>>>(diff).count();
+                                activityTimeText = std::to_string(days) + " day" + (days > 1 ? "s" : "") + " ago";
+                            }
+
+                            ImGui::Dummy(ImVec2(0, ImGui::GetStyle().FramePadding.y));
+                            ImGui::Text(fmt::format("{} {}", iter.m_activityText, activityTimeText).c_str());
+                        }
                     }
-                }
-                else
-                {
-                    gluten::loading_spinner loading;
-                    loading.render_cursor();
+                    else
+                    {
+                        gluten::loading_spinner loading;
+                        loading.render_cursor();
+                    }
+                    ImGui::EndChild();
                 }
 
                 ImGui::EndTabItem();
