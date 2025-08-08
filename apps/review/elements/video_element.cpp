@@ -38,7 +38,7 @@ video_element::video_element(const std::filesystem::path& videoFile, int64_t fil
 	}
 
     m_videoControlsBackground.set_element_background_color(gluten::theme::carbon_g100::background);
-        m_addCommentButton.set_element_background_color(gluten::theme::carbon_g100::layer01);
+    m_addCommentButton.set_element_background_color(gluten::theme::carbon_g100::layer01);
 
     m_playButton.set_element_active_color(gluten::theme::carbon_g100::backgroundActive);
     m_pauseButton.set_element_active_color(gluten::theme::carbon_g100::backgroundActive);
@@ -59,7 +59,6 @@ video_element::video_element(const std::filesystem::path& videoFile, int64_t fil
 auto video_element::render_element(const ImRect& elementRect) -> bool
 {
     gluten::imgui::scoped_id id(m_videoFile.string().c_str());
-    //gluten::imgui::scoped_id randomId(std::rand());
 
     std::shared_ptr<video_subsystem> videoSubsystem = m_videoSubsystem.lock();
     if (!videoSubsystem)
@@ -69,14 +68,18 @@ auto video_element::render_element(const ImRect& elementRect) -> bool
 
     m_videoImage.render(elementRect);
 
-    ImRect videoControlsRect = elementRect;
-    videoControlsRect.Min.y  = videoControlsRect.Max.y - g_videoControlsHeight;
+    render_layouts(elementRect);
+    render_comments(videoSubsystem);
+    render_controls(videoSubsystem);
+}
 
-    m_videoControlsBackground.render(videoControlsRect);
+auto video_element::render_comments(std::shared_ptr<video_subsystem>& videoSubsystem) -> void
+{
 
-    //m_videoControlsLayout.set_element_padding(ImVec2(5.0f, 0.0f));
-    m_videoControlsLayout.render(m_videoControlsBackground.get_element_rect());
+}
 
+auto video_element::render_controls(std::shared_ptr<video_subsystem>& videoSubsystem) -> void
+{
     if (m_videoControlsLayout.render_layout_element_pixels_horizontal(&m_playButton, g_videoButtonsWidth))
     {
         videoSubsystem->play_video(m_videoFile);
@@ -101,7 +104,8 @@ auto video_element::render_element(const ImRect& elementRect) -> bool
 
     if (m_videoControlsLayout.render_layout_element_pixels_horizontal(&m_addCommentButton, g_videoButtonsWidth))
     {
-        if (std::shared_ptr<workspace_manager> workspaceManager = gluten::app::get()->get_manager_by_class<workspace_manager>())
+        if (std::shared_ptr<workspace_manager> workspaceManager =
+                gluten::app::get()->get_manager_by_class<workspace_manager>())
         {
             gluten::data_source<user_settings_data> userSettingsData;
 
@@ -116,17 +120,20 @@ auto video_element::render_element(const ImRect& elementRect) -> bool
     }
     ImGui::SetItemTooltip("Add Comment At Time");
 
-    double videoPosition = videoSubsystem->get_video_play_position(m_videoFile);
+    double videoPosition       = videoSubsystem->get_video_play_position(m_videoFile);
     const double videoDuration = videoSubsystem->get_video_duration(m_videoFile);
     const double videoPercent  = videoPosition / videoDuration;
 
-    m_videoPositionText.set_text(fmt::format("{:02d}:{:02d}", static_cast<int>(videoPosition) / 60, static_cast<int>(videoPosition) % 60));
-    m_videoDurationText.set_text(fmt::format("{:02d}:{:02d}", static_cast<int>(videoDuration) / 60, static_cast<int>(videoDuration) % 60));
+    m_videoPositionText.set_text(
+        fmt::format("{:02d}:{:02d}", static_cast<int>(videoPosition) / 60, static_cast<int>(videoPosition) % 60));
+    m_videoDurationText.set_text(
+        fmt::format("{:02d}:{:02d}", static_cast<int>(videoDuration) / 60, static_cast<int>(videoDuration) % 60));
 
     m_videoControlsLayout.render_layout_element_pixels_horizontal(nullptr, g_gapBetweenButtonsAndText);
     m_videoControlsLayout.render_layout_element_pixels_horizontal(&m_videoPositionText, g_videoButtonsWidth);
 
-    const float timelineWidth = m_videoControlsLayout.get_remaining_layout_size().x - g_videoButtonsWidth - g_gapBetweenButtonsAndText;
+    const float timelineWidth =
+        m_videoControlsLayout.get_remaining_layout_size().x - g_videoButtonsWidth - g_gapBetweenButtonsAndText;
 
     ImVec2 progressLineStart = m_videoControlsLayout.get_current_layout_pos();
     progressLineStart.y += g_videoControlsHeight / 2.0f;
@@ -138,21 +145,20 @@ auto video_element::render_element(const ImRect& elementRect) -> bool
 
     if (ImDrawList* const drawList = ImGui::GetWindowDrawList())
     {
-        drawList->AddLine(
-            ImVec2(progressLineStart.x + (ImGui::GetStyle().GrabMinSize / 2.0f), progressLineStart.y), 
-            ImVec2(progressLineEnd.x - (ImGui::GetStyle().GrabMinSize / 2.0f), progressLineEnd.y),
-            ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::textPrimary),
-            g_progressLineThickness);
+        drawList->AddLine(ImVec2(progressLineStart.x + (ImGui::GetStyle().GrabMinSize / 2.0f), progressLineStart.y),
+                          ImVec2(progressLineEnd.x - (ImGui::GetStyle().GrabMinSize / 2.0f), progressLineEnd.y),
+                          ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::textPrimary),
+                          g_progressLineThickness);
 
         const ImGuiID videoGrabHandleId = ImGui::GetID("##VideoDragHandle");
         ImGui::KeepAliveID(videoGrabHandleId);
 
         ImRect grabRect(progressLineStart.x, progressLineStart.y - (g_videoControlsHeight / 3.0f), progressLineEnd.x,
-               progressLineEnd.y + (g_videoControlsHeight / 3.0f));
+                        progressLineEnd.y + (g_videoControlsHeight / 3.0f));
 
         const bool hovered = ImGui::ItemHoverable(grabRect, videoGrabHandleId, ImGuiSliderFlags_NoInput);
 
-        const bool clicked     = hovered && ImGui::IsMouseClicked(0, ImGuiInputFlags_None, videoGrabHandleId);
+        const bool clicked    = hovered && ImGui::IsMouseClicked(0, ImGuiInputFlags_None, videoGrabHandleId);
         const bool makeActive = (clicked || ImGui::GetCurrentContext()->NavActivateId == videoGrabHandleId);
 
         if (makeActive && clicked)
@@ -169,7 +175,8 @@ auto video_element::render_element(const ImRect& elementRect) -> bool
         }
 
         ImRect outDrag;
-        if (ImGui::SliderBehavior(grabRect, videoGrabHandleId, ImGuiDataType_Double, &videoPosition, &g_minimumVideoPosition, &videoDuration, "%f", ImGuiSliderFlags_None, &outDrag))
+        if (ImGui::SliderBehavior(grabRect, videoGrabHandleId, ImGuiDataType_Double, &videoPosition,
+                                  &g_minimumVideoPosition, &videoDuration, "%f", ImGuiSliderFlags_None, &outDrag))
         {
             ImGui::MarkItemEdited(videoGrabHandleId);
             videoSubsystem->set_video_play_position(m_videoFile, videoPosition);
@@ -177,15 +184,36 @@ auto video_element::render_element(const ImRect& elementRect) -> bool
 
         if (outDrag.Max.x > outDrag.Min.x)
         {
-            drawList->AddRectFilled(outDrag.Min, outDrag.Max,ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::interactive), 0.0f);
+            drawList->AddRectFilled(outDrag.Min, outDrag.Max,
+                                    ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::interactive), 0.0f);
         }
     }
 
     m_videoControlsLayout.render_layout_element_pixels_horizontal(&m_videoDurationText, g_videoButtonsWidth);
 }
 
+auto video_element::render_layouts(const ImRect& elementRect) -> void
+{
+    ImRect videoControlsRect = elementRect;
+    videoControlsRect.Min.y  = videoControlsRect.Max.y - g_videoControlsHeight;
+    m_videoControlsBackground.render(videoControlsRect);
+    m_videoControlsLayout.render(m_videoControlsBackground.get_element_rect());
+
+    videoControlsRect.Min.y -= g_videoControlsHeight;
+    videoControlsRect.Max.y -= g_videoControlsHeight + 1.0f;
+    m_videoControlsBackground.render(videoControlsRect);
+    m_videoCommentsLayout.render(m_videoControlsBackground.get_element_rect());
+
+    if (ImDrawList* drawList = ImGui::GetWindowDrawList())
+    {
+        drawList->AddLine(m_videoCommentsLayout.get_element_rect().GetBL(),
+                          m_videoCommentsLayout.get_element_rect().GetBR(),
+                          ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::textPrimary), 1.0f);
+    }
+}
+
 auto video_element::get_element_content_size(const ImVec2& parentSize) -> ImVec2 const
 {
     const ImVec2 videoSize = m_videoImage.get_element_content_size(parentSize);
-    return ImVec2(videoSize.x, videoSize.y + g_videoControlsHeight);
+    return ImVec2(videoSize.x, videoSize.y + (g_videoControlsHeight * 2.0f));
 }

@@ -11,6 +11,9 @@ public:
 
 protected:
     auto render_element(const ImRect& elementRect) -> bool override;
+    auto render_controls(std::shared_ptr<video_subsystem>& videoSubsystem) -> void;
+    auto render_layouts(const ImRect& elementRect) -> void;
+    auto render_comments(std::shared_ptr<video_subsystem>& videoSubsystem) -> void;
     auto get_element_content_size(const ImVec2& parentSize) -> ImVec2 const override;
 
 private:
@@ -22,6 +25,7 @@ private:
     gluten::image m_videoImage;
     gluten::background m_videoControlsBackground;
     gluten::layout m_videoControlsLayout = gluten::layout(gluten::layout_type::left_to_right, gluten::anchor_preset::stretch_full);
+    gluten::layout m_videoCommentsLayout = gluten::layout(gluten::layout_type::left_to_right, gluten::anchor_preset::stretch_full);
     gluten::icon_button m_playButton = gluten::icon_button("##Play", ICON_LC_PLAY, gluten::fonts::regular_lucide_icons);
     gluten::icon_button m_pauseButton = gluten::icon_button("##Pause", ICON_LC_PAUSE, gluten::fonts::regular_lucide_icons);
     gluten::icon_button m_previousFrameButton = gluten::icon_button("##PrevFrame", ICON_LC_CHEVRON_LEFT, gluten::fonts::regular_lucide_icons);
