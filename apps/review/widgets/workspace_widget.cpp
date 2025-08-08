@@ -450,6 +450,8 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
                     ImRect reviewFilesRect(currentCursorPos, ImVec2(currentCursorPos.x + width, currentCursorPos.y));
                     m_reviewFilesLayout.render(reviewFilesRect);
 
+                    m_reviewFilesLayout.set_layout_spacing(0.0f);
+
                     for (const auto& contextFile : selectedReview.m_relativeContextFiles)
                     {
                         if (contextFile.m_fileName.empty())
@@ -461,8 +463,12 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
 
                         if (contextFile.m_versionsToRelativeFiles.contains(selectedVersion))
                         {
-                            video_element videoElement(workspaceManager->get_workspace_directory() / contextFile.m_versionsToRelativeFiles.at(selectedVersion), contextFile.m_fileId);
-                            m_reviewFilesLayout.render_layout_element_percent_horizontal(&videoElement, 0.75f);
+                            gluten::collapsing_header header(contextFile.m_fileName, false);
+                            if (m_reviewFilesLayout.render_layout_element_percent_horizontal(&header, 1.0f))
+                            {
+                                video_element videoElement(workspaceManager->get_workspace_directory() / contextFile.m_versionsToRelativeFiles.at(selectedVersion), contextFile.m_fileId);
+                                m_reviewFilesLayout.render_layout_element_percent_horizontal(&videoElement, 0.75f);
+                            }
                         }
                     }
 
@@ -477,8 +483,12 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
 
                         if (reviewFile.m_versionsToRelativeFiles.contains(selectedVersion))
                         {
-                            video_element videoElement(workspaceManager->get_workspace_directory() / reviewFile.m_versionsToRelativeFiles.at(selectedVersion), reviewFile.m_fileId);
-                            m_reviewFilesLayout.render_layout_element_percent_horizontal(&videoElement, 0.75f);
+                            gluten::collapsing_header header(reviewFile.m_fileName, false);
+                            if (m_reviewFilesLayout.render_layout_element_percent_horizontal(&header, 1.0f))
+                            {
+                                video_element videoElement(workspaceManager->get_workspace_directory() / reviewFile.m_versionsToRelativeFiles.at(selectedVersion), reviewFile.m_fileId);
+                                m_reviewFilesLayout.render_layout_element_percent_horizontal(&videoElement, 0.75f);
+                            }
                         }
                     }
 
