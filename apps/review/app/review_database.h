@@ -56,11 +56,9 @@ public:
 
     // Activity
     auto get_all_activity_for_review(int64_t reviewId) const -> concurrencpp::result<std::vector<activity_data>>;
-    auto get_activity_count_for_review(int64_t reviewId) const -> concurrencpp::result<std::size_t>;
 
     // Comments
     auto get_all_comments_for_review(int64_t reviewId) const -> concurrencpp::result<std::vector<comment_data>>;
-    auto get_comments_count_for_review(int64_t commentId) const -> concurrencpp::result<std::size_t>;
     auto create_comment(new_comment_data newComment) -> concurrencpp::result<comment_data>;
     auto delete_comment(int64_t commentId) -> concurrencpp::result<void>;
 
@@ -70,7 +68,6 @@ public:
     auto user_is_logged_in_and_has_privilege_for_action(std::string userToken, activity_type activity) -> concurrencpp::result<bool>;
     auto user_is_logged_in_and_has_privilege(std::string userToken, user_privileges privilege) -> concurrencpp::result<bool>;
     auto login_user(login_request_data loginRequest) -> concurrencpp::result<tl::expected<logged_in_user_data, database_error>>;
-    auto get_users_count(std::string userToken) -> concurrencpp::result<tl::expected<std::size_t, database_error>>;
     auto get_all_users(std::string userToken) -> concurrencpp::result<tl::expected<std::vector<user_data>, database_error>>;
     auto delete_user(std::string email, std::string userToken) -> concurrencpp::result<tl::expected<bool, database_error>>;
 

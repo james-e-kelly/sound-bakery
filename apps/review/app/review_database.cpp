@@ -767,30 +767,6 @@ auto review_database::get_all_comments_for_review(int64_t reviewId) const -> con
     co_return result;
 }
 
-auto review_database::get_comments_count_for_review(int64_t commentId) const -> concurrencpp::result<std::size_t>
-{
-    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
-
-#ifdef REVIEW_TEST_DATABASE_BLOCKS
-    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
-#endif
-
-    std::size_t result = 0;
-
-    if (m_database.tableExists("comments") && commentId != 0)
-    {
-        SQLite::Statement query(m_database, "SELECT COUNT(*) FROM comments WHERE review_id=?;");
-        query.bind(1, commentId);
-
-        if (query.executeStep())
-        {
-            result = query.getColumn(0).getInt64();
-        }
-    }
-
-    co_return result;
-}
-
 auto review_database::create_comment(new_comment_data newComment) -> concurrencpp::result<comment_data>
 {
     co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
@@ -1094,38 +1070,6 @@ auto review_database::login_user(login_request_data loginRequest) -> concurrencp
     }
 
     co_return result;
-}
-
-auto review_database::get_users_count(std::string userToken) -> concurrencpp::result<tl::expected<std::size_t, database_error>>
-{
-    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
-
-#ifdef REVIEW_TEST_DATABASE_BLOCKS
-    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
-#endif
-
-    if (co_await user_is_logged_in_and_has_privilege(userToken, user_privileges::user))
-    {
-        if (m_database.tableExists("users"))
-        {
-            SQLite::Statement statement(m_database, "SELECT COUNT(id) FROM users");
-
-            if (statement.executeStep())
-            {
-                co_return statement.getColumn(0).getUInt();
-            }
-        }
-        else
-        {
-            co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::missing_table, .m_errorMessage = "No users table"});
-        }
-    }
-    else
-    {
-        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::unauthorized, .m_errorMessage = "Not authorized to view users"});
-    }
-
-    co_return 0U;
 }
 
 auto review_database::get_all_users(std::string userToken) -> concurrencpp::result<tl::expected<std::vector<user_data>, database_error>>
