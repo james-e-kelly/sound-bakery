@@ -50,31 +50,11 @@ bool gluten::layout::render_layout_element_full(element* element)
 
 bool gluten::layout::render_layout_element_remaining(element* element) 
 { 
-    const ImRect elementBox = get_element_rect(); 
-
     if (m_currentLayoutPos.has_value())
     {
-        const ImVec2 currentLayoutPos = m_currentLayoutPos.value();
-
-        ImVec2 sizeRemain;
-
-        switch (m_layoutType)
-        {
-            case gluten::layout::layout_type::left_to_right:
-            case gluten::layout::layout_type::top_to_bottom:
-                sizeRemain = ImVec2(elementBox.Max.x - currentLayoutPos.x, elementBox.Max.y - currentLayoutPos.y);
-                break;
-            case gluten::layout::layout_type::bottom_to_top:
-                sizeRemain = ImVec2(elementBox.Max.x - currentLayoutPos.x, currentLayoutPos.y - elementBox.Min.y);
-                break;
-            case gluten::layout::layout_type::right_to_left:
-                sizeRemain = ImVec2(currentLayoutPos.x - elementBox.Min.x, elementBox.Max.y - currentLayoutPos.y);
-                break;
-            default:
-                break;
-        }
-
-        return render_layout_element_internal(elementBox, element, sizeRemain.x, sizeRemain.y);
+        const ImRect elementBox = get_element_rect(); 
+        const ImVec2 remainingSize = get_remaining_layout_size();
+        return render_layout_element_internal(elementBox, element, remainingSize.x, remainingSize.y);
     }
     else
     {
@@ -240,6 +220,37 @@ ImVec2 gluten::layout::get_current_layout_pos_local() const
 {
     ImVec2 layoutPos = get_current_layout_pos();
     return layoutPos - ImGui::GetWindowPos();
+}
+
+
+auto gluten::layout::get_remaining_layout_size() const -> ImVec2 
+{
+    ImVec2 sizeRemain;
+
+    if (m_currentLayoutPos.has_value())
+    {
+        const ImRect elementBox = get_element_rect();
+        const ImVec2 currentLayoutPos = m_currentLayoutPos.value();
+
+
+        switch (m_layoutType)
+        {
+            case gluten::layout::layout_type::left_to_right:
+            case gluten::layout::layout_type::top_to_bottom:
+                sizeRemain = ImVec2(elementBox.Max.x - currentLayoutPos.x, elementBox.Max.y - currentLayoutPos.y);
+                break;
+            case gluten::layout::layout_type::bottom_to_top:
+                sizeRemain = ImVec2(elementBox.Max.x - currentLayoutPos.x, currentLayoutPos.y - elementBox.Min.y);
+                break;
+            case gluten::layout::layout_type::right_to_left:
+                sizeRemain = ImVec2(currentLayoutPos.x - elementBox.Min.x, elementBox.Max.y - currentLayoutPos.y);
+                break;
+            default:
+                break;
+        }
+    }
+    
+    return sizeRemain;
 }
 
 auto gluten::layout::pre_render_element() -> void

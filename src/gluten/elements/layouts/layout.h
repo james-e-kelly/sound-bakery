@@ -53,6 +53,8 @@ namespace gluten
 
         ImVec2 get_current_layout_pos_local() const;
 
+        auto get_remaining_layout_size() const -> ImVec2;
+
     protected:
         auto pre_render_element() -> void override;
 

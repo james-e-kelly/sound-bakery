@@ -12,6 +12,7 @@ namespace
     constexpr float g_progressLinePadding      = 5.0f;
     constexpr float g_progressHandleWidth      = 10.0f;
     constexpr float g_progressHandleHeight     = g_videoControlsHeight / 2.0f;
+    constexpr float g_minimumVideoPosition     = 0.0;
 }
 
 video_element::video_element(const std::filesystem::path& videoFile, int64_t fileId)
@@ -115,9 +116,7 @@ auto video_element::render_element(const ImRect& elementRect) -> bool
     }
     ImGui::SetItemTooltip("Add Comment At Time");
 
-    const float remainingWidthMinusFinalText = elementRect.GetWidth() - (g_videoButtonsWidth * 7.0f) - g_gapBetweenButtonsAndText;
-
-    const double videoPosition = videoSubsystem->get_video_play_position(m_videoFile);
+    double videoPosition = videoSubsystem->get_video_play_position(m_videoFile);
     const double videoDuration = videoSubsystem->get_video_duration(m_videoFile);
     const double videoPercent  = videoPosition / videoDuration;
 
@@ -126,27 +125,24 @@ auto video_element::render_element(const ImRect& elementRect) -> bool
 
     m_videoControlsLayout.render_layout_element_pixels_horizontal(nullptr, g_gapBetweenButtonsAndText);
     m_videoControlsLayout.render_layout_element_pixels_horizontal(&m_videoPositionText, g_videoButtonsWidth);
-    m_videoControlsLayout.render_layout_element_pixels_horizontal(nullptr, remainingWidthMinusFinalText);
-    m_videoControlsLayout.render_layout_element_pixels_horizontal(&m_videoDurationText, g_videoButtonsWidth);
+
+    const float timelineWidth = m_videoControlsLayout.get_remaining_layout_size().x - g_videoButtonsWidth - g_gapBetweenButtonsAndText;
+
+    ImVec2 progressLineStart = m_videoControlsLayout.get_current_layout_pos();
+    progressLineStart.y += g_videoControlsHeight / 2.0f;
+
+    m_videoControlsLayout.render_layout_element_pixels_horizontal(nullptr, timelineWidth);
+
+    ImVec2 progressLineEnd = m_videoControlsLayout.get_current_layout_pos();
+    progressLineEnd.y += g_videoControlsHeight / 2.0f;
 
     if (ImDrawList* const drawList = ImGui::GetWindowDrawList())
     {
-        ImVec2 progressLineStart = videoControlsRect.Min;
-        progressLineStart.x += (g_videoButtonsWidth * 6.0f) + g_gapBetweenButtonsAndText + g_progressLinePadding;
-        progressLineStart.y += g_videoControlsHeight / 2.0f;
-
-        ImVec2 progressLineEnd = progressLineStart;
-        progressLineEnd.x += elementRect.GetWidth() - (g_videoButtonsWidth * 7.0f) - g_gapBetweenButtonsAndText - (g_progressLinePadding * 2.0f);
-
         drawList->AddLine(
             ImVec2(progressLineStart.x + (ImGui::GetStyle().GrabMinSize / 2.0f), progressLineStart.y), 
             ImVec2(progressLineEnd.x - (ImGui::GetStyle().GrabMinSize / 2.0f), progressLineEnd.y),
             ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::textPrimary),
             g_progressLineThickness);
-
-        double edit = videoPosition;
-        double min  = 0.0;
-        double max  = videoDuration;
 
         const ImGuiID videoGrabHandleId = ImGui::GetID("##VideoDragHandle");
         ImGui::KeepAliveID(videoGrabHandleId);
@@ -173,10 +169,10 @@ auto video_element::render_element(const ImRect& elementRect) -> bool
         }
 
         ImRect outDrag;
-        if (ImGui::SliderBehavior(grabRect, videoGrabHandleId, ImGuiDataType_Double, &edit, &min, &max, "%f", ImGuiSliderFlags_None, &outDrag))
+        if (ImGui::SliderBehavior(grabRect, videoGrabHandleId, ImGuiDataType_Double, &videoPosition, &g_minimumVideoPosition, &videoDuration, "%f", ImGuiSliderFlags_None, &outDrag))
         {
             ImGui::MarkItemEdited(videoGrabHandleId);
-            videoSubsystem->set_video_play_position(m_videoFile, edit);
+            videoSubsystem->set_video_play_position(m_videoFile, videoPosition);
         }
 
         if (outDrag.Max.x > outDrag.Min.x)
@@ -184,6 +180,8 @@ auto video_element::render_element(const ImRect& elementRect) -> bool
             drawList->AddRectFilled(outDrag.Min, outDrag.Max,ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::interactive), 0.0f);
         }
     }
+
+    m_videoControlsLayout.render_layout_element_pixels_horizontal(&m_videoDurationText, g_videoButtonsWidth);
 }
 
 auto video_element::get_element_content_size(const ImVec2& parentSize) -> ImVec2 const
