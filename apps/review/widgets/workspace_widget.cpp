@@ -568,6 +568,7 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
                     {
                         for (const auto& comment : comments.m_cache)
                         {
+                            gluten::imgui::scoped_id id(comment.m_commentId);
                             ImGui::TextWrapped(comment.m_comment.c_str());
 
                             bool requestBreak = false;
