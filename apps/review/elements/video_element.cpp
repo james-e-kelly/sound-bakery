@@ -92,12 +92,13 @@ auto video_element::render_element(const ImRect& elementRect) -> bool
     m_videoPercent  = m_videoPosition / m_videoDuration;
 
     render_layouts(elementRect);
-    render_controls(videoSubsystem);
+    const bool newComment = render_controls(videoSubsystem);
     render_timeline();
     render_comments();
+    return newComment;
 }
 
-auto video_element::render_controls(std::shared_ptr<video_subsystem>& videoSubsystem) -> void
+auto video_element::render_controls(std::shared_ptr<video_subsystem>& videoSubsystem) -> bool
 {
     if (m_videoButtonsLayout.render_layout_element_pixels_horizontal(&m_previousFrameButton, g_videoButtonsWidth))
     {
@@ -117,30 +118,21 @@ auto video_element::render_controls(std::shared_ptr<video_subsystem>& videoSubsy
     }
     ImGui::SetItemTooltip("Play");
 
-    if (m_videoButtonsLayout.render_layout_element_pixels_horizontal(&m_addCommentButton, g_videoButtonsWidth))
-    {
-        if (std::shared_ptr<workspace_manager> workspaceManager =
-                gluten::app::get()->get_manager_by_class<workspace_manager>())
-        {
-            gluten::data_source<user_settings_data> userSettingsData;
-
-            new_comment_data newComment;
-            newComment.m_reviewId = workspaceManager->get_selected_review().m_reviewId;
-            newComment.m_fileId   = m_fileId;
-            newComment.m_userId   = userSettingsData->m_loggedInUser.m_userId;
-            newComment.m_comment  = "Comment for a video";
-            newComment.m_timeStart = m_videoPosition;
-
-            workspaceManager->create_comment(newComment);
-        }
-    }
+    const bool newComment = m_videoButtonsLayout.render_layout_element_pixels_horizontal(&m_addCommentButton, g_videoButtonsWidth);
     ImGui::SetItemTooltip("Add Comment At Time");
+
+    if (newComment)
+    {
+        videoSubsystem->pause_video(m_videoFile);
+    }
 
     if (m_videoButtonsLayout.render_layout_element_pixels_horizontal(&m_nextFrameButton, g_videoButtonsWidth))
     {
         videoSubsystem->set_video_next_frame(m_videoFile);
     }
     ImGui::SetItemTooltip("Next Frame");
+
+    return newComment;
 }
 
 auto video_element::render_timeline() -> void
@@ -246,6 +238,11 @@ auto video_element::render_comments() -> void
                                                           ImGui::ColorConvertFloat4ToU32(gluten::theme::purple50));
                                 ImGui::ItemAdd(circleRect, ImGui::GetID(comment.m_commentId));
                                 ImGui::SetItemTooltip(comment.m_comment.c_str());
+
+                                if (ImGui::IsItemClicked())
+                                {
+                                    m_videoSubsystem.lock()->set_video_play_position(m_videoFile, comment.m_timeStart);
+                                }
                             }
                         }
                     }

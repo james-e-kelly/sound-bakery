@@ -9,11 +9,16 @@ class video_element : public gluten::element
 public:
     video_element(const std::filesystem::path& videoFile, int64_t fileId);
 
+    auto get_video_position() const -> double
+    {
+        return m_videoPosition;
+    }
+
 protected:
     auto render_element(const ImRect& elementRect) -> bool override;
 
     auto render_layouts(const ImRect& elementRect) -> void;
-    auto render_controls(std::shared_ptr<video_subsystem>& videoSubsystem) -> void;
+    auto render_controls(std::shared_ptr<video_subsystem>& videoSubsystem) -> bool;
     auto render_timeline() -> void;
     auto render_comments() -> void;
     auto get_element_content_size(const ImVec2& parentSize) -> ImVec2 const override;

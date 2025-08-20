@@ -10,6 +10,7 @@
 #include "elements/inline_user_display_element.h"
 #include "elements/video_element.h"
 #include "subsystems/video_subsystem.h"
+#include "widgets/create_comment_popup.h"
 #include "widgets/create_project_popup.h"
 #include "widgets/create_review_popup.h"
 #include "widgets/update_review_popup.h"
@@ -452,42 +453,34 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
 
                     m_reviewFilesLayout.set_layout_spacing(0.0f);
 
-                    for (const auto& contextFile : selectedReview.m_relativeContextFiles)
+                    for (const auto& assetRef : {std::cref(selectedReview.m_relativeContextFiles), std::cref(selectedReview.m_reviewAssets)})
                     {
-                        if (contextFile.m_fileName.empty())
+                        for (const auto& asset : assetRef.get())
                         {
-                            continue;
-                        }
-
-                        const std::size_t selectedVersion = std::min(m_reviewToSelectedVersionMap[selectedReview.m_reviewId], contextFile.m_versionsToRelativeFiles.size());
-
-                        if (contextFile.m_versionsToRelativeFiles.contains(selectedVersion))
-                        {
-                            gluten::collapsing_header header(contextFile.m_fileName, false);
-                            if (m_reviewFilesLayout.render_layout_element_percent_horizontal(&header, 1.0f))
+                            if (asset.m_fileName.empty())
                             {
-                                video_element videoElement(workspaceManager->get_workspace_directory() / contextFile.m_versionsToRelativeFiles.at(selectedVersion), contextFile.m_fileId);
-                                m_reviewFilesLayout.render_layout_element_percent_horizontal(&videoElement, 0.75f);
+                                continue;
                             }
-                        }
-                    }
 
-                    for (const auto& reviewFile : selectedReview.m_reviewAssets)
-                    {
-                        if (reviewFile.m_fileName.empty())
-                        {
-                            continue;
-                        }
+                            const std::size_t selectedVersion = std::min(m_reviewToSelectedVersionMap[selectedReview.m_reviewId], asset.m_versionsToRelativeFiles.size());
 
-                        const std::size_t selectedVersion = std::min(m_reviewToSelectedVersionMap[selectedReview.m_reviewId], reviewFile.m_versionsToRelativeFiles.size());
-
-                        if (reviewFile.m_versionsToRelativeFiles.contains(selectedVersion))
-                        {
-                            gluten::collapsing_header header(reviewFile.m_fileName, false);
-                            if (m_reviewFilesLayout.render_layout_element_percent_horizontal(&header, 1.0f))
+                            if (asset.m_versionsToRelativeFiles.contains(selectedVersion))
                             {
-                                video_element videoElement(workspaceManager->get_workspace_directory() / reviewFile.m_versionsToRelativeFiles.at(selectedVersion), reviewFile.m_fileId);
-                                m_reviewFilesLayout.render_layout_element_percent_horizontal(&videoElement, 0.75f);
+                                gluten::collapsing_header header(asset.m_fileName, false);
+                                if (m_reviewFilesLayout.render_layout_element_percent_horizontal(&header, 1.0f))
+                                {
+                                    video_element videoElement(workspaceManager->get_workspace_directory() /
+                                                                   asset.m_versionsToRelativeFiles.at(selectedVersion),
+                                                               asset.m_fileId);
+                                    if (m_reviewFilesLayout.render_layout_element_percent_horizontal(&videoElement,
+                                                                                                     0.75f))
+                                    {
+                                        m_createCommentPopup = add_child_widget<create_comment_popup>(
+                                            this, m_userSettings->m_loggedInUser.m_userId, selectedReview.m_reviewId,
+                                            asset.m_fileId, videoElement.get_video_position());
+                                        m_createCommentPopup->open_popup();
+                                    }
+                                }
                             }
                         }
                     }

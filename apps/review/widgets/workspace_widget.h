@@ -75,4 +75,6 @@ private:
     gluten::button editUserButton = gluten::button("Edit " ICON_LC_PENCIL);
     gluten::button changePasswordButton = gluten::button("Change Password " ICON_LC_PENCIL);
     gluten::button deleteUserButton = gluten::button("Delete " ICON_LC_USER_ROUND_X);
+
+    std::shared_ptr<class create_comment_popup> m_createCommentPopup;
 };

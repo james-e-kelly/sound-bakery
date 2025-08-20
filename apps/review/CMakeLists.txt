@@ -21,6 +21,7 @@ set(review_SOURCES
   widgets/review_root_widget.cpp
   widgets/intro_widget.cpp
   widgets/workspace_widget.cpp
+  widgets/create_comment_popup.cpp
   widgets/create_project_popup.cpp
   widgets/create_review_popup.cpp
   widgets/update_review_popup.cpp
@@ -53,6 +54,7 @@ set(review_HEADERS
   widgets/review_root_widget.h
   widgets/intro_widget.h
   widgets/workspace_widget.h
+  widgets/create_comment_popup.h
   widgets/create_project_popup.h
   widgets/create_review_popup.h
   widgets/update_review_popup.h
