@@ -201,7 +201,7 @@ auto video_element::render_timeline() -> void
         {
             drawList->AddRectFilled(outDrag.Min, outDrag.Max,
                                     ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::interactive), 0.0f);
-        }
+        }        
     }
 
     m_videoControlsLayout.render_layout_element_pixels_horizontal(&m_videoDurationText, g_videoButtonsWidth);
@@ -236,7 +236,17 @@ auto video_element::render_comments() -> void
                             const float commentTimelineWidth = rightMiddle.x - leftMiddle.x;
                             const float commentPosition = leftMiddle.x + (commentTimelineWidth * (comment.m_timeStart / m_videoDuration));
 
-                            drawList->AddCircleFilled(ImVec2(commentPosition, leftMiddle.y), g_commentBubbleRadius, ImGui::ColorConvertFloat4ToU32(gluten::theme::purple50));
+                            if (commentPosition < 10000.0f)
+                            {
+                                ImRect circleRect(
+                                    commentPosition - g_commentBubbleRadius, leftMiddle.y - g_commentBubbleRadius,
+                                    commentPosition + g_commentBubbleRadius, leftMiddle.y + g_commentBubbleRadius);
+
+                                drawList->AddCircleFilled(ImVec2(commentPosition, leftMiddle.y), g_commentBubbleRadius,
+                                                          ImGui::ColorConvertFloat4ToU32(gluten::theme::purple50));
+                                ImGui::ItemAdd(circleRect, ImGui::GetID(comment.m_commentId));
+                                ImGui::SetItemTooltip(comment.m_comment.c_str());
+                            }
                         }
                     }
                 }
