@@ -236,7 +236,7 @@ auto video_element::render_comments() -> void
                             const float commentTimelineWidth = rightMiddle.x - leftMiddle.x;
                             const float commentPosition = leftMiddle.x + (commentTimelineWidth * (comment.m_timeStart / m_videoDuration));
 
-                            if (commentPosition < 10000.0f)
+                            if (std::abs(commentPosition) < 10000.0f)
                             {
                                 ImRect circleRect(
                                     commentPosition - g_commentBubbleRadius, leftMiddle.y - g_commentBubbleRadius,
