@@ -157,7 +157,7 @@ auto reviewer_display_element::render_element(const ImRect& parentRect) -> bool
                                                     : m_vote == review_vote::upvote ? ICON_LC_THUMBS_UP
                                                                                     : ICON_LC_THUMBS_DOWN);
 
-        if (ImDrawList* const drawList = ImGui::GetForegroundDrawList())
+        if (ImDrawList* const drawList = ImGui::GetWindowDrawList())
         {
             const ImU32 circleColor =
                 ImGui::GetColorU32(m_vote == review_vote::upvote     ? gluten::theme::carbon_g100::supportSuccess
