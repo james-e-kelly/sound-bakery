@@ -48,9 +48,9 @@ auto workspace_widget::start_implementation() -> void
 
     rightPanelLayout.set_layout_spacing(ImGui::GetStyle().FramePadding.y)
         .set_element_background_color(gluten::theme::carbon_g100::fieldHover02);
-    rightPanelLayout.get_element_anchor().minOffset.x -= g_rightPanelWidth;
     rightPanelLayout.get_element_anchor().minOffset.y += topHeaderHeight;
-    rightPanelLayout.get_element_anchor().maxOffset.x += g_rightPanelWidth;
+    rightPanelLayout.get_element_anchor().maxOffset.x += g_rightPanelWidth - 2.0f;
+    rightPanelLayout.set_element_translation(ImVec2(-g_rightPanelWidth, 0.0f));
 
     editReviewersButton.set_element_alignment(ImVec2(1.0f, -0.1f));
     editReviewersButton.set_element_translation(ImVec2(-ImGui::GetStyle().FramePadding.x, 0.0f));
@@ -761,7 +761,7 @@ void workspace_widget::render_reviewers(std::shared_ptr<workspace_manager>& work
         for (const auto& reviewer : reviewers.m_cache)
         {
             reviewer_display_element user(reviewer, selectedReview.m_reviewId);
-            rightPanelLayout.render_layout_element_percent_vertical(&user, 1.0f);
+            rightPanelLayout.render_layout_element_pixels_vertical(&user, rightPanelLayout.get_element_rect().GetWidth());
         }
     }
     else
