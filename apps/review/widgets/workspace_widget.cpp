@@ -875,7 +875,7 @@ auto workspace_widget::render_left_toolbar() -> void
     {
         buttonsLayout.render_window();
 
-        static auto create_toolbar_button = [activeView = m_activeView](const char* name, const char* icon, active_view active) 
+        static auto create_toolbar_button = [activeView = std::cref(m_activeView)](const char* name, const char* icon, active_view active) 
             {
                 gluten::icon_button iconButton(name, icon, gluten::fonts::regular_lucide_icons);
                 iconButton
