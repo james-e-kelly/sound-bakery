@@ -19,6 +19,9 @@ protected:
 
 private:
     auto render_content() -> void;
+    auto render_right_panel(std::shared_ptr<workspace_manager> &workspaceManager,
+                            const review_data &selectedReview,
+                            const user_data &selectedUser) -> void;
     void render_review_content(std::shared_ptr<workspace_manager> &workspaceManager, const review_data& selectedReview);
     void render_review_description(const review_data &selectedReview);
     void render_tests();
@@ -43,9 +46,8 @@ private:
     gluten::data_source<user_settings_data> m_userSettings;
 
 private:
-    gluten::layout verticalContentLayout = gluten::layout(gluten::layout::layout_type::top_to_bottom, gluten::element::anchor_preset::stretch_full);
     gluten::layout contentAndRightPanelLayout = gluten::layout(gluten::layout::layout_type::right_to_left, gluten::element::anchor_preset::stretch_full);
-    gluten::layout rightPanelBackground = gluten::layout(gluten::layout::layout_type::top_to_bottom, gluten::element::anchor_preset::stretch_full);
+    gluten::layout rightPanelLayout = gluten::layout(gluten::layout::layout_type::top_to_bottom, gluten::element::anchor_preset::stretch_right);
     gluten::layout contentVerticalLayout = gluten::layout(gluten::layout::layout_type::top_to_bottom, gluten::element::anchor_preset::stretch_full);
     gluten::layout buttonsLayout = gluten::layout(gluten::layout::layout_type::top_to_bottom, gluten::element::anchor_preset::stretch_full);
     gluten::layout leftUserPanel = gluten::layout(gluten::layout_type::top_to_bottom, gluten::anchor_preset::stretch_left);

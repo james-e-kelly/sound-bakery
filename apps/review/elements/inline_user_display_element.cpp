@@ -166,7 +166,7 @@ auto reviewer_display_element::render_element(const ImRect& parentRect) -> bool
                                                                      : gluten::theme::carbon_g100::layer01);
 
             ImVec2 avatarCenter = avatar.get_element_rect().GetCenter();
-            avatarCenter.y -= 420.0f;  // TODO: Why do we need this? Why is the center wrong?
+            avatarCenter.y -= 460.0f;  // TODO: Why do we need this? Why is the center wrong?
             drawList->AddCircle(avatarCenter, avatar.get_element_rect().GetSize().x / 2.0f, circleColor, 0, 4.0f);
         }
     }

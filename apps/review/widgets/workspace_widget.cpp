@@ -24,8 +24,8 @@ namespace
     constexpr float leftToolbarHalfButtonHeight = leftToolbarButtonHeight / 2.0f;
     constexpr float descriptionBoxHeight        = topHeaderHeight * 2.0f;
 
-    constexpr float itemListWidth = leftToobarWidth * 5.0f;
-    constexpr float rightPanelWidth = leftToobarWidth * 1.0f;
+    constexpr float g_itemListWidth = leftToobarWidth * 5.0f;
+    constexpr float g_rightPanelWidth = leftToobarWidth * 1.0f;
 }
 
 auto workspace_widget::start_implementation() -> void
@@ -37,15 +37,26 @@ auto workspace_widget::start_implementation() -> void
 
     m_workspaceManager = get_app()->get_manager_by_class<workspace_manager>();
 
-    topContentBarBackground.set_element_background_color(gluten::theme::carbon_g100::fieldHover02);
+    topContentBarBackground
+        .set_element_background_color(gluten::theme::carbon_g100::fieldHover02)
+        .set_element_anchor_preset(gluten::anchor_preset::stretch_top);
+    topContentBarBackground.get_element_anchor().maxOffset.y += topHeaderHeight;
 
     reviewContent.set_element_frame_padding();
     reviewContent.get_element_anchor().maxOffset.y -= 20.0f;
     buttonsLayout.get_element_anchor().max.x += 0.1f;
     breadcrumbText.set_element_content_font_size(gluten::g_baseFontSize * 2.0f)
         .set_element_translation(ImVec2(5, 0.0f));
-    rightPanelBackground.set_layout_spacing(ImGui::GetStyle().FramePadding.y)
-        .set_element_background_color(gluten::theme::carbon_g100::fieldHover03);
+
+    rightPanelLayout.set_layout_spacing(ImGui::GetStyle().FramePadding.y)
+        .set_element_background_color(gluten::theme::carbon_g100::fieldHover02);
+    rightPanelLayout.get_element_anchor().minOffset.x -= g_rightPanelWidth;
+    rightPanelLayout.get_element_anchor().minOffset.y += topHeaderHeight;
+    rightPanelLayout.get_element_anchor().maxOffset.x += g_rightPanelWidth;
+
+    //contentVerticalLayout.get_element_anchor().maxOffset.y -= 5.0f;
+    contentVerticalLayout.set_element_padding(ImVec2(5.0f, 5.0f));
+
     editReviewersButton.set_element_alignment(ImVec2(1.0f, -0.1f));
     editReviewersButton.set_element_translation(ImVec2(-ImGui::GetStyle().FramePadding.x, 0.0f));
     innerDescriptionBox.set_layout_type(gluten::layout::layout_type::top_to_bottom)
@@ -105,7 +116,7 @@ auto workspace_widget::render_list() -> void
         return;
     }
 
-    if (ImGui::BeginChild("ItemsPanel", ImVec2(itemListWidth, 0), ImGuiChildFlags_ResizeX))
+    if (ImGui::BeginChild("ItemsPanel", ImVec2(g_itemListWidth, 0), ImGuiChildFlags_ResizeX))
     {
         gluten::element topToolbar(gluten::element::anchor_preset::stretch_top);
         topToolbar.get_element_anchor().maxOffset.y = leftToobarWidth;
@@ -308,95 +319,111 @@ auto workspace_widget::render_content() -> void
 
     std::shared_ptr<workspace_manager> workspaceManager = m_workspaceManager.lock();
 
-    if (ImGui::BeginChild("Content") && workspaceManager)
+    if (ImGui::BeginChild("ContentContainer", ImVec2(0, 0), ImGuiChildFlags_None, ImGuiWindowFlags_NoScrollbar))
     {
         const project_data& selectedProject = workspaceManager->get_selected_project();
         const review_data& selectedReview   = workspaceManager->get_selected_review();
         const user_data& selectedUser       = workspaceManager->get_selected_user();
-
-        verticalContentLayout.render_window();
-
+        
         render_top_content_bar(workspaceManager, selectedProject, selectedReview);
+        render_right_panel(workspaceManager, selectedReview, selectedUser);
 
-        verticalContentLayout.render_layout_element_remaining(&contentAndRightPanelLayout);
+        ImGui::SetCursorScreenPos(topContentBarBackground.get_element_rect().GetBL());
 
-        contentAndRightPanelLayout.render_layout_element_pixels_horizontal(selectedUser.m_email.empty() ? &rightPanelBackground : nullptr, rightPanelWidth);
-        contentAndRightPanelLayout.render_layout_element_remaining(&mainContentParent);
-        contentVerticalLayout.render(mainContentParent.get_element_rect());
-
-        if (selectedReview.m_reviewId)
+        if (ImGui::BeginChild("Content", ImVec2(ImGui::GetWindowWidth() - g_rightPanelWidth, ImGui::GetWindowHeight() - (topHeaderHeight * 1.25f)), 0, 0))
         {
-            render_reviewers(workspaceManager, selectedReview, selectedUser);
-            render_tests();
-            render_review_description(selectedReview);
-            render_review_content(workspaceManager, selectedReview);
-        }
-        else if (!selectedUser.m_email.empty())
-        {
-            constexpr float avatarSize = 300.0f;
-            constexpr float paddingSize = 10.0f;
-            constexpr float textSize    = 20.0f;
-            constexpr float buttonSize  = textSize * 2.0f;
+            contentVerticalLayout.render(ImGui::GetCurrentWindow()->WorkRect);
 
-            user_avatar_element userAvatar(selectedUser.m_email);
-            gluten::text userDisplayNameText(selectedUser.m_displayName, ImVec2(), gluten::anchor_preset::stretch_full);
-            gluten::text userTitleText(selectedUser.m_title, ImVec2(), gluten::anchor_preset::stretch_full);
-            gluten::text userEmailText(selectedUser.m_email, ImVec2(), gluten::anchor_preset::stretch_full);
-            gluten::text userRoleText(get_user_privileges_string(selectedUser.m_privileges), ImVec2(), gluten::anchor_preset::stretch_full);
-
-            gluten::anchor_info& layoutAnchor = leftUserPanel.get_element_anchor();
-            layoutAnchor.maxOffset.x          = avatarSize;
-            leftUserPanel.set_element_background_color(gluten::theme::carbon_g100::layer02);
-            leftUserPanel.set_layout_spacing(paddingSize);
-
-            gluten::anchor_info& anchor = userAvatar.get_element_anchor();
-            anchor.min                  = anchor.max = ImVec2(0, 0);
-            anchor.maxOffset            = ImVec2(avatarSize, avatarSize);
-            userAvatar.set_element_padding(ImVec2(paddingSize, paddingSize));
-            userAvatar.set_avatar_render(gluten::image_render::square);
-
-            userDisplayNameText.set_font(gluten::fonts::title).set_element_frame_padding();
-            userDisplayNameText.set_element_padding(ImVec2(paddingSize, 0.0f));
-            userTitleText.set_element_padding(ImVec2(paddingSize, 0.0f));
-            userEmailText.set_element_padding(ImVec2(paddingSize, 0.0f));
-            userRoleText.set_element_padding(ImVec2(paddingSize, 0.0f));
-            editUserButton.set_element_translation(ImVec2(paddingSize, 0.0f));
-            changePasswordButton.set_element_translation(ImVec2(paddingSize, 0.0f));
-            deleteUserButton.set_element_translation(ImVec2(paddingSize, 0.0f));
-
-            leftUserPanel.render(mainContentParent.get_element_rect());
-            leftUserPanel.render_layout_element_pixels_vertical(&userAvatar, avatarSize);
-            leftUserPanel.render_layout_element_pixels_vertical(&userDisplayNameText, textSize);
-            leftUserPanel.render_layout_element_pixels_vertical(&userTitleText, textSize);
-            leftUserPanel.render_layout_element_pixels_vertical(&userEmailText, textSize);
-            leftUserPanel.render_layout_element_pixels_vertical(&userRoleText, textSize);
-
-            ImGui::BeginDisabled(m_userSettings->m_loggedInUser.m_email != selectedUser.m_email && m_userSettings->m_loggedInUser.m_privileges != user_privileges::admin);
-            leftUserPanel.render_layout_element_pixels_vertical(&editUserButton, buttonSize);
-
-            if (m_userSettings->m_loggedInUser.m_email == selectedUser.m_email || m_userSettings->m_loggedInUser.m_privileges == user_privileges::admin)
+            if (selectedReview.m_reviewId)
             {
-                leftUserPanel.render_layout_element_pixels_vertical(&changePasswordButton, buttonSize);
-
-                gluten::imgui::scoped_color_stack deleteButtonColors(ImGuiCol_Button, gluten::theme::red60, ImGuiCol_ButtonHovered, gluten::theme::red50, ImGuiCol_ButtonActive, gluten::theme::red70);
-                if (leftUserPanel.render_layout_element_pixels_vertical(&deleteUserButton, buttonSize))
-                {
-                    static std::shared_ptr<gluten::confirmation_popup> confirmUserDeletionPopup;
-                    confirmUserDeletionPopup = add_child_widget<gluten::confirmation_popup>(false, "Delete User?", [weakWorkspaceManager = m_workspaceManager, email = selectedUser.m_email]() 
-                        {
-                            if (std::shared_ptr<workspace_manager> workspaceManager = weakWorkspaceManager.lock())
-                            {
-                                workspaceManager->delete_user(email);
-                            }
-                        });
-                    confirmUserDeletionPopup->open_popup();
-                }
+                render_review_description(selectedReview);
+                render_review_content(workspaceManager, selectedReview);
             }
+            else if (!selectedUser.m_email.empty())
+            {
+                constexpr float avatarSize  = 300.0f;
+                constexpr float paddingSize = 10.0f;
+                constexpr float textSize    = 20.0f;
+                constexpr float buttonSize  = textSize * 2.0f;
 
-            ImGui::EndDisabled();
+                user_avatar_element userAvatar(selectedUser.m_email);
+                gluten::text userDisplayNameText(selectedUser.m_displayName, ImVec2(),
+                                                 gluten::anchor_preset::stretch_full);
+                gluten::text userTitleText(selectedUser.m_title, ImVec2(), gluten::anchor_preset::stretch_full);
+                gluten::text userEmailText(selectedUser.m_email, ImVec2(), gluten::anchor_preset::stretch_full);
+                gluten::text userRoleText(get_user_privileges_string(selectedUser.m_privileges), ImVec2(),
+                                          gluten::anchor_preset::stretch_full);
+
+                gluten::anchor_info& layoutAnchor = leftUserPanel.get_element_anchor();
+                layoutAnchor.maxOffset.x          = avatarSize;
+                leftUserPanel.set_element_background_color(gluten::theme::carbon_g100::layer02);
+                leftUserPanel.set_layout_spacing(paddingSize);
+
+                gluten::anchor_info& anchor = userAvatar.get_element_anchor();
+                anchor.min = anchor.max = ImVec2(0, 0);
+                anchor.maxOffset        = ImVec2(avatarSize, avatarSize);
+                userAvatar.set_element_padding(ImVec2(paddingSize, paddingSize));
+                userAvatar.set_avatar_render(gluten::image_render::square);
+
+                userDisplayNameText.set_font(gluten::fonts::title).set_element_frame_padding();
+                userDisplayNameText.set_element_padding(ImVec2(paddingSize, 0.0f));
+                userTitleText.set_element_padding(ImVec2(paddingSize, 0.0f));
+                userEmailText.set_element_padding(ImVec2(paddingSize, 0.0f));
+                userRoleText.set_element_padding(ImVec2(paddingSize, 0.0f));
+                editUserButton.set_element_translation(ImVec2(paddingSize, 0.0f));
+                changePasswordButton.set_element_translation(ImVec2(paddingSize, 0.0f));
+                deleteUserButton.set_element_translation(ImVec2(paddingSize, 0.0f));
+
+                leftUserPanel.render(mainContentParent.get_element_rect());
+                leftUserPanel.render_layout_element_pixels_vertical(&userAvatar, avatarSize);
+                leftUserPanel.render_layout_element_pixels_vertical(&userDisplayNameText, textSize);
+                leftUserPanel.render_layout_element_pixels_vertical(&userTitleText, textSize);
+                leftUserPanel.render_layout_element_pixels_vertical(&userEmailText, textSize);
+                leftUserPanel.render_layout_element_pixels_vertical(&userRoleText, textSize);
+
+                ImGui::BeginDisabled(m_userSettings->m_loggedInUser.m_email != selectedUser.m_email &&
+                                     m_userSettings->m_loggedInUser.m_privileges != user_privileges::admin);
+                leftUserPanel.render_layout_element_pixels_vertical(&editUserButton, buttonSize);
+
+                if (m_userSettings->m_loggedInUser.m_email == selectedUser.m_email ||
+                    m_userSettings->m_loggedInUser.m_privileges == user_privileges::admin)
+                {
+                    leftUserPanel.render_layout_element_pixels_vertical(&changePasswordButton, buttonSize);
+
+                    gluten::imgui::scoped_color_stack deleteButtonColors(ImGuiCol_Button, gluten::theme::red60,
+                                                                         ImGuiCol_ButtonHovered, gluten::theme::red50,
+                                                                         ImGuiCol_ButtonActive, gluten::theme::red70);
+                    if (leftUserPanel.render_layout_element_pixels_vertical(&deleteUserButton, buttonSize))
+                    {
+                        static std::shared_ptr<gluten::confirmation_popup> confirmUserDeletionPopup;
+                        confirmUserDeletionPopup = add_child_widget<gluten::confirmation_popup>(
+                            false, "Delete User?",
+                            [weakWorkspaceManager = m_workspaceManager, email = selectedUser.m_email]()
+                            {
+                                if (std::shared_ptr<workspace_manager> workspaceManager = weakWorkspaceManager.lock())
+                                {
+                                    workspaceManager->delete_user(email);
+                                }
+                            });
+                        confirmUserDeletionPopup->open_popup();
+                    }
+                }
+
+                ImGui::EndDisabled();
+            }
         }
+        ImGui::EndChild();
     }
     ImGui::EndChild();
+}
+
+auto workspace_widget::render_right_panel(std::shared_ptr<workspace_manager>& workspaceManager,
+                                          const review_data& selectedReview,
+                                          const user_data& selectedUser) -> void
+{
+    rightPanelLayout.render_window();
+    render_reviewers(workspaceManager, selectedReview, selectedUser);
+    // render_tests();
 }
 
 void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>& workspaceManager,
@@ -404,263 +431,241 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
 {
     contentVerticalLayout.render_layout_element_remaining(&reviewContent);
 
-    if (ImGui::BeginChild("ReviewContent", reviewContent.get_element_rect().GetSize(), 0, ImGuiWindowFlags_NoScrollbar))
+    if (ImGui::BeginTabBar("Tabs"))
     {
-        if (ImGui::BeginTabBar("Tabs"))
+        if (ImGui::BeginTabItem("Files"))
         {
-            if (ImGui::BeginTabItem("Files"))
+            ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
+
+            static std::unordered_map<int64_t, std::size_t> m_reviewToSelectedVersionMap;
+
+            if (!m_reviewToSelectedVersionMap.contains(selectedReview.m_reviewId))
             {
-                ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
-
-                static std::unordered_map<int64_t, std::size_t> m_reviewToSelectedVersionMap;
-
-                if (!m_reviewToSelectedVersionMap.contains(selectedReview.m_reviewId))
-                {
-                    m_reviewToSelectedVersionMap[selectedReview.m_reviewId] = 1;
-                }
-
-                const std::size_t maxVersions = std::max(selectedReview.m_relativeContextFiles.size(), selectedReview.m_reviewAssets.size()) + 1;
-
-                if (ImGui::BeginCombo("Review Version", fmt::format("#{}", m_reviewToSelectedVersionMap[selectedReview.m_reviewId]).c_str()))
-                {
-                    for (std::size_t versionIndex = 1; versionIndex < maxVersions; ++versionIndex)
-                    {
-                        if (ImGui::Selectable(fmt::format("#{}", versionIndex).c_str()))
-                        {
-                            m_reviewToSelectedVersionMap[selectedReview.m_reviewId] = versionIndex;
-                        }
-                    }
-
-                    ImGui::EndCombo();
-                }
-
-                ImGui::SameLine(0.0f, 10.0f);
-
-                if (ImGui::Button(ICON_LC_PLUS " Version"))
-                {
-
-                }
-
-                ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
-
-                if (ImGui::BeginChild("FilesChild", ImVec2(), ImGuiChildFlags_None,
-                                        ImGuiWindowFlags_AlwaysVerticalScrollbar))
-                {
-                    const ImVec2 currentCursorPos = ImGui::GetCursorScreenPos();
-                    const float width             = reviewContent.get_element_rect().GetSize().x - 25.0f;
-                    ImRect reviewFilesRect(currentCursorPos, ImVec2(currentCursorPos.x + width, currentCursorPos.y));
-                    m_reviewFilesLayout.render(reviewFilesRect);
-
-                    m_reviewFilesLayout.set_layout_spacing(0.0f);
-
-                    for (const auto& assetRef : {std::cref(selectedReview.m_relativeContextFiles), std::cref(selectedReview.m_reviewAssets)})
-                    {
-                        for (const auto& asset : assetRef.get())
-                        {
-                            if (asset.m_fileName.empty())
-                            {
-                                continue;
-                            }
-
-                            const std::size_t selectedVersion = std::min(m_reviewToSelectedVersionMap[selectedReview.m_reviewId], asset.m_versionsToRelativeFiles.size());
-
-                            if (asset.m_versionsToRelativeFiles.contains(selectedVersion))
-                            {
-                                gluten::collapsing_header header(asset.m_fileName, false);
-                                if (m_reviewFilesLayout.render_layout_element_percent_horizontal(&header, 1.0f))
-                                {
-                                    video_element videoElement(workspaceManager->get_workspace_directory() /
-                                                                   asset.m_versionsToRelativeFiles.at(selectedVersion),
-                                                               asset.m_fileId);
-                                    if (m_reviewFilesLayout.render_layout_element_percent_horizontal(&videoElement,
-                                                                                                     0.7f))
-                                    {
-                                        m_createCommentPopup = add_child_widget<create_comment_popup>(
-                                            this, m_userSettings->m_loggedInUser.m_userId, selectedReview.m_reviewId,
-                                            asset.m_fileId, videoElement.get_video_position());
-                                        m_createCommentPopup->open_popup();
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    ImGui::EndChild();
-                }
-
-                ImGui::EndTabItem();
+                m_reviewToSelectedVersionMap[selectedReview.m_reviewId] = 1;
             }
 
-            if (ImGui::BeginTabItem("Comments"))
+            const std::size_t maxVersions = std::max(selectedReview.m_relativeContextFiles.size(), selectedReview.m_reviewAssets.size()) + 1;
+
+            if (ImGui::BeginCombo("Review Version", fmt::format("#{}", m_reviewToSelectedVersionMap[selectedReview.m_reviewId]).c_str()))
+            {
+                for (std::size_t versionIndex = 1; versionIndex < maxVersions; ++versionIndex)
+                {
+                    if (ImGui::Selectable(fmt::format("#{}", versionIndex).c_str()))
+                    {
+                        m_reviewToSelectedVersionMap[selectedReview.m_reviewId] = versionIndex;
+                    }
+                }
+
+                ImGui::EndCombo();
+            }
+
+            ImGui::SameLine(0.0f, 10.0f);
+
+            if (ImGui::Button(ICON_LC_PLUS " Version"))
+            {
+
+            }
+
+            ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
+
+            const ImVec2 currentCursorPos = ImGui::GetCursorScreenPos();
+            const float width             = reviewContent.get_element_rect().GetSize().x - 25.0f;
+            ImRect reviewFilesRect(currentCursorPos, ImVec2(currentCursorPos.x + width, currentCursorPos.y));
+            m_reviewFilesLayout.render(reviewFilesRect);
+
+            m_reviewFilesLayout.set_layout_spacing(0.0f);
+
+            for (const auto& assetRef : {std::cref(selectedReview.m_relativeContextFiles), std::cref(selectedReview.m_reviewAssets)})
+            {
+                for (const auto& asset : assetRef.get())
+                {
+                    if (asset.m_fileName.empty())
+                    {
+                        continue;
+                    }
+
+                    const std::size_t selectedVersion = std::min(m_reviewToSelectedVersionMap[selectedReview.m_reviewId], asset.m_versionsToRelativeFiles.size());
+
+                    if (asset.m_versionsToRelativeFiles.contains(selectedVersion))
+                    {
+                        gluten::collapsing_header header(asset.m_fileName, false);
+                        if (m_reviewFilesLayout.render_layout_element_percent_horizontal(&header, 1.0f))
+                        {
+                            video_element videoElement(workspaceManager->get_workspace_directory() /
+                                                            asset.m_versionsToRelativeFiles.at(selectedVersion),
+                                                        asset.m_fileId);
+                            if (m_reviewFilesLayout.render_layout_element_percent_horizontal(&videoElement,
+                                                                                                0.7f))
+                            {
+                                m_createCommentPopup = add_child_widget<create_comment_popup>(
+                                    this, m_userSettings->m_loggedInUser.m_userId, selectedReview.m_reviewId,
+                                    asset.m_fileId, videoElement.get_video_position());
+                                m_createCommentPopup->open_popup();
+                            }
+                        }
+                    }
+                }
+            }
+
+            ImGui::EndTabItem();
+        }
+
+        if (ImGui::BeginTabItem("Comments"))
+        {
+            ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
+
+            static bool newCommentOpen = false;
+
+            ImGui::BeginDisabled(newCommentOpen);
+            if (m_userSettings->m_loggedInUser.m_privileges > user_privileges::guest)
+            {
+                if (ImGui::Button(ICON_LC_PLUS))
+                {
+                    newCommentOpen = true;
+                }
+            }
+            ImGui::EndDisabled();
+
+            constexpr std::size_t commentBufferSize = 2045;
+            static char buffer[commentBufferSize]   = {0};
+
+            if (newCommentOpen)
             {
                 ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
 
-                static bool newCommentOpen = false;
+                bool wantsToAdd = false;
 
-                ImGui::BeginDisabled(newCommentOpen);
-                if (m_userSettings->m_loggedInUser.m_privileges > user_privileges::guest)
+                if (ImGui::GetIO().KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Enter))
                 {
-                    if (ImGui::Button(ICON_LC_PLUS))
-                    {
-                        newCommentOpen = true;
-                    }
+                    wantsToAdd = true;
                 }
-                ImGui::EndDisabled();
 
-                if (ImGui::BeginChild("CommentsChild", ImVec2(), ImGuiChildFlags_None,
-                                      ImGuiWindowFlags_AlwaysVerticalScrollbar))
+                ImGui::InputTextMultiline("Comment", buffer, commentBufferSize,
+                                            ImVec2(ImGui::GetWindowSize().x, 100.0f));
+
+                ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
+
+                wantsToAdd |= ImGui::Button("Add");
+
+                if (wantsToAdd)
                 {
+                    new_comment_data newComment = {0};
+                    newComment.m_reviewId       = selectedReview.m_reviewId;
+                    newComment.m_comment        = buffer;
+                    newComment.m_userId         = 1;
 
-                    constexpr std::size_t commentBufferSize = 2045;
-                    static char buffer[commentBufferSize]   = {0};
+                    workspaceManager->create_comment(newComment);
 
-                    if (newCommentOpen)
+                    buffer[0]      = '\0';
+                    newCommentOpen = false;
+                }
+
+                ImGui::SameLine(0.0f, 8.0f);
+
+                if (ImGui::Button("Cancel"))
+                {
+                    buffer[0]      = '\0';
+                    newCommentOpen = false;
+                }
+            }
+
+            ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
+
+            const auto& comments = workspaceManager->get_all_comments_for_review(selectedReview.m_reviewId);
+            if (comments.has_data())
+            {
+                for (const auto& comment : comments.m_cache)
+                {
+                    gluten::imgui::scoped_id id(comment.m_commentId);
+                    ImGui::TextWrapped(comment.m_comment.c_str());
+
+                    bool requestBreak = false;
+
+                    if (ImGui::BeginPopupContextItem(comment.m_comment.c_str()))
                     {
-                        ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
-
-                        bool wantsToAdd = false;
-
-                        if (ImGui::GetIO().KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Enter))
+                        if (ImGui::Selectable("Copy"))
                         {
-                            wantsToAdd = true;
+                            ImGui::SetClipboardText(comment.m_comment.c_str());
                         }
 
-                        ImGui::InputTextMultiline("Comment", buffer, commentBufferSize,
-                                                  ImVec2(ImGui::GetWindowSize().x, 100.0f));
-
-                        ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
-
-                        wantsToAdd |= ImGui::Button("Add");
-
-                        if (wantsToAdd)
+                        if (ImGui::Selectable("Delete"))
                         {
-                            new_comment_data newComment = {0};
-                            newComment.m_reviewId       = selectedReview.m_reviewId;
-                            newComment.m_comment        = buffer;
-                            newComment.m_userId         = 1;
-
-                            workspaceManager->create_comment(newComment);
-
-                            buffer[0]      = '\0';
-                            newCommentOpen = false;
+                            workspaceManager->delete_comment(comment.m_commentId);
+                            requestBreak = true;
                         }
-
-                        ImGui::SameLine(0.0f, 8.0f);
-
-                        if (ImGui::Button("Cancel"))
-                        {
-                            buffer[0]      = '\0';
-                            newCommentOpen = false;
-                        }
+                        ImGui::EndPopup();
                     }
-
                     ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
 
-                    const auto& comments = workspaceManager->get_all_comments_for_review(selectedReview.m_reviewId);
-                    if (comments.has_data())
+                    if (requestBreak)
                     {
-                        for (const auto& comment : comments.m_cache)
-                        {
-                            gluten::imgui::scoped_id id(comment.m_commentId);
-                            ImGui::TextWrapped(comment.m_comment.c_str());
-
-                            bool requestBreak = false;
-
-                            if (ImGui::BeginPopupContextItem(comment.m_comment.c_str()))
-                            {
-                                if (ImGui::Selectable("Copy"))
-                                {
-                                    ImGui::SetClipboardText(comment.m_comment.c_str());
-                                }
-
-                                if (ImGui::Selectable("Delete"))
-                                {
-                                    workspaceManager->delete_comment(comment.m_commentId);
-                                    requestBreak = true;
-                                }
-                                ImGui::EndPopup();
-                            }
-                            ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
-
-                            if (requestBreak)
-                            {
-                                break;
-                            }
-                        }
+                        break;
                     }
-                    else
-                    {
-                        gluten::loading_spinner loading;
-                        loading.render_cursor();
-                    }
-                    ImGui::EndChild();
                 }
-
-                ImGui::EndTabItem();
             }
-
-            if (ImGui::BeginTabItem("Activity"))
+            else
             {
-                if (ImGui::BeginChild("ActivityChild", ImVec2(), ImGuiChildFlags_None,
-                                      ImGuiWindowFlags_AlwaysVerticalScrollbar))
+                gluten::loading_spinner loading;
+                loading.render_cursor();
+            }
+
+            ImGui::EndTabItem();
+        }
+
+        if (ImGui::BeginTabItem("Activity"))
+        {
+            const auto& reviewsActivity =
+                workspaceManager->get_all_activity_for_review(selectedReview.m_reviewId);
+            if (reviewsActivity.has_data())
+            {
+                for (const auto& iter : reviewsActivity.m_cache)
                 {
+                    std::istringstream in(iter.m_activityTimestamp);
+                    std::chrono::sys_seconds tp;
+                    in >> std::chrono::parse("%F %T", tp);
 
-                    const auto& reviewsActivity =
-                        workspaceManager->get_all_activity_for_review(selectedReview.m_reviewId);
-                    if (reviewsActivity.has_data())
+                    auto now  = std::chrono::floor<std::chrono::seconds>(std::chrono::system_clock::now());
+                    auto diff = now - tp;
+
+                    using namespace std::literals::chrono_literals;
+
+                    std::string activityTimeText;
+
+                    if (diff < 1min)
                     {
-                        for (const auto& iter : reviewsActivity.m_cache)
-                        {
-                            std::istringstream in(iter.m_activityTimestamp);
-                            std::chrono::sys_seconds tp;
-                            in >> std::chrono::parse("%F %T", tp);
-
-                            auto now  = std::chrono::floor<std::chrono::seconds>(std::chrono::system_clock::now());
-                            auto diff = now - tp;
-
-                            using namespace std::literals::chrono_literals;
-
-                            std::string activityTimeText;
-
-                            if (diff < 1min)
-                            {
-                                activityTimeText = "less than 1 minute ago";
-                            }
-                            else if (diff <= 60min)
-                            {
-                                activityTimeText =
-                                    std::to_string(duration_cast<std::chrono::minutes>(diff).count()) + " minutes ago";
-                            }
-                            else if (diff < 24h)
-                            {
-                                activityTimeText =
-                                    std::to_string(duration_cast<std::chrono::hours>(diff).count()) + " hours ago";
-                            }
-                            else
-                            {
-                                auto days = duration_cast<std::chrono::duration<int, std::ratio<86400>>>(diff).count();
-                                activityTimeText = std::to_string(days) + " day" + (days > 1 ? "s" : "") + " ago";
-                            }
-
-                            ImGui::Dummy(ImVec2(0, ImGui::GetStyle().FramePadding.y));
-                            ImGui::Text(fmt::format("{} {}", iter.m_activityText, activityTimeText).c_str());
-                        }
+                        activityTimeText = "less than 1 minute ago";
+                    }
+                    else if (diff <= 60min)
+                    {
+                        activityTimeText =
+                            std::to_string(duration_cast<std::chrono::minutes>(diff).count()) + " minutes ago";
+                    }
+                    else if (diff < 24h)
+                    {
+                        activityTimeText =
+                            std::to_string(duration_cast<std::chrono::hours>(diff).count()) + " hours ago";
                     }
                     else
                     {
-                        gluten::loading_spinner loading;
-                        loading.render_cursor();
+                        auto days = duration_cast<std::chrono::duration<int, std::ratio<86400>>>(diff).count();
+                        activityTimeText = std::to_string(days) + " day" + (days > 1 ? "s" : "") + " ago";
                     }
-                    ImGui::EndChild();
-                }
 
-                ImGui::EndTabItem();
+                    ImGui::Dummy(ImVec2(0, ImGui::GetStyle().FramePadding.y));
+                    ImGui::Text(fmt::format("{} {}", iter.m_activityText, activityTimeText).c_str());
+                }
+            }
+            else
+            {
+                gluten::loading_spinner loading;
+                loading.render_cursor();
             }
 
-            ImGui::EndTabBar();
+            ImGui::EndTabItem();
         }
+
+        ImGui::EndTabBar();
     }
-    ImGui::EndChild();
 }
 
 void workspace_widget::render_review_description(const review_data& selectedReview)
@@ -749,20 +754,20 @@ void workspace_widget::render_reviewers(std::shared_ptr<workspace_manager>& work
 {
     const auto& reviewers = workspaceManager->get_users_for_review(selectedReview.m_reviewId);
 
-    rightPanelBackground.render_layout_element_pixels_vertical(nullptr, 2.0f);
+    rightPanelLayout.render_layout_element_pixels_vertical(nullptr, 2.0f);
         
     if (reviewers.has_data())
     {
         for (const auto& reviewer : reviewers.m_cache)
         {
             reviewer_display_element user(reviewer, selectedReview.m_reviewId);
-            rightPanelBackground.render_layout_element_percent_vertical(&user, 1.0f);
+            rightPanelLayout.render_layout_element_percent_vertical(&user, 1.0f);
         }
     }
     else
     {
         gluten::loading_spinner loading;
-        rightPanelBackground.render_layout_element_percent_vertical(&loading, 1.0f);
+        rightPanelLayout.render_layout_element_percent_vertical(&loading, 1.0f);
     }
 
     /*if (m_userSettings->m_loggedInUser.m_privileges > user_privileges::guest)
@@ -780,7 +785,7 @@ void workspace_widget::render_top_content_bar(std::shared_ptr<workspace_manager>
                                               const project_data& selectedProject,
                                               const review_data& selectedReview)
 {
-    verticalContentLayout.render_layout_element_pixels_vertical(&topContentBarBackground, topHeaderHeight);
+    topContentBarBackground.render_window();
 
     const auto& workspaceName = workspaceManager->get_workspace_name();
 
