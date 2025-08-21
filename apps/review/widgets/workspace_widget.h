@@ -51,7 +51,7 @@ private:
     gluten::layout contentVerticalLayout = gluten::layout(gluten::layout::layout_type::top_to_bottom, gluten::element::anchor_preset::stretch_full);
     gluten::layout buttonsLayout = gluten::layout(gluten::layout::layout_type::top_to_bottom, gluten::element::anchor_preset::stretch_full);
     gluten::layout leftUserPanel = gluten::layout(gluten::layout_type::top_to_bottom, gluten::anchor_preset::stretch_left);
-    gluten::layout innerDescriptionBox;
+    gluten::layout descriptionBoxLayout;
     gluten::layout scrutinyLayout;
     gluten::layout m_reviewFilesLayout = gluten::layout(gluten::layout_type::top_to_bottom, gluten::anchor_preset::stretch_full);
 
@@ -69,7 +69,6 @@ private:
     gluten::collapsing_header reviewersHeader = gluten::collapsing_header("Reviewers");
     gluten::collapsing_header testsHeader = gluten::collapsing_header("Tests");
 
-    gluten::background descriptionBox;
     gluten::background reviewContent;
 
     gluten::button editReviewersButton = gluten::button("Edit " ICON_LC_PENCIL, false, gluten::anchor_preset::right_top);

@@ -54,15 +54,12 @@ auto workspace_widget::start_implementation() -> void
     rightPanelLayout.get_element_anchor().minOffset.y += topHeaderHeight;
     rightPanelLayout.get_element_anchor().maxOffset.x += g_rightPanelWidth;
 
-    contentVerticalLayout.get_element_anchor().minOffset.x += 5.0f;
-    contentVerticalLayout.get_element_anchor().maxOffset.x -= 5.0f;
-    contentVerticalLayout.get_element_anchor().maxOffset.y -= 5.0f;
+    contentVerticalLayout.set_element_padding(ImVec2(8.0f, 8.0f));
 
     editReviewersButton.set_element_alignment(ImVec2(1.0f, -0.1f));
     editReviewersButton.set_element_translation(ImVec2(-ImGui::GetStyle().FramePadding.x, 0.0f));
-    innerDescriptionBox.set_layout_type(gluten::layout::layout_type::top_to_bottom)
-        .set_element_anchor_preset(gluten::element::anchor_preset::stretch_full)
-        .set_element_padding(ImGui::GetStyle().FramePadding);
+    descriptionBoxLayout.set_layout_type(gluten::layout::layout_type::top_to_bottom)
+        .set_element_anchor_preset(gluten::element::anchor_preset::stretch_full);
     titleText
         .set_font(gluten::fonts::title_lucide_icons)
         .set_element_content_font_size(gluten::g_baseFontSize * 1.5f);
@@ -671,8 +668,7 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
 
 void workspace_widget::render_review_description(const review_data& selectedReview)
 {
-    contentVerticalLayout.render_layout_element_pixels_vertical(&descriptionBox, 200.0f);
-    innerDescriptionBox.render(descriptionBox.get_element_rect());
+    contentVerticalLayout.render_layout_element_pixels_vertical(&descriptionBoxLayout, 200.0f);
 
     titleText.set_text(fmt::format("{}", selectedReview.m_reviewName));
     titleText.set_url(selectedReview.m_reviewTaskUrl);
@@ -683,12 +679,12 @@ void workspace_widget::render_review_description(const review_data& selectedRevi
     std::pair<std::string, int> votes = get_votes_string(selectedReview);
     votesText.set_text(fmt::format("     {}", votes.first));
 
-    innerDescriptionBox.render_layout_element_percent_vertical(&titleText, 0.2f);
-    innerDescriptionBox.render_layout_element_percent_vertical(&descriptionText, 0.16f);
-    innerDescriptionBox.render_layout_element_percent_vertical(&phaseText, 0.16f);
-    innerDescriptionBox.render_layout_element_percent_vertical(&qualityText, 0.16f);
+    descriptionBoxLayout.render_layout_element_percent_vertical(&titleText, 0.2f);
+    descriptionBoxLayout.render_layout_element_percent_vertical(&descriptionText, 0.16f);
+    descriptionBoxLayout.render_layout_element_percent_vertical(&phaseText, 0.16f);
+    descriptionBoxLayout.render_layout_element_percent_vertical(&qualityText, 0.16f);
     
-    innerDescriptionBox.render_layout_element_percent_vertical(&votesIconText, 0.16f);
+    descriptionBoxLayout.render_layout_element_percent_vertical(&votesIconText, 0.16f);
     
     {
         ImVec4 votesColor;
@@ -712,7 +708,7 @@ void workspace_widget::render_review_description(const review_data& selectedRevi
 
     gluten::imgui::scoped_color frameProgressBg(ImGuiCol_FrameBg, gluten::theme::carbon_g100::layer03);
 
-    innerDescriptionBox.render_layout_element_percent_vertical(&scrutinyLayout, 0.2f);
+    descriptionBoxLayout.render_layout_element_percent_vertical(&scrutinyLayout, 0.2f);
 
     constexpr float max       = ((int)review_phase::num) * ((int)review_quality::num);
     constexpr float third     = max * 0.33f;
@@ -724,11 +720,12 @@ void workspace_widget::render_review_description(const review_data& selectedRevi
                                                                          : value >= third   ? gluten::theme::yellow60
                                                                                             : gluten::theme::green60);
 
+    ImGui::SetCursorScreenPos(scrutinyLayout.get_element_rect().GetTL());
     ImGui::ProgressBar(fraction, scrutinyLayout.get_element_rect().GetSize(), "Scrutiny");
 
     if (m_userSettings->m_loggedInUser.m_privileges > user_privileges::guest)
     {
-        if (descriptionEditButton.render(innerDescriptionBox.get_element_rect()))
+        if (descriptionEditButton.render(descriptionBoxLayout.get_element_rect()))
         {
             static std::shared_ptr<update_review_popup> updateProjectPopup;
             updateProjectPopup = add_child_widget<update_review_popup>(false);
