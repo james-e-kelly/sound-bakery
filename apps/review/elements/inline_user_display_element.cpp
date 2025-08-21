@@ -117,7 +117,7 @@ auto user_avatar_element::render_element(const ImRect& parentRect) -> bool
 {
     static avatar_resolver resolver;
 
-    if (gluten::image* avatarImage = resolver.get_avatar_image(m_userEmailAddress, std::abs(parentRect.GetHeight()), m_render))
+    if (avatarImage = resolver.get_avatar_image(m_userEmailAddress, std::abs(parentRect.GetHeight()), m_render))
     {
         avatarImage->render(parentRect);
         return true;
@@ -158,16 +158,14 @@ auto reviewer_display_element::render_element(const ImRect& parentRect) -> bool
                                                                                     : ICON_LC_THUMBS_DOWN);
         ImGui::SetItemTooltip(tooltipText.c_str());
 
-        if (ImDrawList* const drawList = ImGui::GetWindowDrawList())
+        if (ImDrawList* const drawList = ImGui::GetForegroundDrawList())
         {
             const ImU32 circleColor =
                 ImGui::GetColorU32(m_vote == review_vote::upvote     ? gluten::theme::carbon_g100::supportSuccess
                                    : m_vote == review_vote::downvote ? gluten::theme::carbon_g100::supportError
                                                                      : gluten::theme::carbon_g100::layer01);
 
-            ImVec2 avatarCenter = avatar.get_element_rect().GetCenter();
-            avatarCenter.y -= 460.0f;  // TODO: Why do we need this? Why is the center wrong?
-            drawList->AddCircle(avatarCenter, avatar.get_element_rect().GetSize().x / 2.0f, circleColor, 0, 4.0f);
+            drawList->AddCircle(avatar.get_image_rect().GetCenter(), avatar.get_element_rect().GetSize().x / 2.0f, circleColor, 0, 4.0f);
         }
     }
 

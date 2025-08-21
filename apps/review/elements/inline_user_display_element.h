@@ -13,12 +13,18 @@ public:
 
     auto set_avatar_render(gluten::image_render render) -> void;
 
+    auto get_image_rect() const -> ImRect 
+    {
+        return avatarImage ? avatarImage->get_element_rect() : get_element_rect();
+    }
+
 protected:
     auto render_element(const ImRect& parentRect) -> bool override;
 
 private:
     gluten::image_render m_render = gluten::image_render::circular;
     std::string m_userEmailAddress;
+    gluten::image* avatarImage = nullptr;
 };
 
 class logged_in_user_element : public gluten::element
