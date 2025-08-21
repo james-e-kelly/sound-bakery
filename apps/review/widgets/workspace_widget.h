@@ -54,6 +54,7 @@ private:
     gluten::layout descriptionBoxLayout;
     gluten::layout scrutinyLayout;
     gluten::layout m_reviewFilesLayout = gluten::layout(gluten::layout_type::top_to_bottom, gluten::anchor_preset::stretch_full);
+    gluten::layout m_descriptionBoxButtonsLayout = gluten::layout(gluten::layout_type::right_to_left, gluten::anchor_preset::right_top);
 
     gluten::background topContentBarBackground;
     gluten::background mainContentParent;

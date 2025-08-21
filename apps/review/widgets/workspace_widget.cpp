@@ -72,6 +72,8 @@ auto workspace_widget::start_implementation() -> void
     scrutinyLayout.set_element_anchor_preset(gluten::element::anchor_preset::stretch_full);
     descriptionEditButton.set_element_alignment(ImVec2(1.0f, -0.0f));
     m_reviewFilesLayout.set_layout_spacing(20.0f);
+
+    m_descriptionBoxButtonsLayout.set_layout_spacing(8.0f);
 }
 
 auto workspace_widget::render_window_implementation() -> void
@@ -725,9 +727,11 @@ void workspace_widget::render_review_description(const review_data& selectedRevi
     ImGui::SetCursorScreenPos(scrutinyLayout.get_element_rect().GetTL());
     ImGui::ProgressBar(fraction, scrutinyLayout.get_element_rect().GetSize(), "Scrutiny");
 
+    m_descriptionBoxButtonsLayout.render(descriptionBoxLayout.get_element_rect());
+
     if (m_userSettings->m_loggedInUser.m_privileges > user_privileges::guest)
     {
-        if (descriptionEditButton.render(descriptionBoxLayout.get_element_rect()))
+        if (m_descriptionBoxButtonsLayout.render_layout_element_pixels_horizontal(&descriptionEditButton, 30.0f))
         {
             static std::shared_ptr<update_review_popup> updateProjectPopup;
             updateProjectPopup = add_child_widget<update_review_popup>(false);
@@ -738,6 +742,28 @@ void workspace_widget::render_review_description(const review_data& selectedRevi
                 updateProjectPopup->open_popup();
             }
         }
+    }
+
+    gluten::button downVoteButton(ICON_LC_THUMBS_DOWN);
+    gluten::button noVoteButton(ICON_LC_MINUS);
+    gluten::button upVoteButton(ICON_LC_THUMBS_UP);
+
+    if (m_descriptionBoxButtonsLayout.render_layout_element_pixels_horizontal(
+            &upVoteButton, 30.0f))
+    {
+        m_workspaceManager.lock()->set_user_vote_for_review(selectedReview.m_reviewId, m_userSettings->m_loggedInUser.m_userId, review_vote::upvote);
+    }
+
+    if (m_descriptionBoxButtonsLayout.render_layout_element_pixels_horizontal(
+            &noVoteButton, 30.0f))
+    {
+        m_workspaceManager.lock()->set_user_vote_for_review(selectedReview.m_reviewId, m_userSettings->m_loggedInUser.m_userId, review_vote::no_vote);
+    }
+
+    if (m_descriptionBoxButtonsLayout.render_layout_element_pixels_horizontal(
+            &downVoteButton, 30.0f))
+    {
+        m_workspaceManager.lock()->set_user_vote_for_review(selectedReview.m_reviewId, m_userSettings->m_loggedInUser.m_userId, review_vote::downvote);
     }
 }
 
