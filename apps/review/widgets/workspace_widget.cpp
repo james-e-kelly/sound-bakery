@@ -25,7 +25,7 @@ namespace
     constexpr float descriptionBoxHeight        = topHeaderHeight * 2.0f;
 
     constexpr float itemListWidth = leftToobarWidth * 5.0f;
-    constexpr float rightPanelWidth = leftToobarWidth * 4.0f;
+    constexpr float rightPanelWidth = leftToobarWidth * 1.0f;
 }
 
 auto workspace_widget::start_implementation() -> void
@@ -738,35 +738,34 @@ void workspace_widget::render_review_description(const review_data& selectedRevi
 
 void workspace_widget::render_tests()
 {
-    if (rightPanelBackground.render_layout_element_pixels_vertical(&testsHeader, 50.0f))
+    /*if (rightPanelBackground.render_layout_element_pixels_vertical(&testsHeader, 50.0f))
     {
-    }
+    }*/
 }
 
 void workspace_widget::render_reviewers(std::shared_ptr<workspace_manager>& workspaceManager,
                                         const review_data& selectedReview,
                                         const user_data& selectedUser)
 {
-    if (rightPanelBackground.render_layout_element_pixels_vertical(&reviewersHeader, 50.0f))
-    {
-        const auto& reviewers = workspaceManager->get_users_for_review(selectedReview.m_reviewId);
+    const auto& reviewers = workspaceManager->get_users_for_review(selectedReview.m_reviewId);
+
+    rightPanelBackground.render_layout_element_pixels_vertical(nullptr, 2.0f);
         
-        if (reviewers.has_data())
+    if (reviewers.has_data())
+    {
+        for (const auto& reviewer : reviewers.m_cache)
         {
-            for (const auto& reviewer : reviewers.m_cache)
-            {
-                reviewer_display_element user(reviewer, selectedReview.m_reviewId);
-                rightPanelBackground.render_layout_element_pixels_vertical(&user, 50.0f);
-            }
-        }
-        else
-        {
-            gluten::loading_spinner loading;
-            rightPanelBackground.render_layout_element_pixels_vertical(&loading, 50.0f);
+            reviewer_display_element user(reviewer, selectedReview.m_reviewId);
+            rightPanelBackground.render_layout_element_percent_vertical(&user, 1.0f);
         }
     }
+    else
+    {
+        gluten::loading_spinner loading;
+        rightPanelBackground.render_layout_element_percent_vertical(&loading, 1.0f);
+    }
 
-    if (m_userSettings->m_loggedInUser.m_privileges > user_privileges::guest)
+    /*if (m_userSettings->m_loggedInUser.m_privileges > user_privileges::guest)
     {
         if (editReviewersButton.render(reviewersHeader.get_element_rect()))
         {
@@ -774,7 +773,7 @@ void workspace_widget::render_reviewers(std::shared_ptr<workspace_manager>& work
             editReviewersPopup = add_child_widget<edit_reviewers_popup>(false, selectedReview);
             editReviewersPopup->open_popup();
         }
-    }
+    }*/
 }
 
 void workspace_widget::render_top_content_bar(std::shared_ptr<workspace_manager>& workspaceManager,

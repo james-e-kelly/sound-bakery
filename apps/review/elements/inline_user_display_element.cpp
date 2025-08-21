@@ -149,62 +149,24 @@ auto reviewer_display_element::render_element(const ImRect& parentRect) -> bool
     const bool renderingLoggedInUser = m_userSettings->m_loggedInUser.m_email == m_userEmailAddress;
 
     user_avatar_element avatar(m_userEmailAddress);
+    avatar.set_element_padding(ImVec2(5.0f, 0.0f));
     avatar.render(parentRect);
 
-    gluten::text userNameText({}, ImVec2(0.0f, 0.5f), element::anchor_preset::left_middle);
-
-    if (renderingLoggedInUser)
-    {
-        userNameText.set_text(m_userDisplayName);
-    }
-    else
-    {
-        userNameText.set_text(fmt::format("{}   {}", m_userDisplayName,
+    const std::string tooltipText = fmt::format("{} {}", m_userDisplayName,
                                           m_vote == review_vote::no_vote  ? ""
                                           : m_vote == review_vote::upvote ? ICON_LC_THUMBS_UP
-                                                                          : ICON_LC_THUMBS_DOWN));
-    }
+                                                                          : ICON_LC_THUMBS_DOWN);
+    ImGui::SetItemTooltip(tooltipText.c_str());
 
-    userNameText.set_element_translation(ImVec2(parentRect.GetHeight() + ImGui::GetStyle().FramePadding.x, 0.0f));
-    userNameText.render(parentRect);
-
-    gluten::button upvoteButton(ICON_LC_THUMBS_UP);
-    gluten::button clearVoteButton(ICON_LC_MINUS);
-    gluten::button downvoteButton(ICON_LC_THUMBS_DOWN);
-
-    gluten::layout buttonsLayout(gluten::layout_type::right_to_left, gluten::anchor_preset::stretch_right);
-    buttonsLayout.set_element_translation(ImVec2(-ImGui::GetStyle().FramePadding.x, 5.0f)); //< Slightly move the layout to make the buttons vertically align. Magic number, yes, but simple
-    buttonsLayout.set_layout_spacing(ImGui::GetStyle().FramePadding.x);
-    buttonsLayout.render(parentRect);
-
-    upvoteButton.set_element_active_color(gluten::theme::carbon_g100::supportSuccess);
-    clearVoteButton.set_element_active_color(gluten::theme::carbon_g100::supportWarning);
-    downvoteButton.set_element_active_color(gluten::theme::carbon_g100::supportError);
-
-    upvoteButton.set_element_active(m_vote == review_vote::upvote);
-    clearVoteButton.set_element_active(m_vote == review_vote::no_vote);
-    downvoteButton.set_element_active(m_vote == review_vote::downvote);
-
-    if (renderingLoggedInUser)
+    if (ImDrawList* const drawList = ImGui::GetWindowDrawList())
     {
-        if (std::shared_ptr<workspace_manager> workspaceManager =
-            gluten::app::get()->get_manager_by_class<workspace_manager>())
-        {
-            if (buttonsLayout.render_layout_element_pixels_horizontal(&upvoteButton, 30.0f))
-            {
-                workspaceManager->set_user_vote_for_review(m_reviewId, m_userId, review_vote::upvote);
-            }
+        const ImU32 circleColor = ImGui::GetColorU32(m_vote == review_vote::upvote     ? gluten::theme::carbon_g100::supportSuccess
+                            : m_vote == review_vote::downvote ? gluten::theme::carbon_g100::supportError
+                                                              : gluten::theme::carbon_g100::layer01);
 
-            if (buttonsLayout.render_layout_element_pixels_horizontal(&clearVoteButton, 30.0f))
-            {
-                workspaceManager->set_user_vote_for_review(m_reviewId, m_userId, review_vote::no_vote);
-            }
-            
-            if (buttonsLayout.render_layout_element_pixels_horizontal(&downvoteButton, 30.0f))
-            {
-                workspaceManager->set_user_vote_for_review(m_reviewId, m_userId, review_vote::downvote);
-            }
-        }
+        ImVec2 avatarCenter = avatar.get_element_rect().GetCenter();
+        avatarCenter.y -= 420.0f;   // TODO: Why do we need this? Why is the center wrong?
+        drawList->AddCircle(avatarCenter, avatar.get_element_rect().GetSize().x / 2.0f, circleColor, 0, 4.0f);
     }
 
     return false;
