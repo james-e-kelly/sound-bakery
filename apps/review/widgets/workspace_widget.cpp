@@ -42,8 +42,6 @@ auto workspace_widget::start_implementation() -> void
         .set_element_anchor_preset(gluten::anchor_preset::stretch_top);
     topContentBarBackground.get_element_anchor().maxOffset.y += topHeaderHeight;
 
-    reviewContent.set_element_frame_padding();
-    reviewContent.get_element_anchor().maxOffset.y -= 20.0f;
     buttonsLayout.get_element_anchor().max.x += 0.1f;
     breadcrumbText.set_element_content_font_size(gluten::g_baseFontSize * 2.0f)
         .set_element_translation(ImVec2(5, 0.0f));
@@ -335,7 +333,7 @@ auto workspace_widget::render_content() -> void
             if (selectedReview.m_reviewId)
             {
                 render_review_description(selectedReview);
-                contentVerticalLayout.render_layout_element_pixels_vertical(nullptr, 8.0f);
+                contentVerticalLayout.render_layout_element_pixels_vertical(nullptr, 16.0f);
                 render_review_content(workspaceManager, selectedReview);
             }
             else if (!selectedUser.m_email.empty())
