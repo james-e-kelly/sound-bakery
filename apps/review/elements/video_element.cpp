@@ -68,8 +68,8 @@ video_element::video_element(const std::filesystem::path& videoFile, int64_t fil
     m_videoDurationText.set_element_alignment(ImVec2(-0.f, -0.75f));
 
     m_videoButtonsLayout.set_element_alignment(ImVec2(-0.5f, 0.0f));
-    m_videoButtonsLayout.get_element_anchor().minOffset.x -= g_totalVideoButtonsWidth;
-    m_videoButtonsLayout.get_element_anchor().maxOffset.x += g_totalVideoButtonsWidth;
+    m_videoButtonsLayout.get_element_anchor().minOffset.x -= g_totalVideoButtonsWidth + (g_videoButtonsWidth * 2.0f);
+    m_videoButtonsLayout.get_element_anchor().maxOffset.x += g_totalVideoButtonsWidth + (g_videoButtonsWidth * 2.0f);
 
     m_videoCommentsLayout.set_element_padding(ImVec2(g_commentBubbleDiamter, 0.0f));
     m_videoTimelineLayout.set_element_padding(ImVec2(g_commentBubbleDiamter, 0.0f));
@@ -91,6 +91,9 @@ auto video_element::render_element(const ImRect& elementRect) -> bool
     m_videoDuration = videoSubsystem->get_video_duration(m_videoFile);
     m_videoPercent  = m_videoPosition / m_videoDuration;
 
+    m_videoPositionText.set_text(fmt::format("{:02d}:{:02d}", static_cast<int>(m_videoPosition) / 60, static_cast<int>(m_videoPosition) % 60));
+    m_videoDurationText.set_text(fmt::format("{:02d}:{:02d}", static_cast<int>(m_videoDuration) / 60, static_cast<int>(m_videoDuration) % 60));
+
     render_layouts(elementRect);
     const bool newComment = render_controls(videoSubsystem);
     render_timeline();
@@ -100,6 +103,8 @@ auto video_element::render_element(const ImRect& elementRect) -> bool
 
 auto video_element::render_controls(std::shared_ptr<video_subsystem>& videoSubsystem) -> bool
 {
+    m_videoButtonsLayout.render_layout_element_pixels_horizontal(&m_videoPositionText, g_videoButtonsWidth);
+
     if (m_videoButtonsLayout.render_layout_element_pixels_horizontal(&m_previousFrameButton, g_videoButtonsWidth))
     {
         videoSubsystem->set_video_prev_frame(m_videoFile);
@@ -132,14 +137,13 @@ auto video_element::render_controls(std::shared_ptr<video_subsystem>& videoSubsy
     }
     ImGui::SetItemTooltip("Next Frame");
 
+    m_videoButtonsLayout.render_layout_element_pixels_horizontal(&m_videoDurationText, g_videoButtonsWidth);
+
     return newComment;
 }
 
 auto video_element::render_timeline() -> void
 {
-    m_videoPositionText.set_text(fmt::format("{:02d}:{:02d}", static_cast<int>(m_videoPosition) / 60, static_cast<int>(m_videoPosition) % 60));
-    m_videoDurationText.set_text(fmt::format("{:02d}:{:02d}", static_cast<int>(m_videoDuration) / 60, static_cast<int>(m_videoDuration) % 60));
-
     const float timelineWidth = m_videoTimelineLayout.get_element_rect().GetWidth();
 
     ImVec2 progressLineStart = m_videoTimelineLayout.get_element_rect().GetTL();
@@ -195,8 +199,6 @@ auto video_element::render_timeline() -> void
                                     ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::interactive), 0.0f);
         }        
     }
-
-    m_videoControlsLayout.render_layout_element_pixels_horizontal(&m_videoDurationText, g_videoButtonsWidth);
 }
 
 auto video_element::render_comments() -> void
