@@ -52,8 +52,6 @@ auto workspace_widget::start_implementation() -> void
     rightPanelLayout.get_element_anchor().minOffset.y += topHeaderHeight;
     rightPanelLayout.get_element_anchor().maxOffset.x += g_rightPanelWidth;
 
-    contentVerticalLayout.set_element_padding(ImVec2(8.0f, 8.0f));
-
     editReviewersButton.set_element_alignment(ImVec2(1.0f, -0.1f));
     editReviewersButton.set_element_translation(ImVec2(-ImGui::GetStyle().FramePadding.x, 0.0f));
     descriptionBoxLayout.set_layout_type(gluten::layout::layout_type::top_to_bottom)
@@ -326,7 +324,12 @@ auto workspace_widget::render_content() -> void
 
         ImGui::SetCursorScreenPos(topContentBarBackground.get_element_rect().GetBL());
 
-        if (ImGui::BeginChild("Content", ImVec2(ImGui::GetWindowWidth() - g_rightPanelWidth, ImGui::GetWindowHeight() - (topHeaderHeight * 1.25f)), ImGuiChildFlags_AutoResizeY, 0))
+        gluten::imgui::scoped_style childPadding(ImGuiStyleVar_WindowPadding, ImVec2(8.0f, 8.0f));
+
+        if (ImGui::BeginChild("Content",
+                              ImVec2(ImGui::GetWindowWidth() - g_rightPanelWidth,
+                                     ImGui::GetWindowHeight() - (topHeaderHeight * 1.25f)),
+                              ImGuiChildFlags_AutoResizeY | ImGuiChildFlags_AlwaysUseWindowPadding, 0))
         {
             contentVerticalLayout.render(ImGui::GetCurrentWindow()->WorkRect);
 
