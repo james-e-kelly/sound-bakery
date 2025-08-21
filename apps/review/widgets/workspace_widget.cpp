@@ -729,41 +729,57 @@ void workspace_widget::render_review_description(const review_data& selectedRevi
 
     m_descriptionBoxButtonsLayout.render(descriptionBoxLayout.get_element_rect());
 
-    if (m_userSettings->m_loggedInUser.m_privileges > user_privileges::guest)
+    if (std::shared_ptr<workspace_manager> workspaceManager = m_workspaceManager.lock())
     {
-        if (m_descriptionBoxButtonsLayout.render_layout_element_pixels_horizontal(&descriptionEditButton, 30.0f))
+        if (m_userSettings->m_loggedInUser.m_privileges > user_privileges::guest)
         {
-            static std::shared_ptr<update_review_popup> updateProjectPopup;
-            updateProjectPopup = add_child_widget<update_review_popup>(false);
-
-            if (updateProjectPopup)
+            if (m_descriptionBoxButtonsLayout.render_layout_element_pixels_horizontal(&descriptionEditButton, 30.0f))
             {
-                updateProjectPopup->set_review_data(selectedReview);
-                updateProjectPopup->open_popup();
+                static std::shared_ptr<update_review_popup> updateProjectPopup;
+                updateProjectPopup = add_child_widget<update_review_popup>(false);
+
+                if (updateProjectPopup)
+                {
+                    updateProjectPopup->set_review_data(selectedReview);
+                    updateProjectPopup->open_popup();
+                }
             }
         }
-    }
 
-    gluten::button downVoteButton(ICON_LC_THUMBS_DOWN);
-    gluten::button noVoteButton(ICON_LC_MINUS);
-    gluten::button upVoteButton(ICON_LC_THUMBS_UP);
+        const auto& reviewers = workspaceManager->get_users_for_review(selectedReview.m_reviewId);
+        if (reviewers.has_data())
+        {
+            const auto foundIter = std::find_if(reviewers.m_cache.begin(), reviewers.m_cache.end(),
+                         [loggedInUserId = m_userSettings->m_loggedInUser.m_userId](const reviewer_data& reviewer) 
+                {
+                    return reviewer.m_userId == loggedInUserId;
+                });
 
-    if (m_descriptionBoxButtonsLayout.render_layout_element_pixels_horizontal(
-            &upVoteButton, 30.0f))
-    {
-        m_workspaceManager.lock()->set_user_vote_for_review(selectedReview.m_reviewId, m_userSettings->m_loggedInUser.m_userId, review_vote::upvote);
-    }
+            if (foundIter != reviewers.m_cache.end())
+            {
+                gluten::button downVoteButton(ICON_LC_THUMBS_DOWN);
+                gluten::button noVoteButton(ICON_LC_MINUS);
+                gluten::button upVoteButton(ICON_LC_THUMBS_UP);
 
-    if (m_descriptionBoxButtonsLayout.render_layout_element_pixels_horizontal(
-            &noVoteButton, 30.0f))
-    {
-        m_workspaceManager.lock()->set_user_vote_for_review(selectedReview.m_reviewId, m_userSettings->m_loggedInUser.m_userId, review_vote::no_vote);
-    }
+                if (m_descriptionBoxButtonsLayout.render_layout_element_pixels_horizontal(
+                        &upVoteButton, 30.0f))
+                {
+                    workspaceManager->set_user_vote_for_review(selectedReview.m_reviewId, m_userSettings->m_loggedInUser.m_userId, review_vote::upvote);
+                }
 
-    if (m_descriptionBoxButtonsLayout.render_layout_element_pixels_horizontal(
-            &downVoteButton, 30.0f))
-    {
-        m_workspaceManager.lock()->set_user_vote_for_review(selectedReview.m_reviewId, m_userSettings->m_loggedInUser.m_userId, review_vote::downvote);
+                if (m_descriptionBoxButtonsLayout.render_layout_element_pixels_horizontal(
+                        &noVoteButton, 30.0f))
+                {
+                    workspaceManager->set_user_vote_for_review(selectedReview.m_reviewId, m_userSettings->m_loggedInUser.m_userId, review_vote::no_vote);
+                }
+
+                if (m_descriptionBoxButtonsLayout.render_layout_element_pixels_horizontal(
+                        &downVoteButton, 30.0f))
+                {
+                    workspaceManager->set_user_vote_for_review(selectedReview.m_reviewId, m_userSettings->m_loggedInUser.m_userId, review_vote::downvote);
+                }
+            }
+        }
     }
 }
 
