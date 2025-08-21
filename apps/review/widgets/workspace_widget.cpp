@@ -54,8 +54,9 @@ auto workspace_widget::start_implementation() -> void
     rightPanelLayout.get_element_anchor().minOffset.y += topHeaderHeight;
     rightPanelLayout.get_element_anchor().maxOffset.x += g_rightPanelWidth;
 
-    //contentVerticalLayout.get_element_anchor().maxOffset.y -= 5.0f;
-    contentVerticalLayout.set_element_padding(ImVec2(5.0f, 5.0f));
+    contentVerticalLayout.get_element_anchor().minOffset.x += 5.0f;
+    contentVerticalLayout.get_element_anchor().maxOffset.x -= 5.0f;
+    contentVerticalLayout.get_element_anchor().maxOffset.y -= 5.0f;
 
     editReviewersButton.set_element_alignment(ImVec2(1.0f, -0.1f));
     editReviewersButton.set_element_translation(ImVec2(-ImGui::GetStyle().FramePadding.x, 0.0f));
@@ -330,7 +331,7 @@ auto workspace_widget::render_content() -> void
 
         ImGui::SetCursorScreenPos(topContentBarBackground.get_element_rect().GetBL());
 
-        if (ImGui::BeginChild("Content", ImVec2(ImGui::GetWindowWidth() - g_rightPanelWidth, ImGui::GetWindowHeight() - (topHeaderHeight * 1.25f)), 0, 0))
+        if (ImGui::BeginChild("Content", ImVec2(ImGui::GetWindowWidth() - g_rightPanelWidth, ImGui::GetWindowHeight() - (topHeaderHeight * 1.25f)), ImGuiChildFlags_AutoResizeY, 0))
         {
             contentVerticalLayout.render(ImGui::GetCurrentWindow()->WorkRect);
 
