@@ -120,13 +120,13 @@ auto user_avatar_element::render_element(const ImRect& parentRect) -> bool
     if (gluten::image* avatarImage = resolver.get_avatar_image(m_userEmailAddress, std::abs(parentRect.GetHeight()), m_render))
     {
         avatarImage->render(parentRect);
+        return true;
     }
     else
     {
         ImSpinner::SpinnerAngEclipse("##Loading", ImGui::GetFontSize() / 2.0f, 2.0f, gluten::theme::white, 8.0f);
+        return false;
     }
-
-    return false;
 }
 
 auto logged_in_user_element::render_element(const ImRect& parentRect) -> bool
@@ -150,23 +150,25 @@ auto reviewer_display_element::render_element(const ImRect& parentRect) -> bool
 
     user_avatar_element avatar(m_userEmailAddress);
     avatar.set_element_padding(ImVec2(5.0f, 0.0f));
-    avatar.render(parentRect);
-
-    const std::string tooltipText = fmt::format("{} {}", m_userDisplayName,
-                                          m_vote == review_vote::no_vote  ? ""
-                                          : m_vote == review_vote::upvote ? ICON_LC_THUMBS_UP
-                                                                          : ICON_LC_THUMBS_DOWN);
-    ImGui::SetItemTooltip(tooltipText.c_str());
-
-    if (ImDrawList* const drawList = ImGui::GetWindowDrawList())
+    if (avatar.render(parentRect))
     {
-        const ImU32 circleColor = ImGui::GetColorU32(m_vote == review_vote::upvote     ? gluten::theme::carbon_g100::supportSuccess
-                            : m_vote == review_vote::downvote ? gluten::theme::carbon_g100::supportError
-                                                              : gluten::theme::carbon_g100::layer01);
+        const std::string tooltipText = fmt::format("{} {}", m_userDisplayName,
+                                                    m_vote == review_vote::no_vote  ? ""
+                                                    : m_vote == review_vote::upvote ? ICON_LC_THUMBS_UP
+                                                                                    : ICON_LC_THUMBS_DOWN);
+        ImGui::SetItemTooltip(tooltipText.c_str());
 
-        ImVec2 avatarCenter = avatar.get_element_rect().GetCenter();
-        avatarCenter.y -= 420.0f;   // TODO: Why do we need this? Why is the center wrong?
-        drawList->AddCircle(avatarCenter, avatar.get_element_rect().GetSize().x / 2.0f, circleColor, 0, 4.0f);
+        if (ImDrawList* const drawList = ImGui::GetWindowDrawList())
+        {
+            const ImU32 circleColor =
+                ImGui::GetColorU32(m_vote == review_vote::upvote     ? gluten::theme::carbon_g100::supportSuccess
+                                   : m_vote == review_vote::downvote ? gluten::theme::carbon_g100::supportError
+                                                                     : gluten::theme::carbon_g100::layer01);
+
+            ImVec2 avatarCenter = avatar.get_element_rect().GetCenter();
+            avatarCenter.y -= 420.0f;  // TODO: Why do we need this? Why is the center wrong?
+            drawList->AddCircle(avatarCenter, avatar.get_element_rect().GetSize().x / 2.0f, circleColor, 0, 4.0f);
+        }
     }
 
     return false;
