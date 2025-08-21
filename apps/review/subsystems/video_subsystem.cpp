@@ -72,6 +72,11 @@ video_subsystem::mpv_context::~mpv_context()
         m_waitEventResult.get();
     }
 
+    if (m_mpvHandle)
+    {
+        mpv_command_string(m_mpvHandle, "set pause yes");
+    }
+
     if (m_mpvRenderContext)
     {
         mpv_render_context_free(m_mpvRenderContext);
