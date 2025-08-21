@@ -18,5 +18,7 @@ private:
     char reviewNameBuffer[textBufferSize]        = {0};
     char reviewDescriptionBuffer[textBufferSize] = {0};
     char reviewUrlBuffer[textBufferSize] = {0};
+    bool m_addingNewUser = false;
+    std::optional<std::vector<reviewer_data>> m_newReviewers;
     review_data m_reviewData;
 };

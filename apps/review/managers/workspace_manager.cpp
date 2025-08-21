@@ -327,7 +327,6 @@ auto workspace_manager::get_all_reviews() -> typename default_cache_type<review_
     if (m_cachedReviews.get_cache_needs_filling(key))
     {
         m_cachedReviews.set_async_fill_cache(key, m_database->get_all_reviews(m_selectedProject.m_id));
-        m_selectedReview = review_data();
     }
 
     return m_cachedReviews.get_cached_data({m_selectedProject.m_id, m_userSettingsData->m_loggedInUser.m_sessionToken});
