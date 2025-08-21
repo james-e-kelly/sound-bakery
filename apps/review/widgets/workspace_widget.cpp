@@ -821,7 +821,7 @@ void workspace_widget::render_top_content_bar(std::shared_ptr<workspace_manager>
 
 auto workspace_widget::render_left_toolbar() -> void
 {
-    gluten::imgui::scoped_color toolbarBackgroundColor(ImGuiCol_ChildBg, gluten::theme::carbon_g100::layer01);
+    gluten::imgui::scoped_color toolbarBackgroundColor(ImGuiCol_ChildBg, gluten::theme::carbon_g100::background);
 
     std::shared_ptr<workspace_manager> workspaceManager = m_workspaceManager.lock();
 
@@ -834,26 +834,20 @@ auto workspace_widget::render_left_toolbar() -> void
     {
         buttonsLayout.render_window();
 
-        gluten::icon_button reviewsButton("##ReviewsButton", ICON_LC_CHART_NO_AXES_GANTT, gluten::fonts::regular_lucide_icons);
-        reviewsButton
-            .set_element_content_font_size(gluten::g_baseIconFontSize * (leftToolbarButtonHeight / gluten::g_baseIconFontSize) / 1.75f)
-            .set_element_hover_color(gluten::theme::carbon_g100::fieldHover01)
-            .set_element_active_color(gluten::theme::carbon_g100::layerActive01)
-            .set_element_active(m_activeView == reviews_view);
+        static auto create_toolbar_button = [activeView = m_activeView](const char* name, const char* icon, active_view active) 
+            {
+                gluten::icon_button iconButton(name, icon, gluten::fonts::regular_lucide_icons);
+                iconButton
+                    .set_element_content_font_size(gluten::g_baseIconFontSize * (leftToolbarButtonHeight / gluten::g_baseIconFontSize) / 1.75f)
+                    .set_element_hover_color(gluten::theme::carbon_g100::backgroundHover)
+                    .set_element_active_color(gluten::theme::carbon_g100::backgroundActive)
+                    .set_element_active(activeView == active);
+                return iconButton;
+            };
 
-        gluten::icon_button usersButton("##UsersButton", ICON_LC_USERS, gluten::fonts::regular_lucide_icons);
-        usersButton
-            .set_element_content_font_size(gluten::g_baseIconFontSize * (leftToolbarButtonHeight / gluten::g_baseIconFontSize) / 1.75f)
-            .set_element_hover_color(gluten::theme::carbon_g100::fieldHover01)
-            .set_element_active_color(gluten::theme::carbon_g100::layerActive01)
-            .set_element_active(m_activeView == users_view);
-
-        gluten::icon_button settingsButton("##SettingsButton", ICON_LC_SETTINGS, gluten::fonts::regular_lucide_icons);
-        settingsButton
-            .set_element_content_font_size(gluten::g_baseIconFontSize * (leftToolbarButtonHeight / gluten::g_baseIconFontSize) / 1.75f)
-            .set_element_hover_color(gluten::theme::carbon_g100::fieldHover01)
-            .set_element_active_color(gluten::theme::carbon_g100::layerActive01)
-            .set_element_active(m_activeView == settings_view);
+        gluten::icon_button reviewsButton = create_toolbar_button("##ReviewsButton", ICON_LC_CHART_NO_AXES_GANTT, reviews_view);
+        gluten::icon_button usersButton = create_toolbar_button("##UsersButton", ICON_LC_USERS, users_view);
+        gluten::icon_button settingsButton = create_toolbar_button("##SettingsButton", ICON_LC_SETTINGS, settings_view);
 
         if (buttonsLayout.render_layout_element_pixels_vertical(&reviewsButton, leftToolbarButtonHeight))
         {
