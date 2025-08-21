@@ -243,12 +243,6 @@ bool gluten::element::render(const ImRect& parent)
     const ImRect elementBoxNoPadding = (elementBoxes.second * m_scale) + m_translation;
     m_currentRect = elementBox;
 
-    // Early out in case of weird rects. It's likely the parent hasn't finished resizing
-    if (elementBox.Min.x > elementBox.Max.x)
-    {
-        return false;
-    }
-
     ImDrawList* const windowDrawList     = ImGui::GetWindowDrawList();
 
     ImGui::SetCursorScreenPos(elementBoxNoPadding.Min);
