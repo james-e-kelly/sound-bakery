@@ -335,6 +335,7 @@ auto workspace_widget::render_content() -> void
             if (selectedReview.m_reviewId)
             {
                 render_review_description(selectedReview);
+                contentVerticalLayout.render_layout_element_pixels_vertical(nullptr, 8.0f);
                 render_review_content(workspaceManager, selectedReview);
             }
             else if (!selectedUser.m_email.empty())
