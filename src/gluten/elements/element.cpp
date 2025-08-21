@@ -238,7 +238,9 @@ bool gluten::element::render(const ImRect& parent)
         ImGui::SetWindowFontScale(1.0f);
     }
 
-    const ImRect elementBox = (get_element_box_from_parent(parent, m_minSize, get_element_content_size(parent.GetSize()), m_alignment, m_padding, m_anchor) * m_scale) + m_translation;
+    const std::pair<ImRect, ImRect> elementBoxes = get_element_box_from_parent(parent, m_minSize, get_element_content_size(parent.GetSize()), m_alignment, m_padding, m_anchor);
+    const ImRect elementBox = (elementBoxes.first * m_scale) + m_translation;
+    const ImRect elementBoxNoPadding = (elementBoxes.second * m_scale) + m_translation;
     m_currentRect = elementBox;
 
     // Early out in case of weird rects. It's likely the parent hasn't finished resizing
@@ -249,8 +251,8 @@ bool gluten::element::render(const ImRect& parent)
 
     ImDrawList* const windowDrawList     = ImGui::GetWindowDrawList();
 
-    ImGui::SetCursorScreenPos(elementBox.Min);
-    ImGui::Dummy(elementBox.GetSize());    
+    ImGui::SetCursorScreenPos(elementBoxNoPadding.Min);
+    ImGui::Dummy(elementBoxNoPadding.GetSize());    
     ImGui::SetCursorScreenPos(elementBox.Min);
 
     const bool hovered = ImGui::IsMouseHoveringRect(elementBox.Min, elementBox.Max);
@@ -417,7 +419,7 @@ ImVec2 gluten::element::get_anchor_end_position(const ImVec2& startPosition,
     return ImVec2(xPosition, yPosition);
 }
 
-ImRect gluten::element::get_element_start_position(const ImVec2& anchorStartPosition,
+std::pair<ImRect, ImRect> gluten::element::get_element_start_position(const ImVec2& anchorStartPosition,
                                                    const ImVec2& anchorEndPosition,
                                                    const ImVec2& minSize,
                                                    const ImVec2& desiredSize,
@@ -444,10 +446,10 @@ ImRect gluten::element::get_element_start_position(const ImVec2& anchorStartPosi
 
     const ImVec2 elementStart = anchorStartPosition - (alignment * size);
 
-    return ImRect{elementStart + padding, elementStart + size - padding};
+    return {ImRect{elementStart + padding, elementStart + size - padding}, ImRect(elementStart, elementStart + size)};
 }
 
-ImRect gluten::element::get_element_box_from_parent(const ImRect& parent,
+std::pair<ImRect, ImRect> gluten::element::get_element_box_from_parent(const ImRect& parent,
                                                     const ImVec2& minSize,
                                                     const ImVec2& desiredSize,
                                                     const ImVec2& alignment,

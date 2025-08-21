@@ -223,13 +223,13 @@ namespace gluten
                                               const ImVec2& containerPosition,
                                               const ImVec2& containerSize,
                                               const anchor_info& anchor);
-        static ImRect get_element_start_position(const ImVec2& anchorStartPosition,
+        static std::pair<ImRect, ImRect> get_element_start_position(const ImVec2& anchorStartPosition,
                                                  const ImVec2& anchorEndPosition,
                                                  const ImVec2& minSize,
                                                  const ImVec2& desiredSize,
                                                  const ImVec2& alignment,
                                                  const ImVec2& padding);
-        static ImRect get_element_box_from_parent(const ImRect& parent,
+        static std::pair<ImRect, ImRect> get_element_box_from_parent(const ImRect& parent,
                                                   const ImVec2& minSize,
                                                   const ImVec2& desiredSize,
                                                   const ImVec2& alignment,

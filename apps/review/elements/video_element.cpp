@@ -45,7 +45,7 @@ video_element::video_element(const std::filesystem::path& videoFile, int64_t fil
         m_videoImage = gluten::image(m_videoTexture, 1920, 1080);
 	}
 
-    set_element_padding(ImVec2(0.0, 10.0f));
+    set_element_padding(ImVec2(0.0, 16.0f));
 
     m_videoControlsLayout.set_element_background_color(gluten::theme::carbon_g100::background);
     m_playButton.set_element_background_color(gluten::theme::carbon_g100::background);
