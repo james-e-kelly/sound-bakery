@@ -21,7 +21,6 @@ EmptyLineBeforeAccessModifier: Always
 PointerAlignment: Left
 ReferenceAlignment: Pointer
 BinPackParameters: false
-ColumnLimit:     120
 ConstructorInitializerAllOnOneLineOrOnePerLine: true
 DerivePointerBinding: true
 ExperimentalAutoDetectBinPacking: false
