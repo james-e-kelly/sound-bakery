@@ -5,7 +5,7 @@
 
 namespace
 {
-    constexpr float g_videoControlRowHeight = 40.0f;
+    constexpr float g_videoControlRowHeight = 30.0f;
     constexpr float g_videoControlRowHalfHeight = g_videoControlRowHeight / 2.0f;
     constexpr int g_videoControlRows           = 3;
     constexpr float g_totalVideoControlsHeight = g_videoControlRowHeight * g_videoControlRows;
@@ -64,12 +64,12 @@ video_element::video_element(const std::filesystem::path& videoFile, int64_t fil
     m_nextFrameButton.set_element_hover_color(gluten::theme::carbon_g100::backgroundHover);
     m_addCommentButton.set_element_hover_color(gluten::theme::carbon_g100::layerHover01);
 
-    m_videoPositionText.set_element_alignment(ImVec2(-0.f, -0.75f));
-    m_videoDurationText.set_element_alignment(ImVec2(-0.f, -0.75f));
+    m_videoPositionText.set_element_alignment(ImVec2(-0.f, -0.5f));
+    m_videoDurationText.set_element_alignment(ImVec2(-0.f, -0.5f));
 
     m_videoButtonsLayout.set_element_alignment(ImVec2(-0.5f, 0.0f));
-    m_videoButtonsLayout.get_element_anchor().minOffset.x -= g_totalVideoButtonsWidth + (g_videoButtonsWidth * 2.0f);
-    m_videoButtonsLayout.get_element_anchor().maxOffset.x += g_totalVideoButtonsWidth + (g_videoButtonsWidth * 2.0f);
+    m_videoButtonsLayout.get_element_anchor().minOffset.x -= g_totalVideoButtonsWidth + (g_videoButtonsWidth * 3.0f);
+    m_videoButtonsLayout.get_element_anchor().maxOffset.x += g_totalVideoButtonsWidth + (g_videoButtonsWidth * 3.0f);
 
     m_videoCommentsLayout.set_element_padding(ImVec2(g_commentBubbleDiamter, 0.0f));
     m_videoTimelineLayout.set_element_padding(ImVec2(g_commentBubbleDiamter, 0.0f));

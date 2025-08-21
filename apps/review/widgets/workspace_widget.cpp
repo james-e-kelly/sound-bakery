@@ -473,7 +473,7 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
                                                                    asset.m_versionsToRelativeFiles.at(selectedVersion),
                                                                asset.m_fileId);
                                     if (m_reviewFilesLayout.render_layout_element_percent_horizontal(&videoElement,
-                                                                                                     0.75f))
+                                                                                                     0.7f))
                                     {
                                         m_createCommentPopup = add_child_widget<create_comment_popup>(
                                             this, m_userSettings->m_loggedInUser.m_userId, selectedReview.m_reviewId,
