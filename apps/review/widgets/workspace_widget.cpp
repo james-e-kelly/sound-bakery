@@ -38,7 +38,8 @@ auto workspace_widget::start_implementation() -> void
     m_workspaceManager = get_app()->get_manager_by_class<workspace_manager>();
 
     topContentBarBackground
-        .set_element_background_color(gluten::theme::carbon_g100::fieldHover02)
+        .set_element_background_color(gluten::theme::carbon_g100::field01)
+        .set_element_border(1.0f, 0.0f)
         .set_element_anchor_preset(gluten::anchor_preset::stretch_top);
     topContentBarBackground.get_element_anchor().maxOffset.y += topHeaderHeight;
 
@@ -99,7 +100,7 @@ auto workspace_widget::render_window_implementation() -> void
 
 auto workspace_widget::render_list() -> void
 {
-    gluten::imgui::scoped_color backgroundColor(ImGuiCol_ChildBg, gluten::theme::carbon_g100::layer02);
+    gluten::imgui::scoped_color backgroundColor(ImGuiCol_ChildBg, gluten::theme::carbon_g100::layer01);
     gluten::imgui::scoped_color borderColor(ImGuiCol_Border, gluten::theme::carbon_g100::background);
     gluten::imgui::scoped_color separatorColor(ImGuiCol_Separator, gluten::theme::carbon_g100::background);
 
@@ -214,6 +215,8 @@ auto workspace_widget::render_list() -> void
 
         ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal, 2.0f);
 
+        gluten::imgui::scoped_color backgroundColor(ImGuiCol_ChildBg, gluten::theme::carbon_g100::layer01);
+
         if (ImGui::BeginChild("ItemsList", ImVec2(0, 0), 0, ImGuiWindowFlags_AlwaysVerticalScrollbar))
         {
             gluten::layout itemsLayout(gluten::layout::layout_type::top_to_bottom, gluten::element::anchor_preset::stretch_full);
@@ -304,13 +307,15 @@ auto workspace_widget::render_list() -> void
 
 auto workspace_widget::render_content() -> void
 {
-    gluten::imgui::scoped_color backgroundColor(ImGuiCol_ChildBg, gluten::theme::carbon_g100::layer03);
+    gluten::imgui::scoped_color backgroundColor(ImGuiCol_ChildBg, gluten::theme::carbon_g100::layer02);
     gluten::imgui::scoped_color borderColor(ImGuiCol_Border, gluten::theme::carbon_g100::borderStrong02);
     gluten::imgui::scoped_color tabBg(ImGuiCol_Tab, gluten::theme::carbon_g100::field03);
-    gluten::imgui::scoped_color tabSelectedBg(ImGuiCol_TabActive, gluten::theme::carbon_g100::layerAccentActive03);
+    gluten::imgui::scoped_color tabSelectedBg(ImGuiCol_TabActive, gluten::theme::carbon_g100::layerAccentActive02);
     gluten::imgui::scoped_color tabHoverdBg(ImGuiCol_TabHovered, gluten::theme::carbon_g100::layerHover03);
-    gluten::imgui::scoped_color frameBg(ImGuiCol_FrameBg, gluten::theme::carbon_g100::layer02);
-    gluten::imgui::scoped_color frameHoveredBg(ImGuiCol_FrameBgHovered, gluten::theme::carbon_g100::layerHover02);
+    gluten::imgui::scoped_color frameBg(ImGuiCol_FrameBg, gluten::theme::carbon_g100::layer03);
+    gluten::imgui::scoped_color frameHoveredBg(ImGuiCol_FrameBgHovered, gluten::theme::carbon_g100::layerHover03);
+    gluten::imgui::scoped_color header(ImGuiCol_Header, gluten::theme::carbon_g100::layer01);
+    gluten::imgui::scoped_color headerBg(ImGuiCol_HeaderHovered, gluten::theme::carbon_g100::layerHover01);
     gluten::imgui::scoped_font iconFont(gluten::app::get()->get_font(gluten::fonts::regular_lucide_icons));
 
     std::shared_ptr<workspace_manager> workspaceManager = m_workspaceManager.lock();
@@ -448,17 +453,21 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
 
             const std::size_t maxVersions = std::max(selectedReview.m_relativeContextFiles.size(), selectedReview.m_reviewAssets.size()) + 1;
 
-            if (ImGui::BeginCombo("Review Version", fmt::format("#{}", m_reviewToSelectedVersionMap[selectedReview.m_reviewId]).c_str()))
             {
-                for (std::size_t versionIndex = 1; versionIndex < maxVersions; ++versionIndex)
-                {
-                    if (ImGui::Selectable(fmt::format("#{}", versionIndex).c_str()))
-                    {
-                        m_reviewToSelectedVersionMap[selectedReview.m_reviewId] = versionIndex;
-                    }
-                }
+                gluten::imgui::scoped_color selectableBg(ImGuiCol_PopupBg, gluten::theme::carbon_g100::layer03);
 
-                ImGui::EndCombo();
+                if (ImGui::BeginCombo("Review Version", fmt::format("#{}", m_reviewToSelectedVersionMap[selectedReview.m_reviewId]).c_str()))
+                {
+                    for (std::size_t versionIndex = 1; versionIndex < maxVersions; ++versionIndex)
+                    {
+                        if (ImGui::Selectable(fmt::format("#{}", versionIndex).c_str()))
+                        {
+                            m_reviewToSelectedVersionMap[selectedReview.m_reviewId] = versionIndex;
+                        }
+                    }
+
+                    ImGui::EndCombo();
+                }
             }
 
             ImGui::SameLine(0.0f, 10.0f);
@@ -828,6 +837,11 @@ void workspace_widget::render_top_content_bar(std::shared_ptr<workspace_manager>
                                               const review_data& selectedReview)
 {
     topContentBarBackground.render_window();
+
+    if (ImDrawList* const drawList = ImGui::GetWindowDrawList())
+    {
+        drawList->AddLine(topContentBarBackground.get_element_rect().GetTL(), topContentBarBackground.get_element_rect().GetBL(), ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::background), 1.0f);
+    }
 
     const auto& workspaceName = workspaceManager->get_workspace_name();
 
