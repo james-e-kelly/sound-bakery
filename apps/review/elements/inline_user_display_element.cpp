@@ -153,20 +153,21 @@ auto reviewer_display_element::render_element(const ImRect& parentRect) -> bool
     if (avatar.render(parentRect))
     {
         const std::string tooltipText = fmt::format("{} {}", m_userDisplayName,
-                                                    m_vote == review_vote::no_vote  ? ""
+                                                    m_vote == review_vote::no_vote  ? "No Vote"
                                                     : m_vote == review_vote::upvote ? ICON_LC_THUMBS_UP
                                                                                     : ICON_LC_THUMBS_DOWN);
-        ImGui::SetItemTooltip(tooltipText.c_str());
 
         if (ImDrawList* const drawList = ImGui::GetForegroundDrawList())
         {
             const ImU32 circleColor =
                 ImGui::GetColorU32(m_vote == review_vote::upvote     ? gluten::theme::carbon_g100::supportSuccess
-                                   : m_vote == review_vote::downvote ? gluten::theme::carbon_g100::supportError
-                                                                     : gluten::theme::carbon_g100::layer01);
+                                    : m_vote == review_vote::downvote ? gluten::theme::carbon_g100::supportError
+                                                                        : gluten::theme::carbon_g100::layer03);
 
-            drawList->AddCircle(avatar.get_image_rect().GetCenter(), avatar.get_element_rect().GetSize().x / 2.0f, circleColor, 0, 4.0f);
+            drawList->AddCircle(avatar.get_image_rect().GetCenter(), avatar.get_element_rect().GetSize().x / 2.0f, circleColor, 0, m_vote == review_vote::no_vote ? 2.0f : 4.0f);
         }
+
+        ImGui::SetItemTooltip(tooltipText.c_str());
     }
 
     return false;
