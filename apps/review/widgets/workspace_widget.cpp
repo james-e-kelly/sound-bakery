@@ -38,7 +38,7 @@ auto workspace_widget::start_implementation() -> void
     m_workspaceManager = get_app()->get_manager_by_class<workspace_manager>();
 
     topContentBarBackground
-        .set_element_background_color(gluten::theme::carbon_g100::field01)
+        .set_element_background_color(gluten::theme::carbon_g100::background)
         .set_element_border(1.0f, 0.0f)
         .set_element_anchor_preset(gluten::anchor_preset::stretch_top);
     topContentBarBackground.get_element_anchor().maxOffset.y += topHeaderHeight;
@@ -48,7 +48,7 @@ auto workspace_widget::start_implementation() -> void
         .set_element_translation(ImVec2(5, 0.0f));
 
     rightPanelLayout.set_layout_spacing(ImGui::GetStyle().FramePadding.y)
-        .set_element_background_color(gluten::theme::carbon_g100::fieldHover02);
+        .set_element_background_color(gluten::theme::carbon_g100::layer01);
     rightPanelLayout.get_element_anchor().minOffset.y += topHeaderHeight;
     rightPanelLayout.get_element_anchor().maxOffset.x += g_rightPanelWidth - 2.0f;
     rightPanelLayout.set_element_translation(ImVec2(-g_rightPanelWidth, 0.0f));
@@ -307,13 +307,13 @@ auto workspace_widget::render_list() -> void
 
 auto workspace_widget::render_content() -> void
 {
-    gluten::imgui::scoped_color backgroundColor(ImGuiCol_ChildBg, gluten::theme::carbon_g100::layer02);
+    gluten::imgui::scoped_color backgroundColor(ImGuiCol_ChildBg, gluten::theme::carbon_g100::background);
     gluten::imgui::scoped_color borderColor(ImGuiCol_Border, gluten::theme::carbon_g100::borderStrong02);
-    gluten::imgui::scoped_color tabBg(ImGuiCol_Tab, gluten::theme::carbon_g100::field03);
-    gluten::imgui::scoped_color tabSelectedBg(ImGuiCol_TabActive, gluten::theme::carbon_g100::layerAccentActive02);
-    gluten::imgui::scoped_color tabHoverdBg(ImGuiCol_TabHovered, gluten::theme::carbon_g100::layerHover03);
-    gluten::imgui::scoped_color frameBg(ImGuiCol_FrameBg, gluten::theme::carbon_g100::layer03);
-    gluten::imgui::scoped_color frameHoveredBg(ImGuiCol_FrameBgHovered, gluten::theme::carbon_g100::layerHover03);
+    gluten::imgui::scoped_color tabBg(ImGuiCol_Tab, gluten::theme::carbon_g100::field01);
+    gluten::imgui::scoped_color tabSelectedBg(ImGuiCol_TabActive, gluten::theme::carbon_g100::layerAccentActive01);
+    gluten::imgui::scoped_color tabHoverdBg(ImGuiCol_TabHovered, gluten::theme::carbon_g100::layerHover01);
+    gluten::imgui::scoped_color frameBg(ImGuiCol_FrameBg, gluten::theme::carbon_g100::layer01);
+    gluten::imgui::scoped_color frameHoveredBg(ImGuiCol_FrameBgHovered, gluten::theme::carbon_g100::layerHover01);
     gluten::imgui::scoped_color header(ImGuiCol_Header, gluten::theme::carbon_g100::layer01);
     gluten::imgui::scoped_color headerBg(ImGuiCol_HeaderHovered, gluten::theme::carbon_g100::layerHover01);
     gluten::imgui::scoped_font iconFont(gluten::app::get()->get_font(gluten::fonts::regular_lucide_icons));
@@ -331,7 +331,7 @@ auto workspace_widget::render_content() -> void
 
         ImGui::SetCursorScreenPos(topContentBarBackground.get_element_rect().GetBL());
 
-        gluten::imgui::scoped_style childPadding(ImGuiStyleVar_WindowPadding, ImVec2(8.0f, 8.0f));
+        gluten::imgui::scoped_style childPadding(ImGuiStyleVar_WindowPadding, selectedReview.m_reviewId ? ImVec2(8.0f, 8.0f) : ImVec2(0.0f, 0.0f));
 
         if (ImGui::BeginChild("Content",
                               ImVec2(ImGui::GetWindowWidth() - g_rightPanelWidth,
@@ -719,7 +719,7 @@ void workspace_widget::render_review_description(const review_data& selectedRevi
         votesText.render(votesIconText.get_element_rect());
     }
 
-    gluten::imgui::scoped_color frameProgressBg(ImGuiCol_FrameBg, gluten::theme::carbon_g100::layer03);
+    gluten::imgui::scoped_color frameProgressBg(ImGuiCol_FrameBg, gluten::theme::carbon_g100::layer02);
 
     descriptionBoxLayout.render_layout_element_percent_vertical(&scrutinyLayout, 0.2f);
 
@@ -840,7 +840,8 @@ void workspace_widget::render_top_content_bar(std::shared_ptr<workspace_manager>
 
     if (ImDrawList* const drawList = ImGui::GetWindowDrawList())
     {
-        drawList->AddLine(topContentBarBackground.get_element_rect().GetTL(), topContentBarBackground.get_element_rect().GetBL(), ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::background), 1.0f);
+        //drawList->AddLine(topContentBarBackground.get_element_rect().GetTL(), topContentBarBackground.get_element_rect().GetBL(), ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::borderStrong01), 1.0f);
+        drawList->AddLine(topContentBarBackground.get_element_rect().GetBL(), topContentBarBackground.get_element_rect().GetBR(), ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::borderStrong02), 2.0f);
     }
 
     const auto& workspaceName = workspaceManager->get_workspace_name();
