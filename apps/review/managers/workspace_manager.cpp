@@ -310,14 +310,16 @@ auto workspace_manager::create_review(const new_frontend_review_data newReview) 
     m_cachedReviews.set_cache_expired({m_selectedProject.m_id, m_userSettingsData->m_loggedInUser.m_sessionToken});
 }
 
-auto workspace_manager::update_review(const review_data& updatedReview) -> void
+auto workspace_manager::update_review(const review_data& updatedReview) -> concurrencpp::result<void>
 {
-    m_cachedReviews.set_cache_expired({m_selectedProject.m_id, m_userSettingsData->m_loggedInUser.m_sessionToken});
-    
     if (m_selectedReview.m_reviewId == updatedReview.m_reviewId)
     {
         m_selectedReview = updatedReview;
     }
+
+    co_await m_database->update_review(updatedReview);
+
+    m_cachedReviews.set_cache_expired({m_selectedProject.m_id, m_userSettingsData->m_loggedInUser.m_sessionToken});
 }
 
 auto workspace_manager::get_all_reviews() -> typename default_cache_type<review_data>::cache_result
