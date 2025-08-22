@@ -260,8 +260,7 @@ void root_widget::draw_titlebar()
     const ImRect menuBarRect  = root_widget_utils::get_menu_bar_rect(titleBarRect);
 
     background topBarBackground;
-    topBarBackground.set_element_background_color(
-        ImGui::ColorConvertFloat4ToU32(ImGui::GetStyleColorVec4(ImGuiCol_TitleBg)));
+    topBarBackground.set_element_background_color(gluten::theme::carbon_g100::background);
     topBarBackground.render(titleBarRect);
 
     if (m_renderLogo)

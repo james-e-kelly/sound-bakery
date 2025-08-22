@@ -47,8 +47,8 @@ video_element::video_element(const std::filesystem::path& videoFile, int64_t fil
 
     set_element_padding(ImVec2(0.0, 16.0f));
 
-    m_videoControlsLayout.set_element_background_color(gluten::theme::carbon_g100::layer01);
-    m_playButton.set_element_background_color(gluten::theme::carbon_g100::background);
+    m_videoControlsLayout.set_element_background_color(gluten::theme::carbon_g100::field01);
+    m_playButton.set_element_background_color(gluten::theme::carbon_g100::field01);
     
     m_playButton.set_element_border(1.0f, 0.0f);
 
