@@ -482,6 +482,14 @@ auto workspace_manager::login_user(login_request_data loginData) -> concurrencpp
 
 auto workspace_manager::logout() -> void
 {
+    m_cachedActivity.clear();
+    m_cachedComments.clear();
+    m_cachedProjects.clear();
+    m_cachedReviews.clear();
+    m_cachedUsers.clear();
+    m_reviewUsersCache.clear();
+    m_cachedWorkspaceName.clear();
+
     m_userSettingsData->m_loggedInUser = logged_in_user_data();
     m_workspaceWidget.reset();
     m_userFlowPopup.reset();
