@@ -18,7 +18,7 @@
 
 namespace
 {
-    constexpr float leftToobarWidth = gluten::g_baseFontSize * 5.0f;
+    constexpr float leftToobarWidth = gluten::g_baseFontSize * 4.5f;
     constexpr float leftToolbarButtonHeight     = leftToobarWidth;
     constexpr float topHeaderHeight             = leftToobarWidth;
     constexpr float leftToolbarHalfButtonHeight = leftToolbarButtonHeight / 2.0f;
