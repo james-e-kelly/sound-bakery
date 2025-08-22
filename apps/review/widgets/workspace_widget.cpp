@@ -684,7 +684,30 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
 
 void workspace_widget::render_review_description(const review_data& selectedReview)
 {
-    contentVerticalLayout.render_layout_element_pixels_vertical(&descriptionBoxLayout, 200.0f);
+    constexpr int verticalElements = 6;
+    constexpr float maxHeight      = 200.0f;
+    constexpr float perLaneHeight  = maxHeight / verticalElements;
+    
+    int currentElements = 3;
+
+    if (m_userSettings->m_displayPhases)
+    {
+        ++currentElements;
+    }
+
+    if (m_userSettings->m_displayQuality)
+    {
+        ++currentElements;
+    }
+
+    if (m_userSettings->m_displayScrutiny)
+    {
+        ++currentElements;
+    }
+
+    const float size = perLaneHeight * currentElements;
+
+    contentVerticalLayout.render_layout_element_pixels_vertical(&descriptionBoxLayout, size);
 
     titleText.set_text(fmt::format("{}", selectedReview.m_reviewName));
     titleText.set_url(selectedReview.m_reviewTaskUrl);
@@ -695,12 +718,20 @@ void workspace_widget::render_review_description(const review_data& selectedRevi
     std::pair<std::string, int> votes = get_votes_string(selectedReview);
     votesText.set_text(fmt::format("     {}", votes.first));
 
-    descriptionBoxLayout.render_layout_element_percent_vertical(&titleText, 0.2f);
-    descriptionBoxLayout.render_layout_element_percent_vertical(&descriptionText, 0.16f);
-    descriptionBoxLayout.render_layout_element_percent_vertical(&phaseText, 0.16f);
-    descriptionBoxLayout.render_layout_element_percent_vertical(&qualityText, 0.16f);
+    descriptionBoxLayout.render_layout_element_pixels_vertical(&titleText, perLaneHeight);
+    descriptionBoxLayout.render_layout_element_pixels_vertical(&descriptionText, perLaneHeight);
+
+    if (m_userSettings->m_displayPhases)
+    {
+        descriptionBoxLayout.render_layout_element_pixels_vertical(&phaseText, perLaneHeight);
+    }
+
+    if (m_userSettings->m_displayQuality)
+    {
+        descriptionBoxLayout.render_layout_element_pixels_vertical(&qualityText, perLaneHeight);
+    }
     
-    descriptionBoxLayout.render_layout_element_percent_vertical(&votesIconText, 0.16f);
+    descriptionBoxLayout.render_layout_element_pixels_vertical(&votesIconText, perLaneHeight);
     
     {
         ImVec4 votesColor;
@@ -724,7 +755,10 @@ void workspace_widget::render_review_description(const review_data& selectedRevi
 
     gluten::imgui::scoped_color frameProgressBg(ImGuiCol_FrameBg, gluten::theme::carbon_g100::layer02);
 
-    descriptionBoxLayout.render_layout_element_percent_vertical(&scrutinyLayout, 0.2f);
+    if (m_userSettings->m_displayScrutiny)
+    {
+        descriptionBoxLayout.render_layout_element_pixels_vertical(&scrutinyLayout, perLaneHeight);
+    }
 
     constexpr float max       = ((int)review_phase::num) * ((int)review_quality::num);
     constexpr float third     = max * 0.33f;
@@ -736,8 +770,11 @@ void workspace_widget::render_review_description(const review_data& selectedRevi
                                                                          : value >= third   ? gluten::theme::yellow60
                                                                                             : gluten::theme::green60);
 
-    ImGui::SetCursorScreenPos(scrutinyLayout.get_element_rect().GetTL());
-    ImGui::ProgressBar(fraction, scrutinyLayout.get_element_rect().GetSize(), "Scrutiny");
+    if (m_userSettings->m_displayScrutiny)
+    {
+        ImGui::SetCursorScreenPos(scrutinyLayout.get_element_rect().GetTL());
+        ImGui::ProgressBar(fraction, scrutinyLayout.get_element_rect().GetSize(), "Scrutiny");
+    }
 
     m_descriptionBoxButtonsLayout.render(descriptionBoxLayout.get_element_rect());
 
