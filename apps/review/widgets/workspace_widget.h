@@ -31,6 +31,7 @@ private:
                                 const review_data &selectedReview);
     auto render_list() -> void;
     auto render_left_toolbar() -> void;
+    auto render_settings() -> void;
 
     auto get_votes_string(const review_data &selectedReview) const -> std::pair<std::string, int>;
 

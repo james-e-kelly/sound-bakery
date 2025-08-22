@@ -30,6 +30,7 @@ enum review_app_version
     review_app_version_start = 0,
     review_app_save_selected_project,
     review_app_user_tokens,
+    review_app_first_settings,
 
     // Add versions above this //
     review_app_version_end,

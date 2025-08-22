@@ -4,6 +4,12 @@
 
 #include "data/user_data.h"
 
+enum class review_app_theme
+{
+    dark,
+    light
+};
+
 /**
  * @brief Cached user settings like the open workspace
  *
@@ -16,6 +22,11 @@ struct user_settings_data
     std::string m_selectedProjectName;
 
     logged_in_user_data m_loggedInUser;
+
+    review_app_theme m_theme = review_app_theme::dark;
+    bool m_displayPhases     = true;
+    bool m_displayQuality    = true;
+    bool m_displayScrutiny   = true;
 
     auto workspace_exists() const -> bool
     {
@@ -35,6 +46,14 @@ struct user_settings_data
         if (version >= review_app_user_tokens)
         {
             archive & boost::serialization::make_nvp("UserLogin", m_loggedInUser);
+        }
+
+        if (version >= review_app_first_settings)
+        {
+            archive & boost::serialization::make_nvp("theme", m_theme);
+            archive & boost::serialization::make_nvp("display_phases", m_displayPhases);
+            archive & boost::serialization::make_nvp("display_quality", m_displayQuality);
+            archive & boost::serialization::make_nvp("display_scrutiny", m_displayScrutiny);
         }
     }
 };

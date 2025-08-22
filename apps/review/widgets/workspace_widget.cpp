@@ -93,6 +93,9 @@ auto workspace_widget::render_window_implementation() -> void
             ImGui::SameLine();
             render_content();
             break;
+        case workspace_widget::settings_view:
+            render_settings();
+            break;
         default:
             break;
     }
@@ -993,4 +996,64 @@ auto workspace_widget::render_menu_implementation() -> void
         }
         ImGui::EndMenu();
     }
+}
+
+auto workspace_widget::render_settings() -> void
+{
+    gluten::imgui::scoped_color bgColor(ImGuiCol_WindowBg, gluten::theme::carbon_g100::layer01);
+    gluten::imgui::scoped_style padding(ImGuiStyleVar_WindowPadding, ImVec2(80.0f, 80.0f));
+
+    if (ImGui::BeginChild("SettingsContainer", ImVec2(0, 0), ImGuiChildFlags_AlwaysUseWindowPadding, ImGuiWindowFlags_NoScrollbar))
+    {
+        gluten::background settingsBackground;
+        settingsBackground.set_element_background_color(gluten::theme::carbon_g100::layer01);
+        settingsBackground.render_window();
+
+        if (ImGui::BeginTable("Settings", 2, ImGuiTableFlags_Resizable | ImGuiTableFlags_BordersInnerH | ImGuiTableFlags_SizingStretchProp))
+        {
+            ImGui::TableNextColumn();
+            ImGui::TextUnformatted("Setting");
+            ImGui::TableNextColumn();
+            ImGui::TextUnformatted("Value");
+            ImGui::TableNextColumn();
+            ImGui::TextUnformatted("Theme");
+            ImGui::TableNextColumn();
+            
+            if (ImGui::BeginCombo("Theme", m_userSettings->m_theme == review_app_theme::dark ? "Dark" : "Light"))
+            {
+                bool darkSelected = m_userSettings->m_theme == review_app_theme::dark;
+                bool lightSelected = m_userSettings->m_theme == review_app_theme::light;
+
+                if (ImGui::Selectable("Dark", &darkSelected))
+                {
+                    m_userSettings->m_theme = review_app_theme::dark;
+                }
+
+                if (ImGui::Selectable("Light", &lightSelected))
+                {
+                    m_userSettings->m_theme = review_app_theme::light;
+                }
+
+                ImGui::EndCombo();
+            }
+
+            ImGui::TableNextColumn();
+            ImGui::TextUnformatted("Display Quality");
+            ImGui::TableNextColumn();
+            ImGui::Checkbox("Quality", &m_userSettings->m_displayQuality);
+
+            ImGui::TableNextColumn();
+            ImGui::TextUnformatted("Display Phases");
+            ImGui::TableNextColumn();
+            ImGui::Checkbox("Phases", &m_userSettings->m_displayPhases);
+
+            ImGui::TableNextColumn();
+            ImGui::TextUnformatted("Display Scrutiny");
+            ImGui::TableNextColumn();
+            ImGui::Checkbox("Scrutiny", &m_userSettings->m_displayScrutiny);
+
+            ImGui::EndTable();
+        }
+    }
+    ImGui::EndChild();
 }
