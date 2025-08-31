@@ -24,7 +24,7 @@ namespace
 }
 
 video_element::video_element(const std::filesystem::path& videoFile, int64_t fileId)
-    : gluten::element(gluten::anchor_preset::stretch_full), m_videoFile(videoFile), m_fileId(fileId)
+    : file_element(gluten::anchor_preset::stretch_full, videoFile, fileId)
 {
 	if (m_videoSubsystem.expired())
     {
@@ -33,19 +33,17 @@ video_element::video_element(const std::filesystem::path& videoFile, int64_t fil
 
 	if (std::shared_ptr<video_subsystem> videoSubsystem = m_videoSubsystem.lock())
 	{
-        m_videoTexture = videoSubsystem->get_video_texture(m_videoFile.string());
+        m_videoTexture = videoSubsystem->get_video_texture(m_filePath.string());
 
 		if (m_videoTexture == 0)
         {
-            videoSubsystem->load_video(m_videoFile);
+            videoSubsystem->load_video(m_filePath);
         }
 
-		m_videoTexture = videoSubsystem->get_video_texture(m_videoFile.string());
+		m_videoTexture = videoSubsystem->get_video_texture(m_filePath.string());
 
         m_videoImage = gluten::image(m_videoTexture, 1920, 1080);
 	}
-
-    set_element_padding(ImVec2(0.0, 16.0f));
 
     m_videoControlsLayout.set_element_background_color(gluten::theme::carbon_g100::field01);
     m_playButton.set_element_background_color(gluten::theme::carbon_g100::field01);
@@ -64,12 +62,8 @@ video_element::video_element(const std::filesystem::path& videoFile, int64_t fil
     m_nextFrameButton.set_element_hover_color(gluten::theme::carbon_g100::backgroundHover);
     m_addCommentButton.set_element_hover_color(gluten::theme::carbon_g100::layerHover01);
 
-    m_videoPositionText.set_element_alignment(ImVec2(-0.f, -0.5f));
-    m_videoDurationText.set_element_alignment(ImVec2(-0.f, -0.5f));
-
-    m_videoButtonsLayout.set_element_alignment(ImVec2(-0.5f, 0.0f));
-    m_videoButtonsLayout.get_element_anchor().minOffset.x -= g_totalVideoButtonsWidth + (g_videoButtonsWidth * 3.0f);
-    m_videoButtonsLayout.get_element_anchor().maxOffset.x += g_totalVideoButtonsWidth + (g_videoButtonsWidth * 3.0f);
+    m_filePositionText.set_element_alignment(ImVec2(-0.f, -0.5f));
+    m_fileDurationText.set_element_alignment(ImVec2(-0.f, -0.5f));
 
     m_videoCommentsLayout.set_element_padding(ImVec2(g_commentBubbleDiamter, 0.0f));
     m_videoTimelineLayout.set_element_padding(ImVec2(g_commentBubbleDiamter, 0.0f));
@@ -77,7 +71,7 @@ video_element::video_element(const std::filesystem::path& videoFile, int64_t fil
 
 auto video_element::render_element(const ImRect& elementRect) -> bool
 {
-    gluten::imgui::scoped_id id(m_videoFile.string().c_str());
+    file_element::render_element(elementRect);
 
     std::shared_ptr<video_subsystem> videoSubsystem = m_videoSubsystem.lock();
     if (!videoSubsystem)
@@ -87,58 +81,10 @@ auto video_element::render_element(const ImRect& elementRect) -> bool
 
     m_videoImage.render(elementRect);
 
-    m_videoPosition = videoSubsystem->get_video_play_position(m_videoFile);
-    m_videoDuration = videoSubsystem->get_video_duration(m_videoFile);
-    m_videoPercent  = m_videoPosition / m_videoDuration;
-
-    m_videoPositionText.set_text(fmt::format("{:02d}:{:02d}", static_cast<int>(m_videoPosition) / 60, static_cast<int>(m_videoPosition) % 60));
-    m_videoDurationText.set_text(fmt::format("{:02d}:{:02d}", static_cast<int>(m_videoDuration) / 60, static_cast<int>(m_videoDuration) % 60));
-
     render_layouts(elementRect);
-    const bool newComment = render_controls(videoSubsystem);
+    const bool newComment = render_controls();
     render_timeline();
     render_comments();
-    return newComment;
-}
-
-auto video_element::render_controls(std::shared_ptr<video_subsystem>& videoSubsystem) -> bool
-{
-    m_videoButtonsLayout.render_layout_element_pixels_horizontal(&m_videoPositionText, g_videoButtonsWidth);
-
-    if (m_videoButtonsLayout.render_layout_element_pixels_horizontal(&m_previousFrameButton, g_videoButtonsWidth))
-    {
-        videoSubsystem->set_video_prev_frame(m_videoFile);
-    }
-    ImGui::SetItemTooltip("Previous Frame");
-
-    if (m_videoButtonsLayout.render_layout_element_pixels_horizontal(&m_pauseButton, g_videoButtonsWidth))
-    {
-        videoSubsystem->pause_video(m_videoFile);
-    }
-    ImGui::SetItemTooltip("Pause");
-
-    if (m_videoButtonsLayout.render_layout_element_pixels_horizontal(&m_playButton, g_videoButtonsWidth))
-    {
-        videoSubsystem->play_video(m_videoFile);
-    }
-    ImGui::SetItemTooltip("Play");
-
-    const bool newComment = m_videoButtonsLayout.render_layout_element_pixels_horizontal(&m_addCommentButton, g_videoButtonsWidth);
-    ImGui::SetItemTooltip("Add Comment At Time");
-
-    if (newComment)
-    {
-        videoSubsystem->pause_video(m_videoFile);
-    }
-
-    if (m_videoButtonsLayout.render_layout_element_pixels_horizontal(&m_nextFrameButton, g_videoButtonsWidth))
-    {
-        videoSubsystem->set_video_next_frame(m_videoFile);
-    }
-    ImGui::SetItemTooltip("Next Frame");
-
-    m_videoButtonsLayout.render_layout_element_pixels_horizontal(&m_videoDurationText, g_videoButtonsWidth);
-
     return newComment;
 }
 
@@ -186,11 +132,11 @@ auto video_element::render_timeline() -> void
         }
 
         ImRect outDrag;
-        if (ImGui::SliderBehavior(grabRect, videoGrabHandleId, ImGuiDataType_Double, &m_videoPosition,
-                                  &g_minimumVideoPosition, &m_videoDuration, "%f", ImGuiSliderFlags_None, &outDrag))
+        if (ImGui::SliderBehavior(grabRect, videoGrabHandleId, ImGuiDataType_Double, &m_filePosition,
+                                  &g_minimumVideoPosition, &m_fileDuration, "%f", ImGuiSliderFlags_None, &outDrag))
         {
             ImGui::MarkItemEdited(videoGrabHandleId);
-            m_videoSubsystem.lock()->set_video_play_position(m_videoFile, m_videoPosition);
+            m_videoSubsystem.lock()->set_video_play_position(m_filePath, m_filePosition);
         }
 
         if (outDrag.Max.x > outDrag.Min.x)
@@ -228,7 +174,7 @@ auto video_element::render_comments() -> void
                         if (comment.m_timeStart >= 0.0)
                         {
                             const float commentTimelineWidth = rightMiddle.x - leftMiddle.x;
-                            const float commentPosition = leftMiddle.x + (commentTimelineWidth * (comment.m_timeStart / m_videoDuration));
+                            const float commentPosition = leftMiddle.x + (commentTimelineWidth * (comment.m_timeStart / m_fileDuration));
 
                             if (std::abs(commentPosition) < 10000.0f)
                             {
@@ -243,7 +189,7 @@ auto video_element::render_comments() -> void
 
                                 if (ImGui::IsItemClicked())
                                 {
-                                    m_videoSubsystem.lock()->set_video_play_position(m_videoFile, comment.m_timeStart);
+                                    m_videoSubsystem.lock()->set_video_play_position(m_filePath, comment.m_timeStart);
                                 }
                             }
                         }
@@ -260,7 +206,7 @@ auto video_element::render_layouts(const ImRect& elementRect) -> void
     videoControlsRect.Min.y  = videoControlsRect.Max.y - g_totalVideoControlsHeight;
     m_videoControlsLayout.render(videoControlsRect);
 
-    m_videoControlsLayout.render_layout_element_pixels_vertical(&m_videoButtonsLayout, g_videoControlRowHeight);
+    m_videoControlsLayout.render_layout_element_pixels_vertical(&m_controlButtonsLayout, g_videoControlRowHeight);
     m_videoControlsLayout.render_layout_element_pixels_vertical(&m_videoTimelineLayout, g_videoControlRowHeight);
     m_videoControlsLayout.render_layout_element_pixels_vertical(&m_videoCommentsLayout, g_videoControlRowHeight);
 }
@@ -269,4 +215,39 @@ auto video_element::get_element_content_size(const ImVec2& parentSize) -> ImVec2
 {
     const ImVec2 videoSize = m_videoImage.get_element_content_size(parentSize);
     return ImVec2(videoSize.x, videoSize.y + g_totalVideoControlsHeight);
+}
+
+auto video_element::get_file_play_position() const -> double 
+{
+    return m_videoSubsystem.lock()->get_video_play_position(m_filePath);
+}
+
+auto video_element::get_file_duration() const -> double
+{
+    return m_videoSubsystem.lock()->get_video_duration(m_filePath);
+}
+
+auto video_element::play_file() -> void
+{
+    m_videoSubsystem.lock()->play_video(m_filePath);
+}
+
+auto video_element::pause_file() -> void
+{
+    m_videoSubsystem.lock()->pause_video(m_filePath);
+}
+
+auto video_element::seek_to_position(double position) -> void
+{
+    m_videoSubsystem.lock()->set_video_play_position(m_filePath, position);
+}
+
+auto video_element::prev_frame() -> void 
+{
+    m_videoSubsystem.lock()->set_video_prev_frame(m_filePath);
+}
+
+auto video_element::next_frame() -> void 
+{
+    m_videoSubsystem.lock()->set_video_next_frame(m_filePath);
 }

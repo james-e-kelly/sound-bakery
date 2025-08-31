@@ -214,6 +214,7 @@ namespace gluten
     protected:
 
         virtual auto pre_render_element() -> void {}
+        virtual auto post_render_element() -> void {}
         virtual auto render_element(const ImRect& elementBox) -> bool { return false; }
 
         static ImVec2 get_anchor_start_position(const ImVec2& containerPosition,

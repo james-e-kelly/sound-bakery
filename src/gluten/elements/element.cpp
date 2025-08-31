@@ -327,6 +327,8 @@ bool gluten::element::render(const ImRect& parent)
         windowDrawList->AddLine(bottomCenter, topCenter, ImGui::ColorConvertFloat4ToU32(gluten::theme::orange50));
     }
 
+    post_render_element();
+
     return activated;
 }
 

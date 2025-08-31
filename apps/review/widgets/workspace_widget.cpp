@@ -9,6 +9,7 @@
 #include "elements/user_element.h"
 #include "elements/inline_user_display_element.h"
 #include "elements/video_element.h"
+#include "elements/audio_element.h"
 #include "subsystems/video_subsystem.h"
 #include "widgets/create_comment_popup.h"
 #include "widgets/create_project_popup.h"
@@ -505,16 +506,22 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
                         gluten::collapsing_header header(asset.m_fileName, false);
                         if (m_reviewFilesLayout.render_layout_element_percent_horizontal(&header, 1.0f))
                         {
-                            video_element videoElement(workspaceManager->get_workspace_directory() /
-                                                            asset.m_versionsToRelativeFiles.at(selectedVersion),
-                                                        asset.m_fileId);
-                            if (m_reviewFilesLayout.render_layout_element_percent_horizontal(&videoElement,
-                                                                                                0.7f))
+                            const std::filesystem::path absoluteFilePath = workspaceManager->get_workspace_directory() /
+                                                            asset.m_versionsToRelativeFiles.at(selectedVersion);
+
+                            if (audio_element::can_handle_file(absoluteFilePath))
                             {
-                                m_createCommentPopup = add_child_widget<create_comment_popup>(
-                                    this, m_userSettings->m_loggedInUser.m_userId, selectedReview.m_reviewId,
-                                    asset.m_fileId, videoElement.get_video_position());
-                                m_createCommentPopup->open_popup();
+                                audio_element audioElement(absoluteFilePath, asset.m_fileId);
+                                m_reviewFilesLayout.render_layout_element_percent_horizontal(&audioElement, 0.7f);
+                            }
+                            else if (video_element::can_handle_file(absoluteFilePath))
+                            {
+                                video_element videoElement(absoluteFilePath, asset.m_fileId);
+                                if (m_reviewFilesLayout.render_layout_element_percent_horizontal(&videoElement, 0.7f))
+                                {
+                                    m_createCommentPopup = add_child_widget<create_comment_popup>(this, m_userSettings->m_loggedInUser.m_userId, selectedReview.m_reviewId, asset.m_fileId, videoElement.get_video_position());
+                                    m_createCommentPopup->open_popup();
+                                }
                             }
                         }
                     }
