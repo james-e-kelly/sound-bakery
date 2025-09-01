@@ -217,6 +217,11 @@ sbk_result sc_system_create(sc_system** outSystem)
         *outSystem = (sc_system*)ma_malloc(sizeof(sc_system), NULL);
 
         result = *outSystem ? SBK_SUCCESS : SBK_ERR_OUT_OF_MEMORY;
+
+        if (*outSystem)
+        {
+            SC_ZERO_OBJECT(*outSystem);
+        }
     }
 
     DEBUG_ASSERT(result == SBK_SUCCESS);
@@ -508,8 +513,7 @@ sbk_result sc_system_play_sound(
     }
     else if (system->masterNodeGroup != NULL)
     {
-        ma_result attachResult =
-            ma_node_attach_output_bus(*instance, 0, system->masterNodeGroup->tail->state->userData, 0);
+        ma_result attachResult = ma_node_attach_output_bus(*instance, 0, system->masterNodeGroup->tail->state->userData, 0);
         SC_CHECK_RESULT(attachResult);
     }
 
@@ -593,6 +597,16 @@ sbk_result sc_system_create_dsp(sc_system* system, const sc_dsp_config* config, 
 
 #pragma region Sound
 
+sbk_result sc_sound_get_length(sc_sound* sound, float* lengthInSeconds)
+{
+    SC_CHECK_ARG(sound != NULL);
+    SC_CHECK_ARG(lengthInSeconds != NULL);
+
+    ma_sound_get_length_in_seconds(&sound->sound, lengthInSeconds);
+
+    return SBK_SUCCESS;
+}
+
 sbk_result sc_sound_release(sc_sound* sound)
 {
     SC_CHECK_ARG(sound != NULL);
@@ -615,6 +629,34 @@ sbk_result sc_sound_instance_is_playing(sc_sound_instance* instance, sc_bool* is
     SC_CHECK_ARG(isPlaying != NULL);
 
     *isPlaying = ma_sound_is_playing(&instance->sound);
+
+    return SBK_SUCCESS;
+}
+
+sbk_result sc_sound_instance_start(sc_sound_instance* instance)
+{
+    SC_CHECK_ARG(instance != NULL);
+
+    ma_sound_start(&instance->sound);
+
+    return SBK_SUCCESS;
+}
+
+sbk_result sc_sound_instance_pause(sc_sound_instance* instance)
+{
+    SC_CHECK_ARG(instance != NULL);
+
+    ma_sound_stop(&instance->sound);
+
+    return SBK_SUCCESS;
+}
+
+sbk_result sc_sound_instance_get_cursor_in_seconds(sc_sound_instance* instance, float* seconds)
+{
+    SC_CHECK_ARG(instance != NULL);
+    SC_CHECK_ARG(seconds != NULL);
+
+    ma_sound_get_cursor_in_seconds(&instance->sound, seconds);
 
     return SBK_SUCCESS;
 }

@@ -26,7 +26,6 @@ public:
     auto set_video_next_frame(const std::filesystem::path& absoluteFilePath) -> void;
     auto set_video_prev_frame(const std::filesystem::path& absoluteFilePath) -> void;
 
-protected:
     auto pre_init(int ArgC, char* ArgV[]) -> int override;
     auto init() -> int override;
     auto tick(double deltaTime) -> void override;

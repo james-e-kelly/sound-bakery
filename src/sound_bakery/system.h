@@ -49,7 +49,7 @@ namespace sbk
             LEAK_DETECTOR(system)
 
         public:
-            enum class operating_mode
+            enum class operating_mode : uint8_t
             {
                 unkown, //< Unkown/unset
                 editor, //< We have a project

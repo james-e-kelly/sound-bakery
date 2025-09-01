@@ -149,7 +149,6 @@ target_include_directories(review PRIVATE ${OPENSSL_ROOT_DIR}/include)
 target_link_libraries(review
     PRIVATE
     SoundBakery::Gluten
-    SoundBakery::SoundBakery_Static
     SQLiteCpp
     sqlite3
     magic_enum::magic_enum

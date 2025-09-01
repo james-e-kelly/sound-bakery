@@ -138,8 +138,8 @@ namespace gluten
     template <class T>
     std::shared_ptr<T> app::add_subsystem_class()
     {
-        m_subsystems.push_back(std::make_shared<T>(this));
-        std::shared_ptr<subsystem> subsystemPtr = m_subsystems.back();
+        std::shared_ptr<T> subsystemPtr = std::make_shared<T>(this);
+        m_subsystems.push_back(subsystemPtr);
         assert(subsystemPtr);
 
         if (m_hasInit)
@@ -148,7 +148,7 @@ namespace gluten
             subsystemPtr->init();
         }
 
-        return std::static_pointer_cast<T>(subsystemPtr);
+        return subsystemPtr;
     }
 
     template <class T>

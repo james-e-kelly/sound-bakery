@@ -1,5 +1,6 @@
 ﻿#include "review_app.h"
 
+#include "gluten/subsystems/audio_subsystem.h"
 #include "subsystems/video_subsystem.h"
 #include "managers/workspace_manager.h"
 #include "widgets/review_root_widget.h"
@@ -118,6 +119,7 @@ auto review_app::pre_init() -> void
 
     m_dropTarget = std::make_unique<review_app_drop_target>();
 
+    m_audioSubsystem   = add_subsystem_class<gluten::audio_subsystem>();
     m_videoManager     = add_subsystem_class<video_subsystem>();
     m_workspaceManager = add_manager_class<workspace_manager>();
 }

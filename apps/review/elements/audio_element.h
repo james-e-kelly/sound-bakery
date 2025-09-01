@@ -30,11 +30,11 @@ protected:
     auto render_element(const ImRect& elementRect) -> bool override;
     auto get_element_content_size(const ImVec2& parentSize) -> ImVec2 const override;
 
-    auto get_file_play_position() const -> double override { return 0.0; }
-    auto get_file_duration() const -> double override { return 0.0; }
+    auto get_file_play_position() const -> double override;
+    auto get_file_duration() const -> double override;
 
-    auto play_file() -> void override {}
-    auto pause_file() -> void override {}
+    auto play_file() -> void override;
+    auto pause_file() -> void override;
     auto seek_to_position(double position) -> void override {}
     auto prev_frame() -> void override {}
     auto next_frame() -> void override {}

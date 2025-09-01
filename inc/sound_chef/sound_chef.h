@@ -110,8 +110,34 @@ extern "C"
      */
     sbk_result SC_API sc_system_create_dsp(sc_system* system, const sc_dsp_config* config, sc_dsp** dsp);
 
+    sbk_result SC_API sc_sound_get_length(sc_sound* sound, float* lengthInSeconds);
+
     sbk_result SC_API sc_sound_release(sc_sound* sound);
+
+    /**
+     * @brief Checks whether the sound instance is playing or not.
+     */
     sbk_result SC_API sc_sound_instance_is_playing(sc_sound_instance* instance, sc_bool* isPlaying);
+
+    /**
+     * @brief Plays a sound instance, if it is not already.
+     * 
+     * Does not create any new resources, unlike sc_system_play_sound.
+     */
+    sbk_result SC_API sc_sound_instance_start(sc_sound_instance* instance);
+
+    /**
+     * @brief Pause playback at the current time.
+     */
+    sbk_result SC_API sc_sound_instance_pause(sc_sound_instance* instance);
+
+    sbk_result SC_API sc_sound_instance_get_cursor_in_seconds(sc_sound_instance* instance, float* seconds);
+
+    /**
+     * @brief Releases the sound instance's resources.
+     * 
+     * The raw sc_sound needs to be released as well, once used, to release all resources.
+     */
     sbk_result SC_API sc_sound_instance_release(sc_sound_instance* instance);
 
     /**

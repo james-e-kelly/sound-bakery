@@ -34,6 +34,7 @@ set(GLUTEN_SOURCES
   elements/loading_spinner.cpp
   elements/layouts/layout.cpp
   managers/manager.cpp
+  subsystems/audio_subsystem.cpp
   subsystems/renderer_subsystem.cpp
   subsystems/widget_subsystem.cpp
   utils/imgui_util_functions.cpp
@@ -63,6 +64,7 @@ set(GLUTEN_HEADERS
   elements/loading_spinner.h
   elements/layouts/layout.h
   managers/manager.h
+  subsystems/audio_subsystem.h
   subsystems/renderer_subsystem.h
   subsystems/widget_subsystem.h
   theme/theme.h
@@ -153,6 +155,7 @@ target_include_directories(gluten PUBLIC
 
 target_link_libraries(gluten
     PUBLIC
+    SoundBakery::SoundBakery_Static
     SoundBakery::Core
     Boost::serialization
     concurrencpp::concurrencpp 
