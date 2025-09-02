@@ -69,6 +69,21 @@ auto gluten::audio_subsystem::pause_sound(const std::filesystem::path& filePath)
     }
 }
 
+auto gluten::audio_subsystem::set_sound_cursor_position(const std::filesystem::path& filePath, float cursorPosition) -> void
+{
+    if (sc_sound_instance* const soundInstance = get_sound_instance(filePath))
+    {
+        sc_sound_instance_set_cursor_in_seconds(soundInstance, cursorPosition);
+    }
+    else if (sc_sound* const sound = get_or_load_audio_handle(filePath))
+    {
+        sc_sound_instance* soundInstance = nullptr;
+        sc_system_play_sound(m_soundChef.get(), sound, &soundInstance, nullptr, SBK_TRUE);
+        sc_sound_instance_set_cursor_in_seconds(soundInstance, cursorPosition);
+        m_filesToSoundInstancesMap[filePath].reset(soundInstance);
+    }
+}
+
 auto gluten::audio_subsystem::get_sound_cursor_position(const std::filesystem::path& filePath) -> float
 {
     float seconds = 0.0f;
@@ -228,5 +243,5 @@ auto gluten::audio_subsystem::generate_waveform(const std::filesystem::path file
 
     ma_decoder_uninit(&decoder);
 
-    co_yield std::vector<std::pair<float, float>>();
+    //co_yield std::vector<std::pair<float, float>>();
 }

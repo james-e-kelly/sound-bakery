@@ -661,6 +661,23 @@ sbk_result sc_sound_instance_get_cursor_in_seconds(sc_sound_instance* instance, 
     return SBK_SUCCESS;
 }
 
+sbk_result sc_sound_instance_set_cursor_in_seconds(sc_sound_instance* instance, float seconds)
+{
+    SC_CHECK_ARG(instance != NULL);
+    SC_CHECK_ARG(seconds >= 0.0f);
+
+    ma_uint64 lengthInPCMFrames = 0;
+    float lengthInSeconds       = 0.0f;
+
+    ma_sound_get_length_in_pcm_frames(&instance->sound, &lengthInPCMFrames);
+    ma_sound_get_length_in_seconds(&instance->sound, &lengthInSeconds);
+
+    const float percentage               = seconds / lengthInSeconds;
+    const ma_uint32 frameIndexForSeconds = lengthInPCMFrames * percentage;
+
+    return ma_sound_seek_to_pcm_frame(&instance->sound, frameIndexForSeconds);
+}
+
 sbk_result sc_sound_instance_release(sc_sound_instance* instance)
 {
     SC_CHECK_ARG(instance != NULL);

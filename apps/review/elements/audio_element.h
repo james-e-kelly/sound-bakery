@@ -28,6 +28,7 @@ public:
 
 protected:
     auto render_element(const ImRect& elementRect) -> bool override;
+    void render_waveform();
     auto get_element_content_size(const ImVec2& parentSize) -> ImVec2 const override;
 
     auto get_file_play_position() const -> double override;

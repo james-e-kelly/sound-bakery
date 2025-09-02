@@ -19,11 +19,44 @@ auto audio_element::render_element(const ImRect& elementRect) -> bool
 
     render_controls();
 
+    render_waveform();
+
+    if (ImGui::IsMouseHoveringRect(m_audioBackground.get_element_rect().Min, m_audioBackground.get_element_rect().Max))
+    {
+        const bool clicked = ImGui::IsMouseClicked(ImGuiMouseButton_Left);
+        const bool doubleClicked = ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left);
+
+        if (clicked || doubleClicked)
+        {
+            const ImVec2 mousePos = ImGui::GetMousePos();
+            const float mousePercentageInWaveform = (mousePos.x - m_audioBackground.get_element_rect().Min.x) / (m_audioBackground.get_element_rect().GetWidth());
+            const float timeInWaveform = mousePercentageInWaveform * m_fileDuration;
+
+            if (std::shared_ptr<gluten::audio_subsystem> audioSubsystem = gluten::app::get()->get_subsystem_by_class<gluten::audio_subsystem>())
+            {
+                audioSubsystem->set_sound_cursor_position(m_filePath, timeInWaveform);
+
+                if (doubleClicked)
+                {
+                    audioSubsystem->play_sound(m_filePath);
+                }
+            }
+        }
+    }
+
+    return false;
+}
+
+void audio_element::render_waveform()
+{
     if (std::shared_ptr<gluten::audio_subsystem> audioSubsystem = gluten::app::get()->get_subsystem_by_class<gluten::audio_subsystem>())
     {
         if (ImDrawList* const drawList = ImGui::GetWindowDrawList())
         {
-            typename gluten::audio_subsystem::waveform& waveform = audioSubsystem->get_ui_waveform(m_filePath, m_audioBackground.get_element_rect().GetWidth());
+            typename gluten::audio_subsystem::waveform& waveform =
+                audioSubsystem->get_ui_waveform(
+                    m_filePath,
+                    m_audioBackground.get_element_rect().GetWidth());
 
             const std::size_t buckets = waveform.size();
 
@@ -31,44 +64,63 @@ auto audio_element::render_element(const ImRect& elementRect) -> bool
             {
                 const std::size_t channels = waveform[0].size();
 
-                const float widthAvailable = m_audioBackground.get_element_rect().GetWidth();
+                const float widthAvailable =
+                    m_audioBackground.get_element_rect().GetWidth();
                 const float bucketWidth = 1.0f;
 
-                const float heightAvailable = m_audioBackground.get_element_rect().GetHeight();
+                const float heightAvailable =
+                    m_audioBackground.get_element_rect().GetHeight();
                 const float heightToEachChannel = heightAvailable / channels;
-                const float channelHalfHeight = heightToEachChannel / 2.0f;
+                const float channelHalfHeight   = heightToEachChannel / 2.0f;
 
                 // 0 lines
                 /*for (std::size_t channel = 0; channel < channels; ++channel)
                 {
-                    const float channelStartY = m_audioBackground.get_element_rect().Min.y + (heightToEachChannel * channel);
-                    const float channelMidY = channelStartY + channelHalfHeight;
+                    const float channelStartY =
+                m_audioBackground.get_element_rect().Min.y +
+                (heightToEachChannel * channel); const float channelMidY =
+                channelStartY + channelHalfHeight;
 
-                    const ImVec2 channelLeft(m_audioBackground.get_element_rect().Min.x, channelMidY);
-                    const ImVec2 channelRight(m_audioBackground.get_element_rect().Max.x, channelMidY);
+                    const ImVec2
+                channelLeft(m_audioBackground.get_element_rect().Min.x,
+                channelMidY); const ImVec2
+                channelRight(m_audioBackground.get_element_rect().Max.x,
+                channelMidY);
 
-                    drawList->AddLine(channelLeft, channelRight, IM_COL32(255,255,255,155));
+                    drawList->AddLine(channelLeft, channelRight,
+                IM_COL32(255,255,255,155));
                 }*/
 
                 for (std::size_t bucket = 0; bucket < waveform.size(); ++bucket)
                 {
-                    const float bucketStartX = m_audioBackground.get_element_rect().Min.x + (bucketWidth * bucket);
-                    const float bucketMidX = bucketStartX + (bucketWidth / 2.0f);
+                    const float bucketStartX =
+                        m_audioBackground.get_element_rect().Min.x +
+                        (bucketWidth * bucket);
+                    const float bucketMidX =
+                        bucketStartX + (bucketWidth / 2.0f);
 
                     for (std::size_t channel = 0; channel < channels; ++channel)
                     {
-                        const float channelStartY = m_audioBackground.get_element_rect().Min.y + (heightToEachChannel * channel);
-                        const float channelMidY = channelStartY + channelHalfHeight;
+                        const float channelStartY =
+                            m_audioBackground.get_element_rect().Min.y +
+                            (heightToEachChannel * channel);
+                        const float channelMidY =
+                            channelStartY + channelHalfHeight;
 
                         if (waveform[bucket].size() <= channel)
                         {
                             continue;
                         }
 
-                        const std::pair<float,float> minMax = waveform[bucket][channel];
+                        const std::pair<float, float> minMax =
+                            waveform[bucket][channel];
 
-                        ImVec2 minLine(bucketMidX, channelMidY - (minMax.first * channelHalfHeight));
-                        ImVec2 maxLine(bucketMidX, channelMidY - (minMax.second * channelHalfHeight));
+                        ImVec2 minLine(
+                            bucketMidX,
+                            channelMidY - (minMax.first * channelHalfHeight));
+                        ImVec2 maxLine(
+                            bucketMidX,
+                            channelMidY - (minMax.second * channelHalfHeight));
 
                         if (std::abs(maxLine.y - minLine.y) <= 1.0f)
                         {
@@ -81,15 +133,18 @@ auto audio_element::render_element(const ImRect& elementRect) -> bool
                 }
             }
 
-            const float cursorX = m_audioBackground.get_element_rect().Min.x + (m_audioBackground.get_element_rect().GetWidth() * m_filePercent);
-            const ImVec2 cursorTop(cursorX, m_audioBackground.get_element_rect().Min.y);
-            const ImVec2 cursorBottom(cursorX, m_audioBackground.get_element_rect().Max.y);
-            
+            const float cursorX =
+                m_audioBackground.get_element_rect().Min.x +
+                (m_audioBackground.get_element_rect().GetWidth() *
+                 m_filePercent);
+            const ImVec2 cursorTop(cursorX,
+                                   m_audioBackground.get_element_rect().Min.y);
+            const ImVec2 cursorBottom(
+                cursorX, m_audioBackground.get_element_rect().Max.y);
+
             drawList->AddLine(cursorBottom, cursorTop, IM_COL32_WHITE);
         }
     }
-
-    return false;
 }
 
 auto audio_element::get_element_content_size(const ImVec2& parentSize) -> ImVec2 const

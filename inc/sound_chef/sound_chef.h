@@ -132,6 +132,7 @@ extern "C"
     sbk_result SC_API sc_sound_instance_pause(sc_sound_instance* instance);
 
     sbk_result SC_API sc_sound_instance_get_cursor_in_seconds(sc_sound_instance* instance, float* seconds);
+    sbk_result SC_API sc_sound_instance_set_cursor_in_seconds(sc_sound_instance* instance, float seconds);
 
     /**
      * @brief Releases the sound instance's resources.
