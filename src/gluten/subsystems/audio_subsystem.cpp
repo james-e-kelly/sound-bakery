@@ -1,5 +1,7 @@
 #include "audio_subsystem.h"
 
+#include "gluten/app/app.h"
+
 #define CHECK_SC_RESULT(result)     \
     if (result != SBK_SUCCESS)      \
     {                               \
@@ -121,4 +123,110 @@ auto gluten::audio_subsystem::get_sound_instance(const std::filesystem::path& fi
         }
     }
     return soundInstance;
+}
+
+auto gluten::audio_subsystem::get_ui_waveform(const std::filesystem::path& filePath, std::size_t buckets) -> waveform&
+{
+    if (!m_filesToWaveforms.contains(filePath))
+    {
+        m_filesToWaveforms.insert({filePath, waveform()});
+        async_generate_waveform(filePath, buckets);
+    }
+    return m_filesToWaveforms.at(filePath);
+}
+
+auto gluten::audio_subsystem::async_generate_waveform(const std::filesystem::path filePath, std::size_t targetSamples) -> concurrencpp::result<void>
+{
+    co_await concurrencpp::resume_on(gluten::app::get()->background_executor());
+
+    constexpr std::size_t bucketsToFillPerIteration = 50;
+    std::size_t iteration                           = 0;
+
+    std::vector<waveform_bucket> buckets;
+
+    for (const waveform_bucket bucket : generate_waveform(filePath, targetSamples))
+    {
+        buckets.push_back(bucket);
+
+        if (iteration++ >= bucketsToFillPerIteration)
+        {
+            iteration = 0;
+            co_await concurrencpp::resume_on(gluten::app::get()->get_tick_executor());
+            m_filesToWaveforms.at(filePath).insert(m_filesToWaveforms.at(filePath).end(), buckets.begin(), buckets.end());
+            co_await concurrencpp::resume_on(gluten::app::get()->background_executor());
+            buckets.clear();
+        }
+    }
+
+    co_return;
+}
+
+auto gluten::audio_subsystem::generate_waveform(const std::filesystem::path filePath, std::size_t targetSamples) -> waveform_generator
+{
+    if (!std::filesystem::exists(filePath))
+    {
+        co_yield std::vector<std::pair<float, float>>();
+    }
+
+    if (targetSamples == 0)
+    {
+        co_yield std::vector<std::pair<float, float>>();
+    }
+
+    ma_decoder decoder;
+    SC_ZERO_OBJECT(&decoder);
+    const ma_decoder_config config = ma_decoder_config_init(ma_format_f32, 0, ma_standard_sample_rate_48000);
+
+    if (ma_decoder_init_file(filePath.string().c_str(), &config, &decoder) != MA_SUCCESS)
+    {
+        co_yield std::vector<std::pair<float, float>>();
+    }
+
+    ma_uint64 frameCount;
+    ma_decoder_get_length_in_pcm_frames(&decoder, &frameCount);
+
+    size_t framesPerBucket = frameCount / targetSamples;
+    if (framesPerBucket < 1)
+    {
+        framesPerBucket = 1;
+    }
+
+    for (ma_uint64 bucket = 0; bucket < frameCount; bucket += framesPerBucket)
+    {
+        std::vector<float> framesInBucket(framesPerBucket * decoder.outputChannels, 0);
+        std::vector<float> channelMaxesForBucket(decoder.outputChannels, 0.0f);
+        std::vector<float> channelMinsForBucket(decoder.outputChannels, 0.0f);
+        ma_decoder_read_pcm_frames(&decoder, framesInBucket.data(), framesPerBucket, NULL);
+
+        for (ma_uint64 frame = 0; frame < framesPerBucket; ++frame)
+        {
+            for (ma_uint64 channel = 0; channel < decoder.outputChannels; ++channel)
+            {
+                const ma_uint64 sampleIndex = (frame * decoder.outputChannels) + channel;
+                const float sampleValue = framesInBucket[sampleIndex];
+                if (sampleValue > channelMaxesForBucket[channel])
+                {
+                    channelMaxesForBucket[channel] = sampleValue;
+                }
+
+                if (sampleValue < channelMinsForBucket[channel])
+                {
+                    channelMinsForBucket[channel] = sampleValue;
+                }
+            }
+        }
+
+        std::vector<std::pair<float, float>> result;
+
+        for (ma_uint64 channel = 0; channel < decoder.outputChannels; ++channel)
+        {
+            result.push_back(std::pair<float, float>(channelMinsForBucket[channel], channelMaxesForBucket[channel]));
+        }
+
+        co_yield result;
+    }
+
+    ma_decoder_uninit(&decoder);
+
+    co_yield std::vector<std::pair<float, float>>();
 }
