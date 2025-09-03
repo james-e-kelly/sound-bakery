@@ -6,7 +6,7 @@ audio_element::audio_element(const std::filesystem::path& filePath,
                                     const int64_t fileId)
     : file_element(gluten::anchor_preset::stretch_full, filePath, fileId)
 {
-    m_audioBackground.set_element_background_color(gluten::theme::carbon_g100::layer02);
+    m_audioBackground.set_element_background_color(gluten::theme::carbon_g100::layerHover01);
 }
 
 auto audio_element::render_element(const ImRect& elementRect) -> bool
@@ -93,7 +93,14 @@ void audio_element::render_waveform()
                                 maxLine.y = channelMidY - 0.5f;
                             }
 
-                            drawList->AddLine(minLine, maxLine, IM_COL32_WHITE);
+                            if (minMax.first < -1.0f || minMax.second > 1.0f)
+                            {
+                                drawList->AddLine(minLine, maxLine, IM_COL32(255,0,0,255));
+                            }
+                            else
+                            {
+                                drawList->AddLine(minLine, maxLine, IM_COL32_WHITE);
+                            }
                         }
                     }
                 }

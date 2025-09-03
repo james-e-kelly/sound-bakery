@@ -12,7 +12,7 @@ auto review_element::render_element(const ImRect& elementRect) -> bool
     {
         gluten::background background;
         background.set_element_background_color(m_backgroundColor.value())
-            .set_element_hover_color(gluten::theme::carbon_g100::fieldHover02);
+            .set_element_hover_color(gluten::theme::carbon_g100::fieldHover03);
         m_backgroundColor.reset();
         background.render(elementRect);
     }

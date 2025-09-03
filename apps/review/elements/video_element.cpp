@@ -45,25 +45,7 @@ video_element::video_element(const std::filesystem::path& videoFile, int64_t fil
         m_videoImage = gluten::image(m_videoTexture, 1920, 1080);
 	}
 
-    m_videoControlsLayout.set_element_background_color(gluten::theme::carbon_g100::field01);
-    m_playButton.set_element_background_color(gluten::theme::carbon_g100::field01);
-    
-    m_playButton.set_element_border(1.0f, 0.0f);
-
-    m_playButton.set_element_active_color(gluten::theme::carbon_g100::backgroundActive);
-    m_pauseButton.set_element_active_color(gluten::theme::carbon_g100::backgroundActive);
-    m_previousFrameButton.set_element_active_color(gluten::theme::carbon_g100::backgroundActive);
-    m_nextFrameButton.set_element_active_color(gluten::theme::carbon_g100::backgroundActive);
-    m_addCommentButton.set_element_active_color(gluten::theme::carbon_g100::layerActive01);
-
-    m_playButton.set_element_hover_color(gluten::theme::carbon_g100::backgroundHover);
-    m_pauseButton.set_element_hover_color(gluten::theme::carbon_g100::backgroundHover);
-    m_previousFrameButton.set_element_hover_color(gluten::theme::carbon_g100::backgroundHover);
-    m_nextFrameButton.set_element_hover_color(gluten::theme::carbon_g100::backgroundHover);
-    m_addCommentButton.set_element_hover_color(gluten::theme::carbon_g100::layerHover01);
-
-    m_filePositionText.set_element_alignment(ImVec2(-0.f, -0.5f));
-    m_fileDurationText.set_element_alignment(ImVec2(-0.f, -0.5f));
+    m_videoControlsLayout.set_element_background_color(gluten::theme::carbon_g100::background);
 
     m_videoCommentsLayout.set_element_padding(ImVec2(g_commentBubbleDiamter, 0.0f));
     m_videoTimelineLayout.set_element_padding(ImVec2(g_commentBubbleDiamter, 0.0f));
