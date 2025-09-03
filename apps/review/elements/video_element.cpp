@@ -153,7 +153,7 @@ auto video_element::render_comments() -> void
                 {
                     if (comment.m_fileId == m_fileId)
                     {
-                        if (comment.m_timeStart >= 0.0)
+                        if (comment.m_timeStart >= 0.0) 
                         {
                             const float commentTimelineWidth = rightMiddle.x - leftMiddle.x;
                             const float commentPosition = leftMiddle.x + (commentTimelineWidth * (comment.m_timeStart / m_fileDuration));

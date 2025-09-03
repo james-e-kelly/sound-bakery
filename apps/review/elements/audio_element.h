@@ -28,8 +28,11 @@ public:
 
 protected:
     auto render_element(const ImRect& elementRect) -> bool override;
-    void render_waveform();
+    auto render_waveform() -> void;
+    auto render_comments() -> bool;
     auto get_element_content_size(const ImVec2& parentSize) -> ImVec2 const override;
+
+    auto handle_mouse_control() -> void;
 
     auto get_file_play_position() const -> double override;
     auto get_file_duration() const -> double override;
@@ -37,8 +40,8 @@ protected:
     auto play_file() -> void override;
     auto pause_file() -> void override;
     auto seek_to_position(double position) -> void override {}
-    auto prev_frame() -> void override {}
-    auto next_frame() -> void override {}
+    auto prev_frame() -> void override;
+    auto next_frame() -> void override;
 
 private:
     auto get_audio_height(float width) -> float;
