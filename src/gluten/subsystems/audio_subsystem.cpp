@@ -206,11 +206,19 @@ auto gluten::audio_subsystem::generate_waveform(const std::filesystem::path file
         framesPerBucket = 1;
     }
 
+    std::vector<std::pair<float, float>> result;
+    result.reserve(decoder.outputChannels);
+
+    std::vector<float> framesInBucket(framesPerBucket * decoder.outputChannels, 0.0f);
+    std::vector<float> channelMaxesForBucket(decoder.outputChannels, 0.0f);
+    std::vector<float> channelMinsForBucket(decoder.outputChannels, 0.0f);
+
     for (ma_uint64 bucket = 0; bucket < frameCount; bucket += framesPerBucket)
     {
-        std::vector<float> framesInBucket(framesPerBucket * decoder.outputChannels, 0);
-        std::vector<float> channelMaxesForBucket(decoder.outputChannels, 0.0f);
-        std::vector<float> channelMinsForBucket(decoder.outputChannels, 0.0f);
+        std::fill(framesInBucket.begin(), framesInBucket.end(), 0.0f);
+        std::fill(channelMaxesForBucket.begin(), channelMaxesForBucket.end(), 0.0f);
+        std::fill(channelMinsForBucket.begin(), channelMinsForBucket.end(), 0.0f);
+
         ma_decoder_read_pcm_frames(&decoder, framesInBucket.data(), framesPerBucket, NULL);
 
         for (ma_uint64 frame = 0; frame < framesPerBucket; ++frame)
@@ -231,7 +239,7 @@ auto gluten::audio_subsystem::generate_waveform(const std::filesystem::path file
             }
         }
 
-        std::vector<std::pair<float, float>> result;
+        result.clear();
 
         for (ma_uint64 channel = 0; channel < decoder.outputChannels; ++channel)
         {
@@ -242,6 +250,4 @@ auto gluten::audio_subsystem::generate_waveform(const std::filesystem::path file
     }
 
     ma_decoder_uninit(&decoder);
-
-    //co_yield std::vector<std::pair<float, float>>();
 }
