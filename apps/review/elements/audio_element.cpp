@@ -84,11 +84,11 @@ auto audio_element::render_waveform() -> void
 
                             if (minMax.first < -1.0f || minMax.second > 1.0f)
                             {
-                                drawList->AddLine(minLine, maxLine, IM_COL32(255,0,0,255));
+                                drawList->AddLine(minLine, maxLine, ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::textError));
                             }
                             else
                             {
-                                drawList->AddLine(minLine, maxLine, IM_COL32_WHITE);
+                                drawList->AddLine(minLine, maxLine, ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::textHelper));
                             }
                         }
                     }
@@ -190,7 +190,7 @@ auto audio_element::handle_mouse_control() -> void
 
 auto audio_element::handle_keyboard_control() -> void
 {
-    if (ImGui::IsMouseHoveringRect(m_audioBackground.get_element_rect().Min, m_audioBackground.get_element_rect().Max))
+    if (ImGui::IsWindowFocused() && ImGui::IsMouseHoveringRect(m_audioBackground.get_element_rect().Min, m_audioBackground.get_element_rect().Max))
     {
         if (ImGui::IsKeyPressed(ImGuiKey_Space))
         {
