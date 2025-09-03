@@ -206,9 +206,7 @@ auto gluten::audio_subsystem::generate_waveform(const std::filesystem::path file
         framesPerBucket = 1;
     }
 
-    std::vector<std::pair<float, float>> result;
-    result.reserve(decoder.outputChannels);
-
+    std::vector<std::pair<float, float>> result(decoder.outputChannels, std::pair<float,float>());
     std::vector<float> framesInBucket(framesPerBucket * decoder.outputChannels, 0.0f);
     std::vector<float> channelMaxesForBucket(decoder.outputChannels, 0.0f);
     std::vector<float> channelMinsForBucket(decoder.outputChannels, 0.0f);
