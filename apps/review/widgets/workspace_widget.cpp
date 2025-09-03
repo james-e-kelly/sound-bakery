@@ -476,9 +476,26 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
 
             ImGui::SameLine(0.0f, 10.0f);
 
+            bool collapseAll = false;
+            bool expandAll   = false;
+
             if (ImGui::Button(ICON_LC_PLUS " Version"))
             {
 
+            }
+
+            ImGui::SameLine(0.0f, 10.0f);
+
+            if (ImGui::Button("Collapse All"))
+            {
+                collapseAll = true;
+            }
+
+            ImGui::SameLine(0.0f, 10.0f);
+
+            if (ImGui::Button("Expand All"))
+            {
+                expandAll = true;
             }
 
             ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
@@ -504,6 +521,17 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
                     if (asset.m_versionsToRelativeFiles.contains(selectedVersion))
                     {
                         gluten::collapsing_header header(asset.m_fileName, false);
+
+                        if (collapseAll)
+                        {
+                            header.set_open(false);
+                        }
+
+                        if (expandAll)
+                        {
+                            header.set_open(true);
+                        }
+
                         if (m_reviewFilesLayout.render_layout_element_percent_horizontal(&header, 1.0f))
                         {
                             const std::filesystem::path absoluteFilePath = workspaceManager->get_workspace_directory() /

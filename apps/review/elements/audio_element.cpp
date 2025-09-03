@@ -30,6 +30,7 @@ auto audio_element::render_element(const ImRect& elementRect) -> bool
     if (!render_comments())
     {
         handle_mouse_control();
+        handle_keyboard_control();
     }
 
     return createdComment;
@@ -179,6 +180,27 @@ auto audio_element::handle_mouse_control() -> void
                 audioSubsystem->set_sound_cursor_position(m_filePath, timeInWaveform);
 
                 if (doubleClicked)
+                {
+                    audioSubsystem->play_sound(m_filePath);
+                }
+            }
+        }
+    }
+}
+
+auto audio_element::handle_keyboard_control() -> void
+{
+    if (ImGui::IsMouseHoveringRect(m_audioBackground.get_element_rect().Min, m_audioBackground.get_element_rect().Max))
+    {
+        if (ImGui::IsKeyPressed(ImGuiKey_Space))
+        {
+            if (std::shared_ptr<gluten::audio_subsystem> audioSubsystem = gluten::app::get()->get_subsystem_by_class<gluten::audio_subsystem>())
+            {
+                if (audioSubsystem->get_sound_is_playing(m_filePath))
+                {
+                    audioSubsystem->pause_sound(m_filePath);
+                }
+                else
                 {
                     audioSubsystem->play_sound(m_filePath);
                 }

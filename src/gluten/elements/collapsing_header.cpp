@@ -4,6 +4,16 @@
 #include "gluten/elements/text.h"
 #include "gluten/utils/imgui_util_structures.h"
 
+auto gluten::collapsing_header::set_open(bool open) -> void
+{
+    gluten::imgui::scoped_id id(m_label.c_str());
+
+    if (ImGuiStorage* const storage = ImGui::GetStateStorage())
+    {
+        storage->SetBool(ImGui::GetID(m_label.c_str()), open);
+    }
+}
+
 auto gluten::collapsing_header::render_element(const ImRect& parentRect) -> bool
 {
     gluten::imgui::scoped_id id(m_label.c_str());

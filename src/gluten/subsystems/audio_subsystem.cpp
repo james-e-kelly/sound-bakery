@@ -108,6 +108,18 @@ auto gluten::audio_subsystem::get_sound_length(const std::filesystem::path& file
     return seconds;
 }
 
+auto gluten::audio_subsystem::get_sound_is_playing(const std::filesystem::path& filePath) -> bool
+{
+    sc_bool playing = MA_FALSE;
+
+    if (sc_sound_instance* const soundInstance = get_sound_instance(filePath))
+    {
+        sc_sound_instance_is_playing(soundInstance, &playing);
+    }
+
+    return playing;
+}
+
 auto gluten::audio_subsystem::get_or_load_audio_handle(const std::filesystem::path& filePath) -> sc_sound*
 {
     sc_sound* sound = nullptr;

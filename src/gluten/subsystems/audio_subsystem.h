@@ -30,6 +30,7 @@ namespace gluten
         auto set_sound_cursor_position(const std::filesystem::path& filePath, float cursorPosition) -> void;
         auto get_sound_cursor_position(const std::filesystem::path& filePath) -> float;
         auto get_sound_length(const std::filesystem::path& filePath) -> float;
+        auto get_sound_is_playing(const std::filesystem::path& filePath) -> bool;
 
         auto get_or_load_audio_handle(const std::filesystem::path& filePath) -> sc_sound*;
         auto get_sound_instance(const std::filesystem::path& filePath) -> sc_sound_instance*;

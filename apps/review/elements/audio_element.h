@@ -33,6 +33,7 @@ protected:
     auto get_element_content_size(const ImVec2& parentSize) -> ImVec2 const override;
 
     auto handle_mouse_control() -> void;
+    auto handle_keyboard_control() -> void;
 
     auto get_file_play_position() const -> double override;
     auto get_file_duration() const -> double override;
