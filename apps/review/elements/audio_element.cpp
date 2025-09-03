@@ -64,71 +64,37 @@ void audio_element::render_waveform()
             {
                 const std::size_t channels = waveform[0].size();
 
-                const float widthAvailable =
-                    m_audioBackground.get_element_rect().GetWidth();
+                const float widthAvailable = m_audioBackground.get_element_rect().GetWidth();
                 const float bucketWidth = 1.0f;
 
-                const float heightAvailable =
-                    m_audioBackground.get_element_rect().GetHeight();
+                const float heightAvailable = m_audioBackground.get_element_rect().GetHeight();
                 const float heightToEachChannel = heightAvailable / channels;
                 const float channelHalfHeight   = heightToEachChannel / 2.0f;
 
-                // 0 lines
-                /*for (std::size_t channel = 0; channel < channels; ++channel)
+                for (std::size_t pixel = 0; pixel < widthAvailable; ++pixel)
                 {
-                    const float channelStartY =
-                m_audioBackground.get_element_rect().Min.y +
-                (heightToEachChannel * channel); const float channelMidY =
-                channelStartY + channelHalfHeight;
-
-                    const ImVec2
-                channelLeft(m_audioBackground.get_element_rect().Min.x,
-                channelMidY); const ImVec2
-                channelRight(m_audioBackground.get_element_rect().Max.x,
-                channelMidY);
-
-                    drawList->AddLine(channelLeft, channelRight,
-                IM_COL32(255,255,255,155));
-                }*/
-
-                for (std::size_t bucket = 0; bucket < waveform.size(); ++bucket)
-                {
-                    const float bucketStartX =
-                        m_audioBackground.get_element_rect().Min.x +
-                        (bucketWidth * bucket);
-                    const float bucketMidX =
-                        bucketStartX + (bucketWidth / 2.0f);
+                    const float bucketStartX = m_audioBackground.get_element_rect().Min.x + pixel;
 
                     for (std::size_t channel = 0; channel < channels; ++channel)
                     {
-                        const float channelStartY =
-                            m_audioBackground.get_element_rect().Min.y +
-                            (heightToEachChannel * channel);
-                        const float channelMidY =
-                            channelStartY + channelHalfHeight;
+                        const float channelStartY = m_audioBackground.get_element_rect().Min.y + (heightToEachChannel * channel);
+                        const float channelMidY = channelStartY + channelHalfHeight;
 
-                        if (waveform[bucket].size() <= channel)
+                        if (waveform.size() > pixel)
                         {
-                            continue;
+                            const std::pair<float, float> minMax = waveform[pixel][channel];
+
+                            ImVec2 minLine(bucketStartX, channelMidY - (minMax.first * channelHalfHeight));
+                            ImVec2 maxLine(bucketStartX, channelMidY - (minMax.second * channelHalfHeight));
+
+                            if (std::abs(maxLine.y - minLine.y) <= 1.0f)
+                            {
+                                minLine.y = channelMidY + 0.5f;
+                                maxLine.y = channelMidY - 0.5f;
+                            }
+
+                            drawList->AddLine(minLine, maxLine, IM_COL32_WHITE);
                         }
-
-                        const std::pair<float, float> minMax =
-                            waveform[bucket][channel];
-
-                        ImVec2 minLine(
-                            bucketMidX,
-                            channelMidY - (minMax.first * channelHalfHeight));
-                        ImVec2 maxLine(
-                            bucketMidX,
-                            channelMidY - (minMax.second * channelHalfHeight));
-
-                        if (std::abs(maxLine.y - minLine.y) <= 1.0f)
-                        {
-                            minLine.y = channelMidY + 0.5f;
-                            maxLine.y = channelMidY - 0.5f;
-                        }
-
-                        drawList->AddLine(minLine, maxLine, IM_COL32_WHITE);
                     }
                 }
             }

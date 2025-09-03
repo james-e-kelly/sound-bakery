@@ -173,6 +173,14 @@ auto gluten::audio_subsystem::async_generate_waveform(const std::filesystem::pat
         }
     }
 
+    if (!buckets.empty())
+    {
+        co_await concurrencpp::resume_on(gluten::app::get()->get_tick_executor());
+        m_filesToWaveforms.at(filePath).insert(m_filesToWaveforms.at(filePath).end(), buckets.begin(), buckets.end());
+        co_await concurrencpp::resume_on(gluten::app::get()->background_executor());
+        buckets.clear();
+    }
+
     co_return;
 }
 
@@ -211,15 +219,26 @@ auto gluten::audio_subsystem::generate_waveform(const std::filesystem::path file
     std::vector<float> channelMaxesForBucket(decoder.outputChannels, 0.0f);
     std::vector<float> channelMinsForBucket(decoder.outputChannels, 0.0f);
 
-    for (ma_uint64 bucket = 0; bucket < frameCount; bucket += framesPerBucket)
+    for (ma_uint64 samplingIndex = 0; samplingIndex < targetSamples; ++samplingIndex)
     {
+        ma_uint64 framesToRead = framesPerBucket;
+        ma_uint64 framesRead   = framesPerBucket * samplingIndex;
+        ma_uint64 framesRemaining = frameCount - framesRead;
+
+        if (framesRemaining < framesToRead)
+        {
+            framesToRead = framesRemaining;
+        }
+
+        framesInBucket.resize(framesToRead * decoder.outputChannels);
+
         std::fill(framesInBucket.begin(), framesInBucket.end(), 0.0f);
         std::fill(channelMaxesForBucket.begin(), channelMaxesForBucket.end(), 0.0f);
         std::fill(channelMinsForBucket.begin(), channelMinsForBucket.end(), 0.0f);
 
-        ma_decoder_read_pcm_frames(&decoder, framesInBucket.data(), framesPerBucket, NULL);
+        ma_decoder_read_pcm_frames(&decoder, framesInBucket.data(), framesToRead, nullptr);
 
-        for (ma_uint64 frame = 0; frame < framesPerBucket; ++frame)
+        for (ma_uint64 frame = 0; frame < framesToRead; ++frame)
         {
             for (ma_uint64 channel = 0; channel < decoder.outputChannels; ++channel)
             {
