@@ -17,7 +17,7 @@ auto audio_element::render_element(const ImRect& elementRect) -> bool
     m_layout.render_layout_element_pixels_vertical(&m_audioBackground, elementRect.GetHeight() - s_controlHeight);
     m_layout.render_layout_element_pixels_vertical(&m_controlButtonsLayout, s_controlHeight);
 
-    render_controls();
+    const bool createdComment = render_controls();
 
     render_waveform();
 
@@ -44,7 +44,7 @@ auto audio_element::render_element(const ImRect& elementRect) -> bool
         }
     }
 
-    return false;
+    return createdComment;
 }
 
 void audio_element::render_waveform()

@@ -13,6 +13,11 @@ public:
     auto render_element(const ImRect& elementRect) -> bool override;
     auto post_render_element() -> void override;
 
+    auto get_file_position() const -> double
+    {
+        return m_filePosition;
+    }
+
     static inline constexpr float s_buttonWidth             = 30.0f;
     static inline constexpr float s_controlHeight           = s_buttonWidth;
     static inline constexpr int s_controlButtonsCount       = 5;

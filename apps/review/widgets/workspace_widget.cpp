@@ -512,14 +512,18 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
                             if (audio_element::can_handle_file(absoluteFilePath))
                             {
                                 audio_element audioElement(absoluteFilePath, asset.m_fileId);
-                                m_reviewFilesLayout.render_layout_element_percent_horizontal(&audioElement, 0.7f);
+                                if (m_reviewFilesLayout.render_layout_element_percent_horizontal(&audioElement, 1.0f))
+                                {
+                                    m_createCommentPopup = add_child_widget<create_comment_popup>(this, m_userSettings->m_loggedInUser.m_userId, selectedReview.m_reviewId, asset.m_fileId, audioElement.get_file_position());
+                                    m_createCommentPopup->open_popup();
+                                }
                             }
                             else if (video_element::can_handle_file(absoluteFilePath))
                             {
                                 video_element videoElement(absoluteFilePath, asset.m_fileId);
-                                if (m_reviewFilesLayout.render_layout_element_percent_horizontal(&videoElement, 0.7f))
+                                if (m_reviewFilesLayout.render_layout_element_percent_horizontal(&videoElement, 1.0f))
                                 {
-                                    m_createCommentPopup = add_child_widget<create_comment_popup>(this, m_userSettings->m_loggedInUser.m_userId, selectedReview.m_reviewId, asset.m_fileId, videoElement.get_video_position());
+                                    m_createCommentPopup = add_child_widget<create_comment_popup>(this, m_userSettings->m_loggedInUser.m_userId, selectedReview.m_reviewId, asset.m_fileId, videoElement.get_file_position());
                                     m_createCommentPopup->open_popup();
                                 }
                             }
