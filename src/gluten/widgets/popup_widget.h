@@ -4,6 +4,12 @@
 
 namespace gluten
 {
+    enum class popup_style
+    {
+        modal,
+        normal
+    };
+
     class popup_widget : public widget
     {
     public:
@@ -22,10 +28,16 @@ namespace gluten
             m_closable = closable;
         }
 
+        auto set_popup_type(popup_style style) -> void
+        {
+            m_style = style;
+        }
+
     private:
         virtual auto render_implementation() -> void override;
         
         bool m_closable = true;
+        popup_style m_style = popup_style::modal;
     };
 
     class confirmation_popup : public popup_widget

@@ -164,7 +164,7 @@ auto audio_element::get_element_content_size(const ImVec2& parentSize) -> ImVec2
 
 auto audio_element::handle_mouse_control() -> void
 {
-    if (ImGui::IsMouseHoveringRect(m_audioBackground.get_element_rect().Min, m_audioBackground.get_element_rect().Max))
+    if (ImGui::IsWindowFocused() && ImGui::IsMouseHoveringRect(m_audioBackground.get_element_rect().Min, m_audioBackground.get_element_rect().Max))
     {
         const bool clicked = ImGui::IsMouseClicked(ImGuiMouseButton_Left);
         const bool doubleClicked = ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left);

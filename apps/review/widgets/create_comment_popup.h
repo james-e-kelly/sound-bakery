@@ -8,6 +8,7 @@ public:
     create_comment_popup(gluten::widget* widgetParent, int64_t userId, int64_t reviewId, int64_t fileId, double videoPosition)
         : gluten::popup_widget(widgetParent, "Create Comment"), m_userId(userId), m_reviewId(reviewId), m_fileId(fileId), m_videoPosition(videoPosition)
     {
+        set_popup_type(gluten::popup_style::normal);
     }
 
 protected:

@@ -38,11 +38,28 @@ auto gluten::popup_widget::render_implementation() -> void
     ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
     ImGui::SetNextWindowSize(ImVec2(800, 250), ImGuiCond_Appearing);
 
-    if (ImGui::BeginPopupModal(get_widget_name().data(), m_closable ? &m_visible : nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+    switch (m_style)
     {
-        render_popup();
+        case popup_style::modal:
+        {
+            if (ImGui::BeginPopupModal(get_widget_name().data(), m_closable ? &m_visible : nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+            {
+                render_popup();
 
-        ImGui::EndPopup();
+                ImGui::EndPopup();
+            }
+            break;
+        }
+        case popup_style::normal:
+        {
+            if (ImGui::BeginPopup(get_widget_name().data(), ImGuiWindowFlags_AlwaysAutoResize))
+            {
+                render_popup();
+
+                ImGui::EndPopup();
+            }
+            break;
+        }
     }
 }
 
