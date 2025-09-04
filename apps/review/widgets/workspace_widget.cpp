@@ -520,6 +520,7 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
 
                     if (asset.m_versionsToRelativeFiles.contains(selectedVersion))
                     {
+                        gluten::imgui::scoped_id reviewId(selectedReview.m_reviewId);
                         gluten::collapsing_header header(asset.m_fileName, false);
 
                         if (collapseAll)
