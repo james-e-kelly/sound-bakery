@@ -1,5 +1,6 @@
 #include "audio_subsystem.h"
 
+#include "ebur128/ebur128.h"
 #include "gluten/app/app.h"
 
 #define CHECK_SC_RESULT(result)     \
@@ -162,6 +163,16 @@ auto gluten::audio_subsystem::get_ui_waveform(const std::filesystem::path& fileP
     return m_filesToWaveforms.at(filePath);
 }
 
+auto gluten::audio_subsystem::get_loudness_lufs(const std::filesystem::path& filePath) -> loudness_cache_type::cache_result
+{
+    if (m_filesToLoudnessCache.get_cache_needs_filling(filePath))
+    {
+        m_filesToLoudnessCache.set_async_fill_cache(filePath, async_calculate_loudness(filePath));
+    }
+
+    return m_filesToLoudnessCache.get_cached_data(filePath);
+}
+
 auto gluten::audio_subsystem::async_generate_waveform(const std::filesystem::path filePath, std::size_t targetSamples) -> concurrencpp::result<void>
 {
     co_await concurrencpp::resume_on(gluten::app::get()->background_executor());
@@ -194,6 +205,55 @@ auto gluten::audio_subsystem::async_generate_waveform(const std::filesystem::pat
     }
 
     co_return;
+}
+
+auto gluten::audio_subsystem::async_calculate_loudness(const std::filesystem::path filePath) -> loudness_cache_type::async_cache_result
+{
+    co_await concurrencpp::resume_on(gluten::app::get()->background_executor());
+
+    ma_decoder decoder;
+    SC_ZERO_OBJECT(&decoder);
+    const ma_decoder_config config = ma_decoder_config_init(ma_format_f32, 0, 0);
+
+    if (ma_decoder_init_file(filePath.string().c_str(), &config, &decoder) != MA_SUCCESS)
+    {
+        co_return loudness_lufs();
+    }
+
+    loudness_lufs loudness;
+
+    ebur128_state* eburState = ebur128_init(decoder.outputChannels, decoder.outputSampleRate, EBUR128_MODE_M | EBUR128_MODE_S | EBUR128_MODE_I);
+
+    ma_uint64 frameCount;
+    ma_decoder_get_length_in_pcm_frames(&decoder, &frameCount);
+
+    constexpr std::size_t framesPerLoop = 1000;
+    std::vector<float> pcmData(decoder.outputChannels * framesPerLoop, 0.0f);
+
+    while (frameCount)
+    {
+        const std::size_t framesToRead = std::min<std::size_t>(frameCount, framesPerLoop);
+        frameCount -= framesToRead;
+
+        ma_decoder_read_pcm_frames(&decoder, pcmData.data(), framesToRead, nullptr);
+        ebur128_add_frames_float(eburState, pcmData.data(), framesToRead);
+
+        double shortterm = 0.0;
+        double momentary = 0.0;
+
+        ebur128_loudness_shortterm(eburState, &shortterm);
+        ebur128_loudness_momentary(eburState, &momentary);
+
+        loudness.shorttermMax = std::max<double>(loudness.shorttermMax, shortterm);
+        loudness.momentaryMax = std::max<double>(loudness.momentaryMax, momentary);
+
+    }
+    
+    ebur128_loudness_global(eburState, &loudness.integrated);
+
+    ebur128_destroy(&eburState);
+
+    co_return loudness;
 }
 
 auto gluten::audio_subsystem::generate_waveform(const std::filesystem::path filePath, std::size_t targetSamples) -> waveform_generator

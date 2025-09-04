@@ -2,11 +2,25 @@
 
 #include "gluten/subsystems/subsystem.h"
 
+#include "gluten/data/data_cache.h"
 #include "concurrencpp/concurrencpp.h"
 #include "sound_chef/sound_chef.h"
 
 namespace gluten
 {
+    struct loudness_lufs
+    {
+        double integrated = 0.0;
+        double shorttermMax = 0.0;
+        double momentaryMax = 0.0;
+    };
+
+    struct loudness_lufs_key
+    {
+        std::filesystem::path filePath;
+        
+    };
+
 	/**
 	 * @brief A simple audio subsystem that can play audio using Sound Chef.
      * 
@@ -20,6 +34,7 @@ namespace gluten
         using waveform_bucket = std::vector<std::pair<float,float>>;
         using waveform = std::vector<std::vector<std::pair<float,float>>>;
         using waveform_generator = concurrencpp::generator<waveform_bucket>;
+        using loudness_cache_type = data_cache<loudness_lufs, key_cache_key<std::filesystem::path>, key_cache_key_hasher<std::filesystem::path>>;
 
         audio_subsystem(app* appOwner) : subsystem(appOwner) {}
 
@@ -36,6 +51,8 @@ namespace gluten
         auto get_sound_instance(const std::filesystem::path& filePath) -> sc_sound_instance*;
 
         auto get_ui_waveform(const std::filesystem::path& filePath, std::size_t buckets) -> waveform&;
+
+        auto get_loudness_lufs(const std::filesystem::path& filePath) -> loudness_cache_type::cache_result;
 
     protected:
         struct sc_system_deleter
@@ -54,6 +71,7 @@ namespace gluten
         };
 
         auto async_generate_waveform(const std::filesystem::path filePath, std::size_t targetSamples) -> concurrencpp::result<void>;
+        auto async_calculate_loudness(const std::filesystem::path filePath) -> loudness_cache_type::async_cache_result;
         auto generate_waveform(const std::filesystem::path filePath, std::size_t targetSamples) -> waveform_generator;
 
         std::unique_ptr<sc_system, sc_system_deleter> m_soundChef;
@@ -61,5 +79,6 @@ namespace gluten
         std::unordered_map<std::filesystem::path, std::unique_ptr<sc_sound_instance, sc_sound_deleter>> m_filesToSoundInstancesMap;
 
         std::unordered_map<std::filesystem::path, waveform> m_filesToWaveforms;
+        loudness_cache_type m_filesToLoudnessCache; 
 	};
 }

@@ -40,6 +40,8 @@ auto audio_element::render_waveform() -> void
 {
     if (std::shared_ptr<gluten::audio_subsystem> audioSubsystem = gluten::app::get()->get_subsystem_by_class<gluten::audio_subsystem>())
     {
+        auto lufs = audioSubsystem->get_loudness_lufs(m_filePath);
+
         if (ImDrawList* const drawList = ImGui::GetWindowDrawList())
         {
             typename gluten::audio_subsystem::waveform& waveform =

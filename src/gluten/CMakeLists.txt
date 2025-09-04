@@ -157,6 +157,7 @@ CPMAddPackage(NAME libebur128
 
 target_include_directories(gluten PUBLIC
   ${fonts_SOURCE_DIR}
+  ${libebur128_SOURCE_DIR}
 )
 
 target_link_libraries(gluten
