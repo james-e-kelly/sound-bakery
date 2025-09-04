@@ -149,6 +149,12 @@ CPMAddPackage(NAME sodium-cmake
   OPTIONS "SODIUM_DISABLE_TESTS ON"
 )
 
+CPMAddPackage(NAME libebur128
+  GITHUB_REPOSITORY jiixyj/libebur128
+  GIT_TAG master
+  OPTIONS "ENABLE_TESTS OFF" "BUILD_SHARED_LIBS OFF"
+)
+
 target_include_directories(gluten PUBLIC
   ${fonts_SOURCE_DIR}
 )
@@ -173,6 +179,7 @@ target_link_libraries(gluten
     sago::platform_folders
     utf8cpp
     sodium
+    ebur128
 )
 
 target_compile_options(gluten PRIVATE ${PROJECT_WARNING_FLAGS})
