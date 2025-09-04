@@ -227,7 +227,7 @@ auto gluten::audio_subsystem::async_calculate_loudness(const std::filesystem::pa
     ma_uint64 frameCount;
     ma_decoder_get_length_in_pcm_frames(&decoder, &frameCount);
 
-    constexpr std::size_t framesPerLoop = 1000;
+    const std::size_t framesPerLoop = decoder.outputSampleRate;
     std::vector<float> pcmData(decoder.outputChannels * framesPerLoop, 0.0f);
 
     while (frameCount)

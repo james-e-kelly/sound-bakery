@@ -10,15 +10,9 @@ namespace gluten
 {
     struct loudness_lufs
     {
-        double integrated = 0.0;
-        double shorttermMax = 0.0;
-        double momentaryMax = 0.0;
-    };
-
-    struct loudness_lufs_key
-    {
-        std::filesystem::path filePath;
-        
+        double integrated = -200.0;
+        double shorttermMax = -200.0;
+        double momentaryMax = -200.0;
     };
 
 	/**

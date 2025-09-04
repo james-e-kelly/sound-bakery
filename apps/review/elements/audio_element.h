@@ -48,7 +48,9 @@ private:
     auto get_audio_height(float width) -> float;
 
     gluten::background m_audioBackground;
+    gluten::background m_loudnessBackground;
     gluten::background m_controlsBackground;
 
     gluten::layout m_layout = gluten::layout(gluten::layout_type::top_to_bottom, gluten::anchor_preset::stretch_full);
+    gluten::layout m_waveformAndLoudnessLayout = gluten::layout(gluten::layout_type::left_to_right, gluten::anchor_preset::stretch_full);
 };

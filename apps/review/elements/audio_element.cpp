@@ -14,6 +14,7 @@ audio_element::audio_element(const std::filesystem::path& filePath,
     : file_element(gluten::anchor_preset::stretch_full, filePath, fileId)
 {
     m_audioBackground.set_element_background_color(gluten::theme::carbon_g100::layerHover01);
+    m_loudnessBackground.set_element_background_color(gluten::theme::gray100Hover);
 }
 
 auto audio_element::render_element(const ImRect& elementRect) -> bool
@@ -21,7 +22,11 @@ auto audio_element::render_element(const ImRect& elementRect) -> bool
     file_element::render_element(elementRect);
 
     m_layout.render(elementRect);
-    m_layout.render_layout_element_pixels_vertical(&m_audioBackground, elementRect.GetHeight() - s_controlHeight);
+    m_layout.render_layout_element_pixels_vertical(&m_waveformAndLoudnessLayout, elementRect.GetHeight() - s_controlHeight);
+
+    m_waveformAndLoudnessLayout.render_layout_element_percent_horizontal(&m_audioBackground, 0.9f);
+    m_waveformAndLoudnessLayout.render_layout_element_percent_horizontal(&m_loudnessBackground, 0.1f);
+
     m_layout.render_layout_element_pixels_vertical(&m_controlButtonsLayout, s_controlHeight);
 
     const bool createdComment = render_controls();
@@ -31,6 +36,25 @@ auto audio_element::render_element(const ImRect& elementRect) -> bool
     {
         handle_mouse_control();
         handle_keyboard_control();
+    }
+
+    if (std::shared_ptr<gluten::audio_subsystem> audioSubsystem = gluten::app::get()->get_subsystem_by_class<gluten::audio_subsystem>())
+    {
+        auto lufs = audioSubsystem->get_loudness_lufs(m_filePath);
+
+        if (lufs.has_data())
+        {
+            ImGui::SetCursorScreenPos(m_loudnessBackground.get_element_rect().GetTL());
+
+            ImGui::BeginGroup();
+
+            ImGui::NewLine();
+            ImGui::Text("Integrated: %.1lf", lufs.m_cache.integrated);
+            ImGui::Text("Maximum short-term: %.1lf", lufs.m_cache.shorttermMax);
+            ImGui::Text("Maximum momentary: %.1lf", lufs.m_cache.momentaryMax);
+
+            ImGui::EndGroup();
+        }
     }
 
     return createdComment;
