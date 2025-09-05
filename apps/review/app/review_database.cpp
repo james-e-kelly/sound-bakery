@@ -297,7 +297,7 @@ auto review_database::get_all_projects() const -> concurrencpp::result<std::vect
     co_return result;
 }
 
-auto review_database::create_review(int64_t projectId, const new_transit_review_data newReview) -> concurrencpp::result<review_data>
+auto review_database::create_review(int64_t projectId, const new_transit_review_data newReview, std::string userToken) -> concurrencpp::result<review_data>
 {
     co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
 
@@ -329,6 +329,8 @@ auto review_database::create_review(int64_t projectId, const new_transit_review_
             result.m_reviewStatus      = review_status::open;
             result.m_reviewPhase       = newReview.m_reviewPhase;
             result.m_reviewQuality     = newReview.m_reviewQuality;
+
+            co_await set_users_for_review(result.m_reviewId, newReview.m_reviewerIds, userToken);
 
             if (m_database.tableExists("activity"))
             {

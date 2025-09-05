@@ -53,6 +53,8 @@ auto create_review_popup::render_popup() -> void
     ImGui::SetItemTooltip("Set the review quality. The higher the quality, the more the asset may need reviewing. Your "
                           "project may vary but roughly A == \"Industry Competitive\"");
 
+    render_reviewers();
+
     ImGui::EndDisabled();
 
     {
@@ -134,6 +136,16 @@ auto create_review_popup::render_popup() -> void
     {
         if (std::shared_ptr<workspace_manager> workspaceManager = get_app()->get_manager_by_class<workspace_manager>())
         {
+            if (m_newReviewers.has_value())
+            {
+                m_reviewData.m_reviewerIds.resize(m_newReviewers.value().size());
+
+                std::transform(m_newReviewers.value().begin(),
+                               m_newReviewers.value().end(),
+                               m_reviewData.m_reviewerIds.begin(),
+                               [](const user_data& user) { return user.m_userId; });
+            }
+
             m_asyncCreateReviewResult = workspaceManager->create_review(m_reviewData);
             set_closable(false);
         }

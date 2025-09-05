@@ -95,6 +95,7 @@ struct new_review_data_base
     std::string m_reviewDescription;
     review_phase m_reviewPhase = review_phase::first_pass;
     review_quality m_reviewQuality = review_quality::c;
+    std::vector<int64_t> m_reviewerIds;
 };
 
 /**
