@@ -455,18 +455,26 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
                 m_reviewToSelectedVersionMap[selectedReview.m_reviewId] = 1;
             }
 
-            const std::size_t maxVersions = std::max(selectedReview.m_relativeContextFiles.size(), selectedReview.m_reviewAssets.size()) + 1;
+            std::size_t maxVersions = 1;
+
+            for (const auto& assetRef : { std::cref(selectedReview.m_relativeContextFiles), std::cref(selectedReview.m_reviewAssets) })
+            {
+                for (const auto& asset : assetRef.get())
+                {
+                    maxVersions = std::max<std::size_t>(asset.m_versionsToRelativeFiles.size(), maxVersions);
+                }
+            }
 
             {
-                gluten::imgui::scoped_color selectableBg(ImGuiCol_PopupBg, gluten::theme::carbon_g100::layer03);
+                gluten::imgui::scoped_color selectableBg(ImGuiCol_PopupBg, gluten::theme::carbon_g100::layer02);
 
                 if (ImGui::BeginCombo("Review Version", fmt::format("#{}", m_reviewToSelectedVersionMap[selectedReview.m_reviewId]).c_str()))
                 {
-                    for (std::size_t versionIndex = 1; versionIndex < maxVersions; ++versionIndex)
+                    for (std::size_t versionIndex = 0; versionIndex < maxVersions; ++versionIndex)
                     {
-                        if (ImGui::Selectable(fmt::format("#{}", versionIndex).c_str()))
+                        if (ImGui::Selectable(fmt::format("#{}", versionIndex + 1).c_str()))
                         {
-                            m_reviewToSelectedVersionMap[selectedReview.m_reviewId] = versionIndex;
+                            m_reviewToSelectedVersionMap[selectedReview.m_reviewId] = versionIndex + 1;
                         }
                     }
 
