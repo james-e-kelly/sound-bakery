@@ -444,7 +444,9 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
 
     if (ImGui::BeginTabBar("Tabs"))
     {
-        if (ImGui::BeginTabItem("Files"))
+        const ImGuiTabItemFlags filesTabFlags = m_focussedComment.has_value() ? ImGuiTabItemFlags_SetSelected : ImGuiTabItemFlags_None;
+
+        if (ImGui::BeginTabItem("Files", nullptr, filesTabFlags))
         {
             ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
 
@@ -541,6 +543,11 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
                             header.set_open(true);
                         }
 
+                        if (m_focussedComment.has_value() && m_focussedComment.value().fileId == asset.m_fileId)
+                        {
+                            header.set_open(true);
+                        }
+
                         if (m_reviewFilesLayout.render_layout_element_percent_horizontal(&header, 1.0f))
                         {
                             const std::filesystem::path absoluteFilePath = workspaceManager->get_workspace_directory() /
@@ -554,6 +561,12 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
                                     m_createCommentPopup = add_child_widget<create_comment_popup>(this, selectedReview.m_reviewId, asset.m_fileId, audioElement.get_file_position());
                                     m_createCommentPopup->open_popup();
                                 }
+
+                                if (m_focussedComment.has_value())
+                                {
+                                    audioElement.seek_to_position(m_focussedComment.value().filePosition);
+                                    m_focussedComment.reset();
+                                }
                             }
                             else if (video_element::can_handle_file(absoluteFilePath))
                             {
@@ -562,6 +575,12 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
                                 {
                                     m_createCommentPopup = add_child_widget<create_comment_popup>(this, selectedReview.m_reviewId, asset.m_fileId, videoElement.get_file_position());
                                     m_createCommentPopup->open_popup();
+                                }
+
+                                if (m_focussedComment.has_value())
+                                {
+                                    videoElement.seek_to_position(m_focussedComment.value().filePosition);
+                                    m_focussedComment.reset();
                                 }
                             }
                         }
@@ -691,6 +710,14 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
                     ImGui::Dummy(ImVec2(0.0f, commentPadding * 2.0f));
                     ImGui::TextWrapped(comment.m_comment.c_str());
                     ImGui::Dummy(ImVec2(0.0f, commentPadding * 2.0f));
+                    if (comment.m_fileId > 0)
+                    {
+                        if (ImGui::Button(ICON_LC_SQUARE_ARROW_OUT_UP_RIGHT))
+                        {
+                            m_focussedComment = focussed_comment {.commentId = comment.m_commentId, .fileId = comment.m_fileId, .filePosition = comment.m_timeStart};
+                        }
+                        ImGui::SetItemTooltip("Go to file comment...");
+                    }
                     ImGui::EndGroup();
 
                     bool requestBreak = false;

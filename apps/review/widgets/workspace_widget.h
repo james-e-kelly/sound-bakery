@@ -8,6 +8,13 @@
 
 class workspace_manager;
 
+struct focussed_comment
+{
+    int64_t commentId = 0;
+    int64_t fileId    = 0;
+    double filePosition = 0.0;
+};
+
 class workspace_widget : public gluten::window_widget
 {
     WIDGET_CONSTRUCT_PARENT(workspace_widget, "Workspace", gluten::window_widget)
@@ -80,4 +87,6 @@ private:
     gluten::button deleteUserButton = gluten::button("Delete " ICON_LC_USER_ROUND_X);
 
     std::shared_ptr<class create_comment_popup> m_createCommentPopup;
+
+    std::optional<focussed_comment> m_focussedComment;
 };

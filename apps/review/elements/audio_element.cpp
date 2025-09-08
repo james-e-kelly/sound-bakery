@@ -289,3 +289,11 @@ auto audio_element::get_audio_height(float width) -> float
 {
     return width * 0.33f;
 }
+
+auto audio_element::seek_to_position(double position) -> void
+{
+    if (std::shared_ptr<gluten::audio_subsystem> audioSubsystem = gluten::app::get()->get_subsystem_by_class<gluten::audio_subsystem>())
+    {
+        audioSubsystem->set_sound_cursor_position(m_filePath, position);
+    }
+}

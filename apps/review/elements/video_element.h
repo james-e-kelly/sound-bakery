@@ -33,6 +33,8 @@ public:
         return videoExtensions.contains(extension);
     }
 
+    auto seek_to_position(double position) -> void override;
+
 protected:
     auto render_element(const ImRect& elementRect) -> bool override;
     auto render_layouts(const ImRect& elementRect) -> void;
@@ -45,7 +47,6 @@ protected:
 
     auto play_file() -> void override;
     auto pause_file() -> void override;
-    auto seek_to_position(double position) -> void override;
     auto prev_frame() -> void override;
     auto next_frame() -> void override;
 
