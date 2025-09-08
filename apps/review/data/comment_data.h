@@ -18,4 +18,7 @@ struct comment_data : public base_comment_data
     std::string m_timestamp;    //< Adds a timestamp of when the comment was added to the database
 };
 
-using new_comment_data = base_comment_data; //< Has no row id as it is not in the database and does not need to be filled by the user
+struct new_comment_data : public base_comment_data
+{
+    new_comment_data();
+};

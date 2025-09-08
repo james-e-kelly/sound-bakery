@@ -30,7 +30,6 @@ auto create_comment_popup::render_popup() -> void
             newComment.m_comment = commentBuffer;
             newComment.m_timeStart = m_videoPosition;
             newComment.m_reviewId  = m_reviewId;
-            newComment.m_userId    = m_userId;
             newComment.m_fileId    = m_fileId;
 
             workspaceManager->create_comment(newComment);

@@ -551,7 +551,7 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
                                 audio_element audioElement(absoluteFilePath, asset.m_fileId);
                                 if (m_reviewFilesLayout.render_layout_element_percent_horizontal(&audioElement, 1.0f))
                                 {
-                                    m_createCommentPopup = add_child_widget<create_comment_popup>(this, m_userSettings->m_loggedInUser.m_userId, selectedReview.m_reviewId, asset.m_fileId, audioElement.get_file_position());
+                                    m_createCommentPopup = add_child_widget<create_comment_popup>(this, selectedReview.m_reviewId, asset.m_fileId, audioElement.get_file_position());
                                     m_createCommentPopup->open_popup();
                                 }
                             }
@@ -560,7 +560,7 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
                                 video_element videoElement(absoluteFilePath, asset.m_fileId);
                                 if (m_reviewFilesLayout.render_layout_element_percent_horizontal(&videoElement, 1.0f))
                                 {
-                                    m_createCommentPopup = add_child_widget<create_comment_popup>(this, m_userSettings->m_loggedInUser.m_userId, selectedReview.m_reviewId, asset.m_fileId, videoElement.get_file_position());
+                                    m_createCommentPopup = add_child_widget<create_comment_popup>(this, selectedReview.m_reviewId, asset.m_fileId, videoElement.get_file_position());
                                     m_createCommentPopup->open_popup();
                                 }
                             }
@@ -611,10 +611,9 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
 
                 if (wantsToAdd)
                 {
-                    new_comment_data newComment = {0};
+                    new_comment_data newComment;
                     newComment.m_reviewId       = selectedReview.m_reviewId;
                     newComment.m_comment        = buffer;
-                    newComment.m_userId         = 1;
 
                     workspaceManager->create_comment(newComment);
 
@@ -634,12 +633,71 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
             ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
 
             const auto& comments = workspaceManager->get_all_comments_for_review(selectedReview.m_reviewId);
+            const auto& users = workspaceManager->get_all_users();
             if (comments.has_data())
             {
                 for (const auto& comment : comments.m_cache)
                 {
+                    const auto foundUserIter = std::find_if(users.m_cache.begin(), users.m_cache.end(), [userId = comment.m_userId](const user_data& user){return user.m_userId == userId;});
+                    if (foundUserIter == users.m_cache.end())
+                    {
+                        gluten::loading_spinner loading;
+                        loading.render_cursor();
+                        continue;
+                    }
+
+                    constexpr float commentAvatarSize = 40.0f;
+                    constexpr float commentPadding    = 8.0f;
+
                     gluten::imgui::scoped_id id(comment.m_commentId);
+                    
+                    user_avatar_element avatar(foundUserIter->m_email);
+                    avatar.set_element_min_size(ImVec2(commentAvatarSize, commentAvatarSize));
+                    avatar.render_cursor();
+
+                    ImGui::SetCursorPosX(ImGui::GetCursorPosX() + commentAvatarSize + commentPadding);
+                    ImGui::BeginGroup();
+                    ImGui::TextUnformatted(fmt::format("{} commented on review {}", foundUserIter->m_displayName, selectedReview.m_reviewId).c_str());
+                    if (comment.m_fileId)
+                    {
+                        std::string fileName;
+
+                        auto foundFileIter = std::find_if(
+                            selectedReview.m_relativeContextFiles.begin(),
+                            selectedReview.m_relativeContextFiles.end(),
+                            [fileId = comment.m_fileId](const versionable_review_asset& asset) {return asset.m_fileId == fileId;});
+
+                        if (foundFileIter == selectedReview.m_relativeContextFiles.end())
+                        {
+                            foundFileIter = std::find_if(
+                                selectedReview.m_reviewAssets.begin(),
+                                selectedReview.m_reviewAssets.end(),
+                                [fileId = comment.m_fileId](const versionable_review_asset& asset){return asset.m_fileId == fileId;});
+
+                            if (foundFileIter != selectedReview.m_reviewAssets.end())
+                            {
+                                fileName = foundFileIter->m_fileName;
+                            }
+                        }
+                        else
+                        {
+                            fileName = foundFileIter->m_fileName;
+                        }
+
+                        ImGui::SameLine();
+                        if (comment.m_timeStart)
+                        {
+                            ImGui::TextUnformatted(fmt::format(" - {} at {:.2f}", fileName, comment.m_timeStart).c_str());
+                        }
+                        else
+                        {
+                            ImGui::TextUnformatted(fmt::format(" - {}", fileName).c_str());
+                        }
+                    }
+                    ImGui::Dummy(ImVec2(0.0f, commentPadding * 2.0f));
                     ImGui::TextWrapped(comment.m_comment.c_str());
+                    ImGui::Dummy(ImVec2(0.0f, commentPadding * 2.0f));
+                    ImGui::EndGroup();
 
                     bool requestBreak = false;
 
