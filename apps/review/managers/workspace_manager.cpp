@@ -577,6 +577,18 @@ auto workspace_manager::delete_user(const std::string& email) -> concurrencpp::r
     }
 }
 
+auto workspace_manager::get_user(int64_t userId) -> user_data
+{
+    const auto& users = get_all_users();
+
+    const auto foundUserIter = std::find_if(users.m_cache.begin(), users.m_cache.end(), [userId](const user_data& user) { return user.m_userId == userId; });
+    if (foundUserIter == users.m_cache.end())
+    {
+        return user_data();
+    }
+    return *foundUserIter;
+}
+
 auto workspace_manager::get_users_for_review(int64_t reviewId) -> typename default_cache_type<reviewer_data>::cache_result
 {
     const gluten::key_and_token_cache_key key(reviewId, m_userSettingsData->m_loggedInUser.m_sessionToken);

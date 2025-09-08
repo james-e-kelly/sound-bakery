@@ -638,26 +638,20 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
             {
                 for (const auto& comment : comments.m_cache)
                 {
-                    const auto foundUserIter = std::find_if(users.m_cache.begin(), users.m_cache.end(), [userId = comment.m_userId](const user_data& user){return user.m_userId == userId;});
-                    if (foundUserIter == users.m_cache.end())
-                    {
-                        gluten::loading_spinner loading;
-                        loading.render_cursor();
-                        continue;
-                    }
+                    const user_data commentUser = workspaceManager->get_user(comment.m_userId);
 
                     constexpr float commentAvatarSize = 40.0f;
                     constexpr float commentPadding    = 8.0f;
 
                     gluten::imgui::scoped_id id(comment.m_commentId);
                     
-                    user_avatar_element avatar(foundUserIter->m_email);
+                    user_avatar_element avatar(commentUser.m_email);
                     avatar.set_element_min_size(ImVec2(commentAvatarSize, commentAvatarSize));
                     avatar.render_cursor();
 
                     ImGui::SetCursorPosX(ImGui::GetCursorPosX() + commentAvatarSize + commentPadding);
                     ImGui::BeginGroup();
-                    ImGui::TextUnformatted(fmt::format("{} commented on review {}", foundUserIter->m_displayName, selectedReview.m_reviewId).c_str());
+                    ImGui::TextUnformatted(fmt::format("{} commented on review {}", commentUser.m_displayName, selectedReview.m_reviewId).c_str());
                     if (comment.m_fileId)
                     {
                         std::string fileName;

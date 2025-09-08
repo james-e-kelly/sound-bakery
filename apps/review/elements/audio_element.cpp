@@ -164,7 +164,7 @@ auto audio_element::render_comments() -> bool
                                     drawList->AddCircleFilled(ImVec2(commentPosition, commentBubbleCenterY), g_commentBubbleRadius,
                                                               ImGui::ColorConvertFloat4ToU32(gluten::theme::purple50));
                                     ImGui::ItemAdd(circleRect, ImGui::GetID(comment.m_commentId));
-                                    ImGui::SetItemTooltip(comment.m_comment.c_str());
+                                    ImGui::SetItemTooltip(fmt::format("{}: {}", workspaceManager->get_user(comment.m_userId).m_displayName, comment.m_comment).c_str());
 
                                     if (ImGui::IsItemClicked())
                                     {

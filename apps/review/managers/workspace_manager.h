@@ -72,6 +72,7 @@ public:
     auto get_selected_user() const -> const user_data&;
     auto select_user(const std::string& email) -> void;
     auto delete_user(const std::string& email) -> concurrencpp::result<void>;
+    auto get_user(int64_t userId) -> user_data;
 
     // Login / Logout
     auto login_user(login_request_data loginData) -> concurrencpp::result<tl::expected<bool, database_error>>;
