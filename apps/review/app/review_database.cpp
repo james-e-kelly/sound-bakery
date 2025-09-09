@@ -769,7 +769,14 @@ auto review_database::create_comment(new_comment_data newComment) -> concurrencp
             insertCommentStatement.bind(3, newComment.m_comment);
             insertCommentStatement.bind(4, newComment.m_timeStart);
             insertCommentStatement.bind(5, newComment.m_timeEnd);
-            insertCommentStatement.bind(6, newComment.m_fileId);
+            if (newComment.m_fileId > 0)
+            {
+                insertCommentStatement.bind(6, newComment.m_fileId);
+            }
+            else
+            {
+                insertCommentStatement.bind(6);
+            }
 
             insertCommentStatement.exec();
             
