@@ -426,11 +426,6 @@ auto workspace_manager::open_create_user_popup() -> void
     }
 }
 
-auto workspace_manager::users_table_is_empty() -> concurrencpp::result<bool>
-{
-    co_return co_await m_database->user_table_is_empty();
-}
-
 auto workspace_manager::logged_in_user_can_create_users() -> concurrencpp::result<bool>
 {
     co_return co_await m_database->user_is_logged_in_and_has_privilege_for_action(m_userSettingsData->m_loggedInUser.m_sessionToken, activity_type::user_added);
