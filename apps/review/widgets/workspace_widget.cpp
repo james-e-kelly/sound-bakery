@@ -595,68 +595,14 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
         {
             ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
 
-            static bool newCommentOpen = false;
-
-            ImGui::BeginDisabled(newCommentOpen);
-            if (m_userSettings->m_loggedInUser.m_privileges > user_privileges::guest)
-            {
-                if (ImGui::Button(ICON_LC_PLUS))
-                {
-                    newCommentOpen = true;
-                }
-            }
-            ImGui::EndDisabled();
-
-            constexpr std::size_t commentBufferSize = 2045;
-            static char buffer[commentBufferSize]   = {0};
-
-            if (newCommentOpen)
-            {
-                ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
-
-                bool wantsToAdd = false;
-
-                if (ImGui::GetIO().KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Enter))
-                {
-                    wantsToAdd = true;
-                }
-
-                ImGui::InputTextMultiline("Comment", buffer, commentBufferSize,
-                                            ImVec2(ImGui::GetWindowSize().x, 100.0f));
-
-                ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
-
-                wantsToAdd |= ImGui::Button("Add");
-
-                if (wantsToAdd)
-                {
-                    new_comment_data newComment;
-                    newComment.m_reviewId       = selectedReview.m_reviewId;
-                    newComment.m_comment        = buffer;
-
-                    workspaceManager->create_comment(newComment);
-
-                    buffer[0]      = '\0';
-                    newCommentOpen = false;
-                }
-
-                ImGui::SameLine(0.0f, 8.0f);
-
-                if (ImGui::Button("Cancel"))
-                {
-                    buffer[0]      = '\0';
-                    newCommentOpen = false;
-                }
-            }
-
-            ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
-
             const auto& comments = workspaceManager->get_all_comments_for_review(selectedReview.m_reviewId);
             const auto& users = workspaceManager->get_all_users();
             if (comments.has_data())
             {
-                for (const auto& comment : comments.m_cache)
+                for (auto iter = comments.m_cache.rbegin(); iter != comments.m_cache.rend(); ++iter)
                 {
+                    const auto& comment = *iter;
+
                     const user_data commentUser = workspaceManager->get_user(comment.m_userId);
 
                     constexpr float commentAvatarSize = 40.0f;
@@ -749,6 +695,62 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
                 gluten::loading_spinner loading;
                 loading.render_cursor();
             }
+
+            static bool newCommentOpen = false;
+
+            ImGui::BeginDisabled(newCommentOpen);
+            if (m_userSettings->m_loggedInUser.m_privileges > user_privileges::guest)
+            {
+                if (ImGui::Button(ICON_LC_PLUS))
+                {
+                    newCommentOpen = true;
+                }
+            }
+            ImGui::EndDisabled();
+
+            constexpr std::size_t commentBufferSize = 2045;
+            static char buffer[commentBufferSize]   = {0};
+
+            if (newCommentOpen)
+            {
+                ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
+
+                bool wantsToAdd = false;
+
+                if (ImGui::GetIO().KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Enter))
+                {
+                    wantsToAdd = true;
+                }
+
+                ImGui::InputTextMultiline("Comment", buffer, commentBufferSize,
+                                            ImVec2(ImGui::GetWindowSize().x, 100.0f));
+
+                ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
+
+                wantsToAdd |= ImGui::Button("Add");
+
+                if (wantsToAdd)
+                {
+                    new_comment_data newComment;
+                    newComment.m_reviewId       = selectedReview.m_reviewId;
+                    newComment.m_comment        = buffer;
+
+                    workspaceManager->create_comment(newComment);
+
+                    buffer[0]      = '\0';
+                    newCommentOpen = false;
+                }
+
+                ImGui::SameLine(0.0f, 8.0f);
+
+                if (ImGui::Button("Cancel"))
+                {
+                    buffer[0]      = '\0';
+                    newCommentOpen = false;
+                }
+            }
+
+            ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
 
             ImGui::EndTabItem();
         }
