@@ -351,68 +351,13 @@ auto review_database::create_review(int64_t projectId, const new_transit_review_
                 addActivity.exec();
             }
 
-            // Do file stuff on a background thread as we don't need to sync the database right now
-            co_await concurrencpp::resume_on(gluten::app::get()->background_executor());
+            auto newVersionData = co_await create_new_review_version(result.m_reviewId, newReview, userToken);
 
-            const std::filesystem::path databasePath = std::filesystem::path(m_database.getFilename()).parent_path();
-            const std::filesystem::path reviewsPath = databasePath / g_reviewsPathName;
-            const std::filesystem::path thisReviewPath = reviewsPath / std::to_string(result.m_reviewId);
-
-            auto create_files = [&databasePath, &thisReviewPath](const std::vector<review_file_data>& reviewFiles, std::vector<versionable_review_asset>& result)
-                {
-                    std::unordered_set<std::string> uniqueFileNames;
-
-                    for (const auto& rawContextFile : reviewFiles)
-                    {
-                        if (!uniqueFileNames.contains(rawContextFile.m_fileName))
-                        {
-                            uniqueFileNames.insert(rawContextFile.m_fileName);
-
-                            const std::filesystem::path thisFilePath = thisReviewPath / std::filesystem::path(rawContextFile.m_fileName).stem();
-                            const std::filesystem::path currentVersionFilePath = thisFilePath / "v1";
-                            const std::filesystem::path currentVersionFile     = currentVersionFilePath / rawContextFile.m_fileName;
-
-                            std::filesystem::create_directories(currentVersionFilePath);
-
-                            std::ofstream stream(currentVersionFile.string(), std::ios::binary | std::ios::out);
-                            stream.write(reinterpret_cast<const char*>(rawContextFile.m_fileData.data()), rawContextFile.m_fileData.size());
-
-                            versionable_review_asset versionedReviewAsset;
-                            versionedReviewAsset.m_fileName            = rawContextFile.m_fileName;
-                            versionedReviewAsset.m_versionsToRelativeFiles[1] = std::filesystem::relative(currentVersionFile, databasePath);
-                            result.push_back(versionedReviewAsset);
-                        }
-                    }
-                };
-
-            create_files(newReview.m_contextFiles, result.m_relativeContextFiles);
-            create_files(newReview.m_reviewFiles, result.m_reviewAssets);
-
-            // Back to database thread to insert all the files
-            co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
-
-            auto insert_files_into_database = [database = std::cref(m_database)](std::vector<versionable_review_asset>& assets,int64_t reviewId, review_file_type fileType) 
-                {
-                    for (auto& contextFile : assets)
-                    {
-                        SQLite::Statement insertReviewFileStatement(database.get(), "INSERT INTO review_files (review_id, file_name, file_type) VALUES (?, ?, ?);");
-                        insertReviewFileStatement.bind(1, reviewId);
-                        insertReviewFileStatement.bind(2, contextFile.m_fileName);
-                        insertReviewFileStatement.bind(3, (int)fileType);
-                        insertReviewFileStatement.exec();
-
-                        contextFile.m_fileId = database.get().getLastInsertRowid();
-                
-                        SQLite::Statement insertVersionedReviewFileStatement(database, "INSERT INTO versioned_review_files (review_file_id, version, file_path) VALUES (?, ?, ?);");
-                        insertVersionedReviewFileStatement.bind(1, database.get().getLastInsertRowid());
-                        insertVersionedReviewFileStatement.bind(2, 1);
-                        insertVersionedReviewFileStatement.bind(3, contextFile.m_versionsToRelativeFiles.at(1).string());
-                        insertVersionedReviewFileStatement.exec();
-                    }
-                };
-
-            insert_files_into_database(result.m_relativeContextFiles, result.m_reviewId, review_file_type::context);
-            insert_files_into_database(result.m_reviewAssets, result.m_reviewId, review_file_type::review);
+            if (newVersionData.has_value())
+            {
+                result.m_relativeContextFiles = newVersionData.value().m_relativeContextFiles;
+                result.m_reviewAssets = newVersionData.value().m_reviewAssets;
+            }
         }
     }
 
@@ -425,7 +370,144 @@ auto review_database::create_new_review_version(int64_t reviewId, const new_tran
     CHECK_PRIVILEGED_ACTION(userToken, activity_type::review_edited);
     INSERT_NETWORK_TEST();
 
-    co_return review_data();
+    if (reviewId < 1)
+    {
+        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::invalid_parameters, .m_errorMessage = "Invalid review id"});
+    }
+
+    review_data result;
+    
+    std::unordered_map<int64_t, versionable_review_asset> contextFilesMap;
+    std::unordered_map<int64_t, versionable_review_asset> reviewFilesMap;
+    std::unordered_map<int64_t, versionable_review_asset> commentFilesMap;
+
+    SQLite::Statement getFilesStatement(m_database, "SELECT id, file_name, file_type FROM review_files WHERE review_id = ?;");
+    getFilesStatement.bind(1, reviewId);
+
+    while (getFilesStatement.executeStep())
+    {
+        const int64_t fileId            = getFilesStatement.getColumn(0).getInt64();
+        const std::string fileName      = getFilesStatement.getColumn(1).getText();
+        const review_file_type fileType = (review_file_type)getFilesStatement.getColumn(2).getInt();
+
+        SQLite::Statement getVersionedFilesStatement(m_database, "SELECT version, file_path FROM versioned_review_files WHERE review_file_id = ?;");
+        getVersionedFilesStatement.bind(1, fileId);
+
+        if (getVersionedFilesStatement.executeStep())
+        {
+            const std::size_t fileVersion = getVersionedFilesStatement.getColumn(0).getInt64();
+            const std::filesystem::path relativeFilePath = getVersionedFilesStatement.getColumn(1).getText();
+
+            switch ((review_file_type)getFilesStatement.getColumn(2).getInt())
+            {
+                case review_file_type::context:
+                    contextFilesMap[fileId].m_fileId   = fileId;
+                    contextFilesMap[fileId].m_fileName = fileName;
+                    contextFilesMap[fileId].m_versionsToRelativeFiles.insert({fileVersion, relativeFilePath});
+                    break;
+                case review_file_type::review:
+                    reviewFilesMap[fileId].m_fileId   = fileId;
+                    reviewFilesMap[fileId].m_fileName = fileName;
+                    reviewFilesMap[fileId].m_versionsToRelativeFiles.insert({fileVersion, relativeFilePath});
+                    break;
+                case review_file_type::comment:
+                    commentFilesMap[fileId].m_fileId   = fileId;
+                    commentFilesMap[fileId].m_fileName = fileName;
+                    commentFilesMap[fileId].m_versionsToRelativeFiles.insert({fileVersion, relativeFilePath});
+                    break;
+            }
+        }
+    }
+
+    if (!contextFilesMap.empty())
+    {
+        result.m_relativeContextFiles.resize(contextFilesMap.size());
+        std::transform(contextFilesMap.begin(), contextFilesMap.end(), result.m_relativeContextFiles.begin(), [](const auto& pair) { return pair.second; });
+    }
+
+    if (!reviewFilesMap.empty())
+    {
+        result.m_reviewAssets.resize(reviewFilesMap.size());
+        std::transform(reviewFilesMap.begin(), reviewFilesMap.end(), result.m_reviewAssets.begin(), [](const auto& pair) { return pair.second; });
+    }
+
+    const std::filesystem::path databasePath = std::filesystem::path(m_database.getFilename()).parent_path();
+    const std::filesystem::path reviewsPath = databasePath / g_reviewsPathName;
+    const std::filesystem::path thisReviewPath = reviewsPath / std::to_string(reviewId);
+
+    auto create_files = [&databasePath, &thisReviewPath](const std::vector<review_file_data>& reviewFiles, std::vector<versionable_review_asset>& result)
+        {
+            std::unordered_set<std::string> uniqueFileNames;
+
+            for (const auto& rawContextFile : reviewFiles)
+            {
+                if (!uniqueFileNames.contains(rawContextFile.m_fileName))
+                {
+                    uniqueFileNames.insert(rawContextFile.m_fileName);
+
+                    std::size_t newVersion = 1;
+
+                    const auto existingFileIter = std::find_if(result.begin(), result.end(), [fileName = rawContextFile.m_fileName](const versionable_review_asset& asset){return asset.m_fileName == fileName;});
+
+                    if (existingFileIter != result.end())
+                    {
+                        newVersion = existingFileIter->m_versionsToRelativeFiles.size() + 1;
+                    }
+
+                    const std::filesystem::path thisFilePath = thisReviewPath / std::filesystem::path(rawContextFile.m_fileName).stem();
+                    const std::filesystem::path currentVersionFilePath = thisFilePath / fmt::format("v{}", newVersion);
+                    const std::filesystem::path currentVersionFile     = currentVersionFilePath / rawContextFile.m_fileName;
+
+                    std::filesystem::create_directories(currentVersionFilePath);
+
+                    std::ofstream stream(currentVersionFile.string(), std::ios::binary | std::ios::out);
+                    stream.write(reinterpret_cast<const char*>(rawContextFile.m_fileData.data()), rawContextFile.m_fileData.size());
+
+                    versionable_review_asset versionedReviewAsset;
+                    versionedReviewAsset.m_fileName            = rawContextFile.m_fileName;
+                    versionedReviewAsset.m_versionsToRelativeFiles[newVersion] = std::filesystem::relative(currentVersionFile, databasePath);
+                    result.push_back(versionedReviewAsset);
+                }
+            }
+        };
+
+    auto insert_files_into_database = [database = std::cref(m_database)](std::vector<versionable_review_asset>& assets, int64_t reviewId, review_file_type fileType) 
+        {
+            for (auto& contextFile : assets)
+            {
+                if (contextFile.m_versionsToRelativeFiles.size() <= 1)
+                {
+                    SQLite::Statement insertReviewFileStatement(database.get(), "INSERT INTO review_files (review_id, file_name, file_type) VALUES (?, ?, ?);");
+                    insertReviewFileStatement.bind(1, reviewId);
+                    insertReviewFileStatement.bind(2, contextFile.m_fileName);
+                    insertReviewFileStatement.bind(3, (int)fileType);
+                    insertReviewFileStatement.exec();
+
+                    contextFile.m_fileId = database.get().getLastInsertRowid();
+                }
+
+                const std::size_t newVersion = contextFile.m_versionsToRelativeFiles.size();
+                
+                SQLite::Statement insertVersionedReviewFileStatement(database, "INSERT INTO versioned_review_files (review_file_id, version, file_path) VALUES (?, ?, ?);");
+                insertVersionedReviewFileStatement.bind(1, database.get().getLastInsertRowid());
+                insertVersionedReviewFileStatement.bind(2, (int)newVersion);
+                insertVersionedReviewFileStatement.bind(3, contextFile.m_versionsToRelativeFiles.at(newVersion).string());
+                insertVersionedReviewFileStatement.exec();
+            }
+        };
+
+    co_await concurrencpp::resume_on(gluten::app::get()->background_executor());
+
+    create_files(newReviewVersion.m_contextFiles, result.m_relativeContextFiles);
+    create_files(newReviewVersion.m_reviewFiles, result.m_reviewAssets);
+
+    // Back to database thread to insert all the files
+    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
+
+    insert_files_into_database(result.m_relativeContextFiles, reviewId, review_file_type::context);
+    insert_files_into_database(result.m_reviewAssets, reviewId, review_file_type::review);
+
+    co_return result;
 }
 
 auto review_database::update_review(const review_data review) -> concurrencpp::result<review_data>
