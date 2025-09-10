@@ -42,6 +42,8 @@ namespace gluten
         bool render_layout_element_percent_horizontal(element* element, float horizontalPercent);
         bool render_layout_element_percent_vertical(element* element, float verticalPercent);
 
+        auto render_vertical_spacer(float verticalPixels) -> void;
+
         void reset_layout(const ImRect& parent);
 
         void finish_layout();  //< Resets cursor so future elements are drawn after this layout area

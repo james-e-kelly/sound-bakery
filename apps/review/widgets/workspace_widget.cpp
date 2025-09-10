@@ -517,76 +517,93 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
 
             m_reviewFilesLayout.set_layout_spacing(0.0f);
 
-            for (const auto& assetRef : {std::cref(selectedReview.m_relativeContextFiles), std::cref(selectedReview.m_reviewAssets)})
-            {
-                for (const auto& asset : assetRef.get())
+            auto render_assets = [&](const std::vector<versionable_review_asset>& assets) 
                 {
-                    if (asset.m_fileName.empty())
+                    for (const auto& asset : assets)
                     {
-                        continue;
-                    }
-
-                    const std::size_t selectedVersion = std::min(m_reviewToSelectedVersionMap[selectedReview.m_reviewId], asset.m_versionsToRelativeFiles.size());
-
-                    if (asset.m_versionsToRelativeFiles.contains(selectedVersion))
-                    {
-                        gluten::imgui::scoped_id reviewId(selectedReview.m_reviewId);
-                        gluten::collapsing_header header(fmt::format("{} #{}", asset.m_fileName, selectedVersion), false);
-
-                        if (collapseAll)
+                        if (asset.m_fileName.empty())
                         {
-                            header.set_open(false);
+                            continue;
                         }
 
-                        if (expandAll)
-                        {
-                            header.set_open(true);
-                        }
+                        const std::size_t selectedVersion = std::min(m_reviewToSelectedVersionMap[selectedReview.m_reviewId], asset.m_versionsToRelativeFiles.size());
 
-                        if (m_focussedComment.has_value() && m_focussedComment.value().fileId == asset.m_fileId)
+                        if (asset.m_versionsToRelativeFiles.contains(selectedVersion))
                         {
-                            header.set_open(true);
-                        }
+                            gluten::imgui::scoped_id reviewId(selectedReview.m_reviewId);
+                            gluten::collapsing_header header(fmt::format("{} #{}", asset.m_fileName, selectedVersion), false);
 
-                        if (m_reviewFilesLayout.render_layout_element_percent_horizontal(&header, 1.0f))
-                        {
-                            const std::filesystem::path absoluteFilePath = workspaceManager->get_workspace_directory() /
-                                                            asset.m_versionsToRelativeFiles.at(selectedVersion);
-
-                            if (audio_element::can_handle_file(absoluteFilePath))
+                            if (collapseAll)
                             {
-                                audio_element audioElement(absoluteFilePath, asset.m_fileId);
-                                if (m_reviewFilesLayout.render_layout_element_percent_horizontal(&audioElement, 1.0f))
-                                {
-                                    m_createCommentPopup = add_child_widget<create_comment_popup>(this, selectedReview.m_reviewId, asset.m_fileId, audioElement.get_file_position());
-                                    m_createCommentPopup->open_popup();
-                                }
+                                header.set_open(false);
+                            }
 
-                                if (m_focussedComment.has_value())
+                            if (expandAll)
+                            {
+                                header.set_open(true);
+                            }
+
+                            if (m_focussedComment.has_value() && m_focussedComment.value().fileId == asset.m_fileId)
+                            {
+                                header.set_open(true);
+                            }
+
+                            if (m_reviewFilesLayout.render_layout_element_percent_horizontal(&header, 1.0f))
+                            {
+                                const std::filesystem::path absoluteFilePath = workspaceManager->get_workspace_directory() /
+                                                                asset.m_versionsToRelativeFiles.at(selectedVersion);
+
+                                if (audio_element::can_handle_file(absoluteFilePath))
                                 {
-                                    audioElement.seek_to_position(m_focussedComment.value().filePosition);
-                                    m_focussedComment.reset();
+                                    audio_element audioElement(absoluteFilePath, asset.m_fileId);
+                                    if (m_reviewFilesLayout.render_layout_element_percent_horizontal(&audioElement, 1.0f))
+                                    {
+                                        m_createCommentPopup = add_child_widget<create_comment_popup>(this, selectedReview.m_reviewId, asset.m_fileId, audioElement.get_file_position());
+                                        m_createCommentPopup->open_popup();
+                                    }
+
+                                    if (m_focussedComment.has_value())
+                                    {
+                                        audioElement.seek_to_position(m_focussedComment.value().filePosition);
+                                        m_focussedComment.reset();
+                                    }
+                                }
+                                else if (video_element::can_handle_file(absoluteFilePath))
+                                {
+                                    video_element videoElement(absoluteFilePath, asset.m_fileId);
+                                    if (m_reviewFilesLayout.render_layout_element_percent_horizontal(&videoElement, 1.0f))
+                                    {
+                                        m_createCommentPopup = add_child_widget<create_comment_popup>(this, selectedReview.m_reviewId, asset.m_fileId, videoElement.get_file_position());
+                                        m_createCommentPopup->open_popup();
+                                    }
+
+                                    if (m_focussedComment.has_value())
+                                    {
+                                        videoElement.seek_to_position(m_focussedComment.value().filePosition);
+                                        m_focussedComment.reset();
+                                    }
                                 }
                             }
-                            else if (video_element::can_handle_file(absoluteFilePath))
-                            {
-                                video_element videoElement(absoluteFilePath, asset.m_fileId);
-                                if (m_reviewFilesLayout.render_layout_element_percent_horizontal(&videoElement, 1.0f))
-                                {
-                                    m_createCommentPopup = add_child_widget<create_comment_popup>(this, selectedReview.m_reviewId, asset.m_fileId, videoElement.get_file_position());
-                                    m_createCommentPopup->open_popup();
-                                }
-
-                                if (m_focussedComment.has_value())
-                                {
-                                    videoElement.seek_to_position(m_focussedComment.value().filePosition);
-                                    m_focussedComment.reset();
-                                }
-                            }
                         }
                     }
-                }
-            }
+                };
+
+            gluten::text contextHeader("Context Files");
+            gluten::text assetsHeader("Review Files");
+
+            contextHeader.set_font(gluten::fonts::title);
+            assetsHeader.set_font(gluten::fonts::title);
+
+            m_reviewFilesLayout.render_layout_element_percent_horizontal(&contextHeader, 1.0f);
+            m_reviewFilesLayout.render_vertical_spacer(16.0f);
+            render_assets(selectedReview.m_relativeContextFiles);
+            m_reviewFilesLayout.render_vertical_spacer(16.0f);
+
+            m_reviewFilesLayout.render_layout_element_percent_horizontal(&assetsHeader, 1.0f);
+            m_reviewFilesLayout.render_vertical_spacer(16.0f);
+            render_assets(selectedReview.m_reviewAssets);
+            m_reviewFilesLayout.render_vertical_spacer(16.0f);
+
 
             ImGui::EndTabItem();
         }

@@ -108,6 +108,11 @@ bool gluten::layout::render_layout_element_percent_vertical(element* element, fl
                                           elementBox.GetSize().y * verticalPercent);
 }
 
+auto gluten::layout::render_vertical_spacer(float verticalPixels) -> void
+{
+    render_layout_element_pixels(nullptr, 0.0f, verticalPixels);
+}
+
 bool gluten::layout::render_layout_element_internal(const ImRect& thisBox,
                                                     element* element,
                                                     float horizontalPixels,
