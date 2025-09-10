@@ -185,6 +185,15 @@ namespace gluten
         }
 
         /**
+         * @brief Set the cached data manually.
+         * @warn This is not thread safe! Ensure this method is called on the reader thread
+         */
+        auto set_cache_data(const key_type& key, const data_type& data) -> void
+        {
+            m_cache[key].m_cache = data;
+        }
+
+        /**
          * @brief Get the cached data.
          * 
          * This returns a const reference to the data to avoid copying.
