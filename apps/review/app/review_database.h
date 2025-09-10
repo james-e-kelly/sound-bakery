@@ -34,7 +34,10 @@ public:
     review_database(const std::filesystem::path& databasePath);
     ~review_database() = default;
 
-    using bool_result = concurrencpp::result<tl::expected<bool, database_error>>;
+    template<typename T>
+    using database_result = concurrencpp::result<tl::expected<T, database_error>>;
+
+    using bool_result = database_result<bool>;
     using user_id = int64_t;
 
 public:
@@ -48,7 +51,8 @@ public:
     auto get_all_projects() const -> concurrencpp::result<std::vector<project_data>>;
 
     // Review
-    auto create_review(int64_t projectId, const new_transit_review_data newReview, std::string userToken) -> concurrencpp::result<review_data>;
+    auto create_review(int64_t projectId, const new_transit_review_data newReview, std::string userToken) -> database_result<review_data>;
+    auto create_new_review_version(int64_t reviewId, const new_transit_review_data newReviewVersion, std::string userToken) -> database_result<review_data>;
     auto update_review(const review_data review) -> concurrencpp::result<review_data>;
     auto get_all_reviews(int64_t projectId) const -> concurrencpp::result<std::vector<review_data>>;
     auto get_user_vote_on_review(int64_t reviewId, int64_t userId) const -> concurrencpp::result<tl::expected<review_vote, database_error>>;
