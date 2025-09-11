@@ -359,7 +359,18 @@ auto workspace_manager::delete_review(int64_t reviewId) -> concurrencpp::result<
 
 auto workspace_manager::create_new_review_version(int64_t reviewId, new_frontend_review_data newReviewVersion) -> concurrencpp::result<void>
 {
-    co_return;
+    const auto createNewReviewVersionResult = co_await m_database->create_new_review_version(reviewId, newReviewVersion, m_userSettingsData->m_loggedInUser.m_sessionToken);
+
+    if (createNewReviewVersionResult.has_value())
+    {
+        co_await concurrencpp::resume_on(get_app()->get_tick_executor());
+
+        const gluten::key_and_token_cache_key key(m_selectedProject.m_id, m_userSettingsData->m_loggedInUser.m_sessionToken);
+        std::vector<review_data> newReviewData = co_await m_database->get_all_reviews(m_selectedProject.m_id);
+    
+        m_cachedReviews.set_cache_data(key, newReviewData);
+        select_review(reviewId);
+    }
 }
 
 template<typename data_type>

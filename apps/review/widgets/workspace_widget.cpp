@@ -203,7 +203,6 @@ auto workspace_widget::render_list() -> void
                     }
                     else if (listingReviews)
                     {
-                        static std::shared_ptr<create_review_popup> createReviewPopup;
                         createReviewPopup = add_child_widget<create_review_popup>(this);
 
                         if (createReviewPopup)
@@ -452,11 +451,6 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
 
             static std::unordered_map<int64_t, std::size_t> m_reviewToSelectedVersionMap;
 
-            if (!m_reviewToSelectedVersionMap.contains(selectedReview.m_reviewId))
-            {
-                m_reviewToSelectedVersionMap[selectedReview.m_reviewId] = 1;
-            }
-
             std::size_t maxVersions = 1;
 
             for (const auto& assetRef : { std::cref(selectedReview.m_relativeContextFiles), std::cref(selectedReview.m_reviewAssets) })
@@ -465,6 +459,11 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
                 {
                     maxVersions = std::max<std::size_t>(asset.m_versionsToRelativeFiles.size(), maxVersions);
                 }
+            }
+
+            if (!m_reviewToSelectedVersionMap.contains(selectedReview.m_reviewId))
+            {
+                m_reviewToSelectedVersionMap[selectedReview.m_reviewId] = maxVersions;
             }
 
             {
@@ -491,7 +490,22 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
 
             if (ImGui::Button(ICON_LC_PLUS " Version"))
             {
+                createReviewPopup = add_child_widget<create_review_popup>(this, selectedReview.m_reviewId);
+                createReviewPopup->onCompleteDelegate.AddLambda([reviewId = selectedReview.m_reviewId, selectedReview = std::cref(selectedReview), selectedVersionsMap = std::ref(m_reviewToSelectedVersionMap)]() 
+                    {
+                        std::size_t maxVersions = 1;
 
+                        for (const auto& assetRef : { std::cref(selectedReview.get().m_relativeContextFiles), std::cref(selectedReview.get().m_reviewAssets) })
+                        {
+                            for (const auto& asset : assetRef.get())
+                            {
+                                maxVersions = std::max<std::size_t>(asset.m_versionsToRelativeFiles.size(), maxVersions);
+                            }
+                        }
+
+                        selectedVersionsMap.get()[reviewId] = maxVersions;
+                    });
+                createReviewPopup->open_popup();
             }
 
             ImGui::SameLine(0.0f, 10.0f);

@@ -87,6 +87,7 @@ private:
     gluten::button deleteUserButton = gluten::button("Delete " ICON_LC_USER_ROUND_X);
 
     std::shared_ptr<class create_comment_popup> m_createCommentPopup;
+    std::shared_ptr<class create_review_popup> createReviewPopup;
 
     std::optional<focussed_comment> m_focussedComment;
 };

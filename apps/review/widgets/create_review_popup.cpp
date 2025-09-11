@@ -9,55 +9,64 @@ auto create_review_popup::render_popup() -> void
     ImGui::BeginDisabled(static_cast<bool>(m_asyncCreateReviewResult));
     ImGui::BeginDisabled(review_app::get()->get_is_drag_dropping());
 
-    ImGui::InputTextWithHint("Review Name", "My New Review", reviewNameBuffer, textBufferSize);
-    ImGui::SetItemTooltip("Write the title of the review. It can be anything from \"Adding some sounds\" to "
-                          "\"[TASK-1234][Level1] Add Looping Fire Sounds\"");
-
-    ImGui::InputTextMultiline("Review Description", reviewDescriptionBuffer, textBufferSize);
-    ImGui::SetItemTooltip("Give the review a description to help describe what sounds you are adding or changing");
-
-    ImGui::InputTextWithHint("Review URL", "https://domain.com/task", reviewUrlBuffer, textBufferSize);
-    ImGui::SetItemTooltip("Add the Jira/ADO/HacknPlan task URL");
-
-    if (ImGui::BeginCombo("Review Phase", get_review_phase_string(m_reviewData.m_reviewPhase).data()))
+    if (!m_existingReviewId.has_value())
     {
-        for (int i = 0; i < static_cast<int>(review_phase::num); ++i)
+        ImGui::InputTextWithHint("Review Name", "My New Review", reviewNameBuffer, textBufferSize);
+        ImGui::SetItemTooltip("Write the title of the review. It can be anything from \"Adding some sounds\" to "
+                              "\"[TASK-1234][Level1] Add Looping Fire Sounds\"");
+
+        ImGui::InputTextMultiline("Review Description", reviewDescriptionBuffer, textBufferSize);
+        ImGui::SetItemTooltip("Give the review a description to help describe what sounds you are adding or changing");
+
+        ImGui::InputTextWithHint("Review URL", "https://domain.com/task", reviewUrlBuffer, textBufferSize);
+        ImGui::SetItemTooltip("Add the Jira/ADO/HacknPlan task URL");
+
+        if (ImGui::BeginCombo("Review Phase", get_review_phase_string(m_reviewData.m_reviewPhase).data()))
         {
-            review_phase phase = static_cast<review_phase>(i);
-
-            if (ImGui::Selectable(get_review_phase_string(phase).data()))
+            for (int i = 0; i < static_cast<int>(review_phase::num); ++i)
             {
-                m_reviewData.m_reviewPhase = phase;
+                review_phase phase = static_cast<review_phase>(i);
+
+                if (ImGui::Selectable(get_review_phase_string(phase).data()))
+                {
+                    m_reviewData.m_reviewPhase = phase;
+                }
             }
+
+            ImGui::EndCombo();
         }
+        ImGui::SetItemTooltip("Set the review phase. Useful for giving context as a temp sound does not need as much "
+                              "vetting as a final pass sound");
 
-        ImGui::EndCombo();
+        if (ImGui::BeginCombo("Review Quality", get_review_quality_string(m_reviewData.m_reviewQuality).data()))
+        {
+            for (int i = 0; i < static_cast<int>(review_quality::num); ++i)
+            {
+                review_quality quality = static_cast<review_quality>(i);
+
+                if (ImGui::Selectable(get_review_quality_string(quality).data()))
+                {
+                    m_reviewData.m_reviewQuality = quality;
+                }
+            }
+
+            ImGui::EndCombo();
+        }
+        ImGui::SetItemTooltip("Set the review quality. The higher the quality, the more the asset may need reviewing. Your "
+                              "project may vary but roughly A == \"Industry Competitive\"");
+
+        render_reviewers();
     }
-    ImGui::SetItemTooltip("Set the review phase. Useful for giving context as a temp sound does not need as much "
-                          "vetting as a final pass sound");
-
-    if (ImGui::BeginCombo("Review Quality", get_review_quality_string(m_reviewData.m_reviewQuality).data()))
+    else
     {
-        for (int i = 0; i < static_cast<int>(review_quality::num); ++i)
-        {
-            review_quality quality = static_cast<review_quality>(i);
-
-            if (ImGui::Selectable(get_review_quality_string(quality).data()))
-            {
-                m_reviewData.m_reviewQuality = quality;
-            }
-        }
-
-        ImGui::EndCombo();
+        ImGui::Dummy(ImVec2(400.0f, 5.0f));
     }
-    ImGui::SetItemTooltip("Set the review quality. The higher the quality, the more the asset may need reviewing. Your "
-                          "project may vary but roughly A == \"Industry Competitive\"");
-
-    render_reviewers();
 
     ImGui::EndDisabled();
 
     {
+        ImGui::TextUnformatted("Drag Files To Add");
+
         gluten::imgui::scoped_color headerBg(ImGuiCol_Header, gluten::theme::carbon_g100::field03);
 
         if (ImGui::CollapsingHeader("Context Files"))
@@ -128,7 +137,9 @@ auto create_review_popup::render_popup() -> void
     m_reviewData.m_reviewDescription = reviewDescriptionBuffer;
     m_reviewData.m_reviewTaskUrl     = reviewUrlBuffer;
 
-    const bool setupValid = !m_reviewData.m_reviewName.empty();
+    const bool hasFiles = !m_reviewData.m_absoluteContextFiles.empty() || !m_reviewData.m_absoluteReviewFiles.empty();
+
+    const bool setupValid = !m_reviewData.m_reviewName.empty() || (m_existingReviewId.has_value() && hasFiles);
 
     ImGui::BeginDisabled(!setupValid);
 
@@ -146,7 +157,14 @@ auto create_review_popup::render_popup() -> void
                                [](const user_data& user) { return user.m_userId; });
             }
 
-            m_asyncCreateReviewResult = workspaceManager->create_review(m_reviewData);
+            if (m_existingReviewId.has_value())
+            {
+                m_asyncCreateReviewResult = workspaceManager->create_new_review_version(m_existingReviewId.value(), m_reviewData);
+            }
+            else
+            {
+                m_asyncCreateReviewResult = workspaceManager->create_review(m_reviewData);
+            }
             set_closable(false);
         }
     }
@@ -171,6 +189,7 @@ auto create_review_popup::render_popup() -> void
             case concurrencpp::result_status::value:
             {
                 m_asyncCreateReviewResult.get();
+                onCompleteDelegate.Broadcast();
                 close_popup();
                 break;
             }
