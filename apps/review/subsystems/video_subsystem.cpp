@@ -72,11 +72,6 @@ video_subsystem::mpv_context::~mpv_context()
         m_waitEventResult.get();
     }
 
-    if (m_mpvHandle)
-    {
-        mpv_command_string(m_mpvHandle, "set pause yes");
-    }
-
     if (m_mpvRenderContext)
     {
         mpv_render_context_free(m_mpvRenderContext);
@@ -430,7 +425,7 @@ auto video_subsystem::wait_for_mpv_events(mpv_handle* handle) -> concurrencpp::r
         }
         else if (event->event_id == MPV_EVENT_SHUTDOWN)
         {
-            break;
+            co_return;
         }
     }
 
