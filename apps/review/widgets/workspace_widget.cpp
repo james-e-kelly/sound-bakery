@@ -879,6 +879,7 @@ void workspace_widget::render_review_description(const review_data& selectedRevi
     votesText.set_text(fmt::format("     {}", votes.first));
 
     descriptionBoxLayout.render_layout_element_pixels_vertical(&titleText, perLaneHeight);
+    descriptionBoxLayout.render_vertical_spacer(10.0f);
     descriptionBoxLayout.render_layout_element_pixels_vertical(&descriptionText, perLaneHeight);
 
     if (m_userSettings->m_displayPhases)
