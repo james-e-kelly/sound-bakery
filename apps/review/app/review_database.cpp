@@ -214,7 +214,7 @@ review_database::review_database(const std::filesystem::path& databasePath)
     m_database.exec(g_createSessionsTableStatement.data());
 }
 
-auto review_database::create_workspace(const std::string name) -> bool_result
+auto review_database::create_workspace(const std::string name) const -> bool_result
 {
     CHECK_ARG(!name.empty());
     MOVE_TO_DATABASE_THREAD();
@@ -228,7 +228,7 @@ auto review_database::create_workspace(const std::string name) -> bool_result
     co_return true;
 }
 
-auto review_database::open_workspace(const std::string name) -> bool_result
+auto review_database::open_workspace(const std::string name) const -> bool_result
 {
     CHECK_ARG(!name.empty());
     MOVE_TO_DATABASE_THREAD();
@@ -242,10 +242,11 @@ auto review_database::open_workspace(const std::string name) -> bool_result
     co_return true;
 }
 
-auto review_database::get_workspace_name() const -> database_result<std::string>
+auto review_database::get_workspace_name(std::string userToken) const -> database_result<std::string>
 {
     MOVE_TO_DATABASE_THREAD();
     CHECK_TABLE_EXISTS(workspaces);
+    CHECK_USER_PRIVILEGE(userToken, user_privileges::guest);
     INSERT_NETWORK_TEST();
 
     std::string workspaceName = "Unknown";
@@ -260,10 +261,11 @@ auto review_database::get_workspace_name() const -> database_result<std::string>
     co_return workspaceName;
 }
 
-auto review_database::create_project(const std::string name, const std::string description) -> database_result<project_data>
+auto review_database::create_project(const std::string name, const std::string description, std::string userToken) const -> database_result<project_data>
 {
     CHECK_ARG(!name.empty());
     MOVE_TO_DATABASE_THREAD();
+    CHECK_PRIVILEGED_ACTION(userToken, activity_type::project_created);
     CHECK_TABLE_EXISTS(projects);
     CHECK_TABLE_EXISTS(activity);
     INSERT_NETWORK_TEST();
@@ -288,9 +290,10 @@ auto review_database::create_project(const std::string name, const std::string d
     co_return newProjectData;
 }
 
-auto review_database::get_all_projects() const -> database_result<std::vector<project_data>>
+auto review_database::get_all_projects(std::string userToken) const -> database_result<std::vector<project_data>>
 {
     MOVE_TO_DATABASE_THREAD();
+    CHECK_USER_PRIVILEGE(userToken, user_privileges::guest);
     CHECK_TABLE_EXISTS(projects);
     CHECK_TABLE_EXISTS(activity);
     INSERT_NETWORK_TEST();
@@ -312,7 +315,7 @@ auto review_database::get_all_projects() const -> database_result<std::vector<pr
     co_return result;
 }
 
-auto review_database::create_review(database_id projectId, const new_transit_review_data newReview, std::string userToken) -> database_result<review_data>
+auto review_database::create_review(database_id projectId, const new_transit_review_data newReview, std::string userToken) const -> database_result<review_data>
 {
     CHECK_ARG(!newReview.m_reviewName.empty());
     CHECK_ARG(projectId > 1);
@@ -362,7 +365,7 @@ auto review_database::create_review(database_id projectId, const new_transit_rev
     co_return result;
 }
 
-auto review_database::create_review_version(database_id reviewId, const new_transit_review_data newReviewVersion, std::string userToken) -> database_result<review_data>
+auto review_database::create_review_version(database_id reviewId, const new_transit_review_data newReviewVersion, std::string userToken) const -> database_result<review_data>
 {
     CHECK_ARG(reviewId > 0);
     MOVE_TO_DATABASE_THREAD();
@@ -535,11 +538,12 @@ auto review_database::create_review_version(database_id reviewId, const new_tran
     co_return result;
 }
 
-auto review_database::update_review(const review_data review) -> database_result<review_data>
+auto review_database::update_review(const review_data review, std::string userToken) const -> database_result<review_data>
 {
     CHECK_ARG(review.m_reviewId > 0);
     CHECK_ARG(!review.m_reviewName.empty());
     MOVE_TO_DATABASE_THREAD();
+    CHECK_PRIVILEGED_ACTION(userToken, activity_type::review_edited);
     CHECK_TABLE_EXISTS(reviews);
     CHECK_TABLE_EXISTS(activity);
     INSERT_NETWORK_TEST();
@@ -564,10 +568,11 @@ auto review_database::update_review(const review_data review) -> database_result
     co_return review;
 }
 
-auto review_database::get_all_reviews(database_id projectId) const -> database_result<std::vector<review_data>>
+auto review_database::get_all_reviews(database_id projectId, std::string userToken) const -> database_result<std::vector<review_data>>
 {
     CHECK_ARG(projectId > 0);
     MOVE_TO_DATABASE_THREAD();
+    CHECK_USER_PRIVILEGE(userToken, user_privileges::guest);
     CHECK_TABLE_EXISTS(reviews);
     INSERT_NETWORK_TEST();
 
@@ -647,11 +652,12 @@ auto review_database::get_all_reviews(database_id projectId) const -> database_r
     co_return result;
 }
 
-auto review_database::get_review_vote(database_id reviewId, database_id userId) const -> database_result<review_vote>
+auto review_database::get_review_vote(database_id reviewId, database_id userId, std::string userToken) const -> database_result<review_vote>
 {
     CHECK_ARG(reviewId > 0);
     CHECK_ARG(userId > 0);
     MOVE_TO_DATABASE_THREAD();
+    CHECK_USER_PRIVILEGE(userToken, user_privileges::guest);
     CHECK_TABLE_EXISTS(votes);
     INSERT_NETWORK_TEST();
 
@@ -669,7 +675,7 @@ auto review_database::get_review_vote(database_id reviewId, database_id userId) 
     co_return result;
 }
 
-auto review_database::delete_review(database_id reviewId, std::string userToken) -> bool_result
+auto review_database::delete_review(database_id reviewId, std::string userToken) const -> bool_result
 {
     CHECK_ARG(reviewId > 0);
     MOVE_TO_DATABASE_THREAD();
@@ -687,10 +693,11 @@ auto review_database::delete_review(database_id reviewId, std::string userToken)
     co_return true;
 }
 
-auto review_database::get_all_review_activity(database_id reviewId) const -> database_result<std::vector<activity_data>> 
+auto review_database::get_all_review_activity(database_id reviewId, std::string userToken) const -> database_result<std::vector<activity_data>> 
 {
     CHECK_ARG(reviewId > 0);
     MOVE_TO_DATABASE_THREAD();
+    CHECK_USER_PRIVILEGE(userToken, user_privileges::guest);
     CHECK_TABLE_EXISTS(activity);
     INSERT_NETWORK_TEST();
 
@@ -718,10 +725,11 @@ auto review_database::get_all_review_activity(database_id reviewId) const -> dat
     co_return result;
 }
 
-auto review_database::get_all_comments_for_review(database_id reviewId) const -> database_result<std::vector<comment_data>> 
+auto review_database::get_all_comments_for_review(database_id reviewId, std::string userToken) const -> database_result<std::vector<comment_data>> 
 {
     CHECK_ARG(reviewId > 0);
     MOVE_TO_DATABASE_THREAD();
+    CHECK_USER_PRIVILEGE(userToken, user_privileges::guest);
     CHECK_TABLE_EXISTS(comments);
     INSERT_NETWORK_TEST();
 
@@ -750,12 +758,13 @@ auto review_database::get_all_comments_for_review(database_id reviewId) const ->
     co_return result;
 }
 
-auto review_database::create_comment(new_comment_data newComment) -> bool_result
+auto review_database::create_comment(new_comment_data newComment, std::string userToken) const -> bool_result
 {
     CHECK_ARG(!newComment.m_comment.empty());
     CHECK_ARG(newComment.m_userId > 0);
     CHECK_ARG(newComment.m_reviewId > 0);
     MOVE_TO_DATABASE_THREAD();
+    CHECK_PRIVILEGED_ACTION(userToken, activity_type::comment_added);
     CHECK_TABLE_EXISTS(comments);
     CHECK_TABLE_EXISTS(activity);
     INSERT_NETWORK_TEST();
@@ -789,10 +798,11 @@ auto review_database::create_comment(new_comment_data newComment) -> bool_result
     co_return true;
 }
 
-auto review_database::delete_comment(database_id commentId) -> bool_result
+auto review_database::delete_comment(database_id commentId, std::string userToken) const -> bool_result
 {
     CHECK_ARG(commentId > 0);
     MOVE_TO_DATABASE_THREAD();
+    CHECK_PRIVILEGED_ACTION(userToken, activity_type::comment_deleted);
     CHECK_TABLE_EXISTS(comments);
     CHECK_TABLE_EXISTS(activity);
     INSERT_NETWORK_TEST();
@@ -810,7 +820,7 @@ auto review_database::delete_comment(database_id commentId) -> bool_result
     co_return true;
 }
 
-auto review_database::create_user(new_user_data newUser, std::string userToken) -> bool_result
+auto review_database::create_user(new_user_data newUser, std::string userToken) const -> bool_result
 {
     CHECK_ARG(!newUser.m_email.empty());
     CHECK_ARG(!newUser.m_rawPassword.empty());
@@ -819,7 +829,7 @@ auto review_database::create_user(new_user_data newUser, std::string userToken) 
     CHECK_TABLE_EXISTS(activity);
     INSERT_NETWORK_TEST();
 
-    const bool firstUserCreation = userToken.empty() && user_table_is_empty();
+    const bool firstUserCreation = userToken.empty() && user_table_is_empty(userToken);
     const bool userLoggedIn      = !firstUserCreation && user_can_perform_action(userToken, activity_type::user_added);
 
     if (!firstUserCreation && !userLoggedIn)
@@ -862,9 +872,10 @@ auto review_database::create_user(new_user_data newUser, std::string userToken) 
     co_return true;
 }
 
-auto review_database::user_table_is_empty() const -> database_result<bool>
+auto review_database::user_table_is_empty(std::string userToken) const -> database_result<bool>
 {
     MOVE_TO_DATABASE_THREAD();
+    CHECK_USER_PRIVILEGE(userToken, user_privileges::guest);
     CHECK_TABLE_EXISTS(users);
     INSERT_NETWORK_TEST();
 
@@ -879,7 +890,7 @@ auto review_database::user_table_is_empty() const -> database_result<bool>
     co_return usersCount == 0;
 }
 
-auto review_database::user_can_perform_action(std::string userToken, activity_type activity) -> database_result<bool>
+auto review_database::user_can_perform_action(std::string userToken, activity_type activity) const -> database_result<bool>
 {
     MOVE_TO_DATABASE_THREAD();
     CHECK_TABLE_EXISTS(users);
@@ -918,7 +929,7 @@ auto review_database::user_can_perform_action(std::string userToken, activity_ty
     co_return co_await has_user_privilege(userToken, requiredPriveleges);
 }
 
-auto review_database::has_user_privilege(std::string userToken, user_privileges privilege) -> database_result<bool>
+auto review_database::has_user_privilege(std::string userToken, user_privileges privilege) const -> database_result<bool>
 {
     MOVE_TO_DATABASE_THREAD();
     CHECK_TABLE_EXISTS(sessions);
@@ -936,7 +947,7 @@ auto review_database::has_user_privilege(std::string userToken, user_privileges 
     co_return userWithPrivelegesIsLoggedIn;
 }
 
-auto review_database::login_user(login_request_data loginRequest) -> database_result<logged_in_user_data>
+auto review_database::login_user(login_request_data loginRequest) const -> database_result<logged_in_user_data>
 {
     CHECK_ARG(!loginRequest.m_email.empty());
     CHECK_ARG(!loginRequest.m_rawPassword.empty());
@@ -1020,7 +1031,7 @@ auto review_database::login_user(login_request_data loginRequest) -> database_re
     co_return result;
 }
 
-auto review_database::get_all_users(std::string userToken) -> database_result<std::vector<user_data>>
+auto review_database::get_all_users(std::string userToken) const -> database_result<std::vector<user_data>>
 {
     MOVE_TO_DATABASE_THREAD();
     CHECK_USER_PRIVILEGE(userToken, user_privileges::user);
@@ -1047,12 +1058,12 @@ auto review_database::get_all_users(std::string userToken) -> database_result<st
     co_return result;
 }
 
-auto review_database::delete_user(std::string email, std::string userToken) -> bool_result
+auto review_database::delete_user(std::string email, std::string userToken) const -> bool_result
 {
     CHECK_ARG(!email.empty());
     CHECK_ARG(!userToken.empty());
     MOVE_TO_DATABASE_THREAD();
-    CHECK_USER_PRIVILEGE(userToken, user_privileges::user);
+    CHECK_PRIVILEGED_ACTION(userToken, activity_type::user_deleted);
     CHECK_TABLE_EXISTS(users);
     CHECK_TABLE_EXISTS(sessions);
     INSERT_NETWORK_TEST();
@@ -1074,7 +1085,7 @@ auto review_database::delete_user(std::string email, std::string userToken) -> b
     co_return false;
 }
 
-auto review_database::get_review_users(database_id reviewId, std::string userToken) -> database_result<std::vector<user_data>>
+auto review_database::get_review_users(database_id reviewId, std::string userToken) const -> database_result<std::vector<user_data>>
 {
     CHECK_ARG(reviewId > 0);
     CHECK_ARG(!userToken.empty());
@@ -1117,7 +1128,7 @@ auto review_database::get_review_users(database_id reviewId, std::string userTok
     co_return users;
 }
 
-auto review_database::set_review_users(database_id reviewId, std::vector<database_id> userIds, std::string userToken) -> bool_result
+auto review_database::set_review_users(database_id reviewId, std::vector<database_id> userIds, std::string userToken) const -> bool_result
 {
     CHECK_ARG(reviewId > 0);
     CHECK_ARG(!userToken.empty());
@@ -1142,7 +1153,7 @@ auto review_database::set_review_users(database_id reviewId, std::vector<databas
     co_return true;
 }
 
-auto review_database::set_review_vote(database_id reviewId, database_id userId, review_vote vote, std::string userToken) -> bool_result
+auto review_database::set_review_vote(database_id reviewId, database_id userId, review_vote vote, std::string userToken) const -> bool_result
 {
     CHECK_ARG(reviewId > 0);
     CHECK_ARG(userId > 0);

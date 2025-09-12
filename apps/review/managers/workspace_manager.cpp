@@ -88,9 +88,9 @@ auto workspace_manager::open_workspace(const std::filesystem::path workspaceFile
         
         co_await concurrencpp::resume_on(review_app::get()->thread_pool_executor());
         co_await m_database->open_workspace(workspaceFile.stem().string());
-        co_await m_database->get_workspace_name();
+        co_await m_database->get_workspace_name(get_user_session_token());
 
-        if (co_await transform_database_result_to_bool(m_database->user_table_is_empty()) ||
+        if (co_await transform_database_result_to_bool(m_database->user_table_is_empty(get_user_session_token())) ||
             get_user_session_token().empty() || get_user_session_has_expired())
         {
             co_await concurrencpp::resume_on(review_app::get()->get_tick_executor());
@@ -129,9 +129,9 @@ auto workspace_manager::async_get_users_for_review(int64_t reviewId) -> concurre
         {
             co_await concurrencpp::resume_on(review_app::get()->thread_pool_executor());
 
-            std::transform(users.begin(), users.end(), reviewers.begin(), [database = m_database, reviewId](const user_data& user) 
+            std::transform(users.begin(), users.end(), reviewers.begin(), [this, database = m_database, reviewId](const user_data& user) 
                 {
-                    return reviewer_data(user, database->get_review_vote(reviewId, user.m_userId).get().value());
+                    return reviewer_data(user, database->get_review_vote(reviewId, user.m_userId, get_user_session_token()).get().value());
                 });
 
             std::sort(reviewers.begin(), reviewers.end(), [userSettings = m_userSettingsData](const reviewer_data& lhs, const reviewer_data& rhs) -> bool
@@ -171,7 +171,7 @@ auto workspace_manager::open_user_flow_popup() -> concurrencpp::result<void>
     m_userFlowPopup = get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class_to_root<user_flow_popup>(false);
     m_userFlowPopup->open_popup();
 
-    if (!co_await transform_database_result_to_bool(m_database->user_table_is_empty()))
+    if (!co_await transform_database_result_to_bool(m_database->user_table_is_empty(get_user_session_token())))
     {
         co_await concurrencpp::resume_on(get_app()->get_tick_executor());
         m_userFlowPopup->set_flow_type(user_flow_type::new_user_and_login);
@@ -193,7 +193,7 @@ auto workspace_manager::create_project(const std::string& projectName, const std
         return;
     }
 
-    m_database->create_project(projectName, projectDescription);
+    m_database->create_project(projectName, projectDescription, get_user_session_token());
     m_cachedProjects.set_cache_expired(get_user_session_token());
 }
 
@@ -222,7 +222,7 @@ auto workspace_manager::select_project(const std::string projectName) -> concurr
 
             if (m_cachedReviews.get_cache_needs_filling(key))
             {
-                m_cachedReviews.set_async_fill_cache(key, transform_database_result_to_cache_result<std::vector<review_data>>(m_database->get_all_reviews(key.m_key)));
+                m_cachedReviews.set_async_fill_cache(key, transform_database_result_to_cache_result<std::vector<review_data>>(m_database->get_all_reviews(key.m_key, get_user_session_token())));
             }
             break;
         }
@@ -275,7 +275,7 @@ auto workspace_manager::get_all_projects() -> typename global_cache_type<project
 
     if (m_cachedProjects.get_cache_needs_filling(key))
     {
-        m_cachedProjects.set_async_fill_cache(key, transform_database_result_to_cache_result(m_database->get_all_projects()));
+        m_cachedProjects.set_async_fill_cache(key, transform_database_result_to_cache_result(m_database->get_all_projects(get_user_session_token())));
         m_selectedProject = project_data();
     }
 
@@ -288,7 +288,7 @@ auto workspace_manager::get_workspace_name() -> typename string_cache_type::cach
 
     if (m_cachedWorkspaceName.get_cache_needs_filling(key))
     {
-        m_cachedWorkspaceName.set_async_fill_cache(key, transform_database_result_to_cache_result(m_database->get_workspace_name()));
+        m_cachedWorkspaceName.set_async_fill_cache(key, transform_database_result_to_cache_result(m_database->get_workspace_name(get_user_session_token())));
     }
 
     return m_cachedWorkspaceName.get_cached_data(key);
@@ -360,7 +360,7 @@ auto workspace_manager::create_review(const new_frontend_review_data newReview) 
         co_await concurrencpp::resume_on(get_app()->get_tick_executor());
 
         const gluten::key_and_token_cache_key key(m_selectedProject.m_id, get_user_session_token());
-        const auto newReviewDataResult = co_await m_database->get_all_reviews(m_selectedProject.m_id);
+        const auto newReviewDataResult = co_await m_database->get_all_reviews(m_selectedProject.m_id, get_user_session_token());
     
         if (newReviewDataResult.has_value())
         {
@@ -377,7 +377,7 @@ auto workspace_manager::update_review(const review_data& updatedReview) -> concu
         m_selectedReview = updatedReview;
     }
 
-    co_await m_database->update_review(updatedReview);
+    co_await m_database->update_review(updatedReview, get_user_session_token());
 
     m_cachedReviews.set_cache_expired({m_selectedProject.m_id, get_user_session_token()});
 }
@@ -388,7 +388,7 @@ auto workspace_manager::get_all_reviews() -> typename default_cache_type<review_
 
     if (m_cachedReviews.get_cache_needs_filling(key))
     {
-        m_cachedReviews.set_async_fill_cache(key, transform_database_result_to_cache_result(m_database->get_all_reviews(m_selectedProject.m_id)));
+        m_cachedReviews.set_async_fill_cache(key, transform_database_result_to_cache_result(m_database->get_all_reviews(m_selectedProject.m_id, get_user_session_token())));
     }
 
     return m_cachedReviews.get_cached_data({m_selectedProject.m_id, get_user_session_token()});
@@ -425,7 +425,7 @@ auto workspace_manager::create_review_version(int64_t reviewId, new_frontend_rev
         co_await concurrencpp::resume_on(get_app()->get_tick_executor());
 
         const gluten::key_and_token_cache_key key(m_selectedProject.m_id, get_user_session_token());
-        const auto newReviewDataResult = co_await m_database->get_all_reviews(m_selectedProject.m_id);
+        const auto newReviewDataResult = co_await m_database->get_all_reviews(m_selectedProject.m_id, get_user_session_token());
     
         if (newReviewDataResult.has_value())
         {
@@ -441,7 +441,7 @@ auto workspace_manager::get_all_review_activity(int64_t reviewId) -> typename de
 
     if (m_cachedActivity.get_cache_needs_filling(key))
     {
-        m_cachedActivity.set_async_fill_cache(key, transform_database_result_to_cache_result(m_database->get_all_review_activity(reviewId)));
+        m_cachedActivity.set_async_fill_cache(key, transform_database_result_to_cache_result(m_database->get_all_review_activity(reviewId, get_user_session_token())));
     }
 
     return m_cachedActivity.get_cached_data(key);
@@ -453,7 +453,7 @@ auto workspace_manager::get_all_comments_for_review(int64_t reviewId) -> typenam
 
     if (m_cachedComments.get_cache_needs_filling(key))
     {
-        m_cachedComments.set_async_fill_cache(key, transform_database_result_to_cache_result(m_database->get_all_comments_for_review(reviewId)));
+        m_cachedComments.set_async_fill_cache(key, transform_database_result_to_cache_result(m_database->get_all_comments_for_review(reviewId, get_user_session_token())));
     }
     
     return m_cachedComments.get_cached_data(key);
@@ -466,7 +466,7 @@ auto workspace_manager::create_comment(const new_comment_data& newComment) -> co
     auto& rawComments = m_cachedComments.get_raw_data(key);
     rawComments.insert(rawComments.begin(), comment_data(newComment));
 
-    co_await m_database->create_comment(newComment);
+    co_await m_database->create_comment(newComment, get_user_session_token());
 
     m_cachedComments.set_cache_expired(key);
     m_cachedActivity.set_cache_expired(key);
@@ -481,7 +481,7 @@ auto workspace_manager::delete_comment(int64_t commentId) -> concurrencpp::resul
                                    [commentId](const comment_data& comment)
                                    { return commentId == comment.m_commentId; }));
 
-    co_await m_database->delete_comment(commentId);
+    co_await m_database->delete_comment(commentId, get_user_session_token());
 
     m_cachedComments.set_cache_expired(key);
     m_cachedActivity.set_cache_expired(key);
@@ -514,7 +514,7 @@ auto workspace_manager::create_user(const new_user_data newUser, std::optional<s
 
 auto workspace_manager::create_user_and_login(new_user_data newUser) -> concurrencpp::result<tl::expected<bool, database_error>>
 {
-    if (co_await m_database->user_table_is_empty())
+    if (co_await transform_database_result_to_bool(m_database->user_table_is_empty(get_user_session_token())))
     {
         newUser.m_requestedPrivileges = user_privileges::admin;
     }
