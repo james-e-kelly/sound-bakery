@@ -72,6 +72,11 @@ namespace
 
         auto get_avatar_image(const std::string& email, float size, gluten::image_render render) -> gluten::image*
         {
+            if (email.empty() || size < 1.0f)
+            {
+                return nullptr;
+            }
+
             const avatar_identifier avatar{.m_email = email, .m_size = size, .m_render = render};
 
             if (m_cache.get_cache_needs_filling(avatar))
@@ -122,7 +127,7 @@ auto user_avatar_element::render_element(const ImRect& parentRect) -> bool
         avatarImage->render(parentRect);
         return true;
     }
-    else
+    else if (parentRect.GetHeight() > 1.0f)
     {
         ImSpinner::SpinnerAngEclipse("##Loading", ImGui::GetFontSize() / 2.0f, 2.0f, gluten::theme::white, 8.0f);
         return false;

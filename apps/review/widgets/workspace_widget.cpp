@@ -979,7 +979,7 @@ void workspace_widget::render_reviewers(std::shared_ptr<workspace_manager>& work
             rightPanelLayout.render_layout_element_pixels_vertical(&user, rightPanelLayout.get_element_rect().GetWidth());
         }
     }
-    else
+    else if (reviewers.m_state == gluten::cache_state::loading)
     {
         gluten::loading_spinner loading;
         rightPanelLayout.render_layout_element_percent_vertical(&loading, 1.0f);
