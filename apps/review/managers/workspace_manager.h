@@ -85,6 +85,8 @@ public:
     // Voting
     auto set_review_vote(int64_t reviewId, int64_t userId, review_vote vote) -> concurrencpp::result<void>;
 
+    auto get_user_session_token() const -> std::string;
+
 protected:
     auto init(gluten::app* app) -> void override;
     auto start() -> void override;
