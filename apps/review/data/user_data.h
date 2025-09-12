@@ -36,6 +36,7 @@ struct logged_in_user_data
     std::string m_email;
     std::string m_sessionToken;                             //< Sent to the server for authentication
     user_privileges m_privileges = user_privileges::guest;  //< User side privileges for quickly changing the UI. But the server will still authenticate
+    time_t m_expiryTime = std::numeric_limits<time_t>::max();
 
     template <class archive_class>
     auto serialize(archive_class& archive, const unsigned int version) -> void
@@ -44,8 +45,15 @@ struct logged_in_user_data
         archive & boost::serialization::make_nvp("token", m_sessionToken);
         archive & boost::serialization::make_nvp("email", m_email);
         archive & boost::serialization::make_nvp("privileges", m_privileges);
+
+        if (version >= review_app_stored_expiry_time)
+        {
+            archive & boost::serialization::make_nvp("expiry", m_expiryTime);
+        }
     }
 };
+
+BOOST_CLASS_VERSION(logged_in_user_data, review_app_version_current)
 
 struct user_data
 {

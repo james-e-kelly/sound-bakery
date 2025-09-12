@@ -981,7 +981,7 @@ auto review_database::login_user(login_request_data loginRequest) -> database_re
     const std::string displayName   = statement.getColumn(4).getString();
     const std::string title         = statement.getColumn(5).getString();
     
-    SQLite::Statement sessionStatement(m_database, "SELECT token FROM sessions WHERE user_id = ? AND expires_at > strftime('%s', 'now')");
+    SQLite::Statement sessionStatement(m_database, "SELECT token, expires_at FROM sessions WHERE user_id = ? AND expires_at > strftime('%s', 'now')");
     sessionStatement.bind(1, userId);
     const bool hasSessionToken = sessionStatement.executeStep();
 
@@ -995,6 +995,7 @@ auto review_database::login_user(login_request_data loginRequest) -> database_re
     if (hasSessionToken)
     {
         result.m_sessionToken = sessionStatement.getColumn(0).getText();
+        result.m_expiryTime   = sessionStatement.getColumn(0).getInt64();
     }
     else
     {
@@ -1004,16 +1005,16 @@ auto review_database::login_user(login_request_data loginRequest) -> database_re
         randombytes_buf(sessionToken, g_sessionTokenSize);
         sodium_bin2base64(base64SessionToken, g_base64SessionTokenSize, sessionToken, g_sessionTokenSize, g_base64EncodeVariant);
 
-        const std::time_t now    = std::time(nullptr);
-        const std::time_t expiry = now + 7 * 24 * 60 * 60;
+        const auto expiry = std::chrono::system_clock::now() + std::chrono::days(7);
 
         SQLite::Statement newSessionStatement(m_database, "INSERT INTO sessions (token, user_id, expires_at) VALUES (?, ?, ?)");
         newSessionStatement.bind(1, base64SessionToken);
         newSessionStatement.bind(2, userId);
-        newSessionStatement.bind(3, static_cast<int>(expiry));
+        newSessionStatement.bind(3, std::chrono::system_clock::to_time_t(expiry));
         newSessionStatement.exec();
 
         result.m_sessionToken = base64SessionToken;
+        result.m_expiryTime   = std::chrono::system_clock::to_time_t(expiry);
     }
 
     co_return result;

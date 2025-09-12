@@ -91,7 +91,7 @@ auto workspace_manager::open_workspace(const std::filesystem::path workspaceFile
         co_await m_database->get_workspace_name();
 
         if (co_await transform_database_result_to_bool(m_database->user_table_is_empty()) ||
-            get_user_session_token().empty())
+            get_user_session_token().empty() || get_user_session_has_expired())
         {
             co_await concurrencpp::resume_on(review_app::get()->get_tick_executor());
             open_user_flow_popup();
@@ -187,12 +187,24 @@ auto workspace_manager::open_user_flow_popup() -> concurrencpp::result<void>
 
 auto workspace_manager::create_project(const std::string& projectName, const std::string& projectDescription) -> void
 {
+    if (get_user_session_has_expired())
+    {
+        logout();
+        return;
+    }
+
     m_database->create_project(projectName, projectDescription);
     m_cachedProjects.set_cache_expired(get_user_session_token());
 }
 
 auto workspace_manager::select_project(const std::string projectName) -> concurrencpp::result<void>
 {
+    if (get_user_session_has_expired())
+    {
+        logout();
+        co_return;
+    }
+
     if (projectName.empty())
     {
         m_selectedProject = project_data();
@@ -299,6 +311,12 @@ auto workspace_manager::file_is_workspace(const std::filesystem::path& file) -> 
 
 auto workspace_manager::select_review(int64_t reviewId) -> void
 {
+    if (get_user_session_has_expired())
+    {
+        logout();
+        return;
+    }
+
     if (reviewId == 0)
     {
         m_selectedReview  = review_data();
@@ -325,6 +343,12 @@ auto workspace_manager::get_selected_review() const -> const review_data&
 
 auto workspace_manager::create_review(const new_frontend_review_data newReview) -> concurrencpp::result<void> 
 {
+    if (get_user_session_has_expired())
+    {
+        logout();
+        co_return;
+    }
+
     co_await concurrencpp::resume_on(get_app()->background_executor());
 
     new_transit_review_data newBackendReviewData(newReview);
@@ -388,6 +412,12 @@ auto workspace_manager::delete_review(int64_t reviewId) -> concurrencpp::result<
 
 auto workspace_manager::create_review_version(int64_t reviewId, new_frontend_review_data newReviewVersion) -> concurrencpp::result<void>
 {
+    if (get_user_session_has_expired())
+    {
+        logout();
+        co_return;
+    }
+
     const auto createNewReviewVersionResult = co_await m_database->create_review_version(reviewId, newReviewVersion, get_user_session_token());
 
     if (createNewReviewVersionResult.has_value())
@@ -668,4 +698,10 @@ auto workspace_manager::set_review_vote(int64_t reviewId, int64_t userId, review
 auto workspace_manager::get_user_session_token() const -> std::string
 {
     return m_userSettingsData->m_loggedInUser.m_sessionToken;
+}
+
+auto workspace_manager::get_user_session_has_expired() const -> bool
+{
+    const time_t now   = std::time(nullptr);
+    return now >= m_userSettingsData->m_loggedInUser.m_expiryTime;
 }
