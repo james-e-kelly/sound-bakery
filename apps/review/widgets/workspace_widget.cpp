@@ -789,7 +789,7 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
         if (ImGui::BeginTabItem("Activity"))
         {
             const auto& reviewsActivity =
-                workspaceManager->get_all_activity_for_review(selectedReview.m_reviewId);
+                workspaceManager->get_all_review_activity(selectedReview.m_reviewId);
             if (reviewsActivity.has_data())
             {
                 for (const auto& iter : reviewsActivity.m_cache)
@@ -955,7 +955,7 @@ void workspace_widget::render_review_description(const review_data& selectedRevi
             }
         }
 
-        const auto& reviewers = workspaceManager->get_users_for_review(selectedReview.m_reviewId);
+        const auto& reviewers = workspaceManager->get_review_users(selectedReview.m_reviewId);
         if (reviewers.has_data())
         {
             const auto foundIter = std::find_if(reviewers.m_cache.begin(), reviewers.m_cache.end(),
@@ -973,19 +973,19 @@ void workspace_widget::render_review_description(const review_data& selectedRevi
                 if (m_descriptionBoxButtonsLayout.render_layout_element_pixels_horizontal(
                         &upVoteButton, 30.0f))
                 {
-                    workspaceManager->set_user_vote_for_review(selectedReview.m_reviewId, m_userSettings->m_loggedInUser.m_userId, review_vote::upvote);
+                    workspaceManager->set_review_vote(selectedReview.m_reviewId, m_userSettings->m_loggedInUser.m_userId, review_vote::upvote);
                 }
 
                 if (m_descriptionBoxButtonsLayout.render_layout_element_pixels_horizontal(
                         &noVoteButton, 30.0f))
                 {
-                    workspaceManager->set_user_vote_for_review(selectedReview.m_reviewId, m_userSettings->m_loggedInUser.m_userId, review_vote::no_vote);
+                    workspaceManager->set_review_vote(selectedReview.m_reviewId, m_userSettings->m_loggedInUser.m_userId, review_vote::no_vote);
                 }
 
                 if (m_descriptionBoxButtonsLayout.render_layout_element_pixels_horizontal(
                         &downVoteButton, 30.0f))
                 {
-                    workspaceManager->set_user_vote_for_review(selectedReview.m_reviewId, m_userSettings->m_loggedInUser.m_userId, review_vote::downvote);
+                    workspaceManager->set_review_vote(selectedReview.m_reviewId, m_userSettings->m_loggedInUser.m_userId, review_vote::downvote);
                 }
             }
         }
@@ -1003,7 +1003,7 @@ void workspace_widget::render_reviewers(std::shared_ptr<workspace_manager>& work
                                         const review_data& selectedReview,
                                         const user_data& selectedUser)
 {
-    const auto& reviewers = workspaceManager->get_users_for_review(selectedReview.m_reviewId);
+    const auto& reviewers = workspaceManager->get_review_users(selectedReview.m_reviewId);
 
     rightPanelLayout.render_layout_element_pixels_vertical(nullptr, 2.0f);
         
@@ -1131,7 +1131,7 @@ auto workspace_widget::render_left_toolbar() -> void
 
 auto workspace_widget::get_votes_string(const review_data& selectedReview) const -> std::pair<std::string, int>
 {
-    const auto reviewers = m_workspaceManager.lock()->get_users_for_review(selectedReview.m_reviewId);
+    const auto reviewers = m_workspaceManager.lock()->get_review_users(selectedReview.m_reviewId);
 
     std::string text;
     int upvotes = 0;

@@ -60,7 +60,7 @@ auto update_review_popup::render_popup() -> void
     const std::shared_ptr<workspace_manager> workspaceManager = get_app()->get_manager_by_class<workspace_manager>();
 
     const typename workspace_manager::global_cache_type<user_data>::cache_result& allUsers = workspaceManager->get_all_users();
-    const typename workspace_manager::default_cache_type<reviewer_data>::cache_result& reviewers = workspaceManager->get_users_for_review(m_reviewData.m_reviewId);
+    const typename workspace_manager::default_cache_type<reviewer_data>::cache_result& reviewers = workspaceManager->get_review_users(m_reviewData.m_reviewId);
 
     if (!m_newReviewers.has_value() && reviewers.m_state == gluten::cache_state::has_data)
     {
@@ -143,7 +143,7 @@ auto update_review_popup::render_popup() -> void
                            m_newReviewers.value().end(), userIds.begin(),
                            [](const user_data& user) { return user.m_userId; });
 
-            workspaceManager->set_users_for_review(m_reviewData.m_reviewId, userIds);
+            workspaceManager->set_review_users(m_reviewData.m_reviewId, userIds);
         }
 
         close_popup();

@@ -53,10 +53,10 @@ public:
     auto update_review(const review_data& updatedReview) -> concurrencpp::result<void>;
     auto get_all_reviews() -> typename default_cache_type<review_data>::cache_result;
     auto delete_review(int64_t reviewId) -> concurrencpp::result<void>;
-    auto create_new_review_version(int64_t reviewId, new_frontend_review_data newReviewVersion) -> concurrencpp::result<void>;
+    auto create_review_version(int64_t reviewId, new_frontend_review_data newReviewVersion) -> concurrencpp::result<void>;
 
     // Activity
-    auto get_all_activity_for_review(int64_t reviewId) -> typename default_cache_type<activity_data>::cache_result;
+    auto get_all_review_activity(int64_t reviewId) -> typename default_cache_type<activity_data>::cache_result;
 
     // Comments
     auto get_all_comments_for_review(int64_t reviewId) -> typename default_cache_type<comment_data>::cache_result;
@@ -79,11 +79,11 @@ public:
     auto logout() -> void;
 
     // Review Users
-    auto get_users_for_review(int64_t reviewId) -> typename default_cache_type<reviewer_data>::cache_result;
-    auto set_users_for_review(int64_t reviewId, std::vector<int64_t> userIds) -> concurrencpp::result<tl::expected<bool, database_error>>;
+    auto get_review_users(int64_t reviewId) -> typename default_cache_type<reviewer_data>::cache_result;
+    auto set_review_users(int64_t reviewId, std::vector<int64_t> userIds) -> concurrencpp::result<tl::expected<bool, database_error>>;
 
     // Voting
-    auto set_user_vote_for_review(int64_t reviewId, int64_t userId, review_vote vote) -> concurrencpp::result<void>;
+    auto set_review_vote(int64_t reviewId, int64_t userId, review_vote vote) -> concurrencpp::result<void>;
 
 protected:
     auto init(gluten::app* app) -> void override;

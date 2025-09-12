@@ -30,7 +30,7 @@ struct new_user_data
 
 struct logged_in_user_data
 {
-    int64_t m_userId = -1;
+    database_id m_userId = -1;
     std::string m_displayName;
     std::string m_title;
     std::string m_email;
@@ -49,7 +49,7 @@ struct logged_in_user_data
 
 struct user_data
 {
-    int64_t m_userId = -1;
+    database_id m_userId = -1;
     std::string m_displayName;
     std::string m_title;
     std::string m_email;

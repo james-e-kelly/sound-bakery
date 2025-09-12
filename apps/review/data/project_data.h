@@ -6,7 +6,7 @@
 
 struct project_data
 {
-    int64_t m_id = 0;
+    database_id m_id = 0;
     std::string m_projectName;
     std::string m_projectDescription;
 

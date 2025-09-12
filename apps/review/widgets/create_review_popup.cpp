@@ -159,7 +159,7 @@ auto create_review_popup::render_popup() -> void
 
             if (m_existingReviewId.has_value())
             {
-                m_asyncCreateReviewResult = workspaceManager->create_new_review_version(m_existingReviewId.value(), m_reviewData);
+                m_asyncCreateReviewResult = workspaceManager->create_review_version(m_existingReviewId.value(), m_reviewData);
             }
             else
             {

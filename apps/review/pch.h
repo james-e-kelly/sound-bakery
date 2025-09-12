@@ -23,7 +23,7 @@
 #include "boost/serialization/version.hpp"
 #include <magic_enum/magic_enum.hpp>
 
-using project_id_type = unsigned int;
+using database_id = int64_t;
 
 enum review_app_version
 {

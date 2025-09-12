@@ -18,6 +18,9 @@ enum class database_error_code
     invalid_parameters  //< User supplied incorrect parameters
 };
 
+/**
+ * @brief Describes a database error through an error code and error message.
+ */
 struct database_error
 {
     database_error_code m_errorCode = database_error_code::error;
@@ -25,7 +28,7 @@ struct database_error
 };
 
 /**
- * @brief Handles database creation, deletion, updates and so on.
+ * @brief Handles database creation, deletion, updates, queries and more.
  */
 class review_database
 {
@@ -38,49 +41,48 @@ public:
     using database_result = concurrencpp::result<tl::expected<T, database_error>>;
 
     using bool_result = database_result<bool>;
-    using user_id = int64_t;
 
 public:
     // Workspace
-    auto create_workspace(const std::string name) -> concurrencpp::result<void>;
-    auto open_workspace(const std::string name) -> concurrencpp::result<void>;
-    auto get_workspace_name() const -> concurrencpp::result<std::string>;
+    auto create_workspace(const std::string name)                                                                               -> bool_result;
+    auto open_workspace(const std::string name)                                                                                 -> bool_result;
+    auto get_workspace_name() const                                                                                             -> database_result<std::string>;
 
     // Project
-    auto create_project(const std::string name, const std::string description) -> concurrencpp::result<project_data>;
-    auto get_all_projects() const -> concurrencpp::result<std::vector<project_data>>;
+    auto create_project(const std::string name, const std::string description)                                                  -> database_result<project_data>;
+    auto get_all_projects() const                                                                                               -> database_result<std::vector<project_data>>;
 
     // Review
-    auto create_review(int64_t projectId, const new_transit_review_data newReview, std::string userToken) -> database_result<review_data>;
-    auto create_new_review_version(int64_t reviewId, const new_transit_review_data newReviewVersion, std::string userToken) -> database_result<review_data>;
-    auto update_review(const review_data review) -> concurrencpp::result<review_data>;
-    auto get_all_reviews(int64_t projectId) const -> concurrencpp::result<std::vector<review_data>>;
-    auto get_user_vote_on_review(int64_t reviewId, int64_t userId) const -> concurrencpp::result<tl::expected<review_vote, database_error>>;
-    auto delete_review(int64_t reviewId, std::string userToken) -> concurrencpp::result<tl::expected<bool, database_error>>;
+    auto create_review(database_id projectId, const new_transit_review_data newReview, std::string userToken)                   -> database_result<review_data>;
+    auto create_review_version(database_id reviewId, const new_transit_review_data newReviewVersion, std::string userToken)     -> database_result<review_data>;
+    auto update_review(const review_data review)                                                                                -> database_result<review_data>;
+    auto get_all_reviews(database_id projectId) const                                                                           -> database_result<std::vector<review_data>>;
+    auto get_review_vote(database_id reviewId, database_id userId) const                                                        -> database_result<review_vote>;
+    auto delete_review(database_id reviewId, std::string userToken)                                                             -> bool_result;
 
     // Activity
-    auto get_all_activity_for_review(int64_t reviewId) const -> concurrencpp::result<std::vector<activity_data>>;
+    auto get_all_review_activity(database_id reviewId) const                                                                    -> database_result<std::vector<activity_data>>;
 
     // Comments
-    auto get_all_comments_for_review(int64_t reviewId) const -> concurrencpp::result<std::vector<comment_data>>;
-    auto create_comment(new_comment_data newComment) -> concurrencpp::result<comment_data>;
-    auto delete_comment(int64_t commentId) -> concurrencpp::result<void>;
+    auto get_all_comments_for_review(database_id reviewId) const                                                                -> database_result<std::vector<comment_data>>;
+    auto create_comment(new_comment_data newComment)                                                                            -> bool_result;
+    auto delete_comment(database_id commentId)                                                                                  -> bool_result;
 
     // Users
-    auto create_user(new_user_data newUser, std::string userToken) -> concurrencpp::result<tl::expected<bool, database_error>>;
-    auto user_table_is_empty() const -> concurrencpp::result<bool>; //< If the table is empty, we allow an admin account to be created
-    auto user_is_logged_in_and_has_privilege_for_action(std::string userToken, activity_type activity) -> concurrencpp::result<bool>;
-    auto user_is_logged_in_and_has_privilege(std::string userToken, user_privileges privilege) -> concurrencpp::result<bool>;
-    auto login_user(login_request_data loginRequest) -> concurrencpp::result<tl::expected<logged_in_user_data, database_error>>;
-    auto get_all_users(std::string userToken) -> concurrencpp::result<tl::expected<std::vector<user_data>, database_error>>;
-    auto delete_user(std::string email, std::string userToken) -> concurrencpp::result<tl::expected<bool, database_error>>;
+    auto create_user(new_user_data newUser, std::string userToken)                                                              -> bool_result;
+    auto user_table_is_empty() const                                                                                            -> bool_result;
+    auto user_can_perform_action(std::string userToken, activity_type activity)                                                 -> bool_result;
+    auto has_user_privilege(std::string userToken, user_privileges privilege)                                                   -> bool_result;
+    auto login_user(login_request_data loginRequest)                                                                            -> database_result<logged_in_user_data>;
+    auto get_all_users(std::string userToken)                                                                                   -> database_result<std::vector<user_data>>;
+    auto delete_user(std::string email, std::string userToken)                                                                  -> bool_result;
 
     // Review Users
-    auto get_users_for_review(int64_t reviewId, std::string userToken) -> concurrencpp::result<tl::expected<std::vector<user_data>, database_error>>;
-    auto set_users_for_review(int64_t reviewId, std::vector<int64_t> userIds, std::string userToken) -> bool_result;
+    auto get_review_users(database_id reviewId, std::string userToken)                                                          -> database_result<std::vector<user_data>>;
+    auto set_review_users(database_id reviewId, std::vector<database_id> userIds, std::string userToken)                        -> bool_result;
 
     // Votes
-    auto set_user_vote_for_review(int64_t reviewId, user_id userId, review_vote vote, std::string userToken) -> bool_result;
+    auto set_review_vote(database_id reviewId, database_id userId, review_vote vote, std::string userToken)                     -> bool_result;
 
 private:
     SQLite::Database m_database;

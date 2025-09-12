@@ -14,7 +14,7 @@ auto edit_reviewers::render_reviewers() -> void
 	gluten::imgui::scoped_font iconFont(gluten::app::get()->get_font(gluten::fonts::regular_lucide_icons));
 
 	const typename workspace_manager::global_cache_type<user_data>::cache_result& allUsers = workspaceManager->get_all_users();
-	const typename workspace_manager::default_cache_type<reviewer_data>::cache_result& reviewers = workspaceManager->get_users_for_review(m_reviewId);
+	const typename workspace_manager::default_cache_type<reviewer_data>::cache_result& reviewers = workspaceManager->get_review_users(m_reviewId);
 
 	if (!m_newReviewers.has_value() && reviewers.m_state == gluten::cache_state::has_data)
 	{

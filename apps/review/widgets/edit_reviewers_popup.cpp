@@ -39,7 +39,7 @@ auto edit_reviewers_popup::render_popup() -> void
 					return user.m_userId;
 				});
 
-			workspaceManager->set_users_for_review(m_review.m_reviewId, userIds);
+			workspaceManager->set_review_users(m_review.m_reviewId, userIds);
 		}
 
 		close_popup();

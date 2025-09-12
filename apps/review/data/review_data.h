@@ -52,7 +52,7 @@ enum class review_file_type
 
 struct versionable_review_asset
 {
-    int64_t m_fileId;                   //< Database ID of the file
+    database_id m_fileId;    //< Database ID of the file
     std::string m_fileName;             //< Filename for displaying
     std::map<std::size_t, std::filesystem::path> m_versionsToRelativeFiles; //< Relative paths of each version of the asset
 
@@ -66,7 +66,7 @@ struct versionable_review_asset
 
 struct review_data
 {
-    int64_t m_reviewId = 0;
+    database_id m_reviewId = 0;
     std::string m_reviewName;
     std::string m_reviewTaskUrl;
     std::string m_reviewDescription;
@@ -75,7 +75,7 @@ struct review_data
     review_status m_reviewStatus   = review_status::open;
     std::vector<versionable_review_asset> m_relativeContextFiles;   //< Context files are also versionable in case new context is required
     std::vector<versionable_review_asset> m_reviewAssets;
-    std::vector<int64_t> m_reviewUserIds;
+    std::vector<database_id> m_reviewUserIds;
 
     bool operator<(const review_data& review) const
     {
@@ -95,7 +95,7 @@ struct new_review_data_base
     std::string m_reviewDescription;
     review_phase m_reviewPhase = review_phase::first_pass;
     review_quality m_reviewQuality = review_quality::c;
-    std::vector<int64_t> m_reviewerIds;
+    std::vector<database_id> m_reviewerIds;
 };
 
 /**

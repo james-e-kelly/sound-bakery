@@ -169,9 +169,23 @@ namespace
 
     #define MOVE_TO_DATABASE_THREAD() co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor())
 
-    #define CHECK_PRIVILEGED_ACTION(token, action)                                                                                                      \
-    if (!co_await user_is_logged_in_and_has_privilege_for_action(token, action))                                                                        \
+    #define CHECK_PRIVILEGED_ACTION(token, action)                                                                                                  \
+    const auto userCanPerformActionResult = co_await user_can_perform_action(token, action);                                                        \
+    if (!userCanPerformActionResult.has_value() || !userCanPerformActionResult.value())                                                             \
         co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::unauthorized, .m_errorMessage = "User is unauthorized"})
+
+    #define CHECK_USER_PRIVILEGE(token, privilegeLevel)                                                                                             \
+    const auto userHasPrivilegeresult = co_await has_user_privilege(token, privilegeLevel);                                                         \
+    if (!userHasPrivilegeresult.has_value() || !userHasPrivilegeresult.value())                                                                     \
+        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::unauthorized, .m_errorMessage = "User is unauthorized"})
+
+    #define CHECK_TABLE_EXISTS(table)                                                                                                                               \
+    if (!m_database.tableExists("votes"))                                                                                                                           \
+        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::missing_table, .m_errorMessage = IM_STRINGIFY(table) " table is empty"})
+
+    #define CHECK_ARG(condition)                                                                                                                                                \
+    if ((condition) == false)                                                                                                                                                   \
+        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::invalid_parameters, .m_errorMessage = IM_STRINGIFY(condition) " condition failed"})
 
     #ifdef REVIEW_TEST_DATABASE_BLOCKS
         #define INSERT_NETWORK_TEST()   co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor())
@@ -200,193 +214,175 @@ review_database::review_database(const std::filesystem::path& databasePath)
     m_database.exec(g_createSessionsTableStatement.data());
 }
 
-auto review_database::create_workspace(const std::string name) -> concurrencpp::result<void>
+auto review_database::create_workspace(const std::string name) -> bool_result
 {
-    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
-
-#ifdef REVIEW_TEST_DATABASE_BLOCKS
-    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
-#endif
+    CHECK_ARG(!name.empty());
+    MOVE_TO_DATABASE_THREAD();
+    CHECK_TABLE_EXISTS(workspaces);
+    INSERT_NETWORK_TEST();
 
     SQLite::Statement insertWorkspaceName(m_database, "INSERT INTO workspaces (name) VALUES (?);");
     insertWorkspaceName.bind(1, name);
     insertWorkspaceName.exec();
+
+    co_return true;
 }
 
-auto review_database::open_workspace(const std::string name) -> concurrencpp::result<void>
+auto review_database::open_workspace(const std::string name) -> bool_result
 {
-    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
-
-#ifdef REVIEW_TEST_DATABASE_BLOCKS
-    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
-#endif
+    CHECK_ARG(!name.empty());
+    MOVE_TO_DATABASE_THREAD();
+    CHECK_TABLE_EXISTS(workspaces);
+    INSERT_NETWORK_TEST();
 
     SQLite::Statement insertWorkspaceName(m_database, "INSERT OR IGNORE INTO workspaces (name) VALUES (?);");
     insertWorkspaceName.bind(1, name);
     insertWorkspaceName.exec();
+
+    co_return true;
 }
 
-auto review_database::get_workspace_name() const -> concurrencpp::result<std::string>
+auto review_database::get_workspace_name() const -> database_result<std::string>
 {
-    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
+    MOVE_TO_DATABASE_THREAD();
+    CHECK_TABLE_EXISTS(workspaces);
+    INSERT_NETWORK_TEST();
 
-#ifdef REVIEW_TEST_DATABASE_BLOCKS
-    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
-#endif
+    std::string workspaceName = "Unknown";
 
-    if (m_database.tableExists("workspaces"))
+    SQLite::Statement query(m_database, "SELECT name FROM workspaces LIMIT 1;");
+
+    while (query.executeStep())
     {
-        SQLite::Statement query(m_database, "SELECT name FROM workspaces LIMIT 1;");
-
-        while (query.executeStep())
-        {
-            std::string name = query.getColumn(0);
-            co_return name;
-        }
+        workspaceName = query.getColumn(0).getString();
     }
 
-    co_return std::string{};
+    co_return workspaceName;
 }
 
-auto review_database::create_project(const std::string name, const std::string description) -> concurrencpp::result<project_data>
+auto review_database::create_project(const std::string name, const std::string description) -> database_result<project_data>
 {
-    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
-    
-#ifdef REVIEW_TEST_DATABASE_BLOCKS
-    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
-#endif
+    CHECK_ARG(!name.empty());
+    MOVE_TO_DATABASE_THREAD();
+    CHECK_TABLE_EXISTS(projects);
+    CHECK_TABLE_EXISTS(activity);
+    INSERT_NETWORK_TEST();
 
     project_data newProjectData;
 
-    if (m_database.tableExists("projects"))
-    {
-        SQLite::Statement query(m_database, "INSERT INTO projects (name, description) VALUES (?, ?);");
-        query.bind(1, name);
-        query.bind(2, description);
-        query.exec();
+    SQLite::Statement query(m_database, "INSERT INTO projects (name, description) VALUES (?, ?);");
+    query.bind(1, name);
+    query.bind(2, description);
+    query.exec();
 
-        newProjectData.m_id = m_database.getLastInsertRowid();
-        newProjectData.m_projectName = name;
-        newProjectData.m_projectDescription = description;
+    newProjectData.m_id = m_database.getLastInsertRowid();
+    newProjectData.m_projectName = name;
+    newProjectData.m_projectDescription = description;
 
-        if (m_database.tableExists("activity"))
-        {
-            SQLite::Statement addActivity(m_database, "INSERT INTO activity (project_id, activity_type, activity_text) VALUES (?, ?, ?)");
-            addActivity.bind(1, newProjectData.m_id);
-            addActivity.bind(2, (int)activity_type::project_created);
-            addActivity.bind(3, fmt::format("Created a project called {}", name));
-            addActivity.exec();
-        }
-    }
+    SQLite::Statement addActivity(m_database, "INSERT INTO activity (project_id, activity_type, activity_text) VALUES (?, ?, ?)");
+    addActivity.bind(1, newProjectData.m_id);
+    addActivity.bind(2, (int)activity_type::project_created);
+    addActivity.bind(3, fmt::format("Created a project called {}", name));
+    addActivity.exec();
+
     co_return newProjectData;
 }
 
-auto review_database::get_all_projects() const -> concurrencpp::result<std::vector<project_data>>
+auto review_database::get_all_projects() const -> database_result<std::vector<project_data>>
 {
-    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
-
-#ifdef REVIEW_TEST_DATABASE_BLOCKS
-    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
-#endif
+    MOVE_TO_DATABASE_THREAD();
+    CHECK_TABLE_EXISTS(projects);
+    CHECK_TABLE_EXISTS(activity);
+    INSERT_NETWORK_TEST();
 
     std::vector<project_data> result;
 
-    if (m_database.tableExists("projects"))
+    SQLite::Statement query(m_database, "SELECT id, name, description FROM projects;");
+
+    while (query.executeStep())
     {
-        SQLite::Statement query(m_database, "SELECT id, name, description FROM projects;");
+        project_data projectData;
+        projectData.m_id                    = query.getColumn(0).getInt();
+        projectData.m_projectName           = query.getColumn(1).getString();
+        projectData.m_projectDescription    = query.getColumn(2).getString();
 
-        while (query.executeStep())
-        {
-            project_data projectData;
-            projectData.m_id                    = query.getColumn(0).getInt();
-            projectData.m_projectName           = query.getColumn(1).getString();
-            projectData.m_projectDescription    = query.getColumn(2).getString();
-
-            result.push_back(std::move(projectData));
-        }
+        result.push_back(std::move(projectData));
     }
 
     co_return result;
 }
 
-auto review_database::create_review(int64_t projectId, const new_transit_review_data newReview, std::string userToken) -> database_result<review_data>
+auto review_database::create_review(database_id projectId, const new_transit_review_data newReview, std::string userToken) -> database_result<review_data>
 {
+    CHECK_ARG(!newReview.m_reviewName.empty());
+    CHECK_ARG(projectId > 1);
     MOVE_TO_DATABASE_THREAD();
     CHECK_PRIVILEGED_ACTION(userToken, activity_type::review_created);
+    CHECK_TABLE_EXISTS(reviews);
+    CHECK_TABLE_EXISTS(activity);
     INSERT_NETWORK_TEST();
 
     review_data result;
 
-    if (!newReview.m_reviewName.empty() && projectId != 0)
+    SQLite::Statement insertReviewStatement(m_database, "INSERT INTO reviews (project_id, name, task_url, description, status, phase, quality) VALUES (?, ?, ?, ?, ?, ?, ?);");
+    insertReviewStatement.bind(1, projectId);
+    insertReviewStatement.bind(2, newReview.m_reviewName);
+    insertReviewStatement.bind(3, newReview.m_reviewTaskUrl);
+    insertReviewStatement.bind(4, newReview.m_reviewDescription);
+    insertReviewStatement.bind(5, (int)review_status::open);
+    insertReviewStatement.bind(6, (int)newReview.m_reviewPhase);
+    insertReviewStatement.bind(6, (int)newReview.m_reviewQuality);
+
+    insertReviewStatement.exec();
+
+    result.m_reviewId = m_database.getLastInsertRowid();
+    result.m_reviewName = newReview.m_reviewName;
+    result.m_reviewTaskUrl = newReview.m_reviewTaskUrl;
+    result.m_reviewDescription = newReview.m_reviewDescription;
+    result.m_reviewStatus      = review_status::open;
+    result.m_reviewPhase       = newReview.m_reviewPhase;
+    result.m_reviewQuality     = newReview.m_reviewQuality;
+
+    co_await set_review_users(result.m_reviewId, newReview.m_reviewerIds, userToken);
+
+    SQLite::Statement addActivity(m_database, "INSERT INTO activity (review_id, activity_type, activity_text) VALUES (?, ?, ?)");
+    addActivity.bind(1, result.m_reviewId);
+    addActivity.bind(2, (int)activity_type::review_created);
+    addActivity.bind(3, fmt::format("Created a review called {}", newReview.m_reviewName));
+    addActivity.exec();
+
+    auto newVersionData = co_await create_review_version(result.m_reviewId, newReview, userToken);
+
+    if (newVersionData.has_value())
     {
-        if (m_database.tableExists("reviews"))
-        {
-            SQLite::Statement insertReviewStatement(m_database, "INSERT INTO reviews (project_id, name, task_url, description, status, phase, quality) VALUES (?, ?, ?, ?, ?, ?, ?);");
-            insertReviewStatement.bind(1, projectId);
-            insertReviewStatement.bind(2, newReview.m_reviewName);
-            insertReviewStatement.bind(3, newReview.m_reviewTaskUrl);
-            insertReviewStatement.bind(4, newReview.m_reviewDescription);
-            insertReviewStatement.bind(5, (int)review_status::open);
-            insertReviewStatement.bind(6, (int)newReview.m_reviewPhase);
-            insertReviewStatement.bind(6, (int)newReview.m_reviewQuality);
-
-            insertReviewStatement.exec();
-
-            result.m_reviewId = m_database.getLastInsertRowid();
-            result.m_reviewName = newReview.m_reviewName;
-            result.m_reviewTaskUrl = newReview.m_reviewTaskUrl;
-            result.m_reviewDescription = newReview.m_reviewDescription;
-            result.m_reviewStatus      = review_status::open;
-            result.m_reviewPhase       = newReview.m_reviewPhase;
-            result.m_reviewQuality     = newReview.m_reviewQuality;
-
-            co_await set_users_for_review(result.m_reviewId, newReview.m_reviewerIds, userToken);
-
-            if (m_database.tableExists("activity"))
-            {
-                SQLite::Statement addActivity(m_database, "INSERT INTO activity (review_id, activity_type, activity_text) VALUES (?, ?, ?)");
-                addActivity.bind(1, result.m_reviewId);
-                addActivity.bind(2, (int)activity_type::review_created);
-                addActivity.bind(3, fmt::format("Created a review called {}", newReview.m_reviewName));
-                addActivity.exec();
-            }
-
-            auto newVersionData = co_await create_new_review_version(result.m_reviewId, newReview, userToken);
-
-            if (newVersionData.has_value())
-            {
-                result.m_relativeContextFiles = newVersionData.value().m_relativeContextFiles;
-                result.m_reviewAssets = newVersionData.value().m_reviewAssets;
-            }
-        }
+        result.m_relativeContextFiles = newVersionData.value().m_relativeContextFiles;
+        result.m_reviewAssets = newVersionData.value().m_reviewAssets;
     }
 
     co_return result;
 }
 
-auto review_database::create_new_review_version(int64_t reviewId, const new_transit_review_data newReviewVersion, std::string userToken) -> database_result<review_data>
+auto review_database::create_review_version(database_id reviewId, const new_transit_review_data newReviewVersion, std::string userToken) -> database_result<review_data>
 {
+    CHECK_ARG(reviewId > 0);
     MOVE_TO_DATABASE_THREAD();
+    CHECK_TABLE_EXISTS(review_files);
+    CHECK_TABLE_EXISTS(versioned_review_files);
     CHECK_PRIVILEGED_ACTION(userToken, activity_type::review_edited);
     INSERT_NETWORK_TEST();
 
-    if (reviewId < 1)
-    {
-        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::invalid_parameters, .m_errorMessage = "Invalid review id"});
-    }
-
     review_data result;
     
-    std::unordered_map<int64_t, versionable_review_asset> contextFilesMap;
-    std::unordered_map<int64_t, versionable_review_asset> reviewFilesMap;
-    std::unordered_map<int64_t, versionable_review_asset> commentFilesMap;
+    std::unordered_map<database_id, versionable_review_asset> contextFilesMap;
+    std::unordered_map<database_id, versionable_review_asset> reviewFilesMap;
+    std::unordered_map<database_id, versionable_review_asset> commentFilesMap;
 
     SQLite::Statement getFilesStatement(m_database, "SELECT id, file_name, file_type FROM review_files WHERE review_id = ?;");
     getFilesStatement.bind(1, reviewId);
 
     while (getFilesStatement.executeStep())
     {
-        const int64_t fileId            = getFilesStatement.getColumn(0).getInt64();
+        const database_id fileId            = getFilesStatement.getColumn(0).getInt64();
         const std::string fileName      = getFilesStatement.getColumn(1).getText();
         const review_file_type fileType = (review_file_type)getFilesStatement.getColumn(2).getInt();
 
@@ -478,7 +474,7 @@ auto review_database::create_new_review_version(int64_t reviewId, const new_tran
             }
         };
 
-    auto insert_files_into_database = [database = std::cref(m_database)](const std::vector<review_file_data>& newReviewFiles, std::vector<versionable_review_asset>& assets, int64_t reviewId, review_file_type fileType) 
+    auto insert_files_into_database = [database = std::cref(m_database)](const std::vector<review_file_data>& newReviewFiles, std::vector<versionable_review_asset>& assets, database_id reviewId, review_file_type fileType) 
         {
             for (const auto& newReviewFile : newReviewFiles)
             {
@@ -539,152 +535,125 @@ auto review_database::create_new_review_version(int64_t reviewId, const new_tran
     co_return result;
 }
 
-auto review_database::update_review(const review_data review) -> concurrencpp::result<review_data>
+auto review_database::update_review(const review_data review) -> database_result<review_data>
 {
-    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
+    CHECK_ARG(review.m_reviewId > 0);
+    CHECK_ARG(!review.m_reviewName.empty());
+    MOVE_TO_DATABASE_THREAD();
+    CHECK_TABLE_EXISTS(reviews);
+    CHECK_TABLE_EXISTS(activity);
+    INSERT_NETWORK_TEST();
 
-#ifdef REVIEW_TEST_DATABASE_BLOCKS
-    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
-#endif
+    SQLite::Statement updateReviewStatement(m_database, "UPDATE reviews SET name = ?, task_url = ?, description = ?, status = ?, phase = ?, quality = ? WHERE id = ?;");
+    updateReviewStatement.bind(1, review.m_reviewName);
+    updateReviewStatement.bind(2, review.m_reviewTaskUrl);
+    updateReviewStatement.bind(3, review.m_reviewDescription);
+    updateReviewStatement.bind(4, (int)review.m_reviewStatus);
+    updateReviewStatement.bind(5, (int)review.m_reviewPhase);
+    updateReviewStatement.bind(6, (int)review.m_reviewQuality);
+    updateReviewStatement.bind(7, review.m_reviewId);
 
-    if (!review.m_reviewName.empty() && review.m_reviewId != 0)
-    {
-        if (m_database.tableExists("reviews"))
-        {
-            SQLite::Statement updateReviewStatement(m_database, "UPDATE reviews SET name = ?, task_url = ?, description = ?, status = ?, phase = ?, quality = ? WHERE id = ?;");
-            updateReviewStatement.bind(1, review.m_reviewName);
-            updateReviewStatement.bind(2, review.m_reviewTaskUrl);
-            updateReviewStatement.bind(3, review.m_reviewDescription);
-            updateReviewStatement.bind(4, (int)review.m_reviewStatus);
-            updateReviewStatement.bind(5, (int)review.m_reviewPhase);
-            updateReviewStatement.bind(6, (int)review.m_reviewQuality);
-            updateReviewStatement.bind(7, review.m_reviewId);
+    updateReviewStatement.exec();
 
-            updateReviewStatement.exec();
-
-            if (m_database.tableExists("activity"))
-            {
-                SQLite::Statement editActivity(m_database, "INSERT INTO activity (review_id, activity_type, activity_text) VALUES (?, ?, ?)");
-                editActivity.bind(1, review.m_reviewId);
-                editActivity.bind(2, (int)activity_type::review_edited);
-                editActivity.bind(3, fmt::format("Edited a review called {}", review.m_reviewName));
-                editActivity.exec();
-            }
-        }
-    }
+    SQLite::Statement editActivity(m_database, "INSERT INTO activity (review_id, activity_type, activity_text) VALUES (?, ?, ?)");
+    editActivity.bind(1, review.m_reviewId);
+    editActivity.bind(2, (int)activity_type::review_edited);
+    editActivity.bind(3, fmt::format("Edited a review called {}", review.m_reviewName));
+    editActivity.exec();
 
     co_return review;
 }
 
-auto review_database::get_all_reviews(int64_t projectId) const -> concurrencpp::result<std::vector<review_data>>
+auto review_database::get_all_reviews(database_id projectId) const -> database_result<std::vector<review_data>>
 {
-    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
-
-#ifdef REVIEW_TEST_DATABASE_BLOCKS
-    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
-#endif
+    CHECK_ARG(projectId > 0);
+    MOVE_TO_DATABASE_THREAD();
+    CHECK_TABLE_EXISTS(reviews);
+    INSERT_NETWORK_TEST();
 
     std::vector<review_data> result;
 
-    if (m_database.tableExists("reviews") && projectId != 0)
+    SQLite::Statement query(m_database, "SELECT id, name, description, task_url, status, phase, quality FROM reviews WHERE project_id=?;");
+    query.bind(1, projectId);
+
+    while (query.executeStep())
     {
-        SQLite::Statement query(m_database, "SELECT id, name, description, task_url, status, phase, quality FROM reviews WHERE project_id=?;");
-        query.bind(1, projectId);
+        review_data reviewData;
+        reviewData.m_reviewId           = query.getColumn(0).getInt();
+        reviewData.m_reviewName         = query.getColumn(1).getString();
+        reviewData.m_reviewDescription  = query.getColumn(2).getString();
+        reviewData.m_reviewTaskUrl      = query.getColumn(3).getString();
+        reviewData.m_reviewStatus       = (review_status)query.getColumn(4).getInt();
+        reviewData.m_reviewPhase        = (review_phase)query.getColumn(5).getInt();
+        reviewData.m_reviewQuality      = (review_quality)query.getColumn(6).getInt();
 
-        while (query.executeStep())
+        std::unordered_map<database_id, versionable_review_asset> contextFilesMap;
+        std::unordered_map<database_id, versionable_review_asset> reviewFilesMap;
+        std::unordered_map<database_id, versionable_review_asset> commentFilesMap;
+
+        SQLite::Statement getFilesStatement(m_database, "SELECT id, file_name, file_type FROM review_files WHERE review_id = ?;");
+        getFilesStatement.bind(1, reviewData.m_reviewId);
+
+        while (getFilesStatement.executeStep())
         {
-            review_data reviewData;
-            reviewData.m_reviewId           = query.getColumn(0).getInt();
-            reviewData.m_reviewName         = query.getColumn(1).getString();
-            reviewData.m_reviewDescription  = query.getColumn(2).getString();
-            reviewData.m_reviewTaskUrl      = query.getColumn(3).getString();
-            reviewData.m_reviewStatus       = (review_status)query.getColumn(4).getInt();
-            reviewData.m_reviewPhase        = (review_phase)query.getColumn(5).getInt();
-            reviewData.m_reviewQuality      = (review_quality)query.getColumn(6).getInt();
+            const database_id fileId            = getFilesStatement.getColumn(0).getInt64();
+            const std::string fileName      = getFilesStatement.getColumn(1).getText();
+            const review_file_type fileType = (review_file_type)getFilesStatement.getColumn(2).getInt();
 
-            std::unordered_map<int64_t, versionable_review_asset> contextFilesMap;
-            std::unordered_map<int64_t, versionable_review_asset> reviewFilesMap;
-            std::unordered_map<int64_t, versionable_review_asset> commentFilesMap;
+            SQLite::Statement getVersionedFilesStatement(m_database, "SELECT version, file_path FROM versioned_review_files WHERE review_file_id = ?;");
+            getVersionedFilesStatement.bind(1, fileId);
 
-            SQLite::Statement getFilesStatement(m_database, "SELECT id, file_name, file_type FROM review_files WHERE review_id = ?;");
-            getFilesStatement.bind(1, reviewData.m_reviewId);
-
-            while (getFilesStatement.executeStep())
+            while (getVersionedFilesStatement.executeStep())
             {
-                const int64_t fileId            = getFilesStatement.getColumn(0).getInt64();
-                const std::string fileName      = getFilesStatement.getColumn(1).getText();
-                const review_file_type fileType = (review_file_type)getFilesStatement.getColumn(2).getInt();
+                const std::size_t fileVersion = getVersionedFilesStatement.getColumn(0).getInt64();
+                const std::filesystem::path relativeFilePath = getVersionedFilesStatement.getColumn(1).getText();
 
-                SQLite::Statement getVersionedFilesStatement(m_database, "SELECT version, file_path FROM versioned_review_files WHERE review_file_id = ?;");
-                getVersionedFilesStatement.bind(1, fileId);
-
-                while (getVersionedFilesStatement.executeStep())
+                switch ((review_file_type)getFilesStatement.getColumn(2).getInt())
                 {
-                    const std::size_t fileVersion = getVersionedFilesStatement.getColumn(0).getInt64();
-                    const std::filesystem::path relativeFilePath = getVersionedFilesStatement.getColumn(1).getText();
-
-                    switch ((review_file_type)getFilesStatement.getColumn(2).getInt())
-                    {
-                        case review_file_type::context:
-                            contextFilesMap[fileId].m_fileId   = fileId;
-                            contextFilesMap[fileId].m_fileName = fileName;
-                            contextFilesMap[fileId].m_versionsToRelativeFiles.insert({fileVersion, relativeFilePath});
-                            break;
-                        case review_file_type::review:
-                            reviewFilesMap[fileId].m_fileId   = fileId;
-                            reviewFilesMap[fileId].m_fileName = fileName;
-                            reviewFilesMap[fileId].m_versionsToRelativeFiles.insert({fileVersion, relativeFilePath});
-                            break;
-                        case review_file_type::comment:
-                            commentFilesMap[fileId].m_fileId   = fileId;
-                            commentFilesMap[fileId].m_fileName = fileName;
-                            commentFilesMap[fileId].m_versionsToRelativeFiles.insert({fileVersion, relativeFilePath});
-                            break;
-                    }
+                    case review_file_type::context:
+                        contextFilesMap[fileId].m_fileId   = fileId;
+                        contextFilesMap[fileId].m_fileName = fileName;
+                        contextFilesMap[fileId].m_versionsToRelativeFiles.insert({fileVersion, relativeFilePath});
+                        break;
+                    case review_file_type::review:
+                        reviewFilesMap[fileId].m_fileId   = fileId;
+                        reviewFilesMap[fileId].m_fileName = fileName;
+                        reviewFilesMap[fileId].m_versionsToRelativeFiles.insert({fileVersion, relativeFilePath});
+                        break;
+                    case review_file_type::comment:
+                        commentFilesMap[fileId].m_fileId   = fileId;
+                        commentFilesMap[fileId].m_fileName = fileName;
+                        commentFilesMap[fileId].m_versionsToRelativeFiles.insert({fileVersion, relativeFilePath});
+                        break;
                 }
             }
-
-            if (!contextFilesMap.empty())
-            {
-                reviewData.m_relativeContextFiles.resize(contextFilesMap.size());
-                std::transform(contextFilesMap.begin(), contextFilesMap.end(), reviewData.m_relativeContextFiles.begin(), [](const auto& pair) { return pair.second; });
-            }
-
-            if (!reviewFilesMap.empty())
-            {
-                reviewData.m_reviewAssets.resize(reviewFilesMap.size());
-                std::transform(reviewFilesMap.begin(), reviewFilesMap.end(), reviewData.m_reviewAssets.begin(), [](const auto& pair) { return pair.second; });
-            }
-
-            result.push_back(std::move(reviewData));
         }
+
+        if (!contextFilesMap.empty())
+        {
+            reviewData.m_relativeContextFiles.resize(contextFilesMap.size());
+            std::transform(contextFilesMap.begin(), contextFilesMap.end(), reviewData.m_relativeContextFiles.begin(), [](const auto& pair) { return pair.second; });
+        }
+
+        if (!reviewFilesMap.empty())
+        {
+            reviewData.m_reviewAssets.resize(reviewFilesMap.size());
+            std::transform(reviewFilesMap.begin(), reviewFilesMap.end(), reviewData.m_reviewAssets.begin(), [](const auto& pair) { return pair.second; });
+        }
+
+        result.push_back(std::move(reviewData));
     }
 
     co_return result;
 }
 
-auto review_database::get_user_vote_on_review(int64_t reviewId, int64_t userId) const -> concurrencpp::result<tl::expected<review_vote, database_error>>
+auto review_database::get_review_vote(database_id reviewId, database_id userId) const -> database_result<review_vote>
 {
-    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
-
-#ifdef REVIEW_TEST_DATABASE_BLOCKS
-    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
-#endif
-
-    if (userId < 0)
-    {
-        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::invalid_parameters, .m_errorMessage = "User ID is invalid"});
-    }
-
-    if (reviewId < 0)
-    {
-        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::invalid_parameters, .m_errorMessage = "Review ID is invalid"});
-    }
-
-    if (!m_database.tableExists("votes"))
-    {
-        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::missing_table, .m_errorMessage = "Votes table is empty"});
-    }
+    CHECK_ARG(reviewId > 0);
+    CHECK_ARG(userId > 0);
+    MOVE_TO_DATABASE_THREAD();
+    CHECK_TABLE_EXISTS(votes);
+    INSERT_NETWORK_TEST();
 
     review_vote result = review_vote::no_vote;
 
@@ -700,55 +669,15 @@ auto review_database::get_user_vote_on_review(int64_t reviewId, int64_t userId) 
     co_return result;
 }
 
-auto review_database::delete_review(int64_t reviewId, std::string userToken) -> concurrencpp::result<tl::expected<bool, database_error>>
+auto review_database::delete_review(database_id reviewId, std::string userToken) -> bool_result
 {
-    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
-
-#ifdef REVIEW_TEST_DATABASE_BLOCKS
-    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
-#endif
-
-    if (reviewId < 0)
-    {
-        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::invalid_parameters, .m_errorMessage = "Review ID is invalid"});
-    }
-
-    if (userToken.empty())
-    {
-        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::unauthorized, .m_errorMessage = "Session token is invalid"});
-    }
-
-    if (!co_await user_is_logged_in_and_has_privilege_for_action(userToken, activity_type::review_deleted))
-    {
-        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::unauthorized, .m_errorMessage = "User is unauthorized to delete a review"});
-    }
+    CHECK_ARG(reviewId > 0);
+    MOVE_TO_DATABASE_THREAD();
+    CHECK_PRIVILEGED_ACTION(userToken, activity_type::review_deleted);
+    CHECK_TABLE_EXISTS(reviews);
+    INSERT_NETWORK_TEST();
 
     // TOOD: Reviews need to be authored by someone so we can delete reviews only if the user created it (or is an admin)
-
-    if (!m_database.tableExists("reviews"))
-    {
-        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::missing_table, .m_errorMessage = "No reviews table"});
-    }
-
-    if (!m_database.tableExists("activity"))
-    {
-        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::missing_table, .m_errorMessage = "No activity table"});
-    }
-
-    if (!m_database.tableExists("comments"))
-    {
-        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::missing_table, .m_errorMessage = "No comments table"});
-    }
-
-    if (!m_database.tableExists("review_files"))
-    {
-        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::missing_table, .m_errorMessage = "No review_files table"});
-    }
-
-    if (!m_database.tableExists("versioned_review_files"))
-    {
-        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::missing_table, .m_errorMessage = "No versioned_review_files table"});
-    }
         
     // Cascading delete removes all other data referencing this
     SQLite::Statement deleteReviewStatement(m_database, "DELETE FROM reviews WHERE id = ?;");
@@ -758,34 +687,30 @@ auto review_database::delete_review(int64_t reviewId, std::string userToken) -> 
     co_return true;
 }
 
-auto review_database::get_all_activity_for_review(int64_t reviewId) const -> concurrencpp::result<std::vector<activity_data>> 
+auto review_database::get_all_review_activity(database_id reviewId) const -> database_result<std::vector<activity_data>> 
 {
-    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
-
-#ifdef REVIEW_TEST_DATABASE_BLOCKS
-    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
-#endif
+    CHECK_ARG(reviewId > 0);
+    MOVE_TO_DATABASE_THREAD();
+    CHECK_TABLE_EXISTS(activity);
+    INSERT_NETWORK_TEST();
 
     std::vector<activity_data> result;
 
-    if (m_database.tableExists("activity") && reviewId != 0)
+    SQLite::Statement query(m_database, "SELECT id, review_id, project_id, user_id, activity_type, activity_text, timestamp FROM activity WHERE review_id=?;");
+    query.bind(1, reviewId);
+
+    while (query.executeStep())
     {
-        SQLite::Statement query(m_database, "SELECT id, review_id, project_id, user_id, activity_type, activity_text, timestamp FROM activity WHERE review_id=?;");
-        query.bind(1, reviewId);
+        activity_data activityData;
+        activityData.m_activityId        = query.getColumn(0).getInt64();
+        activityData.m_reviewId          = query.getColumn(1).getInt64();
+        activityData.m_projectId         = query.getColumn(2).getInt64();
+        activityData.m_userId            = query.getColumn(3).getInt64();
+        activityData.m_activityType      = (activity_type)query.getColumn(4).getInt();
+        activityData.m_activityText      = query.getColumn(5).getString();
+        activityData.m_activityTimestamp = query.getColumn(6).getString();
 
-        while (query.executeStep())
-        {
-            activity_data activityData;
-            activityData.m_activityId        = query.getColumn(0).getInt64();
-            activityData.m_reviewId          = query.getColumn(1).getInt64();
-            activityData.m_projectId         = query.getColumn(2).getInt64();
-            activityData.m_userId            = query.getColumn(3).getInt64();
-            activityData.m_activityType      = (activity_type)query.getColumn(4).getInt();
-            activityData.m_activityText      = query.getColumn(5).getString();
-            activityData.m_activityTimestamp = query.getColumn(6).getString();
-
-            result.push_back(std::move(activityData));
-        }
+        result.push_back(std::move(activityData));
     }
 
     std::sort(result.begin(), result.end(), [](const auto& lhs, const auto& rhs) {return lhs.m_activityId > rhs.m_activityId;});
@@ -793,35 +718,31 @@ auto review_database::get_all_activity_for_review(int64_t reviewId) const -> con
     co_return result;
 }
 
-auto review_database::get_all_comments_for_review(int64_t reviewId) const -> concurrencpp::result<std::vector<comment_data>> 
+auto review_database::get_all_comments_for_review(database_id reviewId) const -> database_result<std::vector<comment_data>> 
 {
-    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
-
-#ifdef REVIEW_TEST_DATABASE_BLOCKS
-    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
-#endif
+    CHECK_ARG(reviewId > 0);
+    MOVE_TO_DATABASE_THREAD();
+    CHECK_TABLE_EXISTS(comments);
+    INSERT_NETWORK_TEST();
 
     std::vector<comment_data> result;
 
-    if (m_database.tableExists("comments") && reviewId != 0)
+    SQLite::Statement query(m_database, "SELECT id, review_id, user_id, comment, timestamp, audio_time_start, audio_time_end, file_id FROM comments WHERE review_id=?;");
+    query.bind(1, reviewId);
+
+    while (query.executeStep())
     {
-        SQLite::Statement query(m_database, "SELECT id, review_id, user_id, comment, timestamp, audio_time_start, audio_time_end, file_id FROM comments WHERE review_id=?;");
-        query.bind(1, reviewId);
+        comment_data commentData;
+        commentData.m_commentId         = query.getColumn(0).getInt64();
+        commentData.m_reviewId          = query.getColumn(1).getInt64();
+        commentData.m_userId            = query.getColumn(2).getInt64();
+        commentData.m_comment           = query.getColumn(3).getText();
+        commentData.m_timestamp         = query.getColumn(4).getString();
+        commentData.m_timeStart         = query.getColumn(5).getDouble();
+        commentData.m_timeEnd           = query.getColumn(6).getDouble();
+        commentData.m_fileId            = query.getColumn(7).getInt64();
 
-        while (query.executeStep())
-        {
-            comment_data commentData;
-            commentData.m_commentId         = query.getColumn(0).getInt64();
-            commentData.m_reviewId          = query.getColumn(1).getInt64();
-            commentData.m_userId            = query.getColumn(2).getInt64();
-            commentData.m_comment           = query.getColumn(3).getText();
-            commentData.m_timestamp         = query.getColumn(4).getString();
-            commentData.m_timeStart         = query.getColumn(5).getDouble();
-            commentData.m_timeEnd           = query.getColumn(6).getDouble();
-            commentData.m_fileId            = query.getColumn(7).getInt64();
-
-            result.push_back(std::move(commentData));
-        }
+        result.push_back(std::move(commentData));
     }
 
     std::sort(result.begin(), result.end(), [](const auto& lhs, const auto& rhs) { return lhs.m_commentId > rhs.m_commentId; });
@@ -829,111 +750,81 @@ auto review_database::get_all_comments_for_review(int64_t reviewId) const -> con
     co_return result;
 }
 
-auto review_database::create_comment(new_comment_data newComment) -> concurrencpp::result<comment_data>
+auto review_database::create_comment(new_comment_data newComment) -> bool_result
 {
-    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
-
-#ifdef REVIEW_TEST_DATABASE_BLOCKS
-    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
-#endif
+    CHECK_ARG(!newComment.m_comment.empty());
+    CHECK_ARG(newComment.m_userId > 0);
+    CHECK_ARG(newComment.m_reviewId > 0);
+    MOVE_TO_DATABASE_THREAD();
+    CHECK_TABLE_EXISTS(comments);
+    CHECK_TABLE_EXISTS(activity);
+    INSERT_NETWORK_TEST();
 
     constexpr float defaultAudioStartOrEnd = -1.0f;
 
-    if (!newComment.m_comment.empty() && newComment.m_reviewId != 0)
+    SQLite::Statement insertCommentStatement(m_database,"INSERT INTO comments (review_id, user_id, comment, audio_time_start, audio_time_end, file_id) VALUES (?, ?, ?, ?, ?, ?);");
+
+    insertCommentStatement.bind(1, newComment.m_reviewId);
+    insertCommentStatement.bind(2, newComment.m_userId);
+    insertCommentStatement.bind(3, newComment.m_comment);
+    insertCommentStatement.bind(4, newComment.m_timeStart);
+    insertCommentStatement.bind(5, newComment.m_timeEnd);
+    if (newComment.m_fileId > 0)
     {
-        if (m_database.tableExists("comments"))
-        {
-            SQLite::Statement insertCommentStatement(m_database,"INSERT INTO comments (review_id, user_id, comment, audio_time_start, audio_time_end, file_id) VALUES (?, ?, ?, ?, ?, ?);");
+        insertCommentStatement.bind(6, newComment.m_fileId);
+    }
+    else
+    {
+        insertCommentStatement.bind(6);
+    }
 
-            insertCommentStatement.bind(1, newComment.m_reviewId);
-            insertCommentStatement.bind(2, newComment.m_userId);
-            insertCommentStatement.bind(3, newComment.m_comment);
-            insertCommentStatement.bind(4, newComment.m_timeStart);
-            insertCommentStatement.bind(5, newComment.m_timeEnd);
-            if (newComment.m_fileId > 0)
-            {
-                insertCommentStatement.bind(6, newComment.m_fileId);
-            }
-            else
-            {
-                insertCommentStatement.bind(6);
-            }
-
-            insertCommentStatement.exec();
+    insertCommentStatement.exec();
             
-            if (m_database.tableExists("activity"))
-            {
-                SQLite::Statement addActivity(m_database, "INSERT INTO activity (review_id, activity_type, activity_text) VALUES (?, ?, ?);");
-                addActivity.bind(1, newComment.m_reviewId);
-                addActivity.bind(2, (int)activity_type::comment_added);
-                addActivity.bind(3, fmt::format("Created a comment -> \"{}\"", newComment.m_comment));
-                addActivity.exec();
-            }
-        }
-    }
+    SQLite::Statement addActivity(m_database, "INSERT INTO activity (review_id, activity_type, activity_text) VALUES (?, ?, ?);");
+    addActivity.bind(1, newComment.m_reviewId);
+    addActivity.bind(2, (int)activity_type::comment_added);
+    addActivity.bind(3, fmt::format("Created a comment -> \"{}\"", newComment.m_comment));
+    addActivity.exec();
 
-    co_return comment_data{};
+    co_return true;
 }
 
-auto review_database::delete_comment(int64_t commentId) -> concurrencpp::result<void>
+auto review_database::delete_comment(database_id commentId) -> bool_result
 {
-    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
+    CHECK_ARG(commentId > 0);
+    MOVE_TO_DATABASE_THREAD();
+    CHECK_TABLE_EXISTS(comments);
+    CHECK_TABLE_EXISTS(activity);
+    INSERT_NETWORK_TEST();
 
-#ifdef REVIEW_TEST_DATABASE_BLOCKS
-    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
-#endif
+    SQLite::Statement addActivity(m_database, "INSERT INTO activity (review_id, activity_type, activity_text) SELECT review_id, ?, ? FROM comments WHERE id=? LIMIT 1;");
+    addActivity.bind(1, (int)activity_type::comment_deleted);
+    addActivity.bind(2, fmt::format("Removed a comment"));
+    addActivity.bind(3, commentId);
+    addActivity.exec();
 
-    if (commentId != 0)
-    {
-        if (m_database.tableExists("comments"))
-        {
-            if (m_database.tableExists("activity"))
-            {
-                SQLite::Statement addActivity(m_database, "INSERT INTO activity (review_id, activity_type, activity_text) SELECT review_id, ?, ? FROM comments WHERE id=? LIMIT 1;");
-                addActivity.bind(1, (int)activity_type::comment_deleted);
-                addActivity.bind(2, fmt::format("Removed a comment"));
-                addActivity.bind(3, commentId);
-                addActivity.exec();
-            }
+    SQLite::Statement insertCommentStatement(m_database, "DELETE FROM comments where id=?");
+    insertCommentStatement.bind(1, commentId);
+    insertCommentStatement.exec();
 
-            SQLite::Statement insertCommentStatement(m_database, "DELETE FROM comments where id=?");
-            insertCommentStatement.bind(1, commentId);
-            insertCommentStatement.exec();
-        }
-    }
-
-    co_return;
+    co_return true;
 }
 
-auto review_database::create_user(new_user_data newUser, std::string userToken) -> concurrencpp::result<tl::expected<bool, database_error>>
+auto review_database::create_user(new_user_data newUser, std::string userToken) -> bool_result
 {
-    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
-
-#ifdef REVIEW_TEST_DATABASE_BLOCKS
-    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
-#endif
-
-    if (newUser.m_email.empty())
-    {
-        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::invalid_parameters, .m_errorMessage = "Email address is empty"});
-    }
-
-    if (newUser.m_rawPassword.empty())
-    {
-        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::invalid_parameters, .m_errorMessage = "Password is empty"});
-    }
+    CHECK_ARG(!newUser.m_email.empty());
+    CHECK_ARG(!newUser.m_rawPassword.empty());
+    MOVE_TO_DATABASE_THREAD();
+    CHECK_TABLE_EXISTS(users);
+    CHECK_TABLE_EXISTS(activity);
+    INSERT_NETWORK_TEST();
 
     const bool firstUserCreation = userToken.empty() && user_table_is_empty();
-    const bool userLoggedIn      = !firstUserCreation && user_is_logged_in_and_has_privilege_for_action(userToken, activity_type::user_added);
+    const bool userLoggedIn      = !firstUserCreation && user_can_perform_action(userToken, activity_type::user_added);
 
     if (!firstUserCreation && !userLoggedIn)
     {
         co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::unauthorized, .m_errorMessage = "User is unauthorized to create a user"});
-    }
-
-    if (!m_database.tableExists("users"))
-    {
-        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::missing_table, .m_errorMessage = "Users table does not exist"});
     }
 
     unsigned char hashBuffer[g_passwordHashSize] = {0};
@@ -963,46 +854,36 @@ auto review_database::create_user(new_user_data newUser, std::string userToken) 
     insertUserStatement.bind(6, (int)newUser.m_requestedPrivileges);
     insertUserStatement.exec();
 
-    if (m_database.tableExists("activity"))
-    {
-        SQLite::Statement addActivity(m_database, "INSERT INTO activity (activity_type, activity_text) VALUES (?, ?);");
-        addActivity.bind(1, (int)activity_type::user_added);
-        addActivity.bind(2, fmt::format("Added {} as a user", newUser.m_email));
-        addActivity.exec();
-    }
+    SQLite::Statement addActivity(m_database, "INSERT INTO activity (activity_type, activity_text) VALUES (?, ?);");
+    addActivity.bind(1, (int)activity_type::user_added);
+    addActivity.bind(2, fmt::format("Added {} as a user", newUser.m_email));
+    addActivity.exec();
 
     co_return true;
 }
 
-auto review_database::user_table_is_empty() const -> concurrencpp::result<bool>
+auto review_database::user_table_is_empty() const -> database_result<bool>
 {
-    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
-
-#ifdef REVIEW_TEST_DATABASE_BLOCKS
-    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
-#endif
+    MOVE_TO_DATABASE_THREAD();
+    CHECK_TABLE_EXISTS(users);
+    INSERT_NETWORK_TEST();
 
     std::size_t usersCount = 0;
 
-    if (m_database.tableExists("users"))
+    SQLite::Statement getsUsersCountStatement(m_database, "SELECT COUNT(id) FROM users;");
+    if (getsUsersCountStatement.executeStep())
     {
-        SQLite::Statement getsUsersCountStatement(m_database, "SELECT COUNT(id) FROM users;");
-        if (getsUsersCountStatement.executeStep())
-        {
-            usersCount = getsUsersCountStatement.getColumn(0).getInt64();
-        }
+        usersCount = getsUsersCountStatement.getColumn(0).getInt64();
     }
 
     co_return usersCount == 0;
 }
 
-auto review_database::user_is_logged_in_and_has_privilege_for_action(std::string userToken, activity_type activity) -> concurrencpp::result<bool>
+auto review_database::user_can_perform_action(std::string userToken, activity_type activity) -> database_result<bool>
 {
-    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
-
-#ifdef REVIEW_TEST_DATABASE_BLOCKS
-    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
-#endif
+    MOVE_TO_DATABASE_THREAD();
+    CHECK_TABLE_EXISTS(users);
+    INSERT_NETWORK_TEST();
 
     if (userToken.empty())
     {
@@ -1034,45 +915,36 @@ auto review_database::user_is_logged_in_and_has_privilege_for_action(std::string
         break;
     }
 
-    co_return co_await user_is_logged_in_and_has_privilege(userToken, requiredPriveleges);
+    co_return co_await has_user_privilege(userToken, requiredPriveleges);
 }
 
-auto review_database::user_is_logged_in_and_has_privilege(std::string userToken, user_privileges privilege) -> concurrencpp::result<bool>
+auto review_database::has_user_privilege(std::string userToken, user_privileges privilege) -> database_result<bool>
 {
-    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
-
-#ifdef REVIEW_TEST_DATABASE_BLOCKS
-    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
-#endif
+    MOVE_TO_DATABASE_THREAD();
+    CHECK_TABLE_EXISTS(sessions);
+    INSERT_NETWORK_TEST();
 
     bool userWithPrivelegesIsLoggedIn = false;
 
-    if (m_database.tableExists("sessions"))
-    {
-        SQLite::Statement statement(m_database,
-            "SELECT users.id, users.privilege FROM sessions JOIN users ON users.id = sessions.user_id WHERE "
-            "sessions.token = ? AND sessions.expires_at > strftime('%s', 'now') AND users.privilege >= ?;");
-        statement.bind(1, userToken);
-        statement.bind(2, (int)privilege);
-        userWithPrivelegesIsLoggedIn = statement.executeStep();
-    }
+    SQLite::Statement statement(m_database,
+        "SELECT users.id, users.privilege FROM sessions JOIN users ON users.id = sessions.user_id WHERE "
+        "sessions.token = ? AND sessions.expires_at > strftime('%s', 'now') AND users.privilege >= ?;");
+    statement.bind(1, userToken);
+    statement.bind(2, (int)privilege);
+    userWithPrivelegesIsLoggedIn = statement.executeStep();
 
     co_return userWithPrivelegesIsLoggedIn;
 }
 
-auto review_database::login_user(login_request_data loginRequest) -> concurrencpp::result<tl::expected<logged_in_user_data, database_error>>
+auto review_database::login_user(login_request_data loginRequest) -> database_result<logged_in_user_data>
 {
-    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
-
-#ifdef REVIEW_TEST_DATABASE_BLOCKS
-    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
-#endif
-
-    if (!m_database.tableExists("users"))
-    {
-        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::missing_table, .m_errorMessage = "Missing users table"});
-    }
-
+    CHECK_ARG(!loginRequest.m_email.empty());
+    CHECK_ARG(!loginRequest.m_rawPassword.empty());
+    MOVE_TO_DATABASE_THREAD();
+    CHECK_TABLE_EXISTS(users);
+    CHECK_TABLE_EXISTS(sessions);
+    INSERT_NETWORK_TEST();
+    
     SQLite::Statement statement(m_database, "SELECT id, password, salt, privilege, display_name, title FROM users WHERE email = ?;");
     statement.bind(1, loginRequest.m_email);
 
@@ -1104,7 +976,7 @@ auto review_database::login_user(login_request_data loginRequest) -> concurrencp
         co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::unauthorized, .m_errorMessage = "Password is incorrect"});
     }
 
-    const int64_t userId           = statement.getColumn(0).getInt64();
+    const database_id userId           = statement.getColumn(0).getInt64();
     const user_privileges privilege = (user_privileges)statement.getColumn(3).getInt();
     const std::string displayName   = statement.getColumn(4).getString();
     const std::string title         = statement.getColumn(5).getString();
@@ -1147,74 +1019,42 @@ auto review_database::login_user(login_request_data loginRequest) -> concurrencp
     co_return result;
 }
 
-auto review_database::get_all_users(std::string userToken) -> concurrencpp::result<tl::expected<std::vector<user_data>, database_error>>
+auto review_database::get_all_users(std::string userToken) -> database_result<std::vector<user_data>>
 {
-    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
-    
-#ifdef REVIEW_TEST_DATABASE_BLOCKS
-    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
-#endif
+    MOVE_TO_DATABASE_THREAD();
+    CHECK_USER_PRIVILEGE(userToken, user_privileges::user);
+    CHECK_TABLE_EXISTS(users);
+    CHECK_TABLE_EXISTS(sessions);
+    INSERT_NETWORK_TEST();
 
     std::vector<user_data> result;
 
-    if (co_await user_is_logged_in_and_has_privilege(userToken, user_privileges::user))
-    {
-        if (m_database.tableExists("users"))
-        {
-            SQLite::Statement statement(m_database, "SELECT id, display_name, title, email, timestamp, privilege FROM users");
+    SQLite::Statement statement(m_database, "SELECT id, display_name, title, email, timestamp, privilege FROM users");
 
-            while (statement.executeStep())
-            {
-                user_data user;
-                user.m_userId      = statement.getColumn(0).getInt64();
-                user.m_displayName = statement.getColumn(1).getText();
-                user.m_title       = statement.getColumn(2).getText();
-                user.m_email       = statement.getColumn(3).getText();
-                user.m_createdAt   = statement.getColumn(4).getText();
-                user.m_privileges  = (user_privileges)statement.getColumn(5).getInt();
-                result.push_back(std::move(user));
-            }
-        }
-        else
-        {
-            co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::missing_table, .m_errorMessage = "No users table"});
-        }
-    }
-    else
+    while (statement.executeStep())
     {
-        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::unauthorized, .m_errorMessage = "Not authorized to view users"});
+        user_data user;
+        user.m_userId      = statement.getColumn(0).getInt64();
+        user.m_displayName = statement.getColumn(1).getText();
+        user.m_title       = statement.getColumn(2).getText();
+        user.m_email       = statement.getColumn(3).getText();
+        user.m_createdAt   = statement.getColumn(4).getText();
+        user.m_privileges  = (user_privileges)statement.getColumn(5).getInt();
+        result.push_back(std::move(user));
     }
 
     co_return result;
 }
 
-auto review_database::delete_user(std::string email, std::string userToken) -> concurrencpp::result<tl::expected<bool, database_error>>
+auto review_database::delete_user(std::string email, std::string userToken) -> bool_result
 {
-    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
-
-#ifdef REVIEW_TEST_DATABASE_BLOCKS
-    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
-#endif
-
-    if (email.empty())
-    {
-        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::invalid_parameters, .m_errorMessage = "Email address was empty"});
-    }
-
-    if (userToken.empty())
-    {
-        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::unauthorized, .m_errorMessage = "Session token was invalid"});
-    }
-
-    if (!m_database.tableExists("users"))
-    {
-        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::missing_table, .m_errorMessage = "No users table"});
-    }
-
-    if (!m_database.tableExists("sessions"))
-    {
-        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::missing_table, .m_errorMessage = "No sessions table"});
-    }
+    CHECK_ARG(!email.empty());
+    CHECK_ARG(!userToken.empty());
+    MOVE_TO_DATABASE_THREAD();
+    CHECK_USER_PRIVILEGE(userToken, user_privileges::user);
+    CHECK_TABLE_EXISTS(users);
+    CHECK_TABLE_EXISTS(sessions);
+    INSERT_NETWORK_TEST();
 
     SQLite::Statement deletingSelfStatement(m_database, "SELECT users.id, users.email FROM sessions JOIN users ON users.id = sessions.user_id WHERE sessions.token = ? AND users.email = ?;");
     deletingSelfStatement.bind(1, userToken);
@@ -1222,7 +1062,7 @@ auto review_database::delete_user(std::string email, std::string userToken) -> c
 
     const bool deletingSelf = deletingSelfStatement.executeStep();
 
-    if (deletingSelf || co_await user_is_logged_in_and_has_privilege(userToken, user_privileges::admin))
+    if (deletingSelf || co_await has_user_privilege(userToken, user_privileges::admin))
     {
         SQLite::Statement deleteUserStatement(m_database, "DELETE FROM users WHERE email = ?;");
         deleteUserStatement.bind(1, email);
@@ -1233,33 +1073,20 @@ auto review_database::delete_user(std::string email, std::string userToken) -> c
     co_return false;
 }
 
-auto review_database::get_users_for_review(int64_t reviewId, std::string userToken) -> concurrencpp::result<tl::expected<std::vector<user_data>, database_error>>
+auto review_database::get_review_users(database_id reviewId, std::string userToken) -> database_result<std::vector<user_data>>
 {
-    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
-
-#ifdef REVIEW_TEST_DATABASE_BLOCKS
-    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
-#endif
-
-    if (reviewId < 0)
-    {
-        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::invalid_parameters, .m_errorMessage = "Review Id is invalid"});
-    }
-
-    if (userToken.empty())
-    {
-        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::unauthorized, .m_errorMessage = "User token is empty"});
-    }
-
-    if (co_await user_is_logged_in_and_has_privilege(userToken, user_privileges::guest) == false)
-    {
-        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::unauthorized, .m_errorMessage = "Unauthorized"});
-    }
+    CHECK_ARG(reviewId > 0);
+    CHECK_ARG(!userToken.empty());
+    MOVE_TO_DATABASE_THREAD();
+    CHECK_USER_PRIVILEGE(userToken, user_privileges::guest);
+    CHECK_TABLE_EXISTS(users);
+    CHECK_TABLE_EXISTS(reviewers);
+    INSERT_NETWORK_TEST();
 
     SQLite::Statement getUsersForReviewStatement(m_database, "SELECT user_id FROM reviewers WHERE review_id = ?;");
     getUsersForReviewStatement.bind(1, reviewId);
 
-    std::vector<int64_t> userIds;
+    std::vector<database_id> userIds;
 
     while (getUsersForReviewStatement.executeStep())
     {
@@ -1289,28 +1116,15 @@ auto review_database::get_users_for_review(int64_t reviewId, std::string userTok
     co_return users;
 }
 
-auto review_database::set_users_for_review(int64_t reviewId, std::vector<int64_t> userIds, std::string userToken) -> bool_result
+auto review_database::set_review_users(database_id reviewId, std::vector<database_id> userIds, std::string userToken) -> bool_result
 {
-    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
-
-#ifdef REVIEW_TEST_DATABASE_BLOCKS
-    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
-#endif
-
-    if (reviewId < 0)
-    {
-        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::invalid_parameters, .m_errorMessage = "Review Id is invalid"});
-    }
-
-    if (userToken.empty())
-    {
-        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::unauthorized, .m_errorMessage = "User token is empty"});
-    }
-
-    if (!co_await user_is_logged_in_and_has_privilege_for_action(userToken, activity_type::review_edited))
-    {
-        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::unauthorized, .m_errorMessage = "User is unauthorized"});
-    }
+    CHECK_ARG(reviewId > 0);
+    CHECK_ARG(!userToken.empty());
+    MOVE_TO_DATABASE_THREAD();
+    CHECK_PRIVILEGED_ACTION(userToken, activity_type::review_edited);
+    CHECK_TABLE_EXISTS(users);
+    CHECK_TABLE_EXISTS(reviewers);
+    INSERT_NETWORK_TEST();
 
     SQLite::Statement removeAllReviewersStatement(m_database, "DELETE FROM reviewers WHERE review_id = ?;");
     removeAllReviewersStatement.bind(1, reviewId);
@@ -1327,28 +1141,16 @@ auto review_database::set_users_for_review(int64_t reviewId, std::vector<int64_t
     co_return true;
 }
 
-auto review_database::set_user_vote_for_review(int64_t reviewId, user_id userId, review_vote vote, std::string userToken) -> bool_result
+auto review_database::set_review_vote(database_id reviewId, database_id userId, review_vote vote, std::string userToken) -> bool_result
 {
-    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
-
-#ifdef REVIEW_TEST_DATABASE_BLOCKS
-    co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor());
-#endif
-
-    if (reviewId < 0)
-    {
-        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::invalid_parameters, .m_errorMessage = "Review ID is invalid"});
-    }
-
-    if (userId < 0)
-    {
-        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::invalid_parameters, .m_errorMessage = "User ID is invalid"});
-    }
-
-    if (userToken.empty())
-    {
-        co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::unauthorized, .m_errorMessage = "User token is empty"});
-    }
+    CHECK_ARG(reviewId > 0);
+    CHECK_ARG(userId > 0);
+    CHECK_ARG(!userToken.empty());
+    MOVE_TO_DATABASE_THREAD();
+    CHECK_PRIVILEGED_ACTION(userToken, activity_type::review_edited);
+    CHECK_TABLE_EXISTS(users);
+    CHECK_TABLE_EXISTS(reviewers);
+    INSERT_NETWORK_TEST();
 
     SQLite::Statement setVoteStatement(m_database, "INSERT OR REPLACE INTO votes (review_id, user_id, vote) VALUES (?, ?, ?);");
     setVoteStatement.bind(1, reviewId);
