@@ -49,6 +49,7 @@ protected:
     auto pause_file() -> void override;
     auto prev_frame() -> void override;
     auto next_frame() -> void override;
+    auto get_is_playing() -> bool override;
 
 private:
     static inline std::weak_ptr<video_subsystem> m_videoSubsystem;

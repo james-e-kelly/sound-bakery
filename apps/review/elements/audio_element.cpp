@@ -35,7 +35,7 @@ auto audio_element::render_element(const ImRect& elementRect) -> bool
     if (!render_comments())
     {
         handle_mouse_control();
-        handle_keyboard_control();
+        handle_keyboard_controls(m_audioBackground.get_element_rect());
     }
 
     if (std::shared_ptr<gluten::audio_subsystem> audioSubsystem = gluten::app::get()->get_subsystem_by_class<gluten::audio_subsystem>())
@@ -190,12 +190,13 @@ auto audio_element::get_element_content_size(const ImVec2& parentSize) -> ImVec2
 
 auto audio_element::handle_mouse_control() -> void
 {
+    handle_mouse_controls(m_audioBackground.get_element_rect());
+
     if (ImGui::IsWindowFocused() && ImGui::IsMouseHoveringRect(m_audioBackground.get_element_rect().Min, m_audioBackground.get_element_rect().Max))
     {
         const bool clicked = ImGui::IsMouseClicked(ImGuiMouseButton_Left);
-        const bool doubleClicked = ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left);
-
-        if (clicked || doubleClicked)
+        
+        if (clicked)
         {
             const ImVec2 mousePos = ImGui::GetMousePos();
             const float mousePercentageInWaveform = (mousePos.x - m_audioBackground.get_element_rect().Min.x) / (m_audioBackground.get_element_rect().GetWidth());
@@ -204,32 +205,6 @@ auto audio_element::handle_mouse_control() -> void
             if (std::shared_ptr<gluten::audio_subsystem> audioSubsystem = gluten::app::get()->get_subsystem_by_class<gluten::audio_subsystem>())
             {
                 audioSubsystem->set_sound_cursor_position(m_filePath, timeInWaveform);
-
-                if (doubleClicked)
-                {
-                    audioSubsystem->play_sound(m_filePath);
-                }
-            }
-        }
-    }
-}
-
-auto audio_element::handle_keyboard_control() -> void
-{
-    if (ImGui::IsWindowFocused() && ImGui::IsMouseHoveringRect(m_audioBackground.get_element_rect().Min, m_audioBackground.get_element_rect().Max))
-    {
-        if (ImGui::IsKeyPressed(ImGuiKey_Space))
-        {
-            if (std::shared_ptr<gluten::audio_subsystem> audioSubsystem = gluten::app::get()->get_subsystem_by_class<gluten::audio_subsystem>())
-            {
-                if (audioSubsystem->get_sound_is_playing(m_filePath))
-                {
-                    audioSubsystem->pause_sound(m_filePath);
-                }
-                else
-                {
-                    audioSubsystem->play_sound(m_filePath);
-                }
             }
         }
     }
@@ -283,6 +258,18 @@ auto audio_element::next_frame() -> void
     {
         audioSubsystem->set_sound_cursor_position(m_filePath, std::min<float>(m_filePosition + 1.0f, m_fileDuration));
     }
+}
+
+auto audio_element::get_is_playing() -> bool
+{
+    bool playing = false;
+
+    if (std::shared_ptr<gluten::audio_subsystem> audioSubsystem = gluten::app::get()->get_subsystem_by_class<gluten::audio_subsystem>())
+    {
+        playing = audioSubsystem->get_sound_is_playing(m_filePath);
+    }
+
+    return playing;
 }
 
 auto audio_element::get_audio_height(float width) -> float

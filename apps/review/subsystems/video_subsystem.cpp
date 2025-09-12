@@ -131,19 +131,27 @@ auto video_subsystem::get_video_texture(const std::filesystem::path& file) const
 
 auto video_subsystem::play_video(const std::filesystem::path& absoluteFilePath) -> void
 {
-    mpv_handle* handle = get_mpv_handle_from_file(absoluteFilePath);
-    if (handle)
+    if (mpv_handle* const handle = get_mpv_handle_from_file(absoluteFilePath))
     {
         mpv_command_string(handle, "set pause no");
+
+        if (m_mpvContexts.contains(handle))
+        {
+            m_mpvContexts.at(handle)->m_playing = true;
+        }
     }
 }
 
 auto video_subsystem::pause_video(const std::filesystem::path& absoluteFilePath) -> void
 {
-    mpv_handle* handle = get_mpv_handle_from_file(absoluteFilePath);
-    if (handle)
+    if (mpv_handle* const handle = get_mpv_handle_from_file(absoluteFilePath))
     {
         mpv_command_string(handle, "set pause yes");
+
+        if (m_mpvContexts.contains(handle))
+        {
+            m_mpvContexts.at(handle)->m_playing = false;
+        }
     }
 }
 
@@ -201,6 +209,21 @@ auto video_subsystem::set_video_prev_frame(const std::filesystem::path& absolute
         const char* cmd[] = {"frame-back-step", nullptr};
         mpv_command(handle, cmd);
     }
+}
+
+auto video_subsystem::get_video_is_playing(const std::filesystem::path& absoluteFilePath) const -> bool
+{
+    bool playing = false;
+
+    if (mpv_handle* const handle = get_mpv_handle_from_file(absoluteFilePath))
+    {
+        if (m_mpvContexts.contains(handle))
+        {
+            playing = m_mpvContexts.at(handle)->m_playing;
+        }
+    }
+
+    return playing;
 }
 
 auto video_subsystem::pre_init(int ArgC, char* ArgV[]) -> int

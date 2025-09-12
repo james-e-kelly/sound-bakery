@@ -67,6 +67,10 @@ auto video_element::render_element(const ImRect& elementRect) -> bool
     const bool newComment = render_controls();
     render_timeline();
     render_comments();
+
+    handle_keyboard_controls(m_videoImage.get_element_rect());
+    handle_mouse_controls(m_videoImage.get_element_rect());
+
     return newComment;
 }
 
@@ -232,4 +236,9 @@ auto video_element::prev_frame() -> void
 auto video_element::next_frame() -> void 
 {
     m_videoSubsystem.lock()->set_video_next_frame(m_filePath);
+}
+
+auto video_element::get_is_playing() -> bool
+{
+    return m_videoSubsystem.lock()->get_video_is_playing(m_filePath);
 }

@@ -98,3 +98,50 @@ auto file_element::render_controls() -> bool
 
     return newComment;
 }
+
+auto file_element::handle_mouse_controls(const ImRect& contentArea) -> void
+{
+    if (ImGui::IsWindowFocused() && ImGui::IsMouseHoveringRect(contentArea.Min, contentArea.Max))
+    {
+        const bool clicked = ImGui::IsMouseClicked(ImGuiMouseButton_Left);
+        const bool doubleClicked = ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left);
+
+        if (clicked || doubleClicked)
+        {
+            if (doubleClicked)
+            {
+                play_file();
+            }
+        }
+
+        if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+        {
+            if (get_is_playing())
+            {
+                pause_file();
+            }
+            else
+            {
+                play_file();
+            }
+        }
+    }
+}
+
+auto file_element::handle_keyboard_controls(const ImRect& contentArea) -> void
+{
+    if (ImGui::IsWindowFocused() && ImGui::IsMouseHoveringRect(contentArea.Min, contentArea.Max))
+    {
+        if (ImGui::IsKeyPressed(ImGuiKey_Space))
+        {
+            if (get_is_playing())
+            {
+                pause_file();
+            }
+            else
+            {
+                play_file();
+            }
+        }
+    }
+}

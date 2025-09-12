@@ -7,7 +7,6 @@ class audio_element : public file_element
 public:
     audio_element(const std::filesystem::path& filePath, const int64_t fileId);
 
-
 	static auto can_handle_file(const std::filesystem::path& filePath) -> bool
     {
         const std::string extension = filePath.extension().string();
@@ -35,7 +34,6 @@ protected:
     auto get_element_content_size(const ImVec2& parentSize) -> ImVec2 const override;
 
     auto handle_mouse_control() -> void;
-    auto handle_keyboard_control() -> void;
 
     auto get_file_play_position() const -> double override;
     auto get_file_duration() const -> double override;
@@ -44,6 +42,7 @@ protected:
     auto pause_file() -> void override;
     auto prev_frame() -> void override;
     auto next_frame() -> void override;
+    auto get_is_playing() -> bool override;
 
 private:
     auto get_audio_height(float width) -> float;

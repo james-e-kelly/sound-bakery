@@ -26,6 +26,9 @@ public:
 protected:
     auto render_controls() -> bool;
 
+    auto handle_mouse_controls(const ImRect& contentArea) -> void;
+    auto handle_keyboard_controls(const ImRect& contentArea) -> void;
+
     virtual auto get_file_play_position() const -> double = 0;
     virtual auto get_file_duration() const -> double      = 0;
 
@@ -34,6 +37,7 @@ protected:
     virtual auto seek_to_position(double position) -> void = 0;
     virtual auto prev_frame() -> void                      = 0;
     virtual auto next_frame() -> void                      = 0;
+    virtual auto get_is_playing() -> bool                  = 0;
 
     const std::filesystem::path m_filePath;
     int64_t m_fileId = -1;
