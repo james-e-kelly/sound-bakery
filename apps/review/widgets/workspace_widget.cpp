@@ -848,22 +848,7 @@ void workspace_widget::render_review_description(const review_data& selectedRevi
     constexpr float maxHeight      = 200.0f;
     constexpr float perLaneHeight  = maxHeight / verticalElements;
     
-    int currentElements = 3;
-
-    if (m_userSettings->m_displayPhases)
-    {
-        ++currentElements;
-    }
-
-    if (m_userSettings->m_displayQuality)
-    {
-        ++currentElements;
-    }
-
-    if (m_userSettings->m_displayScrutiny)
-    {
-        ++currentElements;
-    }
+    constexpr int currentElements = 3;
 
     const float size = perLaneHeight * currentElements;
 
@@ -881,16 +866,6 @@ void workspace_widget::render_review_description(const review_data& selectedRevi
     descriptionBoxLayout.render_layout_element_pixels_vertical(&titleText, perLaneHeight);
     descriptionBoxLayout.render_vertical_spacer(10.0f);
     descriptionBoxLayout.render_layout_element_pixels_vertical(&descriptionText, perLaneHeight);
-
-    if (m_userSettings->m_displayPhases)
-    {
-        descriptionBoxLayout.render_layout_element_pixels_vertical(&phaseText, perLaneHeight);
-    }
-
-    if (m_userSettings->m_displayQuality)
-    {
-        descriptionBoxLayout.render_layout_element_pixels_vertical(&qualityText, perLaneHeight);
-    }
     
     descriptionBoxLayout.render_layout_element_pixels_vertical(&votesIconText, perLaneHeight);
     
@@ -916,11 +891,6 @@ void workspace_widget::render_review_description(const review_data& selectedRevi
 
     gluten::imgui::scoped_color frameProgressBg(ImGuiCol_FrameBg, gluten::theme::carbon_g100::layer02);
 
-    if (m_userSettings->m_displayScrutiny)
-    {
-        descriptionBoxLayout.render_layout_element_pixels_vertical(&scrutinyLayout, perLaneHeight);
-    }
-
     constexpr float max       = ((int)review_phase::num) * ((int)review_quality::num);
     constexpr float third     = max * 0.33f;
     constexpr float twoThirds = max * 0.66f;
@@ -930,13 +900,6 @@ void workspace_widget::render_review_description(const review_data& selectedRevi
     gluten::imgui::scoped_color progressBarColor(ImGuiCol_PlotHistogram, value >= twoThirds ? gluten::theme::red60
                                                                          : value >= third   ? gluten::theme::yellow60
                                                                                             : gluten::theme::green60);
-
-    if (m_userSettings->m_displayScrutiny)
-    {
-        ImGui::SetCursorScreenPos(scrutinyLayout.get_element_rect().GetTL());
-        ImGui::ProgressBar(fraction, scrutinyLayout.get_element_rect().GetSize(), "Scrutiny");
-    }
-
     m_descriptionBoxButtonsLayout.render(descriptionBoxLayout.get_element_rect());
 
     if (std::shared_ptr<workspace_manager> workspaceManager = m_workspaceManager.lock())
@@ -1198,13 +1161,13 @@ auto workspace_widget::render_menu_implementation() -> void
 
 auto workspace_widget::render_settings() -> void
 {
-    gluten::imgui::scoped_color bgColor(ImGuiCol_WindowBg, gluten::theme::carbon_g100::layer01);
+    gluten::imgui::scoped_color bgColor(ImGuiCol_FrameBg, gluten::theme::carbon_g100::layer03);
     gluten::imgui::scoped_style padding(ImGuiStyleVar_WindowPadding, ImVec2(80.0f, 80.0f));
 
     if (ImGui::BeginChild("SettingsContainer", ImVec2(0, 0), ImGuiChildFlags_AlwaysUseWindowPadding, ImGuiWindowFlags_NoScrollbar))
     {
         gluten::background settingsBackground;
-        settingsBackground.set_element_background_color(gluten::theme::carbon_g100::layer01);
+        settingsBackground.set_element_background_color(gluten::theme::carbon_g100::layer02);
         settingsBackground.render_window();
 
         if (ImGui::BeginTable("Settings", 2, ImGuiTableFlags_Resizable | ImGuiTableFlags_BordersInnerH | ImGuiTableFlags_SizingStretchProp))
@@ -1234,21 +1197,6 @@ auto workspace_widget::render_settings() -> void
 
                 ImGui::EndCombo();
             }
-
-            ImGui::TableNextColumn();
-            ImGui::TextUnformatted("Display Quality");
-            ImGui::TableNextColumn();
-            ImGui::Checkbox("Quality", &m_userSettings->m_displayQuality);
-
-            ImGui::TableNextColumn();
-            ImGui::TextUnformatted("Display Phases");
-            ImGui::TableNextColumn();
-            ImGui::Checkbox("Phases", &m_userSettings->m_displayPhases);
-
-            ImGui::TableNextColumn();
-            ImGui::TextUnformatted("Display Scrutiny");
-            ImGui::TableNextColumn();
-            ImGui::Checkbox("Scrutiny", &m_userSettings->m_displayScrutiny);
 
             ImGui::EndTable();
         }

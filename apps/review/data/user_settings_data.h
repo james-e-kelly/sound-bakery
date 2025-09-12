@@ -24,9 +24,6 @@ struct user_settings_data
     logged_in_user_data m_loggedInUser;
 
     review_app_theme m_theme = review_app_theme::dark;
-    bool m_displayPhases     = true;
-    bool m_displayQuality    = true;
-    bool m_displayScrutiny   = true;
 
     auto workspace_exists() const -> bool
     {
@@ -51,9 +48,6 @@ struct user_settings_data
         if (version >= review_app_first_settings)
         {
             archive & boost::serialization::make_nvp("theme", m_theme);
-            archive & boost::serialization::make_nvp("display_phases", m_displayPhases);
-            archive & boost::serialization::make_nvp("display_quality", m_displayQuality);
-            archive & boost::serialization::make_nvp("display_scrutiny", m_displayScrutiny);
         }
     }
 };
