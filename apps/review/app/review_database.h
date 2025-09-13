@@ -74,7 +74,7 @@ public:
 
     auto user_table_is_empty(std::string userToken) const                                                                           -> bool_result;
     auto user_can_perform_action(std::string userToken, activity_type activity) const                                               -> bool_result;
-    auto has_user_privilege(std::string userToken, user_privileges privilege) const                                                 -> bool_result;
+    auto user_has_privilege(std::string userToken, user_privileges privilege) const                                                 -> bool_result;
 private:
     SQLite::Database m_database;
 };

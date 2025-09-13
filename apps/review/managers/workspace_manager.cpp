@@ -98,7 +98,7 @@ auto workspace_manager::open_workspace(const std::filesystem::path workspaceFile
         }
         else
         {
-            if (co_await transform_database_result_to_bool(m_database->has_user_privilege(get_user_session_token(), user_privileges::guest)))
+            if (co_await transform_database_result_to_bool(m_database->user_has_privilege(get_user_session_token(), user_privileges::guest)))
             {
                 co_await concurrencpp::resume_on(review_app::get()->get_tick_executor());
                 open_workspace_widget();

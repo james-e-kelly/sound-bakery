@@ -175,7 +175,7 @@ namespace
         co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::unauthorized, .m_errorMessage = "User is unauthorized"})
 
     #define CHECK_USER_PRIVILEGE(token, privilegeLevel)                                                                                             \
-    const auto userHasPrivilegeresult = co_await has_user_privilege(token, privilegeLevel);                                                         \
+    const auto userHasPrivilegeresult = co_await user_has_privilege(token, privilegeLevel);                                                         \
     if (!userHasPrivilegeresult.has_value() || !userHasPrivilegeresult.value())                                                                     \
         co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::unauthorized, .m_errorMessage = "User is unauthorized"})
 
@@ -942,10 +942,10 @@ auto review_database::user_can_perform_action(std::string userToken, activity_ty
         break;
     }
 
-    co_return co_await has_user_privilege(userToken, requiredPriveleges);
+    co_return co_await user_has_privilege(userToken, requiredPriveleges);
 }
 
-auto review_database::has_user_privilege(std::string userToken, user_privileges privilege) const -> database_result<bool>
+auto review_database::user_has_privilege(std::string userToken, user_privileges privilege) const -> database_result<bool>
 {
     MOVE_TO_DATABASE_THREAD();
     CHECK_TABLE_EXISTS(sessions);
@@ -1090,7 +1090,7 @@ auto review_database::delete_user(std::string email, std::string userToken) cons
 
     const bool deletingSelf = deletingSelfStatement.executeStep();
 
-    if (deletingSelf || co_await has_user_privilege(userToken, user_privileges::admin))
+    if (deletingSelf || co_await user_has_privilege(userToken, user_privileges::admin))
     {
         SQLite::Statement deleteUserStatement(m_database, "DELETE FROM users WHERE email = ?;");
         deleteUserStatement.bind(1, email);
