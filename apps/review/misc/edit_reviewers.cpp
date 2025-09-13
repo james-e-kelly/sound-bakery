@@ -16,9 +16,16 @@ auto edit_reviewers::render_reviewers() -> void
 	const typename workspace_manager::global_cache_type<user_data>::cache_result& allUsers = workspaceManager->get_all_users();
 	const typename workspace_manager::default_cache_type<reviewer_data>::cache_result& reviewers = workspaceManager->get_review_users(m_reviewId);
 
-	if (!m_newReviewers.has_value() && reviewers.m_state == gluten::cache_state::has_data)
+	if (!m_newReviewers.has_value())
 	{
-        m_newReviewers = reviewers.m_cache;
+		if (reviewers.m_state == gluten::cache_state::has_data)
+		{
+			m_newReviewers = reviewers.m_cache;
+		}
+		else if (reviewers.m_state == gluten::cache_state::no_data)
+		{
+            m_newReviewers = std::vector<reviewer_data>();
+		}
 	}
 
 	if (m_newReviewers.has_value())
