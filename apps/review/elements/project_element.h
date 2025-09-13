@@ -9,10 +9,12 @@ public:
     project_element(const std::string& projectName,
                     const std::string& projectDescription,
                     int openReviews,
-                    int closedReviews)
+                    int closedReviews,
+                    int archivedReviews)
         : gluten::element(anchor_preset::stretch_full), m_projectName(projectName), m_projectDescription(projectDescription),
           m_openReviews(openReviews),
-          m_closedReviews(closedReviews)
+          m_closedReviews(closedReviews),
+          m_archivedReviews(archivedReviews)
     {
         set_element_background_color(gluten::theme::carbon_g100::field03);
     }
@@ -44,7 +46,7 @@ protected:
         gluten::text projectDescriptionText(m_projectDescription.c_str(), ImVec2(0.0f, 0.0f), anchor_preset::left_top);
         projectDescriptionText.set_element_content_font_size(16.0f).get_element_anchor().min = projectTitleText.get_element_anchor().max = ImVec2(0.0f, 0.5f);
 
-        const std::string reviewText = fmt::format("{} {} {} {}", m_openReviews, ICON_LC_PENCIL, m_closedReviews, ICON_LC_CHECK);
+        const std::string reviewText = fmt::format("{} {} | {} {} | {} {}", m_openReviews, ICON_LC_PENCIL, m_closedReviews, ICON_LC_CHECK_LINE, m_archivedReviews, ICON_LC_ARCHIVE);
 
         gluten::text openReviewsText(reviewText.c_str(), ImVec2(1.0f, 0.5f), anchor_preset::right_top);
         openReviewsText
@@ -66,4 +68,5 @@ private:
     std::string m_projectDescription;
     int m_openReviews = 0;
     int m_closedReviews = 0;
+    int m_archivedReviews = 0;
 };

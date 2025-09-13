@@ -25,6 +25,11 @@ protected:
     virtual auto render_menu_implementation() -> void override;
 
 private:
+    auto render_left_toolbar() -> void;
+
+    auto render_list_elements_panel() -> void;
+    auto render_list_panel_elements(const bool listingProjects, std::shared_ptr<workspace_manager> &workspaceManager, const bool listingReviews) -> void;
+
     auto render_content() -> void;
     auto render_right_panel(std::shared_ptr<workspace_manager> &workspaceManager,
                             const review_data &selectedReview,
@@ -36,8 +41,6 @@ private:
     void render_top_content_bar(std::shared_ptr<workspace_manager> &workspaceManager,
                                 const project_data &selectedProject,
                                 const review_data &selectedReview);
-    auto render_list() -> void;
-    auto render_left_toolbar() -> void;
     auto render_settings() -> void;
 
     auto get_votes_string(const review_data &selectedReview) const -> std::pair<std::string, int>;
@@ -67,6 +70,7 @@ private:
     gluten::background topContentBarBackground;
     gluten::background mainContentParent;
 
+    gluten::text listItemsTitle     = gluten::text({}, ImVec2(0.5f, 0.5f), gluten::element::anchor_preset::center_middle);
     gluten::text breadcrumbText     = gluten::text({}, ImVec2(0, -0.75f), gluten::element::anchor_preset::left_top);
     gluten::text titleText          = gluten::text({}, ImVec2(0.0f, 0.0f), gluten::element::anchor_preset::stretch_full);
     gluten::text descriptionText    = gluten::text({}, ImVec2(0.0f, 0.0f), gluten::element::anchor_preset::stretch_full);
@@ -85,6 +89,9 @@ private:
     gluten::button editUserButton = gluten::button("Edit " ICON_LC_PENCIL);
     gluten::button changePasswordButton = gluten::button("Change Password " ICON_LC_PENCIL);
     gluten::button deleteUserButton = gluten::button("Delete " ICON_LC_USER_ROUND_X);
+
+    gluten::icon_button listItemsBackButton = gluten::icon_button("##BackButton", ICON_LC_ARROW_BIG_LEFT, gluten::fonts::regular_lucide_icons);
+    gluten::icon_button listItemsNewButton = gluten::icon_button("##NewButton", ICON_LC_PLUS, gluten::fonts::regular_lucide_icons);
 
     std::shared_ptr<class create_comment_popup> m_createCommentPopup;
     std::shared_ptr<class create_review_popup> createReviewPopup;

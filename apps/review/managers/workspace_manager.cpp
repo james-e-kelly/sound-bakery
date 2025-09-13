@@ -435,6 +435,31 @@ auto workspace_manager::create_review_version(int64_t reviewId, new_frontend_rev
     }
 }
 
+auto workspace_manager::set_review_status(database_id reviewId, review_status status) -> concurrencpp::result<void>
+{
+    if (get_user_session_has_expired())
+    {
+        logout();
+        co_return;
+    }
+
+    const auto setReviewResult = co_await m_database->set_review_status(reviewId, status, get_user_session_token());
+
+    m_cachedProjects.set_cache_expired(get_user_session_token());
+
+    if (setReviewResult.has_value() && setReviewResult.value())
+    {
+        const gluten::key_and_token_cache_key key(m_selectedProject.m_id, get_user_session_token());
+        const auto getReviewsResult = co_await m_database->get_all_reviews(m_selectedProject.m_id, get_user_session_token());
+
+        if (getReviewsResult.has_value())
+        {
+            m_cachedReviews.set_cache_data(key, getReviewsResult.value());
+            select_review(reviewId);
+        }
+    }
+}
+
 auto workspace_manager::get_all_review_activity(int64_t reviewId) -> typename default_cache_type<activity_data>::cache_result
 {
     const gluten::key_and_token_cache_key key(reviewId, get_user_session_token());

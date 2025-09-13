@@ -309,6 +309,22 @@ auto review_database::get_all_projects(std::string userToken) const -> database_
         projectData.m_projectName           = query.getColumn(1).getString();
         projectData.m_projectDescription    = query.getColumn(2).getString();
 
+        auto get_reviews_count = [database = std::cref(m_database)](database_id projectId, review_status status, int& result)
+            { 
+                SQLite::Statement getReviewsCountStatement(database, "SELECT COUNT(id) from reviews WHERE project_id = ? AND status = ?;");
+                getReviewsCountStatement.bind(1, projectId);
+                getReviewsCountStatement.bind(2, (int)status);
+
+                if (getReviewsCountStatement.executeStep())
+                {
+                    result = getReviewsCountStatement.getColumn(0).getInt();
+                }
+            };
+
+        get_reviews_count(projectData.m_id, review_status::open, projectData.m_openReviews);
+        get_reviews_count(projectData.m_id, review_status::closed, projectData.m_closedReviews);
+        get_reviews_count(projectData.m_id, review_status::archived, projectData.m_archivedReviews);
+
         result.push_back(std::move(projectData));
     }
 
@@ -1169,6 +1185,25 @@ auto review_database::set_review_vote(database_id reviewId, database_id userId, 
     setVoteStatement.bind(2, userId);
     setVoteStatement.bind(3, (int)vote);
     setVoteStatement.exec();
+
+    co_return true;
+}
+
+auto review_database::set_review_status(database_id reviewId, review_status status, std::string userToken) const -> bool_result
+{
+    CHECK_ARG(reviewId > 0);
+    CHECK_ARG(status >= review_status::open);
+    CHECK_ARG(status <= review_status::archived);
+    CHECK_ARG(!userToken.empty());
+    MOVE_TO_DATABASE_THREAD();
+    CHECK_PRIVILEGED_ACTION(userToken, activity_type::review_edited);
+    CHECK_TABLE_EXISTS(reviews);
+    INSERT_NETWORK_TEST();
+
+    SQLite::Statement setStatusStatement(m_database, "UPDATE reviews SET status = ? WHERE id = ?;");
+    setStatusStatement.bind(1, (int)status);
+    setStatusStatement.bind(2, reviewId);
+    setStatusStatement.exec();
 
     co_return true;
 }
