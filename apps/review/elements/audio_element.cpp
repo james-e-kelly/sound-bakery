@@ -232,6 +232,7 @@ auto audio_element::play_file() -> void
 {
     if (std::shared_ptr<gluten::audio_subsystem> audioSubsystem = gluten::app::get()->get_subsystem_by_class<gluten::audio_subsystem>())
     {
+        audioSubsystem->pause_all();
         audioSubsystem->play_sound(m_filePath);
     }
 }

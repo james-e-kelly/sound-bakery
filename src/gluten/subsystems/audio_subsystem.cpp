@@ -70,6 +70,17 @@ auto gluten::audio_subsystem::pause_sound(const std::filesystem::path& filePath)
     }
 }
 
+auto gluten::audio_subsystem::pause_all() -> void
+{
+    for (const auto& soundInstance : m_filesToSoundInstancesMap)
+    {
+        if (soundInstance.second)
+        {
+            sc_sound_instance_pause(soundInstance.second.get());
+        }
+    }
+}
+
 auto gluten::audio_subsystem::set_sound_cursor_position(const std::filesystem::path& filePath, float cursorPosition) -> void
 {
     if (sc_sound_instance* const soundInstance = get_sound_instance(filePath))

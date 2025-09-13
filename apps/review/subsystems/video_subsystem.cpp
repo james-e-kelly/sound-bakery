@@ -126,6 +126,20 @@ auto video_subsystem::get_video_texture(const std::filesystem::path& file) const
 
 auto video_subsystem::play_video(const std::filesystem::path& absoluteFilePath) -> void
 {
+    // Pause everything so there is only one video playing at once
+    for (const auto& handle : m_videoFileToContexts)
+    {
+        if (handle.second)
+        {
+            mpv_command_string(handle.second, "set pause yes");
+
+            if (m_mpvContexts.contains(handle.second))
+            {
+                m_mpvContexts.at(handle.second)->m_playing = false;
+            }
+        }
+    }
+
     if (mpv_handle* const handle = get_mpv_handle_from_file(absoluteFilePath))
     {
         mpv_command_string(handle, "set pause no");
