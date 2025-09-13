@@ -370,7 +370,14 @@ auto workspace_widget::render_content() -> void
             if (selectedReview.m_reviewId)
             {
                 render_review_description(selectedReview);
-                contentVerticalLayout.render_layout_element_pixels_vertical(nullptr, 16.0f);
+
+                const float extraDescriptionBoxSize = descriptionBoxLayout.get_remaining_layout_size().y;
+
+                if (extraDescriptionBoxSize < 0.0f)
+                {
+                    contentVerticalLayout.render_vertical_spacer(-extraDescriptionBoxSize);
+                }
+
                 render_review_content(workspaceManager, selectedReview);
             }
             else if (!selectedUser.m_email.empty())
@@ -868,15 +875,9 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
 
 void workspace_widget::render_review_description(const review_data& selectedReview)
 {
-    constexpr int verticalElements = 6;
-    constexpr float maxHeight      = 200.0f;
-    constexpr float perLaneHeight  = maxHeight / verticalElements;
-    
-    constexpr int currentElements = 3;
+    constexpr float descriptionBoxStartingHeight = 70.0;
 
-    const float size = perLaneHeight * currentElements;
-
-    contentVerticalLayout.render_layout_element_pixels_vertical(&descriptionBoxLayout, size);
+    contentVerticalLayout.render_layout_element_pixels_vertical(&descriptionBoxLayout, descriptionBoxStartingHeight);
 
     titleText.set_text(fmt::format("{}", selectedReview.m_reviewName));
     titleText.set_url(selectedReview.m_reviewTaskUrl);
@@ -887,11 +888,13 @@ void workspace_widget::render_review_description(const review_data& selectedRevi
     std::pair<std::string, int> votes = get_votes_string(selectedReview);
     votesText.set_text(fmt::format("     {}", votes.first));
 
-    descriptionBoxLayout.render_layout_element_pixels_vertical(&titleText, perLaneHeight);
+    descriptionBoxLayout.render_layout_element_pixels_vertical(&titleText, 40.0f);
     descriptionBoxLayout.render_vertical_spacer(10.0f);
-    descriptionBoxLayout.render_layout_element_pixels_vertical(&descriptionText, perLaneHeight);
-    
-    descriptionBoxLayout.render_layout_element_pixels_vertical(&votesIconText, perLaneHeight);
+
+    const float descriptionTextHeight = ImGui::CalcTextSize(selectedReview.m_reviewDescription.c_str(), nullptr, descriptionBoxLayout.get_element_rect().GetWidth()).y * 1.4f;
+    descriptionBoxLayout.render_layout_element_pixels_vertical(&descriptionText, descriptionTextHeight);
+    descriptionBoxLayout.render_vertical_spacer(16.0f);
+    descriptionBoxLayout.render_layout_element_pixels_vertical(&votesIconText, 30.0f);
     
     {
         ImVec4 votesColor;
