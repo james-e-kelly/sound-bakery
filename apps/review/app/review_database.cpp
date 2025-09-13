@@ -1022,7 +1022,7 @@ auto review_database::login_user(login_request_data loginRequest) const -> datab
     if (hasSessionToken)
     {
         result.m_sessionToken = sessionStatement.getColumn(0).getText();
-        result.m_expiryTime   = sessionStatement.getColumn(0).getInt64();
+        result.m_expiryTime   = sessionStatement.getColumn(1).getInt64();
     }
     else
     {

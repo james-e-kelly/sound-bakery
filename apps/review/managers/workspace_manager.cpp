@@ -114,6 +114,12 @@ auto workspace_manager::open_workspace(const std::filesystem::path workspaceFile
 
 auto workspace_manager::async_get_users_for_review(int64_t reviewId) -> concurrencpp::result<std::vector<reviewer_data>>
 {
+    if (get_user_session_has_expired())
+    {
+        logout();
+        co_return std::vector<reviewer_data>();
+    }
+
     const tl::expected<std::vector<user_data>, database_error> result = co_await m_database->get_review_users(reviewId, get_user_session_token());
 
     std::vector<reviewer_data> reviewers;
@@ -443,9 +449,9 @@ auto workspace_manager::set_review_status(database_id reviewId, review_status st
         co_return;
     }
 
-    const auto setReviewResult = co_await m_database->set_review_status(reviewId, status, get_user_session_token());
-
     m_cachedProjects.set_cache_expired(get_user_session_token());
+
+    const auto setReviewResult = co_await m_database->set_review_status(reviewId, status, get_user_session_token());
 
     if (setReviewResult.has_value() && setReviewResult.value())
     {
@@ -561,7 +567,8 @@ auto workspace_manager::login_user(login_request_data loginData) -> concurrencpp
 
     if (loggedInUser.has_value())
     {
-        m_userSettingsData->m_loggedInUser = loggedInUser.value();
+        const logged_in_user_data loggedInData = loggedInUser.value();
+        m_userSettingsData->m_loggedInUser     = loggedInData;
         m_userFlowPopup.reset();
         open_workspace_widget();
         co_return true;
@@ -574,6 +581,9 @@ auto workspace_manager::login_user(login_request_data loginData) -> concurrencpp
 
 auto workspace_manager::logout() -> void
 {
+    m_selectedReview = review_data();
+    m_selectedProject = project_data();
+
     m_cachedActivity.clear();
     m_cachedComments.clear();
     m_cachedProjects.clear();
@@ -728,5 +738,5 @@ auto workspace_manager::get_user_session_token() const -> std::string
 auto workspace_manager::get_user_session_has_expired() const -> bool
 {
     const time_t now   = std::time(nullptr);
-    return now >= m_userSettingsData->m_loggedInUser.m_expiryTime;
+    return get_user_session_token().empty() || now >= m_userSettingsData->m_loggedInUser.m_expiryTime;
 }
