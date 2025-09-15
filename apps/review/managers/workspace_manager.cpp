@@ -297,7 +297,8 @@ auto workspace_manager::get_workspace_name() -> typename string_cache_type::cach
 
     if (m_cachedWorkspaceName.get_cache_needs_filling(key))
     {
-        m_cachedWorkspaceName.set_async_fill_cache(key, transform_database_result_to_cache_result(m_database->get_workspace_name(get_user_session_token())));
+        BOOST_ASSERT(m_client);
+        m_cachedWorkspaceName.set_async_fill_cache(key, m_client->get_workspace_name());
     }
 
     return m_cachedWorkspaceName.get_cached_data(key);

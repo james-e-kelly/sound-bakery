@@ -8,6 +8,7 @@ public:
     review_server(gluten::app* app, const std::filesystem::path& workspacePath);
     ~review_server() = default;
 
+    auto start() -> void override;
     auto exit() -> void override;
 
 private:
@@ -16,10 +17,9 @@ private:
         response.set_content("pong", "text/plain");
     }
 
-    static auto get_workspace_name(const httplib::Request& request, httplib::Response& response) -> void
-    {
-        response.set_content("Hello World!", "text/plain");
-    }
+    static auto get_workspace_name(const httplib::Request& request,
+                                   httplib::Response& response) -> void;
 
     std::unique_ptr<httplib::SSLServer> m_server;
+    std::shared_ptr<class review_database> m_database;
 };

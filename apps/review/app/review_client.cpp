@@ -9,6 +9,8 @@ review_client::review_client(gluten::app* app, const std::filesystem::path& work
         m_client = std::make_unique<httplib::SSLClient>("localhost", 8080);
         m_client->enable_server_certificate_verification(false);
 
+        m_client->set_bearer_token_auth(get_user_session_token());
+
         httplib::Result result = m_client->Get("/ping");
         if (result) 
         {
@@ -23,4 +25,18 @@ auto review_client::exit() -> void
     {
         m_client->stop();
     }
+}
+
+auto review_client::get_workspace_name() -> concurrencpp::result<std::string>
+{
+    BOOST_ASSERT(m_client);
+
+    co_await concurrencpp::resume_on(get_app()->background_executor());
+
+    httplib::Result result = m_client->Get("/get_workspace_name");
+    if (result)
+    {
+        co_return result.value().body;
+    }
+    co_return std::string();
 }

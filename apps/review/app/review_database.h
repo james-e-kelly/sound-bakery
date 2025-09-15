@@ -30,7 +30,7 @@ struct database_error
 /**
  * @brief Handles database creation, deletion, updates, queries and more.
  */
-class review_database
+class review_database : public std::enable_shared_from_this<review_database>
 {
 public:
     review_database() = delete;
