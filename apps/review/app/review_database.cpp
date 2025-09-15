@@ -334,7 +334,7 @@ auto review_database::get_all_projects(std::string userToken) const -> database_
 auto review_database::create_review(database_id projectId, const new_transit_review_data newReview, std::string userToken) const -> database_result<review_data>
 {
     CHECK_ARG(!newReview.m_reviewName.empty());
-    CHECK_ARG(projectId > 1);
+    CHECK_ARG(projectId > 0);
     MOVE_TO_DATABASE_THREAD();
     CHECK_PRIVILEGED_ACTION(userToken, activity_type::review_created);
     CHECK_TABLE_EXISTS(reviews);
