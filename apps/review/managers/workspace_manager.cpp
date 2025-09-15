@@ -1,6 +1,8 @@
 #include "workspace_manager.h"
 
 #include "app/review_app.h"
+#include "app/review_server.h"
+#include "app/review_client.h"
 #include "widgets/intro_widget.h"
 #include "widgets/user_flow_popup.h"
 #include "widgets/workspace_widget.h"
@@ -85,13 +87,14 @@ auto workspace_manager::open_workspace(const std::filesystem::path workspaceFile
         loadingPopup->open_popup();
 
         m_database = std::make_shared<review_database>(std::filesystem::path(workspaceFile));
+        m_server = get_app()->add_manager_class<review_server>(workspaceFile.parent_path());
+        m_client = get_app()->add_manager_class<review_client>(workspaceFile.parent_path());
         
         co_await concurrencpp::resume_on(review_app::get()->thread_pool_executor());
         co_await m_database->open_workspace(workspaceFile.stem().string());
         co_await m_database->get_workspace_name(get_user_session_token());
 
-        if (co_await transform_database_result_to_bool(m_database->user_table_is_empty(get_user_session_token())) ||
-            get_user_session_token().empty() || get_user_session_has_expired())
+        if (co_await transform_database_result_to_bool(m_database->user_table_is_empty(get_user_session_token())) || get_user_session_token().empty() || get_user_session_has_expired())
         {
             co_await concurrencpp::resume_on(review_app::get()->get_tick_executor());
             open_user_flow_popup();

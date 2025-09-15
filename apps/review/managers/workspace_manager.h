@@ -110,6 +110,8 @@ private:
     review_data m_selectedReview;
     user_data m_selectedUser;
     std::shared_ptr<review_database> m_database;
+    std::shared_ptr<class review_server> m_server;
+    std::shared_ptr<class review_client> m_client;
 
     // Caches
     default_cache_type<comment_data> m_cachedComments;

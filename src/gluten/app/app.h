@@ -41,8 +41,8 @@ namespace gluten
         template <class T>
         void remove_subsystem_by_class();
 
-        template <class T>
-        std::shared_ptr<T> add_manager_class();
+        template <class T, typename... Args>
+        std::shared_ptr<T> add_manager_class(Args&&... args);
 
         template <class T>
         std::shared_ptr<T> get_manager_by_class();
@@ -182,10 +182,10 @@ namespace gluten
         }
     }
 
-    template <class T>
-    std::shared_ptr<T> app::add_manager_class()
+    template <class T, typename... Args>
+    std::shared_ptr<T> app::add_manager_class(Args&&... args)
     {
-        m_managers.push_back(std::make_shared<T>(this));
+        m_managers.push_back(std::make_shared<T>(this, std::forward<Args>(args)...));
         std::shared_ptr<manager> managerPtr = m_managers.back();
 
         if (managerPtr)

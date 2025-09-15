@@ -161,10 +161,10 @@ namespace
 
     constexpr std::string_view g_reviewsPathName = "Reviews";
 
-    //#define REVIEW_TEST_DATABASE_BLOCKS
+    #define REVIEW_TEST_DATABASE_BLOCKS
 
 #ifdef REVIEW_TEST_DATABASE_BLOCKS
-    constexpr std::chrono::milliseconds g_blockDelay = std::chrono::seconds(2);
+    constexpr std::chrono::milliseconds g_blockDelay = std::chrono::milliseconds(500);
 #endif
 
     #define MOVE_TO_DATABASE_THREAD() co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor())

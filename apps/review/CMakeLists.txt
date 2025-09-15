@@ -5,6 +5,8 @@ set(BUILD_FOLDER ${CMAKE_BINARY_DIR})
 set(review_SOURCES
   app/review_app.cpp
   app/review_database.cpp
+  app/review_client.cpp
+  app/review_server.cpp
   data/activity_data.cpp
   data/comment_data.cpp
   data/user_data.cpp
@@ -35,6 +37,8 @@ set(review_SOURCES
 set(review_HEADERS
   app/review_app.h
   app/review_database.h
+  app/review_client.h
+  app/review_server.h
   data/activity_data.h
   data/comment_data.h
   data/user_data.h
