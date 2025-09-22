@@ -1,5 +1,6 @@
 #include "review_server.h"
 
+#include "app/review_app.h"
 #include "app/review_database.h"
 #include "managers/workspace_manager.h"
 
@@ -76,20 +77,11 @@ namespace
 
         return false;
     }
-
-    std::shared_ptr<review_database> s_reviewDatabase;
 }
 
-review_server::review_server(gluten::app* app,
-                             const std::filesystem::path& workspacePath)
+review_server::review_server(gluten::app* app, const std::filesystem::path& workspacePath)
     : gluten::manager(app)
 {
-    if (std::shared_ptr<workspace_manager> workspaceManager = get_app()->get_manager_by_class<workspace_manager>())
-    {
-        m_database = workspaceManager->get_database();
-        s_reviewDatabase = m_database;
-    }
-
     std::error_code errorCode;
     BOOST_ASSERT_MSG(std::filesystem::is_directory(workspacePath, errorCode), "workspacePath must be a directory and not a file!");
 
@@ -130,14 +122,13 @@ auto review_server::exit() -> void
     {
         m_server->stop();
     }
-    s_reviewDatabase.reset();
 }
 
 auto review_server::get_workspace_name(const httplib::Request& request, httplib::Response& response) -> void
 {
-    if (s_reviewDatabase)
+    if (auto database = review_app::get_review_database())
     {
-        const auto databaseResult = s_reviewDatabase->get_workspace_name(httplib::get_bearer_token_auth(request)).get();
+        const auto databaseResult = database->get_workspace_name(httplib::get_bearer_token_auth(request)).get();
 
         if (databaseResult.has_value())
         {

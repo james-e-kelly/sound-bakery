@@ -1,5 +1,6 @@
 ﻿#include "review_app.h"
 
+#include "app/review_database.h"
 #include "gluten/subsystems/audio_subsystem.h"
 #include "subsystems/video_subsystem.h"
 #include "managers/workspace_manager.h"
@@ -119,9 +120,10 @@ auto review_app::pre_init() -> void
 
     m_dropTarget = std::make_unique<review_app_drop_target>();
 
-    m_audioSubsystem   = add_subsystem_class<gluten::audio_subsystem>();
-    m_videoManager     = add_subsystem_class<video_subsystem>();
-    m_workspaceManager = add_manager_class<workspace_manager>();
+    m_audioSubsystem    = add_subsystem_class<gluten::audio_subsystem>();
+    m_videoSubsystem    = add_subsystem_class<video_subsystem>();
+
+    m_workspaceManager  = add_manager_class<workspace_manager>();
 }
 
 auto review_app::post_init() -> void
@@ -187,6 +189,31 @@ auto review_app::tick_implementation() -> void
 auto review_app::get() -> review_app*
 {
     return static_cast<review_app*>(gluten::app::get());
+}
+
+auto review_app::get_review_database() -> std::shared_ptr<review_database>
+{
+    if (review_app* const app = get())
+    {
+        return app->m_database;
+    }
+    return nullptr;
+}
+
+auto review_app::create_review_database(const std::filesystem::path& path) -> void
+{
+    if (review_app* const app = get())
+    {
+        app->m_database = std::make_shared<review_database>(path);
+    }
+}
+
+auto review_app::close_review_database() -> void
+{
+    if (review_app* const app = get())
+    {
+        app->m_database.reset();
+    }
 }
 
 auto review_app::get_drag_drop_files() -> std::unordered_set<std::filesystem::path>

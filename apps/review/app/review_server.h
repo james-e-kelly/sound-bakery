@@ -2,6 +2,8 @@
 
 #include "pch.h"
 
+#include "app/review_database.h"
+
 class review_server : public gluten::manager
 {
 public:
@@ -21,5 +23,4 @@ private:
                                    httplib::Response& response) -> void;
 
     std::unique_ptr<httplib::SSLServer> m_server;
-    std::shared_ptr<class review_database> m_database;
 };

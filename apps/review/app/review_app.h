@@ -32,6 +32,10 @@ public:
         return m_databaseThread;
     }
 
+    static auto get_review_database() -> std::shared_ptr<review_database>;
+    static auto create_review_database(const std::filesystem::path& path) -> void;
+    static auto close_review_database() -> void;
+
 protected:
     auto pre_init() -> void override;
     auto post_init() -> void override;
@@ -45,7 +49,7 @@ private:
     }
 
     std::shared_ptr<gluten::audio_subsystem> m_audioSubsystem;
-    std::shared_ptr<video_subsystem> m_videoManager;
+    std::shared_ptr<video_subsystem> m_videoSubsystem;
     std::shared_ptr<workspace_manager> m_workspaceManager;
     std::unique_ptr<review_app_drop_target> m_dropTarget;
 
@@ -53,4 +57,6 @@ private:
     bool m_isDragDropReady  = false;
 
     std::shared_ptr<concurrencpp::worker_thread_executor> m_databaseThread;
+
+    std::shared_ptr<review_database> m_database;
 };

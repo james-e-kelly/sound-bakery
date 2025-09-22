@@ -891,7 +891,6 @@ auto review_database::create_user(new_user_data newUser, std::string userToken) 
 auto review_database::user_table_is_empty(std::string userToken) const -> database_result<bool>
 {
     MOVE_TO_DATABASE_THREAD();
-    CHECK_USER_PRIVILEGE(userToken, user_privileges::guest);
     CHECK_TABLE_EXISTS(users);
     INSERT_NETWORK_TEST();
 

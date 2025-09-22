@@ -89,10 +89,7 @@ public:
     auto get_user_session_token() const -> std::string;
     auto get_user_session_has_expired() const -> bool;
 
-    auto get_database() const -> std::shared_ptr<review_database>
-    {
-        return m_database;
-    }
+    auto get_database() const -> std::shared_ptr<review_database>;
 
 protected:
     auto init(gluten::app* app) -> void override;
@@ -114,7 +111,6 @@ private:
     project_data m_selectedProject;
     review_data m_selectedReview;
     user_data m_selectedUser;
-    std::shared_ptr<review_database> m_database;
     std::shared_ptr<class review_server> m_server;
     std::shared_ptr<class review_client> m_client;
 
