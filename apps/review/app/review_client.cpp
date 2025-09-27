@@ -1,5 +1,36 @@
 #include "review_client.h"
 
+namespace
+{
+    template <typename T>
+    T deserialize_from_xml(const std::string& body)
+    {
+        T data;
+        std::istringstream inputStream(body);
+        boost::archive::xml_iarchive archive(inputStream);
+        archive& BOOST_SERIALIZATION_NVP(data);
+        return data;
+    }
+
+    template <typename T, typename... Args>
+    auto get_api(const std::unique_ptr<httplib::SSLClient>& client, const std::string& endpoint, Args&&... args) -> concurrencpp::result<T>
+    {
+        co_await concurrencpp::resume_on(gluten::app::get()->background_executor());
+
+        httplib::Params params;
+        ((params.emplace(std::forward<Args>(args).first,
+                         std::forward<Args>(args).second)),
+         ...);
+
+        if (auto result = client->Get(endpoint, params, httplib::Headers()))
+        {
+            co_return deserialize_from_xml<T>(result.value().body);
+        }
+
+        co_return T{};
+    }
+}
+
 review_client::review_client(gluten::app* app, const std::filesystem::path& workspacePath)
     : gluten::manager(app)
 {
@@ -27,79 +58,30 @@ auto review_client::exit() -> void
     }
 }
 
-template <typename T>
-T deserialize_from_xml(const std::string& body)
-{
-    T data;
-    std::istringstream inputStream(body);
-    boost::archive::xml_iarchive archive(inputStream);
-    archive & BOOST_SERIALIZATION_NVP(data);
-    return data;
-}
-
 auto review_client::get_workspace_name() -> concurrencpp::result<std::string>
 {
-    co_await concurrencpp::resume_on(get_app()->background_executor());
-
-    if (httplib::Result result = m_client->Get(review_app_api::getWorkspaceName))
-    {
-        co_return deserialize_from_xml<std::string>(result.value().body);
-    }
-    
-    co_return std::string();
+    co_return co_await get_api<std::string>(m_client, review_app_api::getWorkspaceName);
 }
 
 auto review_client::get_all_projects() -> concurrencpp::result<std::vector<project_data>>
 {
-    co_await concurrencpp::resume_on(get_app()->background_executor());
-    
-    if (httplib::Result result = m_client->Get(review_app_api::getAllProjects))
-    {
-        co_return deserialize_from_xml<std::vector<project_data>>(result.value().body);
-    }
-
-    co_return std::vector<project_data>();
+    co_return co_await get_api<std::vector<project_data>>(m_client, review_app_api::getAllProjects);
 }
 
 auto review_client::get_all_reviews(database_id projectId) -> concurrencpp::result<std::vector<review_data>>
 {
-    co_await concurrencpp::resume_on(get_app()->background_executor());
-
-    httplib::Params params;
-    params.emplace(review_app_parameters::projectId, std::to_string(projectId));
-
-    if (httplib::Result result = m_client->Get(review_app_api::getAllReviews, params, httplib::Headers()))
-    {
-        co_return deserialize_from_xml<std::vector<review_data>>(result.value().body);
-    }
-
-    co_return std::vector<review_data>();
+    co_return co_await get_api<std::vector<review_data>>(m_client, review_app_api::getAllReviews,
+        std::make_pair(review_app_parameters::projectId, std::to_string(projectId)));
 }
 
 auto review_client::get_review_vote(database_id reviewId, database_id userId) -> concurrencpp::result<review_vote>
 {
-    co_await concurrencpp::resume_on(get_app()->background_executor());
-
-    httplib::Params params;
-    params.emplace(review_app_parameters::reviewId, std::to_string(reviewId));
-    params.emplace(review_app_parameters::userId, std::to_string(userId));
-
-    if (httplib::Result result = m_client->Get(review_app_api::getReviewVote, params, httplib::Headers()))
-    {
-        co_return deserialize_from_xml<review_vote>(result.value().body);
-    }
-
-    co_return review_vote();
+    co_return co_await get_api<review_vote>(m_client, review_app_api::getReviewVote,
+                         std::make_pair(review_app_parameters::reviewId, std::to_string(reviewId)),
+                         std::make_pair(review_app_parameters::userId, std::to_string(userId)));
 }
 
 auto review_client::user_table_is_empty() -> concurrencpp::result<bool>
 {
-    co_await concurrencpp::resume_on(get_app()->background_executor());
-
-    if (httplib::Result result = m_client->Get(review_app_api::userTableIsEmpty))
-    {
-        co_return deserialize_from_xml<bool>(result.value().body);
-    }
-    
-    co_return true;
+    co_return co_await get_api<bool>(m_client, review_app_api::userTableIsEmpty);
 }
