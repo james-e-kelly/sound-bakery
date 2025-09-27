@@ -29,6 +29,19 @@ namespace
 
         co_return T{};
     }
+
+    template <typename... Args>
+    auto post_api(const std::unique_ptr<httplib::SSLClient>& client, const std::string& endpoint, Args&&... args) -> concurrencpp::result<void>
+    {
+        co_await concurrencpp::resume_on(gluten::app::get()->background_executor());
+
+        httplib::Params params;
+        ((params.emplace(std::forward<Args>(args).first,
+                         std::forward<Args>(args).second)),
+         ...);
+
+        const httplib::Result result = client->Post(endpoint, httplib::Headers(), params);
+    }
 }
 
 review_client::review_client(gluten::app* app, const std::filesystem::path& workspacePath)
@@ -65,7 +78,7 @@ auto review_client::get_workspace_name() -> concurrencpp::result<std::string>
 
 auto review_client::get_all_projects() -> concurrencpp::result<std::vector<project_data>>
 {
-    co_return co_await get_api<std::vector<project_data>>(m_client, review_app_api::getAllProjects);
+    co_return co_await get_api<std::vector<project_data>>(m_client, review_app_endpoints::projects);
 }
 
 auto review_client::get_all_reviews(database_id projectId) -> concurrencpp::result<std::vector<review_data>>
@@ -84,4 +97,12 @@ auto review_client::get_review_vote(database_id reviewId, database_id userId) ->
 auto review_client::user_table_is_empty() -> concurrencpp::result<bool>
 {
     co_return co_await get_api<bool>(m_client, review_app_api::userTableIsEmpty);
+}
+
+auto review_client::post_project(const std::string projectName, const std::string projectDescription) -> concurrencpp::result<void>
+{
+    co_return co_await post_api(
+        m_client, review_app_endpoints::projects,
+        std::make_pair(review_app_parameters::name, projectName),
+        std::make_pair(review_app_parameters::description, projectDescription));
 }

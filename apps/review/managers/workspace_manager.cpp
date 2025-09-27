@@ -201,7 +201,7 @@ auto workspace_manager::create_project(const std::string& projectName, const std
         return;
     }
 
-    get_database()->create_project(projectName, projectDescription, get_user_session_token());
+    m_client->post_project(projectName, projectDescription);
     m_cachedProjects.set_cache_expired(get_user_session_token());
 }
 

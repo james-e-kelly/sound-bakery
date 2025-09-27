@@ -90,7 +90,7 @@ namespace
     }
 
     template<typename data_type>
-    auto add_database_endpoint(const std::unique_ptr<httplib::SSLServer>& server, const std::string& pattern, std::function<review_database::database_result<data_type>(std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)> databaseFunction)
+    auto add_database_get_endpoint(const std::unique_ptr<httplib::SSLServer>& server, const std::string& pattern, std::function<review_database::database_result<data_type>(std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)> databaseFunction)
     {
         server->Get(pattern, [function = std::move(databaseFunction)](const httplib::Request& request, httplib::Response& response) 
             {
@@ -106,6 +106,23 @@ namespace
                     {
                         response.status = httplib::StatusCode::InternalServerError_500;
                     }
+                }
+                else
+                {
+                    response.status = httplib::StatusCode::InternalServerError_500;
+                }
+            });
+    }
+
+    auto add_database_post_endpoint(const std::unique_ptr<httplib::SSLServer>& server, const std::string& pattern, std::function<void(std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)> databaseFunction)
+    {
+        server->Post(pattern, [function = std::move(databaseFunction)](const httplib::Request& request, httplib::Response& response) 
+            {
+                if (auto database = review_app::get_review_database())
+                {
+                    function(database, httplib::get_bearer_token_auth(request), request);
+
+                    response.status = httplib::StatusCode::NoContent_204;
                 }
                 else
                 {
@@ -138,17 +155,25 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
 
     m_server = std::make_unique<httplib::SSLServer>(certPath.string().c_str(), keyPath.string().c_str());
 
-    add_database_endpoint<std::vector<project_data>>(m_server, review_app_api::getAllProjects, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)
-        {
-            return database->get_all_projects(userToken);
-        });
-
-    add_database_endpoint<std::string>(m_server, review_app_api::getWorkspaceName, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)
+    add_database_get_endpoint<std::string>(m_server, review_app_api::getWorkspaceName, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)
         {
             return database->get_workspace_name(userToken);
         });
 
-    add_database_endpoint<std::vector<review_data>>(m_server, review_app_api::getAllReviews, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)
+    add_database_get_endpoint<std::vector<project_data>>(m_server, review_app_endpoints::projects, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)
+        {
+            return database->get_all_projects(userToken);
+        });
+
+    add_database_post_endpoint(m_server, review_app_endpoints::projects, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)
+        {
+            const std::string name = request.get_param_value(review_app_parameters::name);
+            const std::string description = request.get_param_value(review_app_parameters::description);
+
+            return database->create_project(name, description, userToken);
+        });
+
+    add_database_get_endpoint<std::vector<review_data>>(m_server, review_app_api::getAllReviews, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)
         {
             database_id projectId = 0;
             
@@ -160,7 +185,7 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
             return database->get_all_reviews(projectId, userToken);
         });
 
-    add_database_endpoint<review_vote>(m_server, review_app_api::getReviewVote, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)
+    add_database_get_endpoint<review_vote>(m_server, review_app_api::getReviewVote, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)
         {
             database_id reviewId = 0;
             database_id userId = 0;
@@ -178,7 +203,7 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
             return database->get_review_vote(reviewId, userId, userToken);
         });
 
-    add_database_endpoint<bool>(m_server, review_app_api::userTableIsEmpty, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)
+    add_database_get_endpoint<bool>(m_server, review_app_api::userTableIsEmpty, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)
         {
             return database->user_table_is_empty(userToken);
         });

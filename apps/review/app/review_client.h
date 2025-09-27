@@ -21,6 +21,8 @@ public:
 
     auto user_table_is_empty() -> concurrencpp::result<bool>;
 
+    auto post_project(const std::string projectName, const std::string projectDescription) -> concurrencpp::result<void>;
+
 private:
 
     auto get_user_session_token() const -> std::string

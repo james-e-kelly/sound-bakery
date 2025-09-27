@@ -40,6 +40,15 @@ enum review_app_version
     review_app_version_current = review_app_version_end - 1
 };
 
+struct review_app_endpoints
+{
+    static inline std::string workspace = "/workspace";
+    static inline std::string projects = "/projects";
+    static inline std::string reviews = "/reviews";
+    static inline std::string reviewVotes = "/votes";
+    static inline std::string users = "/users";
+};
+
 struct review_app_api
 {
     static inline std::string getWorkspaceName = "/get-workspace-name";
@@ -55,4 +64,7 @@ struct review_app_parameters
     static inline std::string projectId = "projectId";
     static inline std::string reviewId = "reviewId";
     static inline std::string userId = "userId";
+
+    static inline std::string name = "name";
+    static inline std::string description = "description";
 };
