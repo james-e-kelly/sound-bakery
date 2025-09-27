@@ -75,3 +75,19 @@ auto review_client::get_all_reviews(database_id projectId) -> concurrencpp::resu
 
     co_return std::vector<review_data>();
 }
+
+auto review_client::get_review_vote(database_id reviewId, database_id userId) -> concurrencpp::result<review_vote>
+{
+    co_await concurrencpp::resume_on(get_app()->background_executor());
+
+    httplib::Params params;
+    params.emplace(review_app_parameters::reviewId, std::to_string(reviewId));
+    params.emplace(review_app_parameters::userId, std::to_string(userId));
+
+    if (httplib::Result result = m_client->Get(review_app_api::getReviewVote, params, httplib::Headers()))
+    {
+        co_return deserialize_from_xml<review_vote>(result.value().body);
+    }
+
+    co_return review_vote();
+}

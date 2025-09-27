@@ -136,12 +136,15 @@ auto workspace_manager::async_get_users_for_review(int64_t reviewId) -> concurre
 
         if (!users.empty() && !reviewers.empty())
         {
-            co_await concurrencpp::resume_on(review_app::get()->thread_pool_executor());
+            co_await concurrencpp::resume_on(review_app::get()->background_executor());
 
-            std::transform(users.begin(), users.end(), reviewers.begin(), [this, database = get_database(), reviewId](const user_data& user) 
-                {
-                    return reviewer_data(user, database->get_review_vote(reviewId, user.m_userId, get_user_session_token()).get().value());
-                });
+            auto usersIter = users.begin();
+            auto reviewersIter = reviewers.begin();
+            for (; usersIter != users.end(); ++usersIter, ++reviewersIter)
+            {
+                review_vote vote = co_await m_client->get_review_vote(reviewId, usersIter->m_userId);
+                *reviewersIter = reviewer_data(*usersIter, vote);
+            }
 
             std::sort(reviewers.begin(), reviewers.end(), [userSettings = m_userSettingsData](const reviewer_data& lhs, const reviewer_data& rhs) -> bool
                 {

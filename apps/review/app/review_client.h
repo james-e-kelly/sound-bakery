@@ -17,6 +17,7 @@ public:
     auto get_workspace_name() -> concurrencpp::result<std::string>;
     auto get_all_projects() -> concurrencpp::result<std::vector<project_data>>;
     auto get_all_reviews(database_id projectId) -> concurrencpp::result<std::vector<review_data>>;
+    auto get_review_vote(database_id reviewId, database_id userId) -> concurrencpp::result<review_vote>;
 
 private:
 

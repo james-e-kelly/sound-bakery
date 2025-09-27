@@ -45,9 +45,12 @@ struct review_app_api
     static inline std::string getworkspaceName = "/get-workspace-name";
     static inline std::string getAllProjects = "/get-all-projects";
     static inline std::string getAllReviews = "/get-all-reviews";
+    static inline std::string getReviewVote = "/get-review-vote";
 };
 
 struct review_app_parameters
 {
     static inline std::string projectId = "projectId";
+    static inline std::string reviewId = "reviewId";
+    static inline std::string userId = "userId";
 };

@@ -84,7 +84,7 @@ namespace
         std::ostringstream outputStream;
         {
             boost::archive::xml_oarchive archive(outputStream);
-            archive& BOOST_SERIALIZATION_NVP(data);
+            archive & BOOST_SERIALIZATION_NVP(data);
         }
         return outputStream.str();
     }
@@ -158,6 +158,24 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
             }
 
             return database->get_all_reviews(projectId, userToken);
+        });
+
+    add_database_endpoint<review_vote>(m_server, review_app_api::getReviewVote, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)
+        {
+            database_id reviewId = 0;
+            database_id userId = 0;
+            
+            if (request.has_param(review_app_parameters::reviewId))
+            {
+                reviewId = std::stol(request.get_param_value(review_app_parameters::reviewId));
+            }
+
+            if (request.has_param(review_app_parameters::userId))
+            {
+                userId = std::stol(request.get_param_value(review_app_parameters::userId));
+            }
+
+            return database->get_review_vote(reviewId, userId, userToken);
         });
 }
 
