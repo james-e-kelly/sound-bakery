@@ -21,6 +21,8 @@
 #include "tl/expected.hpp"
 
 #include "boost/serialization/version.hpp"
+#include "boost/serialization/vector.hpp"
+#include "boost/serialization/map.hpp"
 #include <magic_enum/magic_enum.hpp>
 
 using database_id = int64_t;
@@ -36,4 +38,16 @@ enum review_app_version
     // Add versions above this //
     review_app_version_end,
     review_app_version_current = review_app_version_end - 1
+};
+
+struct review_app_api
+{
+    static inline std::string getworkspaceName = "/get-workspace-name";
+    static inline std::string getAllProjects = "/get-all-projects";
+    static inline std::string getAllReviews = "/get-all-reviews";
+};
+
+struct review_app_parameters
+{
+    static inline std::string projectId = "projectId";
 };

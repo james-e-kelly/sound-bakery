@@ -2,6 +2,8 @@
 
 #include "pch.h"
 
+#include "data/project_data.h"
+#include "data/review_data.h"
 #include "data/user_settings_data.h"
 
 class review_client : public gluten::manager
@@ -13,19 +15,10 @@ public:
     auto exit() -> void override;
 
     auto get_workspace_name() -> concurrencpp::result<std::string>;
+    auto get_all_projects() -> concurrencpp::result<std::vector<project_data>>;
+    auto get_all_reviews(database_id projectId) -> concurrencpp::result<std::vector<review_data>>;
 
 private:
-    static auto ping(const httplib::Request& request,
-                     httplib::Response& response) -> void
-    {
-        response.set_content("pong", "text/plain");
-    }
-
-    static auto get_workspace_name(const httplib::Request& request,
-                                   httplib::Response& response) -> void
-    {
-        response.set_content("Hello World!", "text/plain");
-    }
 
     auto get_user_session_token() const -> std::string
     {

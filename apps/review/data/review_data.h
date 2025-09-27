@@ -59,8 +59,9 @@ struct versionable_review_asset
     template <class archive_class>
     auto serialize(archive_class& archive, const unsigned int version) -> void
     {
-        archive & boost::serialization::make_nvp("file_name", m_fileName);
-        archive & boost::serialization::make_nvp("file_version", m_versionsToRelativeFiles);
+        archive & BOOST_SERIALIZATION_NVP(m_fileId);
+        archive & BOOST_SERIALIZATION_NVP(m_fileName);
+        archive & BOOST_SERIALIZATION_NVP(m_versionsToRelativeFiles);
     }
 };
 
@@ -76,6 +77,21 @@ struct review_data
     std::vector<versionable_review_asset> m_relativeContextFiles;   //< Context files are also versionable in case new context is required
     std::vector<versionable_review_asset> m_reviewAssets;
     std::vector<database_id> m_reviewUserIds;
+
+    template <class archive_class>
+    auto serialize(archive_class& archive, const unsigned int version) -> void
+    {
+        archive & BOOST_SERIALIZATION_NVP(m_reviewId);
+        archive & BOOST_SERIALIZATION_NVP(m_reviewName);
+        archive & BOOST_SERIALIZATION_NVP(m_reviewTaskUrl);
+        archive & BOOST_SERIALIZATION_NVP(m_reviewDescription);
+        archive & BOOST_SERIALIZATION_NVP(m_reviewPhase);
+        archive & BOOST_SERIALIZATION_NVP(m_reviewQuality);
+        archive & BOOST_SERIALIZATION_NVP(m_reviewStatus);
+        archive & BOOST_SERIALIZATION_NVP(m_relativeContextFiles);
+        archive & BOOST_SERIALIZATION_NVP(m_reviewAssets);
+        archive & BOOST_SERIALIZATION_NVP(m_reviewUserIds);
+    }
 
     bool operator<(const review_data& review) const
     {

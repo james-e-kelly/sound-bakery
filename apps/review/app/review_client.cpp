@@ -27,16 +27,51 @@ auto review_client::exit() -> void
     }
 }
 
+template <typename T>
+T deserialize_from_xml(const std::string& body)
+{
+    T data;
+    std::istringstream inputStream(body);
+    boost::archive::xml_iarchive archive(inputStream);
+    archive & BOOST_SERIALIZATION_NVP(data);
+    return data;
+}
+
 auto review_client::get_workspace_name() -> concurrencpp::result<std::string>
 {
-    BOOST_ASSERT(m_client);
-
     co_await concurrencpp::resume_on(get_app()->background_executor());
 
-    httplib::Result result = m_client->Get("/get_workspace_name");
-    if (result)
+    if (httplib::Result result = m_client->Get(review_app_api::getworkspaceName))
     {
-        co_return result.value().body;
+        co_return deserialize_from_xml<std::string>(result.value().body);
     }
+    
     co_return std::string();
+}
+
+auto review_client::get_all_projects() -> concurrencpp::result<std::vector<project_data>>
+{
+    co_await concurrencpp::resume_on(get_app()->background_executor());
+    
+    if (httplib::Result result = m_client->Get(review_app_api::getAllProjects))
+    {
+        co_return deserialize_from_xml<std::vector<project_data>>(result.value().body);
+    }
+
+    co_return std::vector<project_data>();
+}
+
+auto review_client::get_all_reviews(database_id projectId) -> concurrencpp::result<std::vector<review_data>>
+{
+    co_await concurrencpp::resume_on(get_app()->background_executor());
+
+    httplib::Params params;
+    params.emplace(review_app_parameters::projectId, std::to_string(projectId));
+
+    if (httplib::Result result = m_client->Get(review_app_api::getAllReviews, params, httplib::Headers()))
+    {
+        co_return deserialize_from_xml<std::vector<review_data>>(result.value().body);
+    }
+
+    co_return std::vector<review_data>();
 }

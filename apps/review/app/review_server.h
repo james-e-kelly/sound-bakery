@@ -14,13 +14,5 @@ public:
     auto exit() -> void override;
 
 private:
-    static auto ping(const httplib::Request& request, httplib::Response& response) -> void
-    {
-        response.set_content("pong", "text/plain");
-    }
-
-    static auto get_workspace_name(const httplib::Request& request,
-                                   httplib::Response& response) -> void;
-
     std::unique_ptr<httplib::SSLServer> m_server;
 };

@@ -130,6 +130,7 @@ namespace gluten
         std::shared_ptr<concurrencpp::manual_executor> m_tickExecutor;
 
         bool m_hasInit          = false;
+        bool m_hasStarted       = false;
         bool m_isRequestingExit = false;
 
         double m_deltaTime = 0.0;
@@ -191,6 +192,11 @@ namespace gluten
         if (managerPtr)
         {
             managerPtr->init(this);
+
+            if (m_hasStarted)
+            {
+                managerPtr->start();
+            }
         }
 
         return std::static_pointer_cast<T>(managerPtr);

@@ -16,8 +16,12 @@ struct project_data
     template <class archive_class>
     auto serialize(archive_class& archive, const unsigned int version) -> void
     {
-        archive & boost::serialization::make_nvp("project_name", m_projectName);
-        archive & boost::serialization::make_nvp("project_description", m_projectDescription);
+        archive & BOOST_SERIALIZATION_NVP(m_id);
+        archive & BOOST_SERIALIZATION_NVP(m_projectName);
+        archive & BOOST_SERIALIZATION_NVP(m_projectDescription);
+        archive & BOOST_SERIALIZATION_NVP(m_openReviews);
+        archive & BOOST_SERIALIZATION_NVP(m_closedReviews);
+        archive & BOOST_SERIALIZATION_NVP(m_archivedReviews);
     }
 
     bool operator<(const project_data& project) const

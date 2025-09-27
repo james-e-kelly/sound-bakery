@@ -227,7 +227,7 @@ auto workspace_manager::select_project(const std::string projectName) -> concurr
 
             if (m_cachedReviews.get_cache_needs_filling(key))
             {
-                m_cachedReviews.set_async_fill_cache(key, transform_database_result_to_cache_result<std::vector<review_data>>(get_database()->get_all_reviews(key.m_key, get_user_session_token())));
+                m_cachedReviews.set_async_fill_cache(key, m_client->get_all_reviews(key.m_key));
             }
             break;
         }
@@ -280,7 +280,7 @@ auto workspace_manager::get_all_projects() -> typename global_cache_type<project
 
     if (m_cachedProjects.get_cache_needs_filling(key))
     {
-        m_cachedProjects.set_async_fill_cache(key, transform_database_result_to_cache_result(get_database()->get_all_projects(get_user_session_token())));
+        m_cachedProjects.set_async_fill_cache(key, m_client->get_all_projects());
         m_selectedProject = project_data();
     }
 
@@ -366,13 +366,10 @@ auto workspace_manager::create_review(const new_frontend_review_data newReview) 
         co_await concurrencpp::resume_on(get_app()->get_tick_executor());
 
         const gluten::key_and_token_cache_key key(m_selectedProject.m_id, get_user_session_token());
-        const auto newReviewDataResult = co_await get_database()->get_all_reviews(m_selectedProject.m_id, get_user_session_token());
+        const auto newReviewDataResult = co_await m_client->get_all_reviews(m_selectedProject.m_id);
     
-        if (newReviewDataResult.has_value())
-        {
-            m_cachedReviews.set_cache_data(key, newReviewDataResult.value());
-            select_review(createReviewResult.value().m_reviewId);
-        }
+        m_cachedReviews.set_cache_data(key, newReviewDataResult);
+        select_review(createReviewResult.value().m_reviewId);
     }
 }
 
@@ -394,7 +391,7 @@ auto workspace_manager::get_all_reviews() -> typename default_cache_type<review_
 
     if (m_cachedReviews.get_cache_needs_filling(key))
     {
-        m_cachedReviews.set_async_fill_cache(key, transform_database_result_to_cache_result(get_database()->get_all_reviews(m_selectedProject.m_id, get_user_session_token())));
+        m_cachedReviews.set_async_fill_cache(key, m_client->get_all_reviews(m_selectedProject.m_id));
     }
 
     return m_cachedReviews.get_cached_data({m_selectedProject.m_id, get_user_session_token()});
@@ -431,13 +428,10 @@ auto workspace_manager::create_review_version(int64_t reviewId, new_frontend_rev
         co_await concurrencpp::resume_on(get_app()->get_tick_executor());
 
         const gluten::key_and_token_cache_key key(m_selectedProject.m_id, get_user_session_token());
-        const auto newReviewDataResult = co_await get_database()->get_all_reviews(m_selectedProject.m_id, get_user_session_token());
+        const auto newReviewDataResult = co_await m_client->get_all_reviews(m_selectedProject.m_id);
     
-        if (newReviewDataResult.has_value())
-        {
-            m_cachedReviews.set_cache_data(key, newReviewDataResult.value());
-            select_review(reviewId);
-        }
+        m_cachedReviews.set_cache_data(key, newReviewDataResult);
+        select_review(reviewId);
     }
 }
 
@@ -456,13 +450,10 @@ auto workspace_manager::set_review_status(database_id reviewId, review_status st
     if (setReviewResult.has_value() && setReviewResult.value())
     {
         const gluten::key_and_token_cache_key key(m_selectedProject.m_id, get_user_session_token());
-        const auto getReviewsResult = co_await get_database()->get_all_reviews(m_selectedProject.m_id, get_user_session_token());
+        const auto getReviewsResult = co_await m_client->get_all_reviews(m_selectedProject.m_id);
 
-        if (getReviewsResult.has_value())
-        {
-            m_cachedReviews.set_cache_data(key, getReviewsResult.value());
-            select_review(reviewId);
-        }
+        m_cachedReviews.set_cache_data(key, getReviewsResult);
+        select_review(reviewId);
     }
 }
 

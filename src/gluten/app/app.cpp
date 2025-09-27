@@ -58,6 +58,8 @@ int gluten::app::run(int argc, char** argv)
 
     start();
 
+    m_hasStarted = true;
+
     while (!m_isRequestingExit)
     {
         tick();

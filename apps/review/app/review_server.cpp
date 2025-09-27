@@ -77,6 +77,42 @@ namespace
 
         return false;
     }
+
+    template <typename T>
+    std::string serialize_to_xml(const T& data)
+    {
+        std::ostringstream outputStream;
+        {
+            boost::archive::xml_oarchive archive(outputStream);
+            archive& BOOST_SERIALIZATION_NVP(data);
+        }
+        return outputStream.str();
+    }
+
+    template<typename data_type>
+    auto add_database_endpoint(const std::unique_ptr<httplib::SSLServer>& server, const std::string& pattern, std::function<review_database::database_result<data_type>(std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)> databaseFunction)
+    {
+        server->Get(pattern, [function = std::move(databaseFunction)](const httplib::Request& request, httplib::Response& response) 
+            {
+                if (auto database = review_app::get_review_database())
+                {
+                    const auto databaseResult = function(database, httplib::get_bearer_token_auth(request), request).get();
+
+                    if (databaseResult.has_value())
+                    {
+                        response.set_content(serialize_to_xml(databaseResult.value()), "application/xml");
+                    }
+                    else
+                    {
+                        response.status = httplib::StatusCode::InternalServerError_500;
+                    }
+                }
+                else
+                {
+                    response.status = httplib::StatusCode::InternalServerError_500;
+                }
+            });
+    }
 }
 
 review_server::review_server(gluten::app* app, const std::filesystem::path& workspacePath)
@@ -102,18 +138,35 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
 
     m_server = std::make_unique<httplib::SSLServer>(certPath.string().c_str(), keyPath.string().c_str());
 
-    m_server->Get("/get_workspace_name", &review_server::get_workspace_name);
-    m_server->Get("/ping", &review_server::ping);
-
-    get_app()->background_executor()->submit([this]() 
+    add_database_endpoint<std::vector<project_data>>(m_server, review_app_api::getAllProjects, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)
         {
-            m_server->listen("localhost", 8080);
+            return database->get_all_projects(userToken);
+        });
+
+    add_database_endpoint<std::string>(m_server, review_app_api::getworkspaceName, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)
+        {
+            return database->get_workspace_name(userToken);
+        });
+
+    add_database_endpoint<std::vector<review_data>>(m_server, review_app_api::getAllReviews, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)
+        {
+            database_id projectId = 0;
+            
+            if (request.has_param(review_app_parameters::projectId))
+            {
+                projectId = std::stol(request.get_param_value(review_app_parameters::projectId));
+            }
+
+            return database->get_all_reviews(projectId, userToken);
         });
 }
 
 auto review_server::start() -> void
 {
-    
+    get_app()->background_executor()->submit([this]() 
+        {
+            m_server->listen("localhost", 8080);
+        });
 }
 
 auto review_server::exit() -> void
@@ -121,26 +174,5 @@ auto review_server::exit() -> void
     if (m_server)
     {
         m_server->stop();
-    }
-}
-
-auto review_server::get_workspace_name(const httplib::Request& request, httplib::Response& response) -> void
-{
-    if (auto database = review_app::get_review_database())
-    {
-        const auto databaseResult = database->get_workspace_name(httplib::get_bearer_token_auth(request)).get();
-
-        if (databaseResult.has_value())
-        {
-            response.set_content(databaseResult.value(), "text/plain");
-        }
-        else
-        {
-            response.status = httplib::StatusCode::InternalServerError_500;
-        }
-    }
-    else
-    {
-        response.status = httplib::StatusCode::InternalServerError_500;
     }
 }
