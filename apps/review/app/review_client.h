@@ -19,6 +19,8 @@ public:
     auto get_all_reviews(database_id projectId) -> concurrencpp::result<std::vector<review_data>>;
     auto get_review_vote(database_id reviewId, database_id userId) -> concurrencpp::result<review_vote>;
 
+    auto user_table_is_empty() -> concurrencpp::result<bool>;
+
 private:
 
     auto get_user_session_token() const -> std::string

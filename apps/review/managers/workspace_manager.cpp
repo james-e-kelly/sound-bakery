@@ -94,7 +94,7 @@ auto workspace_manager::open_workspace(const std::filesystem::path workspaceFile
         co_await get_database()->open_workspace(workspaceFile.stem().string());
         co_await get_database()->get_workspace_name(get_user_session_token());
 
-        if (co_await transform_database_result_to_bool(get_database()->user_table_is_empty(get_user_session_token())) || get_user_session_token().empty() || get_user_session_has_expired())
+        if (co_await m_client->user_table_is_empty() || get_user_session_token().empty() || get_user_session_has_expired())
         {
             co_await concurrencpp::resume_on(review_app::get()->get_tick_executor());
             open_user_flow_popup();
@@ -183,7 +183,7 @@ auto workspace_manager::open_user_flow_popup() -> concurrencpp::result<void>
     m_userFlowPopup = get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class_to_root<user_flow_popup>(false);
     m_userFlowPopup->open_popup();
 
-    if (co_await transform_database_result_to_bool(get_database()->user_table_is_empty(get_user_session_token())))
+    if (co_await m_client->user_table_is_empty())
     {
         m_userFlowPopup->set_flow_type(user_flow_type::new_user_and_login);
     }
@@ -539,7 +539,7 @@ auto workspace_manager::create_user(const new_user_data newUser, std::optional<s
 
 auto workspace_manager::create_user_and_login(new_user_data newUser) -> concurrencpp::result<tl::expected<bool, database_error>>
 {
-    if (co_await transform_database_result_to_bool(get_database()->user_table_is_empty(get_user_session_token())))
+    if (co_await m_client->user_table_is_empty())
     {
         newUser.m_requestedPrivileges = user_privileges::admin;
     }

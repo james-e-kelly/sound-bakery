@@ -41,7 +41,7 @@ auto review_client::get_workspace_name() -> concurrencpp::result<std::string>
 {
     co_await concurrencpp::resume_on(get_app()->background_executor());
 
-    if (httplib::Result result = m_client->Get(review_app_api::getworkspaceName))
+    if (httplib::Result result = m_client->Get(review_app_api::getWorkspaceName))
     {
         co_return deserialize_from_xml<std::string>(result.value().body);
     }
@@ -90,4 +90,16 @@ auto review_client::get_review_vote(database_id reviewId, database_id userId) ->
     }
 
     co_return review_vote();
+}
+
+auto review_client::user_table_is_empty() -> concurrencpp::result<bool>
+{
+    co_await concurrencpp::resume_on(get_app()->background_executor());
+
+    if (httplib::Result result = m_client->Get(review_app_api::userTableIsEmpty))
+    {
+        co_return deserialize_from_xml<bool>(result.value().body);
+    }
+    
+    co_return true;
 }

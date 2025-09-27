@@ -143,7 +143,7 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
             return database->get_all_projects(userToken);
         });
 
-    add_database_endpoint<std::string>(m_server, review_app_api::getworkspaceName, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)
+    add_database_endpoint<std::string>(m_server, review_app_api::getWorkspaceName, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)
         {
             return database->get_workspace_name(userToken);
         });
@@ -176,6 +176,11 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
             }
 
             return database->get_review_vote(reviewId, userId, userToken);
+        });
+
+    add_database_endpoint<bool>(m_server, review_app_api::userTableIsEmpty, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)
+        {
+            return database->user_table_is_empty(userToken);
         });
 }
 

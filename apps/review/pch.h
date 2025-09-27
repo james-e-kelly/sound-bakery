@@ -42,10 +42,12 @@ enum review_app_version
 
 struct review_app_api
 {
-    static inline std::string getworkspaceName = "/get-workspace-name";
+    static inline std::string getWorkspaceName = "/get-workspace-name";
     static inline std::string getAllProjects = "/get-all-projects";
     static inline std::string getAllReviews = "/get-all-reviews";
     static inline std::string getReviewVote = "/get-review-vote";
+
+    static inline std::string userTableIsEmpty = "/user-table-is-empty";
 };
 
 struct review_app_parameters
