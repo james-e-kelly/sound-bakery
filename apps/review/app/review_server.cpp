@@ -104,7 +104,16 @@ namespace
                     }
                     else
                     {
-                        response.status = httplib::StatusCode::InternalServerError_500;
+                        const auto error = databaseResult.error();
+
+                        if (error.m_errorCode == database_error_code::unauthorized)
+                        {
+                            response.status = httplib::StatusCode::Unauthorized_401;
+                        }
+                        else
+                        {
+                            response.status = httplib::StatusCode::InternalServerError_500;
+                        }
                     }
                 }
                 else

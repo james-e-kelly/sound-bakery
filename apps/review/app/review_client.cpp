@@ -51,15 +51,9 @@ review_client::review_client(gluten::app* app, const std::filesystem::path& work
     if (std::filesystem::exists(workspacePath, errorCode))
     {
         m_client = std::make_unique<httplib::SSLClient>("localhost", 8080);
+
         m_client->enable_server_certificate_verification(false);
-
         m_client->set_bearer_token_auth(get_user_session_token());
-
-        httplib::Result result = m_client->Get("/ping");
-        if (result) 
-        {
-            const std::string value = result.value().body;
-        }
     }
 }
 
