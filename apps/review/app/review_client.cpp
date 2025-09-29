@@ -138,7 +138,7 @@ auto review_client::post_review(database_id projectId, const new_transit_review_
 
     const httplib::Result postResult = m_client->Post(review_app_endpoints::reviews, httplib::Headers(), items);
 
-    if (postResult && postResult.value().status == httplib::StatusCode::OK_200)
+    if (http_result_okay(postResult))
     {
         review = review_app_serialization::deserialize_from_xml<review_data>(postResult.value().body);
     }

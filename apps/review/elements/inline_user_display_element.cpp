@@ -96,7 +96,7 @@ namespace
 
             const httplib::Result result = client->Get(fmt::format("/avatar/{}?s={}&d=identicon", emailHash, size));
 
-            if (result)
+            if (http_result_okay(result))
             {
                 const std::string body = result->body;
 

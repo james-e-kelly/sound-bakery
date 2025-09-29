@@ -99,6 +99,11 @@ private:
     ULONG m_refCount;
 };
 
+auto http_result_okay(const httplib::Result& result) -> bool
+{
+    return result && result.value().status == httplib::StatusCode::OK_200;
+}
+
 auto create_application() -> gluten::app* 
 {
 	return new review_app();

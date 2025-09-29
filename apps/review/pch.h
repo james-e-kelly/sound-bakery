@@ -25,10 +25,12 @@
 #include "boost/serialization/map.hpp"
 #include <magic_enum/magic_enum.hpp>
 
+auto http_result_okay(const httplib::Result& result) -> bool;
+
 namespace review_app_serialization
 {
     template <typename T>
-    T deserialize_from_xml(const std::string& body)
+    auto deserialize_from_xml(const std::string& body) -> T
     {
         T data;
         std::istringstream inputStream(body);
@@ -38,7 +40,7 @@ namespace review_app_serialization
     }
 
     template <typename T>
-    std::string serialize_to_xml(const T& data)
+    auto serialize_to_xml(const T& data) -> std::string
     {
         std::ostringstream outputStream;
         {
