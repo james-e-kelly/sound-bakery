@@ -68,6 +68,7 @@ enum review_app_version
 
 struct review_app_endpoints
 {
+    static inline std::string me = "/me";
     static inline std::string workspace = "/workspace";
     static inline std::string projects = "/projects";
     static inline std::string reviews = "/reviews";

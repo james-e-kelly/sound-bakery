@@ -72,6 +72,11 @@ auto review_client::get_review_vote(database_id reviewId, database_id userId) ->
     }
 }
 
+auto review_client::user_is_logged_in() -> concurrencpp::result<bool>
+{
+    co_return co_await get_api<bool>(m_client, review_app_endpoints::me);
+}
+
 auto review_client::user_table_is_empty() -> concurrencpp::result<bool>
 {
     co_return (co_await get_api<std::vector<user_data>>(m_client, review_app_endpoints::users)).empty();

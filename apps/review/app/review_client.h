@@ -19,6 +19,7 @@ public:
     auto get_all_reviews(database_id projectId) -> concurrencpp::result<std::vector<review_data>>;
     auto get_review_vote(database_id reviewId, database_id userId) -> concurrencpp::result<review_vote>;
 
+    auto user_is_logged_in() -> concurrencpp::result<bool>;
     auto user_table_is_empty() -> concurrencpp::result<bool>;
 
     auto post_project(const std::string projectName, const std::string projectDescription) -> concurrencpp::result<database_id>;

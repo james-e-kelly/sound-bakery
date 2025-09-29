@@ -175,6 +175,11 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
 
     // GET
 
+    add_database_get_endpoint<bool>(m_server, review_app_endpoints::me, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)
+        {
+            return database->user_has_privilege(userToken, user_privileges::guest);
+        });
+
     add_database_get_endpoint<workspace_data>(m_server, review_app_endpoints::workspace, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)
         {
             return database->get_workspace(userToken);
