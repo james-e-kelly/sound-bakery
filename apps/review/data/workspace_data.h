@@ -4,6 +4,7 @@
 
 struct workspace_data
 {
+    database_id m_id = 0;
     std::string m_workspaceName;
 
     template <class archive_class>

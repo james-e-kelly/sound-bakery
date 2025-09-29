@@ -63,6 +63,17 @@ struct user_data
     std::string m_email;
     std::string m_createdAt;
     user_privileges m_privileges = user_privileges::guest;
+
+    template <class archive_class>
+    auto serialize(archive_class& archive, const unsigned int version) -> void
+    {
+        archive & BOOST_SERIALIZATION_NVP(m_userId);
+        archive & BOOST_SERIALIZATION_NVP(m_displayName);
+        archive & BOOST_SERIALIZATION_NVP(m_title);
+        archive & BOOST_SERIALIZATION_NVP(m_email);
+        archive & BOOST_SERIALIZATION_NVP(m_createdAt);
+        archive & BOOST_SERIALIZATION_NVP(m_privileges);
+    }
 };
 
 /**

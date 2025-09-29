@@ -39,7 +39,7 @@ auto review_client::exit() -> void
 
 auto review_client::get_workspace_name() -> concurrencpp::result<std::string>
 {
-    co_return co_await get_api<std::string>(m_client, review_app_api::getWorkspaceName);
+    co_return (co_await get_api<workspace_data>(m_client, review_app_endpoints::workspace)).m_workspaceName;
 }
 
 auto review_client::get_all_projects() -> concurrencpp::result<std::vector<project_data>>
@@ -55,17 +55,26 @@ auto review_client::get_all_reviews(database_id projectId) -> concurrencpp::resu
 
 auto review_client::get_review_vote(database_id reviewId, database_id userId) -> concurrencpp::result<review_vote>
 {
-    co_return co_await get_api<review_vote>(m_client, review_app_api::getReviewVote,
+    const auto reviewVotes = co_await get_api<std::vector<review_vote>>(m_client, review_app_endpoints::reviewVotes,
         httplib::Params
         {
             {review_app_parameters::reviewId, std::to_string(reviewId)},
             {review_app_parameters::userId, std::to_string(userId)}
         });
+
+    if (reviewVotes.empty())
+    {
+        co_return review_vote();
+    }
+    else
+    {
+        co_return reviewVotes[0];
+    }
 }
 
 auto review_client::user_table_is_empty() -> concurrencpp::result<bool>
 {
-    co_return co_await get_api<bool>(m_client, review_app_api::userTableIsEmpty);
+    co_return (co_await get_api<std::vector<user_data>>(m_client, review_app_endpoints::users)).empty();
 }
 
 auto review_client::post_project(const std::string projectName, const std::string projectDescription) -> concurrencpp::result<database_id>

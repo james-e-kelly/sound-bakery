@@ -43,20 +43,20 @@ public:
     using bool_result = database_result<bool>;
 
 public:
+    auto create_workspace(const std::string name) const                                                                             -> bool_result;
     auto open_workspace(const std::string name) const                                                                               -> bool_result;
     auto login_user(login_request_data loginRequest) const                                                                          -> database_result<logged_in_user_data>;
     
-    auto create_workspace(const std::string name) const                                                                             -> bool_result;
     auto create_user(new_user_data newUser, std::string userToken) const                                                            -> bool_result;
     auto create_project(const std::string name, const std::string description, std::string userToken) const                         -> database_result<project_data>;
     auto create_review(database_id projectId, const new_transit_review_data newReview, std::string userToken) const                 -> database_result<review_data>;
     auto create_review_version(database_id reviewId, const new_transit_review_data newReviewVersion, std::string userToken) const   -> database_result<review_data>;
     auto create_comment(new_comment_data newComment, std::string userToken) const                                                   -> bool_result;
     
-    auto get_workspace_name(std::string userToken) const                                                                            -> database_result<std::string>;
+    auto get_workspace(std::string userToken) const                                                                                 -> database_result<workspace_data>;
     auto get_all_projects(std::string userToken) const                                                                              -> database_result<std::vector<project_data>>;
     auto get_all_reviews(database_id projectId, std::string userToken) const                                                        -> database_result<std::vector<review_data>>;
-    auto get_review_vote(database_id reviewId, database_id userId, std::string userToken) const                                     -> database_result<review_vote>;
+    auto get_review_votes(database_id reviewId, database_id userId, std::string userToken) const                                    -> database_result<std::vector<review_vote>>;
     auto get_all_review_activity(database_id reviewId, std::string userToken) const                                                 -> database_result<std::vector<activity_data>>;
     auto get_all_comments_for_review(database_id reviewId, std::string userToken) const                                             -> database_result<std::vector<comment_data>>;
     auto get_all_users(std::string userToken) const                                                                                 -> database_result<std::vector<user_data>>;

@@ -242,23 +242,25 @@ auto review_database::open_workspace(const std::string name) const -> bool_resul
     co_return true;
 }
 
-auto review_database::get_workspace_name(std::string userToken) const -> database_result<std::string>
+auto review_database::get_workspace(std::string userToken) const -> database_result<workspace_data>
 {
     MOVE_TO_DATABASE_THREAD();
     CHECK_TABLE_EXISTS(workspaces);
     CHECK_USER_PRIVILEGE(userToken, user_privileges::guest);
     INSERT_NETWORK_TEST();
 
+    database_id id            = 0;
     std::string workspaceName = "Unknown";
 
-    SQLite::Statement query(m_database, "SELECT name FROM workspaces LIMIT 1;");
+    SQLite::Statement query(m_database, "SELECT id, name FROM workspaces LIMIT 1;");
 
     while (query.executeStep())
     {
-        workspaceName = query.getColumn(0).getString();
+        id            = query.getColumn(0).getInt64();
+        workspaceName = query.getColumn(1).getString();
     }
 
-    co_return workspaceName;
+    co_return workspace_data{id, workspaceName};
 }
 
 auto review_database::create_project(const std::string name, const std::string description, std::string userToken) const -> database_result<project_data>
@@ -668,7 +670,7 @@ auto review_database::get_all_reviews(database_id projectId, std::string userTok
     co_return result;
 }
 
-auto review_database::get_review_vote(database_id reviewId, database_id userId, std::string userToken) const -> database_result<review_vote>
+auto review_database::get_review_votes(database_id reviewId, database_id userId, std::string userToken) const -> database_result<std::vector<review_vote>>
 {
     CHECK_ARG(reviewId > 0);
     CHECK_ARG(userId > 0);
@@ -677,15 +679,17 @@ auto review_database::get_review_vote(database_id reviewId, database_id userId, 
     CHECK_TABLE_EXISTS(votes);
     INSERT_NETWORK_TEST();
 
-    review_vote result = review_vote::no_vote;
+    std::vector<review_vote> result;
 
-    SQLite::Statement getVoteStatement(m_database, "SELECT vote FROM votes WHERE review_id = ? AND user_id = ?;");
+    SQLite::Statement getVoteStatement(m_database, "SELECT vote FROM votes WHERE (? <= 0 OR review_id = ?) AND (? <= 0 OR user_id = ?);");
     getVoteStatement.bind(1, reviewId);
-    getVoteStatement.bind(2, userId);
+    getVoteStatement.bind(2, reviewId);
+    getVoteStatement.bind(3, userId);
+    getVoteStatement.bind(4, userId);
 
     while (getVoteStatement.executeStep())
     {
-        result = (review_vote)getVoteStatement.getColumn(0).getInt();
+        result.push_back((review_vote)getVoteStatement.getColumn(0).getInt());
     }
 
     co_return result;

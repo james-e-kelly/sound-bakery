@@ -92,7 +92,6 @@ auto workspace_manager::open_workspace(const std::filesystem::path workspaceFile
         
         co_await concurrencpp::resume_on(review_app::get()->thread_pool_executor());
         co_await get_database()->open_workspace(workspaceFile.stem().string());
-        co_await get_database()->get_workspace_name(get_user_session_token());
 
         if (co_await m_client->user_table_is_empty() || get_user_session_token().empty() || get_user_session_has_expired())
         {
