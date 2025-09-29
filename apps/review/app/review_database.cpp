@@ -586,7 +586,6 @@ auto review_database::update_review(const review_data review, std::string userTo
 
 auto review_database::get_all_reviews(database_id projectId, std::string userToken) const -> database_result<std::vector<review_data>>
 {
-    CHECK_ARG(projectId > 0);
     MOVE_TO_DATABASE_THREAD();
     CHECK_USER_PRIVILEGE(userToken, user_privileges::guest);
     CHECK_TABLE_EXISTS(reviews);
@@ -594,8 +593,9 @@ auto review_database::get_all_reviews(database_id projectId, std::string userTok
 
     std::vector<review_data> result;
 
-    SQLite::Statement query(m_database, "SELECT id, name, description, task_url, status, phase, quality FROM reviews WHERE project_id=?;");
+    SQLite::Statement query(m_database, "SELECT id, name, description, task_url, status, phase, quality FROM reviews WHERE (? <= 0 OR project_id=?);");
     query.bind(1, projectId);
+    query.bind(2, projectId);
 
     while (query.executeStep())
     {

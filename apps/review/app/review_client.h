@@ -21,10 +21,10 @@ public:
 
     auto user_table_is_empty() -> concurrencpp::result<bool>;
 
-    auto post_project(const std::string projectName, const std::string projectDescription) -> concurrencpp::result<void>;
+    auto post_project(const std::string projectName, const std::string projectDescription) -> concurrencpp::result<database_id>;
+    auto post_review(database_id projectId, const new_transit_review_data newReview) -> concurrencpp::result<tl::expected<review_data,bool>>;
 
 private:
-
     auto get_user_session_token() const -> std::string
     {
         return m_userSettingsData->m_loggedInUser.m_sessionToken;

@@ -25,6 +25,30 @@
 #include "boost/serialization/map.hpp"
 #include <magic_enum/magic_enum.hpp>
 
+namespace review_app_serialization
+{
+    template <typename T>
+    T deserialize_from_xml(const std::string& body)
+    {
+        T data;
+        std::istringstream inputStream(body);
+        boost::archive::xml_iarchive archive(inputStream);
+        archive & BOOST_SERIALIZATION_NVP(data);
+        return data;
+    }
+
+    template <typename T>
+    std::string serialize_to_xml(const T& data)
+    {
+        std::ostringstream outputStream;
+        {
+            boost::archive::xml_oarchive archive(outputStream);
+            archive & BOOST_SERIALIZATION_NVP(data);
+        }
+        return outputStream.str();
+    }
+}
+
 using database_id = int64_t;
 
 enum review_app_version
@@ -67,4 +91,7 @@ struct review_app_parameters
 
     static inline std::string name = "name";
     static inline std::string description = "description";
+    static inline std::string data = "data";
+    static inline std::string reviewFile = "review_file";
+    static inline std::string contextFile = "context_file";
 };

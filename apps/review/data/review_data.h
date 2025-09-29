@@ -112,6 +112,17 @@ struct new_review_data_base
     review_phase m_reviewPhase = review_phase::first_pass;
     review_quality m_reviewQuality = review_quality::c;
     std::vector<database_id> m_reviewerIds;
+
+    template <class archive_class>
+    auto serialize(archive_class& archive, const unsigned int version) -> void
+    {
+        archive & BOOST_SERIALIZATION_NVP(m_reviewName);
+        archive & BOOST_SERIALIZATION_NVP(m_reviewTaskUrl);
+        archive & BOOST_SERIALIZATION_NVP(m_reviewDescription);
+        archive & BOOST_SERIALIZATION_NVP(m_reviewPhase);
+        archive & BOOST_SERIALIZATION_NVP(m_reviewQuality);
+        archive & BOOST_SERIALIZATION_NVP(m_reviewerIds);
+    }
 };
 
 /**
@@ -140,10 +151,17 @@ struct review_file_data
  */
 struct new_transit_review_data : public new_review_data_base
 {
+    new_transit_review_data() = default;
     new_transit_review_data(const new_frontend_review_data& frontendData);
 
     std::vector<review_file_data> m_contextFiles;  //< Absolute files to copy into the review folder
     std::vector<review_file_data> m_reviewFiles;   //< Absolute files to copy into the review folder
+
+    template <class archive_class>
+    auto serialize(archive_class& archive, const unsigned int version) -> void
+    {
+        archive & BOOST_SERIALIZATION_BASE_OBJECT_NVP(new_review_data_base);
+    }
 };
 
 /**

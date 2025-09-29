@@ -358,22 +358,18 @@ auto workspace_manager::create_review(const new_frontend_review_data newReview) 
         co_return;
     }
 
+    const new_transit_review_data newBackendReviewData(newReview);
+    const database_id selectedProject = get_selected_project().m_id;
+
     co_await concurrencpp::resume_on(get_app()->background_executor());
 
-    new_transit_review_data newBackendReviewData(newReview);
+    const auto review = co_await m_client->post_review(selectedProject, newBackendReviewData);
 
-    const auto createReviewResult = co_await get_database()->create_review(get_selected_project().m_id, newBackendReviewData, get_user_session_token());
+    co_await concurrencpp::resume_on(get_app()->get_tick_executor());
 
-    if (createReviewResult.has_value())
-    {
-        co_await concurrencpp::resume_on(get_app()->get_tick_executor());
-
-        const gluten::key_and_token_cache_key key(m_selectedProject.m_id, get_user_session_token());
-        const auto newReviewDataResult = co_await m_client->get_all_reviews(m_selectedProject.m_id);
-    
-        m_cachedReviews.set_cache_data(key, newReviewDataResult);
-        select_review(createReviewResult.value().m_reviewId);
-    }
+    const gluten::key_and_token_cache_key key(m_selectedProject.m_id, get_user_session_token());
+    m_cachedReviews.get_raw_data(key).push_back(review.value());
+    select_review(review.value().m_reviewId);
 }
 
 auto workspace_manager::update_review(const review_data& updatedReview) -> concurrencpp::result<void>
@@ -535,6 +531,8 @@ auto workspace_manager::create_user(const new_user_data newUser, std::optional<s
     co_await concurrencpp::resume_on(get_app()->get_tick_executor());
     m_userFlowPopup.reset();
     m_cachedUsers.set_cache_expired(get_user_session_token());
+
+    co_return true;
 }
 
 auto workspace_manager::create_user_and_login(new_user_data newUser) -> concurrencpp::result<tl::expected<bool, database_error>>

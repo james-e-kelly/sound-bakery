@@ -78,17 +78,6 @@ namespace
         return false;
     }
 
-    template <typename T>
-    std::string serialize_to_xml(const T& data)
-    {
-        std::ostringstream outputStream;
-        {
-            boost::archive::xml_oarchive archive(outputStream);
-            archive & BOOST_SERIALIZATION_NVP(data);
-        }
-        return outputStream.str();
-    }
-
     template<typename data_type>
     auto add_database_get_endpoint(const std::unique_ptr<httplib::SSLServer>& server, const std::string& pattern, std::function<review_database::database_result<data_type>(std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)> databaseFunction)
     {
@@ -100,7 +89,7 @@ namespace
 
                     if (databaseResult.has_value())
                     {
-                        response.set_content(serialize_to_xml(databaseResult.value()), "application/xml");
+                        response.set_content(review_app_serialization::serialize_to_xml(databaseResult.value()), "application/xml");
                     }
                     else
                     {
@@ -132,6 +121,26 @@ namespace
                     function(database, httplib::get_bearer_token_auth(request), request);
 
                     response.status = httplib::StatusCode::NoContent_204;
+                }
+                else
+                {
+                    response.status = httplib::StatusCode::InternalServerError_500;
+                }
+            });
+    }
+
+    auto add_database_post_form_endpoint(const std::unique_ptr<httplib::SSLServer>& server, const std::string& pattern, std::function<void(std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request, httplib::Response& response)> databaseFunction)
+    {
+        server->Post(pattern, [function = std::move(databaseFunction)](const httplib::Request& request, httplib::Response& response) 
+            {
+                if (auto database = review_app::get_review_database())
+                {
+                    function(database, httplib::get_bearer_token_auth(request), request, response);
+
+                    if (response.body.empty())
+                    {
+                        response.status = httplib::StatusCode::NoContent_204;
+                    }
                 }
                 else
                 {
@@ -182,7 +191,7 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
             return database->create_project(name, description, userToken);
         });
 
-    add_database_get_endpoint<std::vector<review_data>>(m_server, review_app_api::getAllReviews, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)
+    add_database_get_endpoint<std::vector<review_data>>(m_server, review_app_endpoints::reviews, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)
         {
             database_id projectId = 0;
             
@@ -192,6 +201,43 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
             }
 
             return database->get_all_reviews(projectId, userToken);
+        });
+
+    add_database_post_form_endpoint(m_server, review_app_endpoints::reviews, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request, httplib::Response& response)
+        {
+            new_transit_review_data newReviewTransitData = review_app_serialization::deserialize_from_xml<new_transit_review_data>(request.form.get_field(review_app_parameters::data));
+            database_id projectId = std::stoll(request.form.get_field(review_app_parameters::projectId));
+            auto contextFiles = request.form.get_files(review_app_parameters::contextFile);
+            auto reviewFiles = request.form.get_files(review_app_parameters::reviewFile);
+
+            for (const httplib::FormData& doc : contextFiles) 
+            {
+                newReviewTransitData.m_contextFiles.push_back(
+                    {
+                        doc.filename,
+                        std::vector<uint8_t>(doc.content.begin(), doc.content.end())
+                    });
+            }
+
+            for (const httplib::FormData& doc : reviewFiles) 
+            {
+                newReviewTransitData.m_reviewFiles.push_back(
+                    {
+                        doc.filename,
+                        std::vector<uint8_t>(doc.content.begin(), doc.content.end())
+                    });
+            }
+
+            const auto newReviewResult = database->create_review(projectId, newReviewTransitData, userToken).get();
+
+            review_data newReviewData;
+
+            if (newReviewResult.has_value())
+            {
+                newReviewData = newReviewResult.value();
+            }
+
+            response.set_content(review_app_serialization::serialize_to_xml<review_data>(newReviewData), "application/xml");
         });
 
     add_database_get_endpoint<review_vote>(m_server, review_app_api::getReviewVote, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)
