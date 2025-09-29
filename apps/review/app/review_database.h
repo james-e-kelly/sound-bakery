@@ -72,7 +72,6 @@ public:
     auto delete_comment(database_id commentId, std::string userToken) const                                                         -> bool_result;
     auto delete_user(std::string email, std::string userToken) const                                                                -> bool_result;
 
-    auto user_table_is_empty(std::string userToken) const                                                                           -> bool_result;
     auto user_can_perform_action(std::string userToken, activity_type activity) const                                               -> bool_result;
     auto user_has_privilege(std::string userToken, user_privileges privilege) const                                                 -> bool_result;
 private:

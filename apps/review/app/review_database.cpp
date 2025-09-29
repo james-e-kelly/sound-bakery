@@ -849,7 +849,13 @@ auto review_database::create_user(new_user_data newUser, std::string userToken) 
     CHECK_TABLE_EXISTS(activity);
     INSERT_NETWORK_TEST();
 
-    const bool firstUserCreation = userToken.empty() && user_table_is_empty(userToken);
+    auto user_table_is_empty = [this, userToken]() -> concurrencpp::result<bool>
+        {
+            const auto getUsersResult = co_await get_all_users(userToken);
+            co_return getUsersResult.has_value() ? getUsersResult.value().empty() : true;
+        };
+
+    const bool firstUserCreation = userToken.empty() && (co_await user_table_is_empty());
     const bool userLoggedIn      = !firstUserCreation && user_can_perform_action(userToken, activity_type::user_added);
 
     if (!firstUserCreation && !userLoggedIn)
@@ -890,23 +896,6 @@ auto review_database::create_user(new_user_data newUser, std::string userToken) 
     addActivity.exec();
 
     co_return true;
-}
-
-auto review_database::user_table_is_empty(std::string userToken) const -> database_result<bool>
-{
-    MOVE_TO_DATABASE_THREAD();
-    CHECK_TABLE_EXISTS(users);
-    INSERT_NETWORK_TEST();
-
-    std::size_t usersCount = 0;
-
-    SQLite::Statement getsUsersCountStatement(m_database, "SELECT COUNT(id) FROM users;");
-    if (getsUsersCountStatement.executeStep())
-    {
-        usersCount = getsUsersCountStatement.getColumn(0).getInt64();
-    }
-
-    co_return usersCount == 0;
 }
 
 auto review_database::user_can_perform_action(std::string userToken, activity_type activity) const -> database_result<bool>
