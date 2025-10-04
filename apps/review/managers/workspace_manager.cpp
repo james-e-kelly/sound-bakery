@@ -91,7 +91,6 @@ auto workspace_manager::open_workspace(const std::filesystem::path workspaceFile
         m_client = get_app()->add_manager_class<review_client>(workspaceFile.parent_path());
         
         co_await concurrencpp::resume_on(review_app::get()->thread_pool_executor());
-        co_await get_database()->open_workspace(workspaceFile.stem().string());
 
         if (co_await m_client->user_table_is_empty() || get_user_session_token().empty() || get_user_session_has_expired())
         {
@@ -406,7 +405,7 @@ auto workspace_manager::delete_review(int64_t reviewId) -> concurrencpp::result<
             return reviewId == review.m_reviewId;
         }));
 
-    co_await get_database()->delete_review(reviewId, get_user_session_token());
+    co_await m_client->delete_review(reviewId);
 
     m_cachedReviews.set_cache_expired(key);
 }

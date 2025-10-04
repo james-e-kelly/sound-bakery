@@ -25,6 +25,8 @@ public:
     auto post_project(const std::string projectName, const std::string projectDescription) -> concurrencpp::result<database_id>;
     auto post_review(database_id projectId, const new_transit_review_data newReview) -> concurrencpp::result<tl::expected<review_data,bool>>;
 
+    auto delete_review(database_id reviewId) -> concurrencpp::result<void>;
+
 private:
     auto get_user_session_token() const -> std::string
     {

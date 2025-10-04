@@ -159,3 +159,15 @@ auto review_client::post_review(database_id projectId, const new_transit_review_
 
     co_return review;
 }
+
+auto review_client::delete_review(database_id reviewId) -> concurrencpp::result<void>
+{
+    co_await concurrencpp::resume_on(gluten::app::get()->background_executor());
+
+    m_client->Delete(review_app_endpoints::reviews, httplib::Params
+        {
+            {review_app_parameters::reviewId, std::to_string(reviewId)},
+        });
+
+    co_return;
+}
