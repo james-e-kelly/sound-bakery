@@ -439,11 +439,11 @@ auto workspace_widget::render_content() -> void
                         static std::shared_ptr<gluten::confirmation_popup> confirmUserDeletionPopup;
                         confirmUserDeletionPopup = add_child_widget<gluten::confirmation_popup>(
                             false, "Delete User?",
-                            [weakWorkspaceManager = m_workspaceManager, email = selectedUser.m_email]()
+                            [weakWorkspaceManager = m_workspaceManager, userId = selectedUser.m_userId]()
                             {
                                 if (std::shared_ptr<workspace_manager> workspaceManager = weakWorkspaceManager.lock())
                                 {
-                                    workspaceManager->delete_user(email);
+                                    workspaceManager->delete_user(userId);
                                 }
                             });
                         confirmUserDeletionPopup->open_popup();

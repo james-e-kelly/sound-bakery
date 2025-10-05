@@ -72,7 +72,7 @@ public:
     auto get_all_users() -> typename global_cache_type<user_data>::cache_result;
     auto get_selected_user() const -> const user_data&;
     auto select_user(const std::string& email) -> void;
-    auto delete_user(const std::string& email) -> concurrencpp::result<void>;
+    auto delete_user(database_id userId) -> concurrencpp::result<void>;
     auto get_user(int64_t userId) -> user_data;
 
     // Login / Logout

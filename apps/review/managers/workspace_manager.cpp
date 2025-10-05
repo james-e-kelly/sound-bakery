@@ -595,7 +595,7 @@ auto workspace_manager::get_all_users() -> typename global_cache_type<user_data>
 
     if (m_cachedUsers.get_cache_needs_filling(key))
     {
-        m_cachedUsers.set_async_fill_cache(key, transform_database_result_to_cache_result(get_database()->get_all_users(0, key.m_token)));
+        m_cachedUsers.set_async_fill_cache(key, m_client->get_all_users(0));
         m_selectedUser = user_data();
     }
 
@@ -630,9 +630,9 @@ auto workspace_manager::select_user(const std::string& email) -> void
     }
 }
 
-auto workspace_manager::delete_user(const std::string& email) -> concurrencpp::result<void>
+auto workspace_manager::delete_user(database_id userId) -> concurrencpp::result<void>
 {
-    if (!email.empty())
+    if (userId > 0)
     {
         m_selectedUser = user_data();
 
@@ -640,31 +640,25 @@ auto workspace_manager::delete_user(const std::string& email) -> concurrencpp::r
 
         m_cachedUsers.get_raw_data(key).erase(
             std::find_if(m_cachedUsers.get_raw_data(key).begin(), m_cachedUsers.get_raw_data(key).end(),
-            [email](const user_data& user) -> bool 
+            [userId](const user_data& user) -> bool 
             {
-                return email == user.m_email;
+                return userId == user.m_userId;
             }));
 
-        const bool deletingSelf = email == m_userSettingsData->m_loggedInUser.m_email;
+        const bool deletingSelf = userId == m_userSettingsData->m_loggedInUser.m_userId;
 
-        const tl::expected<bool, database_error> result = co_await get_database()->delete_user(email, get_user_session_token());
+        co_await m_client->delete_user(userId);
 
-        if (result.has_value())
+        co_await concurrencpp::resume_on(review_app::get()->get_tick_executor());
+
+        m_selectedProject = project_data();
+        m_selectedReview  = review_data();
+
+        m_cachedUsers.set_cache_expired(key);
+
+        if (deletingSelf)
         {
-            if (result.value())
-            {
-                co_await concurrencpp::resume_on(review_app::get()->get_tick_executor());
-
-                m_selectedProject = project_data();
-                m_selectedReview  = review_data();
-
-                m_cachedUsers.set_cache_expired(key);
-
-                if (deletingSelf)
-                {
-                    logout();
-                }
-            }
+            logout();
         }
     }
 }

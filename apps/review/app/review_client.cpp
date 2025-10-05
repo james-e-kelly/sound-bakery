@@ -115,6 +115,14 @@ auto review_client::get_review_vote(database_id reviewId, database_id userId) ->
     }
 }
 
+auto review_client::get_all_users(database_id userId) -> concurrencpp::result<std::vector<user_data>>
+{
+    co_return co_await get_api<std::vector<user_data>>(m_client, review_app_endpoints::users, httplib::Params
+        {
+            { review_app_parameters::userId, std::to_string(userId) }
+        });
+}
+
 auto review_client::user_is_logged_in() -> concurrencpp::result<bool>
 {
     co_return co_await get_api<bool>(m_client, review_app_endpoints::me);
@@ -253,5 +261,13 @@ auto review_client::delete_comment(database_id commentId) -> concurrencpp::resul
     co_return co_await delete_api(m_client, review_app_endpoints::comments, httplib::Params
         {
             { review_app_parameters::commentId, std::to_string(commentId) },
+        });
+}
+
+auto review_client::delete_user(database_id userId) -> concurrencpp::result<void>
+{
+    co_return co_await delete_api(m_client, review_app_endpoints::users, httplib::Params
+        {
+            { review_app_parameters::userId, std::to_string(userId) },
         });
 }
