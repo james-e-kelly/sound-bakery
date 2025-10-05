@@ -440,17 +440,17 @@ auto workspace_manager::set_review_status(database_id reviewId, review_status st
         co_return;
     }
 
-    m_cachedProjects.set_cache_expired(get_user_session_token());
+    co_await m_client->put_review_status(reviewId, status);
 
-    const auto setReviewResult = co_await get_database()->set_review_status(reviewId, status, get_user_session_token());
+    co_await concurrencpp::resume_on(get_app()->background_executor());
 
-    if (setReviewResult.has_value() && setReviewResult.value())
+    const gluten::key_and_token_cache_key key(m_selectedProject.m_id, get_user_session_token());
+
+    const auto foundReviewIter = std::find_if(m_cachedReviews.get_raw_data(key).begin(), m_cachedReviews.get_raw_data(key).end(), [reviewId](const review_data& review){return reviewId == review.m_reviewId;});
+
+    if (foundReviewIter != m_cachedReviews.get_raw_data(key).end())
     {
-        const gluten::key_and_token_cache_key key(m_selectedProject.m_id, get_user_session_token());
-        const auto getReviewsResult = co_await m_client->get_all_reviews(m_selectedProject.m_id);
-
-        m_cachedReviews.set_cache_data(key, getReviewsResult);
-        select_review(reviewId);
+        foundReviewIter->m_reviewStatus = status;
     }
 }
 

@@ -2,7 +2,7 @@
 
 namespace
 {
-    template <typename T, typename... Args>
+    template <typename T>
     auto get_api(const std::unique_ptr<httplib::SSLClient>& client, const std::string endpoint, httplib::Params params = httplib::Params()) -> concurrencpp::result<T>
     {
         co_await concurrencpp::resume_on(gluten::app::get()->background_executor());
@@ -13,6 +13,24 @@ namespace
         }
 
         co_return T{};
+    }
+
+    auto put_api(const std::unique_ptr<httplib::SSLClient>& client, const std::string endpoint, httplib::Params params = httplib::Params()) -> concurrencpp::result<void>
+    {
+        co_await concurrencpp::resume_on(gluten::app::get()->background_executor());
+
+        client->Put(endpoint, params);
+
+        co_return;
+    }
+
+    auto delete_api(const std::unique_ptr<httplib::SSLClient>& client, const std::string endpoint, httplib::Params params = httplib::Params()) -> concurrencpp::result<void>
+    {
+        co_await concurrencpp::resume_on(gluten::app::get()->background_executor());
+
+        auto result = client->Delete(endpoint, params);
+
+        co_return;
     }
 }
 
@@ -160,14 +178,19 @@ auto review_client::post_review(database_id projectId, const new_transit_review_
     co_return review;
 }
 
+auto review_client::put_review_status(database_id reviewId, review_status status) -> concurrencpp::result<void>
+{
+    co_return co_await put_api(m_client, review_app_endpoints::reviews, httplib::Params
+        {
+            { review_app_parameters::reviewId, std::to_string(reviewId) },
+            { review_app_parameters::reviewStatus, std::to_string((int)status) }
+        });
+}
+
 auto review_client::delete_review(database_id reviewId) -> concurrencpp::result<void>
 {
-    co_await concurrencpp::resume_on(gluten::app::get()->background_executor());
-
-    m_client->Delete(review_app_endpoints::reviews, httplib::Params
+    co_return co_await delete_api(m_client, review_app_endpoints::reviews, httplib::Params
         {
-            {review_app_parameters::reviewId, std::to_string(reviewId)},
+            { review_app_parameters::reviewId, std::to_string(reviewId) },
         });
-
-    co_return;
 }

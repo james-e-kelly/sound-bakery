@@ -149,6 +149,26 @@ namespace
             });
     }
 
+    auto add_database_put_endpoint(const std::unique_ptr<httplib::SSLServer>& server, const std::string& pattern, std::function<void(std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request, httplib::Response& response)> databaseFunction)
+    {
+        server->Put(pattern, [function = std::move(databaseFunction)](const httplib::Request& request, httplib::Response& response) 
+            {
+                if (auto database = review_app::get_review_database())
+                {
+                    function(database, httplib::get_bearer_token_auth(request), request, response);
+
+                    if (response.status <= 0)
+                    {
+                        response.status = httplib::StatusCode::OK_200;
+                    }
+                }
+                else
+                {
+                    response.status = httplib::StatusCode::InternalServerError_500;
+                }
+            });
+    }
+
     auto add_database_delete_endpoint(const std::unique_ptr<httplib::SSLServer>& server, const std::string& pattern, std::function<void(std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request, httplib::Response& response)> databaseFunction)
     {
         server->Delete(pattern, [function = std::move(databaseFunction)](const httplib::Request& request, httplib::Response& response) 
@@ -292,6 +312,26 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
             response.set_content(review_app_serialization::serialize_to_xml<review_data>(newReviewData), "application/xml");
         });
 
+    // PUT
+
+    add_database_put_endpoint(m_server, review_app_endpoints::reviews, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request, httplib::Response& response)
+        {
+            database_id reviewId = 0;
+            review_status status = review_status::open;
+
+            if (request.has_param(review_app_parameters::reviewId))
+            {
+                reviewId = std::stol(request.get_param_value(review_app_parameters::reviewId));
+            }
+
+            if (request.has_param(review_app_parameters::reviewStatus))
+            {
+                status = (review_status)std::stoi(request.get_param_value(review_app_parameters::reviewStatus));
+            }
+
+            database->set_review_status(reviewId, status, userToken).get();
+        });
+
     // DELETE
 
     add_database_delete_endpoint(m_server, review_app_endpoints::reviews, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request, httplib::Response& response)
@@ -305,7 +345,7 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
 
             if (reviewId > 0)
             {
-                database->delete_review(reviewId, userToken);
+                database->delete_review(reviewId, userToken).get();
             }
             else
             {
