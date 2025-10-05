@@ -71,6 +71,14 @@ auto review_client::get_all_reviews(database_id projectId) -> concurrencpp::resu
         httplib::Params{{review_app_parameters::projectId, std::to_string(projectId)}});
 }
 
+auto review_client::get_all_comments_for_review(database_id reviewId) -> concurrencpp::result<std::vector<comment_data>>
+{
+    co_return co_await get_api<std::vector<comment_data>>(m_client, review_app_endpoints::comments, httplib::Params
+        {
+            { review_app_parameters::reviewId, std::to_string(reviewId) }
+        });
+}
+
 auto review_client::get_review_vote(database_id reviewId, database_id userId) -> concurrencpp::result<review_vote>
 {
     const auto reviewVotes = co_await get_api<std::vector<review_vote>>(m_client, review_app_endpoints::reviewVotes,

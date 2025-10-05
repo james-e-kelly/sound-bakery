@@ -89,7 +89,9 @@ namespace
 
                     if (databaseResult.has_value())
                     {
-                        response.set_content(review_app_serialization::serialize_to_xml(databaseResult.value()), "application/xml");
+                        const data_type& data = databaseResult.value();
+                        const std::string serializedXml = review_app_serialization::serialize_to_xml(data);
+                        response.set_content(serializedXml, "application/xml");
                     }
                     else
                     {
@@ -263,6 +265,18 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
     add_database_get_endpoint<std::vector<user_data>>(m_server, review_app_endpoints::users, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)
         {
             return database->get_all_users(userToken);
+        });
+
+    add_database_get_endpoint<std::vector<comment_data>>(m_server, review_app_endpoints::comments, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)
+        {
+            database_id reviewId = 0;
+
+            if (request.has_param(review_app_parameters::reviewId))
+            {
+                reviewId = std::stol(request.get_param_value(review_app_parameters::reviewId));
+            }
+
+            return database->get_all_comments_for_review(reviewId, userToken);
         });
 
     // POST

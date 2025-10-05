@@ -74,6 +74,7 @@ struct review_app_endpoints
     static inline std::string reviews = "/reviews";
     static inline std::string reviewVotes = "/votes";
     static inline std::string users = "/users";
+    static inline std::string comments = "/comments";
 };
 
 struct review_app_parameters
