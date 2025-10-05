@@ -264,7 +264,14 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
 
     add_database_get_endpoint<std::vector<user_data>>(m_server, review_app_endpoints::users, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)
         {
-            return database->get_all_users(userToken);
+            database_id userId = 0;
+
+            if (request.has_param(review_app_parameters::userId))
+            {
+                userId = std::stol(request.get_param_value(review_app_parameters::userId));
+            }
+
+            return database->get_all_users(userId, userToken);
         });
 
     add_database_get_endpoint<std::vector<comment_data>>(m_server, review_app_endpoints::comments, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)
@@ -340,6 +347,22 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
             }
 
             response.set_content(review_app_serialization::serialize_to_xml<comment_data>(createdComment), "application/xml");
+        });
+
+    add_database_post_form_endpoint(m_server, review_app_endpoints::users, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request, httplib::Response& response)
+        {
+            new_user_data newUserData = review_app_serialization::deserialize_from_xml<new_user_data>(request.form.get_field(review_app_parameters::data));
+
+            const auto newUserResult = database->create_user(newUserData, userToken).get();
+
+            user_data createdUser;
+
+            if (newUserResult.has_value())
+            {
+                createdUser = newUserResult.value();
+            }
+
+            response.set_content(review_app_serialization::serialize_to_xml<user_data>(createdUser), "application/xml");
         });
 
     // PUT

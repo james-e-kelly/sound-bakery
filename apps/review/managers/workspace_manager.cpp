@@ -524,11 +524,11 @@ auto workspace_manager::logged_in_user_can_create_users() -> concurrencpp::resul
 
 auto workspace_manager::create_user(const new_user_data newUser, std::optional<std::string> userToken) -> concurrencpp::result<tl::expected<bool, database_error>> 
 {
-    co_await get_database()->create_user(newUser, userToken.has_value() ? userToken.value() : std::string());
+    user_data createdUserData = co_await m_client->post_user(newUser);
 
     co_await concurrencpp::resume_on(get_app()->get_tick_executor());
     m_userFlowPopup.reset();
-    m_cachedUsers.set_cache_expired(get_user_session_token());
+    m_cachedUsers.get_raw_data(get_user_session_token()).push_back(createdUserData);
 
     co_return true;
 }
@@ -540,7 +540,7 @@ auto workspace_manager::create_user_and_login(new_user_data newUser) -> concurre
         newUser.m_requestedPrivileges = user_privileges::admin;
     }
 
-    co_await get_database()->create_user(newUser, std::string());
+    co_await create_user(newUser, {});
 
     login_request_data loginRequest;
     loginRequest.m_email = newUser.m_email;
@@ -595,7 +595,7 @@ auto workspace_manager::get_all_users() -> typename global_cache_type<user_data>
 
     if (m_cachedUsers.get_cache_needs_filling(key))
     {
-        m_cachedUsers.set_async_fill_cache(key, transform_database_result_to_cache_result(get_database()->get_all_users(key.m_token)));
+        m_cachedUsers.set_async_fill_cache(key, transform_database_result_to_cache_result(get_database()->get_all_users(0, key.m_token)));
         m_selectedUser = user_data();
     }
 

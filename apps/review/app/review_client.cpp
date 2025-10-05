@@ -217,6 +217,20 @@ auto review_client::post_comment(new_comment_data comment) -> concurrencpp::resu
     co_return co_await post_form_api<comment_data>(m_client, review_app_endpoints::comments, items);
 }
 
+auto review_client::post_user(new_user_data newUser) -> concurrencpp::result<user_data>
+{
+    httplib::UploadFormDataItems items = 
+    {
+        {
+            review_app_parameters::data,
+            review_app_serialization::serialize_to_xml<new_user_data>(newUser),
+            "", "application/xml"
+        }
+    };
+
+    co_return co_await post_form_api<user_data>(m_client, review_app_endpoints::users, items);
+}
+
 auto review_client::put_review_status(database_id reviewId, review_status status) -> concurrencpp::result<void>
 {
     co_return co_await put_api(m_client, review_app_endpoints::reviews, httplib::Params

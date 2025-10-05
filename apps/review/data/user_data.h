@@ -26,6 +26,16 @@ struct new_user_data
     std::string m_email;
     std::array<char, g_rawPasswordSize> m_rawPassword;
     user_privileges m_requestedPrivileges = user_privileges::guest;
+
+    template <class archive_class>
+    auto serialize(archive_class& archive, const unsigned int version) -> void
+    {
+        archive & BOOST_SERIALIZATION_NVP(m_displayName);
+        archive & BOOST_SERIALIZATION_NVP(m_title);
+        archive & BOOST_SERIALIZATION_NVP(m_email);
+        archive & BOOST_SERIALIZATION_NVP(m_rawPassword);
+        archive & BOOST_SERIALIZATION_NVP(m_requestedPrivileges);
+    }
 };
 
 struct logged_in_user_data

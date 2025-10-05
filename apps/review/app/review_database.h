@@ -47,7 +47,7 @@ public:
     auto open_workspace(const std::string name) const                                                                               -> bool_result;
     auto login_user(login_request_data loginRequest) const                                                                          -> database_result<logged_in_user_data>;
     
-    auto create_user(new_user_data newUser, std::string userToken) const                                                            -> bool_result;
+    auto create_user(new_user_data newUser, std::string userToken) const                                                            -> database_result<user_data>;
     auto create_project(const std::string name, const std::string description, std::string userToken) const                         -> database_result<project_data>;
     auto create_review(database_id projectId, const new_transit_review_data newReview, std::string userToken) const                 -> database_result<review_data>;
     auto create_review_version(database_id reviewId, const new_transit_review_data newReviewVersion, std::string userToken) const   -> database_result<review_data>;
@@ -67,7 +67,14 @@ public:
      * @return A vector of the comments found. Can be 0, 1, or more.
      */
     auto get_all_comments(database_id reviewId, database_id commentId, std::string userToken) const                                 -> database_result<std::vector<comment_data>>;
-    auto get_all_users(std::string userToken) const                                                                                 -> database_result<std::vector<user_data>>;
+
+    /**
+     * @brief Get all users in the database, optionally filtered.
+     * @param userId optional filter to return just the user data with the passed ID.
+     * @param userToken userToken to check authority with.
+     * @return A vector of all users or a vector with the single user in. Can also empty.
+     */
+    auto get_all_users(database_id userId, std::string userToken) const                                                             -> database_result<std::vector<user_data>>;
     auto get_review_users(database_id reviewId, std::string userToken) const                                                        -> database_result<std::vector<user_data>>;
 
     auto update_review(const review_data review, std::string userToken) const                                                       -> database_result<review_data>;

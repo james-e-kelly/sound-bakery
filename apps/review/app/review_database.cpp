@@ -851,7 +851,7 @@ auto review_database::delete_comment(database_id commentId, std::string userToke
     co_return true;
 }
 
-auto review_database::create_user(new_user_data newUser, std::string userToken) const -> bool_result
+auto review_database::create_user(new_user_data newUser, std::string userToken) const -> database_result<user_data>
 {
     CHECK_ARG(!newUser.m_email.empty());
     CHECK_ARG(!newUser.m_rawPassword.empty());
@@ -862,7 +862,7 @@ auto review_database::create_user(new_user_data newUser, std::string userToken) 
 
     auto user_table_is_empty = [this, userToken]() -> concurrencpp::result<bool>
         {
-            const auto getUsersResult = co_await get_all_users(userToken);
+            const auto getUsersResult = co_await get_all_users(0, userToken);
             co_return getUsersResult.has_value() ? getUsersResult.value().empty() : true;
         };
 
@@ -901,12 +901,21 @@ auto review_database::create_user(new_user_data newUser, std::string userToken) 
     insertUserStatement.bind(6, (int)newUser.m_requestedPrivileges);
     insertUserStatement.exec();
 
+    const auto getUsersResult = co_await get_all_users(m_database.getLastInsertRowid(), userToken);
+
     SQLite::Statement addActivity(m_database, "INSERT INTO activity (activity_type, activity_text) VALUES (?, ?);");
     addActivity.bind(1, (int)activity_type::user_added);
     addActivity.bind(2, fmt::format("Added {} as a user", newUser.m_email));
     addActivity.exec();
 
-    co_return true;
+    if (getUsersResult.has_value() && !getUsersResult.value().empty())
+    {
+        co_return getUsersResult.value()[0];
+    }
+    else
+    {
+        co_return user_data();
+    }
 }
 
 auto review_database::user_can_perform_action(std::string userToken, activity_type activity) const -> database_result<bool>
@@ -1050,7 +1059,7 @@ auto review_database::login_user(login_request_data loginRequest) const -> datab
     co_return result;
 }
 
-auto review_database::get_all_users(std::string userToken) const -> database_result<std::vector<user_data>>
+auto review_database::get_all_users(database_id userId, std::string userToken) const -> database_result<std::vector<user_data>>
 {
     MOVE_TO_DATABASE_THREAD();
     CHECK_USER_PRIVILEGE(userToken, user_privileges::user);
@@ -1060,7 +1069,9 @@ auto review_database::get_all_users(std::string userToken) const -> database_res
 
     std::vector<user_data> result;
 
-    SQLite::Statement statement(m_database, "SELECT id, display_name, title, email, timestamp, privilege FROM users");
+    SQLite::Statement statement(m_database, "SELECT id, display_name, title, email, timestamp, privilege FROM users WHERE (? <= 0 OR id = ?);");
+    statement.bind(1, userId);
+    statement.bind(2, userId);
 
     while (statement.executeStep())
     {

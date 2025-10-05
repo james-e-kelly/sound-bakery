@@ -23,6 +23,7 @@
 #include "boost/serialization/version.hpp"
 #include "boost/serialization/vector.hpp"
 #include "boost/serialization/map.hpp"
+#include "boost/serialization/array.hpp"
 #include <magic_enum/magic_enum.hpp>
 
 auto http_result_okay(const httplib::Result& result) -> bool;
