@@ -501,9 +501,8 @@ auto workspace_manager::delete_comment(int64_t commentId) -> concurrencpp::resul
                                    [commentId](const comment_data& comment)
                                    { return commentId == comment.m_commentId; }));
 
-    co_await get_database()->delete_comment(commentId, get_user_session_token());
+    co_await m_client->delete_comment(commentId);
 
-    m_cachedComments.set_cache_expired(key);
     m_cachedActivity.set_cache_expired(key);
 }
 

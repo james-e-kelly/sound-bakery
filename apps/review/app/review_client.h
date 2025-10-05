@@ -31,6 +31,7 @@ public:
     auto put_review_status(database_id reviewId, review_status status) -> concurrencpp::result<void>;
 
     auto delete_review(database_id reviewId) -> concurrencpp::result<void>;
+    auto delete_comment(database_id commentId) -> concurrencpp::result<void>;
 
 private:
     auto get_user_session_token() const -> std::string

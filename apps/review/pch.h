@@ -82,6 +82,7 @@ struct review_app_parameters
     static inline std::string projectId = "projectId";
     static inline std::string reviewId = "reviewId";
     static inline std::string userId = "userId";
+    static inline std::string commentId = "commentId";
 
     static inline std::string name = "name";
     static inline std::string description = "description";

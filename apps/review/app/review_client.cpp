@@ -233,3 +233,11 @@ auto review_client::delete_review(database_id reviewId) -> concurrencpp::result<
             { review_app_parameters::reviewId, std::to_string(reviewId) },
         });
 }
+
+auto review_client::delete_comment(database_id commentId) -> concurrencpp::result<void>
+{
+    co_return co_await delete_api(m_client, review_app_endpoints::comments, httplib::Params
+        {
+            { review_app_parameters::commentId, std::to_string(commentId) },
+        });
+}

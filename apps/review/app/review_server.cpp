@@ -382,6 +382,25 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
                 response.status = httplib::StatusCode::BadRequest_400;
             }
         });
+
+    add_database_delete_endpoint(m_server, review_app_endpoints::comments, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request, httplib::Response& response)
+        {
+            database_id commentId = 0;
+            
+            if (request.has_param(review_app_parameters::commentId))
+            {
+                commentId = std::stol(request.get_param_value(review_app_parameters::commentId));
+            }
+
+            if (commentId > 0)
+            {
+                database->delete_comment(commentId, userToken).get();
+            }
+            else
+            {
+                response.status = httplib::StatusCode::BadRequest_400;
+            }
+        });
 }
 
 auto review_server::start() -> void
