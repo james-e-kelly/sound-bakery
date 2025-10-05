@@ -745,9 +745,8 @@ auto review_database::get_all_review_activity(database_id reviewId, std::string 
     co_return result;
 }
 
-auto review_database::get_all_comments_for_review(database_id reviewId, std::string userToken) const -> database_result<std::vector<comment_data>> 
+auto review_database::get_all_comments(database_id reviewId, database_id commentId, std::string userToken) const -> database_result<std::vector<comment_data>> 
 {
-    CHECK_ARG(reviewId > 0);
     MOVE_TO_DATABASE_THREAD();
     CHECK_USER_PRIVILEGE(userToken, user_privileges::guest);
     CHECK_TABLE_EXISTS(comments);
@@ -755,8 +754,11 @@ auto review_database::get_all_comments_for_review(database_id reviewId, std::str
 
     std::vector<comment_data> result;
 
-    SQLite::Statement query(m_database, "SELECT id, review_id, user_id, comment, timestamp, audio_time_start, audio_time_end, file_id FROM comments WHERE review_id=?;");
+    SQLite::Statement query(m_database, "SELECT id, review_id, user_id, comment, timestamp, audio_time_start, audio_time_end, file_id FROM comments WHERE (? <= 0 OR review_id = ?) AND (? <= 0 OR id = ?);");
     query.bind(1, reviewId);
+    query.bind(2, reviewId);
+    query.bind(3, commentId);
+    query.bind(4, commentId);
 
     while (query.executeStep())
     {
@@ -778,7 +780,7 @@ auto review_database::get_all_comments_for_review(database_id reviewId, std::str
     co_return result;
 }
 
-auto review_database::create_comment(new_comment_data newComment, std::string userToken) const -> bool_result
+auto review_database::create_comment(new_comment_data newComment, std::string userToken) const -> database_result<comment_data>
 {
     CHECK_ARG(!newComment.m_comment.empty());
     CHECK_ARG(newComment.m_userId > 0);
@@ -808,6 +810,8 @@ auto review_database::create_comment(new_comment_data newComment, std::string us
     }
 
     insertCommentStatement.exec();
+
+    const auto getNewCommentResult = co_await get_all_comments(newComment.m_reviewId, m_database.getLastInsertRowid(), userToken);
             
     SQLite::Statement addActivity(m_database, "INSERT INTO activity (review_id, activity_type, activity_text) VALUES (?, ?, ?);");
     addActivity.bind(1, newComment.m_reviewId);
@@ -815,7 +819,14 @@ auto review_database::create_comment(new_comment_data newComment, std::string us
     addActivity.bind(3, fmt::format("Created a comment -> \"{}\"", newComment.m_comment));
     addActivity.exec();
 
-    co_return true;
+    if (getNewCommentResult.has_value() && !getNewCommentResult.value().empty())
+    {
+        co_return getNewCommentResult.value()[0];
+    }
+    else
+    {
+        co_return comment_data{};
+    }
 }
 
 auto review_database::delete_comment(database_id commentId, std::string userToken) const -> bool_result

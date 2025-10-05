@@ -15,6 +15,23 @@ namespace
         co_return T{};
     }
 
+    template <typename T>
+    auto post_form_api(const std::unique_ptr<httplib::SSLClient>& client, const std::string endpoint, httplib::UploadFormDataItems items) -> concurrencpp::result<T>
+    {
+        co_await concurrencpp::resume_on(gluten::app::get()->background_executor());
+
+        const httplib::Result postResult = client->Post(endpoint, httplib::Headers(), items);
+
+        T result;
+
+        if (http_result_okay(postResult))
+        {
+            result = review_app_serialization::deserialize_from_xml<T>(postResult.value().body);
+        }
+
+        co_return result;
+    }
+
     auto put_api(const std::unique_ptr<httplib::SSLClient>& client, const std::string endpoint, httplib::Params params = httplib::Params()) -> concurrencpp::result<void>
     {
         co_await concurrencpp::resume_on(gluten::app::get()->background_executor());
@@ -184,6 +201,20 @@ auto review_client::post_review(database_id projectId, const new_transit_review_
     }
 
     co_return review;
+}
+
+auto review_client::post_comment(new_comment_data comment) -> concurrencpp::result<comment_data>
+{
+    httplib::UploadFormDataItems items = 
+    {
+        {
+            review_app_parameters::data,
+            review_app_serialization::serialize_to_xml<new_comment_data>(comment),
+            "", "application/xml"
+        }
+    };
+
+    co_return co_await post_form_api<comment_data>(m_client, review_app_endpoints::comments, items);
 }
 
 auto review_client::put_review_status(database_id reviewId, review_status status) -> concurrencpp::result<void>

@@ -478,16 +478,17 @@ auto workspace_manager::get_all_comments_for_review(int64_t reviewId) -> typenam
     return m_cachedComments.get_cached_data(key);
 }
 
-auto workspace_manager::create_comment(const new_comment_data& newComment) -> concurrencpp::result<void>
+auto workspace_manager::create_comment(const new_comment_data newComment) -> concurrencpp::result<void>
 {
     const gluten::key_and_token_cache_key key(m_selectedReview.m_reviewId, get_user_session_token());
+
+    const comment_data createdComment = co_await m_client->post_comment(newComment);
+
+    co_await concurrencpp::resume_on(get_app()->get_tick_executor());
     
     auto& rawComments = m_cachedComments.get_raw_data(key);
-    rawComments.insert(rawComments.begin(), comment_data(newComment));
+    rawComments.insert(rawComments.begin(), createdComment);
 
-    co_await get_database()->create_comment(newComment, get_user_session_token());
-
-    m_cachedComments.set_cache_expired(key);
     m_cachedActivity.set_cache_expired(key);
 }
 

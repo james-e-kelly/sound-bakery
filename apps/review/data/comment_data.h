@@ -40,4 +40,10 @@ struct comment_data : public base_comment_data
 struct new_comment_data : public base_comment_data
 {
     new_comment_data();
+
+    template <class archive_class>
+    auto serialize(archive_class& archive, const unsigned int version) -> void
+    {
+        archive & BOOST_SERIALIZATION_BASE_OBJECT_NVP(base_comment_data);
+    }
 };
