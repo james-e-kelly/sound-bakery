@@ -9,7 +9,10 @@ namespace
 
         if (auto result = client->Get(endpoint, params, httplib::Headers()))
         {
-            co_return review_app_serialization::deserialize_from_xml<T>(result.value().body);
+            if (http_result_okay(result))
+            {
+                co_return review_app_serialization::deserialize_from_xml<T>(result.value().body);
+            }
         }
 
         co_return T{};
@@ -148,11 +151,13 @@ auto review_client::get_review_vote(database_id reviewId, database_id userId) ->
 
 auto review_client::get_all_users(database_id userId, database_id reviewId) -> concurrencpp::result<std::vector<user_data>>
 {
-    co_return co_await get_api<std::vector<user_data>>(m_client, review_app_endpoints::users, httplib::Params
+    std::vector<user_data> users = co_await get_api<std::vector<user_data>>(m_client, review_app_endpoints::users,httplib::Params
         {
             { review_app_parameters::userId, std::to_string(userId) },
             { review_app_parameters::reviewId, std::to_string(reviewId) }
         });
+
+    co_return users;
 }
 
 auto review_client::get_all_review_activity(database_id reviewId) -> concurrencpp::result<std::vector<activity_data>>

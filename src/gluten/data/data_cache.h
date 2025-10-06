@@ -88,7 +88,8 @@ namespace gluten
         no_data,        //< Either initial state or has not been supplied any data after requesting it
         loading,        //< Has an async function that is loading the data. The data will be available later
         has_data,       //< Has data and is ready to use
-        expired         //< Any current data is out of date and needs a new load
+        expired,        //< Any current data is out of date and needs a new load
+        failed          //< Either something threw an exception or something else went wrong
     };
 
     template <typename data_type, typename key_type, typename key_hasher>
@@ -151,6 +152,13 @@ namespace gluten
                 {
                     m_cache[key].m_state = cache_state::loading;
                 }
+
+                const async_cache_result& asyncResult = m_asyncCache.at(key);
+
+                if (asyncResult.status() == concurrencpp::result_status::exception)
+                {
+                    m_cache[key].m_state = cache_state::failed;
+                }
             }
             else if (m_cache.contains(key))
             {
@@ -172,6 +180,15 @@ namespace gluten
         {
             const cache_state state = get_cache_state(key);
             return (state == cache_state::no_data || state == cache_state::expired) && !m_asyncCache.contains(key);
+        }
+
+        /**
+         * @brief Returns true if the cache failed when doing an async load.
+         */
+        [[nodiscard]] auto get_cache_failed(const key_type& key) const -> bool
+        {
+            const cache_state state = get_cache_state(key);
+            return (state == cache_state::failed);
         }
 
         /**
