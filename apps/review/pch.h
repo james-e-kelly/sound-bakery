@@ -91,4 +91,5 @@ struct review_app_parameters
     static inline std::string reviewFile = "review_file";
     static inline std::string contextFile = "context_file";
     static inline std::string reviewStatus = "review_status";
+    static inline std::string reviewVote = "review_vote";
 };

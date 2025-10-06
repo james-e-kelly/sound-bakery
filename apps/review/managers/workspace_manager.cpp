@@ -121,7 +121,7 @@ auto workspace_manager::async_get_users_for_review(int64_t reviewId) -> concurre
         co_return std::vector<reviewer_data>();
     }
 
-    const tl::expected<std::vector<user_data>, database_error> result = co_await get_database()->get_review_users(reviewId, get_user_session_token());
+    const tl::expected<std::vector<user_data>, database_error> result = co_await m_client->get_all_users(0, reviewId);
 
     std::vector<reviewer_data> reviewers;
 
@@ -595,7 +595,7 @@ auto workspace_manager::get_all_users() -> typename global_cache_type<user_data>
 
     if (m_cachedUsers.get_cache_needs_filling(key))
     {
-        m_cachedUsers.set_async_fill_cache(key, m_client->get_all_users(0));
+        m_cachedUsers.set_async_fill_cache(key, m_client->get_all_users(0, 0));
         m_selectedUser = user_data();
     }
 
@@ -711,7 +711,7 @@ auto workspace_manager::set_review_vote(int64_t reviewId, int64_t userId, review
         foundReviewer->m_vote = vote;
     }
 
-    co_await get_database()->set_review_vote(reviewId, userId, vote, userSettings->m_loggedInUser.m_sessionToken);
+    co_await m_client->put_review_vote(reviewId, userId, vote);
 }
 
 auto workspace_manager::get_user_session_token() const -> std::string

@@ -271,7 +271,14 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
                 userId = std::stol(request.get_param_value(review_app_parameters::userId));
             }
 
-            return database->get_all_users(userId, userToken);
+            if (request.has_param(review_app_parameters::reviewId))
+            {
+                return database->get_review_users(std::stol(request.get_param_value(review_app_parameters::reviewId)), userToken);
+            }
+            else
+            {
+                return database->get_all_users(userId, userToken);
+            }
         });
 
     add_database_get_endpoint<std::vector<comment_data>>(m_server, review_app_endpoints::comments, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)
@@ -383,6 +390,30 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
             }
 
             database->set_review_status(reviewId, status, userToken).get();
+        });
+
+    add_database_put_endpoint(m_server, review_app_endpoints::reviewVotes, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request, httplib::Response& response)
+        {
+            database_id reviewId = 0;
+            database_id userId = 0;
+            review_vote vote = review_vote::no_vote;
+
+            if (request.has_param(review_app_parameters::reviewId))
+            {
+                reviewId = std::stol(request.get_param_value(review_app_parameters::reviewId));
+            }
+
+            if (request.has_param(review_app_parameters::userId))
+            {
+                userId = std::stol(request.get_param_value(review_app_parameters::userId));
+            }
+
+            if (request.has_param(review_app_parameters::reviewVote))
+            {
+                vote = (review_vote)std::stoi(request.get_param_value(review_app_parameters::reviewVote));
+            }
+
+            database->set_review_vote(reviewId, userId, vote, userToken).get();
         });
 
     // DELETE

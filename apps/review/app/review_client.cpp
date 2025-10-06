@@ -115,11 +115,12 @@ auto review_client::get_review_vote(database_id reviewId, database_id userId) ->
     }
 }
 
-auto review_client::get_all_users(database_id userId) -> concurrencpp::result<std::vector<user_data>>
+auto review_client::get_all_users(database_id userId, database_id reviewId) -> concurrencpp::result<std::vector<user_data>>
 {
     co_return co_await get_api<std::vector<user_data>>(m_client, review_app_endpoints::users, httplib::Params
         {
-            { review_app_parameters::userId, std::to_string(userId) }
+            { review_app_parameters::userId, std::to_string(userId) },
+            { review_app_parameters::reviewId, std::to_string(reviewId) }
         });
 }
 
@@ -245,6 +246,16 @@ auto review_client::put_review_status(database_id reviewId, review_status status
         {
             { review_app_parameters::reviewId, std::to_string(reviewId) },
             { review_app_parameters::reviewStatus, std::to_string((int)status) }
+        });
+}
+
+auto review_client::put_review_vote(database_id reviewId, database_id userId, review_vote vote) -> concurrencpp::result<void>
+{
+    co_return co_await put_api(m_client, review_app_endpoints::reviewVotes, httplib::Params
+        {
+            { review_app_parameters::reviewId, std::to_string(reviewId) },
+            { review_app_parameters::userId, std::to_string(userId) },
+            { review_app_parameters::reviewVote, std::to_string((int)vote) }
         });
 }
 

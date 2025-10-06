@@ -20,7 +20,7 @@ public:
     auto get_all_reviews(database_id projectId) -> concurrencpp::result<std::vector<review_data>>;
     auto get_all_comments_for_review(database_id reviewId) -> concurrencpp::result<std::vector<comment_data>>;
     auto get_review_vote(database_id reviewId, database_id userId) -> concurrencpp::result<review_vote>;
-    auto get_all_users(database_id userId) -> concurrencpp::result<std::vector<user_data>>;
+    auto get_all_users(database_id userId, database_id reviewId) -> concurrencpp::result<std::vector<user_data>>;
 
     auto user_is_logged_in() -> concurrencpp::result<bool>;
     auto user_table_is_empty() -> concurrencpp::result<bool>;
@@ -31,6 +31,7 @@ public:
     auto post_user(new_user_data newUser) -> concurrencpp::result<user_data>;
 
     auto put_review_status(database_id reviewId, review_status status) -> concurrencpp::result<void>;
+    auto put_review_vote(database_id reviewId, database_id userId, review_vote vote) -> concurrencpp::result<void>;
 
     auto delete_review(database_id reviewId) -> concurrencpp::result<void>;
     auto delete_comment(database_id commentId) -> concurrencpp::result<void>;
