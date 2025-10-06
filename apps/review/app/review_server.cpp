@@ -376,20 +376,23 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
 
     add_database_put_endpoint(m_server, review_app_endpoints::reviews, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request, httplib::Response& response)
         {
-            database_id reviewId = 0;
-            review_status status = review_status::open;
-
             if (request.has_param(review_app_parameters::reviewId))
             {
-                reviewId = std::stol(request.get_param_value(review_app_parameters::reviewId));
+                const database_id reviewId = std::stol(request.get_param_value(review_app_parameters::reviewId));
+                
+                if (request.has_param(review_app_parameters::reviewStatus))
+                {
+                    const review_status status = (review_status)std::stoi(request.get_param_value(review_app_parameters::reviewStatus));
+                    
+                    database->set_review_status(reviewId, status, userToken).get();
+                }
             }
-
-            if (request.has_param(review_app_parameters::reviewStatus))
+            else if (request.form.has_field(review_app_parameters::data))
             {
-                status = (review_status)std::stoi(request.get_param_value(review_app_parameters::reviewStatus));
-            }
+                review_data reviewData = review_app_serialization::deserialize_from_xml<review_data>(request.form.get_field(review_app_parameters::data));
 
-            database->set_review_status(reviewId, status, userToken).get();
+                database->update_review(reviewData, userToken);
+            }
         });
 
     add_database_put_endpoint(m_server, review_app_endpoints::reviewVotes, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request, httplib::Response& response)

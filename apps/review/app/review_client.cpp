@@ -41,6 +41,15 @@ namespace
         co_return;
     }
 
+    auto put_form_api(const std::unique_ptr<httplib::SSLClient>& client, const std::string endpoint, httplib::UploadFormDataItems items) -> concurrencpp::result<void>
+    {
+        co_await concurrencpp::resume_on(gluten::app::get()->background_executor());
+
+        const httplib::Result postResult = client->Put(endpoint, httplib::Headers(), items);
+
+        co_return;
+    }
+
     auto delete_api(const std::unique_ptr<httplib::SSLClient>& client, const std::string endpoint, httplib::Params params = httplib::Params()) -> concurrencpp::result<void>
     {
         co_await concurrencpp::resume_on(gluten::app::get()->background_executor());
@@ -257,6 +266,20 @@ auto review_client::put_review_vote(database_id reviewId, database_id userId, re
             { review_app_parameters::userId, std::to_string(userId) },
             { review_app_parameters::reviewVote, std::to_string((int)vote) }
         });
+}
+
+auto review_client::put_review(review_data reviewData) -> concurrencpp::result<void>
+{
+    httplib::UploadFormDataItems items = 
+    {
+        {
+            review_app_parameters::data,
+            review_app_serialization::serialize_to_xml<review_data>(reviewData),
+            "", "application/xml"
+        }
+    };
+
+    co_return co_await put_form_api(m_client, review_app_endpoints::reviews, items);
 }
 
 auto review_client::delete_review(database_id reviewId) -> concurrencpp::result<void>
