@@ -293,6 +293,18 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
             return database->get_all_comments(reviewId, 0, userToken);
         });
 
+    add_database_get_endpoint<std::vector<activity_data>>(m_server, review_app_endpoints::activity, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)
+        {
+            database_id reviewId = 0;
+
+            if (request.has_param(review_app_parameters::reviewId))
+            {
+                reviewId = std::stol(request.get_param_value(review_app_parameters::reviewId));
+            }
+
+            return database->get_all_review_activity(reviewId, userToken);
+        });
+
     // POST
 
     add_database_post_endpoint(m_server, review_app_endpoints::projects, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)

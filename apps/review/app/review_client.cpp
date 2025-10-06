@@ -133,6 +133,14 @@ auto review_client::get_all_users(database_id userId, database_id reviewId) -> c
         });
 }
 
+auto review_client::get_all_review_activity(database_id reviewId) -> concurrencpp::result<std::vector<activity_data>>
+{
+    co_return co_await get_api<std::vector<activity_data>>(m_client, review_app_endpoints::activity, httplib::Params
+        {
+            { review_app_parameters::reviewId, std::to_string(reviewId) }
+        });
+}
+
 auto review_client::user_is_logged_in() -> concurrencpp::result<bool>
 {
     co_return co_await get_api<bool>(m_client, review_app_endpoints::me);

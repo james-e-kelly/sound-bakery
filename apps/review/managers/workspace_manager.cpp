@@ -460,7 +460,7 @@ auto workspace_manager::get_all_review_activity(int64_t reviewId) -> typename de
 
     if (m_cachedActivity.get_cache_needs_filling(key))
     {
-        m_cachedActivity.set_async_fill_cache(key, transform_database_result_to_cache_result(get_database()->get_all_review_activity(reviewId, get_user_session_token())));
+        m_cachedActivity.set_async_fill_cache(key, m_client->get_all_review_activity(reviewId));
     }
 
     return m_cachedActivity.get_cached_data(key);
