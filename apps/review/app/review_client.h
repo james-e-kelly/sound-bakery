@@ -38,6 +38,7 @@ public:
     auto put_review_status(database_id reviewId, review_status status) -> concurrencpp::result<void>;
     auto put_review_vote(database_id reviewId, database_id userId, review_vote vote) -> concurrencpp::result<void>;
     auto put_review(review_data reviewData) -> concurrencpp::result<void>;
+    auto put_review_users(database_id reviewId, std::vector<database_id> userIds) -> concurrencpp::result<void>;
 
     auto delete_review(database_id reviewId) -> concurrencpp::result<void>;
     auto delete_comment(database_id commentId) -> concurrencpp::result<void>;

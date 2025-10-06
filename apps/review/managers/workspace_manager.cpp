@@ -682,12 +682,12 @@ auto workspace_manager::get_review_users(int64_t reviewId) -> typename default_c
     return m_reviewUsersCache.get_cached_data(key);
 }
 
-auto workspace_manager::set_review_users(int64_t reviewId, std::vector<int64_t> userIds) -> concurrencpp::result<tl::expected<bool, database_error>>
+auto workspace_manager::set_review_users(int64_t reviewId, std::vector<int64_t> userIds) -> concurrencpp::result<void>
 {
     const gluten::key_and_token_cache_key key(reviewId, get_user_session_token());
     m_reviewUsersCache.set_cache_expired(key);
 
-    co_return co_await get_database()->set_review_users(reviewId, userIds, get_user_session_token());
+    co_return co_await m_client->put_review_users(reviewId, userIds);
 }
 
 auto workspace_manager::set_review_vote(int64_t reviewId, int64_t userId, review_vote vote) -> concurrencpp::result<void>

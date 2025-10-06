@@ -80,7 +80,7 @@ public:
 
     // Review Users
     auto get_review_users(int64_t reviewId) -> typename default_cache_type<reviewer_data>::cache_result;
-    auto set_review_users(int64_t reviewId, std::vector<int64_t> userIds) -> concurrencpp::result<tl::expected<bool, database_error>>;
+    auto set_review_users(int64_t reviewId, std::vector<int64_t> userIds) -> concurrencpp::result<void>;
 
     // Voting
     auto set_review_vote(int64_t reviewId, int64_t userId, review_vote vote) -> concurrencpp::result<void>;

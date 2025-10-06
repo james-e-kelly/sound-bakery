@@ -312,6 +312,25 @@ auto review_client::put_review(review_data reviewData) -> concurrencpp::result<v
     co_return co_await put_form_api(m_client, review_app_endpoints::reviews, items);
 }
 
+auto review_client::put_review_users(database_id reviewId, std::vector<database_id> userIds) -> concurrencpp::result<void>
+{
+    httplib::UploadFormDataItems items = 
+    {
+        {
+            review_app_parameters::data,
+            review_app_serialization::serialize_to_xml<std::vector<database_id>>(userIds),
+            "", "application/xml"
+        },
+        {
+            review_app_parameters::reviewId,
+            review_app_serialization::serialize_to_xml<database_id>(reviewId),
+            "", "application/xml"
+        }
+    };
+
+    co_return co_await put_form_api(m_client, review_app_endpoints::reviewUsers, items);
+}
+
 auto review_client::delete_review(database_id reviewId) -> concurrencpp::result<void>
 {
     co_return co_await delete_api(m_client, review_app_endpoints::reviews, httplib::Params

@@ -456,6 +456,17 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
             database->set_review_vote(reviewId, userId, vote, userToken).get();
         });
 
+    add_database_put_endpoint(m_server, review_app_endpoints::reviewUsers, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request, httplib::Response& response)
+        {
+            if (request.form.has_field(review_app_parameters::data) && request.form.has_field(review_app_parameters::reviewId))
+            {
+                const database_id reviewId = review_app_serialization::deserialize_from_xml<database_id>(request.form.get_field(review_app_parameters::reviewId));
+                const std::vector<database_id> reviewUsers = review_app_serialization::deserialize_from_xml<std::vector<database_id>>(request.form.get_field(review_app_parameters::data));
+
+                database->set_review_users(reviewId, reviewUsers, userToken);
+            }
+        });
+
     // DELETE
 
     add_database_delete_endpoint(m_server, review_app_endpoints::reviews, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request, httplib::Response& response)
