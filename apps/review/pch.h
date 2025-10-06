@@ -77,6 +77,7 @@ struct review_app_endpoints
     static inline std::string users = "/users";
     static inline std::string comments = "/comments";
     static inline std::string activity = "/activity";
+    static inline std::string login = "/login";
 };
 
 struct review_app_parameters
@@ -93,4 +94,5 @@ struct review_app_parameters
     static inline std::string contextFile = "context_file";
     static inline std::string reviewStatus = "review_status";
     static inline std::string reviewVote = "review_vote";
+    static inline std::string activityType = "activity_type";
 };

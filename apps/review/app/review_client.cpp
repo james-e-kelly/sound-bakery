@@ -86,6 +86,28 @@ auto review_client::get_workspace_name() -> concurrencpp::result<std::string>
     co_return (co_await get_api<workspace_data>(m_client, review_app_endpoints::workspace)).m_workspaceName;
 }
 
+auto review_client::get_user_can_perform_action(activity_type activityType) -> concurrencpp::result<bool>
+{
+    co_return co_await get_api<bool>(m_client, review_app_endpoints::me, httplib::Params
+        {
+            { review_app_parameters::activityType, std::to_string((int)activityType) }
+        });
+}
+
+auto review_client::login(login_request_data loginRequestData) -> concurrencpp::result<logged_in_user_data>
+{
+    httplib::UploadFormDataItems items = 
+    {
+        {
+            review_app_parameters::data,
+            review_app_serialization::serialize_to_xml<login_request_data>(loginRequestData),
+            "", "application/xml"
+        }
+    };
+
+    co_return co_await post_form_api<logged_in_user_data>(m_client, review_app_endpoints::login, items);
+}
+
 auto review_client::get_all_projects() -> concurrencpp::result<std::vector<project_data>>
 {
     co_return co_await get_api<std::vector<project_data>>(m_client, review_app_endpoints::projects);

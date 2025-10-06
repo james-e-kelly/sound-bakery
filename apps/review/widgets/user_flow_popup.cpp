@@ -31,8 +31,11 @@ auto user_flow_popup::render_popup() -> void
     switch (allUsers.m_state)
     {
         case gluten::cache_state::loading:
-            ImGui::ProgressBar(-1.0f * (float)ImGui::GetTime(), ImVec2(gluten::loading_popup::s_progressBarWidth, 0.0f), "Waiting for users to load...");
-            return;
+            if (m_type != user_flow_type::login_user)
+            {
+                ImGui::ProgressBar(-1.0f * (float)ImGui::GetTime(), ImVec2(gluten::loading_popup::s_progressBarWidth, 0.0f), "Waiting for users to load...");
+                return;
+            }
             break;
         default:
             m_firstUserCreation = allUsers.m_cache.empty();

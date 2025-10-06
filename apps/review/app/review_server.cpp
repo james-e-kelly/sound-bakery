@@ -219,7 +219,16 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
 
     add_database_get_endpoint<bool>(m_server, review_app_endpoints::me, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)
         {
-            return database->user_has_privilege(userToken, user_privileges::guest);
+            if (request.has_param(review_app_parameters::activityType))
+            {
+                const activity_type activityType = (activity_type)std::stoi(request.get_param_value(review_app_parameters::activityType));
+
+                return database->user_can_perform_action(userToken, activityType);
+            }
+            else
+            {
+                return database->user_has_privilege(userToken, user_privileges::guest);
+            }
         });
 
     add_database_get_endpoint<workspace_data>(m_server, review_app_endpoints::workspace, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)
@@ -382,6 +391,22 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
             }
 
             response.set_content(review_app_serialization::serialize_to_xml<user_data>(createdUser), "application/xml");
+        });
+
+    add_database_post_form_endpoint(m_server, review_app_endpoints::login, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request, httplib::Response& response)
+        {
+            login_request_data loginRequestData = review_app_serialization::deserialize_from_xml<login_request_data>(request.form.get_field(review_app_parameters::data));
+            
+            const auto loggedInUserResult = database->login_user(loginRequestData).get();
+
+            logged_in_user_data loggedInUserData;
+
+            if (loggedInUserResult.has_value())
+            {
+                loggedInUserData = loggedInUserResult.value();
+                
+                response.set_content(review_app_serialization::serialize_to_xml<logged_in_user_data>(loggedInUserData), "application/xml");
+            }
         });
 
     // PUT

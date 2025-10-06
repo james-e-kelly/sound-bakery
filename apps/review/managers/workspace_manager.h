@@ -66,7 +66,6 @@ public:
 
     // Users
     auto open_create_user_popup() -> void;
-    auto logged_in_user_can_create_users() -> concurrencpp::result<bool>;
     auto create_user(const new_user_data newUser, std::optional<std::string> userToken) -> concurrencpp::result<tl::expected<bool, database_error>>;
     auto create_user_and_login(new_user_data newUser) -> concurrencpp::result<tl::expected<bool, database_error>>;
     auto get_all_users() -> typename global_cache_type<user_data>::cache_result;

@@ -17,6 +17,9 @@ public:
     auto exit() -> void override;
 
     auto get_workspace_name() -> concurrencpp::result<std::string>;
+    auto get_user_can_perform_action(activity_type activityType) -> concurrencpp::result<bool>;
+    auto login(login_request_data loginRequestData) -> concurrencpp::result<logged_in_user_data>;
+
     auto get_all_projects() -> concurrencpp::result<std::vector<project_data>>;
     auto get_all_reviews(database_id projectId) -> concurrencpp::result<std::vector<review_data>>;
     auto get_all_comments_for_review(database_id reviewId) -> concurrencpp::result<std::vector<comment_data>>;

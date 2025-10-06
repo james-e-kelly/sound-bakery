@@ -92,7 +92,7 @@ auto workspace_manager::open_workspace(const std::filesystem::path workspaceFile
         
         co_await concurrencpp::resume_on(review_app::get()->thread_pool_executor());
 
-        if (co_await m_client->user_table_is_empty() || get_user_session_token().empty() || get_user_session_has_expired())
+        if (get_user_session_token().empty() || get_user_session_has_expired() || co_await m_client->user_table_is_empty())
         {
             co_await concurrencpp::resume_on(review_app::get()->get_tick_executor());
             open_user_flow_popup();
@@ -181,13 +181,13 @@ auto workspace_manager::open_user_flow_popup() -> concurrencpp::result<void>
     m_userFlowPopup = get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class_to_root<user_flow_popup>(false);
     m_userFlowPopup->open_popup();
 
-    if (co_await m_client->user_table_is_empty())
-    {
-        m_userFlowPopup->set_flow_type(user_flow_type::new_user_and_login);
-    }
-    else if (get_user_session_token().empty())
+    if (get_user_session_token().empty())
     {
         m_userFlowPopup->set_flow_type(user_flow_type::login_user);
+    }
+    else if (co_await m_client->user_table_is_empty())
+    {
+        m_userFlowPopup->set_flow_type(user_flow_type::new_user_and_login);
     }
 }
 
@@ -517,11 +517,6 @@ auto workspace_manager::open_create_user_popup() -> void
     }
 }
 
-auto workspace_manager::logged_in_user_can_create_users() -> concurrencpp::result<bool>
-{
-    co_return co_await get_database()->user_can_perform_action(get_user_session_token(), activity_type::user_added);
-}
-
 auto workspace_manager::create_user(const new_user_data newUser, std::optional<std::string> userToken) -> concurrencpp::result<tl::expected<bool, database_error>> 
 {
     user_data createdUserData = co_await m_client->post_user(newUser);
@@ -551,7 +546,7 @@ auto workspace_manager::create_user_and_login(new_user_data newUser) -> concurre
 
 auto workspace_manager::login_user(login_request_data loginData) -> concurrencpp::result<tl::expected<bool, database_error>>
 {
-    const tl::expected<logged_in_user_data, database_error> loggedInUser = co_await get_database()->login_user(loginData);
+    const tl::expected<logged_in_user_data, database_error> loggedInUser = co_await m_client->login(loginData);
 
     co_await concurrencpp::resume_on(get_app()->get_tick_executor());
 
