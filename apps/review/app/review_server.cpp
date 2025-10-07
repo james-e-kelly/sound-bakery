@@ -367,6 +367,43 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
             response.set_content(review_app_serialization::serialize_to_xml<review_data>(newReviewData), "application/xml");
         });
 
+    add_database_post_form_endpoint(m_server, fmt::format("{}/:id", review_app_endpoints::reviews), [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request, httplib::Response& response)
+        {
+            new_transit_review_data newReviewTransitData;
+            const database_id reviewId = std::stol(request.path_params.at("id"));
+            auto contextFiles = request.form.get_files(review_app_parameters::contextFile);
+            auto reviewFiles = request.form.get_files(review_app_parameters::reviewFile);
+
+            for (const httplib::FormData& doc : contextFiles) 
+            {
+                newReviewTransitData.m_contextFiles.push_back(
+                    {
+                        doc.filename,
+                        std::vector<uint8_t>(doc.content.begin(), doc.content.end())
+                    });
+            }
+
+            for (const httplib::FormData& doc : reviewFiles) 
+            {
+                newReviewTransitData.m_reviewFiles.push_back(
+                    {
+                        doc.filename,
+                        std::vector<uint8_t>(doc.content.begin(), doc.content.end())
+                    });
+            }
+
+            const auto newReviewVersionResult = database->create_review_version(reviewId, newReviewTransitData, userToken).get();
+
+            review_data newReviewData;
+
+            if (newReviewVersionResult.has_value())
+            {
+                newReviewData = newReviewVersionResult.value();
+            }
+
+            response.set_content(review_app_serialization::serialize_to_xml<review_data>(newReviewData), "application/xml");
+        });
+
     add_database_post_form_endpoint(m_server, review_app_endpoints::comments, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request, httplib::Response& response)
         {
             new_comment_data newCommentData = review_app_serialization::deserialize_from_xml<new_comment_data>(request.form.get_field(review_app_parameters::data));

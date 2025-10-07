@@ -256,6 +256,46 @@ auto review_client::post_review(database_id projectId, const new_transit_review_
     co_return review;
 }
 
+auto review_client::post_review_version(database_id reviewId, new_transit_review_data newReviewData) -> concurrencpp::result<tl::expected<review_data, bool>>
+{
+    httplib::UploadFormDataItems items;
+
+    for (const auto contextFile : newReviewData.m_contextFiles)
+    {
+        items.push_back(
+            {
+                review_app_parameters::contextFile,
+                std::string(reinterpret_cast<const char*>(contextFile.m_fileData.data()), contextFile.m_fileData.size()),
+                contextFile.m_fileName,
+                "application/octet-stream"
+            });
+    }
+
+    for (const auto reviewFile : newReviewData.m_reviewFiles)
+    {
+        items.push_back(
+            {
+                review_app_parameters::reviewFile,
+                std::string(reinterpret_cast<const char*>(reviewFile.m_fileData.data()), reviewFile.m_fileData.size()),
+                reviewFile.m_fileName,
+                "application/octet-stream"
+            });
+    }
+    
+    review_data review;
+
+    co_await concurrencpp::resume_on(gluten::app::get()->background_executor());
+
+    const httplib::Result postResult = m_client->Post(fmt::format("{}/{}", review_app_endpoints::reviews, reviewId), httplib::Headers(), items);
+
+    if (http_result_okay(postResult))
+    {
+        review = review_app_serialization::deserialize_from_xml<review_data>(postResult.value().body);
+    }
+
+    co_return review;
+}
+
 auto review_client::post_comment(new_comment_data comment) -> concurrencpp::result<comment_data>
 {
     httplib::UploadFormDataItems items = 

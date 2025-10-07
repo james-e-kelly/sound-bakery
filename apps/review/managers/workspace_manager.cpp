@@ -418,7 +418,7 @@ auto workspace_manager::create_review_version(int64_t reviewId, new_frontend_rev
         co_return;
     }
 
-    const auto createNewReviewVersionResult = co_await get_database()->create_review_version(reviewId, newReviewVersion, get_user_session_token());
+    const auto createNewReviewVersionResult = co_await m_client->post_review_version(reviewId, new_transit_review_data(newReviewVersion));
 
     if (createNewReviewVersionResult.has_value())
     {

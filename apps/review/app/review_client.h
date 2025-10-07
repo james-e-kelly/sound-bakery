@@ -32,6 +32,7 @@ public:
 
     auto post_project(const std::string projectName, const std::string projectDescription) -> concurrencpp::result<database_id>;
     auto post_review(database_id projectId, const new_transit_review_data newReview) -> concurrencpp::result<tl::expected<review_data,bool>>;
+    auto post_review_version(database_id reviewId, new_transit_review_data newReviewData) -> concurrencpp::result<tl::expected<review_data, bool>>;
     auto post_comment(new_comment_data comment) -> concurrencpp::result<comment_data>;
     auto post_user(new_user_data newUser) -> concurrencpp::result<user_data>;
 
