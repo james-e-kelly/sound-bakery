@@ -21,6 +21,7 @@ set(review_SOURCES
   managers/project_manager.cpp
   managers/review_manager.cpp
   managers/workspace_manager.cpp
+  managers/intro_manager.cpp
   subsystems/video_subsystem.cpp
   widgets/review_root_widget.cpp
   widgets/intro_widget.cpp
@@ -59,6 +60,7 @@ set(review_HEADERS
   managers/project_manager.h
   managers/review_manager.h
   managers/workspace_manager.h
+  managers/intro_manager.h
   subsystems/video_subsystem.h
   widgets/review_root_widget.h
   widgets/intro_widget.h

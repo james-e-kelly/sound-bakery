@@ -11,7 +11,7 @@
 #include "data/project_data.h"
 #include "data/user_settings_data.h"
 
-class intro_widget;
+class review_client;
 class review_database;
 class user_flow_popup;
 class workspace_widget;
@@ -35,7 +35,7 @@ public:
     [[nodiscard]] auto get_workspace_name() -> typename string_cache_type::cache_result;
     [[nodiscard]] auto get_workspace_file() const -> std::filesystem::path;
     [[nodiscard]] auto get_workspace_directory() const -> std::filesystem::path;
-    auto open_workspace(const std::filesystem::path workspaceFile) -> concurrencpp::result<void>;
+    auto open_client(const std::shared_ptr<review_client>& client) -> concurrencpp::result<void>;
     auto create_workspace(const std::string& workspaceName, const std::filesystem::path& workspaceDirectory) -> void;
     auto close_workspace() -> void;
     
@@ -102,7 +102,6 @@ private:
     auto open_workspace_widget() -> void;
     auto open_user_flow_popup() -> concurrencpp::result<void>;
 
-    std::shared_ptr<intro_widget> m_introWidget;
     std::shared_ptr<workspace_widget> m_workspaceWidget;
     std::shared_ptr<user_flow_popup> m_userFlowPopup;
 

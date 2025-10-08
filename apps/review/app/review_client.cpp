@@ -63,13 +63,12 @@ namespace
     }
 }
 
-review_client::review_client(gluten::app* app, const std::filesystem::path& workspacePath)
+review_client::review_client(gluten::app* app, const std::string& serverAddress)
     : gluten::manager(app)
 {
-    std::error_code errorCode;
-    if (std::filesystem::exists(workspacePath, errorCode))
+    if (!serverAddress.empty())
     {
-        m_client = std::make_unique<httplib::SSLClient>("localhost", 8080);
+        m_client = std::make_unique<httplib::SSLClient>(serverAddress, 8080);
 
         m_client->enable_server_certificate_verification(false);
         m_client->set_bearer_token_auth(get_user_session_token());

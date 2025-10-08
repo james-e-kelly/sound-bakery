@@ -14,31 +14,6 @@ namespace
     constexpr const char* g_projectDirectoryName		= "Projects";
     constexpr const char* g_userDirectoryName			= "Users";
     constexpr const char* g_projectFileExtension		= "project";
-
-    template<typename data_type>
-    static auto transform_database_result_to_cache_result(concurrencpp::result<tl::expected<data_type, database_error>> databaseResult) -> concurrencpp::result<data_type>
-    {
-        const auto result = co_await databaseResult;
-
-        if (result.has_value())
-        {
-            co_return result.value();
-        }
-
-        co_return data_type();
-    }
-
-    static auto transform_database_result_to_bool(concurrencpp::result<tl::expected<bool, database_error>> databaseResult) -> concurrencpp::result<bool>
-    {
-        const auto result = co_await databaseResult;
-
-        if (result.has_value())
-        {
-            co_return result.value();
-        }
-
-        co_return false;
-    }
 }
 
 workspace_manager::~workspace_manager()
@@ -47,68 +22,39 @@ workspace_manager::~workspace_manager()
 
 auto workspace_manager::init(gluten::app* app) -> void
 {
-    if (!m_userSettingsData->workspace_exists())
-	{
-        m_introWidget = app->get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class_to_root<intro_widget>(false);
-	}
 }
 
 auto workspace_manager::start() -> void
 {
-    if (m_userSettingsData->workspace_exists())
-	{
-        open_workspace(m_userSettingsData->m_workspaceFilePath);
-	}
-
-	if (m_introWidget)
-	{
-        gluten::dockspace_refresh refresh = get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->get_root_widget()->set_manual_layout();
-		refresh.assign_widget_to_node(rttr::type::get<intro_widget>(), refresh.dockspaceID);
-	}
-
-	if (m_workspaceWidget)
-	{
-        gluten::dockspace_refresh refresh = get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->get_root_widget()->set_manual_layout();
-        refresh.assign_widget_to_node(rttr::type::get<workspace_widget>(), refresh.dockspaceID);
-	}
 }
 
-auto workspace_manager::open_workspace(const std::filesystem::path workspaceFile) -> concurrencpp::result<void>
+auto workspace_manager::open_client(const std::shared_ptr<review_client>& client) -> concurrencpp::result<void>
 {
+    m_client = client;
+
     co_await concurrencpp::resume_on(get_app()->get_tick_executor());
 
-    if (file_is_workspace(workspaceFile))
-    {
-        m_introWidget.reset();
-
-        m_userSettingsData->m_workspaceFilePath = workspaceFile;
-
-        const std::shared_ptr<gluten::loading_popup> loadingPopup = get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class_to_root<gluten::loading_popup>(false);
-        loadingPopup->open_popup();
-
-        review_app::create_review_database(std::filesystem::path(workspaceFile));
-        m_server = get_app()->add_manager_class<review_server>(workspaceFile.parent_path());
-        m_client = get_app()->add_manager_class<review_client>(workspaceFile.parent_path());
+    const std::shared_ptr<gluten::loading_popup> loadingPopup = get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class_to_root<gluten::loading_popup>(false);
+    loadingPopup->open_popup();
         
-        co_await concurrencpp::resume_on(review_app::get()->thread_pool_executor());
+    co_await concurrencpp::resume_on(review_app::get()->thread_pool_executor());
 
-        if (get_user_session_token().empty() || get_user_session_has_expired() || co_await m_client->user_table_is_empty())
+    if (get_user_session_token().empty() || get_user_session_has_expired() || co_await m_client->user_table_is_empty())
+    {
+        co_await concurrencpp::resume_on(review_app::get()->get_tick_executor());
+        open_user_flow_popup();
+    }
+    else
+    {
+        if (co_await m_client->user_is_logged_in())
         {
             co_await concurrencpp::resume_on(review_app::get()->get_tick_executor());
-            open_user_flow_popup();
+            open_workspace_widget();
         }
         else
         {
-            if (co_await m_client->user_is_logged_in())
-            {
-                co_await concurrencpp::resume_on(review_app::get()->get_tick_executor());
-                open_workspace_widget();
-            }
-            else
-            {
-                co_await concurrencpp::resume_on(review_app::get()->get_tick_executor());
-                open_user_flow_popup();
-            }
+            co_await concurrencpp::resume_on(review_app::get()->get_tick_executor());
+            open_user_flow_popup();
         }
     }
 }
@@ -166,11 +112,6 @@ auto workspace_manager::open_workspace_widget() -> void
 
     gluten::dockspace_refresh refresh = get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->get_root_widget()->set_manual_layout();
     refresh.assign_widget_to_node(rttr::type::get<workspace_widget>(), refresh.dockspaceID);
-
-    if (!m_userSettingsData->m_selectedProjectName.empty())
-    {
-        select_project(m_userSettingsData->m_selectedProjectName);
-    }
 }
 
 auto workspace_manager::open_user_flow_popup() -> concurrencpp::result<void>
@@ -247,8 +188,6 @@ auto workspace_manager::create_workspace(const std::string& workspaceName, const
         review_app::create_review_database(workspaceFile);
         get_database()->create_workspace(workspaceName);
 
-		m_introWidget.reset();
-
 		open_user_flow_popup();
 	}
 }
@@ -260,14 +199,6 @@ auto workspace_manager::close_workspace() -> void
     m_cachedProjects.clear();
     m_userSettingsData->m_workspaceFilePath.clear();
     review_app::close_review_database();
-
-	if (!m_introWidget)
-	{
-		m_introWidget = get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class_to_root<intro_widget>(false);
-
-		gluten::dockspace_refresh refresh = get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->get_root_widget()->set_manual_layout();
-        refresh.assign_widget_to_node(rttr::type::get<intro_widget>(), refresh.dockspaceID);
-	}
 }
 
 auto workspace_manager::get_selected_project() const -> const project_data&

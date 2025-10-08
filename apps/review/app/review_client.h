@@ -11,7 +11,7 @@
 class review_client : public gluten::manager
 {
 public:
-    review_client(gluten::app* app, const std::filesystem::path& workspacePath);
+    review_client(gluten::app* app, const std::string& serverAddress);
     ~review_client() = default;
 
     auto exit() -> void override;

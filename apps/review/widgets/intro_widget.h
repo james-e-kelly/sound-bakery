@@ -24,4 +24,5 @@ protected:
 
 private:
     std::shared_ptr<create_workspace_popup> m_createWorkspacePopup;
+    concurrencpp::result<bool> m_testConnectionResult;
 };

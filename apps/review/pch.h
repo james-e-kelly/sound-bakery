@@ -61,6 +61,7 @@ enum review_app_version
     review_app_user_tokens,
     review_app_first_settings,
     review_app_stored_expiry_time,
+    review_app_ip_address,
 
     // Add versions above this //
     review_app_version_end,

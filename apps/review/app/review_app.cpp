@@ -1,8 +1,11 @@
 ﻿#include "review_app.h"
 
 #include "app/review_database.h"
+#include "app/review_client.h"
+#include "app/review_server.h"
 #include "gluten/subsystems/audio_subsystem.h"
 #include "subsystems/video_subsystem.h"
+#include "managers/intro_manager.h"
 #include "managers/workspace_manager.h"
 #include "widgets/review_root_widget.h"
 
@@ -123,12 +126,7 @@ auto review_app::pre_init() -> void
         }
     }
 
-    m_dropTarget = std::make_unique<review_app_drop_target>();
-
-    m_audioSubsystem    = add_subsystem_class<gluten::audio_subsystem>();
-    m_videoSubsystem    = add_subsystem_class<video_subsystem>();
-
-    m_workspaceManager  = add_manager_class<workspace_manager>();
+    add_manager_class<intro_manager>();
 }
 
 auto review_app::post_init() -> void
@@ -137,12 +135,6 @@ auto review_app::post_init() -> void
             get_subsystem_by_class<gluten::renderer_subsystem>())
     {
         rendererSubsystem->set_maximised();
-
-        HRESULT r = OleInitialize(nullptr);
-        assert(r == S_OK);
-
-        HRESULT result = RegisterDragDrop(glfwGetWin32Window(rendererSubsystem->get_glfw_window()), m_dropTarget.get());
-        assert(result == S_OK);
     }
 }
 
@@ -191,9 +183,19 @@ auto review_app::tick_implementation() -> void
     }
 }
 
+auto review_app::set_is_drag_dropping(bool dragDropping) -> void
+{
+    m_isDragDropping = dragDropping;
+}
+
 auto review_app::get() -> review_app*
 {
     return static_cast<review_app*>(gluten::app::get());
+}
+
+auto review_app::get_database_thread_executor() const -> std::shared_ptr<concurrencpp::worker_thread_executor>
+{
+    return m_databaseThread;
 }
 
 auto review_app::get_review_database() -> std::shared_ptr<review_database>
@@ -221,7 +223,12 @@ auto review_app::close_review_database() -> void
     }
 }
 
-auto review_app::get_drag_drop_files() -> std::unordered_set<std::filesystem::path>
+auto review_app::get_is_drag_dropping() const -> bool
+{
+    return m_isDragDropping;
+}
+
+auto review_app::get_drag_drop_files() const -> std::unordered_set<std::filesystem::path>
 {
     if (m_isDragDropReady && m_dropTarget)
     {
@@ -230,4 +237,36 @@ auto review_app::get_drag_drop_files() -> std::unordered_set<std::filesystem::pa
         return m_dropTarget->m_payloadPaths;
     }
     return {};
+}
+
+auto review_app::setup_client(const std::string& serverAddress) -> void
+{
+    if (review_app* const app = get())
+    {
+        app->remove_manager_by_class<intro_manager>();
+        app->m_dropTarget = std::make_unique<review_app_drop_target>();
+        app->m_audioSubsystem = app->add_subsystem_class<gluten::audio_subsystem>();
+        app->m_videoSubsystem = app->add_subsystem_class<video_subsystem>();
+        app->m_workspaceManager = app->add_manager_class<workspace_manager>();
+        app->m_workspaceManager->open_client(app->add_manager_class<review_client>(serverAddress));
+
+        if (std::shared_ptr<gluten::renderer_subsystem> rendererSubsystem = app->get_subsystem_by_class<gluten::renderer_subsystem>())
+        {
+            HRESULT r = OleInitialize(nullptr);
+            assert(r == S_OK);
+
+            HRESULT result = RegisterDragDrop(glfwGetWin32Window(rendererSubsystem->get_glfw_window()), app->m_dropTarget.get());
+            assert(result == S_OK);
+        }
+    }
+}
+
+auto review_app::setup_server(const std::filesystem::path& workspaceFile) -> void
+{
+    if (review_app* const app = get())
+    {
+        app->remove_manager_by_class<intro_manager>();
+        review_app::create_review_database(workspaceFile);
+        app->add_manager_class<review_server>(workspaceFile.parent_path());
+    }
 }
