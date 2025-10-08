@@ -243,6 +243,9 @@ auto review_app::setup_client(const std::string& serverAddress) -> void
 {
     if (review_app* const app = get())
     {
+        gluten::data_source<user_settings_data> userSettings;
+        userSettings->m_serverIpAddress = serverAddress;
+
         app->remove_manager_by_class<intro_manager>();
         app->m_dropTarget = std::make_unique<review_app_drop_target>();
         app->m_audioSubsystem = app->add_subsystem_class<gluten::audio_subsystem>();
@@ -265,6 +268,9 @@ auto review_app::setup_server(const std::filesystem::path& workspaceFile) -> voi
 {
     if (review_app* const app = get())
     {
+        gluten::data_source<user_settings_data> userSettings;
+        userSettings->m_workspaceFilePath = workspaceFile;
+
         app->remove_manager_by_class<intro_manager>();
         review_app::create_review_database(workspaceFile);
         app->add_manager_class<review_server>(workspaceFile.parent_path());

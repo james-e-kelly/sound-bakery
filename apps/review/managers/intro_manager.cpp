@@ -25,7 +25,6 @@ auto intro_manager::init(gluten::app* app) -> void
         m_testServerConnectionResult = review_app_test_connect::test_server_connection(m_userSettingsData->m_serverIpAddress);
 		m_loadingPopup = app->get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class_to_root<gluten::loading_popup>(false);
         m_loadingPopup->open_popup();
-		//review_app::setup_client(m_userSettingsData->m_serverIpAddress);
 	}
     else if (m_userSettingsData->workspace_exists())
 	{
