@@ -24,7 +24,6 @@ auto intro_manager::init(gluten::app* app) -> void
 	{
         m_testServerConnectionResult = review_app_test_connect::test_server_connection(m_userSettingsData->m_serverIpAddress);
 		m_loadingPopup = app->get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class_to_root<gluten::loading_popup>(false);
-        m_loadingPopup->open_popup();
 	}
     else if (m_userSettingsData->workspace_exists())
 	{
@@ -38,6 +37,11 @@ auto intro_manager::init(gluten::app* app) -> void
 
 auto intro_manager::start() -> void
 {
+	if (m_loadingPopup)
+	{
+		m_loadingPopup->open_popup();
+	}
+
 	if (m_introWidget)
 	{
         gluten::dockspace_refresh refresh = get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->get_root_widget()->set_manual_layout();
@@ -57,7 +61,7 @@ auto intro_manager::tick(double deltaTime) -> void
 
 				if (serverConnectionOkay)
 				{
-					review_app::setup_server(m_userSettingsData->m_serverIpAddress);
+					review_app::setup_client(m_userSettingsData->m_serverIpAddress);
 				}
 			}
 		}
@@ -69,5 +73,7 @@ auto intro_manager::tick(double deltaTime) -> void
     else if (!m_introWidget)
 	{
 		m_introWidget = gluten::add_widget_class_to_root<intro_widget>(false);
+		gluten::dockspace_refresh refresh = get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->get_root_widget()->set_manual_layout();
+		refresh.assign_widget_to_node(rttr::type::get<intro_widget>(), refresh.dockspaceID);
 	}
 }

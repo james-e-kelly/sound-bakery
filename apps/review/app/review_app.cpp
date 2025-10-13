@@ -250,8 +250,8 @@ auto review_app::setup_client(const std::string& serverAddress) -> void
         app->m_dropTarget = std::make_unique<review_app_drop_target>();
         app->m_audioSubsystem = app->add_subsystem_class<gluten::audio_subsystem>();
         app->m_videoSubsystem = app->add_subsystem_class<video_subsystem>();
-        app->m_workspaceManager = app->add_manager_class<workspace_manager>();
-        app->m_workspaceManager->open_client(app->add_manager_class<review_client>(serverAddress));
+        std::shared_ptr<workspace_manager> workspaceManager = app->add_manager_class<workspace_manager>();
+        workspaceManager->open_client(app->add_manager_class<review_client>(serverAddress));
 
         if (std::shared_ptr<gluten::renderer_subsystem> rendererSubsystem = app->get_subsystem_by_class<gluten::renderer_subsystem>())
         {
@@ -274,5 +274,17 @@ auto review_app::setup_server(const std::filesystem::path& workspaceFile) -> voi
         app->remove_manager_by_class<intro_manager>();
         review_app::create_review_database(workspaceFile);
         app->add_manager_class<review_server>(workspaceFile.parent_path());
+    }
+}
+
+auto review_app::reset_to_intro() -> void
+{
+    if (review_app* const app = get())
+    {
+        app->remove_manager_by_class<review_server>();
+        app->remove_manager_by_class<review_client>();
+        app->remove_manager_by_class<workspace_manager>();
+
+        app->add_manager_class<intro_manager>();
     }
 }

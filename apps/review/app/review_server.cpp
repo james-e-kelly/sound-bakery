@@ -553,6 +553,16 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
 
 auto review_server::start() -> void
 {
+    m_serverWidget = gluten::add_widget_class_to_root<server_widget>(false);
+
+    ImGuiWindowClass windowClass;
+    windowClass.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoTabBar;
+
+    m_serverWidget->set_window_class(windowClass);
+
+    gluten::dockspace_refresh refresh = get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->get_root_widget()->set_manual_layout();
+	refresh.assign_widget_to_node(rttr::type::get<server_widget>(), refresh.dockspaceID);
+
     get_app()->background_executor()->submit([this]() 
         {
             m_server->listen("localhost", 8080);
@@ -565,4 +575,30 @@ auto review_server::exit() -> void
     {
         m_server->stop();
     }
+}
+
+auto server_widget::render_menu_implementation() -> void
+{
+    if (ImGui::BeginMenu(s_fileMenuName))
+    {
+        if (ImGui::MenuItem("Close Server..."))
+        {
+            review_app::reset_to_intro();
+        }
+        ImGui::EndMenu();
+    }
+}
+
+auto server_widget::render_window_implementation() -> void
+{
+    gluten::background background;
+    gluten::text runningText("Running server...");
+    gluten::loading_spinner loading;
+
+    background.set_element_padding(ImVec2(16.0f, 16.0f));
+    loading.set_element_translation(ImVec2(0.0f, 16.0f));
+
+    background.render_window();
+    runningText.render(background.get_element_rect());
+    loading.render(background.get_element_rect());
 }

@@ -4,6 +4,8 @@
 
 #include "app/review_database.h"
 
+class server_widget;
+
 class review_server : public gluten::manager
 {
 public:
@@ -15,4 +17,14 @@ public:
 
 private:
     std::unique_ptr<httplib::SSLServer> m_server;
+    std::shared_ptr<server_widget> m_serverWidget;
+};
+
+class server_widget : public gluten::window_widget
+{
+    WIDGET_CONSTRUCT_PARENT(server_widget, "Server Widget", gluten::window_widget)
+
+protected:
+    auto render_menu_implementation() -> void override;
+    auto render_window_implementation() -> void override;
 };

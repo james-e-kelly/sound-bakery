@@ -48,9 +48,9 @@ auto intro_widget::render_window_implementation() -> void
 	gluten::layout twoColumnLayout(gluten::layout::layout_type::left_to_right, gluten::element::anchor_preset::stretch_full);
     twoColumnLayout.set_element_frame_padding();
 
-	gluten::button openButton("Open...", false, gluten::element::anchor_preset::center_top);
-	gluten::button createButton("Create...", false, gluten::element::anchor_preset::center_top);
-	gluten::button connectButton("Connect...", false, gluten::element::anchor_preset::center_top);
+	gluten::button openButton("Open Review Database File...", false, gluten::element::anchor_preset::center_top);
+	gluten::button createButton("Create Review Database File...", false, gluten::element::anchor_preset::center_top);
+	gluten::button connectButton("Connect To Server...", false, gluten::element::anchor_preset::center_top);
 
 	openButton.set_element_alignment(ImVec2(0.5f, 0.f));
 	createButton.set_element_alignment(ImVec2(0.5f, 0.f));

@@ -28,6 +28,7 @@ public:
     static auto close_review_database() -> void;
     static auto setup_client(const std::string& serverAddress) -> void;
     static auto setup_server(const std::filesystem::path& workspaceFile) -> void;
+    static auto reset_to_intro() -> void;
 
 protected:
     auto pre_init() -> void override;
@@ -40,7 +41,6 @@ private:
 
     std::shared_ptr<gluten::audio_subsystem> m_audioSubsystem;
     std::shared_ptr<video_subsystem> m_videoSubsystem;
-    std::shared_ptr<workspace_manager> m_workspaceManager;
     std::unique_ptr<review_app_drop_target> m_dropTarget;
 
     mutable bool m_isDragDropping   = false;
