@@ -11,7 +11,7 @@ public:
     {
         const std::string extension = filePath.extension().string();
 
-        const std::unordered_set<std::string> audioExtensions = {
+        static const std::unordered_set<std::string> audioExtensions = {
             ".ac3",     ".a52", ".eac3",   ".mlp",     ".dts",  ".dts-hd", ".dtshd",
             ".true-hd", ".thd", ".truehd", ".thd+ac3", ".tta",  ".pcm",    ".wav",
             ".aiff",    ".aif", ".aifc",   ".amr",     ".awb",  ".au",     ".snd",
