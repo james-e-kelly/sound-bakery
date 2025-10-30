@@ -80,6 +80,9 @@ auto review_client::exit() -> void
     if (m_client)
     {
         m_client->stop();
+
+        std::error_code errorCode;
+        std::filesystem::remove_all(get_file_cache_directory(), errorCode);
     }
 }
 

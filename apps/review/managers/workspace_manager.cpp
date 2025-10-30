@@ -670,7 +670,7 @@ auto workspace_manager::get_review_file(const std::filesystem::path& relativeFil
 
 auto workspace_manager::async_get_review_file(std::filesystem::path relativeFilePath) -> concurrencpp::result<file_cache_type::cache_data_type>
 {
-    static const std::filesystem::path downloadedFilesRoot = std::filesystem::path(sago::getCacheDir()) / "SoundCheck" / "cache" / "downloaded";
+    static const std::filesystem::path downloadedFilesRoot = get_file_cache_directory();
 
     const std::filesystem::path absoluteFilePath = downloadedFilesRoot / relativeFilePath;
 

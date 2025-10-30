@@ -107,6 +107,11 @@ auto http_result_okay(const httplib::Result& result) -> bool
     return result && result.value().status == httplib::StatusCode::OK_200;
 }
 
+auto get_file_cache_directory() -> std::filesystem::path
+{
+    return std::filesystem::path(sago::getCacheDir()) / "SoundCheck" / "cache" / "downloaded";
+}
+
 auto create_application() -> gluten::app* 
 {
 	return new review_app();

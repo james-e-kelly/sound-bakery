@@ -28,6 +28,7 @@
 #include <magic_enum/magic_enum.hpp>
 
 auto http_result_okay(const httplib::Result& result) -> bool;
+auto get_file_cache_directory() -> std::filesystem::path;
 
 namespace review_app_serialization
 {
