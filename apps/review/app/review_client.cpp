@@ -107,7 +107,11 @@ auto review_client::login(login_request_data loginRequestData) -> concurrencpp::
         }
     };
 
-    co_return co_await post_form_api<logged_in_user_data>(m_client, review_app_endpoints::login, items);
+    const logged_in_user_data result = co_await post_form_api<logged_in_user_data>(m_client, review_app_endpoints::login, items);
+
+    m_client->set_bearer_token_auth(result.m_sessionToken);
+
+    co_return result;
 }
 
 auto review_client::get_all_projects() -> concurrencpp::result<std::vector<project_data>>
