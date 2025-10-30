@@ -28,6 +28,9 @@ public:
 
     using string_cache_type = gluten::data_cache<std::string, gluten::token_cache_key<std::string>, gluten::token_cache_key_hasher<std::string>>;
 
+    // Relative path key -> absolute path cache
+    using file_cache_type = gluten::data_cache<std::filesystem::path, gluten::key_and_token_cache_key<std::filesystem::path, std::string>, gluten::key_and_token_cache_key_hasher<std::filesystem::path, std::string>>;
+
     workspace_manager(gluten::app* app) : gluten::manager(app) {}
     ~workspace_manager();
 
@@ -90,6 +93,8 @@ public:
 
     auto get_database() const -> std::shared_ptr<review_database>;
 
+    auto get_review_file(const std::filesystem::path& relativeFilePath) -> typename file_cache_type::cache_result;
+
 protected:
     auto init(gluten::app* app) -> void override;
     auto start() -> void override;
@@ -98,6 +103,7 @@ private:
     static auto file_is_workspace(const std::filesystem::path& file) -> bool;
 
     auto async_get_users_for_review(int64_t reviewId) -> concurrencpp::result<std::vector<reviewer_data>>;
+    auto async_get_review_file(std::filesystem::path relativeFilePath) -> concurrencpp::result<file_cache_type::cache_data_type>;
 
     auto open_workspace_widget() -> void;
     auto open_user_flow_popup() -> concurrencpp::result<void>;
@@ -120,4 +126,5 @@ private:
     default_cache_type<review_data> m_cachedReviews;
     global_cache_type<project_data> m_cachedProjects;
     string_cache_type m_cachedWorkspaceName;
+    file_cache_type m_filesCache;
 };

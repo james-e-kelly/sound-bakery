@@ -167,6 +167,29 @@ auto review_client::get_all_review_activity(database_id reviewId) -> concurrencp
         });
 }
 
+auto review_client::get_review_file(std::filesystem::path relativeFilePath) -> concurrencpp::result<review_file_data>
+{
+    co_await concurrencpp::resume_on(gluten::app::get()->background_executor());
+
+    review_file_data data;
+
+    const httplib::Params params
+    {
+        { review_app_parameters::file, relativeFilePath.string() }
+    };
+
+    if (auto result = m_client->Get(review_app_endpoints::files, params, httplib::Headers()))
+    {
+        if (http_result_okay(result))
+        {
+            data.m_fileData = std::vector<unsigned char>(result.value().body.begin(), result.value().body.end());
+            data.m_fileName = relativeFilePath.string();
+        }
+    }
+
+    co_return data;
+}
+
 auto review_client::user_is_logged_in() -> concurrencpp::result<bool>
 {
     co_return co_await get_api<bool>(m_client, review_app_endpoints::me);
@@ -174,7 +197,7 @@ auto review_client::user_is_logged_in() -> concurrencpp::result<bool>
 
 auto review_client::user_table_is_empty() -> concurrencpp::result<bool>
 {
-    co_return (co_await get_api<std::vector<user_data>>(m_client, review_app_endpoints::users)).empty();
+    co_return co_await get_api<bool>(m_client, review_app_endpoints::queries, httplib::Params{ { review_app_parameters::query, review_app_queries::userTableEmptyQuery } });
 }
 
 auto review_client::post_project(const std::string projectName, const std::string projectDescription) -> concurrencpp::result<database_id>

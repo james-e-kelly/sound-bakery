@@ -655,3 +655,41 @@ auto workspace_manager::get_database() const -> std::shared_ptr<review_database>
 {
     return review_app::get_review_database();
 }
+
+auto workspace_manager::get_review_file(const std::filesystem::path& relativeFilePath) -> typename file_cache_type::cache_result
+{
+    const typename file_cache_type::cache_key_type key(relativeFilePath, get_user_session_token());
+
+    if (m_filesCache.get_cache_needs_filling(key))
+    {
+        m_filesCache.set_async_fill_cache(key, async_get_review_file(relativeFilePath));
+    }
+
+    return m_filesCache.get_cached_data(key);
+}
+
+auto workspace_manager::async_get_review_file(std::filesystem::path relativeFilePath) -> concurrencpp::result<file_cache_type::cache_data_type>
+{
+    static const std::filesystem::path downloadedFilesRoot = std::filesystem::path(sago::getCacheDir()) / "SoundCheck" / "cache" / "downloaded";
+
+    const std::filesystem::path absoluteFilePath = downloadedFilesRoot / relativeFilePath;
+
+    if (std::filesystem::exists(absoluteFilePath))
+    {
+        co_return absoluteFilePath;
+    }
+
+    co_await concurrencpp::resume_on(get_app()->background_executor());
+
+    const review_file_data fileData = co_await m_client->get_review_file(relativeFilePath);
+
+    if (!fileData.m_fileName.empty() && !fileData.m_fileData.empty())
+    {
+        std::filesystem::create_directories(absoluteFilePath.parent_path());
+
+        std::ofstream stream(absoluteFilePath.string(), std::ios::binary | std::ios::out);
+        stream.write(reinterpret_cast<const char*>(fileData.m_fileData.data()), fileData.m_fileData.size());
+    }
+    
+    co_return absoluteFilePath;
+}

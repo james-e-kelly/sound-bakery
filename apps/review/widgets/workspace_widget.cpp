@@ -595,12 +595,18 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
 
                             if (m_reviewFilesLayout.render_layout_element_percent_horizontal(&header, 1.0f))
                             {
-                                const std::filesystem::path absoluteFilePath = workspaceManager->get_workspace_directory() /
-                                                                asset.m_versionsToRelativeFiles.at(selectedVersion);
-
-                                if (audio_element::can_handle_file(absoluteFilePath))
+                                const auto reviewFileCache = workspaceManager->get_review_file(asset.m_versionsToRelativeFiles.at(selectedVersion));
+                                
+                                if (!reviewFileCache.has_data())
                                 {
-                                    audio_element audioElement(absoluteFilePath, asset.m_fileId);
+                                    gluten::loading_spinner loadingFileSpinner;
+                                    m_reviewFilesLayout.render_layout_element_pixels_horizontal(&loadingFileSpinner, 50.0f);
+                                    continue;
+                                }
+
+                                if (audio_element::can_handle_file(reviewFileCache.m_cache))
+                                {
+                                    audio_element audioElement(reviewFileCache.m_cache, asset.m_fileId);
                                     if (m_reviewFilesLayout.render_layout_element_percent_horizontal(&audioElement, 1.0f))
                                     {
                                         m_createCommentPopup = add_child_widget<create_comment_popup>(this, selectedReview.m_reviewId, asset.m_fileId, audioElement.get_file_position());
@@ -613,9 +619,9 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
                                         m_focussedComment.reset();
                                     }
                                 }
-                                else if (video_element::can_handle_file(absoluteFilePath))
+                                else if (video_element::can_handle_file(reviewFileCache.m_cache))
                                 {
-                                    video_element videoElement(absoluteFilePath, asset.m_fileId);
+                                    video_element videoElement(reviewFileCache.m_cache, asset.m_fileId);
                                     if (m_reviewFilesLayout.render_layout_element_percent_horizontal(&videoElement, 1.0f))
                                     {
                                         m_createCommentPopup = add_child_widget<create_comment_popup>(this, selectedReview.m_reviewId, asset.m_fileId, videoElement.get_file_position());

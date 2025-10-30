@@ -296,6 +296,22 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
             }
         });
 
+    add_database_get_endpoint<bool>(m_server, review_app_endpoints::queries, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)
+        {
+            std::string query;
+
+            if (request.has_param(review_app_parameters::query))
+            {
+                query = request.get_param_value(review_app_parameters::query);
+            }
+
+            if (query == review_app_queries::userTableEmptyQuery)
+            {
+            }
+
+            return database->user_table_empty();
+        });
+
     add_database_get_endpoint<std::vector<comment_data>>(m_server, review_app_endpoints::comments, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)
         {
             database_id reviewId = 0;
@@ -319,6 +335,33 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
 
             return database->get_all_review_activity(reviewId, userToken);
         });
+
+    m_server->Get(review_app_endpoints::files, [workspacePath](const httplib::Request& request, httplib::Response& response) 
+    {
+        if (auto database = review_app::get_review_database())
+        {
+            if (!request.has_param(review_app_parameters::file))
+            {
+                return;
+            }
+
+            const std::filesystem::path relativeFilePath = request.get_param_value(review_app_parameters::file);
+            const std::filesystem::path absoluteFilePath = workspacePath / relativeFilePath;
+
+            const auto result = database->user_has_privilege(httplib::get_bearer_token_auth(request), user_privileges::guest).get();
+
+            if (!result.has_value() || !result.value())
+            {
+                return;
+            }
+
+            response.set_file_content(absoluteFilePath.string());
+        }
+        else
+        {
+            response.status = httplib::StatusCode::InternalServerError_500;
+        }
+    });
 
     // POST
 

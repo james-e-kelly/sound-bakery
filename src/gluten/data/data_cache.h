@@ -137,6 +137,8 @@ namespace gluten
 
         using async_cache_result    = concurrencpp::result<data_type>;
         using cache_result          = const cached_data&;
+        using cache_key_type        = key_type;
+        using cache_data_type       = data_type;
 
         /**
          * @brief Query the cache state. The user should should begin filling new data if the state is == no_data || expired

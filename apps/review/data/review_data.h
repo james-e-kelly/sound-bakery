@@ -140,6 +140,13 @@ struct review_file_data
 {
     std::string m_fileName;             //< my_file.wav, some_other_file.mp3, my_video.mp4, my_compressed_file.ogg, etc.
     std::vector<uint8_t> m_fileData;    //< Raw bytes of the file
+
+    template <class archive_class>
+    auto serialize(archive_class& archive, const unsigned int version) -> void
+    {
+        archive & BOOST_SERIALIZATION_NVP(m_fileName);
+        archive & BOOST_SERIALIZATION_NVP(m_fileData);
+    }
 };
 
 /**

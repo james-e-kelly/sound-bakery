@@ -26,6 +26,7 @@ public:
     auto get_review_vote(database_id reviewId, database_id userId) -> concurrencpp::result<review_vote>;
     auto get_all_users(database_id userId, database_id reviewId) -> concurrencpp::result<std::vector<user_data>>;
     auto get_all_review_activity(database_id reviewId) -> concurrencpp::result<std::vector<activity_data>>;
+    auto get_review_file(std::filesystem::path relativeFilePath) -> concurrencpp::result<review_file_data>;
 
     auto user_is_logged_in() -> concurrencpp::result<bool>;
     auto user_table_is_empty() -> concurrencpp::result<bool>;

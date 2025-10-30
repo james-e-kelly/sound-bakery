@@ -24,6 +24,7 @@
 #include "boost/serialization/vector.hpp"
 #include "boost/serialization/map.hpp"
 #include "boost/serialization/array.hpp"
+#include "platform_folders.h"
 #include <magic_enum/magic_enum.hpp>
 
 auto http_result_okay(const httplib::Result& result) -> bool;
@@ -80,6 +81,8 @@ struct review_app_endpoints
     static inline std::string comments = "/comments";
     static inline std::string activity = "/activity";
     static inline std::string login = "/login";
+    static inline std::string files = "/files";
+    static inline std::string queries = "/queries";
 };
 
 struct review_app_parameters
@@ -94,7 +97,14 @@ struct review_app_parameters
     static inline std::string data = "data";
     static inline std::string reviewFile = "review_file";
     static inline std::string contextFile = "context_file";
+    static inline std::string file = "file";
     static inline std::string reviewStatus = "review_status";
     static inline std::string reviewVote = "review_vote";
     static inline std::string activityType = "activity_type";
+    static inline std::string query = "query";
+};
+
+struct review_app_queries
+{
+    static inline std::string userTableEmptyQuery = "users_empty";
 };

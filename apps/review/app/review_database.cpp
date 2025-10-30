@@ -1221,3 +1221,17 @@ auto review_database::set_review_status(database_id reviewId, review_status stat
 
     co_return true;
 }
+
+auto review_database::user_table_empty() const -> bool_result
+{
+    bool hasUsers = false;
+
+    SQLite::Statement getUsersCountStatement(m_database, "SELECT COUNT(id) from users;");
+
+    if (getUsersCountStatement.executeStep())
+    {
+        hasUsers = getUsersCountStatement.getColumn(0).getInt();
+    }
+
+    co_return !hasUsers;
+}

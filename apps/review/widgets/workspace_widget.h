@@ -97,4 +97,6 @@ private:
     std::shared_ptr<class create_review_popup> createReviewPopup;
 
     std::optional<focussed_comment> m_focussedComment;
+
+    gluten::data_cache<std::filesystem::path, gluten::key_and_token_cache_key<std::filesystem::path, std::string>, gluten::key_and_token_cache_key_hasher<std::filesystem::path, std::string>> m_filesCache;
 };
