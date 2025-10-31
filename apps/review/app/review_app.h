@@ -20,13 +20,8 @@ public:
 
     auto get_is_drag_dropping() const -> bool;
     auto get_drag_drop_files() const -> std::unordered_set<std::filesystem::path>;
-    auto get_database_thread_executor() const -> std::shared_ptr<concurrencpp::worker_thread_executor>;
 
     static auto get() -> review_app*;
-    static auto get_review_database() -> std::shared_ptr<review_database>;
-    static auto create_review_database(const std::filesystem::path& path) -> void;
-    static auto create_new_review_database(const std::filesystem::path& path) -> void;
-    static auto close_review_database() -> void;
     static auto setup_client(const std::string& serverAddress) -> void;
     static auto setup_server(const std::filesystem::path& workspaceFile) -> void;
     static auto reset_to_intro() -> void;
@@ -48,6 +43,4 @@ private:
     mutable bool m_isDragDropReady  = false;
 
     std::shared_ptr<concurrencpp::worker_thread_executor> m_databaseThread;
-
-    std::shared_ptr<review_database> m_database;
 };

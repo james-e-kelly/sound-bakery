@@ -178,27 +178,12 @@ auto workspace_manager::select_project(const std::string projectName) -> concurr
 
 auto workspace_manager::has_selected_project() const -> bool { return m_selectedProject.m_id != 0; }
 
-auto workspace_manager::create_workspace(const std::string& workspaceName, const std::filesystem::path& workspaceDirectory) -> void
-{
-	if (!workspaceName.empty() && std::filesystem::exists(workspaceDirectory))
-	{
-        const std::filesystem::path workspaceFile = workspaceDirectory / (workspaceName + g_workspaceExtensionWithDot);
-		std::filesystem::create_directories(workspaceDirectory);
-
-        review_app::create_review_database(workspaceFile);
-        get_database()->create_workspace(workspaceName);
-
-		open_user_flow_popup();
-	}
-}
-
 auto workspace_manager::close_workspace() -> void
 {
 	m_workspaceWidget.reset();
     m_selectedProject = project_data();
     m_cachedProjects.clear();
     m_userSettingsData->m_workspaceFilePath.clear();
-    review_app::close_review_database();
 }
 
 auto workspace_manager::get_selected_project() const -> const project_data&
@@ -649,11 +634,6 @@ auto workspace_manager::get_user_session_has_expired() const -> bool
 {
     const time_t now   = std::time(nullptr);
     return get_user_session_token().empty() || now >= m_userSettingsData->m_loggedInUser.m_expiryTime;
-}
-
-auto workspace_manager::get_database() const -> std::shared_ptr<review_database>
-{
-    return review_app::get_review_database();
 }
 
 auto workspace_manager::get_review_file(const std::filesystem::path& relativeFilePath) -> typename file_cache_type::cache_result

@@ -93,4 +93,5 @@ public:
     auto user_table_empty() const                                                                                                   -> bool_result;
 private:
     SQLite::Database m_database;
+    std::shared_ptr<concurrencpp::worker_thread_executor> m_databaseThread;
 };

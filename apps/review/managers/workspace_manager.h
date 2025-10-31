@@ -39,7 +39,6 @@ public:
     [[nodiscard]] auto get_workspace_file() const -> std::filesystem::path;
     [[nodiscard]] auto get_workspace_directory() const -> std::filesystem::path;
     auto open_client(const std::shared_ptr<review_client>& client) -> concurrencpp::result<void>;
-    auto create_workspace(const std::string& workspaceName, const std::filesystem::path& workspaceDirectory) -> void;
     auto close_workspace() -> void;
     
     // Projects
@@ -90,8 +89,6 @@ public:
 
     auto get_user_session_token() const -> std::string;
     auto get_user_session_has_expired() const -> bool;
-
-    auto get_database() const -> std::shared_ptr<review_database>;
 
     auto get_review_file(const std::filesystem::path& relativeFilePath) -> typename file_cache_type::cache_result;
 

@@ -132,8 +132,7 @@ auto create_workspace_popup::render_popup() -> void
 	if (ImGui::Button("Create"))
 	{
         const std::filesystem::path workspaceFile = std::filesystem::path(workspaceDirectory) / (workspaceName + ".workspace");
-		std::filesystem::create_directories(workspaceDirectory);
-		review_app::create_new_review_database(workspaceFile);
+		review_app::setup_server(workspaceFile);
 
         close_popup();
 	}

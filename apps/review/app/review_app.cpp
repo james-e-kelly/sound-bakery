@@ -198,47 +198,6 @@ auto review_app::get() -> review_app*
     return static_cast<review_app*>(gluten::app::get());
 }
 
-auto review_app::get_database_thread_executor() const -> std::shared_ptr<concurrencpp::worker_thread_executor>
-{
-    return m_databaseThread;
-}
-
-auto review_app::get_review_database() -> std::shared_ptr<review_database>
-{
-    if (review_app* const app = get())
-    {
-        return app->m_database;
-    }
-    return nullptr;
-}
-
-auto review_app::create_review_database(const std::filesystem::path& path) -> void
-{
-    if (review_app* const app = get())
-    {
-        app->m_database = std::make_shared<review_database>(path);
-    }
-}
-
-auto review_app::create_new_review_database(const std::filesystem::path& path) -> void
-{
-    if (review_app* const app = get())
-    {
-        std::filesystem::create_directories(path.parent_path());
-        app->m_database = std::make_shared<review_database>(path);
-        app->m_database->create_workspace(path.filename().string());
-        setup_server(path);
-    }
-}
-
-auto review_app::close_review_database() -> void
-{
-    if (review_app* const app = get())
-    {
-        app->m_database.reset();
-    }
-}
-
 auto review_app::get_is_drag_dropping() const -> bool
 {
     return m_isDragDropping;
@@ -284,12 +243,8 @@ auto review_app::setup_server(const std::filesystem::path& workspaceFile) -> voi
 {
     if (review_app* const app = get())
     {
-        gluten::data_source<user_settings_data> userSettings;
-        userSettings->m_workspaceFilePath = workspaceFile;
-
         app->remove_manager_by_class<intro_manager>();
-        review_app::create_review_database(workspaceFile);
-        app->add_manager_class<review_server>(workspaceFile.parent_path());
+        app->add_manager_class<review_server>(workspaceFile);
     }
 }
 

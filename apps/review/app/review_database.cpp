@@ -167,7 +167,7 @@ namespace
     constexpr std::chrono::milliseconds g_blockDelay = std::chrono::milliseconds(500);
 #endif
 
-    #define MOVE_TO_DATABASE_THREAD() co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor())
+    #define MOVE_TO_DATABASE_THREAD() co_await concurrencpp::resume_on(m_databaseThread)
 
     #define CHECK_PRIVILEGED_ACTION(token, action)                                                                                                  \
     const auto userCanPerformActionResult = co_await user_can_perform_action(token, action);                                                        \
@@ -197,21 +197,26 @@ namespace
 review_database::review_database(const std::filesystem::path& databasePath)
     : m_database(databasePath, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE, 200)
 {
-    SQLite::Statement enableForeignKeysStatement(m_database, "PRAGMA foreign_keys = ON;");
-    enableForeignKeysStatement.exec();
+    m_databaseThread = review_app::get()->make_worker_thread_executor();
 
-    m_database.exec(g_createWorkspaceTableStatement);
-    m_database.exec(g_createProjectsTableStatement);
-    m_database.exec(g_createReviewsTableStatement);
-    m_database.exec(g_createUsersTableStatement);
-    m_database.exec(g_createReviewAuthorsTableStatement);
-    m_database.exec(g_createReviewersTableStatement);
-    m_database.exec(g_createReviewFilesTableStatement);
-    m_database.exec(g_createVersionedReviewFilesTableStatement);
-    m_database.exec(g_createCommentsTableStatement);
-    m_database.exec(g_createVotesTableStatement);
-    m_database.exec(g_createActivityTableStatement);
-    m_database.exec(g_createSessionsTableStatement.data());
+    m_databaseThread->submit([this]() 
+        {
+            SQLite::Statement enableForeignKeysStatement(m_database, "PRAGMA foreign_keys = ON;");
+            enableForeignKeysStatement.exec();
+
+            m_database.exec(g_createWorkspaceTableStatement);
+            m_database.exec(g_createProjectsTableStatement);
+            m_database.exec(g_createReviewsTableStatement);
+            m_database.exec(g_createUsersTableStatement);
+            m_database.exec(g_createReviewAuthorsTableStatement);
+            m_database.exec(g_createReviewersTableStatement);
+            m_database.exec(g_createReviewFilesTableStatement);
+            m_database.exec(g_createVersionedReviewFilesTableStatement);
+            m_database.exec(g_createCommentsTableStatement);
+            m_database.exec(g_createVotesTableStatement);
+            m_database.exec(g_createActivityTableStatement);
+            m_database.exec(g_createSessionsTableStatement.data());
+        });
 }
 
 auto review_database::create_workspace(const std::string name) const -> bool_result
@@ -548,7 +553,7 @@ auto review_database::create_review_version(database_id reviewId, const new_tran
     create_files(newReviewVersion.m_reviewFiles, result.m_reviewAssets);
 
     // Back to database thread to insert all the files
-    co_await concurrencpp::resume_on(review_app::get()->get_database_thread_executor());
+    MOVE_TO_DATABASE_THREAD();
 
     insert_files_into_database(newReviewVersion.m_contextFiles, result.m_relativeContextFiles, reviewId, review_file_type::context);
     insert_files_into_database(newReviewVersion.m_reviewFiles, result.m_reviewAssets, reviewId, review_file_type::review);
