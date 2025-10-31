@@ -286,6 +286,10 @@ auto review_app::reset_to_intro() -> void
 {
     if (review_app* const app = get())
     {
+        gluten::data_source<user_settings_data> userSettings;
+        userSettings->m_workspaceFilePath.clear();
+        userSettings->m_loggedInUser.m_sessionToken.clear();
+
         app->remove_manager_by_class<review_server>();
         app->remove_manager_by_class<review_client>();
         app->remove_manager_by_class<workspace_manager>();
