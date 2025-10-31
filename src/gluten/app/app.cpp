@@ -22,8 +22,8 @@ int gluten::app::run(int argc, char** argv)
 
     m_executableLocation = std::string(argv[0]);
 
-    add_subsystem_class<renderer_subsystem>();
-    add_subsystem_class<widget_subsystem>();
+    add_unique_subsystem_class<renderer_subsystem>();
+    add_unique_subsystem_class<widget_subsystem>();
 
     m_tickExecutor = make_manual_executor();
 

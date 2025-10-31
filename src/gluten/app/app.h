@@ -33,7 +33,7 @@ namespace gluten
         void request_exit();
 
         template <class T>
-        std::shared_ptr<T> add_subsystem_class();
+        std::shared_ptr<T> add_unique_subsystem_class();
 
         template <class T>
         std::shared_ptr<T> get_subsystem_by_class();
@@ -137,8 +137,15 @@ namespace gluten
     };
 
     template <class T>
-    std::shared_ptr<T> app::add_subsystem_class()
+    std::shared_ptr<T> app::add_unique_subsystem_class()
     {
+        // Should only have one subsystem of each class. Therefore, return the existing
+        // one, if found
+        if (std::shared_ptr<T> foundSubsystem = get_subsystem_by_class<T>())
+        {
+            return foundSubsystem;
+        }
+
         std::shared_ptr<T> subsystemPtr = std::make_shared<T>(this);
         m_subsystems.push_back(subsystemPtr);
         assert(subsystemPtr);
@@ -165,8 +172,7 @@ namespace gluten
                 }
             }
         }
-        assert(false);
-        return nullptr;
+        return {};
     }
 
     template <class T>
