@@ -38,7 +38,7 @@ public:
     [[nodiscard]] auto get_workspace_name() -> typename string_cache_type::cache_result;
     [[nodiscard]] auto get_workspace_file() const -> std::filesystem::path;
     [[nodiscard]] auto get_workspace_directory() const -> std::filesystem::path;
-    auto open_client(const std::shared_ptr<review_client>& client) -> concurrencpp::result<void>;
+    auto open_client(const std::shared_ptr<review_client> client) -> concurrencpp::result<void>;
     auto close_workspace() -> void;
     
     // Projects

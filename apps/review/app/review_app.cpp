@@ -3,8 +3,6 @@
 #include "app/review_database.h"
 #include "app/review_client.h"
 #include "app/review_server.h"
-#include "gluten/subsystems/audio_subsystem.h"
-#include "subsystems/video_subsystem.h"
 #include "managers/intro_manager.h"
 #include "managers/workspace_manager.h"
 #include "widgets/review_root_widget.h"
@@ -224,9 +222,13 @@ auto review_app::setup_client(const std::string& serverAddress) -> void
         userSettings->m_serverIpAddress = serverAddress;
 
         app->remove_manager_by_class<intro_manager>();
-        app->m_dropTarget = std::make_unique<review_app_drop_target>();
-        app->m_audioSubsystem = app->add_subsystem_class<gluten::audio_subsystem>();
-        app->m_videoSubsystem = app->add_subsystem_class<video_subsystem>();
+
+        if (!app->m_dropTarget)
+        {
+            app->m_dropTarget = std::make_unique<review_app_drop_target>();
+        }
+
+        app->remove_manager_by_class<workspace_manager>();
         std::shared_ptr<workspace_manager> workspaceManager = app->add_manager_class<workspace_manager>();
         workspaceManager->open_client(app->add_manager_class<review_client>(serverAddress));
 
@@ -262,6 +264,7 @@ auto review_app::reset_to_intro() -> void
         gluten::data_source<user_settings_data> userSettings;
         userSettings->m_workspaceFilePath.clear();
         userSettings->m_loggedInUser.m_sessionToken.clear();
+        userSettings->m_serverIpAddress.clear();
 
         app->remove_manager_by_class<review_server>();
         app->remove_manager_by_class<review_client>();

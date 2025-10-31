@@ -1,5 +1,6 @@
 #include "user_flow_popup.h"
 
+#include "app/review_app.h"
 #include "managers/workspace_manager.h"
 
 #include "gluten/widgets/popup_widget.h"
@@ -187,6 +188,7 @@ auto user_flow_popup::render_popup() -> void
 
     if (ImGui::Button("Cancel"))
     {
+        review_app::reset_to_intro();
         close_popup();
     }
 

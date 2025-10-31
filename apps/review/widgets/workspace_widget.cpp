@@ -1209,7 +1209,7 @@ auto workspace_widget::render_menu_implementation() -> void
 
         if (ImGui::MenuItem("Close Workspace"))
         {
-            get_app()->get_manager_by_class<workspace_manager>()->close_workspace();
+            review_app::reset_to_intro();
         }
 
         if (ImGui::MenuItem("Logout..."))
