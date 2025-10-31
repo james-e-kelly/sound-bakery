@@ -40,6 +40,10 @@ auto intro_widget::render_window_implementation() -> void
     clientHeader.set_font(gluten::fonts::title);
     serverHeader.set_font(gluten::fonts::title);
 
+	welcomeText.set_element_content_scale(1.25f);
+    clientHeader.set_element_content_scale(1.25f);
+    serverHeader.set_element_content_scale(1.25f);
+
 	centerColumnLayout.render_layout_element_pixels_vertical(nullptr, 50.0f);
 	centerColumnLayout.render_layout_element_pixels_vertical(&welcomeText, 50.0f);
 	centerColumnLayout.render_layout_element_pixels_vertical(&secondText, 50.f);
@@ -62,7 +66,7 @@ auto intro_widget::render_window_implementation() -> void
     ImGui::PushItemWidth(centerColumnLayout.get_element_rect().GetWidth());
 
 	static char textBuffer[512];
-    ImGui::InputTextWithHint("IP Address", "172.0.0.1:8080", textBuffer, 512);
+    ImGui::InputTextWithHint("IP Address", "172.0.0.1", textBuffer, 512);
 
 	centerColumnLayout.render_layout_element_pixels_vertical(nullptr, 60.0f);
 	if (centerColumnLayout.render_layout_element_pixels_vertical(&connectButton, 50.0f))
