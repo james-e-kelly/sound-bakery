@@ -220,6 +220,17 @@ auto review_app::create_review_database(const std::filesystem::path& path) -> vo
     }
 }
 
+auto review_app::create_new_review_database(const std::filesystem::path& path) -> void
+{
+    if (review_app* const app = get())
+    {
+        std::filesystem::create_directories(path.parent_path());
+        app->m_database = std::make_shared<review_database>(path);
+        app->m_database->create_workspace(path.filename().string());
+        setup_server(path);
+    }
+}
+
 auto review_app::close_review_database() -> void
 {
     if (review_app* const app = get())

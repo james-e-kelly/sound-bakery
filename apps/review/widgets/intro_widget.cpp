@@ -131,10 +131,9 @@ auto create_workspace_popup::render_popup() -> void
 
 	if (ImGui::Button("Create"))
 	{
-        if (std::shared_ptr<workspace_manager> workspaceManager = get_app()->get_manager_by_class<workspace_manager>())
-		{
-            workspaceManager->create_workspace(workspaceName, workspaceDirectory);
-		}
+        const std::filesystem::path workspaceFile = std::filesystem::path(workspaceDirectory) / (workspaceName + ".workspace");
+		std::filesystem::create_directories(workspaceDirectory);
+		review_app::create_new_review_database(workspaceFile);
 
         close_popup();
 	}

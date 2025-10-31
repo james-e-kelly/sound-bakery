@@ -25,6 +25,7 @@ public:
     static auto get() -> review_app*;
     static auto get_review_database() -> std::shared_ptr<review_database>;
     static auto create_review_database(const std::filesystem::path& path) -> void;
+    static auto create_new_review_database(const std::filesystem::path& path) -> void;
     static auto close_review_database() -> void;
     static auto setup_client(const std::string& serverAddress) -> void;
     static auto setup_server(const std::filesystem::path& workspaceFile) -> void;
