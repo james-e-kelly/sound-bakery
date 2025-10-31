@@ -145,12 +145,14 @@ auto review_app::post_init() -> void
 
 auto review_app::exit() -> void
 {
-    if (std::shared_ptr<gluten::renderer_subsystem> rendererSubsystem =
-            get_subsystem_by_class<gluten::renderer_subsystem>())
+    if (m_dropTarget)
     {
-        RevokeDragDrop(glfwGetWin32Window(rendererSubsystem->get_glfw_window()));
+        if (std::shared_ptr<gluten::renderer_subsystem> rendererSubsystem = get_subsystem_by_class<gluten::renderer_subsystem>())
+        {
+            RevokeDragDrop(glfwGetWin32Window(rendererSubsystem->get_glfw_window()));
 
-        CoUninitialize();
+            CoUninitialize();
+        }
     }
 }
 
@@ -230,11 +232,16 @@ auto review_app::setup_client(const std::string& serverAddress) -> void
 
         if (std::shared_ptr<gluten::renderer_subsystem> rendererSubsystem = app->get_subsystem_by_class<gluten::renderer_subsystem>())
         {
-            HRESULT r = OleInitialize(nullptr);
-            assert(r == S_OK);
-
-            HRESULT result = RegisterDragDrop(glfwGetWin32Window(rendererSubsystem->get_glfw_window()), app->m_dropTarget.get());
-            assert(result == S_OK);
+            const HRESULT initializeResult = OleInitialize(nullptr);
+            
+            if (initializeResult == S_OK)
+            {
+                const HRESULT result = RegisterDragDrop(glfwGetWin32Window(rendererSubsystem->get_glfw_window()), app->m_dropTarget.get());
+            }
+            else
+            {
+                app->m_dropTarget.reset();
+            }
         }
     }
 }
