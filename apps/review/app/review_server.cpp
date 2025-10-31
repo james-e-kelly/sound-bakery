@@ -608,7 +608,7 @@ auto review_server::start() -> void
 
     get_app()->background_executor()->submit([this]() 
         {
-            m_server->listen("localhost", 8080);
+            m_server->listen("0.0.0.0", 8080);
         });
 }
 
