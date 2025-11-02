@@ -83,7 +83,10 @@ auto intro_widget::render_window_implementation() -> void
 	{
         const std::filesystem::path workspaceFile = gluten::app::open_select_file_dialog("workspace", "workspace");
 
-		review_app::setup_server(workspaceFile);
+		if (std::filesystem::exists(workspaceFile))
+		{
+			review_app::setup_server(workspaceFile);
+		}
 	}
 
 	if (twoColumnLayout.render_layout_element_percent_horizontal(&createButton, 0.5f))

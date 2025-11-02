@@ -250,7 +250,10 @@ retry:
             break;
     }
 
-    NFD_FreePath(outPath);
+    if (outPath)
+    {
+        NFD_FreePath(outPath);
+    }
     NFD_Quit();
 
     return result;
