@@ -53,7 +53,7 @@ FetchContent_Declare(
 FetchContent_Declare(
   fonts
   GIT_REPOSITORY https://github.com/juliettef/IconFontCppHeaders.git
-  GIT_TAG        main
+  GIT_TAG        bbe9ecd24203c4de10d1b9e3fdeb4edf5c6cb842
   GIT_SHALLOW    TRUE
   OVERRIDE_FIND_PACKAGE
   EXCLUDE_FROM_ALL
