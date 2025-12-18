@@ -363,7 +363,7 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
             }
 
             const std::filesystem::path relativeFilePath = request.get_param_value(review_app_parameters::file);
-            const std::filesystem::path absoluteFilePath = workspaceFile / relativeFilePath;
+            const std::filesystem::path absoluteFilePath = workspaceFile.parent_path() / relativeFilePath;
 
             const auto result = database->user_has_privilege(httplib::get_bearer_token_auth(request), user_privileges::guest).get();
 
