@@ -365,7 +365,10 @@ auto workspace_widget::render_content() -> void
                                      ImGui::GetWindowHeight() - (topHeaderHeight * 1.25f)),
                               ImGuiChildFlags_AutoResizeY | ImGuiChildFlags_AlwaysUseWindowPadding, 0))
         {
-            contentVerticalLayout.render(ImGui::GetCurrentWindow()->WorkRect);
+            ImRect windowRect = ImGui::GetCurrentWindow()->WorkRect;
+            windowRect.Max.y  = windowRect.Min.y + 10.0f;
+
+            contentVerticalLayout.render(windowRect);
 
             if (selectedReview.m_reviewId)
             {
