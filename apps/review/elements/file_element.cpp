@@ -105,13 +105,15 @@ auto file_element::handle_mouse_controls(const ImRect& contentArea) -> void
     {
         const bool clicked = ImGui::IsMouseClicked(ImGuiMouseButton_Left);
         const bool doubleClicked = ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left);
+        const bool dragging = ImGui::IsMouseDragging(ImGuiMouseButton_Left);
 
-        if (clicked || doubleClicked)
+        if (doubleClicked)
         {
-            if (doubleClicked)
-            {
-                play_file();
-            }
+            play_file();
+        }
+        else if (dragging)
+        {
+
         }
 
         if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))

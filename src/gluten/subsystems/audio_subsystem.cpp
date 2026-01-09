@@ -86,12 +86,31 @@ auto gluten::audio_subsystem::set_sound_cursor_position(const std::filesystem::p
     if (sc_sound_instance* const soundInstance = get_sound_instance(filePath))
     {
         sc_sound_instance_set_cursor_in_seconds(soundInstance, cursorPosition);
+        sc_sound_instance_set_looping(soundInstance, SBK_FALSE);
     }
     else if (sc_sound* const sound = get_or_load_audio_handle(filePath))
     {
         sc_sound_instance* soundInstance = nullptr;
         sc_system_play_sound(m_soundChef.get(), sound, &soundInstance, nullptr, SBK_TRUE);
         sc_sound_instance_set_cursor_in_seconds(soundInstance, cursorPosition);
+        sc_sound_instance_set_looping(soundInstance, SBK_FALSE);
+        m_filesToSoundInstancesMap[filePath].reset(soundInstance);
+    }
+}
+
+auto gluten::audio_subsystem::set_sound_loop_position(const std::filesystem::path& filePath, float loopPosition) -> void
+{
+    if (sc_sound_instance* const soundInstance = get_sound_instance(filePath))
+    {
+        sc_sound_instance_set_loop_position_in_seconds(soundInstance, loopPosition);
+        sc_sound_instance_set_looping(soundInstance, SBK_TRUE);
+    }
+    else if (sc_sound* const sound = get_or_load_audio_handle(filePath))
+    {
+        sc_sound_instance* soundInstance = nullptr;
+        sc_system_play_sound(m_soundChef.get(), sound, &soundInstance, nullptr, SBK_TRUE);
+        sc_sound_instance_set_loop_position_in_seconds(soundInstance, loopPosition);
+        sc_sound_instance_set_looping(soundInstance, SBK_TRUE);
         m_filesToSoundInstancesMap[filePath].reset(soundInstance);
     }
 }
@@ -103,6 +122,18 @@ auto gluten::audio_subsystem::get_sound_cursor_position(const std::filesystem::p
     if (sc_sound_instance* const soundInstance = get_sound_instance(filePath))
     {
         sc_sound_instance_get_cursor_in_seconds(soundInstance, &seconds);
+    }
+
+    return seconds;
+}
+
+auto gluten::audio_subsystem::get_sound_loop_position(const std::filesystem::path& filePath) -> float
+{
+    float seconds = 0.0f;
+
+    if (sc_sound_instance* const soundInstance = get_sound_instance(filePath))
+    {
+        sc_sound_instance_get_loop_position_in_seconds(soundInstance, &seconds);
     }
 
     return seconds;
@@ -130,6 +161,18 @@ auto gluten::audio_subsystem::get_sound_is_playing(const std::filesystem::path& 
     }
 
     return playing;
+}
+
+auto gluten::audio_subsystem::get_sound_is_looping(const std::filesystem::path& filePath) -> bool
+{
+    sc_bool looping = MA_FALSE;
+
+    if (sc_sound_instance* const soundInstance = get_sound_instance(filePath))
+    {
+        sc_sound_instance_get_is_looping(soundInstance, &looping);
+    }
+
+    return looping;
 }
 
 auto gluten::audio_subsystem::get_or_load_audio_handle(const std::filesystem::path& filePath) -> sc_sound*

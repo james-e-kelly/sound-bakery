@@ -121,16 +121,30 @@ auto audio_element::render_waveform() -> void
                 }
             }
 
-            const float cursorX =
-                m_audioBackground.get_element_rect().Min.x +
-                (m_audioBackground.get_element_rect().GetWidth() *
-                 m_filePercent);
-            const ImVec2 cursorTop(cursorX,
-                                   m_audioBackground.get_element_rect().Min.y);
-            const ImVec2 cursorBottom(
-                cursorX, m_audioBackground.get_element_rect().Max.y);
+            const float cursorX = m_audioBackground.get_element_rect().Min.x + (m_audioBackground.get_element_rect().GetWidth() * m_filePercent);
+            const ImVec2 cursorTop(cursorX, m_audioBackground.get_element_rect().Min.y);
+            const ImVec2 cursorBottom(cursorX, m_audioBackground.get_element_rect().Max.y);
 
             drawList->AddLine(cursorBottom, cursorTop, IM_COL32_WHITE);
+
+            const float loopPosition = audioSubsystem->get_sound_loop_position(m_filePath);
+            const float loopCursorPosition = m_audioBackground.get_element_rect().Min.x + (m_audioBackground.get_element_rect().GetWidth() * (loopPosition / m_fileDuration));
+            const ImVec2 loopCursorTop(loopCursorPosition, m_audioBackground.get_element_rect().Min.y);
+            const ImVec2 loopCursorBottom(loopCursorPosition, m_audioBackground.get_element_rect().Max.y);
+
+
+            if (audioSubsystem->get_sound_is_looping(m_filePath))
+            {
+                if (cursorX < loopCursorPosition)
+                {
+                    drawList->AddRectFilled(cursorTop, loopCursorBottom, IM_COL32(100,100,100,100));
+                }
+                else
+                {
+                    drawList->AddRectFilled(cursorTop, loopCursorBottom, IM_COL32(255,100,100,100));
+                }
+                drawList->AddLine(loopCursorBottom, loopCursorTop, IM_COL32_WHITE);
+            }
         }
     }
 }
@@ -195,16 +209,21 @@ auto audio_element::handle_mouse_control() -> void
     if (ImGui::IsWindowFocused() && ImGui::IsMouseHoveringRect(m_audioBackground.get_element_rect().Min, m_audioBackground.get_element_rect().Max))
     {
         const bool clicked = ImGui::IsMouseClicked(ImGuiMouseButton_Left);
+        const bool dragging = ImGui::IsMouseDragging(ImGuiMouseButton_Left);
         
-        if (clicked)
-        {
-            const ImVec2 mousePos = ImGui::GetMousePos();
-            const float mousePercentageInWaveform = (mousePos.x - m_audioBackground.get_element_rect().Min.x) / (m_audioBackground.get_element_rect().GetWidth());
-            const float timeInWaveform = mousePercentageInWaveform * m_fileDuration;
+        const ImVec2 mousePos = ImGui::GetMousePos();
+        const float mousePercentageInWaveform = (mousePos.x - m_audioBackground.get_element_rect().Min.x) / (m_audioBackground.get_element_rect().GetWidth());
+        const float timeInWaveform = mousePercentageInWaveform * m_fileDuration;
 
-            if (std::shared_ptr<gluten::audio_subsystem> audioSubsystem = gluten::app::get()->get_subsystem_by_class<gluten::audio_subsystem>())
+        if (std::shared_ptr<gluten::audio_subsystem> audioSubsystem = gluten::app::get()->get_subsystem_by_class<gluten::audio_subsystem>())
+        {
+            if (clicked)
             {
                 audioSubsystem->set_sound_cursor_position(m_filePath, timeInWaveform);
+            }
+            else if (dragging)
+            {
+                audioSubsystem->set_sound_loop_position(m_filePath, timeInWaveform);
             }
         }
     }

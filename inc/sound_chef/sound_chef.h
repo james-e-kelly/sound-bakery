@@ -134,6 +134,11 @@ extern "C"
     sbk_result SC_API sc_sound_instance_get_cursor_in_seconds(sc_sound_instance* instance, float* seconds);
     sbk_result SC_API sc_sound_instance_set_cursor_in_seconds(sc_sound_instance* instance, float seconds);
 
+    sbk_result SC_API sc_sound_instance_get_loop_position_in_seconds(sc_sound_instance* instance, float* seconds);
+    sbk_result SC_API sc_sound_instance_set_loop_position_in_seconds(sc_sound_instance* instance, float seconds);
+    sbk_result SC_API sc_sound_instance_get_is_looping(sc_sound_instance* instance, sc_bool* looping);
+    sbk_result SC_API sc_sound_instance_set_looping(sc_sound_instance* instance, sc_bool looping);
+
     /**
      * @brief Releases the sound instance's resources.
      * 
