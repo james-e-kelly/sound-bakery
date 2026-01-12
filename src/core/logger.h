@@ -1,7 +1,5 @@
 #pragma once
 
-#include "sound_bakery/sound_bakery_common.h"
-
 #include "spdlog/logger.h"
 #include "spdlog/sinks/callback_sink.h"
 #include "spdlog/sinks/basic_file_sink.h"
@@ -10,16 +8,27 @@
 #include "spdlog/sinks/stdout_color_sinks.h"
 #if defined(_WIN32)
 #include "spdlog/sinks/msvc_sink.h"
+#include "spdlog/sinks/wincolor_sink.h"
 #endif
 
 #include <filesystem>
 
 namespace sbk::core
 {
+    typedef enum
+    {
+        SBK_LOG_LEVEL_DEBUG   = 4,
+        SBK_LOG_LEVEL_INFO    = 3,
+        SBK_LOG_LEVEL_WARNING = 2,
+        SBK_LOG_LEVEL_ERROR   = 1
+    } sbk_log_level;
+
+    typedef void (* sbk_log_callback_proc)(unsigned int level, const char* pMessage);
+
     class external_log_callback : public spdlog::sinks::base_sink<std::mutex>
     {
     public:
-        explicit external_log_callback(ma_log_callback_proc callback)
+        explicit external_log_callback(sbk_log_callback_proc callback)
             : m_callback{m_callback}
         {
         }
@@ -33,18 +42,18 @@ namespace sbk::core
                 {
                     case spdlog::level::trace:
                     case spdlog::level::debug:
-                        m_callback(nullptr, MA_LOG_LEVEL_DEBUG, msg.payload.data());
+                        m_callback(SBK_LOG_LEVEL_DEBUG, msg.payload.data());
                         break;
                     default:
                     case spdlog::level::info:
-                        m_callback(nullptr, MA_LOG_LEVEL_INFO, msg.payload.data());
+                        m_callback(SBK_LOG_LEVEL_INFO, msg.payload.data());
                         break;
                     case spdlog::level::warn:
-                        m_callback(nullptr, MA_LOG_LEVEL_WARNING, msg.payload.data());
+                        m_callback(SBK_LOG_LEVEL_WARNING, msg.payload.data());
                         break;
                     case spdlog::level::err:
                     case spdlog::level::critical:
-                        m_callback(nullptr, MA_LOG_LEVEL_ERROR, msg.payload.data());
+                        m_callback(SBK_LOG_LEVEL_ERROR, msg.payload.data());
                         break;
                 }
             }
@@ -53,16 +62,23 @@ namespace sbk::core
         void flush_() override {};
 
     private:
-        ma_log_callback_proc m_callback = nullptr;
+        sbk_log_callback_proc m_callback = nullptr;
     };
 
 	class logger
 	{
     public:
-        logger()
+        logger(const std::string& name)
         {
             m_sinks = std::make_shared<spdlog::sinks::dist_sink_mt>();
 
+            m_logger = std::make_shared<spdlog::logger>(name, spdlog::sinks_init_list{m_sinks});
+            m_logger->set_level(spdlog::level::debug);
+            m_logger->set_pattern("[%Y-%m-%d %H:%M:%S %z][Thread %t][%l] %n: %v");
+        }
+
+        auto add_console_sink() -> void
+        {
         #if defined(_WIN32)
             const std::shared_ptr<spdlog::sinks::msvc_sink_mt> windowsSink = std::make_shared<spdlog::sinks::msvc_sink_mt>();
             m_sinks->add_sink(windowsSink);
@@ -70,10 +86,6 @@ namespace sbk::core
 
             const std::shared_ptr<spdlog::sinks::stdout_color_sink_mt> stdoutSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
             m_sinks->add_sink(stdoutSink);
-
-            m_logger = std::make_shared<spdlog::logger>("LogSoundBakery", spdlog::sinks_init_list{m_sinks});
-            m_logger->set_level(spdlog::level::debug);
-            m_logger->set_pattern("[%Y-%m-%d %H:%M:%S %z][Thread %t][%l] %n: %v");
         }
 
         auto add_file_sink(const std::filesystem::path& file) -> void
@@ -92,7 +104,7 @@ namespace sbk::core
             m_sinks->add_sink(basicFileSink);
         }
 
-        auto add_external_log(ma_log_callback_proc callback) -> void
+        auto add_external_log(sbk_log_callback_proc callback) -> void
         {
             const auto externalCallbackSink = std::make_shared<external_log_callback>(callback);
             externalCallbackSink->set_level(spdlog::level::info);

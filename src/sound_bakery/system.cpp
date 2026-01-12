@@ -1,6 +1,5 @@
 #include "system.h"
 
-#include "sound_bakery/core/logger.h"
 #include "sound_bakery/editor/project/project.h"
 #include "sound_bakery/gameobject/gameobject.h"
 #include "sound_bakery/node/bus/bus.h"
@@ -80,7 +79,7 @@ namespace
 }  // namespace
 
 system::system()
-    : sc_system()
+    : sc_system(), sbk::core::logger("SoundBakery")
 {
     BOOST_ASSERT(s_system == nullptr);
     s_system = this;
@@ -99,7 +98,8 @@ system::system()
     BOOST_ASSERT(initLogResult == SBK_SUCCESS);
 }
 
-system::system(const std::filesystem::path& logFile) 
+system::system(const std::filesystem::path& logFile)
+    : sbk::core::logger("SoundBakery")
 {
     BOOST_ASSERT(s_system == nullptr);
     s_system = this;
@@ -120,7 +120,8 @@ system::system(const std::filesystem::path& logFile)
     BOOST_ASSERT(initLogResult == SBK_SUCCESS);
 }
 
-system::system(ma_log_callback_proc logCallback)
+system::system(sbk::core::sbk_log_callback_proc logCallback)
+    : sbk::core::logger("SoundBakery")
 {
     BOOST_ASSERT(s_system == nullptr);
     s_system = this;
@@ -404,7 +405,7 @@ auto sbk::engine::system::get_game_object(sbk_id gameObjectID) -> std::weak_ptr<
     return gameObjectID == 0 ? std::static_pointer_cast<sbk::core::database_object, sbk::engine::game_object>(s_system->m_listenerGameObject) : s_system->try_find_database_object(gameObjectID);
 }
 
-auto system::open_project(const std::filesystem::path& projectFile, ma_log_callback_proc logCallback) -> sbk_result
+auto system::open_project(const std::filesystem::path& projectFile, sbk::core::sbk_log_callback_proc logCallback) -> sbk_result
 {
     destroy();
 

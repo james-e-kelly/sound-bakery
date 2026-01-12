@@ -1,7 +1,7 @@
 #pragma once
 
+#include "core/logger.h"
 #include "sound_bakery/core/core_fwd.h"
-#include "sound_bakery/core/logger.h"
 #include "sound_bakery/core/database/database.h"
 #include "sound_bakery/core/database/database_ptr.h"
 #include "sound_bakery/core/object/object_tracker.h"
@@ -60,7 +60,7 @@ namespace sbk
         public:
             system();
             system(const std::filesystem::path& logFile);
-            system(ma_log_callback_proc logCallback);
+            system(sbk::core::sbk_log_callback_proc logCallback);
             ~system();
 
             static auto create() -> sbk_result;
@@ -88,7 +88,7 @@ namespace sbk
             /**
              * @brief Creates an instance of Sound Bakery and opens the project.
              */
-            static auto open_project(const std::filesystem::path& projectFile, ma_log_callback_proc logCallback) -> sbk_result;
+            static auto open_project(const std::filesystem::path& projectFile, sbk::core::sbk_log_callback_proc logCallback) -> sbk_result;
 
             /**
              * @brief Creates a project and initializes Sound Bakery.

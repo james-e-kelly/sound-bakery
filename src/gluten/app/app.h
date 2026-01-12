@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core/leak_detector.h"
+#include "core/logger.h"
 #include "boost/program_options.hpp"
 #include <boost/archive/xml_iarchive.hpp>
 #include <boost/archive/xml_oarchive.hpp>
@@ -8,6 +9,8 @@
 #include "gluten/subsystems/subsystem.h"
 #include "concurrencpp/concurrencpp.h"
 #include "imgui.h"
+
+#include <rttr/type>
 
 namespace gluten
 {
@@ -20,12 +23,12 @@ namespace gluten
      * 
      * The app class is intended to pass application behaviour to manager and subsystem classes.
      */
-    class app : public concurrencpp::runtime
+    class app : public concurrencpp::runtime, public sbk::core::logger
     {
         LEAK_DETECTOR(app)
 
     public:
-        app()          = default;
+        app();
         virtual ~app() = default;
 
         static app* get();
@@ -154,6 +157,8 @@ namespace gluten
             return foundSubsystem;
         }
 
+        get_logger()->info(fmt::format("Creating a subsystem of type {}", rttr::type::get<T>().get_name().data()));
+
         std::shared_ptr<T> subsystemPtr = std::make_shared<T>(this);
         m_subsystems.push_back(subsystemPtr);
         assert(subsystemPtr);
@@ -186,6 +191,8 @@ namespace gluten
     template <class T>
     void app::remove_subsystem_by_class()
     {
+        get_logger()->info(fmt::format("Removing a subsystem of type {}", rttr::type::get<T>().get_name().data()));
+
         for (int index = m_subsystems.size() - 1; index >= 0; --index)
         {
             if (T* castedSubsytem = dynamic_cast<T*>(m_subsystems[index].get()))
@@ -200,6 +207,8 @@ namespace gluten
     template <class T, typename... Args>
     std::shared_ptr<T> app::add_manager_class(Args&&... args)
     {
+        get_logger()->info(fmt::format("Creating a manager of type {}", rttr::type::get<T>().get_name().data()));
+
         m_managers.push_back(std::make_shared<T>(this, std::forward<Args>(args)...));
         std::shared_ptr<manager> managerPtr = m_managers.back();
 
@@ -235,6 +244,8 @@ namespace gluten
     template <class T>
     void app::remove_manager_by_class()
     {
+        get_logger()->info(fmt::format("Removing a manager of type {}", rttr::type::get<T>().get_name().data()));
+
         for (int index = m_managers.size() - 1; index >= 0; --index)
         {
             if (T* castedManager = dynamic_cast<T*>(m_managers[index].get()))

@@ -9,9 +9,25 @@
         return 1;                   \
     }
 
-static void sbk_log_callback(void* pUserData, ma_uint32 level, const char* pMessage)
+static void sbk_log_callback(unsigned int level, const char* message)
 {
+    const sbk::core::sbk_log_level logLevel = static_cast<sbk::core::sbk_log_level>(level);
 
+    switch (logLevel)
+    {
+        case sbk::core::SBK_LOG_LEVEL_DEBUG:
+            gluten::app::get()->get_logger()->log(spdlog::level::debug, message);
+            break;
+        case sbk::core::SBK_LOG_LEVEL_INFO:
+            gluten::app::get()->get_logger()->log(spdlog::level::info, message);
+            break;
+        case sbk::core::SBK_LOG_LEVEL_WARNING:
+            gluten::app::get()->get_logger()->log(spdlog::level::warn, message);
+            break;
+        case sbk::core::SBK_LOG_LEVEL_ERROR:
+            gluten::app::get()->get_logger()->log(spdlog::level::err, message);
+            break;
+    }
 }
 
 int gluten::audio_subsystem::init()

@@ -45,7 +45,6 @@ target_link_libraries(sound_bakery_static PUBLIC
   SoundBakery::SoundChef_Static
   RTTR::Core_Lib
   concurrencpp::concurrencpp
-  spdlog::spdlog
   Boost::serialization
   Boost::msm
   ztd::out_ptr

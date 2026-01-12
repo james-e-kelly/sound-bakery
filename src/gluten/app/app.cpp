@@ -18,10 +18,14 @@ CMRC_DECLARE(sbk::fonts);
 
 namespace gluten_cli_arguments
 {
+    static constexpr const char* s_help = "help";
     static constexpr const char* s_headless = "headless";
+    static constexpr const char* s_console = "console";
 }
 
 static gluten::app* s_app = nullptr;
+
+gluten::app::app() : sbk::core::logger("Gluten") {}
 
 gluten::app* gluten::app::get() { return s_app; }
 
@@ -35,6 +39,8 @@ int gluten::app::run(int argc, char** argv)
 
     boost::program_options::options_description cliDescription;
     cliDescription.add_options()
+        (gluten_cli_arguments::s_help, "prints help information")
+        (gluten_cli_arguments::s_console, "adds a console window")
         (gluten_cli_arguments::s_headless, "removes rendering");
 
     cli_setup(cliDescription);
@@ -43,7 +49,11 @@ int gluten::app::run(int argc, char** argv)
     boost::program_options::store(boost::program_options::parse_command_line(argc, argv, cliDescription), cliVariables);
     boost::program_options::notify(cliVariables);
 
-    if (cliVariables.count(gluten_cli_arguments::s_headless))
+    const bool headless = cliVariables.count(gluten_cli_arguments::s_headless);
+    const bool console = headless || cliVariables.count(gluten_cli_arguments::s_console);
+    const bool gui = !headless;
+
+    if (console)
     {
 #ifdef _WIN32
         if (!AttachConsole(ATTACH_PARENT_PROCESS))
@@ -55,13 +65,27 @@ int gluten::app::run(int argc, char** argv)
         freopen_s(&fp, "CONOUT$", "w", stdout);
         freopen_s(&fp, "CONOUT$", "w", stderr);
         freopen_s(&fp, "CONIN$", "r", stdin);
+
+
 #endif
+        get_logger()->info("Created Console Window");
     }
-    else
+
+    add_console_sink();
+
+    if (gui)
     {
+        get_logger()->info("Creating GUI...");
         add_unique_subsystem_class<renderer_subsystem>();
         add_unique_subsystem_class<widget_subsystem>();
     }
+
+    if (cliVariables.count(gluten_cli_arguments::s_help))
+    {
+        cliDescription.print(std::cout);
+    }
+
+    get_logger()->info("Pre Init");
 
     pre_init(cliVariables);
 
@@ -73,6 +97,8 @@ int gluten::app::run(int argc, char** argv)
             return errorCode;
         }
     }
+
+    get_logger()->info("Init");
 
     // Init
     for (std::shared_ptr<subsystem>& subsystem : m_subsystems)
@@ -93,7 +119,11 @@ int gluten::app::run(int argc, char** argv)
 
     m_hasInit = true;
 
+    get_logger()->info("Post Init");
+
     post_init();
+
+    get_logger()->info("Start");
 
     start();
 
@@ -103,6 +133,8 @@ int gluten::app::run(int argc, char** argv)
     {
         tick();
     }
+
+    get_logger()->info("Exiting...");
 
     exit();
 
@@ -196,6 +228,8 @@ auto gluten::app::tick_end() -> void
 
 void gluten::app::load_fonts()
 {
+    get_logger()->info("Loading fonts...");
+
     static const ImWchar fontAwesomeIconRanges[] = {ICON_MIN_FA, ICON_MAX_16_FA, 0};
     static const ImWchar fontAudioIconRanges[]   = {ICON_MIN_FAD, ICON_MAX_16_FAD, 0};
     static const ImWchar lucideIconRanges[]      = {ICON_MIN_LC, ICON_MAX_16_LC, 0};

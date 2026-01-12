@@ -3,6 +3,7 @@ message(STATUS "Adding Core Library")
 set(CORE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/leak_detector.h
     ${CMAKE_CURRENT_SOURCE_DIR}/macros.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/logger.h
     ${CMAKE_CURRENT_SOURCE_DIR}/core.cpp
 )
 
@@ -18,6 +19,7 @@ target_link_libraries(sound_bakery_core PUBLIC
   SoundBakery::Delegates 
   Boost::assert
   tl::expected
+  spdlog::spdlog
 )
 
 target_include_directories(sound_bakery_core PUBLIC ${PROJECT_SOURCE_DIR}/src/)
