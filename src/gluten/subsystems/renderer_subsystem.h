@@ -15,7 +15,7 @@ namespace gluten
 
     public:
         /** AppSubsystem Implementation */
-        virtual int pre_init(int ArgC, char* ArgV[]) override;
+        virtual int pre_init(const boost::program_options::variables_map& cliVariables) override;
         virtual int init() override;
         virtual void pre_tick(double deltaTime) override;
         virtual void tick(double deltaTime) override;

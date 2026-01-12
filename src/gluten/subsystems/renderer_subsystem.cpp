@@ -133,7 +133,7 @@ renderer_subsystem::window_guard::~window_guard()
     }
 }
 
-int renderer_subsystem::pre_init(int ArgC, char* ArgV[]) { return 0; }
+int renderer_subsystem::pre_init(const boost::program_options::variables_map& cliVariables) { return 0; }
 
 void renderer_subsystem::set_default_window_hints()
 {

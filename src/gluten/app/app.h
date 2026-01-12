@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core/leak_detector.h"
+#include "boost/program_options.hpp"
 #include <boost/archive/xml_iarchive.hpp>
 #include <boost/archive/xml_oarchive.hpp>
 #include "gluten/managers/manager.h"
@@ -89,11 +90,18 @@ namespace gluten
 
     protected:
         /**
+         * @brief Runs at the earliest possible time and before the parsing of command line arguments.
+         * 
+         * Use this function to set up command line arguments. Read the parsed values in @see pre_init.
+         */
+        virtual void cli_setup(boost::program_options::options_description& options) {}
+
+        /**
          * @brief Runs after subsystems are created and before any init functions are called.
          * 
          * Use this function to create the root widget, managers, more subsystems or general initialization.
          */
-        virtual void pre_init() {}
+        virtual void pre_init(const boost::program_options::variables_map& cliVariables) {}
 
         /**
          * @brief Runs after all init functions were called and before start.
@@ -152,7 +160,7 @@ namespace gluten
 
         if (m_hasInit)
         {
-            subsystemPtr->pre_init(0, NULL);
+            subsystemPtr->pre_init({});
             subsystemPtr->init();
         }
 

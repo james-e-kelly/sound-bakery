@@ -165,6 +165,7 @@ target_link_libraries(gluten
     SoundBakery::SoundBakery_Static
     SoundBakery::Core
     Boost::serialization
+    Boost::program_options
     concurrencpp::concurrencpp 
     SoundBakery::Delegates 
     SoundBakery::Fonts

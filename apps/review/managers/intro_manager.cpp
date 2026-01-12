@@ -23,7 +23,10 @@ auto intro_manager::init(gluten::app* app) -> void
 	if (m_userSettingsData->server_address_valid())
 	{
         m_testServerConnectionResult = review_app_test_connect::test_server_connection(m_userSettingsData->m_serverIpAddress);
-		m_loadingPopup = app->get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class_to_root<gluten::loading_popup>(false);
+		if (auto widgetSubsystem = app->get_subsystem_by_class<gluten::widget_subsystem>())
+		{
+			m_loadingPopup = widgetSubsystem->add_widget_class_to_root<gluten::loading_popup>(false);
+		}
 	}
     else if (m_userSettingsData->workspace_exists())
 	{

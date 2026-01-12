@@ -115,7 +115,7 @@ auto create_application() -> gluten::app*
 	return new review_app();
 }
 
-auto review_app::pre_init() -> void
+auto review_app::pre_init(const boost::program_options::variables_map& cliVariables) -> void
 {
     m_databaseThread = make_worker_thread_executor();
 

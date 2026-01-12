@@ -10,7 +10,16 @@
 
 #include <cmrc/cmrc.hpp>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 CMRC_DECLARE(sbk::fonts);
+
+namespace gluten_cli_arguments
+{
+    static constexpr const char* s_headless = "headless";
+}
 
 static gluten::app* s_app = nullptr;
 
@@ -22,17 +31,44 @@ int gluten::app::run(int argc, char** argv)
 
     m_executableLocation = std::string(argv[0]);
 
-    add_unique_subsystem_class<renderer_subsystem>();
-    add_unique_subsystem_class<widget_subsystem>();
-
     m_tickExecutor = make_manual_executor();
 
-    pre_init();
+    boost::program_options::options_description cliDescription;
+    cliDescription.add_options()
+        (gluten_cli_arguments::s_headless, "removes rendering");
+
+    cli_setup(cliDescription);
+
+    boost::program_options::variables_map cliVariables;
+    boost::program_options::store(boost::program_options::parse_command_line(argc, argv, cliDescription), cliVariables);
+    boost::program_options::notify(cliVariables);
+
+    if (cliVariables.count(gluten_cli_arguments::s_headless))
+    {
+#ifdef _WIN32
+        if (!AttachConsole(ATTACH_PARENT_PROCESS))
+        {
+            AllocConsole();
+        }
+
+        FILE* fp;
+        freopen_s(&fp, "CONOUT$", "w", stdout);
+        freopen_s(&fp, "CONOUT$", "w", stderr);
+        freopen_s(&fp, "CONIN$", "r", stdin);
+#endif
+    }
+    else
+    {
+        add_unique_subsystem_class<renderer_subsystem>();
+        add_unique_subsystem_class<widget_subsystem>();
+    }
+
+    pre_init(cliVariables);
 
     // PreInit
     for (std::shared_ptr<subsystem>& subsystem : m_subsystems)
     {
-        if (int errorCode = subsystem->pre_init(argc, argv); errorCode != 0)
+        if (int errorCode = subsystem->pre_init(cliVariables); errorCode != 0)
         {
             return errorCode;
         }
@@ -47,7 +83,10 @@ int gluten::app::run(int argc, char** argv)
         }
     }
 
-    load_fonts();
+    if (!cliVariables.count(gluten_cli_arguments::s_headless))
+    {
+        load_fonts();
+    }
 
     m_currentTime  = std::chrono::high_resolution_clock::now();
     m_previousTime = std::chrono::high_resolution_clock::now();
@@ -221,7 +260,10 @@ bool gluten::app::is_maximized() { return get_subsystem_by_class<gluten::rendere
 void gluten::app::set_application_display_title(const std::string& title)
 {
     m_applicationDisplayTitle = title;
-    get_subsystem_by_class<renderer_subsystem>()->set_window_title(title);
+    if (auto renderSubsystem = get_subsystem_by_class<renderer_subsystem>())
+    {
+        renderSubsystem->set_window_title(title);
+    }
 }
 
 auto gluten::app::open_select_folder_dialog() -> std::filesystem::path

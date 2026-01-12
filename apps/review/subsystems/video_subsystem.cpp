@@ -235,7 +235,7 @@ auto video_subsystem::get_video_is_playing(const std::filesystem::path& absolute
     return playing;
 }
 
-auto video_subsystem::pre_init(int ArgC, char* ArgV[]) -> int
+auto video_subsystem::pre_init(const boost::program_options::variables_map& cliVariables) -> int
 {
     std::setlocale(LC_NUMERIC, "C");
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "gluten/pch.h"
+#include "boost/program_options.hpp"
 #include "core/leak_detector.h"
 
 namespace gluten
@@ -20,11 +21,10 @@ namespace gluten
         /**
          * @brief Runs as early as possible and provides command line arguments
          *
-         * @param ArgC Command line arguments count
-         * @param ArgV Command line arguments array
+         * @param cliVariables the parsed command line arguments
          * @return int Returns for success and greater than 0 for error
          */
-        virtual int pre_init(int ArgC, char* ArgV[]) { return 0; }
+        virtual int pre_init(const boost::program_options::variables_map& cliVariables) { return 0; }
 
         /**
          * @brief Init the subsystem / start
