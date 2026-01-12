@@ -16,6 +16,7 @@ macro(set_sources)
     core/memory.cpp
     core/name.cpp
     core/property.cpp
+    core/logger.cpp
 
     editor/project/project.cpp
     editor/project/project_configuration.cpp
@@ -78,6 +79,7 @@ set(SOUND_BAKERY_HEADERS
     core/database/database_ptr.h
 
     core/memory.h
+    core/logger.h
 
     editor/editor_defines.h
     editor/project/project.h

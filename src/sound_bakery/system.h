@@ -1,10 +1,10 @@
 #pragma once
 
 #include "sound_bakery/core/core_fwd.h"
+#include "sound_bakery/core/logger.h"
 #include "sound_bakery/core/database/database.h"
 #include "sound_bakery/core/database/database_ptr.h"
 #include "sound_bakery/core/object/object_tracker.h"
-#include "spdlog/sinks/basic_file_sink.h"
 
 namespace sbk
 {
@@ -40,6 +40,7 @@ namespace sbk
          * It owns all loaded Soundbanks, listener game object, and busses.
          */
         class SB_CLASS system final : public sc_system,
+                                      public sbk::core::logger,  
                                       public sbk::core::object_owner,
                                       public sbk::core::object_tracker,
                                       public sbk::core::database,
@@ -58,9 +59,12 @@ namespace sbk
 
         public:
             system();
+            system(const std::filesystem::path& logFile);
+            system(ma_log_callback_proc logCallback);
             ~system();
 
             static auto create() -> sbk_result;
+            static auto create(const std::filesystem::path logFile) -> sbk_result;
             static auto init(const sbk_system_config& config) -> sbk_result;
             static auto update() -> sbk_result;
             static auto destroy() -> void;
@@ -84,7 +88,7 @@ namespace sbk
             /**
              * @brief Creates an instance of Sound Bakery and opens the project.
              */
-            static auto open_project(const std::filesystem::path& project_file) -> sbk_result;
+            static auto open_project(const std::filesystem::path& projectFile, ma_log_callback_proc logCallback) -> sbk_result;
 
             /**
              * @brief Creates a project and initializes Sound Bakery.
@@ -119,7 +123,6 @@ namespace sbk
             std::shared_ptr<concurrencpp::manual_executor> m_studioThreadExecuter;
             std::shared_ptr<concurrencpp::worker_thread_executor> m_workerThread;
             concurrencpp::timer m_studioThreadTimer;
-            std::shared_ptr<spdlog::logger> m_logger;
         };
     }  // namespace engine
 }  // namespace sbk

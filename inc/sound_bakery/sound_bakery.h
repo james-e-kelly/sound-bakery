@@ -8,6 +8,8 @@ extern "C"
 {
 #endif
 
+sbk_result SB_API sbk_log(ma_log_level level, const char* message);
+
 sbk_system_config SB_API sbk_system_config_init_default();
 sbk_system_config SB_API sbk_system_config_init(const char* pluginPath);
 

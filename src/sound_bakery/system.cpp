@@ -1,5 +1,6 @@
 #include "system.h"
 
+#include "sound_bakery/core/logger.h"
 #include "sound_bakery/editor/project/project.h"
 #include "sound_bakery/gameobject/gameobject.h"
 #include "sound_bakery/node/bus/bus.h"
@@ -98,6 +99,48 @@ system::system()
     BOOST_ASSERT(initLogResult == SBK_SUCCESS);
 }
 
+system::system(const std::filesystem::path& logFile) 
+{
+    BOOST_ASSERT(s_system == nullptr);
+    s_system = this;
+
+    add_file_sink(logFile.string());
+
+    concurrencpp::runtime_options runtimeOptions;
+    runtimeOptions.thread_started_callback = [](std::string_view threadName) -> void { sbk::memory::thread_start(threadName); };
+    runtimeOptions.thread_terminated_callback = [](std::string_view threadName) -> void { sbk::memory::thread_end(threadName); };
+
+    m_threadRuntime             = std::make_unique<concurrencpp::runtime>(runtimeOptions);
+    m_gameThreadExecuter        = std::make_shared<concurrencpp::manual_executor>();
+    m_studioThreadExecuter      = std::make_shared<concurrencpp::manual_executor>();
+    m_workerThread = std::make_shared<concurrencpp::worker_thread_executor>(runtimeOptions.thread_started_callback,
+                                                                            runtimeOptions.thread_terminated_callback);
+
+    const sbk_result initLogResult = sc_system_log_init(this, miniaudio_log_callback);
+    BOOST_ASSERT(initLogResult == SBK_SUCCESS);
+}
+
+system::system(ma_log_callback_proc logCallback)
+{
+    BOOST_ASSERT(s_system == nullptr);
+    s_system = this;
+
+    add_external_log(logCallback);
+
+    concurrencpp::runtime_options runtimeOptions;
+    runtimeOptions.thread_started_callback = [](std::string_view threadName) -> void { sbk::memory::thread_start(threadName); };
+    runtimeOptions.thread_terminated_callback = [](std::string_view threadName) -> void { sbk::memory::thread_end(threadName); };
+
+    m_threadRuntime             = std::make_unique<concurrencpp::runtime>(runtimeOptions);
+    m_gameThreadExecuter        = std::make_shared<concurrencpp::manual_executor>();
+    m_studioThreadExecuter      = std::make_shared<concurrencpp::manual_executor>();
+    m_workerThread = std::make_shared<concurrencpp::worker_thread_executor>(runtimeOptions.thread_started_callback,
+                                                                            runtimeOptions.thread_terminated_callback);
+
+    const sbk_result initLogResult = sc_system_log_init(this, miniaudio_log_callback);
+    BOOST_ASSERT(initLogResult == SBK_SUCCESS);
+}
+
 system::~system()
 {
     SBK_INFO("Closing Sound Bakery");
@@ -157,6 +200,16 @@ auto system::create() -> sbk_result
     if (s_system == nullptr)
     {
         s_system = new system();
+    }
+
+    return s_system ? SBK_SUCCESS : SBK_ERR_OUT_OF_MEMORY;
+}
+
+auto system::create(const std::filesystem::path logFile) -> sbk_result
+{
+    if (s_system == nullptr)
+    {
+        s_system = new system(logFile);
     }
 
     return s_system ? SBK_SUCCESS : SBK_ERR_OUT_OF_MEMORY;
@@ -351,43 +404,18 @@ auto sbk::engine::system::get_game_object(sbk_id gameObjectID) -> std::weak_ptr<
     return gameObjectID == 0 ? std::static_pointer_cast<sbk::core::database_object, sbk::engine::game_object>(s_system->m_listenerGameObject) : s_system->try_find_database_object(gameObjectID);
 }
 
-sbk_result system::open_project(const std::filesystem::path& project_file)
+auto system::open_project(const std::filesystem::path& projectFile, ma_log_callback_proc logCallback) -> sbk_result
 {
     destroy();
 
-    // Create the global logger before initializing Sound Bakery
+    const sbk::editor::project_configuration tempProject = sbk::editor::project_configuration(projectFile);
 
-    const sbk::editor::project_configuration tempProject = sbk::editor::project_configuration(project_file);
+    create(tempProject.log_folder() / (std::string(tempProject.project_name()) + ".txt"));
 
-    auto consoleSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-    consoleSink->set_level(spdlog::level::info);
-
-    auto now          = spdlog::log_clock::now();
-    const time_t tnow = spdlog::log_clock::to_time_t(now);
-    const tm now_tm   = spdlog::details::os::localtime(tnow);
-
-    auto dailySink = std::make_shared<spdlog::sinks::daily_file_sink_mt>(
-        (tempProject.log_folder() / (std::string(tempProject.project_name()) + ".txt")).string(), now_tm.tm_hour,
-        now_tm.tm_min, true, 0, spdlog::file_event_handlers{});
-    dailySink->set_level(spdlog::level::trace);
-
-    auto basicFileSink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(
-        (tempProject.log_folder() / (std::string(tempProject.project_name()) + ".txt")).string(), true);
-    basicFileSink->set_level(spdlog::level::trace);
-
-    const std::shared_ptr<spdlog::logger> logger = std::make_shared<spdlog::logger>(
-        std::string("LogSoundBakery"), spdlog::sinks_init_list{consoleSink, dailySink, basicFileSink});
-    logger->set_level(spdlog::level::debug);
-    logger->set_pattern("[%Y-%m-%d %H:%M:%S %z][Thread %t][%l] %n: %v");
-
-    const std::shared_ptr<spdlog::logger> soundChefLogger = std::make_shared<spdlog::logger>(
-        s_soundChefLoggerName, spdlog::sinks_init_list{consoleSink, dailySink, basicFileSink});
-    soundChefLogger->set_level(spdlog::level::debug);
-
-    spdlog::set_default_logger(logger);
-    spdlog::register_logger(soundChefLogger);
-
-    create();
+    if (logCallback)
+    {
+        s_system->add_external_log(logCallback);
+    }
 
     const std::string pluginFolder      = tempProject.plugin_folder().string();
     const sbk_system_config systemConfig = sbk_system_config_init(pluginFolder.c_str());
@@ -396,7 +424,7 @@ sbk_result system::open_project(const std::filesystem::path& project_file)
 
     s_system->m_project = std::make_unique<sbk::editor::project>();
 
-    if (s_system->m_project->open_project(project_file))
+    if (s_system->m_project->open_project(projectFile))
     {
         return SBK_SUCCESS;
     }
@@ -411,7 +439,7 @@ sbk_result sbk::engine::system::create_project(const std::filesystem::directory_
 {
     const sbk::editor::project_configuration projectConfig(projectDirectory, projectName);
 
-    if (open_project(projectConfig.project_file()) == SBK_SUCCESS)
+    if (open_project(projectConfig.project_file(), nullptr) == SBK_SUCCESS)
     {
         if (s_system->m_project)
         {
