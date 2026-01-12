@@ -9,28 +9,18 @@
         return 1;                   \
     }
 
-auto gluten::audio_subsystem::sc_system_deleter::operator()(sc_system* system) -> void
+static void sbk_log_callback(void* pUserData, ma_uint32 level, const char* pMessage)
 {
-    if (system)
-    {
-        sc_system_close(system);
-        sc_system_release(system);
-    }
+
 }
 
 int gluten::audio_subsystem::init()
 {
-    sc_system* system = nullptr;
-    sbk_result result = sc_system_create(&system);
-    CHECK_SC_RESULT(result);
+    m_soundBakery = std::make_unique<sbk::engine::system>(sbk_log_callback);
 
-    m_soundChef.reset(system);
-
-    if (m_soundChef)
+    if (m_soundBakery)
     {
-        const sc_system_config config = sc_system_config_init_default();
-        result = sc_system_init(m_soundChef.get(), &config);
-        CHECK_SC_RESULT(result);
+        CHECK_SC_RESULT(m_soundBakery->init(sbk_system_config_init_default()));
     }
 
     return 0;
@@ -51,7 +41,7 @@ auto gluten::audio_subsystem::play_sound(const std::filesystem::path& filePath) 
     else if (sc_sound* const sound = get_or_load_audio_handle(filePath))
     {
         sc_sound_instance* soundInstance = nullptr;
-        sc_system_play_sound(m_soundChef.get(), sound, &soundInstance, nullptr, SBK_FALSE);
+        sc_system_play_sound(m_soundBakery.get(), sound, &soundInstance, nullptr, SBK_FALSE);
         m_filesToSoundInstancesMap[filePath].reset(soundInstance);
     }
 }
@@ -91,7 +81,7 @@ auto gluten::audio_subsystem::set_sound_cursor_position(const std::filesystem::p
     else if (sc_sound* const sound = get_or_load_audio_handle(filePath))
     {
         sc_sound_instance* soundInstance = nullptr;
-        sc_system_play_sound(m_soundChef.get(), sound, &soundInstance, nullptr, SBK_TRUE);
+        sc_system_play_sound(m_soundBakery.get(), sound, &soundInstance, nullptr, SBK_TRUE);
         sc_sound_instance_set_cursor_in_seconds(soundInstance, cursorPosition);
         sc_sound_instance_set_looping(soundInstance, SBK_FALSE);
         m_filesToSoundInstancesMap[filePath].reset(soundInstance);
@@ -108,7 +98,7 @@ auto gluten::audio_subsystem::set_sound_loop_position(const std::filesystem::pat
     else if (sc_sound* const sound = get_or_load_audio_handle(filePath))
     {
         sc_sound_instance* soundInstance = nullptr;
-        sc_system_play_sound(m_soundChef.get(), sound, &soundInstance, nullptr, SBK_TRUE);
+        sc_system_play_sound(m_soundBakery.get(), sound, &soundInstance, nullptr, SBK_TRUE);
         sc_sound_instance_set_loop_position_in_seconds(soundInstance, loopPosition);
         sc_sound_instance_set_looping(soundInstance, SBK_TRUE);
         m_filesToSoundInstancesMap[filePath].reset(soundInstance);
@@ -185,7 +175,7 @@ auto gluten::audio_subsystem::get_or_load_audio_handle(const std::filesystem::pa
         {
             sound = m_filesToSoundsMap.at(filePath).get();
         }
-        else if (sc_system_create_sound(m_soundChef.get(), filePath.string().c_str(), SC_SOUND_MODE_DECODE, &sound) == SBK_SUCCESS)
+        else if (sc_system_create_sound(m_soundBakery.get(), filePath.string().c_str(), SC_SOUND_MODE_DECODE, &sound) == SBK_SUCCESS)
         {
             m_filesToSoundsMap[filePath].reset(sound);
         }

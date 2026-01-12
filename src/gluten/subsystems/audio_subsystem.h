@@ -4,7 +4,7 @@
 
 #include "gluten/data/data_cache.h"
 #include "concurrencpp/concurrencpp.h"
-#include "sound_chef/sound_chef.h"
+#include "sound_bakery/system.h"
 
 namespace gluten
 {
@@ -53,11 +53,6 @@ namespace gluten
         auto get_loudness_lufs(const std::filesystem::path& filePath) -> loudness_cache_type::cache_result;
 
     protected:
-        struct sc_system_deleter
-        {
-            auto operator()(sc_system* system) -> void;
-        };
-
         struct sc_sound_deleter
         {
             void operator()(sc_sound* sound) { sc_sound_release(sound); }
@@ -72,7 +67,7 @@ namespace gluten
         auto async_calculate_loudness(const std::filesystem::path filePath) -> loudness_cache_type::async_cache_result;
         auto generate_waveform(const std::filesystem::path filePath, std::size_t targetSamples) -> waveform_generator;
 
-        std::unique_ptr<sc_system, sc_system_deleter> m_soundChef;
+        std::unique_ptr<sbk::engine::system> m_soundBakery;
         std::unordered_map<std::filesystem::path, std::unique_ptr<sc_sound, sc_sound_deleter>> m_filesToSoundsMap;
         std::unordered_map<std::filesystem::path, std::unique_ptr<sc_sound_instance, sc_sound_deleter>> m_filesToSoundInstancesMap;
 
