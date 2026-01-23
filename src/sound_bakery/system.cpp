@@ -240,6 +240,9 @@ auto system::init(const sbk_system_config& config) -> sbk_result
     configCopy.soundChefConfig.allocationCallbacks.onRealloc = ma_realloc;
     configCopy.soundChefConfig.allocationCallbacks.onFree = ma_free;
 
+    s_system->masterNodeGroup = nullptr;
+    s_system->clapPlugins     = nullptr;
+
     const sbk_result result = sc_system_init(s_system, &configCopy.soundChefConfig);
     BOOST_ASSERT(result == SBK_SUCCESS);
 
