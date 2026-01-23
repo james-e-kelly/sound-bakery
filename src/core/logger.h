@@ -28,9 +28,11 @@ namespace sbk::core
     class external_log_callback : public spdlog::sinks::base_sink<std::mutex>
     {
     public:
-        explicit external_log_callback(sbk_log_callback_proc callback)
-            : m_callback{m_callback}
+        external_log_callback() = default;
+
+        auto set_callback(sbk_log_callback_proc callback) -> void
         {
+            m_callback = callback;
         }
 
     protected:
@@ -106,7 +108,8 @@ namespace sbk::core
 
         auto add_external_log(sbk_log_callback_proc callback) -> void
         {
-            const auto externalCallbackSink = std::make_shared<external_log_callback>(callback);
+            const auto externalCallbackSink = std::make_shared<external_log_callback>();
+            externalCallbackSink->set_callback(callback);
             externalCallbackSink->set_level(spdlog::level::info);
 
             m_sinks->add_sink(externalCallbackSink);

@@ -11,6 +11,12 @@
 #include <GLFW/glfw3.h>
 #include <GLFW/glfw3native.h>
 
+namespace review_app_cli_arguments
+{
+    static constexpr const char* s_remoteServerAddress  = "remote_ip";
+    static constexpr const char* s_databaseFile         = "workspace";
+}
+
 class review_app_drop_target : public IDropTarget
 {
 public:
@@ -115,6 +121,13 @@ auto create_application() -> gluten::app*
 	return new review_app();
 }
 
+auto review_app::cli_setup(boost::program_options::options_description& options) -> void
+{
+    options.add_options()
+        (review_app_cli_arguments::s_remoteServerAddress, boost::program_options::value<std::string>(), "set the IP address of the remote server")
+        (review_app_cli_arguments::s_databaseFile, boost::program_options::value<std::string>(), "set the file path to the workspace to open as a server");
+}
+
 auto review_app::pre_init(const boost::program_options::variables_map& cliVariables) -> void
 {
     m_databaseThread = make_worker_thread_executor();
@@ -129,7 +142,23 @@ auto review_app::pre_init(const boost::program_options::variables_map& cliVariab
         }
     }
 
-    add_manager_class<intro_manager>();
+    const bool hasWorkspaceFile = cliVariables.count(review_app_cli_arguments::s_databaseFile);
+    const bool hasRemoteIp = cliVariables.count(review_app_cli_arguments::s_remoteServerAddress);
+
+    if (hasWorkspaceFile)
+    {
+        setup_server(cliVariables.at(review_app_cli_arguments::s_databaseFile).as<std::string>());
+    }
+
+    if (hasRemoteIp)
+    {
+        setup_client(cliVariables.at(review_app_cli_arguments::s_remoteServerAddress).as<std::string>());
+    }
+
+    if (!hasWorkspaceFile && !hasRemoteIp)
+    {
+        add_manager_class<intro_manager>();
+    }
 }
 
 auto review_app::post_init() -> void

@@ -97,28 +97,28 @@ namespace gluten
          * 
          * Use this function to set up command line arguments. Read the parsed values in @see pre_init.
          */
-        virtual void cli_setup(boost::program_options::options_description& options) {}
+        virtual auto cli_setup(boost::program_options::options_description& options) -> void {}
 
         /**
          * @brief Runs after subsystems are created and before any init functions are called.
          * 
          * Use this function to create the root widget, managers, more subsystems or general initialization.
          */
-        virtual void pre_init(const boost::program_options::variables_map& cliVariables) {}
+        virtual auto pre_init(const boost::program_options::variables_map& cliVariables) -> void{}
 
         /**
          * @brief Runs after all init functions were called and before start.
          */
-        virtual void post_init() {}
+        virtual auto post_init() -> void {}
 
         /**
          * @brief Runs before everything has exited and when the app is about to exit.
          * 
          * The subsystems and managers will still be valid at this point.
          */
-        virtual void exit() {}
+        virtual auto exit() -> void {}
 
-        virtual void tick_implementation() {}
+        virtual auto tick_implementation() -> void {}
 
     private:
         auto start() -> void;

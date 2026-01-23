@@ -27,6 +27,7 @@ public:
     static auto reset_to_intro() -> void;
 
 protected:
+    auto cli_setup(boost::program_options::options_description& options) -> void override;
     auto pre_init(const boost::program_options::variables_map& cliVariables) -> void override;
     auto post_init() -> void override;
     auto exit() -> void override;
