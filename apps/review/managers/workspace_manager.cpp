@@ -473,11 +473,16 @@ auto workspace_manager::login_user(login_request_data loginData) -> concurrencpp
 
     if (loggedInUser.has_value())
     {
-        const logged_in_user_data loggedInData = loggedInUser.value();
-        m_userSettingsData->m_loggedInUser     = loggedInData;
-        m_userFlowPopup.reset();
-        open_workspace_widget();
-        co_return true;
+        if (!loggedInUser.value().m_sessionToken.empty())
+        {
+            const logged_in_user_data loggedInData = loggedInUser.value();
+            m_userSettingsData->m_loggedInUser     = loggedInData;
+            m_userFlowPopup.reset();
+            open_workspace_widget();
+            co_return true;
+        }
+
+        co_return false;
     }
     else
     {
