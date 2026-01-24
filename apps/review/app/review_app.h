@@ -22,8 +22,8 @@ public:
     auto get_drag_drop_files() const -> std::unordered_set<std::filesystem::path>;
 
     static auto get() -> review_app*;
-    static auto setup_client(const std::string& serverAddress) -> void;
-    static auto setup_server(const std::filesystem::path& workspaceFile) -> void;
+    static auto set_up_client(const std::string& serverAddress) -> void;
+    static auto set_up_server(const std::filesystem::path& workspaceFile) -> void;
     static auto reset_to_intro() -> void;
 
 protected:

@@ -85,7 +85,7 @@ auto intro_widget::render_window_implementation() -> void
 
 		if (std::filesystem::exists(workspaceFile))
 		{
-			review_app::setup_server(workspaceFile);
+			review_app::set_up_server(workspaceFile);
 		}
 	}
 
@@ -101,7 +101,7 @@ auto intro_widget::render_window_implementation() -> void
 	{
 		if (m_testConnectionResult.get())
 		{
-            review_app::setup_client(textBuffer);
+            review_app::set_up_client(textBuffer);
 		}
 	}
 
@@ -139,7 +139,7 @@ auto create_workspace_popup::render_popup() -> void
 	if (ImGui::Button("Create"))
 	{
         const std::filesystem::path workspaceFile = std::filesystem::path(workspaceDirectory) / (workspaceName + ".workspace");
-		review_app::setup_server(workspaceFile);
+		review_app::set_up_server(workspaceFile);
 
         close_popup();
 	}

@@ -230,6 +230,8 @@ auto review_database::create_workspace(const std::string name) const -> bool_res
     insertWorkspaceName.bind(1, name);
     insertWorkspaceName.exec();
 
+    gluten::app::get()->get_logger()->info("[DATABASE] Created workspace/database");
+
     co_return true;
 }
 
@@ -243,6 +245,8 @@ auto review_database::open_workspace(const std::string name) const -> bool_resul
     SQLite::Statement insertWorkspaceName(m_database, "INSERT OR IGNORE INTO workspaces (name) VALUES (?);");
     insertWorkspaceName.bind(1, name);
     insertWorkspaceName.exec();
+
+    gluten::app::get()->get_logger()->info("[DATABASE] Opened workspace");
 
     co_return true;
 }
@@ -294,6 +298,8 @@ auto review_database::create_project(const std::string name, const std::string d
     addActivity.bind(3, fmt::format("Created a project called {}", name));
     addActivity.exec();
 
+    gluten::app::get()->get_logger()->info("[DATABASE] Created project");
+
     co_return newProjectData;
 }
 
@@ -334,6 +340,8 @@ auto review_database::get_all_projects(std::string userToken) const -> database_
 
         result.push_back(std::move(projectData));
     }
+
+    gluten::app::get()->get_logger()->info("[DATABASE] Returned all projects");
 
     co_return result;
 }

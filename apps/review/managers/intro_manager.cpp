@@ -30,7 +30,7 @@ auto intro_manager::init(gluten::app* app) -> void
 	}
     else if (m_userSettingsData->workspace_exists())
 	{
-        review_app::setup_server(m_userSettingsData->m_workspaceFilePath);
+        review_app::set_up_server(m_userSettingsData->m_workspaceFilePath);
 	}
 	else
 	{
@@ -64,7 +64,7 @@ auto intro_manager::tick(double deltaTime) -> void
 
 				if (serverConnectionOkay)
 				{
-					review_app::setup_client(m_userSettingsData->m_serverIpAddress);
+					review_app::set_up_client(m_userSettingsData->m_serverIpAddress);
 				}
 			}
 		}

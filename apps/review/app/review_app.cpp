@@ -147,12 +147,12 @@ auto review_app::pre_init(const boost::program_options::variables_map& cliVariab
 
     if (hasWorkspaceFile)
     {
-        setup_server(cliVariables.at(review_app_cli_arguments::s_databaseFile).as<std::string>());
+        set_up_server(cliVariables.at(review_app_cli_arguments::s_databaseFile).as<std::string>());
     }
 
     if (hasRemoteIp)
     {
-        setup_client(cliVariables.at(review_app_cli_arguments::s_remoteServerAddress).as<std::string>());
+        set_up_client(cliVariables.at(review_app_cli_arguments::s_remoteServerAddress).as<std::string>());
     }
 
     if (!hasWorkspaceFile && !hasRemoteIp)
@@ -243,10 +243,12 @@ auto review_app::get_drag_drop_files() const -> std::unordered_set<std::filesyst
     return {};
 }
 
-auto review_app::setup_client(const std::string& serverAddress) -> void
+auto review_app::set_up_client(const std::string& serverAddress) -> void
 {
     if (review_app* const app = get())
     {
+        app->get_logger()->info("[APP] Setting up the client");
+
         gluten::data_source<user_settings_data> userSettings;
         userSettings->m_serverIpAddress = serverAddress;
 
@@ -277,10 +279,12 @@ auto review_app::setup_client(const std::string& serverAddress) -> void
     }
 }
 
-auto review_app::setup_server(const std::filesystem::path& workspaceFile) -> void
+auto review_app::set_up_server(const std::filesystem::path& workspaceFile) -> void
 {
     if (review_app* const app = get())
     {
+        app->get_logger()->info("[APP] Setting up the server");
+
         app->remove_manager_by_class<intro_manager>();
         app->add_manager_class<review_server>(workspaceFile);
     }
@@ -290,6 +294,8 @@ auto review_app::reset_to_intro() -> void
 {
     if (review_app* const app = get())
     {
+        app->get_logger()->info("[APP] Resetting");
+
         gluten::data_source<user_settings_data> userSettings;
         userSettings->m_workspaceFilePath.clear();
         userSettings->m_loggedInUser.m_sessionToken.clear();

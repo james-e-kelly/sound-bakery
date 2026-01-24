@@ -31,6 +31,10 @@ namespace
         {
             result = review_app_serialization::deserialize_from_xml<T>(postResult.value().body);
         }
+        else
+        {
+            gluten::app::get()->get_logger()->error("[CLIENT] Post returned \"{}\"", httplib::to_string(postResult.error()));
+        }
 
         co_return result;
     }
@@ -112,7 +116,10 @@ auto review_client::login(login_request_data loginRequestData) -> concurrencpp::
 
     const logged_in_user_data result = co_await post_form_api<logged_in_user_data>(m_client, review_app_endpoints::login, items);
 
-    m_client->set_bearer_token_auth(result.m_sessionToken);
+    if (!result.m_sessionToken.empty())
+    {
+        m_client->set_bearer_token_auth(result.m_sessionToken);
+    }
 
     co_return result;
 }
