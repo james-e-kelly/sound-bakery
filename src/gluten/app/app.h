@@ -191,12 +191,12 @@ namespace gluten
     template <class T>
     void app::remove_subsystem_by_class()
     {
-        get_logger()->info(fmt::format("Removing a subsystem of type {}", rttr::type::get<T>().get_name().data()));
-
         for (int index = m_subsystems.size() - 1; index >= 0; --index)
         {
             if (T* castedSubsytem = dynamic_cast<T*>(m_subsystems[index].get()))
             {
+                get_logger()->info(fmt::format("Removing a subsystem of type {}", rttr::type::get<T>().get_name().data()));
+
                 castedSubsytem->exit();
                 m_subsystems.erase(m_subsystems.begin() + index);
                 return;
@@ -244,12 +244,12 @@ namespace gluten
     template <class T>
     void app::remove_manager_by_class()
     {
-        get_logger()->info(fmt::format("Removing a manager of type {}", rttr::type::get<T>().get_name().data()));
-
         for (int index = m_managers.size() - 1; index >= 0; --index)
         {
             if (T* castedManager = dynamic_cast<T*>(m_managers[index].get()))
             {
+                get_logger()->info(fmt::format("Removing a manager of type {}", rttr::type::get<T>().get_name().data()));
+
                 castedManager->exit();
                 m_managers.erase(m_managers.begin() + index);
                 return;
