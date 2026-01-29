@@ -134,8 +134,8 @@ bool gluten::imgui::update_window_manual_resize(ImGuiWindow* window, ImVec2& new
                 g.NextWindowData.SizeCallback(&data);
                 new_size = data.DesiredSize;
             }
-            new_size.x = IM_FLOOR(new_size.x);
-            new_size.y = IM_FLOOR(new_size.y);
+            new_size.x = IM_TRUNC(new_size.x);
+            new_size.y = IM_TRUNC(new_size.y);
         }
 
         // Minimum size
@@ -224,7 +224,7 @@ bool gluten::imgui::update_window_manual_resize(ImGuiWindow* window, ImVec2& new
     const int resize_grip_count = g.IO.ConfigWindowsResizeFromEdges ? 2 : 1;  // Allow resize from lower-left if we have
                                                                               // the mouse cursor feedback for it.
     const float resize_grip_draw_size =
-        IM_FLOOR(ImMax(g.FontSize * 1.10f, window->WindowRounding + 1.0f + g.FontSize * 0.2f));
+        IM_TRUNC(ImMax(g.FontSize * 1.10f, window->WindowRounding + 1.0f + g.FontSize * 0.2f));
     window->ResizeBorderHeld = (signed char)border_held;
 
     // const ImRect& visibility_rect;
@@ -323,8 +323,8 @@ bool gluten::imgui::update_window_manual_resize(ImGuiWindow* window, ImVec2& new
 
     bool ret_auto_fit             = false;
     const int resize_border_count = g.IO.ConfigWindowsResizeFromEdges ? 4 : 0;
-    const float grip_draw_size = IM_FLOOR(ImMax(g.FontSize * 1.35f, window->WindowRounding + 1.0f + g.FontSize * 0.2f));
-    const float grip_hover_inner_size = IM_FLOOR(grip_draw_size * 0.75f);
+    const float grip_draw_size        = IM_TRUNC(ImMax(g.FontSize * 1.35f, window->WindowRounding + 1.0f + g.FontSize * 0.2f));
+    const float grip_hover_inner_size = IM_TRUNC(grip_draw_size * 0.75f);
     const float grip_hover_outer_size = g.IO.ConfigWindowsResizeFromEdges ? WINDOWS_HOVER_PADDING : 0.0f;
 
     ImVec2 pos_target(FLT_MAX, FLT_MAX);
