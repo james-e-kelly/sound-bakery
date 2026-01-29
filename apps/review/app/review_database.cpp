@@ -708,6 +708,19 @@ auto review_database::get_review_votes(database_id reviewId, database_id userId,
     co_return result;
 }
 
+auto review_database::delete_project(database_id projectId, std::string userToken) const -> bool_result
+{
+    CHECK_ARG(projectId > 0);
+    MOVE_TO_DATABASE_THREAD();
+    CHECK_PRIVILEGED_ACTION(userToken, activity_type::project_deleted);
+    CHECK_TABLE_EXISTS(projects);
+    INSERT_NETWORK_TEST();
+
+    SQLite::Statement deleteProjectStatement(m_database, "DELETE FROM projects WHERE id = ?;");
+    deleteProjectStatement.bind(1, projectId);
+    co_return deleteProjectStatement.exec();
+}
+
 auto review_database::delete_review(database_id reviewId, std::string userToken) const -> bool_result
 {
     CHECK_ARG(reviewId > 0);
@@ -721,9 +734,7 @@ auto review_database::delete_review(database_id reviewId, std::string userToken)
     // Cascading delete removes all other data referencing this
     SQLite::Statement deleteReviewStatement(m_database, "DELETE FROM reviews WHERE id = ?;");
     deleteReviewStatement.bind(1, reviewId);
-    deleteReviewStatement.exec();
-
-    co_return true;
+    co_return deleteReviewStatement.exec();
 }
 
 auto review_database::get_all_review_activity(database_id reviewId, std::string userToken) const -> database_result<std::vector<activity_data>> 

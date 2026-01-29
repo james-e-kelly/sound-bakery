@@ -412,6 +412,14 @@ auto review_client::put_review_users(database_id reviewId, std::vector<database_
     co_return co_await put_form_api(m_client, review_app_endpoints::reviewUsers, items);
 }
 
+auto review_client::delete_project(database_id projectId) -> concurrencpp::result<void>
+{
+    co_return co_await delete_api(m_client, review_app_endpoints::projects, httplib::Params
+        {
+            { review_app_parameters::projectId, std::to_string(projectId) },
+        });
+}
+
 auto review_client::delete_review(database_id reviewId) -> concurrencpp::result<void>
 {
     co_return co_await delete_api(m_client, review_app_endpoints::reviews, httplib::Params

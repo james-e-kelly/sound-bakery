@@ -14,6 +14,7 @@ set(review_SOURCES
   data/review_data.cpp
   elements/inline_user_display_element.cpp
   elements/review_element.cpp
+  elements/project_element.cpp
   elements/video_element.cpp
   elements/audio_element.cpp
   elements/file_element.cpp

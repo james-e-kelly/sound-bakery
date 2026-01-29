@@ -181,6 +181,34 @@ auto workspace_manager::select_project(const std::string projectName) -> concurr
     }
 }
 
+auto workspace_manager::delete_project(const std::string& projectName) -> concurrencpp::result<void>
+{
+    if (m_userSettingsData->m_loggedInUser.m_privileges < user_privileges::admin)
+    {
+        co_return;
+    }
+
+    const gluten::token_cache_key key(get_user_session_token());
+    auto& rawProjects = m_cachedProjects.get_raw_data(key);
+
+    const auto foundProjectIter = std::find_if(rawProjects.begin(), rawProjects.end(), [projectName](const project_data& project)
+                                  { return projectName == project.m_projectName; });
+
+    if (foundProjectIter != rawProjects.end())
+    {
+        if (foundProjectIter->m_id == m_selectedProject.m_id)
+        {
+            m_selectedProject = project_data();
+        }
+
+        const database_id projectToDeleteId = foundProjectIter->m_id;
+        rawProjects.erase(foundProjectIter);
+
+        co_await m_client->delete_project(projectToDeleteId);
+        m_cachedProjects.set_cache_expired(key);
+    }
+}
+
 auto workspace_manager::has_selected_project() const -> bool { return m_selectedProject.m_id != 0; }
 
 auto workspace_manager::close_workspace() -> void
@@ -644,6 +672,11 @@ auto workspace_manager::get_user_session_has_expired() const -> bool
 {
     const time_t now   = std::time(nullptr);
     return get_user_session_token().empty() || now >= m_userSettingsData->m_loggedInUser.m_expiryTime;
+}
+
+auto workspace_manager::get_user_privileges() const -> user_privileges
+{
+    return m_userSettingsData->m_loggedInUser.m_privileges;
 }
 
 auto workspace_manager::get_review_file(const std::filesystem::path& relativeFilePath) -> typename file_cache_type::cache_result

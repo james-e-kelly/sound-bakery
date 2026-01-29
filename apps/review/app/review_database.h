@@ -83,6 +83,7 @@ public:
     auto set_review_vote(database_id reviewId, database_id userId, review_vote vote, std::string userToken) const                   -> bool_result;
     auto set_review_status(database_id reviewId, review_status status, std::string userToken) const                                 -> bool_result;
 
+    auto delete_project(database_id projectId, std::string userToken) const                                                         -> bool_result;
     auto delete_review(database_id reviewId, std::string userToken) const                                                           -> bool_result;
     auto delete_comment(database_id commentId, std::string userToken) const                                                         -> bool_result;
     auto delete_user(std::string email, std::string userToken) const                                                                -> bool_result;

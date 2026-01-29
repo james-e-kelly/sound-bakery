@@ -47,6 +47,7 @@ public:
     [[nodiscard]] auto has_selected_project() const -> bool;
     auto create_project(const std::string& projectName, const std::string& projectDescription) -> void;
     auto select_project(const std::string projectName) -> concurrencpp::result<void>;
+    auto delete_project(const std::string& proejctName) -> concurrencpp::result<void>;
 
     // Reviews
     auto select_review(int64_t reviewId) -> void;
@@ -89,6 +90,7 @@ public:
 
     auto get_user_session_token() const -> std::string;
     auto get_user_session_has_expired() const -> bool;
+    auto get_user_privileges() const -> user_privileges;
 
     auto get_review_file(const std::filesystem::path& relativeFilePath) -> typename file_cache_type::cache_result;
 

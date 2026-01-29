@@ -617,6 +617,27 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
 
     // DELETE
 
+    add_database_delete_endpoint(m_server, review_app_endpoints::projects, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request, httplib::Response& response)
+        {
+            gluten::app::get()->get_logger()->info("[SERVER] delete/projects");
+
+            database_id projectId = 0;
+            
+            if (request.has_param(review_app_parameters::projectId))
+            {
+                projectId = std::stol(request.get_param_value(review_app_parameters::projectId));
+            }
+
+            if (projectId > 0)
+            {
+                database->delete_project(projectId, userToken).get();
+            }
+            else
+            {
+                response.status = httplib::StatusCode::BadRequest_400;
+            }
+        }, m_database);
+
     add_database_delete_endpoint(m_server, review_app_endpoints::reviews, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request, httplib::Response& response)
         {
             gluten::app::get()->get_logger()->info("[SERVER] delete/reviews");
