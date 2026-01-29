@@ -16,11 +16,7 @@ namespace gluten
     };
 
 	/**
-	 * @brief A simple audio subsystem that can play audio using Sound Chef.
-     * 
-     * The audio_subsystem does not use Sound Bakery as there is no need for adaptive audio. 
-     * Instead, the subsystem acts as a normal application audio player, suitable for playing audio files
-     * or reading wav data.
+	 * @brief A simple audio subsystem that can play audio using Sound Bakery.
 	 */
 	class audio_subsystem : public subsystem
 	{
@@ -38,9 +34,11 @@ namespace gluten
         auto pause_sound(const std::filesystem::path& filePath) -> void;
         auto pause_all() -> void;
         auto set_sound_cursor_position(const std::filesystem::path& filePath, float cursorPosition) -> void;
-        auto set_sound_loop_position(const std::filesystem::path& filePath, float loopPosition) -> void;
+        auto set_sound_loop_start_position(const std::filesystem::path& filePath, float loopPosition) -> void;
+        auto set_sound_loop_end_position(const std::filesystem::path& filePath, float loopPosition) -> void;
         auto get_sound_cursor_position(const std::filesystem::path& filePath) -> float;
-        auto get_sound_loop_position(const std::filesystem::path& filePath) -> float;
+        auto get_sound_loop_start_position(const std::filesystem::path& filePath) -> float;
+        auto get_sound_loop_end_position(const std::filesystem::path& filePath) -> float;
         auto get_sound_length(const std::filesystem::path& filePath) -> float;
         auto get_sound_is_playing(const std::filesystem::path& filePath) -> bool;
         auto get_sound_is_looping(const std::filesystem::path& filePath) -> bool;
@@ -63,6 +61,14 @@ namespace gluten
             void operator()(sc_sound_instance* soundInstance) { sc_sound_instance_release(soundInstance); }
         };
 
+        struct loop_data
+        {
+            float m_loopStart = -1.0f;
+            float m_loopEnd = -1.0f;
+        };
+
+        auto get_sound_loop_info(const std::filesystem::path& filePath) -> loop_data*;
+
         auto async_generate_waveform(const std::filesystem::path filePath, std::size_t targetSamples) -> concurrencpp::result<void>;
         auto async_calculate_loudness(const std::filesystem::path filePath) -> loudness_cache_type::async_cache_result;
         auto generate_waveform(const std::filesystem::path filePath, std::size_t targetSamples) -> waveform_generator;
@@ -70,6 +76,7 @@ namespace gluten
         std::unique_ptr<sbk::engine::system> m_soundBakery;
         std::unordered_map<std::filesystem::path, std::unique_ptr<sc_sound, sc_sound_deleter>> m_filesToSoundsMap;
         std::unordered_map<std::filesystem::path, std::unique_ptr<sc_sound_instance, sc_sound_deleter>> m_filesToSoundInstancesMap;
+        std::unordered_map<std::filesystem::path, loop_data> m_filesToLoopDataMap;
 
         std::unordered_map<std::filesystem::path, waveform> m_filesToWaveforms;
         loudness_cache_type m_filesToLoudnessCache; 

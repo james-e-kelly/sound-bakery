@@ -127,23 +127,26 @@ auto audio_element::render_waveform() -> void
 
             drawList->AddLine(cursorBottom, cursorTop, IM_COL32_WHITE);
 
-            const float loopPosition = audioSubsystem->get_sound_loop_position(m_filePath);
-            const float loopCursorPosition = m_audioBackground.get_element_rect().Min.x + (m_audioBackground.get_element_rect().GetWidth() * (loopPosition / m_fileDuration));
-            const ImVec2 loopCursorTop(loopCursorPosition, m_audioBackground.get_element_rect().Min.y);
-            const ImVec2 loopCursorBottom(loopCursorPosition, m_audioBackground.get_element_rect().Max.y);
-
-
             if (audioSubsystem->get_sound_is_looping(m_filePath))
             {
-                if (cursorX < loopCursorPosition)
-                {
-                    drawList->AddRectFilled(cursorTop, loopCursorBottom, IM_COL32(100,100,100,100));
-                }
-                else
-                {
-                    drawList->AddRectFilled(cursorTop, loopCursorBottom, IM_COL32(255,100,100,100));
-                }
-                drawList->AddLine(loopCursorBottom, loopCursorTop, IM_COL32_WHITE);
+                const auto render_loop_line = [](float loopTime, float fileDuration, const ImRect& elementRect, ImDrawList* drawList) 
+                    {
+                        const float loopCursorPosition = elementRect.Min.x + (elementRect.GetWidth() * (loopTime / fileDuration));
+                        const ImVec2 loopCursorTop(loopCursorPosition, elementRect.Max.y);
+                        const ImVec2 loopCursorBottom(loopCursorPosition, elementRect.Min.y);
+
+                        drawList->AddLine(loopCursorTop, loopCursorBottom, IM_COL32(100,255,255,255));
+                    };
+
+                const float loopStart = audioSubsystem->get_sound_loop_start_position(m_filePath);
+                const float loopEnd = audioSubsystem->get_sound_loop_end_position(m_filePath);
+                const float loopStartCursorPosition = m_audioBackground.get_element_rect().Min.x + (m_audioBackground.get_element_rect().GetWidth() * (loopStart / m_fileDuration));
+                const float loopEndCursorPosition = m_audioBackground.get_element_rect().Min.x + (m_audioBackground.get_element_rect().GetWidth() * (loopEnd / m_fileDuration));
+
+                render_loop_line(loopStart, m_fileDuration, m_audioBackground.get_element_rect(), drawList);
+                render_loop_line(loopEnd, m_fileDuration, m_audioBackground.get_element_rect(), drawList);
+
+                drawList->AddRectFilled(ImVec2(loopStartCursorPosition, m_audioBackground.get_element_rect().Min.y), ImVec2(loopEndCursorPosition, m_audioBackground.get_element_rect().Max.y), IM_COL32(100,100,100,100));
             }
         }
     }
@@ -220,10 +223,11 @@ auto audio_element::handle_mouse_control() -> void
             if (clicked)
             {
                 audioSubsystem->set_sound_cursor_position(m_filePath, timeInWaveform);
+                audioSubsystem->set_sound_loop_start_position(m_filePath, timeInWaveform);
             }
             else if (dragging)
             {
-                audioSubsystem->set_sound_loop_position(m_filePath, timeInWaveform);
+                audioSubsystem->set_sound_loop_end_position(m_filePath, timeInWaveform);
             }
         }
     }

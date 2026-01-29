@@ -697,23 +697,24 @@ sbk_result sc_sound_instance_get_loop_position_in_seconds(sc_sound_instance* ins
     return SBK_SUCCESS;
 }
 
-sbk_result sc_sound_instance_set_loop_position_in_seconds(sc_sound_instance* instance, float seconds)
+sbk_result sc_sound_instance_set_loop_position_in_seconds(sc_sound_instance* instance, float loopStartSeconds, float loopEndSeconds)
 {
     SC_CHECK_ARG(instance != NULL);
-    SC_CHECK_ARG(seconds >= 0.0f);
+    SC_CHECK_ARG(loopStartSeconds >= 0.0f);
+    SC_CHECK_ARG(loopEndSeconds >= 0.0f);
 
-    ma_data_source* const dataSource = ma_sound_get_data_source(&instance->sound);
+    ma_data_source* const dataSource =
+        ma_sound_get_data_source(&instance->sound);
     if (dataSource)
     {
-        ma_uint64 cursorPosInPCMFrames = 0;
         ma_uint32 sampleRate           = 0;
 
-        SC_CHECK_RESULT(ma_data_source_get_cursor_in_pcm_frames(dataSource, &cursorPosInPCMFrames));
         SC_CHECK_RESULT(ma_data_source_get_data_format(dataSource, NULL, NULL, &sampleRate, NULL, 0));
 
-        const ma_uint64 loopEndInPCMFrames = seconds * sampleRate;
+        const ma_uint64 loopStartInPCMFrames = loopStartSeconds * sampleRate;
+        const ma_uint64 loopEndInPCMFrames = loopEndSeconds * sampleRate;
 
-        SC_CHECK_RESULT(ma_data_source_set_loop_point_in_pcm_frames(dataSource, cursorPosInPCMFrames, loopEndInPCMFrames));
+        SC_CHECK_RESULT(ma_data_source_set_loop_point_in_pcm_frames(dataSource, loopStartInPCMFrames, loopEndInPCMFrames));
     }
 
     return SBK_SUCCESS;

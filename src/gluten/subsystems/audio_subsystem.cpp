@@ -44,6 +44,19 @@ int gluten::audio_subsystem::init()
 
 auto gluten::audio_subsystem::play_sound(const std::filesystem::path& filePath) -> void
 {
+    loop_data* loopData = get_sound_loop_info(filePath);
+
+    const auto try_set_loop_points = [](sc_sound_instance* soundInstance, loop_data* loopData) 
+        { 
+            if (soundInstance && loopData)
+            {
+                if (loopData->m_loopStart >= 0.0f && loopData->m_loopEnd >= 0.0f)
+                {
+                    sc_sound_instance_set_loop_position_in_seconds(soundInstance, loopData->m_loopStart, loopData->m_loopEnd);
+                }
+            }
+        };
+
     if (sc_sound_instance* const soundInstance = get_sound_instance(filePath))
     {
         sc_bool playing = MA_FALSE;
@@ -52,12 +65,14 @@ auto gluten::audio_subsystem::play_sound(const std::filesystem::path& filePath) 
         if (!playing)
         {
             sc_sound_instance_start(soundInstance);
+            try_set_loop_points(soundInstance, loopData);
         }
     }
     else if (sc_sound* const sound = get_or_load_audio_handle(filePath))
     {
         sc_sound_instance* soundInstance = nullptr;
         sc_system_play_sound(m_soundBakery.get(), sound, &soundInstance, nullptr, SBK_FALSE);
+        try_set_loop_points(soundInstance, loopData);
         m_filesToSoundInstancesMap[filePath].reset(soundInstance);
     }
 }
@@ -104,20 +119,29 @@ auto gluten::audio_subsystem::set_sound_cursor_position(const std::filesystem::p
     }
 }
 
-auto gluten::audio_subsystem::set_sound_loop_position(const std::filesystem::path& filePath, float loopPosition) -> void
+auto gluten::audio_subsystem::set_sound_loop_start_position(const std::filesystem::path& filePath, float loopPosition) -> void
 {
-    if (sc_sound_instance* const soundInstance = get_sound_instance(filePath))
+    if (loop_data* loopData = get_sound_loop_info(filePath))
     {
-        sc_sound_instance_set_loop_position_in_seconds(soundInstance, loopPosition);
-        sc_sound_instance_set_looping(soundInstance, SBK_TRUE);
+        if (sc_sound_instance* const soundInstance = get_sound_instance(filePath))
+        {
+            sc_sound_instance_set_looping(soundInstance, SBK_FALSE);
+        }
+
+        loopData->m_loopStart = loopPosition;
     }
-    else if (sc_sound* const sound = get_or_load_audio_handle(filePath))
+}
+
+auto gluten::audio_subsystem::set_sound_loop_end_position(const std::filesystem::path& filePath, float loopPosition) -> void
+{
+    if (loop_data* loopData = get_sound_loop_info(filePath))
     {
-        sc_sound_instance* soundInstance = nullptr;
-        sc_system_play_sound(m_soundBakery.get(), sound, &soundInstance, nullptr, SBK_TRUE);
-        sc_sound_instance_set_loop_position_in_seconds(soundInstance, loopPosition);
-        sc_sound_instance_set_looping(soundInstance, SBK_TRUE);
-        m_filesToSoundInstancesMap[filePath].reset(soundInstance);
+        if (sc_sound_instance* const soundInstance = get_sound_instance(filePath))
+        {
+            sc_sound_instance_set_looping(soundInstance, SBK_TRUE);
+        }
+
+        loopData->m_loopEnd = loopPosition;
     }
 }
 
@@ -133,13 +157,25 @@ auto gluten::audio_subsystem::get_sound_cursor_position(const std::filesystem::p
     return seconds;
 }
 
-auto gluten::audio_subsystem::get_sound_loop_position(const std::filesystem::path& filePath) -> float
+auto gluten::audio_subsystem::get_sound_loop_start_position(const std::filesystem::path& filePath) -> float
 {
     float seconds = 0.0f;
 
-    if (sc_sound_instance* const soundInstance = get_sound_instance(filePath))
+    if (loop_data* loopData = get_sound_loop_info(filePath))
     {
-        sc_sound_instance_get_loop_position_in_seconds(soundInstance, &seconds);
+        seconds = loopData->m_loopStart;
+    }
+
+    return seconds;
+}
+
+auto gluten::audio_subsystem::get_sound_loop_end_position(const std::filesystem::path& filePath) -> float
+{
+    float seconds = 0.0f;
+
+    if (loop_data* loopData = get_sound_loop_info(filePath))
+    {
+        seconds = loopData->m_loopEnd;
     }
 
     return seconds;
@@ -231,6 +267,22 @@ auto gluten::audio_subsystem::get_loudness_lufs(const std::filesystem::path& fil
     }
 
     return m_filesToLoudnessCache.get_cached_data(filePath);
+}
+
+auto gluten::audio_subsystem::get_sound_loop_info(const std::filesystem::path& filePath) -> loop_data*
+{
+    loop_data* loopData = nullptr;
+
+    if (std::filesystem::exists(filePath))
+    {
+        if (!m_filesToLoopDataMap.contains(filePath))
+        {
+            m_filesToLoopDataMap.insert({filePath, loop_data()});
+        }
+
+        loopData = &m_filesToLoopDataMap.at(filePath);
+    }
+    return loopData;
 }
 
 auto gluten::audio_subsystem::async_generate_waveform(const std::filesystem::path filePath, std::size_t targetSamples) -> concurrencpp::result<void>
