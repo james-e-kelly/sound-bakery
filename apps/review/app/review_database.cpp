@@ -1211,19 +1211,11 @@ auto review_database::get_review_users(database_id reviewId, std::string userTok
 
     for (const auto& userId : userIds)
     {
-        SQLite::Statement getUserStatement(m_database, "SELECT id, display_name, title, email, timestamp, privilege FROM users WHERE id = ?;");
-        getUserStatement.bind(1, userId);
+        const auto userData = co_await get_all_users(userId, userToken);
 
-        if (getUserStatement.executeStep())
+        if (userData)
         {
-            user_data user;
-            user.m_userId      = getUserStatement.getColumn(0).getInt64();
-            user.m_displayName = getUserStatement.getColumn(1).getText();
-            user.m_title       = getUserStatement.getColumn(2).getText();
-            user.m_email       = getUserStatement.getColumn(3).getText();
-            user.m_createdAt   = getUserStatement.getColumn(4).getText();
-            user.m_privileges  = (user_privileges)getUserStatement.getColumn(5).getInt();
-            users.push_back(std::move(user));
+            users.insert(users.end(), userData.value().begin(), userData.value().end());
         }
     }
 
