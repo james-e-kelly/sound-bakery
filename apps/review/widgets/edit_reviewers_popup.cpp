@@ -25,16 +25,16 @@ auto edit_reviewers_popup::render_popup() -> void
 
 	render_reviewers();
 
-	ImGui::BeginDisabled(!m_newReviewers.has_value());
+	ImGui::BeginDisabled(!m_newUsers.has_value());
 
 	if (ImGui::Button("Save"))
 	{
 		if (std::shared_ptr<workspace_manager> workspaceManager = m_workspaceManager.lock())
 		{
 			std::vector<int64_t> userIds;
-			userIds.resize(m_newReviewers.value().size());
+			userIds.resize(m_newUsers.value().size());
 
-			std::transform(m_newReviewers.value().begin(), m_newReviewers.value().end(), userIds.begin(), [](const user_data& user) 
+			std::transform(m_newUsers.value().begin(), m_newUsers.value().end(), userIds.begin(), [](const user_data& user) 
 				{
 					return user.m_userId;
 				});

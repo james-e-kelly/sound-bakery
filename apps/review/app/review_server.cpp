@@ -311,6 +311,7 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
 
             database_id userId = 0;
             database_id reviewId = 0;
+            database_id projectId = 0;
 
             if (request.has_param(review_app_parameters::userId))
             {
@@ -322,7 +323,16 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
                 reviewId = std::stol(request.get_param_value(review_app_parameters::reviewId));
             }
 
-            if (reviewId > 0)
+            if (request.has_param(review_app_parameters::projectId))
+            {
+                projectId = std::stol(request.get_param_value(review_app_parameters::projectId));
+            }
+
+            if (projectId > 0)
+            {
+                return database->get_project_users(projectId, userToken);
+            }
+            else if (reviewId > 0)
             {
                 return database->get_review_users(reviewId, userToken);
             }
@@ -606,12 +616,25 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
         {
             gluten::app::get()->get_logger()->info("[SERVER] put/reviewUsers");
 
-            if (request.form.has_field(review_app_parameters::data) && request.form.has_field(review_app_parameters::reviewId))
+            if (request.form.has_field(review_app_parameters::users) && request.form.has_field(review_app_parameters::reviewId))
             {
                 const database_id reviewId = review_app_serialization::deserialize_from_xml<database_id>(request.form.get_field(review_app_parameters::reviewId));
-                const std::vector<database_id> reviewUsers = review_app_serialization::deserialize_from_xml<std::vector<database_id>>(request.form.get_field(review_app_parameters::data));
+                const std::vector<database_id> reviewUsers = review_app_serialization::deserialize_from_xml<std::vector<database_id>>(request.form.get_field(review_app_parameters::users));
 
                 database->set_review_users(reviewId, reviewUsers, userToken);
+            }
+        }, m_database);
+
+    add_database_put_endpoint(m_server, review_app_endpoints::projects, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request, httplib::Response& response)
+        {
+            gluten::app::get()->get_logger()->info("[SERVER] put/projects");
+
+            if (request.form.has_field(review_app_parameters::users) && request.form.has_field(review_app_parameters::projectId))
+            {
+                const database_id projectId = review_app_serialization::deserialize_from_xml<database_id>(request.form.get_field(review_app_parameters::projectId));
+                const std::vector<database_id> projectUsers = review_app_serialization::deserialize_from_xml<std::vector<database_id>>(request.form.get_field(review_app_parameters::users));
+
+                database->set_project_users(projectId, projectUsers, userToken);
             }
         }, m_database);
 

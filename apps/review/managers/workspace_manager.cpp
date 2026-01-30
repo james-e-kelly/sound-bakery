@@ -72,7 +72,7 @@ auto workspace_manager::async_get_users_for_review(int64_t reviewId) -> concurre
         co_return std::vector<reviewer_data>();
     }
 
-    const tl::expected<std::vector<user_data>, database_error> result = co_await m_client->get_all_users(0, reviewId);
+    const tl::expected<std::vector<user_data>, database_error> result = co_await m_client->get_all_users(0, reviewId, 0);
 
     std::vector<reviewer_data> reviewers;
 
@@ -206,6 +206,36 @@ auto workspace_manager::delete_project(const std::string& projectName) -> concur
 
         co_await m_client->delete_project(projectToDeleteId);
         m_cachedProjects.set_cache_expired(key);
+    }
+}
+
+auto workspace_manager::get_project_users(database_id projectId) -> typename default_cache_type<user_data>::cache_result
+{
+    const gluten::key_and_token_cache_key key(projectId, get_user_session_token());
+
+    if (projectId > 0 && m_projectUsersCache.get_cache_needs_filling(key))
+    {
+        m_projectUsersCache.set_async_fill_cache(key, m_client->get_all_users(0, 0, projectId));
+    }
+
+    return m_projectUsersCache.get_cached_data(key);
+}
+
+auto workspace_manager::set_project_users(database_id projectId, std::vector<user_data> users) -> concurrencpp::result<void>
+{
+    const gluten::key_and_token_cache_key key(projectId, get_user_session_token());
+
+    if (projectId > 0)
+    {
+        m_projectUsersCache.set_cache_data(key, users);
+
+        std::vector<int64_t> userIds;
+        userIds.resize(users.size());
+
+        std::transform(users.begin(), users.end(), userIds.begin(), [](const user_data& user)
+                       { return user.m_userId; });
+
+        co_return co_await m_client->put_project_users(projectId, userIds);
     }
 }
 
@@ -544,7 +574,7 @@ auto workspace_manager::get_all_users() -> typename global_cache_type<user_data>
 
     if (m_cachedUsers.get_cache_needs_filling(key))
     {
-        m_cachedUsers.set_async_fill_cache(key, m_client->get_all_users(0, 0));
+        m_cachedUsers.set_async_fill_cache(key, m_client->get_all_users(0, 0, 0));
         m_selectedUser = user_data();
     }
 

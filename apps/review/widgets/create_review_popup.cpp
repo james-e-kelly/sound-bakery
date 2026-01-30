@@ -113,12 +113,12 @@ auto create_review_popup::render_popup() -> void
     {
         if (std::shared_ptr<workspace_manager> workspaceManager = get_app()->get_manager_by_class<workspace_manager>())
         {
-            if (m_newReviewers.has_value())
+            if (m_newUsers.has_value())
             {
-                m_reviewData.m_reviewerIds.resize(m_newReviewers.value().size());
+                m_reviewData.m_reviewerIds.resize(m_newUsers.value().size());
 
-                std::transform(m_newReviewers.value().begin(),
-                               m_newReviewers.value().end(),
+                std::transform(m_newUsers.value().begin(),
+                               m_newUsers.value().end(),
                                m_reviewData.m_reviewerIds.begin(),
                                [](const user_data& user) { return user.m_userId; });
             }

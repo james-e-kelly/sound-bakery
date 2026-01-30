@@ -162,12 +162,13 @@ auto review_client::get_review_vote(database_id reviewId, database_id userId) ->
     }
 }
 
-auto review_client::get_all_users(database_id userId, database_id reviewId) -> concurrencpp::result<std::vector<user_data>>
+auto review_client::get_all_users(database_id userId, database_id reviewId, database_id projectId) -> concurrencpp::result<std::vector<user_data>>
 {
-    std::vector<user_data> users = co_await get_api<std::vector<user_data>>(m_client, review_app_endpoints::users,httplib::Params
+    std::vector<user_data> users = co_await get_api<std::vector<user_data>>(m_client, review_app_endpoints::users, httplib::Params
         {
-            { review_app_parameters::userId, std::to_string(userId) },
-            { review_app_parameters::reviewId, std::to_string(reviewId) }
+            { review_app_parameters::userId, std::to_string(userId) }, 
+            { review_app_parameters::reviewId, std::to_string(reviewId) },
+            { review_app_parameters::projectId, std::to_string(projectId) }
         });
 
     co_return users;
@@ -398,7 +399,7 @@ auto review_client::put_review_users(database_id reviewId, std::vector<database_
     httplib::UploadFormDataItems items = 
     {
         {
-            review_app_parameters::data,
+            review_app_parameters::users,
             review_app_serialization::serialize_to_xml<std::vector<database_id>>(userIds),
             "", "application/xml"
         },
@@ -410,6 +411,25 @@ auto review_client::put_review_users(database_id reviewId, std::vector<database_
     };
 
     co_return co_await put_form_api(m_client, review_app_endpoints::reviewUsers, items);
+}
+
+auto review_client::put_project_users(database_id projectId, std::vector<database_id> userIds) -> concurrencpp::result<void>
+{
+     httplib::UploadFormDataItems items = 
+    {
+        {
+            review_app_parameters::users,
+            review_app_serialization::serialize_to_xml<std::vector<database_id>>(userIds),
+            "", "application/xml"
+        },
+        {
+            review_app_parameters::projectId,
+            review_app_serialization::serialize_to_xml<database_id>(projectId),
+            "", "application/xml"
+        }
+    };
+
+    co_return co_await put_form_api(m_client, review_app_endpoints::projects, items);
 }
 
 auto review_client::delete_project(database_id projectId) -> concurrencpp::result<void>

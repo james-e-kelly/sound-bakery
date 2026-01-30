@@ -96,6 +96,7 @@ struct review_app_parameters
     static inline std::string name = "name";
     static inline std::string description = "description";
     static inline std::string data = "data";
+    static inline std::string users = "users";
     static inline std::string reviewFile = "review_file";
     static inline std::string contextFile = "context_file";
     static inline std::string file = "file";

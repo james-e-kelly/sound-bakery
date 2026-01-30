@@ -8,12 +8,12 @@ class create_review_popup : public gluten::popup_widget, protected edit_reviewer
 public:
     create_review_popup(gluten::widget* widgetParent)
         : gluten::popup_widget(widgetParent, "Create Review"),
-          edit_reviewers(0)
+          edit_reviewers()
     {
     }
 
     create_review_popup(gluten::widget* widgetParent, int64_t existingReviewId)
-        : gluten::popup_widget(widgetParent, "Create New Version"), m_existingReviewId(existingReviewId), edit_reviewers(0)
+        : gluten::popup_widget(widgetParent, "Create New Version"), m_existingReviewId(existingReviewId), edit_reviewers()
     {
     }
 

@@ -200,6 +200,7 @@ namespace gluten
         {
             assert(get_cache_state(key) != cache_state::loading);
             assert(static_cast<bool>(m_asyncCache[key]) == false);
+            m_cache[key].m_state = cache_state::loading;
             m_asyncCache[key] = std::move(asyncResult);
         }
 

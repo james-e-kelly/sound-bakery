@@ -5,6 +5,7 @@
 #include "data/user_settings_data.h"
 #include "data/review_data.h"
 #include "data/project_data.h"
+#include "misc/edit_reviewers.h"
 
 class workspace_manager;
 
@@ -97,6 +98,8 @@ private:
     std::shared_ptr<class create_review_popup> createReviewPopup;
 
     std::optional<focussed_comment> m_focussedComment;
+
+    edit_reviewers m_editReviewers;
 
     gluten::data_cache<std::filesystem::path, gluten::key_and_token_cache_key<std::filesystem::path, std::string>, gluten::key_and_token_cache_key_hasher<std::filesystem::path, std::string>> m_filesCache;
 };

@@ -24,7 +24,7 @@ public:
     auto get_all_reviews(database_id projectId) -> concurrencpp::result<std::vector<review_data>>;
     auto get_all_comments_for_review(database_id reviewId) -> concurrencpp::result<std::vector<comment_data>>;
     auto get_review_vote(database_id reviewId, database_id userId) -> concurrencpp::result<review_vote>;
-    auto get_all_users(database_id userId, database_id reviewId) -> concurrencpp::result<std::vector<user_data>>;
+    auto get_all_users(database_id userId, database_id reviewId, database_id projectId) -> concurrencpp::result<std::vector<user_data>>;
     auto get_all_review_activity(database_id reviewId) -> concurrencpp::result<std::vector<activity_data>>;
     auto get_review_file(std::filesystem::path relativeFilePath) -> concurrencpp::result<review_file_data>;
 
@@ -41,6 +41,7 @@ public:
     auto put_review_vote(database_id reviewId, database_id userId, review_vote vote) -> concurrencpp::result<void>;
     auto put_review(review_data reviewData) -> concurrencpp::result<void>;
     auto put_review_users(database_id reviewId, std::vector<database_id> userIds) -> concurrencpp::result<void>;
+    auto put_project_users(database_id projectId, std::vector<database_id> userIds) -> concurrencpp::result<void>;
 
     auto delete_project(database_id projectId) -> concurrencpp::result<void>;
     auto delete_review(database_id reviewId) -> concurrencpp::result<void>;

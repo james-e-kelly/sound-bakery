@@ -76,10 +76,12 @@ public:
      */
     auto get_all_users(database_id userId, std::string userToken) const                                                             -> database_result<std::vector<user_data>>;
     auto get_review_users(database_id reviewId, std::string userToken) const                                                        -> database_result<std::vector<user_data>>;
+    auto get_project_users(database_id projectId, std::string userToken) const                                                      -> database_result<std::vector<user_data>>;
 
     auto update_review(const review_data review, std::string userToken) const                                                       -> database_result<review_data>;
 
     auto set_review_users(database_id reviewId, std::vector<database_id> userIds, std::string userToken) const                      -> bool_result;
+    auto set_project_users(database_id projectId, std::vector<database_id> userIds, std::string userToken) const                    -> bool_result;
     auto set_review_vote(database_id reviewId, database_id userId, review_vote vote, std::string userToken) const                   -> bool_result;
     auto set_review_status(database_id reviewId, review_status status, std::string userToken) const                                 -> bool_result;
 

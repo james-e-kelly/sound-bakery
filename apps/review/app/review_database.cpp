@@ -22,6 +22,16 @@ namespace
         );
     )sql";
 
+    constexpr const char* g_createProjectUsersTableStatement = R"sql(
+        CREATE TABLE IF NOT EXISTS project_users (
+            project_id INTEGER NOT NULL,
+            user_id INTEGER NOT NULL,
+            PRIMARY KEY (project_id, user_id),
+            FOREIGN KEY(project_id) REFERENCES projects(id) ON DELETE CASCADE,
+            FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+        );
+    )sql";
+
     constexpr const char* g_createUsersTableStatement = R"sql(
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -192,6 +202,9 @@ namespace
     #else
         #define INSERT_NETWORK_TEST()
     #endif
+
+    #define LOG_DATABASE_ACCESS()   \
+        gluten::app::get()->get_logger()->info("[DATABASE] {}", __FUNCTION__)
 }
 
 review_database::review_database(const std::filesystem::path& databasePath)
@@ -215,6 +228,7 @@ review_database::review_database(const std::filesystem::path& databasePath)
             m_database.exec(g_createCommentsTableStatement);
             m_database.exec(g_createVotesTableStatement);
             m_database.exec(g_createActivityTableStatement);
+            m_database.exec(g_createProjectUsersTableStatement);
             m_database.exec(g_createSessionsTableStatement.data());
         });
 }
@@ -225,12 +239,11 @@ auto review_database::create_workspace(const std::string name) const -> bool_res
     MOVE_TO_DATABASE_THREAD();
     CHECK_TABLE_EXISTS(workspaces);
     INSERT_NETWORK_TEST();
+    LOG_DATABASE_ACCESS();
 
     SQLite::Statement insertWorkspaceName(m_database, "INSERT INTO workspaces (name) VALUES (?);");
     insertWorkspaceName.bind(1, name);
     insertWorkspaceName.exec();
-
-    gluten::app::get()->get_logger()->info("[DATABASE] Created workspace/database");
 
     co_return true;
 }
@@ -241,6 +254,7 @@ auto review_database::open_workspace(const std::string name) const -> bool_resul
     MOVE_TO_DATABASE_THREAD();
     CHECK_TABLE_EXISTS(workspaces);
     INSERT_NETWORK_TEST();
+    LOG_DATABASE_ACCESS();
 
     SQLite::Statement insertWorkspaceName(m_database, "INSERT OR IGNORE INTO workspaces (name) VALUES (?);");
     insertWorkspaceName.bind(1, name);
@@ -257,6 +271,7 @@ auto review_database::get_workspace(std::string userToken) const -> database_res
     CHECK_TABLE_EXISTS(workspaces);
     CHECK_USER_PRIVILEGE(userToken, user_privileges::guest);
     INSERT_NETWORK_TEST();
+    LOG_DATABASE_ACCESS();
 
     database_id id            = 0;
     std::string workspaceName = "Unknown";
@@ -280,6 +295,7 @@ auto review_database::create_project(const std::string name, const std::string d
     CHECK_TABLE_EXISTS(projects);
     CHECK_TABLE_EXISTS(activity);
     INSERT_NETWORK_TEST();
+    LOG_DATABASE_ACCESS();
 
     project_data newProjectData;
 
@@ -310,17 +326,33 @@ auto review_database::get_all_projects(std::string userToken) const -> database_
     CHECK_TABLE_EXISTS(projects);
     CHECK_TABLE_EXISTS(activity);
     INSERT_NETWORK_TEST();
+    LOG_DATABASE_ACCESS();
 
     std::vector<project_data> result;
+    database_id userId = 0;
 
-    SQLite::Statement query(m_database, "SELECT id, name, description FROM projects;");
+    SQLite::Statement getUserIdStatement(m_database, "SELECT users.id FROM sessions JOIN users ON users.id = sessions.user_id WHERE sessions.token = ?;");
+    getUserIdStatement.bind(1, userToken);
 
-    while (query.executeStep())
+    if (getUserIdStatement.executeStep())
+    {
+        userId = getUserIdStatement.getColumn(0).getInt64();
+    }
+
+    SQLite::Statement getAllProjectsStatement(m_database, "SELECT id, name, description FROM projects;");
+    SQLite::Statement getProjectsForUserStatement(m_database, "SELECT p.id, p.name, p.description FROM projects p INNER JOIN project_users pu ON p.id = pu.project_id WHERE pu.user_id = ?;");
+    getProjectsForUserStatement.bind(1, userId);
+
+    const auto userIsAdmin = co_await user_has_privilege(userToken, user_privileges::admin);
+
+    SQLite::Statement& statementToRun = userIsAdmin && userIsAdmin.value() ? getAllProjectsStatement : getProjectsForUserStatement;
+
+    while (statementToRun.executeStep())
     {
         project_data projectData;
-        projectData.m_id                    = query.getColumn(0).getInt();
-        projectData.m_projectName           = query.getColumn(1).getString();
-        projectData.m_projectDescription    = query.getColumn(2).getString();
+        projectData.m_id                    = statementToRun.getColumn(0).getInt();
+        projectData.m_projectName           = statementToRun.getColumn(1).getString();
+        projectData.m_projectDescription    = statementToRun.getColumn(2).getString();
 
         auto get_reviews_count = [database = std::cref(m_database)](database_id projectId, review_status status, int& result)
             { 
@@ -341,8 +373,6 @@ auto review_database::get_all_projects(std::string userToken) const -> database_
         result.push_back(std::move(projectData));
     }
 
-    gluten::app::get()->get_logger()->info("[DATABASE] Returned all projects");
-
     co_return result;
 }
 
@@ -355,6 +385,7 @@ auto review_database::create_review(database_id projectId, const new_transit_rev
     CHECK_TABLE_EXISTS(reviews);
     CHECK_TABLE_EXISTS(activity);
     INSERT_NETWORK_TEST();
+    LOG_DATABASE_ACCESS();
 
     review_data result;
 
@@ -404,6 +435,7 @@ auto review_database::create_review_version(database_id reviewId, const new_tran
     CHECK_TABLE_EXISTS(versioned_review_files);
     CHECK_PRIVILEGED_ACTION(userToken, activity_type::review_edited);
     INSERT_NETWORK_TEST();
+    LOG_DATABASE_ACCESS();
 
     review_data result;
     
@@ -578,6 +610,7 @@ auto review_database::update_review(const review_data review, std::string userTo
     CHECK_TABLE_EXISTS(reviews);
     CHECK_TABLE_EXISTS(activity);
     INSERT_NETWORK_TEST();
+    LOG_DATABASE_ACCESS();
 
     SQLite::Statement updateReviewStatement(m_database, "UPDATE reviews SET name = ?, task_url = ?, description = ?, status = ?, phase = ?, quality = ? WHERE id = ?;");
     updateReviewStatement.bind(1, review.m_reviewName);
@@ -605,6 +638,7 @@ auto review_database::get_all_reviews(database_id projectId, std::string userTok
     CHECK_USER_PRIVILEGE(userToken, user_privileges::guest);
     CHECK_TABLE_EXISTS(reviews);
     INSERT_NETWORK_TEST();
+    LOG_DATABASE_ACCESS();
 
     std::vector<review_data> result;
 
@@ -691,6 +725,7 @@ auto review_database::get_review_votes(database_id reviewId, database_id userId,
     CHECK_USER_PRIVILEGE(userToken, user_privileges::guest);
     CHECK_TABLE_EXISTS(votes);
     INSERT_NETWORK_TEST();
+    LOG_DATABASE_ACCESS();
 
     std::vector<review_vote> result;
 
@@ -715,6 +750,7 @@ auto review_database::delete_project(database_id projectId, std::string userToke
     CHECK_PRIVILEGED_ACTION(userToken, activity_type::project_deleted);
     CHECK_TABLE_EXISTS(projects);
     INSERT_NETWORK_TEST();
+    LOG_DATABASE_ACCESS();
 
     SQLite::Statement deleteProjectStatement(m_database, "DELETE FROM projects WHERE id = ?;");
     deleteProjectStatement.bind(1, projectId);
@@ -728,6 +764,7 @@ auto review_database::delete_review(database_id reviewId, std::string userToken)
     CHECK_PRIVILEGED_ACTION(userToken, activity_type::review_deleted);
     CHECK_TABLE_EXISTS(reviews);
     INSERT_NETWORK_TEST();
+    LOG_DATABASE_ACCESS();
 
     // TOOD: Reviews need to be authored by someone so we can delete reviews only if the user created it (or is an admin)
         
@@ -744,6 +781,7 @@ auto review_database::get_all_review_activity(database_id reviewId, std::string 
     CHECK_USER_PRIVILEGE(userToken, user_privileges::guest);
     CHECK_TABLE_EXISTS(activity);
     INSERT_NETWORK_TEST();
+    LOG_DATABASE_ACCESS();
 
     std::vector<activity_data> result;
 
@@ -775,6 +813,7 @@ auto review_database::get_all_comments(database_id reviewId, database_id comment
     CHECK_USER_PRIVILEGE(userToken, user_privileges::guest);
     CHECK_TABLE_EXISTS(comments);
     INSERT_NETWORK_TEST();
+    LOG_DATABASE_ACCESS();
 
     std::vector<comment_data> result;
 
@@ -814,6 +853,7 @@ auto review_database::create_comment(new_comment_data newComment, std::string us
     CHECK_TABLE_EXISTS(comments);
     CHECK_TABLE_EXISTS(activity);
     INSERT_NETWORK_TEST();
+
 
     constexpr float defaultAudioStartOrEnd = -1.0f;
 
@@ -862,6 +902,7 @@ auto review_database::delete_comment(database_id commentId, std::string userToke
     CHECK_TABLE_EXISTS(activity);
     INSERT_NETWORK_TEST();
 
+
     SQLite::Statement addActivity(m_database, "INSERT INTO activity (review_id, activity_type, activity_text) SELECT review_id, ?, ? FROM comments WHERE id=? LIMIT 1;");
     addActivity.bind(1, (int)activity_type::comment_deleted);
     addActivity.bind(2, fmt::format("Removed a comment"));
@@ -883,6 +924,7 @@ auto review_database::create_user(new_user_data newUser, std::string userToken) 
     CHECK_TABLE_EXISTS(users);
     CHECK_TABLE_EXISTS(activity);
     INSERT_NETWORK_TEST();
+    LOG_DATABASE_ACCESS();
 
     auto user_table_is_empty = [this, userToken]() -> concurrencpp::result<bool>
         {
@@ -947,6 +989,7 @@ auto review_database::user_can_perform_action(std::string userToken, activity_ty
     MOVE_TO_DATABASE_THREAD();
     CHECK_TABLE_EXISTS(users);
     INSERT_NETWORK_TEST();
+    LOG_DATABASE_ACCESS();
 
     if (userToken.empty())
     {
@@ -986,6 +1029,7 @@ auto review_database::user_has_privilege(std::string userToken, user_privileges 
     MOVE_TO_DATABASE_THREAD();
     CHECK_TABLE_EXISTS(sessions);
     INSERT_NETWORK_TEST();
+    LOG_DATABASE_ACCESS();
 
     bool userWithPrivelegesIsLoggedIn = false;
 
@@ -1007,6 +1051,7 @@ auto review_database::login_user(login_request_data loginRequest) const -> datab
     CHECK_TABLE_EXISTS(users);
     CHECK_TABLE_EXISTS(sessions);
     INSERT_NETWORK_TEST();
+    LOG_DATABASE_ACCESS();
     
     SQLite::Statement statement(m_database, "SELECT id, password, salt, privilege, display_name, title FROM users WHERE email = ?;");
     statement.bind(1, loginRequest.m_email);
@@ -1090,6 +1135,7 @@ auto review_database::get_all_users(database_id userId, std::string userToken) c
     CHECK_TABLE_EXISTS(users);
     CHECK_TABLE_EXISTS(sessions);
     INSERT_NETWORK_TEST();
+    LOG_DATABASE_ACCESS();
 
     std::vector<user_data> result;
 
@@ -1121,6 +1167,7 @@ auto review_database::delete_user(std::string email, std::string userToken) cons
     CHECK_TABLE_EXISTS(users);
     CHECK_TABLE_EXISTS(sessions);
     INSERT_NETWORK_TEST();
+    LOG_DATABASE_ACCESS();
 
     SQLite::Statement deletingSelfStatement(m_database, "SELECT users.id, users.email FROM sessions JOIN users ON users.id = sessions.user_id WHERE sessions.token = ? AND users.email = ?;");
     deletingSelfStatement.bind(1, userToken);
@@ -1148,6 +1195,7 @@ auto review_database::get_review_users(database_id reviewId, std::string userTok
     CHECK_TABLE_EXISTS(users);
     CHECK_TABLE_EXISTS(reviewers);
     INSERT_NETWORK_TEST();
+    LOG_DATABASE_ACCESS();
 
     SQLite::Statement getUsersForReviewStatement(m_database, "SELECT user_id FROM reviewers WHERE review_id = ?;");
     getUsersForReviewStatement.bind(1, reviewId);
@@ -1182,6 +1230,43 @@ auto review_database::get_review_users(database_id reviewId, std::string userTok
     co_return users;
 }
 
+auto review_database::get_project_users(database_id projectId, std::string userToken) const -> database_result<std::vector<user_data>>
+{
+    CHECK_ARG(projectId > 0);
+    CHECK_ARG(!userToken.empty());
+    MOVE_TO_DATABASE_THREAD();
+    CHECK_USER_PRIVILEGE(userToken, user_privileges::guest);
+    CHECK_TABLE_EXISTS(users);
+    CHECK_TABLE_EXISTS(projects);
+    CHECK_TABLE_EXISTS(project_users);
+    INSERT_NETWORK_TEST();
+    LOG_DATABASE_ACCESS();
+
+    SQLite::Statement getUsersForProjectStatement(m_database, "SELECT user_id FROM project_users WHERE project_id = ?;");
+    getUsersForProjectStatement.bind(1, projectId);
+
+    std::vector<database_id> userIds;
+
+    while (getUsersForProjectStatement.executeStep())
+    {
+        userIds.push_back(getUsersForProjectStatement.getColumn(0).getInt64());
+    }
+
+    std::vector<user_data> users;
+
+    for (const auto& userId : userIds)
+    {
+        const auto usersWithUserId = co_await get_all_users(userId, userToken);
+
+        if (usersWithUserId)
+        {
+            users.insert(users.end(), usersWithUserId.value().begin(), usersWithUserId.value().end());
+        }
+    }
+
+    co_return users;
+}
+
 auto review_database::set_review_users(database_id reviewId, std::vector<database_id> userIds, std::string userToken) const -> bool_result
 {
     CHECK_ARG(reviewId > 0);
@@ -1191,6 +1276,7 @@ auto review_database::set_review_users(database_id reviewId, std::vector<databas
     CHECK_TABLE_EXISTS(users);
     CHECK_TABLE_EXISTS(reviewers);
     INSERT_NETWORK_TEST();
+    LOG_DATABASE_ACCESS();
 
     SQLite::Statement removeAllReviewersStatement(m_database, "DELETE FROM reviewers WHERE review_id = ?;");
     removeAllReviewersStatement.bind(1, reviewId);
@@ -1200,6 +1286,32 @@ auto review_database::set_review_users(database_id reviewId, std::vector<databas
     {
         SQLite::Statement addUserStatement(m_database, "INSERT INTO reviewers (review_id, user_id) VALUES (?, ?);");
         addUserStatement.bind(1, reviewId);
+        addUserStatement.bind(2, userId);
+        addUserStatement.exec();
+    }
+
+    co_return true;
+}
+
+auto review_database::set_project_users(database_id projectId, std::vector<database_id> userIds, std::string userToken) const -> bool_result
+{
+    CHECK_ARG(projectId > 0);
+    CHECK_ARG(!userToken.empty());
+    MOVE_TO_DATABASE_THREAD();
+    CHECK_PRIVILEGED_ACTION(userToken, activity_type::project_edited);
+    CHECK_TABLE_EXISTS(users);
+    CHECK_TABLE_EXISTS(project_users);
+    INSERT_NETWORK_TEST();
+    LOG_DATABASE_ACCESS();
+
+    SQLite::Statement removeAllProjectUsersStatement(m_database, "DELETE FROM project_users WHERE project_id = ?;");
+    removeAllProjectUsersStatement.bind(1, projectId);
+    removeAllProjectUsersStatement.exec();
+
+    for (const auto& userId : userIds)
+    {
+        SQLite::Statement addUserStatement(m_database, "INSERT INTO project_users (project_id, user_id) VALUES (?, ?);");
+        addUserStatement.bind(1, projectId);
         addUserStatement.bind(2, userId);
         addUserStatement.exec();
     }
@@ -1237,6 +1349,7 @@ auto review_database::set_review_status(database_id reviewId, review_status stat
     CHECK_PRIVILEGED_ACTION(userToken, activity_type::review_edited);
     CHECK_TABLE_EXISTS(reviews);
     INSERT_NETWORK_TEST();
+    LOG_DATABASE_ACCESS();
 
     SQLite::Statement setStatusStatement(m_database, "UPDATE reviews SET status = ? WHERE id = ?;");
     setStatusStatement.bind(1, (int)status);

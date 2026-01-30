@@ -48,6 +48,8 @@ public:
     auto create_project(const std::string& projectName, const std::string& projectDescription) -> void;
     auto select_project(const std::string projectName) -> concurrencpp::result<void>;
     auto delete_project(const std::string& proejctName) -> concurrencpp::result<void>;
+    auto get_project_users(database_id projectId) -> typename default_cache_type<user_data>::cache_result; // Users assigned to this project. It is viewable to them and possibly editable if they have the user privileges
+    auto set_project_users(database_id projectId, std::vector<user_data> users) -> concurrencpp::result<void>;
 
     // Reviews
     auto select_review(int64_t reviewId) -> void;
@@ -120,6 +122,7 @@ private:
     // Caches
     default_cache_type<comment_data> m_cachedComments;
     global_cache_type<user_data> m_cachedUsers;
+    default_cache_type<user_data> m_projectUsersCache;
     default_cache_type<reviewer_data> m_reviewUsersCache;
     default_cache_type<activity_data> m_cachedActivity;
     default_cache_type<review_data> m_cachedReviews;

@@ -241,6 +241,7 @@ auto workspace_widget::render_list_panel_elements(const bool listingProjects, st
                             if (itemsLayout.render_layout_element_pixels_vertical(&projectElement,leftToolbarButtonHeight))
                             {
                                 workspaceManager->select_project(project.m_projectName);
+                                m_editReviewers.set_project_id(project.m_id);
                             }
                         }
                     }
@@ -382,6 +383,31 @@ auto workspace_widget::render_content() -> void
                 }
 
                 render_review_content(workspaceManager, selectedReview);
+            }
+            else if (selectedProject.m_id)
+            {
+                {
+                    gluten::text projectDescriptionText(selectedProject.m_projectDescription);
+                    projectDescriptionText.set_element_frame_padding();
+                    projectDescriptionText.set_element_min_size(ImVec2(200.0f, 60.0f));
+                    projectDescriptionText.set_element_content_scale(1.5f);
+                    contentVerticalLayout.render_layout_element_pixels_vertical(&projectDescriptionText, 60.0f);
+                    ImGui::Dummy(ImVec2(0.0f, 60.0f));
+                }
+
+                ImGui::Dummy(ImVec2(8.0f, 0.0f));
+                ImGui::SameLine();
+                m_editReviewers.render_reviewers();
+
+                ImGui::Dummy(ImVec2(0.0f, 8.0f));
+                ImGui::Dummy(ImVec2(8.0f, 0.0f));
+                ImGui::SameLine();
+                
+                if (ImGui::Button("Save"))
+                {
+                    workspaceManager->set_project_users(selectedProject.m_id, m_editReviewers.get_edited_users());
+                }
+                ImGui::SetItemTooltip("Save the user list to the project");
             }
             else if (!selectedUser.m_email.empty())
             {
