@@ -395,19 +395,22 @@ auto workspace_widget::render_content() -> void
                     ImGui::Dummy(ImVec2(0.0f, 60.0f));
                 }
 
-                ImGui::Dummy(ImVec2(8.0f, 0.0f));
-                ImGui::SameLine();
-                m_editReviewers.render_reviewers();
-
-                ImGui::Dummy(ImVec2(0.0f, 8.0f));
-                ImGui::Dummy(ImVec2(8.0f, 0.0f));
-                ImGui::SameLine();
-                
-                if (ImGui::Button("Save"))
+                if (workspaceManager->get_user_privileges() == user_privileges::admin)
                 {
-                    workspaceManager->set_project_users(selectedProject.m_id, m_editReviewers.get_edited_users());
+                    ImGui::Dummy(ImVec2(8.0f, 0.0f));
+                    ImGui::SameLine();
+                    m_editReviewers.render_reviewers();
+
+                    ImGui::Dummy(ImVec2(0.0f, 8.0f));
+                    ImGui::Dummy(ImVec2(8.0f, 0.0f));
+                    ImGui::SameLine();
+
+                    if (ImGui::Button("Save"))
+                    {
+                        workspaceManager->set_project_users(selectedProject.m_id, m_editReviewers.get_edited_users());
+                    }
+                    ImGui::SetItemTooltip("Save the user list to the project");
                 }
-                ImGui::SetItemTooltip("Save the user list to the project");
             }
             else if (!selectedUser.m_email.empty())
             {
