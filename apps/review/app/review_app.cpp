@@ -163,11 +163,6 @@ auto review_app::pre_init(const boost::program_options::variables_map& cliVariab
 
 auto review_app::post_init() -> void
 {
-    if (std::shared_ptr<gluten::renderer_subsystem> rendererSubsystem =
-            get_subsystem_by_class<gluten::renderer_subsystem>())
-    {
-        rendererSubsystem->set_maximised();
-    }
 }
 
 auto review_app::exit() -> void

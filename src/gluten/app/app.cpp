@@ -21,6 +21,7 @@ namespace gluten_cli_arguments
     static constexpr const char* s_help = "help";
     static constexpr const char* s_headless = "headless";
     static constexpr const char* s_console = "console";
+    static constexpr const char* s_fullscreen = "fullscreen";
 }
 
 static gluten::app* s_app = nullptr;
@@ -41,6 +42,7 @@ int gluten::app::run(int argc, char** argv)
     cliDescription.add_options()
         (gluten_cli_arguments::s_help, "prints help information")
         (gluten_cli_arguments::s_console, "adds a console window")
+        (gluten_cli_arguments::s_fullscreen, "maximises the window on start")
         (gluten_cli_arguments::s_headless, "removes rendering");
 
     cli_setup(cliDescription);
@@ -52,6 +54,8 @@ int gluten::app::run(int argc, char** argv)
     const bool headless = cliVariables.count(gluten_cli_arguments::s_headless);
     const bool console = headless || cliVariables.count(gluten_cli_arguments::s_console);
     const bool gui = !headless;
+
+    const bool maximise = cliVariables.count(gluten_cli_arguments::s_fullscreen);
 
     if (console)
     {
@@ -109,9 +113,17 @@ int gluten::app::run(int argc, char** argv)
         }
     }
 
-    if (!cliVariables.count(gluten_cli_arguments::s_headless))
+    if (!headless)
     {
         load_fonts();
+    }
+
+    if (maximise)
+    {
+        if (std::shared_ptr<renderer_subsystem> rendererSubsystem = get_subsystem_by_class<renderer_subsystem>())
+        {
+            rendererSubsystem->set_maximised();
+        }
     }
 
     m_currentTime  = std::chrono::high_resolution_clock::now();
