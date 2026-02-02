@@ -147,22 +147,31 @@ auto review_app::pre_init(const boost::program_options::variables_map& cliVariab
 
     if (hasWorkspaceFile)
     {
-        set_up_server(cliVariables.at(review_app_cli_arguments::s_databaseFile).as<std::string>());
+        m_workspaceFile = cliVariables.at(review_app_cli_arguments::s_databaseFile).as<std::string>();
     }
 
     if (hasRemoteIp)
     {
-        set_up_client(cliVariables.at(review_app_cli_arguments::s_remoteServerAddress).as<std::string>());
-    }
-
-    if (!hasWorkspaceFile && !hasRemoteIp)
-    {
-        add_manager_class<intro_manager>();
+        m_remoteIpAddress = cliVariables.at(review_app_cli_arguments::s_remoteServerAddress).as<std::string>();
     }
 }
 
 auto review_app::post_init() -> void
 {
+    if (m_workspaceFile.has_value())
+    {
+        set_up_server(m_workspaceFile.value());
+    }
+
+    if (m_remoteIpAddress.has_value())
+    {
+        set_up_client(m_remoteIpAddress.value());
+    }
+
+    if (!m_workspaceFile.has_value() && !m_remoteIpAddress.has_value())
+    {
+        add_manager_class<intro_manager>();
+    }
 }
 
 auto review_app::exit() -> void
@@ -265,6 +274,7 @@ auto review_app::set_up_client(const std::string& serverAddress) -> void
             if (initializeResult == S_OK)
             {
                 const HRESULT result = RegisterDragDrop(glfwGetWin32Window(rendererSubsystem->get_glfw_window()), app->m_dropTarget.get());
+                assert(result == S_OK);
             }
             else
             {

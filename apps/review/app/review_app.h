@@ -43,5 +43,11 @@ private:
     mutable bool m_isDragDropping   = false;
     mutable bool m_isDragDropReady  = false;
 
+    std::optional<std::string> m_remoteIpAddress;
+    std::optional<std::string> m_workspaceFile;
+
+    bool m_hasRemoteIp = false;
+    bool m_hasWorkspaceFile = false;
+
     std::shared_ptr<concurrencpp::worker_thread_executor> m_databaseThread;
 };
