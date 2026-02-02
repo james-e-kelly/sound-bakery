@@ -157,6 +157,8 @@ auto workspace_manager::select_project(const std::string projectName) -> concurr
         co_return;
     }
 
+    stop_all_files();
+
     if (projectName.empty())
     {
         m_selectedProject = project_data();
@@ -302,6 +304,8 @@ auto workspace_manager::select_review(int64_t reviewId) -> void
         logout();
         return;
     }
+
+    stop_all_files();
 
     if (reviewId == 0)
     {
@@ -745,4 +749,17 @@ auto workspace_manager::async_get_review_file(std::filesystem::path relativeFile
     }
     
     co_return absoluteFilePath;
+}
+
+auto workspace_manager::stop_all_files() const -> void
+{
+    if (std::shared_ptr<gluten::audio_subsystem> audioSubsystem = get_app()->get_subsystem_by_class<gluten::audio_subsystem>())
+    {
+        audioSubsystem->stop_all_sounds();
+    }
+
+    if (std::shared_ptr<video_subsystem> videoSubsystem = get_app()->get_subsystem_by_class<video_subsystem>())
+    {
+        videoSubsystem->stop_all_videos();
+    }
 }

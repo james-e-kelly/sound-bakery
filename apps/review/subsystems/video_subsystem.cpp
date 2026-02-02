@@ -235,6 +235,19 @@ auto video_subsystem::get_video_is_playing(const std::filesystem::path& absolute
     return playing;
 }
 
+auto video_subsystem::stop_all_videos() const -> void
+{
+    for (const auto& handle : m_videoFileToContexts)
+    {
+        mpv_command_string(handle.second, "set pause yes");
+
+        if (m_mpvContexts.contains(handle.second))
+        {
+            m_mpvContexts.at(handle.second)->m_playing = false;
+        }
+    }
+}
+
 auto video_subsystem::pre_init(const boost::program_options::variables_map& cliVariables) -> int
 {
     std::setlocale(LC_NUMERIC, "C");

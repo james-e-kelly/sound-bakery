@@ -42,6 +42,7 @@ namespace gluten
         auto get_sound_length(const std::filesystem::path& filePath) -> float;
         auto get_sound_is_playing(const std::filesystem::path& filePath) -> bool;
         auto get_sound_is_looping(const std::filesystem::path& filePath) -> bool;
+        auto stop_all_sounds() -> void;
 
         auto get_or_load_audio_handle(const std::filesystem::path& filePath) -> sc_sound*;
         auto get_sound_instance(const std::filesystem::path& filePath) -> sc_sound_instance*;

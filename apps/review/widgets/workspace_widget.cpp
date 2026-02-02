@@ -539,6 +539,7 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
                         if (ImGui::Selectable(fmt::format("#{}", versionIndex + 1).c_str()))
                         {
                             m_reviewToSelectedVersionMap[selectedReview.m_reviewId] = versionIndex + 1;
+                            workspaceManager->stop_all_files();
                         }
                     }
 

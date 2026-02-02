@@ -14,6 +14,20 @@ auto gluten::collapsing_header::set_open(bool open) -> void
     }
 }
 
+auto gluten::collapsing_header::get_open() const -> bool
+{
+    gluten::imgui::scoped_id id(m_label.c_str());
+
+    bool result = false;
+
+    if (ImGuiStorage* const storage = ImGui::GetStateStorage())
+    {
+        result = storage->GetBool(ImGui::GetID(m_label.c_str()));
+    }
+
+    return false;
+}
+
 auto gluten::collapsing_header::render_element(const ImRect& parentRect) -> bool
 {
     gluten::imgui::scoped_id id(m_label.c_str());

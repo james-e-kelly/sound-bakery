@@ -96,6 +96,8 @@ public:
 
     auto get_review_file(const std::filesystem::path& relativeFilePath) -> typename file_cache_type::cache_result;
 
+    auto stop_all_files() const -> void;
+
 protected:
     auto init(gluten::app* app) -> void override;
     auto start() -> void override;

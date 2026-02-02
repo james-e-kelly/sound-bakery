@@ -28,6 +28,8 @@ public:
 
     auto get_video_is_playing(const std::filesystem::path& absoluteFilePath) const -> bool;
 
+    auto stop_all_videos() const -> void;
+
     auto pre_init(const boost::program_options::variables_map& cliVariables) -> int override;
     auto init() -> int override;
     auto tick(double deltaTime) -> void override;

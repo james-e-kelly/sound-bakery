@@ -217,6 +217,19 @@ auto gluten::audio_subsystem::get_sound_is_looping(const std::filesystem::path& 
     return looping;
 }
 
+auto gluten::audio_subsystem::stop_all_sounds() -> void
+{
+    for (const auto& soundInstance : m_filesToSoundInstancesMap)
+    {
+        if (soundInstance.second)
+        {
+            sc_sound_instance_pause(soundInstance.second.get());
+        }
+    }
+
+    m_filesToSoundInstancesMap.clear();
+}
+
 auto gluten::audio_subsystem::get_or_load_audio_handle(const std::filesystem::path& filePath) -> sc_sound*
 {
     sc_sound* sound = nullptr;

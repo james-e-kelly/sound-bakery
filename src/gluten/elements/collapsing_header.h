@@ -15,6 +15,8 @@ namespace gluten
 
 		auto set_open(bool open) -> void;
 
+		auto get_open() const -> bool;
+
 	protected:
         auto render_element(const ImRect& parentRect) -> bool override;
 		auto get_element_content_size(const ImVec2& parentSize) -> ImVec2 const override
