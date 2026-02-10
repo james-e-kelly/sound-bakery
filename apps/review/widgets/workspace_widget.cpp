@@ -60,7 +60,7 @@ auto workspace_widget::start_implementation() -> void
         .set_element_anchor_preset(gluten::element::anchor_preset::stretch_full);
     titleText
         .set_font(gluten::fonts::title_lucide_icons)
-        .set_element_content_font_size(gluten::g_baseFontSize * 1.5f);
+        .set_element_content_font_size(gluten::g_baseFontSize * 2.0f);
     descriptionText.set_font(gluten::fonts::regular_lucide_icons)
         .set_element_content_font_size(gluten::g_baseFontSize * 1.3f);
     qualityText.set_font(gluten::fonts::regular_lucide_icons);

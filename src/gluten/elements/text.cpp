@@ -1,6 +1,7 @@
 #include "text.h"
 
 #include "gluten/app/app.h"
+#include "gluten/utils/imgui_util_structures.h"
 
 namespace
 {
@@ -110,6 +111,7 @@ bool gluten::text::render_element(const ImRect& parent)
                     }
                     else
                     {
+                        gluten::imgui::scoped_color urlColor(ImGuiCol_TextLink, ImGui::GetColorU32(ImGuiCol_Text));   
                         ImGui::TextLinkOpenURL(m_truncatedText.c_str(), m_url.c_str());
                     }
                 }
