@@ -73,16 +73,17 @@ namespace gluten::theme
     constexpr ImVec4 orange90Hover  = hex_to_imgui_imvec4(0x522200);
     constexpr ImVec4 orange100Hover = hex_to_imgui_imvec4(0x421e00);
 
-    constexpr ImVec4 red10  = hex_to_imgui_imvec4(0xfff1f1);
-    constexpr ImVec4 red20  = hex_to_imgui_imvec4(0xffd7d9);
-    constexpr ImVec4 red30  = hex_to_imgui_imvec4(0xffb3b8);
-    constexpr ImVec4 red40  = hex_to_imgui_imvec4(0xff8389);
-    constexpr ImVec4 red50  = hex_to_imgui_imvec4(0xfa4d56);
-    constexpr ImVec4 red60  = hex_to_imgui_imvec4(0xda1e28);
-    constexpr ImVec4 red70  = hex_to_imgui_imvec4(0xa2191f);
-    constexpr ImVec4 red80  = hex_to_imgui_imvec4(0x750e13);
-    constexpr ImVec4 red90  = hex_to_imgui_imvec4(0x520408);
-    constexpr ImVec4 red100 = hex_to_imgui_imvec4(0x2d0709);
+    // Moderately desaturated reds (calm but still indicates error/warning)
+    constexpr ImVec4 red10  = ImVec4(0.95f, 0.84f, 0.84f, 1.0f);  // Light red
+    constexpr ImVec4 red20  = ImVec4(0.90f, 0.68f, 0.68f, 1.0f);
+    constexpr ImVec4 red30  = ImVec4(0.85f, 0.55f, 0.55f, 1.0f);
+    constexpr ImVec4 red40  = ImVec4(0.80f, 0.45f, 0.45f, 1.0f);  // Error text
+    constexpr ImVec4 red50  = ImVec4(0.75f, 0.38f, 0.38f, 1.0f);  // Primary error
+    constexpr ImVec4 red60  = ImVec4(0.68f, 0.32f, 0.32f, 1.0f);
+    constexpr ImVec4 red70  = ImVec4(0.60f, 0.28f, 0.28f, 1.0f);
+    constexpr ImVec4 red80  = ImVec4(0.50f, 0.23f, 0.23f, 1.0f);
+    constexpr ImVec4 red90  = ImVec4(0.38f, 0.18f, 0.18f, 1.0f);
+    constexpr ImVec4 red100 = ImVec4(0.28f, 0.13f, 0.13f, 1.0f);
 
     constexpr ImVec4 red100Hover = hex_to_imgui_imvec4(0x540d11);
     constexpr ImVec4 red90Hover  = hex_to_imgui_imvec4(0x66050a);
@@ -206,16 +207,17 @@ namespace gluten::theme
     constexpr ImVec4 teal90Hover  = hex_to_imgui_imvec4(0x033940);
     constexpr ImVec4 teal100Hover = hex_to_imgui_imvec4(0x0f3034);
 
-    constexpr ImVec4 green10  = hex_to_imgui_imvec4(0xdefbe6);
-    constexpr ImVec4 green20  = hex_to_imgui_imvec4(0xa7f0ba);
-    constexpr ImVec4 green30  = hex_to_imgui_imvec4(0x6fdc8c);
-    constexpr ImVec4 green40  = hex_to_imgui_imvec4(0x42be65);
-    constexpr ImVec4 green50  = hex_to_imgui_imvec4(0x24a148);
-    constexpr ImVec4 green60  = hex_to_imgui_imvec4(0x198038);
-    constexpr ImVec4 green70  = hex_to_imgui_imvec4(0x0e6027);
-    constexpr ImVec4 green80  = hex_to_imgui_imvec4(0x044317);
-    constexpr ImVec4 green90  = hex_to_imgui_imvec4(0x022d0d);
-    constexpr ImVec4 green100 = hex_to_imgui_imvec4(0x071908);
+    // Moderately desaturated greens (calm but still recognizable)
+    constexpr ImVec4 green10  = ImVec4(0.82f, 0.93f, 0.86f, 1.0f);  // Light green
+    constexpr ImVec4 green20  = ImVec4(0.65f, 0.85f, 0.72f, 1.0f);
+    constexpr ImVec4 green30  = ImVec4(0.52f, 0.78f, 0.62f, 1.0f);
+    constexpr ImVec4 green40  = ImVec4(0.42f, 0.72f, 0.54f, 1.0f);  // Success states
+    constexpr ImVec4 green50  = ImVec4(0.35f, 0.65f, 0.48f, 1.0f);  // Primary success
+    constexpr ImVec4 green60  = ImVec4(0.30f, 0.58f, 0.43f, 1.0f);
+    constexpr ImVec4 green70  = ImVec4(0.25f, 0.50f, 0.38f, 1.0f);
+    constexpr ImVec4 green80  = ImVec4(0.20f, 0.42f, 0.32f, 1.0f);
+    constexpr ImVec4 green90  = ImVec4(0.15f, 0.32f, 0.25f, 1.0f);
+    constexpr ImVec4 green100 = ImVec4(0.11f, 0.24f, 0.19f, 1.0f);
 
     constexpr ImVec4 green10Hover  = hex_to_imgui_imvec4(0xb6f6c8);
     constexpr ImVec4 green20Hover  = hex_to_imgui_imvec4(0x74e792);
