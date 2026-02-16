@@ -26,7 +26,7 @@ namespace
     constexpr float descriptionBoxHeight        = topHeaderHeight * 2.0f;
 
     constexpr float g_itemListWidth   = topHeaderHeight * 5.0f;
-    constexpr float g_rightPanelWidth = topHeaderHeight * 1.0f;
+    constexpr float g_rightPanelWidth = topHeaderHeight * 1.25f;
 }
 
 auto workspace_widget::start_implementation() -> void
