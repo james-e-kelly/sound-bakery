@@ -169,6 +169,11 @@ namespace gluten::theme::carbon_g100
     constexpr ImVec2 paddingVec                 = ImVec2(padding, padding);
     constexpr ImVec2 verticalPaddingVec         = ImVec2(0, padding);
 
+    constexpr float rounding        = 8.0f;
+    constexpr float largerRounding   = rounding * 2;
+    constexpr float largestRounding = rounding * 3;
+    constexpr float noRounding      = 2.0f;
+
     inline void apply_colours()
     {
         ImGuiStyle* style = &ImGui::GetStyle();
@@ -266,11 +271,6 @@ namespace gluten::theme::carbon_g100
     inline void apply_styles()
     {
         ImGuiStyle* style = &ImGui::GetStyle();
-
-        static constexpr float rounding        = 0.0f;
-        static constexpr float largerounding   = rounding * 2;
-        static constexpr float largestRounding = rounding * 3;
-        static constexpr float noRounding      = 2.0f;
 
         style->Alpha         = 1.0f;
         style->DisabledAlpha = 0.5f;

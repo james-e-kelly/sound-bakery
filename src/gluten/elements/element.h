@@ -151,6 +151,9 @@ namespace gluten
         ImVec2 minOffset;  //< Pixel offset of the min/element start
         ImVec2 maxOffset;  //< Pixel offset of the max/element end
 
+        auto set_min_offset(ImVec2 offset) -> anchor_info&;
+        auto set_max_offset(ImVec2 offset) -> anchor_info&;
+
         std::optional<anchor_preset> anchorPreset;  //< Possible preset, if using one
 
         void set_achor_from_preset(const anchor_preset& preset);
@@ -195,6 +198,7 @@ namespace gluten
         auto virtual set_element_max_size(const ImVec2& maxSize) -> element&;
         auto virtual set_element_translation(const ImVec2& translation) -> element&;
         auto virtual set_element_border(float borderSize, float borderRounding) -> element&;
+        auto virtual set_element_rounding(float rounding) -> element&;
 
         anchor_info& get_element_anchor();
 
@@ -217,25 +221,10 @@ namespace gluten
         virtual auto post_render_element() -> void {}
         virtual auto render_element(const ImRect& elementBox) -> bool { return false; }
 
-        static ImVec2 get_anchor_start_position(const ImVec2& containerPosition,
-                                                const ImVec2& containerSize,
-                                                const anchor_info& anchor);
-        static ImVec2 get_anchor_end_position(const ImVec2& startPosition,
-                                              const ImVec2& containerPosition,
-                                              const ImVec2& containerSize,
-                                              const anchor_info& anchor);
-        static std::pair<ImRect, ImRect> get_element_start_position(const ImVec2& anchorStartPosition,
-                                                 const ImVec2& anchorEndPosition,
-                                                 const ImVec2& minSize,
-                                                 const ImVec2& desiredSize,
-                                                 const ImVec2& alignment,
-                                                 const ImVec2& padding);
-        static std::pair<ImRect, ImRect> get_element_box_from_parent(const ImRect& parent,
-                                                  const ImVec2& minSize,
-                                                  const ImVec2& desiredSize,
-                                                  const ImVec2& alignment,
-                                                  const ImVec2& padding,
-                                                  const anchor_info& anchor);
+        static ImVec2 get_anchor_start_position(const ImVec2& containerPosition, const ImVec2& containerSize, const anchor_info& anchor);
+        static ImVec2 get_anchor_end_position(const ImVec2& startPosition, const ImVec2& containerPosition, const ImVec2& containerSize, const anchor_info& anchor);
+        static std::pair<ImRect, ImRect> get_element_start_position(const ImVec2& anchorStartPosition, const ImVec2& anchorEndPosition, const ImVec2& minSize, const ImVec2& desiredSize, const ImVec2& alignment, const ImVec2& padding);
+        static std::pair<ImRect, ImRect> get_element_box_from_parent(const ImRect& parent, const ImVec2& minSize, const ImVec2& desiredSize, const ImVec2& alignment, const ImVec2& padding, const anchor_info& anchor);
 
         anchor_info m_anchor;
 
@@ -250,6 +239,7 @@ namespace gluten
         std::optional<ImU32> m_activeColor;
         std::optional<float> m_borderSize;
         std::optional<float> m_borderRounding;
+        float m_elementRounding = 0.0f;
         mutable std::optional<ImRect> m_currentRect;
 
         bool m_active = false;

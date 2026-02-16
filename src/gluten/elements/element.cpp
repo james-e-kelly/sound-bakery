@@ -110,6 +110,18 @@ void gluten::element::anchor_info::set_achor_from_preset(const anchor_preset& pr
     }
 }
 
+auto gluten::element::anchor_info::set_min_offset(ImVec2 offset) -> anchor_info&
+{
+    minOffset = offset;
+    return *this;
+}
+
+auto gluten::element::anchor_info::set_max_offset(ImVec2 offset) -> anchor_info&
+{
+    maxOffset = offset;
+    return *this;
+}
+
 gluten::element::element(const anchor_preset& anchorPreset) { m_anchor.set_achor_from_preset(anchorPreset); }
 
 gluten::element::~element()
@@ -258,7 +270,7 @@ bool gluten::element::render(const ImRect& parent)
         if (borderSize > 0.0f)
         {
             const ImU32 borderColor    = ImGui::GetColorU32(ImGuiCol_Border);
-            const float borderRounding = m_borderRounding.value_or(0.0f);
+            const float borderRounding = ImGui::GetStyle().FrameRounding;
 
             ImRect borderRect = elementBox;
             borderRect.Expand(borderSize);
@@ -271,21 +283,21 @@ bool gluten::element::render(const ImRect& parent)
     {
         if (windowDrawList)
         {
-            windowDrawList->AddRectFilled(elementBox.Min, elementBox.Max, m_activeColor.value());
+            windowDrawList->AddRectFilled(elementBox.Min, elementBox.Max, m_activeColor.value(), m_elementRounding);
         }
     }
     else if (hovered && m_hoverColor.has_value())
     {
         if (windowDrawList)
         {
-            windowDrawList->AddRectFilled(elementBox.Min, elementBox.Max, m_hoverColor.value());
+            windowDrawList->AddRectFilled(elementBox.Min, elementBox.Max, m_hoverColor.value(), m_elementRounding);
         }
     }
     else if (m_backgroundColor.has_value())
     {
         if (ImDrawList* const backgroundDrawList = ImGui::GetBackgroundDrawList())
         {
-            windowDrawList->AddRectFilled(elementBox.Min, elementBox.Max, m_backgroundColor.value());
+            windowDrawList->AddRectFilled(elementBox.Min, elementBox.Max, m_backgroundColor.value(), m_elementRounding);
         }
     }
 
@@ -295,14 +307,13 @@ bool gluten::element::render(const ImRect& parent)
     {
         if (windowDrawList)
         {
-            windowDrawList->AddRectFilled(elementBox.Min, elementBox.Max, m_activeColor.value());
+            windowDrawList->AddRectFilled(elementBox.Min, elementBox.Max, m_activeColor.value(), m_elementRounding);
         }
     }
 
     if (s_debug)
     {
-        windowDrawList->AddRect(elementBox.Min, elementBox.Max,
-                                    ImGui::ColorConvertFloat4ToU32(gluten::theme::red50));
+        windowDrawList->AddRect(elementBox.Min, elementBox.Max, ImGui::ColorConvertFloat4ToU32(gluten::theme::red50), m_elementRounding);
     }
 
     if (s_debugVertical)
@@ -380,6 +391,12 @@ auto gluten::element::set_element_border(float borderSize, float borderRounding)
 {
     m_borderSize     = borderSize;
     m_borderRounding = borderRounding;
+    return *this;
+}
+
+auto gluten::element::set_element_rounding(float rounding) -> element&
+{
+    m_elementRounding = rounding;
     return *this;
 }
 

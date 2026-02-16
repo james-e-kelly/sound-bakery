@@ -35,6 +35,7 @@ auto gluten::collapsing_header::render_element(const ImRect& parentRect) -> bool
 	gluten::background background;
     background.set_element_background_color(ImGui::GetStyleColorVec4(ImGuiCol_Header));
     background.set_element_hover_color(ImGui::GetStyleColorVec4(ImGuiCol_HeaderHovered));
+    background.set_element_rounding(m_elementRounding);
     background.render(parentRect);
 
     gluten::element inner(element::anchor_preset::stretch_full);

@@ -9,8 +9,10 @@ auto project_element::render_element(const ImRect& elementRect) -> bool
     if (m_backgroundColor.has_value())
     {
         gluten::background background;
-        background.set_element_background_color(m_backgroundColor.value())
-            .set_element_hover_color(gluten::theme::carbon_g100::fieldHover03);
+        background
+            .set_element_background_color(m_backgroundColor.value())
+            .set_element_hover_color(gluten::theme::carbon_g100::fieldHover03)
+            .set_element_rounding(m_elementRounding);
         m_backgroundColor.reset();
         background.render(elementRect);
     }

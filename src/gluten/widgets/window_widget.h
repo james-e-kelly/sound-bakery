@@ -13,6 +13,8 @@ namespace gluten
         auto set_window_flags(ImGuiWindowFlags flags) -> void;
         auto set_window_class(const ImGuiWindowClass& windowClass) -> void; 
 
+        auto set_background_color(ImVec4 color) -> void;
+
     protected:
         virtual auto render_window_implementation() -> void {}
 
@@ -21,5 +23,6 @@ namespace gluten
 
         ImGuiWindowFlags m_windowFlags = ImGuiWindowFlags_None;
         ImGuiWindowClass m_windowClass;
+        std::optional<ImVec4> m_backgroundColor;
     };
 }  // namespace gluten
