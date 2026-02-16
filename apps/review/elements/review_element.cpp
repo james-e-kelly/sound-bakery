@@ -40,7 +40,10 @@ auto review_element::render_element(const ImRect& elementRect) -> bool
     gluten::button button("##ProjectElementButton", true, anchor_preset::stretch_full);
 
     reviewTitleText.render(inner.get_element_rect());
-    reviewDescriptionText.render(inner.get_element_rect());
+    {
+        gluten::imgui::scoped_color textCol(ImGuiCol_Text, gluten::theme::carbon_g100::textSecondary);
+        reviewDescriptionText.render(inner.get_element_rect());
+    }
     openReviewsText.render(inner.get_element_rect());
 
     const bool pressed = button.render(elementRect);

@@ -107,7 +107,7 @@ namespace gluten::theme::carbon_g100
 
     // Text
     constexpr ImVec4 textPrimary         = gray10;
-    constexpr ImVec4 textSecondary       = gray40;  // Changed from gray30 for better readability
+    constexpr ImVec4 textSecondary       = gray20;  
     constexpr ImVec4 textPlaceholder     = adjust_alpha(textPrimary, 0.4f);
     constexpr ImVec4 textHelper          = gray50;  // Changed from gray40
     constexpr ImVec4 textError           = red40;

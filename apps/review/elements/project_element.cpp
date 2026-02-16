@@ -49,7 +49,10 @@ auto project_element::render_element(const ImRect& elementRect) -> bool
                           anchor_preset::stretch_full);
 
     projectTitleText.render(contentRect);
-    projectDescriptionText.render(contentRect);
+    {
+        gluten::imgui::scoped_color textCol(ImGuiCol_Text, gluten::theme::carbon_g100::textSecondary);
+        projectDescriptionText.render(contentRect);
+    }
     openReviewsText.render(contentRect);
 
     const bool pressed = button.render(elementRect);

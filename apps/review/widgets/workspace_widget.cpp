@@ -367,6 +367,9 @@ auto workspace_widget::render_content() -> void
     gluten::imgui::scoped_color header(ImGuiCol_Header, gluten::theme::carbon_g100::layer02);
     gluten::imgui::scoped_color headerBg(ImGuiCol_HeaderHovered, gluten::theme::carbon_g100::layerHover01);
     gluten::imgui::scoped_color scrollbarBg(ImGuiCol_ScrollbarBg, gluten::theme::carbon_g100::layer01);
+    gluten::imgui::scoped_color buttonCol(ImGuiCol_Button, gluten::theme::gray50);
+    gluten::imgui::scoped_color buttonHovCol(ImGuiCol_ButtonHovered, gluten::theme::gray50Hover);
+    gluten::imgui::scoped_color buttonSelectCol(ImGuiCol_ButtonActive, gluten::theme::gray40);
     gluten::imgui::scoped_font iconFont(gluten::app::get()->get_font(gluten::fonts::regular_lucide_icons));
 
     std::shared_ptr<workspace_manager> workspaceManager = m_workspaceManager.lock();
@@ -572,11 +575,16 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
             bool collapseAll = false;
             bool expandAll   = false;
 
-            if (ImGui::Button(ICON_LC_PLUS " Version"))
             {
-                createReviewPopup = add_child_widget<create_review_popup>(this, selectedReview.m_reviewId);
-                createReviewPopup->onCompleteDelegate.AddLambda([reviewId = selectedReview.m_reviewId, selectedReview = std::cref(selectedReview), selectedVersionsMap = std::ref(m_reviewToSelectedVersionMap)]() 
-                    {
+                gluten::imgui::scoped_color buttonCol(ImGuiCol_Button, gluten::theme::carbon_g100::interactive);
+                gluten::imgui::scoped_color buttonHovCol(ImGuiCol_ButtonHovered, gluten::theme::carbon_g100::interactiveHover);
+                gluten::imgui::scoped_color buttonSelectCol(ImGuiCol_ButtonActive, gluten::theme::carbon_g100::interactiveActive);
+
+                if (ImGui::Button(ICON_LC_PLUS " Version"))
+                {
+                    createReviewPopup = add_child_widget<create_review_popup>(this, selectedReview.m_reviewId);
+                    createReviewPopup->onCompleteDelegate.AddLambda([reviewId = selectedReview.m_reviewId, selectedReview = std::cref(selectedReview), selectedVersionsMap = std::ref(m_reviewToSelectedVersionMap)]()
+                                                                    {
                         std::size_t maxVersions = 1;
 
                         for (const auto& assetRef : { std::cref(selectedReview.get().m_relativeContextFiles), std::cref(selectedReview.get().m_reviewAssets) })
@@ -587,9 +595,9 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
                             }
                         }
 
-                        selectedVersionsMap.get()[reviewId] = maxVersions;
-                    });
-                createReviewPopup->open_popup();
+                        selectedVersionsMap.get()[reviewId] = maxVersions; });
+                    createReviewPopup->open_popup();
+                }
             }
 
             ImGui::SameLine(0.0f, 10.0f);
@@ -1021,10 +1029,16 @@ void workspace_widget::render_review_description(const review_data& selectedRevi
                 gluten::button noVoteButton(ICON_LC_MINUS);
                 gluten::button upVoteButton(ICON_LC_THUMBS_UP);
 
-                if (m_descriptionBoxButtonsLayout.render_layout_element_pixels_horizontal(
-                        &upVoteButton, 30.0f))
                 {
-                    workspaceManager->set_review_vote(selectedReview.m_reviewId, m_userSettings->m_loggedInUser.m_userId, review_vote::upvote);
+                    gluten::imgui::scoped_color buttonCol(ImGuiCol_Button, gluten::theme::green50);
+                    gluten::imgui::scoped_color buttonHovCol(ImGuiCol_ButtonHovered, gluten::theme::green50Hover);
+                    gluten::imgui::scoped_color buttonSelectCol(ImGuiCol_ButtonActive, gluten::theme::green40);
+
+                    if (m_descriptionBoxButtonsLayout.render_layout_element_pixels_horizontal(
+                            &upVoteButton, 30.0f))
+                    {
+                        workspaceManager->set_review_vote(selectedReview.m_reviewId, m_userSettings->m_loggedInUser.m_userId, review_vote::upvote);
+                    }
                 }
 
                 if (m_descriptionBoxButtonsLayout.render_layout_element_pixels_horizontal(
@@ -1033,10 +1047,16 @@ void workspace_widget::render_review_description(const review_data& selectedRevi
                     workspaceManager->set_review_vote(selectedReview.m_reviewId, m_userSettings->m_loggedInUser.m_userId, review_vote::no_vote);
                 }
 
-                if (m_descriptionBoxButtonsLayout.render_layout_element_pixels_horizontal(
-                        &downVoteButton, 30.0f))
                 {
-                    workspaceManager->set_review_vote(selectedReview.m_reviewId, m_userSettings->m_loggedInUser.m_userId, review_vote::downvote);
+                    gluten::imgui::scoped_color buttonCol(ImGuiCol_Button, gluten::theme::red50);
+                    gluten::imgui::scoped_color buttonHovCol(ImGuiCol_ButtonHovered, gluten::theme::red50Hover);
+                    gluten::imgui::scoped_color buttonSelectCol(ImGuiCol_ButtonActive, gluten::theme::red40);
+
+                    if (m_descriptionBoxButtonsLayout.render_layout_element_pixels_horizontal(
+                            &downVoteButton, 30.0f))
+                    {
+                        workspaceManager->set_review_vote(selectedReview.m_reviewId, m_userSettings->m_loggedInUser.m_userId, review_vote::downvote);
+                    }
                 }
             }
         }
@@ -1044,6 +1064,10 @@ void workspace_widget::render_review_description(const review_data& selectedRevi
         m_descriptionBoxButtonsLayout.render_layout_element_pixels_horizontal(nullptr, ImGui::CalcItemWidth() + ImGui::CalcTextSize("Status", NULL, true).x);
 
         ImGui::SetCursorScreenPos(m_descriptionBoxButtonsLayout.get_current_layout_pos());
+
+        gluten::imgui::scoped_color buttonCol(ImGuiCol_Button, gluten::theme::carbon_g100::interactive);
+        gluten::imgui::scoped_color buttonHovCol(ImGuiCol_ButtonHovered, gluten::theme::carbon_g100::interactiveHover);
+        gluten::imgui::scoped_color buttonSelectCol(ImGuiCol_ButtonActive, gluten::theme::carbon_g100::interactiveActive);
 
         if (ImGui::BeginCombo("Status", selectedReview.m_reviewStatus == review_status::open ? "Open" : selectedReview.m_reviewStatus == review_status::closed ? "Closed" : "Archived"))
         {
@@ -1115,6 +1139,8 @@ void workspace_widget::render_top_content_bar(std::shared_ptr<workspace_manager>
                                               const project_data& selectedProject,
                                               const review_data& selectedReview)
 {
+    gluten::imgui::scoped_color textCol(ImGuiCol_Text, gluten::theme::carbon_g100::textSecondary);
+
     m_mainPanelLayout.render_layout_element_pixels_vertical(&m_topContentBarBackground, topHeaderHeight);
 
     if (ImDrawList* const drawList = ImGui::GetWindowDrawList())
