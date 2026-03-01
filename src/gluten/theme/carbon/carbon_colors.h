@@ -56,17 +56,16 @@ namespace gluten::theme
     constexpr ImVec4 orange90Hover  = hex_to_imgui_imvec4(0x522200);
     constexpr ImVec4 orange100Hover = hex_to_imgui_imvec4(0x421e00);
 
-    // Moderately desaturated reds (calm but still indicates error/warning)
-    constexpr ImVec4 red10  = ImVec4(0.95f, 0.84f, 0.84f, 1.0f);  // Light red
-    constexpr ImVec4 red20  = ImVec4(0.90f, 0.68f, 0.68f, 1.0f);
-    constexpr ImVec4 red30  = ImVec4(0.85f, 0.55f, 0.55f, 1.0f);
-    constexpr ImVec4 red40  = ImVec4(0.80f, 0.45f, 0.45f, 1.0f);  // Error text
-    constexpr ImVec4 red50  = ImVec4(0.75f, 0.38f, 0.38f, 1.0f);  // Primary error
-    constexpr ImVec4 red60  = ImVec4(0.68f, 0.32f, 0.32f, 1.0f);
-    constexpr ImVec4 red70  = ImVec4(0.60f, 0.28f, 0.28f, 1.0f);
-    constexpr ImVec4 red80  = ImVec4(0.50f, 0.23f, 0.23f, 1.0f);
-    constexpr ImVec4 red90  = ImVec4(0.38f, 0.18f, 0.18f, 1.0f);
-    constexpr ImVec4 red100 = ImVec4(0.28f, 0.13f, 0.13f, 1.0f);
+    constexpr ImVec4 red10  = hex_to_imgui_imvec4(0xfff1f1);
+    constexpr ImVec4 red20  = hex_to_imgui_imvec4(0xffd7d9);
+    constexpr ImVec4 red30  = hex_to_imgui_imvec4(0xffb3b8);
+    constexpr ImVec4 red40  = hex_to_imgui_imvec4(0xff8389);
+    constexpr ImVec4 red50  = hex_to_imgui_imvec4(0xfa4d56);
+    constexpr ImVec4 red60  = hex_to_imgui_imvec4(0xda1e28);
+    constexpr ImVec4 red70  = hex_to_imgui_imvec4(0xa2191f);
+    constexpr ImVec4 red80  = hex_to_imgui_imvec4(0x750e13);
+    constexpr ImVec4 red90  = hex_to_imgui_imvec4(0x520408);
+    constexpr ImVec4 red100 = hex_to_imgui_imvec4(0x2d0709);
 
     constexpr ImVec4 red100Hover = hex_to_imgui_imvec4(0x540d11);
     constexpr ImVec4 red90Hover  = hex_to_imgui_imvec4(0x66050a);
@@ -123,17 +122,16 @@ namespace gluten::theme
     constexpr ImVec4 purple20Hover  = hex_to_imgui_imvec4(0xdcc7ff);
     constexpr ImVec4 purple10Hover  = hex_to_imgui_imvec4(0xede5ff);
 
-    // Moderately desaturated blues (between vibrant Carbon and muted version)
-    constexpr ImVec4 blue10  = ImVec4(0.82f, 0.89f, 0.96f, 1.0f);  // Light blue
-    constexpr ImVec4 blue20  = ImVec4(0.65f, 0.76f, 0.90f, 1.0f);
-    constexpr ImVec4 blue30  = ImVec4(0.52f, 0.66f, 0.85f, 1.0f);  // Links
-    constexpr ImVec4 blue40  = ImVec4(0.42f, 0.58f, 0.82f, 1.0f);  // Link hover
-    constexpr ImVec4 blue50  = ImVec4(0.35f, 0.52f, 0.78f, 1.0f);  // Primary interactive
-    constexpr ImVec4 blue60  = ImVec4(0.30f, 0.47f, 0.72f, 1.0f);  // Button backgrounds
-    constexpr ImVec4 blue70  = ImVec4(0.25f, 0.40f, 0.65f, 1.0f);  // Pressed states
-    constexpr ImVec4 blue80  = ImVec4(0.20f, 0.33f, 0.55f, 1.0f);  // Dark accents
-    constexpr ImVec4 blue90  = ImVec4(0.15f, 0.25f, 0.42f, 1.0f);
-    constexpr ImVec4 blue100 = ImVec4(0.11f, 0.19f, 0.32f, 1.0f);  // Darkest
+    constexpr ImVec4 blue10  = hex_to_imgui_imvec4(0xedf5ff);
+    constexpr ImVec4 blue20  = hex_to_imgui_imvec4(0xd0e2ff);
+    constexpr ImVec4 blue30  = hex_to_imgui_imvec4(0xa6c8ff);
+    constexpr ImVec4 blue40  = hex_to_imgui_imvec4(0x78a9ff);
+    constexpr ImVec4 blue50  = hex_to_imgui_imvec4(0x4589ff);
+    constexpr ImVec4 blue60  = hex_to_imgui_imvec4(0x0f62fe);
+    constexpr ImVec4 blue70  = hex_to_imgui_imvec4(0x0043ce);
+    constexpr ImVec4 blue80  = hex_to_imgui_imvec4(0x002d9c);
+    constexpr ImVec4 blue90  = hex_to_imgui_imvec4(0x001d6c);
+    constexpr ImVec4 blue100 = hex_to_imgui_imvec4(0x001141);
 
     constexpr ImVec4 blue100Hover = hex_to_imgui_imvec4(0x001f75);
     constexpr ImVec4 blue90Hover  = hex_to_imgui_imvec4(0x00258a);
@@ -190,17 +188,16 @@ namespace gluten::theme
     constexpr ImVec4 teal90Hover  = hex_to_imgui_imvec4(0x033940);
     constexpr ImVec4 teal100Hover = hex_to_imgui_imvec4(0x0f3034);
 
-    // Moderately desaturated greens (calm but still recognizable)
-    constexpr ImVec4 green10  = ImVec4(0.82f, 0.93f, 0.86f, 1.0f);  // Light green
-    constexpr ImVec4 green20  = ImVec4(0.65f, 0.85f, 0.72f, 1.0f);
-    constexpr ImVec4 green30  = ImVec4(0.52f, 0.78f, 0.62f, 1.0f);
-    constexpr ImVec4 green40  = ImVec4(0.42f, 0.72f, 0.54f, 1.0f);  // Success states
-    constexpr ImVec4 green50  = ImVec4(0.35f, 0.65f, 0.48f, 1.0f);  // Primary success
-    constexpr ImVec4 green60  = ImVec4(0.30f, 0.58f, 0.43f, 1.0f);
-    constexpr ImVec4 green70  = ImVec4(0.25f, 0.50f, 0.38f, 1.0f);
-    constexpr ImVec4 green80  = ImVec4(0.20f, 0.42f, 0.32f, 1.0f);
-    constexpr ImVec4 green90  = ImVec4(0.15f, 0.32f, 0.25f, 1.0f);
-    constexpr ImVec4 green100 = ImVec4(0.11f, 0.24f, 0.19f, 1.0f);
+    constexpr ImVec4 green10  = hex_to_imgui_imvec4(0xdefbe6);
+    constexpr ImVec4 green20  = hex_to_imgui_imvec4(0xa7f0ba);
+    constexpr ImVec4 green30  = hex_to_imgui_imvec4(0x6fdc8c);
+    constexpr ImVec4 green40  = hex_to_imgui_imvec4(0x42be65);
+    constexpr ImVec4 green50  = hex_to_imgui_imvec4(0x24a148);
+    constexpr ImVec4 green60  = hex_to_imgui_imvec4(0x198038);
+    constexpr ImVec4 green70  = hex_to_imgui_imvec4(0x0e6027);
+    constexpr ImVec4 green80  = hex_to_imgui_imvec4(0x044317);
+    constexpr ImVec4 green90  = hex_to_imgui_imvec4(0x022d0d);
+    constexpr ImVec4 green100 = hex_to_imgui_imvec4(0x071908);
 
     constexpr ImVec4 green10Hover  = hex_to_imgui_imvec4(0xb6f6c8);
     constexpr ImVec4 green20Hover  = hex_to_imgui_imvec4(0x74e792);
@@ -235,7 +232,7 @@ namespace gluten::theme
     constexpr ImVec4 coolGray90Hover  = hex_to_imgui_imvec4(0x2b3236);
     constexpr ImVec4 coolGray100Hover = hex_to_imgui_imvec4(0x222a2f);
 
-    /*constexpr ImVec4 gray10  = hex_to_imgui_imvec4(0xf4f4f4);
+    constexpr ImVec4 gray10  = hex_to_imgui_imvec4(0xf4f4f4);
     constexpr ImVec4 gray20  = hex_to_imgui_imvec4(0xe0e0e0);
     constexpr ImVec4 gray30  = hex_to_imgui_imvec4(0xc6c6c6);
     constexpr ImVec4 gray40  = hex_to_imgui_imvec4(0xa8a8a8);
@@ -244,45 +241,9 @@ namespace gluten::theme
     constexpr ImVec4 gray70  = hex_to_imgui_imvec4(0x525252);
     constexpr ImVec4 gray80  = hex_to_imgui_imvec4(0x393939);
     constexpr ImVec4 gray90  = hex_to_imgui_imvec4(0x262626);
-    constexpr ImVec4 gray100 = hex_to_imgui_imvec4(0x161616);*/
+    constexpr ImVec4 gray100 = hex_to_imgui_imvec4(0x161616);
 
-    // Discord-inspired dark grays with subtle blue tint
-    //constexpr ImVec4 gray10  = ImVec4(0.95f, 0.96f, 0.97f, 1.0f);  // Light text
-    //constexpr ImVec4 gray20  = ImVec4(0.70f, 0.72f, 0.75f, 1.0f);
-    //constexpr ImVec4 gray30  = ImVec4(0.60f, 0.63f, 0.67f, 1.0f);  // "Greyple" inspired
-    //constexpr ImVec4 gray40  = ImVec4(0.50f, 0.53f, 0.57f, 1.0f);
-    //constexpr ImVec4 gray50  = ImVec4(0.40f, 0.43f, 0.48f, 1.0f);
-    //constexpr ImVec4 gray60  = ImVec4(0.30f, 0.33f, 0.38f, 1.0f);
-    //constexpr ImVec4 gray70  = ImVec4(0.22f, 0.25f, 0.30f, 1.0f);  // Elevated panels
-    //constexpr ImVec4 gray80  = ImVec4(0.17f, 0.18f, 0.20f, 1.0f);  // "Dark But Not Black"
-    //constexpr ImVec4 gray90  = ImVec4(0.14f, 0.15f, 0.16f, 1.0f);  // Main background
-    //constexpr ImVec4 gray100 = ImVec4(0.11f, 0.12f, 0.14f, 1.0f);  // "Not Quite Black"
-
-    // Much darker, calmer grays - minimal blue shift in mids
-    constexpr ImVec4 gray10  = ImVec4(0.88f, 0.88f, 0.89f, 1.0f);  // Dimmed down significantly
-    constexpr ImVec4 gray20  = ImVec4(0.62f, 0.63f, 0.65f, 1.0f);  // Way darker
-    constexpr ImVec4 gray30  = ImVec4(0.50f, 0.52f, 0.54f, 1.0f);  // Calmer mid-tone
-    constexpr ImVec4 gray40  = ImVec4(0.40f, 0.42f, 0.45f, 1.0f);  // Subdued
-    constexpr ImVec4 gray50  = ImVec4(0.32f, 0.35f, 0.39f, 1.0f);
-    constexpr ImVec4 gray60  = ImVec4(0.26f, 0.29f, 0.33f, 1.0f);
-    constexpr ImVec4 gray70  = ImVec4(0.20f, 0.23f, 0.27f, 1.0f);  // Elevated panels
-    constexpr ImVec4 gray80  = ImVec4(0.16f, 0.18f, 0.20f, 1.0f);  // Sidebar
-    constexpr ImVec4 gray90  = ImVec4(0.13f, 0.14f, 0.16f, 1.0f);  // Main background
-    constexpr ImVec4 gray100 = ImVec4(0.09f, 0.10f, 0.12f, 1.0f);  // Darkest
-
-    // Cool-tinted grays (very subtle blue shift)
-    //constexpr ImVec4 gray10  = ImVec4(0.95f, 0.96f, 0.97f, 1.0f);  // Was pure gray
-    //constexpr ImVec4 gray20  = ImVec4(0.87f, 0.89f, 0.91f, 1.0f);
-    //constexpr ImVec4 gray30  = ImVec4(0.78f, 0.81f, 0.84f, 1.0f);
-    //constexpr ImVec4 gray40  = ImVec4(0.68f, 0.72f, 0.76f, 1.0f);
-    //constexpr ImVec4 gray50  = ImVec4(0.58f, 0.62f, 0.67f, 1.0f);
-    //constexpr ImVec4 gray60  = ImVec4(0.46f, 0.51f, 0.56f, 1.0f);
-    //constexpr ImVec4 gray70  = ImVec4(0.34f, 0.39f, 0.44f, 1.0f);
-    //constexpr ImVec4 gray80  = ImVec4(0.24f, 0.28f, 0.32f, 1.0f);
-    //constexpr ImVec4 gray90  = ImVec4(0.16f, 0.19f, 0.22f, 1.0f);
-    //constexpr ImVec4 gray100 = ImVec4(0.10f, 0.12f, 0.14f, 1.0f);  // Darkest
-
-    /*constexpr ImVec4 gray10Hover  = hex_to_imgui_imvec4(0xe8e8e8);
+    constexpr ImVec4 gray10Hover  = hex_to_imgui_imvec4(0xe8e8e8);
     constexpr ImVec4 gray20Hover  = hex_to_imgui_imvec4(0xd1d1d1);
     constexpr ImVec4 gray30Hover  = hex_to_imgui_imvec4(0xb5b5b5);
     constexpr ImVec4 gray40Hover  = hex_to_imgui_imvec4(0x999999);
@@ -291,31 +252,7 @@ namespace gluten::theme
     constexpr ImVec4 gray70Hover  = hex_to_imgui_imvec4(0x636363);
     constexpr ImVec4 gray80Hover  = hex_to_imgui_imvec4(0x474747);
     constexpr ImVec4 gray90Hover  = hex_to_imgui_imvec4(0x333333);
-    constexpr ImVec4 gray100Hover = hex_to_imgui_imvec4(0x292929);*/
-
-    // Hover states - darker with subtle blue shift
-    //constexpr ImVec4 gray10Hover  = hex_to_imgui_imvec4(0xe8eaec);  // Slightly cooler light hover
-    //constexpr ImVec4 gray20Hover  = hex_to_imgui_imvec4(0xb5b8bd);
-    //constexpr ImVec4 gray30Hover  = hex_to_imgui_imvec4(0x9ba1a9);
-    //constexpr ImVec4 gray40Hover  = hex_to_imgui_imvec4(0x838892);
-    //constexpr ImVec4 gray50Hover  = hex_to_imgui_imvec4(0x6a707a);
-    //constexpr ImVec4 gray60Hover  = hex_to_imgui_imvec4(0x4e5561);
-    //constexpr ImVec4 gray70Hover  = hex_to_imgui_imvec4(0x3a414d);  // Mid-range hovers
-    //constexpr ImVec4 gray80Hover  = hex_to_imgui_imvec4(0x2c2e33);  // Sidebar hover
-    //constexpr ImVec4 gray90Hover  = hex_to_imgui_imvec4(0x242628);  // Main background hover
-    //constexpr ImVec4 gray100Hover = hex_to_imgui_imvec4(0x1c1e21);  // Darkest hover
-
-    // Calmer hover states
-    constexpr ImVec4 gray10Hover  = hex_to_imgui_imvec4(0xe0e0e2);
-    constexpr ImVec4 gray20Hover  = hex_to_imgui_imvec4(0xa5a7ab);
-    constexpr ImVec4 gray30Hover  = hex_to_imgui_imvec4(0x85898e);
-    constexpr ImVec4 gray40Hover  = hex_to_imgui_imvec4(0x6b7078);
-    constexpr ImVec4 gray50Hover  = hex_to_imgui_imvec4(0x565c65);
-    constexpr ImVec4 gray60Hover  = hex_to_imgui_imvec4(0x444a54);
-    constexpr ImVec4 gray70Hover  = hex_to_imgui_imvec4(0x353b45);
-    constexpr ImVec4 gray80Hover  = hex_to_imgui_imvec4(0x2a2d33);
-    constexpr ImVec4 gray90Hover  = hex_to_imgui_imvec4(0x222428);
-    constexpr ImVec4 gray100Hover = hex_to_imgui_imvec4(0x1a1c20);
+    constexpr ImVec4 gray100Hover = hex_to_imgui_imvec4(0x292929);
 
     constexpr ImVec4 warmGray10  = hex_to_imgui_imvec4(0xf7f3f2);
     constexpr ImVec4 warmGray20  = hex_to_imgui_imvec4(0xe5e0df);
