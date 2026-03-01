@@ -1,6 +1,6 @@
 #include "menu_bar.h"
 
-#include "gluten/theme/carbon_theme_g100.h"
+#include "gluten/theme/carbon/carbon_theme_g100.h"
 #include "gluten/utils/imgui_util_structures.h"
 
 namespace menu_bar_utils

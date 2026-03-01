@@ -9,7 +9,7 @@
 #include "gluten/elements/collapsing_header.h"
 #include "gluten/elements/loading_spinner.h"
 #include "gluten/elements/layouts/layout.h"
-#include "gluten/theme/carbon_theme_g100.h"
+#include "gluten/theme/carbon/carbon_theme_g100.h"
 #include "gluten/managers/manager.h"
 #include "gluten/subsystems/renderer_subsystem.h"
 #include "gluten/subsystems/widget_subsystem.h"

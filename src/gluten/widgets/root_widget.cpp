@@ -7,7 +7,7 @@
 #include "gluten/elements/menu_bar.h"
 #include "gluten/elements/text.h"
 #include "gluten/subsystems/renderer_subsystem.h"
-#include "gluten/theme/carbon_theme_g100.h"
+#include "gluten/theme/carbon/carbon_theme_g100.h"
 #include "gluten/theme/theme.h"
 #include "gluten/theme/walnut_icon.embed"
 #include "gluten/theme/window_images.embed"

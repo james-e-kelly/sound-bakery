@@ -5,7 +5,7 @@
 #include "audio_display_widget.h"
 #include "gluten/elements/image_button.h"
 #include "gluten/elements/toolbar.h"
-#include "gluten/theme/carbon_theme_g100.h"
+#include "gluten/theme/carbon/carbon_theme_g100.h"
 #include "gluten/utils/imgui_util_structures.h"
 #include "imgui.h"
 #include "managers/project_manager.h"

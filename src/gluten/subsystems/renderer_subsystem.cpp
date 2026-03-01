@@ -2,7 +2,7 @@
 
 #include "app/app.h"
 #include "gluten/subsystems/widget_subsystem.h"
-#include "gluten/theme/carbon_theme_g100.h"
+#include "gluten/theme/carbon/carbon_theme_g100.h"
 #include "gluten/theme/theme.h"
 #include "gluten/widgets/root_widget.h"
 #include "imgui.h"

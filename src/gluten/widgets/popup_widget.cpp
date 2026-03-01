@@ -1,7 +1,7 @@
 #include "popup_widget.h"
 
 #include "gluten/elements/loading_spinner.h"
-#include "gluten/theme/carbon_theme_g100.h"
+#include "gluten/theme/carbon/carbon_theme_g100.h"
 #include "gluten/utils/imgui_util_structures.h"
 
 auto gluten::popup_widget::open_popup() -> void

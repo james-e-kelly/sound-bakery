@@ -1,26 +1,9 @@
 #pragma once
 
-#include "imgui.h"
-#include "implot.h"
+#include "gluten/theme/theme.h"
 
 namespace gluten::theme
 {
-    consteval ImVec4 adjust_alpha(const ImVec4& color, const float& alpha)
-    {
-        return ImVec4(color.x, color.y, color.z, alpha);
-    }
-
-    consteval ImVec4 hex_to_imgui_imvec4(const unsigned long& hex)
-    {
-        const float s = 1.0f / 255.0f;
-
-        // The RGB order is backwards here -> BGR
-        // Also, set alpha to 1 as the carbon hex values don't hold alpha and therefore
-        // everything would get set to 0
-        return ImVec4(((hex >> IM_COL32_B_SHIFT) & 0xFF) * s, ((hex >> IM_COL32_G_SHIFT) & 0xFF) * s,
-                      ((hex >> IM_COL32_R_SHIFT) & 0xFF) * s, 1.0f);
-    }
-
     constexpr ImVec4 black      = hex_to_imgui_imvec4(0x000000);
     constexpr ImVec4 black100   = black;
     constexpr ImVec4 blackHover = hex_to_imgui_imvec4(0x212121);

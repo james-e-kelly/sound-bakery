@@ -1,6 +1,7 @@
 #pragma once
 
-#include "gluten/theme/carbon_colors.h"
+#include "gluten/theme/carbon/carbon_colors.h"
+#include "implot.h"
 
 namespace gluten::theme::carbon_g100
 {
@@ -265,7 +266,7 @@ namespace gluten::theme::carbon_g100
         style->Colors[ImGuiCol_NavHighlight]          = interactiveActive;
         style->Colors[ImGuiCol_NavWindowingHighlight] = borderInteractive;  // CTRL+TAB and docking previews
 
-        ImPlot::GetStyle().Colors[ImPlotCol_Fill] = green50;
+        //ImPlot::GetStyle().Colors[ImPlotCol_Fill] = green50;
     }
 
     inline void apply_styles()
