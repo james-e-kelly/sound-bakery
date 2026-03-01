@@ -11,7 +11,7 @@ public:
         : gluten::element(anchor_preset::stretch_full),
         m_user(user)
     {
-        set_element_background_color(gluten::theme::carbon_g100::field03);
+        set_element_background_color(gluten::theme::field03);
     }
 
 protected:
@@ -23,7 +23,7 @@ protected:
         {
             gluten::background background;
             background.set_element_background_color(m_backgroundColor.value())
-                .set_element_hover_color(gluten::theme::carbon_g100::fieldHover03);
+                .set_element_hover_color(gluten::theme::fieldHover03);
             m_backgroundColor.reset();
             background.render(elementRect);
         }

@@ -33,7 +33,7 @@ auto create_review_popup::render_popup() -> void
     {
         ImGui::TextUnformatted("Drag Files To Add");
 
-        gluten::imgui::scoped_color headerBg(ImGuiCol_Header, gluten::theme::carbon_g100::field03);
+        gluten::imgui::scoped_color headerBg(ImGuiCol_Header, gluten::theme::field03);
 
         if (ImGui::CollapsingHeader("Context Files"))
         {

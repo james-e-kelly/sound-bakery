@@ -165,9 +165,9 @@ auto reviewer_display_element::render_element(const ImRect& parentRect) -> bool
         if (ImDrawList* const drawList = ImGui::GetWindowDrawList())
         {
             const ImU32 circleColor =
-                ImGui::GetColorU32(m_vote == review_vote::upvote     ? gluten::theme::carbon_g100::supportSuccess
-                                    : m_vote == review_vote::downvote ? gluten::theme::carbon_g100::supportError
-                                                                        : gluten::theme::carbon_g100::layer03);
+                ImGui::GetColorU32(m_vote == review_vote::upvote     ? gluten::theme::supportSuccess
+                                    : m_vote == review_vote::downvote ? gluten::theme::supportError
+                                                                        : gluten::theme::layer03);
 
             drawList->AddCircle(avatar.get_image_rect().GetCenter(), avatar.get_element_rect().GetSize().x / 2.0f, circleColor, 0, m_vote == review_vote::no_vote ? 2.0f : 4.0f);
         }

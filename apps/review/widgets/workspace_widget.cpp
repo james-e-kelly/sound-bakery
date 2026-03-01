@@ -38,32 +38,32 @@ auto workspace_widget::start_implementation() -> void
 
     m_workspaceManager = get_app()->get_manager_by_class<workspace_manager>();
 
-    set_background_color(gluten::theme::carbon_g100::background);
+    set_background_color(gluten::theme::background);
 
     m_windowLayout
-        .set_element_background_color(gluten::theme::carbon_g100::background)
+        .set_element_background_color(gluten::theme::background)
         .get_element_anchor()
         .set_max_offset(ImVec2(-1.0f, -1.0f));
 
     m_innerLayout
-        .set_layout_spacing(gluten::theme::carbon_g100::largerRounding)
-        .set_element_rounding(gluten::theme::carbon_g100::largerRounding)
-        .set_element_background_color(gluten::theme::carbon_g100::layer01);
+        .set_layout_spacing(gluten::theme::largerRounding)
+        .set_element_rounding(gluten::theme::largerRounding)
+        .set_element_background_color(gluten::theme::layer01);
 
     m_leftToolbarLayout
-        .set_element_background_color(gluten::theme::carbon_g100::background)
+        .set_element_background_color(gluten::theme::background)
         .get_element_anchor().max.x += 0.1f;
 
     m_leftPanelLayout
-        .set_element_background_color(gluten::theme::carbon_g100::layer02)
-        .set_element_rounding(gluten::theme::carbon_g100::largestRounding)
-        .set_element_padding(ImVec2(0.0f, gluten::theme::carbon_g100::rounding))
-        .get_element_anchor().maxOffset.y -= gluten::theme::carbon_g100::rounding;
+        .set_element_background_color(gluten::theme::layer02)
+        .set_element_rounding(gluten::theme::largestRounding)
+        .set_element_padding(ImVec2(0.0f, gluten::theme::rounding))
+        .get_element_anchor().maxOffset.y -= gluten::theme::rounding;
 
     m_topContentBarBackground
-        .set_element_background_color(gluten::theme::carbon_g100::layer01)
+        .set_element_background_color(gluten::theme::layer01)
         .set_element_anchor_preset(gluten::anchor_preset::stretch_top)
-        .get_element_anchor().set_max_offset(ImVec2(-gluten::theme::carbon_g100::padding * 2.0f, topHeaderHeight));
+        .get_element_anchor().set_max_offset(ImVec2(-gluten::theme::padding * 2.0f, topHeaderHeight));
 
     m_breadcrumbText
         .set_element_content_font_size(gluten::g_baseFontSize * 2.0f)
@@ -71,11 +71,11 @@ auto workspace_widget::start_implementation() -> void
 
     m_rightPanelLayout
         .set_layout_spacing(ImGui::GetStyle().FramePadding.y)
-        .set_element_padding(gluten::theme::carbon_g100::paddingVec);
+        .set_element_padding(gluten::theme::paddingVec);
 
     m_contentVerticalLayout
-        .set_element_padding(ImVec2(0.0f, gluten::theme::carbon_g100::padding * 2.0f))
-        .get_element_anchor().set_max_offset(ImVec2(-gluten::theme::carbon_g100::padding, 0.0f));
+        .set_element_padding(ImVec2(0.0f, gluten::theme::padding * 2.0f))
+        .get_element_anchor().set_max_offset(ImVec2(-gluten::theme::padding, 0.0f));
 
     editReviewersButton.set_element_alignment(ImVec2(1.0f, -0.1f));
     editReviewersButton.set_element_translation(ImVec2(-ImGui::GetStyle().FramePadding.x, 0.0f));
@@ -109,26 +109,26 @@ auto workspace_widget::start_implementation() -> void
     m_leftPanelBackButton
         //.set_element_border(2.0f, 0.0f)
         .set_element_scale(1.3f)
-        //.set_element_background_color(gluten::theme::carbon_g100::field03)
-        .set_element_hover_color(gluten::theme::carbon_g100::fieldHover02)
-        .set_element_active_color(gluten::theme::carbon_g100::layerActive01)
+        //.set_element_background_color(gluten::theme::field03)
+        .set_element_hover_color(gluten::theme::fieldHover02)
+        .set_element_active_color(gluten::theme::layerActive01)
         .set_element_anchor_preset(gluten::element::anchor_preset::left_middle)
         .set_element_content_scale(2.5f)  // Icon size
         .set_element_alignment(ImVec2(0.5f, 0.5f))
         .set_element_translation(ImVec2(listItemButtonsOffset, 0.0f))
-        .set_element_rounding(gluten::theme::carbon_g100::rounding);
+        .set_element_rounding(gluten::theme::rounding);
 
     m_leftPanelNewButton
         //.set_element_border(2.0f, 0.0f)
         .set_element_scale(1.3f)
-        //.set_element_background_color(gluten::theme::carbon_g100::field03)
-        .set_element_hover_color(gluten::theme::carbon_g100::fieldHover02)
-        .set_element_active_color(gluten::theme::carbon_g100::layerActive01)
+        //.set_element_background_color(gluten::theme::field03)
+        .set_element_hover_color(gluten::theme::fieldHover02)
+        .set_element_active_color(gluten::theme::layerActive01)
         .set_element_anchor_preset(gluten::element::anchor_preset::right_middle)
         .set_element_content_scale(2.5f)  // Icon size
         .set_element_alignment(ImVec2(0.5f, 0.5f))
         .set_element_translation(ImVec2(-listItemButtonsOffset, 0.0f))
-        .set_element_rounding(gluten::theme::carbon_g100::rounding);
+        .set_element_rounding(gluten::theme::rounding);
 }
 
 auto workspace_widget::render_window_implementation() -> void
@@ -161,9 +161,9 @@ auto workspace_widget::render_window_implementation() -> void
 
 auto workspace_widget::render_list_panel() -> void
 {
-    gluten::imgui::scoped_color backgroundColor(ImGuiCol_ChildBg, gluten::theme::carbon_g100::layer02);
-    gluten::imgui::scoped_color borderColor(ImGuiCol_Border, gluten::theme::carbon_g100::background);
-    gluten::imgui::scoped_color separatorColor(ImGuiCol_Separator, gluten::theme::carbon_g100::background);
+    gluten::imgui::scoped_color backgroundColor(ImGuiCol_ChildBg, gluten::theme::layer02);
+    gluten::imgui::scoped_color borderColor(ImGuiCol_Border, gluten::theme::background);
+    gluten::imgui::scoped_color separatorColor(ImGuiCol_Separator, gluten::theme::background);
 
     std::shared_ptr<workspace_manager> workspaceManager = m_workspaceManager.lock();
 
@@ -242,9 +242,9 @@ auto workspace_widget::render_list_panel() -> void
 
 auto workspace_widget::render_list_panel_elements(const bool listingProjects, std::shared_ptr<workspace_manager>& workspaceManager, const bool listingReviews) -> void
 {
-    gluten::imgui::scoped_color backgroundColor(ImGuiCol_ChildBg, gluten::theme::carbon_g100::layer02);
-    gluten::imgui::scoped_color scrollbarBg(ImGuiCol_ScrollbarBg, gluten::theme::carbon_g100::layer02);
-    gluten::imgui::scoped_color scrollbarGrab(ImGuiCol_ScrollbarGrab, gluten::theme::carbon_g100::layer02);
+    gluten::imgui::scoped_color backgroundColor(ImGuiCol_ChildBg, gluten::theme::layer02);
+    gluten::imgui::scoped_color scrollbarBg(ImGuiCol_ScrollbarBg, gluten::theme::layer02);
+    gluten::imgui::scoped_color scrollbarGrab(ImGuiCol_ScrollbarGrab, gluten::theme::layer02);
 
     gluten::layout itemsLayout(gluten::layout::layout_type::top_to_bottom, gluten::element::anchor_preset::stretch_full);
     itemsLayout.set_layout_spacing(2.0f);
@@ -284,7 +284,7 @@ auto workspace_widget::render_list_panel_elements(const bool listingProjects, st
                 gluten::collapsing_header closedReviewsHeader("Closed", false);
                 gluten::collapsing_header archivedReviewsHeader("Archived", false);
 
-                gluten::imgui::scoped_color_stack headerColors(ImGuiCol_Header, gluten::theme::carbon_g100::layerAccent03, ImGuiCol_HeaderHovered, gluten::theme::carbon_g100::layerAccentHover03);
+                gluten::imgui::scoped_color_stack headerColors(ImGuiCol_Header, gluten::theme::layerAccent03, ImGuiCol_HeaderHovered, gluten::theme::layerAccentHover03);
 
                 auto render_reviews = [&allReviews, &workspaceManager, &itemsLayout](review_status statusToRender)
                     {
@@ -358,18 +358,18 @@ auto workspace_widget::render_list_panel_elements(const bool listingProjects, st
 
 auto workspace_widget::render_content() -> void
 {
-    gluten::imgui::scoped_color backgroundColor(ImGuiCol_ChildBg, gluten::theme::carbon_g100::layer01);
-    gluten::imgui::scoped_color tabBg(ImGuiCol_Tab, gluten::theme::carbon_g100::field01);
-    gluten::imgui::scoped_color tabSelectedBg(ImGuiCol_TabActive, gluten::theme::carbon_g100::layerAccentActive01);
-    gluten::imgui::scoped_color tabHoverdBg(ImGuiCol_TabHovered, gluten::theme::carbon_g100::layerHover01);
-    gluten::imgui::scoped_color frameBg(ImGuiCol_FrameBg, gluten::theme::carbon_g100::layer02);
-    gluten::imgui::scoped_color frameHoveredBg(ImGuiCol_FrameBgHovered, gluten::theme::carbon_g100::layerHover01);
-    gluten::imgui::scoped_color header(ImGuiCol_Header, gluten::theme::carbon_g100::layer02);
-    gluten::imgui::scoped_color headerBg(ImGuiCol_HeaderHovered, gluten::theme::carbon_g100::layerHover01);
-    gluten::imgui::scoped_color scrollbarBg(ImGuiCol_ScrollbarBg, gluten::theme::carbon_g100::layer01);
-    gluten::imgui::scoped_color buttonCol(ImGuiCol_Button, gluten::theme::gray50);
+    gluten::imgui::scoped_color backgroundColor(ImGuiCol_ChildBg, gluten::theme::layer01);
+    gluten::imgui::scoped_color tabBg(ImGuiCol_Tab, gluten::theme::field01);
+    gluten::imgui::scoped_color tabSelectedBg(ImGuiCol_TabActive, gluten::theme::layerAccentActive01);
+    gluten::imgui::scoped_color tabHoverdBg(ImGuiCol_TabHovered, gluten::theme::layerHover01);
+    gluten::imgui::scoped_color frameBg(ImGuiCol_FrameBg, gluten::theme::layer02);
+    gluten::imgui::scoped_color frameHoveredBg(ImGuiCol_FrameBgHovered, gluten::theme::layerHover01);
+    gluten::imgui::scoped_color header(ImGuiCol_Header, gluten::theme::layer02);
+    gluten::imgui::scoped_color headerBg(ImGuiCol_HeaderHovered, gluten::theme::layerHover01);
+    gluten::imgui::scoped_color scrollbarBg(ImGuiCol_ScrollbarBg, gluten::theme::layer01);
+    /*gluten::imgui::scoped_color buttonCol(ImGuiCol_Button, gluten::theme::gray50);
     gluten::imgui::scoped_color buttonHovCol(ImGuiCol_ButtonHovered, gluten::theme::gray50Hover);
-    gluten::imgui::scoped_color buttonSelectCol(ImGuiCol_ButtonActive, gluten::theme::gray40);
+    gluten::imgui::scoped_color buttonSelectCol(ImGuiCol_ButtonActive, gluten::theme::gray40);*/
     gluten::imgui::scoped_font iconFont(gluten::app::get()->get_font(gluten::fonts::regular_lucide_icons));
 
     std::shared_ptr<workspace_manager> workspaceManager = m_workspaceManager.lock();
@@ -387,7 +387,7 @@ auto workspace_widget::render_content() -> void
 
     ImGui::SetCursorPos(ImVec2(m_contentAndRightPanelLayout.get_current_layout_pos_local().x, m_contentAndRightPanelLayout.get_current_layout_pos_local().y + 1.0f));   // + 1.0f to get rid of a weird line
 
-    if (ImGui::BeginChild("##MainContent", ImVec2(m_contentAndRightPanelLayout.get_element_rect().GetWidth() - g_rightPanelWidth, m_contentAndRightPanelLayout.get_element_rect().GetHeight() - (gluten::theme::carbon_g100::padding * 2.0f) - 2.0f), ImGuiChildFlags_AutoResizeY | ImGuiChildFlags_AlwaysUseWindowPadding))
+    if (ImGui::BeginChild("##MainContent", ImVec2(m_contentAndRightPanelLayout.get_element_rect().GetWidth() - g_rightPanelWidth, m_contentAndRightPanelLayout.get_element_rect().GetHeight() - (gluten::theme::padding * 2.0f) - 2.0f), ImGuiChildFlags_AutoResizeY | ImGuiChildFlags_AlwaysUseWindowPadding))
     {
         ImRect windowRect = ImGui::GetCurrentWindow()->WorkRect;
         windowRect.Max.y  = windowRect.Min.y + 10.0f;
@@ -452,7 +452,7 @@ auto workspace_widget::render_content() -> void
 
             gluten::anchor_info& layoutAnchor = m_leftUserPanel.get_element_anchor();
             layoutAnchor.maxOffset.x          = avatarSize;
-            m_leftUserPanel.set_element_background_color(gluten::theme::carbon_g100::layer02);
+            m_leftUserPanel.set_element_background_color(gluten::theme::layer02);
             m_leftUserPanel.set_layout_spacing(paddingSize);
 
             gluten::anchor_info& anchor = userAvatar.get_element_anchor();
@@ -486,9 +486,9 @@ auto workspace_widget::render_content() -> void
             {
                 m_leftUserPanel.render_layout_element_pixels_vertical(&changePasswordButton, buttonSize);
 
-                gluten::imgui::scoped_color_stack deleteButtonColors(ImGuiCol_Button, gluten::theme::red60,
-                                                                        ImGuiCol_ButtonHovered, gluten::theme::red50,
-                                                                        ImGuiCol_ButtonActive, gluten::theme::red70);
+                gluten::imgui::scoped_color_stack deleteButtonColors(ImGuiCol_Button, gluten::theme::supportError,
+                                                                        ImGuiCol_ButtonHovered, gluten::theme::supportError,
+                                                                        ImGuiCol_ButtonActive, gluten::theme::supportError);
                 if (m_leftUserPanel.render_layout_element_pixels_vertical(&deleteUserButton, buttonSize))
                 {
                     static std::shared_ptr<gluten::confirmation_popup> confirmUserDeletionPopup;
@@ -553,7 +553,7 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
             }
 
             {
-                gluten::imgui::scoped_color selectableBg(ImGuiCol_PopupBg, gluten::theme::carbon_g100::layer02);
+                gluten::imgui::scoped_color selectableBg(ImGuiCol_PopupBg, gluten::theme::layer02);
 
                 if (ImGui::BeginCombo("Review Version", fmt::format("#{}", m_reviewToSelectedVersionMap[selectedReview.m_reviewId]).c_str()))
                 {
@@ -576,9 +576,9 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
             bool expandAll   = false;
 
             {
-                gluten::imgui::scoped_color buttonCol(ImGuiCol_Button, gluten::theme::carbon_g100::interactive);
-                gluten::imgui::scoped_color buttonHovCol(ImGuiCol_ButtonHovered, gluten::theme::carbon_g100::interactiveHover);
-                gluten::imgui::scoped_color buttonSelectCol(ImGuiCol_ButtonActive, gluten::theme::carbon_g100::interactiveActive);
+                gluten::imgui::scoped_color buttonCol(ImGuiCol_Button, gluten::theme::interactive);
+                gluten::imgui::scoped_color buttonHovCol(ImGuiCol_ButtonHovered, gluten::theme::interactiveHover);
+                gluten::imgui::scoped_color buttonSelectCol(ImGuiCol_ButtonActive, gluten::theme::interactiveActive);
 
                 if (ImGui::Button(ICON_LC_PLUS " Version"))
                 {
@@ -638,7 +638,7 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
                         {
                             gluten::imgui::scoped_id reviewId(selectedReview.m_reviewId);
                             gluten::collapsing_header header(fmt::format("{} #{}", asset.m_fileName, selectedVersion), false);
-                            header.set_element_rounding(gluten::theme::carbon_g100::rounding);
+                            header.set_element_rounding(gluten::theme::rounding);
 
                             if (collapseAll)
                             {
@@ -969,22 +969,22 @@ void workspace_widget::render_review_description(const review_data& selectedRevi
 
         if (votes.second > 0)
         {
-            votesColor = gluten::theme::carbon_g100::supportSuccess;
+            votesColor = gluten::theme::supportSuccess;
         }
         else if (votes.second == 0)
         {
-            votesColor = gluten::theme::carbon_g100::supportCautionMinor;
+            votesColor = gluten::theme::white;
         }
         else
         {
-            votesColor = gluten::theme::carbon_g100::supportError;
+            votesColor = gluten::theme::supportError;
         }
 
         gluten::imgui::scoped_color votesTextColor(ImGuiCol_Text, votesColor);
         votesText.render(votesIconText.get_element_rect());
     }
 
-    gluten::imgui::scoped_color frameProgressBg(ImGuiCol_FrameBg, gluten::theme::carbon_g100::layer02);
+    gluten::imgui::scoped_color frameProgressBg(ImGuiCol_FrameBg, gluten::theme::layer02);
 
     constexpr float max       = ((int)review_phase::num) * ((int)review_quality::num);
     constexpr float third     = max * 0.33f;
@@ -992,9 +992,9 @@ void workspace_widget::render_review_description(const review_data& selectedRevi
     const float value         = ((int)selectedReview.m_reviewPhase + 1) * ((int)selectedReview.m_reviewQuality + 1);
     const float fraction      = value / max;
 
-    gluten::imgui::scoped_color progressBarColor(ImGuiCol_PlotHistogram, value >= twoThirds ? gluten::theme::red60
-                                                                         : value >= third   ? gluten::theme::yellow60
-                                                                                            : gluten::theme::green60);
+    gluten::imgui::scoped_color progressBarColor(ImGuiCol_PlotHistogram, value >= twoThirds ? gluten::theme::supportError
+                                                                         : value >= third   ? gluten::theme::supportWarning
+                                                                                            : gluten::theme::supportSuccess);
     m_descriptionBoxButtonsLayout.render(m_descriptionBoxLayout.get_element_rect());
 
     if (std::shared_ptr<workspace_manager> workspaceManager = m_workspaceManager.lock())
@@ -1030,9 +1030,9 @@ void workspace_widget::render_review_description(const review_data& selectedRevi
                 gluten::button upVoteButton(ICON_LC_THUMBS_UP);
 
                 {
-                    gluten::imgui::scoped_color buttonCol(ImGuiCol_Button, gluten::theme::green50);
-                    gluten::imgui::scoped_color buttonHovCol(ImGuiCol_ButtonHovered, gluten::theme::green50Hover);
-                    gluten::imgui::scoped_color buttonSelectCol(ImGuiCol_ButtonActive, gluten::theme::green40);
+                    gluten::imgui::scoped_color buttonCol(ImGuiCol_Button, gluten::theme::supportSuccess);
+                    gluten::imgui::scoped_color buttonHovCol(ImGuiCol_ButtonHovered, gluten::theme::supportSuccess);
+                    gluten::imgui::scoped_color buttonSelectCol(ImGuiCol_ButtonActive, gluten::theme::supportSuccess);
 
                     if (m_descriptionBoxButtonsLayout.render_layout_element_pixels_horizontal(
                             &upVoteButton, 30.0f))
@@ -1048,9 +1048,9 @@ void workspace_widget::render_review_description(const review_data& selectedRevi
                 }
 
                 {
-                    gluten::imgui::scoped_color buttonCol(ImGuiCol_Button, gluten::theme::red50);
-                    gluten::imgui::scoped_color buttonHovCol(ImGuiCol_ButtonHovered, gluten::theme::red50Hover);
-                    gluten::imgui::scoped_color buttonSelectCol(ImGuiCol_ButtonActive, gluten::theme::red40);
+                    gluten::imgui::scoped_color buttonCol(ImGuiCol_Button, gluten::theme::supportError);
+                    gluten::imgui::scoped_color buttonHovCol(ImGuiCol_ButtonHovered, gluten::theme::supportError);
+                    gluten::imgui::scoped_color buttonSelectCol(ImGuiCol_ButtonActive, gluten::theme::supportError);
 
                     if (m_descriptionBoxButtonsLayout.render_layout_element_pixels_horizontal(
                             &downVoteButton, 30.0f))
@@ -1065,9 +1065,9 @@ void workspace_widget::render_review_description(const review_data& selectedRevi
 
         ImGui::SetCursorScreenPos(m_descriptionBoxButtonsLayout.get_current_layout_pos());
 
-        gluten::imgui::scoped_color buttonCol(ImGuiCol_Button, gluten::theme::carbon_g100::interactive);
-        gluten::imgui::scoped_color buttonHovCol(ImGuiCol_ButtonHovered, gluten::theme::carbon_g100::interactiveHover);
-        gluten::imgui::scoped_color buttonSelectCol(ImGuiCol_ButtonActive, gluten::theme::carbon_g100::interactiveActive);
+        gluten::imgui::scoped_color buttonCol(ImGuiCol_Button, gluten::theme::interactive);
+        gluten::imgui::scoped_color buttonHovCol(ImGuiCol_ButtonHovered, gluten::theme::interactiveHover);
+        gluten::imgui::scoped_color buttonSelectCol(ImGuiCol_ButtonActive, gluten::theme::interactiveActive);
 
         if (ImGui::BeginCombo("Status", selectedReview.m_reviewStatus == review_status::open ? "Open" : selectedReview.m_reviewStatus == review_status::closed ? "Closed" : "Archived"))
         {
@@ -1139,14 +1139,14 @@ void workspace_widget::render_top_content_bar(std::shared_ptr<workspace_manager>
                                               const project_data& selectedProject,
                                               const review_data& selectedReview)
 {
-    gluten::imgui::scoped_color textCol(ImGuiCol_Text, gluten::theme::carbon_g100::textSecondary);
+    gluten::imgui::scoped_color textCol(ImGuiCol_Text, gluten::theme::textSecondary);
 
     m_mainPanelLayout.render_layout_element_pixels_vertical(&m_topContentBarBackground, topHeaderHeight);
 
     if (ImDrawList* const drawList = ImGui::GetWindowDrawList())
     {
-        //drawList->AddLine(topContentBarBackground.get_element_rect().GetTL(), topContentBarBackground.get_element_rect().GetBL(), ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::borderStrong01), 1.0f);
-        drawList->AddLine(m_topContentBarBackground.get_element_rect().GetBL(), m_topContentBarBackground.get_element_rect().GetBR(), ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::borderStrong02), 2.0f);
+        //drawList->AddLine(topContentBarBackground.get_element_rect().GetTL(), topContentBarBackground.get_element_rect().GetBL(), ImGui::ColorConvertFloat4ToU32(gluten::theme::borderStrong01), 1.0f);
+        drawList->AddLine(m_topContentBarBackground.get_element_rect().GetBL(), m_topContentBarBackground.get_element_rect().GetBR(), ImGui::ColorConvertFloat4ToU32(gluten::theme::borderStrong02), 2.0f);
     }
 
     const auto& workspaceName = workspaceManager->get_workspace_name();
@@ -1196,11 +1196,11 @@ auto workspace_widget::render_left_toolbar() -> void
             gluten::icon_button iconButton(name, icon, gluten::fonts::regular_lucide_icons);
             iconButton
                 .set_element_content_font_size(gluten::g_baseIconFontSize * (leftToolbarButtonHeight / gluten::g_baseIconFontSize) / 1.75f)
-                .set_element_hover_color(gluten::theme::carbon_g100::backgroundHover)
-                .set_element_active_color(gluten::theme::carbon_g100::backgroundActive)
+                .set_element_hover_color(gluten::theme::backgroundHover)
+                .set_element_active_color(gluten::theme::backgroundActive)
                 .set_element_active(activeView == active)
-                .set_element_padding(gluten::theme::carbon_g100::paddingVec)
-                .set_element_rounding(gluten::theme::carbon_g100::rounding);
+                .set_element_padding(gluten::theme::paddingVec)
+                .set_element_rounding(gluten::theme::rounding);
             return iconButton;
         };
 
@@ -1298,13 +1298,13 @@ auto workspace_widget::render_menu_implementation() -> void
 
 auto workspace_widget::render_settings() -> void
 {
-    gluten::imgui::scoped_color bgColor(ImGuiCol_FrameBg, gluten::theme::carbon_g100::layer03);
+    gluten::imgui::scoped_color bgColor(ImGuiCol_FrameBg, gluten::theme::layer03);
     gluten::imgui::scoped_style padding(ImGuiStyleVar_WindowPadding, ImVec2(80.0f, 80.0f));
 
     if (ImGui::BeginChild("SettingsContainer", ImVec2(0, 0), ImGuiChildFlags_AlwaysUseWindowPadding, ImGuiWindowFlags_NoScrollbar))
     {
         gluten::background settingsBackground;
-        settingsBackground.set_element_background_color(gluten::theme::carbon_g100::layer02);
+        settingsBackground.set_element_background_color(gluten::theme::layer02);
         settingsBackground.render_window();
 
         if (ImGui::BeginTable("Settings", 2, ImGuiTableFlags_Resizable | ImGuiTableFlags_BordersInnerH | ImGuiTableFlags_SizingStretchProp))

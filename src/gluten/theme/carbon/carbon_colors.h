@@ -4,12 +4,8 @@
 
 namespace gluten::theme
 {
-    constexpr ImVec4 black      = hex_to_imgui_imvec4(0x000000);
-    constexpr ImVec4 black100   = black;
     constexpr ImVec4 blackHover = hex_to_imgui_imvec4(0x212121);
 
-    constexpr ImVec4 white      = hex_to_imgui_imvec4(0xffffff);
-    constexpr ImVec4 white0     = white;
     constexpr ImVec4 whiteHover = hex_to_imgui_imvec4(0xe8e8e8);
 
     constexpr ImVec4 yellow10  = hex_to_imgui_imvec4(0xfcf4d6);

@@ -7,7 +7,7 @@ namespace gluten::theme::carbon_g100
 {
     // https://github.com/carbon-design-system/carbon/blob/v10/packages/themes/src/next/g100.js
 
-   // Background
+    // Background
     constexpr ImVec4 background              = gray100;  // Keep - darkest base
     constexpr ImVec4 backgroundInverse       = gray10;
     constexpr ImVec4 backgroundBrand         = blue60;
@@ -164,163 +164,26 @@ namespace gluten::theme::carbon_g100
 
     constexpr ImVec4 missingColorColor = magenta50;
 
-    constexpr float appTitlebarHeightMultiplier = 3.0f;
-    constexpr float padding                     = 8.0f;
-    constexpr ImVec2 noPadding                  = ImVec2(0, 0);
-    constexpr ImVec2 paddingVec                 = ImVec2(padding, padding);
-    constexpr ImVec2 verticalPaddingVec         = ImVec2(0, padding);
-
-    constexpr float rounding        = 8.0f;
-    constexpr float largerRounding   = rounding * 2;
-    constexpr float largestRounding = rounding * 3;
-    constexpr float noRounding      = 2.0f;
-
     inline void apply_colours()
     {
-        ImGuiStyle* style = &ImGui::GetStyle();
-
-        // Text
-        style->Colors[ImGuiCol_Text]         = textPrimary;
-        style->Colors[ImGuiCol_TextDisabled] = textDisabled;
-
-        // Backgrounds
-        style->Colors[ImGuiCol_MenuBarBg]         = background;  // Menu Bar (close buttons etc.)
-        style->Colors[ImGuiCol_WindowBg]          = layer01;     // Main windows background
-        style->Colors[ImGuiCol_ChildBg]           = background;
-        style->Colors[ImGuiCol_FrameBg]           = layer02;
-        style->Colors[ImGuiCol_PopupBg]           = layer02;
-        style->Colors[ImGuiCol_ScrollbarBg]       = background;
-        style->Colors[ImGuiCol_DockingEmptyBg]    = background;
-        style->Colors[ImGuiCol_TableRowBg]        = missingColorColor;
-        style->Colors[ImGuiCol_TableRowBgAlt]     = missingColorColor;
-        style->Colors[ImGuiCol_TableHeaderBg]     = missingColorColor;
-        style->Colors[ImGuiCol_TextSelectedBg]    = fieldHover01;
-        style->Colors[ImGuiCol_NavWindowingDimBg] = layer01;
-        style->Colors[ImGuiCol_ModalWindowDimBg]  = layer01;
-
-        // Tabs are both tabs inside a window
-        // and also when windows are docked, they are tabbed
-        style->Colors[ImGuiCol_Tab]                 = field02;      // actual tab
-        style->Colors[ImGuiCol_TabHovered]          = field01;      // actual tab and dock tab
-        style->Colors[ImGuiCol_TabActive]           = field01;      // actual tab and dock tab
-        style->Colors[ImGuiCol_TabSelectedOverline] = interactive;  // top line over dock tab
-        style->Colors[ImGuiCol_TabSelected]         = field01;      // actual tab and dock tab
-
-        style->Colors[ImGuiCol_TabUnfocused]       = missingColorColor;
-        style->Colors[ImGuiCol_TabUnfocusedActive] = missingColorColor;
-
-        style->Colors[ImGuiCol_TabDimmedSelected] = field01;  // selected dock tab
-        style->Colors[ImGuiCol_TabDimmed]         = background;
-
-        // Window Titles
-        style->Colors[ImGuiCol_TitleBg]          = background;
-        style->Colors[ImGuiCol_TitleBgActive]    = background;
-        style->Colors[ImGuiCol_TitleBgCollapsed] = background;
-
-        style->Colors[ImGuiCol_FrameBgHovered] = fieldHover01;
-        style->Colors[ImGuiCol_FrameBgActive]  = fieldHover01;
-
-        // Borders around elements / tabs
-        style->Colors[ImGuiCol_Border]       = borderSubtle00;
-        style->Colors[ImGuiCol_BorderShadow] = shadow;
-
-        // Scrollbar
-        style->Colors[ImGuiCol_ScrollbarGrab]        = layer03;
-        style->Colors[ImGuiCol_ScrollbarGrabHovered] = layerHover03;
-        style->Colors[ImGuiCol_ScrollbarGrabActive]  = layerActive03;
-
-        style->Colors[ImGuiCol_CheckMark]        = interactive;
-        style->Colors[ImGuiCol_SliderGrab]       = field03;
-        style->Colors[ImGuiCol_SliderGrabActive] = fieldHover03;
-
-        // Buttons
-        style->Colors[ImGuiCol_Button]        = interactive;
-        style->Colors[ImGuiCol_ButtonHovered] = interactiveHover;
-        style->Colors[ImGuiCol_ButtonActive]  = interactiveActive;
-
-        // Collapsing Headers
-        style->Colors[ImGuiCol_Header]        = layer02;
-        style->Colors[ImGuiCol_HeaderHovered] = layerHover02;
-        style->Colors[ImGuiCol_HeaderActive]  = layerActive02;
-
-        style->Colors[ImGuiCol_ResizeGrip]        = interactive;
-        style->Colors[ImGuiCol_ResizeGripHovered] = interactiveHover;
-        style->Colors[ImGuiCol_ResizeGripActive]  = interactiveActive;
-
-        style->Colors[ImGuiCol_PlotLines]            = missingColorColor;
-        style->Colors[ImGuiCol_PlotLinesHovered]     = missingColorColor;
-        style->Colors[ImGuiCol_PlotHistogram]        = interactive;    // slider
-        style->Colors[ImGuiCol_PlotHistogramHovered] = missingColorColor;
-
-        // Separators
-        style->Colors[ImGuiCol_Separator]        = borderStrong02;
-        style->Colors[ImGuiCol_SeparatorHovered] = borderStrong03;
-        style->Colors[ImGuiCol_SeparatorActive]  = borderStrong01;
-
-        style->Colors[ImGuiCol_TableBorderStrong] = borderStrong01;
-        style->Colors[ImGuiCol_TableBorderLight]  = borderSubtle01;
-
-        style->Colors[ImGuiCol_DockingPreview] = interactive;
-        style->Colors[ImGuiCol_DragDropTarget] = supportInfo;
-
-        style->Colors[ImGuiCol_NavHighlight]          = interactiveActive;
-        style->Colors[ImGuiCol_NavWindowingHighlight] = borderInteractive;  // CTRL+TAB and docking previews
-
-        //ImPlot::GetStyle().Colors[ImPlotCol_Fill] = green50;
+        gluten::theme::textPrimary  = textPrimary;
+        gluten::theme::textDisabled = textDisabled;
+        gluten::theme::background   = background;
+        gluten::theme::layer01      = layer01;
+        gluten::theme::layer02      = layer02;
+        gluten::theme::layer03      = layer03;
+        gluten::theme::field01      = field01;
+        gluten::theme::field02      = field02;
+        gluten::theme::field03      = field03;
+        gluten::theme::fieldHover01 = fieldHover01;
+        gluten::theme::fieldHover02 = fieldHover02;
+        gluten::theme::fieldHover03 = fieldHover03;
     }
 
     inline void apply_styles()
     {
-        ImGuiStyle* style = &ImGui::GetStyle();
-
-        style->Alpha         = 1.0f;
-        style->DisabledAlpha = 0.5f;
-
-        style->WindowPadding = ImVec2(padding, 0.0f);
-        style->FramePadding  = ImVec2(padding, padding * 1.5f);
-
-        style->WindowRounding    = rounding;
-        style->ChildRounding     = 0.0f;
-        style->PopupRounding     = rounding;
-        style->FrameRounding     = rounding;
-        style->ScrollbarRounding = rounding;
-        style->GrabRounding      = rounding;
-        style->TabRounding       = rounding;
-
-        style->SeparatorTextPadding;
-        style->DisplayWindowPadding = paddingVec;
-        style->DisplaySafeAreaPadding;
-        style->CellPadding       = paddingVec;
-        style->TouchExtraPadding = ImVec2(0, 0);
-
-        style->WindowBorderSize         = 2.0f;
-        style->WindowMinSize            = ImVec2(100, 100);
-        style->WindowTitleAlign         = ImVec2(0.1f, 0.5f);
-        style->WindowMenuButtonPosition = ImGuiDir_Right;
-        style->ChildBorderSize          = 2.0f;
-        style->PopupBorderSize          = 0.0f;
-        style->FrameBorderSize          = 0.0f;
-        style->ItemSpacing              = ImVec2(6, 8);
-        style->ItemInnerSpacing         = ImVec2(0, 0);
-        style->IndentSpacing            = 24.0f;
-        style->ColumnsMinSpacing        = 10.0f;
-        style->ScrollbarSize            = 18.0f;
-        style->GrabMinSize              = 12.0f;
-        style->LogSliderDeadzone;
-        style->TabBorderSize             = 0.0f;
-        style->TabBarBorderSize          = 1.0f;
-        style->TableAngledHeadersAngle   = 45.0f;
-        style->ColorButtonPosition;
-        style->ButtonTextAlign         = ImVec2(0.0f, 0.5f);
-        style->SelectableTextAlign     = ImVec2(0.5f, 0.5f);
-        style->SeparatorTextBorderSize = 1.0f;
-        style->SeparatorTextAlign      = ImVec2(0.5f, 0.5f);
-        style->DockingSeparatorSize    = 4.0f;
-        style->MouseCursorScale;
-        style->AntiAliasedLines;
-        style->AntiAliasedLinesUseTex;
-        style->AntiAliasedFill;
-        style->CurveTessellationTol;
-        style->CircleTessellationMaxError;
+        gluten::theme::padding = padding;
+        gluten::theme::noPadding = noPadding;
+        gluten::theme::rounding  = rounding;
     }
-}  // namespace gluten::theme::carbon_g100
+}  // namespace gluten::theme

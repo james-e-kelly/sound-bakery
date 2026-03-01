@@ -12,7 +12,7 @@ auto review_element::render_element(const ImRect& elementRect) -> bool
     {
         gluten::background background;
         background.set_element_background_color(m_backgroundColor.value())
-            .set_element_hover_color(gluten::theme::carbon_g100::fieldHover03);
+            .set_element_hover_color(gluten::theme::fieldHover03);
         m_backgroundColor.reset();
         background.render(elementRect);
     }
@@ -41,7 +41,7 @@ auto review_element::render_element(const ImRect& elementRect) -> bool
 
     reviewTitleText.render(inner.get_element_rect());
     {
-        gluten::imgui::scoped_color textCol(ImGuiCol_Text, gluten::theme::carbon_g100::textSecondary);
+        gluten::imgui::scoped_color textCol(ImGuiCol_Text, gluten::theme::textSecondary);
         reviewDescriptionText.render(inner.get_element_rect());
     }
     openReviewsText.render(inner.get_element_rect());

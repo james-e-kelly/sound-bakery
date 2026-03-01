@@ -2,8 +2,8 @@
 
 #include "app/app.h"
 #include "gluten/subsystems/widget_subsystem.h"
-#include "gluten/theme/carbon/carbon_theme_g100.h"
 #include "gluten/theme/theme.h"
+#include "gluten/theme/things/things.h"
 #include "gluten/widgets/root_widget.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -182,8 +182,10 @@ int renderer_subsystem::init_imgui()
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;    // Enable Multi-Viewport / Platform
     io.IniFilename = nullptr;
 
-    theme::carbon_g100::apply_styles();
-    theme::carbon_g100::apply_colours();
+    theme::things::apply_colours();
+
+    theme::apply_styles();
+    theme::apply_colours();
 
     return 0;
 }
@@ -240,7 +242,7 @@ void renderer_subsystem::tick_rendering(double deltaTime)
 {
     ZoneScoped;
 
-    static ImVec4 clear_color = gluten::theme::carbon_g100::background;
+    static ImVec4 clear_color = gluten::theme::background;
 
     // Rendering
     ImGui::Render();

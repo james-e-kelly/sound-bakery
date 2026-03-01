@@ -1,6 +1,6 @@
 #include "menu_bar.h"
 
-#include "gluten/theme/carbon/carbon_theme_g100.h"
+#include "gluten/theme/theme.h"
 #include "gluten/utils/imgui_util_structures.h"
 
 namespace menu_bar_utils
@@ -42,7 +42,7 @@ auto gluten::menu_bar::render_element(const ImRect& elementBox) -> bool
         ImGui::SetCursorScreenPos(topLeft);
     }
 
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, gluten::theme::carbon_g100::paddingVec);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, gluten::theme::paddingVec);
 
     return true;
 }

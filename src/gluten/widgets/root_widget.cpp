@@ -7,7 +7,6 @@
 #include "gluten/elements/menu_bar.h"
 #include "gluten/elements/text.h"
 #include "gluten/subsystems/renderer_subsystem.h"
-#include "gluten/theme/carbon/carbon_theme_g100.h"
 #include "gluten/theme/theme.h"
 #include "gluten/theme/walnut_icon.embed"
 #include "gluten/theme/window_images.embed"
@@ -39,7 +38,7 @@ namespace root_widget_utils
     static float titleBarHeight()
     {
         ImGuiContext* const context = ImGui::GetCurrentContext();
-        return context == nullptr ? 0.0f : context->FontSize * gluten::theme::carbon_g100::appTitlebarHeightMultiplier;
+        return context == nullptr ? 0.0f : context->FontSize * gluten::theme::appTitlebarHeightMultiplier;
     }
 
     constexpr float titleLogoWidth           = 64.0f;
@@ -190,13 +189,13 @@ void root_widget::start_implementation()
     m_windowRestoreIcon->set_element_max_size(ImVec2(16, 16));
 
     m_windowCloseIcon->set_element_hover_color(
-        theme::ColorWithMultipliedValue(ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::background), 2.f));
+        theme::color_with_multiplied_value(ImGui::ColorConvertFloat4ToU32(gluten::theme::background), 2.f));
     m_windowMinimiseIcon->set_element_hover_color(
-        theme::ColorWithMultipliedValue(ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::background), 2.f));
+        theme::color_with_multiplied_value(ImGui::ColorConvertFloat4ToU32(gluten::theme::background), 2.f));
     m_windowMaximiseIcon->set_element_hover_color(
-        theme::ColorWithMultipliedValue(ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::background), 2.f));
+        theme::color_with_multiplied_value(ImGui::ColorConvertFloat4ToU32(gluten::theme::background), 2.f));
     m_windowRestoreIcon->set_element_hover_color(
-        theme::ColorWithMultipliedValue(ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::background), 2.f));
+        theme::color_with_multiplied_value(ImGui::ColorConvertFloat4ToU32(gluten::theme::background), 2.f));
 }
 
 void root_widget::render_implementation()
@@ -260,7 +259,7 @@ void root_widget::draw_titlebar()
     const ImRect menuBarRect  = root_widget_utils::get_menu_bar_rect(titleBarRect);
 
     background topBarBackground;
-    topBarBackground.set_element_background_color(gluten::theme::carbon_g100::background);
+    topBarBackground.set_element_background_color(gluten::theme::background);
     topBarBackground.render(titleBarRect);
 
     if (m_renderLogo)

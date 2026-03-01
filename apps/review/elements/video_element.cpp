@@ -45,7 +45,7 @@ video_element::video_element(const std::filesystem::path& videoFile, int64_t fil
         m_videoImage = gluten::image(m_videoTexture, 1920, 1080);
 	}
 
-    m_videoControlsLayout.set_element_background_color(gluten::theme::carbon_g100::background);
+    m_videoControlsLayout.set_element_background_color(gluten::theme::background);
 
     m_videoCommentsLayout.set_element_padding(ImVec2(g_commentBubbleDiamter, 0.0f));
     m_videoTimelineLayout.set_element_padding(ImVec2(g_commentBubbleDiamter, 0.0f));
@@ -88,7 +88,7 @@ auto video_element::render_timeline() -> void
     {
         drawList->AddLine(ImVec2(progressLineStart.x, progressLineStart.y),
                           ImVec2(progressLineEnd.x, progressLineEnd.y),
-                          ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::textPrimary),
+                          ImGui::ColorConvertFloat4ToU32(gluten::theme::textPrimary),
                           g_progressLineThickness);
 
         const ImGuiID videoGrabHandleId = ImGui::GetID("##VideoDragHandle");
@@ -128,7 +128,7 @@ auto video_element::render_timeline() -> void
         if (outDrag.Max.x > outDrag.Min.x)
         {
             drawList->AddRectFilled(outDrag.Min, outDrag.Max,
-                                    ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::interactive), 0.0f);
+                                    ImGui::ColorConvertFloat4ToU32(gluten::theme::interactive), 0.0f);
         }        
     }
 }
@@ -147,7 +147,7 @@ auto video_element::render_comments() -> void
             rightMiddle.y += g_videoControlRowHeight / 2.0f;
 
             drawList->AddLine(leftMiddle, rightMiddle,
-                              ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::textPrimary), 1.0f);
+                              ImGui::ColorConvertFloat4ToU32(gluten::theme::textPrimary), 1.0f);
 
             const auto& comments = workspaceManager->get_all_comments_for_review(workspaceManager->get_selected_review().m_reviewId);
 
@@ -169,7 +169,7 @@ auto video_element::render_comments() -> void
                                     commentPosition + g_commentBubbleRadius, leftMiddle.y + g_commentBubbleRadius);
 
                                 drawList->AddCircleFilled(ImVec2(commentPosition, leftMiddle.y), g_commentBubbleRadius,
-                                                          ImGui::ColorConvertFloat4ToU32(gluten::theme::purple50));
+                                                          ImGui::ColorConvertFloat4ToU32(gluten::theme::supportWarning));
                                 ImGui::ItemAdd(circleRect, ImGui::GetID(comment.m_commentId));
                                 ImGui::SetItemTooltip(comment.m_comment.c_str());
 

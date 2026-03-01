@@ -17,13 +17,13 @@ protected:
 
     auto render_element(const ImRect& elementRect) -> bool override
     {
-        gluten::imgui::scoped_color borderColor(ImGuiCol_Border, gluten::theme::carbon_g100::textHelper);
+        gluten::imgui::scoped_color borderColor(ImGuiCol_Border, gluten::theme::textHelper);
 
         gluten::background background;
         background
             .set_element_border(2.0f, 5.0f)
-            .set_element_background_color(gluten::theme::carbon_g100::field02)
-            .set_element_hover_color(gluten::theme::carbon_g100::fieldHover02);
+            .set_element_background_color(gluten::theme::field02)
+            .set_element_hover_color(gluten::theme::fieldHover02);
 
         bool dropped = false;
 

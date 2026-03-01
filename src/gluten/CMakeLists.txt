@@ -37,6 +37,7 @@ set(GLUTEN_SOURCES
   subsystems/audio_subsystem.cpp
   subsystems/renderer_subsystem.cpp
   subsystems/widget_subsystem.cpp
+  theme/theme.cpp
   utils/imgui_util_functions.cpp
   theme/window_images.embed
   theme/walnut_icon.embed

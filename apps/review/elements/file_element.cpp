@@ -7,23 +7,23 @@ file_element::file_element(const gluten::anchor_preset& anchorPreset,
 {
     set_element_padding(ImVec2(0.0, 16.0f));
 
-    m_playButton.set_element_background_color(gluten::theme::carbon_g100::field01);
-    m_fileBackground.set_element_background_color(gluten::theme::carbon_g100::background);
-    m_controlButtonsLayout.set_element_background_color(gluten::theme::carbon_g100::background);
+    m_playButton.set_element_background_color(gluten::theme::field01);
+    m_fileBackground.set_element_background_color(gluten::theme::background);
+    m_controlButtonsLayout.set_element_background_color(gluten::theme::background);
 
     m_playButton.set_element_border(1.0f, 0.0f);
 
-    m_playButton.set_element_active_color(gluten::theme::carbon_g100::backgroundActive);
-    m_pauseButton.set_element_active_color(gluten::theme::carbon_g100::backgroundActive);
-    m_previousFrameButton.set_element_active_color(gluten::theme::carbon_g100::backgroundActive);
-    m_nextFrameButton.set_element_active_color(gluten::theme::carbon_g100::backgroundActive);
-    m_addCommentButton.set_element_active_color(gluten::theme::carbon_g100::layerActive01);
+    m_playButton.set_element_active_color(gluten::theme::backgroundActive);
+    m_pauseButton.set_element_active_color(gluten::theme::backgroundActive);
+    m_previousFrameButton.set_element_active_color(gluten::theme::backgroundActive);
+    m_nextFrameButton.set_element_active_color(gluten::theme::backgroundActive);
+    m_addCommentButton.set_element_active_color(gluten::theme::layerActive01);
 
-    m_playButton.set_element_hover_color(gluten::theme::carbon_g100::fieldHover01);
-    m_pauseButton.set_element_hover_color(gluten::theme::carbon_g100::backgroundHover);
-    m_previousFrameButton.set_element_hover_color(gluten::theme::carbon_g100::backgroundHover);
-    m_nextFrameButton.set_element_hover_color(gluten::theme::carbon_g100::backgroundHover);
-    m_addCommentButton.set_element_hover_color(gluten::theme::carbon_g100::layerHover01);
+    m_playButton.set_element_hover_color(gluten::theme::fieldHover01);
+    m_pauseButton.set_element_hover_color(gluten::theme::backgroundHover);
+    m_previousFrameButton.set_element_hover_color(gluten::theme::backgroundHover);
+    m_nextFrameButton.set_element_hover_color(gluten::theme::backgroundHover);
+    m_addCommentButton.set_element_hover_color(gluten::theme::layerHover01);
 
     m_filePositionText.set_element_alignment(ImVec2(-0.f, -0.5f));
     m_fileDurationText.set_element_alignment(ImVec2(-0.f, -0.5f));

@@ -1,6 +1,6 @@
 #include "property_drawer.h"
 
-#include "gluten/theme/carbon/carbon_theme_g100.h"
+#include "gluten/theme/theme.h"
 #include "gluten/utils/imgui_util_functions.h"
 #include "gluten/utils/imgui_util_structures.h"
 #include "imgui.h"
@@ -18,7 +18,7 @@ void property_drawer::draw_object(rttr::type type, rttr::instance instance)
     {
         gluten::imgui::indent_cursor();
 
-        const gluten::imgui::scoped_color innerItemsBorder(ImGuiCol_Border, gluten::theme::carbon_g100::layer02);
+        const gluten::imgui::scoped_color innerItemsBorder(ImGuiCol_Border, gluten::theme::layer02);
 
         if (ImGui::BeginTable(
                 "Properties", 2,

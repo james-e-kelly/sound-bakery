@@ -1,7 +1,7 @@
 #include "popup_widget.h"
 
 #include "gluten/elements/loading_spinner.h"
-#include "gluten/theme/carbon/carbon_theme_g100.h"
+#include "gluten/theme/theme.h"
 #include "gluten/utils/imgui_util_structures.h"
 
 auto gluten::popup_widget::open_popup() -> void
@@ -31,8 +31,8 @@ auto gluten::popup_widget::render_implementation() -> void
 {
     open_popup();
 
-    gluten::imgui::scoped_color inputTextBackground(ImGuiCol_FrameBg, gluten::theme::carbon_g100::layer01);
-    gluten::imgui::scoped_style popupPadding(ImGuiStyleVar_WindowPadding, ImVec2(gluten::theme::carbon_g100::paddingVec));
+    gluten::imgui::scoped_color inputTextBackground(ImGuiCol_FrameBg, gluten::theme::layer01);
+    gluten::imgui::scoped_style popupPadding(ImGuiStyleVar_WindowPadding, ImVec2(gluten::theme::paddingVec));
 
     ImVec2 center = ImGui::GetMainViewport()->GetCenter();
     ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));

@@ -5,7 +5,7 @@
 #include "audio_display_widget.h"
 #include "gluten/elements/image_button.h"
 #include "gluten/elements/toolbar.h"
-#include "gluten/theme/carbon/carbon_theme_g100.h"
+#include "gluten/theme/theme.h"
 #include "gluten/utils/imgui_util_structures.h"
 #include "imgui.h"
 #include "managers/project_manager.h"
@@ -57,7 +57,7 @@ void player_widget::start_implementation()
 void player_widget::render_implementation()
 {
     const gluten::imgui::scoped_font font(get_app()->get_font(gluten::fonts::regular_lucide_icons));
-    const gluten::imgui::scoped_style morePadding(ImGuiStyleVar_WindowPadding, gluten::theme::carbon_g100::paddingVec);
+    const gluten::imgui::scoped_style morePadding(ImGuiStyleVar_WindowPadding, gluten::theme::paddingVec);
 
     ImGui::Begin(fmt::format("{} - {}", s_lastPlayableSelection.get_name(), get_widget_name().data()).c_str());
 

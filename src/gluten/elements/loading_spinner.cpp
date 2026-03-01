@@ -1,6 +1,6 @@
 #include "loading_spinner.h"
 
-#include "gluten/theme/carbon/carbon_theme_g100.h"
+#include "gluten/theme/theme.h"
 
 #include "imspinner.h"
 

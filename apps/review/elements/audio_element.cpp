@@ -13,8 +13,8 @@ audio_element::audio_element(const std::filesystem::path& filePath,
                                     const int64_t fileId)
     : file_element(gluten::anchor_preset::stretch_full, filePath, fileId)
 {
-    m_audioBackground.set_element_background_color(gluten::theme::carbon_g100::layerHover01);
-    m_loudnessBackground.set_element_background_color(gluten::theme::gray100Hover);
+    m_audioBackground.set_element_background_color(gluten::theme::layerHover01);
+    m_loudnessBackground.set_element_background_color(gluten::theme::layer02);
 }
 
 auto audio_element::render_element(const ImRect& elementRect) -> bool
@@ -110,11 +110,11 @@ auto audio_element::render_waveform() -> void
 
                             if (minMax.first < -1.0f || minMax.second > 1.0f)
                             {
-                                drawList->AddLine(minLine, maxLine, ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::textError));
+                                drawList->AddLine(minLine, maxLine, ImGui::ColorConvertFloat4ToU32(gluten::theme::textError));
                             }
                             else
                             {
-                                drawList->AddLine(minLine, maxLine, ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::textHelper));
+                                drawList->AddLine(minLine, maxLine, ImGui::ColorConvertFloat4ToU32(gluten::theme::textHelper));
                             }
                         }
                     }
@@ -179,7 +179,7 @@ auto audio_element::render_comments() -> bool
                                     ImRect circleRect(commentPosition - g_commentBubbleRadius, commentBubbleCenterY - g_commentBubbleRadius, commentPosition + g_commentBubbleRadius, commentBubbleCenterY + g_commentBubbleRadius);
 
                                     drawList->AddCircleFilled(ImVec2(commentPosition, commentBubbleCenterY), g_commentBubbleRadius,
-                                                              ImGui::ColorConvertFloat4ToU32(gluten::theme::purple50));
+                                                              ImGui::ColorConvertFloat4ToU32(gluten::theme::supportWarning));
                                     ImGui::ItemAdd(circleRect, ImGui::GetID(comment.m_commentId));
                                     ImGui::SetItemTooltip(fmt::format("{}: {}", workspaceManager->get_user(comment.m_userId).m_displayName, comment.m_comment).c_str());
 

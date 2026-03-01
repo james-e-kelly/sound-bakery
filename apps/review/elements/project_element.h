@@ -16,7 +16,7 @@ public:
           m_closedReviews(closedReviews),
           m_archivedReviews(archivedReviews)
     {
-        set_element_background_color(gluten::theme::carbon_g100::field03);
+        set_element_background_color(gluten::theme::field03);
     }
 
 protected:

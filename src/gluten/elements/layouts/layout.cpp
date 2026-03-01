@@ -1,6 +1,6 @@
 #include "layout.h"
 
-#include "gluten/theme/carbon/carbon_theme_g100.h"
+#include "gluten/theme/theme.h"
 
 static ImVec2 operator+(const ImVec2& lhs, const ImVec2& rhs) { return ImVec2(lhs.x + rhs.x, lhs.y + rhs.y); }
 static ImVec2 operator-(const ImVec2& lhs, const ImVec2& rhs) { return ImVec2(lhs.x - rhs.x, lhs.y - rhs.y); }
@@ -178,7 +178,7 @@ bool gluten::layout::render_layout_element_internal(const ImRect& thisBox,
         {
             ImDrawList* const drawList = ImGui::GetWindowDrawList();
             drawList->AddRect(currentLayoutPos, currentLayoutPos + sizeGivenToElement,
-                                        ImGui::ColorConvertFloat4ToU32(gluten::theme::purple50));
+                                        ImGui::ColorConvertFloat4ToU32(gluten::theme::supportWarning));
         }
     }
 

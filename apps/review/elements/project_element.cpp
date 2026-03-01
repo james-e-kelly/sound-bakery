@@ -11,7 +11,7 @@ auto project_element::render_element(const ImRect& elementRect) -> bool
         gluten::background background;
         background
             .set_element_background_color(m_backgroundColor.value())
-            .set_element_hover_color(gluten::theme::carbon_g100::fieldHover03)
+            .set_element_hover_color(gluten::theme::fieldHover03)
             .set_element_rounding(m_elementRounding);
         m_backgroundColor.reset();
         background.render(elementRect);
@@ -50,7 +50,7 @@ auto project_element::render_element(const ImRect& elementRect) -> bool
 
     projectTitleText.render(contentRect);
     {
-        gluten::imgui::scoped_color textCol(ImGuiCol_Text, gluten::theme::carbon_g100::textSecondary);
+        gluten::imgui::scoped_color textCol(ImGuiCol_Text, gluten::theme::textSecondary);
         projectDescriptionText.render(contentRect);
     }
     openReviewsText.render(contentRect);
