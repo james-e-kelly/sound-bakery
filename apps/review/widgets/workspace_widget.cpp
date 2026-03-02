@@ -10,6 +10,8 @@
 #include "elements/inline_user_display_element.h"
 #include "elements/video_element.h"
 #include "elements/audio_element.h"
+#include "gluten/theme/things/things.h"
+#include "gluten/theme/carbon/carbon_theme_g100.h"
 #include "subsystems/video_subsystem.h"
 #include "widgets/create_comment_popup.h"
 #include "widgets/create_project_popup.h"
@@ -1298,13 +1300,15 @@ auto workspace_widget::render_menu_implementation() -> void
 
 auto workspace_widget::render_settings() -> void
 {
-    gluten::imgui::scoped_color bgColor(ImGuiCol_FrameBg, gluten::theme::layer03);
-    gluten::imgui::scoped_style padding(ImGuiStyleVar_WindowPadding, ImVec2(80.0f, 80.0f));
+    gluten::imgui::scoped_color bgColor(ImGuiCol_FrameBg, gluten::theme::layer01);
+    gluten::imgui::scoped_style padding(ImGuiStyleVar_WindowPadding, ImVec2(80.0f, 160.0f));
+
+    ImGui::SetCursorPos(ImVec2(m_innerLayout.get_current_layout_pos_local().x, m_innerLayout.get_current_layout_pos_local().y + 1.0f));  // + 1.0f to get rid of a weird line
 
     if (ImGui::BeginChild("SettingsContainer", ImVec2(0, 0), ImGuiChildFlags_AlwaysUseWindowPadding, ImGuiWindowFlags_NoScrollbar))
     {
         gluten::background settingsBackground;
-        settingsBackground.set_element_background_color(gluten::theme::layer02);
+        settingsBackground.set_element_background_color(gluten::theme::layer01);
         settingsBackground.render_window();
 
         if (ImGui::BeginTable("Settings", 2, ImGuiTableFlags_Resizable | ImGuiTableFlags_BordersInnerH | ImGuiTableFlags_SizingStretchProp))
@@ -1325,11 +1329,15 @@ auto workspace_widget::render_settings() -> void
                 if (ImGui::Selectable("Dark", &darkSelected))
                 {
                     m_userSettings->m_theme = review_app_theme::dark;
+                    gluten::theme::things::apply_colours();
+                    gluten::theme::apply_colours();
                 }
 
                 if (ImGui::Selectable("Light", &lightSelected))
                 {
                     m_userSettings->m_theme = review_app_theme::light;
+                    gluten::theme::carbon_g100::apply_colours();
+                    gluten::theme::apply_colours();
                 }
 
                 ImGui::EndCombo();

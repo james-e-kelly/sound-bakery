@@ -16,27 +16,27 @@ namespace gluten::theme::things
     static ImVec4 red    = hex_to_imgui_imvec4(0xe83e3e);
     static ImVec4 purple = hex_to_imgui_imvec4(0x9e86c8);
 
-    auto create_hover_color(const ImVec4& color) -> ImVec4
+    static auto create_hover_color(const ImVec4& color) -> ImVec4
     {
         return color_with_added_value(color, 0.08f);
     }
 
-    auto create_active_color(const ImVec4& color) -> ImVec4
+    static auto create_active_color(const ImVec4& color) -> ImVec4
     {
         return color_with_added_value(color, 0.1f);
     }
 
-    auto create_next_layer(const ImVec4& color) -> ImVec4
+    static auto create_next_layer(const ImVec4& color) -> ImVec4
     {
         return color_with_multiplied_saturation(color_with_added_value(color, 0.05f), 0.88f);
     }
 
-    auto create_field_color(const ImVec4& color) -> ImVec4
+    static auto create_field_color(const ImVec4& color) -> ImVec4
     {
         return color_with_multiplied_saturation(color, 1.15f);
     }
 
-    auto create_layer_accent(const ImVec4& color) -> ImVec4
+    static auto create_layer_accent(const ImVec4& color) -> ImVec4
     {
         return color_with_multiplied_saturation(color_with_added_value(color, 0.06f), 1.10f);
     }
