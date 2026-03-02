@@ -2,8 +2,8 @@
 
 #include "app/app.h"
 #include "gluten/subsystems/widget_subsystem.h"
-#include "gluten/theme/theme.h"
 #include "gluten/theme/things/things.h"
+#include "gluten/theme/carbon/carbon_theme_g100.h"
 #include "gluten/widgets/root_widget.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -182,6 +182,7 @@ int renderer_subsystem::init_imgui()
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;    // Enable Multi-Viewport / Platform
     io.IniFilename = nullptr;
 
+    //theme::carbon_g100::apply_colours();
     theme::things::apply_colours();
 
     theme::apply_styles();

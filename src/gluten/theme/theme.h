@@ -79,14 +79,14 @@ namespace gluten::theme
         return ImColor::HSV(std::min(hue + delta, 1.0f), sat, val);
     }
 
-    consteval ImVec4 adjust_alpha(const ImVec4& color, const float& alpha)
+    inline ImVec4 adjust_alpha(const ImVec4& color, const float& alpha)
     {
         return ImVec4(color.x, color.y, color.z, alpha);
     }
 
-    consteval ImVec4 hex_to_imgui_imvec4(const unsigned long& hex)
+    inline ImVec4 hex_to_imgui_imvec4(const unsigned long& hex)
     {
-        const float s = 1.0f / 255.0f;
+        constexpr float s = 1.0f / 255.0f;
 
         // The RGB order is backwards here -> BGR
         // Also, set alpha to 1 as the carbon hex values don't hold alpha and therefore
