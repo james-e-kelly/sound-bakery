@@ -95,6 +95,8 @@ namespace gluten::theme
     ImVec4 interactive = missingColorColor;
     ImVec4 interactiveHover = missingColorColor;
     ImVec4 interactiveActive = missingColorColor;
+    ImVec4 interactiveSecondary = missingColorColor;
+    ImVec4 interactiveSecondaryHover = missingColorColor;
     ImVec4 highlight = missingColorColor;
     ImVec4 overlay = missingColorColor;
     ImVec4 toggleOff = missingColorColor;

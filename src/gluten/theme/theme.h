@@ -239,6 +239,8 @@ namespace gluten::theme
     extern ImVec4 interactive;
     extern ImVec4 interactiveHover;
     extern ImVec4 interactiveActive;
+    extern ImVec4 interactiveSecondary;
+    extern ImVec4 interactiveSecondaryHover;
     extern ImVec4 highlight;
     extern ImVec4 overlay;
     extern ImVec4 toggleOff;

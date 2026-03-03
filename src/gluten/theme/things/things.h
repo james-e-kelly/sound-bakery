@@ -98,8 +98,13 @@ namespace gluten::theme::things
         gluten::theme::supportSuccess = green;
         gluten::theme::supportWarning = yellow;
 
-        gluten::theme::interactive = gluten::theme::layer03;
-        gluten::theme::interactiveHover  = gluten::theme::layerHover03;
-        gluten::theme::interactiveActive = gluten::theme::layerActive03;
+        gluten::theme::interactive = blue;
+        gluten::theme::interactiveHover  = create_hover_color(blue);
+        gluten::theme::interactiveActive = create_active_color(blue);
+
+        gluten::theme::interactiveSecondary = gluten::theme::layer01;
+        gluten::theme::interactiveSecondaryHover = gluten::theme::layerHover01;
+
+        gluten::theme::shadow = ImVec4(borderStrong01.x, borderStrong01.y, borderStrong01.z, 0.5f);
     }
 }

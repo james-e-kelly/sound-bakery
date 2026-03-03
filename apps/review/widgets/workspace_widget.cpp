@@ -604,6 +604,12 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
 
             ImGui::SameLine(0.0f, 10.0f);
 
+            gluten::imgui::scoped_color buttonCol(ImGuiCol_Button, gluten::theme::interactiveSecondary);
+            gluten::imgui::scoped_color buttonHovCol(ImGuiCol_ButtonHovered, gluten::theme::interactiveSecondaryHover);
+            gluten::imgui::scoped_color buttonSelectCol(ImGuiCol_ButtonActive, gluten::theme::interactiveActive);
+            gluten::imgui::scoped_color border(ImGuiCol_Border, gluten::theme::borderStrong01);
+            gluten::imgui::scoped_style frameBorder(ImGuiStyleVar_FrameBorderSize, 2.0f);
+
             if (ImGui::Button("Collapse All"))
             {
                 collapseAll = true;
@@ -999,10 +1005,18 @@ void workspace_widget::render_review_description(const review_data& selectedRevi
                                                                                             : gluten::theme::supportSuccess);
     m_descriptionBoxButtonsLayout.render(m_descriptionBoxLayout.get_element_rect());
 
+    constexpr float buttonsScale = 1.25f;
+
     if (std::shared_ptr<workspace_manager> workspaceManager = m_workspaceManager.lock())
     {
         if (selectedReview.m_reviewStatus == review_status::open && m_userSettings->m_loggedInUser.m_privileges > user_privileges::guest)
         {
+            gluten::imgui::scoped_color_stack buttonColor(ImGuiCol_Button, gluten::theme::interactiveSecondary, 
+                ImGuiCol_ButtonHovered, gluten::theme::interactiveSecondaryHover,
+                ImGuiCol_Border, gluten::theme::borderStrong01);
+
+            descriptionEditButton.set_element_content_scale(buttonsScale);
+
             if (m_descriptionBoxButtonsLayout.render_layout_element_pixels_horizontal(&descriptionEditButton, 30.0f))
             {
                 static std::shared_ptr<update_review_popup> updateProjectPopup;
@@ -1014,6 +1028,8 @@ void workspace_widget::render_review_description(const review_data& selectedRevi
                     updateProjectPopup->open_popup();
                 }
             }
+
+            m_descriptionBoxButtonsLayout.render_spacer_pixels(7.5f, 0.0f);
         }
 
         const auto& reviewers = workspaceManager->get_review_users(selectedReview.m_reviewId);
@@ -1031,34 +1047,44 @@ void workspace_widget::render_review_description(const review_data& selectedRevi
                 gluten::button noVoteButton(ICON_LC_MINUS);
                 gluten::button upVoteButton(ICON_LC_THUMBS_UP);
 
-                {
-                    gluten::imgui::scoped_color buttonCol(ImGuiCol_Button, gluten::theme::supportSuccess);
-                    gluten::imgui::scoped_color buttonHovCol(ImGuiCol_ButtonHovered, gluten::theme::supportSuccess);
-                    gluten::imgui::scoped_color buttonSelectCol(ImGuiCol_ButtonActive, gluten::theme::supportSuccess);
+                downVoteButton.set_element_content_scale(buttonsScale);
+                noVoteButton.set_element_content_scale(buttonsScale);
+                upVoteButton.set_element_content_scale(buttonsScale);
 
+                gluten::imgui::scoped_color_stack buttonColor(ImGuiCol_Button, gluten::theme::interactiveSecondary,
+                                                              ImGuiCol_ButtonHovered, gluten::theme::interactiveSecondaryHover,
+                                                              ImGuiCol_ButtonActive, gluten::theme::layerActive01,
+                                                              ImGuiCol_Border, gluten::theme::borderStrong01);
+
+                {
                     if (m_descriptionBoxButtonsLayout.render_layout_element_pixels_horizontal(
                             &upVoteButton, 30.0f))
                     {
                         workspaceManager->set_review_vote(selectedReview.m_reviewId, m_userSettings->m_loggedInUser.m_userId, review_vote::upvote);
                     }
-                }
 
-                if (m_descriptionBoxButtonsLayout.render_layout_element_pixels_horizontal(
-                        &noVoteButton, 30.0f))
-                {
-                    workspaceManager->set_review_vote(selectedReview.m_reviewId, m_userSettings->m_loggedInUser.m_userId, review_vote::no_vote);
+                    ImGui::SetItemTooltip("Vote up this review");
                 }
 
                 {
-                    gluten::imgui::scoped_color buttonCol(ImGuiCol_Button, gluten::theme::supportError);
-                    gluten::imgui::scoped_color buttonHovCol(ImGuiCol_ButtonHovered, gluten::theme::supportError);
-                    gluten::imgui::scoped_color buttonSelectCol(ImGuiCol_ButtonActive, gluten::theme::supportError);
+                    
 
+                    if (m_descriptionBoxButtonsLayout.render_layout_element_pixels_horizontal(&noVoteButton, 30.0f))
+                    {
+                        workspaceManager->set_review_vote(selectedReview.m_reviewId, m_userSettings->m_loggedInUser.m_userId, review_vote::no_vote);
+                    }
+
+                    ImGui::SetItemTooltip("Clear the vote on this review");
+                }
+
+                {
                     if (m_descriptionBoxButtonsLayout.render_layout_element_pixels_horizontal(
                             &downVoteButton, 30.0f))
                     {
                         workspaceManager->set_review_vote(selectedReview.m_reviewId, m_userSettings->m_loggedInUser.m_userId, review_vote::downvote);
                     }
+
+                    ImGui::SetItemTooltip("Vote down this review");
                 }
             }
         }
@@ -1067,9 +1093,9 @@ void workspace_widget::render_review_description(const review_data& selectedRevi
 
         ImGui::SetCursorScreenPos(m_descriptionBoxButtonsLayout.get_current_layout_pos());
 
-        gluten::imgui::scoped_color buttonCol(ImGuiCol_Button, gluten::theme::interactive);
-        gluten::imgui::scoped_color buttonHovCol(ImGuiCol_ButtonHovered, gluten::theme::interactiveHover);
-        gluten::imgui::scoped_color buttonSelectCol(ImGuiCol_ButtonActive, gluten::theme::interactiveActive);
+        gluten::imgui::scoped_color buttonCol(ImGuiCol_Button, gluten::theme::layer03);
+        gluten::imgui::scoped_color buttonHovCol(ImGuiCol_ButtonHovered, gluten::theme::layerHover03);
+        gluten::imgui::scoped_color buttonSelectCol(ImGuiCol_ButtonActive, gluten::theme::layerActive03);
 
         if (ImGui::BeginCombo("Status", selectedReview.m_reviewStatus == review_status::open ? "Open" : selectedReview.m_reviewStatus == review_status::closed ? "Closed" : "Archived"))
         {

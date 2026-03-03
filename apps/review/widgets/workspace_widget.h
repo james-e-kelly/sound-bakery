@@ -87,7 +87,7 @@ private:
     gluten::background reviewContent;
 
     gluten::button editReviewersButton = gluten::button("Edit " ICON_LC_PENCIL, false, gluten::anchor_preset::right_top);
-    gluten::button descriptionEditButton = gluten::button("Edit " ICON_LC_PENCIL_LINE, false, gluten::element::anchor_preset::right_top);
+    gluten::button descriptionEditButton = gluten::button(ICON_LC_PENCIL_LINE  " Edit", false, gluten::element::anchor_preset::right_top);
     gluten::button editUserButton = gluten::button("Edit " ICON_LC_PENCIL);
     gluten::button changePasswordButton = gluten::button("Change Password " ICON_LC_PENCIL);
     gluten::button deleteUserButton = gluten::button("Delete " ICON_LC_USER_ROUND_X);
