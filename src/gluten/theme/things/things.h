@@ -90,7 +90,7 @@ namespace gluten::theme::things
 
         gluten::theme::borderInteractive = color_with_added_value(base00, 0.30f);
 
-        gluten::theme::textPrimary = white;
+        gluten::theme::textPrimary = color_with_multiplied_saturation(color_with_added_value(base00, 0.75f), 0.5f);
         gluten::theme::textSecondary = color_with_multiplied_value(gluten::theme::textPrimary, 0.8f);
         gluten::theme::textDisabled  = color_with_multiplied_value(gluten::theme::textPrimary, 0.5f);
 
