@@ -12,7 +12,7 @@ gluten::menu_bar::menu_bar() : element(anchor_preset::stretch_full) {}
 
 gluten::menu_bar::~menu_bar() { end_menu_bar(); }
 
-auto gluten::menu_bar::render_element(const ImRect& elementBox) -> bool
+auto gluten::menu_bar::render_element(const element_render_info& renderInfo) -> bool
 {
     if (ImGuiWindow* const window = ImGui::GetCurrentWindow())
     {
@@ -24,20 +24,20 @@ auto gluten::menu_bar::render_element(const ImRect& elementBox) -> bool
         ImGui::BeginGroup();
         ImGui::PushID(menu_bar_utils::menubar_id);
 
-        ImGui::PushClipRect(elementBox.Min, elementBox.Max, true);
+        ImGui::PushClipRect(renderInfo.elementBox.Min, renderInfo.elementBox.Max, true);
 
         window->DC.LayoutType       = ImGuiLayoutType_Horizontal;
         window->DC.NavLayerCurrent  = ImGuiNavLayer_Menu;
         window->DC.MenuBarAppending = true;
 
-        const float height         = elementBox.GetSize().y;
+        const float height         = renderInfo.elementBox.GetSize().y;
         const float halfHeight     = height / 2.0f;
         const float textHeight     = ImGui::GetTextLineHeight();
         const float textHalfHeight = textHeight / 2.0f;
 
-        const float desiredY = elementBox.Min.y + halfHeight - textHalfHeight;
+        const float desiredY = renderInfo.elementBox.Min.y + halfHeight - textHalfHeight;
 
-        ImVec2 topLeft = elementBox.GetTL();
+        ImVec2 topLeft = renderInfo.elementBox.GetTL();
         topLeft.y      = desiredY;
         ImGui::SetCursorScreenPos(topLeft);
     }

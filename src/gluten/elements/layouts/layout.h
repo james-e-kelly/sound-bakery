@@ -63,9 +63,9 @@ namespace gluten
     private:
         void setup_layout_begin(const ImRect& thisBox);
 
-        bool render_element(const ImRect& info) override 
+        bool render_element(const element_render_info& renderInfo) override 
         {
-            ImGui::Dummy(info.GetSize());
+            ImGui::Dummy(renderInfo.elementBox.GetSize());
             return false; 
         }
 

@@ -29,7 +29,7 @@ namespace gluten
         image(const void* data, std::size_t dataSize);
         ~image();
 
-        bool render_element(const ImRect& parent) override;
+        bool render_element(const element_render_info& renderInfo) override;
         void release();
 
         auto get_element_content_size(const ImVec2& parentSize) -> ImVec2 const override;

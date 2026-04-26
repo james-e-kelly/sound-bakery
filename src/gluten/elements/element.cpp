@@ -254,13 +254,14 @@ bool gluten::element::render(const ImRect& parent)
     const ImRect elementBox = (elementBoxes.first * m_scale) + m_translation;
     const ImRect elementBoxNoPadding = (elementBoxes.second * m_scale) + m_translation;
     m_currentRect = elementBox;
-
+    
     ImDrawList* const windowDrawList     = ImGui::GetWindowDrawList();
 
     ImGui::SetCursorScreenPos(elementBoxNoPadding.Min);
-    ImGui::Dummy(elementBoxNoPadding.GetSize());    
+    ImGui::Dummy(elementBoxNoPadding.GetSize()); 
     ImGui::SetCursorScreenPos(elementBox.Min);
 
+    const bool isItemVisible = ImGui::IsRectVisible(elementBox.Min, elementBox.Max);
     const bool hovered = ImGui::IsMouseHoveringRect(elementBox.Min, elementBox.Max);
 
     if (windowDrawList && m_borderSize.has_value())
@@ -301,7 +302,11 @@ bool gluten::element::render(const ImRect& parent)
         }
     }
 
-    const bool activated = render_element(elementBox);
+    element_render_info renderInfo;
+    renderInfo.elementBox = elementBox;
+    renderInfo.isVisible  = isItemVisible;
+
+    const bool activated = render_element(renderInfo);
 
     if (activated && hovered && m_activeColor.has_value())
     {

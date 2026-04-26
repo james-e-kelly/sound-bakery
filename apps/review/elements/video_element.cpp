@@ -51,19 +51,19 @@ video_element::video_element(const std::filesystem::path& videoFile, int64_t fil
     m_videoTimelineLayout.set_element_padding(ImVec2(g_commentBubbleDiamter, 0.0f));
 }
 
-auto video_element::render_element(const ImRect& elementRect) -> bool
+auto video_element::render_element(const gluten::element_render_info& renderInfo) -> bool
 {
-    file_element::render_element(elementRect);
+    file_element::render_element(renderInfo);
 
     std::shared_ptr<video_subsystem> videoSubsystem = m_videoSubsystem.lock();
-    if (!videoSubsystem)
+    if (!videoSubsystem || !renderInfo.isVisible)
     {
         return false;
     }
 
-    m_videoImage.render(elementRect);
+    m_videoImage.render(renderInfo.elementBox);
 
-    render_layouts(elementRect);
+    render_layouts(renderInfo.elementBox);
     const bool newComment = render_controls();
     render_timeline();
     render_comments();

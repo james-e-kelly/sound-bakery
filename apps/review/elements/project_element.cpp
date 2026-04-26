@@ -2,7 +2,7 @@
 
 #include "managers/workspace_manager.h"
 
-auto project_element::render_element(const ImRect& elementRect) -> bool
+auto project_element::render_element(const gluten::element_render_info& renderInfo) -> bool
 {
     gluten::imgui::scoped_id id(ImGui::GetID(m_projectName.c_str()));
 
@@ -14,10 +14,10 @@ auto project_element::render_element(const ImRect& elementRect) -> bool
             .set_element_hover_color(gluten::theme::fieldHover03)
             .set_element_rounding(m_elementRounding);
         m_backgroundColor.reset();
-        background.render(elementRect);
+        background.render(renderInfo.elementBox);
     }
 
-    ImRect contentRect = elementRect;
+    ImRect contentRect = renderInfo.elementBox;
     contentRect.Expand(ImVec2(-5.0f, -5.0f));
 
     gluten::text projectTitleText(m_projectName.c_str(), ImVec2(0.0f, 0.5f),
@@ -55,7 +55,7 @@ auto project_element::render_element(const ImRect& elementRect) -> bool
     }
     openReviewsText.render(contentRect);
 
-    const bool pressed = button.render(elementRect);
+    const bool pressed = button.render(renderInfo.elementBox);
 
     if (ImGui::BeginPopupContextItem("Project Context"))
     {

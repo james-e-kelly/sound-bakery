@@ -66,7 +66,7 @@ auto gluten::text::pre_render_element() -> void
     }
 }
 
-bool gluten::text::render_element(const ImRect& parent)
+bool gluten::text::render_element(const element_render_info& renderInfo)
 {
     if (!m_displayText.empty())
     {
@@ -87,17 +87,17 @@ bool gluten::text::render_element(const ImRect& parent)
                 {
                     // TODO: Make truncation faster or cached. Without testing, this seems like a slow approach
 
-                    const float currentHeight = parent.GetHeight();
+                    const float currentHeight = renderInfo.elementBox.GetHeight();
                     
                     m_truncatedText = m_displayText;
 
-                    textSize = ImGui::CalcTextSize(m_truncatedText.c_str(), nullptr, false, parent.GetWidth());
+                    textSize = ImGui::CalcTextSize(m_truncatedText.c_str(), nullptr, false, renderInfo.elementBox.GetWidth());
 
                     while (textSize.y > currentHeight && textSize.y > 0.0f && !m_truncatedText.empty())
                     {
                         remove_last_word(m_truncatedText);
                         const std::string sizeTestString = m_truncatedText + "...";
-                        textSize = ImGui::CalcTextSize(sizeTestString.c_str(), nullptr, false, parent.GetWidth());
+                        textSize                         = ImGui::CalcTextSize(sizeTestString.c_str(), nullptr, false, renderInfo.elementBox.GetWidth());
                     }
 
                     if (m_displayText != m_truncatedText)
@@ -107,7 +107,7 @@ bool gluten::text::render_element(const ImRect& parent)
 
                     if (m_url.empty())
                     {
-                        drawList->AddText(context.Font, context.FontSize, textPos, ImGui::GetColorU32(ImGuiCol_Text), m_truncatedText.c_str(), nullptr, parent.GetWidth());
+                        drawList->AddText(context.Font, context.FontSize, textPos, ImGui::GetColorU32(ImGuiCol_Text), m_truncatedText.c_str(), nullptr, renderInfo.elementBox.GetWidth());
                     }
                     else
                     {
@@ -117,11 +117,11 @@ bool gluten::text::render_element(const ImRect& parent)
                 }
                 else
                 {
-                    textSize = ImGui::CalcTextSize(m_displayText.c_str(), nullptr, false, parent.GetWidth());
+                    textSize = ImGui::CalcTextSize(m_displayText.c_str(), nullptr, false, renderInfo.elementBox.GetWidth());
 
                     if (m_url.empty())
                     {
-                        drawList->AddText(context.Font, context.FontSize, textPos, ImGui::GetColorU32(ImGuiCol_Text), m_displayText.c_str(), nullptr, parent.GetWidth());
+                        drawList->AddText(context.Font, context.FontSize, textPos, ImGui::GetColorU32(ImGuiCol_Text), m_displayText.c_str(), nullptr, renderInfo.elementBox.GetWidth());
                     }
                     else
                     {
@@ -154,11 +154,15 @@ bool gluten::text::render_element(const ImRect& parent)
         }
     }
 
+    return false;
+}
+
+auto gluten::text::post_render_element() -> void
+{
     if (m_font.has_value())
     {
         ImGui::PopFont();
     }
-    return false;
 }
 
 auto gluten::text::get_element_content_size(const ImVec2& parentSize) -> ImVec2 const { return ImGui::CalcTextSize(m_displayText.c_str()); }

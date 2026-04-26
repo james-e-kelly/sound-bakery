@@ -18,7 +18,7 @@ namespace gluten
 		auto get_open() const -> bool;
 
 	protected:
-        auto render_element(const ImRect& parentRect) -> bool override;
+        auto render_element(const element_render_info& renderInfo) -> bool override;
 		auto get_element_content_size(const ImVec2& parentSize) -> ImVec2 const override
 		{
             const ImVec2 textSize = ImGui::CalcTextSize(m_label.c_str());

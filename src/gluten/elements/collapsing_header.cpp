@@ -28,7 +28,7 @@ auto gluten::collapsing_header::get_open() const -> bool
     return false;
 }
 
-auto gluten::collapsing_header::render_element(const ImRect& parentRect) -> bool
+auto gluten::collapsing_header::render_element(const element_render_info& renderInfo) -> bool
 {
     gluten::imgui::scoped_id id(m_label.c_str());
 
@@ -36,11 +36,11 @@ auto gluten::collapsing_header::render_element(const ImRect& parentRect) -> bool
     background.set_element_background_color(ImGui::GetStyleColorVec4(ImGuiCol_Header));
     background.set_element_hover_color(ImGui::GetStyleColorVec4(ImGuiCol_HeaderHovered));
     background.set_element_rounding(m_elementRounding);
-    background.render(parentRect);
+    background.render(renderInfo.elementBox);
 
     gluten::element inner(element::anchor_preset::stretch_full);
     inner.set_element_padding(ImVec2(4.0f, 4.0f));
-    inner.render(parentRect);
+    inner.render(renderInfo.elementBox);
 
     const float text_offset_x = ImGui::GetCurrentContext()->FontSize + ImGui::GetStyle().FramePadding.x;
 
@@ -59,7 +59,7 @@ auto gluten::collapsing_header::render_element(const ImRect& parentRect) -> bool
     ImGui::RenderArrow(ImGui::GetWindowDrawList(), ImVec2(inner.get_element_rect().Min.x, inner.get_element_rect().Min.y + (inner.get_element_rect().GetHeight() / 2.0f) - (ImGui::GetWindowDrawList()->_Data->FontSize / 2.0f)), ImGui::GetColorU32(ImGuiCol_Text), open ? ImGuiDir_Down : ImGuiDir_Right);
 
     gluten::button button("##CollapsingHeaderButton", true, anchor_preset::stretch_full);
-    if (button.render(parentRect))
+    if (button.render(renderInfo.elementBox))
     {
         open = !open;
         storage->SetBool(ImGui::GetID(m_label.c_str()), open);

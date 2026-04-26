@@ -12,6 +12,6 @@ namespace gluten
         loading_spinner() : element(anchor_preset::stretch_full) {}
 
 	protected:
-        auto render_element(const ImRect& elementBox) -> bool override;
+        auto render_element(const element_render_info& renderInfo) -> bool override;
 	};
 }

@@ -2,7 +2,7 @@
 
 #include "managers/workspace_manager.h"
 
-auto review_element::render_element(const ImRect& elementRect) -> bool
+auto review_element::render_element(const gluten::element_render_info& renderInfo) -> bool
 {
     gluten::imgui::scoped_id id(ImGui::GetID(m_review.m_reviewId));
 
@@ -14,12 +14,12 @@ auto review_element::render_element(const ImRect& elementRect) -> bool
         background.set_element_background_color(m_backgroundColor.value())
             .set_element_hover_color(gluten::theme::fieldHover03);
         m_backgroundColor.reset();
-        background.render(elementRect);
+        background.render(renderInfo.elementBox);
     }
 
     gluten::element inner(gluten::element::anchor_preset::stretch_full);
     inner.set_element_padding(ImVec2(5.0f, 5.0f));
-    inner.render(elementRect);
+    inner.render(renderInfo.elementBox);
 
     gluten::text reviewTitleText(m_review.m_reviewName.c_str(), ImVec2(0.0f, -0.25f), anchor_preset::left_top);
     reviewTitleText.set_font(gluten::fonts::title).set_element_content_font_size(18.0f);
@@ -46,7 +46,7 @@ auto review_element::render_element(const ImRect& elementRect) -> bool
     }
     openReviewsText.render(inner.get_element_rect());
 
-    const bool pressed = button.render(elementRect);
+    const bool pressed = button.render(renderInfo.elementBox);
 
     ImGui::EndGroup();
 

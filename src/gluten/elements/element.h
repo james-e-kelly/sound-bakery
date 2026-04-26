@@ -159,6 +159,12 @@ namespace gluten
         void set_achor_from_preset(const anchor_preset& preset);
     };
 
+    struct element_render_info
+    {
+        ImRect  elementBox;     //< Box the element should render inside
+        bool    isVisible;      //< Whether this element is visible. If invisible, you can skip rendering and just add dummy elements to keep the same sizing
+    };
+
     /**
      * @brief Defines a UI element.
      *
@@ -219,7 +225,7 @@ namespace gluten
 
         virtual auto pre_render_element() -> void {}
         virtual auto post_render_element() -> void {}
-        virtual auto render_element(const ImRect& elementBox) -> bool { return false; }
+        virtual auto render_element(const element_render_info& renderInfo) -> bool { return false; }
 
         static ImVec2 get_anchor_start_position(const ImVec2& containerPosition, const ImVec2& containerSize, const anchor_info& anchor);
         static ImVec2 get_anchor_end_position(const ImVec2& startPosition, const ImVec2& containerPosition, const ImVec2& containerSize, const anchor_info& anchor);
@@ -259,6 +265,6 @@ namespace gluten
         background() : element(anchor_preset::stretch_full) {}
 
     protected:
-        auto render_element(const ImRect& elementBox) -> bool override { return false; }
+        auto render_element(const element_render_info& renderInfo) -> bool override { return false; }
     };
 }  // namespace gluten

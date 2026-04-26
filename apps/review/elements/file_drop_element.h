@@ -15,7 +15,7 @@ protected:
         return ImVec2(xSize, 100);
     }
 
-    auto render_element(const ImRect& elementRect) -> bool override
+    auto render_element(const gluten::element_render_info& renderInfo) -> bool override
     {
         gluten::imgui::scoped_color borderColor(ImGuiCol_Border, gluten::theme::textHelper);
 
@@ -67,8 +67,8 @@ protected:
         gluten::text text(m_displayText.empty() ? "Drop Here" : m_displayText.c_str(), ImVec2(0.5f, 0.5f),
                           anchor_preset::center_middle);
 
-        background.render(elementRect);
-        text.render(elementRect);
+        background.render(renderInfo.elementBox);
+        text.render(renderInfo.elementBox);
 
         ImVec2 elementEnd = get_element_rect_local().GetBL();
         elementEnd.y += ImGui::GetCurrentContext()->Style.FramePadding.y;

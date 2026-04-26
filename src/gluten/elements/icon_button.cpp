@@ -15,13 +15,13 @@ gluten::icon_button::icon_button(const char* buttonID, const char* icon, fonts f
         .set_element_alignment(ImVec2(0.5f, 0.5f));
 }
 
-bool gluten::icon_button::render_element(const ImRect& parent)
+bool gluten::icon_button::render_element(const element_render_info& renderInfo)
 {
     ImGui::BeginGroup();
-    m_button.set_element_min_size(m_text.get_element_content_size(parent.GetSize()));
-    const bool buttonActivated = m_button.render(parent);
+    m_button.set_element_min_size(m_text.get_element_content_size(renderInfo.elementBox.GetSize()));
+    const bool buttonActivated = m_button.render(renderInfo.elementBox);
     m_text.set_element_content_scale(get_element_scale());
-    m_text.render(parent);
+    m_text.render(renderInfo.elementBox);
     ImGui::EndGroup();
     return buttonActivated;
 }

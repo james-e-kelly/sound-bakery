@@ -19,7 +19,7 @@ public:
     }
 
 protected:
-    auto render_element(const ImRect& parentRect) -> bool override;
+    auto render_element(const gluten::element_render_info& renderInfo) -> bool override;
 
 private:
     gluten::image_render m_render = gluten::image_render::circular;
@@ -33,7 +33,7 @@ public:
     logged_in_user_element(const std::string& userEmail) : element(element::anchor_preset::stretch_full), m_userEmailAddress(userEmail) {}
 
 protected:
-    auto render_element(const ImRect& parentRect) -> bool override;
+    auto render_element(const gluten::element_render_info& renderInfo) -> bool override;
 
 private:
     std::string m_userEmailAddress;
@@ -54,7 +54,7 @@ public:
     }
 
 protected:
-    auto render_element(const ImRect& parentRect) -> bool override;
+    auto render_element(const gluten::element_render_info& renderInfo) -> bool override;
 
 private:
     std::string m_userEmailAddress;

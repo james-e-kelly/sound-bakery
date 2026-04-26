@@ -40,17 +40,17 @@ namespace gluten
 
     image::~image() { release(); }
 
-    bool image::render_element(const ImRect& elementRect)
+    bool gluten::image::render_element(const element_render_info& renderInfo)
     {
         if (m_openGlId != 0 && m_width > 0 && m_height > 0)
         {
             if (ImDrawList* const drawList = ImGui::GetWindowDrawList())
             {
-                const ImVec2 elementRectSize = elementRect.GetSize();
-                const ImVec2 imageSize = get_element_content_size(elementRect.GetSize());
+                const ImVec2 elementRectSize = renderInfo.elementBox.GetSize();
+                const ImVec2 imageSize       = get_element_content_size(renderInfo.elementBox.GetSize());
                 
-                const float newStartX = elementRect.Min.x + (elementRectSize.x / 2) - (imageSize.x / 2);
-                const float newStartY = elementRect.Min.y + (elementRectSize.y / 2) - (imageSize.y / 2);
+                const float newStartX = renderInfo.elementBox.Min.x + (elementRectSize.x / 2) - (imageSize.x / 2);
+                const float newStartY = renderInfo.elementBox.Min.y + (elementRectSize.y / 2) - (imageSize.y / 2);
 
                 switch (m_render)
                 {

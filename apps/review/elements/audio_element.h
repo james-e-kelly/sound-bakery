@@ -28,7 +28,7 @@ public:
     auto seek_to_position(double position) -> void override;
 
 protected:
-    auto render_element(const ImRect& elementRect) -> bool override;
+    auto render_element(const gluten::element_render_info& renderInfo) -> bool override;
     auto render_waveform() -> void;
     auto render_comments() -> bool;
     auto get_element_content_size(const ImVec2& parentSize) -> ImVec2 const override;

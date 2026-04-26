@@ -9,7 +9,7 @@ namespace add_effect_button_utils
     static constexpr const char* effectPopupName = "Effect_Popup";
 }
 
-auto add_effect_button::render_element(const ImRect& elementBox) -> bool
+auto add_effect_button::render_element(const element_render_info& renderInfo) -> bool
 { 
 	if (std::shared_ptr<project_manager> projectManager = gluten::app::get()->get_manager_by_class<project_manager>())
     {

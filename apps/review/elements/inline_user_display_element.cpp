@@ -118,36 +118,36 @@ namespace
 
 auto user_avatar_element::set_avatar_render(gluten::image_render render) -> void { m_render = render; }
 
-auto user_avatar_element::render_element(const ImRect& parentRect) -> bool
+auto user_avatar_element::render_element(const gluten::element_render_info& renderInfo) -> bool
 {
     static avatar_resolver resolver;
 
-    if (avatarImage = resolver.get_avatar_image(m_userEmailAddress, std::abs(parentRect.GetHeight()), m_render))
+    if (avatarImage = resolver.get_avatar_image(m_userEmailAddress, std::abs(renderInfo.elementBox.GetHeight()), m_render))
     {
-        avatarImage->render(parentRect);
+        avatarImage->render(renderInfo.elementBox);
         return true;
     }
-    else if (parentRect.GetHeight() > 1.0f)
+    else if (renderInfo.elementBox.GetHeight() > 1.0f)
     {
         ImSpinner::SpinnerAngEclipse("##Loading", ImGui::GetFontSize() / 2.0f, 2.0f, gluten::theme::white, 8.0f);
         return false;
     }
 }
 
-auto logged_in_user_element::render_element(const ImRect& parentRect) -> bool
+auto logged_in_user_element::render_element(const gluten::element_render_info& renderInfo) -> bool
 {
     user_avatar_element avatar(m_userEmailAddress);
     avatar.set_element_frame_padding();
-    avatar.render(parentRect);
+    avatar.render(renderInfo.elementBox);
 
     gluten::text emailText(m_userEmailAddress, ImVec2(0.0f, 0.5f), element::anchor_preset::left_middle);
-    emailText.set_element_translation(ImVec2(-emailText.get_element_content_size(parentRect.GetSize()).x, 0.0f));
-    emailText.render(parentRect);
+    emailText.set_element_translation(ImVec2(-emailText.get_element_content_size(renderInfo.elementBox.GetSize()).x, 0.0f));
+    emailText.render(renderInfo.elementBox);
 
     return false;
 }
 
-auto reviewer_display_element::render_element(const ImRect& parentRect) -> bool
+auto reviewer_display_element::render_element(const gluten::element_render_info& renderInfo) -> bool
 {
     gluten::imgui::scoped_id id(m_userEmailAddress.c_str());
 
@@ -155,7 +155,7 @@ auto reviewer_display_element::render_element(const ImRect& parentRect) -> bool
 
     user_avatar_element avatar(m_userEmailAddress);
     avatar.set_element_padding(ImVec2(5.0f, 0.0f));
-    if (avatar.render(parentRect))
+    if (avatar.render(renderInfo.elementBox))
     {
         const std::string tooltipText = fmt::format("{} {}", m_userDisplayName,
                                                     m_vote == review_vote::no_vote  ? "No Vote"

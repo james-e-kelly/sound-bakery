@@ -41,9 +41,9 @@ auto file_element::pre_render_element() -> void
     ImGui::PushID(m_filePath.string().c_str());
 }
 
-auto file_element::render_element(const ImRect& elementRect) -> bool
+auto file_element::render_element(const gluten::element_render_info& renderInfo) -> bool
 {
-    return m_fileBackground.render(elementRect);
+    return m_fileBackground.render(renderInfo.elementBox);
 }
 
 auto file_element::post_render_element() -> void 

@@ -10,7 +10,7 @@ public:
                  const int64_t& fileId);
 
     auto pre_render_element() -> void override;
-    auto render_element(const ImRect& elementRect) -> bool override;
+    auto render_element(const gluten::element_render_info& renderInfo) -> bool override;
     auto post_render_element() -> void override;
 
     auto get_file_position() const -> double

@@ -20,7 +20,7 @@ public:
     }
 
 protected:
-    auto render_element(const ImRect& elementRect) -> bool override;
+    auto render_element(const gluten::element_render_info& renderInfo) -> bool override;
 
 private:
     std::string m_projectName;

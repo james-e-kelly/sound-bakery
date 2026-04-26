@@ -17,12 +17,12 @@ audio_element::audio_element(const std::filesystem::path& filePath,
     m_loudnessBackground.set_element_background_color(gluten::theme::layer02);
 }
 
-auto audio_element::render_element(const ImRect& elementRect) -> bool
+auto audio_element::render_element(const gluten::element_render_info& renderInfo) -> bool
 {
-    file_element::render_element(elementRect);
+    file_element::render_element(renderInfo);
 
-    m_layout.render(elementRect);
-    m_layout.render_layout_element_pixels_vertical(&m_waveformAndLoudnessLayout, elementRect.GetHeight() - s_controlHeight);
+    m_layout.render(renderInfo.elementBox);
+    m_layout.render_layout_element_pixels_vertical(&m_waveformAndLoudnessLayout, renderInfo.elementBox.GetHeight() - s_controlHeight);
 
     m_waveformAndLoudnessLayout.render_layout_element_percent_horizontal(&m_audioBackground, 0.9f);
     m_waveformAndLoudnessLayout.render_layout_element_percent_horizontal(&m_loudnessBackground, 0.1f);
@@ -31,29 +31,32 @@ auto audio_element::render_element(const ImRect& elementRect) -> bool
 
     const bool createdComment = render_controls();
 
-    render_waveform();
-    if (!render_comments())
+    if (renderInfo.isVisible)
     {
-        handle_mouse_control();
-        handle_keyboard_controls(m_audioBackground.get_element_rect());
-    }
-
-    if (std::shared_ptr<gluten::audio_subsystem> audioSubsystem = gluten::app::get()->get_subsystem_by_class<gluten::audio_subsystem>())
-    {
-        auto lufs = audioSubsystem->get_loudness_lufs(m_filePath);
-
-        if (lufs.has_data())
+        render_waveform();
+        if (!render_comments())
         {
-            ImGui::SetCursorScreenPos(m_loudnessBackground.get_element_rect().GetTL());
+            handle_mouse_control();
+            handle_keyboard_controls(m_audioBackground.get_element_rect());
+        }
 
-            ImGui::BeginGroup();
+        if (std::shared_ptr<gluten::audio_subsystem> audioSubsystem = gluten::app::get()->get_subsystem_by_class<gluten::audio_subsystem>())
+        {
+            auto lufs = audioSubsystem->get_loudness_lufs(m_filePath);
 
-            ImGui::NewLine();
-            ImGui::Text("Integrated: %.1lf", lufs.m_cache.integrated);
-            ImGui::Text("Maximum short-term: %.1lf", lufs.m_cache.shorttermMax);
-            ImGui::Text("Maximum momentary: %.1lf", lufs.m_cache.momentaryMax);
+            if (lufs.has_data())
+            {
+                ImGui::SetCursorScreenPos(m_loudnessBackground.get_element_rect().GetTL());
 
-            ImGui::EndGroup();
+                ImGui::BeginGroup();
+
+                ImGui::NewLine();
+                ImGui::Text("Integrated: %.1lf", lufs.m_cache.integrated);
+                ImGui::Text("Maximum short-term: %.1lf", lufs.m_cache.shorttermMax);
+                ImGui::Text("Maximum momentary: %.1lf", lufs.m_cache.momentaryMax);
+
+                ImGui::EndGroup();
+            }
         }
     }
 

@@ -26,7 +26,7 @@ namespace gluten
         }
 
     protected:
-        auto render_element(const ImRect& parent) -> bool override
+        auto render_element(const element_render_info& renderInfo) -> bool override
         {
             // Magic numbers!
             // Needed to almost-perfectly align the icons
@@ -75,7 +75,7 @@ namespace gluten
         icon_button() = delete;
         icon_button(const char* buttonID, const char* icon, fonts font);
 
-        bool render_element(const ImRect& parent) override;
+        bool render_element(const element_render_info& renderInfo) override;
         auto get_element_content_size(const ImVec2& parentSize) -> const ImVec2 override
         {
             ImVec2 scaledParentSize = parentSize;

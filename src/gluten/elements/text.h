@@ -20,8 +20,9 @@ namespace gluten
         auto get_element_content_size(const ImVec2& parentSize) -> ImVec2 const override;
 
     protected:
-        auto render_element(const ImRect& parent) -> bool override;
+        auto render_element(const element_render_info& renderInfo) -> bool override;
         auto pre_render_element() -> void override;
+        auto post_render_element() -> void override;
 
     private:
         std::string m_displayText;
