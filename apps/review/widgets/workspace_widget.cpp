@@ -40,6 +40,11 @@ auto workspace_widget::start_implementation() -> void
 
     m_workspaceManager = get_app()->get_manager_by_class<workspace_manager>();
 
+    apply_styling();
+}
+
+void workspace_widget::apply_styling()
+{
     set_background_color(gluten::theme::background);
 
     m_windowLayout
@@ -54,18 +59,21 @@ auto workspace_widget::start_implementation() -> void
 
     m_leftToolbarLayout
         .set_element_background_color(gluten::theme::background)
-        .get_element_anchor().max.x += 0.1f;
+        .get_element_anchor()
+        .max.x += 0.1f;
 
     m_leftPanelLayout
         .set_element_background_color(gluten::theme::layer02)
         .set_element_rounding(gluten::theme::largestRounding)
         .set_element_padding(ImVec2(0.0f, gluten::theme::rounding))
-        .get_element_anchor().maxOffset.y -= gluten::theme::rounding;
+        .get_element_anchor()
+        .maxOffset.y -= gluten::theme::rounding;
 
     m_topContentBarBackground
         .set_element_background_color(gluten::theme::layer01)
         .set_element_anchor_preset(gluten::anchor_preset::stretch_top)
-        .get_element_anchor().set_max_offset(ImVec2(-gluten::theme::padding * 2.0f, topHeaderHeight));
+        .get_element_anchor()
+        .set_max_offset(ImVec2(-gluten::theme::padding * 2.0f, topHeaderHeight));
 
     m_breadcrumbText
         .set_element_content_font_size(gluten::g_baseFontSize * 2.0f)
@@ -77,7 +85,8 @@ auto workspace_widget::start_implementation() -> void
 
     m_contentVerticalLayout
         .set_element_padding(ImVec2(0.0f, gluten::theme::padding * 2.0f))
-        .get_element_anchor().set_max_offset(ImVec2(-gluten::theme::padding, 0.0f));
+        .get_element_anchor()
+        .set_max_offset(ImVec2(-gluten::theme::padding, 0.0f));
 
     editReviewersButton.set_element_alignment(ImVec2(1.0f, -0.1f));
     editReviewersButton.set_element_translation(ImVec2(-ImGui::GetStyle().FramePadding.x, 0.0f));
@@ -375,6 +384,11 @@ auto workspace_widget::render_content() -> void
     gluten::imgui::scoped_font iconFont(gluten::app::get()->get_font(gluten::fonts::regular_lucide_icons));
 
     std::shared_ptr<workspace_manager> workspaceManager = m_workspaceManager.lock();
+
+    if (!workspaceManager)
+    {
+        return;
+    }
 
     const project_data& selectedProject = workspaceManager->get_selected_project();
     const review_data& selectedReview   = workspaceManager->get_selected_review();
@@ -1355,15 +1369,17 @@ auto workspace_widget::render_settings() -> void
                 if (ImGui::Selectable("Dark", &darkSelected))
                 {
                     m_userSettings->m_theme = review_app_theme::dark;
-                    gluten::theme::things::apply_colours();
+                    gluten::theme::things::apply_colours(gluten::theme::things::darkModeBackgroundColor, true);
                     gluten::theme::apply_colours();
+                    apply_styling();
                 }
 
                 if (ImGui::Selectable("Light", &lightSelected))
                 {
                     m_userSettings->m_theme = review_app_theme::light;
-                    gluten::theme::carbon_g100::apply_colours();
+                    gluten::theme::things::apply_colours(gluten::theme::things::lightModeBackgroundColor, false);
                     gluten::theme::apply_colours();
+                    apply_styling();
                 }
 
                 ImGui::EndCombo();

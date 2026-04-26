@@ -60,7 +60,7 @@ namespace gluten::theme
         const ImVec4& colRow = color.Value;
         float hue, sat, val;
         ImGui::ColorConvertRGBtoHSV(colRow.x, colRow.y, colRow.z, hue, sat, val);
-        return ImColor::HSV(hue, sat, std::min(val + delta, 1.0f));
+        return ImColor::HSV(hue, sat, std::clamp(val + delta, 0.0f, 1.0f));
     }
 
     inline ImVec4 color_with_added_saturation(const ImColor& color, float delta)

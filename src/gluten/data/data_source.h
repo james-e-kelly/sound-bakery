@@ -53,6 +53,7 @@ namespace gluten
         auto get_data() const -> T*
         {
             assert(m_localData);
+            assert(m_localData.get());
             return m_localData.get();
         }
 

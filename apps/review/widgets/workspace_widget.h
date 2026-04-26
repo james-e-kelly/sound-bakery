@@ -22,6 +22,7 @@ class workspace_widget : public gluten::window_widget
 
 protected:
     virtual auto start_implementation() -> void override;
+    void apply_styling();
     virtual auto render_window_implementation() -> void override;
     virtual auto render_menu_implementation() -> void override;
 

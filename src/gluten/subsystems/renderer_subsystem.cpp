@@ -183,7 +183,7 @@ int renderer_subsystem::init_imgui()
     io.IniFilename = nullptr;
 
     //theme::carbon_g100::apply_colours();
-    theme::things::apply_colours();
+    theme::things::apply_colours(theme::things::darkModeBackgroundColor, true);
 
     theme::apply_styles();
     theme::apply_colours();
