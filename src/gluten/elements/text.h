@@ -4,6 +4,14 @@
 
 namespace gluten
 {
+    enum class text_alignment
+    {
+        none,
+        horizontal_center,
+        vertical_center,
+        center
+    };
+
     class text : public element
     {
     public:
@@ -16,8 +24,10 @@ namespace gluten
         auto set_text(const std::string& displayText) -> text&;
         auto set_font(const fonts& font) -> text&;
         auto set_url(const std::string& url) -> text&;
+        auto set_text_alignment(text_alignment alignment) -> void;
 
         auto get_element_content_size(const ImVec2& parentSize) -> ImVec2 const override;
+
 
     protected:
         auto render_element(const element_render_info& renderInfo) -> bool override;
@@ -29,5 +39,6 @@ namespace gluten
         std::string m_truncatedText;
         std::string m_url;
         std::optional<fonts> m_font;
+        text_alignment m_textAlignment = text_alignment::none;
     };
 }  // namespace gluten

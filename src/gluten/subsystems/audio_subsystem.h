@@ -15,15 +15,26 @@ namespace gluten
         double momentaryMax = -200.0;
     };
 
+    /**
+     * @brief Volume data about one bucket and one channel
+     */
+    struct channel_bucket
+    {
+        float min;
+        float max;
+        float rms;
+        float smoothedRms;
+    };
+
 	/**
 	 * @brief A simple audio subsystem that can play audio using Sound Bakery.
 	 */
 	class audio_subsystem : public subsystem
 	{
     public:
-        using waveform_bucket = std::vector<std::pair<float,float>>;
-        using waveform = std::vector<std::vector<std::pair<float,float>>>;
-        using waveform_generator = concurrencpp::generator<waveform_bucket>;
+        using waveform_frame = std::vector<channel_bucket>;                //< All channels in the bucket
+        using waveform = std::vector<waveform_frame>;                      //< All buckets and all channels
+        using waveform_generator = concurrencpp::generator<waveform_frame>;
         using loudness_cache_type = data_cache<loudness_lufs, key_cache_key<std::filesystem::path>, key_cache_key_hasher<std::filesystem::path>>;
 
         audio_subsystem(app* appOwner) : subsystem(appOwner) {}

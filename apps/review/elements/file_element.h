@@ -18,9 +18,9 @@ public:
         return m_filePosition;
     }
 
-    static inline constexpr float s_buttonWidth             = 30.0f;
+    static inline constexpr float s_buttonWidth             = 45.0f;
     static inline constexpr float s_controlHeight           = s_buttonWidth;
-    static inline constexpr int s_controlButtonsCount       = 5;
+    static inline constexpr int s_controlButtonsCount       = 4;
     static inline constexpr float s_controlButtonsWidth     = s_buttonWidth * s_controlButtonsCount;
 
 protected:

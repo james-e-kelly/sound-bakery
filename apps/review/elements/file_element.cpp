@@ -7,26 +7,23 @@ file_element::file_element(const gluten::anchor_preset& anchorPreset,
 {
     set_element_padding(ImVec2(0.0, 16.0f));
 
-    m_playButton.set_element_background_color(gluten::theme::field01);
-    m_fileBackground.set_element_background_color(gluten::theme::background);
-    m_controlButtonsLayout.set_element_background_color(gluten::theme::background);
-
-    m_playButton.set_element_border(1.0f, 0.0f);
-
-    m_playButton.set_element_active_color(gluten::theme::backgroundActive);
-    m_pauseButton.set_element_active_color(gluten::theme::backgroundActive);
-    m_previousFrameButton.set_element_active_color(gluten::theme::backgroundActive);
-    m_nextFrameButton.set_element_active_color(gluten::theme::backgroundActive);
+    m_playButton.set_element_active_color(gluten::theme::layerActive01);
+    m_pauseButton.set_element_active_color(gluten::theme::layerActive01);
+    m_previousFrameButton.set_element_active_color(gluten::theme::layerActive01);
+    m_nextFrameButton.set_element_active_color(gluten::theme::layerActive01);
     m_addCommentButton.set_element_active_color(gluten::theme::layerActive01);
 
-    m_playButton.set_element_hover_color(gluten::theme::fieldHover01);
-    m_pauseButton.set_element_hover_color(gluten::theme::backgroundHover);
-    m_previousFrameButton.set_element_hover_color(gluten::theme::backgroundHover);
-    m_nextFrameButton.set_element_hover_color(gluten::theme::backgroundHover);
+    m_playButton.set_element_hover_color(gluten::theme::layerHover01);
+    m_pauseButton.set_element_hover_color(gluten::theme::layerHover01);
+    m_previousFrameButton.set_element_hover_color(gluten::theme::layerHover01);
+    m_nextFrameButton.set_element_hover_color(gluten::theme::layerHover01);
     m_addCommentButton.set_element_hover_color(gluten::theme::layerHover01);
 
-    m_filePositionText.set_element_alignment(ImVec2(-0.f, -0.5f));
-    m_fileDurationText.set_element_alignment(ImVec2(-0.f, -0.5f));
+    m_filePositionText.set_element_anchor_preset(gluten::anchor_preset::center_middle);
+    m_fileDurationText.set_element_anchor_preset(gluten::anchor_preset::center_middle);
+
+    m_filePositionText.set_text_alignment(gluten::text_alignment::center);
+    m_fileDurationText.set_text_alignment(gluten::text_alignment::center);
 
     m_controlButtonsLayout.set_element_alignment(ImVec2(-0.5f, 0.0f));
     m_controlButtonsLayout.get_element_anchor().minOffset.x -= s_controlButtonsWidth + (s_buttonWidth * 3.0f);
@@ -43,6 +40,7 @@ auto file_element::pre_render_element() -> void
 
 auto file_element::render_element(const gluten::element_render_info& renderInfo) -> bool
 {
+    return false;
     return m_fileBackground.render(renderInfo.elementBox);
 }
 

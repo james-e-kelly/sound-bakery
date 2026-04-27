@@ -58,6 +58,11 @@ auto gluten::text::set_url(const std::string& url) -> text&
     return *this;
 }
 
+auto gluten::text::set_text_alignment(text_alignment alignment) -> void
+{
+    m_textAlignment = alignment;
+}
+
 auto gluten::text::pre_render_element() -> void
 {
     if (m_font.has_value())
@@ -76,8 +81,8 @@ bool gluten::text::render_element(const element_render_info& renderInfo)
         {
             if (ImDrawList* const drawList = ImGui::GetWindowDrawList())
             {
-                const bool hasStrictHorizontalControl = std::abs(m_anchor.max.x - m_anchor.min.x) > 0.01f;
-                const bool hasStrictVerticalControl = std::abs(m_anchor.max.y - m_anchor.min.y) > 0.01f;
+                const bool hasStrictHorizontalControl = std::abs(m_anchor.max.x - m_anchor.min.x) > 0.01f && (m_textAlignment != text_alignment::horizontal_center && m_textAlignment != text_alignment::center);
+                const bool hasStrictVerticalControl   = std::abs(m_anchor.max.y - m_anchor.min.y) > 0.01f && (m_textAlignment != text_alignment::vertical_center && m_textAlignment != text_alignment::center);
 
                 const ImVec2 textPos(window->DC.CursorPos.x, window->DC.CursorPos.y + window->DC.CurrLineTextBaseOffset);
 
@@ -121,7 +126,25 @@ bool gluten::text::render_element(const element_render_info& renderInfo)
 
                     if (m_url.empty())
                     {
-                        drawList->AddText(context.Font, context.FontSize, textPos, ImGui::GetColorU32(ImGuiCol_Text), m_displayText.c_str(), nullptr, renderInfo.elementBox.GetWidth());
+                        ImVec2 textPosWithAlignment = textPos;
+
+                        switch (m_textAlignment)
+                        {
+                            case gluten::text_alignment::horizontal_center:
+                                textPosWithAlignment.x -= textSize.x / 2.0f;
+                                break;
+                            case gluten::text_alignment::vertical_center:
+                                textPosWithAlignment.y -= context.FontSize / 2.0f;
+                                break;
+                            case gluten::text_alignment::center:
+                                textPosWithAlignment.x -= textSize.x / 2.0f;
+                                textPosWithAlignment.y -= context.FontSize / 2.0f;
+                                break;
+                            default:
+                                break;
+                        }
+
+                        drawList->AddText(context.Font, context.FontSize, textPosWithAlignment, ImGui::GetColorU32(ImGuiCol_Text), m_displayText.c_str(), nullptr, renderInfo.elementBox.GetWidth());
                     }
                     else
                     {

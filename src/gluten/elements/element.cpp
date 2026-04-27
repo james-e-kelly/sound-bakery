@@ -318,7 +318,8 @@ bool gluten::element::render(const ImRect& parent)
 
     if (s_debug)
     {
-        windowDrawList->AddRect(elementBox.Min, elementBox.Max, ImGui::ColorConvertFloat4ToU32(gluten::theme::red50), m_elementRounding);
+        windowDrawList->AddRect(elementBoxNoPadding.Min, elementBoxNoPadding.Max, ImGui::ColorConvertFloat4ToU32(gluten::theme::red50), m_elementRounding);
+        windowDrawList->AddRect(elementBox.Min, elementBox.Max, ImGui::ColorConvertFloat4ToU32(gluten::theme::color_with_multiplied_value(gluten::theme::red50, 0.5f)), m_elementRounding);
     }
 
     if (s_debugVertical)

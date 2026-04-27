@@ -13,8 +13,22 @@ audio_element::audio_element(const std::filesystem::path& filePath,
                                     const int64_t fileId)
     : file_element(gluten::anchor_preset::stretch_full, filePath, fileId)
 {
-    m_audioBackground.set_element_background_color(gluten::theme::layerHover01);
     m_loudnessBackground.set_element_background_color(gluten::theme::layer02);
+
+    m_layout.set_layout_spacing(gluten::theme::padding);
+    m_layout.set_element_padding(gluten::theme::paddingVec);
+
+    m_waveformAndLoudnessLayout.set_layout_spacing(gluten::theme::padding);
+    m_waveformAndLoudnessLayout.set_element_rounding(gluten::theme::rounding);
+
+    m_controlButtonsLayout.set_element_rounding(gluten::theme::rounding);
+    m_controlButtonsLayout.set_element_background_color(gluten::theme::layer02);
+    m_controlButtonsLayout.set_element_max_size(ImVec2(0.0f, s_controlButtonsWidth));
+
+    m_audioBackground.set_element_background_color(gluten::theme::layer02);
+
+    m_audioBackground.set_element_rounding(gluten::theme::rounding);
+    m_loudnessBackground.set_element_rounding(gluten::theme::rounding);
 }
 
 auto audio_element::render_element(const gluten::element_render_info& renderInfo) -> bool
@@ -22,12 +36,11 @@ auto audio_element::render_element(const gluten::element_render_info& renderInfo
     file_element::render_element(renderInfo);
 
     m_layout.render(renderInfo.elementBox);
-    m_layout.render_layout_element_pixels_vertical(&m_waveformAndLoudnessLayout, renderInfo.elementBox.GetHeight() - s_controlHeight);
-
-    m_waveformAndLoudnessLayout.render_layout_element_percent_horizontal(&m_audioBackground, 0.9f);
-    m_waveformAndLoudnessLayout.render_layout_element_percent_horizontal(&m_loudnessBackground, 0.1f);
-
+    m_layout.render_layout_element_pixels_vertical(&m_waveformAndLoudnessLayout, m_layout.get_element_rect().GetHeight() - s_controlHeight);
     m_layout.render_layout_element_pixels_vertical(&m_controlButtonsLayout, s_controlHeight);
+
+    m_waveformAndLoudnessLayout.render_layout_element_percent_horizontal(&m_audioBackground, 0.66f);
+    m_waveformAndLoudnessLayout.render_layout_element_remaining(&m_loudnessBackground);
 
     const bool createdComment = render_controls();
 
@@ -71,10 +84,7 @@ auto audio_element::render_waveform() -> void
 
         if (ImDrawList* const drawList = ImGui::GetWindowDrawList())
         {
-            typename gluten::audio_subsystem::waveform& waveform =
-                audioSubsystem->get_ui_waveform(
-                    m_filePath,
-                    m_audioBackground.get_element_rect().GetWidth());
+            typename gluten::audio_subsystem::waveform& waveform = audioSubsystem->get_ui_waveform(m_filePath, m_audioBackground.get_element_rect().GetWidth());
 
             const std::size_t buckets = waveform.size();
 
@@ -100,10 +110,12 @@ auto audio_element::render_waveform() -> void
 
                         if (waveform.size() > pixel)
                         {
-                            const std::pair<float, float> minMax = waveform[pixel][channel];
+                            const auto channelData              = waveform[pixel][channel];
+                            const float maxAmplitude            = std::max(std::abs(channelData.min), std::abs(channelData.max));
+                            const float rmsDecibel = ma_volume_linear_to_db(channelData.smoothedRms);
 
-                            ImVec2 minLine(bucketStartX, channelMidY - (minMax.first * channelHalfHeight));
-                            ImVec2 maxLine(bucketStartX, channelMidY - (minMax.second * channelHalfHeight));
+                            ImVec2 minLine(bucketStartX, channelMidY - (std::clamp(channelData.min, -1.0f, 1.0f) * channelHalfHeight));
+                            ImVec2 maxLine(bucketStartX, channelMidY - (std::clamp(channelData.max, -1.0f, 1.0f) * channelHalfHeight));
 
                             if (std::abs(maxLine.y - minLine.y) <= 1.0f)
                             {
@@ -111,14 +123,22 @@ auto audio_element::render_waveform() -> void
                                 maxLine.y = channelMidY - 0.5f;
                             }
 
-                            if (minMax.first < -1.0f || minMax.second > 1.0f)
+                            ImVec4 lineColor = gluten::theme::interactive;
+                            
+                            if (rmsDecibel > -6.0f)
                             {
-                                drawList->AddLine(minLine, maxLine, ImGui::ColorConvertFloat4ToU32(gluten::theme::textError));
+                                lineColor = gluten::theme::supportError;
                             }
-                            else
+                            else if (rmsDecibel > -12.0f)
                             {
-                                drawList->AddLine(minLine, maxLine, ImGui::ColorConvertFloat4ToU32(gluten::theme::textHelper));
+                                lineColor = gluten::theme::supportWarning;
                             }
+                            else if (rmsDecibel > -18.0f)
+                            {
+                                lineColor = gluten::theme::supportSuccess;
+                            }
+
+                            drawList->AddLine(minLine, maxLine, ImGui::ColorConvertFloat4ToU32(lineColor));
                         }
                     }
                 }

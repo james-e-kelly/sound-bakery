@@ -305,28 +305,58 @@ auto gluten::audio_subsystem::async_generate_waveform(const std::filesystem::pat
     constexpr std::size_t bucketsToFillPerIteration = 50;
     std::size_t iteration                           = 0;
 
-    std::vector<waveform_bucket> buckets;
+    typename gluten::audio_subsystem::waveform waveform;
 
-    for (const waveform_bucket bucket : generate_waveform(filePath, targetSamples))
+    for (const waveform_frame frame : generate_waveform(filePath, targetSamples))
     {
-        buckets.push_back(bucket);
+        waveform.push_back(frame);
 
         if (iteration++ >= bucketsToFillPerIteration)
         {
             iteration = 0;
             co_await concurrencpp::resume_on(gluten::app::get()->get_tick_executor());
-            m_filesToWaveforms.at(filePath).insert(m_filesToWaveforms.at(filePath).end(), buckets.begin(), buckets.end());
+            m_filesToWaveforms.at(filePath).insert(m_filesToWaveforms.at(filePath).end(), waveform.begin(), waveform.end());
             co_await concurrencpp::resume_on(gluten::app::get()->background_executor());
-            buckets.clear();
+            waveform.clear();
         }
     }
 
-    if (!buckets.empty())
+    if (!waveform.empty())
     {
         co_await concurrencpp::resume_on(gluten::app::get()->get_tick_executor());
-        m_filesToWaveforms.at(filePath).insert(m_filesToWaveforms.at(filePath).end(), buckets.begin(), buckets.end());
+        m_filesToWaveforms.at(filePath).insert(m_filesToWaveforms.at(filePath).end(), waveform.begin(), waveform.end());
         co_await concurrencpp::resume_on(gluten::app::get()->background_executor());
-        buckets.clear();
+        waveform.clear();
+    }
+
+    // Smooth over the RMS values
+    co_await concurrencpp::resume_on(gluten::app::get()->get_tick_executor());
+
+    constexpr int smoothWindowSize = 15;
+    constexpr int smoothHalfWindowSize = smoothWindowSize / 2;
+
+    typename gluten::audio_subsystem::waveform& completeWaveform = m_filesToWaveforms.at(filePath);
+
+    for (int frameIndex = 0; frameIndex < completeWaveform.size(); ++frameIndex)
+    {
+        for (int channelIndex = 0; channelIndex < completeWaveform[frameIndex].size(); ++channelIndex)
+        {
+            float rmsSum = 0.0f;
+            int neighboursCountedInSum = 0;
+
+            for (int neighbourIndex = -smoothHalfWindowSize; neighbourIndex <= smoothHalfWindowSize; ++neighbourIndex)
+            {
+                const int neighbourFrameIndex = frameIndex + neighbourIndex;
+
+                if (neighbourFrameIndex >= 0 && neighbourFrameIndex < completeWaveform.size())
+                {
+                    rmsSum += completeWaveform[neighbourFrameIndex][channelIndex].rms;
+                    ++neighboursCountedInSum;
+                }
+            }
+
+            completeWaveform[frameIndex][channelIndex].smoothedRms = rmsSum / neighboursCountedInSum;
+        }
     }
 
     co_return;
@@ -385,12 +415,12 @@ auto gluten::audio_subsystem::generate_waveform(const std::filesystem::path file
 {
     if (!std::filesystem::exists(filePath))
     {
-        co_yield std::vector<std::pair<float, float>>();
+        co_yield waveform_frame();
     }
 
     if (targetSamples == 0)
     {
-        co_yield std::vector<std::pair<float, float>>();
+        co_yield waveform_frame();
     }
 
     ma_decoder decoder;
@@ -399,7 +429,7 @@ auto gluten::audio_subsystem::generate_waveform(const std::filesystem::path file
 
     if (ma_decoder_init_file(filePath.string().c_str(), &config, &decoder) != MA_SUCCESS)
     {
-        co_yield std::vector<std::pair<float, float>>();
+        co_yield waveform_frame();
     }
 
     ma_uint64 frameCount;
@@ -411,10 +441,12 @@ auto gluten::audio_subsystem::generate_waveform(const std::filesystem::path file
         framesPerBucket = 1;
     }
 
-    std::vector<std::pair<float, float>> result(decoder.outputChannels, std::pair<float,float>());
+    waveform_frame result(decoder.outputChannels, channel_bucket());
     std::vector<float> framesInBucket(framesPerBucket * decoder.outputChannels, 0.0f);
     std::vector<float> channelMaxesForBucket(decoder.outputChannels, 0.0f);
     std::vector<float> channelMinsForBucket(decoder.outputChannels, 0.0f);
+    std::vector<float> channelRmsForBucket(decoder.outputChannels, 0.0f);
+    std::vector<float> channelSmoothedRmsForBucket(decoder.outputChannels, 0.0f);
 
     for (ma_uint64 samplingIndex = 0; samplingIndex < targetSamples; ++samplingIndex)
     {
@@ -432,6 +464,8 @@ auto gluten::audio_subsystem::generate_waveform(const std::filesystem::path file
         std::fill(framesInBucket.begin(), framesInBucket.end(), 0.0f);
         std::fill(channelMaxesForBucket.begin(), channelMaxesForBucket.end(), 0.0f);
         std::fill(channelMinsForBucket.begin(), channelMinsForBucket.end(), 0.0f);
+        std::fill(channelRmsForBucket.begin(), channelRmsForBucket.end(), 0.0f);
+        std::fill(channelSmoothedRmsForBucket.begin(), channelSmoothedRmsForBucket.end(), 0.0f);
 
         ma_decoder_read_pcm_frames(&decoder, framesInBucket.data(), framesToRead, nullptr);
 
@@ -441,15 +475,10 @@ auto gluten::audio_subsystem::generate_waveform(const std::filesystem::path file
             {
                 const ma_uint64 sampleIndex = (frame * decoder.outputChannels) + channel;
                 const float sampleValue = framesInBucket[sampleIndex];
-                if (sampleValue > channelMaxesForBucket[channel])
-                {
-                    channelMaxesForBucket[channel] = sampleValue;
-                }
 
-                if (sampleValue < channelMinsForBucket[channel])
-                {
-                    channelMinsForBucket[channel] = sampleValue;
-                }
+                channelMaxesForBucket[channel] = std::max<float>(channelMaxesForBucket[channel], sampleValue);
+                channelMinsForBucket[channel]  = std::min<float>(channelMinsForBucket[channel], sampleValue);
+                channelRmsForBucket[channel]   += sampleValue * sampleValue;
             }
         }
 
@@ -457,7 +486,7 @@ auto gluten::audio_subsystem::generate_waveform(const std::filesystem::path file
 
         for (ma_uint64 channel = 0; channel < decoder.outputChannels; ++channel)
         {
-            result.push_back(std::pair<float, float>(channelMinsForBucket[channel], channelMaxesForBucket[channel]));
+            result.push_back(channel_bucket{.min = channelMinsForBucket[channel], .max = channelMaxesForBucket[channel], .rms = std::sqrt(channelRmsForBucket[channel] / framesToRead)});
         }
 
         co_yield result;

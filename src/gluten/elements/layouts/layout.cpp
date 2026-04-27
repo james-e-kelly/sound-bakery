@@ -174,12 +174,12 @@ bool gluten::layout::render_layout_element_internal(const ImRect& thisBox,
 
         activated = element->render({currentLayoutPos, currentLayoutPos + sizeGivenToElement});
 
-        if (s_debug)
+        /*if (s_debug)
         {
             ImDrawList* const drawList = ImGui::GetWindowDrawList();
             drawList->AddRect(currentLayoutPos, currentLayoutPos + sizeGivenToElement,
                                         ImGui::ColorConvertFloat4ToU32(gluten::theme::supportWarning));
-        }
+        }*/
     }
 
     switch (m_layoutType)
