@@ -99,6 +99,12 @@ namespace gluten
         data_cache() = default;
         ~data_cache() = default;
 
+        data_cache(const data_cache&) = delete;
+        data_cache(data_cache&& other) = default;
+
+        auto operator=(const data_cache&) -> data_cache& = delete;
+        auto operator=(data_cache&&) -> data_cache&      = default;
+
         data_cache(const std::chrono::seconds& expirySeconds)
             : m_expirySeconds(expirySeconds) {}
 

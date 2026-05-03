@@ -272,6 +272,24 @@ auto gluten::audio_subsystem::get_ui_waveform(const std::filesystem::path& fileP
     return m_filesToWaveforms.at(filePath);
 }
 
+auto gluten::audio_subsystem::get_ui_waveform_lods(const std::filesystem::path& filePath, double fileDuration) -> waveform_lods&
+{
+    if (!m_filesToWaveformLods.contains(filePath))
+    {
+        waveform_lods lods;
+
+        lods.thumbnailRes.set_async_fill_cache(filePath, async_generate_waveform_lod(filePath, fileDuration, 16));
+        lods.lowRes.set_async_fill_cache(filePath, async_generate_waveform_lod(filePath, fileDuration, 100));
+        lods.medRes.set_async_fill_cache(filePath, async_generate_waveform_lod(filePath, fileDuration, 500));
+        lods.highRes.set_async_fill_cache(filePath, async_generate_waveform_lod(filePath, fileDuration, 2000));
+        lods.sampleRes.set_async_fill_cache(filePath, async_generate_waveform_lod(filePath, fileDuration, 48000));
+
+        m_filesToWaveformLods.insert({filePath, std::move(lods)});
+    }
+
+    return m_filesToWaveformLods.at(filePath);
+}
+
 auto gluten::audio_subsystem::get_loudness_lufs(const std::filesystem::path& filePath) -> loudness_cache_type::cache_result
 {
     if (m_filesToLoudnessCache.get_cache_needs_filling(filePath))
@@ -302,7 +320,7 @@ auto gluten::audio_subsystem::async_generate_waveform(const std::filesystem::pat
 {
     co_await concurrencpp::resume_on(gluten::app::get()->background_executor());
 
-    constexpr std::size_t bucketsToFillPerIteration = 50;
+    constexpr std::size_t bucketsToFillPerIteration = 200;
     std::size_t iteration                           = 0;
 
     typename gluten::audio_subsystem::waveform waveform;
@@ -360,6 +378,21 @@ auto gluten::audio_subsystem::async_generate_waveform(const std::filesystem::pat
     }
 
     co_return;
+}
+
+auto gluten::audio_subsystem::async_generate_waveform_lod(const std::filesystem::path filePath, double fileDuration, std::size_t resolution) -> concurrencpp::result<waveform_lod>
+{
+    co_await concurrencpp::resume_on(gluten::app::get()->background_executor());
+
+    waveform_lod lod;
+    lod.resolution = resolution;
+
+    for (const waveform_frame frame : generate_waveform(filePath, resolution * fileDuration))
+    {
+        lod.waveform.push_back(frame);
+    }
+
+    co_return lod;
 }
 
 auto gluten::audio_subsystem::async_calculate_loudness(const std::filesystem::path filePath) -> loudness_cache_type::async_cache_result
@@ -447,6 +480,7 @@ auto gluten::audio_subsystem::generate_waveform(const std::filesystem::path file
     std::vector<float> channelMinsForBucket(decoder.outputChannels, 0.0f);
     std::vector<float> channelRmsForBucket(decoder.outputChannels, 0.0f);
     std::vector<float> channelSmoothedRmsForBucket(decoder.outputChannels, 0.0f);
+    std::vector<float> channelAverageSampleForBucket(decoder.outputChannels, 0.0f);
 
     for (ma_uint64 samplingIndex = 0; samplingIndex < targetSamples; ++samplingIndex)
     {
@@ -466,6 +500,7 @@ auto gluten::audio_subsystem::generate_waveform(const std::filesystem::path file
         std::fill(channelMinsForBucket.begin(), channelMinsForBucket.end(), 0.0f);
         std::fill(channelRmsForBucket.begin(), channelRmsForBucket.end(), 0.0f);
         std::fill(channelSmoothedRmsForBucket.begin(), channelSmoothedRmsForBucket.end(), 0.0f);
+        std::fill(channelAverageSampleForBucket.begin(), channelAverageSampleForBucket.end(), 0.0f);
 
         ma_decoder_read_pcm_frames(&decoder, framesInBucket.data(), framesToRead, nullptr);
 
@@ -476,17 +511,23 @@ auto gluten::audio_subsystem::generate_waveform(const std::filesystem::path file
                 const ma_uint64 sampleIndex = (frame * decoder.outputChannels) + channel;
                 const float sampleValue = framesInBucket[sampleIndex];
 
-                channelMaxesForBucket[channel] = std::max<float>(channelMaxesForBucket[channel], sampleValue);
-                channelMinsForBucket[channel]  = std::min<float>(channelMinsForBucket[channel], sampleValue);
-                channelRmsForBucket[channel]   += sampleValue * sampleValue;
+                channelMaxesForBucket[channel]          = std::max<float>(channelMaxesForBucket[channel], sampleValue);
+                channelMinsForBucket[channel]           = std::min<float>(channelMinsForBucket[channel], sampleValue);
+                channelRmsForBucket[channel]            += sampleValue * sampleValue;
+                channelAverageSampleForBucket[channel]  += sampleValue; // sum as we go and then average afterwards
             }
+        }
+
+        for (ma_uint64 channel = 0; channel < decoder.outputChannels; ++channel)
+        {
+            channelAverageSampleForBucket[channel] /= framesToRead;
         }
 
         result.clear();
 
         for (ma_uint64 channel = 0; channel < decoder.outputChannels; ++channel)
         {
-            result.push_back(channel_bucket{.min = channelMinsForBucket[channel], .max = channelMaxesForBucket[channel], .rms = std::sqrt(channelRmsForBucket[channel] / framesToRead)});
+            result.push_back(channel_bucket{.min = channelMinsForBucket[channel], .max = channelMaxesForBucket[channel], .rms = std::sqrt(channelRmsForBucket[channel] / framesToRead), .averageSample = channelAverageSampleForBucket[channel]});
         }
 
         co_yield result;

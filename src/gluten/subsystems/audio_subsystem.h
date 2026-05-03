@@ -24,6 +24,7 @@ namespace gluten
         float max;
         float rms;
         float smoothedRms;
+        float averageSample;
     };
 
 	/**
@@ -36,6 +37,23 @@ namespace gluten
         using waveform = std::vector<waveform_frame>;                      //< All buckets and all channels
         using waveform_generator = concurrencpp::generator<waveform_frame>;
         using loudness_cache_type = data_cache<loudness_lufs, key_cache_key<std::filesystem::path>, key_cache_key_hasher<std::filesystem::path>>;
+
+        struct waveform_lod
+        {
+            int resolution;
+            waveform waveform;
+        };
+
+        using waveform_lod_cache_type = data_cache<waveform_lod, key_cache_key<std::filesystem::path>, key_cache_key_hasher<std::filesystem::path>>;
+
+        struct waveform_lods
+        {
+            waveform_lod_cache_type thumbnailRes;
+            waveform_lod_cache_type lowRes;
+            waveform_lod_cache_type medRes;
+            waveform_lod_cache_type highRes;
+            waveform_lod_cache_type sampleRes;
+        };
 
         audio_subsystem(app* appOwner) : subsystem(appOwner) {}
 
@@ -59,6 +77,7 @@ namespace gluten
         auto get_sound_instance(const std::filesystem::path& filePath) -> sc_sound_instance*;
 
         auto get_ui_waveform(const std::filesystem::path& filePath, std::size_t buckets) -> waveform&;
+        auto get_ui_waveform_lods(const std::filesystem::path& filePath, double fileDuration) -> waveform_lods&;
 
         auto get_loudness_lufs(const std::filesystem::path& filePath) -> loudness_cache_type::cache_result;
 
@@ -82,6 +101,7 @@ namespace gluten
         auto get_sound_loop_info(const std::filesystem::path& filePath) -> loop_data*;
 
         auto async_generate_waveform(const std::filesystem::path filePath, std::size_t targetSamples) -> concurrencpp::result<void>;
+        auto async_generate_waveform_lod(const std::filesystem::path filePath, double fileDuration, std::size_t resolution) -> concurrencpp::result<waveform_lod>;
         auto async_calculate_loudness(const std::filesystem::path filePath) -> loudness_cache_type::async_cache_result;
         auto generate_waveform(const std::filesystem::path filePath, std::size_t targetSamples) -> waveform_generator;
 
@@ -91,6 +111,7 @@ namespace gluten
         std::unordered_map<std::filesystem::path, loop_data> m_filesToLoopDataMap;
 
         std::unordered_map<std::filesystem::path, waveform> m_filesToWaveforms;
+        std::unordered_map<std::filesystem::path, waveform_lods> m_filesToWaveformLods;
         loudness_cache_type m_filesToLoudnessCache; 
 	};
 }
