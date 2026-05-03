@@ -58,23 +58,42 @@ auto audio_element::render_element(const gluten::element_render_info& renderInfo
     return createdComment;
 }
 
+static inline double transform_linear_to_decibel(double v, void*)
+{
+    return ma_volume_linear_to_db(std::clamp(v, -1.0, 1.0));
+}
+
+static inline double transform_decibel_to_linear(double v, void*)
+{
+    return ma_volume_db_to_linear(std::clamp(v, -96.0, 0.0));
+}
+
+int linear_volume_formatter(double value, char* buff, int size, void* data)
+{
+    while (value < -1.0)
+    {
+        value += 2.0;
+    }
+
+    return snprintf(buff, size, "%g", value);
+}
+
 int time_formatter(double value, char* buff, int size, void* data)
 {
-    const char* unit       = (const char*)data;
-    static double v[]      = {1000000000, 1000000, 1000, 1, 0.001, 0.000001, 0.000000001};
-    static const char* p[] = {"G", "M", "k", "", "m", "u", "n"};
-    if (value == 0)
+    const double minute = std::floor(value / 60.0);
+    const double second = std::floor(std::fmod(value, 60.0));
+    const double millisecond = std::fmod(value, 1.0);
+
+    const bool isWholeSecond = millisecond < 0.1;
+    
+    if (millisecond > 0.0)
     {
-        return snprintf(buff, size, "0 %s", unit);
+        return snprintf(buff, size, "%02g:%02g.%2g", minute, second, std::floor(millisecond * 1000.0));
     }
-    for (int i = 0; i < 7; ++i)
+    else
     {
-        if (fabs(value) >= v[i])
-        {
-            return snprintf(buff, size, "%g %s%s", value / v[i], p[i], unit);
-        }
+        return snprintf(buff, size, "%02g:%02g", minute, second);
     }
-    return snprintf(buff, size, "%g %s%s", value / v[6], p[6], unit);
 }
 
 auto audio_element::render_waveform() -> void
@@ -142,137 +161,138 @@ auto audio_element::render_waveform() -> void
 
             ImGui::SetCursorScreenPos(m_audioBackground.get_element_rect().GetTL());
 
-            if (ImPlot::BeginSubplots(fmt::format("Audio Channels##{}", m_filePath.filename().string()).c_str(), channels, 1, m_audioBackground.get_element_rect().GetSize(),
-                                      ImPlotSubplotFlags_LinkAllX | ImPlotSubplotFlags_NoResize | ImPlotSubplotFlags_NoTitle | ImPlotSubplotFlags_ShareItems))
+            float value = ImGui::GetStateStorage()->GetFloat(ImGui::GetID("Min dB"), -96.0f);
+            ImGui::SliderFloat("Min dB", &value, -96.0f, 0.0f);
+
+            if (ImPlot::BeginPlot(fmt::format("Waveform##{}", m_filePath.filename().string()).c_str(), ImVec2(-1, m_audioBackground.get_element_rect().GetHeight()), ImPlotFlags_NoTitle | ImPlotFlags_NoMenus | ImPlotFlags_NoBoxSelect | ImPlotFlags_NoMouseText))
             {
+                ImPlot::SetupAxis(ImAxis_X1, "Time", ImPlotAxisFlags_None);
+                ImPlot::SetupAxisFormat(ImAxis_X1, time_formatter);
+                ImPlot::SetupAxisLimits(ImAxis_X1, 0.0, m_fileDuration);
+                ImPlot::SetupAxisLimitsConstraints(ImAxis_X1, 0.0, m_fileDuration);
+
+                const float minYValue = 1.0f - (2.0f * channels);
+                const float mindBYValue = value * channels;
+
+                static const char* volumeLabels[]    = {"+1.0", "+0.5", "0", "-0.5", "-1.0"};
+                static const double volumeValueValues[] = {1.0, 0.5, 0.0, -0.5, -1.0};
+
+                ImPlot::SetupAxis(ImAxis_Y1, "Volume", ImPlotAxisFlags_NoGridLines | ImPlotAxisFlags_Lock);
+                ImPlot::SetupAxisLimits(ImAxis_Y1, minYValue, 1.0);
+                ImPlot::SetupAxisLimitsConstraints(ImAxis_Y1, minYValue, 1.0);
+                ImPlot::SetupAxisFormat(ImAxis_Y1, linear_volume_formatter);
+
+                ImPlot::SetupAxis(ImAxis_Y2, "dB", ImPlotAxisFlags_AuxDefault | ImPlotAxisFlags_Lock);
+                ImPlot::SetupAxisLimits(ImAxis_Y2, mindBYValue, 0.0, ImPlotCond_Always);
+                ImPlot::SetupAxisLimitsConstraints(ImAxis_Y2, mindBYValue, 0.0);
+
+                ImPlot::SetupAxis(ImAxis_Y3, "LU", ImPlotAxisFlags_AuxDefault | ImPlotAxisFlags_Lock);
+                ImPlot::SetupAxisLimits(ImAxis_Y3, -48.0, 0.0);
+                ImPlot::SetupAxisLimitsConstraints(ImAxis_Y3, -48.0, 0.0);
+
                 for (int channel = 0; channel < channels; ++channel)
                 {
-                    if (ImPlot::BeginPlot(fmt::format("Channel##{}", channel).c_str(), ImVec2(-1, 0), ImPlotFlags_NoTitle | ImPlotFlags_NoMenus | ImPlotFlags_NoBoxSelect | ImPlotFlags_NoMouseText))
+                    std::vector<ImVec2> upperPoints;
+                    std::vector<ImVec2> lowerPoints;
+                    std::vector<ImVec2> dbPoints;
+                    std::vector<ImVec2> rmsPoints;
+                    std::vector<ImVec2> samplePoints;
+
+                    const int numWaveformPoints  = (int)(m_fileDuration * waveformCache->m_cache.resolution);
+                    const int plotLimitLeftAsPointIndexAtCurrentRes = (m_plotLimitLeft / m_fileDuration) * numWaveformPoints;  // Try to skip iterating points that won't be rendered
+                    const int plotLimitRightAsPointIndexAtCurrentRes = (m_plotLimitRight / m_fileDuration) * numWaveformPoints;
+
+                    for (int point = plotLimitLeftAsPointIndexAtCurrentRes; point < numWaveformPoints && point <= plotLimitRightAsPointIndexAtCurrentRes; ++point)
                     {
-                        std::vector<ImVec2> upperPoints;
-                        std::vector<ImVec2> lowerPoints;
-                        std::vector<ImVec2> dbPoints;
-                        std::vector<ImVec2> rmsPoints;
-                        std::vector<ImVec2> samplePoints;
+                        const double xPosition = (double)point / (numWaveformPoints) * m_fileDuration;
+                        const auto channelData   = waveformCache->m_cache.waveform[point][channel];
 
-                        const int numWaveformPoints  = (int)(m_fileDuration * waveformCache->m_cache.resolution);
-                        const int plotLimitLeftAsPointIndexAtCurrentRes = (m_plotLimitLeft / m_fileDuration) * numWaveformPoints;  // Try to skip iterating points that won't be rendered
-                        const int plotLimitRightAsPointIndexAtCurrentRes = (m_plotLimitRight / m_fileDuration) * numWaveformPoints;
-
-                        for (int point = plotLimitLeftAsPointIndexAtCurrentRes; point < numWaveformPoints && point <= plotLimitRightAsPointIndexAtCurrentRes; ++point)
+                        if (xPosition >= m_plotLimitLeft && xPosition <= m_plotLimitRight)
                         {
-                            const auto channelData   = waveformCache->m_cache.waveform[point][channel];
-                            const float maxAmplitude = std::max(std::abs(channelData.min), std::abs(channelData.max));
-
-                            const double xPosition = (double)point / (numWaveformPoints) * m_fileDuration;
-
-                            if (xPosition >= m_plotLimitLeft && xPosition <= m_plotLimitRight)
+                            if (sampleRes)
                             {
-                                if (sampleRes)
-                                {
-                                    samplePoints.push_back(ImVec2(xPosition, channelData.averageSample));
-                                }
-                                else
-                                {
-                                    upperPoints.push_back(ImVec2(xPosition, channelData.max));
-                                    lowerPoints.push_back(ImVec2(xPosition, channelData.min));
-                                }
-
+                                samplePoints.push_back(ImVec2(xPosition, channelData.averageSample - (2.0f * channel)));
                             }
+                            else
+                            {
+                                upperPoints.push_back(ImVec2(xPosition, channelData.max - (2.0f * channel)));
+                                lowerPoints.push_back(ImVec2(xPosition, channelData.min - (2.0f * channel)));
+                            }
+
                         }
-
-                        const int numPeakPoints = (int)(m_fileDuration * peakCache->m_cache.resolution);
-
-                        const int plotLimitLeftAsPointIndexAtLowRes = (m_plotLimitLeft / m_fileDuration) * numPeakPoints;
-                        const int plotLimitRighttAsPointIndexAtLowRes = (m_plotLimitRight / m_fileDuration) * numPeakPoints;
-
-                        for (int point = plotLimitLeftAsPointIndexAtLowRes; point < numPeakPoints && point <= plotLimitRighttAsPointIndexAtLowRes; ++point)
-                        {
-                            const double xPosition = (double)point / (numPeakPoints) * m_fileDuration;
-
-                            const auto& lowResChannelData = peakCache->m_cache.waveform[point][channel];
-                            const float rmsDecibel       = ma_volume_linear_to_db(lowResChannelData.rms);
-
-                            dbPoints.push_back(ImVec2(xPosition, std::max(ma_volume_linear_to_db(std::max(-lowResChannelData.min, lowResChannelData.max)), -95.0f)));
-                            rmsPoints.push_back(ImVec2(xPosition, std::max(rmsDecibel, -95.0f)));
-                        }
-
-                        ImPlotAxisFlags xflags = channel == channels - 1 ? ImPlotAxisFlags_None : ImPlotAxisFlags_NoLabel | ImPlotAxisFlags_NoTickLabels | ImPlotAxisFlags_None;
-
-                        ImPlot::SetupAxis(ImAxis_X1, "Time", xflags);
-                        ImPlot::SetupAxisFormat(ImAxis_X1, "%g s");
-                        ImPlot::SetupAxisLimits(ImAxis_X1, 0.0, m_fileDuration);
-                        ImPlot::SetupAxisLimitsConstraints(ImAxis_X1, 0.0, m_fileDuration);
-
-                        ImPlot::SetupAxis(ImAxis_Y1, "Volume", ImPlotAxisFlags_NoGridLines | ImPlotAxisFlags_Lock);
-                        ImPlot::SetupAxisLimits(ImAxis_Y1, -1.0, 1.0);
-                        ImPlot::SetupAxisLimitsConstraints(ImAxis_Y1, -1.0, 1.0);
-
-                        ImPlot::SetupAxis(ImAxis_Y2, "dB", ImPlotAxisFlags_AuxDefault | ImPlotAxisFlags_Lock);
-                        ImPlot::SetupAxisLimits(ImAxis_Y2, -96.0, 0.0);
-                        ImPlot::SetupAxisLimitsConstraints(ImAxis_Y2, -96.0, 0.0);
-
-                        ImPlot::SetupAxis(ImAxis_Y3, "LU", ImPlotAxisFlags_AuxDefault | ImPlotAxisFlags_Lock);
-                        ImPlot::SetupAxisLimits(ImAxis_Y3, -48.0, 0.0);
-                        ImPlot::SetupAxisLimitsConstraints(ImAxis_Y3, -48.0, 0.0);
-
-                        ImPlot::SetAxes(ImAxis_X1, ImAxis_Y1);
-
-                        if (sampleRes)
-                        {
-                            ImPlot::PlotStairsG("Waveform", [](int idx, void* data) { return ImPlotPoint(((ImVec2*)data)[idx]); }, samplePoints.data(), samplePoints.size());
-                        }
-                        else
-                        {
-                            ImPlot::PlotShadedG("Waveform", [](int idx, void* data)
-                                                { return ImPlotPoint(((ImVec2*)data)[idx]); }, upperPoints.data(), [](int idx, void* data)
-                                                { return ImPlotPoint(((ImVec2*)data)[idx]); }, lowerPoints.data(), lowerPoints.size());
-                            ImPlot::PlotLineG("Waveform", [](int idx, void* data)
-                                                { return ImPlotPoint(((ImVec2*)data)[idx]); }, upperPoints.data(), upperPoints.size());
-                            ImPlot::PlotLineG("Waveform", [](int idx, void* data)
-                                                { return ImPlotPoint(((ImVec2*)data)[idx]); }, lowerPoints.data(), lowerPoints.size());
-                        }
-
-                        ImPlot::SetAxes(ImAxis_X1, ImAxis_Y2);
-
-                        if (sampleRes)
-                        {
-                            ImPlot::PlotStairsG("Peak", [](int idx, void* data) { return ImPlotPoint(((ImVec2*)data)[idx]); }, dbPoints.data(), dbPoints.size());
-                            ImPlot::PlotStairsG("RMS", [](int idx, void* data) { return ImPlotPoint(((ImVec2*)data)[idx]); }, rmsPoints.data(), rmsPoints.size());
-                        }
-                        else
-                        {
-                            ImPlot::PlotLineG("Peak", [](int idx, void* data) { return ImPlotPoint(((ImVec2*)data)[idx]); }, dbPoints.data(), dbPoints.size());
-                            ImPlot::PlotLineG("RMS", [](int idx, void* data) { return ImPlotPoint(((ImVec2*)data)[idx]); }, rmsPoints.data(), rmsPoints.size());
-                        }
-
-                        ImPlot::SetAxes(ImAxis_X1, ImAxis_Y3);
-
-                        ImPlot::TagY(lufs.m_cache.integrated, gluten::theme::supportInfo, fmt::format("LUFS-I: {:.1f}", lufs.m_cache.integrated).c_str());
-                        ImPlot::TagY(lufs.m_cache.shorttermMax, gluten::theme::supportWarning, fmt::format("LUFS-S: {:.1f}", lufs.m_cache.shorttermMax).c_str());
-                        ImPlot::TagY(lufs.m_cache.momentaryMax, gluten::theme::supportError, fmt::format("LUFS-M: {:.1f}", lufs.m_cache.momentaryMax).c_str());
-
-                        ImPlot::SetAxes(ImAxis_X1, ImAxis_Y1);
-                        const double scaledFilePosition = m_filePosition;
-                        ImPlot::PlotInfLines("##Playhead", &scaledFilePosition, 1);
-
-                        if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && ImPlot::IsPlotHovered())
-                        {
-                            audioSubsystem->set_sound_cursor_position(m_filePath, ImPlot::GetPlotMousePos().x);
-                        }
-
-                        m_plotLimitLeft = ImPlot::GetPlotLimits().X.Min;
-                        m_plotLimitRight = ImPlot::GetPlotLimits().X.Max;
-
-                        ImPlot::EndPlot();
                     }
-                }
 
-                ImPlot::EndSubplots();
+                    const int numPeakPoints = (int)(m_fileDuration * peakCache->m_cache.resolution);
+
+                    const int plotLimitLeftAsPointIndexAtLowRes = (m_plotLimitLeft / m_fileDuration) * numPeakPoints;
+                    const int plotLimitRighttAsPointIndexAtLowRes = (m_plotLimitRight / m_fileDuration) * numPeakPoints;
+
+                    for (int point = plotLimitLeftAsPointIndexAtLowRes; point < numPeakPoints && point <= plotLimitRighttAsPointIndexAtLowRes; ++point)
+                    {
+                        const double xPosition = (double)point / (numPeakPoints) * m_fileDuration;
+
+                        const auto& lowResChannelData = peakCache->m_cache.waveform[point][channel];
+                        const float rmsDecibel       = ma_volume_linear_to_db(lowResChannelData.rms);
+
+                        dbPoints.push_back(ImVec2(xPosition, std::max(ma_volume_linear_to_db(std::max(-lowResChannelData.min, lowResChannelData.max)), value + 1.0f) + (value * channel)));
+                        rmsPoints.push_back(ImVec2(xPosition, std::max(rmsDecibel, value + 1.0f) + (value * channel)));
+                    }
+
+                    ImPlot::SetAxes(ImAxis_X1, ImAxis_Y1);
+
+                    if (sampleRes)
+                    {
+                        ImPlot::PlotStairsG("Waveform", [](int idx, void* data) { return ImPlotPoint(((ImVec2*)data)[idx]); }, samplePoints.data(), samplePoints.size());
+                    }
+                    else
+                    {
+                        ImPlot::PlotShadedG("Waveform", [](int idx, void* data)
+                                            { return ImPlotPoint(((ImVec2*)data)[idx]); }, upperPoints.data(), [](int idx, void* data)
+                                            { return ImPlotPoint(((ImVec2*)data)[idx]); }, lowerPoints.data(), lowerPoints.size());
+                        ImPlot::PlotLineG("Waveform", [](int idx, void* data)
+                                            { return ImPlotPoint(((ImVec2*)data)[idx]); }, upperPoints.data(), upperPoints.size());
+                        ImPlot::PlotLineG("Waveform", [](int idx, void* data)
+                                            { return ImPlotPoint(((ImVec2*)data)[idx]); }, lowerPoints.data(), lowerPoints.size());
+                    }
+
+                    ImPlot::SetAxes(ImAxis_X1, ImAxis_Y2);
+
+                    if (sampleRes)
+                    {
+                        ImPlot::PlotStairsG("Peak", [](int idx, void* data) { return ImPlotPoint(((ImVec2*)data)[idx]); }, dbPoints.data(), dbPoints.size());
+                        ImPlot::PlotStairsG("RMS", [](int idx, void* data) { return ImPlotPoint(((ImVec2*)data)[idx]); }, rmsPoints.data(), rmsPoints.size());
+                    }
+                    else
+                    {
+                        ImPlot::PlotLineG("Peak", [](int idx, void* data) { return ImPlotPoint(((ImVec2*)data)[idx]); }, dbPoints.data(), dbPoints.size());
+                        ImPlot::PlotLineG("RMS", [](int idx, void* data) { return ImPlotPoint(((ImVec2*)data)[idx]); }, rmsPoints.data(), rmsPoints.size());
+                    }
+
+                    ImPlot::SetAxes(ImAxis_X1, ImAxis_Y3);
+
+                    ImPlot::TagY(lufs.m_cache.integrated, gluten::theme::supportInfo, fmt::format("LUFS-I: {:.1f}", lufs.m_cache.integrated).c_str());
+                    ImPlot::TagY(lufs.m_cache.shorttermMax, gluten::theme::supportWarning, fmt::format("LUFS-S: {:.1f}", lufs.m_cache.shorttermMax).c_str());
+                    ImPlot::TagY(lufs.m_cache.momentaryMax, gluten::theme::supportError, fmt::format("LUFS-M: {:.1f}", lufs.m_cache.momentaryMax).c_str());
+
+                    ImPlot::SetAxes(ImAxis_X1, ImAxis_Y1);
+                    const double scaledFilePosition = m_filePosition;
+                    ImPlot::PlotInfLines("##Playhead", &scaledFilePosition, 1);
+
+                    if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && ImPlot::IsPlotHovered())
+                    {
+                        audioSubsystem->set_sound_cursor_position(m_filePath, ImPlot::GetPlotMousePos().x);
+                    }
+
+                    m_plotLimitLeft = ImPlot::GetPlotLimits().X.Min;
+                    m_plotLimitRight = ImPlot::GetPlotLimits().X.Max;
+
+                }
+                ImPlot::EndPlot();
             }
 
             ImGui::GetStateStorage()->SetFloat(ImGui::GetID("Min"), m_plotLimitLeft);
             ImGui::GetStateStorage()->SetFloat(ImGui::GetID("Max"), m_plotLimitRight);
+            ImGui::GetStateStorage()->SetFloat(ImGui::GetID("Min dB"), value);
 
             //if (audioSubsystem->get_sound_is_looping(m_filePath))
             //{
