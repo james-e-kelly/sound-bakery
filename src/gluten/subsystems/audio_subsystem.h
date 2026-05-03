@@ -20,11 +20,11 @@ namespace gluten
      */
     struct channel_bucket
     {
-        float min;
-        float max;
-        float rms;
-        float smoothedRms;
-        float averageSample;
+        float min = 0.0f;
+        float max = 0.0f;
+        float rms = 0.0f;
+        float smoothedRms = 0.0f;
+        float averageSample = 0.0f;
     };
 
 	/**
@@ -104,6 +104,8 @@ namespace gluten
         auto async_generate_waveform_lod(const std::filesystem::path filePath, double fileDuration, std::size_t resolution) -> concurrencpp::result<waveform_lod>;
         auto async_calculate_loudness(const std::filesystem::path filePath) -> loudness_cache_type::async_cache_result;
         auto generate_waveform(const std::filesystem::path filePath, std::size_t targetSamples) -> waveform_generator;
+        auto generate_downsampled_resolution_waveform(const std::filesystem::path filePath, std::size_t targetSamples) -> concurrencpp::result<waveform>;
+        auto generate_sample_resolution_waveform(const std::filesystem::path filePath) -> concurrencpp::result<waveform>;
 
         std::unique_ptr<sbk::engine::system> m_soundBakery;
         std::unordered_map<std::filesystem::path, std::unique_ptr<sc_sound, sc_sound_deleter>> m_filesToSoundsMap;

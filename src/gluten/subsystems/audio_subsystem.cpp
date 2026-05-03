@@ -278,10 +278,10 @@ auto gluten::audio_subsystem::get_ui_waveform_lods(const std::filesystem::path& 
     {
         waveform_lods lods;
 
-        lods.thumbnailRes.set_async_fill_cache(filePath, async_generate_waveform_lod(filePath, fileDuration, 16));
+        lods.thumbnailRes.set_async_fill_cache(filePath, async_generate_waveform_lod(filePath, fileDuration, 10));
         lods.lowRes.set_async_fill_cache(filePath, async_generate_waveform_lod(filePath, fileDuration, 100));
-        lods.medRes.set_async_fill_cache(filePath, async_generate_waveform_lod(filePath, fileDuration, 500));
-        lods.highRes.set_async_fill_cache(filePath, async_generate_waveform_lod(filePath, fileDuration, 2000));
+        lods.medRes.set_async_fill_cache(filePath, async_generate_waveform_lod(filePath, fileDuration, 1000));
+        lods.highRes.set_async_fill_cache(filePath, async_generate_waveform_lod(filePath, fileDuration, 3000));
         lods.sampleRes.set_async_fill_cache(filePath, async_generate_waveform_lod(filePath, fileDuration, 48000));
 
         m_filesToWaveformLods.insert({filePath, std::move(lods)});
@@ -387,9 +387,13 @@ auto gluten::audio_subsystem::async_generate_waveform_lod(const std::filesystem:
     waveform_lod lod;
     lod.resolution = resolution;
 
-    for (const waveform_frame frame : generate_waveform(filePath, resolution * fileDuration))
+    if (resolution == ma_standard_sample_rate_48000)
     {
-        lod.waveform.push_back(frame);
+        lod.waveform = co_await generate_sample_resolution_waveform(filePath);
+    }
+    else
+    {
+        lod.waveform = co_await generate_downsampled_resolution_waveform(filePath, resolution * fileDuration);
     }
 
     co_return lod;
@@ -501,7 +505,7 @@ auto gluten::audio_subsystem::generate_waveform(const std::filesystem::path file
         std::fill(channelRmsForBucket.begin(), channelRmsForBucket.end(), 0.0f);
         std::fill(channelSmoothedRmsForBucket.begin(), channelSmoothedRmsForBucket.end(), 0.0f);
         std::fill(channelAverageSampleForBucket.begin(), channelAverageSampleForBucket.end(), 0.0f);
-
+        
         ma_decoder_read_pcm_frames(&decoder, framesInBucket.data(), framesToRead, nullptr);
 
         for (ma_uint64 frame = 0; frame < framesToRead; ++frame)
@@ -534,4 +538,119 @@ auto gluten::audio_subsystem::generate_waveform(const std::filesystem::path file
     }
 
     ma_decoder_uninit(&decoder);
+}
+
+auto gluten::audio_subsystem::generate_downsampled_resolution_waveform(const std::filesystem::path filePath, std::size_t targetSamples) -> concurrencpp::result<waveform>
+{
+    if (!std::filesystem::exists(filePath))
+    {
+        co_return waveform();
+    }
+
+    if (targetSamples == 0)
+    {
+        co_return waveform();
+    }
+
+    ma_decoder decoder;
+    SC_ZERO_OBJECT(&decoder);
+    const ma_decoder_config config = ma_decoder_config_init(ma_format_f32, 0, ma_standard_sample_rate_48000);
+
+    if (ma_decoder_init_file(filePath.string().c_str(), &config, &decoder) != MA_SUCCESS)
+    {
+        co_return waveform();
+    }
+
+    ma_uint64 frameCount;
+    ma_decoder_get_length_in_pcm_frames(&decoder, &frameCount);
+    
+    size_t framesPerBucket = frameCount / targetSamples;
+    if (framesPerBucket < 1)
+    {
+        framesPerBucket = 1;
+    }
+
+    waveform result(targetSamples, waveform_frame(decoder.outputChannels, channel_bucket()));
+
+    std::vector<float> frameData(frameCount * decoder.outputChannels, 0.0f);
+
+    const ma_result readResult = ma_decoder_read_pcm_frames(&decoder, frameData.data(), frameCount, nullptr);
+    assert(readResult == MA_SUCCESS);
+
+    for (ma_uint64 samplingIndex = 0; samplingIndex < targetSamples; ++samplingIndex)
+    {
+        ma_uint64 framesToRead    = framesPerBucket;
+        ma_uint64 framesRead      = framesPerBucket * samplingIndex;
+        ma_uint64 framesRemaining = frameCount - framesRead;
+
+        if (framesRemaining < framesToRead)
+        {
+            framesToRead = framesRemaining;
+        }
+    
+        for (ma_uint64 frame = 0; frame < framesToRead; ++frame)
+        {
+            for (ma_uint64 channel = 0; channel < decoder.outputChannels; ++channel)
+            {
+                const ma_uint64 sampleIndex = (samplingIndex * framesToRead * decoder.outputChannels) + (frame * decoder.outputChannels) + channel;
+                const float sampleValue     = frameData[sampleIndex];
+
+                result[samplingIndex][channel].min = std::min<float>(result[samplingIndex][channel].min, sampleValue);
+                result[samplingIndex][channel].max = std::max<float>(result[samplingIndex][channel].max, sampleValue);
+                result[samplingIndex][channel].rms += sampleValue * sampleValue;
+                result[samplingIndex][channel].averageSample += sampleValue;
+            }
+        }
+
+        for (ma_uint64 channel = 0; channel < decoder.outputChannels; ++channel)
+        {
+            result[samplingIndex][channel].rms /= framesToRead;
+            result[samplingIndex][channel].averageSample /= framesToRead;
+        }
+    }
+
+    ma_decoder_uninit(&decoder);
+
+    co_return result;
+}
+
+auto gluten::audio_subsystem::generate_sample_resolution_waveform(const std::filesystem::path filePath) -> concurrencpp::result<waveform>
+{
+    if (!std::filesystem::exists(filePath))
+    {
+        co_return waveform();
+    }
+
+    ma_decoder decoder;
+    SC_ZERO_OBJECT(&decoder);
+    const ma_decoder_config config = ma_decoder_config_init(ma_format_f32, 0, ma_standard_sample_rate_48000);
+
+    if (ma_decoder_init_file(filePath.string().c_str(), &config, &decoder) != MA_SUCCESS)
+    {
+        co_return waveform();
+    }
+
+    ma_uint64 frameCount;
+    ma_uint64 framesRead = 0;
+    ma_decoder_get_length_in_pcm_frames(&decoder, &frameCount);
+
+    waveform result(frameCount, waveform_frame(decoder.outputChannels, channel_bucket()));
+    
+    std::vector<float> frameData(frameCount * decoder.outputChannels, 0.0f);
+
+    ma_decoder_read_pcm_frames(&decoder, frameData.data(), frameCount, &framesRead);
+
+    for (ma_uint64 frame = 0; frame < framesRead; ++frame)
+    {
+        for (ma_uint64 channel = 0; channel < decoder.outputChannels; ++channel)
+        {
+            const ma_uint64 sampleIndex = (frame * decoder.outputChannels) + channel;
+
+            result[frame][channel].averageSample = frameData[sampleIndex];
+        }
+    }
+
+    ma_decoder_uninit(&decoder);
+
+    co_return result;
 }
