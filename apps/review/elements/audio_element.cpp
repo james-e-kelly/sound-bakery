@@ -126,17 +126,17 @@ auto audio_element::render_waveform() -> void
                 else if (plotTimeWidth < 1.0f)
                 {
                     waveformCache = &waveformLods.highRes.get_cached_data(m_filePath);
-                    peakCache     = &waveformLods.highRes.get_cached_data(m_filePath);
+                    peakCache     = &waveformLods.medRes.get_cached_data(m_filePath);
                 }
                 else if (plotTimeWidth < 10.0f)
                 {
                     waveformCache = &waveformLods.medRes.get_cached_data(m_filePath);
-                    peakCache     = &waveformLods.medRes.get_cached_data(m_filePath);
+                    peakCache     = &waveformLods.lowRes.get_cached_data(m_filePath);
                 }
                 else if (plotTimeWidth < 100.0f)
                 {
                     waveformCache = &waveformLods.lowRes.get_cached_data(m_filePath);
-                    peakCache     = &waveformLods.lowRes.get_cached_data(m_filePath);
+                    peakCache     = &waveformLods.thumbnailRes.get_cached_data(m_filePath);
                 }
                 else
                 {
@@ -244,7 +244,7 @@ auto audio_element::render_waveform() -> void
                         ImPlot::SetAxes(ImAxis_X1, ImAxis_Y1);
 
                         static ImPlotSpec waveformSpec;
-                        waveformSpec.LineColor = gluten::theme::interactive;
+                        //waveformSpec.LineColor = gluten::theme::layer03;
 
                         if (sampleRes)
                         {
