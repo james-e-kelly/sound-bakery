@@ -16,15 +16,67 @@ namespace gluten
     };
 
     /**
-     * @brief Volume data about one bucket and one channel
+     * @brief Min/max of the channel
      */
-    struct channel_bucket
+    struct channel_frame
     {
-        float min = 0.0f;
-        float max = 0.0f;
+        float min       = 0.0f; // min sample value within the time frame. only written to when downsampling
+        float max       = 0.0f; // max sample value within the time frame. only written to when downsampling
+        float sample    = 0.0f; // the actual sample value at this frame. only written to when showing the full resolution
+    };
+
+    /**
+     * @brief Mid/side information
+     */
+    struct stereo_data
+    {
+        float midMin    = 0.0f;
+        float midMax    = 0.0f;
+        float sideMin   = 0.0f;
+        float sideMax   = 0.0f;
+    };
+
+    /**
+     * @brief Data about the frame as a whole, like overall volumes
+     */
+    struct frame_data
+    {
         float rms = 0.0f;
-        float smoothedRms = 0.0f;
-        float averageSample = 0.0f;
+        float channelSumAverage = 0.0f;
+        float lowAverage        = 0.0f;
+        float midAverage        = 0.0f;
+        float highAverage       = 0.0f;
+    };
+    
+    struct waveform
+    {
+        waveform() = default;
+        waveform(std::size_t frames, std::size_t channels) 
+            : channelFrames(channels, std::vector<channel_frame>(frames, channel_frame())),
+              globalFrames(frames, frame_data())
+        {
+            if (channels == 2)
+            {
+                stereoFrames.assign(frames, stereo_data());
+            }
+        }
+
+        std::vector<std::vector<channel_frame>> channelFrames;  // indexed [channel][frame] so each channel can be sent to ImPlot asap
+        std::vector<stereo_data> stereoFrames;                  // Only valid when there are only two channels
+        std::vector<frame_data> globalFrames;                   // Total volume sums
+        
+        double lufsIntegrated = -200.0;
+
+        auto is_stereo() const -> bool
+        {
+            return channelFrames.size() == 2;
+        }
+    };
+
+    struct waveform_lod
+    {
+        int resolution;
+        waveform waveform;
     };
 
 	/**
@@ -33,16 +85,7 @@ namespace gluten
 	class audio_subsystem : public subsystem
 	{
     public:
-        using waveform_frame = std::vector<channel_bucket>;                //< All channels in the bucket
-        using waveform = std::vector<waveform_frame>;                      //< All buckets and all channels
-        using waveform_generator = concurrencpp::generator<waveform_frame>;
         using loudness_cache_type = data_cache<loudness_lufs, key_cache_key<std::filesystem::path>, key_cache_key_hasher<std::filesystem::path>>;
-
-        struct waveform_lod
-        {
-            int resolution;
-            waveform waveform;
-        };
 
         using waveform_lod_cache_type = data_cache<waveform_lod, key_cache_key<std::filesystem::path>, key_cache_key_hasher<std::filesystem::path>>;
 
@@ -76,7 +119,6 @@ namespace gluten
         auto get_or_load_audio_handle(const std::filesystem::path& filePath) -> sc_sound*;
         auto get_sound_instance(const std::filesystem::path& filePath) -> sc_sound_instance*;
 
-        auto get_ui_waveform(const std::filesystem::path& filePath, std::size_t buckets) -> waveform&;
         auto get_ui_waveform_lods(const std::filesystem::path& filePath, double fileDuration) -> waveform_lods&;
 
         auto get_loudness_lufs(const std::filesystem::path& filePath) -> loudness_cache_type::cache_result;
@@ -100,10 +142,8 @@ namespace gluten
 
         auto get_sound_loop_info(const std::filesystem::path& filePath) -> loop_data*;
 
-        auto async_generate_waveform(const std::filesystem::path filePath, std::size_t targetSamples) -> concurrencpp::result<void>;
         auto async_generate_waveform_lod(const std::filesystem::path filePath, double fileDuration, std::size_t resolution) -> concurrencpp::result<waveform_lod>;
         auto async_calculate_loudness(const std::filesystem::path filePath) -> loudness_cache_type::async_cache_result;
-        auto generate_waveform(const std::filesystem::path filePath, std::size_t targetSamples) -> waveform_generator;
         auto generate_downsampled_resolution_waveform(const std::filesystem::path filePath, std::size_t targetSamples) -> concurrencpp::result<waveform>;
         auto generate_sample_resolution_waveform(const std::filesystem::path filePath) -> concurrencpp::result<waveform>;
 

@@ -53,7 +53,4 @@ private:
 
     gluten::layout m_layout = gluten::layout(gluten::layout_type::top_to_bottom, gluten::anchor_preset::stretch_full);
     gluten::layout m_waveformAndLoudnessLayout = gluten::layout(gluten::layout_type::left_to_right, gluten::anchor_preset::stretch_full);
-
-    float m_plotLimitLeft = 0;
-    float m_plotLimitRight = INT_MAX;
 };
