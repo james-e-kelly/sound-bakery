@@ -262,22 +262,14 @@ auto gluten::audio_subsystem::get_sound_instance(const std::filesystem::path& fi
     return soundInstance;
 }
 
-auto gluten::audio_subsystem::get_ui_waveform_lods(const std::filesystem::path& filePath, double fileDuration) -> waveform_lods&
+auto gluten::audio_subsystem::get_ui_waveform_lods(const std::filesystem::path& filePath, double fileDuration) -> waveform_lods_cache_type::cache_result
 {
-    if (!m_filesToWaveformLods.contains(filePath))
+    if (m_waveformLodCache.get_cache_needs_filling(filePath))
     {
-        waveform_lods lods;
-
-        lods.thumbnailRes.set_async_fill_cache(filePath, async_generate_waveform_lod(filePath, fileDuration, 10));
-        lods.lowRes.set_async_fill_cache(filePath, async_generate_waveform_lod(filePath, fileDuration, 100));
-        lods.medRes.set_async_fill_cache(filePath, async_generate_waveform_lod(filePath, fileDuration, 1000));
-        lods.highRes.set_async_fill_cache(filePath, async_generate_waveform_lod(filePath, fileDuration, 3000));
-        lods.sampleRes.set_async_fill_cache(filePath, async_generate_waveform_lod(filePath, fileDuration, 48000));
-
-        m_filesToWaveformLods.insert({filePath, std::move(lods)});
+        m_waveformLodCache.set_async_fill_cache(filePath, async_generate_waveform_lods(filePath, fileDuration, 0));
     }
 
-    return m_filesToWaveformLods.at(filePath);
+    return m_waveformLodCache.get_cached_data(filePath);
 }
 
 auto gluten::audio_subsystem::get_loudness_lufs(const std::filesystem::path& filePath) -> loudness_cache_type::cache_result
@@ -306,26 +298,62 @@ auto gluten::audio_subsystem::get_sound_loop_info(const std::filesystem::path& f
     return loopData;
 }
 
-auto gluten::audio_subsystem::async_generate_waveform_lod(const std::filesystem::path filePath, double fileDuration, std::size_t resolution) -> concurrencpp::result<waveform_lod>
+auto gluten::audio_subsystem::async_generate_waveform_lod(std::shared_ptr<const std::vector<float>> audioData, ma_uint64 channels, double fileDuration, std::size_t resolution, concurrencpp::shared_result<waveform_lod> dependencyResult) -> concurrencpp::result<waveform_lod>
 {
-    co_await concurrencpp::resume_on(gluten::app::get()->background_executor());
+    co_await concurrencpp::resume_on(gluten::app::get()->thread_pool_executor());
+
+    if (dependencyResult)
+    {
+        co_await dependencyResult;
+    }
 
     waveform_lod lod;
     lod.resolution = resolution;
 
     if (resolution == ma_standard_sample_rate_48000)
     {
-        lod.waveform = co_await generate_sample_resolution_waveform(filePath);
+        lod.waveform = co_await generate_sample_resolution_waveform(audioData, channels);
     }
     else
     {
-        lod.waveform = co_await generate_downsampled_resolution_waveform(filePath, resolution * fileDuration);
+        lod.waveform = co_await generate_downsampled_resolution_waveform(audioData, channels, resolution * fileDuration);
     }
 
     co_return lod;
 }
 
-auto gluten::audio_subsystem::async_calculate_loudness(const std::filesystem::path filePath) -> loudness_cache_type::async_cache_result
+auto gluten::audio_subsystem::async_generate_waveform_lods(const std::filesystem::path filePath, double fileDuration, std::size_t resolution) -> concurrencpp::result<waveform_lods>
+{
+    co_await concurrencpp::resume_on(gluten::app::get()->background_executor());
+
+    waveform_lods result;
+
+    ma_decoder decoder;
+    SC_ZERO_OBJECT(&decoder);
+
+    const ma_decoder_config config = ma_decoder_config_init(ma_format_f32, 0, ma_standard_sample_rate_48000);
+
+    if (ma_decoder_init_file(filePath.string().c_str(), &config, &decoder) == MA_SUCCESS)
+    {
+        ma_uint64 frameCount;
+        ma_decoder_get_length_in_pcm_frames(&decoder, &frameCount);
+
+        std::shared_ptr<const std::vector<float>> frameData = std::make_shared<const std::vector<float>>(frameCount * decoder.outputChannels, 0.0f);
+        ma_decoder_read_pcm_frames(&decoder, const_cast<float*>(frameData->data()), frameCount, nullptr);
+
+        concurrencpp::shared_result<waveform_lod> thumbnailResult = async_generate_waveform_lod(frameData, decoder.outputChannels, fileDuration, 10, {});
+
+        result.thumbnailRes.set_async_fill_cache(filePath, thumbnailResult);
+        result.lowRes.set_async_fill_cache(filePath, async_generate_waveform_lod(frameData, decoder.outputChannels, fileDuration, 100, thumbnailResult));
+        result.medRes.set_async_fill_cache(filePath, async_generate_waveform_lod(frameData, decoder.outputChannels, fileDuration, 1000, thumbnailResult));
+        result.highRes.set_async_fill_cache(filePath, async_generate_waveform_lod(frameData, decoder.outputChannels, fileDuration, 3000, thumbnailResult));
+        result.sampleRes.set_async_fill_cache(filePath, async_generate_waveform_lod(frameData, decoder.outputChannels, fileDuration, 48000, thumbnailResult));
+    }
+
+    co_return result;
+}
+
+auto gluten::audio_subsystem::async_calculate_loudness(const std::filesystem::path filePath) -> concurrencpp::result<loudness_cache_type::cache_data_type>
 {
     co_await concurrencpp::resume_on(gluten::app::get()->background_executor());
 
@@ -374,12 +402,12 @@ auto gluten::audio_subsystem::async_calculate_loudness(const std::filesystem::pa
     co_return loudness;
 }
 
-auto gluten::audio_subsystem::generate_downsampled_resolution_waveform(const std::filesystem::path filePath, std::size_t targetSamples) -> concurrencpp::result<waveform>
+auto gluten::audio_subsystem::generate_downsampled_resolution_waveform(std::shared_ptr<const std::vector<float>> audioData, ma_uint32 channels, std::size_t targetSamples) -> concurrencpp::result<waveform>
 {
     constexpr double lowsCrossoverFrequency = 250.0;
     constexpr double highsCrossoverFrequency = 4000.0;
 
-    if (!std::filesystem::exists(filePath))
+    if (!audioData || audioData->empty())
     {
         co_return waveform();
     }
@@ -389,97 +417,83 @@ auto gluten::audio_subsystem::generate_downsampled_resolution_waveform(const std
         co_return waveform();
     }
 
-    ma_decoder decoder;
     ma_lpf lowsLowpass;
     ma_hpf highsHighpass;
     ma_lpf midsLowpass;
     ma_hpf midsHighpass;
-    SC_ZERO_OBJECT(&decoder);
     SC_ZERO_OBJECT(&lowsLowpass);
     SC_ZERO_OBJECT(&highsHighpass);
     SC_ZERO_OBJECT(&midsLowpass);
     SC_ZERO_OBJECT(&midsHighpass);
 
-    const ma_decoder_config config = ma_decoder_config_init(ma_format_f32, 0, ma_standard_sample_rate_48000);
-
-    if (ma_decoder_init_file(filePath.string().c_str(), &config, &decoder) != MA_SUCCESS)
+    const std::size_t frameCount = audioData->size() / channels;
+    size_t framesToRead = frameCount / targetSamples;
+    if (framesToRead < 1)
     {
-        co_return waveform();
+        framesToRead = 1;
     }
 
-    ma_uint64 frameCount;
-    ma_decoder_get_length_in_pcm_frames(&decoder, &frameCount);
-    
-    size_t framesPerBucket = frameCount / targetSamples;
-    if (framesPerBucket < 1)
-    {
-        framesPerBucket = 1;
-    }
-
-    const ma_lpf_config lpfConfig       = ma_lpf_config_init(ma_format_f32, decoder.outputChannels, ma_standard_sample_rate_48000, lowsCrossoverFrequency, 2);
-    const ma_hpf_config hpfConfig       = ma_hpf_config_init(ma_format_f32, decoder.outputChannels, ma_standard_sample_rate_48000, highsCrossoverFrequency, 2);
-    const ma_lpf_config midsLpfConfig   = ma_lpf_config_init(ma_format_f32, decoder.outputChannels, ma_standard_sample_rate_48000, highsCrossoverFrequency, 2);
-    const ma_hpf_config midsHpfConfig   = ma_hpf_config_init(ma_format_f32, decoder.outputChannels, ma_standard_sample_rate_48000, lowsCrossoverFrequency, 2);
+    const ma_lpf_config lpfConfig       = ma_lpf_config_init(ma_format_f32, channels, ma_standard_sample_rate_48000, lowsCrossoverFrequency, 2);
+    const ma_hpf_config hpfConfig       = ma_hpf_config_init(ma_format_f32, channels, ma_standard_sample_rate_48000, highsCrossoverFrequency, 2);
+    const ma_lpf_config midsLpfConfig   = ma_lpf_config_init(ma_format_f32, channels, ma_standard_sample_rate_48000, highsCrossoverFrequency, 2);
+    const ma_hpf_config midsHpfConfig   = ma_hpf_config_init(ma_format_f32, channels, ma_standard_sample_rate_48000, lowsCrossoverFrequency, 2);
 
     ma_lpf_init(&lpfConfig, NULL, &lowsLowpass);
     ma_hpf_init(&hpfConfig, NULL, &highsHighpass);
     ma_lpf_init(&midsLpfConfig, NULL, &midsLowpass);
     ma_hpf_init(&midsHpfConfig, NULL, &midsHighpass);
 
-    waveform result(targetSamples, decoder.outputChannels);
+    waveform result(targetSamples, channels);
 
-    std::vector<float> frameData(frameCount * decoder.outputChannels, 0.0f);
-    std::vector<float> lowData(framesPerBucket * decoder.outputChannels, 0.0f);
-    std::vector<float> midData(framesPerBucket * decoder.outputChannels, 0.0f);
-    std::vector<float> highData(framesPerBucket * decoder.outputChannels, 0.0f);
+    std::vector<float> lowData(audioData->size(), 0.0f);
+    std::vector<float> midData(audioData->size(), 0.0f);
+    std::vector<float> highData(audioData->size(), 0.0f);
 
-    ma_decoder_read_pcm_frames(&decoder, frameData.data(), frameCount, nullptr);
+    ma_lpf_process_pcm_frames(&lowsLowpass, lowData.data(), audioData->data(), frameCount);
+    ma_hpf_process_pcm_frames(&highsHighpass, highData.data(), audioData->data(), frameCount);
+
+    ma_lpf_process_pcm_frames(&midsLowpass, midData.data(), audioData->data(), frameCount);
+    ma_hpf_process_pcm_frames(&midsHighpass, midData.data(), midData.data(), frameCount);
+
+    const float channelsReciprocal = 1.0f / channels;
+    const float framesToReadReciprocal = 1.0f / framesToRead;
 
     for (ma_uint64 samplingIndex = 0; samplingIndex < targetSamples; ++samplingIndex)
     {
-        ma_uint64 framesToRead    = framesPerBucket;
-
-        ma_lpf_process_pcm_frames(&lowsLowpass, lowData.data(), frameData.data() + (samplingIndex * framesPerBucket * decoder.outputChannels), framesToRead);
-        ma_hpf_process_pcm_frames(&highsHighpass, highData.data(), frameData.data() + (samplingIndex * framesPerBucket * decoder.outputChannels), framesToRead);
-
-        ma_lpf_process_pcm_frames(&midsLowpass, midData.data(), frameData.data() + (samplingIndex * framesPerBucket * decoder.outputChannels), framesToRead);
-        ma_hpf_process_pcm_frames(&midsHighpass, midData.data(), midData.data(), framesToRead);
-    
         for (ma_uint64 frame = 0; frame < framesToRead; ++frame)
         {
             float allChannelsSum = 0.0f;
 
-            for (ma_uint64 channel = 0; channel < decoder.outputChannels; ++channel)
+            for (ma_uint64 channel = 0; channel < channels; ++channel)
             {
-                const ma_uint64 sampleIndex = (samplingIndex * framesToRead * decoder.outputChannels) + (frame * decoder.outputChannels) + channel;
-                const ma_uint64 multibandIndex = (frame * decoder.outputChannels) + channel;
+                const ma_uint64 sampleIndex = (samplingIndex * framesToRead * channels) + (frame * channels) + channel;
 
-                const float sampleValue     = frameData[sampleIndex];
-                const float lowValue        = lowData[multibandIndex];
-                const float midValue        = midData[multibandIndex];
-                const float highValue       = highData[multibandIndex];
+                const float sampleValue     = audioData->at(sampleIndex);
+                const float lowValue        = lowData[sampleIndex];
+                const float midValue        = midData[sampleIndex];
+                const float highValue       = highData[sampleIndex];
 
-                allChannelsSum += std::abs(sampleValue) / decoder.outputChannels;
+                allChannelsSum += std::abs(sampleValue) * channelsReciprocal;
 
-                result.globalFrames[samplingIndex].channelSumAverage += (std::abs(sampleValue) / decoder.outputChannels) / framesToRead;
-                result.globalFrames[samplingIndex].lowAverage += (std::abs(lowValue) / decoder.outputChannels) / framesToRead;     
-                result.globalFrames[samplingIndex].midAverage += (std::abs(midValue) / decoder.outputChannels) / framesToRead;    
-                result.globalFrames[samplingIndex].highAverage += (std::abs(highValue) / decoder.outputChannels) / framesToRead;   
+                result.globalFrames[samplingIndex].channelSumAverage += (std::abs(sampleValue) * channelsReciprocal) * framesToReadReciprocal;
+                result.globalFrames[samplingIndex].lowAverage += (std::abs(lowValue) * channelsReciprocal) * framesToReadReciprocal;     
+                result.globalFrames[samplingIndex].midAverage += (std::abs(midValue) * channelsReciprocal) * framesToReadReciprocal;    
+                result.globalFrames[samplingIndex].highAverage += (std::abs(highValue) * channelsReciprocal) * framesToReadReciprocal;   
 
                 result.channelFrames[channel][samplingIndex].min = std::min<float>(result.channelFrames[channel][samplingIndex].min, sampleValue);
                 result.channelFrames[channel][samplingIndex].max = std::max<float>(result.channelFrames[channel][samplingIndex].max, sampleValue);
             }
 
-            if (decoder.outputChannels == 2)
+            if (channels == 2)
             {
-                const ma_uint64 leftSampleIndex     = (samplingIndex * framesToRead * decoder.outputChannels) + (frame * decoder.outputChannels) + 0;
-                const ma_uint64 rightSampleIndex    = (samplingIndex * framesToRead * decoder.outputChannels) + (frame * decoder.outputChannels) + 1;
+                const ma_uint64 leftSampleIndex     = (samplingIndex * framesToRead * channels) + (frame * channels) + 0;
+                const ma_uint64 rightSampleIndex    = (samplingIndex * framesToRead * channels) + (frame * channels) + 1;
 
-                const float leftSampleValue = frameData[leftSampleIndex];
-                const float rightSampleValue = frameData[rightSampleIndex];
+                const float leftSampleValue = audioData->at(leftSampleIndex);
+                const float rightSampleValue = audioData->at(rightSampleIndex);
 
-                const float midValue = (leftSampleValue + rightSampleValue) / 2.0f;
-                const float sideValue = (leftSampleValue - rightSampleValue) / 2.0f;
+                const float midValue = (leftSampleValue + rightSampleValue) * channelsReciprocal;
+                const float sideValue = (leftSampleValue - rightSampleValue) * channelsReciprocal;
 
                 result.stereoFrames[samplingIndex].midMin = std::min<float>(result.stereoFrames[samplingIndex].midMin, midValue);
                 result.stereoFrames[samplingIndex].midMax = std::max<float>(result.stereoFrames[samplingIndex].midMax, midValue);
@@ -490,10 +504,9 @@ auto gluten::audio_subsystem::generate_downsampled_resolution_waveform(const std
             result.globalFrames[samplingIndex].rms                  += allChannelsSum * allChannelsSum;
         }
 
-        result.globalFrames[samplingIndex].rms /= framesToRead;
+        result.globalFrames[samplingIndex].rms *= framesToReadReciprocal;
     }
 
-    ma_decoder_uninit(&decoder);
     ma_lpf_uninit(&lowsLowpass, NULL);
     ma_hpf_uninit(&highsHighpass, NULL);
     ma_lpf_uninit(&midsLowpass, NULL);
@@ -502,42 +515,31 @@ auto gluten::audio_subsystem::generate_downsampled_resolution_waveform(const std
     co_return result;
 }
 
-auto gluten::audio_subsystem::generate_sample_resolution_waveform(const std::filesystem::path filePath) -> concurrencpp::result<waveform>
+auto gluten::audio_subsystem::generate_sample_resolution_waveform(std::shared_ptr<const std::vector<float>> audioData, ma_uint32 channels) -> concurrencpp::result<waveform>
 {
-    if (!std::filesystem::exists(filePath))
+    if (!audioData || audioData->empty())
     {
         co_return waveform();
     }
 
-    ma_decoder decoder;
-    SC_ZERO_OBJECT(&decoder);
-    const ma_decoder_config config = ma_decoder_config_init(ma_format_f32, 0, ma_standard_sample_rate_48000);
+    const ma_uint64 frameCount = audioData->size() / channels;
 
-    if (ma_decoder_init_file(filePath.string().c_str(), &config, &decoder) != MA_SUCCESS)
-    {
-        co_return waveform();
-    }
-
-    ma_uint64 frameCount;
-    ma_uint64 framesRead = 0;
-    ma_decoder_get_length_in_pcm_frames(&decoder, &frameCount);
-
-    waveform result(frameCount, decoder.outputChannels);
+    waveform result(frameCount, channels);
     
-    std::vector<float> frameData(frameCount * decoder.outputChannels, 0.0f);
-
-    ma_decoder_read_pcm_frames(&decoder, frameData.data(), frameCount, &framesRead);
-
-    for (ma_uint64 frame = 0; frame < framesRead; ++frame)
+    for (ma_uint64 frame = 0; frame < frameCount; ++frame)
     {
-        for (ma_uint64 channel = 0; channel < decoder.outputChannels; ++channel)
+        for (ma_uint64 channel = 0; channel < channels; ++channel)
         {
-            const ma_uint64 sampleIndex = (frame * decoder.outputChannels) + channel;
-            result.channelFrames[channel][frame].sample = frameData[sampleIndex];
+            const ma_uint64 sampleIndex = (frame * channels) + channel;
+            result.channelFrames[channel][frame].sample = audioData->at(sampleIndex);
         }
     }
 
-    ma_decoder_uninit(&decoder);
+    ebur128_state* eburState = ebur128_init(channels, ma_standard_sample_rate_48000, EBUR128_MODE_M | EBUR128_MODE_S | EBUR128_MODE_I);
+    
+    ebur128_add_frames_float(eburState, audioData->data(), frameCount);
+    ebur128_loudness_global(eburState, &result.lufs.integrated);
+    ebur128_destroy(&eburState);
 
     co_return result;
 }

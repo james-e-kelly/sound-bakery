@@ -65,7 +65,7 @@ namespace gluten
         std::vector<stereo_data> stereoFrames;                  // Only valid when there are only two channels
         std::vector<frame_data> globalFrames;                   // Total volume sums
         
-        double lufsIntegrated = -200.0;
+        loudness_lufs lufs;
 
         auto is_stereo() const -> bool
         {
@@ -86,7 +86,6 @@ namespace gluten
 	{
     public:
         using loudness_cache_type = data_cache<loudness_lufs, key_cache_key<std::filesystem::path>, key_cache_key_hasher<std::filesystem::path>>;
-
         using waveform_lod_cache_type = data_cache<waveform_lod, key_cache_key<std::filesystem::path>, key_cache_key_hasher<std::filesystem::path>>;
 
         struct waveform_lods
@@ -97,6 +96,8 @@ namespace gluten
             waveform_lod_cache_type highRes;
             waveform_lod_cache_type sampleRes;
         };
+
+        using waveform_lods_cache_type = data_cache<waveform_lods, key_cache_key<std::filesystem::path>, key_cache_key_hasher<std::filesystem::path>>;
 
         audio_subsystem(app* appOwner) : subsystem(appOwner) {}
 
@@ -119,7 +120,7 @@ namespace gluten
         auto get_or_load_audio_handle(const std::filesystem::path& filePath) -> sc_sound*;
         auto get_sound_instance(const std::filesystem::path& filePath) -> sc_sound_instance*;
 
-        auto get_ui_waveform_lods(const std::filesystem::path& filePath, double fileDuration) -> waveform_lods&;
+        auto get_ui_waveform_lods(const std::filesystem::path& filePath, double fileDuration) -> waveform_lods_cache_type::cache_result;
 
         auto get_loudness_lufs(const std::filesystem::path& filePath) -> loudness_cache_type::cache_result;
 
@@ -142,10 +143,11 @@ namespace gluten
 
         auto get_sound_loop_info(const std::filesystem::path& filePath) -> loop_data*;
 
-        auto async_generate_waveform_lod(const std::filesystem::path filePath, double fileDuration, std::size_t resolution) -> concurrencpp::result<waveform_lod>;
-        auto async_calculate_loudness(const std::filesystem::path filePath) -> loudness_cache_type::async_cache_result;
-        auto generate_downsampled_resolution_waveform(const std::filesystem::path filePath, std::size_t targetSamples) -> concurrencpp::result<waveform>;
-        auto generate_sample_resolution_waveform(const std::filesystem::path filePath) -> concurrencpp::result<waveform>;
+        auto async_generate_waveform_lod(std::shared_ptr<const std::vector<float>> audioData, ma_uint64 channels, double fileDuration, std::size_t resolution, concurrencpp::shared_result<waveform_lod> dependencyResult) -> concurrencpp::result<waveform_lod>;
+        auto async_generate_waveform_lods(const std::filesystem::path filePath, double fileDuration, std::size_t resolution) -> concurrencpp::result<waveform_lods>;
+        auto async_calculate_loudness(const std::filesystem::path filePath) -> concurrencpp::result<loudness_cache_type::cache_data_type>;
+        auto generate_downsampled_resolution_waveform(std::shared_ptr<const std::vector<float>> audioData, ma_uint32 channels, std::size_t targetSamples) -> concurrencpp::result<waveform>;
+        auto generate_sample_resolution_waveform(std::shared_ptr<const std::vector<float>> audioData, ma_uint32 channels) -> concurrencpp::result<waveform>;
 
         std::unique_ptr<sbk::engine::system> m_soundBakery;
         std::unordered_map<std::filesystem::path, std::unique_ptr<sc_sound, sc_sound_deleter>> m_filesToSoundsMap;
@@ -153,7 +155,7 @@ namespace gluten
         std::unordered_map<std::filesystem::path, loop_data> m_filesToLoopDataMap;
 
         std::unordered_map<std::filesystem::path, waveform> m_filesToWaveforms;
-        std::unordered_map<std::filesystem::path, waveform_lods> m_filesToWaveformLods;
+        waveform_lods_cache_type m_waveformLodCache;
         loudness_cache_type m_filesToLoudnessCache; 
 	};
 }

@@ -153,51 +153,50 @@ auto audio_element::render_waveform() -> void
                 bool renderMids                             = ImGui::GetStateStorage()->GetBool(ImGui::GetID(s_renderMidsName), true);
                 bool renderHighs                            = ImGui::GetStateStorage()->GetBool(ImGui::GetID(s_renderHighsName), true);
 
-                gluten::audio_subsystem::waveform_lods& waveformLods = audioSubsystem->get_ui_waveform_lods(m_filePath, m_fileDuration);
-                const auto& lufs                                     = audioSubsystem->get_loudness_lufs(m_filePath);
+                const auto& waveformLods    = audioSubsystem->get_ui_waveform_lods(m_filePath, m_fileDuration);
+                const auto& lufs            = audioSubsystem->get_loudness_lufs(m_filePath);
+
+                if (!waveformLods.has_data())
+                {
+                    return;
+                }
 
                 const float plotTimeWidth = plotLimitRight - plotLimitLeft;
 
                 bool sampleRes = false;
 
-                const gluten::audio_subsystem::waveform_lod_cache_type::cached_data* waveformCache = nullptr;
-                const gluten::audio_subsystem::waveform_lod_cache_type::cached_data* peakCache     = nullptr;
+                const gluten::audio_subsystem::waveform_lod_cache_type::cached_data* waveformCache = &waveformLods.m_cache.thumbnailRes.get_cached_data(m_filePath);
+                const gluten::audio_subsystem::waveform_lod_cache_type::cached_data* peakCache     = &waveformLods.m_cache.thumbnailRes.get_cached_data(m_filePath);
 
-                if (plotTimeWidth < s_sampleResolutionThreshold)
+                if (plotTimeWidth < s_lowResolutionThreshold && waveformLods.m_cache.lowRes.get_cached_data(m_filePath).has_data())
                 {
-                    waveformCache = &waveformLods.sampleRes.get_cached_data(m_filePath);
-                    peakCache     = &waveformLods.medRes.get_cached_data(m_filePath);
+                    waveformCache = &waveformLods.m_cache.lowRes.get_cached_data(m_filePath);
+                }
+
+                if (plotTimeWidth < s_mediumResolutionThreshold && waveformLods.m_cache.medRes.get_cached_data(m_filePath).has_data())
+                {
+                    waveformCache = &waveformLods.m_cache.medRes.get_cached_data(m_filePath);
+                }
+
+                if (plotTimeWidth < s_highResolutionThreshold && waveformLods.m_cache.highRes.get_cached_data(m_filePath).has_data())
+                {
+                    waveformCache = &waveformLods.m_cache.highRes.get_cached_data(m_filePath);
+
+                    if (waveformLods.m_cache.lowRes.get_cached_data(m_filePath).has_data())
+                    {
+                        peakCache = &waveformLods.m_cache.lowRes.get_cached_data(m_filePath);
+                    }
+                }
+
+                if (plotTimeWidth < s_sampleResolutionThreshold && waveformLods.m_cache.sampleRes.get_cached_data(m_filePath).has_data())
+                {
+                    waveformCache = &waveformLods.m_cache.sampleRes.get_cached_data(m_filePath);
                     sampleRes     = true;
-                }
-                else if (plotTimeWidth < s_highResolutionThreshold)
-                {
-                    waveformCache = &waveformLods.highRes.get_cached_data(m_filePath);
-                    peakCache     = &waveformLods.lowRes.get_cached_data(m_filePath);
-                }
-                else if (plotTimeWidth < s_mediumResolutionThreshold)
-                {
-                    waveformCache = &waveformLods.medRes.get_cached_data(m_filePath);
-                    peakCache     = &waveformLods.thumbnailRes.get_cached_data(m_filePath);
-                }
-                else if (plotTimeWidth < s_lowResolutionThreshold)
-                {
-                    waveformCache = &waveformLods.lowRes.get_cached_data(m_filePath);
-                    peakCache     = &waveformLods.thumbnailRes.get_cached_data(m_filePath);
-                }
-                else
-                {
-                    waveformCache = &waveformLods.thumbnailRes.get_cached_data(m_filePath);
-                    peakCache     = &waveformLods.thumbnailRes.get_cached_data(m_filePath);
-                }
 
-                if (waveformCache && waveformCache->m_state != gluten::cache_state::has_data)
-                {
-                    waveformCache = &waveformLods.thumbnailRes.get_cached_data(m_filePath);
-                }
-
-                if (peakCache && peakCache->m_state != gluten::cache_state::has_data)
-                {
-                    peakCache = &waveformLods.thumbnailRes.get_cached_data(m_filePath);
+                    if (waveformLods.m_cache.medRes.get_cached_data(m_filePath).has_data())
+                    {
+                        peakCache = &waveformLods.m_cache.medRes.get_cached_data(m_filePath);
+                    }
                 }
 
                 if (!waveformCache || !peakCache)
@@ -404,13 +403,13 @@ auto audio_element::render_waveform() -> void
                         ImPlot::EndLegendPopup();
                     }
 
-                    if (lufs.has_data())
+                    if (waveformLods.m_cache.sampleRes.get_cached_data(m_filePath).has_data())
                     {
                         ImPlot::SetAxes(ImAxis_X1, ImAxis_Y3);
 
-                        ImPlot::TagY(lufs.m_cache.integrated, gluten::theme::supportInfo, fmt::format("LUFS-I: {:.1f}", lufs.m_cache.integrated).c_str());
-                        ImPlot::TagY(lufs.m_cache.shorttermMax, gluten::theme::supportWarning, fmt::format("LUFS-S: {:.1f}", lufs.m_cache.shorttermMax).c_str());
-                        ImPlot::TagY(lufs.m_cache.momentaryMax, gluten::theme::supportError, fmt::format("LUFS-M: {:.1f}", lufs.m_cache.momentaryMax).c_str());
+                        ImPlot::TagY(waveformLods.m_cache.sampleRes.get_cached_data(m_filePath).m_cache.waveform.lufs.integrated, gluten::theme::supportInfo, fmt::format("LUFS-I: {:.1f}", lufs.m_cache.integrated).c_str());
+                        /*ImPlot::TagY(lufs.m_cache.shorttermMax, gluten::theme::supportWarning, fmt::format("LUFS-S: {:.1f}", lufs.m_cache.shorttermMax).c_str());
+                        ImPlot::TagY(lufs.m_cache.momentaryMax, gluten::theme::supportError, fmt::format("LUFS-M: {:.1f}", lufs.m_cache.momentaryMax).c_str());*/
                     }
 
                     ImPlot::SetAxes(ImAxis_X1, ImAxis_Y1);

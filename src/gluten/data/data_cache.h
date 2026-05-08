@@ -100,7 +100,7 @@ namespace gluten
         ~data_cache() = default;
 
         data_cache(const data_cache&) = delete;
-        data_cache(data_cache&& other) = default;
+        data_cache(data_cache&& other) noexcept = default;
 
         auto operator=(const data_cache&) -> data_cache& = delete;
         auto operator=(data_cache&&) -> data_cache&      = default;
@@ -141,7 +141,7 @@ namespace gluten
             }
         };
 
-        using async_cache_result    = concurrencpp::result<data_type>;
+        using async_cache_result    = concurrencpp::shared_result<data_type>;
         using cache_result          = const cached_data&;
         using cache_key_type        = key_type;
         using cache_data_type       = data_type;
@@ -228,7 +228,7 @@ namespace gluten
          * This function checks if the async loading is ready and, if so, fills the cache.
          * Therefore, this is not a const function as the data can change.
          */
-        [[nodiscard]] auto get_cached_data(const key_type& key) -> cache_result
+        [[nodiscard]] auto get_cached_data(const key_type& key) const -> cache_result
         {
             if (m_asyncCache.contains(key))
             {
@@ -238,7 +238,7 @@ namespace gluten
                     switch (asyncResult.status())
                     {
                         case concurrencpp::result_status::value:
-                            m_cache[key] = asyncResult.get();
+                            m_cache[key] = std::move(asyncResult.get());
                             m_cache[key].m_state = cache_state::has_data;
                             m_asyncCache.erase(key);
                             break;
@@ -279,8 +279,8 @@ namespace gluten
         }
 
     private:
-        mutable std::unordered_map<key_type, cached_data, key_hasher> m_cache;      //< The cache, ready to be used by the caller
-        std::unordered_map<key_type, async_cache_result, key_hasher> m_asyncCache;  //< The async request to fill the cache
+        mutable std::unordered_map<key_type, cached_data, key_hasher> m_cache;              //< The cache, ready to be used by the caller
+        mutable std::unordered_map<key_type, async_cache_result, key_hasher> m_asyncCache;  //< The async request to fill the cache
 
         std::chrono::seconds m_expirySeconds = std::chrono::seconds(60 * 10); 
 	};
