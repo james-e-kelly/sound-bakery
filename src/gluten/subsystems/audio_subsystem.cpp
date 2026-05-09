@@ -272,16 +272,6 @@ auto gluten::audio_subsystem::get_ui_waveform_lods(const std::filesystem::path& 
     return m_waveformLodCache.get_cached_data(filePath);
 }
 
-auto gluten::audio_subsystem::get_loudness_lufs(const std::filesystem::path& filePath) -> loudness_cache_type::cache_result
-{
-    if (m_filesToLoudnessCache.get_cache_needs_filling(filePath))
-    {
-        m_filesToLoudnessCache.set_async_fill_cache(filePath, async_calculate_loudness(filePath));
-    }
-
-    return m_filesToLoudnessCache.get_cached_data(filePath);
-}
-
 auto gluten::audio_subsystem::get_sound_loop_info(const std::filesystem::path& filePath) -> loop_data*
 {
     loop_data* loopData = nullptr;
@@ -316,7 +306,7 @@ auto gluten::audio_subsystem::async_generate_waveform_lod(std::shared_ptr<const 
     }
     else
     {
-        lod.waveform = co_await generate_downsampled_resolution_waveform(audioData, channels, resolution * fileDuration);
+        lod.waveform = co_await generate_downsampled_resolution_waveform(audioData, resolution, channels, resolution * fileDuration);
     }
 
     co_return lod;
@@ -353,56 +343,7 @@ auto gluten::audio_subsystem::async_generate_waveform_lods(const std::filesystem
     co_return result;
 }
 
-auto gluten::audio_subsystem::async_calculate_loudness(const std::filesystem::path filePath) -> concurrencpp::result<loudness_cache_type::cache_data_type>
-{
-    co_await concurrencpp::resume_on(gluten::app::get()->background_executor());
-
-    ma_decoder decoder;
-    SC_ZERO_OBJECT(&decoder);
-    const ma_decoder_config config = ma_decoder_config_init(ma_format_f32, 0, 0);
-
-    if (ma_decoder_init_file(filePath.string().c_str(), &config, &decoder) != MA_SUCCESS)
-    {
-        co_return loudness_lufs();
-    }
-
-    loudness_lufs loudness;
-
-    ebur128_state* eburState = ebur128_init(decoder.outputChannels, decoder.outputSampleRate, EBUR128_MODE_M | EBUR128_MODE_S | EBUR128_MODE_I);
-
-    ma_uint64 frameCount;
-    ma_decoder_get_length_in_pcm_frames(&decoder, &frameCount);
-
-    const std::size_t framesPerLoop = decoder.outputSampleRate;
-    std::vector<float> pcmData(decoder.outputChannels * framesPerLoop, 0.0f);
-
-    while (frameCount)
-    {
-        const std::size_t framesToRead = std::min<std::size_t>(frameCount, framesPerLoop);
-        frameCount -= framesToRead;
-
-        ma_decoder_read_pcm_frames(&decoder, pcmData.data(), framesToRead, nullptr);
-        ebur128_add_frames_float(eburState, pcmData.data(), framesToRead);
-
-        double shortterm = 0.0;
-        double momentary = 0.0;
-
-        ebur128_loudness_shortterm(eburState, &shortterm);
-        ebur128_loudness_momentary(eburState, &momentary);
-
-        loudness.shorttermMax = std::max<double>(loudness.shorttermMax, shortterm);
-        loudness.momentaryMax = std::max<double>(loudness.momentaryMax, momentary);
-
-    }
-    
-    ebur128_loudness_global(eburState, &loudness.integrated);
-
-    ebur128_destroy(&eburState);
-
-    co_return loudness;
-}
-
-auto gluten::audio_subsystem::generate_downsampled_resolution_waveform(std::shared_ptr<const std::vector<float>> audioData, ma_uint32 channels, std::size_t targetSamples) -> concurrencpp::result<waveform>
+auto gluten::audio_subsystem::generate_downsampled_resolution_waveform(std::shared_ptr<const std::vector<float>> audioData, std::size_t resolution, ma_uint32 channels, std::size_t targetSamples) -> concurrencpp::result<waveform>
 {
     constexpr double lowsCrossoverFrequency = 250.0;
     constexpr double highsCrossoverFrequency = 4000.0;
@@ -425,6 +366,8 @@ auto gluten::audio_subsystem::generate_downsampled_resolution_waveform(std::shar
     SC_ZERO_OBJECT(&highsHighpass);
     SC_ZERO_OBJECT(&midsLowpass);
     SC_ZERO_OBJECT(&midsHighpass);
+
+    ebur128_state* eburState = ebur128_init(channels, ma_standard_sample_rate_48000, EBUR128_MODE_M | EBUR128_MODE_S);
 
     const std::size_t frameCount = audioData->size() / channels;
     size_t framesToRead = frameCount / targetSamples;
@@ -458,8 +401,18 @@ auto gluten::audio_subsystem::generate_downsampled_resolution_waveform(std::shar
     const float channelsReciprocal = 1.0f / channels;
     const float framesToReadReciprocal = 1.0f / framesToRead;
 
+    const bool calculateLufs = resolution <= 1000;
+
     for (ma_uint64 samplingIndex = 0; samplingIndex < targetSamples; ++samplingIndex)
     {
+        if (calculateLufs)
+        {
+            ebur128_add_frames_float(eburState, audioData->data() + (samplingIndex * framesToRead * channels), framesToRead);
+
+            ebur128_loudness_shortterm(eburState, &result.globalFrames[samplingIndex].lufs.shortterm);
+            ebur128_loudness_momentary(eburState, &result.globalFrames[samplingIndex].lufs.momentary);
+        }
+
         for (ma_uint64 frame = 0; frame < framesToRead; ++frame)
         {
             float allChannelsSum = 0.0f;
@@ -512,6 +465,8 @@ auto gluten::audio_subsystem::generate_downsampled_resolution_waveform(std::shar
     ma_lpf_uninit(&midsLowpass, NULL);
     ma_hpf_uninit(&midsHighpass, NULL);
 
+    ebur128_destroy(&eburState);
+
     co_return result;
 }
 
@@ -535,10 +490,12 @@ auto gluten::audio_subsystem::generate_sample_resolution_waveform(std::shared_pt
         }
     }
 
-    ebur128_state* eburState = ebur128_init(channels, ma_standard_sample_rate_48000, EBUR128_MODE_M | EBUR128_MODE_S | EBUR128_MODE_I);
+    ebur128_state* eburState = ebur128_init(channels, ma_standard_sample_rate_48000, EBUR128_MODE_I | EBUR128_MODE_LRA);
     
     ebur128_add_frames_float(eburState, audioData->data(), frameCount);
     ebur128_loudness_global(eburState, &result.lufs.integrated);
+    ebur128_loudness_range(eburState, &result.lufs.range);
+
     ebur128_destroy(&eburState);
 
     co_return result;

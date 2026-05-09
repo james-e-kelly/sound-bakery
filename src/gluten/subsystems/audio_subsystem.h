@@ -10,9 +10,14 @@ namespace gluten
 {
     struct loudness_lufs
     {
+        double shortterm = -200.0;
+        double momentary = -200.0;
+    };
+
+    struct loudness_lufs_global
+    {
         double integrated = -200.0;
-        double shorttermMax = -200.0;
-        double momentaryMax = -200.0;
+        double range      = -200.0;
     };
 
     /**
@@ -46,6 +51,8 @@ namespace gluten
         float lowAverage        = 0.0f;
         float midAverage        = 0.0f;
         float highAverage       = 0.0f;
+
+        loudness_lufs lufs;
     };
     
     struct waveform
@@ -65,7 +72,7 @@ namespace gluten
         std::vector<stereo_data> stereoFrames;                  // Only valid when there are only two channels
         std::vector<frame_data> globalFrames;                   // Total volume sums
         
-        loudness_lufs lufs;
+        loudness_lufs_global lufs;
 
         auto is_stereo() const -> bool
         {
@@ -122,8 +129,6 @@ namespace gluten
 
         auto get_ui_waveform_lods(const std::filesystem::path& filePath, double fileDuration) -> waveform_lods_cache_type::cache_result;
 
-        auto get_loudness_lufs(const std::filesystem::path& filePath) -> loudness_cache_type::cache_result;
-
     protected:
         struct sc_sound_deleter
         {
@@ -145,8 +150,7 @@ namespace gluten
 
         auto async_generate_waveform_lod(std::shared_ptr<const std::vector<float>> audioData, ma_uint64 channels, double fileDuration, std::size_t resolution, concurrencpp::shared_result<waveform_lod> dependencyResult) -> concurrencpp::result<waveform_lod>;
         auto async_generate_waveform_lods(const std::filesystem::path filePath, double fileDuration, std::size_t resolution) -> concurrencpp::result<waveform_lods>;
-        auto async_calculate_loudness(const std::filesystem::path filePath) -> concurrencpp::result<loudness_cache_type::cache_data_type>;
-        auto generate_downsampled_resolution_waveform(std::shared_ptr<const std::vector<float>> audioData, ma_uint32 channels, std::size_t targetSamples) -> concurrencpp::result<waveform>;
+        auto generate_downsampled_resolution_waveform(std::shared_ptr<const std::vector<float>> audioData, std::size_t resolution, ma_uint32 channels, std::size_t targetSamples) -> concurrencpp::result<waveform>;
         auto generate_sample_resolution_waveform(std::shared_ptr<const std::vector<float>> audioData, ma_uint32 channels) -> concurrencpp::result<waveform>;
 
         std::unique_ptr<sbk::engine::system> m_soundBakery;

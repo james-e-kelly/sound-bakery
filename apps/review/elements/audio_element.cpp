@@ -116,8 +116,12 @@ auto audio_element::render_waveform() -> void
                 constexpr const char* s_renderLowsName      = "Lows";
                 constexpr const char* s_renderMidsName      = "Mids";
                 constexpr const char* s_renderHighsName     = "Highs";
+                constexpr const char* s_overlayModeName     = "Overlay Mode";
+                constexpr const char* s_renderMomentaryName = "Momentary";
+                constexpr const char* s_renderShorttermName = "Shortterm";
 
                 constexpr const char* s_waveformPlotName    = "Waveform";
+                constexpr const char* s_overlayPlotName     = "Overlay";
                 constexpr const char* s_volumeAxisName      = "Volume";
                 constexpr const char* s_timeAxisName        = "Time";
                 constexpr const char* s_decibelAxisName     = "dB";
@@ -152,9 +156,11 @@ auto audio_element::render_waveform() -> void
                 bool renderLows                             = ImGui::GetStateStorage()->GetBool(ImGui::GetID(s_renderLowsName), true);
                 bool renderMids                             = ImGui::GetStateStorage()->GetBool(ImGui::GetID(s_renderMidsName), true);
                 bool renderHighs                            = ImGui::GetStateStorage()->GetBool(ImGui::GetID(s_renderHighsName), true);
+                int overlayMode                             = ImGui::GetStateStorage()->GetInt(ImGui::GetID(s_overlayModeName), 0);
+                bool renderMomentary                         = ImGui::GetStateStorage()->GetBool(ImGui::GetID(s_renderMomentaryName), true);
+                bool renderShortterm                         = ImGui::GetStateStorage()->GetBool(ImGui::GetID(s_renderShorttermName), true);
 
                 const auto& waveformLods    = audioSubsystem->get_ui_waveform_lods(m_filePath, m_fileDuration);
-                const auto& lufs            = audioSubsystem->get_loudness_lufs(m_filePath);
 
                 if (!waveformLods.has_data())
                 {
@@ -204,8 +210,8 @@ auto audio_element::render_waveform() -> void
                     return;
                 }
 
-                const bool dropLufsMax          = lufs.has_data() && lufs.m_cache.integrated < s_lufsMidPoint && lufs.m_cache.momentaryMax < s_lufsMidPoint && lufs.m_cache.shorttermMax < s_lufsMidPoint;
-                const bool raiseLufsMin         = lufs.has_data() && lufs.m_cache.integrated > s_lufsMidPoint && lufs.m_cache.momentaryMax > s_lufsMidPoint && lufs.m_cache.shorttermMax > s_lufsMidPoint;
+                const bool dropLufsMax     = false;//     = lufs.has_data() && lufs.m_cache.integrated < s_lufsMidPoint && lufs.m_cache.momentaryMax < s_lufsMidPoint && lufs.m_cache.shorttermMax < s_lufsMidPoint;
+                const bool raiseLufsMin    = false;//     = lufs.has_data() && lufs.m_cache.integrated > s_lufsMidPoint && lufs.m_cache.momentaryMax > s_lufsMidPoint && lufs.m_cache.shorttermMax > s_lufsMidPoint;
                 const float lufsAxisMin         = raiseLufsMin ? s_lufsMidPoint : s_lufsVolumeMin;
                 const float lufsAxisMax         = dropLufsMax ? s_lufsMidPoint : s_lufsVolumeMax;
 
@@ -315,6 +321,8 @@ auto audio_element::render_waveform() -> void
                         std::vector<ImVec2> midDecibelPoints(pointsThisIteration, ImVec2());
                         std::vector<ImVec2> highDecibelPoints(pointsThisIteration, ImVec2());
                         std::vector<ImVec2> rmsPoints(pointsThisIteration, ImVec2());
+                        std::vector<ImVec2> momentaryPoints(pointsThisIteration, ImVec2());
+                        std::vector<ImVec2> shorttermPoints(pointsThisIteration, ImVec2());
 
                         int index = 0;
                         int point = plotLimitLeftAsPointIndexAtLowRes;
@@ -331,12 +339,16 @@ auto audio_element::render_waveform() -> void
                                 const float lowDecibel        = std::max(ma_volume_linear_to_db(lowResChannelData.lowAverage), minimumDecibelValue + 1.0f);
                                 const float midDecibel        = std::max(ma_volume_linear_to_db(lowResChannelData.midAverage), minimumDecibelValue + 1.0f);
                                 const float highDecibel       = std::max(ma_volume_linear_to_db(lowResChannelData.highAverage), minimumDecibelValue + 1.0f);
+                                const float& shortterm        = lowResChannelData.lufs.shortterm;
+                                const float& momentary        = lowResChannelData.lufs.momentary;
 
                                 peakDecibelPoints[index] = (ImVec2(xPosition, peakDecibel));
                                 lowDecibelPoints[index]  = (ImVec2(xPosition, lowDecibel));
                                 midDecibelPoints[index]  = (ImVec2(xPosition, midDecibel));
                                 highDecibelPoints[index] = (ImVec2(xPosition, highDecibel));
                                 rmsPoints[index]         = (ImVec2(xPosition, rmsDecibel));
+                                momentaryPoints[index] = (ImVec2(xPosition, momentary));
+                                shorttermPoints[index] = (ImVec2(xPosition, shortterm));
                             }
                             else
                             {
@@ -349,6 +361,8 @@ auto audio_element::render_waveform() -> void
                                 midDecibelPoints[index]  = (ImVec2(xPosition, midDecibelPoints[index - 1].y));
                                 highDecibelPoints[index] = (ImVec2(xPosition, highDecibelPoints[index - 1].y));
                                 rmsPoints[index]         = (ImVec2(xPosition, rmsPoints[index - 1].y));
+                                momentaryPoints[index]   = (ImVec2(xPosition, momentaryPoints[index-1].y));
+                                shorttermPoints[index]   = (ImVec2(xPosition, shorttermPoints[index-1].y));
                             }
                         }
 
@@ -359,32 +373,54 @@ auto audio_element::render_waveform() -> void
                         static ImPlotSpec lowSpec;
                         static ImPlotSpec midSpec;
                         static ImPlotSpec highSpec;
+                        static ImPlotSpec momentarySpec;
+                        static ImPlotSpec shorttermSpec;
 
                         peakSpec.LineColor = gluten::theme::adjust_alpha(gluten::theme::supportWarning, 0.33f);
                         rmsSpec.LineColor  = gluten::theme::adjust_alpha(gluten::theme::supportInfo, 0.5f);
                         lowSpec.LineColor  = gluten::theme::adjust_alpha(gluten::theme::supportError, 0.5f);
                         midSpec.LineColor  = gluten::theme::adjust_alpha(gluten::theme::supportWarning, 0.5f);
                         highSpec.LineColor = gluten::theme::adjust_alpha(gluten::theme::supportSuccess, 0.5f);
+                        momentarySpec.LineColor = gluten::theme::adjust_alpha(gluten::theme::supportWarning, 0.33f);
+                        shorttermSpec.LineColor = gluten::theme::adjust_alpha(gluten::theme::supportSuccess, 0.5f);
 
                         lowSpec.LineWeight = midSpec.LineWeight = highSpec.LineWeight = 2.0f;
+                        momentarySpec.LineWeight = shorttermSpec.LineWeight = 2.0f;
 
-                        if (renderLows)
+                        if (overlayMode == 0)
                         {
-                            ImPlot::PlotLineG("Multi-Band", vec2_to_plot_point, lowDecibelPoints.data(), lowDecibelPoints.size(), lowSpec);
+                            if (renderLows)
+                            {
+                                ImPlot::PlotLineG(s_overlayPlotName, vec2_to_plot_point, lowDecibelPoints.data(), lowDecibelPoints.size(), lowSpec);
+                            }
+
+                            if (renderMids)
+                            {
+                                ImPlot::PlotLineG(s_overlayPlotName, vec2_to_plot_point, midDecibelPoints.data(), midDecibelPoints.size(), midSpec);
+                            }
+
+                            if (renderHighs)
+                            {
+                                ImPlot::PlotLineG(s_overlayPlotName, vec2_to_plot_point, highDecibelPoints.data(), highDecibelPoints.size(), highSpec);
+                            }
                         }
-
-                        if (renderMids)
+                        else if (overlayMode == 1)
                         {
-                            ImPlot::PlotLineG("Multi-Band", vec2_to_plot_point, midDecibelPoints.data(), midDecibelPoints.size(), midSpec);
-                        }
+                            ImPlot::SetAxes(ImAxis_X1, ImAxis_Y3);
 
-                        if (renderHighs)
-                        {
-                            ImPlot::PlotLineG("Multi-Band", vec2_to_plot_point, highDecibelPoints.data(), highDecibelPoints.size(), highSpec);
+                            if (renderMomentary)
+                            {
+                                ImPlot::PlotLineG(s_overlayPlotName, vec2_to_plot_point, momentaryPoints.data(), momentaryPoints.size(), momentarySpec);
+                            }
+
+                            if (renderShortterm)
+                            {
+                                ImPlot::PlotLineG(s_overlayPlotName, vec2_to_plot_point, shorttermPoints.data(), shorttermPoints.size(), shorttermSpec);
+                            }
                         }
                     }
 
-                    if (ImPlot::BeginLegendPopup("Waveform"))
+                    if (ImPlot::BeginLegendPopup(s_waveformPlotName))
                     {
                         if (channels == 2)
                         {
@@ -394,11 +430,37 @@ auto audio_element::render_waveform() -> void
                         ImPlot::EndLegendPopup();
                     }
 
-                    if (ImPlot::BeginLegendPopup("Multi-Band"))
+                    if (ImPlot::BeginLegendPopup(s_overlayPlotName))
                     {
-                        ImGui::Checkbox("Render Lows", &renderLows);
-                        ImGui::Checkbox("Render Mids", &renderMids);
-                        ImGui::Checkbox("Render Highs", &renderHighs);
+                        static const char* labels[2] = {"Multi-Band", "LUFS"};
+
+                        if (ImGui::BeginCombo("Overlay Mode", labels[overlayMode]))
+                        {
+                            if (ImGui::Selectable(labels[0], overlayMode == 0))
+                            {
+                                overlayMode = 0;
+                            }
+
+                            if (ImGui::Selectable(labels[1], overlayMode == 1))
+                            {
+                                overlayMode = 1;
+                            }
+
+                            ImGui::EndCombo();
+                        }
+
+                        if (overlayMode == 0)
+                        {
+                            ImGui::Checkbox("Render Lows", &renderLows);
+                            ImGui::Checkbox("Render Mids", &renderMids);
+                            ImGui::Checkbox("Render Highs", &renderHighs);
+                        }
+                        else if (overlayMode == 1)
+                        {
+                            ImGui::Checkbox("Render Momentary", &renderMomentary);
+                            ImGui::Checkbox("Render Shortterm", &renderShortterm);
+                        }
+
 
                         ImPlot::EndLegendPopup();
                     }
@@ -407,7 +469,7 @@ auto audio_element::render_waveform() -> void
                     {
                         ImPlot::SetAxes(ImAxis_X1, ImAxis_Y3);
 
-                        ImPlot::TagY(waveformLods.m_cache.sampleRes.get_cached_data(m_filePath).m_cache.waveform.lufs.integrated, gluten::theme::supportInfo, fmt::format("LUFS-I: {:.1f}", lufs.m_cache.integrated).c_str());
+                        ImPlot::TagY(waveformLods.m_cache.sampleRes.get_cached_data(m_filePath).m_cache.waveform.lufs.integrated, gluten::theme::supportInfo, fmt::format("LUFS-I: {:.1f}", waveformLods.m_cache.sampleRes.get_cached_data(m_filePath).m_cache.waveform.lufs.integrated).c_str());
                         /*ImPlot::TagY(lufs.m_cache.shorttermMax, gluten::theme::supportWarning, fmt::format("LUFS-S: {:.1f}", lufs.m_cache.shorttermMax).c_str());
                         ImPlot::TagY(lufs.m_cache.momentaryMax, gluten::theme::supportError, fmt::format("LUFS-M: {:.1f}", lufs.m_cache.momentaryMax).c_str());*/
                     }
@@ -456,6 +518,9 @@ auto audio_element::render_waveform() -> void
                 ImGui::GetStateStorage()->SetBool(ImGui::GetID(s_renderLowsName), renderLows);
                 ImGui::GetStateStorage()->SetBool(ImGui::GetID(s_renderMidsName), renderMids);
                 ImGui::GetStateStorage()->SetBool(ImGui::GetID(s_renderHighsName), renderHighs);
+                ImGui::GetStateStorage()->SetInt(ImGui::GetID(s_overlayModeName), overlayMode);
+                ImGui::GetStateStorage()->SetBool(ImGui::GetID(s_renderMomentaryName), renderMomentary);
+                ImGui::GetStateStorage()->SetBool(ImGui::GetID(s_renderShorttermName), renderShortterm);
 
                 // if (audioSubsystem->get_sound_is_looping(m_filePath))
                 //{
