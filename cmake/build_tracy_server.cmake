@@ -38,41 +38,8 @@ CPMAddPackage(
     EXCLUDE_FROM_ALL TRUE
 )
 
-set(ZSTD_DIR "${tracy_SOURCE_DIR}/zstd")
 set(TRACY_COMMON_DIR ${tracy_SOURCE_DIR}/public/common)
 set(TRACY_SERVER_DIR ${tracy_SOURCE_DIR}/server)
-
-set(ZSTD_SOURCES
-    decompress/zstd_ddict.c
-    decompress/zstd_decompress_block.c
-    decompress/huf_decompress.c
-    decompress/zstd_decompress.c
-    common/zstd_common.c
-    common/error_private.c
-    common/xxhash.c
-    common/entropy_common.c
-    common/debug.c
-    common/threading.c
-    common/pool.c
-    common/fse_decompress.c
-    compress/zstd_ldm.c
-    compress/zstd_compress_superblock.c
-    compress/zstd_opt.c
-    compress/zstd_compress_sequences.c
-    compress/fse_compress.c
-    compress/zstd_double_fast.c
-    compress/zstd_compress.c
-    compress/zstd_compress_literals.c
-    compress/hist.c
-    compress/zstdmt_compress.c
-    compress/zstd_lazy.c
-    compress/huf_compress.c
-    compress/zstd_fast.c
-    dictBuilder/zdict.c
-    dictBuilder/cover.c
-    dictBuilder/divsufsort.c
-    dictBuilder/fastcover.c
-)
 
 set(TRACY_COMMON_SOURCES
     tracy_lz4.cpp
@@ -155,17 +122,11 @@ list(TRANSFORM TRACY_COMMON_SOURCES PREPEND "${TRACY_COMMON_DIR}/")
 list(TRANSFORM TRACY_SERVER_SOURCES PREPEND "${TRACY_SERVER_DIR}/")
 list(TRANSFORM ZSTD_SOURCES PREPEND "${ZSTD_DIR}/")
 
-set_property(SOURCE ${ZSTD_DIR}/decompress/huf_decompress_amd64.S APPEND PROPERTY COMPILE_OPTIONS "-x" "assembler-with-cpp")
-
-add_library(TracyZstd STATIC ${ZSTD_SOURCES})
-target_include_directories(TracyZstd PUBLIC ${ZSTD_DIR})
-target_compile_definitions(TracyZstd PRIVATE ZSTD_DISABLE_ASM)
-c_17(TracyZstd)
-cxx_20(TracyZstd)
+#set_property(SOURCE ${ZSTD_DIR}/decompress/huf_decompress_amd64.S APPEND PROPERTY COMPILE_OPTIONS "-x" "assembler-with-cpp")
 
 add_library(sbk_tracy_server STATIC ${TRACY_COMMON_SOURCES} ${TRACY_SERVER_SOURCES})
 target_include_directories(sbk_tracy_server PUBLIC ${TRACY_COMMON_DIR} ${TRACY_SERVER_DIR} ${capstone_SOURCE_DIR}/include/capstone)
-target_link_libraries(sbk_tracy_server PUBLIC capstone_static TracyZstd PPQSort::PPQSort)
+target_link_libraries(sbk_tracy_server PUBLIC capstone_static PPQSort::PPQSort)
 c_17(sbk_tracy_server)
 cxx_20(sbk_tracy_server)
 
