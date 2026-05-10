@@ -99,11 +99,7 @@ void project_nodes_widget::render_category(SB_OBJECT_CATEGORY category)
     {
         for (int row_n = clipper.DisplayStart; row_n < clipper.DisplayEnd; ++row_n)
         {
-            ImU32 col =
-                (row_n & 1)
-                    ? ImGui::ColorConvertFloat4ToU32(gluten::theme::background)
-                    : gluten::theme::color_with_multiplied_value(
-                          ImGui::ColorConvertFloat4ToU32(gluten::theme::backgroundSelected), 0.22f);
+            ImU32 col = (row_n & 1) ? ImGui::ColorConvertFloat4ToU32(gluten::theme::background) : ImGui::ColorConvertFloat4ToU32(gluten::theme::color_with_multiplied_value(gluten::theme::backgroundSelected, 0.22f));
             if ((col & IM_COL32_A_MASK) == 0)
                 continue;
             float y1 = y0 + (line_height * static_cast<float>(row_n));

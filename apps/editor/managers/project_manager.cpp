@@ -2,6 +2,7 @@
 
 #include "app/app.h"
 #include "gluten/subsystems/widget_subsystem.h"
+#include "gluten/widgets/profiler_widget.h"
 #include "sound_bakery/core/database/database.h"
 #include "sound_bakery/core/object/object_tracker.h"
 #include "sound_bakery/editor/project/project.h"
@@ -15,13 +16,12 @@
 #include "widgets/details_widget.h"
 #include "widgets/play_controls_widget.h"
 #include "widgets/project_explorer_widget.h"
-#include "widgets/profiler_widget.h"
 #include "widgets/root_widget.h"
 #include "widgets/database_widget.h"
 
 void project_manager::init_project(const std::filesystem::path& project_file)
 {
-    if (sbk::engine::system::open_project(project_file) == MA_SUCCESS)
+    if (sbk::engine::system::open_project(project_file, nullptr) == MA_SUCCESS)
     {
         setup_project();
     }
