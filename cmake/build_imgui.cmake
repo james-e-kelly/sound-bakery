@@ -25,11 +25,11 @@ add_library(imgui STATIC
   ${implot_SOURCE_DIR}/implot.cpp
   ${implot_SOURCE_DIR}/implot_items.cpp
   ${implot_SOURCE_DIR}/implot_demo.cpp
-  ${imguizmo_SOURCE_DIR}/GraphEditor.cpp
-  ${imguizmo_SOURCE_DIR}/ImCurveEdit.cpp
-  ${imguizmo_SOURCE_DIR}/ImGradient.cpp
-  ${imguizmo_SOURCE_DIR}/ImGuizmo.cpp
-  ${imguizmo_SOURCE_DIR}/ImSequencer.cpp
+  ${imguizmo_SOURCE_DIR}/src/GraphEditor.cpp
+  ${imguizmo_SOURCE_DIR}/src/ImCurveEdit.cpp
+  ${imguizmo_SOURCE_DIR}/src/ImGradient.cpp
+  ${imguizmo_SOURCE_DIR}/src/ImGuizmo.cpp
+  ${imguizmo_SOURCE_DIR}/src/ImSequencer.cpp
 )
 
 c_17(imgui)
