@@ -1,7 +1,8 @@
 #pragma once
 
-#include "pch.h"
+#include "gluten/pch.h"
 
+#include "gluten/widgets/widget.h"
 #include "TracyView.hpp"
 
 class profiler_widget : public gluten::widget

@@ -45,6 +45,7 @@ set(GLUTEN_SOURCES
   widgets/root_widget.cpp
   widgets/popup_widget.cpp
   widgets/window_widget.cpp
+  widgets/profiler_widget.cpp
 )
 
 set(GLUTEN_HEADERS
@@ -79,6 +80,7 @@ set(GLUTEN_HEADERS
   widgets/root_widget.h
   widgets/popup_widget.h
   widgets/window_widget.h
+  widgets/profiler_widget.h
 )
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Source Files" FILES ${GLUTEN_SOURCES})
@@ -162,6 +164,8 @@ target_include_directories(gluten PUBLIC
   ${libebur128_SOURCE_DIR}
 )
 
+include(build_tracy_server)
+
 target_link_libraries(gluten
     PUBLIC
     SoundBakery::SoundBakery_Static
@@ -184,6 +188,7 @@ target_link_libraries(gluten
     utf8cpp
     sodium
     ebur128
+    sbk::tracy_profiler
 )
 
 target_compile_options(gluten PRIVATE ${PROJECT_WARNING_FLAGS})

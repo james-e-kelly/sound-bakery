@@ -1,5 +1,6 @@
 #include "profiler_widget.h"
 
+#include "gluten/app/app.h"
 #include "gluten/utils/imgui_util_structures.h"
 
 #include "sound_bakery/system.h"

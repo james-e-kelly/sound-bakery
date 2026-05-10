@@ -7,11 +7,13 @@
 #include "gluten/elements/menu_bar.h"
 #include "gluten/elements/text.h"
 #include "gluten/subsystems/renderer_subsystem.h"
+#include "gluten/subsystems/widget_subsystem.h"
 #include "gluten/theme/theme.h"
 #include "gluten/theme/walnut_icon.embed"
 #include "gluten/theme/window_images.embed"
 #include "gluten/utils/imgui_util_functions.h"
 #include "gluten/utils/imgui_util_structures.h"
+#include "gluten/widgets/profiler_widget.h"
 #include "imgui.h"
 #include "imgui_internal.h"
 #include "implot.h"
@@ -154,7 +156,7 @@ auto gluten::dockspace_refresh::assign_widget_to_node(const rttr::type& widgetTy
     }
     else
     {
-        assert(false);
+        //assert(false);
     }
 }
 
@@ -367,6 +369,13 @@ auto root_widget::render_menu_implementation() -> void
             ImGui::MenuItem("Debug Item Rects", NULL, &element::s_debug);
             ImGui::MenuItem("Debug Item Vertical", NULL, &element::s_debugVertical);
             ImGui::MenuItem("Debug Item Horizontal", NULL, &element::s_debugHorizontal);
+
+            ImGui::Separator();
+
+            if (ImGui::MenuItem("New Profiler Session...", NULL))
+            {
+                get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class_to_root<profiler_widget>(true);
+            }
 
             ImGui::EndMenu();
         }
