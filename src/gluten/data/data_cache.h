@@ -7,6 +7,22 @@
 
 namespace gluten
 {
+    struct null_cache_key
+    {
+        bool operator==(const null_cache_key& rhs) const
+        {
+            return true;
+        }
+    };
+
+    struct null_cache_key_hasher
+    {
+        std::size_t operator()(const null_cache_key& defaultCacheKey) const
+        {
+            return 1U;
+        }
+    };
+
     template<typename key_type>
     struct key_cache_key
     {
@@ -205,12 +221,22 @@ namespace gluten
         /**
          * @brief Give this cache an async result that can be used later to get the latest version of the data.
          */
+        template <typename K = key_type, std::enable_if_t<!std::is_same_v<K, null_cache_key>, int> = 0>
         auto set_async_fill_cache(const key_type& key, async_cache_result asyncResult) -> void
         {
             assert(get_cache_state(key) != cache_state::loading);
             assert(static_cast<bool>(m_asyncCache[key]) == false);
             m_cache[key].m_state = cache_state::loading;
             m_asyncCache[key] = std::move(asyncResult);
+        }
+
+        template <typename K = key_type, std::enable_if_t<std::is_same_v<K, null_cache_key>, int> = 0>
+        auto set_async_fill_cache(async_cache_result asyncResult) -> void
+        {
+            assert(get_cache_state({}) != cache_state::loading);
+            assert(static_cast<bool>(m_asyncCache[{}]) == false);
+            m_cache[{}].m_state = cache_state::loading;
+            m_asyncCache[{}]    = std::move(asyncResult);
         }
 
         /**
@@ -259,6 +285,12 @@ namespace gluten
             return m_cache[key];
         }
 
+        template <typename K = key_type, std::enable_if_t<std::is_same_v<K, null_cache_key>, int> = 0>
+        [[nodiscard]] cache_result get_cached_data() const
+        {
+            return get_cached_data({});  // Call the keyed version with default-constructed key
+        }
+
         /**
          * @brief Set the cache expired so it can be filled again.
          */
@@ -287,4 +319,7 @@ namespace gluten
 
         std::chrono::seconds m_expirySeconds = std::chrono::seconds(60 * 10); 
 	};
+
+    template <typename data_type>
+    using single_data_cache = data_cache<data_type, null_cache_key, null_cache_key_hasher>;
 }

@@ -171,37 +171,37 @@ auto audio_element::render_waveform() -> void
 
                 bool sampleRes = false;
 
-                const gluten::audio_subsystem::waveform_lod_cache_type::cached_data* waveformCache = &waveformLods.m_cache.thumbnailRes.get_cached_data(m_filePath);
-                const gluten::audio_subsystem::waveform_lod_cache_type::cached_data* peakCache     = &waveformLods.m_cache.thumbnailRes.get_cached_data(m_filePath);
+                const gluten::audio_subsystem::waveform_lod_cache_type::cached_data* waveformCache = &waveformLods.m_cache.thumbnailRes.get_cached_data();
+                const gluten::audio_subsystem::waveform_lod_cache_type::cached_data* peakCache     = &waveformLods.m_cache.thumbnailRes.get_cached_data();
 
-                if (plotTimeWidth < s_lowResolutionThreshold && waveformLods.m_cache.lowRes.get_cached_data(m_filePath).has_data())
+                if (plotTimeWidth < s_lowResolutionThreshold && waveformLods.m_cache.lowRes.get_cached_data().has_data())
                 {
-                    waveformCache = &waveformLods.m_cache.lowRes.get_cached_data(m_filePath);
+                    waveformCache = &waveformLods.m_cache.lowRes.get_cached_data();
                 }
 
-                if (plotTimeWidth < s_mediumResolutionThreshold && waveformLods.m_cache.medRes.get_cached_data(m_filePath).has_data())
+                if (plotTimeWidth < s_mediumResolutionThreshold && waveformLods.m_cache.medRes.get_cached_data().has_data())
                 {
-                    waveformCache = &waveformLods.m_cache.medRes.get_cached_data(m_filePath);
+                    waveformCache = &waveformLods.m_cache.medRes.get_cached_data();
                 }
 
-                if (plotTimeWidth < s_highResolutionThreshold && waveformLods.m_cache.highRes.get_cached_data(m_filePath).has_data())
+                if (plotTimeWidth < s_highResolutionThreshold && waveformLods.m_cache.highRes.get_cached_data().has_data())
                 {
-                    waveformCache = &waveformLods.m_cache.highRes.get_cached_data(m_filePath);
+                    waveformCache = &waveformLods.m_cache.highRes.get_cached_data();
 
-                    if (waveformLods.m_cache.lowRes.get_cached_data(m_filePath).has_data())
+                    if (waveformLods.m_cache.lowRes.get_cached_data().has_data())
                     {
-                        peakCache = &waveformLods.m_cache.lowRes.get_cached_data(m_filePath);
+                        peakCache = &waveformLods.m_cache.lowRes.get_cached_data();
                     }
                 }
 
-                if (plotTimeWidth < s_sampleResolutionThreshold && waveformLods.m_cache.sampleRes.get_cached_data(m_filePath).has_data())
+                if (plotTimeWidth < s_sampleResolutionThreshold && waveformLods.m_cache.sampleRes.get_cached_data().has_data())
                 {
-                    waveformCache = &waveformLods.m_cache.sampleRes.get_cached_data(m_filePath);
+                    waveformCache = &waveformLods.m_cache.sampleRes.get_cached_data();
                     sampleRes     = true;
 
-                    if (waveformLods.m_cache.medRes.get_cached_data(m_filePath).has_data())
+                    if (waveformLods.m_cache.medRes.get_cached_data().has_data())
                     {
-                        peakCache = &waveformLods.m_cache.medRes.get_cached_data(m_filePath);
+                        peakCache = &waveformLods.m_cache.medRes.get_cached_data();
                     }
                 }
 
@@ -307,7 +307,7 @@ auto audio_element::render_waveform() -> void
                         }
                     }
 
-                    if (peakCache->has_data())
+                    if (peakCache->has_data() && peakCache->m_cache.waveform.globalFramesCache.get_cached_data().has_data())
                     {
                         const int numPeakPoints = (int)(m_fileDuration * peakCache->m_cache.resolution);
 
@@ -331,9 +331,9 @@ auto audio_element::render_waveform() -> void
                         {
                             const double xPosition = (((double)point / numPeakPoints) * m_fileDuration);
 
-                            if (point < peakCache->m_cache.waveform.globalFrames.size())
+                            if (point < peakCache->m_cache.waveform.globalFramesCache.get_cached_data().m_cache.size())
                             {
-                                const auto& lowResChannelData = peakCache->m_cache.waveform.globalFrames[point];
+                                const auto& lowResChannelData = peakCache->m_cache.waveform.globalFramesCache.get_cached_data().m_cache[point];
                                 const float rmsDecibel        = std::max(ma_volume_linear_to_db(lowResChannelData.rms), minimumDecibelValue + 1.0f);
                                 const float peakDecibel       = std::max(ma_volume_linear_to_db(lowResChannelData.channelSumAverage), minimumDecibelValue + 1.0f);
                                 const float lowDecibel        = std::max(ma_volume_linear_to_db(lowResChannelData.lowAverage), minimumDecibelValue + 1.0f);
@@ -342,13 +342,13 @@ auto audio_element::render_waveform() -> void
                                 const float& shortterm        = lowResChannelData.lufs.shortterm;
                                 const float& momentary        = lowResChannelData.lufs.momentary;
 
-                                peakDecibelPoints[index] = (ImVec2(xPosition, peakDecibel));
-                                lowDecibelPoints[index]  = (ImVec2(xPosition, lowDecibel));
-                                midDecibelPoints[index]  = (ImVec2(xPosition, midDecibel));
-                                highDecibelPoints[index] = (ImVec2(xPosition, highDecibel));
-                                rmsPoints[index]         = (ImVec2(xPosition, rmsDecibel));
-                                momentaryPoints[index] = (ImVec2(xPosition, momentary));
-                                shorttermPoints[index] = (ImVec2(xPosition, shortterm));
+                                peakDecibelPoints[index]    = (ImVec2(xPosition, peakDecibel));
+                                lowDecibelPoints[index]     = (ImVec2(xPosition, lowDecibel));
+                                midDecibelPoints[index]     = (ImVec2(xPosition, midDecibel));
+                                highDecibelPoints[index]    = (ImVec2(xPosition, highDecibel));
+                                rmsPoints[index]            = (ImVec2(xPosition, rmsDecibel));
+                                momentaryPoints[index]      = (ImVec2(xPosition, momentary));
+                                shorttermPoints[index]      = (ImVec2(xPosition, shortterm));
                             }
                             else
                             {
@@ -465,11 +465,11 @@ auto audio_element::render_waveform() -> void
                         ImPlot::EndLegendPopup();
                     }
 
-                    if (waveformLods.m_cache.sampleRes.get_cached_data(m_filePath).has_data())
+                    if (waveformLods.m_cache.sampleRes.get_cached_data().has_data())
                     {
                         ImPlot::SetAxes(ImAxis_X1, ImAxis_Y3);
 
-                        ImPlot::TagY(waveformLods.m_cache.sampleRes.get_cached_data(m_filePath).m_cache.waveform.lufs.integrated, gluten::theme::supportInfo, fmt::format("LUFS-I: {:.1f}", waveformLods.m_cache.sampleRes.get_cached_data(m_filePath).m_cache.waveform.lufs.integrated).c_str());
+                        ImPlot::TagY(waveformLods.m_cache.sampleRes.get_cached_data().m_cache.waveform.lufs.integrated, gluten::theme::supportInfo, fmt::format("LUFS-I: {:.1f}", waveformLods.m_cache.sampleRes.get_cached_data().m_cache.waveform.lufs.integrated).c_str());
                         /*ImPlot::TagY(lufs.m_cache.shorttermMax, gluten::theme::supportWarning, fmt::format("LUFS-S: {:.1f}", lufs.m_cache.shorttermMax).c_str());
                         ImPlot::TagY(lufs.m_cache.momentaryMax, gluten::theme::supportError, fmt::format("LUFS-M: {:.1f}", lufs.m_cache.momentaryMax).c_str());*/
                     }

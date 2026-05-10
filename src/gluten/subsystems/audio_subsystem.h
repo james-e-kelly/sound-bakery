@@ -57,10 +57,11 @@ namespace gluten
     
     struct waveform
     {
+        using global_frame_cache_type = single_data_cache<std::vector<frame_data>>;
+
         waveform() = default;
         waveform(std::size_t frames, std::size_t channels) 
-            : channelFrames(channels, std::vector<channel_frame>(frames, channel_frame())),
-              globalFrames(frames, frame_data())
+            : channelFrames(channels, std::vector<channel_frame>(frames, channel_frame()))
         {
             if (channels == 2)
             {
@@ -70,7 +71,7 @@ namespace gluten
 
         std::vector<std::vector<channel_frame>> channelFrames;  // indexed [channel][frame] so each channel can be sent to ImPlot asap
         std::vector<stereo_data> stereoFrames;                  // Only valid when there are only two channels
-        std::vector<frame_data> globalFrames;                   // Total volume sums
+        global_frame_cache_type globalFramesCache;              // Total volume sums
         
         loudness_lufs_global lufs;
 
@@ -93,7 +94,7 @@ namespace gluten
 	{
     public:
         using loudness_cache_type = data_cache<loudness_lufs, key_cache_key<std::filesystem::path>, key_cache_key_hasher<std::filesystem::path>>;
-        using waveform_lod_cache_type = data_cache<waveform_lod, key_cache_key<std::filesystem::path>, key_cache_key_hasher<std::filesystem::path>>;
+        using waveform_lod_cache_type = single_data_cache<waveform_lod>;
 
         struct waveform_lods
         {
@@ -151,6 +152,7 @@ namespace gluten
         auto async_generate_waveform_lod(std::shared_ptr<const std::vector<float>> audioData, ma_uint64 channels, double fileDuration, std::size_t resolution, concurrencpp::shared_result<waveform_lod> dependencyResult) -> concurrencpp::result<waveform_lod>;
         auto async_generate_waveform_lods(const std::filesystem::path filePath, double fileDuration, std::size_t resolution) -> concurrencpp::result<waveform_lods>;
         auto generate_downsampled_resolution_waveform(std::shared_ptr<const std::vector<float>> audioData, std::size_t resolution, ma_uint32 channels, std::size_t targetSamples) -> concurrencpp::result<waveform>;
+        auto generate_downsampled_resolution_global_frames(std::shared_ptr<const std::vector<float>> audioData, std::size_t resolution, ma_uint32 channels, std::size_t targetSamples) -> concurrencpp::result<std::vector<frame_data>>;
         auto generate_sample_resolution_waveform(std::shared_ptr<const std::vector<float>> audioData, ma_uint32 channels) -> concurrencpp::result<waveform>;
 
         std::unique_ptr<sbk::engine::system> m_soundBakery;
