@@ -158,13 +158,12 @@ function(build_dependencies)
     message(STATUS "Fetching out_ptr")
     FetchContent_MakeAvailable(out_ptr)
 
-    set(TRACY_ENABLE "" ON)
-    set(TRACY_ON_DEMAND "" ON)
-    set(TRACY_NO_VSYNC_CAPTURE "" ON)
-    set(TRACY_NO_FRAME_IMAGE "" ON)
-
-    message(STATUS "Fetching Tracy")
-    FetchContent_MakeAvailable(tracy)
+    CPMAddPackage(
+    NAME tracy
+    GITHUB_REPOSITORY wolfpld/tracy
+    GIT_TAG v0.13.1
+    OPTIONS "TRACY_ENABLE ON" "TRACY_ON_DEMAND ON" "TRACY_NO_VSYNC_CAPTURE ON" "TRACY_NO_FRAME_IMAGE ON" "TRACY_FIBERS ON"
+    )   
 
     message(STATUS "Fetching rpmalloc")
     FetchContent_MakeAvailable(sbk_rpmalloc_content)

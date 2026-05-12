@@ -1,5 +1,7 @@
 if (${SOUND_BAKERY_EDITOR})
     set(CMAKE_FOLDER apps)
+
+    include(build_tracy)
     
     add_subdirectory(editor)
     add_subdirectory(game)

@@ -13,34 +13,6 @@ FetchContent_Declare(
   EXCLUDE_FROM_ALL 
 )
 
-# Using TheCherno version for custom titlebar on Windows
-FetchContent_Declare(
-  glfw
-  GIT_REPOSITORY https://github.com/TheCherno/glfw.git
-  GIT_TAG        master
-  GIT_SHALLOW    TRUE
-  OVERRIDE_FIND_PACKAGE
-  EXCLUDE_FROM_ALL 
-)
-
-FetchContent_Declare(
-  imgui
-  GIT_REPOSITORY https://github.com/ocornut/imgui.git
-  GIT_TAG        docking
-  GIT_SHALLOW    TRUE
-  OVERRIDE_FIND_PACKAGE
-  EXCLUDE_FROM_ALL 
-)
-
-FetchContent_Declare(
-    implot
-    GIT_REPOSITORY https://github.com/epezent/implot.git
-    GIT_TAG master
-    GIT_SHALLOW TRUE
-    OVERRIDE_FIND_PACKAGE
-    EXCLUDE_FROM_ALL 
-)
-
 FetchContent_Declare(
   nfd
   GIT_REPOSITORY https://github.com/btzy/nativefiledialog-extended.git
@@ -243,15 +215,6 @@ FetchContent_Declare(
 )
 
 FetchContent_Declare(
-  tracy
-  GIT_REPOSITORY https://github.com/james-e-kelly/tracy.git
-  GIT_TAG master
-  GIT_SHALLOW TRUE
-  GIT_PROGRESS TRUE
-  EXCLUDE_FROM_ALL
-)
-
-FetchContent_Declare(
   sbk_rpmalloc_content
   GIT_REPOSITORY https://github.com/mjansson/rpmalloc.git
   GIT_TAG 1.4.5
@@ -263,13 +226,6 @@ FetchContent_Declare(
 FetchContent_Declare(
   platform-folders
   GIT_REPOSITORY https://github.com/sago007/PlatformFolders.git
-  GIT_TAG master
-  EXCLUDE_FROM_ALL
-)
-
-FetchContent_Declare(
-  imspinner
-  GIT_REPOSITORY https://github.com/dalerank/imspinner.git
   GIT_TAG master
   EXCLUDE_FROM_ALL
 )

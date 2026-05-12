@@ -1,8 +1,5 @@
 message(STATUS "Adding gluten")
 
-message(STATUS "Fetching imspinner")
-FetchContent_MakeAvailable(imspinner)
-
 set(BUILD_FOLDER ${CMAKE_BINARY_DIR})
 
 set(FONT_FILES
@@ -45,7 +42,6 @@ set(GLUTEN_SOURCES
   widgets/root_widget.cpp
   widgets/popup_widget.cpp
   widgets/window_widget.cpp
-  widgets/profiler_widget.cpp
 )
 
 set(GLUTEN_HEADERS
@@ -80,7 +76,6 @@ set(GLUTEN_HEADERS
   widgets/root_widget.h
   widgets/popup_widget.h
   widgets/window_widget.h
-  widgets/profiler_widget.h
 )
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Source Files" FILES ${GLUTEN_SOURCES})
@@ -94,7 +89,6 @@ add_library(gluten STATIC
   ${GLUTEN_SOURCES}
   ${GLUTEN_HEADERS}
   ${stb_SOURCE_DIR}/stb_image.h
-  ${imspinner_SOURCE_DIR}/imspinner.h
 )
 
 c_17(gluten)
@@ -104,7 +98,6 @@ add_library(SoundBakery::Gluten ALIAS gluten)
 
 target_include_directories(gluten
     PUBLIC ${PROJECT_SOURCE_DIR}/src
-    PUBLIC ${imspinner_SOURCE_DIR}
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
     PRIVATE ${stb_SOURCE_DIR}
 )
@@ -134,7 +127,6 @@ add_library(bytesize INTERFACE)
 target_include_directories(bytesize INTERFACE ${bytesizelib_SOURCE_DIR})
 
 include(build_nfd)
-include(build_imgui)
 
 message(STATUS "Fetching audio fonts")
 FetchContent_MakeAvailable(fonts)
@@ -144,6 +136,8 @@ FetchContent_MakeAvailable(fmt)
 
 message(STATUS "Fetching platform folders")
 FetchContent_MakeAvailable(platform-folders)
+
+include(build_imgui)
 
 CPMAddPackage("gh:nemtrif/utfcpp@4.0.6")
 
@@ -163,8 +157,6 @@ target_include_directories(gluten PUBLIC
   ${fonts_SOURCE_DIR}
   ${libebur128_SOURCE_DIR}
 )
-
-include(build_tracy_server)
 
 target_link_libraries(gluten
     PUBLIC
@@ -188,7 +180,6 @@ target_link_libraries(gluten
     utf8cpp
     sodium
     ebur128
-    sbk::tracy_profiler
 )
 
 target_compile_options(gluten PRIVATE ${PROJECT_WARNING_FLAGS})

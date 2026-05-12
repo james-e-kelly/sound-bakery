@@ -118,6 +118,8 @@ add_executable(review
   ${review_HEADERS}
 )
 
+setup_tracy_profiler(review)
+
 set_target_properties(review PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/$<CONFIG>)
 
 cxx_20(review)
