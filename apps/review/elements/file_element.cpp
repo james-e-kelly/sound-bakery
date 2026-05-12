@@ -51,6 +51,8 @@ auto file_element::post_render_element() -> void
 
 auto file_element::render_controls() -> bool
 {
+    ZoneScoped;
+
     m_filePosition = get_file_play_position();
     m_fileDuration = get_file_duration();
     m_filePercent  = m_fileDuration > 0.0 ? m_filePosition / m_fileDuration : 0.0;

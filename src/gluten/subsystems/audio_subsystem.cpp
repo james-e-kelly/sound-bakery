@@ -183,6 +183,8 @@ auto gluten::audio_subsystem::get_sound_loop_end_position(const std::filesystem:
 
 auto gluten::audio_subsystem::get_sound_length(const std::filesystem::path& filePath) -> float
 {
+    ZoneScoped;
+
     float seconds = 0.0f;
 
    if (sc_sound* const sound = get_or_load_audio_handle(filePath))
@@ -232,6 +234,8 @@ auto gluten::audio_subsystem::stop_all_sounds() -> void
 
 auto gluten::audio_subsystem::get_or_load_audio_handle(const std::filesystem::path& filePath) -> sc_sound*
 {
+    ZoneScoped;
+
     sc_sound* sound = nullptr;
 
     if (std::filesystem::exists(filePath))
@@ -264,6 +268,8 @@ auto gluten::audio_subsystem::get_sound_instance(const std::filesystem::path& fi
 
 auto gluten::audio_subsystem::get_ui_waveform_lods(const std::filesystem::path& filePath, double fileDuration) -> waveform_lods_cache_type::cache_result
 {
+    ZoneScoped;
+
     if (m_waveformLodCache.get_cache_needs_filling(filePath))
     {
         m_waveformLodCache.set_async_fill_cache(filePath, async_generate_waveform_lods(filePath, fileDuration, 0));
@@ -290,6 +296,8 @@ auto gluten::audio_subsystem::get_sound_loop_info(const std::filesystem::path& f
 
 auto gluten::audio_subsystem::async_generate_waveform_lod(std::shared_ptr<const std::vector<float>> audioData, ma_uint64 channels, double fileDuration, std::size_t resolution, concurrencpp::shared_result<waveform_lod> dependencyResult) -> concurrencpp::result<waveform_lod>
 {
+    ZoneScoped;
+
     co_await concurrencpp::resume_on(gluten::app::get()->thread_pool_executor());
 
     if (dependencyResult)
@@ -314,6 +322,8 @@ auto gluten::audio_subsystem::async_generate_waveform_lod(std::shared_ptr<const 
 
 auto gluten::audio_subsystem::async_generate_waveform_lods(const std::filesystem::path filePath, double fileDuration, std::size_t resolution) -> concurrencpp::result<waveform_lods>
 {
+    ZoneScoped;
+
     co_await concurrencpp::resume_on(gluten::app::get()->background_executor());
 
     waveform_lods result;
@@ -345,6 +355,8 @@ auto gluten::audio_subsystem::async_generate_waveform_lods(const std::filesystem
 
 auto gluten::audio_subsystem::generate_downsampled_resolution_waveform(std::shared_ptr<const std::vector<float>> audioData, std::size_t resolution, ma_uint32 channels, std::size_t targetSamples) -> concurrencpp::result<waveform>
 {
+    ZoneScoped;
+
     if (!audioData || audioData->empty())
     {
         co_return waveform();
@@ -414,6 +426,8 @@ auto gluten::audio_subsystem::generate_downsampled_resolution_waveform(std::shar
 
 auto gluten::audio_subsystem::generate_downsampled_resolution_global_frames(std::shared_ptr<const std::vector<float>> audioData, std::size_t resolution, ma_uint32 channels, std::size_t targetSamples) -> concurrencpp::result<std::vector<frame_data>>
 {
+    ZoneScoped;
+    
     co_await concurrencpp::resume_on(gluten::app::get()->background_executor());
 
     constexpr double lowsCrossoverFrequency  = 250.0;
@@ -523,6 +537,8 @@ auto gluten::audio_subsystem::generate_downsampled_resolution_global_frames(std:
 
 auto gluten::audio_subsystem::generate_sample_resolution_waveform(std::shared_ptr<const std::vector<float>> audioData, ma_uint32 channels) -> concurrencpp::result<waveform>
 {
+    ZoneScoped;
+
     if (!audioData || audioData->empty())
     {
         co_return waveform();

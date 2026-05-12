@@ -34,6 +34,8 @@ audio_element::audio_element(const std::filesystem::path& filePath,
 
 auto audio_element::render_element(const gluten::element_render_info& renderInfo) -> bool
 {
+    ZoneScoped;
+
     file_element::render_element(renderInfo);
 
     m_layout.render(renderInfo.elementBox);
@@ -103,6 +105,8 @@ static ImPlotPoint vec2_to_plot_point(int idx, void* data)
 
 auto audio_element::render_waveform() -> void
 {
+    ZoneScoped;
+
     if (std::shared_ptr<workspace_manager> workspaceManager = gluten::app::get()->get_manager_by_class<workspace_manager>())
     {
         if (std::shared_ptr<gluten::audio_subsystem> audioSubsystem = gluten::app::get()->get_subsystem_by_class<gluten::audio_subsystem>())
@@ -633,6 +637,8 @@ auto audio_element::handle_mouse_control() -> void
 
 auto audio_element::get_file_play_position() const -> double
 {
+    ZoneScoped;
+
     if (std::shared_ptr<gluten::audio_subsystem> audioSubsystem = gluten::app::get()->get_subsystem_by_class<gluten::audio_subsystem>())
     {
         return audioSubsystem->get_sound_cursor_position(m_filePath);
@@ -642,6 +648,8 @@ auto audio_element::get_file_play_position() const -> double
 
 auto audio_element::get_file_duration() const -> double
 {
+    ZoneScoped;
+
     if (std::shared_ptr<gluten::audio_subsystem> audioSubsystem = gluten::app::get()->get_subsystem_by_class<gluten::audio_subsystem>())
     {
         return audioSubsystem->get_sound_length(m_filePath);

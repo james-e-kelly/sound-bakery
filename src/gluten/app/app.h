@@ -91,6 +91,11 @@ namespace gluten
             return m_tickExecutor;
         }
 
+        auto get_executable_location() const -> std::string
+        {
+            return m_executableLocation;
+        }
+
     protected:
         /**
          * @brief Runs at the earliest possible time and before the parsing of command line arguments.

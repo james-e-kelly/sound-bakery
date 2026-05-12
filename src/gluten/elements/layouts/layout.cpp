@@ -118,6 +118,8 @@ bool gluten::layout::render_layout_element_internal(const ImRect& thisBox,
                                                     float horizontalPixels,
                                                     float verticalPixels)
 {
+    ZoneScoped;
+
     bool activated = false;
 
     const ImVec2 requestedElementSize = element ? element->get_element_content_size(ImVec2(horizontalPixels, verticalPixels)) : ImVec2();

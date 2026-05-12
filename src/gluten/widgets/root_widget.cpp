@@ -13,7 +13,6 @@
 #include "gluten/theme/window_images.embed"
 #include "gluten/utils/imgui_util_functions.h"
 #include "gluten/utils/imgui_util_structures.h"
-#include "gluten/widgets/profiler_widget.h"
 #include "imgui.h"
 #include "imgui_internal.h"
 #include "implot.h"
@@ -372,9 +371,14 @@ auto root_widget::render_menu_implementation() -> void
 
             ImGui::Separator();
 
-            if (ImGui::MenuItem("New Profiler Session...", NULL))
+            if (ImGui::MenuItem("Profile This Application...", NULL))
             {
-                get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class_to_root<profiler_widget>(true);
+#ifdef WIN32
+                const auto tracyExe = std::filesystem::path(get_app()->get_executable_location()).parent_path() / "tracy-profiler.exe";
+                std::system(fmt::format("start {} -a 127.0.0.1", tracyExe.string()).c_str());
+#endif
+
+                //get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class_to_root<profiler_widget>(true);
             }
 
             ImGui::EndMenu();

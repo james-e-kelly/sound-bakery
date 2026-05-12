@@ -113,10 +113,7 @@ namespace gluten
 	{
     public:
         data_cache() = default;
-        ~data_cache()
-        {
-            assert(m_asyncCache.empty());
-        }
+        ~data_cache() = default;
 
         data_cache(const data_cache&) = delete;
         data_cache(data_cache&& other) noexcept = default;

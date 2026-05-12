@@ -239,6 +239,8 @@ ImRect gluten::element::get_element_rect_local() const
 
 bool gluten::element::render(const ImRect& parent)
 {
+    ZoneScoped;
+
     pre_render_element();
 
     if (m_contentScale.has_value())
