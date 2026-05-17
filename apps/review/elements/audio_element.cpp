@@ -3,6 +3,7 @@
 #include "gluten/subsystems/audio_subsystem.h"
 #include "managers/workspace_manager.h"
 #include "implot.h"
+#include "implot_internal.h"
 
 namespace
 {
@@ -103,6 +104,12 @@ static ImPlotPoint vec2_to_plot_point(int idx, void* data)
     return ImPlotPoint(((ImVec2*)data)[idx]);
 }
 
+static ImPlotPoint vec2_to_min_db_plot_point(int idx, void* data)
+{
+    const ImVec2 vec2 = ((ImVec2*)data)[idx];
+    return ImPlotPoint(vec2.x, -96.0);
+}
+
 auto audio_element::render_waveform() -> void
 {
     ZoneScoped;
@@ -126,7 +133,7 @@ auto audio_element::render_waveform() -> void
 
                 constexpr const char* s_waveformPlotName    = "Waveform";
                 constexpr const char* s_overlayPlotName     = "Overlay";
-                constexpr const char* s_volumeAxisName      = "Volume";
+                constexpr const char* s_volumeAxisName      = "Channel";
                 constexpr const char* s_timeAxisName        = "Time";
                 constexpr const char* s_decibelAxisName     = "dB";
                 constexpr const char* s_lufsAxisName        = "LU";
@@ -150,6 +157,12 @@ auto audio_element::render_waveform() -> void
 
                 static std::vector<double> lufsAxisTickValues       = {-48.0, -36.0, -31.0, -27.0, -24.0, -23.0, -18.0, -16.0, -14.0, -12.0, -6.0, 0.0};
                 static std::vector<const char*> lufsAxisTickLabels  = {"-48", "-36", "-31", "-27", "-24", "-23", "-18", "-16", "-14", "-12", "-6", "0"};
+
+                static std::vector<double> linearAxisOneChannelTickValues           = {0.0};
+                static std::vector<const char*> linearAxisOneChannelTickLabels      = {"C"};
+
+                static std::vector<double> linearAxisTickValues                     = {0.0, -2.0, -4.0};
+                static std::vector<const char*> linearAxisTickLabels                = {"L", "R", "C"};
 
                 constexpr float s_timeMinValue              = 0.0f;
 
@@ -223,9 +236,11 @@ auto audio_element::render_waveform() -> void
 
                 ImGui::SetCursorScreenPos(m_audioBackground.get_element_rect().GetTL());
 
-                if (ImPlot::BeginPlot(fmt::format("{}##{}", s_waveformPlotName, m_filePath.filename().string()).c_str(), ImVec2(-1, m_audioBackground.get_element_rect().GetHeight()), ImPlotFlags_NoTitle | ImPlotFlags_NoMenus | ImPlotFlags_NoBoxSelect | ImPlotFlags_NoMouseText))
+                if (ImPlot::BeginPlot(fmt::format("{}##{}", s_waveformPlotName, m_filePath.filename().string()).c_str(), ImVec2(-1, m_audioBackground.get_element_rect().GetHeight()), ImPlotFlags_NoTitle  | ImPlotFlags_NoMouseText | ImPlotFlags_NoBoxSelect | ImPlotFlags_NoMenus))
                 {
                     ImPlot::SetupLegend(ImPlotLocation_South, ImPlotLegendFlags_Outside | ImPlotLegendFlags_Horizontal);
+
+                    ImPlot::SetupMouseText(ImPlotLocation_SouthEast, ImPlotMouseTextFlags_NoAuxAxes);
 
                     ImPlot::SetupAxis(ImAxis_X1, s_timeAxisName, ImPlotAxisFlags_None);
                     ImPlot::SetupAxisFormat(ImAxis_X1, time_formatter);
@@ -238,7 +253,24 @@ auto audio_element::render_waveform() -> void
                     ImPlot::SetupAxis(ImAxis_Y1, s_volumeAxisName, ImPlotAxisFlags_NoGridLines | ImPlotAxisFlags_Lock);
                     ImPlot::SetupAxisLimits(ImAxis_Y1, minYValue, s_linearVolumeMax, ImPlotCond_Always);
                     ImPlot::SetupAxisLimitsConstraints(ImAxis_Y1, minYValue, s_linearVolumeMax);
-                    ImPlot::SetupAxisFormat(ImAxis_Y1, linear_volume_formatter);
+                    //ImPlot::SetupAxisFormat(ImAxis_Y1, linear_volume_formatter);
+
+                    switch (channels)
+                    {
+                        case 1:
+                        {
+                            ImPlot::SetupAxisTicks(ImAxis_Y1, linearAxisOneChannelTickValues.data(), linearAxisOneChannelTickValues.size(), linearAxisOneChannelTickLabels.data());
+                            break;
+                        }
+                        case 2:
+                        case 3:
+                        default:
+                        {
+
+                            ImPlot::SetupAxisTicks(ImAxis_Y1, linearAxisTickValues.data(), linearAxisTickValues.size(), linearAxisTickLabels.data());
+                            break;
+                        }
+                    }
 
                     ImPlot::SetupAxis(ImAxis_Y2, s_decibelAxisName, ImPlotAxisFlags_AuxDefault | ImPlotAxisFlags_Lock);
                     ImPlot::SetupAxisLimits(ImAxis_Y2, mindBYValue, 0.0, ImPlotCond_Always);
@@ -250,32 +282,74 @@ auto audio_element::render_waveform() -> void
                     ImPlot::SetupAxisLimitsConstraints(ImAxis_Y3, lufsAxisMin, lufsAxisMax);
                     ImPlot::SetupAxisTicks(ImAxis_Y3, lufsAxisTickValues.data(), lufsAxisTickValues.size(), lufsAxisTickLabels.data());
 
+                    using fill_channel_points_callback_type = std::function<void(int index, double xPosition, int point, const gluten::channel_frame& channelFrame, const gluten::stereo_data& stereoData, const gluten::waveform::global_frame_cache_type& globalFrameCache)>;
+
+                    const auto get_render_points_at_cache_resolution = [fileDuration = m_fileDuration, plotLimitLeft, plotLimitRight](const gluten::audio_subsystem::waveform_lod_cache_type::cached_data* cache) -> int
+                        {
+                            if (cache && cache->has_data())
+                            {
+                                const int numWaveformPoints                      = (int)(fileDuration * cache->m_cache.resolution);
+                                const int plotLimitLeftAsPointIndexAtCurrentRes  = (plotLimitLeft / fileDuration) * numWaveformPoints;
+                                const int plotLimitRightAsPointIndexAtCurrentRes = (std::clamp((plotLimitRight + 1.0f), 0.0f, (float)fileDuration) / fileDuration) * numWaveformPoints;
+
+                                return plotLimitRightAsPointIndexAtCurrentRes - plotLimitLeftAsPointIndexAtCurrentRes;
+                            }
+                            else
+                            {
+                                return 0;
+                            }
+                        };
+
+                    const auto fill_channel_points = [fileDuration = m_fileDuration, &plotLimitLeft, &plotLimitRight, &channels](const gluten::audio_subsystem::waveform_lod_cache_type::cached_data* cache, int channel, const fill_channel_points_callback_type& callback) -> void
+                        {
+                            if (!cache || !cache->has_data())
+                            {
+                                return;
+                            }
+
+                            const int numWaveformPoints                      = (int)(fileDuration * cache->m_cache.resolution);
+                            const int plotLimitLeftAsPointIndexAtCurrentRes  = (plotLimitLeft / fileDuration) * numWaveformPoints;
+                            const int plotLimitRightAsPointIndexAtCurrentRes = (std::clamp((plotLimitRight + 1.0f), 0.0f, (float)fileDuration) / fileDuration) * numWaveformPoints;
+                            const int maxIndex                               = fileDuration * numWaveformPoints;
+
+                            const int numberOfPointsAtCurrentResolution = plotLimitRightAsPointIndexAtCurrentRes - plotLimitLeftAsPointIndexAtCurrentRes;
+
+                            int point = plotLimitLeftAsPointIndexAtCurrentRes;
+                            int index = 0;
+
+                            for (; point < numWaveformPoints && point <= plotLimitRightAsPointIndexAtCurrentRes && index < numberOfPointsAtCurrentResolution; ++point, ++index)
+                            {
+                                const int clampedIndex = std::clamp(point, 0, numWaveformPoints - 1);
+
+                                const double xPosition  = (double)point / (numWaveformPoints) * fileDuration;
+
+                                const auto& globalData  = cache->m_cache.waveform.globalFramesCache;
+                                const auto& channelData = cache->m_cache.waveform.channelFrames[channel][clampedIndex];
+                                if (channels == 2)
+                                {
+                                    const auto& stereoData = cache->m_cache.waveform.stereoFrames[clampedIndex];
+                                    callback(index, xPosition, point, channelData, stereoData, globalData);
+                                }
+                                else
+                                {
+                                    const gluten::stereo_data fakeStereoData;
+                                    callback(index, xPosition, point, channelData, fakeStereoData, globalData);
+                                }
+                            }
+                        };
+
                     for (int channel = 0; channel < channels; ++channel)
                     {
-                        const int numWaveformPoints                      = (int)(m_fileDuration * waveformCache->m_cache.resolution);
-                        const int plotLimitLeftAsPointIndexAtCurrentRes  = (plotLimitLeft / m_fileDuration) * numWaveformPoints;
-                        const int plotLimitRightAsPointIndexAtCurrentRes = (plotLimitRight / m_fileDuration) * numWaveformPoints;
-
-                        const int numberOfPointsAtCurrentResolution = plotLimitRightAsPointIndexAtCurrentRes - plotLimitLeftAsPointIndexAtCurrentRes;
+                        const int numberOfPointsAtCurrentResolution = get_render_points_at_cache_resolution(waveformCache);
 
                         std::vector<ImVec2> upperPoints(sampleRes ? 0 : numberOfPointsAtCurrentResolution, ImVec2());
                         std::vector<ImVec2> lowerPoints(sampleRes ? 0 : numberOfPointsAtCurrentResolution, ImVec2());
                         std::vector<ImVec2> samplePoints(sampleRes ? numberOfPointsAtCurrentResolution : 0, ImVec2());
 
-                        int point = plotLimitLeftAsPointIndexAtCurrentRes;
-                        int index = 0;
-
-                        for ( ; point < numWaveformPoints && point <= plotLimitRightAsPointIndexAtCurrentRes && index < numberOfPointsAtCurrentResolution; ++point, ++index)
-                        {
-                            const double xPosition = (double)point / (numWaveformPoints) * m_fileDuration;
-                            const auto& channelData = waveformCache->m_cache.waveform.channelFrames[channel][point];
-
-                            if (xPosition >= plotLimitLeft && xPosition <= plotLimitRight)
+                        fill_channel_points(waveformCache, channel, [&upperPoints, &lowerPoints, &samplePoints, &renderMidSide, &channel, &channels, &sampleRes](int index, double xPosition, int point, const gluten::channel_frame& channelFrame, const gluten::stereo_data& stereoData, const gluten::waveform::global_frame_cache_type& globalFrameCache) 
                             {
                                 if (renderMidSide && channels == 2 && !sampleRes)
                                 {
-                                    const auto& stereoData  = waveformCache->m_cache.waveform.stereoFrames[point];
-
                                     upperPoints[index] = (ImVec2(xPosition, (channel == 0 ? stereoData.midMax : stereoData.sideMax) - (2.0f * channel)));
                                     lowerPoints[index] = (ImVec2(xPosition, (channel == 0 ? stereoData.midMin : stereoData.sideMin) - (2.0f * channel)));
                                 }
@@ -283,21 +357,21 @@ auto audio_element::render_waveform() -> void
                                 {
                                     if (sampleRes)
                                     {
-                                        samplePoints[index] = (ImVec2(xPosition, channelData.sample - (2.0f * channel)));
+                                        samplePoints[index] = (ImVec2(xPosition, channelFrame.sample - (2.0f * channel)));
                                     }
                                     else
                                     {
-                                        upperPoints[index] = (ImVec2(xPosition, channelData.max - (2.0f * channel)));
-                                        lowerPoints[index] = (ImVec2(xPosition, channelData.min - (2.0f * channel)));
+                                        upperPoints[index] = (ImVec2(xPosition, channelFrame.max - (2.0f * channel)));
+                                        lowerPoints[index] = (ImVec2(xPosition, channelFrame.min - (2.0f * channel)));
                                     }
                                 }
-                            }
-                        }
+                            });
 
                         ImPlot::SetAxes(ImAxis_X1, ImAxis_Y1);
 
                         static ImPlotSpec waveformSpec;
-                        //waveformSpec.LineColor = gluten::theme::layer03;
+                        waveformSpec.LineColor = gluten::theme::hex_to_imgui_imvec4(0x4c72b0);
+                        waveformSpec.FillColor = waveformSpec.LineColor;
 
                         if (sampleRes)
                         {
@@ -311,116 +385,136 @@ auto audio_element::render_waveform() -> void
                         }
                     }
 
-                    if (peakCache->has_data() && peakCache->m_cache.waveform.globalFramesCache.get_cached_data().has_data())
+                    const int numberOfPeakPoints = get_render_points_at_cache_resolution(peakCache);
+
+                    std::vector<ImVec2> peakDecibelPoints(numberOfPeakPoints, ImVec2());
+                    std::vector<ImVec2> lowDecibelPoints(numberOfPeakPoints, ImVec2());
+                    std::vector<ImVec2> midDecibelPoints(numberOfPeakPoints, ImVec2());
+                    std::vector<ImVec2> highDecibelPoints(numberOfPeakPoints, ImVec2());
+                    std::vector<ImVec2> rmsPoints(numberOfPeakPoints, ImVec2());
+
+                    fill_channel_points(peakCache, 0, [&minimumDecibelValue, &peakDecibelPoints, &lowDecibelPoints, &midDecibelPoints, &highDecibelPoints, &rmsPoints](int index, double xPosition, int point, const gluten::channel_frame& channelFrame, const gluten::stereo_data& stereoData, const gluten::waveform::global_frame_cache_type& globalFrameCache) 
+                        {
+                            if (globalFrameCache.get_cached_data().has_data())
+                            {
+                                const auto& globalFrameData = globalFrameCache.get_cached_data().m_cache[point];
+
+                                const float rmsDecibel        = std::max(ma_volume_linear_to_db(globalFrameData.rms), minimumDecibelValue + 1.0f);
+                                const float peakDecibel       = std::max(ma_volume_linear_to_db(globalFrameData.channelSumAverage), minimumDecibelValue + 1.0f);
+                                const float lowDecibel        = std::max(ma_volume_linear_to_db(globalFrameData.lowAverage), minimumDecibelValue + 1.0f);
+                                const float midDecibel        = std::max(ma_volume_linear_to_db(globalFrameData.midAverage), minimumDecibelValue + 1.0f);
+                                const float highDecibel       = std::max(ma_volume_linear_to_db(globalFrameData.highAverage), minimumDecibelValue + 1.0f);
+
+                                peakDecibelPoints[index] = (ImVec2(xPosition, peakDecibel));
+                                lowDecibelPoints[index]  = (ImVec2(xPosition, lowDecibel));
+                                midDecibelPoints[index]  = (ImVec2(xPosition, midDecibel));
+                                highDecibelPoints[index] = (ImVec2(xPosition, highDecibel));
+                                rmsPoints[index]         = (ImVec2(xPosition, rmsDecibel));
+                            }
+                        });
+
+                    const int numberOfLufsPoints = get_render_points_at_cache_resolution(&waveformLods.m_cache.thumbnailRes.get_cached_data());
+
+                    std::vector<ImVec2> momentaryPoints(numberOfLufsPoints, ImVec2());
+                    std::vector<ImVec2> shorttermPoints(numberOfLufsPoints, ImVec2());
+                    std::vector<ImVec2> shorttermClampedPoints(numberOfLufsPoints, ImVec2());
+                    std::vector<ImU32> shorttermLineColors(numberOfLufsPoints, ImGui::ColorConvertFloat4ToU32(gluten::theme::supportInfo));
+
+                    fill_channel_points(&waveformLods.m_cache.thumbnailRes.get_cached_data(), 0, [&minimumDecibelValue, &momentaryPoints, &shorttermPoints, &shorttermClampedPoints](int index, double xPosition, int point, const gluten::channel_frame& channelFrame, const gluten::stereo_data& stereoData, const gluten::waveform::global_frame_cache_type& globalFrameCache)
+                        {
+                            if (globalFrameCache.get_cached_data().has_data())
+                            {
+                                const auto& globalFrameData = globalFrameCache.get_cached_data().m_cache[point];
+
+                                const float& shortterm        = globalFrameData.lufs.shortterm;
+                                const float& momentary        = globalFrameData.lufs.momentary;
+
+                                momentaryPoints[index]          = (ImVec2(xPosition, momentary));
+                                shorttermPoints[index]          = (ImVec2(xPosition, shortterm));
+                                shorttermClampedPoints[index]   = (ImVec2(xPosition, std::min(shortterm, -24.0f)));
+                            } 
+                        });
+
+                    for (int i = 0; i < shorttermPoints.size(); ++i)
                     {
-                        const int numPeakPoints = (int)(m_fileDuration * peakCache->m_cache.resolution);
-
-                        const int plotLimitLeftAsPointIndexAtLowRes  = (plotLimitLeft / m_fileDuration) * numPeakPoints;
-                        const int plotLimitRightAsPointIndexAtLowRes = (plotLimitRight / m_fileDuration) * numPeakPoints;
-
-                        const int pointsThisIteration = plotLimitRightAsPointIndexAtLowRes + 1 - plotLimitLeftAsPointIndexAtLowRes;
-
-                        std::vector<ImVec2> peakDecibelPoints(pointsThisIteration, ImVec2());
-                        std::vector<ImVec2> lowDecibelPoints(pointsThisIteration, ImVec2());
-                        std::vector<ImVec2> midDecibelPoints(pointsThisIteration, ImVec2());
-                        std::vector<ImVec2> highDecibelPoints(pointsThisIteration, ImVec2());
-                        std::vector<ImVec2> rmsPoints(pointsThisIteration, ImVec2());
-                        std::vector<ImVec2> momentaryPoints(pointsThisIteration, ImVec2());
-                        std::vector<ImVec2> shorttermPoints(pointsThisIteration, ImVec2());
-
-                        int index = 0;
-                        int point = plotLimitLeftAsPointIndexAtLowRes;
-
-                        for ( ; index < pointsThisIteration ; ++point, ++index)
+                        if (shorttermPoints[i].y > -24.0f)
                         {
-                            const double xPosition = (((double)point / numPeakPoints) * m_fileDuration);
+                            shorttermLineColors[i] = ImGui::ColorConvertFloat4ToU32(gluten::theme::hex_to_imgui_imvec4(0xc46c5e));
+                        }
+                        else
+                        {
+                            shorttermLineColors[i] = ImGui::ColorConvertFloat4ToU32(gluten::theme::hex_to_imgui_imvec4(0xa3b5c8));
+                        }
+                    }
 
-                            if (point < peakCache->m_cache.waveform.globalFramesCache.get_cached_data().m_cache.size())
-                            {
-                                const auto& lowResChannelData = peakCache->m_cache.waveform.globalFramesCache.get_cached_data().m_cache[point];
-                                const float rmsDecibel        = std::max(ma_volume_linear_to_db(lowResChannelData.rms), minimumDecibelValue + 1.0f);
-                                const float peakDecibel       = std::max(ma_volume_linear_to_db(lowResChannelData.channelSumAverage), minimumDecibelValue + 1.0f);
-                                const float lowDecibel        = std::max(ma_volume_linear_to_db(lowResChannelData.lowAverage), minimumDecibelValue + 1.0f);
-                                const float midDecibel        = std::max(ma_volume_linear_to_db(lowResChannelData.midAverage), minimumDecibelValue + 1.0f);
-                                const float highDecibel       = std::max(ma_volume_linear_to_db(lowResChannelData.highAverage), minimumDecibelValue + 1.0f);
-                                const float& shortterm        = lowResChannelData.lufs.shortterm;
-                                const float& momentary        = lowResChannelData.lufs.momentary;
+                    ImPlot::SetAxes(ImAxis_X1, ImAxis_Y2);
 
-                                peakDecibelPoints[index]    = (ImVec2(xPosition, peakDecibel));
-                                lowDecibelPoints[index]     = (ImVec2(xPosition, lowDecibel));
-                                midDecibelPoints[index]     = (ImVec2(xPosition, midDecibel));
-                                highDecibelPoints[index]    = (ImVec2(xPosition, highDecibel));
-                                rmsPoints[index]            = (ImVec2(xPosition, rmsDecibel));
-                                momentaryPoints[index]      = (ImVec2(xPosition, momentary));
-                                shorttermPoints[index]      = (ImVec2(xPosition, shortterm));
-                            }
-                            else
-                            {
-                                // Our peak point resolution is lower than the waveform resolution
-                                // Because of this, the final points can cut off
-                                // So we continue the data a little beyond what we have to make it look nicer
+                    static ImPlotSpec peakSpec;
+                    static ImPlotSpec rmsSpec;
+                    static ImPlotSpec lowSpec;
+                    static ImPlotSpec midSpec;
+                    static ImPlotSpec highSpec;
+                    static ImPlotSpec momentarySpec;
+                    static ImPlotSpec shorttermSpec;
+                    static ImPlotSpec shorttermOverSpec;
+                    static ImPlotSpec shorttermLineSpec;
 
-                                peakDecibelPoints[index] = (ImVec2(xPosition, peakDecibelPoints[index - 1].y));
-                                lowDecibelPoints[index]  = (ImVec2(xPosition, lowDecibelPoints[index - 1].y));
-                                midDecibelPoints[index]  = (ImVec2(xPosition, midDecibelPoints[index - 1].y));
-                                highDecibelPoints[index] = (ImVec2(xPosition, highDecibelPoints[index - 1].y));
-                                rmsPoints[index]         = (ImVec2(xPosition, rmsPoints[index - 1].y));
-                                momentaryPoints[index]   = (ImVec2(xPosition, momentaryPoints[index-1].y));
-                                shorttermPoints[index]   = (ImVec2(xPosition, shorttermPoints[index-1].y));
-                            }
+                    using namespace gluten::theme;
+
+                    peakSpec.LineColor = adjust_alpha(supportWarning, 0.33f);
+                    rmsSpec.LineColor  = adjust_alpha(supportInfo, 0.5f);
+                    lowSpec.LineColor  = adjust_alpha(supportError, 0.5f);
+                    midSpec.LineColor  = adjust_alpha(supportWarning, 0.5f);
+                    highSpec.LineColor = adjust_alpha(supportSuccess, 0.5f);
+                    momentarySpec.LineColor         = hex_to_imgui_imvec4(0xeaecef);
+                    shorttermSpec.FillColor         = adjust_alpha(hex_to_imgui_imvec4(0x3f4d63), 0.33f);
+                    shorttermOverSpec.FillColor     = adjust_alpha(hex_to_imgui_imvec4(0x5a3431), 0.33f);
+                    shorttermLineSpec.LineColors    = shorttermLineColors.data();
+
+                    lowSpec.LineWeight = midSpec.LineWeight = highSpec.LineWeight = 2.0f;
+                    momentarySpec.LineWeight = shorttermLineSpec.LineWeight = 2.0f;
+
+                    if (ImPlot::BeginItem(s_overlayPlotName, highSpec, highSpec.LineColor))
+                    {
+                        ImPlot::EndItem();
+                    }
+
+                    if (overlayMode == 0)
+                    {
+                        if (renderLows)
+                        {
+                            ImPlot::PlotLineG(s_overlayPlotName, vec2_to_plot_point, lowDecibelPoints.data(), lowDecibelPoints.size(), lowSpec);
                         }
 
-                        ImPlot::SetAxes(ImAxis_X1, ImAxis_Y2);
-
-                        static ImPlotSpec peakSpec;
-                        static ImPlotSpec rmsSpec;
-                        static ImPlotSpec lowSpec;
-                        static ImPlotSpec midSpec;
-                        static ImPlotSpec highSpec;
-                        static ImPlotSpec momentarySpec;
-                        static ImPlotSpec shorttermSpec;
-
-                        peakSpec.LineColor = gluten::theme::adjust_alpha(gluten::theme::supportWarning, 0.33f);
-                        rmsSpec.LineColor  = gluten::theme::adjust_alpha(gluten::theme::supportInfo, 0.5f);
-                        lowSpec.LineColor  = gluten::theme::adjust_alpha(gluten::theme::supportError, 0.5f);
-                        midSpec.LineColor  = gluten::theme::adjust_alpha(gluten::theme::supportWarning, 0.5f);
-                        highSpec.LineColor = gluten::theme::adjust_alpha(gluten::theme::supportSuccess, 0.5f);
-                        momentarySpec.LineColor = gluten::theme::adjust_alpha(gluten::theme::supportWarning, 0.33f);
-                        shorttermSpec.LineColor = gluten::theme::adjust_alpha(gluten::theme::supportSuccess, 0.5f);
-
-                        lowSpec.LineWeight = midSpec.LineWeight = highSpec.LineWeight = 2.0f;
-                        momentarySpec.LineWeight = shorttermSpec.LineWeight = 2.0f;
-
-                        if (overlayMode == 0)
+                        if (renderMids)
                         {
-                            if (renderLows)
-                            {
-                                ImPlot::PlotLineG(s_overlayPlotName, vec2_to_plot_point, lowDecibelPoints.data(), lowDecibelPoints.size(), lowSpec);
-                            }
-
-                            if (renderMids)
-                            {
-                                ImPlot::PlotLineG(s_overlayPlotName, vec2_to_plot_point, midDecibelPoints.data(), midDecibelPoints.size(), midSpec);
-                            }
-
-                            if (renderHighs)
-                            {
-                                ImPlot::PlotLineG(s_overlayPlotName, vec2_to_plot_point, highDecibelPoints.data(), highDecibelPoints.size(), highSpec);
-                            }
+                            ImPlot::PlotLineG(s_overlayPlotName, vec2_to_plot_point, midDecibelPoints.data(), midDecibelPoints.size(), midSpec);
                         }
-                        else if (overlayMode == 1)
+
+                        if (renderHighs)
                         {
-                            ImPlot::SetAxes(ImAxis_X1, ImAxis_Y3);
+                            ImPlot::PlotLineG(s_overlayPlotName, vec2_to_plot_point, highDecibelPoints.data(), highDecibelPoints.size(), highSpec);
+                        }
+                    }
+                    else if (overlayMode == 1)
+                    {
+                        ImPlot::SetAxes(ImAxis_X1, ImAxis_Y3);                    
+                        
+                        if (renderShortterm)
+                        {
+                            ImPlot::PlotShadedG(s_overlayPlotName, vec2_to_plot_point, shorttermPoints.data(), vec2_to_min_db_plot_point, shorttermPoints.data(), shorttermPoints.size(), shorttermOverSpec);
+                            //ImPlot::PlotShadedG(s_overlayPlotName, vec2_to_plot_point, shorttermClampedPoints.data(), vec2_to_min_db_plot_point, shorttermClampedPoints.data(), shorttermClampedPoints.size(), shorttermSpec);
+                            ImPlot::PlotLineG(s_overlayPlotName, vec2_to_plot_point, shorttermPoints.data(), shorttermPoints.size(), shorttermLineSpec);
+                        }
 
-                            if (renderMomentary)
-                            {
-                                ImPlot::PlotLineG(s_overlayPlotName, vec2_to_plot_point, momentaryPoints.data(), momentaryPoints.size(), momentarySpec);
-                            }
+                        if (renderMomentary)
+                        {
+                            ImPlot::PlotLineG(s_overlayPlotName, vec2_to_plot_point, momentaryPoints.data(), momentaryPoints.size(), momentarySpec);
+                        }
 
-                            if (renderShortterm)
-                            {
-                                ImPlot::PlotLineG(s_overlayPlotName, vec2_to_plot_point, shorttermPoints.data(), shorttermPoints.size(), shorttermSpec);
-                            }
+                        if (ImPlot::BeginItem(s_overlayPlotName, highSpec, highSpec.LineColor))
+                        {
+                            ImPlot::EndItem();
                         }
                     }
 
@@ -481,7 +575,7 @@ auto audio_element::render_waveform() -> void
                     ImPlot::SetAxes(ImAxis_X1, ImAxis_Y1);
                     
                     const double scaledFilePosition = m_filePosition;
-                    ImPlot::PlotInfLines("##Playhead", &scaledFilePosition, 1, {ImPlotProp_LineWeight, 3.0f, ImPlotProp_LineColor, gluten::theme::supportError});
+                    ImPlot::PlotInfLines("##Playhead", &scaledFilePosition, 1, {ImPlotProp_LineWeight, 3.0f, ImPlotProp_LineColor, get_is_playing() ? gluten::theme::supportSuccess : gluten::theme::supportError});
 
                     const auto& comments = workspaceManager->get_all_comments_for_review(workspaceManager->get_selected_review().m_reviewId);
 
@@ -504,9 +598,24 @@ auto audio_element::render_waveform() -> void
                         }
                     }
 
-                    if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && ImPlot::IsPlotHovered())
+                    if (ImPlot::IsPlotHovered())
                     {
-                        audioSubsystem->set_sound_cursor_position(m_filePath, ImPlot::GetPlotMousePos().x);
+                        if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+                        {
+                            audioSubsystem->set_sound_cursor_position(m_filePath, ImPlot::GetPlotMousePos().x);
+                        }
+
+                        if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+                        {
+                            if (get_is_playing())
+                            {
+                                pause_file();
+                            }
+                            else
+                            {
+                                play_file();
+                            }
+                        }
                     }
 
                     plotLimitLeft  = ImPlot::GetPlotLimits().X.Min;
@@ -608,8 +717,8 @@ auto audio_element::get_element_content_size(const ImVec2& parentSize) -> ImVec2
 
 auto audio_element::handle_mouse_control() -> void
 {
-    handle_mouse_controls(m_audioBackground.get_element_rect());
     return;
+    handle_mouse_controls(m_audioBackground.get_element_rect());
 
     if (ImGui::IsWindowFocused() && ImGui::IsMouseHoveringRect(m_audioBackground.get_element_rect().Min, m_audioBackground.get_element_rect().Max))
     {

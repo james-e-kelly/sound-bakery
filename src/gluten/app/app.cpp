@@ -184,6 +184,7 @@ auto gluten::app::tick() -> void
     m_tickExecutor->loop(m_tickExecutor->size());
     tick_implementation();
     tick_end(); 
+    FrameMark;
 }
 
 auto gluten::app::tick_begin() -> void
@@ -196,7 +197,7 @@ auto gluten::app::tick_begin() -> void
     m_deltaTime = timeDiff.count();
 
     {
-        ZoneScopedN("PreTick");
+        ZoneScopedN("pre_tick");
         for (std::shared_ptr<subsystem>& subsystem : m_subsystems)
         {
             subsystem->pre_tick(m_deltaTime);
@@ -209,7 +210,7 @@ auto gluten::app::tick_begin() -> void
     }
 
     {
-        ZoneScopedN("SubsystemTick");
+        ZoneScopedN("subsystem_tick");
         for (std::shared_ptr<subsystem>& subsystem : m_subsystems)
         {
             subsystem->tick(m_deltaTime);
@@ -217,7 +218,7 @@ auto gluten::app::tick_begin() -> void
     }
 
     {
-        ZoneScopedN("ManagerTick");
+        ZoneScopedN("manager_tick");
         for (auto& manager : m_managers)
         {
             manager->tick(m_deltaTime);
@@ -228,14 +229,12 @@ auto gluten::app::tick_begin() -> void
 auto gluten::app::tick_end() -> void
 {
     {
-        ZoneScopedN("RenderingTick");
+        ZoneScopedN("rendering_tick");
         for (std::shared_ptr<subsystem>& subsystem : m_subsystems)
         {
             subsystem->tick_rendering(m_deltaTime);
         }
     }
-
-    FrameMark;
 }
 
 void gluten::app::load_fonts()

@@ -294,15 +294,35 @@ auto gluten::audio_subsystem::get_sound_loop_info(const std::filesystem::path& f
     return loopData;
 }
 
+struct fiber_raii
+{
+    ~fiber_raii()
+    {
+        TracyFiberLeave;
+    }
+};
+
+#define SET_UP_FIBER                                                                                                    \
+    static std::atomic<unsigned long> counter;                                                                          \
+    const std::string _fiberName = fmt::format("{}_{}", __FUNCTION__, counter.fetch_add(1, std::memory_order_relaxed)); \
+    const fiber_raii fiberRaii
+
+#define ENTER_FIBER TracyFiberEnter(_fiberName.c_str())
+#define EXIT_FIBER  TracyFiberLeave
+
 auto gluten::audio_subsystem::async_generate_waveform_lod(std::shared_ptr<const std::vector<float>> audioData, ma_uint64 channels, double fileDuration, std::size_t resolution, concurrencpp::shared_result<waveform_lod> dependencyResult) -> concurrencpp::result<waveform_lod>
 {
-    ZoneScoped;
-
     co_await concurrencpp::resume_on(gluten::app::get()->thread_pool_executor());
+
+    SET_UP_FIBER;
+
+    ENTER_FIBER;
 
     if (dependencyResult)
     {
+        EXIT_FIBER;
         co_await dependencyResult;
+        ENTER_FIBER;
     }
 
     waveform_lod lod;
@@ -310,11 +330,15 @@ auto gluten::audio_subsystem::async_generate_waveform_lod(std::shared_ptr<const 
 
     if (resolution == ma_standard_sample_rate_48000)
     {
+        EXIT_FIBER;
         lod.waveform = co_await generate_sample_resolution_waveform(audioData, channels);
+        ENTER_FIBER;
     }
     else
     {
+        EXIT_FIBER;
         lod.waveform = co_await generate_downsampled_resolution_waveform(audioData, resolution, channels, resolution * fileDuration);
+        ENTER_FIBER;
     }
 
     co_return lod;
@@ -322,8 +346,6 @@ auto gluten::audio_subsystem::async_generate_waveform_lod(std::shared_ptr<const 
 
 auto gluten::audio_subsystem::async_generate_waveform_lods(const std::filesystem::path filePath, double fileDuration, std::size_t resolution) -> concurrencpp::result<waveform_lods>
 {
-    ZoneScoped;
-
     co_await concurrencpp::resume_on(gluten::app::get()->background_executor());
 
     waveform_lods result;
@@ -355,6 +377,10 @@ auto gluten::audio_subsystem::async_generate_waveform_lods(const std::filesystem
 
 auto gluten::audio_subsystem::generate_downsampled_resolution_waveform(std::shared_ptr<const std::vector<float>> audioData, std::size_t resolution, ma_uint32 channels, std::size_t targetSamples) -> concurrencpp::result<waveform>
 {
+    SET_UP_FIBER;
+
+    ENTER_FIBER;
+
     ZoneScoped;
 
     if (!audioData || audioData->empty())
@@ -426,9 +452,13 @@ auto gluten::audio_subsystem::generate_downsampled_resolution_waveform(std::shar
 
 auto gluten::audio_subsystem::generate_downsampled_resolution_global_frames(std::shared_ptr<const std::vector<float>> audioData, std::size_t resolution, ma_uint32 channels, std::size_t targetSamples) -> concurrencpp::result<std::vector<frame_data>>
 {
-    ZoneScoped;
-    
     co_await concurrencpp::resume_on(gluten::app::get()->background_executor());
+
+    SET_UP_FIBER;
+
+    ENTER_FIBER;
+
+    ZoneScoped;
 
     constexpr double lowsCrossoverFrequency  = 250.0;
     constexpr double highsCrossoverFrequency = 4000.0;
@@ -477,25 +507,43 @@ auto gluten::audio_subsystem::generate_downsampled_resolution_global_frames(std:
     std::vector<float> midData(audioData->size(), 0.0f);
     std::vector<float> highData(audioData->size(), 0.0f);
 
-    ma_lpf_process_pcm_frames(&lowsLowpass, lowData.data(), audioData->data(), frameCount);
-    ma_hpf_process_pcm_frames(&highsHighpass, highData.data(), audioData->data(), frameCount);
+    {
+        ZoneScopedN("Process Low And High Passes");
 
-    ma_lpf_process_pcm_frames(&midsLowpass, midData.data(), audioData->data(), frameCount);
-    ma_hpf_process_pcm_frames(&midsHighpass, midData.data(), midData.data(), frameCount);
+        ma_lpf_process_pcm_frames(&lowsLowpass, lowData.data(), audioData->data(), frameCount);
+        ma_hpf_process_pcm_frames(&highsHighpass, highData.data(), audioData->data(), frameCount);
+
+        ma_lpf_process_pcm_frames(&midsLowpass, midData.data(), audioData->data(), frameCount);
+        ma_hpf_process_pcm_frames(&midsHighpass, midData.data(), midData.data(), frameCount);
+    }
 
     const float channelsReciprocal     = 1.0f / channels;
     const float framesToReadReciprocal = 1.0f / framesToRead;
 
-    const bool calculateLufs = resolution <= 1000;
+    const bool calculateLufs = resolution <= 10;    // Keep a very low resolution for LUFS. It doesn't change very fast
 
     for (ma_uint64 samplingIndex = 0; samplingIndex < targetSamples; ++samplingIndex)
     {
+        ZoneScopedN("loop");
+
         if (calculateLufs)
         {
-            ebur128_add_frames_float(eburState, audioData->data() + (samplingIndex * framesToRead * channels), framesToRead);
+            ZoneScopedN("calculate_lufs");
 
-            ebur128_loudness_shortterm(eburState, &result[samplingIndex].lufs.shortterm);
-            ebur128_loudness_momentary(eburState, &result[samplingIndex].lufs.momentary);
+            {
+                ZoneScopedN("add_frames");
+                ebur128_add_frames_float(eburState, audioData->data() + (samplingIndex * framesToRead * channels), framesToRead);
+            }
+
+            {
+                ZoneScopedN("shortterm");
+                ebur128_loudness_shortterm(eburState, &result[samplingIndex].lufs.shortterm);
+            }
+
+            {
+                ZoneScopedN("momentary");
+                ebur128_loudness_momentary(eburState, &result[samplingIndex].lufs.momentary);
+            }
         }
 
         for (ma_uint64 frame = 0; frame < framesToRead; ++frame)
@@ -537,6 +585,10 @@ auto gluten::audio_subsystem::generate_downsampled_resolution_global_frames(std:
 
 auto gluten::audio_subsystem::generate_sample_resolution_waveform(std::shared_ptr<const std::vector<float>> audioData, ma_uint32 channels) -> concurrencpp::result<waveform>
 {
+    SET_UP_FIBER;
+
+    ENTER_FIBER;
+
     ZoneScoped;
 
     if (!audioData || audioData->empty())
@@ -557,13 +609,17 @@ auto gluten::audio_subsystem::generate_sample_resolution_waveform(std::shared_pt
         }
     }
 
-    ebur128_state* eburState = ebur128_init(channels, ma_standard_sample_rate_48000, EBUR128_MODE_I | EBUR128_MODE_LRA);
-    
-    ebur128_add_frames_float(eburState, audioData->data(), frameCount);
-    ebur128_loudness_global(eburState, &result.lufs.integrated);
-    ebur128_loudness_range(eburState, &result.lufs.range);
+    {
+        ZoneScopedN("Calculate LUFS");
 
-    ebur128_destroy(&eburState);
+        ebur128_state* eburState = ebur128_init(channels, ma_standard_sample_rate_48000, EBUR128_MODE_I | EBUR128_MODE_LRA | EBUR128_MODE_HISTOGRAM);
+    
+        ebur128_add_frames_float(eburState, audioData->data(), frameCount);
+        ebur128_loudness_global(eburState, &result.lufs.integrated);
+        ebur128_loudness_range(eburState, &result.lufs.range);
+
+        ebur128_destroy(&eburState);
+    }
 
     co_return result;
 }

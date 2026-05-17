@@ -10,7 +10,7 @@ namespace gluten::theme::things
 
     static ImVec4 blue   = hex_to_imgui_imvec4(0x2e80f2);
     static ImVec4 pink   = hex_to_imgui_imvec4(0xff82b2);
-    static ImVec4 green  = hex_to_imgui_imvec4(0x3eb4bf);
+    static ImVec4 green  = hex_to_imgui_imvec4(0x47e83e);
     static ImVec4 yellow = hex_to_imgui_imvec4(0xe5b567);
     static ImVec4 orange = hex_to_imgui_imvec4(0xe87d3e);
     static ImVec4 red    = hex_to_imgui_imvec4(0xe83e3e);
@@ -97,6 +97,7 @@ namespace gluten::theme::things
         gluten::theme::supportError = red;
         gluten::theme::supportSuccess = green;
         gluten::theme::supportWarning = yellow;
+        gluten::theme::supportInfo    = color_with_multiplied_value(color_with_multiplied_saturation(blue, 0.5f), 0.75f);
 
         gluten::theme::interactive = blue;
         gluten::theme::interactiveHover  = create_hover_color(blue, darkMode);
