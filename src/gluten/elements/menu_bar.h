@@ -10,7 +10,7 @@ namespace gluten
         menu_bar();
         ~menu_bar();
 
-        virtual bool render_element(const ImRect& elementBox) override;
+        virtual bool render_element(const element_render_info& renderInfo) override;
         void end_menu_bar();
 
     private:

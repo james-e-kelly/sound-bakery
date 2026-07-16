@@ -11,6 +11,6 @@ namespace gluten
         toolbar(const layout_type& type);
 
     protected:
-        auto render_element(const ImRect& elementBox) -> bool override;
+        auto render_element(const element_render_info& renderInfo) -> bool override;
     };
 }  // namespace gluten

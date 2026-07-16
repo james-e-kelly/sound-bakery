@@ -4,6 +4,8 @@
 
 struct GLFWwindow;
 
+typedef void (*GLFWglproc)(void);
+
 namespace gluten
 {
     class renderer_subsystem : public subsystem
@@ -13,13 +15,15 @@ namespace gluten
 
     public:
         /** AppSubsystem Implementation */
-
-        virtual int pre_init(int ArgC, char* ArgV[]) override;
+        virtual int pre_init(const boost::program_options::variables_map& cliVariables) override;
         virtual int init() override;
         virtual void pre_tick(double deltaTime) override;
         virtual void tick(double deltaTime) override;
         virtual void tick_rendering(double deltaTime) override;
         virtual void exit() override;
+
+        static auto glfw_get_proc_address(const char* procName) -> GLFWglproc;
+        static auto glfw_get_proc_address_with_context(void* context, const char* procName) -> GLFWglproc;
 
         void set_window_title(const std::string& title);
 
@@ -29,6 +33,11 @@ namespace gluten
 
         bool is_minimised() const;
         bool is_maximized() const;
+
+        auto get_glfw_window() const -> GLFWwindow*
+        {
+            return m_window.m_window;
+        }
 
         int m_startWindowWidth = 1920;
         int m_startWindowHeight = 1080;

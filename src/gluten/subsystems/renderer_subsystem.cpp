@@ -2,8 +2,8 @@
 
 #include "app/app.h"
 #include "gluten/subsystems/widget_subsystem.h"
-#include "gluten/theme/carbon_theme_g100.h"
-#include "gluten/theme/theme.h"
+#include "gluten/theme/things/things.h"
+#include "gluten/theme/carbon/carbon_theme_g100.h"
 #include "gluten/widgets/root_widget.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -133,7 +133,7 @@ renderer_subsystem::window_guard::~window_guard()
     }
 }
 
-int renderer_subsystem::pre_init(int ArgC, char* ArgV[]) { return 0; }
+int renderer_subsystem::pre_init(const boost::program_options::variables_map& cliVariables) { return 0; }
 
 void renderer_subsystem::set_default_window_hints()
 {
@@ -147,7 +147,7 @@ void renderer_subsystem::set_default_window_hints()
 #else
     // GL 3.0 + GLSL 130
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
     // glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+
     // only glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // 3.0+ only
 #endif
@@ -182,8 +182,11 @@ int renderer_subsystem::init_imgui()
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;    // Enable Multi-Viewport / Platform
     io.IniFilename = nullptr;
 
-    theme::carbon_g100::apply_styles();
-    theme::carbon_g100::apply_colours();
+    //theme::carbon_g100::apply_colours();
+    theme::things::apply_colours(theme::things::darkModeBackgroundColor, true);
+
+    theme::apply_styles();
+    theme::apply_colours();
 
     return 0;
 }
@@ -240,23 +243,37 @@ void renderer_subsystem::tick_rendering(double deltaTime)
 {
     ZoneScoped;
 
-    static ImVec4 clear_color = gluten::theme::carbon_g100::background;
+    static ImVec4 clear_color = gluten::theme::background;
 
-    // Rendering
-    ImGui::Render();
-    int display_w, display_h;
-    glfwGetFramebufferSize(m_window, &display_w, &display_h);
-    glViewport(0, 0, display_w, display_h);
-    glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w,
-                 clear_color.w);
-    glClear(GL_COLOR_BUFFER_BIT);
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    {
+        ZoneScopedN("imgui");
+        ImGui::Render();
+    }
 
-    ImGui::UpdatePlatformWindows();
-    ImGui::RenderPlatformWindowsDefault();
-    glfwMakeContextCurrent(m_window);
+    {
+        ZoneScopedN("glfw");
+        int display_w, display_h;
+        glfwGetFramebufferSize(m_window, &display_w, &display_h);
+        glViewport(0, 0, display_w, display_h);
+        glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w,
+                     clear_color.w);
+        glClear(GL_COLOR_BUFFER_BIT);
+    }
 
-    glfwSwapBuffers(m_window);
+
+    {
+        ZoneScopedN("imgui_draw");
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    }
+
+    {
+        ZoneScopedN("final");
+        ImGui::UpdatePlatformWindows();
+        ImGui::RenderPlatformWindowsDefault();
+        glfwMakeContextCurrent(m_window);
+
+        glfwSwapBuffers(m_window);
+    }
 }
 
 void renderer_subsystem::exit()
@@ -271,6 +288,17 @@ void renderer_subsystem::exit()
     ImGui::DestroyContext();
 
     glfwTerminate();
+}
+
+auto gluten::renderer_subsystem::glfw_get_proc_address(const char* procName) -> GLFWglproc
+{
+    return glfwGetProcAddress(procName);
+}
+
+auto gluten::renderer_subsystem::glfw_get_proc_address_with_context(void* context, const char* procName) -> GLFWglproc
+{
+    (void)context;
+    return glfw_get_proc_address(procName);
 }
 
 void renderer_subsystem::set_window_title(const std::string& title) { m_window.set_title(title); }

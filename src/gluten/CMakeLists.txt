@@ -17,6 +17,7 @@ set(GLUTEN_SOURCES
   app_entry.cpp 
   app/app.cpp
   data/data_source.cpp
+  data/data_cache.cpp
   elements/element.cpp
   elements/button.cpp
   elements/image_button.cpp
@@ -25,21 +26,29 @@ set(GLUTEN_SOURCES
   elements/slider.cpp
   elements/menu_bar.cpp
   elements/toolbar.cpp
+  elements/icon_button.cpp
+  elements/collapsing_header.cpp
+  elements/loading_spinner.cpp
   elements/layouts/layout.cpp
   managers/manager.cpp
+  subsystems/audio_subsystem.cpp
   subsystems/renderer_subsystem.cpp
   subsystems/widget_subsystem.cpp
+  theme/theme.cpp
   utils/imgui_util_functions.cpp
   theme/window_images.embed
   theme/walnut_icon.embed
   widgets/widget.cpp
   widgets/root_widget.cpp
+  widgets/popup_widget.cpp
+  widgets/window_widget.cpp
 )
 
 set(GLUTEN_HEADERS
   app/app.h
   data/data_source.h
   data/data_controller.h
+  data/data_cache.h
   elements/element.h
   elements/button.h
   elements/image_button.h
@@ -48,17 +57,25 @@ set(GLUTEN_HEADERS
   elements/slider.h
   elements/menu_bar.h
   elements/toolbar.h
+  elements/icon_button.h
+  elements/collapsing_header.h
+  elements/loading_spinner.h
   elements/layouts/layout.h
   managers/manager.h
+  subsystems/audio_subsystem.h
   subsystems/renderer_subsystem.h
   subsystems/widget_subsystem.h
   theme/theme.h
-  theme/carbon_colors.h
-  theme/carbon_theme_g100.h
+  theme/carbon/carbon_colors.h
+  theme/carbon/carbon_theme_g100.h
+  theme/things/things.h
   utils/imgui_util_functions.h
   utils/imgui_util_structures.h
+  utils/boost_serialization_extensions.h
   widgets/widget.h
   widgets/root_widget.h
+  widgets/popup_widget.h
+  widgets/window_widget.h
 )
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Source Files" FILES ${GLUTEN_SOURCES})
@@ -110,7 +127,6 @@ add_library(bytesize INTERFACE)
 target_include_directories(bytesize INTERFACE ${bytesizelib_SOURCE_DIR})
 
 include(build_nfd)
-include(build_imgui)
 
 message(STATUS "Fetching audio fonts")
 FetchContent_MakeAvailable(fonts)
@@ -121,13 +137,33 @@ FetchContent_MakeAvailable(fmt)
 message(STATUS "Fetching platform folders")
 FetchContent_MakeAvailable(platform-folders)
 
+include(build_imgui)
+
+CPMAddPackage("gh:nemtrif/utfcpp@4.0.6")
+
+CPMAddPackage(NAME sodium-cmake
+  GITHUB_REPOSITORY robinlinden/libsodium-cmake
+  GIT_TAG master
+  OPTIONS "SODIUM_DISABLE_TESTS ON"
+)
+
+CPMAddPackage(NAME libebur128
+  GITHUB_REPOSITORY jiixyj/libebur128
+  GIT_TAG master
+  OPTIONS "ENABLE_TESTS OFF" "BUILD_SHARED_LIBS OFF"
+)
+
 target_include_directories(gluten PUBLIC
   ${fonts_SOURCE_DIR}
+  ${libebur128_SOURCE_DIR}
 )
 
 target_link_libraries(gluten
     PUBLIC
+    SoundBakery::SoundBakery_Static
+    SoundBakery::Core
     Boost::serialization
+    Boost::program_options
     concurrencpp::concurrencpp 
     SoundBakery::Delegates 
     SoundBakery::Fonts
@@ -141,6 +177,9 @@ target_link_libraries(gluten
     Tracy::TracyClient
     RTTR::Core_Lib
     sago::platform_folders
+    utf8cpp
+    sodium
+    ebur128
 )
 
 target_compile_options(gluten PRIVATE ${PROJECT_WARNING_FLAGS})

@@ -1,6 +1,7 @@
 #include "button.h"
 
 #include "gluten/theme/theme.h"
+#include "gluten/utils/imgui_util_structures.h"
 #include "imgui_internal.h"
 
 gluten::button::button(const char* name, bool invisible, const anchor_preset& anchorPreset)
@@ -8,9 +9,14 @@ gluten::button::button(const char* name, bool invisible, const anchor_preset& an
 {
 }
 
-bool gluten::button::render_element(const ImRect& elementRect)
+bool gluten::button::render_element(const element_render_info& renderInfo)
 {
-    const ImVec2 size = elementRect.GetSize();
+    gluten::imgui::scoped_color_stack buttonColors(
+        ImGuiCol_Button, m_activeColor.has_value() && m_active ? m_activeColor.value() : ImGui::GetColorU32(ImGuiCol_Button),
+        ImGuiCol_ButtonActive, m_activeColor.has_value() && m_active ? m_activeColor.value() : ImGui::GetColorU32(ImGuiCol_Button),
+        ImGuiCol_ButtonHovered, m_hoverColor.has_value() ? m_hoverColor.value() : ImGui::GetColorU32(ImGuiCol_ButtonHovered));
+
+    const ImVec2 size = renderInfo.elementBox.GetSize();
 
     if (size.x < 0.1f || size.y < 0.1f)
     {
@@ -22,15 +28,21 @@ bool gluten::button::render_element(const ImRect& elementRect)
         ImGui::SetNextItemAllowOverlap();
     }
 
-    const bool activated = m_invisible ? ImGui::InvisibleButton(m_name, elementRect.GetSize())
-                                       : ImGui::Button(m_name, elementRect.GetSize());
+    const bool activated = m_invisible ? ImGui::InvisibleButton(m_name, renderInfo.elementBox.GetSize())
+                                       : ImGui::Button(m_name, renderInfo.elementBox.GetSize());
 
     return activated;
 }
 
-auto gluten::button::get_element_content_size() -> ImVec2 const
+auto gluten::button::get_element_content_size(const ImVec2& parentSize) -> ImVec2 const
 {
-    const ImVec2 textSize = ImGui::CalcTextSize(m_name);
+    const ImVec2 textSize = ImGui::CalcTextSize(m_name, nullptr, true);
     const ImVec2 padding  = ImGui::GetStyle().FramePadding;
-    return ImVec2(textSize.x + padding.x * 2, textSize.y + padding.y * 2);
+
+    if (textSize.x > 0.0f)
+    {
+        return ImVec2(textSize.x + padding.x * 2, textSize.y + padding.y * 2);
+    }
+
+    return m_minSize;
 }

@@ -1,6 +1,7 @@
 #include "root_widget.h"
 
 #include "gluten/utils/imgui_util_structures.h"
+#include "gluten/widgets/profiler_widget.h"
 #include "IconsFontAwesome6.h"
 #include "IconsFontaudio.h"
 #include "IconsLucide.h"
@@ -10,7 +11,6 @@
 #include "managers/project_manager.h"
 #include "sound_bakery/editor/project/project.h"
 #include "widgets/audio_meter_widget.h"
-#include "widgets/profiler_widget.h"
 #include "widgets/details_widget.h"
 #include "widgets/play_controls_widget.h"
 #include "widgets/project_explorer_widget.h"

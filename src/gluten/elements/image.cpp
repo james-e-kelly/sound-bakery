@@ -12,8 +12,13 @@
 
 namespace gluten
 {
-
     void image_destroyer::operator()(unsigned char* data) { stbi_image_free(data); }
+
+    image::image(uint32_t imageTexture, int width, int height)
+        : m_openGlId(imageTexture), m_width(width), m_height(height), m_ownsTexture(false)
+    {
+
+    }
 
     image::image(const cmrc::embedded_filesystem& filesystem, const std::string& filePath)
     {
@@ -35,31 +40,32 @@ namespace gluten
 
     image::~image() { release(); }
 
-    bool image::render_element(const ImRect& elementRect)
+    bool gluten::image::render_element(const element_render_info& renderInfo)
     {
         if (m_openGlId != 0 && m_width > 0 && m_height > 0)
         {
-            if (ImDrawList* const drawList = ImGui::GetForegroundDrawList())
+            if (ImDrawList* const drawList = ImGui::GetWindowDrawList())
             {
-                const ImVec2 elementRectSize = elementRect.GetSize();
+                const ImVec2 elementRectSize = renderInfo.elementBox.GetSize();
+                const ImVec2 imageSize       = get_element_content_size(renderInfo.elementBox.GetSize());
+                
+                const float newStartX = renderInfo.elementBox.Min.x + (elementRectSize.x / 2) - (imageSize.x / 2);
+                const float newStartY = renderInfo.elementBox.Min.y + (elementRectSize.y / 2) - (imageSize.y / 2);
 
-                const float imageWidthRatio  = std::clamp(elementRectSize.x, m_minSize.x, m_maxSize.x) / m_width;
-                const float imageHeightRatio = std::clamp(elementRectSize.y, m_minSize.y, m_maxSize.y) / m_height;
-                const float lengthWithLeastAmountOfSpace = std::min(imageWidthRatio, imageHeightRatio);
-
-                const float newImageWidth  = m_width * lengthWithLeastAmountOfSpace;
-                const float newImageHeight = m_height * lengthWithLeastAmountOfSpace;
-
-                const float widthMovementAfterResize  = newImageWidth - m_width;
-                const float heightMovementAfterResize = newImageHeight - m_height;
-
-                const float newStartX = elementRect.Min.x + (elementRectSize.x / 2) - (newImageWidth / 2);
-                const float newStartY = elementRect.Min.y + (elementRectSize.y / 2) - (newImageHeight / 2);
-
-                drawList->AddImage((ImTextureID)m_openGlId, ImVec2(newStartX, newStartY),
-                                   ImVec2(newStartX + newImageWidth, newStartY + newImageHeight));
-
-                // ImGui::DebugDrawItemRect(gluten::theme::invalidPrefab);
+                switch (m_render)
+                {
+                    case gluten::image_render::square:
+                        drawList->AddImage((ImTextureID)m_openGlId, ImVec2(newStartX, newStartY),
+                                           ImVec2(newStartX + imageSize.x, newStartY + imageSize.y));
+                        break;
+                    case gluten::image_render::circular:
+                        drawList->AddImageRounded((ImTextureID)m_openGlId, ImVec2(newStartX, newStartY),
+                                                  ImVec2(newStartX + imageSize.x, newStartY + imageSize.y),
+                                                  ImVec2(0, 0), ImVec2(1, 1), IM_COL32_WHITE, imageSize.y * 0.5f);
+                        break;
+                    default:
+                        break;
+                }
 
                 return true;
             }
@@ -67,6 +73,25 @@ namespace gluten
 
         return false;
     }
+
+    auto image::get_element_content_size(const ImVec2& parentSize) -> ImVec2 const
+    {
+        if (parentSize.x <= 0.0 && parentSize.y <= 0.0f)
+        {
+            return ImVec2(m_width, m_height);
+        }
+
+        const float imageWidthRatio              = std::clamp(parentSize.x, m_minSize.x, m_maxSize.x) / m_width;
+        const float imageHeightRatio             = std::clamp(parentSize.y, m_minSize.y, m_maxSize.y) / m_height;
+        const float lengthWithLeastAmountOfSpace = parentSize.x <= 0.0f ? imageHeightRatio : parentSize.y <= 0.0f ? imageWidthRatio : std::min(imageWidthRatio, imageHeightRatio);
+
+        const float newImageWidth  = m_width * lengthWithLeastAmountOfSpace;
+        const float newImageHeight = m_height * lengthWithLeastAmountOfSpace;
+
+        return ImVec2(newImageWidth, newImageHeight);
+    }
+
+    auto image::set_render_type(image_render render) -> void { m_render = render; }
 
     auto image::load_image_data(unsigned char* data, int dataLength, int& width, int& height) -> data_ptr
     {
@@ -100,7 +125,7 @@ namespace gluten
 
     void image::release()
     {
-        if (m_openGlId != 0)
+        if (m_ownsTexture && m_openGlId != 0)
         {
             glDeleteTextures(1, &m_openGlId);
         }

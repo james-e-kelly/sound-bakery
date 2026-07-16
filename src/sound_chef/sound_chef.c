@@ -217,6 +217,11 @@ sbk_result sc_system_create(sc_system** outSystem)
         *outSystem = (sc_system*)ma_malloc(sizeof(sc_system), NULL);
 
         result = *outSystem ? SBK_SUCCESS : SBK_ERR_OUT_OF_MEMORY;
+
+        if (*outSystem)
+        {
+            SC_ZERO_OBJECT(*outSystem);
+        }
     }
 
     DEBUG_ASSERT(result == SBK_SUCCESS);
@@ -464,8 +469,7 @@ sbk_result sc_system_create_sound_memory(
                                           &(*sound)->sound);
 }
 
-sbk_result sc_system_play_sound(
-    sc_system* system, sc_sound* sound, sc_sound_instance** instance, sc_node_group* parent, sc_bool paused)
+sbk_result sc_system_play_sound(sc_system* system, sc_sound* sound, sc_sound_instance** instance, sc_node_group* parent, sc_bool paused)
 {
     SC_CHECK_ARG(system != NULL);
     SC_CHECK_ARG(sound != NULL);
@@ -508,8 +512,7 @@ sbk_result sc_system_play_sound(
     }
     else if (system->masterNodeGroup != NULL)
     {
-        ma_result attachResult =
-            ma_node_attach_output_bus(*instance, 0, system->masterNodeGroup->tail->state->userData, 0);
+        ma_result attachResult = ma_node_attach_output_bus(*instance, 0, system->masterNodeGroup->tail->state->userData, 0);
         SC_CHECK_RESULT(attachResult);
     }
 
@@ -593,6 +596,16 @@ sbk_result sc_system_create_dsp(sc_system* system, const sc_dsp_config* config, 
 
 #pragma region Sound
 
+sbk_result sc_sound_get_length(sc_sound* sound, float* lengthInSeconds)
+{
+    SC_CHECK_ARG(sound != NULL);
+    SC_CHECK_ARG(lengthInSeconds != NULL);
+
+    ma_sound_get_length_in_seconds(&sound->sound, lengthInSeconds);
+
+    return SBK_SUCCESS;
+}
+
 sbk_result sc_sound_release(sc_sound* sound)
 {
     SC_CHECK_ARG(sound != NULL);
@@ -615,6 +628,113 @@ sbk_result sc_sound_instance_is_playing(sc_sound_instance* instance, sc_bool* is
     SC_CHECK_ARG(isPlaying != NULL);
 
     *isPlaying = ma_sound_is_playing(&instance->sound);
+
+    return SBK_SUCCESS;
+}
+
+sbk_result sc_sound_instance_start(sc_sound_instance* instance)
+{
+    SC_CHECK_ARG(instance != NULL);
+
+    ma_sound_start(&instance->sound);
+
+    return SBK_SUCCESS;
+}
+
+sbk_result sc_sound_instance_pause(sc_sound_instance* instance)
+{
+    SC_CHECK_ARG(instance != NULL);
+
+    ma_sound_stop(&instance->sound);
+
+    return SBK_SUCCESS;
+}
+
+sbk_result sc_sound_instance_get_cursor_in_seconds(sc_sound_instance* instance, float* seconds)
+{
+    SC_CHECK_ARG(instance != NULL);
+    SC_CHECK_ARG(seconds != NULL);
+
+    ma_sound_get_cursor_in_seconds(&instance->sound, seconds);
+
+    return SBK_SUCCESS;
+}
+
+sbk_result sc_sound_instance_set_cursor_in_seconds(sc_sound_instance* instance, float seconds)
+{
+    SC_CHECK_ARG(instance != NULL);
+    SC_CHECK_ARG(seconds >= 0.0f);
+
+    ma_uint64 lengthInPCMFrames = 0;
+    float lengthInSeconds       = 0.0f;
+
+    ma_sound_get_length_in_pcm_frames(&instance->sound, &lengthInPCMFrames);
+    ma_sound_get_length_in_seconds(&instance->sound, &lengthInSeconds);
+
+    const float percentage               = seconds / lengthInSeconds;
+    const ma_uint32 frameIndexForSeconds = lengthInPCMFrames * percentage;
+
+    return ma_sound_seek_to_pcm_frame(&instance->sound, frameIndexForSeconds);
+}
+
+sbk_result sc_sound_instance_get_loop_position_in_seconds(sc_sound_instance* instance, float* seconds)
+{
+    SC_CHECK_ARG(instance != NULL);
+    SC_CHECK_ARG(seconds != NULL);
+
+    ma_data_source* const dataSource = ma_sound_get_data_source(&instance->sound);
+    if (dataSource)
+    {
+        ma_uint64 loopPointInPCMFrames = 0;
+        ma_uint32 sampleRate           = 0;
+
+        SC_CHECK_RESULT(ma_data_source_get_data_format(dataSource, NULL, NULL, &sampleRate, NULL, 0));
+        ma_data_source_get_loop_point_in_pcm_frames(dataSource, NULL, &loopPointInPCMFrames);
+
+        *seconds = (float)loopPointInPCMFrames / (float)sampleRate;
+    }
+
+    return SBK_SUCCESS;
+}
+
+sbk_result sc_sound_instance_set_loop_position_in_seconds(sc_sound_instance* instance, float loopStartSeconds, float loopEndSeconds)
+{
+    SC_CHECK_ARG(instance != NULL);
+    SC_CHECK_ARG(loopStartSeconds >= 0.0f);
+    SC_CHECK_ARG(loopEndSeconds >= 0.0f);
+
+    ma_data_source* const dataSource =
+        ma_sound_get_data_source(&instance->sound);
+    if (dataSource)
+    {
+        ma_uint32 sampleRate           = 0;
+
+        SC_CHECK_RESULT(ma_data_source_get_data_format(dataSource, NULL, NULL, &sampleRate, NULL, 0));
+
+        const ma_uint64 loopStartInPCMFrames = loopStartSeconds * sampleRate;
+        const ma_uint64 loopEndInPCMFrames = loopEndSeconds * sampleRate;
+
+        SC_CHECK_RESULT(ma_data_source_set_loop_point_in_pcm_frames(dataSource, loopStartInPCMFrames, loopEndInPCMFrames));
+    }
+
+    return SBK_SUCCESS;
+}
+
+sbk_result sc_sound_instance_get_is_looping(sc_sound_instance* instance, sc_bool* looping)
+{
+    SC_CHECK_ARG(instance != NULL);
+    SC_CHECK_ARG(looping != NULL);
+
+    *looping = ma_sound_is_looping(&instance->sound);
+
+    return SBK_SUCCESS;
+}
+
+sbk_result sc_sound_instance_set_looping(sc_sound_instance* instance, sc_bool looping)
+{
+    SC_CHECK_ARG(instance != NULL);
+
+    ma_sound_set_looping(&instance->sound, looping);
 
     return SBK_SUCCESS;
 }

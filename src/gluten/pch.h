@@ -1,8 +1,13 @@
 #pragma once
 
+#define IMSPINNER_DEMO
+
+#include "utils/boost_serialization_extensions.h"
+
 #include <rttr/type>
 #include "Delegates.h"
 #include "imgui.h"
+#include "imspinner.h"
 #include "tracy/Tracy.hpp"
 
 #include <fmt/core.h>
@@ -33,6 +38,7 @@ namespace gluten
         regular_audio_icons,
         regular_lucide_icons,
         light,
-        title
+        title,
+        title_lucide_icons
     };
 }

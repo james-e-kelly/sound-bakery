@@ -1,6 +1,6 @@
 #include "layout.h"
 
-#include "gluten/theme/carbon_theme_g100.h"
+#include "gluten/theme/theme.h"
 
 static ImVec2 operator+(const ImVec2& lhs, const ImVec2& rhs) { return ImVec2(lhs.x + rhs.x, lhs.y + rhs.y); }
 static ImVec2 operator-(const ImVec2& lhs, const ImVec2& rhs) { return ImVec2(lhs.x - rhs.x, lhs.y - rhs.y); }
@@ -19,9 +19,17 @@ gluten::layout::layout(const anchor_preset& anchorPreset)
 {
 }
 
-void gluten::layout::set_layout_type(const layout_type& type) { m_layoutType = type; }
+gluten::layout& gluten::layout::set_layout_type(const layout_type& type) 
+{ 
+    m_layoutType = type; 
+    return *this;
+}
 
-void gluten::layout::set_layout_spacing(float spacing) { m_spacing = spacing; }
+gluten::layout& gluten::layout::set_layout_spacing(float spacing) 
+{ 
+    m_spacing = spacing; 
+    return *this;
+}
 
 void gluten::layout::render_spacer_pixels(float horizonalPixels, float verticalPixels)
 {
@@ -40,6 +48,21 @@ bool gluten::layout::render_layout_element_full(element* element)
     return render_layout_element_internal(elementBox, element, elementBox.GetSize().x, elementBox.GetSize().y);
 }
 
+bool gluten::layout::render_layout_element_remaining(element* element) 
+{ 
+    if (m_currentLayoutPos.has_value())
+    {
+        const ImRect elementBox = get_element_rect(); 
+        const ImVec2 remainingSize = get_remaining_layout_size();
+        return render_layout_element_internal(elementBox, element, remainingSize.x, remainingSize.y);
+    }
+    else
+    {
+        // Don't render if there is nothing "remaining"
+        return false;
+    }
+}
+
 bool gluten::layout::render_layout_element_pixels(element* element, float horizontalPixels, float verticalPixels)
 {
     const ImRect elementBox = get_element_rect();
@@ -51,7 +74,7 @@ bool gluten::layout::render_layout_element_pixels_horizontal(element* element, f
 {
     const ImRect elementBox = get_element_rect();
 
-    return render_layout_element_internal(elementBox, element, horizontalPixels, elementBox.GetSize().y);
+    return render_layout_element_internal(elementBox, element, horizontalPixels, elementBox.GetHeight());
 }
 
 bool gluten::layout::render_layout_element_pixels_vertical(element* element, float verticalPixels)
@@ -85,14 +108,23 @@ bool gluten::layout::render_layout_element_percent_vertical(element* element, fl
                                           elementBox.GetSize().y * verticalPercent);
 }
 
+auto gluten::layout::render_vertical_spacer(float verticalPixels) -> void
+{
+    render_layout_element_pixels(nullptr, 0.0f, verticalPixels);
+}
+
 bool gluten::layout::render_layout_element_internal(const ImRect& thisBox,
                                                     element* element,
                                                     float horizontalPixels,
                                                     float verticalPixels)
 {
+    ZoneScoped;
+
     bool activated = false;
 
-    const ImVec2 sizeGivenToElement = ImVec2(horizontalPixels, verticalPixels);
+    const ImVec2 requestedElementSize = element ? element->get_element_content_size(ImVec2(horizontalPixels, verticalPixels)) : ImVec2();
+
+    const ImVec2 sizeGivenToElement = ImVec2(std::max<float>(horizontalPixels, requestedElementSize.x), std::max<float>(verticalPixels, requestedElementSize.y));
 
     const bool firstLayoutRender = m_firstLayout;
     m_firstLayout                = false;
@@ -104,18 +136,18 @@ bool gluten::layout::render_layout_element_internal(const ImRect& thisBox,
 
     ImVec2 currentLayoutPos = m_currentLayoutPos.value();
 
-    if (firstLayoutRender)
+    switch (m_layoutType)
     {
-        // "backwards" layouts still render left to right
-        // so start one element over
-        if (m_layoutType == layout_type::right_to_left)
-        {
+        case gluten::layout::layout_type::right_to_left:
             currentLayoutPos.x -= sizeGivenToElement.x;
-        }
-        else if (m_layoutType == layout_type::bottom_to_top)
-        {
+            break;
+        case gluten::layout::layout_type::bottom_to_top:
             currentLayoutPos.y -= sizeGivenToElement.y;
-        }
+            break;
+        case gluten::layout::layout_type::left_to_right:
+        case gluten::layout::layout_type::top_to_bottom:
+        default:
+            break;
     }
 
     // If rendering would go outside the element box
@@ -137,14 +169,19 @@ bool gluten::layout::render_layout_element_internal(const ImRect& thisBox,
 
     if (element)
     {
-        if (s_debug)
+        if (has_element_scale())
         {
-            ImDrawList* const foregroundDrawList = ImGui::GetForegroundDrawList();
-            foregroundDrawList->AddRect(currentLayoutPos, currentLayoutPos + sizeGivenToElement,
-                                        ImGui::ColorConvertFloat4ToU32(gluten::theme::purple50));
+            element->set_element_content_scale(element->get_element_scale() * get_element_scale());
         }
 
         activated = element->render({currentLayoutPos, currentLayoutPos + sizeGivenToElement});
+
+        /*if (s_debug)
+        {
+            ImDrawList* const drawList = ImGui::GetWindowDrawList();
+            drawList->AddRect(currentLayoutPos, currentLayoutPos + sizeGivenToElement,
+                                        ImGui::ColorConvertFloat4ToU32(gluten::theme::supportWarning));
+        }*/
     }
 
     switch (m_layoutType)
@@ -152,14 +189,13 @@ bool gluten::layout::render_layout_element_internal(const ImRect& thisBox,
         case gluten::layout::layout_type::left_to_right:
             currentLayoutPos.x += sizeGivenToElement.x + m_spacing;
             break;
-        case gluten::layout::layout_type::right_to_left:
-            currentLayoutPos.x -= sizeGivenToElement.x + m_spacing;
-            break;
         case gluten::layout::layout_type::top_to_bottom:
             currentLayoutPos.y += sizeGivenToElement.y + m_spacing;
             break;
+        case gluten::layout::layout_type::right_to_left:
+            currentLayoutPos.x -= m_spacing;
+            break;
         case gluten::layout::layout_type::bottom_to_top:
-            currentLayoutPos.y -= sizeGivenToElement.y + m_spacing;
             break;
         default:
             break;
@@ -172,10 +208,10 @@ bool gluten::layout::render_layout_element_internal(const ImRect& thisBox,
 
 void gluten::layout::reset_layout(const ImRect& parent)
 {
-    const ImRect elementBox =
+    const std::pair<ImRect, ImRect> elementBox =
         get_element_box_from_parent(parent, m_minSize, get_element_content_size(), m_alignment, m_padding, m_anchor);
-    m_currentRect = elementBox;
-    setup_layout_begin(elementBox);
+    m_currentRect = elementBox.first;
+    setup_layout_begin(elementBox.first);
     m_firstLayout = true;
 }
 
@@ -191,6 +227,44 @@ ImVec2 gluten::layout::get_current_layout_pos_local() const
 {
     ImVec2 layoutPos = get_current_layout_pos();
     return layoutPos - ImGui::GetWindowPos();
+}
+
+
+auto gluten::layout::get_remaining_layout_size() const -> ImVec2 
+{
+    ImVec2 sizeRemain;
+
+    if (m_currentLayoutPos.has_value())
+    {
+        const ImRect elementBox = get_element_rect();
+        const ImVec2 currentLayoutPos = m_currentLayoutPos.value();
+
+
+        switch (m_layoutType)
+        {
+            case gluten::layout::layout_type::left_to_right:
+            case gluten::layout::layout_type::top_to_bottom:
+                sizeRemain = ImVec2(elementBox.Max.x - currentLayoutPos.x, elementBox.Max.y - currentLayoutPos.y);
+                break;
+            case gluten::layout::layout_type::bottom_to_top:
+                sizeRemain = ImVec2(elementBox.Max.x - currentLayoutPos.x, currentLayoutPos.y - elementBox.Min.y);
+                break;
+            case gluten::layout::layout_type::right_to_left:
+                sizeRemain = ImVec2(currentLayoutPos.x - elementBox.Min.x, elementBox.Max.y - currentLayoutPos.y);
+                break;
+            default:
+                break;
+        }
+    }
+    
+    return sizeRemain;
+}
+
+auto gluten::layout::pre_render_element() -> void
+{
+    m_firstLayout = true;
+    m_currentRect.reset();
+    m_currentLayoutPos.reset();
 }
 
 void gluten::layout::setup_layout_begin(const ImRect& thisBox)

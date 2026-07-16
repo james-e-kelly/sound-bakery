@@ -4,32 +4,35 @@
 
 namespace gluten
 {
+    /**
+     * @brief Which direction/technique to layout the children
+     */
+    enum class layout_type
+    {
+        left_to_right,
+        right_to_left,
+        top_to_bottom,
+        bottom_to_top
+    };
+
     class layout : public element
     {
     public:
-        /**
-         * @brief Which direction/technique to layout the children
-         */
-        enum class layout_type
-        {
-            left_to_right,
-            right_to_left,
-            top_to_bottom,
-            bottom_to_top
-        };
+        using layout_type = ::gluten::layout_type;
 
         layout() = default;
         layout(const layout_type& layoutType);
         layout(const layout_type& layoutType, const anchor_preset& anchorPreset);
         layout(const anchor_preset& anchorPreset);  //< New layout with left_to_right layout and defined anchor preset
 
-        void set_layout_type(const layout_type& type);
-        void set_layout_spacing(float spacing);
+        layout& set_layout_type(const layout_type& type);  //< Set the type of layout (direction the children are laid out in)
+        layout& set_layout_spacing(float spacing);         //< Adds a gap between child elements
 
-        void render_spacer_pixels(float horizonalPixels, float verticalPixels);
-        void render_spacer_percent(float horizontalPercent, float verticalPercent);
+        void render_spacer_pixels(float horizonalPixels, float verticalPixels);     //< Render a "blank" element with a set size in pixels
+        void render_spacer_percent(float horizontalPercent, float verticalPercent); //< Render a "blank" element with a set size as a percentage of this layout's size
 
-        bool render_layout_element_full(element* element);
+        bool render_layout_element_full(element* element);      //< Render an element and give it the size of this layout as the box to render inside
+        bool render_layout_element_remaining(element* element); //< Render an element and give it the remaining space in the layout
 
         bool render_layout_element_pixels(element* element, float horizontalPixels, float verticalPixels);
         bool render_layout_element_pixels_horizontal(element* element, float horizontalPixels);
@@ -38,6 +41,8 @@ namespace gluten
         bool render_layout_element_percent(element* element, float horizontalPercent, float verticalPercent);
         bool render_layout_element_percent_horizontal(element* element, float horizontalPercent);
         bool render_layout_element_percent_vertical(element* element, float verticalPercent);
+
+        auto render_vertical_spacer(float verticalPixels) -> void;
 
         void reset_layout(const ImRect& parent);
 
@@ -50,10 +55,19 @@ namespace gluten
 
         ImVec2 get_current_layout_pos_local() const;
 
+        auto get_remaining_layout_size() const -> ImVec2;
+
+    protected:
+        auto pre_render_element() -> void override;
+
     private:
         void setup_layout_begin(const ImRect& thisBox);
 
-        bool render_element(const ImRect& info) override { return false; }
+        bool render_element(const element_render_info& renderInfo) override 
+        {
+            ImGui::Dummy(renderInfo.elementBox.GetSize());
+            return false; 
+        }
 
         bool render_layout_element_internal(const ImRect& thisBox,
                                             element* element,

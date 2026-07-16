@@ -13,10 +13,8 @@ namespace gluten
         button() = delete;
         button(const char* name, bool invisible = false, const anchor_preset& anchorPreset = anchor_preset::left_top);
 
-        bool render_element(const ImRect& parent) override;
-
-    protected:
-        auto get_element_content_size() -> ImVec2 const override;
+        bool render_element(const element_render_info& renderInfo) override;
+        auto get_element_content_size(const ImVec2& parentSize) -> ImVec2 const override;
 
     private:
         const char* m_name     = nullptr;

@@ -1,21 +1,34 @@
 #pragma once
 
+#include "core/leak_detector.h"
+#include "core/logger.h"
+#include "boost/program_options.hpp"
+#include <boost/archive/xml_iarchive.hpp>
+#include <boost/archive/xml_oarchive.hpp>
 #include "gluten/managers/manager.h"
 #include "gluten/subsystems/subsystem.h"
 #include "concurrencpp/concurrencpp.h"
 #include "imgui.h"
 
+#include <rttr/type>
+
 namespace gluten
 {
+    static inline constexpr const char* g_serializedEntryName = "data";
+    static inline constexpr float g_baseFontSize              = 16.0f;
+    static inline constexpr float g_baseIconFontSize         = g_baseFontSize * (2.0f / 3.0f);
+
     /**
      * @brief Manages application lifetime and object owning.
      * 
      * The app class is intended to pass application behaviour to manager and subsystem classes.
      */
-    class app : public concurrencpp::runtime
+    class app : public concurrencpp::runtime, public sbk::core::logger
     {
+        LEAK_DETECTOR(app)
+
     public:
-        app()          = default;
+        app();
         virtual ~app() = default;
 
         static app* get();
@@ -24,7 +37,7 @@ namespace gluten
         void request_exit();
 
         template <class T>
-        std::shared_ptr<T> add_subsystem_class();
+        std::shared_ptr<T> add_unique_subsystem_class();
 
         template <class T>
         std::shared_ptr<T> get_subsystem_by_class();
@@ -32,8 +45,8 @@ namespace gluten
         template <class T>
         void remove_subsystem_by_class();
 
-        template <class T>
-        std::shared_ptr<T> add_manager_class();
+        template <class T, typename... Args>
+        std::shared_ptr<T> add_manager_class(Args&&... args);
 
         template <class T>
         std::shared_ptr<T> get_manager_by_class();
@@ -50,18 +63,67 @@ namespace gluten
 
         virtual auto on_file_drop(const std::vector<std::string>& paths) -> void {}
 
+        static auto open_select_folder_dialog() -> std::filesystem::path;
+        static auto open_select_file_dialog(const std::string& name, const std::string& fileExtensionNoDots) -> std::filesystem::path;
+
+        template<typename T>
+        static auto save_data_to_disk(const std::filesystem::path& file, const T& data) -> void
+        {
+            std::filesystem::create_directories(file.parent_path());
+
+            std::ofstream outputStream(file, std::ios_base::out);
+            boost::archive::xml_oarchive archive(outputStream);
+
+            archive & boost::serialization::make_nvp(g_serializedEntryName, data);
+        }
+
+        template <typename T>
+        static auto load_data_from_disk(const std::filesystem::path& file, T& data) -> void
+        {
+            std::ifstream inputStream(file, std::ios_base::in);
+            boost::archive::xml_iarchive archive(inputStream);
+
+            archive & boost::serialization::make_nvp(g_serializedEntryName, data);
+        }
+
+        auto get_tick_executor() const -> std::shared_ptr<concurrencpp::manual_executor>
+        {
+            return m_tickExecutor;
+        }
+
+        auto get_executable_location() const -> std::string
+        {
+            return m_executableLocation;
+        }
+
     protected:
+        /**
+         * @brief Runs at the earliest possible time and before the parsing of command line arguments.
+         * 
+         * Use this function to set up command line arguments. Read the parsed values in @see pre_init.
+         */
+        virtual auto cli_setup(boost::program_options::options_description& options) -> void {}
+
         /**
          * @brief Runs after subsystems are created and before any init functions are called.
          * 
          * Use this function to create the root widget, managers, more subsystems or general initialization.
          */
-        virtual void pre_init() {}
+        virtual auto pre_init(const boost::program_options::variables_map& cliVariables) -> void{}
 
         /**
          * @brief Runs after all init functions were called and before start.
          */
-        virtual void post_init() {}
+        virtual auto post_init() -> void {}
+
+        /**
+         * @brief Runs before everything has exited and when the app is about to exit.
+         * 
+         * The subsystems and managers will still be valid at this point.
+         */
+        virtual auto exit() -> void {}
+
+        virtual auto tick_implementation() -> void {}
 
     private:
         auto start() -> void;
@@ -81,26 +143,38 @@ namespace gluten
 
         std::unordered_map<fonts, ImFont*> m_fonts;
 
+        std::shared_ptr<concurrencpp::manual_executor> m_tickExecutor;
+
         bool m_hasInit          = false;
+        bool m_hasStarted       = false;
         bool m_isRequestingExit = false;
 
         double m_deltaTime = 0.0;
     };
 
     template <class T>
-    std::shared_ptr<T> app::add_subsystem_class()
+    std::shared_ptr<T> app::add_unique_subsystem_class()
     {
-        m_subsystems.push_back(std::make_shared<T>(this));
-        std::shared_ptr<subsystem> subsystemPtr = m_subsystems.back();
+        // Should only have one subsystem of each class. Therefore, return the existing
+        // one, if found
+        if (std::shared_ptr<T> foundSubsystem = get_subsystem_by_class<T>())
+        {
+            return foundSubsystem;
+        }
+
+        get_logger()->info(fmt::format("Creating a subsystem of type {}", rttr::type::get<T>().get_name().data()));
+
+        std::shared_ptr<T> subsystemPtr = std::make_shared<T>(this);
+        m_subsystems.push_back(subsystemPtr);
         assert(subsystemPtr);
 
         if (m_hasInit)
         {
-            subsystemPtr->pre_init(0, NULL);
+            subsystemPtr->pre_init({});
             subsystemPtr->init();
         }
 
-        return std::static_pointer_cast<T>(subsystemPtr);
+        return subsystemPtr;
     }
 
     template <class T>
@@ -116,8 +190,7 @@ namespace gluten
                 }
             }
         }
-        assert(false);
-        return nullptr;
+        return {};
     }
 
     template <class T>
@@ -127,6 +200,8 @@ namespace gluten
         {
             if (T* castedSubsytem = dynamic_cast<T*>(m_subsystems[index].get()))
             {
+                get_logger()->info(fmt::format("Removing a subsystem of type {}", rttr::type::get<T>().get_name().data()));
+
                 castedSubsytem->exit();
                 m_subsystems.erase(m_subsystems.begin() + index);
                 return;
@@ -134,15 +209,22 @@ namespace gluten
         }
     }
 
-    template <class T>
-    std::shared_ptr<T> app::add_manager_class()
+    template <class T, typename... Args>
+    std::shared_ptr<T> app::add_manager_class(Args&&... args)
     {
-        m_managers.push_back(std::make_shared<T>(this));
+        get_logger()->info(fmt::format("Creating a manager of type {}", rttr::type::get<T>().get_name().data()));
+
+        m_managers.push_back(std::make_shared<T>(this, std::forward<Args>(args)...));
         std::shared_ptr<manager> managerPtr = m_managers.back();
 
         if (managerPtr)
         {
             managerPtr->init(this);
+
+            if (m_hasStarted)
+            {
+                managerPtr->start();
+            }
         }
 
         return std::static_pointer_cast<T>(managerPtr);
@@ -171,6 +253,8 @@ namespace gluten
         {
             if (T* castedManager = dynamic_cast<T*>(m_managers[index].get()))
             {
+                get_logger()->info(fmt::format("Removing a manager of type {}", rttr::type::get<T>().get_name().data()));
+
                 castedManager->exit();
                 m_managers.erase(m_managers.begin() + index);
                 return;

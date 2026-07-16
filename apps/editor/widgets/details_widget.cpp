@@ -1,7 +1,7 @@
 #include "details_widget.h"
 
 #include "app/app.h"
-#include "gluten/theme/carbon_theme_g100.h"
+#include "gluten/theme/theme.h"
 #include "gluten/utils/imgui_util_functions.h"
 #include "gluten/utils/imgui_util_structures.h"
 #include "imgui.h"
@@ -16,9 +16,9 @@ void details_widget::render_implementation()
 
     const gluten::imgui::scoped_style noItemSpacing(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
     const gluten::imgui::scoped_style headerBorder(ImGuiStyleVar_FrameBorderSize, 1.0f);
-    const gluten::imgui::scoped_color borderIsLayer1(ImGuiCol_Border, gluten::theme::carbon_g100::layer01);
-    const gluten::imgui::scoped_color borderShadowIsLayer1(ImGuiCol_BorderShadow, gluten::theme::carbon_g100::layer01);
-    const gluten::imgui::scoped_color frameBackgroundIsDark(ImGuiCol_FrameBg, gluten::theme::carbon_g100::background);
+    const gluten::imgui::scoped_color borderIsLayer1(ImGuiCol_Border, gluten::theme::layer01);
+    const gluten::imgui::scoped_color borderShadowIsLayer1(ImGuiCol_BorderShadow, gluten::theme::layer01);
+    const gluten::imgui::scoped_color frameBackgroundIsDark(ImGuiCol_FrameBg, gluten::theme::background);
 
     if (ImGui::Begin(get_widget_name().data(), nullptr, ImGuiWindowFlags_AlwaysAutoResize))
     {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "gluten/pch.h"
+#include "core/leak_detector.h"
 
 /**
  * @def Macro to quickly create the basic constructors for a widget.
@@ -10,6 +11,15 @@
 public:                                                                                 \
     type(gluten::widget_subsystem* parentSubsystem) : widget(parentSubsystem, name) {}  \
     type(gluten::widget* parent) : gluten::widget(parent, name) {}
+
+/**
+ * @def Macro to quickly create the basic constructors for a widget that is a subtype of a widget.
+ */
+#define WIDGET_CONSTRUCT_PARENT(type, name, parentType)                                     \
+                                                                                            \
+public:                                                                                     \
+    type(gluten::widget_subsystem* parentSubsystem) : parentType(parentSubsystem, name) {}  \
+    type(gluten::widget* parent) : parentType(parent, name) {}
 
 namespace gluten
 {
@@ -26,6 +36,8 @@ namespace gluten
      */
     class widget : public std::enable_shared_from_this<widget>
     {
+        LEAK_DETECTOR(widget)
+
     public:
         widget() = delete;
         widget(widget_subsystem* parentSubsystem, const std::string& name);
@@ -49,9 +61,9 @@ namespace gluten
 
         auto set_tick_frequency(double tickFrequency) -> void;
 
-        template <class T>
+        template <class T, typename... Args>
             requires std::derived_from<T, widget>
-        [[nodiscard]] std::shared_ptr<T> add_child_widget(bool widgetOwns);
+        [[nodiscard]] std::shared_ptr<T> add_child_widget(bool widgetOwns, Args&&... args);
         
         auto has_started() const -> bool;
         auto is_visible() const -> bool;
@@ -108,16 +120,24 @@ namespace gluten
         bool m_wantsDestroy = false;
     };
 
-    template <class T>
+    template <class T, typename... Args>
         requires std::derived_from<T, widget>
-    [[nodiscard]] std::shared_ptr<T> widget::add_child_widget(bool widgetOwns)
+    [[nodiscard]] std::shared_ptr<T> widget::add_child_widget(bool widgetOwns, Args&&... args)
     {
-        std::shared_ptr<T> ptr = std::make_shared<T>(this);
+        std::shared_ptr<T> ptr = std::make_shared<T>(this, std::forward<Args>(args)...);
         if (widgetOwns)
         {
             m_owningChildWidgets.push_back(ptr);
         }
-        m_childWidgets.insert({rttr::type::get<T>(), ptr});
+        const rttr::type type = rttr::type::get<T>();
+        if (m_childWidgets.contains(type))
+        {
+            m_childWidgets[type] = ptr;
+        }
+        else
+        {
+            m_childWidgets.insert({rttr::type::get<T>(), ptr});
+        }
         std::shared_ptr<gluten::widget> widget = std::static_pointer_cast<gluten::widget>(ptr);
         if (m_hasStarted)
         {

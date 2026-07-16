@@ -41,12 +41,10 @@ setup_linter_targets()
 fix_msvc_linters()
 
 target_link_libraries(sound_bakery_static PUBLIC 
-  SoundBakery::Delegates 
+  SoundBakery::Core
   SoundBakery::SoundChef_Static
   RTTR::Core_Lib
   concurrencpp::concurrencpp
-  spdlog::spdlog
-  Boost::assert
   Boost::serialization
   Boost::msm
   ztd::out_ptr
@@ -57,12 +55,11 @@ target_link_libraries(sound_bakery_static PUBLIC
 )
 
 target_link_libraries(sound_bakery_shared PUBLIC 
-  SoundBakery::Delegates 
+  SoundBakery::Core
   SoundBakery::SoundChef_Shared
   RTTR::Core_Lib
   concurrencpp::concurrencpp
   spdlog::spdlog
-  Boost::assert
   Boost::serialization
   Boost::msm
   ztd::out_ptr

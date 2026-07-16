@@ -6,6 +6,8 @@
     #define MA_DLL
 #endif
 
+#define MA_COINIT_VALUE 0x2 //< COINIT_APARTMENTTHREADED
+
 #include "miniaudio.h"
 #include "stb_ds.h"
 #include "clap/clap.h"
@@ -64,28 +66,30 @@ extern "C"
 #include "sound_chef/sound_chef_version.h"
 
 typedef ma_bool32 sc_bool;
+#define SBK_FALSE 0
+#define SBK_TRUE 1
 
 typedef enum
 {
     // < 0: miniaudio Errors
-    SBK_SUCCESS = MA_SUCCESS,
+    SBK_SUCCESS = MA_SUCCESS,       //< Success
 
     // 1-100: User Errors
     SBK_ERR_USER = 1,               //< Generic user error
     SBK_ERR_INVALID_PARAMETER,      //< Invalid parameter given to the function
 
     // 101-200: Sound Chef Errors
-    SBK_ERR_CHEF = 100,             //< Generic Sound Chef error
+    SBK_ERR_CHEF = 101,             //< Generic Sound Chef error
     SBK_ERR_CHEF_UNITIALIZED,
 
     // 201-300: Sound Bakery Errors
-    SBK_ERR_BAKERY = 200,           //< Generic Sound Bakery error
+    SBK_ERR_BAKERY = 201,           //< Generic Sound Bakery error
     SBK_ERR_BAKERY_UNINITIALIZED,   //< The system object is not created or not initialized
     SBK_ERR_BAKERY_SERIALIZATION,   //< An error happened during serialization
     SBK_ERR_BAKERY_OBJECT_NOT_FOUND,//< An object with the ID or name was not found
 
-    // 300-301: System Errors
-    SBK_ERR_SYSTEM,                 //< Generic System error
+    // 301-400: System Errors
+    SBK_ERR_SYSTEM = 301,           //< Generic System error
     SBK_ERR_OUT_OF_MEMORY,         
     SBK_ERR_INVALID_FILE,
     SBK_ERR_NULL,                   //< Found a null pointer where there shouldn't be one

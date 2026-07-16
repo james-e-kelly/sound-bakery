@@ -21,7 +21,6 @@ EmptyLineBeforeAccessModifier: Always
 PointerAlignment: Left
 ReferenceAlignment: Pointer
 BinPackParameters: false
-ColumnLimit:     120
 ConstructorInitializerAllOnOneLineOrOnePerLine: true
 DerivePointerBinding: true
 ExperimentalAutoDetectBinPacking: false
@@ -66,4 +65,5 @@ SpacesInCStyleCastParentheses: false
 SpaceAfterControlStatementKeyword: true
 SpaceBeforeAssignmentOperators: true
 ContinuationIndentWidth: 4
+ColumnLimit: 0
 ...

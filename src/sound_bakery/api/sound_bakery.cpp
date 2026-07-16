@@ -13,6 +13,37 @@ static T* convert_id_to_pointer(sbk_id id)
     return reinterpret_cast<T*>(id);
 }
 
+sbk_result sbk_log(ma_log_level level, const char* message)
+{
+    SC_CHECK_ARG(message != NULL);
+
+    if (const sbk::engine::system* const system = sbk::engine::system::get())
+    {
+        switch (level)
+        {
+            case MA_LOG_LEVEL_DEBUG:
+                system->get_logger()->log(spdlog::level::debug, message);
+                TracyMessageC(message, sizeof(message), 0xffffff);
+                break;
+            case MA_LOG_LEVEL_INFO:
+                system->get_logger()->log(spdlog::level::info, message);
+                TracyMessageC(message, sizeof(message), 0xff4500);
+                break;
+            case MA_LOG_LEVEL_WARNING:
+                system->get_logger()->log(spdlog::level::warn, message);
+                TracyMessageC(message, sizeof(message), 0xff0000);
+                break;
+            case MA_LOG_LEVEL_ERROR:
+                system->get_logger()->log(spdlog::level::err, message);
+                TracyMessageC(message, sizeof(message), 0x8b0000);
+                break;
+        }
+
+    }
+
+    return SBK_SUCCESS;
+}
+
 sbk_system_config sbk_system_config_init_default()
 {
     sbk_system_config config;

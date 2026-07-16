@@ -2,7 +2,7 @@
 
 #include "nfd.h"
 #include "app/app.h"
-#include "gluten/theme/carbon_theme_g100.h"
+#include "gluten/theme/theme.h"
 #include "gluten/elements/button.h"
 #include "gluten/elements/layouts/layout.h"
 #include "gluten/utils/imgui_util_structures.h"
@@ -33,7 +33,7 @@ void new_project_widget::render_implementation()
     ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
     ImGui::SetNextWindowSize(ImVec2(800, 250), ImGuiCond_Appearing);
 
-    gluten::imgui::scoped_color inputTextBackground(ImGuiCol_FrameBg, gluten::theme::carbon_g100::layer01);
+    gluten::imgui::scoped_color inputTextBackground(ImGuiCol_FrameBg, gluten::theme::layer01);
 
     if (ImGui::BeginPopupModal(get_widget_name().data(), nullptr, ImGuiWindowFlags_NoResize))
     {

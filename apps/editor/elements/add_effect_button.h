@@ -5,5 +5,5 @@
 class add_effect_button : public gluten::element
 {
 protected:
-    auto render_element(const ImRect& elementBox) -> bool override;
+    auto render_element(const gluten::element_render_info& renderInfo) -> bool override;
 };

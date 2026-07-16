@@ -5,18 +5,19 @@ gluten::image_button::image_button(const char* name, const void* data, std::size
 {
 }
 
-auto gluten::image_button::get_element_content_size() -> ImVec2 const { return m_image.get_element_content_size(); }
+auto gluten::image_button::get_element_content_size(const ImVec2& parentSize) -> ImVec2 const { return m_image.get_element_content_size(parentSize); }
 
-bool gluten::image_button::render_element(const ImRect& parent)
+bool gluten::image_button::render_element(const element_render_info& renderInfo)
 {
-    const bool buttonActivated = m_button.render_element(parent);
-    m_image.render_element(parent);
+    const bool buttonActivated = m_button.render_element(renderInfo);
+    m_image.render_element(renderInfo);
     return buttonActivated;
 }
 
-void gluten::image_button::set_element_max_size(const ImVec2& maxSize)
+auto gluten::image_button::set_element_max_size(const ImVec2& maxSize) -> element&
 {
     element::set_element_max_size(maxSize);
     m_button.set_element_max_size(maxSize);
     m_image.set_element_max_size(maxSize);
+    return *this;
 }

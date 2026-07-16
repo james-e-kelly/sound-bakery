@@ -5,13 +5,28 @@
 #include "IconsLucide.h"
 #include "subsystems/renderer_subsystem.h"
 #include "subsystems/widget_subsystem.h"
+#include "nfd.h"
 //#include "Fontawesome"
 
 #include <cmrc/cmrc.hpp>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 CMRC_DECLARE(sbk::fonts);
 
+namespace gluten_cli_arguments
+{
+    static constexpr const char* s_help = "help";
+    static constexpr const char* s_headless = "headless";
+    static constexpr const char* s_console = "console";
+    static constexpr const char* s_fullscreen = "fullscreen";
+}
+
 static gluten::app* s_app = nullptr;
+
+gluten::app::app() : sbk::core::logger("Gluten") {}
 
 gluten::app* gluten::app::get() { return s_app; }
 
@@ -21,19 +36,73 @@ int gluten::app::run(int argc, char** argv)
 
     m_executableLocation = std::string(argv[0]);
 
-    add_subsystem_class<renderer_subsystem>();
-    add_subsystem_class<widget_subsystem>();
+    m_tickExecutor = make_manual_executor();
 
-    pre_init();
+    boost::program_options::options_description cliDescription;
+    cliDescription.add_options()
+        (gluten_cli_arguments::s_help, "prints help information")
+        (gluten_cli_arguments::s_console, "adds a console window")
+        (gluten_cli_arguments::s_fullscreen, "maximises the window on start")
+        (gluten_cli_arguments::s_headless, "removes rendering");
+
+    cli_setup(cliDescription);
+
+    boost::program_options::variables_map cliVariables;
+    boost::program_options::store(boost::program_options::parse_command_line(argc, argv, cliDescription), cliVariables);
+    boost::program_options::notify(cliVariables);
+
+    const bool headless = cliVariables.count(gluten_cli_arguments::s_headless);
+    const bool console = headless || cliVariables.count(gluten_cli_arguments::s_console);
+    const bool gui = !headless;
+
+    const bool maximise = cliVariables.count(gluten_cli_arguments::s_fullscreen);
+
+    if (console)
+    {
+#ifdef _WIN32
+        if (!AttachConsole(ATTACH_PARENT_PROCESS))
+        {
+            AllocConsole();
+        }
+
+        FILE* fp;
+        freopen_s(&fp, "CONOUT$", "w", stdout);
+        freopen_s(&fp, "CONOUT$", "w", stderr);
+        freopen_s(&fp, "CONIN$", "r", stdin);
+
+
+#endif
+        get_logger()->info("Created Console Window");
+    }
+
+    add_console_sink();
+
+    if (gui)
+    {
+        get_logger()->info("Creating GUI...");
+        add_unique_subsystem_class<renderer_subsystem>();
+        add_unique_subsystem_class<widget_subsystem>();
+    }
+
+    if (cliVariables.count(gluten_cli_arguments::s_help))
+    {
+        cliDescription.print(std::cout);
+    }
+
+    get_logger()->info("Pre Init");
+
+    pre_init(cliVariables);
 
     // PreInit
     for (std::shared_ptr<subsystem>& subsystem : m_subsystems)
     {
-        if (int errorCode = subsystem->pre_init(argc, argv); errorCode != 0)
+        if (int errorCode = subsystem->pre_init(cliVariables); errorCode != 0)
         {
             return errorCode;
         }
     }
+
+    get_logger()->info("Init");
 
     // Init
     for (std::shared_ptr<subsystem>& subsystem : m_subsystems)
@@ -44,21 +113,42 @@ int gluten::app::run(int argc, char** argv)
         }
     }
 
-    load_fonts();
+    if (!headless)
+    {
+        load_fonts();
+    }
+
+    if (maximise)
+    {
+        if (std::shared_ptr<renderer_subsystem> rendererSubsystem = get_subsystem_by_class<renderer_subsystem>())
+        {
+            rendererSubsystem->set_maximised();
+        }
+    }
 
     m_currentTime  = std::chrono::high_resolution_clock::now();
     m_previousTime = std::chrono::high_resolution_clock::now();
 
     m_hasInit = true;
 
+    get_logger()->info("Post Init");
+
     post_init();
 
+    get_logger()->info("Start");
+
     start();
+
+    m_hasStarted = true;
 
     while (!m_isRequestingExit)
     {
         tick();
     }
+
+    get_logger()->info("Exiting...");
+
+    exit();
 
     for (auto& manager : m_managers)
     {
@@ -80,13 +170,21 @@ auto gluten::app::start() -> void
     {
         subsystem->start();
     }
+
+    for (std::shared_ptr<manager>& manager : m_managers)
+    {
+        manager->start();
+    }
     tick_end();
 }
 
 auto gluten::app::tick() -> void
 {
     tick_begin();
+    m_tickExecutor->loop(m_tickExecutor->size());
+    tick_implementation();
     tick_end(); 
+    FrameMark;
 }
 
 auto gluten::app::tick_begin() -> void
@@ -99,7 +197,7 @@ auto gluten::app::tick_begin() -> void
     m_deltaTime = timeDiff.count();
 
     {
-        ZoneScopedN("PreTick");
+        ZoneScopedN("pre_tick");
         for (std::shared_ptr<subsystem>& subsystem : m_subsystems)
         {
             subsystem->pre_tick(m_deltaTime);
@@ -112,7 +210,7 @@ auto gluten::app::tick_begin() -> void
     }
 
     {
-        ZoneScopedN("SubsystemTick");
+        ZoneScopedN("subsystem_tick");
         for (std::shared_ptr<subsystem>& subsystem : m_subsystems)
         {
             subsystem->tick(m_deltaTime);
@@ -120,7 +218,7 @@ auto gluten::app::tick_begin() -> void
     }
 
     {
-        ZoneScopedN("ManagerTick");
+        ZoneScopedN("manager_tick");
         for (auto& manager : m_managers)
         {
             manager->tick(m_deltaTime);
@@ -131,22 +229,17 @@ auto gluten::app::tick_begin() -> void
 auto gluten::app::tick_end() -> void
 {
     {
-        ZoneScopedN("RenderingTick");
+        ZoneScopedN("rendering_tick");
         for (std::shared_ptr<subsystem>& subsystem : m_subsystems)
         {
             subsystem->tick_rendering(m_deltaTime);
         }
     }
-
-    FrameMark;
 }
 
 void gluten::app::load_fonts()
 {
-    // Load Fonts
-    const float baseFontSize = 16.0f;
-    const float iconFontSize = baseFontSize * 2.0f / 3.0f;  // FontAwesome fonts need to have their sizes reduced
-                                                            // by 2.0f/3.0f in order to align correctly
+    get_logger()->info("Loading fonts...");
 
     static const ImWchar fontAwesomeIconRanges[] = {ICON_MIN_FA, ICON_MAX_16_FA, 0};
     static const ImWchar fontAudioIconRanges[]   = {ICON_MIN_FAD, ICON_MAX_16_FAD, 0};
@@ -167,7 +260,7 @@ void gluten::app::load_fonts()
     iconFontsConfig.FontDataOwnedByAtlas = false;
     iconFontsConfig.MergeMode            = true;
     iconFontsConfig.PixelSnapH           = true;
-    iconFontsConfig.GlyphMinAdvanceX     = iconFontSize;
+    iconFontsConfig.GlyphMinAdvanceX     = g_baseIconFontSize;
     iconFontsConfig.RasterizerDensity    = 1.0f;
 
     ImFontConfig fontConfig;
@@ -177,27 +270,32 @@ void gluten::app::load_fonts()
     ImGuiIO& io = ImGui::GetIO();
 
     m_fonts[fonts::regular] =
-        io.Fonts->AddFontFromMemoryTTF((void*)mainFontFile.begin(), mainFontFile.size(), baseFontSize, &fontConfig);
+        io.Fonts->AddFontFromMemoryTTF((void*)mainFontFile.begin(), mainFontFile.size(), g_baseFontSize, &fontConfig);
 
     m_fonts[fonts::regular_audio_icons] =
-        io.Fonts->AddFontFromMemoryTTF((void*)mainFontFile.begin(), mainFontFile.size(), baseFontSize, &fontConfig);
-    io.Fonts->AddFontFromMemoryTTF((void*)audioFontFile.begin(), audioFontFile.size(), iconFontSize * 1.3f,
+        io.Fonts->AddFontFromMemoryTTF((void*)mainFontFile.begin(), mainFontFile.size(), g_baseFontSize, &fontConfig);
+    io.Fonts->AddFontFromMemoryTTF((void*)audioFontFile.begin(), audioFontFile.size(), g_baseIconFontSize * 1.3f,
                                    &iconFontsConfig, fontAudioIconRanges);
 
     m_fonts[fonts::regular_lucide_icons] =
-        io.Fonts->AddFontFromMemoryTTF((void*)mainFontFile.begin(), mainFontFile.size(), baseFontSize, &fontConfig);
-    io.Fonts->AddFontFromMemoryTTF((void*)lucideFontFile.begin(), lucideFontFile.size(), iconFontSize * 1.3f,
+        io.Fonts->AddFontFromMemoryTTF((void*)mainFontFile.begin(), mainFontFile.size(), g_baseFontSize, &fontConfig);
+    io.Fonts->AddFontFromMemoryTTF((void*)lucideFontFile.begin(), lucideFontFile.size(), g_baseIconFontSize * 1.3f,
                                    &iconFontsConfig, lucideIconRanges);
 
     m_fonts[fonts::regular_font_awesome] =
-        io.Fonts->AddFontFromMemoryTTF((void*)mainFontFile.begin(), mainFontFile.size(), baseFontSize, &fontConfig);
-    io.Fonts->AddFontFromMemoryTTF((void*)fontAwesomeFontFile.begin(), fontAwesomeFontFile.size(), iconFontSize,
+        io.Fonts->AddFontFromMemoryTTF((void*)mainFontFile.begin(), mainFontFile.size(), g_baseFontSize, &fontConfig);
+    io.Fonts->AddFontFromMemoryTTF((void*)fontAwesomeFontFile.begin(), fontAwesomeFontFile.size(), g_baseIconFontSize,
                                    &iconFontsConfig, fontAwesomeIconRanges);
 
     m_fonts[fonts::light] =
-        io.Fonts->AddFontFromMemoryTTF((void*)lightFontFile.begin(), lightFontFile.size(), baseFontSize, &fontConfig);
+        io.Fonts->AddFontFromMemoryTTF((void*)lightFontFile.begin(), lightFontFile.size(), g_baseFontSize, &fontConfig);
     m_fonts[fonts::title] = io.Fonts->AddFontFromMemoryTTF((void*)titleFontFile.begin(), titleFontFile.size(),
-                                                           baseFontSize * 1.2f, &fontConfig);
+                                                           g_baseFontSize * 1.2f, &fontConfig);
+
+    m_fonts[fonts::title_lucide_icons] =
+        io.Fonts->AddFontFromMemoryTTF((void*)titleFontFile.begin(), titleFontFile.size(), g_baseFontSize * 1.2f, &fontConfig);
+    io.Fonts->AddFontFromMemoryTTF((void*)lucideFontFile.begin(), lucideFontFile.size(), g_baseIconFontSize * 1.3f,
+                                   &iconFontsConfig, lucideIconRanges);
 }
 
 void gluten::app::request_exit() { m_isRequestingExit = true; }
@@ -207,5 +305,81 @@ bool gluten::app::is_maximized() { return get_subsystem_by_class<gluten::rendere
 void gluten::app::set_application_display_title(const std::string& title)
 {
     m_applicationDisplayTitle = title;
-    get_subsystem_by_class<renderer_subsystem>()->set_window_title(title);
+    if (auto renderSubsystem = get_subsystem_by_class<renderer_subsystem>())
+    {
+        renderSubsystem->set_window_title(title);
+    }
+}
+
+auto gluten::app::open_select_folder_dialog() -> std::filesystem::path
+{
+    NFD_Init();
+
+    std::filesystem::path result;
+    nfdchar_t* outPath = NULL;
+
+retry:
+    nfdresult_t pickFolderResult = NFD_PickFolder(&outPath, std::filesystem::current_path().string().c_str());
+
+    switch (pickFolderResult)
+    {
+        case NFD_OKAY:
+            result              = outPath;
+            break;
+
+        case NFD_CANCEL:
+            result.clear();
+            break;
+
+        case NFD_ERROR:
+        default:
+            goto retry;
+            break;
+    }
+
+    if (outPath)
+    {
+        NFD_FreePath(outPath);
+    }
+    NFD_Quit();
+
+    return result;
+}
+
+auto gluten::app::open_select_file_dialog(const std::string& name, const std::string& fileExtensionNoDots) -> std::filesystem::path
+{
+    std::filesystem::path result;
+
+    NFD_Init();
+
+    nfdchar_t* outPath = NULL;
+retry:
+    nfdu8filteritem_t filter{.name = name.c_str(), .spec = fileExtensionNoDots.c_str()};
+    nfdresult_t openResult = NFD_OpenDialog(&outPath, &filter, 1, NULL);
+
+    switch (openResult)
+    {
+        case NFD_OKAY:
+            result = outPath;
+            break;
+
+        case NFD_CANCEL:
+            result.clear();
+            break;
+
+        case NFD_ERROR:
+        default:
+            goto retry;
+            break;
+    }
+
+    if (outPath && std::filesystem::exists(outPath))
+    {
+        result = outPath;
+        NFD_FreePath(outPath);
+    }
+
+    NFD_Quit();
+
+    return result;
 }

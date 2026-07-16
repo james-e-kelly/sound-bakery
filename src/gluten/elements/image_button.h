@@ -11,14 +11,14 @@ namespace gluten
         image_button() = delete;
         image_button(const char* name, const void* data, std::size_t dataSize);
 
-        bool render_element(const ImRect& parent) override;
+        bool render_element(const element_render_info& renderInfo) override;
 
         button& get_button() { return m_button; }
         image& get_image() { return m_image; }
 
-        void set_element_max_size(const ImVec2& maxSize) override;
+        auto set_element_max_size(const ImVec2& maxSize) -> element&;
 
-        auto get_element_content_size() -> ImVec2 const override;
+        auto get_element_content_size(const ImVec2& parentSize) -> ImVec2 const override;
 
     private:
         button m_button;

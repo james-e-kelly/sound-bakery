@@ -7,7 +7,7 @@
 #include "gluten/elements/menu_bar.h"
 #include "gluten/elements/text.h"
 #include "gluten/subsystems/renderer_subsystem.h"
-#include "gluten/theme/carbon_theme_g100.h"
+#include "gluten/subsystems/widget_subsystem.h"
 #include "gluten/theme/theme.h"
 #include "gluten/theme/walnut_icon.embed"
 #include "gluten/theme/window_images.embed"
@@ -39,7 +39,7 @@ namespace root_widget_utils
     static float titleBarHeight()
     {
         ImGuiContext* const context = ImGui::GetCurrentContext();
-        return context == nullptr ? 0.0f : context->FontSize * gluten::theme::carbon_g100::appTitlebarHeightMultiplier;
+        return context == nullptr ? 0.0f : context->FontSize * gluten::theme::appTitlebarHeightMultiplier;
     }
 
     constexpr float titleLogoWidth           = 64.0f;
@@ -153,6 +153,10 @@ auto gluten::dockspace_refresh::assign_widget_to_node(const rttr::type& widgetTy
 
         widget->set_visibile(true);
     }
+    else
+    {
+        //assert(false);
+    }
 }
 
 void root_widget::start_implementation()
@@ -186,13 +190,13 @@ void root_widget::start_implementation()
     m_windowRestoreIcon->set_element_max_size(ImVec2(16, 16));
 
     m_windowCloseIcon->set_element_hover_color(
-        theme::ColorWithMultipliedValue(ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::background), 2.f));
+        theme::color_with_multiplied_value(ImGui::ColorConvertFloat4ToU32(gluten::theme::background), 2.f));
     m_windowMinimiseIcon->set_element_hover_color(
-        theme::ColorWithMultipliedValue(ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::background), 2.f));
+        theme::color_with_multiplied_value(ImGui::ColorConvertFloat4ToU32(gluten::theme::background), 2.f));
     m_windowMaximiseIcon->set_element_hover_color(
-        theme::ColorWithMultipliedValue(ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::background), 2.f));
+        theme::color_with_multiplied_value(ImGui::ColorConvertFloat4ToU32(gluten::theme::background), 2.f));
     m_windowRestoreIcon->set_element_hover_color(
-        theme::ColorWithMultipliedValue(ImGui::ColorConvertFloat4ToU32(gluten::theme::carbon_g100::background), 2.f));
+        theme::color_with_multiplied_value(ImGui::ColorConvertFloat4ToU32(gluten::theme::background), 2.f));
 }
 
 void root_widget::render_implementation()
@@ -256,8 +260,7 @@ void root_widget::draw_titlebar()
     const ImRect menuBarRect  = root_widget_utils::get_menu_bar_rect(titleBarRect);
 
     background topBarBackground;
-    topBarBackground.set_element_background_color(
-        ImGui::ColorConvertFloat4ToU32(ImGui::GetStyleColorVec4(ImGuiCol_TitleBg)));
+    topBarBackground.set_element_background_color(gluten::theme::background);
     topBarBackground.render(titleBarRect);
 
     if (m_renderLogo)
@@ -268,7 +271,7 @@ void root_widget::draw_titlebar()
 
     gluten::text titleText(std::string(get_app()->get_application_display_title()), ImVec2(0.5f, 0.5f),
                            element::anchor_preset::center_middle);
-    titleText.set_font_size(root_widget_utils::titleFontSize);
+    titleText.set_element_content_font_size(root_widget_utils::titleFontSize);
     titleText.set_font(gluten::fonts::regular);
     titleText.render(titleBarRect);
 
@@ -279,7 +282,7 @@ void root_widget::draw_titlebar()
     m_hoveringTitlebar = ImGui::IsItemHovered();
 
     gluten::menu_bar menu_bar;
-    menu_bar.set_font_size(root_widget_utils::fontSize);
+    menu_bar.set_element_content_font_size(root_widget_utils::fontSize);
     if (menu_bar.render(menuBarRect))
     {
         render_menu();
@@ -327,6 +330,7 @@ auto root_widget::render_menu_implementation() -> void
     static bool showStyleEditor    = false;
     static bool showDemo           = false;
     static bool showPlotDemo       = false;
+    static bool showSpinnerDemo    = false;
 
     if (get_child_widget_count())
     {
@@ -357,10 +361,25 @@ auto root_widget::render_menu_implementation() -> void
             ImGui::MenuItem("ImGui Style Editor...", NULL, &showStyleEditor);
             ImGui::MenuItem("ImGui Demo...", NULL, &showDemo);
             ImGui::MenuItem("ImPlot Demo...", NULL, &showPlotDemo);
+            ImGui::MenuItem("ImSpinner Demo...", NULL, &showSpinnerDemo);
 
             ImGui::Separator();
 
             ImGui::MenuItem("Debug Item Rects", NULL, &element::s_debug);
+            ImGui::MenuItem("Debug Item Vertical", NULL, &element::s_debugVertical);
+            ImGui::MenuItem("Debug Item Horizontal", NULL, &element::s_debugHorizontal);
+
+            ImGui::Separator();
+
+            if (ImGui::MenuItem("Profile This Application...", NULL))
+            {
+#ifdef WIN32
+                const auto tracyExe = std::filesystem::path(get_app()->get_executable_location()).parent_path() / "tracy-profiler.exe";
+                std::system(fmt::format("start {} -a 127.0.0.1", tracyExe.string()).c_str());
+#endif
+
+                //get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class_to_root<profiler_widget>(true);
+            }
 
             ImGui::EndMenu();
         }
@@ -399,6 +418,14 @@ auto root_widget::render_menu_implementation() -> void
     {
         ImPlot::ShowDemoWindow(&showPlotDemo);
     }
+    if (showSpinnerDemo)
+    {
+        if (ImGui::Begin("ImSpinner Demo", &showSpinnerDemo))
+        {
+            ImSpinner::demoSpinners();
+        }
+        ImGui::End();
+    }
 }
 
 auto gluten::root_widget::refresh_dockspace() -> dockspace_refresh
@@ -427,6 +454,11 @@ auto gluten::root_widget::set_layout(widget_layout& layout) -> void
 {
     dockspace_refresh refresh = refresh_dockspace();
     layout.onRefreshDockspace(refresh);
+}
+
+auto gluten::root_widget::set_manual_layout() -> dockspace_refresh
+{
+    return refresh_dockspace();
 }
 
 auto gluten::root_widget::get_default_layout() -> gluten::widget_layout&

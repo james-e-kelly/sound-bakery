@@ -1,10 +1,14 @@
 #pragma once
 
+#include "gluten/app/app.h"
 #include "gluten/subsystems/subsystem.h"
 #include "gluten/widgets/widget.h"
 
 namespace gluten
 {
+    template<typename T>
+    auto add_widget_class_to_root(bool rootOwnsChild) -> std::shared_ptr<T>;
+
     /**
      * @brief Owns widgets and the root widget for all the UI.
      */
@@ -46,4 +50,18 @@ namespace gluten
         std::vector<std::weak_ptr<widget>> m_widgets;
         std::shared_ptr<widget> m_rootWidget;
     };
+
+    template <typename T>
+    auto add_widget_class_to_root(bool rootOwnsChild) -> std::shared_ptr<T>
+    {
+        if (gluten::app* const app = gluten::app::get())
+        {
+            if (std::shared_ptr<widget_subsystem> widgetSubsystem = app->get_subsystem_by_class<widget_subsystem>())
+            {
+                return widgetSubsystem->add_widget_class_to_root<T>(rootOwnsChild);
+            }
+        }
+
+        return {};
+    }
 }  // namespace gluten

@@ -18,10 +18,10 @@ namespace gluten
         {
         }
 
-        bool render_element(const ImRect& elementBox) override
+        bool render_element(const element_render_info& renderInfo) override
         {
-            ImGui::SetNextItemWidth(elementBox.GetSize().x);
-            return render_slider<T>(elementBox);
+            ImGui::SetNextItemWidth(renderInfo.elementBox.GetSize().x);
+            return render_slider<T>(renderInfo.elementBox);
         }
 
         template <valid_slider U>
