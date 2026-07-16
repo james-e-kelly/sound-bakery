@@ -312,7 +312,7 @@ struct fiber_raii
 
 auto gluten::audio_subsystem::async_generate_waveform_lod(std::shared_ptr<const std::vector<float>> audioData, ma_uint64 channels, double fileDuration, std::size_t resolution, concurrencpp::shared_result<waveform_lod> dependencyResult) -> concurrencpp::result<waveform_lod>
 {
-    co_await concurrencpp::resume_on(gluten::app::get()->thread_pool_executor());
+    co_await concurrencpp::resume_on(gluten::app::get()->background_executor());
 
     SET_UP_FIBER;
 
@@ -404,7 +404,9 @@ auto gluten::audio_subsystem::generate_downsampled_resolution_waveform(std::shar
 
     if (resolution <= 1000)
     {
+        EXIT_FIBER;
         result.globalFramesCache.set_async_fill_cache(generate_downsampled_resolution_global_frames(audioData, resolution, channels, targetSamples));
+        ENTER_FIBER;
     }
 
     const float channelsReciprocal = 1.0f / channels;
