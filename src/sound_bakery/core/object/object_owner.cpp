@@ -22,7 +22,7 @@ auto sbk::core::object_owner::create_runtime_object(const rttr::type& type) -> s
     {
         const rttr::variant variant = constructor.invoke();
 
-        SBK_CHECK(variant.is_valid(), SBK_ERR_BAKERY, "Failed to create object. Variant is invalid");
+        SBK_CHECK_MSG(variant.is_valid(), SBK_ERR_BAKERY, "Failed to create object. Variant is invalid");
         BOOST_ASSERT(variant.get_type().is_valid());
         BOOST_ASSERT(variant.get_type().get_raw_type().is_valid());
         BOOST_ASSERT_MSG(variant.get_type().is_pointer(), "Objects in Sound Bakery must be constructed on the heap and be pointers");
