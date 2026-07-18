@@ -1,5 +1,7 @@
 #include "video_subsystem.h"
 
+#if GLUTEN_ENABLE_VIDEO
+
 #include "gluten/app/app.h"
 #include "gluten/subsystems/renderer_subsystem.h"
 #include "sound_chef/sound_chef_internal.h"
@@ -469,3 +471,32 @@ auto gluten::video_subsystem::get_mpv_handle_from_file(const std::filesystem::pa
 
     return 0U;
 }
+
+#else  // GLUTEN_ENABLE_VIDEO
+
+// libmpv was not available at configure time, so the video subsystem is built
+// as a no-op. The rest of gluten (and any app that instantiates it) still
+// compiles and links against the same public interface; video playback is
+// simply unavailable and every call is a safe default.
+
+gluten::video_subsystem::~video_subsystem() = default;
+
+auto gluten::video_subsystem::load_video(const std::filesystem::path&) -> void {}
+auto gluten::video_subsystem::get_video_texture(const std::filesystem::path&) const -> uint32_t { return 0U; }
+auto gluten::video_subsystem::play_video(const std::filesystem::path&) -> void {}
+auto gluten::video_subsystem::pause_video(const std::filesystem::path&) -> void {}
+auto gluten::video_subsystem::get_video_play_position(const std::filesystem::path&) -> double { return 0.0; }
+// Slightly above the play position so consumers dividing by duration don't hit a divide-by-zero.
+auto gluten::video_subsystem::get_video_duration(const std::filesystem::path&) -> double { return 0.1; }
+auto gluten::video_subsystem::set_video_play_position(const std::filesystem::path&, double) -> void {}
+auto gluten::video_subsystem::set_video_next_frame(const std::filesystem::path&) -> void {}
+auto gluten::video_subsystem::set_video_prev_frame(const std::filesystem::path&) -> void {}
+auto gluten::video_subsystem::get_video_is_playing(const std::filesystem::path&) const -> bool { return false; }
+auto gluten::video_subsystem::stop_all_videos() const -> void {}
+auto gluten::video_subsystem::pre_init(const boost::program_options::variables_map&) -> int { return 0; }
+auto gluten::video_subsystem::init() -> int { return 0; }
+auto gluten::video_subsystem::tick(double) -> void {}
+auto gluten::video_subsystem::tick_rendering(double) -> void {}
+auto gluten::video_subsystem::exit() -> void {}
+
+#endif  // GLUTEN_ENABLE_VIDEO

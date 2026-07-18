@@ -26,8 +26,26 @@ endfunction()
 
 cmake_dependent_option(USE_MPV_WIN_BUILD "Use Prebuilt static mpv dll on Windows" ON "WIN32" OFF)
 
+# GLUTEN_ENABLE_VIDEO reflects whether the mpv-backed video subsystem can be
+# built. On Windows we always ship the prebuilt dev package. On other platforms
+# it depends on libmpv being discoverable via pkg-config; when it isn't, the
+# video subsystem is compiled as a no-op stub instead of failing the build.
 if(USE_MPV_WIN_BUILD)
   get_mpv_win_dev(mpv_dev)
+  set(GLUTEN_ENABLE_VIDEO ON)
 else()
-  pkg_search_module(MPV REQUIRED mpv>=0.33.0)
+  # pkg_search_module requires find_package(PkgConfig) to have run first; it
+  # locates pkg-config and initialises the internal state the macro relies on.
+  find_package(PkgConfig)
+
+  if(PkgConfig_FOUND)
+    pkg_search_module(MPV mpv>=0.33.0)
+  endif()
+
+  if(MPV_FOUND)
+    set(GLUTEN_ENABLE_VIDEO ON)
+  else()
+    set(GLUTEN_ENABLE_VIDEO OFF)
+    message(STATUS "mpv not found via pkg-config - building without the video subsystem")
+  endif()
 endif()

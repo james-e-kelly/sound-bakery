@@ -118,10 +118,19 @@ target_include_directories(gluten
     PRIVATE ${stb_SOURCE_DIR}
 )
 
-# mpv/client.h declares its functions as extern function pointers when this is set, matching
-# video_subsystem's dlopen/dlsym-based loading. PUBLIC so any app including gluten's video_subsystem.h
-# (directly or transitively) sees the same declarations.
-target_compile_definitions(gluten PUBLIC "MPV_CPLUGIN_DYNAMIC_SYM")
+# GLUTEN_ENABLE_VIDEO gates the mpv-backed video subsystem. PUBLIC so any app
+# including gluten's video_subsystem.h (directly or transitively) compiles the
+# same variant (real subsystem vs. no-op stub) and stays ABI-consistent.
+if(GLUTEN_ENABLE_VIDEO)
+  target_compile_definitions(gluten PUBLIC GLUTEN_ENABLE_VIDEO=1)
+
+  # mpv/client.h declares its functions as extern function pointers when this is set, matching
+  # video_subsystem's dlopen/dlsym-based loading. PUBLIC so any app including gluten's video_subsystem.h
+  # (directly or transitively) sees the same declarations.
+  target_compile_definitions(gluten PUBLIC "MPV_CPLUGIN_DYNAMIC_SYM")
+else()
+  target_compile_definitions(gluten PUBLIC GLUTEN_ENABLE_VIDEO=0)
+endif()
 
 if(USE_MPV_WIN_BUILD)
   add_dependencies(gluten mpv_dev)

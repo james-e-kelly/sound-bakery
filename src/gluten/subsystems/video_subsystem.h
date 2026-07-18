@@ -4,10 +4,13 @@
 
 #include "concurrencpp/concurrencpp.h"
 #include "imgui.h"
-#include "mpv/client.h"
-#include "mpv/render_gl.h"
-#include "mpv/render.h"
 #include "sound_chef/sound_chef.h"
+
+#if GLUTEN_ENABLE_VIDEO
+    #include "mpv/client.h"
+    #include "mpv/render_gl.h"
+    #include "mpv/render.h"
+#endif
 
 namespace gluten
 {
@@ -41,6 +44,7 @@ namespace gluten
         auto exit() -> void override;
 
     private:
+#if GLUTEN_ENABLE_VIDEO
         auto set_video_play_position(mpv_handle* handle, double playPosition) -> concurrencpp::result<void>;
         auto set_video_duration(mpv_handle* handle, double duration) -> concurrencpp::result<void>;
         auto set_video_end(mpv_handle* handle) -> concurrencpp::result<void>;
@@ -77,5 +81,6 @@ namespace gluten
         std::unordered_map<std::string, mpv_handle*> m_videoFileToContexts;
 
         ma_handle m_mpvLibraryHandle = nullptr;
+#endif  // GLUTEN_ENABLE_VIDEO
     };
 }  // namespace gluten
