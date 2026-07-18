@@ -159,6 +159,14 @@ function(build_dependencies)
     message(STATUS "Fetching concurrencpp...")
     FetchContent_MakeAvailable(concurrencpp)
 
+    # Make fmt available before spdlog and point spdlog at it, so the whole build
+    # links a single fmt (fmt::fmt) instead of spdlog also compiling its bundled
+    # copy. spdlog's CMake uses fmt::fmt directly when the target already exists.
+    message(STATUS "Fetching fmt...")
+    FetchContent_MakeAvailable(fmt)
+
+    set(SPDLOG_FMT_EXTERNAL ON CACHE BOOL "Use external fmt instead of spdlog's bundled copy" FORCE)
+
     message(STATUS "Fetching spdlog...")
     FetchContent_MakeAvailable(spdlog)
 
