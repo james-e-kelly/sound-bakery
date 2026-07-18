@@ -65,21 +65,37 @@ jobs:
           AWESOME_DIR: ${{ github.workspace }}/awesome
           DOX_VERSION: ${{ steps.meta.outputs.version }}
         run: |
+          set -euo pipefail
           # Fill in the @VARS@ the CMake build would normally substitute.
           sed \
             -e "s|@CMAKE_SOURCE_DIR@|${GITHUB_WORKSPACE}|g" \
             -e "s|@doxygenawesome_SOURCE_DIR@|${AWESOME_DIR}|g" \
             -e "s|@SOUND_BAKERY_DOXYGEN_VERSION@|${DOX_VERSION}|g" \
             docs/doxygen/Doxyfile.in > Doxyfile
-          # Redirect output out of the source tree (the .in writes in-tree).
+          # Force output out of the source tree. Replace the line in place (rather
+          # than appending) so there is exactly one OUTPUT_DIRECTORY - no reliance
+          # on Doxygen's last-value-wins behaviour.
+          sed -i "s|^OUTPUT_DIRECTORY .*|OUTPUT_DIRECTORY = ${GITHUB_WORKSPACE}/docs-out|" Doxyfile
           {
-            echo "OUTPUT_DIRECTORY = ${GITHUB_WORKSPACE}/docs-out"
             echo "HTML_OUTPUT = html"
             echo "WARN_AS_ERROR = NO"
           } >> Doxyfile
+          echo "Resolved output configuration:"
+          grep -E '^(OUTPUT_DIRECTORY|HTML_OUTPUT)' Doxyfile || true
 
       - name: Build docs
-        run: doxygen Doxyfile
+        shell: bash
+        run: |
+          set -euo pipefail
+          doxygen Doxyfile
+          echo "== docs-out directory tree =="
+          find docs-out -maxdepth 2 -type d || true
+          if [ ! -f docs-out/html/index.html ]; then
+            echo "::error::Doxygen did not produce docs-out/html/index.html"
+            echo "index.html files found under the workspace:"
+            find "${GITHUB_WORKSPACE}" -maxdepth 4 -name index.html -not -path '*/awesome/*' || true
+            exit 1
+          fi
 
       - name: Publish to gh-pages
         shell: bash
@@ -90,7 +106,11 @@ jobs:
         run: |
           set -euo pipefail
           html_dir="${GITHUB_WORKSPACE}/docs-out/html"
-          test -f "${html_dir}/index.html"
+          if [ ! -f "${html_dir}/index.html" ]; then
+            echo "::error::${html_dir}/index.html is missing - nothing to publish"
+            ls -la "${GITHUB_WORKSPACE}/docs-out" || true
+            exit 1
+          fi
 
           repo_url="https://x-access-token:${GIT_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
 
