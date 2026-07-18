@@ -1,5 +1,5 @@
 # Builds the Doxygen docs and publishes them to the gh-pages branch, one folder
-# per release tag plus a rolling /dev/ from main:
+# per release tag plus a rolling /dev/ from the dev branch:
 #   /            -> redirect to /latest/
 #   /versions.json  -> drives the in-page version switcher
 #   /latest/     -> newest release
@@ -13,7 +13,7 @@ name: Docs
 on:
   workflow_dispatch:
   push:
-    branches: [ "main" ]
+    branches: [ "dev" ]
     tags: [ "v*" ]
 
 permissions:
