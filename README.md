@@ -8,8 +8,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![C++20](https://img.shields.io/badge/C%2B%2B-20-blue)](https://en.cppreference.com/w/cpp/compiler_support#cpp20)
 [![Status](https://img.shields.io/badge/Status-WIP-yellow)](#)
-[![GitHub Stars](https://img.shields.io/github/stars/KarateKidzz/sound-bakery?style=flat)](https://github.com/KarateKidzz/sound-bakery)
-[![GitHub Contributors](https://img.shields.io/github/contributors/KarateKidzz/sound-bakery)](https://github.com/KarateKidzz/sound-bakery/graphs/contributors)
+[![Stars](https://img.shields.io/github/stars/KarateKidzz/sound-bakery?style=flat&label=Stars)](https://github.com/KarateKidzz/sound-bakery)
+[![Contributors](https://img.shields.io/github/contributors/KarateKidzz/sound-bakery?label=Contributors)](https://github.com/KarateKidzz/sound-bakery/graphs/contributors)
 
 [Why?](#why-choose-sound-bakery) • [Goal](#goal) • [Getting Started](#getting-started) • [Contributing](#contributing) • [Docs](https://soundbakery.jameskelly.audio)
 
