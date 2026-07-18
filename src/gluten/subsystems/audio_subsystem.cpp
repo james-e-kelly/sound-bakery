@@ -334,13 +334,13 @@ auto gluten::audio_subsystem::async_generate_waveform_lod(std::shared_ptr<const 
     if (resolution == ma_standard_sample_rate_48000)
     {
         EXIT_FIBER;
-        lod.waveform = co_await generate_sample_resolution_waveform(audioData, channels);
+        lod.lodWaveform = co_await generate_sample_resolution_waveform(audioData, channels);
         ENTER_FIBER;
     }
     else
     {
         EXIT_FIBER;
-        lod.waveform = co_await generate_downsampled_resolution_waveform(audioData, resolution, channels, resolution * fileDuration);
+        lod.lodWaveform = co_await generate_downsampled_resolution_waveform(audioData, resolution, channels, resolution * fileDuration);
         ENTER_FIBER;
     }
 

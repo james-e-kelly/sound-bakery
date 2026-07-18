@@ -84,7 +84,7 @@ namespace gluten
     struct waveform_lod
     {
         int resolution;
-        waveform waveform;
+        waveform lodWaveform;
     };
 
 	/**

@@ -246,7 +246,7 @@ namespace gluten
                 const float lufsAxisMin         = raiseLufsMin ? s_lufsMidPoint : s_lufsVolumeMin;
                 const float lufsAxisMax         = dropLufsMax ? s_lufsMidPoint : s_lufsVolumeMax;
 
-                const std::size_t channels = waveformCache && waveformCache->has_data() ? waveformCache->m_cache.waveform.channelFrames.size() : 0;
+                const std::size_t channels = waveformCache && waveformCache->has_data() ? waveformCache->m_cache.lodWaveform.channelFrames.size() : 0;
 
                 ImGui::SetCursorScreenPos(m_audioBackground.get_element_rect().GetTL());
 
@@ -336,11 +336,11 @@ namespace gluten
 
                                 const double xPosition  = (double)point / (numWaveformPoints) * fileDuration;
 
-                                const auto& globalData  = cache->m_cache.waveform.globalFramesCache;
-                                const auto& channelData = cache->m_cache.waveform.channelFrames[channel][clampedIndex];
+                                const auto& globalData  = cache->m_cache.lodWaveform.globalFramesCache;
+                                const auto& channelData = cache->m_cache.lodWaveform.channelFrames[channel][clampedIndex];
                                 if (channels == 2)
                                 {
-                                    const auto& stereoData = cache->m_cache.waveform.stereoFrames[clampedIndex];
+                                    const auto& stereoData = cache->m_cache.lodWaveform.stereoFrames[clampedIndex];
                                     callback(index, xPosition, point, channelData, stereoData, globalData);
                                 }
                                 else
@@ -579,7 +579,7 @@ namespace gluten
                     {
                         ImPlot::SetAxes(ImAxis_X1, ImAxis_Y3);
 
-                        ImPlot::TagY(waveformLods.m_cache.sampleRes.get_cached_data().m_cache.waveform.lufs.integrated, gluten::theme::supportInfo, fmt::format("LUFS-I: {:.1f}", waveformLods.m_cache.sampleRes.get_cached_data().m_cache.waveform.lufs.integrated).c_str());
+                        ImPlot::TagY(waveformLods.m_cache.sampleRes.get_cached_data().m_cache.lodWaveform.lufs.integrated, gluten::theme::supportInfo, fmt::format("LUFS-I: {:.1f}", waveformLods.m_cache.sampleRes.get_cached_data().m_cache.lodWaveform.lufs.integrated).c_str());
                     }
 
                     ImPlot::SetAxes(ImAxis_X1, ImAxis_Y1);
