@@ -33,6 +33,7 @@ auto node::add_effect(sc_dsp_type type) -> sbk::result<void>
     SBK_TRY(auto effect, get_owner()->create_database_object<effect_description>());
     effect->set_dsp_type(type);
     m_effectDescriptions.emplace_back(effect);
+    return sbk::ok();
 }
 
 auto node::add_effect_clap(clap_plugin_factory_t* clapFactory) -> sbk::result<void>
@@ -41,6 +42,7 @@ auto node::add_effect_clap(clap_plugin_factory_t* clapFactory) -> sbk::result<vo
     SBK_TRY(auto effect, get_owner()->create_database_object<effect_description>());
     effect->set_dsp_clap(clapFactory);
     m_effectDescriptions.emplace_back(effect);
+    return sbk::ok();
 }
 
 node_base::~node_base()

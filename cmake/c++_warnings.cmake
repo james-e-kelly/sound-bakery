@@ -48,6 +48,7 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "C
     -Wswitch-enum        # A switch statement has an index of enumerated type and lacks a case.
     -Wundef              # An undefined identifier is evaluated in an #if directive.
     -Wunused             # Enable all -Wunused- warnings.
+    -Werror=return-type  # Force errors for not returning a value (helps with sbk::result)
     )
   # Enable additional warnings depending on the compiler and compiler version in use.
   if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -134,6 +135,7 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     /w14905      # Wide string literal cast to 'LPSTR'.
     /w14906      # String literal cast to 'LPWSTR'.
     /w14928      # Illegal copy-initialization; applied more than one user-defined conversion.
+    /we4715      # 'function' : not all control paths return a value
     )
 endif ()
 

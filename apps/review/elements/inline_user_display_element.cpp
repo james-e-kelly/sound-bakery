@@ -130,8 +130,8 @@ auto user_avatar_element::render_element(const gluten::element_render_info& rend
     else if (renderInfo.elementBox.GetHeight() > 1.0f)
     {
         ImSpinner::SpinnerAngEclipse("##Loading", ImGui::GetFontSize() / 2.0f, 2.0f, gluten::theme::white, 8.0f);
-        return false;
     }
+    return false;
 }
 
 auto logged_in_user_element::render_element(const gluten::element_render_info& renderInfo) -> bool

@@ -25,6 +25,8 @@ auto sbk::core::database::add_object_to_database(const std::shared_ptr<database_
     object->get_on_destroy().AddRaw(this, &sbk::core::database::on_object_destroyed);
     object->get_on_update_id().AddRaw(this, &sbk::core::database::update_id);
     object->get_on_update_database_name().AddRaw(this, &sbk::core::database::update_database_name);
+
+    return sbk::ok();
 }
 
 auto sbk::core::database::assign_name_to_id(sbk_id id, const database_name& name) -> sbk::result<void>
@@ -36,6 +38,8 @@ auto sbk::core::database::assign_name_to_id(sbk_id id, const database_name& name
     SBK_CHECK_MSG(nameIter == m_nameToIdMap.end(), SBK_ERR_BAKERY_OBJECT_EXISTS, "Assigning a name to an ID should only happen once");
 
     m_nameToIdMap[name] = id;
+    
+    return sbk::ok();
 }
 
 auto sbk::core::database::remove_object_from_database(sbk_id objectID) -> sbk::result<void>
@@ -79,12 +83,11 @@ auto sbk::core::database::remove_object_from_database(sbk_id objectID) -> sbk::r
                 nameIter = m_nameToIdMap.erase(nameIter);
                 break;
             }
-            else
-            {
-                ++nameIter;
-            }
+            ++nameIter;
         }
     }
+
+    return sbk::ok();
 }
 
 auto sbk::core::database::try_find_database_object(sbk_id objectID) const -> std::weak_ptr<sbk::core::database_object>

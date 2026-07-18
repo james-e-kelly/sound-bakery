@@ -276,6 +276,8 @@ auto sbk::engine::node_instance_fsm::init_child() -> sbk::result<void>
             SBK_TRYV(runtimeChild->init(childInit));
         }
     }
+
+    return sbk::ok();
 }
 
 auto sbk::engine::node_instance_fsm::init_callbacks() -> void
