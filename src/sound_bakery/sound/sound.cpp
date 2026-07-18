@@ -47,7 +47,7 @@ auto sound::load_synchronous() -> void
             BOOST_ASSERT(std::filesystem::exists(finalSoundPath));
 
             sbk_status result = sc_system_create_sound(sbk::engine::system::get(), finalSoundPath.string().c_str(), SC_SOUND_MODE_DEFAULT, &loadedSound);
-            BOOST_ASSERT(result == MA_SUCCESS);
+            BOOST_ASSERT(result == SBK_SUCCESS);
             break;
         }
         case sbk::engine::system::operating_mode::runtime:
@@ -57,7 +57,7 @@ auto sound::load_synchronous() -> void
                 sbk_status result =
                     sc_system_create_sound_memory(sbk::engine::system::get(), m_memorySoundData.get(),
                                                   m_memorySoundDataSize, SC_SOUND_MODE_DEFAULT, &loadedSound);
-                BOOST_ASSERT(result == MA_SUCCESS);
+                BOOST_ASSERT(result == SBK_SUCCESS);
             }
             break;
         }

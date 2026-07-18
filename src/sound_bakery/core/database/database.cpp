@@ -249,7 +249,7 @@ auto sbk::core::database::on_object_destroyed(object* object) -> void
     {
         if (database_object* databaseObject = object->try_convert_object<database_object>())
         {
-            remove_object_from_database(databaseObject->get_database_id());
+            (void)remove_object_from_database(databaseObject->get_database_id());
         }
     }
 }

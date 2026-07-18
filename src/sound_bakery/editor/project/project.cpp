@@ -17,11 +17,11 @@ auto sbk::editor::project::open_project(const std::filesystem::path& projectFile
 
     m_projectConfig = project_configuration(projectFile);
 
-    load_objects();
-    load_system();
-    load_sounds();
+    (void)load_objects();
+    (void)load_system();
+    (void)load_sounds();
 
-    create_preview_container();
+    (void)create_preview_container();
 
     return sbk::ok();
 }

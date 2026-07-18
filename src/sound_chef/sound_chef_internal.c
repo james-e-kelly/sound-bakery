@@ -135,7 +135,7 @@ sbk_status sc_clap_load(const char* clapFilePath, sc_clap* clapPlugin)
     SC_ZERO_OBJECT(clapPlugin);
 
     ma_handle pluginHandle = sc_dlopen(NULL, clapFilePath);
-    SC_CHECK(pluginHandle != NULL, MA_ERROR);
+    SC_CHECK(pluginHandle != NULL, SBK_FROM_MA(MA_ERROR));
 
     clap_plugin_entry_t* const clapEntry = (clap_plugin_entry_t*)sc_dlsym(NULL, pluginHandle, CLAP_ENTRY);
     SC_CHECK_AND_GOTO(clapEntry != NULL, error_dll);
@@ -153,7 +153,7 @@ sbk_status sc_clap_load(const char* clapFilePath, sc_clap* clapPlugin)
         clapPlugin->clapEntry            = clapEntry;
         clapPlugin->pluginFactory        = pluginFactory;
 
-        return MA_SUCCESS;
+        return SBK_SUCCESS;
     }
     else
     {
@@ -165,7 +165,7 @@ error_clap:
 error_dll:
     sc_dlclose(NULL, pluginHandle);
 
-    return MA_ERROR;
+    return SBK_FROM_MA(MA_ERROR);
 }
 
 sbk_status sc_clap_unload(sc_clap* clapPlugin)
@@ -180,7 +180,7 @@ sbk_status sc_clap_unload(sc_clap* clapPlugin)
 
     SC_ZERO_OBJECT(clapPlugin);
 
-    return MA_SUCCESS;
+    return SBK_SUCCESS;
 }
 
 sbk_status sc_system_release_clap_plugins(sc_system* system)
@@ -191,11 +191,12 @@ sbk_status sc_system_release_clap_plugins(sc_system* system)
     for (int index = 0; index < arrlen(system->clapPlugins); ++index)
     {
         const sbk_status unloadResult = sc_clap_unload(&system->clapPlugins[index]);
-        assert(unloadResult == MA_SUCCESS);
+        assert(unloadResult == SBK_SUCCESS);
+        (void)unloadResult;
     }
 
     arrfree(system->clapPlugins);
     system->clapPlugins = NULL;
 
-    return MA_SUCCESS;
+    return SBK_SUCCESS;
 }

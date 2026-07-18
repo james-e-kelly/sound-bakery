@@ -36,7 +36,7 @@ auto node::add_effect(sc_dsp_type type) -> sbk::result<void>
     return sbk::ok();
 }
 
-auto node::add_effect_clap(clap_plugin_factory_t* clapFactory) -> sbk::result<void>
+auto node::add_effect_clap(const clap_plugin_factory_t* clapFactory) -> sbk::result<void>
 {
     SBK_CHECK(get_owner() != nullptr, SBK_ERR_NULL);
     SBK_TRY(auto effect, get_owner()->create_database_object<effect_description>());

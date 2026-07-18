@@ -115,6 +115,8 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   list(APPEND PROJECT_WARNING_FLAGS
     /permissive- # Specify standards conformance mode to the compiler.
     /W4          # Enable level 4 warnings.
+    /external:anglebrackets # Treat headers included via <> (STL, Boost, other third-party) as external.
+    /external:W0            # Silence warnings originating inside external headers.
     /w14062      # Enumerator 'identifier' in a switch of enum 'enumeration' is not handled.
     /w14242      # The types are different, possible loss of data. The compiler makes the conversion.
     /w14254      # A larger bit field was assigned to a smaller bit field, possible loss of data.
@@ -139,7 +141,21 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     )
 endif ()
 
-# Enable warnings as errors.
+# Library targets (Sound Chef, Sound Bakery) are warning-clean and use this stricter list so
+# they can treat warnings as errors independently of application targets (editor, game, etc.).
+option(LIBRARY_WARNINGS_AS_ERRORS "Library targets using PROJECT_LIBRARY_WARNING_FLAGS will treat warnings as errors." OFF)
+
+set(PROJECT_LIBRARY_WARNING_FLAGS ${PROJECT_WARNING_FLAGS})
+
+if (WARNINGS_AS_ERRORS OR LIBRARY_WARNINGS_AS_ERRORS)
+  if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    list(APPEND PROJECT_LIBRARY_WARNING_FLAGS -Werror)
+  elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    list(APPEND PROJECT_LIBRARY_WARNING_FLAGS /WX)
+  endif ()
+endif ()
+
+# Enable warnings as errors for every target that uses PROJECT_WARNING_FLAGS.
 if (WARNINGS_AS_ERRORS)
   if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     list(APPEND PROJECT_WARNING_FLAGS -Werror)

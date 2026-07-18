@@ -19,9 +19,9 @@ auto sbk::core::object_id_is_child_of_parent(sbk_id childToCheck, sbk_id parent)
 {
     const sbk::core::database_ptr<database_object> parentPtr(parent);
 
-    if (auto parent = parentPtr.shared())
+    if (auto sharedParent = parentPtr.shared())
     {
-        if (auto parentNode = std::static_pointer_cast<sbk::engine::node_base>(parent))
+        if (auto parentNode = std::static_pointer_cast<sbk::engine::node_base>(sharedParent))
         {
             return parentNode->has_child(childToCheck);
         }

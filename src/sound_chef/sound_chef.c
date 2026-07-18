@@ -11,6 +11,7 @@
 #include "sound_chef_encoder.h"
 
 #include <dirent.h>
+#include <stdio.h>
 
 #ifndef NDEBUG
     #define DEBUG_ASSERT(condition) MA_ASSERT(condition)
@@ -204,9 +205,9 @@ static ma_decoding_backend_vtable g_ma_decoding_backend_vtable_libopus = {
 
 #pragma region System
 
-static void sc_system_clap_request_callback(const clap_host_t* host) {}
-static void sc_system_clap_request_process(const clap_host_t* host) {}
-static void sc_system_clap_request_restart(const clap_host_t* host) {}
+static void sc_system_clap_request_callback(const clap_host_t* host) { (void)host; }
+static void sc_system_clap_request_process(const clap_host_t* host) { (void)host; }
+static void sc_system_clap_request_restart(const clap_host_t* host) { (void)host; }
 
 sbk_status sc_system_create(sc_system** outSystem)
 {
@@ -249,10 +250,11 @@ sbk_status sc_system_log_init(sc_system* system, ma_log_callback_proc callbackPr
     SC_CHECK_ARG(system != NULL);
     SC_CHECK_ARG(callbackProc != NULL);
 
-    ma_result logInitResult = ma_log_init(NULL, &system->log);
+    const sbk_status logInitResult = SBK_FROM_MA(ma_log_init(NULL, &system->log));
     SC_CHECK_STATUS(logInitResult);
 
-    ma_result registerResult = ma_log_register_callback(&system->log, ma_log_callback_init(callbackProc, NULL));
+    const sbk_status registerResult =
+        SBK_FROM_MA(ma_log_register_callback(&system->log, ma_log_callback_init(callbackProc, NULL)));
     SC_CHECK_STATUS(registerResult);
 
     ma_log_post(&system->log, MA_LOG_LEVEL_INFO, "Initialized Sound Chef Logging");
@@ -296,7 +298,7 @@ sbk_status sc_system_init(sc_system* system, const sc_system_config* systemConfi
         resourceManagerConfig.pLog = &system->log;
 
         maResult = ma_resource_manager_init(&resourceManagerConfig, &system->resourceManager);
-        SC_CHECK_STATUS(maResult);
+        SC_CHECK_STATUS(SBK_FROM_MA(maResult));
 
         ma_engine_config engineConfig = ma_engine_config_init();
         engineConfig.pResourceManager = &system->resourceManager;
@@ -354,12 +356,11 @@ sbk_status sc_system_init(sc_system* system, const sc_system_config* systemConfi
                                 if (fileIsClap)
                                 {
                                     char filePath[1024];
-                                    strcpy(filePath, systemConfig->pluginPath);
-                                    strcat(filePath, "/");
-                                    strcat(filePath, directoryEntry->d_name);
+                                    snprintf(filePath, sizeof(filePath), "%s/%s", systemConfig->pluginPath,
+                                             directoryEntry->d_name);
 
                                     sc_clap clapPlugin;
-                                    if (sc_clap_load(filePath, &clapPlugin) == MA_SUCCESS)
+                                    if (sc_clap_load(filePath, &clapPlugin) == SBK_SUCCESS)
                                     {
                                         arrput(system->clapPlugins, clapPlugin);
                                     }
@@ -377,14 +378,14 @@ sbk_status sc_system_init(sc_system* system, const sc_system_config* systemConfi
     }
 
     DEBUG_ASSERT(result == SBK_SUCCESS);
-    DEBUG_ASSERT(maResult == SBK_SUCCESS);
+    DEBUG_ASSERT(maResult == MA_SUCCESS);
 
     return result;
 }
 
 sbk_status sc_system_close(sc_system* system)
 {
-    sbk_status result = MA_SUCCESS;
+    sbk_status result = SBK_SUCCESS;
 
     if (system)
     {
@@ -395,7 +396,7 @@ sbk_status sc_system_close(sc_system* system)
         ma_log_post(&system->log, MA_LOG_LEVEL_INFO, "Closed Sound Chef");
     }
 
-    DEBUG_ASSERT(result == MA_SUCCESS);
+    DEBUG_ASSERT(result == SBK_SUCCESS);
 
     return result;
 }
@@ -462,7 +463,7 @@ sbk_status sc_system_create_sound_memory(
         ma_decoder_uninit((*sound)->memoryDecoder);
         SC_FREE((*sound)->memoryDecoder, system);
         (*sound)->memoryDecoder = NULL;
-        return decoderInitResult;
+        return SBK_FROM_MA(decoderInitResult);
     }
 
     return (sbk_status)ma_sound_init_from_data_source((ma_engine*)system, (*sound)->memoryDecoder, get_flags_from_mode(mode), NULL,
@@ -492,34 +493,36 @@ sbk_status sc_system_play_sound(sc_system* system, sc_sound* sound, sc_sound_ins
             const ma_result decoderInitResult = ma_decoder_init_memory(sound->memoryDecoder->data.memory.pData,
                                                                        sound->memoryDecoder->data.memory.dataSize,
                                                                        &decoderConfig, (*instance)->memoryDecoder);
+            SC_CHECK_STATUS(SBK_FROM_MA(decoderInitResult));
 
             const ma_result initResult = ma_sound_init_from_data_source((ma_engine*)system, (*instance)->memoryDecoder,
                                                                         sound->mode, NULL, &(*instance)->sound);
-            SC_CHECK_STATUS(initResult);
+            SC_CHECK_STATUS(SBK_FROM_MA(initResult));
         }
     }
     else
     {
         const ma_result copyResult =
             ma_sound_init_copy((ma_engine*)system, &sound->sound, sound->mode, NULL, &(*instance)->sound);
-        SC_CHECK_STATUS(copyResult);
+        SC_CHECK_STATUS(SBK_FROM_MA(copyResult));
     }
 
     if (parent != NULL)
     {
-        ma_result attachResult = ma_node_attach_output_bus(*instance, 0, parent->tail->state->userData, 0);
-        SC_CHECK_STATUS(attachResult);
+        const ma_result attachResult = ma_node_attach_output_bus(*instance, 0, parent->tail->state->userData, 0);
+        SC_CHECK_STATUS(SBK_FROM_MA(attachResult));
     }
     else if (system->masterNodeGroup != NULL)
     {
-        ma_result attachResult = ma_node_attach_output_bus(*instance, 0, system->masterNodeGroup->tail->state->userData, 0);
-        SC_CHECK_STATUS(attachResult);
+        const ma_result attachResult =
+            ma_node_attach_output_bus(*instance, 0, system->masterNodeGroup->tail->state->userData, 0);
+        SC_CHECK_STATUS(SBK_FROM_MA(attachResult));
     }
 
     if (paused == MA_FALSE)
     {
-        ma_result startResult = ma_sound_start(&(*instance)->sound);
-        SC_CHECK_STATUS(startResult);
+        const ma_result startResult = ma_sound_start(&(*instance)->sound);
+        SC_CHECK_STATUS(SBK_FROM_MA(startResult));
     }
 
     return SBK_SUCCESS;
@@ -672,9 +675,9 @@ sbk_status sc_sound_instance_set_cursor_in_seconds(sc_sound_instance* instance, 
     ma_sound_get_length_in_seconds(&instance->sound, &lengthInSeconds);
 
     const float percentage               = seconds / lengthInSeconds;
-    const ma_uint32 frameIndexForSeconds = lengthInPCMFrames * percentage;
+    const ma_uint32 frameIndexForSeconds = (ma_uint32)((float)lengthInPCMFrames * percentage);
 
-    return ma_sound_seek_to_pcm_frame(&instance->sound, frameIndexForSeconds);
+    return SBK_FROM_MA(ma_sound_seek_to_pcm_frame(&instance->sound, frameIndexForSeconds));
 }
 
 sbk_status sc_sound_instance_get_loop_position_in_seconds(sc_sound_instance* instance, float* seconds)
@@ -688,7 +691,7 @@ sbk_status sc_sound_instance_get_loop_position_in_seconds(sc_sound_instance* ins
         ma_uint64 loopPointInPCMFrames = 0;
         ma_uint32 sampleRate           = 0;
 
-        SC_CHECK_STATUS(ma_data_source_get_data_format(dataSource, NULL, NULL, &sampleRate, NULL, 0));
+        SC_CHECK_STATUS(SBK_FROM_MA(ma_data_source_get_data_format(dataSource, NULL, NULL, &sampleRate, NULL, 0)));
         ma_data_source_get_loop_point_in_pcm_frames(dataSource, NULL, &loopPointInPCMFrames);
 
         *seconds = (float)loopPointInPCMFrames / (float)sampleRate;
@@ -709,12 +712,13 @@ sbk_status sc_sound_instance_set_loop_position_in_seconds(sc_sound_instance* ins
     {
         ma_uint32 sampleRate           = 0;
 
-        SC_CHECK_STATUS(ma_data_source_get_data_format(dataSource, NULL, NULL, &sampleRate, NULL, 0));
+        SC_CHECK_STATUS(SBK_FROM_MA(ma_data_source_get_data_format(dataSource, NULL, NULL, &sampleRate, NULL, 0)));
 
-        const ma_uint64 loopStartInPCMFrames = loopStartSeconds * sampleRate;
-        const ma_uint64 loopEndInPCMFrames = loopEndSeconds * sampleRate;
+        const ma_uint64 loopStartInPCMFrames = (ma_uint64)(loopStartSeconds * (float)sampleRate);
+        const ma_uint64 loopEndInPCMFrames   = (ma_uint64)(loopEndSeconds * (float)sampleRate);
 
-        SC_CHECK_STATUS(ma_data_source_set_loop_point_in_pcm_frames(dataSource, loopStartInPCMFrames, loopEndInPCMFrames));
+        SC_CHECK_STATUS(
+            SBK_FROM_MA(ma_data_source_set_loop_point_in_pcm_frames(dataSource, loopStartInPCMFrames, loopEndInPCMFrames)));
     }
 
     return SBK_SUCCESS;
@@ -796,13 +800,13 @@ sbk_status sc_dsp_release(sc_dsp* dsp)
 
 sbk_status sc_node_group_add_dsp(sc_node_group* nodeGroup, sc_dsp* dsp, sc_dsp_index index)
 {
-    SC_CHECK(index == SC_DSP_INDEX_HEAD, MA_NOT_IMPLEMENTED);
+    SC_CHECK(index == SC_DSP_INDEX_HEAD, SBK_FROM_MA(MA_NOT_IMPLEMENTED));
     SC_CHECK_ARG(nodeGroup != NULL);
     SC_CHECK_ARG(dsp != NULL);
     SC_CHECK(dsp->prev == NULL,
-             MA_NOT_IMPLEMENTED);  // don't have detatch logic
+             SBK_FROM_MA(MA_NOT_IMPLEMENTED));  // don't have detatch logic
     SC_CHECK(dsp->next == NULL,
-             MA_NOT_IMPLEMENTED);  // don't have detatch logic
+             SBK_FROM_MA(MA_NOT_IMPLEMENTED));  // don't have detatch logic
 
     sbk_status result = SBK_ERR_CHEF;
 
@@ -821,12 +825,12 @@ sbk_status sc_node_group_add_dsp(sc_node_group* nodeGroup, sc_dsp* dsp, sc_dsp_i
             if (currentParent)
             {
                 // Attach the dsp to the get_parent output
-                result = ma_node_attach_output_bus(dsp->state->userData, 0, currentParent, 0);
+                result = SBK_FROM_MA(ma_node_attach_output_bus(dsp->state->userData, 0, currentParent, 0));
                 SC_CHECK_STATUS(result);
 
                 // Make the current head attach to the DSP (which is now the
                 // head)
-                result = ma_node_attach_output_bus(currentHead->state->userData, 0, dsp->state->userData, 0);
+                result = SBK_FROM_MA(ma_node_attach_output_bus(currentHead->state->userData, 0, dsp->state->userData, 0));
                 SC_CHECK_STATUS(result);
 
                 nodeGroup->head->next = dsp;
@@ -842,7 +846,7 @@ sbk_status sc_node_group_add_dsp(sc_node_group* nodeGroup, sc_dsp* dsp, sc_dsp_i
         {
             sc_dsp* currentTail = nodeGroup->tail;
 
-            result = ma_node_attach_output_bus(dsp->state->userData, 0, currentTail->state->userData, 0);
+            result = SBK_FROM_MA(ma_node_attach_output_bus(dsp->state->userData, 0, currentTail->state->userData, 0));
             SC_CHECK_STATUS(result);
 
             break;
@@ -861,7 +865,7 @@ sbk_status sc_node_group_set_parent(sc_node_group* nodeGroup, sc_node_group* par
     SC_CHECK_ARG(nodeGroup != NULL);
     SC_CHECK_ARG(parent != NULL);
 
-    return ma_node_attach_output_bus(nodeGroup->head->state->userData, 0, parent->tail->state->userData, 0);
+    return SBK_FROM_MA(ma_node_attach_output_bus(nodeGroup->head->state->userData, 0, parent->tail->state->userData, 0));
 }
 
 sbk_status sc_node_group_set_parent_endpoint(sc_node_group* nodeGroup)
@@ -872,9 +876,9 @@ sbk_status sc_node_group_set_parent_endpoint(sc_node_group* nodeGroup)
     SC_CHECK(system != NULL, SBK_ERR_NULL);
 
     ma_node* const endPoint = ma_node_graph_get_endpoint((ma_node_graph*)system);
-    SC_CHECK(endPoint != NULL, MA_BAD_ADDRESS);
+    SC_CHECK(endPoint != NULL, SBK_FROM_MA(MA_BAD_ADDRESS));
 
-    return ma_node_attach_output_bus(nodeGroup->head->state->userData, 0, endPoint, 0);
+    return SBK_FROM_MA(ma_node_attach_output_bus(nodeGroup->head->state->userData, 0, endPoint, 0));
 }
 
 sbk_status sc_node_group_get_dsp(sc_node_group* nodeGroup, sc_dsp_type type, sc_dsp** dsp)
@@ -897,7 +901,7 @@ sbk_status sc_node_group_get_dsp(sc_node_group* nodeGroup, sc_dsp_type type, sc_
         currentDsp = currentDsp->next;
     } while (currentDsp != NULL);
 
-    return MA_SUCCESS;
+    return SBK_SUCCESS;
 }
 
 sbk_status sc_node_group_release(sc_node_group* nodeGroup)
@@ -941,7 +945,7 @@ static sbk_status sc_dsp_fader_create(sc_dsp_state* state)
     }
 
     ma_sound_group_config config = ma_sound_group_config_init_2((ma_engine*)state->system);
-    return ma_sound_group_init_ex((ma_engine*)state->system, &config, (ma_sound_group*)state->userData);
+    return SBK_FROM_MA(ma_sound_group_init_ex((ma_engine*)state->system, &config, (ma_sound_group*)state->userData));
 }
 
 static sbk_status sc_dsp_fader_release(sc_dsp_state* state)
@@ -968,7 +972,7 @@ static sbk_status sc_dsp_lowpass_create(sc_dsp_state* state)
     ma_lpf_node_config config = ma_lpf_node_config_init(ma_engine_get_channels((ma_engine*)state->system),
                                                         ma_engine_get_sample_rate((ma_engine*)state->system),
                                                         SC_DSP_CUTOFF_MAX, SC_DSP_DEFAULT_FILTER_ORDER);
-    return ma_lpf_node_init((ma_node_graph*)state->system, &config, NULL, (ma_lpf_node*)state->userData);
+    return SBK_FROM_MA(ma_lpf_node_init((ma_node_graph*)state->system, &config, NULL, (ma_lpf_node*)state->userData));
 }
 
 static sbk_status sc_dsp_lowpass_release(sc_dsp_state* state)
@@ -996,7 +1000,7 @@ static sbk_status sc_dsp_lowpass_set_param_float(sc_dsp_state* state, int index,
         {
             ma_lpf_config lpfConfig =
                 ma_lpf_config_init(format, channels, sampleRate, value, SC_DSP_DEFAULT_FILTER_ORDER);
-            result = ma_lpf_node_reinit(&lpfConfig, state->userData);
+            result = SBK_FROM_MA(ma_lpf_node_reinit(&lpfConfig, state->userData));
             break;
         }
     }
@@ -1045,14 +1049,14 @@ static sbk_status sc_dsp_highpass_create(sc_dsp_state* state)
     ma_hpf_node_config config = ma_hpf_node_config_init(ma_engine_get_channels((ma_engine*)state->system),
                                                         ma_engine_get_sample_rate((ma_engine*)state->system),
                                                         SC_DSP_CUTOFF_MIN, SC_DSP_DEFAULT_FILTER_ORDER);
-    return ma_hpf_node_init((ma_node_graph*)state->system, &config, NULL, (ma_hpf_node*)state->userData);
+    return SBK_FROM_MA(ma_hpf_node_init((ma_node_graph*)state->system, &config, NULL, (ma_hpf_node*)state->userData));
 }
 
 static sbk_status sc_dsp_highpass_release(sc_dsp_state* state)
 {
     ma_hpf_node_uninit((ma_hpf_node*)state->userData, NULL);
     SC_FREE(state->userData, (sc_system*)state->system);
-    return MA_SUCCESS;
+    return SBK_SUCCESS;
 }
 
 static sbk_status sc_dsp_highpass_set_param_float(sc_dsp_state* state, int index, float value)
@@ -1073,7 +1077,7 @@ static sbk_status sc_dsp_highpass_set_param_float(sc_dsp_state* state, int index
         {
             ma_hpf_config hpfConfig =
                 ma_hpf_config_init(format, channels, sampleRate, value, SC_DSP_DEFAULT_FILTER_ORDER);
-            result = ma_hpf_node_reinit(&hpfConfig, state->userData);
+            result = SBK_FROM_MA(ma_hpf_node_reinit(&hpfConfig, state->userData));
             break;
         }
     }
@@ -1156,7 +1160,7 @@ static void sc_meter_node_process_pcm_frames(
 
 static ma_node_vtable sc_meter_node_vtable = {sc_meter_node_process_pcm_frames, NULL, 1, 1, MA_NODE_FLAG_PASSTHROUGH};
 
-static ma_uint32 channels = 2;
+static ma_uint32 s_meterChannels = 2;
 
 static sbk_status sc_meter_node_init(ma_node_graph* nodeGraph,
                                     const ma_allocation_callbacks* allocCallbacks,
@@ -1164,10 +1168,10 @@ static sbk_status sc_meter_node_init(ma_node_graph* nodeGraph,
 {
     ma_node_config baseNodeConfig  = ma_node_config_init();
     baseNodeConfig.vtable          = &sc_meter_node_vtable;
-    baseNodeConfig.pInputChannels  = &channels;
-    baseNodeConfig.pOutputChannels = &channels;
+    baseNodeConfig.pInputChannels  = &s_meterChannels;
+    baseNodeConfig.pOutputChannels = &s_meterChannels;
 
-    return ma_node_init(nodeGraph, &baseNodeConfig, allocCallbacks, node);
+    return SBK_FROM_MA(ma_node_init(nodeGraph, &baseNodeConfig, allocCallbacks, node));
 }
 static void sc_meter_node_uninit(sc_meter_node* node, const ma_allocation_callbacks* allocationCallbacks)
 {
@@ -1179,7 +1183,7 @@ static sbk_status sc_dsp_meter_create(sc_dsp_state* state)
     state->userData = ma_malloc(sizeof(sc_meter_node), &((sc_system*)state->system)->engine.allocationCallbacks);
     if (state->userData == NULL)
     {
-        return MA_OUT_OF_MEMORY;
+        return SBK_ERR_OUT_OF_MEMORY;
     }
 
     return sc_meter_node_init((ma_node_graph*)state->system, NULL, (sc_meter_node*)state->userData);
@@ -1189,7 +1193,7 @@ static sbk_status sc_dsp_meter_release(sc_dsp_state* state)
 {
     sc_meter_node_uninit((sc_meter_node*)state->userData, NULL);
     SC_FREE(state->userData, (sc_system*)state->system);
-    return MA_SUCCESS;
+    return SBK_SUCCESS;
 }
 
 static sc_dsp_vtable s_meterVtable = {sc_dsp_meter_create, sc_dsp_meter_release, NULL, NULL, NULL, 0};
@@ -1198,14 +1202,13 @@ sbk_status sc_dsp_get_metering_info(sc_dsp* dsp, ma_uint32 channelIndex, sc_dsp_
 {
     SC_CHECK_ARG(dsp != NULL);
     SC_CHECK_ARG(dsp->type == SC_DSP_TYPE_METER);
-    SC_CHECK_ARG(channelIndex >= 0);
     SC_CHECK_ARG(channelIndex <= SC_DSP_METER_MAX_CHANNELS);
     SC_CHECK_ARG(meterType >= 0);
     SC_CHECK_ARG(meterType < SC_DSP_METER_NUM_PARAM);
     SC_CHECK_ARG(value != NULL);
 
     sc_meter_node* meterNode = (sc_meter_node*)dsp->state->userData;
-    SC_CHECK(meterNode != NULL, MA_INVALID_DATA);
+    SC_CHECK(meterNode != NULL, SBK_FROM_MA(MA_INVALID_DATA));
 
     switch (meterType)
     {
@@ -1221,7 +1224,7 @@ sbk_status sc_dsp_get_metering_info(sc_dsp* dsp, ma_uint32 channelIndex, sc_dsp_
             break;
     }
 
-    return MA_SUCCESS;
+    return SBK_SUCCESS;
 }
 
 #pragma endregion
@@ -1231,20 +1234,31 @@ sbk_status sc_dsp_get_metering_info(sc_dsp* dsp, ma_uint32 channelIndex, sc_dsp_
 #define SC_CLAP_INPUT_BUS  1
 #define SC_CLAP_OUTPUT_BUS 1
 
-static ma_uint32 sc_clap_input_events_size(const clap_input_events_t* list) { return 0; }
+static ma_uint32 sc_clap_input_events_size(const clap_input_events_t* list)
+{
+    (void)list;
+    return 0;
+}
 
-static const clap_event_header_t* sc_clap_input_events_get(const clap_input_events_t* list, ma_uint32 index) { return NULL; }
+static const clap_event_header_t* sc_clap_input_events_get(const clap_input_events_t* list, ma_uint32 index)
+{
+    (void)list;
+    (void)index;
+    return NULL;
+}
 
 static bool sc_clap_output_events_try_push(const clap_output_events_t* list, const clap_event_header_t* event)
 {
+    (void)list;
+    (void)event;
     return true;
 }
 
 static void sc_clap_node_process_pcm_frames(
     ma_node* node, const float** framesIn, ma_uint32* const frameCountIn, float** framesOut, ma_uint32* frameCountOut)
 {
-    sc_clap_node* const clapNode    = (sc_clap_node*)node;
-    clap_plugin_t* const clapPlugin = clapNode->clapPlugin;
+    sc_clap_node* const clapNode          = (sc_clap_node*)node;
+    const clap_plugin_t* const clapPlugin = clapNode->clapPlugin;
 
     const ma_uint32 inputChannels  = ma_node_get_input_channels(node, 0);
     const ma_uint32 outputChannels = ma_node_get_output_channels(node, 0);
@@ -1268,18 +1282,18 @@ static void sc_clap_node_process_pcm_frames(
         void* deinterleavedInputFrames[MA_MAX_CHANNELS];
         void* deinterleavedOutputFrames[MA_MAX_CHANNELS];
 
-        for (int channel = 0; channel < inputChannels; ++channel)
+        for (ma_uint32 channel = 0; channel < inputChannels; ++channel)
         {
             deinterleavedInputFrames[channel] = ma_malloc(ma_get_bytes_per_sample(ma_format_f32) * *frameCountIn, &((ma_engine*)clapNode->baseNode.pNodeGraph)->allocationCallbacks);
             deinterleavedOutputFrames[channel] = ma_malloc(ma_get_bytes_per_sample(ma_format_f32) * *frameCountOut, &((ma_engine*)clapNode->baseNode.pNodeGraph)->allocationCallbacks);
         }
 
-        ma_deinterleave_pcm_frames(ma_format_f32, inputChannels, *frameCountIn, framesIn[0], &deinterleavedInputFrames);
+        ma_deinterleave_pcm_frames(ma_format_f32, inputChannels, *frameCountIn, framesIn[0], deinterleavedInputFrames);
 
-        inputBuffer.data32        = &deinterleavedInputFrames;
+        inputBuffer.data32        = (float**)deinterleavedInputFrames;
         inputBuffer.channel_count = inputChannels;
 
-        outputBuffer.data32        = &deinterleavedOutputFrames;
+        outputBuffer.data32        = (float**)deinterleavedOutputFrames;
         outputBuffer.channel_count = outputChannels;
 
         inputEvents.size = sc_clap_input_events_size;
@@ -1300,15 +1314,15 @@ static void sc_clap_node_process_pcm_frames(
 
         if (status == CLAP_PROCESS_ERROR)
         {
-            ma_silence_pcm_frames(framesOut, *frameCountOut, ma_format_f32, ma_node_get_output_channels(node, 0));
+            ma_silence_pcm_frames(framesOut[0], *frameCountOut, ma_format_f32, ma_node_get_output_channels(node, 0));
         }
         else
         {
-            ma_interleave_pcm_frames(ma_format_f32, outputChannels, *frameCountOut, &deinterleavedOutputFrames,
-                                     framesOut[0]);
+            ma_interleave_pcm_frames(ma_format_f32, outputChannels, *frameCountOut,
+                                     (const void**)deinterleavedOutputFrames, framesOut[0]);
         }
 
-        for (int channel = 0; channel < inputChannels; ++channel)
+        for (ma_uint32 channel = 0; channel < inputChannels; ++channel)
         {
             ma_free(deinterleavedInputFrames[channel], &((ma_engine*)clapNode->baseNode.pNodeGraph)->allocationCallbacks);
             ma_free(deinterleavedOutputFrames[channel], &((ma_engine*)clapNode->baseNode.pNodeGraph)->allocationCallbacks);
@@ -1334,7 +1348,7 @@ static sbk_status sc_clap_node_init(ma_node_graph* nodeGraph,
     baseNodeConfig.pInputChannels  = &channels;
     baseNodeConfig.pOutputChannels = &channels;
 
-    return ma_node_init(nodeGraph, &baseNodeConfig, allocCallbacks, node);
+    return SBK_FROM_MA(ma_node_init(nodeGraph, &baseNodeConfig, allocCallbacks, node));
 }
 static void sc_clap_node_uninit(sc_clap_node* node, const ma_allocation_callbacks* allocationCallbacks)
 {
@@ -1345,28 +1359,28 @@ static sbk_status sc_dsp_clap_create(sc_dsp_state* state)
 {
     SC_CREATE(state->userData, sc_clap_node, (sc_system*)state->system);
 
-    sc_system* const system                  = state->system;
-    sc_clap_node* const clapNode             = (sc_clap_node*)state->userData;
-    sc_dsp* const dsp                        = (sc_dsp*)state->instance;
-    clap_plugin_factory_t* const clapFactory = dsp->clapFactory;
+    sc_system* const system                        = state->system;
+    sc_clap_node* const clapNode                   = (sc_clap_node*)state->userData;
+    sc_dsp* const dsp                              = (sc_dsp*)state->instance;
+    const clap_plugin_factory_t* const clapFactory = dsp->clapFactory;
     SC_CHECK_ARG(clapFactory != NULL);
 
     const clap_plugin_descriptor_t* const clapDescriptor = clapFactory->get_plugin_descriptor(clapFactory, 0);
-    SC_CHECK(clapDescriptor != NULL, MA_ERROR);
+    SC_CHECK(clapDescriptor != NULL, SBK_FROM_MA(MA_ERROR));
 
     const clap_plugin_t* clapPlugin = clapFactory->create_plugin(clapFactory, &system->clapHost, clapDescriptor->id);
-    SC_CHECK(clapPlugin != NULL, MA_ERROR);
+    SC_CHECK(clapPlugin != NULL, SBK_FROM_MA(MA_ERROR));
 
     if (!clapPlugin->init(clapPlugin))
     {
         clapPlugin->destroy(clapPlugin);
-        return MA_ERROR;
+        return SBK_FROM_MA(MA_ERROR);
     }
 
     if (!clapPlugin->activate(clapPlugin, ma_engine_get_sample_rate((ma_engine*)system), 1, 36))
     {
         clapPlugin->destroy(clapPlugin);
-        return MA_ERROR;
+        return SBK_FROM_MA(MA_ERROR);
     }
 
     clapNode->clapPlugin = clapPlugin;
@@ -1381,8 +1395,8 @@ static sbk_status sc_dsp_clap_release(sc_dsp_state* state)
     SC_CHECK_ARG(state->system != NULL);
     SC_CHECK_ARG(state->userData != NULL);
 
-    sc_clap_node* const clapNode    = (sc_clap_node*)state->userData;
-    clap_plugin_t* const clapPlugin = clapNode->clapPlugin;
+    sc_clap_node* const clapNode          = (sc_clap_node*)state->userData;
+    const clap_plugin_t* const clapPlugin = clapNode->clapPlugin;
 
     clapPlugin->stop_processing(clapPlugin);
     clapPlugin->deactivate(clapPlugin);
@@ -1392,17 +1406,23 @@ static sbk_status sc_dsp_clap_release(sc_dsp_state* state)
     sc_clap_node_uninit(clapNode, &((sc_system*)state->system)->engine.allocationCallbacks);
     SC_FREE(state->userData, (sc_system*)state->system);
 
-    return MA_SUCCESS;
+    return SBK_SUCCESS;
 }
 
 static sbk_status sc_dsp_clap_set_floatParam(sc_dsp_state* dspState, int index, float value)
 {
-    return MA_NOT_IMPLEMENTED;
+    (void)dspState;
+    (void)index;
+    (void)value;
+    return SBK_FROM_MA(MA_NOT_IMPLEMENTED);
 }
 
 static sbk_status sc_dsp_clap_get_floatParam(sc_dsp_state* dspState, int index, float* value)
 {
-    return MA_NOT_IMPLEMENTED;
+    (void)dspState;
+    (void)index;
+    (void)value;
+    return SBK_FROM_MA(MA_NOT_IMPLEMENTED);
 }
 
 static sc_dsp_vtable s_clapVtable = {
@@ -1444,7 +1464,7 @@ sc_dsp_config sc_dsp_config_init(sc_dsp_type type)
     return result;
 }
 
-sc_dsp_config sc_dsp_config_init_clap(clap_plugin_factory_t* pluginFactory)
+sc_dsp_config sc_dsp_config_init_clap(const clap_plugin_factory_t* pluginFactory)
 {
     sc_dsp_config config = sc_dsp_config_init(SC_DSP_TYPE_CLAP);
     config.clapFactory   = pluginFactory;
@@ -1458,26 +1478,25 @@ sbk_status sc_system_clap_get_count(sc_system* system, ma_uint32* count)
     SC_CHECK_ARG(system != NULL);
     SC_CHECK_ARG(count != NULL);
 
-    *count = arrlen(system->clapPlugins);
+    *count = (ma_uint32)arrlen(system->clapPlugins);
 
-    return MA_SUCCESS;
+    return SBK_SUCCESS;
 }
 
 sbk_status sc_system_clap_get_at(sc_system* system, ma_uint32 index, sc_clap** plugin)
 {
     SC_CHECK_ARG(system != NULL);
     SC_CHECK_ARG(plugin != NULL);
-    SC_CHECK_ARG(index >= 0);
 
     ma_uint32 clapCount = 0;
     sc_system_clap_get_count(system, &clapCount);
     SC_CHECK_ARG(index < clapCount);
-    SC_CHECK(clapCount > 0, MA_DOES_NOT_EXIST);
+    SC_CHECK(clapCount > 0, SBK_FROM_MA(MA_DOES_NOT_EXIST));
 
     if (clapCount > 0)
     {
         *plugin = &system->clapPlugins[index];
     }
 
-    return MA_SUCCESS;
+    return SBK_SUCCESS;
 }

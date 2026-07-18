@@ -101,6 +101,7 @@ namespace sbk
             auto update_async() -> void;
 
             bool m_registeredReflection = false;
+            bool m_initSoundChef        = false;
 
             std::shared_ptr<sbk::engine::game_object> m_listenerGameObject;
             std::shared_ptr<sbk::engine::bus> m_masterBus;

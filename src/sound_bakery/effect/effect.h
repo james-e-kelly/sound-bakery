@@ -39,7 +39,7 @@ namespace sbk::engine
             }
         }
 
-        auto set_dsp_clap(clap_plugin_factory* pluginFactory) -> void
+        auto set_dsp_clap(const clap_plugin_factory* pluginFactory) -> void
         {
             m_parameterDescriptions.clear();
 

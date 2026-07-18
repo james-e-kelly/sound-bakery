@@ -5,7 +5,6 @@
 #include "sound_bakery/core/object/object_owner.h"
 #include "sound_bakery/core/memory.h"
 #include "sound_bakery/core/name.h"
-#include <cstdint>
 #include <boost/core/noncopyable.hpp>
 #include <boost/serialization/nvp.hpp>
 

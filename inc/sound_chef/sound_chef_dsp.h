@@ -81,7 +81,7 @@ extern "C"
     typedef struct sc_clap_node
     {
         ma_node_base baseNode;
-        clap_plugin_t* clapPlugin;
+        const clap_plugin_t* clapPlugin;
     } sc_clap_node;
 
 #ifdef __cplusplus

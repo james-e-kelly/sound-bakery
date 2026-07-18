@@ -82,7 +82,7 @@ namespace sbk::engine
         virtual auto gather_parameters(global_parameter_list& parameters) -> void;
 
         auto add_effect(sc_dsp_type type) -> sbk::result<void>;
-        auto add_effect_clap(clap_plugin_factory_t* clapFactory) -> sbk::result<void>;
+        auto add_effect_clap(const clap_plugin_factory_t* clapFactory) -> sbk::result<void>;
 
     protected:
         /**

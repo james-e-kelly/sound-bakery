@@ -9,11 +9,6 @@
 #include "sound_bakery/system.h"
 #include "sound_bakery/voice/voice.h"
 
-static auto convert_pointer_to_id(void* ptr) -> sbk_id
-{
-    return reinterpret_cast<sbk_id>(ptr);
-}
-
 template<class T>
 static auto convert_id_to_pointer(sbk_id id) -> T*
 {
@@ -304,7 +299,7 @@ sbk_status sbk_system_post_event(const char* eventName, sbk_id gameObjectID)
                     if (std::shared_ptr<sbk::engine::event> sharedEvent =
                             std::static_pointer_cast<sbk::engine::event>(event.lock()))
                     {
-                        dispatch_event(sharedGameObject.get(), sharedEvent.get());
+                        (void)dispatch_event(sharedGameObject.get(), sharedEvent.get());
                     }
                 }
             });
@@ -363,7 +358,7 @@ namespace sbk::engine
                     if (std::shared_ptr<sbk::engine::container> sharedContainer =
                             std::static_pointer_cast<sbk::engine::container>(container.lock()))
                     {
-                        play_container(sharedGameObject.get(), sharedContainer.get());
+                        (void)play_container(sharedGameObject.get(), sharedContainer.get());
                     }
                 }
             });

@@ -127,7 +127,7 @@ namespace sbk::engine
                         {
                             stateMachine.m_children.clear();
                             ++stateMachine.m_numTimesPlayed;
-                            stateMachine.init_child();
+                            (void)stateMachine.init_child();
 
                             stateMachine.process_event(event_play());
                         }

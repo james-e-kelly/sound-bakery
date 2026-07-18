@@ -105,11 +105,19 @@ typedef enum
     SBK_ERROR_MAX
 } sbk_status;
 
+/**
+ * sbk_status shares its numeric space with ma_result (miniaudio codes are <= 0,
+ * Sound Bakery codes are > 0), so converting between the two enums is safe.
+ * These macros make the conversion explicit at the boundary.
+ */
+#define SBK_FROM_MA(maResult) ((sbk_status)(maResult))
+#define MA_FROM_SBK(sbkStatus) ((ma_result)(sbkStatus))
+
 #define SC_CHECK(condition, result) \
     if ((condition) == MA_FALSE)    \
     return (result)
 #define SC_CHECK_STATUS(result) \
-    if (((sbk_status)result) != SBK_SUCCESS) \
+    if (((sbk_status)(result)) != SBK_SUCCESS) \
     return (result)
 #define SC_CHECK_ARG(condition)  \
     if ((condition) == MA_FALSE) \
@@ -208,7 +216,7 @@ struct sc_dsp_config
 {
     sc_dsp_type type;
     sc_dsp_vtable* vtable;
-    clap_plugin_factory_t* clapFactory;
+    const clap_plugin_factory_t* clapFactory;
 };
 
 /**
@@ -222,7 +230,7 @@ struct sc_dsp
     sc_dsp_state* state;    //< holds the instance data for the dsp
     sc_dsp_vtable* vtable;  //< holds the functions for interacting with the underlying node type. Must be not null
     sc_dsp_type type;
-    clap_plugin_factory_t* clapFactory; //< If this is a CLAP plugin, the factory to the plugin
+    const clap_plugin_factory_t* clapFactory; //< If this is a CLAP plugin, the factory to the plugin
     sc_dsp* next;  //< when in a node group, the get_parent/next dsp. Can be null if the head node
     sc_dsp* prev;  //< when in a node group, the child/previous dsp. Can be null if the tail node
 };
@@ -259,7 +267,7 @@ struct sc_clap
 {
     ma_handle dynamicLibraryHandle;         //< Handle to the .clap file
     clap_plugin_entry_t* clapEntry;         //< Entry point of the plugin
-    clap_plugin_factory_t* pluginFactory;    //< Plugin factory to poll and create plugins from
+    const clap_plugin_factory_t* pluginFactory;    //< Plugin factory to poll and create plugins from
 };
 
 /**

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <rttr/type.h>
-#include <cstdint>
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
@@ -151,7 +150,7 @@ namespace sbk::core::serialization
             {
                 BOOST_ASSERT(sbk::engine::system::get() != nullptr);
                 object->clear_flags(object_flags::loading);
-                sbk::engine::system::get()->add_object_to_database(object);
+                (void)sbk::engine::system::get()->add_object_to_database(object);
             }
         }
     };
@@ -476,7 +475,7 @@ namespace sbk::core::serialization
                     loadedVariant.convert((rttr::type)valueType);
                     if (needToCreate)
                     {
-                        view.insert(view.begin() + index, loadedVariant);
+                        view.insert(view.begin() + static_cast<int>(index), loadedVariant);
                     }
                     else
                     {

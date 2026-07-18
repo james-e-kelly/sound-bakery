@@ -43,8 +43,6 @@ auto sbk::core::object_owner::create_runtime_object(const rttr::type& type) -> s
         // exceptions thrown while constructing an object or growing our bookkeeping (e.g. std::bad_alloc).
         return sbk::make_error(SBK_ERR_OUT_OF_MEMORY, exception.what());
     }
-
-    return sbk::make_error(SBK_ERR_BAKERY);
 }
 
 auto sbk::core::object_owner::create_database_object(const rttr::type& type, bool addToDatabase) -> sbk::result<std::shared_ptr<sbk::core::database_object>>
@@ -63,7 +61,7 @@ auto sbk::core::object_owner::create_database_object(const rttr::type& type, boo
         {
             if (addToDatabase)
             {
-                system->add_object_to_database(databaseObject);
+                (void)system->add_object_to_database(databaseObject);
             }
 
             return databaseObject;

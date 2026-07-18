@@ -154,7 +154,7 @@ extern "C"
      * SC_DSP_TYPE_UNKOWN.
      */
     sc_dsp_config SC_API sc_dsp_config_init(sc_dsp_type type);
-    sc_dsp_config SC_API sc_dsp_config_init_clap(clap_plugin_factory_t* pluginFactory);
+    sc_dsp_config SC_API sc_dsp_config_init_clap(const clap_plugin_factory_t* pluginFactory);
 
     sbk_status SC_API sc_dsp_get_parameter_float(sc_dsp* dsp, int index, float* value);
     sbk_status SC_API sc_dsp_set_parameter_float(sc_dsp* dsp, int index, float value);

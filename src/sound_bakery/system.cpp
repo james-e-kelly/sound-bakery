@@ -5,7 +5,6 @@
 #include "sound_bakery/gameobject/gameobject.h"
 #include "sound_bakery/node/bus/bus.h"
 #include "sound_bakery/profiling/voice_tracker.h"
-#include "sound_bakery/reflection/reflection.h"
 #include "sound_bakery/util/type_helper.h"
 #include "spdlog/sinks/daily_file_sink.h"
 #include "spdlog/sinks/rotating_file_sink.h"
@@ -171,8 +170,12 @@ system::~system()
     remove_all();
     BOOST_ASSERT(get_objects_count() == 0);
 
-    const sbk_status closeResult = sc_system_close(this);
-    sbk::log_error(closeResult, "sc_system_close");
+    if (m_initSoundChef)
+    {
+        const sbk_status closeResult = sc_system_close(this);
+        sbk::log_error(closeResult, "sc_system_close");
+        m_initSoundChef = false;
+    }
 
     spdlog::shutdown();
 }
@@ -255,6 +258,7 @@ auto system::init(const sbk_system_config& config) -> sbk::result<void>
     clapPlugins     = nullptr;
 
     SBK_TRY_C(sc_system_init(this, &configCopy.soundChefConfig));  //< Logs and forwards the error if init fails.
+    m_initSoundChef = true;
 
     if (!s_registeredReflection)
     {

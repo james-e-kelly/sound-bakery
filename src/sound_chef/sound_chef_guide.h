@@ -158,4 +158,119 @@
  *
  * It is recommended to refer to the @ref SB::Engine::node_instance class for how Sound Bakery uses Sound Chef to
  * connect node groups together, insert lowpass and highpass effects, and insert user-defined effects.
+ *
+ * ## Complete Example: Interactive Footstep System
+ *
+ * Here's a practical example combining sounds, effects, and node groups for an interactive audio system:
+ *
+ * @code
+ * // Initialize system
+ * sc_system* system = NULL;
+ * sc_system_create(&system);
+ * sc_system_init(system);
+ *
+ * // Load sounds
+ * sc_sound* footstep_concrete = NULL;
+ * sc_sound* footstep_dirt = NULL;
+ * sc_system_create_sound(system, "footstep_concrete.wav", SC_SOUND_MODE_DEFAULT, &footstep_concrete);
+ * sc_system_create_sound(system, "footstep_dirt.wav", SC_SOUND_MODE_DEFAULT, &footstep_dirt);
+ *
+ * // Create footstep bus with lowpass for simulation
+ * sc_node_group* footstep_bus = NULL;
+ * sc_system_create_node_group(system, &footstep_bus);
+ *
+ * // Add lowpass to footstep bus (for underwater footsteps, for example)
+ * const sc_dsp_config lpf_config = sc_dsp_config_init(SC_DSP_TYPE_LOWPASS);
+ * sc_dsp* lpf = NULL;
+ * sc_system_create_dsp(system, &lpf_config, &lpf);
+ * sc_node_group_add_dsp(footstep_bus, lpf, SC_DSP_INDEX_HEAD);
+ *
+ * // Add compression to control dynamic range
+ * const sc_dsp_config compressor_config = sc_dsp_config_init(SC_DSP_TYPE_COMPRESSOR);
+ * sc_dsp* compressor = NULL;
+ * sc_system_create_dsp(system, &compressor_config, &compressor);
+ * sc_node_group_add_dsp(footstep_bus, compressor, SC_DSP_INDEX_HEAD);
+ *
+ * // Play a footstep on concrete
+ * sc_sound_instance* instance1 = NULL;
+ * sc_system_play_sound(system, footstep_concrete, &instance1, footstep_bus, SC_FALSE);
+ *
+ * // Adjust the lowpass cutoff for environmental effect
+ * sc_dsp_set_parameter_float(lpf, SC_DSP_LOWPASS_CUTOFF, 2000.0f);
+ *
+ * // Play another footstep on dirt
+ * sc_sound_instance* instance2 = NULL;
+ * sc_system_play_sound(system, footstep_dirt, &instance2, footstep_bus, SC_FALSE);
+ * @endcode
+ *
+ * ## Error Handling
+ *
+ * Most Sound Chef functions return @ref sc_result. Always check for errors:
+ *
+ * @code
+ * sc_system* system = NULL;
+ * sc_result result = sc_system_create(&system);
+ * if (result != SC_SUCCESS) {
+ *     // Handle error
+ *     return;
+ * }
+ *
+ * result = sc_system_init(system);
+ * if (result != SC_SUCCESS) {
+ *     // Handle error
+ *     sc_system_release(&system);
+ *     return;
+ * }
+ * @endcode
+ *
+ * ## Cleanup
+ *
+ * Always release resources when done:
+ *
+ * @code
+ * // Stop sounds (instances are managed by Sound Chef)
+ * // Release DSP effects if created manually
+ * // Release node groups if created manually
+ * // Finally, release the system
+ * sc_system_release(&system);
+ * @endcode
+ *
+ * ## Memory Management
+ *
+ * - @ref sc_sound objects represent loaded audio data and are reference-counted
+ * - Multiple @ref sc_sound_instance objects can reference the same @ref sc_sound
+ * - Releasing a @ref sc_sound does not stop playing instances; they continue until finished
+ * - Node graphs and DSP effects are managed by the system and released with it
+ * - For thread-safe operations, see @ref SECURITY.md
+ *
+ * ## Available DSP Effects
+ *
+ * Sound Chef provides these DSP effect types (see @ref sound_chef_dsp.h for parameter details):
+ *
+ * | Effect | Purpose | Common Parameters |
+ * |--------|---------|-------------------|
+ * | Lowpass (LPF) | Remove high frequencies | Cutoff, Resonance |
+ * | Highpass (HPF) | Remove low frequencies | Cutoff, Resonance |
+ * | Bandpass (BPF) | Keep frequencies in range | Cutoff, Resonance |
+ * | Notch | Remove specific frequency | Cutoff, Resonance |
+ * | Peaking | Boost/cut frequency range | Cutoff, Gain, Resonance |
+ * | Compressor | Control dynamic range | Threshold, Ratio, Attack, Release |
+ * | Reverb | Add spacious ambience | WetMix, DryMix, Decay |
+ * | Delay | Create repeating echoes | DelayTime, Feedback, WetMix |
+ * | Panning | Stereo positioning | Pan (-1.0 to 1.0) |
+ * | Gating | Silence below threshold | Threshold, Attack, Release |
+ *
+ * Refer to miniaudio documentation for detailed effect behavior:
+ * https://miniaud.io/docs/manual/index.html#DSP
+ *
+ * ## Performance Tips
+ *
+ * - **Reuse Sounds**: Create sounds once, play instances many times
+ * - **Reuse Node Groups**: Many sounds can route through the same bus
+ * - **Minimize Effects**: Each effect has CPU cost; only use what's needed
+ * - **Parameter Updates**: Changing DSP parameters is fast; do it in game loop if needed
+ * - **Streaming**: Use @ref SC_SOUND_MODE_STREAMING for large files to save memory
+ *
+ * @see COMPONENTS.md - Overview of Sound Chef vs Sound Bakery
+ * @see SECURITY.md - Thread safety and audio callback constraints
  */

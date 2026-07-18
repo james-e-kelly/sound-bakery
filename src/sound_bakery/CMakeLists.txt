@@ -21,8 +21,8 @@ set_target_properties(sound_bakery_shared PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${
 target_precompile_headers(sound_bakery_shared PRIVATE ${PCH_HEADER})
 target_precompile_headers(sound_bakery_static PRIVATE ${PCH_HEADER})
 
-target_compile_options(sound_bakery_shared PRIVATE ${PROJECT_WARNING_FLAGS})
-target_compile_options(sound_bakery_static PRIVATE ${PROJECT_WARNING_FLAGS})
+target_compile_options(sound_bakery_shared PRIVATE ${PROJECT_LIBRARY_WARNING_FLAGS})
+target_compile_options(sound_bakery_static PRIVATE ${PROJECT_LIBRARY_WARNING_FLAGS})
 
 target_include_directories(sound_bakery_shared
     PUBLIC ${PROJECT_SOURCE_DIR}/src/

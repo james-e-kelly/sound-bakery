@@ -1,9 +1,9 @@
 #pragma once
 
+#include "sound_bakery/reflection/reflection.h" //< Must be included here and not individual files. TODO: Investigate rttr strangeness when included in multiple files
+
 #include "Delegates.h"
 #include "concurrencpp/concurrencpp.h"
-#include "sound_bakery/core/core_fwd.h"
-#include "sound_bakery/reflection/reflection.h"
 #include "sound_bakery_internal.h"
 #include "spdlog/async.h"
 #include "spdlog/spdlog.h"
@@ -19,6 +19,7 @@
 #include <boost/range/algorithm.hpp>
 #include <boost/assert.hpp>
 #include <boost/serialization/utility.hpp>
+#include <cstdint>
 #include <filesystem>
 #include <fstream>
 #include <iostream>

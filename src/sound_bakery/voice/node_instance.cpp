@@ -36,18 +36,18 @@ auto sbk::engine::node_instance_fsm::action_init(const event_init& init) -> void
     {
         case node_instance_type::child:
         {
-            init_child();
+            (void)init_child();
             break;
         }
         case node_instance_type::bus:
         {
-            init_parent();
+            (void)init_parent();
             break;
         }
         case node_instance_type::main:
         {
-            init_parent();
-            init_child();
+            (void)init_parent();
+            (void)init_child();
             break;
         }
     }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "sound_bakery/pch.h"
 #include "sound_bakery/core/core_fwd.h"
 
 namespace sbk::core
