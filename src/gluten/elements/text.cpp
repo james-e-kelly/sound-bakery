@@ -5,7 +5,7 @@
 
 namespace
 {
-    auto is_valid_character(typename const std::string::value_type& character) -> bool
+    auto is_valid_character(const std::string::value_type& character) -> bool
     {
         return character >= 0 && character <= 255;
     }
