@@ -1,17 +1,12 @@
-#include "database.h"
+ #include "database.h"
 
 #include "sound_bakery/util/type_helper.h"
 
-auto sbk::core::database::add_object_to_database(const std::shared_ptr<database_object>& object) -> void
+auto sbk::core::database::add_object_to_database(const std::shared_ptr<database_object>& object) -> sbk::result<void>
 {
-    if (!object)
-    {
-        SBK_ERROR("Cannot add object to database. Object was null");
-        return;
-    }
+    SBK_CHECK_MSG(object, SBK_ERR_INVALID_PARAMETER, "Cannot add a null object to the database");
 
-    sbk_id objectID        = object->get_database_id();
-    database_name objectName = object->get_database_name();
+    sbk_id objectID = object->get_database_id();
 
     if (objectID == SBK_INVALID_ID)
     {
@@ -19,85 +14,76 @@ auto sbk::core::database::add_object_to_database(const std::shared_ptr<database_
         object->m_objectID = objectID;  // calling the function would trigger the callbacks so set directly
     }
 
-    BOOST_ASSERT_MSG(objectName.valid(), "Database names must be valid");
+    SBK_TRYV(work_till_name_is_unique(object));
 
-    if (auto iter = m_idToPointerMap.find(objectID); iter != m_idToPointerMap.end())
-    {
-        SBK_ERROR("Cannot add object to database. Object ID already mapped");
-        return;
-    }
+    auto idIter = m_idToPointerMap.find(objectID);
+    SBK_CHECK_MSG(idIter == m_idToPointerMap.end(), SBK_ERR_BAKERY_OBJECT_EXISTS, "Adding an object to the database should only happen once. There is already an object with this ID");
 
-    std::unordered_map<database_name, sbk_id>::iterator iter = m_nameToIdMap.find(objectName);
-
-    while (iter != m_nameToIdMap.end())
-    {
-        object->m_objectName = create_new_name(object->get_type());
-        objectName           = object->get_database_name();
-        iter = m_nameToIdMap.find(objectName);
-    }
-
-    m_idToPointerMap[objectID] = object;
-    m_nameToIdMap[objectName]  = objectID;
+    m_idToPointerMap[objectID]                  = object;
+    m_nameToIdMap[object->get_database_name()]  = objectID;
 
     object->get_on_destroy().AddRaw(this, &sbk::core::database::on_object_destroyed);
     object->get_on_update_id().AddRaw(this, &sbk::core::database::update_id);
     object->get_on_update_database_name().AddRaw(this, &sbk::core::database::update_database_name);
 }
 
-auto sbk::core::database::add_object_to_database(sbk_id id, const database_name& name) -> void
+auto sbk::core::database::assign_name_to_id(sbk_id id, const database_name& name) -> sbk::result<void>
 {
-    if (id == SBK_INVALID_ID)
-    {
-        SBK_ERROR("Cannot add invalid ID to database");
-        return;
-    }
+    SBK_CHECK(id != SBK_INVALID_ID, SBK_ERR_INVALID_PARAMETER);
+    SBK_CHECK(name.valid(), SBK_ERR_INVALID_PARAMETER);
 
-    if (!name.valid())
-    {
-        SBK_ERROR("Cannot add invalid name to database");
-        return;
-    }
-
-    if (auto iter = m_idToPointerMap.find(id); iter != m_idToPointerMap.end())
-    {
-        SBK_WARN("Cannot add object to database. Object ID already mapped");
-        return;
-    }
-
-    if (auto iter = m_nameToIdMap.find(name); iter != m_nameToIdMap.end())
-    {
-        SBK_WARN("Cannot add object to database. Object name already mapped");
-        m_idToPointerMap.erase(id);
-        return;
-    }
+    auto nameIter = m_nameToIdMap.find(name);
+    SBK_CHECK_MSG(nameIter == m_nameToIdMap.end(), SBK_ERR_BAKERY_OBJECT_EXISTS, "Assigning a name to an ID should only happen once");
 
     m_nameToIdMap[name] = id;
 }
 
-auto sbk::core::database::remove_object_from_database(sbk_id objectID) -> void
+auto sbk::core::database::remove_object_from_database(sbk_id objectID) -> sbk::result<void>
 {
-    if (objectID == SBK_INVALID_ID)
-    {
-        SBK_ERROR("Cannot remove object from database. Object ID is 0!");
-        return;
-    }
+    SBK_CHECK(objectID != SBK_INVALID_ID, SBK_ERR_INVALID_PARAMETER);
+
+    auto nameIter       = m_nameToIdMap.end();
+    bool objectExpired  = false;
 
     if (const auto idIter = m_idToPointerMap.find(objectID); idIter != m_idToPointerMap.end())
     {
         if (const std::shared_ptr<sbk::core::database_object> object = idIter->second.lock())
         {
-            if (auto nameIter = m_nameToIdMap.find(object->get_database_name());
-                nameIter != m_nameToIdMap.end())
-            {
-                m_nameToIdMap.erase(nameIter);
-            }
+            nameIter = m_nameToIdMap.find(object->get_database_name());
 
             object->get_on_destroy().RemoveObject(this);
             object->get_on_update_id().RemoveObject(this);
             object->get_on_update_name().RemoveObject(this);
         }
+        else
+        {
+            objectExpired = true;
+        }
 
         m_idToPointerMap.erase(idIter);
+    }
+
+    if (nameIter != m_nameToIdMap.end())
+    {
+        m_nameToIdMap.erase(nameIter);
+    }
+    else if (objectExpired)
+    {
+        // Removing objects is meant to happen before their destruction
+        // It should be very unlikely any code removes an ID alone
+        // However, in the rare chance it happens, do a slow search for the ID in the name map
+        for (nameIter = m_nameToIdMap.begin(); nameIter != m_nameToIdMap.end();)
+        {
+            if (nameIter->second == objectID)
+            {
+                nameIter = m_nameToIdMap.erase(nameIter);
+                break;
+            }
+            else
+            {
+                ++nameIter;
+            }
+        }
     }
 }
 
@@ -153,12 +139,12 @@ auto sbk::core::database::get_all_database_names() const -> std::vector<database
 
 auto sbk::core::database::get_database_object_count() const -> size_t
 {
-    return std::max<std::size_t>(m_idToPointerMap.size(), m_nameToIdMap.size());
+    return m_idToPointerMap.size();
 }
 
 auto sbk::core::database::get_database_object_at(size_t index) const -> std::weak_ptr<database_object>
 {
-    std::unordered_map<sbk_id, std::weak_ptr<database_object>>::const_iterator iter = m_idToPointerMap.begin();
+    auto iter = m_idToPointerMap.cbegin();
     if (iter != m_idToPointerMap.cend() && index < m_idToPointerMap.size())
     {
         std::advance(iter, index);
@@ -186,10 +172,27 @@ auto sbk::core::database::create_new_name(const rttr::type& type) -> std::string
     static std::atomic<int> serialNumberGenerator = 0;
 
     BOOST_ASSERT(type.is_valid());
-    const std::string typeName =
-        type.is_valid() ? sbk::util::type_helper::get_display_name_from_type(type).data() : "Object";
+    const std::string typeName = type.is_valid() ? sbk::util::type_helper::get_display_name_from_type(type).data() : "Object";
 
     return fmt::format("{}_{}", typeName, serialNumberGenerator.fetch_add(1));
+}
+
+auto sbk::core::database::work_till_name_is_unique(const std::shared_ptr<database_object>& object) -> sbk::result<void>
+{
+    database_name objectName = object->get_database_name();
+
+    SBK_CHECK_MSG(objectName.valid(), SBK_ERR_BAKERY, "Database names must be valid");
+
+    auto iter = m_nameToIdMap.find(objectName);
+
+    while (iter != m_nameToIdMap.end())
+    {
+        object->m_objectName = create_new_name(object->get_type());
+        objectName           = object->get_database_name();
+        iter                 = m_nameToIdMap.find(objectName);
+    }
+
+    return sbk::ok();
 }
 
 auto sbk::core::database::update_id(sbk_id oldID, sbk_id newID) -> void

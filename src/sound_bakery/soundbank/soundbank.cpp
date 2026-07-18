@@ -21,7 +21,7 @@ auto sbk::engine::soundbank_database::fill_runtime_database() -> void
     {
         for (const soundbank_database_entry& entry : database)
         {
-            system->add_object_to_database(entry.assetID, entry.assetName);
+            system->assign_name_to_id(entry.assetID, entry.assetName);
         }
     }
 }

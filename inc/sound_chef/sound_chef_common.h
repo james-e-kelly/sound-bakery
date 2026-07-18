@@ -94,6 +94,7 @@ typedef enum
     SBK_ERR_BAKERY_UNINITIALIZED,   //< The system object is not created or not initialized
     SBK_ERR_BAKERY_SERIALIZATION,   //< An error happened during serialization
     SBK_ERR_BAKERY_OBJECT_NOT_FOUND,//< An object with the ID or name was not found
+    SBK_ERR_BAKERY_OBJECT_EXISTS,   //< The object with this ID or name already exists
 
     // 301-400: System Errors
     SBK_ERR_SYSTEM = 301,           //< Generic System error
