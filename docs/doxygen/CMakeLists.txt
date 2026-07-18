@@ -6,6 +6,12 @@ FetchContent_MakeAvailable(doxygenawesome)
 set(DOXYGEN_IN ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in)
 set(DOXYGEN_OUT ${CMAKE_BINARY_DIR}/docs/build/Doxyfile)
 
+# Version label shown in the docs (PROJECT_NUMBER). Defaults to the project
+# version; the CI docs job overrides it per release/dev build.
+if(NOT DEFINED SOUND_BAKERY_DOXYGEN_VERSION)
+  set(SOUND_BAKERY_DOXYGEN_VERSION "v${PROJECT_VERSION}")
+endif()
+
 configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
 message(STATUS "Creating doxyfile")
 

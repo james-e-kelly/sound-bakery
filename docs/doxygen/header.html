@@ -58,7 +58,7 @@ $extrastylesheet
   <!--END PROJECT_LOGO-->
   <!--BEGIN PROJECT_NAME-->
   <td id="projectalign">
-   <div id="projectname">$projectname<!--BEGIN PROJECT_NUMBER-->&nbsp<span id="projectnumber">&#160;$projectnumber</span><!--END PROJECT_NUMBER-->
+   <div id="projectname">$projectname<!--BEGIN PROJECT_NUMBER-->&nbsp<span id="projectnumber">&#160;<select id="sbk-version-select" aria-label="Documentation version"><option>$projectnumber</option></select></span><!--END PROJECT_NUMBER-->
    </div>
    <!--BEGIN PROJECT_BRIEF--><div id="projectbrief">$projectbrief</div><!--END PROJECT_BRIEF-->
   </td>
@@ -87,4 +87,30 @@ $extrastylesheet
 </table>
 </div>
 <!--END TITLEAREA-->
+<!-- Sound Bakery documentation version switcher -->
+<script type="text/javascript">
+(function () {
+    var current = "$projectnumber";
+    var select = document.getElementById('sbk-version-select');
+    if (!select) { return; }
+    // versions.json lives at the site root, one level above this version's folder.
+    fetch("$relpath^../versions.json", { cache: "no-cache" })
+        .then(function (r) { return r.ok ? r.json() : []; })
+        .then(function (versions) {
+            if (!versions || !versions.length) { return; }
+            select.innerHTML = "";
+            versions.forEach(function (v) {
+                var opt = document.createElement('option');
+                opt.value = v;
+                opt.textContent = v;
+                if (v === current) { opt.selected = true; }
+                select.appendChild(opt);
+            });
+        })
+        .catch(function () { /* single-version or local build: leave the label as-is */ });
+    select.addEventListener('change', function () {
+        window.location.href = "$relpath^../" + select.value + "/index.html";
+    });
+})();
+</script>
 <!-- end header part -->

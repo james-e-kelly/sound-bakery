@@ -1,0 +1,155 @@
+# Builds the Doxygen docs and publishes them to the gh-pages branch, one folder
+# per release tag plus a rolling /dev/ from main:
+#   /            -> redirect to /latest/
+#   /versions.json  -> drives the in-page version switcher
+#   /latest/     -> newest release
+#   /vX.Y.Z/     -> each release tag
+#   /dev/        -> latest main
+#
+# One-time setup: repo Settings -> Pages -> Source = "Deploy from a branch",
+# Branch = gh-pages / (root). The branch is created by the first run.
+name: Docs
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+    tags: [ "v*" ]
+
+permissions:
+  contents: read
+
+# Serialize deploys so concurrent runs don't race on the gh-pages branch.
+concurrency:
+  group: docs-deploy
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    name: Build and publish docs
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write   # push to gh-pages
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Doxygen
+        run: |
+          sudo apt update
+          sudo apt install -y doxygen graphviz
+
+      - name: Determine version
+        id: meta
+        shell: bash
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            echo "version=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"   # e.g. v0.4.0
+            echo "is_release=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=dev" >> "$GITHUB_OUTPUT"
+            echo "is_release=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Fetch doxygen-awesome-css
+        # Same commit the CMake build pins in cmake/external_dependencies.cmake.
+        run: |
+          git clone https://github.com/jothepro/doxygen-awesome-css.git awesome
+          git -C awesome checkout 82d315e34ac419a81caccf470cc2fbc2ec8ee524
+
+      - name: Generate Doxyfile
+        shell: bash
+        env:
+          AWESOME_DIR: ${{ github.workspace }}/awesome
+          DOX_VERSION: ${{ steps.meta.outputs.version }}
+        run: |
+          # Fill in the @VARS@ the CMake build would normally substitute.
+          sed \
+            -e "s|@CMAKE_SOURCE_DIR@|${GITHUB_WORKSPACE}|g" \
+            -e "s|@doxygenawesome_SOURCE_DIR@|${AWESOME_DIR}|g" \
+            -e "s|@SOUND_BAKERY_DOXYGEN_VERSION@|${DOX_VERSION}|g" \
+            docs/doxygen/Doxyfile.in > Doxyfile
+          # Redirect output out of the source tree (the .in writes in-tree).
+          {
+            echo "OUTPUT_DIRECTORY = ${GITHUB_WORKSPACE}/docs-out"
+            echo "HTML_OUTPUT = html"
+            echo "WARN_AS_ERROR = NO"
+          } >> Doxyfile
+
+      - name: Build docs
+        run: doxygen Doxyfile
+
+      - name: Publish to gh-pages
+        shell: bash
+        env:
+          GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ steps.meta.outputs.version }}
+          IS_RELEASE: ${{ steps.meta.outputs.is_release }}
+        run: |
+          set -euo pipefail
+          html_dir="${GITHUB_WORKSPACE}/docs-out/html"
+          test -f "${html_dir}/index.html"
+
+          repo_url="https://x-access-token:${GIT_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+
+          # Clone the existing gh-pages branch, or start a fresh orphan on first run.
+          if ! git clone --branch gh-pages --depth 1 "${repo_url}" gh-pages 2>/dev/null; then
+            rm -rf gh-pages
+            git init gh-pages
+            git -C gh-pages checkout --orphan gh-pages
+          fi
+          cd gh-pages
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Replace this build's folder (e.g. v0.4.0 or dev).
+          rm -rf "${VERSION}"
+          mkdir -p "${VERSION}"
+          cp -a "${html_dir}/." "${VERSION}/"
+
+          # Releases also refresh the /latest/ alias.
+          if [ "${IS_RELEASE}" = "true" ]; then
+            rm -rf latest
+            mkdir -p latest
+            cp -a "${html_dir}/." latest/
+          fi
+
+          # versions.json: dev first (if present), then release tags newest-first.
+          releases=$(find . -maxdepth 1 -type d -name 'v*' -printf '%f\n' | sort -rV)
+          {
+            printf '['
+            first=1
+            if [ -d dev ]; then printf '"dev"'; first=0; fi
+            for r in ${releases}; do
+              if [ "${first}" -eq 0 ]; then printf ','; fi
+              printf '"%s"' "${r}"
+              first=0
+            done
+            printf ']\n'
+          } > versions.json
+          echo "versions.json: $(cat versions.json)"
+
+          # Root redirect -> /latest/ when a release exists, otherwise /dev/.
+          target="dev"
+          if [ -d latest ]; then target="latest"; fi
+          {
+            echo '<!DOCTYPE html>'
+            echo '<meta charset="utf-8">'
+            echo "<meta http-equiv=\"refresh\" content=\"0; url=./${target}/index.html\">"
+            echo "<link rel=\"canonical\" href=\"./${target}/index.html\">"
+            echo '<title>Sound Bakery documentation</title>'
+            echo "<a href=\"./${target}/index.html\">Redirecting to the ${target} documentation&hellip;</a>"
+          } > index.html
+
+          # Stop GitHub Pages' Jekyll from mangling Doxygen's output.
+          touch .nojekyll
+
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No documentation changes to publish."
+          else
+            git commit -m "docs: update ${VERSION} [skip ci]"
+            git push "${repo_url}" HEAD:gh-pages
+          fi

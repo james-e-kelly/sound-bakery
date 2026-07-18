@@ -1,105 +1,90 @@
-# This is a basic workflow to help you get started with the GitHub Auto-Release on Commit Action.
-name: AutoRelease
+# Cutting a release: push a semver tag, e.g.
+#   git tag v0.4.0 && git push origin v0.4.0
+# This builds every platform and drafts a GitHub release with all dist artifacts
+# attached. The release is always a draft, so a human reviews and publishes it
+# (and can attach extra files first).
+name: Release
 
 on:
   push:
-    branches: [ main ]
+    tags:
+      - 'v*'
+
+# Only the release job needs write access to create the draft release; the
+# reusable build workflows below run with their own read-only permissions.
+permissions:
+  contents: write
 
 jobs:
+  check_version:
+    name: Verify tag matches project version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify tag matches CMake project version
+        shell: bash
+        # Guards against the tag and project(VERSION ...) drifting apart. The
+        # numeric core is compared, so a pre-release tag (v0.4.0-rc1) is allowed
+        # as long as its version matches CMakeLists.txt.
+        run: |
+          tag="${GITHUB_REF_NAME#v}"   # strip leading 'v'
+          tag_core="${tag%%-*}"        # strip any -rc1 / -beta suffix
+          cmake_version=$(grep -m1 -oP 'VERSION\s+\K[0-9]+\.[0-9]+\.[0-9]+' CMakeLists.txt)
+          echo "Tag version:   $tag_core (from tag $GITHUB_REF_NAME)"
+          echo "CMake version: $cmake_version"
+          if [ -z "$cmake_version" ]; then
+            echo "::error::Could not read project(VERSION ...) from CMakeLists.txt"
+            exit 1
+          fi
+          if [ "$tag_core" != "$cmake_version" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match project(VERSION $cmake_version). Bump CMakeLists.txt or retag."
+            exit 1
+          fi
+
   build_linux:
     name: Build On Linux GCC And Clang
+    needs: check_version
     uses: ./.github/workflows/linux.yaml
   build_mac:
     name: Build On Mac
+    needs: check_version
     uses: ./.github/workflows/macos.yaml
   build_windows:
     name: Build On Windows
+    needs: check_version
     uses: ./.github/workflows/windows.yaml
+
   release:
     name: Create Release
     needs: [build_linux, build_mac, build_windows]
     runs-on: ubuntu-latest
-    
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4.1.3
-      - name: Create Auto Release
-        id: auto_release 
-        uses: CupOfTea696/gh-action-auto-release@v1.0.0
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v4
         with:
-          title: "Release: $version"
-          tag: "v$semver"
+          path: artifacts
+
+      - name: Package artifacts
+        shell: bash
+        # download-artifact drops each uploaded artifact into its own subdirectory
+        # (windows-dist, mac-dist, linux-gcc-dist, linux-clang-dist). Zip each one.
+        run: |
+          cd artifacts
+          for dir in */; do
+            name="${dir%/}"
+            zip -r "../${name}.zip" "$name"
+          done
+          cd ..
+          ls -la ./*.zip
+
+      - name: Create draft release
+        uses: softprops/action-gh-release@v2
+        with:
           draft: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Check Release Was Created
-        if: ${{ steps.auto_release.outputs.released == false }}
-        run: exit 1
-      - name: Download Windows Dist
-        uses: actions/download-artifact@v4.1.5
-        with:
-          name: windows-dist
-          path: win
-      - name: Download Mac Dist
-        uses: actions/download-artifact@v4.1.5
-        with:
-          name: mac-dist
-          path: mac
-      - name: Download Linux Clang Dist
-        uses: actions/download-artifact@v4.1.5
-        with:
-          name: linux-clang-dist
-          path: linux-clang
-      - name: Download Linux GCC Dist
-        uses: actions/download-artifact@v4.1.5
-        with:
-          name: linux-gcc-dist
-          path: linux-gcc
-      - name: Zip Windows Dist
-        run: |
-          zip -r win-dist.zip ./win
-      - name: Zip Mac Dist
-        run: |
-          zip -r mac-dist.zip ./mac
-      - name: Zip Linux Clang Dist
-        run: |
-          zip -r linux-clang-dist.zip ./linux-clang
-      - name: Zip Linux GCC Dist
-        run: |
-          zip -r linux-gcc-dist.zip ./linux-gcc
-      - name: Upload Windows Dist
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.auto_release.outputs.upload_url }}
-          asset_path: ./win-dist.zip
-          asset_name: win-dist.zip
-          asset_content_type: application/zip
-      - name: Upload Mac Dist
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.auto_release.outputs.upload_url }}
-          asset_path: ./mac-dist.zip
-          asset_name: mac-dist.zip
-          asset_content_type: application/zip
-      - name: Upload Linux Clang Dist
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.auto_release.outputs.upload_url }}
-          asset_path: ./linux-clang-dist.zip
-          asset_name: linux-clang-dist.zip
-          asset_content_type: application/zip
-      - name: Upload Linux GCC Dist
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.auto_release.outputs.upload_url }}
-          asset_path: ./linux-gcc-dist.zip
-          asset_name: linux-gcc-dist.zip
-          asset_content_type: application/zip
+          tag_name: ${{ github.ref_name }}
+          name: "Release ${{ github.ref_name }}"
+          files: ./*.zip
+          fail_on_unmatched_files: true

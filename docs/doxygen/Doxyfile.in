@@ -2,7 +2,7 @@ PROJECT_NAME            = Sound Bakery
 
 PROJECT_BRIEF           = Open-source audio middleware for games
 
-PROJECT_NUMBER          = v0.1.0
+PROJECT_NUMBER          = @SOUND_BAKERY_DOXYGEN_VERSION@
 
 PROJECT_LOGO            = @CMAKE_SOURCE_DIR@/docs/img/sound-bakery-logo.png
 

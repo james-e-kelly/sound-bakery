@@ -8,13 +8,27 @@ on:
   pull_request:
     branches: [ "main", "dev" ]
 
+# Builds only need to read the repository. The release workflow grants its own
+# (broader) permissions when it calls this workflow.
+permissions:
+  contents: read
+
+# Cancel superseded PR runs so rapid pushes don't pile up. Cancellation is
+# limited to pull_request events on purpose: when the release workflow calls
+# this one, github.workflow resolves to the caller for all platforms, so
+# cancelling there would let the platform builds cancel each other.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   build:
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
 
     strategy:
       fail-fast: false
-      
+
       matrix:
         os: [macos-latest]
         build_type: [Release]
@@ -25,13 +39,25 @@ jobs:
             cpp_compiler: clang++
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Set reusable strings
       id: strings
       shell: bash
       run: |
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+
+    - name: Cache CMake dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          build/_deps
+          build/cpm/cache
+        # Exact key only (no restore-keys): when a dependency pin changes the
+        # cache is rebuilt from scratch rather than partially restored, so stale
+        # artifacts can't leak in. Bump the "v1" token if a runner toolchain
+        # update ever leaves incompatible cached objects behind.
+        key: deps-v1-${{ runner.os }}-${{ matrix.c_compiler }}-${{ matrix.build_type }}-${{ hashFiles('cmake/external_dependencies.cmake', 'cmake/build_sound_bakery.cmake', 'cmake/build_mpv.cmake', 'src/gluten/CMakeLists.txt') }}
 
     - name: Configure CMake
       run: >
@@ -43,17 +69,17 @@ jobs:
         -S ${{ github.workspace }}
 
     - name: Build
-      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} --verbose
+      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} --parallel
 
     - name: Test
       working-directory: ${{ steps.strings.outputs.build-output-dir }}
-      run: ctest --build-config ${{ matrix.build_type }}
+      run: ctest --build-config ${{ matrix.build_type }} --output-on-failure
 
     - name: Install
-      run: cmake --install ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} --verbose
+      run: cmake --install ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
 
     - name: Upload Artifact
-      uses: actions/upload-artifact@v4.3.2
+      uses: actions/upload-artifact@v4
       with:
         name: mac-dist
         path: dist/**/*
