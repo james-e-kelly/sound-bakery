@@ -24,5 +24,5 @@ private:
     int m_playPixel           = 0;
     float m_drawWidth         = 0;
     float m_previousDrawWidth = 0;
-    sbk::engine::sound* m_previousSound;
+    sbk_id m_previousSoundID;
 };

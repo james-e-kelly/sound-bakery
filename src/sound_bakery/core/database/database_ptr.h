@@ -57,7 +57,7 @@ namespace sbk::core
         database_ptr(const TObjectShared& object)
             : m_objectID(object ? static_cast<TIdentifierType>(*object) : 0),
               m_objectPtr(object),
-              m_null(object.use_count() == 0)
+              m_null(object == nullptr)
         {
         }
 
@@ -94,24 +94,10 @@ namespace sbk::core
             {
                 return std::shared_ptr<TObject>();
             }
-            else
-            {
-                return std::static_pointer_cast<TObject>(m_objectPtr.lock());
-            }
+            return std::static_pointer_cast<TObject>(m_objectPtr.lock());
         }
 
         [[nodiscard]] auto weak() const noexcept -> TObjectWeak { return m_objectPtr; }
-
-        /**
-         * @brief Get raw pointer of the referenced object
-         */
-        [[nodiscard]] auto raw() const noexcept -> TObjectPtr { return shared().get(); }
-
-        [[nodiscard]] auto lookup_raw() const noexcept -> TObjectPtr
-        {
-            lookup();
-            return raw();
-        }
 
         /**
          * @brief Returns true if we hold a valid ID and can search for an
@@ -168,11 +154,19 @@ namespace sbk::core
             lookup();
         }
 
+        auto reset(const TObjectShared& object) -> void
+        {
+            m_objectID = object ? static_cast<TIdentifierType>(*object.get()) : TIdentifierType();
+            m_objectPtr = object;
+            m_null      = m_objectPtr.expired();
+        }
+
         auto operator=(TObjectShared object) -> TThisType&
         {
-            if (raw() != object.get())
+            // Not happy about the lock here
+            if (m_objectPtr.lock() != object)
             {
-                reset(object.get());
+                reset(object);
             }
             return *this;
         }
@@ -185,16 +179,13 @@ namespace sbk::core
          */
         auto operator=(TObjectPtr object) -> TThisType&
         {
-            if (raw() != object)
-            {
-                reset(object);
-            }
+            reset(object);
             return *this;
         }
 
-        auto operator=(const TThisType& other) -> TThisType&
+        auto operator=(const TThisType& other) noexcept -> TThisType&
         {
-            if (id() != other.id())
+            if (this != &other && m_objectID != other.id())
             {
                 m_objectID  = other.id();
                 m_objectPtr = other.weak();
@@ -204,14 +195,18 @@ namespace sbk::core
             return *this;
         }
 
-        auto operator=(const TThisType&& other) -> TThisType&
+        auto operator=(TThisType&& other) noexcept -> TThisType&
         {
             if (id() != other.id())
             {
                 m_objectID  = other.id();
-                m_objectPtr = other.weak();
+                m_objectPtr = std::move(other.m_objectPtr);
                 m_null      = other.null();
             }
+
+            other.m_objectID = TIdentifierType();
+            other.m_objectPtr.reset();
+            other.m_null = true;
 
             return *this;
         }
@@ -225,12 +220,6 @@ namespace sbk::core
          * @brief Returns true if this LazyPtr is invalid
          */
         auto operator!() const -> bool { return !valid(); }
-
-        /**
-         * @brief Access the raw object
-         * @return raw object
-         */
-        auto operator->() const -> TObjectPtr { return raw(); }
 
     protected:
         sbk_id m_objectID;
@@ -320,7 +309,7 @@ namespace sbk::core
 
         auto operator=(const TThisType& other) -> TThisType&
         {
-            if (database_ptr<TObject>::id() != other.id())
+            if (this != &other && database_ptr<TObject>::id() != other.id())
             {
                 if (m_ownerID == 0 && database_ptr<TObject>::m_objectID != 0)
                 {

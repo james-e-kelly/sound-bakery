@@ -74,7 +74,7 @@ namespace sbk
             [[nodiscard]] auto get_system_thread_executer() const -> std::shared_ptr<concurrencpp::manual_executor>;
             [[nodiscard]] auto get_background_thread_executer() const -> std::shared_ptr<concurrencpp::thread_pool_executor>;
             [[nodiscard]] auto get_listener_game_object() const -> sbk::engine::game_object*;
-            [[nodiscard]] auto get_master_bus() const -> sbk::engine::bus*;
+            [[nodiscard]] auto get_master_bus() const -> std::shared_ptr<sbk::engine::bus>;
             [[nodiscard]] auto get_current_object_owner() -> sbk::core::object_owner*;  //< Either project for editor or system for runtime
 
             /**

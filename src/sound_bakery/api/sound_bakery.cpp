@@ -97,7 +97,7 @@ namespace
             sbk::engine::event* childEvent              = nullptr;
             sbk::engine::game_object* targetGameObject  = nullptr;
 
-            if (const sbk::core::database_ptr<sbk::core::database_object>& destination = action.m_destination; destination.lookup())
+            if (const auto destination = action.m_destination.shared())
             {
                 container        = destination->try_convert_object<sbk::engine::container>();
                 childEvent       = destination->try_convert_object<sbk::engine::event>();

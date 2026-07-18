@@ -413,7 +413,7 @@ auto sbk::engine::system::get_listener_game_object() const -> sbk::engine::game_
 {
     return m_listenerGameObject.get(); }
 
-auto sbk::engine::system::get_master_bus() const -> sbk::engine::bus* { return m_masterBus.get(); }
+auto sbk::engine::system::get_master_bus() const -> std::shared_ptr<sbk::engine::bus> { return m_masterBus; }
 
 auto sbk::engine::system::set_master_bus(const std::shared_ptr<sbk::engine::bus>& masterBus) -> void
 {

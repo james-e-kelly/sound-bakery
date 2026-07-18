@@ -60,32 +60,29 @@ sbk::engine::soundbank_dependencies sbk::engine::soundbank::gather_dependencies(
         std::transform(namedParameterPointers.begin(), namedParameterPointers.end(), std::back_inserter(dependencies.namedParameters), object_ptr_to_shared_ptr<sbk::engine::named_parameter>);
     }
 
-    std::vector<sbk::engine::node_base*> nodesToSave;
+    std::vector<std::shared_ptr<sbk::engine::node_base>> nodesToSave;
 
     for (auto& event : get_events())
     {
-        if (event.lookup())
+        if (auto eventShared = event.shared())
         {
-            dependencies.events.push_back(event.shared());
+            dependencies.events.push_back(eventShared);
 
-            for (auto& action : event->m_actions)
+            for (auto& action : eventShared->m_actions)
             {
                 if (action.m_type != sbk::engine::action_type::play)
                 {
                     continue;
                 }
 
-                if (!action.m_destination.lookup())
+                if (auto destination = action.m_destination.shared())
                 {
-                    continue;
+                    auto nodeBase = std::static_pointer_cast<node_base>(destination);
+
+                    nodesToSave.push_back(nodeBase);
+                    nodeBase->gather_all_descendants(nodesToSave);
+                    nodeBase->gather_all_parents(nodesToSave);
                 }
-
-                sbk::engine::node_base* const nodeBase =
-                    action.m_destination->try_convert_object<sbk::engine::node_base>();
-
-                nodesToSave.push_back(nodeBase);
-                nodeBase->gather_all_descendants(nodesToSave);
-                nodeBase->gather_all_parents(nodesToSave);
             }
         }
     }
@@ -101,13 +98,12 @@ sbk::engine::soundbank_dependencies sbk::engine::soundbank::gather_dependencies(
                 if (sbk::engine::sound_container* const soundContainer =
                         node->try_convert_object<sbk::engine::sound_container>())
                 {
-                    if (sbk::engine::sound* const sound = soundContainer->get_sound())
+                    if (auto sound = soundContainer->get_sound())
                     {
                         const sbk::engine::encoding_sound encodingSound = sound->get_encoding_sound_data();
                         BOOST_ASSERT(!encodingSound.encodedSoundPath.empty());
 
-                        dependencies.sounds.push_back(
-                            std::static_pointer_cast<sbk::engine::sound>(sound->shared_from_this()));
+                        dependencies.sounds.push_back(sound);
                     }
                 }
             }

@@ -4,11 +4,11 @@ DEFINE_REFLECTION(sbk::engine::blend_container)
 
 auto sbk::engine::blend_container::gather_children_for_play(gather_children_context& context) const -> void
 {
-    for (node_base* const child : get_children())
+    for (const auto& child : get_children())
     {
-        if (child != nullptr)
+        if (child)
         {
-            if (container* const childContainer = child->try_convert_object<container>())
+            if (const auto childContainer = std::static_pointer_cast<container>(child))
             {
                 context.sounds.push_back(childContainer);
             }

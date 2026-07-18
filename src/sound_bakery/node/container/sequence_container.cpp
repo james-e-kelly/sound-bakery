@@ -12,7 +12,7 @@ auto sequence_container::gather_children_for_play(gather_children_context& conte
 
         if (wrappedNumTimesPlayed < m_sequence.size())
         {
-            context.sounds.push_back(m_sequence[wrappedNumTimesPlayed].lookup_raw());
+            context.sounds.push_back(m_sequence[wrappedNumTimesPlayed].shared());
         }
     }
 }

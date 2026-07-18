@@ -65,7 +65,7 @@ auto sbk::core::database_object::get_database_path(std::string& path) const -> v
 {
     if (const sbk::engine::node_base* const nodeThis = try_convert_object<sbk::engine::node>())
     {
-        if (const sbk::engine::node_base* const parent = nodeThis->get_parent())
+        if (const auto parent = nodeThis->get_parent())
         {
             parent->get_database_path(path);
         }

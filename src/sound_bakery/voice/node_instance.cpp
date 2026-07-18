@@ -67,9 +67,9 @@ auto sbk::engine::node_instance_fsm::action_play(const event_play& play) -> void
     ZoneScoped;
     if (m_referencingNode->get_object_type() == rttr::type::get<sound_container>())
     {
-        const sbk::engine::sound_container* const soundContainer  = m_referencingNode->try_convert_object<sound_container>();
-        sbk::engine::sound* const engineSound               = soundContainer->get_sound();
-        sc_sound* const sound                               = engineSound != nullptr ? engineSound->get_sound() : nullptr;
+        const sbk::engine::sound_container* const soundContainer    = m_referencingNode->try_convert_object<sound_container>();
+        auto engineSound                                            = soundContainer->get_sound();
+        sc_sound* const sound                                       = engineSound ? engineSound->get_sound() : nullptr;
 
         if (sound)
         {
@@ -104,17 +104,12 @@ auto sbk::engine::node_instance_fsm::action_stop(const event_stop& stop) -> void
 auto sbk::engine::node_instance_fsm::guard_init(const event_init& init) -> bool
 {
     ZoneScoped;
-    if (!init.refNode.lookup())
+    if (const auto refNode = init.refNode.shared())
     {
-        return false;
+        return refNode->get_object_type().is_derived_from<sbk::engine::node>();
     }
 
-    if (!init.refNode->get_object_type().is_derived_from<sbk::engine::node>())
-    {
-        return false;
-    }
-
-    return true;
+    return false;
 }
 
 // API //
@@ -196,13 +191,13 @@ auto sbk::engine::node_instance_fsm::init_node_group(const event_init& init) -> 
 
     for (const sbk::core::database_ptr<sbk::engine::effect_description>& desc : m_referencingNode->m_effectDescriptions)
     {
-        if (desc.lookup())
+        if (const auto descShared = desc.shared())
         {
             sc_dsp* dsp = nullptr;
-            (void)add_dsp_to_node_group(m_nodeGroup.nodeGroup.get(), &dsp, *desc->get_config());
+            (void)add_dsp_to_node_group(m_nodeGroup.nodeGroup.get(), &dsp, *descShared->get_config());
 
             int index = 0;
-            for (const sbk::engine::effect_parameter_description& parameter : desc->get_parameters())
+            for (const sbk::engine::effect_parameter_description& parameter : descShared->get_parameters())
             {
                 switch (parameter.m_parameter.type)
                 {
@@ -223,7 +218,7 @@ auto sbk::engine::node_instance_fsm::init_parent() -> sbk::result<void>
     SBK_CHECK(m_referencingNode, SBK_ERR_NULL);
     SBK_CHECK(m_owner, SBK_ERR_NULL);
 
-    sbk::engine::node_base* nodeToReference = nullptr;
+    std::shared_ptr<sbk::engine::node_base> nodeToReference;
 
     switch (m_referencingNode->get_node_status())
     {
@@ -244,7 +239,7 @@ auto sbk::engine::node_instance_fsm::init_parent() -> sbk::result<void>
     SBK_CHECK(nodeToReference, SBK_ERR_NULL);
     SBK_CHECK_MSG(nodeToReference->get_database_id() != m_referencingNode->get_database_id(), SBK_ERR_BAKERY, "Pointing to self. Cannot init parent");
  
-    event_init initData{.refNode = nodeToReference, .type = node_instance_type::bus, .m_owningGameObject = m_gameObject};
+    const event_init initData{.refNode = nodeToReference, .type = node_instance_type::bus, .m_owningGameObject = m_gameObject};
     SBK_TRY(m_parent, m_owner->create_runtime_object<sbk::engine::node_instance>());
     return m_parent->init(initData);
 }
@@ -265,9 +260,9 @@ auto sbk::engine::node_instance_fsm::init_child() -> sbk::result<void>
 
         m_children.reserve(context.sounds.size());
 
-        for (sbk::engine::container* const child : context.sounds)
+        for (const auto& child : context.sounds)
         {
-            SBK_CHECK(child != nullptr, SBK_ERR_NULL);
+            SBK_CHECK(child, SBK_ERR_NULL);
             SBK_CHECK_MSG(child->get_database_id() != m_referencingNode->get_database_id(), SBK_ERR_BAKERY, "Referenced node was found in its child list. Self references should not happen");
             SBK_TRY(auto runtimeChild, m_owner->create_runtime_object<sbk::engine::node_instance>());
             m_children.push_back(runtimeChild);

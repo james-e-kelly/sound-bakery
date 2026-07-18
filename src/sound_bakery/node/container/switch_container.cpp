@@ -8,14 +8,13 @@ auto sbk::engine::switch_container::gather_children_for_play(gather_children_con
 {
     sbk::core::database_ptr<named_parameter_value> selectedValue;
 
-    if (auto findLocalValue = context.parameters.intParameters.find(m_switchParameter);
-        findLocalValue != context.parameters.intParameters.cend())
+    if (auto findLocalValue = context.parameters.intParameters.find(m_switchParameter); findLocalValue != context.parameters.intParameters.cend())
     {
         selectedValue = sbk::core::database_ptr<named_parameter_value>(findLocalValue->second.get());
     }
-    else if (m_switchParameter.lookup())
+    else if (auto switchParameter = m_switchParameter.shared())
     {
-        selectedValue = m_switchParameter->get_selected_value();
+        selectedValue = switchParameter->get_selected_value();
     }
 
     if (auto foundIter = m_switchToChild.find(selectedValue); foundIter != m_switchToChild.end())
@@ -23,9 +22,9 @@ auto sbk::engine::switch_container::gather_children_for_play(gather_children_con
         sbk::core::child_ptr<container> selectedChild(*this);
         selectedChild = foundIter->second;
 
-        if (selectedChild.lookup())
+        if (auto selectedChildShared = selectedChild.shared())
         {
-            context.sounds.push_back(selectedChild.lookup_raw());
+            context.sounds.push_back(selectedChildShared);
         }
     }
 }
@@ -42,8 +41,7 @@ auto sbk::engine::switch_container::set_switch_parameter(sbk::core::database_ptr
     populate_child_keys();
 }
 
-auto sbk::engine::switch_container::set_switch_to_child(
-    std::unordered_map<sbk::core::database_ptr<named_parameter_value>, sbk::core::child_ptr<container>> map) -> void
+auto sbk::engine::switch_container::set_switch_to_child(std::unordered_map<sbk::core::database_ptr<named_parameter_value>, sbk::core::child_ptr<container>> map) -> void
 {
     if (map.empty())
     {
@@ -59,9 +57,9 @@ auto sbk::engine::switch_container::populate_child_keys() -> void
 {
     m_switchToChild.clear();
 
-    if (m_switchParameter.lookup())
+    if (auto switchParameter = m_switchParameter.shared())
     {
-        for (const sbk::core::database_ptr<named_parameter_value>& value : m_switchParameter->get_values())
+        for (const sbk::core::database_ptr<named_parameter_value>& value : switchParameter->get_values())
         {
             m_switchToChild.insert({value, sbk::core::child_ptr<container>(*this)});
         }

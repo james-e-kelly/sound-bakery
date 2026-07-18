@@ -281,9 +281,9 @@ void property_drawer::draw_readonly_variant(rttr::variant variant, bool disabled
     {
         sbk::core::database_ptr<sbk::core::database_object> object(variant.convert<sbk_id>());
 
-        if (object.lookup())
+        if (const auto objectShared = object.shared())
         {
-            ImGui::TextUnformatted(object->get_object_name().data());
+            ImGui::TextUnformatted(objectShared->get_object_name().data());
         }
         else if (object.has_id())
         {

@@ -17,13 +17,13 @@ auto sbk::core::find_object(sbk_id id) -> std::weak_ptr<database_object>
 
 auto sbk::core::object_id_is_child_of_parent(sbk_id childToCheck, sbk_id parent) -> bool
 {
-    sbk::core::database_ptr<database_object> parentPtr(parent);
+    const sbk::core::database_ptr<database_object> parentPtr(parent);
 
-    if (parentPtr.lookup())
+    if (auto parent = parentPtr.shared())
     {
-        if (sbk::engine::node_base* nodeBase = parentPtr->try_convert_object<sbk::engine::node_base>())
+        if (auto parentNode = std::static_pointer_cast<sbk::engine::node_base>(parent))
         {
-            return nodeBase->has_child(childToCheck);
+            return parentNode->has_child(childToCheck);
         }
     }
 
@@ -36,11 +36,11 @@ auto sbk::core::get_parent_id_from_id(sbk_id id) -> sbk_id
     {
         const sbk::core::database_ptr<database_object> databasePtr(id);
 
-        if (databasePtr.lookup())
+        if (auto ptr = databasePtr.shared())
         {
-            if (sbk::engine::node_base* nodeBase = databasePtr->try_convert_object<sbk::engine::node_base>())
+            if (auto node = std::static_pointer_cast<sbk::engine::node_base>(ptr))
             {
-                if (sbk::engine::node_base* parent = nodeBase->get_parent())
+                if (auto parent = node->get_parent())
                 {
                     return parent->get_database_id();
                 }

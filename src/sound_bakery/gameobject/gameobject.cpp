@@ -29,8 +29,7 @@ auto game_object::update() -> void
 
 auto sbk::engine::game_object::is_playing() const noexcept -> bool { return get_objects_size(); }
 
-auto sbk::engine::game_object::get_float_parameter_value(
-    const sbk::core::database_ptr<float_parameter>& parameter) const -> float
+auto sbk::engine::game_object::get_float_parameter_value(const sbk::core::database_ptr<float_parameter>& parameter) const -> float
 {
     float result = 0.0F;
 
@@ -42,17 +41,16 @@ auto sbk::engine::game_object::get_float_parameter_value(
     }
     else
     {
-        if (parameter.lookup())
+        if (const auto parameterShared = parameter.shared())
         {
-            result = parameter.raw()->get();
+            result = parameterShared->get();
         }
     }
 
     return result;
 }
 
-auto sbk::engine::game_object::get_int_parameter_value(
-    const sbk::core::database_ptr<named_parameter>& parameter) const -> sbk_id
+auto sbk::engine::game_object::get_int_parameter_value(const sbk::core::database_ptr<named_parameter>& parameter) const -> sbk_id
 {
     sbk_id result = 0;
 
@@ -64,9 +62,9 @@ auto sbk::engine::game_object::get_int_parameter_value(
     }
     else
     {
-        if (parameter.lookup())
+        if (const auto parameterShared = parameter.shared())
         {
-            result = parameter.raw()->get();
+            result = parameterShared->get();
         }
     }
 
@@ -78,16 +76,19 @@ auto sbk::engine::game_object::set_float_parameter(const float_parameter::local_
     m_parameters.floatParameters[parameterValue.first].set(parameterValue.second);
 }
 
-auto sbk::engine::game_object::set_int_parameter_value(
-    const named_parameter::local_parameter_value_pair& parameterValue) -> void
+auto sbk::engine::game_object::set_int_parameter_value(const named_parameter::local_parameter_value_pair& parameterValue) -> void
 {
     if (m_parameters.intParameters.find(parameterValue.first) == m_parameters.intParameters.cend())
     {
         const sbk::core::database_ptr<named_parameter_value> parameterValuePtr(parameterValue.second);
-        parameterValuePtr.lookup();
-        parameterValuePtr->parentParameter.lookup();
 
-        m_parameters.intParameters.insert(parameterValuePtr->parentParameter->create_local_parameter_from_this());
+        if (const auto parameterValuePtrShared = parameterValuePtr.shared())
+        {
+            if (const auto parentParameter = parameterValuePtrShared->parentParameter.shared())
+            {
+                m_parameters.intParameters.insert(parentParameter->create_local_parameter_from_this());
+            }
+        }
     }
 
     m_parameters.intParameters[parameterValue.first].set(parameterValue.second);

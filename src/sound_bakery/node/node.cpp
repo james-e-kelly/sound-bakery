@@ -15,11 +15,11 @@ auto sbk::engine::node::gather_parameters(global_parameter_list& parameters) -> 
 
     gather_parameters_from_this(parameters);
 
-    for (node_base* const child : get_children())
+    for (auto& child : get_children())
     {
-        if (child != nullptr)
+        if (child)
         {
-            if (node* const childNode = child->try_convert_object<node>())
+            if (auto childNode = std::static_pointer_cast<node>(child))
             {
                 childNode->gather_parameters(parameters);
             }
@@ -90,9 +90,9 @@ auto sbk::engine::node_base::get_node_status() const noexcept -> node_status
     return status;
 }
 
-auto sbk::engine::node_base::get_parent() const -> node_base* { return m_parentNode.lookup_raw(); }
+auto sbk::engine::node_base::get_parent() const -> std::shared_ptr<node_base> { return m_parentNode.shared(); }
 
-auto sbk::engine::node_base::get_output_bus() const -> node_base* { return m_outputBus.lookup_raw(); }
+auto sbk::engine::node_base::get_output_bus() const -> std::shared_ptr<node_base> { return m_outputBus.shared(); }
 
 auto sbk::engine::node_base::can_add_children() const -> bool { return true; }
 
@@ -103,10 +103,10 @@ auto sbk::engine::node_base::can_add_child_type(const rttr::type& childType) con
 
 auto sbk::engine::node_base::can_add_child(const sbk::core::database_ptr<node_base>& child) const -> bool
 {
-    if (child.lookup())
+    if (auto childShared = child.shared())
     {
         const bool canAddChildren         = can_add_children();
-        const bool canAddType             = can_add_child_type(child->get_type());
+        const bool canAddType             = can_add_child_type(childShared->get_type());
         const bool childIsNotAlreadyChild = !m_childNodes.contains(child);
         const bool childIsNotSelf         = child.id() != get_database_id();
 
@@ -126,40 +126,39 @@ auto sbk::engine::node_base::add_child(const sbk::core::database_ptr<node_base>&
 {
     if (can_add_child(child))
     {
-        if (child.lookup() && child->get_parent())
+        if (auto childShared = child.shared())
         {
-            child->get_parent()->remove_child(child);
+            if (childShared->get_parent())
+            {
+                childShared->get_parent()->remove_child(child);
+            }
+            childShared->set_parent_node(this);
         }
 
         m_childNodes.insert(child);
-
-        if (child.lookup())
-        {
-            child->set_parent_node(this);
-        }
     }
 }
 
 auto sbk::engine::node_base::remove_child(const sbk::core::database_ptr<node_base>& child) -> void
 {
-    if (child)
+    if (auto childShared = child.shared())
     {
-        child->set_parent_node(nullptr);
+        childShared->set_parent_node(nullptr);
     }
 
     m_childNodes.erase(child);
 }
 
-auto sbk::engine::node_base::get_children() const -> std::vector<node_base*>
+auto sbk::engine::node_base::get_children() const -> std::vector<std::shared_ptr<node_base>>
 {
-    std::vector<node_base*> children;
+    std::vector<std::shared_ptr<node_base>> children;
     children.reserve(m_childNodes.size());
 
-    for (auto& child : m_childNodes)
+    for (const auto& child : m_childNodes)
     {
-        if (child.lookup())
+        if (auto childShared = child.shared())
         {
-            children.push_back(child.raw());
+            children.push_back(childShared);
         }
     }
 
@@ -173,7 +172,7 @@ auto sbk::engine::node_base::has_child(const sbk::core::database_ptr<node_base>&
     return m_childNodes.contains(test);
 }
 
-auto sbk::engine::node_base::gather_all_descendants(std::vector<node_base*>& descendants) const -> void
+auto sbk::engine::node_base::gather_all_descendants(std::vector<std::shared_ptr<node_base>>& descendants) const -> void
 {
     for (auto& child : get_children())
     {
@@ -183,9 +182,9 @@ auto sbk::engine::node_base::gather_all_descendants(std::vector<node_base*>& des
     }
 }
 
-auto sbk::engine::node_base::gather_all_parents(std::vector<node_base*>& parents) const -> void
+auto sbk::engine::node_base::gather_all_parents(std::vector<std::shared_ptr<node_base>>& parents) const -> void
 {
-    if (node_base* const nodeParent = get_parent())
+    if (auto nodeParent = get_parent())
     {
         parents.push_back(nodeParent);
 

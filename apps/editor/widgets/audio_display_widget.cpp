@@ -220,18 +220,18 @@ void audio_display_widget::render_implementation()
 
 bool audio_display_widget::has_cache()
 {
-    sbk::engine::sound_container* currentNode =
-        get_app()->get_manager_by_class<project_manager>()->get_preview_sound_container();
+    sbk::engine::sound_container* currentNode = get_app()->get_manager_by_class<project_manager>()->get_preview_sound_container();
 
     if (currentNode)
     {
-        sbk::engine::sound* currentSound = currentNode->get_sound();
+        if (auto currentSound = currentNode->get_sound())
+        {
+            const bool selectedNewSound = currentSound->get_database_id() != m_previousSoundID;
 
-        const bool selectedNewSound = currentSound != m_previousSound;
+            m_previousSoundID = currentSound->get_database_id();
 
-        m_previousSound = currentSound;
-
-        return !m_cachedSamples.empty() && !selectedNewSound;
+            return !m_cachedSamples.empty() && !selectedNewSound;
+        }
     }
     return false;
 }

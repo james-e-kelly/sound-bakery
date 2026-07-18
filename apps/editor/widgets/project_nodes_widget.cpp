@@ -252,15 +252,13 @@ void project_nodes_widget::render_single_node(rttr::type type, rttr::instance in
                             render_single_node(type, child);
                         }
                     }
-                    else if (sbk::engine::named_parameter* const intParameter =
-                                 object->try_convert_object<sbk::engine::named_parameter>())
+                    else if (sbk::engine::named_parameter* const intParameter = object->try_convert_object<sbk::engine::named_parameter>())
                     {
-                        for (const sbk::core::database_ptr<sbk::engine::named_parameter_value>& value :
-                             intParameter->get_values())
+                        for (const sbk::core::database_ptr<sbk::engine::named_parameter_value>& value : intParameter->get_values())
                         {
-                            if (value.lookup())
+                            if (const auto valueShared = value.shared())
                             {
-                                render_single_node(type, rttr::instance(value.raw()));
+                                render_single_node(type, rttr::instance(valueShared.get()));
                             }
                         }
                     }
@@ -439,7 +437,7 @@ void project_nodes_widget::render_create_parent_or_child_menu(SB_OBJECT_CATEGORY
                     {
                         case node_creation_type::NewParent:
                         {
-                            if (sbk::engine::node_base* baseParent = castedNode->get_parent())
+                            if (auto baseParent = castedNode->get_parent())
                             {
                                 m_nodeToOpen = baseParent->get_database_id();
                                 baseParent->add_child(newNode);

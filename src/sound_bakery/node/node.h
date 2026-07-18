@@ -27,8 +27,8 @@ namespace sbk::engine
         virtual auto set_parent_node(const sbk::core::database_ptr<node_base>& parent) -> void;
         virtual auto set_output_bus(const sbk::core::database_ptr<node_base>& bus) -> void;
 
-        [[nodiscard]] auto get_parent() const -> node_base*;
-        [[nodiscard]] auto get_output_bus() const -> node_base*;
+        [[nodiscard]] auto get_parent() const -> std::shared_ptr<node_base>;
+        [[nodiscard]] auto get_output_bus() const -> std::shared_ptr<node_base>;
 
         [[nodiscard]] auto get_node_status() const noexcept -> node_status;
 
@@ -43,12 +43,12 @@ namespace sbk::engine
         auto add_child(const sbk::core::database_ptr<node_base>& child) -> void;
         auto remove_child(const sbk::core::database_ptr<node_base>& child) -> void;
 
-        [[nodiscard]] auto get_children() const -> std::vector<node_base*>;
+        [[nodiscard]] auto get_children() const -> std::vector<std::shared_ptr<node_base>>;
         [[nodiscard]] auto get_child_count() const -> std::size_t;
         [[nodiscard]] auto has_child(const sbk::core::database_ptr<node_base>& test) const -> bool;
 
-        auto gather_all_descendants(std::vector<node_base*>& descendants) const -> void;
-        auto gather_all_parents(std::vector<node_base*>& parents) const -> void;
+        auto gather_all_descendants(std::vector<std::shared_ptr<node_base>>& descendants) const -> void;
+        auto gather_all_parents(std::vector<std::shared_ptr<node_base>>& parents) const -> void;
 
     protected:
         sbk::core::database_ptr<node_base> m_parentNode;

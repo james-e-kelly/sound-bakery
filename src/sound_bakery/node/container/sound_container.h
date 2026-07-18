@@ -18,7 +18,7 @@ namespace sbk::engine
 
         [[nodiscard]] auto can_add_parent_type(const rttr::type& parentType) const -> bool override;
 
-        [[nodiscard]] auto get_sound() const -> sound*;
+        auto get_sound() const -> std::shared_ptr<sbk::engine::sound>;
         auto set_sound(const sbk::core::database_ptr<sbk::engine::sound>& sound) -> void;
 
     private:
