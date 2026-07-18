@@ -31,7 +31,6 @@ FetchContent_Declare(
   fonts
   GIT_REPOSITORY https://github.com/juliettef/IconFontCppHeaders.git
   GIT_TAG        bbe9ecd24203c4de10d1b9e3fdeb4edf5c6cb842
-  GIT_SHALLOW    TRUE
   OVERRIDE_FIND_PACKAGE
   EXCLUDE_FROM_ALL
 )
@@ -50,7 +49,6 @@ FetchContent_Declare(
   doxygenawesome
   GIT_REPOSITORY https://github.com/jothepro/doxygen-awesome-css.git
   GIT_TAG        82d315e34ac419a81caccf470cc2fbc2ec8ee524 # main @ 2026-07-17
-  GIT_SHALLOW    TRUE
   GIT_PROGRESS TRUE
   OVERRIDE_FIND_PACKAGE
   EXCLUDE_FROM_ALL 
@@ -60,7 +58,6 @@ FetchContent_Declare(
   cppdelegates
   GIT_REPOSITORY https://github.com/KarateKidzz/CppDelegates.git
   GIT_TAG        1f6e8c9352ca1c52b2c596520cba2241b9ecee31 # master @ 2026-07-17
-  GIT_SHALLOW    TRUE
   GIT_PROGRESS TRUE
   OVERRIDE_FIND_PACKAGE
   EXCLUDE_FROM_ALL 
@@ -70,7 +67,6 @@ FetchContent_Declare(
   stb
   GIT_REPOSITORY https://github.com/nothings/stb.git
   GIT_TAG        31c1ad37456438565541f4919958214b6e762fb4 # master @ 2026-07-17
-  GIT_SHALLOW    TRUE
   GIT_PROGRESS TRUE
   OVERRIDE_FIND_PACKAGE
   EXCLUDE_FROM_ALL 
@@ -81,7 +77,6 @@ FetchContent_Declare(
   rttr
   GIT_REPOSITORY https://github.com/KarateKidzz/rttr.git
   GIT_TAG        23850d1dd23952b7c29ba9398adb1548f6816c30 # master @ 2026-07-17
-  GIT_SHALLOW    TRUE
   GIT_PROGRESS TRUE
   OVERRIDE_FIND_PACKAGE
   EXCLUDE_FROM_ALL 
@@ -91,7 +86,6 @@ FetchContent_Declare(
   concurrencpp
   GIT_REPOSITORY https://github.com/james-e-kelly/concurrencpp.git
   GIT_TAG        53b007ba3721d99ec3aa6c39dd228638798d54e4 # master @ 2026-07-17
-  GIT_SHALLOW    TRUE
   GIT_PROGRESS TRUE
   OVERRIDE_FIND_PACKAGE
   EXCLUDE_FROM_ALL 
@@ -171,7 +165,6 @@ FetchContent_Declare(
   bytesizelib
   GIT_REPOSITORY https://github.com/eudoxos/bytesize.git
   GIT_TAG        196542fed6b4234be6994eeb43984e3a3ba86b95 # master @ 2026-07-17
-  GIT_SHALLOW    TRUE
   GIT_PROGRESS TRUE
   OVERRIDE_FIND_PACKAGE
   EXCLUDE_FROM_ALL 
@@ -191,7 +184,6 @@ FetchContent_Declare(
   dirent
   GIT_REPOSITORY https://github.com/tronkko/dirent.git
   GIT_TAG      31db6474b5231c180bd4618c8c90e43af50c86d0 # HEAD @ 2026-07-17
-  GIT_SHALLOW TRUE
   GIT_PROGRESS TRUE
   OVERRIDE_FIND_PACKAGE
   EXCLUDE_FROM_ALL
@@ -207,7 +199,6 @@ FetchContent_Declare(
   boost-yaml
   GIT_REPOSITORY https://github.com/james-e-kelly/yaml-archive.git
   GIT_TAG        fdbba62f97d16a0e8c28dcf04724423293752bc5 # HEAD @ 2026-07-17
-  GIT_SHALLOW    TRUE
   GIT_PROGRESS TRUE
   EXCLUDE_FROM_ALL
 )
@@ -216,7 +207,6 @@ FetchContent_Declare(
   out_ptr
   GIT_REPOSITORY https://github.com/soasis/out_ptr.git
   GIT_TAG 02a577edfcf25e2519e380a95c16743b7e5878a1 # main @ 2026-07-17
-  GIT_SHALLOW TRUE
   GIT_PROGRESS TRUE
   EXCLUDE_FROM_ALL
 )
