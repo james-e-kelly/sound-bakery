@@ -1,0 +1,35 @@
+name: Lint Workflows
+
+# Validates the workflow YAML itself (expression syntax, wrong keys, missing
+# needs, shell mistakes). Only runs when a workflow file changes.
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main", "dev" ]
+    paths: [ ".github/workflows/**" ]
+  pull_request:
+    branches: [ "main", "dev" ]
+    paths: [ ".github/workflows/**" ]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  actionlint:
+    name: actionlint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run actionlint
+        shell: bash
+        # Official installer from the actionlint author (rhysd). shellcheck ships
+        # on the runner, so actionlint also lints the embedded run: scripts.
+        run: |
+          bash <(curl -sSf https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
+          ./actionlint -color
