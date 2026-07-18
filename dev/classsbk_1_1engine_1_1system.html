@@ -1,0 +1,433 @@
+<!-- HTML header for doxygen 1.10.0-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Sound Bakery: sbk::engine::system Class Reference</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom-css.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+</head>
+<body>
+<!-- https://tholman.com/github-corners/ -->
+<a href="https://github.com/KarateKidzz/sound-bakery" class="github-corner" title="View source on GitHub" target="_blank" rel="noopener noreferrer">
+  <svg viewBox="0 0 250 250" width="40" height="40" style="position: absolute; top: 0; border: 0; right: 0; z-index: 99;" aria-hidden="true">
+  <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectlogo"><img alt="Logo" src="sound-bakery-logo.png"$logosize/></td>
+  <td id="projectalign">
+   <div id="projectname">Sound Bakery&nbsp<span id="projectnumber">&#160;<select id="sbk-version-select" aria-label="Documentation version"><option>dev</option></select></span>
+   </div>
+   <div id="projectbrief">Open-source audio middleware for games</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- Sound Bakery documentation version switcher -->
+<script type="text/javascript">
+(function () {
+    var current = "dev";
+    var select = document.getElementById('sbk-version-select');
+    if (!select) { return; }
+    // versions.json lives at the site root, one level above this version's folder.
+    fetch("../versions.json", { cache: "no-cache" })
+        .then(function (r) { return r.ok ? r.json() : []; })
+        .then(function (versions) {
+            if (!versions || !versions.length) { return; }
+            select.innerHTML = "";
+            versions.forEach(function (v) {
+                var opt = document.createElement('option');
+                opt.value = v;
+                opt.textContent = v;
+                if (v === current) { opt.selected = true; }
+                select.appendChild(opt);
+            });
+        })
+        .catch(function () { /* single-version or local build: leave the label as-is */ });
+    select.addEventListener('change', function () {
+        window.location.href = "../" + select.value + "/index.html";
+    });
+})();
+</script>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Search');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('classsbk_1_1engine_1_1system.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#friends">Friends</a> &#124;
+<a href="classsbk_1_1engine_1_1system-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">sbk::engine::system Class Reference<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Manager of the whole Sound Bakery.  
+ <a href="classsbk_1_1engine_1_1system.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="system_8h_source.html">system.h</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for sbk::engine::system:</div>
+<div class="dyncontent">
+<div class="center"><img src="classsbk_1_1engine_1_1system__inherit__graph.png" border="0" usemap="#asbk_1_1engine_1_1system_inherit__map" alt="Inheritance graph"/></div>
+<map name="asbk_1_1engine_1_1system_inherit__map" id="asbk_1_1engine_1_1system_inherit__map">
+<area shape="rect" title="Manager of the whole Sound Bakery." alt="" coords="235,129,388,155"/>
+<area shape="rect" href="structsc__system.html" title="Object that manages the node graph, sounds, output etc." alt="" coords="51,5,141,31"/>
+<area shape="poly" title=" " alt="" coords="156,27,188,40,222,60,253,84,300,127,296,131,250,88,219,65,185,44,154,32"/>
+<area shape="rect" title=" " alt="" coords="31,55,161,80"/>
+<area shape="poly" title=" " alt="" coords="163,81,188,89,283,127,281,132,186,94,161,86"/>
+<area shape="rect" href="classsbk_1_1core_1_1object__owner.html" title="Creates, owns and tracks objects." alt="" coords="8,104,184,129"/>
+<area shape="poly" title=" " alt="" coords="198,126,235,130,234,136,197,131"/>
+<area shape="rect" href="classsbk_1_1core_1_1object__tracker.html" title="Tracks object categories and types." alt="" coords="5,153,187,179"/>
+<area shape="poly" title=" " alt="" coords="200,152,234,148,235,153,201,157"/>
+<area shape="rect" href="classsbk_1_1core_1_1database.html" title="Runtime lookup of objects, using their ID or name." alt="" coords="21,203,171,228"/>
+<area shape="poly" title=" " alt="" coords="157,196,186,187,278,152,280,157,188,193,159,201"/>
+<area shape="rect" title=" " alt="" coords="21,252,171,277"/>
+<area shape="poly" title=" " alt="" coords="167,245,185,237,219,217,249,194,296,153,299,157,253,198,222,221,188,242,169,250"/>
+</map>
+<center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for sbk::engine::system:</div>
+<div class="dyncontent">
+<div class="center"><img src="classsbk_1_1engine_1_1system__coll__graph.png" border="0" usemap="#asbk_1_1engine_1_1system_coll__map" alt="Collaboration graph"/></div>
+<map name="asbk_1_1engine_1_1system_coll__map" id="asbk_1_1engine_1_1system_coll__map">
+<area shape="rect" title="Manager of the whole Sound Bakery." alt="" coords="1459,156,1612,181"/>
+<area shape="rect" href="structsc__system.html" title="Object that manages the node graph, sounds, output etc." alt="" coords="1273,32,1364,57"/>
+<area shape="poly" title=" " alt="" coords="1378,54,1411,66,1445,87,1477,111,1524,154,1520,158,1473,115,1442,91,1408,71,1376,59"/>
+<area shape="rect" href="structsc__clap.html" title="Holds a DLL handle and plugin entry for a CLAP plugin." alt="" coords="961,9,1032,35"/>
+<area shape="poly" title=" " alt="" coords="1046,23,1273,39,1273,44,1046,28"/>
+<area shape="rect" href="structsc__node__group.html" title="Groups nodes/DSPs together into one." alt="" coords="937,59,1056,84"/>
+<area shape="poly" title=" " alt="" coords="1070,64,1204,54,1273,47,1274,52,1204,59,1070,69"/>
+<area shape="rect" href="structsc__dsp.html" title="ma_node with an additional enum descriptor." alt="" coords="784,59,851,84"/>
+<area shape="poly" title=" " alt="" coords="865,69,937,69,937,74,865,74"/>
+<area shape="poly" title=" " alt="" coords="801,44,806,36,817,32,827,35,833,41,831,59,826,58,828,43,824,39,817,37,810,40,806,46"/>
+<area shape="rect" href="structsc__dsp__state.html" title="Holds instance data for a single sc_dsp." alt="" coords="349,57,456,83"/>
+<area shape="poly" title=" " alt="" coords="469,53,497,49,578,45,658,49,784,63,784,69,658,54,578,51,498,54,470,58"/>
+<area shape="rect" href="structsc__dsp__vtable.html" title=" " alt="" coords="576,99,691,124"/>
+<area shape="poly" title=" " alt="" coords="440,86,468,98,498,107,537,112,576,113,576,118,537,118,497,113,466,103,438,91"/>
+<area shape="poly" title=" " alt="" coords="704,93,783,76,785,81,705,99"/>
+<area shape="rect" href="structsc__dsp__parameter.html" title=" " alt="" coords="332,144,473,169"/>
+<area shape="poly" title=" " alt="" coords="487,145,551,134,596,121,597,127,553,139,488,151"/>
+<area shape="rect" href="structsc__dsp__parameter__float.html" title=" " alt="" coords="5,144,183,169"/>
+<area shape="poly" title=" " alt="" coords="197,154,332,154,332,159,197,159"/>
+<area shape="rect" title=" " alt="" coords="1253,81,1384,107"/>
+<area shape="poly" title=" " alt="" coords="1386,108,1410,115,1507,153,1505,158,1408,121,1384,113"/>
+<area shape="rect" href="classsbk_1_1core_1_1object__owner.html" title="Creates, owns and tracks objects." alt="" coords="1231,131,1407,156"/>
+<area shape="poly" title=" " alt="" coords="1421,153,1459,157,1458,162,1420,158"/>
+<area shape="rect" href="classsbk_1_1core_1_1object__tracker.html" title="Tracks object categories and types." alt="" coords="1228,180,1409,205"/>
+<area shape="poly" title=" " alt="" coords="1423,178,1458,174,1459,180,1423,184"/>
+<area shape="rect" href="classsbk_1_1core_1_1database.html" title="Runtime lookup of objects, using their ID or name." alt="" coords="1244,229,1393,255"/>
+<area shape="poly" title=" " alt="" coords="1380,223,1408,214,1502,179,1504,184,1410,219,1382,228"/>
+<area shape="rect" title=" " alt="" coords="1244,279,1393,304"/>
+<area shape="poly" title=" " alt="" coords="1393,272,1408,265,1442,245,1473,222,1520,180,1523,184,1476,226,1445,249,1411,270,1395,277"/>
+</map>
+<center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:ae95e8d39602fb78dd826a49c119b97eb" id="r_ae95e8d39602fb78dd826a49c119b97eb"><td class="memItemLeft" align="right" valign="top"><a id="ae95e8d39602fb78dd826a49c119b97eb" name="ae95e8d39602fb78dd826a49c119b97eb"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>operating_mode</b> : uint8_t { <b>unkown</b>
+, <b>editor</b>
+, <b>runtime</b>
+ }</td></tr>
+<tr class="separator:ae95e8d39602fb78dd826a49c119b97eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a5cb59e0c0c85d3ee0226496cf5c8df8b" id="r_a5cb59e0c0c85d3ee0226496cf5c8df8b"><td class="memItemLeft" align="right" valign="top"><a id="a5cb59e0c0c85d3ee0226496cf5c8df8b" name="a5cb59e0c0c85d3ee0226496cf5c8df8b"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>system</b> (const std::filesystem::path &amp;logFile)</td></tr>
+<tr class="separator:a5cb59e0c0c85d3ee0226496cf5c8df8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac33f2690b0453508f1c44bb1188328df" id="r_ac33f2690b0453508f1c44bb1188328df"><td class="memItemLeft" align="right" valign="top"><a id="ac33f2690b0453508f1c44bb1188328df" name="ac33f2690b0453508f1c44bb1188328df"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>system</b> (sbk::core::sbk_log_callback_proc logCallback)</td></tr>
+<tr class="separator:ac33f2690b0453508f1c44bb1188328df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9406a56cccc05e6b1b5c39d697f7a1e1" id="r_a9406a56cccc05e6b1b5c39d697f7a1e1"><td class="memItemLeft" align="right" valign="top"><a id="a9406a56cccc05e6b1b5c39d697f7a1e1" name="a9406a56cccc05e6b1b5c39d697f7a1e1"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>init</b> (const <a class="el" href="structsbk__system__config.html">sbk_system_config</a> &amp;config) -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt; void &gt;</td></tr>
+<tr class="separator:a9406a56cccc05e6b1b5c39d697f7a1e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a85b3bb6f72821f3789f5c8ed7efba4" id="r_a4a85b3bb6f72821f3789f5c8ed7efba4"><td class="memItemLeft" align="right" valign="top"><a id="a4a85b3bb6f72821f3789f5c8ed7efba4" name="a4a85b3bb6f72821f3789f5c8ed7efba4"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>update</b> () -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt; void &gt;</td></tr>
+<tr class="separator:a4a85b3bb6f72821f3789f5c8ed7efba4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb46f566b3c84b4aa4acb034d55df34a" id="r_adb46f566b3c84b4aa4acb034d55df34a"><td class="memItemLeft" align="right" valign="top"><a id="adb46f566b3c84b4aa4acb034d55df34a" name="adb46f566b3c84b4aa4acb034d55df34a"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_game_thread_executer</b> () const -&gt; std::shared_ptr&lt; concurrencpp::manual_executor &gt;</td></tr>
+<tr class="separator:adb46f566b3c84b4aa4acb034d55df34a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae2f6d05cc7135274330f1b2923ddfb4" id="r_aae2f6d05cc7135274330f1b2923ddfb4"><td class="memItemLeft" align="right" valign="top"><a id="aae2f6d05cc7135274330f1b2923ddfb4" name="aae2f6d05cc7135274330f1b2923ddfb4"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_system_thread_executer</b> () const -&gt; std::shared_ptr&lt; concurrencpp::manual_executor &gt;</td></tr>
+<tr class="separator:aae2f6d05cc7135274330f1b2923ddfb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae59ea355521becc060203b9e7775628b" id="r_ae59ea355521becc060203b9e7775628b"><td class="memItemLeft" align="right" valign="top"><a id="ae59ea355521becc060203b9e7775628b" name="ae59ea355521becc060203b9e7775628b"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_background_thread_executer</b> () const -&gt; std::shared_ptr&lt; concurrencpp::thread_pool_executor &gt;</td></tr>
+<tr class="separator:ae59ea355521becc060203b9e7775628b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa6a26e6d3946a8aa8f36cb99c6fb995d" id="r_aa6a26e6d3946a8aa8f36cb99c6fb995d"><td class="memItemLeft" align="right" valign="top"><a id="aa6a26e6d3946a8aa8f36cb99c6fb995d" name="aa6a26e6d3946a8aa8f36cb99c6fb995d"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_listener_game_object</b> () const -&gt; <a class="el" href="classsbk_1_1engine_1_1game__object.html">sbk::engine::game_object</a> *</td></tr>
+<tr class="separator:aa6a26e6d3946a8aa8f36cb99c6fb995d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6061566095b68385ace73b317203a630" id="r_a6061566095b68385ace73b317203a630"><td class="memItemLeft" align="right" valign="top"><a id="a6061566095b68385ace73b317203a630" name="a6061566095b68385ace73b317203a630"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_master_bus</b> () const -&gt; std::shared_ptr&lt; <a class="el" href="classsbk_1_1engine_1_1bus.html">sbk::engine::bus</a> &gt;</td></tr>
+<tr class="separator:a6061566095b68385ace73b317203a630"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61da1570ae3622d9cff32c41b2d81b19" id="r_a61da1570ae3622d9cff32c41b2d81b19"><td class="memItemLeft" align="right" valign="top"><a id="a61da1570ae3622d9cff32c41b2d81b19" name="a61da1570ae3622d9cff32c41b2d81b19"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_current_object_owner</b> () -&gt; <a class="el" href="classsbk_1_1core_1_1object__owner.html">sbk::core::object_owner</a> *</td></tr>
+<tr class="separator:a61da1570ae3622d9cff32c41b2d81b19"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae49b19eae280cf520cacebef66eb9b70" id="r_ae49b19eae280cf520cacebef66eb9b70"><td class="memItemLeft" align="right" valign="top"><a id="ae49b19eae280cf520cacebef66eb9b70" name="ae49b19eae280cf520cacebef66eb9b70"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>set_master_bus</b> (const std::shared_ptr&lt; <a class="el" href="classsbk_1_1engine_1_1bus.html">sbk::engine::bus</a> &gt; &amp;masterBus) -&gt; void</td></tr>
+<tr class="separator:ae49b19eae280cf520cacebef66eb9b70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a60a9a9992ce9349fac914bafb07ec878" id="r_a60a9a9992ce9349fac914bafb07ec878"><td class="memTemplParams" colspan="2"><a id="a60a9a9992ce9349fac914bafb07ec878" name="a60a9a9992ce9349fac914bafb07ec878"></a>
+template&lt;class archive_class &gt; </td></tr>
+<tr class="memitem:a60a9a9992ce9349fac914bafb07ec878"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><b>serialize</b> (archive_class &amp;archive, const unsigned int version) -&gt; void</td></tr>
+<tr class="separator:a60a9a9992ce9349fac914bafb07ec878"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classsbk_1_1core_1_1object__owner"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classsbk_1_1core_1_1object__owner')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classsbk_1_1core_1_1object__owner.html">sbk::core::object_owner</a></td></tr>
+<tr class="memitem:a588158520d3f23e7f6423d76d8b7f7e0 inherit pub_methods_classsbk_1_1core_1_1object__owner" id="r_a588158520d3f23e7f6423d76d8b7f7e0"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a588158520d3f23e7f6423d76d8b7f7e0 inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classsbk_1_1core_1_1object__owner.html#a588158520d3f23e7f6423d76d8b7f7e0">create_raw_object</a> () -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt; std::shared_ptr&lt; T &gt; &gt;</td></tr>
+<tr class="memdesc:a588158520d3f23e7f6423d76d8b7f7e0 inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a raw object that is not globally tracked.  <br /></td></tr>
+<tr class="separator:a588158520d3f23e7f6423d76d8b7f7e0 inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3bc63e07294238980342d33d68b510a3 inherit pub_methods_classsbk_1_1core_1_1object__owner" id="r_a3bc63e07294238980342d33d68b510a3"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsbk_1_1core_1_1object__owner.html#a3bc63e07294238980342d33d68b510a3">create_runtime_object</a> (const rttr::type &amp;type) -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt; std::shared_ptr&lt; <a class="el" href="classsbk_1_1core_1_1object.html">object</a> &gt; &gt;</td></tr>
+<tr class="memdesc:a3bc63e07294238980342d33d68b510a3 inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an object that is owned by this owner.  <br /></td></tr>
+<tr class="separator:a3bc63e07294238980342d33d68b510a3 inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a67ca2889c938c105f32f76438bb0bf79 inherit pub_methods_classsbk_1_1core_1_1object__owner" id="r_a67ca2889c938c105f32f76438bb0bf79"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsbk_1_1core_1_1object__owner.html#a67ca2889c938c105f32f76438bb0bf79">create_database_object</a> (const rttr::type &amp;type, bool addToDatabase=true) -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt; std::shared_ptr&lt; <a class="el" href="classsbk_1_1core_1_1database__object.html">database_object</a> &gt; &gt;</td></tr>
+<tr class="memdesc:a67ca2889c938c105f32f76438bb0bf79 inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an object that derives from <a class="el" href="classsbk_1_1core_1_1database__object.html" title="Base object type for any object that can exist in the editor/database. Holds an ID and name.">database_object</a>.  <br /></td></tr>
+<tr class="separator:a67ca2889c938c105f32f76438bb0bf79 inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89b7b7bf1159b2ea4dcfa402c81cd98b inherit pub_methods_classsbk_1_1core_1_1object__owner" id="r_a89b7b7bf1159b2ea4dcfa402c81cd98b"><td class="memTemplParams" colspan="2">
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a89b7b7bf1159b2ea4dcfa402c81cd98b inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><b>create_runtime_object</b> () -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt; std::shared_ptr&lt; T &gt; &gt;</td></tr>
+<tr class="memdesc:a89b7b7bf1159b2ea4dcfa402c81cd98b inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="mdescLeft">&#160;</td><td class="mdescRight">Templated version of create_runtime_object. <br /></td></tr>
+<tr class="separator:a89b7b7bf1159b2ea4dcfa402c81cd98b inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc00b34d49c1378041bd7f51d0707f15 inherit pub_methods_classsbk_1_1core_1_1object__owner" id="r_afc00b34d49c1378041bd7f51d0707f15"><td class="memTemplParams" colspan="2">
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:afc00b34d49c1378041bd7f51d0707f15 inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><b>create_database_object</b> (bool addToDatabase=true) -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt; std::shared_ptr&lt; T &gt; &gt;</td></tr>
+<tr class="memdesc:afc00b34d49c1378041bd7f51d0707f15 inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="mdescLeft">&#160;</td><td class="mdescRight">Templated version of create_database_object. <br /></td></tr>
+<tr class="separator:afc00b34d49c1378041bd7f51d0707f15 inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89b480460c28d19375fd233b0cb8d1bb inherit pub_methods_classsbk_1_1core_1_1object__owner" id="r_a89b480460c28d19375fd233b0cb8d1bb"><td class="memItemLeft" align="right" valign="top">
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>add_reference_to_object</b> (std::shared_ptr&lt; <a class="el" href="classsbk_1_1core_1_1database__object.html">database_object</a> &gt; &amp;<a class="el" href="classsbk_1_1core_1_1object.html">object</a>) -&gt; void</td></tr>
+<tr class="memdesc:a89b480460c28d19375fd233b0cb8d1bb inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="mdescLeft">&#160;</td><td class="mdescRight">Track an already existing object. <br /></td></tr>
+<tr class="separator:a89b480460c28d19375fd233b0cb8d1bb inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4eb6b1b09c00a2103024e1a45414d48 inherit pub_methods_classsbk_1_1core_1_1object__owner" id="r_af4eb6b1b09c00a2103024e1a45414d48"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsbk_1_1core_1_1object__owner.html#af4eb6b1b09c00a2103024e1a45414d48">remove_object</a> (const std::shared_ptr&lt; <a class="el" href="classsbk_1_1core_1_1object.html">object</a> &gt; &amp;<a class="el" href="classsbk_1_1core_1_1object.html">object</a>) -&gt; std::vector&lt; std::shared_ptr&lt; <a class="el" href="classsbk_1_1core_1_1object.html">sbk::core::object</a> &gt; &gt;::iterator</td></tr>
+<tr class="memdesc:af4eb6b1b09c00a2103024e1a45414d48 inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove the reference to this object, if we have one.  <br /></td></tr>
+<tr class="separator:af4eb6b1b09c00a2103024e1a45414d48 inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af74e8ef7867fe3352541dcc30e83c00c inherit pub_methods_classsbk_1_1core_1_1object__owner" id="r_af74e8ef7867fe3352541dcc30e83c00c"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsbk_1_1core_1_1object__owner.html#af74e8ef7867fe3352541dcc30e83c00c">remove_all</a> () -&gt; void</td></tr>
+<tr class="memdesc:af74e8ef7867fe3352541dcc30e83c00c inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove all references.  <br /></td></tr>
+<tr class="separator:af74e8ef7867fe3352541dcc30e83c00c inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a091c1929bd697bc70ef2b13f75e426 inherit pub_methods_classsbk_1_1core_1_1object__owner" id="r_a8a091c1929bd697bc70ef2b13f75e426"><td class="memItemLeft" align="right" valign="top">
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_objects</b> () -&gt; std::vector&lt; std::shared_ptr&lt; <a class="el" href="classsbk_1_1core_1_1object.html">object</a> &gt; &gt; &amp;</td></tr>
+<tr class="separator:a8a091c1929bd697bc70ef2b13f75e426 inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7fa8599e1a3484303dbc24b106cb99c8 inherit pub_methods_classsbk_1_1core_1_1object__owner" id="r_a7fa8599e1a3484303dbc24b106cb99c8"><td class="memItemLeft" align="right" valign="top">
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_objects</b> () const -&gt; const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classsbk_1_1core_1_1object.html">object</a> &gt; &gt; &amp;</td></tr>
+<tr class="separator:a7fa8599e1a3484303dbc24b106cb99c8 inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77e0009de1342cf5e6e47d5f84f47992 inherit pub_methods_classsbk_1_1core_1_1object__owner" id="r_a77e0009de1342cf5e6e47d5f84f47992"><td class="memItemLeft" align="right" valign="top">
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_objects_size</b> () const -&gt; std::size_t</td></tr>
+<tr class="separator:a77e0009de1342cf5e6e47d5f84f47992 inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classsbk_1_1core_1_1object__tracker"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classsbk_1_1core_1_1object__tracker')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classsbk_1_1core_1_1object__tracker.html">sbk::core::object_tracker</a></td></tr>
+<tr class="memitem:a3efcf016c98003e61d37c8b9873ab484 inherit pub_methods_classsbk_1_1core_1_1object__tracker" id="r_a3efcf016c98003e61d37c8b9873ab484"><td class="memItemLeft" align="right" valign="top">
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>track_object</b> (<a class="el" href="classsbk_1_1core_1_1object.html">object</a> *<a class="el" href="classsbk_1_1core_1_1object.html">object</a>) -&gt; void</td></tr>
+<tr class="separator:a3efcf016c98003e61d37c8b9873ab484 inherit pub_methods_classsbk_1_1core_1_1object__tracker"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7cebe40de5384ff113f5298f7e130781 inherit pub_methods_classsbk_1_1core_1_1object__tracker" id="r_a7cebe40de5384ff113f5298f7e130781"><td class="memItemLeft" align="right" valign="top">
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>untrack_object</b> (<a class="el" href="classsbk_1_1core_1_1object.html">object</a> *<a class="el" href="classsbk_1_1core_1_1object.html">object</a>, std::optional&lt; rttr::type &gt; typeOverride=std::nullopt) -&gt; void</td></tr>
+<tr class="separator:a7cebe40de5384ff113f5298f7e130781 inherit pub_methods_classsbk_1_1core_1_1object__tracker"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b95d4ab6b010f56e75f5a77fcb495a3 inherit pub_methods_classsbk_1_1core_1_1object__tracker" id="r_a7b95d4ab6b010f56e75f5a77fcb495a3"><td class="memItemLeft" align="right" valign="top">
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_objects_of_category</b> (const SB_OBJECT_CATEGORY &amp;category) const -&gt; std::unordered_set&lt; <a class="el" href="classsbk_1_1core_1_1object.html">object</a> * &gt;</td></tr>
+<tr class="separator:a7b95d4ab6b010f56e75f5a77fcb495a3 inherit pub_methods_classsbk_1_1core_1_1object__tracker"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6fc5da9533d676b30860523528f878ad inherit pub_methods_classsbk_1_1core_1_1object__tracker" id="r_a6fc5da9533d676b30860523528f878ad"><td class="memItemLeft" align="right" valign="top">
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_objects_of_type</b> (const rttr::type &amp;type) const -&gt; std::unordered_set&lt; <a class="el" href="classsbk_1_1core_1_1object.html">object</a> * &gt;</td></tr>
+<tr class="separator:a6fc5da9533d676b30860523528f878ad inherit pub_methods_classsbk_1_1core_1_1object__tracker"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27a659a515f9872ddbd1c32d1d5a0ef4 inherit pub_methods_classsbk_1_1core_1_1object__tracker" id="r_a27a659a515f9872ddbd1c32d1d5a0ef4"><td class="memItemLeft" align="right" valign="top">
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_objects_count</b> () const -&gt; size_t</td></tr>
+<tr class="separator:a27a659a515f9872ddbd1c32d1d5a0ef4 inherit pub_methods_classsbk_1_1core_1_1object__tracker"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b1ea15ef667cd9de518c478d252f6ff inherit pub_methods_classsbk_1_1core_1_1object__tracker" id="r_a0b1ea15ef667cd9de518c478d252f6ff"><td class="memItemLeft" align="right" valign="top">
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_all_category_to_objects</b> () const -&gt; const std::unordered_map&lt; SB_OBJECT_CATEGORY, std::unordered_set&lt; <a class="el" href="classsbk_1_1core_1_1object.html">object</a> * &gt; &gt; &amp;</td></tr>
+<tr class="separator:a0b1ea15ef667cd9de518c478d252f6ff inherit pub_methods_classsbk_1_1core_1_1object__tracker"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18cc135faa10684236bc91e738dce3ba inherit pub_methods_classsbk_1_1core_1_1object__tracker" id="r_a18cc135faa10684236bc91e738dce3ba"><td class="memItemLeft" align="right" valign="top">
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_all_type_to_objects</b> () const -&gt; const std::unordered_map&lt; rttr::type, std::unordered_set&lt; <a class="el" href="classsbk_1_1core_1_1object.html">object</a> * &gt; &gt; &amp;</td></tr>
+<tr class="separator:a18cc135faa10684236bc91e738dce3ba inherit pub_methods_classsbk_1_1core_1_1object__tracker"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36c75a39ac062a07ae19f6c869b3f97a inherit pub_methods_classsbk_1_1core_1_1object__tracker" id="r_a36c75a39ac062a07ae19f6c869b3f97a"><td class="memItemLeft" align="right" valign="top">
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>convert_to_ordered</b> (const std::unordered_set&lt; <a class="el" href="classsbk_1_1core_1_1object.html">object</a> * &gt; &amp;unordered) const -&gt; std::set&lt; <a class="el" href="classsbk_1_1core_1_1object.html">object</a> *, <a class="el" href="structsbk_1_1core_1_1object__ptr__comparator.html">object_ptr_comparator</a> &gt;</td></tr>
+<tr class="separator:a36c75a39ac062a07ae19f6c869b3f97a inherit pub_methods_classsbk_1_1core_1_1object__tracker"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classsbk_1_1core_1_1database"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classsbk_1_1core_1_1database')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classsbk_1_1core_1_1database.html">sbk::core::database</a></td></tr>
+<tr class="memitem:af41782b748c74c112623e632b46b9579 inherit pub_methods_classsbk_1_1core_1_1database" id="r_af41782b748c74c112623e632b46b9579"><td class="memItemLeft" align="right" valign="top">
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>add_object_to_database</b> (const std::shared_ptr&lt; <a class="el" href="classsbk_1_1core_1_1database__object.html">database_object</a> &gt; &amp;<a class="el" href="classsbk_1_1core_1_1object.html">object</a>) -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt; void &gt;</td></tr>
+<tr class="separator:af41782b748c74c112623e632b46b9579 inherit pub_methods_classsbk_1_1core_1_1database"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9f4c08782780575ab8a9653713ed876 inherit pub_methods_classsbk_1_1core_1_1database" id="r_aa9f4c08782780575ab8a9653713ed876"><td class="memItemLeft" align="right" valign="top">
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>remove_object_from_database</b> (sbk_id objectID) -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt; void &gt;</td></tr>
+<tr class="separator:aa9f4c08782780575ab8a9653713ed876 inherit pub_methods_classsbk_1_1core_1_1database"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a6287ddc348bf0f492e2d703465d603 inherit pub_methods_classsbk_1_1core_1_1database" id="r_a6a6287ddc348bf0f492e2d703465d603"><td class="memItemLeft" align="right" valign="top">
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>assign_name_to_id</b> (sbk_id id, const <a class="el" href="structsbk_1_1core_1_1database__name.html">database_name</a> &amp;<a class="el" href="classsbk_1_1core_1_1name.html">name</a>) -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt; void &gt;</td></tr>
+<tr class="memdesc:a6a6287ddc348bf0f492e2d703465d603 inherit pub_methods_classsbk_1_1core_1_1database"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds an entry to the name -&gt; ID lookup. Allows functions to find the ID of an object from its name before the live object exists. <br /></td></tr>
+<tr class="separator:a6a6287ddc348bf0f492e2d703465d603 inherit pub_methods_classsbk_1_1core_1_1database"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace461d1ddc7091c1ba7cba58acba6576 inherit pub_methods_classsbk_1_1core_1_1database" id="r_ace461d1ddc7091c1ba7cba58acba6576"><td class="memItemLeft" align="right" valign="top">
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>try_find_database_object</b> (sbk_id objectID) const -&gt; std::weak_ptr&lt; <a class="el" href="classsbk_1_1core_1_1database__object.html">database_object</a> &gt;</td></tr>
+<tr class="separator:ace461d1ddc7091c1ba7cba58acba6576 inherit pub_methods_classsbk_1_1core_1_1database"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a147006ebdfc436ade2c2fd2bce38c43b inherit pub_methods_classsbk_1_1core_1_1database" id="r_a147006ebdfc436ade2c2fd2bce38c43b"><td class="memItemLeft" align="right" valign="top">
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>try_find_database_object</b> (const <a class="el" href="structsbk_1_1core_1_1database__name.html">database_name</a> &amp;<a class="el" href="classsbk_1_1core_1_1name.html">name</a>) const -&gt; std::weak_ptr&lt; <a class="el" href="classsbk_1_1core_1_1database__object.html">database_object</a> &gt;</td></tr>
+<tr class="separator:a147006ebdfc436ade2c2fd2bce38c43b inherit pub_methods_classsbk_1_1core_1_1database"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aadd8ff729248499cc8db88fe5e90d884 inherit pub_methods_classsbk_1_1core_1_1database" id="r_aadd8ff729248499cc8db88fe5e90d884"><td class="memItemLeft" align="right" valign="top">
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_all_database_objects</b> () const -&gt; std::vector&lt; std::weak_ptr&lt; <a class="el" href="classsbk_1_1core_1_1database__object.html">database_object</a> &gt; &gt;</td></tr>
+<tr class="separator:aadd8ff729248499cc8db88fe5e90d884 inherit pub_methods_classsbk_1_1core_1_1database"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad64cd44a958da4f768628a220b1b48fc inherit pub_methods_classsbk_1_1core_1_1database" id="r_ad64cd44a958da4f768628a220b1b48fc"><td class="memItemLeft" align="right" valign="top">
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_all_database_names</b> () const -&gt; std::vector&lt; <a class="el" href="structsbk_1_1core_1_1database__name.html">database_name</a> &gt;</td></tr>
+<tr class="separator:ad64cd44a958da4f768628a220b1b48fc inherit pub_methods_classsbk_1_1core_1_1database"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a917eba5da0f71d80701f2b4134e3df56 inherit pub_methods_classsbk_1_1core_1_1database" id="r_a917eba5da0f71d80701f2b4134e3df56"><td class="memItemLeft" align="right" valign="top">
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_database_object_count</b> () const -&gt; size_t</td></tr>
+<tr class="separator:a917eba5da0f71d80701f2b4134e3df56 inherit pub_methods_classsbk_1_1core_1_1database"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51af0a88602d49bdedfe4dd50489f035 inherit pub_methods_classsbk_1_1core_1_1database" id="r_a51af0a88602d49bdedfe4dd50489f035"><td class="memItemLeft" align="right" valign="top">
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_database_object_at</b> (size_t index) const -&gt; std::weak_ptr&lt; <a class="el" href="classsbk_1_1core_1_1database__object.html">database_object</a> &gt;</td></tr>
+<tr class="separator:a51af0a88602d49bdedfe4dd50489f035 inherit pub_methods_classsbk_1_1core_1_1database"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d7ac4513520dc2a9f42eb8353a7f3d0 inherit pub_methods_classsbk_1_1core_1_1database" id="r_a6d7ac4513520dc2a9f42eb8353a7f3d0"><td class="memItemLeft" align="right" valign="top">
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>clear_database</b> () noexcept -&gt; void</td></tr>
+<tr class="separator:a6d7ac4513520dc2a9f42eb8353a7f3d0 inherit pub_methods_classsbk_1_1core_1_1database"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:afcbbb06e538a8106221d6a7097732229" id="r_afcbbb06e538a8106221d6a7097732229"><td class="memItemLeft" align="right" valign="top"><a id="afcbbb06e538a8106221d6a7097732229" name="afcbbb06e538a8106221d6a7097732229"></a>
+static auto&#160;</td><td class="memItemRight" valign="bottom"><b>create</b> () -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt; void &gt;</td></tr>
+<tr class="separator:afcbbb06e538a8106221d6a7097732229"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae15074200dff99b6df6fcb04f9f0ca24" id="r_ae15074200dff99b6df6fcb04f9f0ca24"><td class="memItemLeft" align="right" valign="top"><a id="ae15074200dff99b6df6fcb04f9f0ca24" name="ae15074200dff99b6df6fcb04f9f0ca24"></a>
+static auto&#160;</td><td class="memItemRight" valign="bottom"><b>create</b> (const std::filesystem::path &amp;logFile) -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt; void &gt;</td></tr>
+<tr class="separator:ae15074200dff99b6df6fcb04f9f0ca24"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a5ba6ea6f3d448e005f9c7f2d7830e5" id="r_a4a5ba6ea6f3d448e005f9c7f2d7830e5"><td class="memItemLeft" align="right" valign="top"><a id="a4a5ba6ea6f3d448e005f9c7f2d7830e5" name="a4a5ba6ea6f3d448e005f9c7f2d7830e5"></a>
+static auto&#160;</td><td class="memItemRight" valign="bottom"><b>destroy</b> () -&gt; void</td></tr>
+<tr class="separator:a4a5ba6ea6f3d448e005f9c7f2d7830e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8e63bd9b37b2e86cd4dbd1d220e219d" id="r_ae8e63bd9b37b2e86cd4dbd1d220e219d"><td class="memItemLeft" align="right" valign="top"><a id="ae8e63bd9b37b2e86cd4dbd1d220e219d" name="ae8e63bd9b37b2e86cd4dbd1d220e219d"></a>
+static auto&#160;</td><td class="memItemRight" valign="bottom"><b>get</b> () -&gt; <a class="el" href="classsbk_1_1engine_1_1system.html">system</a> *</td></tr>
+<tr class="separator:ae8e63bd9b37b2e86cd4dbd1d220e219d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5b1ac077a7227699fbac19a41c8c2fb" id="r_af5b1ac077a7227699fbac19a41c8c2fb"><td class="memItemLeft" align="right" valign="top"><a id="af5b1ac077a7227699fbac19a41c8c2fb" name="af5b1ac077a7227699fbac19a41c8c2fb"></a>
+static auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_operating_mode</b> () -&gt; operating_mode</td></tr>
+<tr class="separator:af5b1ac077a7227699fbac19a41c8c2fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac55947dbce1b84b1082674aad300c3e7" id="r_ac55947dbce1b84b1082674aad300c3e7"><td class="memItemLeft" align="right" valign="top"><a id="ac55947dbce1b84b1082674aad300c3e7" name="ac55947dbce1b84b1082674aad300c3e7"></a>
+static auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_project</b> () -&gt; <a class="el" href="classsbk_1_1editor_1_1project.html">sbk::editor::project</a> *</td></tr>
+<tr class="separator:ac55947dbce1b84b1082674aad300c3e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3439e02c2378d9c115cc9f9d2a8782bf" id="r_a3439e02c2378d9c115cc9f9d2a8782bf"><td class="memItemLeft" align="right" valign="top"><a id="a3439e02c2378d9c115cc9f9d2a8782bf" name="a3439e02c2378d9c115cc9f9d2a8782bf"></a>
+static auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_voice_tracker</b> () -&gt; <a class="el" href="classsbk_1_1engine_1_1profiling_1_1voice__tracker.html">sbk::engine::profiling::voice_tracker</a> *</td></tr>
+<tr class="separator:a3439e02c2378d9c115cc9f9d2a8782bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c2ddf8c952ad422d2447af7acfae24a" id="r_a2c2ddf8c952ad422d2447af7acfae24a"><td class="memItemLeft" align="right" valign="top"><a id="a2c2ddf8c952ad422d2447af7acfae24a" name="a2c2ddf8c952ad422d2447af7acfae24a"></a>
+static auto&#160;</td><td class="memItemRight" valign="bottom"><b>open_project</b> (const std::filesystem::path &amp;projectFile, sbk::core::sbk_log_callback_proc logCallback) -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt; void &gt;</td></tr>
+<tr class="memdesc:a2c2ddf8c952ad422d2447af7acfae24a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an instance of Sound Bakery and opens the project. <br /></td></tr>
+<tr class="separator:a2c2ddf8c952ad422d2447af7acfae24a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae56255835e17df8c210b592aba5cf003" id="r_ae56255835e17df8c210b592aba5cf003"><td class="memItemLeft" align="right" valign="top"><a id="ae56255835e17df8c210b592aba5cf003" name="ae56255835e17df8c210b592aba5cf003"></a>
+static auto&#160;</td><td class="memItemRight" valign="bottom"><b>create_project</b> (const std::filesystem::directory_entry &amp;projectDirectory, std::string_view projectName) -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt; void &gt;</td></tr>
+<tr class="memdesc:ae56255835e17df8c210b592aba5cf003"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a project and initializes Sound Bakery. <br /></td></tr>
+<tr class="separator:ae56255835e17df8c210b592aba5cf003"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+Friends</h2></td></tr>
+<tr class="memitem:ac98d07dd8f7b70e16ccb9a01abf56b9c" id="r_ac98d07dd8f7b70e16ccb9a01abf56b9c"><td class="memItemLeft" align="right" valign="top"><a id="ac98d07dd8f7b70e16ccb9a01abf56b9c" name="ac98d07dd8f7b70e16ccb9a01abf56b9c"></a>
+class&#160;</td><td class="memItemRight" valign="bottom"><b>boost::serialization::access</b></td></tr>
+<tr class="separator:ac98d07dd8f7b70e16ccb9a01abf56b9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
+Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pub_attribs_structsc__system"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_structsc__system')"><img src="closed.png" alt="-"/>&#160;Public Attributes inherited from <a class="el" href="structsc__system.html">sc_system</a></td></tr>
+<tr class="memitem:a37a32299cb6b32b04c006d937a2c00d6 inherit pub_attribs_structsc__system" id="r_a37a32299cb6b32b04c006d937a2c00d6"><td class="memItemLeft" align="right" valign="top">
+ma_engine&#160;</td><td class="memItemRight" valign="bottom"><b>engine</b></td></tr>
+<tr class="separator:a37a32299cb6b32b04c006d937a2c00d6 inherit pub_attribs_structsc__system"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af65d7c7e68abb0c4bbc4a4495d512c93 inherit pub_attribs_structsc__system" id="r_af65d7c7e68abb0c4bbc4a4495d512c93"><td class="memItemLeft" align="right" valign="top">
+ma_resource_manager&#160;</td><td class="memItemRight" valign="bottom"><b>resourceManager</b></td></tr>
+<tr class="separator:af65d7c7e68abb0c4bbc4a4495d512c93 inherit pub_attribs_structsc__system"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7900608057e5fa2d6a9cd660496ac500 inherit pub_attribs_structsc__system" id="r_a7900608057e5fa2d6a9cd660496ac500"><td class="memItemLeft" align="right" valign="top">
+ma_log&#160;</td><td class="memItemRight" valign="bottom"><b>log</b></td></tr>
+<tr class="separator:a7900608057e5fa2d6a9cd660496ac500 inherit pub_attribs_structsc__system"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a259dcfd78362661526e8c265dc6586a8 inherit pub_attribs_structsc__system" id="r_a259dcfd78362661526e8c265dc6586a8"><td class="memItemLeft" align="right" valign="top">
+clap_host_t&#160;</td><td class="memItemRight" valign="bottom"><b>clapHost</b></td></tr>
+<tr class="separator:a259dcfd78362661526e8c265dc6586a8 inherit pub_attribs_structsc__system"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9efe1dc4169a4c8219677f9fa86e152 inherit pub_attribs_structsc__system" id="r_ab9efe1dc4169a4c8219677f9fa86e152"><td class="memItemLeft" align="right" valign="top">
+<a class="el" href="structsc__clap.html">sc_clap</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>clapPlugins</b></td></tr>
+<tr class="separator:ab9efe1dc4169a4c8219677f9fa86e152 inherit pub_attribs_structsc__system"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0209febd09ec8761e38cc61670165085 inherit pub_attribs_structsc__system" id="r_a0209febd09ec8761e38cc61670165085"><td class="memItemLeft" align="right" valign="top">
+<a class="el" href="structsc__node__group.html">sc_node_group</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>masterNodeGroup</b></td></tr>
+<tr class="separator:a0209febd09ec8761e38cc61670165085 inherit pub_attribs_structsc__system"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Manager of the whole Sound Bakery. </p>
+<p>The system tracks all objects created during Sound Bakery's lifetime.</p>
+<p>It owns all loaded Soundbanks, listener game object, and busses. </p>
+</div><hr/>The documentation for this class was generated from the following files:<ul>
+<li>src/sound_bakery/<a class="el" href="system_8h_source.html">system.h</a></li>
+<li>src/sound_bakery/<b>system.cpp</b></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><b>sbk</b></li><li class="navelem"><b>engine</b></li><li class="navelem"><a class="el" href="classsbk_1_1engine_1_1system.html">system</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
+  </ul>
+</div>
+</body>
+</html>

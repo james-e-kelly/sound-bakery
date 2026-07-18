@@ -1,0 +1,207 @@
+<!-- HTML header for doxygen 1.10.0-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Sound Bakery: Design Philosophy</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom-css.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+</head>
+<body>
+<!-- https://tholman.com/github-corners/ -->
+<a href="https://github.com/KarateKidzz/sound-bakery" class="github-corner" title="View source on GitHub" target="_blank" rel="noopener noreferrer">
+  <svg viewBox="0 0 250 250" width="40" height="40" style="position: absolute; top: 0; border: 0; right: 0; z-index: 99;" aria-hidden="true">
+  <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectlogo"><img alt="Logo" src="sound-bakery-logo.png"$logosize/></td>
+  <td id="projectalign">
+   <div id="projectname">Sound Bakery&nbsp<span id="projectnumber">&#160;<select id="sbk-version-select" aria-label="Documentation version"><option>dev</option></select></span>
+   </div>
+   <div id="projectbrief">Open-source audio middleware for games</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- Sound Bakery documentation version switcher -->
+<script type="text/javascript">
+(function () {
+    var current = "dev";
+    var select = document.getElementById('sbk-version-select');
+    if (!select) { return; }
+    // versions.json lives at the site root, one level above this version's folder.
+    fetch("../versions.json", { cache: "no-cache" })
+        .then(function (r) { return r.ok ? r.json() : []; })
+        .then(function (versions) {
+            if (!versions || !versions.length) { return; }
+            select.innerHTML = "";
+            versions.forEach(function (v) {
+                var opt = document.createElement('option');
+                opt.value = v;
+                opt.textContent = v;
+                if (v === current) { opt.selected = true; }
+                select.appendChild(opt);
+            });
+        })
+        .catch(function () { /* single-version or local build: leave the label as-is */ });
+    select.addEventListener('change', function () {
+        window.location.href = "../" + select.value + "/index.html";
+    });
+})();
+</script>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Search');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('Design.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div><div class="header">
+  <div class="headertitle"><div class="title">Design Philosophy</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><p>When writing a new audio middleware tool, it is almost impossible not to mention <a href="https://www.audiokinetic.com/en/products/wwise/">Wwise</a> and <a href="https://fmod.com">FMOD</a>. They dominate the industry and have established well-designed patterns for adaptive audio. Sound Bakery takes heavy inspiration from both. While there are alternatives like <a href="https://solhsa.com/soloud/">SoLoud</a> and in-engine tools like <a href="https://docs.unrealengine.com/5.2/en-US/working-with-audio-in-unreal-engine/">Unreal's</a>, there are downsides to their approaches that Sound Bakery hopes to avoid.</p>
+<p>At its simplest, adaptive audio solves the problem of 'what sound(s) should I play for this game event?'. This question means an engine must track variable parameters from the game and use them to select one or more sounds. Sound Bakery creates this selection logic with a tree of nodes where each node can either be a sound or hold some logic for choosing a child node. Users can stack nodes to create more and more complex behavior.</p>
+<p>This design doesn't abstract away from the problem too much. For example, FMOD uses timelines and moves the play cursor based on conditions to play a different sound. This approach is acceptable but slightly cumbersome, adding an extra layer of abstraction that isn't needed. FMOD chose this approach to make the tool approachable for users from a DAW. Sound Bakery's approach (inherited from Wwise) might alienate a sound designer at first glance but becomes intuitive once learned.</p>
+<p>Once sound selection is solved, an adaptive audio engine must package its audio for efficient performance at runtime. Uncompressed audio files can be incredibly large and bloat any install size. Moreover, audio is usually reserved only a small portion of the platform's memory, requiring audio to stay compressed in memory. Sound Bakery solves this problem with Soundbanks. The standard approach is to compress many audio files into one file to limit the number of calls to the storage device. Wwise has started to pack each event into a unique soundbank, ensuring only the audio required for the scene is loaded. Sound Bakery will explore this approach, but it will not be a priority.</p>
+<p>With selection logic and Soundbanks, the core of Sound Bakery is complete. However, having selection logic and packaging sorted does not mean the tool is easy to use. How a user interacts with the tool through code and the visual interface is just as important. We will now discuss Sound Bakery's API and editor design.</p>
+<h1><a class="anchor" id="autotoc_md37"></a>
+Interacting With Sound Bakery</h1>
+<p>Sound Bakery can be interacted with via an API and a visual authoring application. The API takes inspiration from FMOD, providing the user with a clean C (and higher level wrappers) API and minimal object types; the authoring application takes some inspiration from Wwise but also goes in a unique direction.</p>
+<h2><a class="anchor" id="autotoc_md38"></a>
+Editor</h2>
+<p>Sound designers spend most of their time importing/modifying sounds, defining playback logic, creating events, and packaging soundbanks. Other features like profiling, mixing, and sandboxing are secondary. Sound Bakery makes the most essential features front and center; others are kept in the background until needed. Sound Bakery believes in keeping the editor clean with minimal visual noise.</p>
+<p>Wwise is almost infamous for its busy editor. While the user can modify this, Wwise's default layout opens to:</p><ul>
+<li>Platform combo box</li>
+<li>Language combo box</li>
+<li>Profiling buttons</li>
+<li>Two search bars</li>
+<li>A project explorer with tabs for every object category</li>
+<li>Audio Devices, Master-Mixer hierarchy, Actor-Mixer hierarchy, and Interactive Music Hierarchy</li>
+<li>Event viewer</li>
+<li>Contextual help window</li>
+<li>Transport/play control</li>
+<li>Large output meter</li>
+<li>Selected object information with:<ul>
+<li>Volume, lowpass, highpass, pitch, and make-up gain values</li>
+<li>Output bus selection with further tweakable properties</li>
+<li>Game-defined sends</li>
+<li>User-defined sends</li>
+<li>Early reflections</li>
+<li>Initial delay</li>
+<li>Unique properties for the selected object</li>
+<li>Contents or source window</li>
+<li>Multiple tabs to tweak even more properties for the object</li>
+</ul>
+</li>
+</ul>
+<p>On top of this, Wwise contains seven other layouts and even more views/windows not shown by default on these layouts.</p>
+<p>This noise is something Sound Bakery aims to avoid. While a complex program should not shy away from its complexity, when the fundamental purpose of the tool is to select an audio file from a game event, it is better to keep the program focussed.</p>
+<p>Sound Bakery displays audio files, nodes, events, and soundbanks in its main explorer windows. These are the main focuses of the program and are kept prominent. Secondly, the play controls and object inspector window are displayed to provide the user with the most important controls and information.</p>
+<p>Customization of the editor is crucial, and the user can add, remove, and dock windows to their liking. The user can make the editor their own and match Wwise or FMOD's layouts if desired.</p>
+<p>Finally, visual design is also essential. While a program targeted at professionals needs to perform more than it needs to look pretty, visual design still needs to be considered.</p>
+<p>Unreal Engine 5's makeover is a clear example. UE5 keeps the same viewport, content browser, inspector, and more, yet its updated visuals make using the tool more enjoyable.</p>
+<p>Sound Bakery aims for a clean and modern visual design that should be familiar and comfortable to users.</p>
+<p>If you want to dive deeper into Sound Bakery's visual design, please refer to the <a class="el" href="UserGuide.html">User Guide</a>.</p>
+<h2><a class="anchor" id="autotoc_md39"></a>
+API</h2>
+<p>Software is complex, and when an API is also complex, working with it becomes more arduous than it needs to be. A clean and simple API can be just as pleasing as any visual tool. Sound Bakery fully believes in a clean, easy-to-use, yet powerful API.</p>
+<p>FMOD's API is an excellent example of a great API. Using FMOD is extremely easy and requires minimal lines of code. For example, starting FMOD and playing a sound takes around four lines of code. This simplicity isn't to say FMOD is a simple tool or has minimal features; instead, FMOD does not expose complexity where it doesn't need to.</p>
+<p>On the other hand, Wwise's API is large and unwieldy. Starting Wwise requires the initialization of six different modules. For example, read this passage for initializing the streaming manager:</p>
+<blockquote class="doxtable">
+<p>&zwj;It requires an instance of AK::StreamMgr::IAkFileLocationResolver, and creates a streaming device. This requires an instance of AK::StreamMgr::IAkLowLevelIOHook. This interface is defined in AkStreamMgrModule.h, which contains all definitions that are specific to the default Stream Manager implementation provided with the SDK. </p>
+</blockquote>
+<p>API design like this causes friction. Sound Bakery also has complex classes and patterns of behavior but doesn't show this to the user unless needed. For example, Sound Bakery is built on a playback library called Sound Chef. Sound Chef is itself built on miniaudio. Miniaudio creates a resource manager when its engine object is created. This chain continues to device initialization. Sound Bakery hides this complexity behind simple functions like <code>SB_System_Init</code>.</p>
+<p>It is also important to note a significant advantage Sound Bakery has due to its open-source nature. While FMOD has an excellent API, it cannot expose anything more. In Sound Bakery, if the user desires, they can dig deeper than the public API and reach into internal objects and functions. This transparency means the user can modify and use Sound Bakery in more ways than publically declared. Moreover, users can extend Sound Bakery itself by modifying its source.</p>
+<p>If you want to dive deeper into Sound Bakery's API, please refer to the <a class="el" href="ProgrammerGuide.html">Programmer's Guide</a>. </p>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+</div><!-- doc-content -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a class="el" href="UserManual.html">User Manual</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
+  </ul>
+</div>
+</body>
+</html>

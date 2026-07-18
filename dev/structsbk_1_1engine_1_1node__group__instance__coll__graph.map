@@ -1,0 +1,15 @@
+<map id="sbk::engine::node_group_instance" name="sbk::engine::node_group_instance">
+<area shape="rect" id="Node000001" title="Owns a node group and applies DSP effects to it." alt="" coords="5,420,187,460"/>
+<area shape="rect" id="Node000002" href="$structsc__dsp.html" title="ma_node with an additional enum descriptor." alt="" coords="63,315,129,341"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="99,355,99,420,93,420,93,355"/>
+<area shape="poly" id="edge7_Node000002_Node000002" title=" " alt="" coords="144,318,152,321,156,328,147,337,130,339,129,334,145,332,151,328,149,325,142,323"/>
+<area shape="rect" id="Node000003" href="$structsc__dsp__state.html" title="Holds instance data for a single sc_dsp." alt="" coords="21,93,128,119"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="79,132,89,250,97,315,92,315,84,251,74,132"/>
+<area shape="rect" id="Node000004" href="$structsc__dsp__vtable.html" title=" " alt="" coords="136,225,251,251"/>
+<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="90,129,113,164,143,199,174,223,171,227,140,203,109,167,86,132"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="172,262,111,317,107,313,169,258"/>
+<area shape="rect" id="Node000005" href="$structsc__dsp__parameter.html" title=" " alt="" coords="152,93,293,119"/>
+<area shape="poly" id="edge5_Node000004_Node000005" title=" " alt="" coords="220,133,199,226,193,224,214,131"/>
+<area shape="rect" id="Node000006" href="$structsc__dsp__parameter__float.html" title=" " alt="" coords="134,5,311,31"/>
+<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="225,45,225,93,220,93,220,45"/>
+</map>

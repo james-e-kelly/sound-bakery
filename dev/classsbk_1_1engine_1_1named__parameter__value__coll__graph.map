@@ -1,0 +1,15 @@
+<map id="sbk::engine::named_parameter_value" name="sbk::engine::named_parameter_value">
+<area shape="rect" id="Node000001" title="Represents a discrete value for a named_parameter." alt="" coords="761,110,912,150"/>
+<area shape="rect" id="Node000002" href="$classsbk_1_1core_1_1database__object.html" title="Base object type for any object that can exist in the editor/database. Holds an ID and name." alt="" coords="430,55,579,95"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="593,87,761,115,760,120,592,92"/>
+<area shape="rect" id="Node000003" href="$classsbk_1_1core_1_1object.html" title="Base object that all sound Bakery objects should inherit from." alt="" coords="231,63,360,88"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="374,73,430,73,430,78,374,78"/>
+<area shape="rect" id="Node000004" href="$classsbk_1_1core_1_1object__owner.html" title="Creates, owns and tracks objects." alt="" coords="5,5,181,31"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="153,32,251,60,249,65,151,37"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="13,55,174,95"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="188,73,230,73,230,78,188,78"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="19,120,168,145"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="151,114,249,85,251,91,153,119"/>
+<area shape="rect" id="Node000007" href="$classsbk_1_1core_1_1database__ptr.html" title=" " alt="" coords="409,120,600,175"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="614,139,761,131,761,137,614,144"/>
+</map>

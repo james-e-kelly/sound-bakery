@@ -1,0 +1,773 @@
+<!-- HTML header for doxygen 1.10.0-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Sound Bakery: Class Hierarchy</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom-css.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+</head>
+<body>
+<!-- https://tholman.com/github-corners/ -->
+<a href="https://github.com/KarateKidzz/sound-bakery" class="github-corner" title="View source on GitHub" target="_blank" rel="noopener noreferrer">
+  <svg viewBox="0 0 250 250" width="40" height="40" style="position: absolute; top: 0; border: 0; right: 0; z-index: 99;" aria-hidden="true">
+  <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectlogo"><img alt="Logo" src="sound-bakery-logo.png"$logosize/></td>
+  <td id="projectalign">
+   <div id="projectname">Sound Bakery&nbsp<span id="projectnumber">&#160;<select id="sbk-version-select" aria-label="Documentation version"><option>dev</option></select></span>
+   </div>
+   <div id="projectbrief">Open-source audio middleware for games</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- Sound Bakery documentation version switcher -->
+<script type="text/javascript">
+(function () {
+    var current = "dev";
+    var select = document.getElementById('sbk-version-select');
+    if (!select) { return; }
+    // versions.json lives at the site root, one level above this version's folder.
+    fetch("../versions.json", { cache: "no-cache" })
+        .then(function (r) { return r.ok ? r.json() : []; })
+        .then(function (versions) {
+            if (!versions || !versions.length) { return; }
+            select.innerHTML = "";
+            versions.forEach(function (v) {
+                var opt = document.createElement('option');
+                opt.value = v;
+                opt.textContent = v;
+                if (v === current) { opt.selected = true; }
+                select.appendChild(opt);
+            });
+        })
+        .catch(function () { /* single-version or local build: leave the label as-is */ });
+    select.addEventListener('change', function () {
+        window.location.href = "../" + select.value + "/index.html";
+    });
+})();
+</script>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Search');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('hierarchy.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">Class Hierarchy</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock">
+<p><a href="hierarchy.html">Go to the textual class hierarchy</a></p>
+</div><table border="0" cellspacing="10" cellpadding="0">
+<tr><td><img src="inherit_graph_0.png" border="0" usemap="#aaudio__meter__utils_1_1audio__meter__draw__info" alt=""/>
+<map name="aaudio__meter__utils_1_1audio__meter__draw__info" id="aaudio__meter__utils_1_1audio__meter__draw__info">
+<area shape="rect" href="structaudio__meter__utils_1_1audio__meter__draw__info.html" title=" " alt="" coords="5,5,180,45"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_1.png" border="0" usemap="#aboost_1_1mpl_1_1vector" alt=""/>
+<map name="aboost_1_1mpl_1_1vector" id="aboost_1_1mpl_1_1vector">
+<area shape="rect" title=" " alt="" coords="5,13,145,38"/>
+<area shape="rect" href="structsbk_1_1engine_1_1node__instance__fsm_1_1transition__table.html" title=" " alt="" coords="193,5,392,45"/>
+<area shape="poly" title=" " alt="" coords="159,23,193,23,193,28,159,28"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_2.png" border="0" usemap="#aboost_1_1msm_1_1front_1_1state" alt=""/>
+<map name="aboost_1_1msm_1_1front_1_1state" id="aboost_1_1msm_1_1front_1_1state">
+<area shape="rect" title=" " alt="" coords="5,133,152,173"/>
+<area shape="rect" href="structsbk_1_1engine_1_1node__instance__fsm_1_1state__init.html" title=" " alt="" coords="200,5,399,45"/>
+<area shape="poly" title=" " alt="" coords="109,122,150,87,199,55,225,43,227,48,201,60,153,92,112,126"/>
+<area shape="rect" href="structsbk_1_1engine_1_1node__instance__fsm_1_1state__playing.html" title=" " alt="" coords="200,69,399,109"/>
+<area shape="poly" title=" " alt="" coords="161,127,229,107,231,112,162,132"/>
+<area shape="rect" href="structsbk_1_1engine_1_1node__instance__fsm_1_1state__stopped.html" title=" " alt="" coords="200,133,399,173"/>
+<area shape="poly" title=" " alt="" coords="166,151,200,151,200,156,166,156"/>
+<area shape="rect" href="structsbk_1_1engine_1_1node__instance__fsm_1_1state__uninit.html" title=" " alt="" coords="200,197,399,237"/>
+<area shape="poly" title=" " alt="" coords="162,175,231,195,229,200,161,180"/>
+<area shape="rect" href="structsbk_1_1engine_1_1node__instance__fsm_1_1state__virtual.html" title=" " alt="" coords="200,261,399,301"/>
+<area shape="poly" title=" " alt="" coords="112,181,153,215,201,247,227,259,225,264,199,252,150,219,109,185"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_3.png" border="0" usemap="#agluten_1_1app" alt=""/>
+<map name="agluten_1_1app" id="agluten_1_1app">
+<area shape="rect" title=" " alt="" coords="5,5,100,31"/>
+<area shape="rect" href="classeditor__app.html" title=" " alt="" coords="148,5,239,31"/>
+<area shape="poly" title=" " alt="" coords="114,15,148,15,148,21,114,21"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_4.png" border="0" usemap="#agluten_1_1element" alt=""/>
+<map name="agluten_1_1element" id="agluten_1_1element">
+<area shape="rect" title=" " alt="" coords="5,5,131,31"/>
+<area shape="rect" href="classadd__effect__button.html" title=" " alt="" coords="179,5,317,31"/>
+<area shape="poly" title=" " alt="" coords="144,15,179,15,179,21,144,21"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_5.png" border="0" usemap="#agluten_1_1manager" alt=""/>
+<map name="agluten_1_1manager" id="agluten_1_1manager">
+<area shape="rect" title=" " alt="" coords="5,31,135,56"/>
+<area shape="rect" href="classapp__manager.html" title=" " alt="" coords="193,5,304,31"/>
+<area shape="poly" title=" " alt="" coords="148,30,193,23,194,28,149,35"/>
+<area shape="rect" href="classproject__manager.html" title=" " alt="" coords="183,55,315,80"/>
+<area shape="poly" title=" " alt="" coords="149,51,182,56,182,61,148,56"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_6.png" border="0" usemap="#agluten_1_1root__widget" alt=""/>
+<map name="agluten_1_1root__widget" id="agluten_1_1root__widget">
+<area shape="rect" title=" " alt="" coords="5,5,153,31"/>
+<area shape="rect" href="classroot__widget.html" title=" " alt="" coords="201,5,300,31"/>
+<area shape="poly" title=" " alt="" coords="167,15,201,15,201,21,167,21"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_7.png" border="0" usemap="#agluten_1_1widget" alt=""/>
+<map name="agluten_1_1widget" id="agluten_1_1widget">
+<area shape="rect" title=" " alt="" coords="5,252,120,277"/>
+<area shape="rect" href="classaudio__display__widget.html" title=" " alt="" coords="176,5,339,31"/>
+<area shape="poly" title=" " alt="" coords="66,238,77,195,96,141,125,87,144,62,166,40,185,28,188,33,170,44,148,65,130,90,101,144,82,196,71,239"/>
+<area shape="rect" href="classaudio__meter__widget.html" title=" " alt="" coords="180,55,335,80"/>
+<area shape="poly" title=" " alt="" coords="70,238,84,204,104,164,131,124,166,89,187,78,189,82,170,93,136,127,109,167,88,206,75,240"/>
+<area shape="rect" href="classdatabase__widget.html" title=" " alt="" coords="191,104,324,129"/>
+<area shape="poly" title=" " alt="" coords="76,239,112,188,138,161,167,138,190,127,192,132,169,143,141,165,117,191,80,242"/>
+<area shape="rect" href="classdetails__widget.html" title=" " alt="" coords="199,153,316,179"/>
+<area shape="poly" title=" " alt="" coords="87,241,123,213,167,188,198,176,200,181,169,192,126,218,90,245"/>
+<area shape="rect" href="classfile__browser__widget.html" title=" " alt="" coords="181,203,333,228"/>
+<area shape="poly" title=" " alt="" coords="126,246,205,226,207,231,127,251"/>
+<area shape="rect" href="classlog__widget.html" title=" " alt="" coords="211,252,304,277"/>
+<area shape="poly" title=" " alt="" coords="134,262,211,262,211,267,134,267"/>
+<area shape="rect" href="classnew__project__widget.html" title=" " alt="" coords="181,301,333,327"/>
+<area shape="poly" title=" " alt="" coords="127,278,207,299,205,304,126,283"/>
+<area shape="rect" href="classplayer__widget.html" title=" " alt="" coords="200,351,315,376"/>
+<area shape="poly" title=" " alt="" coords="91,284,127,311,169,336,202,348,200,353,167,340,124,315,88,289"/>
+<area shape="rect" href="classproject__explorer__widget.html" title=" " alt="" coords="168,400,347,425"/>
+<area shape="poly" title=" " alt="" coords="81,287,117,337,142,363,169,385,195,398,193,402,167,390,138,367,113,341,76,291"/>
+<area shape="rect" href="classproject__nodes__widget.html" title=" " alt="" coords="175,449,339,475"/>
+<area shape="poly" title=" " alt="" coords="75,289,89,323,109,362,136,401,170,435,192,447,190,452,166,439,132,405,105,365,84,325,70,292"/>
+<area shape="rect" href="classsplash__widget.html" title=" " alt="" coords="200,499,315,524"/>
+<area shape="poly" title=" " alt="" coords="71,290,83,332,102,385,130,438,149,463,170,484,201,500,199,505,166,488,144,466,126,441,97,387,77,334,66,291"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_8.png" border="0" usemap="#amethod__drawer" alt=""/>
+<map name="amethod__drawer" id="amethod__drawer">
+<area shape="rect" href="classmethod__drawer.html" title=" " alt="" coords="5,5,129,31"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_9.png" border="0" usemap="#aplayable__selection" alt=""/>
+<map name="aplayable__selection" id="aplayable__selection">
+<area shape="rect" href="structplayable__selection.html" title=" " alt="" coords="5,5,149,31"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_10.png" border="0" usemap="#aproperty__drawer" alt=""/>
+<map name="aproperty__drawer" id="aproperty__drawer">
+<area shape="rect" href="classproperty__drawer.html" title=" " alt="" coords="5,5,135,31"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_11.png" border="0" usemap="#arpmalloc__wrapper" alt=""/>
+<map name="arpmalloc__wrapper" id="arpmalloc__wrapper">
+<area shape="rect" href="structrpmalloc__wrapper.html" title=" " alt="" coords="5,5,144,31"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_12.png" border="0" usemap="#arttr_1_1wrapper__mapper_3_01sbk_1_1core_1_1child__ptr_3_01T_01_4_01_4" alt=""/>
+<map name="arttr_1_1wrapper__mapper_3_01sbk_1_1core_1_1child__ptr_3_01T_01_4_01_4" id="arttr_1_1wrapper__mapper_3_01sbk_1_1core_1_1child__ptr_3_01T_01_4_01_4">
+<area shape="rect" href="structrttr_1_1wrapper__mapper_3_01sbk_1_1core_1_1child__ptr_3_01T_01_4_01_4.html" title=" " alt="" coords="5,5,165,60"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_13.png" border="0" usemap="#arttr_1_1wrapper__mapper_3_01sbk_1_1core_1_1database__ptr_3_01T_01_4_01_4" alt=""/>
+<map name="arttr_1_1wrapper__mapper_3_01sbk_1_1core_1_1database__ptr_3_01T_01_4_01_4" id="arttr_1_1wrapper__mapper_3_01sbk_1_1core_1_1database__ptr_3_01T_01_4_01_4">
+<area shape="rect" href="structrttr_1_1wrapper__mapper_3_01sbk_1_1core_1_1database__ptr_3_01T_01_4_01_4.html" title=" " alt="" coords="5,5,169,60"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_14.png" border="0" usemap="#asbk_1_1core_1_1database" alt=""/>
+<map name="asbk_1_1core_1_1database" id="asbk_1_1core_1_1database">
+<area shape="rect" href="classsbk_1_1core_1_1database.html" title="Runtime lookup of objects, using their ID or name." alt="" coords="21,193,171,218"/>
+<area shape="rect" href="classsbk_1_1engine_1_1system.html" title="Manager of the whole Sound Bakery." alt="" coords="235,267,388,293"/>
+<area shape="poly" title=" " alt="" coords="163,219,188,227,283,265,281,270,186,232,161,224"/>
+<area shape="rect" title=" " alt="" coords="23,391,169,431"/>
+<area shape="rect" href="classsbk_1_1core_1_1object.html" title="Base object that all sound Bakery objects should inherit from." alt="" coords="247,369,376,394"/>
+<area shape="poly" title=" " alt="" coords="182,396,246,387,247,393,182,402"/>
+<area shape="rect" href="classsbk_1_1core_1_1database__object.html" title="Base object type for any object that can exist in the editor/database. Holds an ID and name." alt="" coords="477,304,626,344"/>
+<area shape="poly" title=" " alt="" coords="378,363,476,339,477,344,379,368"/>
+<area shape="rect" href="classsbk_1_1engine_1_1node__instance.html" title="NodeInstances represent runtime versions of Nodes, either containers or busses." alt="" coords="452,418,651,443"/>
+<area shape="poly" title=" " alt="" coords="388,394,489,415,488,421,386,399"/>
+<area shape="rect" href="classsbk_1_1engine_1_1voice.html" title="A runtime graph of nodes and busses, playing a sound or many." alt="" coords="481,369,621,394"/>
+<area shape="poly" title=" " alt="" coords="390,379,481,379,481,384,390,384"/>
+<area shape="rect" href="classsbk_1_1engine_1_1parameter.html" title=" " alt="" coords="723,5,896,45"/>
+<area shape="poly" title=" " alt="" coords="562,290,583,239,615,176,659,111,684,82,713,55,732,43,735,48,716,59,688,85,663,115,620,178,588,241,567,292"/>
+<area shape="rect" href="classsbk_1_1engine_1_1parameter.html" title=" " alt="" coords="723,69,896,109"/>
+<area shape="poly" title=" " alt="" coords="568,290,593,251,626,205,666,159,713,119,734,107,737,112,716,124,670,163,630,209,597,254,573,293"/>
+<area shape="rect" href="classsbk_1_1engine_1_1parameter.html" title=" " alt="" coords="723,133,896,173"/>
+<area shape="poly" title=" " alt="" coords="579,292,638,237,674,208,713,183,738,171,741,176,716,188,678,213,641,241,583,296"/>
+<area shape="rect" href="classsbk_1_1engine_1_1effect__description.html" title="Wraps a sc_dsp_config." alt="" coords="738,197,881,237"/>
+<area shape="poly" title=" " alt="" coords="605,295,714,247,745,235,747,240,716,252,607,300"/>
+<area shape="rect" href="classsbk_1_1engine_1_1event.html" title=" " alt="" coords="738,262,881,287"/>
+<area shape="poly" title=" " alt="" coords="639,305,742,285,743,290,640,310"/>
+<area shape="rect" href="classsbk_1_1engine_1_1game__object.html" title=" " alt="" coords="715,311,904,337"/>
+<area shape="poly" title=" " alt="" coords="640,321,715,321,715,327,640,327"/>
+<area shape="rect" href="classsbk_1_1engine_1_1named__parameter__value.html" title="Represents a discrete value for a named_parameter." alt="" coords="734,361,885,401"/>
+<area shape="poly" title=" " alt="" coords="640,341,734,362,733,367,639,346"/>
+<area shape="rect" href="classsbk_1_1engine_1_1node__base.html" title="Generic node that can have a get_parent and own children." alt="" coords="722,426,897,451"/>
+<area shape="poly" title=" " alt="" coords="641,341,668,355,684,369,693,384,701,398,716,411,743,424,741,428,713,416,697,401,688,387,680,373,665,360,638,346"/>
+<area shape="rect" href="classsbk_1_1engine_1_1parameter.html" title="Defines a database object with a changeable property." alt="" coords="723,476,896,516"/>
+<area shape="poly" title=" " alt="" coords="640,338,668,355,681,369,688,383,694,410,699,436,705,449,716,462,733,474,730,478,713,466,701,452,694,438,688,411,683,384,676,372,665,359,637,342"/>
+<area shape="rect" href="classsbk_1_1engine_1_1sound.html" title=" " alt="" coords="737,541,881,566"/>
+<area shape="poly" title=" " alt="" coords="640,336,669,355,685,377,692,399,693,443,694,485,701,506,716,526,738,540,735,545,713,530,696,508,689,486,688,443,687,400,680,380,665,359,637,341"/>
+<area shape="rect" href="classsbk_1_1engine_1_1soundbank.html" title="Packages events and dependent objects and sounds." alt="" coords="721,590,897,615"/>
+<area shape="poly" title=" " alt="" coords="640,336,669,355,688,384,696,412,696,441,693,469,690,496,690,523,698,550,717,577,731,588,728,592,713,581,693,553,685,524,684,496,688,468,691,440,691,413,683,386,665,359,637,340"/>
+<area shape="rect" href="classsbk_1_1engine_1_1float__parameter.html" title=" " alt="" coords="983,5,1118,45"/>
+<area shape="poly" title=" " alt="" coords="910,23,983,23,983,28,910,28"/>
+<area shape="rect" href="classsbk_1_1engine_1_1int__parameter.html" title=" " alt="" coords="952,77,1149,102"/>
+<area shape="poly" title=" " alt="" coords="910,87,952,87,952,92,910,92"/>
+<area shape="rect" href="classsbk_1_1engine_1_1named__parameter.html" title="Holds discrete named integer values." alt="" coords="975,133,1126,173"/>
+<area shape="poly" title=" " alt="" coords="910,151,975,151,975,156,910,156"/>
+<area shape="rect" href="classsbk_1_1engine_1_1node.html" title="Root node that builds the core graph of sounds and busses." alt="" coords="982,426,1119,451"/>
+<area shape="poly" title=" " alt="" coords="910,436,982,436,982,441,910,441"/>
+<area shape="rect" href="classsbk_1_1engine_1_1bus.html" title=" " alt="" coords="1217,349,1345,374"/>
+<area shape="poly" title=" " alt="" coords="1102,419,1241,372,1243,377,1103,424"/>
+<area shape="rect" href="classsbk_1_1engine_1_1container.html" title="Base container type. Inherited types include sounds, random, sequence etc." alt="" coords="1197,450,1364,475"/>
+<area shape="poly" title=" " alt="" coords="1133,445,1197,451,1197,457,1133,450"/>
+<area shape="rect" href="classsbk_1_1engine_1_1aux__bus.html" title=" " alt="" coords="1416,297,1575,322"/>
+<area shape="poly" title=" " alt="" coords="1346,343,1442,319,1443,325,1348,348"/>
+<area shape="rect" href="classsbk_1_1engine_1_1blend__container.html" title=" " alt="" coords="1425,539,1566,579"/>
+<area shape="poly" title=" " alt="" coords="1320,479,1413,524,1441,536,1439,541,1411,529,1318,484"/>
+<area shape="rect" href="classsbk_1_1engine_1_1random__container.html" title=" " alt="" coords="1418,603,1573,643"/>
+<area shape="poly" title=" " alt="" coords="1303,484,1350,536,1380,564,1413,588,1435,600,1433,605,1411,593,1377,568,1346,540,1299,488"/>
+<area shape="rect" href="classsbk_1_1engine_1_1sequence__container.html" title=" " alt="" coords="1412,347,1579,387"/>
+<area shape="poly" title=" " alt="" coords="1318,441,1411,396,1439,384,1441,389,1413,401,1320,446"/>
+<area shape="rect" href="classsbk_1_1engine_1_1sound__container.html" title=" " alt="" coords="1423,411,1567,451"/>
+<area shape="poly" title=" " alt="" coords="1377,446,1423,439,1423,444,1378,451"/>
+<area shape="rect" href="classsbk_1_1engine_1_1switch__container.html" title=" " alt="" coords="1422,475,1569,515"/>
+<area shape="poly" title=" " alt="" coords="1378,475,1422,481,1422,486,1378,480"/>
+<area shape="rect" title=" " alt="" coords="31,242,161,267"/>
+<area shape="poly" title=" " alt="" coords="176,261,235,268,234,274,175,267"/>
+<area shape="rect" title=" " alt="" coords="21,341,171,366"/>
+<area shape="poly" title=" " alt="" coords="161,334,186,327,280,290,282,295,188,332,163,340"/>
+<area shape="poly" title=" " alt="" coords="185,362,247,370,246,376,184,367"/>
+<area shape="rect" href="classsbk_1_1core_1_1object__owner.html" title="Creates, owns and tracks objects." alt="" coords="8,455,184,481"/>
+<area shape="poly" title=" " alt="" coords="175,447,185,441,203,421,211,402,219,380,232,356,264,319,294,291,297,295,268,323,237,359,223,383,216,404,207,424,188,445,178,451"/>
+<area shape="poly" title=" " alt="" coords="166,448,185,440,209,423,233,404,263,392,265,397,236,409,212,427,188,445,168,453"/>
+<area shape="rect" href="classsbk_1_1editor_1_1project.html" title="Manages a project file and the objects contained within it." alt="" coords="239,483,383,509"/>
+<area shape="poly" title=" " alt="" coords="198,479,239,484,239,489,197,484"/>
+<area shape="rect" href="classsbk_1_1core_1_1object__tracker.html" title="Tracks object categories and types." alt="" coords="5,291,187,317"/>
+<area shape="poly" title=" " alt="" coords="200,290,234,286,235,291,201,295"/>
+<area shape="rect" href="structsc__system.html" title="Object that manages the node graph, sounds, output etc." alt="" coords="51,143,141,169"/>
+<area shape="poly" title=" " alt="" coords="156,165,188,178,222,198,253,222,300,265,296,269,250,226,219,203,185,182,154,170"/>
+<area shape="rect" title=" " alt="" coords="238,419,385,459"/>
+<area shape="poly" title=" " alt="" coords="399,433,452,431,452,437,399,438"/>
+<area shape="rect" href="structsbk_1_1engine_1_1node__instance__fsm.html" title=" " alt="" coords="436,467,667,493"/>
+<area shape="poly" title=" " alt="" coords="399,451,478,465,477,470,398,456"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_15.png" border="0" usemap="#asbk_1_1core_1_1database__name" alt=""/>
+<map name="asbk_1_1core_1_1database__name" id="asbk_1_1core_1_1database__name">
+<area shape="rect" href="structsbk_1_1core_1_1database__name.html" title="Unique and searchable name of type, path and name." alt="" coords="5,5,199,31"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_16.png" border="0" usemap="#asbk_1_1core_1_1database__name__comparator" alt=""/>
+<map name="asbk_1_1core_1_1database__name__comparator" id="asbk_1_1core_1_1database__name__comparator">
+<area shape="rect" href="structsbk_1_1core_1_1database__name__comparator.html" title=" " alt="" coords="5,5,155,45"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_17.png" border="0" usemap="#asbk_1_1core_1_1database__ptr_3_01named__parameter_01_4" alt=""/>
+<map name="asbk_1_1core_1_1database__ptr_3_01named__parameter_01_4" id="asbk_1_1core_1_1database__ptr_3_01named__parameter_01_4">
+<area shape="rect" href="classsbk_1_1core_1_1database__ptr.html" title=" " alt="" coords="5,5,203,45"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_18.png" border="0" usemap="#asbk_1_1core_1_1database__ptr_3_01sbk_1_1core_1_1database__object_01_4" alt=""/>
+<map name="asbk_1_1core_1_1database__ptr_3_01sbk_1_1core_1_1database__object_01_4" id="asbk_1_1core_1_1database__ptr_3_01sbk_1_1core_1_1database__object_01_4">
+<area shape="rect" href="classsbk_1_1core_1_1database__ptr.html" title=" " alt="" coords="5,5,195,60"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_19.png" border="0" usemap="#asbk_1_1core_1_1database__ptr_3_01sbk_1_1engine_1_1container_01_4" alt=""/>
+<map name="asbk_1_1core_1_1database__ptr_3_01sbk_1_1engine_1_1container_01_4" id="asbk_1_1core_1_1database__ptr_3_01sbk_1_1engine_1_1container_01_4">
+<area shape="rect" href="classsbk_1_1core_1_1database__ptr.html" title=" " alt="" coords="5,5,227,45"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_20.png" border="0" usemap="#asbk_1_1core_1_1database__ptr_3_01sbk_1_1engine_1_1named__parameter_01_4" alt=""/>
+<map name="asbk_1_1core_1_1database__ptr_3_01sbk_1_1engine_1_1named__parameter_01_4" id="asbk_1_1core_1_1database__ptr_3_01sbk_1_1engine_1_1named__parameter_01_4">
+<area shape="rect" href="classsbk_1_1core_1_1database__ptr.html" title=" " alt="" coords="5,5,196,60"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_21.png" border="0" usemap="#asbk_1_1core_1_1database__ptr_3_01sbk_1_1engine_1_1node__base_01_4" alt=""/>
+<map name="asbk_1_1core_1_1database__ptr_3_01sbk_1_1engine_1_1node__base_01_4" id="asbk_1_1core_1_1database__ptr_3_01sbk_1_1engine_1_1node__base_01_4">
+<area shape="rect" href="classsbk_1_1core_1_1database__ptr.html" title=" " alt="" coords="5,5,183,60"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_22.png" border="0" usemap="#asbk_1_1core_1_1database__ptr_3_01sbk_1_1engine_1_1sound_01_4" alt=""/>
+<map name="asbk_1_1core_1_1database__ptr_3_01sbk_1_1engine_1_1sound_01_4" id="asbk_1_1core_1_1database__ptr_3_01sbk_1_1engine_1_1sound_01_4">
+<area shape="rect" href="classsbk_1_1core_1_1database__ptr.html" title=" " alt="" coords="5,5,204,45"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_23.png" border="0" usemap="#asbk_1_1core_1_1database__ptr_3_01TObject_01_4" alt=""/>
+<map name="asbk_1_1core_1_1database__ptr_3_01TObject_01_4" id="asbk_1_1core_1_1database__ptr_3_01TObject_01_4">
+<area shape="rect" href="classsbk_1_1core_1_1database__ptr.html" title=" " alt="" coords="5,5,155,45"/>
+<area shape="rect" href="classsbk_1_1core_1_1child__ptr.html" title="Syntactic type to define a pointer that must be a child of the owning object." alt="" coords="203,5,348,45"/>
+<area shape="poly" title=" " alt="" coords="168,23,202,23,202,28,168,28"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_24.png" border="0" usemap="#asbk_1_1core_1_1name" alt=""/>
+<map name="asbk_1_1core_1_1name" id="asbk_1_1core_1_1name">
+<area shape="rect" href="classsbk_1_1core_1_1name.html" title="Specialised string that can check for illegal characters." alt="" coords="5,5,132,31"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_25.png" border="0" usemap="#asbk_1_1core_1_1object__ptr__comparator" alt=""/>
+<map name="asbk_1_1core_1_1object__ptr__comparator" id="asbk_1_1core_1_1object__ptr__comparator">
+<area shape="rect" href="structsbk_1_1core_1_1object__ptr__comparator.html" title=" " alt="" coords="5,5,160,45"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_26.png" border="0" usemap="#asbk_1_1core_1_1parsed__database__name" alt=""/>
+<map name="asbk_1_1core_1_1parsed__database__name" id="asbk_1_1core_1_1parsed__database__name">
+<area shape="rect" href="structsbk_1_1core_1_1parsed__database__name.html" title=" " alt="" coords="5,5,249,31"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_27.png" border="0" usemap="#asbk_1_1core_1_1property_3_01parameter__type_01_4" alt=""/>
+<map name="asbk_1_1core_1_1property_3_01parameter__type_01_4" id="asbk_1_1core_1_1property_3_01parameter__type_01_4">
+<area shape="rect" href="classsbk_1_1core_1_1property.html" title=" " alt="" coords="5,5,161,45"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_28.png" border="0" usemap="#asbk_1_1core_1_1property_3_01T_01_4" alt=""/>
+<map name="asbk_1_1core_1_1property_3_01T_01_4" id="asbk_1_1core_1_1property_3_01T_01_4">
+<area shape="rect" href="classsbk_1_1core_1_1property.html" title=" " alt="" coords="5,5,188,31"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_29.png" border="0" usemap="#asbk_1_1core_1_1serialization_1_1boost__serializer_3_01load__archive_00_01save__archive_00_01inputMode_00_01outputMode_01_4" alt=""/>
+<map name="asbk_1_1core_1_1serialization_1_1boost__serializer_3_01load__archive_00_01save__archive_00_01inputMode_00_01outputMode_01_4" id="asbk_1_1core_1_1serialization_1_1boost__serializer_3_01load__archive_00_01save__archive_00_01inputMode_00_01outputMode_01_4">
+<area shape="rect" href="classsbk_1_1core_1_1serialization_1_1boost__serializer.html" title=" " alt="" coords="5,5,257,75"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_30.png" border="0" usemap="#asbk_1_1core_1_1serialization_1_1serialized__associative__container" alt=""/>
+<map name="asbk_1_1core_1_1serialization_1_1serialized__associative__container" id="asbk_1_1core_1_1serialization_1_1serialized__associative__container">
+<area shape="rect" href="structsbk_1_1core_1_1serialization_1_1serialized__associative__container.html" title=" " alt="" coords="5,5,180,60"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_31.png" border="0" usemap="#asbk_1_1core_1_1serialization_1_1serialized__child__class" alt=""/>
+<map name="asbk_1_1core_1_1serialization_1_1serialized__child__class" id="asbk_1_1core_1_1serialization_1_1serialized__child__class">
+<area shape="rect" href="structsbk_1_1core_1_1serialization_1_1serialized__child__class.html" title=" " alt="" coords="5,5,176,45"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_32.png" border="0" usemap="#asbk_1_1core_1_1serialization_1_1serialized__object" alt=""/>
+<map name="asbk_1_1core_1_1serialization_1_1serialized__object" id="asbk_1_1core_1_1serialization_1_1serialized__object">
+<area shape="rect" href="structsbk_1_1core_1_1serialization_1_1serialized__object.html" title="Serializes an object type and the object&#39;s data." alt="" coords="5,5,175,45"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_33.png" border="0" usemap="#asbk_1_1core_1_1serialization_1_1serialized__object__vector_3_01object__class_01_4" alt=""/>
+<map name="asbk_1_1core_1_1serialization_1_1serialized__object__vector_3_01object__class_01_4" id="asbk_1_1core_1_1serialization_1_1serialized__object__vector_3_01object__class_01_4">
+<area shape="rect" href="structsbk_1_1core_1_1serialization_1_1serialized__object__vector.html" title=" " alt="" coords="5,5,193,60"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_34.png" border="0" usemap="#asbk_1_1core_1_1serialization_1_1serialized__object__vector_3_01sbk_1_1engine_1_1sound_01_4" alt=""/>
+<map name="asbk_1_1core_1_1serialization_1_1serialized__object__vector_3_01sbk_1_1engine_1_1sound_01_4" id="asbk_1_1core_1_1serialization_1_1serialized__object__vector_3_01sbk_1_1engine_1_1sound_01_4">
+<area shape="rect" href="structsbk_1_1core_1_1serialization_1_1serialized__object__vector_3_01sbk_1_1engine_1_1sound_01_4.html" title=" " alt="" coords="5,5,193,60"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_35.png" border="0" usemap="#asbk_1_1core_1_1serialization_1_1serialized__sequential__container" alt=""/>
+<map name="asbk_1_1core_1_1serialization_1_1serialized__sequential__container" id="asbk_1_1core_1_1serialization_1_1serialized__sequential__container">
+<area shape="rect" href="structsbk_1_1core_1_1serialization_1_1serialized__sequential__container.html" title=" " alt="" coords="5,5,175,60"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_36.png" border="0" usemap="#asbk_1_1core_1_1serialization_1_1serialized__sound" alt=""/>
+<map name="asbk_1_1core_1_1serialization_1_1serialized__sound" id="asbk_1_1core_1_1serialization_1_1serialized__sound">
+<area shape="rect" href="structsbk_1_1core_1_1serialization_1_1serialized__sound.html" title=" " alt="" coords="5,5,175,45"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_37.png" border="0" usemap="#asbk_1_1core_1_1serialization_1_1serialized__soundbank" alt=""/>
+<map name="asbk_1_1core_1_1serialization_1_1serialized__soundbank" id="asbk_1_1core_1_1serialization_1_1serialized__soundbank">
+<area shape="rect" href="structsbk_1_1core_1_1serialization_1_1serialized__soundbank.html" title=" " alt="" coords="5,5,176,45"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_38.png" border="0" usemap="#asbk_1_1core_1_1serialization_1_1serialized__standalone__object" alt=""/>
+<map name="asbk_1_1core_1_1serialization_1_1serialized__standalone__object" id="asbk_1_1core_1_1serialization_1_1serialized__standalone__object">
+<area shape="rect" href="structsbk_1_1core_1_1serialization_1_1serialized__standalone__object.html" title="Header for an object that saves to a single file." alt="" coords="5,5,224,45"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_39.png" border="0" usemap="#asbk_1_1core_1_1serialization_1_1serialized__system" alt=""/>
+<map name="asbk_1_1core_1_1serialization_1_1serialized__system" id="asbk_1_1core_1_1serialization_1_1serialized__system">
+<area shape="rect" href="structsbk_1_1core_1_1serialization_1_1serialized__system.html" title=" " alt="" coords="5,5,175,45"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_40.png" border="0" usemap="#asbk_1_1core_1_1serialization_1_1serialized__type" alt=""/>
+<map name="asbk_1_1core_1_1serialization_1_1serialized__type" id="asbk_1_1core_1_1serialization_1_1serialized__type">
+<area shape="rect" href="structsbk_1_1core_1_1serialization_1_1serialized__type.html" title="Serializes an object type so upon loading, we create the correct type." alt="" coords="5,5,175,45"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_41.png" border="0" usemap="#asbk_1_1core_1_1serialization_1_1serialized__version" alt=""/>
+<map name="asbk_1_1core_1_1serialization_1_1serialized__version" id="asbk_1_1core_1_1serialization_1_1serialized__version">
+<area shape="rect" href="structsbk_1_1core_1_1serialization_1_1serialized__version.html" title="Stores the version of Sound Bakery." alt="" coords="5,5,175,45"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_42.png" border="0" usemap="#asbk_1_1editor_1_1project__configuration" alt=""/>
+<map name="asbk_1_1editor_1_1project__configuration" id="asbk_1_1editor_1_1project__configuration">
+<area shape="rect" href="structsbk_1_1editor_1_1project__configuration.html" title="Handles file and folder paths for a project." alt="" coords="5,5,149,45"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_43.png" border="0" usemap="#asbk_1_1engine_1_1action" alt=""/>
+<map name="asbk_1_1engine_1_1action" id="asbk_1_1engine_1_1action">
+<area shape="rect" href="structsbk_1_1engine_1_1action.html" title=" " alt="" coords="5,5,151,31"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_44.png" border="0" usemap="#asbk_1_1engine_1_1effect__parameter__description" alt=""/>
+<map name="asbk_1_1engine_1_1effect__parameter__description" id="asbk_1_1engine_1_1effect__parameter__description">
+<area shape="rect" href="classsbk_1_1engine_1_1effect__parameter__description.html" title=" " alt="" coords="5,5,181,45"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_45.png" border="0" usemap="#asbk_1_1engine_1_1encoding__sound" alt=""/>
+<map name="asbk_1_1engine_1_1encoding__sound" id="asbk_1_1engine_1_1encoding__sound">
+<area shape="rect" href="structsbk_1_1engine_1_1encoding__sound.html" title="Data for converting a sound to an encoded format." alt="" coords="5,5,169,45"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_46.png" border="0" usemap="#asbk_1_1engine_1_1event__devirtualise" alt=""/>
+<map name="asbk_1_1engine_1_1event__devirtualise" id="asbk_1_1engine_1_1event__devirtualise">
+<area shape="rect" href="structsbk_1_1engine_1_1event__devirtualise.html" title=" " alt="" coords="5,5,148,45"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_47.png" border="0" usemap="#asbk_1_1engine_1_1event__init" alt=""/>
+<map name="asbk_1_1engine_1_1event__init" id="asbk_1_1engine_1_1event__init">
+<area shape="rect" href="structsbk_1_1engine_1_1event__init.html" title=" " alt="" coords="5,5,176,31"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_48.png" border="0" usemap="#asbk_1_1engine_1_1event__pause" alt=""/>
+<map name="asbk_1_1engine_1_1event__pause" id="asbk_1_1engine_1_1event__pause">
+<area shape="rect" href="structsbk_1_1engine_1_1event__pause.html" title=" " alt="" coords="5,5,148,45"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_49.png" border="0" usemap="#asbk_1_1engine_1_1event__play" alt=""/>
+<map name="asbk_1_1engine_1_1event__play" id="asbk_1_1engine_1_1event__play">
+<area shape="rect" href="structsbk_1_1engine_1_1event__play.html" title=" " alt="" coords="5,5,183,31"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_50.png" border="0" usemap="#asbk_1_1engine_1_1event__stop" alt=""/>
+<map name="asbk_1_1engine_1_1event__stop" id="asbk_1_1engine_1_1event__stop">
+<area shape="rect" href="structsbk_1_1engine_1_1event__stop.html" title=" " alt="" coords="5,5,183,31"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_51.png" border="0" usemap="#asbk_1_1engine_1_1event__update" alt=""/>
+<map name="asbk_1_1engine_1_1event__update" id="asbk_1_1engine_1_1event__update">
+<area shape="rect" href="structsbk_1_1engine_1_1event__update.html" title=" " alt="" coords="5,5,148,45"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_52.png" border="0" usemap="#asbk_1_1engine_1_1event__virtualise" alt=""/>
+<map name="asbk_1_1engine_1_1event__virtualise" id="asbk_1_1engine_1_1event__virtualise">
+<area shape="rect" href="structsbk_1_1engine_1_1event__virtualise.html" title=" " alt="" coords="5,5,148,45"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_53.png" border="0" usemap="#asbk_1_1engine_1_1flag__playing" alt=""/>
+<map name="asbk_1_1engine_1_1flag__playing" id="asbk_1_1engine_1_1flag__playing">
+<area shape="rect" href="structsbk_1_1engine_1_1flag__playing.html" title=" " alt="" coords="5,5,189,31"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_54.png" border="0" usemap="#asbk_1_1engine_1_1flag__stopped" alt=""/>
+<map name="asbk_1_1engine_1_1flag__stopped" id="asbk_1_1engine_1_1flag__stopped">
+<area shape="rect" href="structsbk_1_1engine_1_1flag__stopped.html" title=" " alt="" coords="5,5,193,31"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_55.png" border="0" usemap="#asbk_1_1engine_1_1gather__children__context" alt=""/>
+<map name="asbk_1_1engine_1_1gather__children__context" id="asbk_1_1engine_1_1gather__children__context">
+<area shape="rect" href="structsbk_1_1engine_1_1gather__children__context.html" title="Contains all information required for gathering sounds for runtime playing and selection." alt="" coords="5,5,152,45"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_56.png" border="0" usemap="#asbk_1_1engine_1_1global__parameter__list" alt=""/>
+<map name="asbk_1_1engine_1_1global__parameter__list" id="asbk_1_1engine_1_1global__parameter__list">
+<area shape="rect" href="structsbk_1_1engine_1_1global__parameter__list.html" title="Holds a list of parameters." alt="" coords="5,5,151,45"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_57.png" border="0" usemap="#asbk_1_1engine_1_1local__parameter__list" alt=""/>
+<map name="asbk_1_1engine_1_1local__parameter__list" id="asbk_1_1engine_1_1local__parameter__list">
+<area shape="rect" href="structsbk_1_1engine_1_1local__parameter__list.html" title="Holds a list of parameters and their local value." alt="" coords="5,5,141,45"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_58.png" border="0" usemap="#asbk_1_1engine_1_1node__group__instance" alt=""/>
+<map name="asbk_1_1engine_1_1node__group__instance" id="asbk_1_1engine_1_1node__group__instance">
+<area shape="rect" href="structsbk_1_1engine_1_1node__group__instance.html" title="Owns a node group and applies DSP effects to it." alt="" coords="5,5,187,45"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_59.png" border="0" usemap="#asbk_1_1engine_1_1node__instance__fsm_1_1action__update" alt=""/>
+<map name="asbk_1_1engine_1_1node__instance__fsm_1_1action__update" id="asbk_1_1engine_1_1node__instance__fsm_1_1action__update">
+<area shape="rect" href="structsbk_1_1engine_1_1node__instance__fsm_1_1action__update.html" title=" " alt="" coords="5,5,204,45"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_60.png" border="0" usemap="#asbk_1_1engine_1_1profiling_1_1voice__tracker" alt=""/>
+<map name="asbk_1_1engine_1_1profiling_1_1voice__tracker" id="asbk_1_1engine_1_1profiling_1_1voice__tracker">
+<area shape="rect" href="classsbk_1_1engine_1_1profiling_1_1voice__tracker.html" title="Tracks every active voice with helper functions." alt="" coords="5,5,164,45"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_61.png" border="0" usemap="#asbk_1_1engine_1_1soundbank__database" alt=""/>
+<map name="asbk_1_1engine_1_1soundbank__database" id="asbk_1_1engine_1_1soundbank__database">
+<area shape="rect" href="structsbk_1_1engine_1_1soundbank__database.html" title="Contains." alt="" coords="5,5,181,45"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_62.png" border="0" usemap="#asbk_1_1engine_1_1soundbank__database__entry" alt=""/>
+<map name="asbk_1_1engine_1_1soundbank__database__entry" id="asbk_1_1engine_1_1soundbank__database__entry">
+<area shape="rect" href="structsbk_1_1engine_1_1soundbank__database__entry.html" title=" " alt="" coords="5,5,181,45"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_63.png" border="0" usemap="#asbk_1_1engine_1_1soundbank__dependencies" alt=""/>
+<map name="asbk_1_1engine_1_1soundbank__dependencies" id="asbk_1_1engine_1_1soundbank__dependencies">
+<area shape="rect" href="structsbk_1_1engine_1_1soundbank__dependencies.html" title="Wraps all events, objects, and sounds needed to package a soundbank." alt="" coords="5,5,181,45"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_64.png" border="0" usemap="#asbk_1_1engine_1_1void__deleter" alt=""/>
+<map name="asbk_1_1engine_1_1void__deleter" id="asbk_1_1engine_1_1void__deleter">
+<area shape="rect" href="structsbk_1_1engine_1_1void__deleter.html" title=" " alt="" coords="5,5,192,31"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_65.png" border="0" usemap="#asbk_1_1error" alt=""/>
+<map name="asbk_1_1error" id="asbk_1_1error">
+<area shape="rect" href="classsbk_1_1error.html" title="A failure value: the sbk_status code plus where it came from." alt="" coords="5,5,89,31"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_66.png" border="0" usemap="#asbk_1_1memory_1_1object__deleter" alt=""/>
+<map name="asbk_1_1memory_1_1object__deleter" id="asbk_1_1memory_1_1object__deleter">
+<area shape="rect" href="structsbk_1_1memory_1_1object__deleter.html" title=" " alt="" coords="5,5,160,45"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_67.png" border="0" usemap="#asbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_01_4" alt=""/>
+<map name="asbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_01_4" id="asbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_01_4">
+<area shape="rect" href="structsbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_01_4.html" title="Once the top&#45;most base class is reached, make an explicit conversion between the base type and Databa..." alt="" coords="5,5,216,45"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_68.png" border="0" usemap="#asbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_00_01BaseClass_00_01U_8_8_8_01_4" alt=""/>
+<map name="asbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_00_01BaseClass_00_01U_8_8_8_01_4" id="asbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_00_01BaseClass_00_01U_8_8_8_01_4">
+<area shape="rect" href="structsbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_00_01BaseClass_00_01U_8_8_8_01_4.html" title="Registers conversions between the derived type and base class, then does the same for the base class&#39;..." alt="" coords="5,5,216,60"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_69.png" border="0" usemap="#asbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_00_01BaseClassList_8_8_8_01_4" alt=""/>
+<map name="asbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_00_01BaseClassList_8_8_8_01_4" id="asbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_00_01BaseClassList_8_8_8_01_4">
+<area shape="rect" href="structsbk_1_1reflection_1_1CreatePointerConversion.html" title=" " alt="" coords="5,5,216,60"/>
+<area shape="rect" href="structsbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_00_01rttr_1_1type__list_3_01BaseClassList_8_8_8_01_4_01_4.html" title="Specialisation for wrapping the rttr::type_list type and extracting its template arguments." alt="" coords="264,5,521,60"/>
+<area shape="poly" title=" " alt="" coords="230,30,264,30,264,35,230,35"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_70.png" border="0" usemap="#asbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_00_01T_01_4" alt=""/>
+<map name="asbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_00_01T_01_4" id="asbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_00_01T_01_4">
+<area shape="rect" href="structsbk_1_1reflection_1_1CreatePointerConversion.html" title="Creates wrapper_mapper conversions for the Dervived class and all its base classes." alt="" coords="5,5,232,45"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_71.png" border="0" usemap="#asbk_1_1reflection_1_1RegisterPointerConversionsForBaseClasses_3_01T_01_4" alt=""/>
+<map name="asbk_1_1reflection_1_1RegisterPointerConversionsForBaseClasses_3_01T_01_4" id="asbk_1_1reflection_1_1RegisterPointerConversionsForBaseClasses_3_01T_01_4">
+<area shape="rect" href="structsbk_1_1reflection_1_1RegisterPointerConversionsForBaseClasses.html" title="Auto&#45;registers wrapper conversions for the type and its base classes." alt="" coords="5,5,293,45"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_72.png" border="0" usemap="#asbk_1_1util_1_1type__comparator" alt=""/>
+<map name="asbk_1_1util_1_1type__comparator" id="asbk_1_1util_1_1type__comparator">
+<area shape="rect" href="structsbk_1_1util_1_1type__comparator.html" title=" " alt="" coords="5,5,199,31"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_73.png" border="0" usemap="#asbk_1_1util_1_1type__helper" alt=""/>
+<map name="asbk_1_1util_1_1type__helper" id="asbk_1_1util_1_1type__helper">
+<area shape="rect" href="classsbk_1_1util_1_1type__helper.html" title=" " alt="" coords="5,5,164,31"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_74.png" border="0" usemap="#asbk__system__config" alt=""/>
+<map name="asbk__system__config" id="asbk__system__config">
+<area shape="rect" href="structsbk__system__config.html" title=" " alt="" coords="5,5,152,31"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_75.png" border="0" usemap="#asc__audioChunk" alt=""/>
+<map name="asc__audioChunk" id="asc__audioChunk">
+<area shape="rect" href="structsc__audioChunk.html" title=" " alt="" coords="5,5,125,31"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_76.png" border="0" usemap="#asc__bank" alt=""/>
+<map name="asc__bank" id="asc__bank">
+<area shape="rect" href="structsc__bank.html" title=" " alt="" coords="5,5,80,31"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_77.png" border="0" usemap="#asc__clap" alt=""/>
+<map name="asc__clap" id="asc__clap">
+<area shape="rect" href="structsc__clap.html" title="Holds a DLL handle and plugin entry for a CLAP plugin." alt="" coords="5,5,76,31"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_78.png" border="0" usemap="#asc__clap__node" alt=""/>
+<map name="asc__clap__node" id="asc__clap__node">
+<area shape="rect" href="structsc__clap__node.html" title=" " alt="" coords="5,5,115,31"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_79.png" border="0" usemap="#asc__dsp" alt=""/>
+<map name="asc__dsp" id="asc__dsp">
+<area shape="rect" href="structsc__dsp.html" title="ma_node with an additional enum descriptor." alt="" coords="5,5,72,31"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_80.png" border="0" usemap="#asc__dsp__config" alt=""/>
+<map name="asc__dsp__config" id="asc__dsp__config">
+<area shape="rect" href="structsc__dsp__config.html" title=" " alt="" coords="5,5,117,31"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_81.png" border="0" usemap="#asc__dsp__parameter" alt=""/>
+<map name="asc__dsp__parameter" id="asc__dsp__parameter">
+<area shape="rect" href="structsc__dsp__parameter.html" title=" " alt="" coords="5,5,147,31"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_82.png" border="0" usemap="#asc__dsp__parameter__float" alt=""/>
+<map name="asc__dsp__parameter__float" id="asc__dsp__parameter__float">
+<area shape="rect" href="structsc__dsp__parameter__float.html" title=" " alt="" coords="5,5,183,31"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_83.png" border="0" usemap="#asc__dsp__state" alt=""/>
+<map name="asc__dsp__state" id="asc__dsp__state">
+<area shape="rect" href="structsc__dsp__state.html" title="Holds instance data for a single sc_dsp." alt="" coords="5,5,112,31"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_84.png" border="0" usemap="#asc__dsp__vtable" alt=""/>
+<map name="asc__dsp__vtable" id="asc__dsp__vtable">
+<area shape="rect" href="structsc__dsp__vtable.html" title=" " alt="" coords="5,5,120,31"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_85.png" border="0" usemap="#asc__encoder" alt=""/>
+<map name="asc__encoder" id="asc__encoder">
+<area shape="rect" href="structsc__encoder.html" title=" " alt="" coords="5,5,100,31"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_86.png" border="0" usemap="#asc__encoder__config" alt=""/>
+<map name="asc__encoder__config" id="asc__encoder__config">
+<area shape="rect" href="structsc__encoder__config.html" title=" " alt="" coords="5,5,147,31"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_87.png" border="0" usemap="#asc__encoder__vorbis" alt=""/>
+<map name="asc__encoder__vorbis" id="asc__encoder__vorbis">
+<area shape="rect" href="structsc__encoder__vorbis.html" title=" " alt="" coords="5,5,148,31"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_88.png" border="0" usemap="#asc__meter" alt=""/>
+<map name="asc__meter" id="asc__meter">
+<area shape="rect" href="structsc__meter.html" title=" " alt="" coords="5,5,88,31"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_89.png" border="0" usemap="#asc__meter__node" alt=""/>
+<map name="asc__meter__node" id="asc__meter__node">
+<area shape="rect" href="structsc__meter__node.html" title=" " alt="" coords="5,5,127,31"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_90.png" border="0" usemap="#asc__node__group" alt=""/>
+<map name="asc__node__group" id="asc__node__group">
+<area shape="rect" href="structsc__node__group.html" title="Groups nodes/DSPs together into one." alt="" coords="5,5,124,31"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_91.png" border="0" usemap="#aSC__NODE__GROUP__DELETER" alt=""/>
+<map name="aSC__NODE__GROUP__DELETER" id="aSC__NODE__GROUP__DELETER">
+<area shape="rect" href="structSC__NODE__GROUP__DELETER.html" title=" " alt="" coords="5,5,208,31"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_92.png" border="0" usemap="#asc__riffChunk" alt=""/>
+<map name="asc__riffChunk" id="asc__riffChunk">
+<area shape="rect" href="structsc__riffChunk.html" title=" " alt="" coords="5,5,108,31"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_93.png" border="0" usemap="#asc__sound" alt=""/>
+<map name="asc__sound" id="asc__sound">
+<area shape="rect" href="structsc__sound.html" title=" " alt="" coords="5,5,88,31"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_94.png" border="0" usemap="#aSC__SOUND__DELETER" alt=""/>
+<map name="aSC__SOUND__DELETER" id="aSC__SOUND__DELETER">
+<area shape="rect" href="structSC__SOUND__DELETER.html" title=" " alt="" coords="5,5,164,31"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_95.png" border="0" usemap="#aSC__SOUND__INSTANCE__DELETER" alt=""/>
+<map name="aSC__SOUND__INSTANCE__DELETER" id="aSC__SOUND__INSTANCE__DELETER">
+<area shape="rect" href="structSC__SOUND__INSTANCE__DELETER.html" title=" " alt="" coords="5,5,236,31"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_96.png" border="0" usemap="#asc__system__config" alt=""/>
+<map name="asc__system__config" id="asc__system__config">
+<area shape="rect" href="structsc__system__config.html" title="Configuration for initializing the sc_system." alt="" coords="5,5,143,31"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_97.png" border="0" usemap="#aselection" alt=""/>
+<map name="aselection" id="aselection">
+<area shape="rect" href="structselection.html" title=" " alt="" coords="5,5,87,31"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_98.png" border="0" usemap="#astbi__io__callbacks" alt=""/>
+<map name="astbi__io__callbacks" id="astbi__io__callbacks">
+<area shape="rect" href="structstbi__io__callbacks.html" title=" " alt="" coords="5,5,139,31"/>
+</map>
+</td></tr>
+</table>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
+  </ul>
+</div>
+</body>
+</html>

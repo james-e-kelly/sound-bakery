@@ -1,0 +1,800 @@
+<!-- HTML header for doxygen 1.10.0-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Sound Bakery: inc/sound_chef/sound_chef.h File Reference</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom-css.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+</head>
+<body>
+<!-- https://tholman.com/github-corners/ -->
+<a href="https://github.com/KarateKidzz/sound-bakery" class="github-corner" title="View source on GitHub" target="_blank" rel="noopener noreferrer">
+  <svg viewBox="0 0 250 250" width="40" height="40" style="position: absolute; top: 0; border: 0; right: 0; z-index: 99;" aria-hidden="true">
+  <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectlogo"><img alt="Logo" src="sound-bakery-logo.png"$logosize/></td>
+  <td id="projectalign">
+   <div id="projectname">Sound Bakery&nbsp<span id="projectnumber">&#160;<select id="sbk-version-select" aria-label="Documentation version"><option>dev</option></select></span>
+   </div>
+   <div id="projectbrief">Open-source audio middleware for games</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- Sound Bakery documentation version switcher -->
+<script type="text/javascript">
+(function () {
+    var current = "dev";
+    var select = document.getElementById('sbk-version-select');
+    if (!select) { return; }
+    // versions.json lives at the site root, one level above this version's folder.
+    fetch("../versions.json", { cache: "no-cache" })
+        .then(function (r) { return r.ok ? r.json() : []; })
+        .then(function (versions) {
+            if (!versions || !versions.length) { return; }
+            select.innerHTML = "";
+            versions.forEach(function (v) {
+                var opt = document.createElement('option');
+                opt.value = v;
+                opt.textContent = v;
+                if (v === current) { opt.selected = true; }
+                select.appendChild(opt);
+            });
+        })
+        .catch(function () { /* single-version or local build: leave the label as-is */ });
+    select.addEventListener('change', function () {
+        window.location.href = "../" + select.value + "/index.html";
+    });
+})();
+</script>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Search');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('sound__chef_8h.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="summary">
+<a href="#func-members">Functions</a>  </div>
+  <div class="headertitle"><div class="title">sound_chef.h File Reference</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>A wrapper library for miniaudio that emulates functionality of FMOD.  
+<a href="#details">More...</a></p>
+<div class="textblock"><code>#include &quot;sound_chef_common.h&quot;</code><br />
+<code>#include &quot;<a class="el" href="sound__chef__dsp_8h_source.html">sound_chef_dsp.h</a>&quot;</code><br />
+</div><div class="textblock"><div class="dynheader">
+Include dependency graph for sound_chef.h:</div>
+<div class="dyncontent">
+<div class="center"><img src="sound__chef_8h__incl.png" border="0" usemap="#ainc_2sound__chef_2sound__chef_8h" alt=""/></div>
+<map name="ainc_2sound__chef_2sound__chef_8h" id="ainc_2sound__chef_2sound__chef_8h">
+<area shape="rect" title="A wrapper library for miniaudio that emulates functionality of FMOD." alt="" coords="336,5,499,45"/>
+<area shape="rect" href="sound__chef__common_8h_source.html" title=" " alt="" coords="242,93,414,119"/>
+<area shape="poly" title=" " alt="" coords="397,48,353,86,350,82,394,44"/>
+<area shape="rect" href="sound__chef__dsp_8h.html" title="DSP object definitions." alt="" coords="439,93,577,119"/>
+<area shape="poly" title=" " alt="" coords="441,44,486,82,482,86,438,48"/>
+<area shape="rect" title=" " alt="" coords="5,174,104,199"/>
+<area shape="poly" title=" " alt="" coords="287,121,117,169,105,173,104,167,115,164,285,116"/>
+<area shape="rect" title=" " alt="" coords="129,174,205,199"/>
+<area shape="poly" title=" " alt="" coords="306,121,203,171,201,166,303,116"/>
+<area shape="rect" title=" " alt="" coords="229,174,321,199"/>
+<area shape="poly" title=" " alt="" coords="322,120,293,164,288,161,318,117"/>
+<area shape="rect" title=" " alt="" coords="345,174,420,199"/>
+<area shape="poly" title=" " alt="" coords="338,117,369,161,365,164,334,120"/>
+<area shape="rect" title=" " alt="" coords="445,174,515,199"/>
+<area shape="poly" title=" " alt="" coords="352,116,447,165,444,170,349,121"/>
+<area shape="rect" href="sound__chef__version_8h_source.html" title=" " alt="" coords="539,167,714,207"/>
+<area shape="poly" title=" " alt="" coords="372,116,542,161,541,166,371,121"/>
+</map>
+</div>
+</div><div class="textblock"><div class="dynheader">
+This graph shows which files directly or indirectly include this file:</div>
+<div class="dyncontent">
+<div class="center"><img src="sound__chef_8h__dep__incl.png" border="0" usemap="#ainc_2sound__chef_2sound__chef_8hdep" alt=""/></div>
+<map name="ainc_2sound__chef_2sound__chef_8hdep" id="ainc_2sound__chef_2sound__chef_8hdep">
+<area shape="rect" title="A wrapper library for miniaudio that emulates functionality of FMOD." alt="" coords="1892,5,2054,45"/>
+<area shape="rect" href="sound__bakery__common_8h_source.html" title=" " alt="" coords="1757,93,1936,133"/>
+<area shape="poly" title=" " alt="" coords="1935,56,1876,95,1873,91,1932,51"/>
+<area shape="rect" href="sound_8h_source.html" title=" " alt="" coords="1808,871,1986,911"/>
+<area shape="poly" title=" " alt="" coords="1976,59,1976,200,1976,716,1969,762,1953,805,1933,843,1914,872,1910,869,1928,840,1948,803,1964,761,1970,716,1970,200,1970,59"/>
+<area shape="rect" href="sound__chef__internal_8h_source.html" title=" " alt="" coords="2010,93,2173,133"/>
+<area shape="poly" title=" " alt="" coords="2012,51,2067,91,2064,95,2009,56"/>
+<area shape="rect" href="sound__bakery_8h_source.html" title=" " alt="" coords="1645,181,1824,221"/>
+<area shape="poly" title=" " alt="" coords="1812,144,1761,183,1758,179,1809,140"/>
+<area shape="rect" href="audio__display__widget_8h_source.html" title=" " alt="" coords="1645,269,1824,309"/>
+<area shape="poly" title=" " alt="" coords="1737,235,1737,269,1732,269,1732,235"/>
+<area shape="rect" href="sound__bakery__internal_8h_source.html" title=" " alt="" coords="1386,269,1565,309"/>
+<area shape="poly" title=" " alt="" coords="1665,228,1533,272,1532,267,1664,223"/>
+<area shape="rect" href="src_2sound__bakery_2pch_8h_source.html" title=" " alt="" coords="1164,357,1339,383"/>
+<area shape="poly" title=" " alt="" coords="1410,316,1286,360,1284,355,1408,311"/>
+<area shape="rect" href="project__nodes__widget_8h_source.html" title=" " alt="" coords="1755,431,1935,471"/>
+<area shape="poly" title=" " alt="" coords="1353,379,1535,400,1743,428,1755,430,1755,435,1742,433,1534,405,1353,384"/>
+<area shape="rect" href="database__ptr_8h_source.html" title=" " alt="" coords="609,695,796,735"/>
+<area shape="poly" title=" " alt="" coords="1151,378,1025,386,890,397,777,413,739,422,719,433,698,462,685,497,678,534,677,571,686,642,699,694,694,695,681,643,672,571,673,533,680,495,693,460,715,429,737,417,776,407,889,392,1025,380,1150,373"/>
+<area shape="rect" href="memory_8h_source.html" title=" " alt="" coords="920,431,1087,471"/>
+<area shape="poly" title=" " alt="" coords="1204,389,1064,433,1063,428,1202,384"/>
+<area shape="rect" href="name_8h_source.html" title=" " alt="" coords="730,431,896,471"/>
+<area shape="poly" title=" " alt="" coords="1170,388,908,433,897,435,896,430,907,428,1169,382"/>
+<area shape="rect" href="object__owner_8h_source.html" title=" " alt="" coords="1112,431,1280,471"/>
+<area shape="poly" title=" " alt="" coords="1238,395,1211,432,1207,429,1233,392"/>
+<area shape="rect" href="object__tracker_8h_source.html" title=" " alt="" coords="412,695,585,735"/>
+<area shape="poly" title=" " alt="" coords="1151,375,1030,378,895,388,773,405,724,418,689,433,652,460,619,493,591,530,566,568,529,641,507,695,502,693,524,639,561,565,586,527,615,490,649,456,686,428,723,413,772,400,894,382,1029,373,1150,369"/>
+<area shape="rect" href="property_8h_source.html" title=" " alt="" coords="1475,519,1642,559"/>
+<area shape="poly" title=" " alt="" coords="1269,393,1301,432,1321,451,1344,468,1375,486,1409,500,1476,520,1474,525,1407,505,1373,490,1341,473,1318,455,1297,435,1265,396"/>
+<area shape="rect" href="voice__tracker_8h_source.html" title=" " alt="" coords="1354,431,1546,471"/>
+<area shape="poly" title=" " alt="" coords="1294,385,1404,428,1402,433,1292,390"/>
+<area shape="rect" href="type__helper_8h_source.html" title=" " alt="" coords="1570,431,1730,471"/>
+<area shape="poly" title=" " alt="" coords="1325,383,1559,428,1571,430,1570,436,1558,433,1324,388"/>
+<area shape="rect" href="core__include_8h_source.html" title=" " alt="" coords="994,783,1160,823"/>
+<area shape="poly" title=" " alt="" coords="798,735,996,780,994,785,797,740"/>
+<area shape="rect" href="system_8h_source.html" title=" " alt="" coords="274,790,472,815"/>
+<area shape="poly" title=" " alt="" coords="618,741,418,793,416,787,617,735"/>
+<area shape="rect" href="engine__api_8h_source.html" title=" " alt="" coords="531,871,690,911"/>
+<area shape="poly" title=" " alt="" coords="981,824,710,873,691,877,690,872,709,868,980,819"/>
+<area shape="rect" href="project_8h_source.html" title=" " alt="" coords="764,959,942,999"/>
+<area shape="poly" title=" " alt="" coords="981,818,875,839,832,854,806,872,801,882,799,893,805,915,818,938,835,957,831,960,814,941,800,917,794,893,795,880,802,869,830,849,874,834,980,812"/>
+<area shape="rect" href="project__configuration_8h_source.html" title=" " alt="" coords="816,871,1040,911"/>
+<area shape="poly" title=" " alt="" coords="1034,832,962,873,959,868,1031,827"/>
+<area shape="rect" href="effect_8h_source.html" title=" " alt="" coords="1165,871,1341,911"/>
+<area shape="poly" title=" " alt="" coords="1129,826,1216,868,1213,873,1127,831"/>
+<area shape="rect" href="node_8h_source.html" title=" " alt="" coords="1168,959,1338,999"/>
+<area shape="poly" title=" " alt="" coords="1097,833,1122,871,1155,909,1187,935,1220,956,1217,961,1184,939,1151,913,1118,874,1092,836"/>
+<area shape="rect" href="node__instance_8h_source.html" title=" " alt="" coords="308,1223,483,1263"/>
+<area shape="poly" title=" " alt="" coords="981,820,888,840,839,855,793,873,701,919,587,987,530,1026,480,1064,439,1102,411,1136,402,1157,397,1181,396,1223,391,1222,392,1180,397,1156,407,1133,435,1098,477,1060,527,1021,584,983,698,915,791,868,838,850,886,835,979,815"/>
+<area shape="rect" href="voice_8h_source.html" title=" " alt="" coords="308,1311,483,1351"/>
+<area shape="poly" title=" " alt="" coords="1077,837,1070,874,1054,912,1033,943,1012,965,988,982,954,1001,917,1019,880,1031,810,1043,743,1044,680,1042,620,1043,563,1054,535,1066,508,1083,481,1106,455,1136,450,1145,449,1153,456,1174,464,1188,475,1197,487,1206,497,1222,503,1243,497,1264,473,1293,443,1313,440,1308,469,1289,492,1261,497,1243,492,1224,483,1210,472,1201,460,1191,451,1176,444,1154,445,1144,451,1133,478,1102,505,1079,533,1061,561,1049,619,1038,680,1037,743,1039,809,1038,879,1026,915,1014,952,996,985,978,1009,961,1029,940,1049,909,1065,873,1072,836"/>
+<area shape="rect" href="gameobject_8h_source.html" title=" " alt="" coords="225,1399,441,1439"/>
+<area shape="poly" title=" " alt="" coords="980,808,860,814,725,825,603,844,555,857,520,873,489,898,456,936,390,1033,333,1138,298,1223,290,1258,287,1286,290,1315,298,1350,308,1375,321,1397,317,1400,304,1378,293,1351,285,1316,282,1287,284,1258,293,1222,328,1136,385,1030,452,932,486,894,517,868,553,852,602,839,725,819,859,808,980,803"/>
+<area shape="rect" href="event_8h_source.html" title=" " alt="" coords="1662,959,1838,999"/>
+<area shape="poly" title=" " alt="" coords="1175,805,1295,812,1432,824,1557,843,1607,854,1645,868,1675,887,1702,911,1740,957,1736,960,1698,915,1672,892,1643,873,1605,860,1556,848,1431,830,1295,818,1174,810"/>
+<area shape="rect" href="parameter_8h_source.html" title=" " alt="" coords="1366,871,1572,911"/>
+<area shape="poly" title=" " alt="" coords="1175,823,1384,868,1383,873,1174,828"/>
+<area shape="poly" title=" " alt="" coords="1175,811,1724,868,1808,877,1807,882,1724,873,1174,817"/>
+<area shape="rect" href="soundbank_8h_source.html" title=" " alt="" coords="1577,1047,1788,1087"/>
+<area shape="poly" title=" " alt="" coords="1175,803,1284,809,1404,820,1513,839,1555,853,1587,869,1676,1045,1671,1048,1583,873,1553,857,1511,845,1404,826,1284,814,1174,809"/>
+<area shape="poly" title=" " alt="" coords="904,923,872,960,868,957,900,919"/>
+<area shape="poly" title=" " alt="" coords="1256,925,1256,958,1250,958,1250,925"/>
+<area shape="rect" href="bus_8h_source.html" title=" " alt="" coords="1168,1047,1338,1087"/>
+<area shape="poly" title=" " alt="" coords="1256,1013,1256,1046,1250,1046,1250,1013"/>
+<area shape="rect" href="container_8h_source.html" title=" " alt="" coords="973,1047,1144,1087"/>
+<area shape="poly" title=" " alt="" coords="1199,1007,1102,1049,1100,1044,1197,1002"/>
+<area shape="rect" href="aux__bus_8h_source.html" title=" " alt="" coords="1666,1135,1837,1175"/>
+<area shape="poly" title=" " alt="" coords="1352,1083,1358,1084,1655,1132,1667,1134,1666,1139,1654,1137,1357,1089,1352,1088"/>
+<area shape="rect" href="serializer_8h_source.html" title=" " alt="" coords="1912,1135,2130,1175"/>
+<area shape="poly" title=" " alt="" coords="1352,1083,1357,1084,1495,1101,1603,1111,1849,1132,1912,1139,1911,1144,1849,1137,1603,1116,1495,1106,1357,1089,1352,1089"/>
+<area shape="rect" href="blend__container_8h_source.html" title=" " alt="" coords="722,1135,928,1175"/>
+<area shape="poly" title=" " alt="" coords="995,1094,877,1137,875,1132,994,1089"/>
+<area shape="rect" href="random__container_8h_source.html" title=" " alt="" coords="952,1135,1172,1175"/>
+<area shape="poly" title=" " alt="" coords="1063,1100,1064,1134,1059,1135,1057,1101"/>
+<area shape="rect" href="sequence__container_8h_source.html" title=" " alt="" coords="465,1135,697,1175"/>
+<area shape="poly" title=" " alt="" coords="960,1088,686,1137,685,1132,959,1083"/>
+<area shape="rect" href="sound__container_8h_source.html" title=" " alt="" coords="1196,1135,1406,1175"/>
+<area shape="poly" title=" " alt="" coords="1125,1089,1249,1132,1247,1137,1124,1094"/>
+<area shape="rect" href="switch__container_8h_source.html" title=" " alt="" coords="1430,1135,1642,1175"/>
+<area shape="poly" title=" " alt="" coords="1158,1084,1430,1133,1429,1138,1157,1090"/>
+<area shape="poly" title=" " alt="" coords="529,1183,437,1225,435,1220,527,1178"/>
+<area shape="poly" title=" " alt="" coords="398,1277,398,1310,393,1310,393,1277"/>
+<area shape="poly" title=" " alt="" coords="376,1364,349,1400,345,1397,372,1360"/>
+<area shape="poly" title=" " alt="" coords="1776,1008,1813,1047,1859,1084,1909,1112,1960,1132,1958,1137,1906,1117,1856,1089,1809,1051,1772,1011"/>
+<area shape="poly" title=" " alt="" coords="1410,918,1301,961,1299,956,1408,913"/>
+<area shape="poly" title=" " alt="" coords="1478,923,1489,962,1506,1006,1532,1049,1567,1085,1588,1097,1612,1106,1667,1117,1724,1120,1779,1120,1825,1121,1857,1127,1866,1135,1869,1145,1864,1159,1851,1176,1808,1215,1750,1249,1680,1279,1597,1305,1506,1328,1407,1347,1196,1378,978,1398,769,1411,441,1420,441,1415,769,1406,977,1393,1195,1373,1406,1342,1505,1323,1596,1300,1678,1274,1748,1244,1805,1210,1847,1173,1859,1157,1863,1145,1862,1137,1855,1132,1825,1126,1779,1125,1724,1125,1666,1122,1611,1112,1586,1102,1563,1089,1528,1052,1502,1008,1484,963,1473,925"/>
+<area shape="poly" title=" " alt="" coords="1914,922,2015,1133,2010,1136,1909,924"/>
+<area shape="poly" title=" " alt="" coords="1771,1087,1948,1132,1946,1137,1769,1093"/>
+<area shape="poly" title=" " alt="" coords="339,824,310,842,286,864,274,887,274,898,281,909,315,940,360,966,415,987,478,1003,548,1015,623,1024,783,1033,947,1036,1104,1035,1242,1037,1351,1044,1458,1063,1566,1084,1912,1136,1911,1141,1565,1089,1457,1068,1350,1049,1242,1042,1104,1041,947,1041,783,1039,622,1029,547,1020,477,1008,413,992,358,971,312,944,276,912,269,899,269,886,282,861,307,838,336,820"/>
+<area shape="poly" title=" " alt="" coords="260,816,193,824,127,836,71,852,50,862,35,873,17,896,10,919,10,977,10,1244,16,1278,31,1307,53,1332,82,1353,116,1370,152,1384,225,1402,224,1407,150,1389,113,1375,79,1358,50,1336,26,1311,11,1280,5,1244,5,977,5,918,12,894,31,869,47,857,69,847,126,831,192,819,260,810"/>
+<area shape="rect" href="project__manager_8h_source.html" title=" " alt="" coords="291,871,455,911"/>
+<area shape="poly" title=" " alt="" coords="376,829,376,870,370,870,370,829"/>
+<area shape="rect" href="audio__meter__widget_8h_source.html" title=" " alt="" coords="45,871,216,911"/>
+<area shape="poly" title=" " alt="" coords="328,823,185,873,183,868,326,818"/>
+<area shape="rect" href="object_8h_source.html" title=" " alt="" coords="920,519,1087,559"/>
+<area shape="poly" title=" " alt="" coords="1006,485,1006,518,1001,518,1001,485"/>
+<area shape="poly" title=" " alt="" coords="1052,565,1072,583,1087,605,1096,629,1101,654,1101,703,1095,749,1086,783,1081,782,1090,748,1096,703,1096,654,1091,630,1083,608,1068,586,1048,569"/>
+<area shape="rect" href="database__object_8h_source.html" title=" " alt="" coords="864,607,1074,647"/>
+<area shape="poly" title=" " alt="" coords="993,572,979,607,974,605,989,570"/>
+<area shape="poly" title=" " alt="" coords="898,653,762,697,760,692,897,648"/>
+<area shape="poly" title=" " alt="" coords="1013,653,1033,671,1051,693,1063,716,1071,740,1078,782,1073,783,1065,741,1058,718,1047,696,1030,675,1009,657"/>
+<area shape="poly" title=" " alt="" coords="1088,645,1251,683,1347,710,1450,744,1555,785,1659,834,1759,891,1852,957,1922,1033,2007,1133,2003,1136,1918,1036,1849,961,1757,896,1657,839,1553,790,1448,749,1346,715,1249,688,1087,651"/>
+<area shape="poly" title=" " alt="" coords="925,656,860,697,835,718,809,737,715,783,618,821,526,851,449,873,448,868,525,846,616,816,713,778,806,732,832,713,857,693,922,652"/>
+<area shape="rect" href="database_8h_source.html" title=" " alt="" coords="871,695,1038,735"/>
+<area shape="poly" title=" " alt="" coords="966,661,960,695,955,694,961,660"/>
+<area shape="poly" title=" " alt="" coords="994,740,1051,780,1048,785,991,745"/>
+<area shape="poly" title=" " alt="" coords="858,733,451,793,450,787,857,728"/>
+<area shape="poly" title=" " alt="" coords="868,474,963,516,961,521,866,479"/>
+<area shape="poly" title=" " alt="" coords="1188,484,1086,783,1081,782,1183,483"/>
+<area shape="poly" title=" " alt="" coords="1294,462,1517,492,1655,516,1801,586,1864,618,1919,654,1964,696,1982,720,1998,747,2010,777,2019,810,2025,848,2026,889,2026,980,2024,1135,2019,1135,2021,980,2021,889,2019,848,2014,811,2005,779,1993,749,1978,723,1960,699,1915,658,1861,623,1799,590,1654,521,1516,498,1293,467"/>
+<area shape="poly" title=" " alt="" coords="1142,479,1047,521,1045,516,1140,474"/>
+<area shape="poly" title=" " alt="" coords="599,732,817,765,994,788,993,794,816,770,598,738"/>
+<area shape="poly" title=" " alt="" coords="461,745,392,792,389,788,458,741"/>
+<area shape="poly" title=" " alt="" coords="1513,568,1113,785,1111,780,1510,563"/>
+</map>
+</div>
+</div>
+<p><a href="sound__chef_8h_source.html">Go to the source code of this file.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:aa1cc1e60d74adbbd33c66dec921861fb" id="r_aa1cc1e60d74adbbd33c66dec921861fb"><td class="memItemLeft" align="right" valign="top">sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sound__chef_8h.html#aa1cc1e60d74adbbd33c66dec921861fb">sc_system_create</a> (<a class="el" href="structsc__system.html">sc_system</a> **outSystem)</td></tr>
+<tr class="memdesc:aa1cc1e60d74adbbd33c66dec921861fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new System object.  <br /></td></tr>
+<tr class="separator:aa1cc1e60d74adbbd33c66dec921861fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa6086b793e2c93701ebcde793bca4b6" id="r_afa6086b793e2c93701ebcde793bca4b6"><td class="memItemLeft" align="right" valign="top">sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sound__chef_8h.html#afa6086b793e2c93701ebcde793bca4b6">sc_system_release</a> (<a class="el" href="structsc__system.html">sc_system</a> *system)</td></tr>
+<tr class="memdesc:afa6086b793e2c93701ebcde793bca4b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases the system memory.  <br /></td></tr>
+<tr class="separator:afa6086b793e2c93701ebcde793bca4b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ac094b92c512c862ad06edb170bc98b" id="r_a0ac094b92c512c862ad06edb170bc98b"><td class="memItemLeft" align="right" valign="top">sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sound__chef_8h.html#a0ac094b92c512c862ad06edb170bc98b">sc_system_log_init</a> (<a class="el" href="structsc__system.html">sc_system</a> *system, ma_log_callback_proc logCallback)</td></tr>
+<tr class="memdesc:a0ac094b92c512c862ad06edb170bc98b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets up logging.  <br /></td></tr>
+<tr class="separator:a0ac094b92c512c862ad06edb170bc98b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa52b5aa949c13e5ff1658b2e6d7cd774" id="r_aa52b5aa949c13e5ff1658b2e6d7cd774"><td class="memItemLeft" align="right" valign="top"><a id="aa52b5aa949c13e5ff1658b2e6d7cd774" name="aa52b5aa949c13e5ff1658b2e6d7cd774"></a>
+<a class="el" href="structsc__system__config.html">sc_system_config</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_system_config_init_default</b> ()</td></tr>
+<tr class="separator:aa52b5aa949c13e5ff1658b2e6d7cd774"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a677251f8944e2c968b8427f93fba9fed" id="r_a677251f8944e2c968b8427f93fba9fed"><td class="memItemLeft" align="right" valign="top"><a id="a677251f8944e2c968b8427f93fba9fed" name="a677251f8944e2c968b8427f93fba9fed"></a>
+<a class="el" href="structsc__system__config.html">sc_system_config</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_system_config_init</b> (const char *pluginPath)</td></tr>
+<tr class="separator:a677251f8944e2c968b8427f93fba9fed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a73c06a9406456d77d8dd5a99dbfd6792" id="r_a73c06a9406456d77d8dd5a99dbfd6792"><td class="memItemLeft" align="right" valign="top">sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sound__chef_8h.html#a73c06a9406456d77d8dd5a99dbfd6792">sc_system_init</a> (<a class="el" href="structsc__system.html">sc_system</a> *system, const <a class="el" href="structsc__system__config.html">sc_system_config</a> *systemConfig)</td></tr>
+<tr class="memdesc:a73c06a9406456d77d8dd5a99dbfd6792"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialises the system.  <br /></td></tr>
+<tr class="separator:a73c06a9406456d77d8dd5a99dbfd6792"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d98ff65c6166df31444916b20e0bbc3" id="r_a4d98ff65c6166df31444916b20e0bbc3"><td class="memItemLeft" align="right" valign="top">sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sound__chef_8h.html#a4d98ff65c6166df31444916b20e0bbc3">sc_system_close</a> (<a class="el" href="structsc__system.html">sc_system</a> *system)</td></tr>
+<tr class="memdesc:a4d98ff65c6166df31444916b20e0bbc3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Closes the system.  <br /></td></tr>
+<tr class="separator:a4d98ff65c6166df31444916b20e0bbc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8a2fdb4a15db2b726bf7eedf4eccb8c" id="r_af8a2fdb4a15db2b726bf7eedf4eccb8c"><td class="memItemLeft" align="right" valign="top"><a id="af8a2fdb4a15db2b726bf7eedf4eccb8c" name="af8a2fdb4a15db2b726bf7eedf4eccb8c"></a>
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_system_create_sound</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, const char *fileName, sc_sound_mode mode, <a class="el" href="structsc__sound.html">sc_sound</a> **sound)</td></tr>
+<tr class="separator:af8a2fdb4a15db2b726bf7eedf4eccb8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab769ebb60f50a49c445ee3d5ed9d92b9" id="r_ab769ebb60f50a49c445ee3d5ed9d92b9"><td class="memItemLeft" align="right" valign="top"><a id="ab769ebb60f50a49c445ee3d5ed9d92b9" name="ab769ebb60f50a49c445ee3d5ed9d92b9"></a>
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_system_create_sound_memory</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, void *memoryLocation, size_t soundSize, sc_sound_mode mode, <a class="el" href="structsc__sound.html">sc_sound</a> **sound)</td></tr>
+<tr class="separator:ab769ebb60f50a49c445ee3d5ed9d92b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f39000fef87f54d58934784869334ca" id="r_a0f39000fef87f54d58934784869334ca"><td class="memItemLeft" align="right" valign="top">sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sound__chef_8h.html#a0f39000fef87f54d58934784869334ca">sc_system_play_sound</a> (<a class="el" href="structsc__system.html">sc_system</a> *system, <a class="el" href="structsc__sound.html">sc_sound</a> *sound, <a class="el" href="structsc__sound.html">sc_sound_instance</a> **instance, <a class="el" href="structsc__node__group.html">sc_node_group</a> *parent, sc_bool paused)</td></tr>
+<tr class="memdesc:a0f39000fef87f54d58934784869334ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plays a sound and returns the playing instance.  <br /></td></tr>
+<tr class="separator:a0f39000fef87f54d58934784869334ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38ea557547fe5842ae56f2eec96e632f" id="r_a38ea557547fe5842ae56f2eec96e632f"><td class="memItemLeft" align="right" valign="top">sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sound__chef_8h.html#a38ea557547fe5842ae56f2eec96e632f">sc_system_create_node_group</a> (<a class="el" href="structsc__system.html">sc_system</a> *system, <a class="el" href="structsc__node__group.html">sc_node_group</a> **nodeGroup)</td></tr>
+<tr class="memdesc:a38ea557547fe5842ae56f2eec96e632f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new Node Group.  <br /></td></tr>
+<tr class="separator:a38ea557547fe5842ae56f2eec96e632f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a87f966d3d8efeae9a0c748c8e92e9350" id="r_a87f966d3d8efeae9a0c748c8e92e9350"><td class="memItemLeft" align="right" valign="top">sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sound__chef_8h.html#a87f966d3d8efeae9a0c748c8e92e9350">sc_system_create_dsp</a> (<a class="el" href="structsc__system.html">sc_system</a> *system, const <a class="el" href="structsc__dsp__config.html">sc_dsp_config</a> *config, <a class="el" href="structsc__dsp.html">sc_dsp</a> **dsp)</td></tr>
+<tr class="memdesc:a87f966d3d8efeae9a0c748c8e92e9350"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new DSP based on the config.  <br /></td></tr>
+<tr class="separator:a87f966d3d8efeae9a0c748c8e92e9350"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d607d28dd65aaeec4f7a6135ab7f5c5" id="r_a9d607d28dd65aaeec4f7a6135ab7f5c5"><td class="memItemLeft" align="right" valign="top"><a id="a9d607d28dd65aaeec4f7a6135ab7f5c5" name="a9d607d28dd65aaeec4f7a6135ab7f5c5"></a>
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_sound_get_length</b> (<a class="el" href="structsc__sound.html">sc_sound</a> *sound, float *lengthInSeconds)</td></tr>
+<tr class="separator:a9d607d28dd65aaeec4f7a6135ab7f5c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15f0ce1f4575cd1adc4f6ae1579b92df" id="r_a15f0ce1f4575cd1adc4f6ae1579b92df"><td class="memItemLeft" align="right" valign="top"><a id="a15f0ce1f4575cd1adc4f6ae1579b92df" name="a15f0ce1f4575cd1adc4f6ae1579b92df"></a>
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_sound_release</b> (<a class="el" href="structsc__sound.html">sc_sound</a> *sound)</td></tr>
+<tr class="separator:a15f0ce1f4575cd1adc4f6ae1579b92df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af0fa7ded0f0adae83f61108f0b0a1ecf" id="r_af0fa7ded0f0adae83f61108f0b0a1ecf"><td class="memItemLeft" align="right" valign="top"><a id="af0fa7ded0f0adae83f61108f0b0a1ecf" name="af0fa7ded0f0adae83f61108f0b0a1ecf"></a>
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_sound_instance_is_playing</b> (<a class="el" href="structsc__sound.html">sc_sound_instance</a> *instance, sc_bool *isPlaying)</td></tr>
+<tr class="memdesc:af0fa7ded0f0adae83f61108f0b0a1ecf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether the sound instance is playing or not. <br /></td></tr>
+<tr class="separator:af0fa7ded0f0adae83f61108f0b0a1ecf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5ca8494137edd07120ed134dbe1ab36" id="r_ad5ca8494137edd07120ed134dbe1ab36"><td class="memItemLeft" align="right" valign="top">sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sound__chef_8h.html#ad5ca8494137edd07120ed134dbe1ab36">sc_sound_instance_start</a> (<a class="el" href="structsc__sound.html">sc_sound_instance</a> *instance)</td></tr>
+<tr class="memdesc:ad5ca8494137edd07120ed134dbe1ab36"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plays a sound instance, if it is not already.  <br /></td></tr>
+<tr class="separator:ad5ca8494137edd07120ed134dbe1ab36"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2616ff67f4dcc329b7f8e11169fe884" id="r_ae2616ff67f4dcc329b7f8e11169fe884"><td class="memItemLeft" align="right" valign="top"><a id="ae2616ff67f4dcc329b7f8e11169fe884" name="ae2616ff67f4dcc329b7f8e11169fe884"></a>
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_sound_instance_pause</b> (<a class="el" href="structsc__sound.html">sc_sound_instance</a> *instance)</td></tr>
+<tr class="memdesc:ae2616ff67f4dcc329b7f8e11169fe884"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pause playback at the current time. <br /></td></tr>
+<tr class="separator:ae2616ff67f4dcc329b7f8e11169fe884"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add6f23f2b6db8cc5b92ca6bb73b5880b" id="r_add6f23f2b6db8cc5b92ca6bb73b5880b"><td class="memItemLeft" align="right" valign="top"><a id="add6f23f2b6db8cc5b92ca6bb73b5880b" name="add6f23f2b6db8cc5b92ca6bb73b5880b"></a>
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_sound_instance_get_cursor_in_seconds</b> (<a class="el" href="structsc__sound.html">sc_sound_instance</a> *instance, float *seconds)</td></tr>
+<tr class="separator:add6f23f2b6db8cc5b92ca6bb73b5880b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40708afdb1c88874dc908a70193943af" id="r_a40708afdb1c88874dc908a70193943af"><td class="memItemLeft" align="right" valign="top"><a id="a40708afdb1c88874dc908a70193943af" name="a40708afdb1c88874dc908a70193943af"></a>
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_sound_instance_set_cursor_in_seconds</b> (<a class="el" href="structsc__sound.html">sc_sound_instance</a> *instance, float seconds)</td></tr>
+<tr class="separator:a40708afdb1c88874dc908a70193943af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae19042d7af6a993e4a47b3fdab3e83e5" id="r_ae19042d7af6a993e4a47b3fdab3e83e5"><td class="memItemLeft" align="right" valign="top"><a id="ae19042d7af6a993e4a47b3fdab3e83e5" name="ae19042d7af6a993e4a47b3fdab3e83e5"></a>
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_sound_instance_get_loop_position_in_seconds</b> (<a class="el" href="structsc__sound.html">sc_sound_instance</a> *instance, float *seconds)</td></tr>
+<tr class="separator:ae19042d7af6a993e4a47b3fdab3e83e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a67093457539bf9d7cf5a1e6862744729" id="r_a67093457539bf9d7cf5a1e6862744729"><td class="memItemLeft" align="right" valign="top"><a id="a67093457539bf9d7cf5a1e6862744729" name="a67093457539bf9d7cf5a1e6862744729"></a>
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_sound_instance_set_loop_position_in_seconds</b> (<a class="el" href="structsc__sound.html">sc_sound_instance</a> *instance, float loopStartSeconds, float loopEndSeconds)</td></tr>
+<tr class="separator:a67093457539bf9d7cf5a1e6862744729"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98b9eabb67f3952cfe4c4e8e5b9a61f9" id="r_a98b9eabb67f3952cfe4c4e8e5b9a61f9"><td class="memItemLeft" align="right" valign="top"><a id="a98b9eabb67f3952cfe4c4e8e5b9a61f9" name="a98b9eabb67f3952cfe4c4e8e5b9a61f9"></a>
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_sound_instance_get_is_looping</b> (<a class="el" href="structsc__sound.html">sc_sound_instance</a> *instance, sc_bool *looping)</td></tr>
+<tr class="separator:a98b9eabb67f3952cfe4c4e8e5b9a61f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a145ec92c95d68218163f82870ae7f6f5" id="r_a145ec92c95d68218163f82870ae7f6f5"><td class="memItemLeft" align="right" valign="top"><a id="a145ec92c95d68218163f82870ae7f6f5" name="a145ec92c95d68218163f82870ae7f6f5"></a>
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_sound_instance_set_looping</b> (<a class="el" href="structsc__sound.html">sc_sound_instance</a> *instance, sc_bool looping)</td></tr>
+<tr class="separator:a145ec92c95d68218163f82870ae7f6f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08cb3eec724853dc1082c757791c6a66" id="r_a08cb3eec724853dc1082c757791c6a66"><td class="memItemLeft" align="right" valign="top">sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sound__chef_8h.html#a08cb3eec724853dc1082c757791c6a66">sc_sound_instance_release</a> (<a class="el" href="structsc__sound.html">sc_sound_instance</a> *instance)</td></tr>
+<tr class="memdesc:a08cb3eec724853dc1082c757791c6a66"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases the sound instance's resources.  <br /></td></tr>
+<tr class="separator:a08cb3eec724853dc1082c757791c6a66"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4350f51bd90e858eb479e97f77d7a936" id="r_a4350f51bd90e858eb479e97f77d7a936"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structsc__dsp__config.html">sc_dsp_config</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sound__chef_8h.html#a4350f51bd90e858eb479e97f77d7a936">sc_dsp_config_init</a> (sc_dsp_type type)</td></tr>
+<tr class="memdesc:a4350f51bd90e858eb479e97f77d7a936"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a valid <a class="el" href="structsc__dsp__config.html">sc_dsp_config</a> object for the DSP type.  <br /></td></tr>
+<tr class="separator:a4350f51bd90e858eb479e97f77d7a936"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae1d796e3a3e8b2326fa95ef1b8aba97f" id="r_ae1d796e3a3e8b2326fa95ef1b8aba97f"><td class="memItemLeft" align="right" valign="top"><a id="ae1d796e3a3e8b2326fa95ef1b8aba97f" name="ae1d796e3a3e8b2326fa95ef1b8aba97f"></a>
+<a class="el" href="structsc__dsp__config.html">sc_dsp_config</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_dsp_config_init_clap</b> (const clap_plugin_factory_t *pluginFactory)</td></tr>
+<tr class="separator:ae1d796e3a3e8b2326fa95ef1b8aba97f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0c427a949f394d9c58698067b5b655c" id="r_ae0c427a949f394d9c58698067b5b655c"><td class="memItemLeft" align="right" valign="top"><a id="ae0c427a949f394d9c58698067b5b655c" name="ae0c427a949f394d9c58698067b5b655c"></a>
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_dsp_get_parameter_float</b> (<a class="el" href="structsc__dsp.html">sc_dsp</a> *dsp, int index, float *value)</td></tr>
+<tr class="separator:ae0c427a949f394d9c58698067b5b655c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b997563b1366b635017c9352473e612" id="r_a4b997563b1366b635017c9352473e612"><td class="memItemLeft" align="right" valign="top"><a id="a4b997563b1366b635017c9352473e612" name="a4b997563b1366b635017c9352473e612"></a>
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_dsp_set_parameter_float</b> (<a class="el" href="structsc__dsp.html">sc_dsp</a> *dsp, int index, float value)</td></tr>
+<tr class="separator:a4b997563b1366b635017c9352473e612"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78c5ea935f778f327924193bf625169b" id="r_a78c5ea935f778f327924193bf625169b"><td class="memItemLeft" align="right" valign="top"><a id="a78c5ea935f778f327924193bf625169b" name="a78c5ea935f778f327924193bf625169b"></a>
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_dsp_get_metering_info</b> (<a class="el" href="structsc__dsp.html">sc_dsp</a> *dsp, ma_uint32 channelIndex, sc_dsp_meter meterType, float *value)</td></tr>
+<tr class="separator:a78c5ea935f778f327924193bf625169b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5e36ce6ecd1b23bc77366b97f51b674" id="r_aa5e36ce6ecd1b23bc77366b97f51b674"><td class="memItemLeft" align="right" valign="top"><a id="aa5e36ce6ecd1b23bc77366b97f51b674" name="aa5e36ce6ecd1b23bc77366b97f51b674"></a>
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_dsp_release</b> (<a class="el" href="structsc__dsp.html">sc_dsp</a> *dsp)</td></tr>
+<tr class="separator:aa5e36ce6ecd1b23bc77366b97f51b674"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a525b0342d2737f310566e4c508490f25" id="r_a525b0342d2737f310566e4c508490f25"><td class="memItemLeft" align="right" valign="top"><a id="a525b0342d2737f310566e4c508490f25" name="a525b0342d2737f310566e4c508490f25"></a>
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_node_group_set_volume</b> (<a class="el" href="structsc__node__group.html">sc_node_group</a> *nodeGroup, float volume)</td></tr>
+<tr class="separator:a525b0342d2737f310566e4c508490f25"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a79d39ea9b6f897041267a8e9b7124c36" id="r_a79d39ea9b6f897041267a8e9b7124c36"><td class="memItemLeft" align="right" valign="top"><a id="a79d39ea9b6f897041267a8e9b7124c36" name="a79d39ea9b6f897041267a8e9b7124c36"></a>
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_node_group_get_volume</b> (<a class="el" href="structsc__node__group.html">sc_node_group</a> *nodeGroup, float *volume)</td></tr>
+<tr class="separator:a79d39ea9b6f897041267a8e9b7124c36"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb39e57c0f5478b13bf83aa2a9f9294c" id="r_adb39e57c0f5478b13bf83aa2a9f9294c"><td class="memItemLeft" align="right" valign="top"><a id="adb39e57c0f5478b13bf83aa2a9f9294c" name="adb39e57c0f5478b13bf83aa2a9f9294c"></a>
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_node_group_set_parent</b> (<a class="el" href="structsc__node__group.html">sc_node_group</a> *nodeGroup, <a class="el" href="structsc__node__group.html">sc_node_group</a> *parent)</td></tr>
+<tr class="separator:adb39e57c0f5478b13bf83aa2a9f9294c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c2da366727186ed30ed20718a2d3846" id="r_a7c2da366727186ed30ed20718a2d3846"><td class="memItemLeft" align="right" valign="top"><a id="a7c2da366727186ed30ed20718a2d3846" name="a7c2da366727186ed30ed20718a2d3846"></a>
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_node_group_set_parent_endpoint</b> (<a class="el" href="structsc__node__group.html">sc_node_group</a> *nodeGroup)</td></tr>
+<tr class="separator:a7c2da366727186ed30ed20718a2d3846"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5cf0ed5390fe06bc7ed20908a5d906b9" id="r_a5cf0ed5390fe06bc7ed20908a5d906b9"><td class="memItemLeft" align="right" valign="top"><a id="a5cf0ed5390fe06bc7ed20908a5d906b9" name="a5cf0ed5390fe06bc7ed20908a5d906b9"></a>
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_node_group_get_dsp</b> (<a class="el" href="structsc__node__group.html">sc_node_group</a> *nodeGroup, sc_dsp_type type, <a class="el" href="structsc__dsp.html">sc_dsp</a> **dsp)</td></tr>
+<tr class="separator:a5cf0ed5390fe06bc7ed20908a5d906b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71821ab9e2189cd16a074b6320afbed6" id="r_a71821ab9e2189cd16a074b6320afbed6"><td class="memItemLeft" align="right" valign="top"><a id="a71821ab9e2189cd16a074b6320afbed6" name="a71821ab9e2189cd16a074b6320afbed6"></a>
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_node_group_add_dsp</b> (<a class="el" href="structsc__node__group.html">sc_node_group</a> *nodeGroup, <a class="el" href="structsc__dsp.html">sc_dsp</a> *dsp, sc_dsp_index index)</td></tr>
+<tr class="separator:a71821ab9e2189cd16a074b6320afbed6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e9f3738313d4d05d4e74f54efdb5079" id="r_a4e9f3738313d4d05d4e74f54efdb5079"><td class="memItemLeft" align="right" valign="top"><a id="a4e9f3738313d4d05d4e74f54efdb5079" name="a4e9f3738313d4d05d4e74f54efdb5079"></a>
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_node_group_remove_dsp</b> (<a class="el" href="structsc__node__group.html">sc_node_group</a> *nodeGroup, <a class="el" href="structsc__dsp.html">sc_dsp</a> *dsp)</td></tr>
+<tr class="separator:a4e9f3738313d4d05d4e74f54efdb5079"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d4bc0d97266559f0b69f35cd6fe0c59" id="r_a3d4bc0d97266559f0b69f35cd6fe0c59"><td class="memItemLeft" align="right" valign="top"><a id="a3d4bc0d97266559f0b69f35cd6fe0c59" name="a3d4bc0d97266559f0b69f35cd6fe0c59"></a>
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_node_group_release</b> (<a class="el" href="structsc__node__group.html">sc_node_group</a> *nodeGroup)</td></tr>
+<tr class="separator:a3d4bc0d97266559f0b69f35cd6fe0c59"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6feb050f6b779e9a1bd353350eacad93" id="r_a6feb050f6b779e9a1bd353350eacad93"><td class="memItemLeft" align="right" valign="top"><a id="a6feb050f6b779e9a1bd353350eacad93" name="a6feb050f6b779e9a1bd353350eacad93"></a>
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_system_clap_get_count</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, ma_uint32 *count)</td></tr>
+<tr class="separator:a6feb050f6b779e9a1bd353350eacad93"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5261222d931a977edc0e9201ac0a0a22" id="r_a5261222d931a977edc0e9201ac0a0a22"><td class="memItemLeft" align="right" valign="top">sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sound__chef_8h.html#a5261222d931a977edc0e9201ac0a0a22">sc_system_clap_get_at</a> (<a class="el" href="structsc__system.html">sc_system</a> *system, ma_uint32 index, <a class="el" href="structsc__clap.html">sc_clap</a> **plugin)</td></tr>
+<tr class="memdesc:a5261222d931a977edc0e9201ac0a0a22"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the CLAP plugin at a specified index.  <br /></td></tr>
+<tr class="separator:a5261222d931a977edc0e9201ac0a0a22"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>A wrapper library for miniaudio that emulates functionality of FMOD. </p>
+<p>The low level engine powering Sound Bakery. </p>
+</div><h2 class="groupheader">Function Documentation</h2>
+<a id="a4350f51bd90e858eb479e97f77d7a936" name="a4350f51bd90e858eb479e97f77d7a936"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4350f51bd90e858eb479e97f77d7a936">&#9670;&#160;</a></span>sc_dsp_config_init()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structsc__dsp__config.html">sc_dsp_config</a> SC_API sc_dsp_config_init </td>
+          <td>(</td>
+          <td class="paramtype">sc_dsp_type&#160;</td>
+          <td class="paramname"><em>type</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns a valid <a class="el" href="structsc__dsp__config.html">sc_dsp_config</a> object for the DSP type. </p>
+<dl class="section warning"><dt>Warning</dt><dd>Will not return a valid config if the type == SC_DSP_TYPE_UNKOWN. </dd></dl>
+
+</div>
+</div>
+<a id="a08cb3eec724853dc1082c757791c6a66" name="a08cb3eec724853dc1082c757791c6a66"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08cb3eec724853dc1082c757791c6a66">&#9670;&#160;</a></span>sc_sound_instance_release()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">sbk_status SC_API sc_sound_instance_release </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structsc__sound.html">sc_sound_instance</a> *&#160;</td>
+          <td class="paramname"><em>instance</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Releases the sound instance's resources. </p>
+<p>The raw <a class="el" href="structsc__sound.html">sc_sound</a> needs to be released as well, once used, to release all resources. </p>
+
+</div>
+</div>
+<a id="ad5ca8494137edd07120ed134dbe1ab36" name="ad5ca8494137edd07120ed134dbe1ab36"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5ca8494137edd07120ed134dbe1ab36">&#9670;&#160;</a></span>sc_sound_instance_start()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">sbk_status SC_API sc_sound_instance_start </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structsc__sound.html">sc_sound_instance</a> *&#160;</td>
+          <td class="paramname"><em>instance</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Plays a sound instance, if it is not already. </p>
+<p>Does not create any new resources, unlike sc_system_play_sound. </p>
+
+</div>
+</div>
+<a id="a5261222d931a977edc0e9201ac0a0a22" name="a5261222d931a977edc0e9201ac0a0a22"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5261222d931a977edc0e9201ac0a0a22">&#9670;&#160;</a></span>sc_system_clap_get_at()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">sbk_status SC_API sc_system_clap_get_at </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structsc__system.html">sc_system</a> *&#160;</td>
+          <td class="paramname"><em>system</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ma_uint32&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structsc__clap.html">sc_clap</a> **&#160;</td>
+          <td class="paramname"><em>plugin</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the CLAP plugin at a specified index. </p>
+<p>Fills the plugin parameter with a pointer to a loaded CLAP plugin.</p>
+<dl class="section warning"><dt>Warning</dt><dd>Do not free the plugin pointer or unload any of the internals of the struct. </dd>
+<dd>
+Do not access the pointer after the system is closed. </dd></dl>
+
+</div>
+</div>
+<a id="a4d98ff65c6166df31444916b20e0bbc3" name="a4d98ff65c6166df31444916b20e0bbc3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d98ff65c6166df31444916b20e0bbc3">&#9670;&#160;</a></span>sc_system_close()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">sbk_status SC_API sc_system_close </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structsc__system.html">sc_system</a> *&#160;</td>
+          <td class="paramname"><em>system</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Closes the system. </p>
+<p>Disconnects the system from the user's audio device and stops all sounds. </p>
+
+</div>
+</div>
+<a id="aa1cc1e60d74adbbd33c66dec921861fb" name="aa1cc1e60d74adbbd33c66dec921861fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa1cc1e60d74adbbd33c66dec921861fb">&#9670;&#160;</a></span>sc_system_create()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">sbk_status SC_API sc_system_create </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structsc__system.html">sc_system</a> **&#160;</td>
+          <td class="paramname"><em>outSystem</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates a new System object. </p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="sound__chef_8h.html#a73c06a9406456d77d8dd5a99dbfd6792" title="Initialises the system.">sc_system_init</a> <a class="el" href="sound__chef_8h.html#afa6086b793e2c93701ebcde793bca4b6" title="Releases the system memory.">sc_system_release</a> </dd></dl>
+
+</div>
+</div>
+<a id="a87f966d3d8efeae9a0c748c8e92e9350" name="a87f966d3d8efeae9a0c748c8e92e9350"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a87f966d3d8efeae9a0c748c8e92e9350">&#9670;&#160;</a></span>sc_system_create_dsp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">sbk_status SC_API sc_system_create_dsp </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structsc__system.html">sc_system</a> *&#160;</td>
+          <td class="paramname"><em>system</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structsc__dsp__config.html">sc_dsp_config</a> *&#160;</td>
+          <td class="paramname"><em>config</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structsc__dsp.html">sc_dsp</a> **&#160;</td>
+          <td class="paramname"><em>dsp</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates a new DSP based on the config. </p>
+<dl class="section warning"><dt>Warning</dt><dd>The config parameter must have its vtable pointer set. Using sc_dsp_config_init will ensure the vtable is correct for built in types. However, users must fill it themselves for custom DSP types.</dd></dl>
+<p>Example: </p><div class="fragment"><div class="line"><a class="code hl_struct" href="structsc__dsp.html">sc_dsp</a>* dsp = NULL;</div>
+<div class="line"><a class="code hl_struct" href="structsc__dsp__config.html">sc_dsp_config</a> lpfConfig = <a class="code hl_function" href="sound__chef_8h.html#a4350f51bd90e858eb479e97f77d7a936">sc_dsp_config_init</a>(SC_DSP_TYPE_LOWPASS);</div>
+<div class="line"><a class="code hl_function" href="sound__chef_8h.html#a87f966d3d8efeae9a0c748c8e92e9350">sc_system_create_dsp</a>(system, &amp;lpfConfig, &amp;dsp);</div>
+<div class="ttc" id="asound__chef_8h_html_a4350f51bd90e858eb479e97f77d7a936"><div class="ttname"><a href="sound__chef_8h.html#a4350f51bd90e858eb479e97f77d7a936">sc_dsp_config_init</a></div><div class="ttdeci">sc_dsp_config SC_API sc_dsp_config_init(sc_dsp_type type)</div><div class="ttdoc">Returns a valid sc_dsp_config object for the DSP type.</div><div class="ttdef"><b>Definition</b> sound_chef.c:1433</div></div>
+<div class="ttc" id="asound__chef_8h_html_a87f966d3d8efeae9a0c748c8e92e9350"><div class="ttname"><a href="sound__chef_8h.html#a87f966d3d8efeae9a0c748c8e92e9350">sc_system_create_dsp</a></div><div class="ttdeci">sbk_status SC_API sc_system_create_dsp(sc_system *system, const sc_dsp_config *config, sc_dsp **dsp)</div><div class="ttdoc">Creates a new DSP based on the config.</div><div class="ttdef"><b>Definition</b> sound_chef.c:559</div></div>
+<div class="ttc" id="astructsc__dsp__config_html"><div class="ttname"><a href="structsc__dsp__config.html">sc_dsp_config</a></div><div class="ttdef"><b>Definition</b> sound_chef_common.h:216</div></div>
+<div class="ttc" id="astructsc__dsp_html"><div class="ttname"><a href="structsc__dsp.html">sc_dsp</a></div><div class="ttdoc">ma_node with an additional enum descriptor.</div><div class="ttdef"><b>Definition</b> sound_chef_common.h:229</div></div>
+</div><!-- fragment --><dl class="section see"><dt>See also</dt><dd><a class="el" href="sound__chef_8h.html#a4350f51bd90e858eb479e97f77d7a936" title="Returns a valid sc_dsp_config object for the DSP type.">sc_dsp_config_init</a> </dd></dl>
+
+</div>
+</div>
+<a id="a38ea557547fe5842ae56f2eec96e632f" name="a38ea557547fe5842ae56f2eec96e632f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38ea557547fe5842ae56f2eec96e632f">&#9670;&#160;</a></span>sc_system_create_node_group()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">sbk_status SC_API sc_system_create_node_group </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structsc__system.html">sc_system</a> *&#160;</td>
+          <td class="paramname"><em>system</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structsc__node__group.html">sc_node_group</a> **&#160;</td>
+          <td class="paramname"><em>nodeGroup</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates a new Node Group. </p>
+<p>Creates a new Node Group with a SC_DSP_TYPE_FADER by default (for handling volume, pitch etc.). Connects to the endpoint by default. </p>
+
+</div>
+</div>
+<a id="a73c06a9406456d77d8dd5a99dbfd6792" name="a73c06a9406456d77d8dd5a99dbfd6792"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a73c06a9406456d77d8dd5a99dbfd6792">&#9670;&#160;</a></span>sc_system_init()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">sbk_status SC_API sc_system_init </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structsc__system.html">sc_system</a> *&#160;</td>
+          <td class="paramname"><em>system</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structsc__system__config.html">sc_system_config</a> *&#160;</td>
+          <td class="paramname"><em>systemConfig</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Initialises the system. </p>
+<p>Initializes the ma_engine and therefore the ma_device. This makes the system connect to the user's audio device and is then ready for playing sounds. </p>
+
+</div>
+</div>
+<a id="a0ac094b92c512c862ad06edb170bc98b" name="a0ac094b92c512c862ad06edb170bc98b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ac094b92c512c862ad06edb170bc98b">&#9670;&#160;</a></span>sc_system_log_init()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">sbk_status SC_API sc_system_log_init </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structsc__system.html">sc_system</a> *&#160;</td>
+          <td class="paramname"><em>system</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ma_log_callback_proc&#160;</td>
+          <td class="paramname"><em>logCallback</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets up logging. </p>
+<p>Must be called before sc_system_init. </p>
+
+</div>
+</div>
+<a id="a0f39000fef87f54d58934784869334ca" name="a0f39000fef87f54d58934784869334ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f39000fef87f54d58934784869334ca">&#9670;&#160;</a></span>sc_system_play_sound()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">sbk_status SC_API sc_system_play_sound </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structsc__system.html">sc_system</a> *&#160;</td>
+          <td class="paramname"><em>system</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structsc__sound.html">sc_sound</a> *&#160;</td>
+          <td class="paramname"><em>sound</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structsc__sound.html">sc_sound_instance</a> **&#160;</td>
+          <td class="paramname"><em>instance</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structsc__node__group.html">sc_node_group</a> *&#160;</td>
+          <td class="paramname"><em>parent</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">sc_bool&#160;</td>
+          <td class="paramname"><em>paused</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Plays a sound and returns the playing instance. </p>
+<p>Internally, the function copies the passed in sound to the instance. This doesn't copy the internal audio data but rather the runtime parameters like play position etc. This gives us a new ma_sound we can attach into the node graph.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">system</td><td>system object </td></tr>
+    <tr><td class="paramname">sound</td><td>to copy to the instance </td></tr>
+    <tr><td class="paramname">instance</td><td>of the new sound for playing </td></tr>
+    <tr><td class="paramname">get_parent</td><td>optional parameter. Outputs to the master node group by default </td></tr>
+    <tr><td class="paramname">paused</td><td>whether this sound is paused upon creation or played instantly </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd></dd></dl>
+
+</div>
+</div>
+<a id="afa6086b793e2c93701ebcde793bca4b6" name="afa6086b793e2c93701ebcde793bca4b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa6086b793e2c93701ebcde793bca4b6">&#9670;&#160;</a></span>sc_system_release()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">sbk_status SC_API sc_system_release </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structsc__system.html">sc_system</a> *&#160;</td>
+          <td class="paramname"><em>system</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Releases the system memory. </p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="sound__chef_8h.html#a4d98ff65c6166df31444916b20e0bbc3" title="Closes the system.">sc_system_close</a> <a class="el" href="sound__chef_8h.html#aa1cc1e60d74adbbd33c66dec921861fb" title="Creates a new System object.">sc_system_create</a> </dd></dl>
+
+</div>
+</div>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a class="el" href="dir_bfccd401955b95cf8c75461437045ac0.html">inc</a></li><li class="navelem"><a class="el" href="dir_f6614a95fb38c693f5fac5b9f0bed566.html">sound_chef</a></li><li class="navelem"><a class="el" href="sound__chef_8h.html">sound_chef.h</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
+  </ul>
+</div>
+</body>
+</html>

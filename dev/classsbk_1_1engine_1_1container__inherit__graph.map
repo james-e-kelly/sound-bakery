@@ -1,0 +1,27 @@
+<map id="sbk::engine::container" name="sbk::engine::container">
+<area shape="rect" id="Node000001" title="Base container type. Inherited types include sounds, random, sequence etc." alt="" coords="1012,141,1179,166"/>
+<area shape="rect" id="Node000009" href="$classsbk_1_1engine_1_1blend__container.html" title=" " alt="" coords="1239,5,1381,45"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="1120,129,1168,92,1225,55,1250,43,1252,48,1228,60,1171,97,1123,134"/>
+<area shape="rect" id="Node000010" href="$classsbk_1_1engine_1_1random__container.html" title=" " alt="" coords="1233,69,1387,109"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="1151,134,1241,107,1243,112,1153,139"/>
+<area shape="rect" id="Node000011" href="$classsbk_1_1engine_1_1sequence__container.html" title=" " alt="" coords="1227,133,1393,173"/>
+<area shape="poly" id="edge10_Node000001_Node000011" title=" " alt="" coords="1193,151,1226,151,1226,156,1193,156"/>
+<area shape="rect" id="Node000012" href="$classsbk_1_1engine_1_1sound__container.html" title=" " alt="" coords="1238,197,1382,237"/>
+<area shape="poly" id="edge11_Node000001_Node000012" title=" " alt="" coords="1153,168,1243,195,1241,200,1151,173"/>
+<area shape="rect" id="Node000013" href="$classsbk_1_1engine_1_1switch__container.html" title=" " alt="" coords="1237,261,1383,301"/>
+<area shape="poly" id="edge12_Node000001_Node000013" title=" " alt="" coords="1123,173,1171,210,1228,247,1252,259,1250,264,1225,252,1168,214,1120,177"/>
+<area shape="rect" id="Node000002" href="$classsbk_1_1engine_1_1node.html" title="Root node that builds the core graph of sounds and busses." alt="" coords="827,141,964,166"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="978,151,1012,151,1012,156,978,156"/>
+<area shape="rect" id="Node000003" href="$classsbk_1_1engine_1_1node__base.html" title="Generic node that can have a get_parent and own children." alt="" coords="604,141,779,166"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="793,151,826,151,826,156,793,156"/>
+<area shape="rect" id="Node000004" href="$classsbk_1_1core_1_1database__object.html" title="Base object type for any object that can exist in the editor/database. Holds an ID and name." alt="" coords="407,133,556,173"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="570,151,604,151,604,156,570,156"/>
+<area shape="rect" id="Node000005" href="$classsbk_1_1core_1_1object.html" title="Base object that all sound Bakery objects should inherit from." alt="" coords="229,141,359,166"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="372,151,406,151,406,156,372,156"/>
+<area shape="rect" id="Node000006" href="$classsbk_1_1core_1_1object__owner.html" title="Creates, owns and tracks objects." alt="" coords="5,83,181,109"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="152,110,250,138,248,143,151,115"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="13,133,174,173"/>
+<area shape="poly" id="edge6_Node000005_Node000007" title=" " alt="" coords="187,151,229,151,229,156,187,156"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="19,198,168,223"/>
+<area shape="poly" id="edge7_Node000005_Node000008" title=" " alt="" coords="151,192,248,163,250,169,152,197"/>
+</map>

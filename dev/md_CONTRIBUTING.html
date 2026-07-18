@@ -1,0 +1,247 @@
+<!-- HTML header for doxygen 1.10.0-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Sound Bakery: Contributing to Sound Bakery</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom-css.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+</head>
+<body>
+<!-- https://tholman.com/github-corners/ -->
+<a href="https://github.com/KarateKidzz/sound-bakery" class="github-corner" title="View source on GitHub" target="_blank" rel="noopener noreferrer">
+  <svg viewBox="0 0 250 250" width="40" height="40" style="position: absolute; top: 0; border: 0; right: 0; z-index: 99;" aria-hidden="true">
+  <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectlogo"><img alt="Logo" src="sound-bakery-logo.png"$logosize/></td>
+  <td id="projectalign">
+   <div id="projectname">Sound Bakery&nbsp<span id="projectnumber">&#160;<select id="sbk-version-select" aria-label="Documentation version"><option>dev</option></select></span>
+   </div>
+   <div id="projectbrief">Open-source audio middleware for games</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- Sound Bakery documentation version switcher -->
+<script type="text/javascript">
+(function () {
+    var current = "dev";
+    var select = document.getElementById('sbk-version-select');
+    if (!select) { return; }
+    // versions.json lives at the site root, one level above this version's folder.
+    fetch("../versions.json", { cache: "no-cache" })
+        .then(function (r) { return r.ok ? r.json() : []; })
+        .then(function (versions) {
+            if (!versions || !versions.length) { return; }
+            select.innerHTML = "";
+            versions.forEach(function (v) {
+                var opt = document.createElement('option');
+                opt.value = v;
+                opt.textContent = v;
+                if (v === current) { opt.selected = true; }
+                select.appendChild(opt);
+            });
+        })
+        .catch(function () { /* single-version or local build: leave the label as-is */ });
+    select.addEventListener('change', function () {
+        window.location.href = "../" + select.value + "/index.html";
+    });
+})();
+</script>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Search');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('md_CONTRIBUTING.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div><div class="header">
+  <div class="headertitle"><div class="title">Contributing to Sound Bakery</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><p><a class="anchor" id="autotoc_md25"></a> Thank you for your interest in contributing to Sound Bakery. With your help, we can make something excellent.</p>
+<h1><a class="anchor" id="autotoc_md26"></a>
+Table of Contents</h1>
+<ul>
+<li>How to Contribute</li>
+<li>Reporting Issues</li>
+<li>Suggesting UI/UX</li>
+<li>Submitting Pull Requests</li>
+<li>Code Style</li>
+<li>Testing</li>
+<li>Documentation</li>
+<li>Community</li>
+</ul>
+<h1><a class="anchor" id="autotoc_md27"></a>
+How to Contribute</h1>
+<p>There are several ways to contribute:</p><ul>
+<li>Reporting bugs and issues</li>
+<li>Suggesting new features and enhancements</li>
+<li>Suggesting visual improvements</li>
+<li>Submitting pull requests to fix bugs or add features</li>
+<li>Submitting pull requests to improve code cleanliness and technical debt</li>
+<li>Improving documentation</li>
+</ul>
+<h1><a class="anchor" id="autotoc_md28"></a>
+Reporting Issues</h1>
+<p>If any bugs or issues are encountered, please report them using the GitHub <a href="https://github.com/KarateKidzz/sound-bakery/issues">issue tracker</a>. When reporting an issue, please provide as much detail as possible, including:</p><ul>
+<li>A clear and descriptive title</li>
+<li>Steps to reproduce the issue</li>
+<li>Expected and actual results</li>
+<li>Any relevant screenshots or logs</li>
+<li>The version of Sound Bakery and your development environment</li>
+</ul>
+<h1><a class="anchor" id="autotoc_md29"></a>
+Suggesting UI UX</h1>
+<p>How to contribute visual improvements is an open question. Please reach out with designs and ideas on the issue tracker or discussions. If you have ideas for collaborating on the UI of Sound Bakery, please speak up.</p>
+<h1><a class="anchor" id="autotoc_md30"></a>
+Submitting Pull Requests</h1>
+<p>To submit a pull request (PR), follow these steps:</p>
+<ol type="1">
+<li><b>Fork the Repository</b>: Fork the <a href="https://github.com/KarateKidzz/sound-bakery">Sound Bakery repository</a> to your GitHub account.</li>
+<li><b>Clone Your Fork</b>: Clone your forked repository to your local machine. <div class="fragment"><div class="line">git clone https://github.com/KarateKidzz/sound-bakery.git</div>
+<div class="line">cd sound-bakery</div>
+</div><!-- fragment --></li>
+<li><b>Create a Branch</b>: Create a new branch for your feature or bugfix. <div class="fragment"><div class="line">git checkout -b feature-or-bugfix-name</div>
+</div><!-- fragment --></li>
+<li><b>Make Changes</b>: Make your changes to the codebase. Ensure that your changes follow the project's code style and include tests if applicable.</li>
+<li><b>Commit Changes</b>: Commit your changes with a clear and descriptive commit message. <div class="fragment"><div class="line">git commit -m &quot;Description of the changes made&quot;</div>
+</div><!-- fragment --></li>
+<li><b>Push Changes</b>: Push your changes to your forked repository. <div class="fragment"><div class="line">git push origin feature-or-bugfix-name</div>
+</div><!-- fragment --></li>
+<li><b>Create a Pull Request</b>: Create a pull request to the main repository. Provide a detailed description of your changes and any relevant information.</li>
+</ol>
+<h1><a class="anchor" id="autotoc_md31"></a>
+Code Style</h1>
+<p>Sound Bakery integrates <code>clang-format</code> and <code>clang-tidy</code> to ensure code quality and consistency. Please follow these guidelines when contributing:</p><ul>
+<li>Use modern C++20 features and standard library components.</li>
+<li>Write for people first and the machine second.</li>
+<li>Ensure that your code is properly formatted using <code>clang-format</code>.</li>
+<li>Run <code>clang-tidy</code> to catch and fix potential issues.</li>
+</ul>
+<p>Code style is a collaborative effort and discussions around style are welcome.</p>
+<h1><a class="anchor" id="autotoc_md32"></a>
+Testing</h1>
+<blockquote class="doxtable">
+<p>&zwj;Testing is WIP and details will be added in the future. </p>
+</blockquote>
+<h1><a class="anchor" id="autotoc_md33"></a>
+Documentation</h1>
+<p>Sound Bakery uses Doxygen for documentation generation. Therefore, documentation is mainly written in the code and guides written in markdown. Please ensure documentation is present for public API functions. Otherwise, write comments for classes and functions where appropriate.</p>
+<h2><a class="anchor" id="autotoc_md34"></a>
+Using Doxygen</h2>
+<p>To generate documentation using Doxygen, follow these steps:</p>
+<ol type="1">
+<li><b>Install Doxygen</b>.</li>
+<li><b>Add Doxygen-style comments</b> to your code. Here is an example: <div class="fragment"><div class="line"> </div>
+<div class="line"><span class="keywordtype">void</span> init();</div>
+</div><!-- fragment --></li>
+<li><b>Build the Doxygen Documentation</b>:<ul>
+<li>Ensure that CMake is set up for the project.</li>
+<li>Build the <code>doc_doxygen</code> target: <div class="fragment"><div class="line">cd build</div>
+<div class="line">cmake --build . --target doc_doxygen</div>
+</div><!-- fragment --></li>
+</ul>
+</li>
+</ol>
+<p>Generated documentation will be available in the <code>doxygen</code> directory.</p>
+<h1><a class="anchor" id="autotoc_md35"></a>
+Community</h1>
+<p>Sound Bakery aims to foster a welcoming and inclusive community. When contributing, please:</p><ul>
+<li>Be respectful and considerate of others.</li>
+<li>Provide constructive feedback and support.</li>
+<li>Follow the Code of Conduct to ensure a positive environment for all contributors.</li>
+</ul>
+<hr  />
+<p>Thank you for contributing! If you have any questions, feel free to reach out via the issue tracker or discussions. </p>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+</div><!-- doc-content -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
+  </ul>
+</div>
+</body>
+</html>

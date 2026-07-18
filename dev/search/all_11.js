@@ -1,0 +1,28 @@
+var searchData=
+[
+  ['parameter_0',['parameter',['../classsbk_1_1engine_1_1parameter.html',1,'sbk::engine::parameter&lt; parameter_type &gt;'],['../classsbk_1_1engine_1_1parameter.html#a2bdf2c84d01f5490daa2d8d27729c901',1,'sbk::engine::parameter::parameter()']]],
+  ['parameter_3c_20float_20_3e_1',['parameter&lt; float &gt;',['../classsbk_1_1engine_1_1parameter.html',1,'sbk::engine']]],
+  ['parameter_3c_20int_20_3e_2',['parameter&lt; int &gt;',['../classsbk_1_1engine_1_1parameter.html',1,'sbk::engine']]],
+  ['parameter_3c_20sbk_5fid_20_3e_3',['parameter&lt; sbk_id &gt;',['../classsbk_1_1engine_1_1parameter.html',1,'sbk::engine']]],
+  ['parameter_5fproperty_4',['parameter_property',['../classsbk_1_1engine_1_1parameter.html#ab62f1c344ff6f9fe48902cdbe6218620',1,'sbk::engine::parameter']]],
+  ['parameters_5',['parameters',['../structsbk_1_1engine_1_1gather__children__context.html#a5b1773760c5fa59423dc919d9120cf78',1,'sbk::engine::gather_children_context']]],
+  ['parsed_5fdatabase_5fname_6',['parsed_database_name',['../structsbk_1_1core_1_1parsed__database__name.html',1,'sbk::core']]],
+  ['pending_7',['pending',['../classsbk_1_1core_1_1database__ptr.html#a46a1eea3ffcb3ec4a5501f02f3f45cdf',1,'sbk::core::database_ptr']]],
+  ['performance_20tips_8',['Performance Tips',['../ChefProgrammerGuide.html#autotoc_md65',1,'']]],
+  ['philosophy_9',['Design Philosophy',['../Design.html',1,'UserManual']]],
+  ['picking_20a_20macro_10',['Picking a macro',['..//home/runner/work/sound-bakery/sound-bakery/src/sound_bakery/error/README.md#autotoc_md48',1,'']]],
+  ['playable_5fselection_11',['playable_selection',['../structplayable__selection.html',1,'']]],
+  ['player_5fwidget_12',['player_widget',['../classplayer__widget.html',1,'']]],
+  ['playing_20a_20sound_13',['Playing A Sound',['../ChefProgrammerGuide.html#autotoc_md57',1,'']]],
+  ['programmer_20s_20guide_14',['programmer s guide',['../ProgrammerGuide.html',1,'Programmer&apos;s Guide'],['../ChefProgrammerGuide.html',1,'Sound Chef Programmer&apos;s Guide']]],
+  ['project_15',['project',['../classsbk_1_1editor_1_1project.html',1,'sbk::editor']]],
+  ['project_5fconfiguration_16',['project_configuration',['../structsbk_1_1editor_1_1project__configuration.html#ad84933983f20736d00e3589efd2a0def',1,'sbk::editor::project_configuration::project_configuration(const std::filesystem::path &amp;projectFile)'],['../structsbk_1_1editor_1_1project__configuration.html#a87918e391ae6c6d0ee0887272368ba54',1,'sbk::editor::project_configuration::project_configuration(const std::filesystem::directory_entry &amp;projectDirectory, std::string_view projectName)'],['../structsbk_1_1editor_1_1project__configuration.html',1,'sbk::editor::project_configuration']]],
+  ['project_5fexplorer_5fwidget_17',['project_explorer_widget',['../classproject__explorer__widget.html',1,'']]],
+  ['project_5fmanager_18',['project_manager',['../classproject__manager.html',1,'']]],
+  ['project_5fnodes_5fwidget_19',['project_nodes_widget',['../classproject__nodes__widget.html',1,'']]],
+  ['projects_20',['Open-Source Projects',['../md_docs_2Inspiration.html#autotoc_md42',1,'']]],
+  ['property_21',['property',['../classsbk_1_1core_1_1property.html',1,'sbk::core']]],
+  ['property_3c_20parameter_5ftype_20_3e_22',['property&lt; parameter_type &gt;',['../classsbk_1_1core_1_1property.html',1,'sbk::core']]],
+  ['property_5fdrawer_23',['property_drawer',['../classproperty__drawer.html',1,'']]],
+  ['pull_20requests_24',['Submitting Pull Requests',['../md_CONTRIBUTING.html#autotoc_md30',1,'']]]
+];

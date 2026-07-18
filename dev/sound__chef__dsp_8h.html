@@ -1,0 +1,352 @@
+<!-- HTML header for doxygen 1.10.0-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Sound Bakery: inc/sound_chef/sound_chef_dsp.h File Reference</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom-css.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+</head>
+<body>
+<!-- https://tholman.com/github-corners/ -->
+<a href="https://github.com/KarateKidzz/sound-bakery" class="github-corner" title="View source on GitHub" target="_blank" rel="noopener noreferrer">
+  <svg viewBox="0 0 250 250" width="40" height="40" style="position: absolute; top: 0; border: 0; right: 0; z-index: 99;" aria-hidden="true">
+  <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectlogo"><img alt="Logo" src="sound-bakery-logo.png"$logosize/></td>
+  <td id="projectalign">
+   <div id="projectname">Sound Bakery&nbsp<span id="projectnumber">&#160;<select id="sbk-version-select" aria-label="Documentation version"><option>dev</option></select></span>
+   </div>
+   <div id="projectbrief">Open-source audio middleware for games</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- Sound Bakery documentation version switcher -->
+<script type="text/javascript">
+(function () {
+    var current = "dev";
+    var select = document.getElementById('sbk-version-select');
+    if (!select) { return; }
+    // versions.json lives at the site root, one level above this version's folder.
+    fetch("../versions.json", { cache: "no-cache" })
+        .then(function (r) { return r.ok ? r.json() : []; })
+        .then(function (versions) {
+            if (!versions || !versions.length) { return; }
+            select.innerHTML = "";
+            versions.forEach(function (v) {
+                var opt = document.createElement('option');
+                opt.value = v;
+                opt.textContent = v;
+                if (v === current) { opt.selected = true; }
+                select.appendChild(opt);
+            });
+        })
+        .catch(function () { /* single-version or local build: leave the label as-is */ });
+    select.addEventListener('change', function () {
+        window.location.href = "../" + select.value + "/index.html";
+    });
+})();
+</script>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Search');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('sound__chef__dsp_8h.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#typedef-members">Typedefs</a> &#124;
+<a href="#enum-members">Enumerations</a>  </div>
+  <div class="headertitle"><div class="title">sound_chef_dsp.h File Reference</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>DSP object definitions.  
+<a href="#details">More...</a></p>
+<div class="textblock"><div class="dynheader">
+This graph shows which files directly or indirectly include this file:</div>
+<div class="dyncontent">
+<div class="center"><img src="sound__chef__dsp_8h__dep__incl.png" border="0" usemap="#ainc_2sound__chef_2sound__chef__dsp_8hdep" alt=""/></div>
+<map name="ainc_2sound__chef_2sound__chef__dsp_8hdep" id="ainc_2sound__chef_2sound__chef__dsp_8hdep">
+<area shape="rect" title="DSP object definitions." alt="" coords="1892,5,2054,45"/>
+<area shape="rect" href="sound__chef_8h.html" title="A wrapper library for miniaudio that emulates functionality of FMOD." alt="" coords="1892,93,2054,133"/>
+<area shape="poly" title=" " alt="" coords="1976,59,1976,93,1970,93,1970,59"/>
+<area shape="rect" href="sound__bakery__common_8h_source.html" title=" " alt="" coords="1757,181,1936,221"/>
+<area shape="poly" title=" " alt="" coords="1935,144,1876,183,1873,179,1932,139"/>
+<area shape="rect" href="sound_8h_source.html" title=" " alt="" coords="1808,959,1986,999"/>
+<area shape="poly" title=" " alt="" coords="1976,147,1976,288,1976,804,1969,850,1953,893,1933,931,1914,960,1910,957,1928,928,1948,891,1964,849,1970,804,1970,288,1970,147"/>
+<area shape="rect" href="sound__chef__internal_8h_source.html" title=" " alt="" coords="2010,181,2173,221"/>
+<area shape="poly" title=" " alt="" coords="2012,139,2067,179,2064,183,2009,144"/>
+<area shape="rect" href="sound__bakery_8h_source.html" title=" " alt="" coords="1645,269,1824,309"/>
+<area shape="poly" title=" " alt="" coords="1812,232,1761,271,1758,267,1809,228"/>
+<area shape="rect" href="audio__display__widget_8h_source.html" title=" " alt="" coords="1645,357,1824,397"/>
+<area shape="poly" title=" " alt="" coords="1737,323,1737,357,1732,357,1732,323"/>
+<area shape="rect" href="sound__bakery__internal_8h_source.html" title=" " alt="" coords="1386,357,1565,397"/>
+<area shape="poly" title=" " alt="" coords="1665,316,1533,360,1532,355,1664,311"/>
+<area shape="rect" href="src_2sound__bakery_2pch_8h_source.html" title=" " alt="" coords="1164,445,1339,471"/>
+<area shape="poly" title=" " alt="" coords="1410,404,1286,448,1284,443,1408,399"/>
+<area shape="rect" href="project__nodes__widget_8h_source.html" title=" " alt="" coords="1755,519,1935,559"/>
+<area shape="poly" title=" " alt="" coords="1353,467,1535,488,1743,516,1755,518,1755,523,1742,521,1534,493,1353,472"/>
+<area shape="rect" href="database__ptr_8h_source.html" title=" " alt="" coords="609,783,796,823"/>
+<area shape="poly" title=" " alt="" coords="1151,466,1025,474,890,485,777,501,739,510,719,521,698,550,685,585,678,622,677,659,686,730,699,782,694,783,681,731,672,659,673,621,680,583,693,548,715,517,737,505,776,495,889,480,1025,468,1150,461"/>
+<area shape="rect" href="memory_8h_source.html" title=" " alt="" coords="920,519,1087,559"/>
+<area shape="poly" title=" " alt="" coords="1204,477,1064,521,1063,516,1202,472"/>
+<area shape="rect" href="name_8h_source.html" title=" " alt="" coords="730,519,896,559"/>
+<area shape="poly" title=" " alt="" coords="1170,476,908,521,897,523,896,518,907,516,1169,470"/>
+<area shape="rect" href="object__owner_8h_source.html" title=" " alt="" coords="1112,519,1280,559"/>
+<area shape="poly" title=" " alt="" coords="1238,483,1211,520,1207,517,1233,480"/>
+<area shape="rect" href="object__tracker_8h_source.html" title=" " alt="" coords="412,783,585,823"/>
+<area shape="poly" title=" " alt="" coords="1151,463,1030,466,895,476,773,493,724,506,689,521,652,548,619,581,591,618,566,656,529,729,507,783,502,781,524,727,561,653,586,615,615,578,649,544,686,516,723,501,772,488,894,470,1029,461,1150,457"/>
+<area shape="rect" href="property_8h_source.html" title=" " alt="" coords="1475,607,1642,647"/>
+<area shape="poly" title=" " alt="" coords="1269,481,1301,520,1321,539,1344,556,1375,574,1409,588,1476,608,1474,613,1407,593,1373,578,1341,561,1318,543,1297,523,1265,484"/>
+<area shape="rect" href="voice__tracker_8h_source.html" title=" " alt="" coords="1354,519,1546,559"/>
+<area shape="poly" title=" " alt="" coords="1294,473,1404,516,1402,521,1292,478"/>
+<area shape="rect" href="type__helper_8h_source.html" title=" " alt="" coords="1570,519,1730,559"/>
+<area shape="poly" title=" " alt="" coords="1325,471,1559,516,1571,518,1570,524,1558,521,1324,476"/>
+<area shape="rect" href="core__include_8h_source.html" title=" " alt="" coords="994,871,1160,911"/>
+<area shape="poly" title=" " alt="" coords="798,823,996,868,994,873,797,828"/>
+<area shape="rect" href="system_8h_source.html" title=" " alt="" coords="274,878,472,903"/>
+<area shape="poly" title=" " alt="" coords="618,829,418,881,416,875,617,823"/>
+<area shape="rect" href="engine__api_8h_source.html" title=" " alt="" coords="531,959,690,999"/>
+<area shape="poly" title=" " alt="" coords="981,912,710,961,691,965,690,960,709,956,980,907"/>
+<area shape="rect" href="project_8h_source.html" title=" " alt="" coords="764,1047,942,1087"/>
+<area shape="poly" title=" " alt="" coords="981,906,875,927,832,942,806,960,801,970,799,981,805,1003,818,1026,835,1045,831,1048,814,1029,800,1005,794,981,795,968,802,957,830,937,874,922,980,900"/>
+<area shape="rect" href="project__configuration_8h_source.html" title=" " alt="" coords="816,959,1040,999"/>
+<area shape="poly" title=" " alt="" coords="1034,920,962,961,959,956,1031,915"/>
+<area shape="rect" href="effect_8h_source.html" title=" " alt="" coords="1165,959,1341,999"/>
+<area shape="poly" title=" " alt="" coords="1129,914,1216,956,1213,961,1127,919"/>
+<area shape="rect" href="node_8h_source.html" title=" " alt="" coords="1168,1047,1338,1087"/>
+<area shape="poly" title=" " alt="" coords="1097,921,1122,959,1155,997,1187,1023,1220,1044,1217,1049,1184,1027,1151,1001,1118,962,1092,924"/>
+<area shape="rect" href="node__instance_8h_source.html" title=" " alt="" coords="308,1311,483,1351"/>
+<area shape="poly" title=" " alt="" coords="981,908,888,928,839,943,793,961,701,1007,587,1075,530,1114,480,1152,439,1190,411,1224,402,1245,397,1269,396,1311,391,1310,392,1268,397,1244,407,1221,435,1186,477,1148,527,1109,584,1071,698,1003,791,956,838,938,886,923,979,903"/>
+<area shape="rect" href="voice_8h_source.html" title=" " alt="" coords="308,1399,483,1439"/>
+<area shape="poly" title=" " alt="" coords="1077,925,1070,962,1054,1000,1033,1031,1012,1053,988,1070,954,1089,917,1107,880,1119,810,1131,743,1132,680,1130,620,1131,563,1142,535,1154,508,1171,481,1194,455,1224,450,1233,449,1241,456,1262,464,1276,475,1285,487,1294,497,1310,503,1331,497,1352,473,1381,443,1401,440,1396,469,1377,492,1349,497,1331,492,1312,483,1298,472,1289,460,1279,451,1264,444,1242,445,1232,451,1221,478,1190,505,1167,533,1149,561,1137,619,1126,680,1125,743,1127,809,1126,879,1114,915,1102,952,1084,985,1066,1009,1049,1029,1028,1049,997,1065,961,1072,924"/>
+<area shape="rect" href="gameobject_8h_source.html" title=" " alt="" coords="225,1487,441,1527"/>
+<area shape="poly" title=" " alt="" coords="980,896,860,902,725,913,603,932,555,945,520,961,489,986,456,1024,390,1121,333,1226,298,1311,290,1346,287,1374,290,1403,298,1438,308,1463,321,1485,317,1488,304,1466,293,1439,285,1404,282,1375,284,1346,293,1310,328,1224,385,1118,452,1020,486,982,517,956,553,940,602,927,725,907,859,896,980,891"/>
+<area shape="rect" href="event_8h_source.html" title=" " alt="" coords="1662,1047,1838,1087"/>
+<area shape="poly" title=" " alt="" coords="1175,893,1295,900,1432,912,1557,931,1607,942,1645,956,1675,975,1702,999,1740,1045,1736,1048,1698,1003,1672,980,1643,961,1605,948,1556,936,1431,918,1295,906,1174,898"/>
+<area shape="rect" href="parameter_8h_source.html" title=" " alt="" coords="1366,959,1572,999"/>
+<area shape="poly" title=" " alt="" coords="1175,911,1384,956,1383,961,1174,916"/>
+<area shape="poly" title=" " alt="" coords="1175,899,1724,956,1808,965,1807,970,1724,961,1174,905"/>
+<area shape="rect" href="soundbank_8h_source.html" title=" " alt="" coords="1577,1135,1788,1175"/>
+<area shape="poly" title=" " alt="" coords="1175,891,1284,897,1404,908,1513,927,1555,941,1587,957,1676,1133,1671,1136,1583,961,1553,945,1511,933,1404,914,1284,902,1174,897"/>
+<area shape="poly" title=" " alt="" coords="904,1011,872,1048,868,1045,900,1007"/>
+<area shape="poly" title=" " alt="" coords="1256,1013,1256,1046,1250,1046,1250,1013"/>
+<area shape="rect" href="bus_8h_source.html" title=" " alt="" coords="1168,1135,1338,1175"/>
+<area shape="poly" title=" " alt="" coords="1256,1101,1256,1134,1250,1134,1250,1101"/>
+<area shape="rect" href="container_8h_source.html" title=" " alt="" coords="973,1135,1144,1175"/>
+<area shape="poly" title=" " alt="" coords="1199,1095,1102,1137,1100,1132,1197,1090"/>
+<area shape="rect" href="aux__bus_8h_source.html" title=" " alt="" coords="1666,1223,1837,1263"/>
+<area shape="poly" title=" " alt="" coords="1352,1171,1358,1172,1655,1220,1667,1222,1666,1227,1654,1225,1357,1177,1352,1176"/>
+<area shape="rect" href="serializer_8h_source.html" title=" " alt="" coords="1912,1223,2130,1263"/>
+<area shape="poly" title=" " alt="" coords="1352,1171,1357,1172,1495,1189,1603,1199,1849,1220,1912,1227,1911,1232,1849,1225,1603,1204,1495,1194,1357,1177,1352,1177"/>
+<area shape="rect" href="blend__container_8h_source.html" title=" " alt="" coords="722,1223,928,1263"/>
+<area shape="poly" title=" " alt="" coords="995,1182,877,1225,875,1220,994,1177"/>
+<area shape="rect" href="random__container_8h_source.html" title=" " alt="" coords="952,1223,1172,1263"/>
+<area shape="poly" title=" " alt="" coords="1063,1188,1064,1222,1059,1223,1057,1189"/>
+<area shape="rect" href="sequence__container_8h_source.html" title=" " alt="" coords="465,1223,697,1263"/>
+<area shape="poly" title=" " alt="" coords="960,1176,686,1225,685,1220,959,1171"/>
+<area shape="rect" href="sound__container_8h_source.html" title=" " alt="" coords="1196,1223,1406,1263"/>
+<area shape="poly" title=" " alt="" coords="1125,1177,1249,1220,1247,1225,1124,1182"/>
+<area shape="rect" href="switch__container_8h_source.html" title=" " alt="" coords="1430,1223,1642,1263"/>
+<area shape="poly" title=" " alt="" coords="1158,1172,1430,1221,1429,1226,1157,1178"/>
+<area shape="poly" title=" " alt="" coords="529,1271,437,1313,435,1308,527,1266"/>
+<area shape="poly" title=" " alt="" coords="398,1365,398,1398,393,1398,393,1365"/>
+<area shape="poly" title=" " alt="" coords="376,1452,349,1488,345,1485,372,1448"/>
+<area shape="poly" title=" " alt="" coords="1776,1096,1813,1135,1859,1172,1909,1200,1960,1220,1958,1225,1906,1205,1856,1177,1809,1139,1772,1099"/>
+<area shape="poly" title=" " alt="" coords="1410,1006,1301,1049,1299,1044,1408,1001"/>
+<area shape="poly" title=" " alt="" coords="1478,1011,1489,1050,1506,1094,1532,1137,1567,1173,1588,1185,1612,1194,1667,1205,1724,1208,1779,1208,1825,1209,1857,1215,1866,1223,1869,1233,1864,1247,1851,1264,1808,1303,1750,1337,1680,1367,1597,1393,1506,1416,1407,1435,1196,1466,978,1486,769,1499,441,1508,441,1503,769,1494,977,1481,1195,1461,1406,1430,1505,1411,1596,1388,1678,1362,1748,1332,1805,1298,1847,1261,1859,1245,1863,1233,1862,1225,1855,1220,1825,1214,1779,1213,1724,1213,1666,1210,1611,1200,1586,1190,1563,1177,1528,1140,1502,1096,1484,1051,1473,1013"/>
+<area shape="poly" title=" " alt="" coords="1914,1010,2015,1221,2010,1224,1909,1012"/>
+<area shape="poly" title=" " alt="" coords="1771,1175,1948,1220,1946,1225,1769,1181"/>
+<area shape="poly" title=" " alt="" coords="339,912,310,930,286,952,274,975,274,986,281,997,315,1028,360,1054,415,1075,478,1091,548,1103,623,1112,783,1121,947,1124,1104,1123,1242,1125,1351,1132,1458,1151,1566,1172,1912,1224,1911,1229,1565,1177,1457,1156,1350,1137,1242,1130,1104,1129,947,1129,783,1127,622,1117,547,1108,477,1096,413,1080,358,1059,312,1032,276,1000,269,987,269,974,282,949,307,926,336,908"/>
+<area shape="poly" title=" " alt="" coords="260,904,193,912,127,924,71,940,50,950,35,961,17,984,10,1007,10,1065,10,1332,16,1366,31,1395,53,1420,82,1441,116,1458,152,1472,225,1490,224,1495,150,1477,113,1463,79,1446,50,1424,26,1399,11,1368,5,1332,5,1065,5,1006,12,982,31,957,47,945,69,935,126,919,192,907,260,898"/>
+<area shape="rect" href="project__manager_8h_source.html" title=" " alt="" coords="291,959,455,999"/>
+<area shape="poly" title=" " alt="" coords="376,917,376,958,370,958,370,917"/>
+<area shape="rect" href="audio__meter__widget_8h_source.html" title=" " alt="" coords="45,959,216,999"/>
+<area shape="poly" title=" " alt="" coords="328,911,185,961,183,956,326,906"/>
+<area shape="rect" href="object_8h_source.html" title=" " alt="" coords="920,607,1087,647"/>
+<area shape="poly" title=" " alt="" coords="1006,573,1006,606,1001,606,1001,573"/>
+<area shape="poly" title=" " alt="" coords="1052,653,1072,671,1087,693,1096,717,1101,742,1101,791,1095,837,1086,871,1081,870,1090,836,1096,791,1096,742,1091,718,1083,696,1068,674,1048,657"/>
+<area shape="rect" href="database__object_8h_source.html" title=" " alt="" coords="864,695,1074,735"/>
+<area shape="poly" title=" " alt="" coords="993,660,979,695,974,693,989,658"/>
+<area shape="poly" title=" " alt="" coords="898,741,762,785,760,780,897,736"/>
+<area shape="poly" title=" " alt="" coords="1013,741,1033,759,1051,781,1063,804,1071,828,1078,870,1073,871,1065,829,1058,806,1047,784,1030,763,1009,745"/>
+<area shape="poly" title=" " alt="" coords="1088,733,1251,771,1347,798,1450,832,1555,873,1659,922,1759,979,1852,1045,1922,1121,2007,1221,2003,1224,1918,1124,1849,1049,1757,984,1657,927,1553,878,1448,837,1346,803,1249,776,1087,739"/>
+<area shape="poly" title=" " alt="" coords="925,744,860,785,835,806,809,825,715,871,618,909,526,939,449,961,448,956,525,934,616,904,713,866,806,820,832,801,857,781,922,740"/>
+<area shape="rect" href="database_8h_source.html" title=" " alt="" coords="871,783,1038,823"/>
+<area shape="poly" title=" " alt="" coords="966,749,960,783,955,782,961,748"/>
+<area shape="poly" title=" " alt="" coords="994,828,1051,868,1048,873,991,833"/>
+<area shape="poly" title=" " alt="" coords="858,821,451,881,450,875,857,816"/>
+<area shape="poly" title=" " alt="" coords="868,562,963,604,961,609,866,567"/>
+<area shape="poly" title=" " alt="" coords="1188,572,1086,871,1081,870,1183,571"/>
+<area shape="poly" title=" " alt="" coords="1294,550,1517,580,1655,604,1801,674,1864,706,1919,742,1964,784,1982,808,1998,835,2010,865,2019,898,2025,936,2026,977,2026,1068,2024,1223,2019,1223,2021,1068,2021,977,2019,936,2014,899,2005,867,1993,837,1978,811,1960,787,1915,746,1861,711,1799,678,1654,609,1516,586,1293,555"/>
+<area shape="poly" title=" " alt="" coords="1142,567,1047,609,1045,604,1140,562"/>
+<area shape="poly" title=" " alt="" coords="599,820,817,853,994,876,993,882,816,858,598,826"/>
+<area shape="poly" title=" " alt="" coords="461,833,392,880,389,876,458,829"/>
+<area shape="poly" title=" " alt="" coords="1513,656,1113,873,1111,868,1510,651"/>
+</map>
+</div>
+</div>
+<p><a href="sound__chef__dsp_8h_source.html">Go to the source code of this file.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsc__dsp__parameter__float.html">sc_dsp_parameter_float</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsc__dsp__parameter.html">sc_dsp_parameter</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsc__meter.html">sc_meter</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsc__meter__node.html">sc_meter_node</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsc__clap__node.html">sc_clap_node</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:a3302fd2ddb9e71775d19aae6924f6638" id="r_a3302fd2ddb9e71775d19aae6924f6638"><td class="memItemLeft" align="right" valign="top"><a id="a3302fd2ddb9e71775d19aae6924f6638" name="a3302fd2ddb9e71775d19aae6924f6638"></a>
+typedef enum sc_dsp_parameter_type&#160;</td><td class="memItemRight" valign="bottom"><b>sc_dsp_parameter_type</b></td></tr>
+<tr class="separator:a3302fd2ddb9e71775d19aae6924f6638"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d79e9dcfa24708fb2ce852585a98744" id="r_a4d79e9dcfa24708fb2ce852585a98744"><td class="memItemLeft" align="right" valign="top"><a id="a4d79e9dcfa24708fb2ce852585a98744" name="a4d79e9dcfa24708fb2ce852585a98744"></a>
+typedef struct <a class="el" href="structsc__dsp__parameter__float.html">sc_dsp_parameter_float</a>&#160;</td><td class="memItemRight" valign="bottom"><b>sc_dsp_parameter_float</b></td></tr>
+<tr class="separator:a4d79e9dcfa24708fb2ce852585a98744"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acbaad1814e1fa0d5e28785091a70d74b" id="r_acbaad1814e1fa0d5e28785091a70d74b"><td class="memItemLeft" align="right" valign="top"><a id="acbaad1814e1fa0d5e28785091a70d74b" name="acbaad1814e1fa0d5e28785091a70d74b"></a>
+typedef enum sc_dsp_lowpass&#160;</td><td class="memItemRight" valign="bottom"><b>sc_dsp_lowpass</b></td></tr>
+<tr class="separator:acbaad1814e1fa0d5e28785091a70d74b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe85d2f73df4ee52acd8c4ce75b7a280" id="r_afe85d2f73df4ee52acd8c4ce75b7a280"><td class="memItemLeft" align="right" valign="top"><a id="afe85d2f73df4ee52acd8c4ce75b7a280" name="afe85d2f73df4ee52acd8c4ce75b7a280"></a>
+typedef enum sc_dsp_highpass&#160;</td><td class="memItemRight" valign="bottom"><b>sc_dsp_highpass</b></td></tr>
+<tr class="separator:afe85d2f73df4ee52acd8c4ce75b7a280"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a60197ec60b84c4349fca4a4c62446999" id="r_a60197ec60b84c4349fca4a4c62446999"><td class="memItemLeft" align="right" valign="top"><a id="a60197ec60b84c4349fca4a4c62446999" name="a60197ec60b84c4349fca4a4c62446999"></a>
+typedef enum sc_dsp_meter&#160;</td><td class="memItemRight" valign="bottom"><b>sc_dsp_meter</b></td></tr>
+<tr class="separator:a60197ec60b84c4349fca4a4c62446999"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae06960b5341c77860c5b8b0d06f46a6b" id="r_ae06960b5341c77860c5b8b0d06f46a6b"><td class="memItemLeft" align="right" valign="top"><a id="ae06960b5341c77860c5b8b0d06f46a6b" name="ae06960b5341c77860c5b8b0d06f46a6b"></a>
+typedef struct <a class="el" href="structsc__meter.html">sc_meter</a>&#160;</td><td class="memItemRight" valign="bottom"><b>sc_meter</b></td></tr>
+<tr class="separator:ae06960b5341c77860c5b8b0d06f46a6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b54c3ab5176e7142384c54c41cf7b41" id="r_a1b54c3ab5176e7142384c54c41cf7b41"><td class="memItemLeft" align="right" valign="top"><a id="a1b54c3ab5176e7142384c54c41cf7b41" name="a1b54c3ab5176e7142384c54c41cf7b41"></a>
+typedef struct <a class="el" href="structsc__meter__node.html">sc_meter_node</a>&#160;</td><td class="memItemRight" valign="bottom"><b>sc_meter_node</b></td></tr>
+<tr class="separator:a1b54c3ab5176e7142384c54c41cf7b41"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abdb3359433cd0c70f46036b853b421a3" id="r_abdb3359433cd0c70f46036b853b421a3"><td class="memItemLeft" align="right" valign="top"><a id="abdb3359433cd0c70f46036b853b421a3" name="abdb3359433cd0c70f46036b853b421a3"></a>
+typedef struct <a class="el" href="structsc__clap__node.html">sc_clap_node</a>&#160;</td><td class="memItemRight" valign="bottom"><b>sc_clap_node</b></td></tr>
+<tr class="separator:abdb3359433cd0c70f46036b853b421a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:a06fc87d81c62e9abb8790b6e5713c55b" id="r_a06fc87d81c62e9abb8790b6e5713c55b"><td class="memItemLeft" align="right" valign="top"><a id="a06fc87d81c62e9abb8790b6e5713c55b" name="a06fc87d81c62e9abb8790b6e5713c55b"></a>enum &#160;</td><td class="memItemRight" valign="bottom">{ <b>SC_STRING_NAME_LENGTH</b> = 16
+ }</td></tr>
+<tr class="separator:a06fc87d81c62e9abb8790b6e5713c55b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63f4fe157e7fdc2c7799c127c2b958a0" id="r_a63f4fe157e7fdc2c7799c127c2b958a0"><td class="memItemLeft" align="right" valign="top"><a id="a63f4fe157e7fdc2c7799c127c2b958a0" name="a63f4fe157e7fdc2c7799c127c2b958a0"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>sc_dsp_parameter_type</b> { <b>SC_DSP_PARAMETER_TYPE_FLOAT</b>
+ }</td></tr>
+<tr class="separator:a63f4fe157e7fdc2c7799c127c2b958a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa748cc6bb4e91bd2091a3cc7954db2f9" id="r_aa748cc6bb4e91bd2091a3cc7954db2f9"><td class="memItemLeft" align="right" valign="top"><a id="aa748cc6bb4e91bd2091a3cc7954db2f9" name="aa748cc6bb4e91bd2091a3cc7954db2f9"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>sc_dsp_lowpass</b> { <b>SC_DSP_LOWPASS_CUTOFF</b>
+, <b>SC_DSP_LOWPASS_NUM_PARAM</b>
+ }</td></tr>
+<tr class="separator:aa748cc6bb4e91bd2091a3cc7954db2f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad468b38d698fcc041e29a272826e61b3" id="r_ad468b38d698fcc041e29a272826e61b3"><td class="memItemLeft" align="right" valign="top"><a id="ad468b38d698fcc041e29a272826e61b3" name="ad468b38d698fcc041e29a272826e61b3"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>sc_dsp_highpass</b> { <b>SC_DSP_HIGHPASS_CUTOFF</b>
+, <b>SC_DSP_HIGHPASS_NUM_PARAM</b>
+ }</td></tr>
+<tr class="separator:ad468b38d698fcc041e29a272826e61b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07cb3ad32c92cdd74454c1e8cfa0890a" id="r_a07cb3ad32c92cdd74454c1e8cfa0890a"><td class="memItemLeft" align="right" valign="top"><a id="a07cb3ad32c92cdd74454c1e8cfa0890a" name="a07cb3ad32c92cdd74454c1e8cfa0890a"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>sc_dsp_meter</b> { <b>SC_DSP_METER_PEAK</b>
+, <b>SC_DSP_METER_RMS</b>
+, <b>SC_DSP_METER_NUM_PARAM</b>
+ }</td></tr>
+<tr class="separator:a07cb3ad32c92cdd74454c1e8cfa0890a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf764cbdea00d65edcd07bb9953ad2b7" id="r_adf764cbdea00d65edcd07bb9953ad2b7"><td class="memItemLeft" align="right" valign="top"><a id="adf764cbdea00d65edcd07bb9953ad2b7" name="adf764cbdea00d65edcd07bb9953ad2b7"></a>enum &#160;</td><td class="memItemRight" valign="bottom">{ <b>SC_DSP_METER_MAX_CHANNELS</b> = 36
+ }</td></tr>
+<tr class="separator:adf764cbdea00d65edcd07bb9953ad2b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>DSP object definitions. </p>
+</div></div><!-- contents -->
+</div><!-- doc-content -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a class="el" href="dir_bfccd401955b95cf8c75461437045ac0.html">inc</a></li><li class="navelem"><a class="el" href="dir_f6614a95fb38c693f5fac5b9f0bed566.html">sound_chef</a></li><li class="navelem"><a class="el" href="sound__chef__dsp_8h.html">sound_chef_dsp.h</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
+  </ul>
+</div>
+</body>
+</html>

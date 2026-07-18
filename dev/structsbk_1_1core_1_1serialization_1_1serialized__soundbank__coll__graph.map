@@ -1,0 +1,11 @@
+<map id="sbk::core::serialization::serialized_soundbank" name="sbk::core::serialization::serialized_soundbank">
+<area shape="rect" id="Node000001" title=" " alt="" coords="673,37,844,77"/>
+<area shape="rect" id="Node000002" href="$structsbk_1_1core_1_1serialization_1_1serialized__version.html" title="Stores the version of Sound Bakery." alt="" coords="316,5,485,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="500,31,673,47,673,52,499,37"/>
+<area shape="rect" id="Node000003" href="$structsbk_1_1core_1_1serialization_1_1serialized__object.html" title="Serializes an object type and the object&#39;s data." alt="" coords="316,69,485,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="499,79,649,65,673,63,673,68,650,71,500,84"/>
+<area shape="rect" id="Node000004" href="$structsbk_1_1core_1_1serialization_1_1serialized__type.html" title="Serializes an object type so upon loading, we create the correct type." alt="" coords="9,40,178,80"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="192,67,316,79,316,84,191,72"/>
+<area shape="rect" id="Node000005" href="$classsbk_1_1core_1_1object__owner.html" title="Creates, owns and tracks objects." alt="" coords="5,105,181,130"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="195,109,292,101,315,99,316,104,292,107,195,115"/>
+</map>

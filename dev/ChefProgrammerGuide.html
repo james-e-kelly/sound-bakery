@@ -1,0 +1,355 @@
+<!-- HTML header for doxygen 1.10.0-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Sound Bakery: Sound Chef Programmer&#39;s Guide</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom-css.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+</head>
+<body>
+<!-- https://tholman.com/github-corners/ -->
+<a href="https://github.com/KarateKidzz/sound-bakery" class="github-corner" title="View source on GitHub" target="_blank" rel="noopener noreferrer">
+  <svg viewBox="0 0 250 250" width="40" height="40" style="position: absolute; top: 0; border: 0; right: 0; z-index: 99;" aria-hidden="true">
+  <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectlogo"><img alt="Logo" src="sound-bakery-logo.png"$logosize/></td>
+  <td id="projectalign">
+   <div id="projectname">Sound Bakery&nbsp<span id="projectnumber">&#160;<select id="sbk-version-select" aria-label="Documentation version"><option>dev</option></select></span>
+   </div>
+   <div id="projectbrief">Open-source audio middleware for games</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- Sound Bakery documentation version switcher -->
+<script type="text/javascript">
+(function () {
+    var current = "dev";
+    var select = document.getElementById('sbk-version-select');
+    if (!select) { return; }
+    // versions.json lives at the site root, one level above this version's folder.
+    fetch("../versions.json", { cache: "no-cache" })
+        .then(function (r) { return r.ok ? r.json() : []; })
+        .then(function (versions) {
+            if (!versions || !versions.length) { return; }
+            select.innerHTML = "";
+            versions.forEach(function (v) {
+                var opt = document.createElement('option');
+                opt.value = v;
+                opt.textContent = v;
+                if (v === current) { opt.selected = true; }
+                select.appendChild(opt);
+            });
+        })
+        .catch(function () { /* single-version or local build: leave the label as-is */ });
+    select.addEventListener('change', function () {
+        window.location.href = "../" + select.value + "/index.html";
+    });
+})();
+</script>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Search');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('ChefProgrammerGuide.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div><div class="header">
+  <div class="headertitle"><div class="title">Sound Chef Programmer's Guide</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><p>Welcome to Sound Chef's programmer's guide. Sound Chef is a low level audio playback library suited for video games. It can be thought of as an extension and wrapper of miniaudio. Miniaudio will be referenced heavily in this guide and it is recommended to be familiar with the tool. You can read its docs <a href="https://miniaud.io/docs/manual/index.html">here</a>.</p>
+<h2><a class="anchor" id="autotoc_md56"></a>
+Creating The System Object</h2>
+<p><a class="el" href="structsc__system.html" title="Object that manages the node graph, sounds, output etc.">sc_system</a> objects can be created with calls to <a class="el" href="sound__chef_8h.html#aa1cc1e60d74adbbd33c66dec921861fb">sc_system_create</a>. The system must be released by the user with a call to <a class="el" href="sound__chef_8h.html#afa6086b793e2c93701ebcde793bca4b6">sc_system_release</a>.</p>
+<p>Once created, call <a class="el" href="sound__chef_8h.html#a73c06a9406456d77d8dd5a99dbfd6792">sc_system_init</a> to intialize the system and connect it to an audio output.</p>
+<div class="fragment"><div class="line"><a class="code hl_struct" href="structsc__system.html">sc_system</a>* system = NULL;</div>
+<div class="line"><a class="code hl_function" href="sound__chef_8h.html#aa1cc1e60d74adbbd33c66dec921861fb">sc_system_create</a>(&amp;system);</div>
+<div class="line"><a class="code hl_function" href="sound__chef_8h.html#a73c06a9406456d77d8dd5a99dbfd6792">sc_system_init</a>(system);</div>
+<div class="ttc" id="asound__chef_8h_html_a73c06a9406456d77d8dd5a99dbfd6792"><div class="ttname"><a href="sound__chef_8h.html#a73c06a9406456d77d8dd5a99dbfd6792">sc_system_init</a></div><div class="ttdeci">sbk_status SC_API sc_system_init(sc_system *system, const sc_system_config *systemConfig)</div><div class="ttdoc">Initialises the system.</div><div class="ttdef"><b>Definition</b> sound_chef.c:279</div></div>
+<div class="ttc" id="asound__chef_8h_html_aa1cc1e60d74adbbd33c66dec921861fb"><div class="ttname"><a href="sound__chef_8h.html#aa1cc1e60d74adbbd33c66dec921861fb">sc_system_create</a></div><div class="ttdeci">sbk_status SC_API sc_system_create(sc_system **outSystem)</div><div class="ttdoc">Creates a new System object.</div><div class="ttdef"><b>Definition</b> sound_chef.c:212</div></div>
+<div class="ttc" id="astructsc__system_html"><div class="ttname"><a href="structsc__system.html">sc_system</a></div><div class="ttdoc">Object that manages the node graph, sounds, output etc.</div><div class="ttdef"><b>Definition</b> sound_chef_common.h:288</div></div>
+</div><!-- fragment --><p>The system manages the node graph, sounds, resources, and outputting audio to the audio device.</p>
+<h2><a class="anchor" id="autotoc_md57"></a>
+Playing A Sound</h2>
+<p>With a <a class="el" href="structsc__system.html">sc_system</a> object, playing a sound is incredibly easy.</p>
+<div class="fragment"><div class="line"><a class="code hl_struct" href="structsc__system.html">sc_system</a>* system = NULL;</div>
+<div class="line"><a class="code hl_function" href="sound__chef_8h.html#aa1cc1e60d74adbbd33c66dec921861fb">sc_system_create</a>(&amp;system);</div>
+<div class="line"><a class="code hl_function" href="sound__chef_8h.html#a73c06a9406456d77d8dd5a99dbfd6792">sc_system_init</a>(system);</div>
+<div class="line"> </div>
+<div class="line"><a class="code hl_struct" href="structsc__sound.html">sc_sound</a>* sound = NULL;</div>
+<div class="line">sc_system_create_sound(system, <span class="stringliteral">&quot;some_sound.wav&quot;</span>, SC_SOUND_MODE_DEFAULT, &amp;sound);</div>
+<div class="line"> </div>
+<div class="line"><a class="code hl_struct" href="structsc__sound.html">sc_sound_instance</a>* instance = NULL;</div>
+<div class="line"><a class="code hl_function" href="sound__chef_8h.html#a0f39000fef87f54d58934784869334ca">sc_system_play_sound</a>(system, sound, &amp;instance, NULL, SC_FALSE);</div>
+<div class="ttc" id="asound__chef_8h_html_a0f39000fef87f54d58934784869334ca"><div class="ttname"><a href="sound__chef_8h.html#a0f39000fef87f54d58934784869334ca">sc_system_play_sound</a></div><div class="ttdeci">sbk_status SC_API sc_system_play_sound(sc_system *system, sc_sound *sound, sc_sound_instance **instance, sc_node_group *parent, sc_bool paused)</div><div class="ttdoc">Plays a sound and returns the playing instance.</div><div class="ttdef"><b>Definition</b> sound_chef.c:473</div></div>
+<div class="ttc" id="astructsc__sound_html"><div class="ttname"><a href="structsc__sound.html">sc_sound</a></div><div class="ttdef"><b>Definition</b> sound_chef_common.h:239</div></div>
+</div><!-- fragment --><p>Sound Chef seperates a loaded sound and a playing sound with the <a class="el" href="structsc__sound.html">sc_sound</a> and sc_sound_instance objects. Internally, they are the same object and are simple extensions of the <code>ma_sound</code> object.</p>
+<p>This is done to ensure each call to <a class="el" href="sound__chef_8h.html#a0f39000fef87f54d58934784869334ca">sc_system_play_sound</a> creates a brand new sound with its play position set to 0. If multiple calls to <a class="el" href="sound__chef_8h.html#a0f39000fef87f54d58934784869334ca">sc_system_play_sound</a> were made to the <a class="el" href="structsc__sound.html">sc_sound</a> object, only one sound would be heard and not many.</p>
+<p>Memory bloat isn't an issue here as miniaudio doesn't copy the loaded sound buffer but the pointers to that resource. Miniaudio also handles reference counting and will release the resource when all sounds have finished playing and the original <a class="el" href="structsc__sound.html">sc_sound</a> is released.</p>
+<h2><a class="anchor" id="autotoc_md58"></a>
+DSP</h2>
+<p>For programs where the outcome is not predetermined, there is a need to abstract away strongly defined types. Sound Bakery is a clear example as a user can insert many different types of effects into the signal chain; this would be cumbersome if unique code was requried each time and for each effect.</p>
+<p>By abstracting effects into <a class="el" href="structsc__dsp.html">sc_dsp</a> objects, a user can quickly call functions like <a class="el" href="sound__chef_8h.html#a4350f51bd90e858eb479e97f77d7a936">sc_dsp_config_init</a> and <a class="el" href="sound__chef_8h.html#a87f966d3d8efeae9a0c748c8e92e9350">sc_system_create_dsp</a> to create many different effects with ease. Sound Chef handles initializing the underlying <code>ma_*_node</code> objects.</p>
+<dl class="section note"><dt>Note</dt><dd>Sound Chef uses many of the miniaudio effects like <code>ma_lpf_node</code>, <code>ma_hpf_node</code> etc. Refer to miniaudio's documentation on how these work.</dd></dl>
+<p>With a DSP created, the user can call sc_dsp_set_parameter_float to change properties of the effect on the fly.</p>
+<div class="fragment"><div class="line"><span class="keyword">const</span> <a class="code hl_struct" href="structsc__dsp__config.html">sc_dsp_config</a> lpfConfig = <a class="code hl_function" href="sound__chef_8h.html#a4350f51bd90e858eb479e97f77d7a936">sc_dsp_config_init</a>(SC_DSP_TYPE_LOWPASS);</div>
+<div class="line"><a class="code hl_struct" href="structsc__dsp.html">sc_dsp</a>* lowpass = NULL;</div>
+<div class="line"><a class="code hl_function" href="sound__chef_8h.html#a87f966d3d8efeae9a0c748c8e92e9350">sc_system_create_dsp</a>(system, &amp;lpfConfig, &amp;lowpass);</div>
+<div class="line"> </div>
+<div class="line">sc_dsp_set_parameter_float(m_lowpass, SC_DSP_LOWPASS_CUTOFF, 500.0f);</div>
+<div class="ttc" id="asound__chef_8h_html_a4350f51bd90e858eb479e97f77d7a936"><div class="ttname"><a href="sound__chef_8h.html#a4350f51bd90e858eb479e97f77d7a936">sc_dsp_config_init</a></div><div class="ttdeci">sc_dsp_config SC_API sc_dsp_config_init(sc_dsp_type type)</div><div class="ttdoc">Returns a valid sc_dsp_config object for the DSP type.</div><div class="ttdef"><b>Definition</b> sound_chef.c:1433</div></div>
+<div class="ttc" id="asound__chef_8h_html_a87f966d3d8efeae9a0c748c8e92e9350"><div class="ttname"><a href="sound__chef_8h.html#a87f966d3d8efeae9a0c748c8e92e9350">sc_system_create_dsp</a></div><div class="ttdeci">sbk_status SC_API sc_system_create_dsp(sc_system *system, const sc_dsp_config *config, sc_dsp **dsp)</div><div class="ttdoc">Creates a new DSP based on the config.</div><div class="ttdef"><b>Definition</b> sound_chef.c:559</div></div>
+<div class="ttc" id="astructsc__dsp__config_html"><div class="ttname"><a href="structsc__dsp__config.html">sc_dsp_config</a></div><div class="ttdef"><b>Definition</b> sound_chef_common.h:216</div></div>
+<div class="ttc" id="astructsc__dsp_html"><div class="ttname"><a href="structsc__dsp.html">sc_dsp</a></div><div class="ttdoc">ma_node with an additional enum descriptor.</div><div class="ttdef"><b>Definition</b> sound_chef_common.h:229</div></div>
+</div><!-- fragment --><p>Many DSP parameters are defined in <a class="el" href="sound__chef__dsp_8h.html">sound_chef_dsp.h</a></p>
+<h2><a class="anchor" id="autotoc_md59"></a>
+Node Groups</h2>
+<p>Sound Chef adds the concept of "Node Groups". These are analogous to busses and Channels/ChannelControls in FMOD. The intention is to create an easy API for inserting, removing, and modifying DSPs.</p>
+<p>To create a new <a class="el" href="structsc__node__group.html">sc_node_group</a>, call <a class="el" href="sound__chef_8h.html#a38ea557547fe5842ae56f2eec96e632f">sc_system_create_node_group</a>. The created node group connects to the endpoint/audio device by default.</p>
+<p>Sounds can be connected to node groups during calls to <a class="el" href="sound__chef_8h.html#a0f39000fef87f54d58934784869334ca">sc_system_play_sound</a>.</p>
+<div class="fragment"><div class="line"><a class="code hl_struct" href="structsc__system.html">sc_system</a>* system = NULL;</div>
+<div class="line"><a class="code hl_function" href="sound__chef_8h.html#aa1cc1e60d74adbbd33c66dec921861fb">sc_system_create</a>(&amp;system);</div>
+<div class="line"><a class="code hl_function" href="sound__chef_8h.html#a73c06a9406456d77d8dd5a99dbfd6792">sc_system_init</a>(system);</div>
+<div class="line"> </div>
+<div class="line"><a class="code hl_struct" href="structsc__sound.html">sc_sound</a>* sound = NULL;</div>
+<div class="line">sc_system_create_sound(system, <span class="stringliteral">&quot;some_sound.wav&quot;</span>, SC_SOUND_MODE_DEFAULT, &amp;sound);</div>
+<div class="line"> </div>
+<div class="line"><a class="code hl_struct" href="structsc__node__group.html">sc_node_group</a>* nodeGroup = NULL;</div>
+<div class="line"><a class="code hl_function" href="sound__chef_8h.html#a38ea557547fe5842ae56f2eec96e632f">sc_system_create_node_group</a>(system, &amp;nodeGroup);</div>
+<div class="line"> </div>
+<div class="line"><a class="code hl_struct" href="structsc__sound.html">sc_sound_instance</a>* instance = NULL;</div>
+<div class="line"><a class="code hl_function" href="sound__chef_8h.html#a0f39000fef87f54d58934784869334ca">sc_system_play_sound</a>(system, sound, &amp;instance, nodeGroup, SC_FALSE);</div>
+<div class="ttc" id="asound__chef_8h_html_a38ea557547fe5842ae56f2eec96e632f"><div class="ttname"><a href="sound__chef_8h.html#a38ea557547fe5842ae56f2eec96e632f">sc_system_create_node_group</a></div><div class="ttdeci">sbk_status SC_API sc_system_create_node_group(sc_system *system, sc_node_group **nodeGroup)</div><div class="ttdoc">Creates a new Node Group.</div><div class="ttdef"><b>Definition</b> sound_chef.c:531</div></div>
+<div class="ttc" id="astructsc__node__group_html"><div class="ttname"><a href="structsc__node__group.html">sc_node_group</a></div><div class="ttdoc">Groups nodes/DSPs together into one.</div><div class="ttdef"><b>Definition</b> sound_chef_common.h:257</div></div>
+</div><!-- fragment --><p>DSP units can be inserted with ease.</p>
+<div class="fragment"><div class="line"><a class="code hl_struct" href="structsc__system.html">sc_system</a>* system = NULL;</div>
+<div class="line"><a class="code hl_function" href="sound__chef_8h.html#aa1cc1e60d74adbbd33c66dec921861fb">sc_system_create</a>(&amp;system);</div>
+<div class="line"><a class="code hl_function" href="sound__chef_8h.html#a73c06a9406456d77d8dd5a99dbfd6792">sc_system_init</a>(system);</div>
+<div class="line"> </div>
+<div class="line"><a class="code hl_struct" href="structsc__sound.html">sc_sound</a>* sound = NULL;</div>
+<div class="line">sc_system_create_sound(system, <span class="stringliteral">&quot;some_sound.wav&quot;</span>, SC_SOUND_MODE_DEFAULT, &amp;sound);</div>
+<div class="line"> </div>
+<div class="line"><a class="code hl_struct" href="structsc__node__group.html">sc_node_group</a>* nodeGroup = NULL;</div>
+<div class="line"><a class="code hl_function" href="sound__chef_8h.html#a38ea557547fe5842ae56f2eec96e632f">sc_system_create_node_group</a>(system, &amp;nodeGroup);</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">const</span> <a class="code hl_struct" href="structsc__dsp__config.html">sc_dsp_config</a> lpfConfig = <a class="code hl_function" href="sound__chef_8h.html#a4350f51bd90e858eb479e97f77d7a936">sc_dsp_config_init</a>(SC_DSP_TYPE_LOWPASS);</div>
+<div class="line"><a class="code hl_struct" href="structsc__dsp.html">sc_dsp</a>* lowpass = NULL;</div>
+<div class="line"><a class="code hl_function" href="sound__chef_8h.html#a87f966d3d8efeae9a0c748c8e92e9350">sc_system_create_dsp</a>(system, &amp;lpfConfig, &amp;lowpass);</div>
+<div class="line">sc_node_group_add_dsp(nodeGroup, lowpass, SC_DSP_INDEX_HEAD);</div>
+<div class="line"> </div>
+<div class="line"><a class="code hl_struct" href="structsc__sound.html">sc_sound_instance</a>* instance = NULL;</div>
+<div class="line"><a class="code hl_function" href="sound__chef_8h.html#a0f39000fef87f54d58934784869334ca">sc_system_play_sound</a>(system, sound, &amp;instance, nodeGroup, SC_FALSE);</div>
+</div><!-- fragment --><p>Node Groups can also be connected together to create a complex graph.</p>
+<div class="fragment"><div class="line"><a class="code hl_struct" href="structsc__node__group.html">sc_node_group</a>* get_parent = NULL;</div>
+<div class="line"><a class="code hl_struct" href="structsc__node__group.html">sc_node_group</a>* child = NULL;</div>
+<div class="line"> </div>
+<div class="line">sc_node_group_set_parent(child, get_parent);</div>
+</div><!-- fragment --><p>It is recommended to refer to the SB::Engine::node_instance class for how Sound Bakery uses Sound Chef to connect node groups together, insert lowpass and highpass effects, and insert user-defined effects.</p>
+<h2><a class="anchor" id="autotoc_md60"></a>
+Complete Example: Interactive Footstep System</h2>
+<p>Here's a practical example combining sounds, effects, and node groups for an interactive audio system:</p>
+<div class="fragment"><div class="line"><span class="comment">// Initialize system</span></div>
+<div class="line"><a class="code hl_struct" href="structsc__system.html">sc_system</a>* system = NULL;</div>
+<div class="line"><a class="code hl_function" href="sound__chef_8h.html#aa1cc1e60d74adbbd33c66dec921861fb">sc_system_create</a>(&amp;system);</div>
+<div class="line"><a class="code hl_function" href="sound__chef_8h.html#a73c06a9406456d77d8dd5a99dbfd6792">sc_system_init</a>(system);</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// Load sounds</span></div>
+<div class="line"><a class="code hl_struct" href="structsc__sound.html">sc_sound</a>* footstep_concrete = NULL;</div>
+<div class="line"><a class="code hl_struct" href="structsc__sound.html">sc_sound</a>* footstep_dirt = NULL;</div>
+<div class="line">sc_system_create_sound(system, <span class="stringliteral">&quot;footstep_concrete.wav&quot;</span>, SC_SOUND_MODE_DEFAULT, &amp;footstep_concrete);</div>
+<div class="line">sc_system_create_sound(system, <span class="stringliteral">&quot;footstep_dirt.wav&quot;</span>, SC_SOUND_MODE_DEFAULT, &amp;footstep_dirt);</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// Create footstep bus with lowpass for simulation</span></div>
+<div class="line"><a class="code hl_struct" href="structsc__node__group.html">sc_node_group</a>* footstep_bus = NULL;</div>
+<div class="line"><a class="code hl_function" href="sound__chef_8h.html#a38ea557547fe5842ae56f2eec96e632f">sc_system_create_node_group</a>(system, &amp;footstep_bus);</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// Add lowpass to footstep bus (for underwater footsteps, for example)</span></div>
+<div class="line"><span class="keyword">const</span> <a class="code hl_struct" href="structsc__dsp__config.html">sc_dsp_config</a> lpf_config = <a class="code hl_function" href="sound__chef_8h.html#a4350f51bd90e858eb479e97f77d7a936">sc_dsp_config_init</a>(SC_DSP_TYPE_LOWPASS);</div>
+<div class="line"><a class="code hl_struct" href="structsc__dsp.html">sc_dsp</a>* lpf = NULL;</div>
+<div class="line"><a class="code hl_function" href="sound__chef_8h.html#a87f966d3d8efeae9a0c748c8e92e9350">sc_system_create_dsp</a>(system, &amp;lpf_config, &amp;lpf);</div>
+<div class="line">sc_node_group_add_dsp(footstep_bus, lpf, SC_DSP_INDEX_HEAD);</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// Add compression to control dynamic range</span></div>
+<div class="line"><span class="keyword">const</span> <a class="code hl_struct" href="structsc__dsp__config.html">sc_dsp_config</a> compressor_config = <a class="code hl_function" href="sound__chef_8h.html#a4350f51bd90e858eb479e97f77d7a936">sc_dsp_config_init</a>(SC_DSP_TYPE_COMPRESSOR);</div>
+<div class="line"><a class="code hl_struct" href="structsc__dsp.html">sc_dsp</a>* compressor = NULL;</div>
+<div class="line"><a class="code hl_function" href="sound__chef_8h.html#a87f966d3d8efeae9a0c748c8e92e9350">sc_system_create_dsp</a>(system, &amp;compressor_config, &amp;compressor);</div>
+<div class="line">sc_node_group_add_dsp(footstep_bus, compressor, SC_DSP_INDEX_HEAD);</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// Play a footstep on concrete</span></div>
+<div class="line"><a class="code hl_struct" href="structsc__sound.html">sc_sound_instance</a>* instance1 = NULL;</div>
+<div class="line"><a class="code hl_function" href="sound__chef_8h.html#a0f39000fef87f54d58934784869334ca">sc_system_play_sound</a>(system, footstep_concrete, &amp;instance1, footstep_bus, SC_FALSE);</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// Adjust the lowpass cutoff for environmental effect</span></div>
+<div class="line">sc_dsp_set_parameter_float(lpf, SC_DSP_LOWPASS_CUTOFF, 2000.0f);</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// Play another footstep on dirt</span></div>
+<div class="line"><a class="code hl_struct" href="structsc__sound.html">sc_sound_instance</a>* instance2 = NULL;</div>
+<div class="line"><a class="code hl_function" href="sound__chef_8h.html#a0f39000fef87f54d58934784869334ca">sc_system_play_sound</a>(system, footstep_dirt, &amp;instance2, footstep_bus, SC_FALSE);</div>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md61"></a>
+Error Handling</h2>
+<p>Most Sound Chef functions return sc_result. Always check for errors:</p>
+<div class="fragment"><div class="line"><a class="code hl_struct" href="structsc__system.html">sc_system</a>* system = NULL;</div>
+<div class="line">sc_result result = <a class="code hl_function" href="sound__chef_8h.html#aa1cc1e60d74adbbd33c66dec921861fb">sc_system_create</a>(&amp;system);</div>
+<div class="line"><span class="keywordflow">if</span> (result != SC_SUCCESS) {</div>
+<div class="line">    <span class="comment">// Handle error</span></div>
+<div class="line">    <span class="keywordflow">return</span>;</div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line">result = <a class="code hl_function" href="sound__chef_8h.html#a73c06a9406456d77d8dd5a99dbfd6792">sc_system_init</a>(system);</div>
+<div class="line"><span class="keywordflow">if</span> (result != SC_SUCCESS) {</div>
+<div class="line">    <span class="comment">// Handle error</span></div>
+<div class="line">    <a class="code hl_function" href="sound__chef_8h.html#afa6086b793e2c93701ebcde793bca4b6">sc_system_release</a>(&amp;system);</div>
+<div class="line">    <span class="keywordflow">return</span>;</div>
+<div class="line">}</div>
+<div class="ttc" id="asound__chef_8h_html_afa6086b793e2c93701ebcde793bca4b6"><div class="ttname"><a href="sound__chef_8h.html#afa6086b793e2c93701ebcde793bca4b6">sc_system_release</a></div><div class="ttdeci">sbk_status SC_API sc_system_release(sc_system *system)</div><div class="ttdoc">Releases the system memory.</div><div class="ttdef"><b>Definition</b> sound_chef.c:233</div></div>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md62"></a>
+Cleanup</h2>
+<p>Always release resources when done:</p>
+<div class="fragment"><div class="line"><span class="comment">// Stop sounds (instances are managed by Sound Chef)</span></div>
+<div class="line"><span class="comment">// Release DSP effects if created manually</span></div>
+<div class="line"><span class="comment">// Release node groups if created manually</span></div>
+<div class="line"><span class="comment">// Finally, release the system</span></div>
+<div class="line"><a class="code hl_function" href="sound__chef_8h.html#afa6086b793e2c93701ebcde793bca4b6">sc_system_release</a>(&amp;system);</div>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md63"></a>
+Memory Management</h2>
+<ul>
+<li><a class="el" href="structsc__sound.html">sc_sound</a> objects represent loaded audio data and are reference-counted</li>
+<li>Multiple sc_sound_instance objects can reference the same <a class="el" href="structsc__sound.html">sc_sound</a></li>
+<li>Releasing a <a class="el" href="structsc__sound.html">sc_sound</a> does not stop playing instances; they continue until finished</li>
+<li>Node graphs and DSP effects are managed by the system and released with it</li>
+<li>For thread-safe operations, see SECURITY.md</li>
+</ul>
+<h2><a class="anchor" id="autotoc_md64"></a>
+Available DSP Effects</h2>
+<p>Sound Chef provides these DSP effect types (see <a class="el" href="sound__chef__dsp_8h.html">sound_chef_dsp.h</a> for parameter details):</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Effect   </th><th class="markdownTableHeadNone">Purpose   </th><th class="markdownTableHeadNone">Common Parameters    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">Lowpass (LPF)   </td><td class="markdownTableBodyNone">Remove high frequencies   </td><td class="markdownTableBodyNone">Cutoff, Resonance    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Highpass (HPF)   </td><td class="markdownTableBodyNone">Remove low frequencies   </td><td class="markdownTableBodyNone">Cutoff, Resonance    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">Bandpass (BPF)   </td><td class="markdownTableBodyNone">Keep frequencies in range   </td><td class="markdownTableBodyNone">Cutoff, Resonance    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Notch   </td><td class="markdownTableBodyNone">Remove specific frequency   </td><td class="markdownTableBodyNone">Cutoff, Resonance    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">Peaking   </td><td class="markdownTableBodyNone">Boost/cut frequency range   </td><td class="markdownTableBodyNone">Cutoff, Gain, Resonance    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Compressor   </td><td class="markdownTableBodyNone">Control dynamic range   </td><td class="markdownTableBodyNone">Threshold, Ratio, Attack, Release    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">Reverb   </td><td class="markdownTableBodyNone">Add spacious ambience   </td><td class="markdownTableBodyNone">WetMix, DryMix, Decay    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Delay   </td><td class="markdownTableBodyNone">Create repeating echoes   </td><td class="markdownTableBodyNone">DelayTime, Feedback, WetMix    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">Panning   </td><td class="markdownTableBodyNone">Stereo positioning   </td><td class="markdownTableBodyNone">Pan (-1.0 to 1.0)    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Gating   </td><td class="markdownTableBodyNone">Silence below threshold   </td><td class="markdownTableBodyNone">Threshold, Attack, Release   </td></tr>
+</table>
+<p>Refer to miniaudio documentation for detailed effect behavior: <a href="https://miniaud.io/docs/manual/index.html#DSP">https://miniaud.io/docs/manual/index.html#DSP</a></p>
+<h2><a class="anchor" id="autotoc_md65"></a>
+Performance Tips</h2>
+<ul>
+<li><b>Reuse Sounds</b>: Create sounds once, play instances many times</li>
+<li><b>Reuse Node Groups</b>: Many sounds can route through the same bus</li>
+<li><b>Minimize Effects</b>: Each effect has CPU cost; only use what's needed</li>
+<li><b>Parameter Updates</b>: Changing DSP parameters is fast; do it in game loop if needed</li>
+<li><b>Streaming</b>: Use SC_SOUND_MODE_STREAMING for large files to save memory</li>
+</ul>
+<dl class="section see"><dt>See also</dt><dd>COMPONENTS.md - Overview of Sound Chef vs Sound Bakery </dd>
+<dd>
+SECURITY.md - Thread safety and audio callback constraints </dd></dl>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+</div><!-- doc-content -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a class="el" href="UserManual.html">User Manual</a></li><li class="navelem"><a class="el" href="Guides.html">Guides</a></li><li class="navelem"><a class="el" href="ProgrammerGuide.html">Programmer&#39;s Guide</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
+  </ul>
+</div>
+</body>
+</html>

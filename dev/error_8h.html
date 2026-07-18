@@ -1,0 +1,455 @@
+<!-- HTML header for doxygen 1.10.0-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Sound Bakery: src/sound_bakery/error/error.h File Reference</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom-css.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+</head>
+<body>
+<!-- https://tholman.com/github-corners/ -->
+<a href="https://github.com/KarateKidzz/sound-bakery" class="github-corner" title="View source on GitHub" target="_blank" rel="noopener noreferrer">
+  <svg viewBox="0 0 250 250" width="40" height="40" style="position: absolute; top: 0; border: 0; right: 0; z-index: 99;" aria-hidden="true">
+  <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectlogo"><img alt="Logo" src="sound-bakery-logo.png"$logosize/></td>
+  <td id="projectalign">
+   <div id="projectname">Sound Bakery&nbsp<span id="projectnumber">&#160;<select id="sbk-version-select" aria-label="Documentation version"><option>dev</option></select></span>
+   </div>
+   <div id="projectbrief">Open-source audio middleware for games</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- Sound Bakery documentation version switcher -->
+<script type="text/javascript">
+(function () {
+    var current = "dev";
+    var select = document.getElementById('sbk-version-select');
+    if (!select) { return; }
+    // versions.json lives at the site root, one level above this version's folder.
+    fetch("../versions.json", { cache: "no-cache" })
+        .then(function (r) { return r.ok ? r.json() : []; })
+        .then(function (versions) {
+            if (!versions || !versions.length) { return; }
+            select.innerHTML = "";
+            versions.forEach(function (v) {
+                var opt = document.createElement('option');
+                opt.value = v;
+                opt.textContent = v;
+                if (v === current) { opt.selected = true; }
+                select.appendChild(opt);
+            });
+        })
+        .catch(function () { /* single-version or local build: leave the label as-is */ });
+    select.addEventListener('change', function () {
+        window.location.href = "../" + select.value + "/index.html";
+    });
+})();
+</script>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Search');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('error_8h.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#typedef-members">Typedefs</a> &#124;
+<a href="#func-members">Functions</a>  </div>
+  <div class="headertitle"><div class="title">error.h File Reference</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Small, self-describing errors for the C++ engine layer.  
+<a href="#details">More...</a></p>
+<div class="textblock"><code>#include &quot;sound_chef/sound_chef_common.h&quot;</code><br />
+<code>#include &quot;tl/expected.hpp&quot;</code><br />
+<code>#include &lt;source_location&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+<code>#include &lt;string_view&gt;</code><br />
+<code>#include &lt;utility&gt;</code><br />
+</div><div class="textblock"><div class="dynheader">
+Include dependency graph for error.h:</div>
+<div class="dyncontent">
+<div class="center"><img src="error_8h__incl.png" border="0" usemap="#asrc_2sound__bakery_2error_2error_8h" alt=""/></div>
+<map name="asrc_2sound__bakery_2error_2error_8h" id="asrc_2sound__bakery_2error_2error_8h">
+<area shape="rect" title="Small, self&#45;describing errors for the C++ engine layer." alt="" coords="621,5,792,45"/>
+<area shape="rect" href="sound__chef__common_8h_source.html" title=" " alt="" coords="241,93,415,133"/>
+<area shape="poly" title=" " alt="" coords="624,48,425,93,424,88,623,43"/>
+<area shape="rect" title=" " alt="" coords="440,101,563,126"/>
+<area shape="poly" title=" " alt="" coords="663,48,542,98,540,93,661,43"/>
+<area shape="rect" title=" " alt="" coords="587,101,711,126"/>
+<area shape="poly" title=" " alt="" coords="696,47,667,90,663,87,692,44"/>
+<area shape="rect" title=" " alt="" coords="736,101,795,126"/>
+<area shape="poly" title=" " alt="" coords="722,44,752,87,747,90,717,47"/>
+<area shape="rect" title=" " alt="" coords="819,101,917,126"/>
+<area shape="poly" title=" " alt="" coords="743,43,836,92,833,97,741,48"/>
+<area shape="rect" title=" " alt="" coords="941,101,1001,126"/>
+<area shape="poly" title=" " alt="" coords="779,43,852,64,930,91,935,93,933,98,928,96,851,70,777,48"/>
+<area shape="rect" title=" " alt="" coords="5,189,104,214"/>
+<area shape="poly" title=" " alt="" coords="269,136,105,187,103,182,267,131"/>
+<area shape="rect" title=" " alt="" coords="129,189,205,214"/>
+<area shape="poly" title=" " alt="" coords="294,136,201,185,199,180,291,131"/>
+<area shape="rect" title=" " alt="" coords="229,189,321,214"/>
+<area shape="poly" title=" " alt="" coords="318,135,292,178,287,175,314,132"/>
+<area shape="rect" title=" " alt="" coords="345,189,420,214"/>
+<area shape="poly" title=" " alt="" coords="342,132,370,175,366,178,338,135"/>
+<area shape="rect" title=" " alt="" coords="445,189,515,214"/>
+<area shape="poly" title=" " alt="" coords="363,131,449,180,447,184,360,136"/>
+<area shape="rect" href="sound__chef__version_8h_source.html" title=" " alt="" coords="539,181,714,221"/>
+<area shape="poly" title=" " alt="" coords="394,131,549,175,547,180,393,136"/>
+</map>
+</div>
+</div><div class="textblock"><div class="dynheader">
+This graph shows which files directly or indirectly include this file:</div>
+<div class="dyncontent">
+<div class="center"><img src="error_8h__dep__incl.png" border="0" usemap="#asrc_2sound__bakery_2error_2error_8hdep" alt=""/></div>
+<map name="asrc_2sound__bakery_2error_2error_8hdep" id="asrc_2sound__bakery_2error_2error_8hdep">
+<area shape="rect" title="Small, self&#45;describing errors for the C++ engine layer." alt="" coords="72,5,243,45"/>
+<area shape="rect" href="engine__api_8h_source.html" title=" " alt="" coords="94,621,253,661"/>
+<area shape="poly" title=" " alt="" coords="145,59,122,123,113,161,109,200,109,466,115,511,129,554,163,620,158,622,124,556,110,512,104,467,104,200,108,160,116,122,140,57"/>
+<area shape="rect" href="project_8h_source.html" title=" " alt="" coords="799,709,977,749"/>
+<area shape="poly" title=" " alt="" coords="160,59,160,200,160,379,153,425,135,466,89,534,69,565,59,596,58,611,62,626,70,642,83,659,96,668,118,676,186,691,277,702,384,710,610,721,799,725,799,730,610,726,383,716,277,707,185,696,117,682,94,673,80,663,65,645,57,628,53,611,53,595,64,563,84,531,131,463,148,424,155,378,155,200,155,59"/>
+<area shape="rect" href="result_8h.html" title="sbk::result and the control&#45;flow macros that make error handling automatic." alt="" coords="1543,93,1713,133"/>
+<area shape="poly" title=" " alt="" coords="256,30,1542,104,1542,110,256,35"/>
+<area shape="rect" href="node__instance_8h_source.html" title=" " alt="" coords="329,973,503,1013"/>
+<area shape="poly" title=" " alt="" coords="113,55,78,81,44,115,18,155,11,177,8,200,8,819,10,843,17,865,27,884,41,902,77,931,123,953,174,969,227,980,329,989,328,995,227,985,173,974,121,958,74,936,37,906,23,887,12,867,5,844,3,819,3,200,5,176,13,152,40,111,74,77,110,51"/>
+<area shape="rect" href="system_8h_source.html" title=" " alt="" coords="1907,541,2106,566"/>
+<area shape="poly" title=" " alt="" coords="256,24,604,26,1063,34,1288,43,1486,54,1638,70,1691,80,1726,91,1793,124,1848,156,1894,190,1933,227,1967,269,1997,318,2025,376,2053,445,2056,472,2048,499,2034,523,2020,542,2016,539,2030,521,2043,497,2051,472,2048,446,2020,378,1992,321,1962,272,1929,230,1891,194,1845,160,1790,128,1724,96,1690,85,1637,75,1485,60,1287,48,1062,40,604,31,256,29"/>
+<area shape="rect" href="object__owner_8h_source.html" title=" " alt="" coords="1544,181,1712,221"/>
+<area shape="poly" title=" " alt="" coords="1631,147,1631,181,1625,181,1625,147"/>
+<area shape="rect" href="serializer_8h_source.html" title=" " alt="" coords="1876,885,2095,925"/>
+<area shape="poly" title=" " alt="" coords="1728,124,1925,154,2040,177,2154,205,2258,238,2343,278,2376,300,2401,323,2417,349,2423,376,2423,731,2420,745,2413,758,2387,783,2349,806,2301,827,2191,862,2084,888,2083,883,2189,857,2299,822,2346,802,2384,779,2409,755,2415,743,2417,730,2417,376,2412,351,2397,327,2373,304,2340,282,2256,243,2153,210,2039,182,1925,159,1727,129"/>
+<area shape="rect" href="core__include_8h_source.html" title=" " alt="" coords="1346,533,1513,573"/>
+<area shape="poly" title=" " alt="" coords="1581,231,1557,249,1535,271,1513,305,1494,341,1464,416,1445,484,1435,534,1430,533,1440,483,1459,414,1489,339,1508,302,1531,268,1553,245,1578,227"/>
+<area shape="poly" title=" " alt="" coords="1726,214,1912,246,2019,270,2124,298,2220,332,2298,370,2329,392,2352,414,2367,438,2372,464,2372,555,2370,612,2362,636,2346,663,2313,704,2275,742,2233,776,2189,806,2105,855,2034,888,2032,883,2102,850,2187,802,2230,772,2271,738,2309,701,2342,660,2357,634,2364,611,2367,555,2367,464,2362,440,2348,418,2326,396,2296,375,2218,337,2122,303,2017,275,1911,251,1725,219"/>
+<area shape="rect" href="object_8h_source.html" title=" " alt="" coords="1545,269,1711,309"/>
+<area shape="poly" title=" " alt="" coords="1631,235,1631,269,1625,269,1625,235"/>
+<area shape="poly" title=" " alt="" coords="1332,559,1137,564,874,575,575,594,272,624,253,627,253,621,272,619,574,589,874,569,1137,558,1332,553"/>
+<area shape="poly" title=" " alt="" coords="1333,570,1221,591,1102,624,1019,662,924,712,921,707,1017,657,1100,619,1220,586,1332,565"/>
+<area shape="rect" href="project__configuration_8h_source.html" title=" " alt="" coords="776,621,1000,661"/>
+<area shape="poly" title=" " alt="" coords="1333,573,1001,625,1000,620,1332,567"/>
+<area shape="rect" href="effect_8h_source.html" title=" " alt="" coords="1125,621,1301,661"/>
+<area shape="poly" title=" " alt="" coords="1370,581,1262,624,1260,619,1368,576"/>
+<area shape="rect" href="node_8h_source.html" title=" " alt="" coords="1128,709,1299,749"/>
+<area shape="poly" title=" " alt="" coords="1333,565,1268,573,1203,585,1148,602,1129,612,1115,623,1109,634,1109,645,1122,668,1146,689,1175,707,1173,712,1143,694,1117,671,1104,646,1104,633,1111,620,1126,607,1146,597,1202,580,1267,567,1332,559"/>
+<area shape="poly" title=" " alt="" coords="1332,557,1089,560,788,569,644,577,520,589,426,604,395,613,375,623,354,645,345,668,344,695,344,728,344,818,350,863,366,906,385,943,404,971,399,974,381,946,361,908,345,865,339,819,339,728,338,695,340,667,350,643,372,619,393,608,425,599,519,584,644,572,788,563,1089,554,1332,552"/>
+<area shape="rect" href="voice_8h_source.html" title=" " alt="" coords="454,1061,629,1101"/>
+<area shape="poly" title=" " alt="" coords="1333,563,1077,584,766,618,622,641,503,667,458,681,423,697,402,712,395,729,395,819,396,876,403,898,419,924,431,935,442,941,467,947,492,953,505,960,517,972,530,993,538,1017,544,1061,539,1061,533,1019,525,996,513,975,501,964,490,958,465,952,440,946,427,939,415,927,398,901,391,876,389,819,389,727,398,709,420,692,456,676,502,662,621,635,765,613,1076,578,1332,558"/>
+<area shape="rect" href="gameobject_8h_source.html" title=" " alt="" coords="1081,1149,1297,1189"/>
+<area shape="poly" title=" " alt="" coords="1332,558,1082,561,772,571,623,579,494,591,396,605,363,614,341,624,316,645,302,667,295,694,293,728,293,995,289,1003,280,1009,274,1014,274,1020,284,1030,312,1046,442,1099,495,1113,565,1126,738,1144,922,1156,1081,1163,1081,1168,922,1161,737,1150,564,1131,494,1118,440,1104,310,1051,281,1035,269,1022,269,1012,277,1005,285,1000,288,994,288,728,290,693,297,665,312,641,339,619,361,609,395,600,493,585,623,574,772,565,1082,556,1332,552"/>
+<area shape="rect" href="event_8h_source.html" title=" " alt="" coords="1437,709,1613,749"/>
+<area shape="poly" title=" " alt="" coords="1500,577,1526,596,1546,620,1554,643,1553,668,1538,710,1533,708,1547,667,1548,644,1542,623,1522,599,1497,582"/>
+<area shape="rect" href="parameter_8h_source.html" title=" " alt="" coords="1326,621,1533,661"/>
+<area shape="poly" title=" " alt="" coords="1432,587,1432,621,1427,621,1427,587"/>
+<area shape="rect" href="sound_8h_source.html" title=" " alt="" coords="1669,797,1848,837"/>
+<area shape="poly" title=" " alt="" coords="1494,577,1532,596,1568,619,1603,652,1626,681,1647,712,1678,747,1735,795,1731,799,1674,751,1643,715,1621,684,1599,655,1565,623,1529,600,1492,581"/>
+<area shape="rect" href="soundbank_8h_source.html" title=" " alt="" coords="1688,709,1899,749"/>
+<area shape="poly" title=" " alt="" coords="1527,569,1599,589,1671,619,1703,639,1732,663,1778,707,1774,711,1729,667,1700,644,1668,624,1597,594,1525,574"/>
+<area shape="poly" title=" " alt="" coords="891,675,891,709,885,709,885,675"/>
+<area shape="poly" title=" " alt="" coords="1216,675,1216,709,1211,709,1211,675"/>
+<area shape="rect" href="bus_8h_source.html" title=" " alt="" coords="1373,797,1544,837"/>
+<area shape="poly" title=" " alt="" coords="1281,751,1406,795,1404,800,1279,756"/>
+<area shape="rect" href="container_8h_source.html" title=" " alt="" coords="1035,797,1205,837"/>
+<area shape="poly" title=" " alt="" coords="1184,761,1142,799,1139,795,1181,757"/>
+<area shape="rect" href="aux__bus_8h_source.html" title=" " alt="" coords="1631,885,1801,925"/>
+<area shape="poly" title=" " alt="" coords="1529,839,1660,883,1659,888,1527,844"/>
+<area shape="poly" title=" " alt="" coords="1558,832,1876,884,1875,889,1558,837"/>
+<area shape="rect" href="blend__container_8h_source.html" title=" " alt="" coords="922,885,1129,925"/>
+<area shape="poly" title=" " alt="" coords="1091,849,1048,887,1044,883,1087,845"/>
+<area shape="rect" href="random__container_8h_source.html" title=" " alt="" coords="1153,885,1373,925"/>
+<area shape="poly" title=" " alt="" coords="1164,842,1233,883,1230,888,1162,847"/>
+<area shape="rect" href="sequence__container_8h_source.html" title=" " alt="" coords="429,885,661,925"/>
+<area shape="poly" title=" " alt="" coords="1021,836,662,889,661,884,1020,831"/>
+<area shape="rect" href="sound__container_8h_source.html" title=" " alt="" coords="1397,885,1606,925"/>
+<area shape="poly" title=" " alt="" coords="1218,838,1418,883,1417,888,1216,843"/>
+<area shape="rect" href="switch__container_8h_source.html" title=" " alt="" coords="686,885,898,925"/>
+<area shape="poly" title=" " alt="" coords="1036,843,864,888,863,883,1034,838"/>
+<area shape="poly" title=" " alt="" coords="506,936,446,975,443,971,504,931"/>
+<area shape="poly" title=" " alt="" coords="457,1019,515,1059,512,1063,454,1024"/>
+<area shape="poly" title=" " alt="" coords="642,1093,1082,1151,1081,1156,642,1099"/>
+<area shape="poly" title=" " alt="" coords="1558,756,1612,802,1659,835,1697,848,1751,862,1876,885,1875,890,1750,867,1696,853,1656,840,1609,807,1554,760"/>
+<area shape="poly" title=" " alt="" coords="1370,669,1262,712,1260,707,1368,664"/>
+<area shape="poly" title=" " alt="" coords="1421,675,1417,712,1420,731,1428,748,1441,763,1454,771,1485,778,1519,781,1538,786,1557,795,1571,806,1580,816,1588,826,1601,835,1632,847,1661,850,1716,847,1742,846,1767,850,1792,861,1816,884,1824,905,1816,927,1792,958,1766,986,1706,1034,1639,1073,1568,1104,1495,1127,1424,1145,1298,1164,1297,1159,1423,1139,1494,1122,1566,1099,1636,1068,1703,1030,1762,982,1788,954,1811,924,1819,905,1811,887,1789,866,1766,855,1742,851,1716,852,1661,856,1631,852,1599,840,1585,830,1576,820,1567,810,1555,800,1536,791,1518,786,1484,783,1452,776,1437,767,1423,751,1415,733,1412,713,1416,674"/>
+<area shape="poly" title=" " alt="" coords="1822,840,1937,883,1935,888,1820,845"/>
+<area shape="poly" title=" " alt="" coords="1826,757,1966,883,1963,887,1823,761"/>
+<area shape="poly" title=" " alt="" coords="1608,322,1446,535,1442,531,1603,319"/>
+<area shape="rect" href="database__object_8h_source.html" title=" " alt="" coords="1663,357,1873,397"/>
+<area shape="poly" title=" " alt="" coords="1672,314,1739,355,1736,360,1669,319"/>
+<area shape="poly" title=" " alt="" coords="1701,404,1599,448,1520,493,1457,535,1454,531,1518,488,1596,443,1698,400"/>
+<area shape="poly" title=" " alt="" coords="1790,408,1810,444,1851,538,1901,667,1981,884,1976,886,1896,669,1846,540,1806,447,1785,410"/>
+<area shape="rect" href="project__manager_8h_source.html" title=" " alt="" coords="2167,621,2331,661"/>
+<area shape="poly" title=" " alt="" coords="1887,389,1970,409,2012,424,2052,443,2112,485,2165,534,2208,582,2238,619,2234,623,2204,585,2162,538,2109,489,2049,448,2010,429,1969,414,1886,394"/>
+<area shape="rect" href="database_8h_source.html" title=" " alt="" coords="1871,445,2038,485"/>
+<area shape="poly" title=" " alt="" coords="1822,401,1915,443,1913,448,1820,405"/>
+<area shape="rect" href="database__ptr_8h_source.html" title=" " alt="" coords="1609,445,1796,485"/>
+<area shape="poly" title=" " alt="" coords="1747,410,1719,447,1715,443,1743,407"/>
+<area shape="poly" title=" " alt="" coords="1858,485,1513,541,1512,536,1857,480"/>
+<area shape="poly" title=" " alt="" coords="1976,496,2002,539,1997,542,1971,499"/>
+<area shape="poly" title=" " alt="" coords="1965,574,1935,595,1912,623,1906,641,1912,660,1921,675,1933,684,1946,693,1957,708,1974,756,1984,806,1989,885,1983,885,1979,806,1969,757,1952,711,1942,696,1930,688,1917,678,1907,662,1901,641,1907,620,1932,591,1963,570"/>
+<area shape="poly" title=" " alt="" coords="2048,570,2080,591,2106,620,2130,670,2138,714,2135,816,2135,995,2127,1012,2108,1027,2077,1042,2037,1055,1934,1081,1808,1103,1533,1139,1298,1162,1297,1157,1532,1134,1807,1098,1933,1075,2036,1050,2075,1037,2105,1023,2123,1009,2129,994,2129,816,2133,714,2125,672,2102,623,2076,595,2045,575"/>
+<area shape="poly" title=" " alt="" coords="2053,568,2197,619,2195,624,2052,573"/>
+<area shape="rect" href="audio__meter__widget_8h_source.html" title=" " alt="" coords="1921,621,2092,661"/>
+<area shape="poly" title=" " alt="" coords="2009,580,2009,621,2004,621,2004,580"/>
+<area shape="poly" title=" " alt="" coords="1630,492,1490,536,1488,531,1629,487"/>
+<area shape="poly" title=" " alt="" coords="1783,486,1967,538,1965,543,1782,492"/>
+</map>
+</div>
+</div>
+<p><a href="error_8h_source.html">Go to the source code of this file.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsbk_1_1error.html">sbk::error</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A failure value: the <code>sbk_status</code> code plus where it came from.  <a href="classsbk_1_1error.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:a390f3d2c4f8f4a52fc2076794fd8e7c7" id="r_a390f3d2c4f8f4a52fc2076794fd8e7c7"><td class="memTemplParams" colspan="2">template&lt;class T  = void&gt; </td></tr>
+<tr class="memitem:a390f3d2c4f8f4a52fc2076794fd8e7c7"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a> = tl::expected&lt; T, <a class="el" href="classsbk_1_1error.html">error</a> &gt;</td></tr>
+<tr class="memdesc:a390f3d2c4f8f4a52fc2076794fd8e7c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">The result of a fallible operation: a value of type <code>T</code>, or an <a class="el" href="classsbk_1_1error.html">sbk::error</a>.  <br /></td></tr>
+<tr class="separator:a390f3d2c4f8f4a52fc2076794fd8e7c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:ad60d80bb5281042595b5065f253f8e75" id="r_ad60d80bb5281042595b5065f253f8e75"><td class="memItemLeft" align="right" valign="top"><a id="ad60d80bb5281042595b5065f253f8e75" name="ad60d80bb5281042595b5065f253f8e75"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>sbk::to_string</b> (sbk_status code) -&gt; std::string_view</td></tr>
+<tr class="memdesc:ad60d80bb5281042595b5065f253f8e75"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a human-readable name for an <code>sbk_status</code> code, e.g. "SBK_ERR_INVALID_FILE". <br /></td></tr>
+<tr class="separator:ad60d80bb5281042595b5065f253f8e75"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf94f59a6d713aa52ca344f737f8c899" id="r_adf94f59a6d713aa52ca344f737f8c899"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="error_8cpp.html#adf94f59a6d713aa52ca344f737f8c899">sbk::log_error</a> (sbk_status code, std::string_view message={}, const std::source_location &amp;location=std::source_location::current()) -&gt; void</td></tr>
+<tr class="memdesc:adf94f59a6d713aa52ca344f737f8c899"><td class="mdescLeft">&#160;</td><td class="mdescRight">Logs a failure once, at its origin, through the Sound Bakery logger.  <br /></td></tr>
+<tr class="separator:adf94f59a6d713aa52ca344f737f8c899"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a652d79b4d0b1d06f0ba98c9e737a3d85" id="r_a652d79b4d0b1d06f0ba98c9e737a3d85"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="error_8cpp.html#a652d79b4d0b1d06f0ba98c9e737a3d85">sbk::make_error</a> (sbk_status code, std::string_view message={}, const std::source_location &amp;location=std::source_location::current()) -&gt; tl::unexpected&lt; <a class="el" href="classsbk_1_1error.html">error</a> &gt;</td></tr>
+<tr class="memdesc:a652d79b4d0b1d06f0ba98c9e737a3d85"><td class="mdescLeft">&#160;</td><td class="mdescRight">Logs a failure once and wraps it for returning from a <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">result</a>.  <br /></td></tr>
+<tr class="separator:a652d79b4d0b1d06f0ba98c9e737a3d85"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4829ae601d7136d4d51f4bbad4e8d7b" id="r_ae4829ae601d7136d4d51f4bbad4e8d7b"><td class="memItemLeft" align="right" valign="top"><a id="ae4829ae601d7136d4d51f4bbad4e8d7b" name="ae4829ae601d7136d4d51f4bbad4e8d7b"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>sbk::ok</b> () -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">result</a>&lt; void &gt;</td></tr>
+<tr class="memdesc:ae4829ae601d7136d4d51f4bbad4e8d7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Success value for a <code>result&lt;void&gt;</code> function. <br /></td></tr>
+<tr class="separator:ae4829ae601d7136d4d51f4bbad4e8d7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7024b50a770dfcbd2f396f4469e7067" id="r_ac7024b50a770dfcbd2f396f4469e7067"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:ac7024b50a770dfcbd2f396f4469e7067"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="error_8h.html#ac7024b50a770dfcbd2f396f4469e7067">sbk::to_status</a> (const <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">result</a>&lt; T &gt; &amp;r) -&gt; sbk_status</td></tr>
+<tr class="memdesc:ac7024b50a770dfcbd2f396f4469e7067"><td class="mdescLeft">&#160;</td><td class="mdescRight">Collapses a rich <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">result</a> back into a C-ABI <code>sbk_status</code> code.  <br /></td></tr>
+<tr class="separator:ac7024b50a770dfcbd2f396f4469e7067"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Small, self-describing errors for the C++ engine layer. </p>
+<p>The C ABI (all <code>sc_*</code> and <code>sbk_*</code> functions) continues to speak <code>sbk_status</code>. Internally, C++ code carries a <a class="el" href="classsbk_1_1error.html">sbk::error</a>, which pairs that code with the <code>std::source_location</code> where the failure originated.</p>
+<p><a class="el" href="classsbk_1_1error.html">sbk::error</a> deliberately holds no owned string: it is trivially copyable and allocation-free, so <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a> is cheap to return everywhere (important for a games/console runtime, and required for a possible <code>-fno-exceptions</code> build). The human-readable message is <em>logged</em> at the origin (see sbk::make_error / sbk::log_error) rather than carried up the stack.</p>
+<p>Errors are logged exactly once, at the point they are first produced. Propagating an existing error up the call stack does not log again, so a single failure yields a single log line. </p>
+</div><h2 class="groupheader">Typedef Documentation</h2>
+<a id="a390f3d2c4f8f4a52fc2076794fd8e7c7" name="a390f3d2c4f8f4a52fc2076794fd8e7c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a390f3d2c4f8f4a52fc2076794fd8e7c7">&#9670;&#160;</a></span>result</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T  = void&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a> = typedef tl::expected&lt;T, error&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>The result of a fallible operation: a value of type <code>T</code>, or an <a class="el" href="classsbk_1_1error.html">sbk::error</a>. </p>
+<p><code>result&lt;void&gt;</code> represents an operation that either succeeds or fails with no value. <code>tl::expected</code> is already marked nodiscard, so ignoring a returned result warns.</p>
+<p>Prefer this over the raw <code>sbk_status</code> code for internal C++ code; see error/README.md and the control-flow macros in <a class="el" href="result_8h.html" title="sbk::result and the control-flow macros that make error handling automatic.">result.h</a>. </p>
+
+</div>
+</div>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="adf94f59a6d713aa52ca344f737f8c899" name="adf94f59a6d713aa52ca344f737f8c899"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf94f59a6d713aa52ca344f737f8c899">&#9670;&#160;</a></span>log_error()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto sbk::log_error </td>
+          <td>(</td>
+          <td class="paramtype">sbk_status&#160;</td>
+          <td class="paramname"><em>code</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>message</em> = <code>{}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::source_location &amp;&#160;</td>
+          <td class="paramname"><em>location</em> = <code>std::source_location::current()</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> -&gt;  void</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Logs a failure once, at its origin, through the Sound Bakery logger. </p>
+<p>A no-op when <code>code</code> is <code>SBK_SUCCESS</code>. The message is only used for the log line. Prefer the <code>SBK_*</code> macros in <a class="el" href="result_8h.html" title="sbk::result and the control-flow macros that make error handling automatic.">result.h</a> over calling this directly. </p>
+
+</div>
+</div>
+<a id="a652d79b4d0b1d06f0ba98c9e737a3d85" name="a652d79b4d0b1d06f0ba98c9e737a3d85"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a652d79b4d0b1d06f0ba98c9e737a3d85">&#9670;&#160;</a></span>make_error()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto sbk::make_error </td>
+          <td>(</td>
+          <td class="paramtype">sbk_status&#160;</td>
+          <td class="paramname"><em>code</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>message</em> = <code>{}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::source_location &amp;&#160;</td>
+          <td class="paramname"><em>location</em> = <code>std::source_location::current()</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> -&gt;  tl::unexpected&lt; <a class="el" href="classsbk_1_1error.html">error</a> &gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Logs a failure once and wraps it for returning from a result. </p>
+<p>The message is logged, not carried in the returned error.</p>
+<div class="fragment"><div class="line"><span class="keywordflow">if</span> (!file_exists) <span class="keywordflow">return</span> sbk::make_error(SBK_ERR_INVALID_FILE, path.string());</div>
+</div><!-- fragment --> 
+</div>
+</div>
+<a id="ac7024b50a770dfcbd2f396f4469e7067" name="ac7024b50a770dfcbd2f396f4469e7067"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7024b50a770dfcbd2f396f4469e7067">&#9670;&#160;</a></span>to_status()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">auto sbk::to_status </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">result</a>&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>r</em></td><td>)</td>
+          <td> -&gt; sbk_status
+    </td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Collapses a rich result back into a C-ABI <code>sbk_status</code> code. </p>
+<p>Use this to bridge a <code><a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7" title="The result of a fallible operation: a value of type T, or an sbk::error.">sbk::result&lt;T&gt;</a></code> function to a caller that returns <code>sbk_status</code>, e.g. at the C API boundary: <code>return sbk::to_status(do_the_work());</code>. </p>
+
+</div>
+</div>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_c849dcb4e7379c1d4c8da40341161ac3.html">sound_bakery</a></li><li class="navelem"><a class="el" href="dir_da8a69999638bf9a53c146fdb7ac613e.html">error</a></li><li class="navelem"><a class="el" href="error_8h.html">error.h</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
+  </ul>
+</div>
+</body>
+</html>

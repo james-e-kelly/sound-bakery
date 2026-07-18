@@ -1,0 +1,13 @@
+<map id="sbk::engine::node_instance" name="sbk::engine::node_instance">
+<area shape="rect" id="Node000001" title="NodeInstances represent runtime versions of Nodes, either containers or busses." alt="" coords="279,196,478,221"/>
+<area shape="rect" id="Node000002" href="$classsbk_1_1core_1_1object.html" title="Base object that all sound Bakery objects should inherit from." alt="" coords="222,108,351,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="311,141,368,194,364,197,307,145"/>
+<area shape="rect" id="Node000003" href="$classsbk_1_1core_1_1object__owner.html" title="Creates, owns and tracks objects." alt="" coords="5,13,181,38"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="130,42,264,105,262,110,128,46"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="206,5,367,45"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="289,59,289,108,284,108,284,59"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="392,13,541,38"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="434,47,310,110,308,106,431,42"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="375,93,569,148"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="435,159,393,198,390,194,432,155"/>
+</map>

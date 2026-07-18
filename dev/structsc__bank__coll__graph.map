@@ -1,0 +1,7 @@
+<map id="sc_bank" name="sc_bank">
+<area shape="rect" id="Node000001" title=" " alt="" coords="28,181,103,207"/>
+<area shape="rect" id="Node000002" href="$structsc__riffChunk.html" title=" " alt="" coords="14,93,117,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="68,133,68,181,63,181,63,133"/>
+<area shape="rect" id="Node000003" href="$structsc__audioChunk.html" title=" " alt="" coords="5,5,125,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="68,45,68,93,63,93,63,45"/>
+</map>

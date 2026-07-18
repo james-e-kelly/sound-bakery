@@ -1,0 +1,11 @@
+<map id="sc_dsp_config" name="sc_dsp_config">
+<area shape="rect" id="Node000001" title=" " alt="" coords="60,313,172,339"/>
+<area shape="rect" id="Node000002" href="$structsc__dsp__vtable.html" title=" " alt="" coords="59,225,173,251"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="119,265,119,313,113,313,113,265"/>
+<area shape="rect" id="Node000003" href="$structsc__dsp__state.html" title="Holds instance data for a single sc_dsp." alt="" coords="5,93,112,119"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="67,131,78,165,93,200,108,223,104,226,88,203,73,166,62,133"/>
+<area shape="rect" id="Node000004" href="$structsc__dsp__parameter.html" title=" " alt="" coords="136,93,277,119"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="194,133,147,203,128,227,124,223,143,200,190,130"/>
+<area shape="rect" id="Node000005" href="$structsc__dsp__parameter__float.html" title=" " alt="" coords="118,5,295,31"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="209,45,209,93,204,93,204,45"/>
+</map>

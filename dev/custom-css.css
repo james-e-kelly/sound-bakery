@@ -1,0 +1,102 @@
+html {
+    /* Dracula theme taken from snippet here: https://github.com/jothepro/doxygen-awesome-css/discussions/13#discussioncomment-6770692 */
+
+    /* primary theme color. This will affect the entire websites color scheme: links, arrows, labels, ... */
+    --primary-color: #bd93f9;
+    --primary-dark-color: #9270e4;
+    --primary-light-color: #9270e4;
+
+    /* page base colors */
+    --page-background-color: #ffffff;
+    --page-foreground-color: #2f4153;
+    --page-secondary-foreground-color: #6f7e8e;
+
+    /* color for all separators on the website: hr, borders, ... */
+    --separator-color: #bd93f965;
+
+    /* border radius for all rounded components. Will affect many components, like dropdowns, memitems, codeblocks, ... */
+    --border-radius-large: 22px;
+    --border-radius-small: 9px;
+    --border-radius-medium: 14px;
+
+    /* default spacings. Most components reference these values for spacing, to provide uniform spacing on the page. */
+    --spacing-small: 8px;
+    --spacing-medium: 14px;
+    --spacing-large: 19px;
+
+    --top-height: 125px;
+
+    .paramname em {
+        color: var(--page-foreground-color);
+    }
+
+    #projectlogo img {
+        filter: invert(100%);
+    }
+
+    .github-corner svg {
+        fill: var(--primary-light-color);
+        color: var(--page-background-color);
+        width: 72px;
+        height: 72px;
+    }
+}
+
+html.dark-mode {
+    color-scheme: dark;
+
+    --james-darkest-blue: #0E121B;
+    --james-plain-black: #202225;
+    --james-silver: #C3C3C3;
+    --james-seperator: #636363;
+    --james-white: #FFFFFF;
+    --james-yellow: #FFC107;
+    --james-light-blue: #27314D;
+    --james-medium-blue: #1c232e;
+    --james-dark-blue: #0e1825;
+    --james-darkest-blue: #0E121B;
+    --james-contrast: #3F1409;
+
+    --primary-color: var(--james-yellow);
+    --primary-dark-color: var(--james-white);
+    --primary-light-color: var(--james-yellow);
+    --primary-lighter-color: var(--james-silver);
+    --primary-lightest-color: var(--james-white);
+
+    --page-background-color: var(--james-dark-blue);
+    --page-foreground-color: var(--james-silver);
+    --page-secondary-foreground-color: var(--james-white);
+
+    --separator-color: var(--james-seperator);
+
+    --side-nav-background: var(--james-medium-blue);
+    --side-nav-foreground: var(--james-silver);
+
+    --toc-background: var(--james-light-blue);
+    --searchbar-background: var(--page-background-color);
+
+    --border-radius-large: 22px;
+    --border-radius-small: 9px;
+    --border-radius-medium: 14px;
+
+    --spacing-small: 8px;
+    --spacing-medium: 14px;
+    --spacing-large: 19px;
+
+    --top-height: 125px;
+
+    .paramname em {
+        color: var(--james-silver);
+    }
+
+    #projectlogo img {
+        filter: invert(0%);
+    }
+
+    .github-corner svg {
+        fill: var(--james-yellow);
+        color: var(--page-background-color);
+        width: 72px;
+        height: 72px;
+    }
+}

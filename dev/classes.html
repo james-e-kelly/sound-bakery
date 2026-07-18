@@ -1,0 +1,208 @@
+<!-- HTML header for doxygen 1.10.0-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Sound Bakery: Class Index</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom-css.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+</head>
+<body>
+<!-- https://tholman.com/github-corners/ -->
+<a href="https://github.com/KarateKidzz/sound-bakery" class="github-corner" title="View source on GitHub" target="_blank" rel="noopener noreferrer">
+  <svg viewBox="0 0 250 250" width="40" height="40" style="position: absolute; top: 0; border: 0; right: 0; z-index: 99;" aria-hidden="true">
+  <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectlogo"><img alt="Logo" src="sound-bakery-logo.png"$logosize/></td>
+  <td id="projectalign">
+   <div id="projectname">Sound Bakery&nbsp<span id="projectnumber">&#160;<select id="sbk-version-select" aria-label="Documentation version"><option>dev</option></select></span>
+   </div>
+   <div id="projectbrief">Open-source audio middleware for games</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- Sound Bakery documentation version switcher -->
+<script type="text/javascript">
+(function () {
+    var current = "dev";
+    var select = document.getElementById('sbk-version-select');
+    if (!select) { return; }
+    // versions.json lives at the site root, one level above this version's folder.
+    fetch("../versions.json", { cache: "no-cache" })
+        .then(function (r) { return r.ok ? r.json() : []; })
+        .then(function (versions) {
+            if (!versions || !versions.length) { return; }
+            select.innerHTML = "";
+            versions.forEach(function (v) {
+                var opt = document.createElement('option');
+                opt.value = v;
+                opt.textContent = v;
+                if (v === current) { opt.selected = true; }
+                select.appendChild(opt);
+            });
+        })
+        .catch(function () { /* single-version or local build: leave the label as-is */ });
+    select.addEventListener('change', function () {
+        window.location.href = "../" + select.value + "/index.html";
+    });
+})();
+</script>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Search');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('classes.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">Class Index</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="qindex"><a class="qindex" href="#letter_A">A</a>&#160;|&#160;<a class="qindex" href="#letter_B">B</a>&#160;|&#160;<a class="qindex" href="#letter_C">C</a>&#160;|&#160;<a class="qindex" href="#letter_D">D</a>&#160;|&#160;<a class="qindex" href="#letter_E">E</a>&#160;|&#160;<a class="qindex" href="#letter_F">F</a>&#160;|&#160;<a class="qindex" href="#letter_G">G</a>&#160;|&#160;<a class="qindex" href="#letter_I">I</a>&#160;|&#160;<a class="qindex" href="#letter_L">L</a>&#160;|&#160;<a class="qindex" href="#letter_M">M</a>&#160;|&#160;<a class="qindex" href="#letter_N">N</a>&#160;|&#160;<a class="qindex" href="#letter_O">O</a>&#160;|&#160;<a class="qindex" href="#letter_P">P</a>&#160;|&#160;<a class="qindex" href="#letter_R">R</a>&#160;|&#160;<a class="qindex" href="#letter_S">S</a>&#160;|&#160;<a class="qindex" href="#letter_T">T</a>&#160;|&#160;<a class="qindex" href="#letter_V">V</a>&#160;|&#160;<a class="qindex" href="#letter_W">W</a></div>
+<div class="classindex">
+<dl class="classindex even">
+<dt class="alphachar"><a id="letter_A" name="letter_A">A</a></dt>
+<dd><a class="el" href="structsbk_1_1engine_1_1action.html">action</a> (sbk::engine)</dd><dd><a class="el" href="structsbk_1_1engine_1_1node__instance__fsm_1_1action__update.html">node_instance_fsm::action_update</a> (sbk::engine)</dd><dd><a class="el" href="classadd__effect__button.html">add_effect_button</a></dd><dd><a class="el" href="classapp__manager.html">app_manager</a></dd><dd><a class="el" href="classaudio__display__widget.html">audio_display_widget</a></dd><dd><a class="el" href="structaudio__meter__utils_1_1audio__meter__draw__info.html">audio_meter_draw_info</a> (audio_meter_utils)</dd><dd><a class="el" href="classaudio__meter__widget.html">audio_meter_widget</a></dd><dd><a class="el" href="classsbk_1_1engine_1_1aux__bus.html">aux_bus</a> (sbk::engine)</dd></dl>
+<dl class="classindex odd">
+<dt class="alphachar"><a id="letter_B" name="letter_B">B</a></dt>
+<dd><a class="el" href="classsbk_1_1engine_1_1blend__container.html">blend_container</a> (sbk::engine)</dd><dd><a class="el" href="classsbk_1_1core_1_1serialization_1_1boost__serializer.html">boost_serializer</a> (sbk::core::serialization)</dd><dd><a class="el" href="classsbk_1_1engine_1_1bus.html">bus</a> (sbk::engine)</dd></dl>
+<dl class="classindex even">
+<dt class="alphachar"><a id="letter_C" name="letter_C">C</a></dt>
+<dd><a class="el" href="classsbk_1_1core_1_1child__ptr.html">child_ptr</a> (sbk::core)</dd><dd><a class="el" href="classsbk_1_1engine_1_1container.html">container</a> (sbk::engine)</dd><dd><a class="el" href="structsbk_1_1reflection_1_1CreatePointerConversion.html">CreatePointerConversion</a> (sbk::reflection)</dd><dd><a class="el" href="structsbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_01_4.html">CreatePointerConversion&lt; DerivedClass &gt;</a> (sbk::reflection)</dd><dd><a class="el" href="structsbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_00_01BaseClass_00_01U_8_8_8_01_4.html">CreatePointerConversion&lt; DerivedClass, BaseClass, U... &gt;</a> (sbk::reflection)</dd><dd><a class="el" href="structsbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_00_01rttr_1_1type__list_3_01BaseClassList_8_8_8_01_4_01_4.html">CreatePointerConversion&lt; DerivedClass, rttr::type_list&lt; BaseClassList... &gt; &gt;</a> (sbk::reflection)</dd></dl>
+<dl class="classindex odd">
+<dt class="alphachar"><a id="letter_D" name="letter_D">D</a></dt>
+<dd><a class="el" href="classsbk_1_1core_1_1database.html">database</a> (sbk::core)</dd><dd><a class="el" href="structsbk_1_1core_1_1database__name.html">database_name</a> (sbk::core)</dd><dd><a class="el" href="structsbk_1_1core_1_1database__name__comparator.html">database_name_comparator</a> (sbk::core)</dd><dd><a class="el" href="classsbk_1_1core_1_1database__object.html">database_object</a> (sbk::core)</dd><dd><a class="el" href="classsbk_1_1core_1_1database__ptr.html">database_ptr</a> (sbk::core)</dd><dd><a class="el" href="classdatabase__widget.html">database_widget</a></dd><dd><a class="el" href="classdetails__widget.html">details_widget</a></dd></dl>
+<dl class="classindex even">
+<dt class="alphachar"><a id="letter_E" name="letter_E">E</a></dt>
+<dd><a class="el" href="classeditor__app.html">editor_app</a></dd><dd><a class="el" href="classsbk_1_1engine_1_1effect__description.html">effect_description</a> (sbk::engine)</dd><dd><a class="el" href="classsbk_1_1engine_1_1effect__parameter__description.html">effect_parameter_description</a> (sbk::engine)</dd><dd><a class="el" href="structsbk_1_1engine_1_1encoding__sound.html">encoding_sound</a> (sbk::engine)</dd><dd><a class="el" href="classsbk_1_1error.html">error</a> (sbk)</dd><dd><a class="el" href="classsbk_1_1engine_1_1event.html">event</a> (sbk::engine)</dd><dd><a class="el" href="structsbk_1_1engine_1_1event__devirtualise.html">event_devirtualise</a> (sbk::engine)</dd><dd><a class="el" href="structsbk_1_1engine_1_1event__init.html">event_init</a> (sbk::engine)</dd><dd><a class="el" href="structsbk_1_1engine_1_1event__pause.html">event_pause</a> (sbk::engine)</dd><dd><a class="el" href="structsbk_1_1engine_1_1event__play.html">event_play</a> (sbk::engine)</dd><dd><a class="el" href="structsbk_1_1engine_1_1event__stop.html">event_stop</a> (sbk::engine)</dd><dd><a class="el" href="structsbk_1_1engine_1_1event__update.html">event_update</a> (sbk::engine)</dd><dd><a class="el" href="structsbk_1_1engine_1_1event__virtualise.html">event_virtualise</a> (sbk::engine)</dd></dl>
+<dl class="classindex odd">
+<dt class="alphachar"><a id="letter_F" name="letter_F">F</a></dt>
+<dd><a class="el" href="classfile__browser__widget.html">file_browser_widget</a></dd><dd><a class="el" href="structsbk_1_1engine_1_1flag__playing.html">flag_playing</a> (sbk::engine)</dd><dd><a class="el" href="structsbk_1_1engine_1_1flag__stopped.html">flag_stopped</a> (sbk::engine)</dd><dd><a class="el" href="classsbk_1_1engine_1_1float__parameter.html">float_parameter</a> (sbk::engine)</dd></dl>
+<dl class="classindex even">
+<dt class="alphachar"><a id="letter_G" name="letter_G">G</a></dt>
+<dd><a class="el" href="classsbk_1_1engine_1_1game__object.html">game_object</a> (sbk::engine)</dd><dd><a class="el" href="structsbk_1_1engine_1_1gather__children__context.html">gather_children_context</a> (sbk::engine)</dd><dd><a class="el" href="structsbk_1_1engine_1_1global__parameter__list.html">global_parameter_list</a> (sbk::engine)</dd></dl>
+<dl class="classindex odd">
+<dt class="alphachar"><a id="letter_I" name="letter_I">I</a></dt>
+<dd><a class="el" href="classsbk_1_1engine_1_1int__parameter.html">int_parameter</a> (sbk::engine)</dd></dl>
+<dl class="classindex even">
+<dt class="alphachar"><a id="letter_L" name="letter_L">L</a></dt>
+<dd><a class="el" href="structsbk_1_1engine_1_1local__parameter__list.html">local_parameter_list</a> (sbk::engine)</dd><dd><a class="el" href="classlog__widget.html">log_widget</a></dd></dl>
+<dl class="classindex odd">
+<dt class="alphachar"><a id="letter_M" name="letter_M">M</a></dt>
+<dd><a class="el" href="classmethod__drawer.html">method_drawer</a></dd></dl>
+<dl class="classindex even">
+<dt class="alphachar"><a id="letter_N" name="letter_N">N</a></dt>
+<dd><a class="el" href="classsbk_1_1core_1_1name.html">name</a> (sbk::core)</dd><dd><a class="el" href="classsbk_1_1engine_1_1named__parameter.html">named_parameter</a> (sbk::engine)</dd><dd><a class="el" href="classsbk_1_1engine_1_1named__parameter__value.html">named_parameter_value</a> (sbk::engine)</dd><dd><a class="el" href="classnew__project__widget.html">new_project_widget</a></dd><dd><a class="el" href="classsbk_1_1engine_1_1node.html">node</a> (sbk::engine)</dd><dd><a class="el" href="classsbk_1_1engine_1_1node__base.html">node_base</a> (sbk::engine)</dd><dd><a class="el" href="structsbk_1_1engine_1_1node__group__instance.html">node_group_instance</a> (sbk::engine)</dd><dd><a class="el" href="classsbk_1_1engine_1_1node__instance.html">node_instance</a> (sbk::engine)</dd><dd><a class="el" href="structsbk_1_1engine_1_1node__instance__fsm.html">node_instance_fsm</a> (sbk::engine)</dd></dl>
+<dl class="classindex odd">
+<dt class="alphachar"><a id="letter_O" name="letter_O">O</a></dt>
+<dd><a class="el" href="classsbk_1_1core_1_1object.html">object</a> (sbk::core)</dd><dd><a class="el" href="structsbk_1_1memory_1_1object__deleter.html">object_deleter</a> (sbk::memory)</dd><dd><a class="el" href="classsbk_1_1core_1_1object__owner.html">object_owner</a> (sbk::core)</dd><dd><a class="el" href="structsbk_1_1core_1_1object__ptr__comparator.html">object_ptr_comparator</a> (sbk::core)</dd><dd><a class="el" href="classsbk_1_1core_1_1object__tracker.html">object_tracker</a> (sbk::core)</dd></dl>
+<dl class="classindex even">
+<dt class="alphachar"><a id="letter_P" name="letter_P">P</a></dt>
+<dd><a class="el" href="classsbk_1_1engine_1_1parameter.html">parameter</a> (sbk::engine)</dd><dd><a class="el" href="structsbk_1_1core_1_1parsed__database__name.html">parsed_database_name</a> (sbk::core)</dd><dd><a class="el" href="structplayable__selection.html">playable_selection</a></dd><dd><a class="el" href="classplayer__widget.html">player_widget</a></dd><dd><a class="el" href="classsbk_1_1editor_1_1project.html">project</a> (sbk::editor)</dd><dd><a class="el" href="structsbk_1_1editor_1_1project__configuration.html">project_configuration</a> (sbk::editor)</dd><dd><a class="el" href="classproject__explorer__widget.html">project_explorer_widget</a></dd><dd><a class="el" href="classproject__manager.html">project_manager</a></dd><dd><a class="el" href="classproject__nodes__widget.html">project_nodes_widget</a></dd><dd><a class="el" href="classsbk_1_1core_1_1property.html">property</a> (sbk::core)</dd><dd><a class="el" href="classproperty__drawer.html">property_drawer</a></dd></dl>
+<dl class="classindex odd">
+<dt class="alphachar"><a id="letter_R" name="letter_R">R</a></dt>
+<dd><a class="el" href="classsbk_1_1engine_1_1random__container.html">random_container</a> (sbk::engine)</dd><dd><a class="el" href="structsbk_1_1reflection_1_1RegisterPointerConversionsForBaseClasses.html">RegisterPointerConversionsForBaseClasses</a> (sbk::reflection)</dd><dd><a class="el" href="classroot__widget.html">root_widget</a></dd><dd><a class="el" href="structrpmalloc__wrapper.html">rpmalloc_wrapper</a></dd></dl>
+<dl class="classindex even">
+<dt class="alphachar"><a id="letter_S" name="letter_S">S</a></dt>
+<dd><a class="el" href="structsbk__system__config.html">sbk_system_config</a></dd><dd><a class="el" href="structsc__audioChunk.html">sc_audioChunk</a></dd><dd><a class="el" href="structsc__bank.html">sc_bank</a></dd><dd><a class="el" href="structsc__clap.html">sc_clap</a></dd><dd><a class="el" href="structsc__clap__node.html">sc_clap_node</a></dd><dd><a class="el" href="structsc__dsp.html">sc_dsp</a></dd><dd><a class="el" href="structsc__dsp__config.html">sc_dsp_config</a></dd><dd><a class="el" href="structsc__dsp__parameter.html">sc_dsp_parameter</a></dd><dd><a class="el" href="structsc__dsp__parameter__float.html">sc_dsp_parameter_float</a></dd><dd><a class="el" href="structsc__dsp__state.html">sc_dsp_state</a></dd><dd><a class="el" href="structsc__dsp__vtable.html">sc_dsp_vtable</a></dd><dd><a class="el" href="structsc__encoder.html">sc_encoder</a></dd><dd><a class="el" href="structsc__encoder__config.html">sc_encoder_config</a></dd><dd><a class="el" href="structsc__encoder__vorbis.html">sc_encoder_vorbis</a></dd><dd><a class="el" href="structsc__meter.html">sc_meter</a></dd><dd><a class="el" href="structsc__meter__node.html">sc_meter_node</a></dd><dd><a class="el" href="structsc__node__group.html">sc_node_group</a></dd><dd><a class="el" href="structSC__NODE__GROUP__DELETER.html">SC_NODE_GROUP_DELETER</a></dd><dd><a class="el" href="structsc__riffChunk.html">sc_riffChunk</a></dd><dd><a class="el" href="structsc__sound.html">sc_sound</a></dd><dd><a class="el" href="structSC__SOUND__DELETER.html">SC_SOUND_DELETER</a></dd><dd><a class="el" href="structSC__SOUND__INSTANCE__DELETER.html">SC_SOUND_INSTANCE_DELETER</a></dd><dd><a class="el" href="structsc__system.html">sc_system</a></dd><dd><a class="el" href="structsc__system__config.html">sc_system_config</a></dd><dd><a class="el" href="structselection.html">selection</a></dd><dd><a class="el" href="classsbk_1_1engine_1_1sequence__container.html">sequence_container</a> (sbk::engine)</dd><dd><a class="el" href="structsbk_1_1core_1_1serialization_1_1serialized__associative__container.html">serialized_associative_container</a> (sbk::core::serialization)</dd><dd><a class="el" href="structsbk_1_1core_1_1serialization_1_1serialized__child__class.html">serialized_child_class</a> (sbk::core::serialization)</dd><dd><a class="el" href="structsbk_1_1core_1_1serialization_1_1serialized__object.html">serialized_object</a> (sbk::core::serialization)</dd><dd><a class="el" href="structsbk_1_1core_1_1serialization_1_1serialized__object__vector.html">serialized_object_vector</a> (sbk::core::serialization)</dd><dd><a class="el" href="structsbk_1_1core_1_1serialization_1_1serialized__object__vector_3_01sbk_1_1engine_1_1sound_01_4.html">serialized_object_vector&lt; sbk::engine::sound &gt;</a> (sbk::core::serialization)</dd><dd><a class="el" href="structsbk_1_1core_1_1serialization_1_1serialized__sequential__container.html">serialized_sequential_container</a> (sbk::core::serialization)</dd><dd><a class="el" href="structsbk_1_1core_1_1serialization_1_1serialized__sound.html">serialized_sound</a> (sbk::core::serialization)</dd><dd><a class="el" href="structsbk_1_1core_1_1serialization_1_1serialized__soundbank.html">serialized_soundbank</a> (sbk::core::serialization)</dd><dd><a class="el" href="structsbk_1_1core_1_1serialization_1_1serialized__standalone__object.html">serialized_standalone_object</a> (sbk::core::serialization)</dd><dd><a class="el" href="structsbk_1_1core_1_1serialization_1_1serialized__system.html">serialized_system</a> (sbk::core::serialization)</dd><dd><a class="el" href="structsbk_1_1core_1_1serialization_1_1serialized__type.html">serialized_type</a> (sbk::core::serialization)</dd><dd><a class="el" href="structsbk_1_1core_1_1serialization_1_1serialized__version.html">serialized_version</a> (sbk::core::serialization)</dd><dd><a class="el" href="classsbk_1_1engine_1_1sound.html">sound</a> (sbk::engine)</dd><dd><a class="el" href="classsbk_1_1engine_1_1sound__container.html">sound_container</a> (sbk::engine)</dd><dd><a class="el" href="classsbk_1_1engine_1_1soundbank.html">soundbank</a> (sbk::engine)</dd><dd><a class="el" href="structsbk_1_1engine_1_1soundbank__database.html">soundbank_database</a> (sbk::engine)</dd><dd><a class="el" href="structsbk_1_1engine_1_1soundbank__database__entry.html">soundbank_database_entry</a> (sbk::engine)</dd><dd><a class="el" href="structsbk_1_1engine_1_1soundbank__dependencies.html">soundbank_dependencies</a> (sbk::engine)</dd><dd><a class="el" href="classsplash__widget.html">splash_widget</a></dd><dd><a class="el" href="structsbk_1_1engine_1_1node__instance__fsm_1_1state__init.html">node_instance_fsm::state_init</a> (sbk::engine)</dd><dd><a class="el" href="structsbk_1_1engine_1_1node__instance__fsm_1_1state__playing.html">node_instance_fsm::state_playing</a> (sbk::engine)</dd><dd><a class="el" href="structsbk_1_1engine_1_1node__instance__fsm_1_1state__stopped.html">node_instance_fsm::state_stopped</a> (sbk::engine)</dd><dd><a class="el" href="structsbk_1_1engine_1_1node__instance__fsm_1_1state__uninit.html">node_instance_fsm::state_uninit</a> (sbk::engine)</dd><dd><a class="el" href="structsbk_1_1engine_1_1node__instance__fsm_1_1state__virtual.html">node_instance_fsm::state_virtual</a> (sbk::engine)</dd><dd><a class="el" href="structstbi__io__callbacks.html">stbi_io_callbacks</a></dd><dd><a class="el" href="classsbk_1_1engine_1_1switch__container.html">switch_container</a> (sbk::engine)</dd><dd><a class="el" href="classsbk_1_1engine_1_1system.html">system</a> (sbk::engine)</dd></dl>
+<dl class="classindex odd">
+<dt class="alphachar"><a id="letter_T" name="letter_T">T</a></dt>
+<dd><a class="el" href="structsbk_1_1engine_1_1node__instance__fsm_1_1transition__table.html">node_instance_fsm::transition_table</a> (sbk::engine)</dd><dd><a class="el" href="structsbk_1_1util_1_1type__comparator.html">type_comparator</a> (sbk::util)</dd><dd><a class="el" href="classsbk_1_1util_1_1type__helper.html">type_helper</a> (sbk::util)</dd></dl>
+<dl class="classindex even">
+<dt class="alphachar"><a id="letter_V" name="letter_V">V</a></dt>
+<dd><a class="el" href="classsbk_1_1engine_1_1voice.html">voice</a> (sbk::engine)</dd><dd><a class="el" href="classsbk_1_1engine_1_1profiling_1_1voice__tracker.html">voice_tracker</a> (sbk::engine::profiling)</dd><dd><a class="el" href="structsbk_1_1engine_1_1void__deleter.html">void_deleter</a> (sbk::engine)</dd></dl>
+<dl class="classindex odd">
+<dt class="alphachar"><a id="letter_W" name="letter_W">W</a></dt>
+<dd><a class="el" href="structrttr_1_1wrapper__mapper_3_01sbk_1_1core_1_1child__ptr_3_01T_01_4_01_4.html">wrapper_mapper&lt; sbk::core::child_ptr&lt; T &gt; &gt;</a> (rttr)</dd><dd><a class="el" href="structrttr_1_1wrapper__mapper_3_01sbk_1_1core_1_1database__ptr_3_01T_01_4_01_4.html">wrapper_mapper&lt; sbk::core::database_ptr&lt; T &gt; &gt;</a> (rttr)</dd></dl>
+</div>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
+  </ul>
+</div>
+</body>
+</html>

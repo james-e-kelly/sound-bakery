@@ -1,0 +1,7 @@
+<map id="sbk::engine::effect_parameter_description" name="sbk::engine::effect_parameter_description">
+<area shape="rect" id="Node000001" title=" " alt="" coords="6,181,182,221"/>
+<area shape="rect" id="Node000002" href="$structsc__dsp__parameter.html" title=" " alt="" coords="23,93,165,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="97,132,97,181,91,181,91,132"/>
+<area shape="rect" id="Node000003" href="$structsc__dsp__parameter__float.html" title=" " alt="" coords="5,5,183,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="97,45,97,93,91,93,91,45"/>
+</map>

@@ -1,0 +1,17 @@
+<map id="src/sound_chef/sound_chef_encoder.h" name="src/sound_chef/sound_chef_encoder.h">
+<area shape="rect" id="Node000001" title="Provides extensions to miniaudio&#39;s encoding API." alt="" coords="247,5,409,45"/>
+<area shape="rect" id="Node000002" href="$sound__chef__common_8h_source.html" title=" " alt="" coords="241,93,415,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="331,46,331,79,325,79,325,46"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="5,189,104,214"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="269,136,105,187,103,182,267,131"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="129,189,205,214"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="294,136,201,185,199,180,291,131"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="229,189,321,214"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="318,135,292,178,287,175,314,132"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="345,189,420,214"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="342,132,370,175,366,178,338,135"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="445,189,515,214"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="363,131,449,180,447,184,360,136"/>
+<area shape="rect" id="Node000008" href="$sound__chef__version_8h_source.html" title=" " alt="" coords="539,181,714,221"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="394,131,549,175,547,180,393,136"/>
+</map>

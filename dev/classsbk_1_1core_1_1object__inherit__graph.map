@@ -1,0 +1,61 @@
+<map id="sbk::core::object" name="sbk::core::object">
+<area shape="rect" id="Node000001" title="Base object that all sound Bakery objects should inherit from." alt="" coords="229,369,359,394"/>
+<area shape="rect" id="Node000005" href="$classsbk_1_1core_1_1database__object.html" title="Base object type for any object that can exist in the editor/database. Holds an ID and name." alt="" coords="431,304,581,344"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="354,362,431,341,432,347,356,368"/>
+<area shape="rect" id="Node000029" href="$classsbk_1_1engine_1_1node__instance.html" title="NodeInstances represent runtime versions of Nodes, either containers or busses." alt="" coords="407,369,605,394"/>
+<area shape="poly" id="edge28_Node000001_Node000029" title=" " alt="" coords="372,379,406,379,406,384,372,384"/>
+<area shape="rect" id="Node000030" href="$classsbk_1_1engine_1_1voice.html" title="A runtime graph of nodes and busses, playing a sound or many." alt="" coords="436,418,576,443"/>
+<area shape="poly" id="edge29_Node000001_Node000030" title=" " alt="" coords="363,395,451,415,450,421,362,400"/>
+<area shape="rect" id="Node000002" href="$classsbk_1_1core_1_1object__owner.html" title="Creates, owns and tracks objects." alt="" coords="5,311,181,337"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="152,338,250,366,248,371,151,343"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="13,361,174,401"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="187,379,229,379,229,384,187,384"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="19,426,168,451"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="151,420,248,391,250,397,152,425"/>
+<area shape="rect" id="Node000006" href="$classsbk_1_1engine_1_1parameter.html" title=" " alt="" coords="661,5,835,45"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="514,290,532,239,561,176,600,111,624,82,652,55,670,43,673,48,655,59,628,85,605,114,566,178,537,241,519,292"/>
+<area shape="rect" id="Node000008" href="$classsbk_1_1engine_1_1parameter.html" title=" " alt="" coords="661,69,835,109"/>
+<area shape="poly" id="edge7_Node000005_Node000008" title=" " alt="" coords="520,290,542,251,571,205,608,159,652,119,672,107,675,112,655,123,612,163,575,208,546,254,525,293"/>
+<area shape="rect" id="Node000010" href="$classsbk_1_1engine_1_1parameter.html" title=" " alt="" coords="661,133,835,173"/>
+<area shape="poly" id="edge9_Node000005_Node000010" title=" " alt="" coords="530,292,583,237,616,208,652,183,676,171,678,176,655,188,619,212,587,241,534,295"/>
+<area shape="rect" id="Node000012" href="$classsbk_1_1engine_1_1effect__description.html" title="Wraps a sc_dsp_config." alt="" coords="677,197,819,237"/>
+<area shape="poly" id="edge11_Node000005_Node000012" title=" " alt="" coords="554,295,652,247,683,235,685,240,654,252,556,300"/>
+<area shape="rect" id="Node000013" href="$classsbk_1_1engine_1_1event.html" title=" " alt="" coords="677,262,819,287"/>
+<area shape="poly" id="edge12_Node000005_Node000013" title=" " alt="" coords="594,303,684,285,685,290,595,309"/>
+<area shape="rect" id="Node000014" href="$classsbk_1_1engine_1_1game__object.html" title=" " alt="" coords="653,311,843,337"/>
+<area shape="poly" id="edge13_Node000005_Node000014" title=" " alt="" coords="595,321,653,321,653,327,595,327"/>
+<area shape="rect" id="Node000015" href="$classsbk_1_1engine_1_1named__parameter__value.html" title="Represents a discrete value for a named_parameter." alt="" coords="673,361,823,401"/>
+<area shape="poly" id="edge14_Node000005_Node000015" title=" " alt="" coords="595,342,673,361,672,366,594,347"/>
+<area shape="rect" id="Node000016" href="$classsbk_1_1engine_1_1node__base.html" title="Generic node that can have a get_parent and own children." alt="" coords="661,426,835,451"/>
+<area shape="poly" id="edge15_Node000005_Node000016" title=" " alt="" coords="594,348,607,355,622,370,631,384,640,398,655,411,681,424,679,428,652,416,636,402,627,387,618,373,604,359,592,352"/>
+<area shape="rect" id="Node000026" href="$classsbk_1_1engine_1_1parameter.html" title="Defines a database object with a changeable property." alt="" coords="661,476,835,516"/>
+<area shape="poly" id="edge25_Node000005_Node000026" title=" " alt="" coords="594,346,607,355,619,369,626,383,632,410,638,437,644,449,655,462,672,474,669,478,652,466,640,452,633,438,627,411,621,385,615,372,604,359,591,350"/>
+<area shape="rect" id="Node000027" href="$classsbk_1_1engine_1_1sound.html" title=" " alt="" coords="676,541,820,566"/>
+<area shape="poly" id="edge26_Node000005_Node000027" title=" " alt="" coords="595,345,607,356,623,378,630,400,631,443,632,485,640,506,655,526,677,540,674,545,652,530,635,508,627,486,626,443,625,401,618,380,603,359,591,349"/>
+<area shape="rect" id="Node000028" href="$classsbk_1_1engine_1_1soundbank.html" title="Packages events and dependent objects and sounds." alt="" coords="660,590,836,615"/>
+<area shape="poly" id="edge27_Node000005_Node000028" title=" " alt="" coords="595,344,607,356,626,384,634,413,634,441,631,469,628,497,628,524,636,550,655,577,670,588,666,592,651,581,632,553,623,524,622,496,626,469,629,441,629,414,621,387,603,359,591,348"/>
+<area shape="rect" id="Node000007" href="$classsbk_1_1engine_1_1float__parameter.html" title=" " alt="" coords="922,5,1057,45"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="848,23,922,23,922,28,848,28"/>
+<area shape="rect" id="Node000009" href="$classsbk_1_1engine_1_1int__parameter.html" title=" " alt="" coords="891,77,1088,102"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="849,87,891,87,891,92,849,92"/>
+<area shape="rect" id="Node000011" href="$classsbk_1_1engine_1_1named__parameter.html" title="Holds discrete named integer values." alt="" coords="914,133,1065,173"/>
+<area shape="poly" id="edge10_Node000010_Node000011" title=" " alt="" coords="848,151,914,151,914,156,848,156"/>
+<area shape="rect" id="Node000017" href="$classsbk_1_1engine_1_1node.html" title="Root node that builds the core graph of sounds and busses." alt="" coords="921,426,1058,451"/>
+<area shape="poly" id="edge16_Node000016_Node000017" title=" " alt="" coords="849,436,920,436,920,441,849,441"/>
+<area shape="rect" id="Node000018" href="$classsbk_1_1engine_1_1bus.html" title=" " alt="" coords="1155,349,1283,374"/>
+<area shape="poly" id="edge17_Node000017_Node000018" title=" " alt="" coords="1040,419,1180,372,1181,377,1042,424"/>
+<area shape="rect" id="Node000020" href="$classsbk_1_1engine_1_1container.html" title="Base container type. Inherited types include sounds, random, sequence etc." alt="" coords="1136,450,1303,475"/>
+<area shape="poly" id="edge19_Node000017_Node000020" title=" " alt="" coords="1072,445,1136,451,1136,457,1071,450"/>
+<area shape="rect" id="Node000019" href="$classsbk_1_1engine_1_1aux__bus.html" title=" " alt="" coords="1355,297,1513,322"/>
+<area shape="poly" id="edge18_Node000018_Node000019" title=" " alt="" coords="1285,343,1380,319,1382,325,1286,348"/>
+<area shape="rect" id="Node000021" href="$classsbk_1_1engine_1_1blend__container.html" title=" " alt="" coords="1363,347,1505,387"/>
+<area shape="poly" id="edge20_Node000020_Node000021" title=" " alt="" coords="1256,441,1350,396,1378,384,1380,389,1352,401,1259,446"/>
+<area shape="rect" id="Node000022" href="$classsbk_1_1engine_1_1random__container.html" title=" " alt="" coords="1357,411,1511,451"/>
+<area shape="poly" id="edge21_Node000020_Node000022" title=" " alt="" coords="1316,446,1356,440,1357,445,1317,451"/>
+<area shape="rect" id="Node000023" href="$classsbk_1_1engine_1_1sequence__container.html" title=" " alt="" coords="1351,475,1517,515"/>
+<area shape="poly" id="edge22_Node000020_Node000023" title=" " alt="" coords="1317,475,1351,480,1350,485,1316,480"/>
+<area shape="rect" id="Node000024" href="$classsbk_1_1engine_1_1sound__container.html" title=" " alt="" coords="1362,539,1506,579"/>
+<area shape="poly" id="edge23_Node000020_Node000024" title=" " alt="" coords="1259,479,1352,524,1380,536,1378,541,1350,529,1256,484"/>
+<area shape="rect" id="Node000025" href="$classsbk_1_1engine_1_1switch__container.html" title=" " alt="" coords="1361,603,1507,643"/>
+<area shape="poly" id="edge24_Node000020_Node000025" title=" " alt="" coords="1241,484,1289,536,1319,564,1352,588,1374,600,1371,605,1349,593,1316,568,1285,540,1237,488"/>
+</map>

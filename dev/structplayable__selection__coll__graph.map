@@ -1,0 +1,11 @@
+<map id="playable_selection" name="playable_selection">
+<area shape="rect" id="Node000001" title=" " alt="" coords="215,183,359,208"/>
+<area shape="rect" id="Node000002" href="$classsbk_1_1core_1_1object.html" title="Base object that all sound Bakery objects should inherit from." alt="" coords="222,95,351,120"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="289,134,289,182,284,182,284,134"/>
+<area shape="rect" id="Node000003" href="$classsbk_1_1core_1_1object__owner.html" title="Creates, owns and tracks objects." alt="" coords="5,13,181,38"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="135,41,260,92,258,97,133,46"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="206,5,367,45"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="289,59,289,94,284,94,284,59"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="392,13,541,38"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="429,46,313,97,311,92,427,41"/>
+</map>

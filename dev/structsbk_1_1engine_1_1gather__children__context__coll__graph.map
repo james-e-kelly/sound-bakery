@@ -1,0 +1,5 @@
+<map id="sbk::engine::gather_children_context" name="sbk::engine::gather_children_context">
+<area shape="rect" id="Node000001" title="Contains all information required for gathering sounds for runtime playing and selection." alt="" coords="5,108,152,148"/>
+<area shape="rect" id="Node000002" href="$structsbk_1_1engine_1_1local__parameter__list.html" title="Holds a list of parameters and their local value." alt="" coords="11,5,147,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="81,59,81,108,76,108,76,59"/>
+</map>

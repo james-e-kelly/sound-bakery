@@ -1,0 +1,197 @@
+var hierarchy =
+[
+    [ "sbk::engine::action", "structsbk_1_1engine_1_1action.html", null ],
+    [ "sbk::engine::node_instance_fsm::action_update", "structsbk_1_1engine_1_1node__instance__fsm_1_1action__update.html", null ],
+    [ "gluten::app", null, [
+      [ "editor_app", "classeditor__app.html", null ]
+    ] ],
+    [ "audio_meter_utils::audio_meter_draw_info", "structaudio__meter__utils_1_1audio__meter__draw__info.html", null ],
+    [ "sbk::core::serialization::boost_serializer< load_archive, save_archive, inputMode, outputMode >", "classsbk_1_1core_1_1serialization_1_1boost__serializer.html", null ],
+    [ "sbk::reflection::CreatePointerConversion< DerivedClass, T >", "structsbk_1_1reflection_1_1CreatePointerConversion.html", null ],
+    [ "sbk::reflection::CreatePointerConversion< DerivedClass >", "structsbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_01_4.html", null ],
+    [ "sbk::reflection::CreatePointerConversion< DerivedClass, BaseClass, U... >", "structsbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_00_01BaseClass_00_01U_8_8_8_01_4.html", null ],
+    [ "sbk::reflection::CreatePointerConversion< DerivedClass, BaseClassList... >", "structsbk_1_1reflection_1_1CreatePointerConversion.html", [
+      [ "sbk::reflection::CreatePointerConversion< DerivedClass, rttr::type_list< BaseClassList... > >", "structsbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_00_01rttr_1_1type__list_3_01BaseClassList_8_8_8_01_4_01_4.html", null ]
+    ] ],
+    [ "sbk::core::database", "classsbk_1_1core_1_1database.html", [
+      [ "sbk::engine::system", "classsbk_1_1engine_1_1system.html", null ]
+    ] ],
+    [ "sbk::core::database_name", "structsbk_1_1core_1_1database__name.html", null ],
+    [ "sbk::core::database_name_comparator", "structsbk_1_1core_1_1database__name__comparator.html", null ],
+    [ "sbk::core::database_ptr< TObject >", "classsbk_1_1core_1_1database__ptr.html", [
+      [ "sbk::core::child_ptr< TObject >", "classsbk_1_1core_1_1child__ptr.html", null ]
+    ] ],
+    [ "sbk::core::database_ptr< named_parameter >", "classsbk_1_1core_1_1database__ptr.html", null ],
+    [ "sbk::core::database_ptr< sbk::core::database_object >", "classsbk_1_1core_1_1database__ptr.html", null ],
+    [ "sbk::core::database_ptr< sbk::engine::container >", "classsbk_1_1core_1_1database__ptr.html", null ],
+    [ "sbk::core::database_ptr< sbk::engine::named_parameter >", "classsbk_1_1core_1_1database__ptr.html", null ],
+    [ "sbk::core::database_ptr< sbk::engine::node_base >", "classsbk_1_1core_1_1database__ptr.html", null ],
+    [ "sbk::core::database_ptr< sbk::engine::sound >", "classsbk_1_1core_1_1database__ptr.html", null ],
+    [ "sbk::engine::effect_parameter_description", "classsbk_1_1engine_1_1effect__parameter__description.html", null ],
+    [ "gluten::element", null, [
+      [ "add_effect_button", "classadd__effect__button.html", null ]
+    ] ],
+    [ "std::enable_shared_from_this", null, [
+      [ "sbk::core::object", "classsbk_1_1core_1_1object.html", [
+        [ "sbk::core::database_object", "classsbk_1_1core_1_1database__object.html", [
+          [ "sbk::engine::parameter< float >", "classsbk_1_1engine_1_1parameter.html", [
+            [ "sbk::engine::float_parameter", "classsbk_1_1engine_1_1float__parameter.html", null ]
+          ] ],
+          [ "sbk::engine::parameter< int >", "classsbk_1_1engine_1_1parameter.html", [
+            [ "sbk::engine::int_parameter", "classsbk_1_1engine_1_1int__parameter.html", null ]
+          ] ],
+          [ "sbk::engine::parameter< sbk_id >", "classsbk_1_1engine_1_1parameter.html", [
+            [ "sbk::engine::named_parameter", "classsbk_1_1engine_1_1named__parameter.html", null ]
+          ] ],
+          [ "sbk::engine::effect_description", "classsbk_1_1engine_1_1effect__description.html", null ],
+          [ "sbk::engine::event", "classsbk_1_1engine_1_1event.html", null ],
+          [ "sbk::engine::game_object", "classsbk_1_1engine_1_1game__object.html", null ],
+          [ "sbk::engine::named_parameter_value", "classsbk_1_1engine_1_1named__parameter__value.html", null ],
+          [ "sbk::engine::node_base", "classsbk_1_1engine_1_1node__base.html", [
+            [ "sbk::engine::node", "classsbk_1_1engine_1_1node.html", [
+              [ "sbk::engine::bus", "classsbk_1_1engine_1_1bus.html", [
+                [ "sbk::engine::aux_bus", "classsbk_1_1engine_1_1aux__bus.html", null ]
+              ] ],
+              [ "sbk::engine::container", "classsbk_1_1engine_1_1container.html", [
+                [ "sbk::engine::blend_container", "classsbk_1_1engine_1_1blend__container.html", null ],
+                [ "sbk::engine::random_container", "classsbk_1_1engine_1_1random__container.html", null ],
+                [ "sbk::engine::sequence_container", "classsbk_1_1engine_1_1sequence__container.html", null ],
+                [ "sbk::engine::sound_container", "classsbk_1_1engine_1_1sound__container.html", null ],
+                [ "sbk::engine::switch_container", "classsbk_1_1engine_1_1switch__container.html", null ]
+              ] ]
+            ] ]
+          ] ],
+          [ "sbk::engine::parameter< parameter_type >", "classsbk_1_1engine_1_1parameter.html", null ],
+          [ "sbk::engine::sound", "classsbk_1_1engine_1_1sound.html", null ],
+          [ "sbk::engine::soundbank", "classsbk_1_1engine_1_1soundbank.html", null ]
+        ] ],
+        [ "sbk::engine::node_instance", "classsbk_1_1engine_1_1node__instance.html", null ],
+        [ "sbk::engine::voice", "classsbk_1_1engine_1_1voice.html", null ]
+      ] ]
+    ] ],
+    [ "sbk::engine::encoding_sound", "structsbk_1_1engine_1_1encoding__sound.html", null ],
+    [ "sbk::error", "classsbk_1_1error.html", null ],
+    [ "sbk::engine::event_devirtualise", "structsbk_1_1engine_1_1event__devirtualise.html", null ],
+    [ "sbk::engine::event_init", "structsbk_1_1engine_1_1event__init.html", null ],
+    [ "sbk::engine::event_pause", "structsbk_1_1engine_1_1event__pause.html", null ],
+    [ "sbk::engine::event_play", "structsbk_1_1engine_1_1event__play.html", null ],
+    [ "sbk::engine::event_stop", "structsbk_1_1engine_1_1event__stop.html", null ],
+    [ "sbk::engine::event_update", "structsbk_1_1engine_1_1event__update.html", null ],
+    [ "sbk::engine::event_virtualise", "structsbk_1_1engine_1_1event__virtualise.html", null ],
+    [ "sbk::engine::flag_playing", "structsbk_1_1engine_1_1flag__playing.html", null ],
+    [ "sbk::engine::flag_stopped", "structsbk_1_1engine_1_1flag__stopped.html", null ],
+    [ "sbk::engine::gather_children_context", "structsbk_1_1engine_1_1gather__children__context.html", null ],
+    [ "sbk::engine::global_parameter_list", "structsbk_1_1engine_1_1global__parameter__list.html", null ],
+    [ "sbk::engine::local_parameter_list", "structsbk_1_1engine_1_1local__parameter__list.html", null ],
+    [ "sbk::core::logger", null, [
+      [ "sbk::engine::system", "classsbk_1_1engine_1_1system.html", null ]
+    ] ],
+    [ "gluten::manager", null, [
+      [ "app_manager", "classapp__manager.html", null ],
+      [ "project_manager", "classproject__manager.html", null ]
+    ] ],
+    [ "method_drawer", "classmethod__drawer.html", null ],
+    [ "sbk::core::name", "classsbk_1_1core_1_1name.html", null ],
+    [ "sbk::engine::node_group_instance", "structsbk_1_1engine_1_1node__group__instance.html", null ],
+    [ "boost::noncopyable", null, [
+      [ "sbk::core::object", "classsbk_1_1core_1_1object.html", null ],
+      [ "sbk::engine::system", "classsbk_1_1engine_1_1system.html", null ]
+    ] ],
+    [ "sbk::memory::object_deleter", "structsbk_1_1memory_1_1object__deleter.html", null ],
+    [ "sbk::core::object_owner", "classsbk_1_1core_1_1object__owner.html", [
+      [ "sbk::core::object", "classsbk_1_1core_1_1object.html", null ],
+      [ "sbk::editor::project", "classsbk_1_1editor_1_1project.html", null ],
+      [ "sbk::engine::system", "classsbk_1_1engine_1_1system.html", null ]
+    ] ],
+    [ "sbk::core::object_ptr_comparator", "structsbk_1_1core_1_1object__ptr__comparator.html", null ],
+    [ "sbk::core::object_tracker", "classsbk_1_1core_1_1object__tracker.html", [
+      [ "sbk::engine::system", "classsbk_1_1engine_1_1system.html", null ]
+    ] ],
+    [ "sbk::core::parsed_database_name", "structsbk_1_1core_1_1parsed__database__name.html", null ],
+    [ "playable_selection", "structplayable__selection.html", null ],
+    [ "sbk::editor::project_configuration", "structsbk_1_1editor_1_1project__configuration.html", null ],
+    [ "sbk::core::property< T >", "classsbk_1_1core_1_1property.html", null ],
+    [ "sbk::core::property< parameter_type >", "classsbk_1_1core_1_1property.html", null ],
+    [ "property_drawer", "classproperty__drawer.html", null ],
+    [ "sbk::reflection::RegisterPointerConversionsForBaseClasses< T >", "structsbk_1_1reflection_1_1RegisterPointerConversionsForBaseClasses.html", null ],
+    [ "gluten::root_widget", null, [
+      [ "root_widget", "classroot__widget.html", null ]
+    ] ],
+    [ "rpmalloc_wrapper", "structrpmalloc__wrapper.html", null ],
+    [ "sbk_system_config", "structsbk__system__config.html", null ],
+    [ "sc_audioChunk", "structsc__audioChunk.html", null ],
+    [ "sc_bank", "structsc__bank.html", null ],
+    [ "sc_clap", "structsc__clap.html", null ],
+    [ "sc_clap_node", "structsc__clap__node.html", null ],
+    [ "sc_dsp", "structsc__dsp.html", null ],
+    [ "sc_dsp_config", "structsc__dsp__config.html", null ],
+    [ "sc_dsp_parameter", "structsc__dsp__parameter.html", null ],
+    [ "sc_dsp_parameter_float", "structsc__dsp__parameter__float.html", null ],
+    [ "sc_dsp_state", "structsc__dsp__state.html", null ],
+    [ "sc_dsp_vtable", "structsc__dsp__vtable.html", null ],
+    [ "sc_encoder", "structsc__encoder.html", null ],
+    [ "sc_encoder_config", "structsc__encoder__config.html", null ],
+    [ "sc_encoder_vorbis", "structsc__encoder__vorbis.html", null ],
+    [ "sc_meter", "structsc__meter.html", null ],
+    [ "sc_meter_node", "structsc__meter__node.html", null ],
+    [ "sc_node_group", "structsc__node__group.html", null ],
+    [ "SC_NODE_GROUP_DELETER", "structSC__NODE__GROUP__DELETER.html", null ],
+    [ "sc_riffChunk", "structsc__riffChunk.html", null ],
+    [ "sc_sound", "structsc__sound.html", null ],
+    [ "SC_SOUND_DELETER", "structSC__SOUND__DELETER.html", null ],
+    [ "SC_SOUND_INSTANCE_DELETER", "structSC__SOUND__INSTANCE__DELETER.html", null ],
+    [ "sc_system", "structsc__system.html", [
+      [ "sbk::engine::system", "classsbk_1_1engine_1_1system.html", null ]
+    ] ],
+    [ "sc_system_config", "structsc__system__config.html", null ],
+    [ "selection", "structselection.html", null ],
+    [ "sbk::core::serialization::serialized_associative_container", "structsbk_1_1core_1_1serialization_1_1serialized__associative__container.html", null ],
+    [ "sbk::core::serialization::serialized_child_class", "structsbk_1_1core_1_1serialization_1_1serialized__child__class.html", null ],
+    [ "sbk::core::serialization::serialized_object", "structsbk_1_1core_1_1serialization_1_1serialized__object.html", null ],
+    [ "sbk::core::serialization::serialized_object_vector< object_class >", "structsbk_1_1core_1_1serialization_1_1serialized__object__vector.html", null ],
+    [ "sbk::core::serialization::serialized_object_vector< sbk::engine::sound >", "structsbk_1_1core_1_1serialization_1_1serialized__object__vector_3_01sbk_1_1engine_1_1sound_01_4.html", null ],
+    [ "sbk::core::serialization::serialized_sequential_container", "structsbk_1_1core_1_1serialization_1_1serialized__sequential__container.html", null ],
+    [ "sbk::core::serialization::serialized_sound", "structsbk_1_1core_1_1serialization_1_1serialized__sound.html", null ],
+    [ "sbk::core::serialization::serialized_soundbank", "structsbk_1_1core_1_1serialization_1_1serialized__soundbank.html", null ],
+    [ "sbk::core::serialization::serialized_standalone_object", "structsbk_1_1core_1_1serialization_1_1serialized__standalone__object.html", null ],
+    [ "sbk::core::serialization::serialized_system", "structsbk_1_1core_1_1serialization_1_1serialized__system.html", null ],
+    [ "sbk::core::serialization::serialized_type", "structsbk_1_1core_1_1serialization_1_1serialized__type.html", null ],
+    [ "sbk::core::serialization::serialized_version", "structsbk_1_1core_1_1serialization_1_1serialized__version.html", null ],
+    [ "sbk::engine::soundbank_database", "structsbk_1_1engine_1_1soundbank__database.html", null ],
+    [ "sbk::engine::soundbank_database_entry", "structsbk_1_1engine_1_1soundbank__database__entry.html", null ],
+    [ "sbk::engine::soundbank_dependencies", "structsbk_1_1engine_1_1soundbank__dependencies.html", null ],
+    [ "boost::msm::front::state", null, [
+      [ "sbk::engine::node_instance_fsm::state_init", "structsbk_1_1engine_1_1node__instance__fsm_1_1state__init.html", null ],
+      [ "sbk::engine::node_instance_fsm::state_playing", "structsbk_1_1engine_1_1node__instance__fsm_1_1state__playing.html", null ],
+      [ "sbk::engine::node_instance_fsm::state_stopped", "structsbk_1_1engine_1_1node__instance__fsm_1_1state__stopped.html", null ],
+      [ "sbk::engine::node_instance_fsm::state_uninit", "structsbk_1_1engine_1_1node__instance__fsm_1_1state__uninit.html", null ],
+      [ "sbk::engine::node_instance_fsm::state_virtual", "structsbk_1_1engine_1_1node__instance__fsm_1_1state__virtual.html", null ]
+    ] ],
+    [ "boost::msm::front::state_machine_def", null, [
+      [ "sbk::engine::node_instance", "classsbk_1_1engine_1_1node__instance.html", null ],
+      [ "sbk::engine::node_instance_fsm", "structsbk_1_1engine_1_1node__instance__fsm.html", null ]
+    ] ],
+    [ "stbi_io_callbacks", "structstbi__io__callbacks.html", null ],
+    [ "sbk::util::type_comparator", "structsbk_1_1util_1_1type__comparator.html", null ],
+    [ "sbk::util::type_helper", "classsbk_1_1util_1_1type__helper.html", null ],
+    [ "boost::mpl::vector", null, [
+      [ "sbk::engine::node_instance_fsm::transition_table", "structsbk_1_1engine_1_1node__instance__fsm_1_1transition__table.html", null ]
+    ] ],
+    [ "sbk::engine::profiling::voice_tracker", "classsbk_1_1engine_1_1profiling_1_1voice__tracker.html", null ],
+    [ "sbk::engine::void_deleter", "structsbk_1_1engine_1_1void__deleter.html", null ],
+    [ "gluten::widget", null, [
+      [ "audio_display_widget", "classaudio__display__widget.html", null ],
+      [ "audio_meter_widget", "classaudio__meter__widget.html", null ],
+      [ "database_widget", "classdatabase__widget.html", null ],
+      [ "details_widget", "classdetails__widget.html", null ],
+      [ "file_browser_widget", "classfile__browser__widget.html", null ],
+      [ "log_widget", "classlog__widget.html", null ],
+      [ "new_project_widget", "classnew__project__widget.html", null ],
+      [ "player_widget", "classplayer__widget.html", null ],
+      [ "project_explorer_widget", "classproject__explorer__widget.html", null ],
+      [ "project_nodes_widget", "classproject__nodes__widget.html", null ],
+      [ "splash_widget", "classsplash__widget.html", null ]
+    ] ],
+    [ "rttr::wrapper_mapper< sbk::core::child_ptr< T > >", "structrttr_1_1wrapper__mapper_3_01sbk_1_1core_1_1child__ptr_3_01T_01_4_01_4.html", null ],
+    [ "rttr::wrapper_mapper< sbk::core::database_ptr< T > >", "structrttr_1_1wrapper__mapper_3_01sbk_1_1core_1_1database__ptr_3_01T_01_4_01_4.html", null ]
+];

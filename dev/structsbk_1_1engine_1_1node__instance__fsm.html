@@ -1,0 +1,323 @@
+<!-- HTML header for doxygen 1.10.0-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Sound Bakery: sbk::engine::node_instance_fsm Struct Reference</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom-css.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+</head>
+<body>
+<!-- https://tholman.com/github-corners/ -->
+<a href="https://github.com/KarateKidzz/sound-bakery" class="github-corner" title="View source on GitHub" target="_blank" rel="noopener noreferrer">
+  <svg viewBox="0 0 250 250" width="40" height="40" style="position: absolute; top: 0; border: 0; right: 0; z-index: 99;" aria-hidden="true">
+  <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectlogo"><img alt="Logo" src="sound-bakery-logo.png"$logosize/></td>
+  <td id="projectalign">
+   <div id="projectname">Sound Bakery&nbsp<span id="projectnumber">&#160;<select id="sbk-version-select" aria-label="Documentation version"><option>dev</option></select></span>
+   </div>
+   <div id="projectbrief">Open-source audio middleware for games</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- Sound Bakery documentation version switcher -->
+<script type="text/javascript">
+(function () {
+    var current = "dev";
+    var select = document.getElementById('sbk-version-select');
+    if (!select) { return; }
+    // versions.json lives at the site root, one level above this version's folder.
+    fetch("../versions.json", { cache: "no-cache" })
+        .then(function (r) { return r.ok ? r.json() : []; })
+        .then(function (versions) {
+            if (!versions || !versions.length) { return; }
+            select.innerHTML = "";
+            versions.forEach(function (v) {
+                var opt = document.createElement('option');
+                opt.value = v;
+                opt.textContent = v;
+                if (v === current) { opt.selected = true; }
+                select.appendChild(opt);
+            });
+        })
+        .catch(function () { /* single-version or local build: leave the label as-is */ });
+    select.addEventListener('change', function () {
+        window.location.href = "../" + select.value + "/index.html";
+    });
+})();
+</script>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Search');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('structsbk_1_1engine_1_1node__instance__fsm.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#pub-types">Public Types</a> &#124;
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="structsbk_1_1engine_1_1node__instance__fsm-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">sbk::engine::node_instance_fsm Struct Reference</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="dynheader">
+Inheritance diagram for sbk::engine::node_instance_fsm:</div>
+<div class="dyncontent">
+<div class="center"><img src="structsbk_1_1engine_1_1node__instance__fsm__inherit__graph.png" border="0" usemap="#asbk_1_1engine_1_1node__instance__fsm_inherit__map" alt="Inheritance graph"/></div>
+<map name="asbk_1_1engine_1_1node__instance__fsm_inherit__map" id="asbk_1_1engine_1_1node__instance__fsm_inherit__map">
+<area shape="rect" title=" " alt="" coords="5,108,236,133"/>
+<area shape="rect" title=" " alt="" coords="24,5,217,60"/>
+<area shape="poly" title=" " alt="" coords="123,74,123,108,118,108,118,74"/>
+</map>
+<center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for sbk::engine::node_instance_fsm:</div>
+<div class="dyncontent">
+<div class="center"><img src="structsbk_1_1engine_1_1node__instance__fsm__coll__graph.png" border="0" usemap="#asbk_1_1engine_1_1node__instance__fsm_coll__map" alt="Collaboration graph"/></div>
+<map name="asbk_1_1engine_1_1node__instance__fsm_coll__map" id="asbk_1_1engine_1_1node__instance__fsm_coll__map">
+<area shape="rect" title=" " alt="" coords="1552,111,1783,136"/>
+<area shape="rect" title=" " alt="" coords="1207,5,1400,60"/>
+<area shape="poly" title=" " alt="" coords="1414,56,1529,85,1619,108,1617,113,1527,90,1413,62"/>
+<area shape="rect" href="classsbk_1_1engine_1_1node__instance.html" title="NodeInstances represent runtime versions of Nodes, either containers or busses." alt="" coords="897,136,1096,161"/>
+<area shape="poly" title=" " alt="" coords="1110,143,1400,133,1551,126,1552,131,1400,138,1110,148"/>
+<area shape="rect" href="classsbk_1_1core_1_1object.html" title="Base object that all sound Bakery objects should inherit from." alt="" coords="643,80,772,105"/>
+<area shape="poly" title=" " alt="" coords="786,105,931,133,930,139,785,110"/>
+<area shape="rect" href="classsbk_1_1core_1_1database__object.html" title="Base object type for any object that can exist in the editor/database. Holds an ID and name." alt="" coords="922,71,1071,111"/>
+<area shape="poly" title=" " alt="" coords="786,90,922,89,922,94,786,95"/>
+<area shape="rect" href="classsbk_1_1core_1_1object__owner.html" title="Creates, owns and tracks objects." alt="" coords="332,23,508,48"/>
+<area shape="poly" title=" " alt="" coords="498,48,644,77,642,83,497,53"/>
+<area shape="rect" title=" " alt="" coords="339,73,501,113"/>
+<area shape="poly" title=" " alt="" coords="514,90,643,90,643,95,514,95"/>
+<area shape="rect" title=" " alt="" coords="345,137,495,163"/>
+<area shape="poly" title=" " alt="" coords="497,132,642,103,644,108,498,137"/>
+<area shape="rect" title=" " alt="" coords="611,131,804,185"/>
+<area shape="poly" title=" " alt="" coords="817,152,897,149,897,155,818,157"/>
+<area shape="rect" href="classsbk_1_1engine_1_1game__object.html" title=" " alt="" coords="1209,84,1398,109"/>
+<area shape="poly" title=" " alt="" coords="1412,102,1552,112,1551,118,1411,107"/>
+<area shape="poly" title=" " alt="" coords="1085,90,1208,92,1208,98,1085,96"/>
+<area shape="rect" href="structsbk_1_1engine_1_1node__group__instance.html" title="Owns a node group and applies DSP effects to it." alt="" coords="1213,205,1394,245"/>
+<area shape="poly" title=" " alt="" coords="1407,207,1467,195,1527,179,1588,157,1640,134,1642,138,1590,162,1529,185,1468,200,1408,212"/>
+<area shape="rect" href="structsc__dsp.html" title="ma_node with an additional enum descriptor." alt="" coords="963,239,1030,264"/>
+<area shape="poly" title=" " alt="" coords="1044,245,1212,230,1213,235,1044,250"/>
+<area shape="poly" title=" " alt="" coords="968,224,977,216,997,212,1013,214,1024,221,1026,230,1021,240,1017,237,1021,230,1019,224,1012,219,997,217,979,220,972,228"/>
+<area shape="rect" href="structsc__dsp__state.html" title="Holds instance data for a single sc_dsp." alt="" coords="367,263,473,288"/>
+<area shape="poly" title=" " alt="" coords="486,260,532,254,657,246,780,244,963,247,963,253,780,250,657,252,532,259,487,265"/>
+<area shape="rect" href="structsc__dsp__vtable.html" title=" " alt="" coords="650,304,765,329"/>
+<area shape="poly" title=" " alt="" coords="462,291,496,303,532,313,593,319,650,318,650,324,593,324,532,318,494,308,460,296"/>
+<area shape="poly" title=" " alt="" coords="777,298,962,256,964,261,778,304"/>
+<area shape="rect" href="structsc__dsp__parameter.html" title=" " alt="" coords="349,349,491,375"/>
+<area shape="poly" title=" " alt="" coords="504,350,586,338,649,326,650,331,587,343,505,355"/>
+<area shape="rect" href="structsc__dsp__parameter__float.html" title=" " alt="" coords="5,349,183,375"/>
+<area shape="poly" title=" " alt="" coords="197,359,349,359,349,365,197,365"/>
+</map>
+<center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsbk_1_1engine_1_1node__instance__fsm_1_1action__update.html">action_update</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsbk_1_1engine_1_1node__instance__fsm_1_1state__init.html">state_init</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsbk_1_1engine_1_1node__instance__fsm_1_1state__playing.html">state_playing</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsbk_1_1engine_1_1node__instance__fsm_1_1state__stopped.html">state_stopped</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsbk_1_1engine_1_1node__instance__fsm_1_1state__uninit.html">state_uninit</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsbk_1_1engine_1_1node__instance__fsm_1_1state__virtual.html">state_virtual</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsbk_1_1engine_1_1node__instance__fsm_1_1transition__table.html">transition_table</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:a3dda8da06e05659644fae298e7791672" id="r_a3dda8da06e05659644fae298e7791672"><td class="memItemLeft" align="right" valign="top"><a id="a3dda8da06e05659644fae298e7791672" name="a3dda8da06e05659644fae298e7791672"></a>
+typedef <a class="el" href="structsbk_1_1engine_1_1node__instance__fsm_1_1state__uninit.html">state_uninit</a>&#160;</td><td class="memItemRight" valign="bottom"><b>initial_state</b></td></tr>
+<tr class="separator:a3dda8da06e05659644fae298e7791672"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:abaecbcb40c927c87eeb1f16322ed9920" id="r_abaecbcb40c927c87eeb1f16322ed9920"><td class="memItemLeft" align="right" valign="top"><a id="abaecbcb40c927c87eeb1f16322ed9920" name="abaecbcb40c927c87eeb1f16322ed9920"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>action_init</b> (const <a class="el" href="structsbk_1_1engine_1_1event__init.html">event_init</a> &amp;init) -&gt; void</td></tr>
+<tr class="separator:abaecbcb40c927c87eeb1f16322ed9920"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8785a15550e80fc0c32d7d7bfc03773" id="r_af8785a15550e80fc0c32d7d7bfc03773"><td class="memItemLeft" align="right" valign="top"><a id="af8785a15550e80fc0c32d7d7bfc03773" name="af8785a15550e80fc0c32d7d7bfc03773"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>action_play</b> (const <a class="el" href="structsbk_1_1engine_1_1event__play.html">event_play</a> &amp;play) -&gt; void</td></tr>
+<tr class="separator:af8785a15550e80fc0c32d7d7bfc03773"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c6d877686ae1653aef4a44882f2003c" id="r_a2c6d877686ae1653aef4a44882f2003c"><td class="memItemLeft" align="right" valign="top"><a id="a2c6d877686ae1653aef4a44882f2003c" name="a2c6d877686ae1653aef4a44882f2003c"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>action_pause</b> (const <a class="el" href="structsbk_1_1engine_1_1event__pause.html">event_pause</a> &amp;pause) -&gt; void</td></tr>
+<tr class="separator:a2c6d877686ae1653aef4a44882f2003c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ac756961cb6a412b350e8b687778680" id="r_a8ac756961cb6a412b350e8b687778680"><td class="memItemLeft" align="right" valign="top"><a id="a8ac756961cb6a412b350e8b687778680" name="a8ac756961cb6a412b350e8b687778680"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>action_stop</b> (const <a class="el" href="structsbk_1_1engine_1_1event__stop.html">event_stop</a> &amp;stop) -&gt; void</td></tr>
+<tr class="separator:a8ac756961cb6a412b350e8b687778680"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a819fc0bbf30de30e61a4301f37fb1aeb" id="r_a819fc0bbf30de30e61a4301f37fb1aeb"><td class="memItemLeft" align="right" valign="top"><a id="a819fc0bbf30de30e61a4301f37fb1aeb" name="a819fc0bbf30de30e61a4301f37fb1aeb"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>action_virtualise</b> (const <a class="el" href="structsbk_1_1engine_1_1event__virtualise.html">event_virtualise</a> &amp;virtualise) -&gt; void</td></tr>
+<tr class="separator:a819fc0bbf30de30e61a4301f37fb1aeb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e502ef10631d192b3e76c5b2bc2b90b" id="r_a2e502ef10631d192b3e76c5b2bc2b90b"><td class="memItemLeft" align="right" valign="top"><a id="a2e502ef10631d192b3e76c5b2bc2b90b" name="a2e502ef10631d192b3e76c5b2bc2b90b"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>action_devirtualise</b> (const <a class="el" href="structsbk_1_1engine_1_1event__devirtualise.html">event_devirtualise</a> &amp;devirtualise) -&gt; void</td></tr>
+<tr class="separator:a2e502ef10631d192b3e76c5b2bc2b90b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a324d7c8d8e1d8ca1d7c84671f727fe20" id="r_a324d7c8d8e1d8ca1d7c84671f727fe20"><td class="memItemLeft" align="right" valign="top"><a id="a324d7c8d8e1d8ca1d7c84671f727fe20" name="a324d7c8d8e1d8ca1d7c84671f727fe20"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>guard_init</b> (const <a class="el" href="structsbk_1_1engine_1_1event__init.html">event_init</a> &amp;init) -&gt; bool</td></tr>
+<tr class="separator:a324d7c8d8e1d8ca1d7c84671f727fe20"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac980030fc2f1eb93fbbab0886b2696b9" id="r_ac980030fc2f1eb93fbbab0886b2696b9"><td class="memTemplParams" colspan="2"><a id="ac980030fc2f1eb93fbbab0886b2696b9" name="ac980030fc2f1eb93fbbab0886b2696b9"></a>
+template&lt;class FSM , class Event &gt; </td></tr>
+<tr class="memitem:ac980030fc2f1eb93fbbab0886b2696b9"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><b>no_transition</b> (Event const &amp;<a class="el" href="classsbk_1_1engine_1_1event.html">event</a>, FSM &amp;stateMachine, int state) -&gt; void</td></tr>
+<tr class="separator:ac980030fc2f1eb93fbbab0886b2696b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a73ee1a5ae772ee35f6e2cd59f3a1775b" id="r_a73ee1a5ae772ee35f6e2cd59f3a1775b"><td class="memItemLeft" align="right" valign="top"><a id="a73ee1a5ae772ee35f6e2cd59f3a1775b" name="a73ee1a5ae772ee35f6e2cd59f3a1775b"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>init_parent</b> () -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt; void &gt;</td></tr>
+<tr class="separator:a73ee1a5ae772ee35f6e2cd59f3a1775b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b12346ee007c3a1d4c45aec13cda82c" id="r_a5b12346ee007c3a1d4c45aec13cda82c"><td class="memItemLeft" align="right" valign="top"><a id="a5b12346ee007c3a1d4c45aec13cda82c" name="a5b12346ee007c3a1d4c45aec13cda82c"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>init_child</b> () -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt; void &gt;</td></tr>
+<tr class="separator:a5b12346ee007c3a1d4c45aec13cda82c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1312723f34a96a5316f37783185aaae" id="r_aa1312723f34a96a5316f37783185aaae"><td class="memItemLeft" align="right" valign="top"><a id="aa1312723f34a96a5316f37783185aaae" name="aa1312723f34a96a5316f37783185aaae"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>init_node_group</b> (const <a class="el" href="structsbk_1_1engine_1_1event__init.html">event_init</a> &amp;init) -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt; void &gt;</td></tr>
+<tr class="separator:aa1312723f34a96a5316f37783185aaae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2752941c9caebdf1c5b070b8518f965e" id="r_a2752941c9caebdf1c5b070b8518f965e"><td class="memItemLeft" align="right" valign="top"><a id="a2752941c9caebdf1c5b070b8518f965e" name="a2752941c9caebdf1c5b070b8518f965e"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>init_callbacks</b> () -&gt; void</td></tr>
+<tr class="separator:a2752941c9caebdf1c5b070b8518f965e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c0866ec3241c4829fbf9bbd02462a5c" id="r_a1c0866ec3241c4829fbf9bbd02462a5c"><td class="memItemLeft" align="right" valign="top"><a id="a1c0866ec3241c4829fbf9bbd02462a5c" name="a1c0866ec3241c4829fbf9bbd02462a5c"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>set_volume</b> (float oldVolume, float newVolume) -&gt; void</td></tr>
+<tr class="separator:a1c0866ec3241c4829fbf9bbd02462a5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2362b479c2729432563eba94c2181546" id="r_a2362b479c2729432563eba94c2181546"><td class="memItemLeft" align="right" valign="top"><a id="a2362b479c2729432563eba94c2181546" name="a2362b479c2729432563eba94c2181546"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>set_pitch</b> (float oldPitch, float newPitch) -&gt; void</td></tr>
+<tr class="separator:a2362b479c2729432563eba94c2181546"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a8fb8f33c4626ed312ceba3d7bf82ae" id="r_a8a8fb8f33c4626ed312ceba3d7bf82ae"><td class="memItemLeft" align="right" valign="top"><a id="a8a8fb8f33c4626ed312ceba3d7bf82ae" name="a8a8fb8f33c4626ed312ceba3d7bf82ae"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>set_lowpass</b> (float oldLowpass, float newLowpass) -&gt; void</td></tr>
+<tr class="separator:a8a8fb8f33c4626ed312ceba3d7bf82ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6c4cc64084de2a46332e5a54c46b1d8" id="r_af6c4cc64084de2a46332e5a54c46b1d8"><td class="memItemLeft" align="right" valign="top"><a id="af6c4cc64084de2a46332e5a54c46b1d8" name="af6c4cc64084de2a46332e5a54c46b1d8"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>set_highpass</b> (float oldHighpass, float newHighpass) -&gt; void</td></tr>
+<tr class="separator:af6c4cc64084de2a46332e5a54c46b1d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a29d85ac96239f135bfc9b7e97a639e0a" id="r_a29d85ac96239f135bfc9b7e97a639e0a"><td class="memItemLeft" align="right" valign="top"><a id="a29d85ac96239f135bfc9b7e97a639e0a" name="a29d85ac96239f135bfc9b7e97a639e0a"></a>
+static auto&#160;</td><td class="memItemRight" valign="bottom"><b>add_dsp_to_node_group</b> (<a class="el" href="structsc__node__group.html">sc_node_group</a> *nodeGroup, <a class="el" href="structsc__dsp.html">sc_dsp</a> **dsp, const <a class="el" href="structsc__dsp__config.html">sc_dsp_config</a> &amp;config) -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt; void &gt;</td></tr>
+<tr class="separator:a29d85ac96239f135bfc9b7e97a639e0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:ad69cc3d776b3757ee2a141f2bc6b1db4" id="r_ad69cc3d776b3757ee2a141f2bc6b1db4"><td class="memItemLeft" align="right" valign="top"><a id="ad69cc3d776b3757ee2a141f2bc6b1db4" name="ad69cc3d776b3757ee2a141f2bc6b1db4"></a>
+std::shared_ptr&lt; <a class="el" href="classsbk_1_1engine_1_1node.html">node</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>m_referencingNode</b></td></tr>
+<tr class="separator:ad69cc3d776b3757ee2a141f2bc6b1db4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af64a303d517c5281c88bc8e613149ffc" id="r_af64a303d517c5281c88bc8e613149ffc"><td class="memItemLeft" align="right" valign="top"><a id="af64a303d517c5281c88bc8e613149ffc" name="af64a303d517c5281c88bc8e613149ffc"></a>
+class <a class="el" href="classsbk_1_1engine_1_1node__instance.html">sbk::engine::node_instance</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>m_owner</b> = nullptr</td></tr>
+<tr class="separator:af64a303d517c5281c88bc8e613149ffc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27b70c7873a3299c3bff1b2e15031d8a" id="r_a27b70c7873a3299c3bff1b2e15031d8a"><td class="memItemLeft" align="right" valign="top"><a id="a27b70c7873a3299c3bff1b2e15031d8a" name="a27b70c7873a3299c3bff1b2e15031d8a"></a>
+<a class="el" href="classsbk_1_1engine_1_1game__object.html">sbk::engine::game_object</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>m_gameObject</b> = nullptr</td></tr>
+<tr class="separator:a27b70c7873a3299c3bff1b2e15031d8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4fd7e095241d1a5e2b1161a91391c4f4" id="r_a4fd7e095241d1a5e2b1161a91391c4f4"><td class="memItemLeft" align="right" valign="top"><a id="a4fd7e095241d1a5e2b1161a91391c4f4" name="a4fd7e095241d1a5e2b1161a91391c4f4"></a>
+<a class="el" href="structsbk_1_1engine_1_1node__group__instance.html">node_group_instance</a>&#160;</td><td class="memItemRight" valign="bottom"><b>m_nodeGroup</b></td></tr>
+<tr class="separator:a4fd7e095241d1a5e2b1161a91391c4f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3c7efe21c5394ee66b73824a8bf171d" id="r_ae3c7efe21c5394ee66b73824a8bf171d"><td class="memItemLeft" align="right" valign="top"><a id="ae3c7efe21c5394ee66b73824a8bf171d" name="ae3c7efe21c5394ee66b73824a8bf171d"></a>
+std::shared_ptr&lt; <a class="el" href="classsbk_1_1engine_1_1node__instance.html">node_instance</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>m_parent</b></td></tr>
+<tr class="separator:ae3c7efe21c5394ee66b73824a8bf171d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af447cb1365022a40aaf549a9d22d9737" id="r_af447cb1365022a40aaf549a9d22d9737"><td class="memItemLeft" align="right" valign="top"><a id="af447cb1365022a40aaf549a9d22d9737" name="af447cb1365022a40aaf549a9d22d9737"></a>
+std::vector&lt; std::shared_ptr&lt; <a class="el" href="classsbk_1_1engine_1_1node__instance.html">node_instance</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>m_children</b></td></tr>
+<tr class="separator:af447cb1365022a40aaf549a9d22d9737"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff5618a98a7d884115087fb77477d1f0" id="r_aff5618a98a7d884115087fb77477d1f0"><td class="memItemLeft" align="right" valign="top"><a id="aff5618a98a7d884115087fb77477d1f0" name="aff5618a98a7d884115087fb77477d1f0"></a>
+std::unique_ptr&lt; <a class="el" href="structsc__sound.html">sc_sound_instance</a>, <a class="el" href="structSC__SOUND__INSTANCE__DELETER.html">SC_SOUND_INSTANCE_DELETER</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>m_soundInstance</b></td></tr>
+<tr class="separator:aff5618a98a7d884115087fb77477d1f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29cfae2d42bfc2bb639daea18e3a99bf" id="r_a29cfae2d42bfc2bb639daea18e3a99bf"><td class="memItemLeft" align="right" valign="top"><a id="a29cfae2d42bfc2bb639daea18e3a99bf" name="a29cfae2d42bfc2bb639daea18e3a99bf"></a>
+unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>m_numTimesPlayed</b> = 0</td></tr>
+<tr class="separator:a29cfae2d42bfc2bb639daea18e3a99bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<hr/>The documentation for this struct was generated from the following files:<ul>
+<li>src/sound_bakery/voice/<a class="el" href="node__instance_8h_source.html">node_instance.h</a></li>
+<li>src/sound_bakery/voice/<b>node_instance.cpp</b></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><b>sbk</b></li><li class="navelem"><b>engine</b></li><li class="navelem"><a class="el" href="structsbk_1_1engine_1_1node__instance__fsm.html">node_instance_fsm</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
+  </ul>
+</div>
+</body>
+</html>

@@ -1,0 +1,13 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" title=" " alt="" coords="5,133,152,173"/>
+<area shape="rect" id="Node000001" href="$structsbk_1_1engine_1_1node__instance__fsm_1_1state__init.html" title=" " alt="" coords="200,5,399,45"/>
+<area shape="poly" id="edge2_Node000000_Node000001" title=" " alt="" coords="109,122,150,87,199,55,225,43,227,48,201,60,153,92,112,126"/>
+<area shape="rect" id="Node000002" href="$structsbk_1_1engine_1_1node__instance__fsm_1_1state__playing.html" title=" " alt="" coords="200,69,399,109"/>
+<area shape="poly" id="edge3_Node000000_Node000002" title=" " alt="" coords="161,127,229,107,231,112,162,132"/>
+<area shape="rect" id="Node000003" href="$structsbk_1_1engine_1_1node__instance__fsm_1_1state__stopped.html" title=" " alt="" coords="200,133,399,173"/>
+<area shape="poly" id="edge4_Node000000_Node000003" title=" " alt="" coords="166,151,200,151,200,156,166,156"/>
+<area shape="rect" id="Node000004" href="$structsbk_1_1engine_1_1node__instance__fsm_1_1state__uninit.html" title=" " alt="" coords="200,197,399,237"/>
+<area shape="poly" id="edge5_Node000000_Node000004" title=" " alt="" coords="162,175,231,195,229,200,161,180"/>
+<area shape="rect" id="Node000005" href="$structsbk_1_1engine_1_1node__instance__fsm_1_1state__virtual.html" title=" " alt="" coords="200,261,399,301"/>
+<area shape="poly" id="edge6_Node000000_Node000005" title=" " alt="" coords="112,181,153,215,201,247,227,259,225,264,199,252,150,219,109,185"/>
+</map>

@@ -1,0 +1,249 @@
+<!-- HTML header for doxygen 1.10.0-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Sound Bakery: src/sound_bakery Directory Reference</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom-css.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+</head>
+<body>
+<!-- https://tholman.com/github-corners/ -->
+<a href="https://github.com/KarateKidzz/sound-bakery" class="github-corner" title="View source on GitHub" target="_blank" rel="noopener noreferrer">
+  <svg viewBox="0 0 250 250" width="40" height="40" style="position: absolute; top: 0; border: 0; right: 0; z-index: 99;" aria-hidden="true">
+  <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectlogo"><img alt="Logo" src="sound-bakery-logo.png"$logosize/></td>
+  <td id="projectalign">
+   <div id="projectname">Sound Bakery&nbsp<span id="projectnumber">&#160;<select id="sbk-version-select" aria-label="Documentation version"><option>dev</option></select></span>
+   </div>
+   <div id="projectbrief">Open-source audio middleware for games</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- Sound Bakery documentation version switcher -->
+<script type="text/javascript">
+(function () {
+    var current = "dev";
+    var select = document.getElementById('sbk-version-select');
+    if (!select) { return; }
+    // versions.json lives at the site root, one level above this version's folder.
+    fetch("../versions.json", { cache: "no-cache" })
+        .then(function (r) { return r.ok ? r.json() : []; })
+        .then(function (versions) {
+            if (!versions || !versions.length) { return; }
+            select.innerHTML = "";
+            versions.forEach(function (v) {
+                var opt = document.createElement('option');
+                opt.value = v;
+                opt.textContent = v;
+                if (v === current) { opt.selected = true; }
+                select.appendChild(opt);
+            });
+        })
+        .catch(function () { /* single-version or local build: leave the label as-is */ });
+    select.addEventListener('change', function () {
+        window.location.href = "../" + select.value + "/index.html";
+    });
+})();
+</script>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Search');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('dir_c849dcb4e7379c1d4c8da40341161ac3.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">sound_bakery Directory Reference</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="dynheader">
+Directory dependency graph for sound_bakery:</div>
+<div class="dyncontent">
+<div class="center"><img src="dir_c849dcb4e7379c1d4c8da40341161ac3_dep.png" border="0" usemap="#adir__c849dcb4e7379c1d4c8da40341161ac3__dep" alt="src/sound_bakery"/></div>
+<map name="adir__c849dcb4e7379c1d4c8da40341161ac3__dep" id="adir__c849dcb4e7379c1d4c8da40341161ac3__dep">
+<area shape="rect" href="dir_4169c6e6d6be5c2a0032fd6c555cf08f.html" title="sound_chef" alt="" coords="1651,136,1747,161"/>
+<area shape="rect" href="dir_da8a69999638bf9a53c146fdb7ac613e.html" title="error" alt="" coords="408,136,461,161"/>
+<area shape="poly" href="dir_000028_000013.html" alt="" coords="149,85,395,136,394,142,148,91"/>
+<area shape="rect" href="dir_000028_000013.html" title="12" alt="" coords="383,122,400,137"/>
+<area shape="rect" href="dir_16a47c9f2c63ad706b09f8e03e15ccf9.html" title="api" alt="" coords="524,63,567,88"/>
+<area shape="poly" href="dir_000000_000013.html" alt="" coords="529,90,466,131,463,126,526,86"/>
+<area shape="rect" href="dir_000000_000013.html" title="2" alt="" coords="468,126,477,140"/>
+<area shape="rect" href="dir_4cb4e3f0564668719cd18800a3e0e239.html" title="core" alt="" coords="449,63,500,88"/>
+<area shape="poly" href="dir_000005_000013.html" alt="" coords="470,90,450,125,446,123,466,87"/>
+<area shape="rect" href="dir_000005_000013.html" title="3" alt="" coords="453,117,462,132"/>
+<area shape="rect" href="dir_708e8f29ef8cdeff5509387aa9e77df6.html" title="editor" alt="" coords="1259,63,1319,88"/>
+<area shape="poly" href="dir_000009_000030.html" alt="" coords="1320,83,1333,85,1418,101,1485,110,1638,132,1637,137,1485,116,1417,106,1331,91,1319,88"/>
+<area shape="rect" href="dir_000009_000030.html" title="2" alt="" coords="1629,118,1639,133"/>
+<area shape="poly" href="dir_000009_000013.html" alt="" coords="1260,88,1247,91,1130,106,1030,112,859,110,777,108,689,110,591,119,475,137,475,132,590,113,689,105,777,103,859,104,1030,106,1130,100,1246,85,1259,83"/>
+<area shape="rect" href="dir_000009_000013.html" title="2" alt="" coords="476,135,486,149"/>
+<area shape="rect" href="dir_03898c24c9a1606205133cad535c401d.html" title="effect" alt="" coords="1176,63,1235,88"/>
+<area shape="rect" href="dir_44bb2e976af3e33cef12db317ef757e1.html" title="event" alt="" coords="1093,63,1152,88"/>
+<area shape="rect" href="dir_bd34f7630ded2ecb8b4f4f1db0e32ce9.html" title="gameobject" alt="" coords="971,63,1069,88"/>
+<area shape="rect" href="dir_afbe7b0a1c2b48fb6c9fc6c982a45738.html" title="maths" alt="" coords="883,63,946,88"/>
+<area shape="rect" href="dir_a559c565d97139f34bc09cffa807ac24.html" title="node" alt="" coords="805,63,859,88"/>
+<area shape="rect" href="dir_816f820dfa6cf603b42aa8646f7eb574.html" title="parameter" alt="" coords="689,63,780,88"/>
+<area shape="rect" href="dir_e77cb5cac74cfbadd6279a31d4db7922.html" title="profiling" alt="" coords="591,63,665,88"/>
+<area shape="rect" href="dir_5b15e82ad8f6972772b2cf632b6ec66a.html" title="reflection" alt="" coords="1344,63,1427,88"/>
+<area shape="poly" href="dir_000024_000030.html" alt="" coords="1428,83,1638,131,1636,136,1426,89"/>
+<area shape="rect" href="dir_000024_000030.html" title="1" alt="" coords="1630,117,1639,132"/>
+<area shape="rect" href="dir_b20da27cefee483b28bf10beb26b1d36.html" title="serialization" alt="" coords="241,63,343,88"/>
+<area shape="poly" href="dir_000025_000013.html" alt="" coords="316,86,400,127,398,132,314,90"/>
+<area shape="rect" href="dir_000025_000013.html" title="1" alt="" coords="394,113,404,127"/>
+<area shape="rect" href="dir_396fe3aba99ed81a05a14abacc49ee61.html" title="sound" alt="" coords="1568,63,1629,88"/>
+<area shape="poly" href="dir_000026_000030.html" alt="" coords="1616,86,1673,126,1670,130,1613,90"/>
+<area shape="rect" href="dir_000026_000030.html" title="1" alt="" coords="1668,111,1677,126"/>
+<area shape="rect" href="dir_bfccd401955b95cf8c75461437045ac0.html" title="inc" alt="" coords="1771,136,1813,161"/>
+<area shape="poly" href="dir_000026_000016.html" alt="" coords="1630,85,1759,132,1757,137,1629,90"/>
+<area shape="rect" href="dir_000026_000016.html" title="1" alt="" coords="1752,118,1762,132"/>
+<area shape="rect" href="dir_8de27a79e173ff29d2d14db251963da3.html" title="soundbank" alt="" coords="1451,63,1544,88"/>
+<area shape="poly" href="dir_000031_000030.html" alt="" coords="1531,86,1654,129,1652,134,1529,91"/>
+<area shape="rect" href="dir_000031_000030.html" title="1" alt="" coords="1647,114,1656,129"/>
+<area shape="rect" href="dir_035c92f05e923c4e04bf7d5d73392fce.html" title="util" alt="" coords="173,63,216,88"/>
+<area shape="rect" href="dir_2d6bb5ce29d94ffe4800e0beb7f63c3f.html" title="voice" alt="" coords="367,63,425,88"/>
+<area shape="poly" href="dir_000035_000013.html" alt="" coords="405,87,424,123,420,125,400,90"/>
+<area shape="rect" href="dir_000035_000013.html" title="2" alt="" coords="422,109,432,123"/>
+<area shape="rect" href="dir_c849dcb4e7379c1d4c8da40341161ac3.html" alt="" coords="27,52,1640,172"/>
+<area shape="rect" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html" title="src" alt="" coords="16,16,1757,183"/>
+</map>
+</div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="subdirs" name="subdirs"></a>
+Directories</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top"><span class="iconfclosed"></span>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dir_16a47c9f2c63ad706b09f8e03e15ccf9.html">api</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top"><span class="iconfclosed"></span>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dir_4cb4e3f0564668719cd18800a3e0e239.html">core</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top"><span class="iconfclosed"></span>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dir_708e8f29ef8cdeff5509387aa9e77df6.html">editor</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top"><span class="iconfclosed"></span>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dir_03898c24c9a1606205133cad535c401d.html">effect</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top"><span class="iconfclosed"></span>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dir_da8a69999638bf9a53c146fdb7ac613e.html">error</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top"><span class="iconfclosed"></span>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dir_44bb2e976af3e33cef12db317ef757e1.html">event</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top"><span class="iconfclosed"></span>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dir_bd34f7630ded2ecb8b4f4f1db0e32ce9.html">gameobject</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top"><span class="iconfclosed"></span>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dir_afbe7b0a1c2b48fb6c9fc6c982a45738.html">maths</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top"><span class="iconfclosed"></span>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dir_a559c565d97139f34bc09cffa807ac24.html">node</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top"><span class="iconfclosed"></span>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dir_816f820dfa6cf603b42aa8646f7eb574.html">parameter</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top"><span class="iconfclosed"></span>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dir_e77cb5cac74cfbadd6279a31d4db7922.html">profiling</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top"><span class="iconfclosed"></span>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dir_5b15e82ad8f6972772b2cf632b6ec66a.html">reflection</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top"><span class="iconfclosed"></span>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dir_b20da27cefee483b28bf10beb26b1d36.html">serialization</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top"><span class="iconfclosed"></span>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dir_396fe3aba99ed81a05a14abacc49ee61.html">sound</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top"><span class="iconfclosed"></span>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dir_8de27a79e173ff29d2d14db251963da3.html">soundbank</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top"><span class="iconfclosed"></span>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dir_035c92f05e923c4e04bf7d5d73392fce.html">util</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top"><span class="iconfclosed"></span>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dir_2d6bb5ce29d94ffe4800e0beb7f63c3f.html">voice</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="files" name="files"></a>
+Files</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top"><a href="src_2sound__bakery_2pch_8h_source.html"><span class="icondoc"></span></a>&#160;</td><td class="memItemRight" valign="bottom"><b>pch.h</b></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top"><a href="sound__bakery__internal_8h_source.html"><span class="icondoc"></span></a>&#160;</td><td class="memItemRight" valign="bottom"><b>sound_bakery_internal.h</b></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top"><a href="system_8h_source.html"><span class="icondoc"></span></a>&#160;</td><td class="memItemRight" valign="bottom"><b>system.h</b></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_c849dcb4e7379c1d4c8da40341161ac3.html">sound_bakery</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
+  </ul>
+</div>
+</body>
+</html>

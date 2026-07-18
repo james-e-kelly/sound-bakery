@@ -1,0 +1,24 @@
+var searchData=
+[
+  ['editor_0',['Editor',['../Design.html#autotoc_md38',1,'']]],
+  ['editor_5fapp_1',['editor_app',['../classeditor__app.html',1,'']]],
+  ['effect_5fdescription_2',['effect_description',['../classsbk_1_1engine_1_1effect__description.html',1,'sbk::engine']]],
+  ['effect_5fparameter_5fdescription_3',['effect_parameter_description',['../classsbk_1_1engine_1_1effect__parameter__description.html',1,'sbk::engine']]],
+  ['effects_4',['Available DSP Effects',['../ChefProgrammerGuide.html#autotoc_md64',1,'']]],
+  ['encoding_5fsound_5',['encoding_sound',['../structsbk_1_1engine_1_1encoding__sound.html',1,'sbk::engine']]],
+  ['error_6',['error',['../classsbk_1_1error.html',1,'sbk']]],
+  ['error_20code_7',['Adding a new error code',['..//home/runner/work/sound-bakery/sound-bakery/src/sound_bakery/error/README.md#autotoc_md52',1,'']]],
+  ['error_20handling_8',['Error Handling',['../ChefProgrammerGuide.html#autotoc_md61',1,'']]],
+  ['error_2eh_9',['error.h',['../error_8h.html',1,'']]],
+  ['event_10',['event',['../classsbk_1_1engine_1_1event.html',1,'sbk::engine']]],
+  ['event_5fdevirtualise_11',['event_devirtualise',['../structsbk_1_1engine_1_1event__devirtualise.html',1,'sbk::engine']]],
+  ['event_5finit_12',['event_init',['../structsbk_1_1engine_1_1event__init.html',1,'sbk::engine']]],
+  ['event_5fpause_13',['event_pause',['../structsbk_1_1engine_1_1event__pause.html',1,'sbk::engine']]],
+  ['event_5fplay_14',['event_play',['../structsbk_1_1engine_1_1event__play.html',1,'sbk::engine']]],
+  ['event_5fstop_15',['event_stop',['../structsbk_1_1engine_1_1event__stop.html',1,'sbk::engine']]],
+  ['event_5fupdate_16',['event_update',['../structsbk_1_1engine_1_1event__update.html',1,'sbk::engine']]],
+  ['event_5fvirtualise_17',['event_virtualise',['../structsbk_1_1engine_1_1event__virtualise.html',1,'sbk::engine']]],
+  ['example_18',['Usage Example',['../index.html#autotoc_md6',1,'']]],
+  ['example_3a_20interactive_20footstep_20system_19',['Complete Example: Interactive Footstep System',['../ChefProgrammerGuide.html#autotoc_md60',1,'']]],
+  ['example_3a_20tt_20system_3a_3acreate_5fproject_20tt_20',['Worked example: &lt;tt&gt;system::create_project&lt;/tt&gt;',['..//home/runner/work/sound-bakery/sound-bakery/src/sound_bakery/error/README.md#autotoc_md50',1,'']]]
+];

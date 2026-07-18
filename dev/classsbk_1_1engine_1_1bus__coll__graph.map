@@ -1,0 +1,19 @@
+<map id="sbk::engine::bus" name="sbk::engine::bus">
+<area shape="rect" id="Node000001" title=" " alt="" coords="316,451,444,476"/>
+<area shape="rect" id="Node000002" href="$classsbk_1_1engine_1_1node.html" title="Root node that builds the core graph of sounds and busses." alt="" coords="311,376,449,401"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="383,416,383,450,377,450,377,416"/>
+<area shape="rect" id="Node000003" href="$classsbk_1_1engine_1_1node__base.html" title="Generic node that can have a get_parent and own children." alt="" coords="293,301,467,327"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="383,341,383,376,377,376,377,341"/>
+<area shape="rect" id="Node000004" href="$classsbk_1_1core_1_1database__object.html" title="Base object type for any object that can exist in the editor/database. Holds an ID and name." alt="" coords="212,177,361,217"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="313,226,373,299,368,303,309,230"/>
+<area shape="rect" id="Node000005" href="$classsbk_1_1core_1_1object.html" title="Base object that all sound Bakery objects should inherit from." alt="" coords="222,95,351,120"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="289,134,289,177,284,177,284,134"/>
+<area shape="rect" id="Node000006" href="$classsbk_1_1core_1_1object__owner.html" title="Creates, owns and tracks objects." alt="" coords="5,13,181,38"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="135,41,260,92,258,97,133,46"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="206,5,367,45"/>
+<area shape="poly" id="edge6_Node000005_Node000007" title=" " alt="" coords="289,59,289,94,284,94,284,59"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="392,13,541,38"/>
+<area shape="poly" id="edge7_Node000005_Node000008" title=" " alt="" coords="429,46,313,97,311,92,427,41"/>
+<area shape="rect" id="Node000009" href="$classsbk_1_1core_1_1database__ptr.html" title=" " alt="" coords="386,169,563,224"/>
+<area shape="poly" id="edge8_Node000003_Node000009" title=" " alt="" coords="446,236,392,302,388,299,442,233"/>
+</map>
