@@ -6,7 +6,7 @@
 
 DEFINE_REFLECTION(sbk::core::database_object)
 
-bool sbk::core::database_name_comparator::operator()(const database_name& lhs, const database_name& rhs) const
+auto sbk::core::database_name_comparator::operator()(const database_name& lhs, const database_name& rhs) const -> bool
 {
     return std::strcmp(lhs, rhs) < 0;
 }
@@ -96,7 +96,7 @@ auto sbk::core::database_object::get_editor_hidden() const -> bool { return edit
 
 auto sbk::core::database_object::get_is_export() const -> bool
 {
-    return !has_flag(object_flag_loading);
+    return !has_flag(object_flags::loading);
 }
 
 auto sbk::core::database_object::set_editor_hidden(bool hidden) -> void { editorHidden = hidden; }

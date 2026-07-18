@@ -8,8 +8,8 @@ sbk::editor::project_configuration::project_configuration(const std::filesystem:
 }
 
 sbk::editor::project_configuration::project_configuration(const std::filesystem::directory_entry& projectDirectory,
-                                                          const std::string& projectName)
-    : m_projectFile(projectDirectory.path() / (projectName + projectExtensionWithDot.data())),
+                                                          std::string_view projectName)
+    : m_projectFile(projectDirectory.path() / (std::string(projectName) + std::string(projectExtensionWithDot))),
       m_projectName(projectName),
       m_projectFolder(projectDirectory.path())
 {
@@ -31,7 +31,7 @@ sbk::editor::project_configuration::project_configuration(const std::filesystem:
     }
 }
 
-std::filesystem::path sbk::editor::project_configuration::type_folder(const rttr::type& type) const
+auto sbk::editor::project_configuration::type_folder(const rttr::type& type) const -> std::filesystem::path
 {
     std::filesystem::path rootObjectFolder = object_folder();
 
@@ -53,11 +53,11 @@ std::filesystem::path sbk::editor::project_configuration::type_folder(const rttr
     return rootObjectFolder / typeNameString.substr(lastColonCharacterPos, std::string::npos);
 }
 
-std::string sbk::editor::project_configuration::get_filename_for_id(sbk::core::database_object* databaseObject,
-                                                                    std::optional<std::string> extensionOverride)
+auto sbk::editor::project_configuration::get_filename_for_id(sbk::core::database_object* databaseObject,
+                                                             std::optional<std::string> extensionOverride) -> std::string
 {
     return std::to_string(databaseObject->get_database_id()) +
            (extensionOverride.has_value() ? extensionOverride.value() : ".yaml");
 }
 
-bool sbk::editor::project_configuration::is_valid() const { return std::filesystem::exists(m_projectFile); }
+auto sbk::editor::project_configuration::is_valid() const -> bool { return std::filesystem::exists(m_projectFile); }

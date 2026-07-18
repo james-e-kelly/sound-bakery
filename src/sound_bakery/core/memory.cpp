@@ -1,6 +1,7 @@
 #include "memory.h"
 
 #include "sound_bakery/core/object/object.h"
+#include "sound_bakery/error/error.h"
 #include "sound_bakery/util/type_helper.h"
 
 #include "rpmalloc/rpmalloc.h"
@@ -22,32 +23,41 @@ struct rpmalloc_wrapper
 
 static rpmalloc_wrapper s_rpmalloc;
 
-void sbk::memory::object_deleter::operator()(sbk::core::object* object)
+auto sbk::memory::object_deleter::operator()(sbk::core::object* object) -> void
 {
     if (object)
     {
-        const SB_OBJECT_CATEGORY objectCategory = sbk::util::type_helper::getCategoryFromType(object->get_object_type());
+        const SB_OBJECT_CATEGORY objectCategory = sbk::util::type_helper::get_category_from_type(object->get_object_type());
         object->~object();
         sbk::memory::free(object, objectCategory);
     }
 }
 
-void* sbk::memory::malloc(std::size_t size, SB_OBJECT_CATEGORY category)
+auto sbk::memory::malloc(std::size_t size, SB_OBJECT_CATEGORY category) -> void*
 {
     void* pointer = rpmalloc(size);
-    TracyAllocN(pointer, size, sbk::util::type_helper::getObjectCategoryName(category).data());
+
+    if (pointer == nullptr)
+    {
+        // Central allocation choke point: rpmalloc returns null (it does not throw) on failure.
+        // Log here; callers propagate the null (e.g. object creation returns an empty shared_ptr).
+        sbk::log_error(SBK_ERR_OUT_OF_MEMORY, "rpmalloc failed to allocate the requested memory");
+        return nullptr;
+    }
+
+    TracyAllocN(pointer, size, sbk::util::type_helper::get_object_category_name(category).data());
     s_totalMemory += size;
     return pointer;
 }
 
-void* sbk::memory::realloc(void* pointer, std::size_t size) 
-{ 
-    return rprealloc(pointer, size); 
+auto sbk::memory::realloc(void* pointer, std::size_t size) -> void*
+{
+    return rprealloc(pointer, size);
 }
 
-void sbk::memory::free(void* pointer, SB_OBJECT_CATEGORY category)
+auto sbk::memory::free(void* pointer, SB_OBJECT_CATEGORY category) -> void
 {
-    TracyFreeN(pointer, sbk::util::type_helper::getObjectCategoryName(category).data());
+    TracyFreeN(pointer, sbk::util::type_helper::get_object_category_name(category).data());
     rpfree(pointer);
 }
 

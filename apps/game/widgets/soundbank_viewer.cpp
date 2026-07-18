@@ -10,13 +10,13 @@ void soundbank_viewer_widget::start_implementation()
 { 
     sbk_system_config config = sbk_system_config_init_default();
 
-    sbk::engine::system::create(); 
-    sbk::engine::system::init(config);
+    (void)sbk::engine::system::create();
+    (void)sbk::engine::system::get()->init(config);
 }
 
 void soundbank_viewer_widget::tick_implementation(double deltaTime)
 {
-    sbk::engine::system::update();
+    (void)sbk::engine::system::get()->update();
 }
 
 void soundbank_viewer_widget::render_implementation()
@@ -29,7 +29,7 @@ void soundbank_viewer_widget::render_implementation()
             {
                 if (ImGui::Button(event->get_database_name()))
                 {
-                    sbk::engine::system::post_event(event->get_database_name(), 0);
+                    sbk_system_post_event(event->get_database_name(), 0);
                 }
             }
         }

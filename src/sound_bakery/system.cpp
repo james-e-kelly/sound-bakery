@@ -1,11 +1,11 @@
 #include "system.h"
 
+#include "sound_bakery/error/result.h"
 #include "sound_bakery/editor/project/project.h"
 #include "sound_bakery/gameobject/gameobject.h"
 #include "sound_bakery/node/bus/bus.h"
 #include "sound_bakery/profiling/voice_tracker.h"
 #include "sound_bakery/reflection/reflection.h"
-#include "sound_bakery/serialization/serializer.h"
 #include "sound_bakery/util/type_helper.h"
 #include "spdlog/sinks/daily_file_sink.h"
 #include "spdlog/sinks/rotating_file_sink.h"
@@ -25,18 +25,18 @@ namespace profiling_strings
     static const char* const s_currentMemory        = "Current Memory";
 }  // namespace profiling_strings
 
-void* ma_malloc(std::size_t size, void* userData)
+auto ma_malloc(std::size_t size, void* userData) -> void*
 {
     return sbk::memory::malloc(size, SB_CATEGORY_UNKNOWN);
 }
 
-void* ma_realloc(void* pointer, std::size_t size, void* userData) 
-{ 
+auto ma_realloc(void* pointer, std::size_t size, void* userData) -> void*
+{
     return sbk::memory::realloc(pointer, size);
 }
 
-void ma_free(void* pointer, void* userData) 
-{ 
+auto ma_free(void* pointer, void* userData) -> void
+{
     sbk::memory::free(pointer, SB_CATEGORY_UNKNOWN);
 }
 
@@ -47,7 +47,7 @@ namespace
 
     const std::string s_soundChefLoggerName("LogSoundChef");
 
-    void miniaudio_log_callback(void* pUserData, ma_uint32 level, const char* pMessage)
+    auto miniaudio_log_callback(void* pUserData, ma_uint32 level, const char* pMessage) -> void
     {
         (void)pUserData;
 
@@ -94,8 +94,8 @@ system::system()
     m_workerThread = std::make_shared<concurrencpp::worker_thread_executor>(runtimeOptions.thread_started_callback,
                                                                             runtimeOptions.thread_terminated_callback);
 
-    const sbk_result initLogResult = sc_system_log_init(this, miniaudio_log_callback);
-    BOOST_ASSERT(initLogResult == SBK_SUCCESS);
+    const sbk_status initLogResult = sc_system_log_init(this, miniaudio_log_callback);
+    sbk::log_error(initLogResult, "sc_system_log_init");
 }
 
 system::system(const std::filesystem::path& logFile)
@@ -116,8 +116,8 @@ system::system(const std::filesystem::path& logFile)
     m_workerThread = std::make_shared<concurrencpp::worker_thread_executor>(runtimeOptions.thread_started_callback,
                                                                             runtimeOptions.thread_terminated_callback);
 
-    const sbk_result initLogResult = sc_system_log_init(this, miniaudio_log_callback);
-    BOOST_ASSERT(initLogResult == SBK_SUCCESS);
+    const sbk_status initLogResult = sc_system_log_init(this, miniaudio_log_callback);
+    sbk::log_error(initLogResult, "sc_system_log_init");
 }
 
 system::system(sbk::core::sbk_log_callback_proc logCallback)
@@ -138,8 +138,8 @@ system::system(sbk::core::sbk_log_callback_proc logCallback)
     m_workerThread = std::make_shared<concurrencpp::worker_thread_executor>(runtimeOptions.thread_started_callback,
                                                                             runtimeOptions.thread_terminated_callback);
 
-    const sbk_result initLogResult = sc_system_log_init(this, miniaudio_log_callback);
-    BOOST_ASSERT(initLogResult == SBK_SUCCESS);
+    const sbk_status initLogResult = sc_system_log_init(this, miniaudio_log_callback);
+    sbk::log_error(initLogResult, "sc_system_log_init");
 }
 
 system::~system()
@@ -171,12 +171,13 @@ system::~system()
     remove_all();
     BOOST_ASSERT(get_objects_count() == 0);
 
-    sc_system_close(this);
+    const sbk_status closeResult = sc_system_close(this);
+    sbk::log_error(closeResult, "sc_system_close");
 
     spdlog::shutdown();
 }
 
-sbk::engine::system* system::get() { return s_system; }
+auto system::get() -> sbk::engine::system* { return s_system; }
 
 auto sbk::engine::system::get_operating_mode() -> operating_mode
 {
@@ -196,100 +197,104 @@ auto sbk::engine::system::get_operating_mode() -> operating_mode
     return operating_mode::unkown;
 }
 
-auto system::create() -> sbk_result
+auto system::create() -> sbk::result<void>
 {
     if (s_system == nullptr)
     {
-        s_system = new system();
+        void* const systemMemory = sbk::memory::malloc(sizeof(system), SB_OBJECT_CATEGORY::SB_CATEGORY_SYSTEM);
+
+        if (systemMemory == nullptr)
+        {
+            return sbk::make_error(SBK_ERR_NULL, "Could not create the system object");
+        }
+        s_system = ::new (systemMemory) system();
     }
 
-    return s_system ? SBK_SUCCESS : SBK_ERR_OUT_OF_MEMORY;
+    SBK_CHECK(s_system != nullptr, SBK_ERR_OUT_OF_MEMORY);
+    return sbk::ok();
 }
 
-auto system::create(const std::filesystem::path logFile) -> sbk_result
+auto system::create(const std::filesystem::path& logFile) -> sbk::result<void>
 {
     if (s_system == nullptr)
     {
-        s_system = new system(logFile);
+        void* const systemMemory = sbk::memory::malloc(sizeof(system), SB_OBJECT_CATEGORY::SB_CATEGORY_SYSTEM);
+
+        if (systemMemory == nullptr)
+        {
+            return sbk::make_error(SBK_ERR_NULL, "Could not create the system object");
+        }
+        s_system = ::new (systemMemory) system(logFile);
     }
 
-    return s_system ? SBK_SUCCESS : SBK_ERR_OUT_OF_MEMORY;
+    SBK_CHECK(s_system != nullptr, SBK_ERR_OUT_OF_MEMORY);
+    return sbk::ok();
 }
 
-void system::destroy()
+auto system::destroy() -> void
 {
     if (s_system != nullptr)
     {
-        delete s_system;
+        s_system->~system();
+        sbk::memory::free(s_system, SB_CATEGORY_SYSTEM);
         s_system = nullptr;
     }
 }
 
-auto system::init(const sbk_system_config& config) -> sbk_result
+auto system::init(const sbk_system_config& config) -> sbk::result<void>
 {
-    if (s_system == nullptr)
-    {
-        return SBK_ERR_BAKERY_UNINITIALIZED;
-    }
-
     SBK_INFO("Initializing Sound Bakery");
 
     sbk_system_config configCopy = config;
-    configCopy.soundChefConfig.allocationCallbacks.pUserData = s_system;
+    configCopy.soundChefConfig.allocationCallbacks.pUserData = this;
     configCopy.soundChefConfig.allocationCallbacks.onMalloc = ma_malloc;
     configCopy.soundChefConfig.allocationCallbacks.onRealloc = ma_realloc;
     configCopy.soundChefConfig.allocationCallbacks.onFree = ma_free;
 
-    s_system->masterNodeGroup = nullptr;
-    s_system->clapPlugins     = nullptr;
+    masterNodeGroup = nullptr;
+    clapPlugins     = nullptr;
 
-    const sbk_result result = sc_system_init(s_system, &configCopy.soundChefConfig);
-    BOOST_ASSERT(result == SBK_SUCCESS);
+    SBK_TRY_C(sc_system_init(this, &configCopy.soundChefConfig));  //< Logs and forwards the error if init fails.
 
     if (!s_registeredReflection)
     {
-        sbk::reflection::registerReflectionTypes();
+        sbk::reflection::register_reflection_types();
         s_registeredReflection = true;
     }
 
-    s_system->m_listenerGameObject = s_system->create_database_object<sbk::engine::game_object>();
-    s_system->m_listenerGameObject->set_object_name("Listener");
-    s_system->m_listenerGameObject->set_editor_hidden(true);
+    SBK_TRY(m_listenerGameObject, create_database_object<sbk::engine::game_object>());
+    m_listenerGameObject->set_object_name("Listener");
+    m_listenerGameObject->set_editor_hidden(true);
 
     // TODO
     // Add way of turning off profiling
-    s_system->m_voiceTracker = std::make_unique<profiling::voice_tracker>();
+    m_voiceTracker = std::make_unique<profiling::voice_tracker>();
 
-    s_system->m_studioThreadTimer = s_system->m_threadRuntime->timer_queue()->make_timer(0ms, 20ms, s_system->m_workerThread,
-                                                         [] { s_system->update_async(); });
+    m_studioThreadTimer = m_threadRuntime->timer_queue()->make_timer(0ms, 20ms, m_workerThread,
+                                                         [this] { update_async(); });
 
-    return result;
+    return sbk::ok();
 }
 
-auto system::update() -> sbk_result
+auto system::update() -> sbk::result<void>
 {
     FrameMarkStart(profiling_strings::s_updateName);
     ZoneScoped;
 
-    if (s_system == nullptr)
+    if (m_voiceTracker)
     {
-        return SBK_ERR_BAKERY_UNINITIALIZED;
+        m_voiceTracker->update(this);
     }
 
-    if (s_system->m_voiceTracker)
-    {
-        s_system->m_voiceTracker->update(s_system);
-    }
-
-    s_system->m_gameThreadExecuter->loop(32);
+    m_gameThreadExecuter->loop(32);
 
     TracyPlotConfig(profiling_strings::s_gameObjectPlotName, tracy::PlotFormatType::Number, true, false, 0);
     TracyPlotConfig(profiling_strings::s_nodeInstancePlotName, tracy::PlotFormatType::Number, true, false, 0);
     TracyPlotConfig(profiling_strings::s_voicePlotName, tracy::PlotFormatType::Number, true, false, 0);
 
-    TracyPlot(profiling_strings::s_gameObjectPlotName, (int64_t)s_system->get_objects_of_type(sbk::engine::game_object::type()).size());
-    TracyPlot(profiling_strings::s_voicePlotName, (int64_t)s_system->get_objects_of_type(sbk::engine::voice::type()).size());
-    TracyPlot(profiling_strings::s_nodeInstancePlotName, (int64_t)s_system->get_objects_of_type(sbk::engine::node_instance::type()).size());
+    TracyPlot(profiling_strings::s_gameObjectPlotName, (int64_t)get_objects_of_type(sbk::engine::game_object::type()).size());
+    TracyPlot(profiling_strings::s_voicePlotName, (int64_t)get_objects_of_type(sbk::engine::voice::type()).size());
+    TracyPlot(profiling_strings::s_nodeInstancePlotName, (int64_t)get_objects_of_type(sbk::engine::node_instance::type()).size());
 
     rpmalloc_global_statistics_t stats;
     rpmalloc_global_statistics(&stats);
@@ -302,7 +307,7 @@ auto system::update() -> sbk_result
 
     FrameMarkEnd(profiling_strings::s_updateName);
 
-    return SBK_SUCCESS;
+    return sbk::ok();
 }
 
 auto sbk::engine::system::update_async() -> void
@@ -311,7 +316,7 @@ auto sbk::engine::system::update_async() -> void
 
     m_studioThreadExecuter->loop(m_studioThreadExecuter->size());
 
-    for (auto& object : s_system->get_objects_of_type(sbk::engine::game_object::type()))
+    for (auto& object : get_objects_of_type(sbk::engine::game_object::type()))
     {
         if (object)
         {
@@ -323,98 +328,15 @@ auto sbk::engine::system::update_async() -> void
     }
 }
 
-sbk::core::object_owner* system::get_current_object_owner() { return m_project.get(); }
+auto system::get_current_object_owner() -> sbk::core::object_owner* { return m_project.get(); }
 
-auto sbk::engine::system::post_event(const char* eventName, sbk_id gameObjectID) -> sbk_result
-{
-    ZoneScoped;
-    SC_CHECK(s_system != nullptr, SBK_ERR_BAKERY_UNINITIALIZED);
-    SC_CHECK_ARG(eventName);
-    
-    std::weak_ptr<sbk::core::database_object> event = s_system->try_find_database_object(sbk::core::database_name(eventName));
-    SC_CHECK(!event.expired(), SBK_ERR_BAKERY_OBJECT_NOT_FOUND);
-
-    std::weak_ptr<sbk::core::database_object> gameObject = get_game_object(gameObjectID);
-    SC_CHECK(!gameObject.expired(), SBK_ERR_BAKERY_OBJECT_NOT_FOUND);
-
-    s_system->get_system_thread_executer()->post([event, gameObject]() 
-        {
-            if (std::shared_ptr<sbk::engine::game_object> sharedGameObject =
-                std::static_pointer_cast<sbk::engine::game_object>(gameObject.lock()))
-            {
-                if (std::shared_ptr<sbk::engine::event> sharedEvent =
-                    std::static_pointer_cast<sbk::engine::event>(event.lock()))
-                {
-                    sharedGameObject->post_event(sharedEvent.get(), pass_key<sbk::engine::system>());
-                }
-            }
-        }
-    );
-
-    return SBK_SUCCESS;
-}
-
-auto sbk::engine::system::post_container(sbk_id containerID, sbk_id gameObjectID) -> sbk_result
-{
-    ZoneScoped;
-    SC_CHECK(s_system != nullptr, SBK_ERR_BAKERY_UNINITIALIZED);
-    SC_CHECK_ARG(containerID != 0);
-
-    std::weak_ptr<sbk::core::database_object> container = s_system->try_find_database_object(containerID);
-    SC_CHECK(!container.expired(), SBK_ERR_BAKERY_OBJECT_NOT_FOUND);
-
-    std::weak_ptr<sbk::core::database_object> gameObject = get_game_object(gameObjectID);
-    SC_CHECK(!gameObject.expired(), SBK_ERR_BAKERY_OBJECT_NOT_FOUND);
-
-    s_system->get_system_thread_executer()->post(
-        [container, gameObject]()
-        {
-            if (std::shared_ptr<sbk::engine::game_object> sharedGameObject =
-                    std::static_pointer_cast<sbk::engine::game_object>(gameObject.lock()))
-            {
-                if (std::shared_ptr<sbk::engine::container> sharedContainer =
-                        std::static_pointer_cast<sbk::engine::container>(container.lock()))
-                {
-                    sharedGameObject->play_container(sharedContainer.get(), pass_key<sbk::engine::system>());
-                }
-            }
-        });
-
-    return SBK_SUCCESS;
-}
-
-auto sbk::engine::system::stop_all(sbk_id gameObjectID) -> sbk_result
-{
-    ZoneScoped;
-    SC_CHECK(s_system != nullptr, SBK_ERR_BAKERY_UNINITIALIZED);
-
-    std::weak_ptr<sbk::core::database_object> gameObject = get_game_object(gameObjectID);
-    SC_CHECK(!gameObject.expired(), SBK_ERR_BAKERY_OBJECT_NOT_FOUND);
-
-    s_system->get_system_thread_executer()->post([gameObject]()
-        {
-            if (std::shared_ptr<sbk::engine::game_object> sharedGameObject =
-                    std::static_pointer_cast<sbk::engine::game_object>(gameObject.lock()))
-            {
-                sharedGameObject->stop_all(pass_key<sbk::engine::system>());
-            }
-        });
-
-    return SBK_SUCCESS;
-}
-
-auto sbk::engine::system::get_game_object(sbk_id gameObjectID) -> std::weak_ptr<sbk::core::database_object>
-{
-    return gameObjectID == 0 ? std::static_pointer_cast<sbk::core::database_object, sbk::engine::game_object>(s_system->m_listenerGameObject) : s_system->try_find_database_object(gameObjectID);
-}
-
-auto system::open_project(const std::filesystem::path& projectFile, sbk::core::sbk_log_callback_proc logCallback) -> sbk_result
+auto system::open_project(const std::filesystem::path& projectFile, sbk::core::sbk_log_callback_proc logCallback) -> sbk::result<void>
 {
     destroy();
 
     const sbk::editor::project_configuration tempProject = sbk::editor::project_configuration(projectFile);
 
-    create(tempProject.log_folder() / (std::string(tempProject.project_name()) + ".txt"));
+    SBK_TRYV(create(tempProject.log_folder() / (std::string(tempProject.project_name()) + ".txt")));
 
     if (logCallback)
     {
@@ -424,56 +346,35 @@ auto system::open_project(const std::filesystem::path& projectFile, sbk::core::s
     const std::string pluginFolder      = tempProject.plugin_folder().string();
     const sbk_system_config systemConfig = sbk_system_config_init(pluginFolder.c_str());
 
-    init(systemConfig);
+    SBK_TRYV(s_system->init(systemConfig));
 
     s_system->m_project = std::make_unique<sbk::editor::project>();
 
-    if (s_system->m_project->open_project(projectFile))
+    if (sbk::result<void> opened = s_system->m_project->open_project(projectFile); !opened.has_value())
     {
-        return SBK_SUCCESS;
+        s_system->m_project.reset();
+        return tl::make_unexpected(std::move(opened).error());  //< Already logged at origin; forward it.
     }
 
-    s_system->m_project.reset();
-
-    return SBK_ERR_BAKERY;
+    return sbk::ok();
 }
 
-sbk_result sbk::engine::system::create_project(const std::filesystem::directory_entry& projectDirectory,
-                                              const std::string& projectName)
+auto sbk::engine::system::create_project(const std::filesystem::directory_entry& projectDirectory,
+                                        std::string_view projectName) -> sbk::result<void>
 {
     const sbk::editor::project_configuration projectConfig(projectDirectory, projectName);
 
-    if (open_project(projectConfig.project_file(), nullptr) == SBK_SUCCESS)
-    {
-        if (s_system->m_project)
-        {
-            if (std::shared_ptr<sbk::engine::bus> masterBus =
-                    s_system->m_project->create_database_object<sbk::engine::bus>())
-            {
-                masterBus->set_object_name("Master Bus");
-                masterBus->setMasterBus(true);
+    SBK_TRYV(open_project(projectConfig.project_file(), nullptr));
+    SBK_CHECK_MSG(s_system->m_project != nullptr, SBK_ERR_BAKERY, "System's project variable was null");
 
-                s_system->m_project->save_project();
+    SBK_TRY(auto masterBus, s_system->m_project->create_database_object<sbk::engine::bus>());
+    masterBus->set_object_name("Master Bus");
+    masterBus->set_master_bus(true);
 
-                return SBK_SUCCESS;
-            }
-        }
-    }
-
-    return SBK_ERR_BAKERY;
+    return s_system->m_project->save_project();
 }
 
-auto sbk::engine::system::load_soundbank(const std::filesystem::path& file, sbk_id& outID) -> sbk_result
-{
-    SC_CHECK_ARG(std::filesystem::exists(file));
-    SC_CHECK(s_system != nullptr, SBK_ERR_BAKERY_UNINITIALIZED);
-
-    sbk::core::serialization::binary_serializer binarySerializer;
-    outID = binarySerializer.load_object<sbk::core::serialization::serialized_soundbank>(s_system, file);
-    return outID != SBK_INVALID_ID ? SBK_SUCCESS : SBK_ERR_BAKERY_SERIALIZATION;
-}
-
-sbk::editor::project* system::get_project()
+auto system::get_project() -> sbk::editor::project*
 {
     if (s_system != nullptr)
     {
@@ -483,7 +384,7 @@ sbk::editor::project* system::get_project()
     return nullptr;
 }
 
-sbk::engine::profiling::voice_tracker* system::get_voice_tracker()
+auto system::get_voice_tracker() -> sbk::engine::profiling::voice_tracker*
 {
     if (s_system != nullptr)
     {
@@ -508,13 +409,13 @@ auto sbk::engine::system::get_background_thread_executer() const -> std::shared_
     return m_threadRuntime ? m_threadRuntime->background_executor() : std::shared_ptr<concurrencpp::thread_pool_executor>{};
 }
 
-sbk::engine::game_object* sbk::engine::system::get_listener_game_object() const
+auto sbk::engine::system::get_listener_game_object() const -> sbk::engine::game_object*
 {
     return m_listenerGameObject.get(); }
 
 auto sbk::engine::system::get_master_bus() const -> sbk::engine::bus* { return m_masterBus.get(); }
 
-void sbk::engine::system::set_master_bus(const std::shared_ptr<sbk::engine::bus>& masterBus)
+auto sbk::engine::system::set_master_bus(const std::shared_ptr<sbk::engine::bus>& masterBus) -> void
 {
     BOOST_ASSERT(!m_masterBus);
     m_masterBus = masterBus;

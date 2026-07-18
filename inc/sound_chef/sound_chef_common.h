@@ -37,10 +37,17 @@
 
 #ifdef SC_DLL
     #define SC_API      SC_DLL_EXPORT SC_CALL
-    #define SC_CLASS    SC_DLL_EXPORT 
+    #define SC_CLASS    SC_DLL_EXPORT
 #else
     #define SC_API SC_CALL
     #define SC_CLASS
+#endif
+
+/* Warns (in C++) if a returned result code is discarded; expands to nothing in C. */
+#if defined(__cplusplus)
+    #define SBK_NODISCARD [[nodiscard]]
+#else
+    #define SBK_NODISCARD
 #endif
 
 #define SC_CHECK_AND_GOTO(condition, dest) \
@@ -95,13 +102,13 @@ typedef enum
     SBK_ERR_NULL,                   //< Found a null pointer where there shouldn't be one
 
     SBK_ERROR_MAX
-} sbk_result;
+} sbk_status;
 
 #define SC_CHECK(condition, result) \
     if ((condition) == MA_FALSE)    \
     return (result)
-#define SC_CHECK_RESULT(result) \
-    if (((sbk_result)result) != SBK_SUCCESS) \
+#define SC_CHECK_STATUS(result) \
+    if (((sbk_status)result) != SBK_SUCCESS) \
     return (result)
 #define SC_CHECK_ARG(condition)  \
     if ((condition) == MA_FALSE) \
@@ -166,10 +173,10 @@ typedef enum sc_encoding_format
     sc_encoding_format_opus
 } sc_encoding_format;
 
-typedef sbk_result(SC_CALL* SC_DSP_CREATE_CALLBACK)(sc_dsp_state* dspState);
-typedef sbk_result(SC_CALL* SC_DSP_RELEASE_CALLBACK)(sc_dsp_state* dspState);
-typedef sbk_result(SC_CALL* SC_DSP_SET_PARAM_FLOAT_CALLBACK)(sc_dsp_state* dspState, int index, float value);
-typedef sbk_result(SC_CALL* SC_DSP_GET_PARAM_FLOAT_CALLBACK)(sc_dsp_state* dspState, int index, float* value);
+typedef sbk_status(SC_CALL* SC_DSP_CREATE_CALLBACK)(sc_dsp_state* dspState);
+typedef sbk_status(SC_CALL* SC_DSP_RELEASE_CALLBACK)(sc_dsp_state* dspState);
+typedef sbk_status(SC_CALL* SC_DSP_SET_PARAM_FLOAT_CALLBACK)(sc_dsp_state* dspState, int index, float value);
+typedef sbk_status(SC_CALL* SC_DSP_GET_PARAM_FLOAT_CALLBACK)(sc_dsp_state* dspState, int index, float* value);
 
 struct sc_dsp_vtable
 {

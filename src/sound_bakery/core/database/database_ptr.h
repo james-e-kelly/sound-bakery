@@ -3,13 +3,15 @@
 #include "sound_bakery/core/database/database_object.h"
 #include "sound_bakery/pch.h"
 
+#include <compare>
+
 namespace sbk::core
 {
     class database_object;
 
-    std::weak_ptr<database_object> SB_API find_object(sbk_id id);
-    bool SB_API object_id_is_child_of_parent(sbk_id childToCheck, sbk_id parent);
-    sbk_id SB_API get_parent_id_from_id(sbk_id id);
+    auto SB_API find_object(sbk_id id) -> std::weak_ptr<database_object>;
+    auto SB_API object_id_is_child_of_parent(sbk_id childToCheck, sbk_id parent) -> bool;
+    auto SB_API get_parent_id_from_id(sbk_id id) -> sbk_id;
 
     /** Lazy Pointer
      * Lazy pointers store an Indentifier to an object and use it to find the
@@ -82,9 +84,9 @@ namespace sbk::core
         /**
          * @brief Get ID of the referenced object
          */
-        auto id() const noexcept -> sbk_id { return m_objectID; }
+        [[nodiscard]] auto id() const noexcept -> sbk_id { return m_objectID; }
 
-        auto shared() const noexcept -> TObjectShared
+        [[nodiscard]] auto shared() const noexcept -> TObjectShared
         {
             lookup();
 
@@ -98,14 +100,14 @@ namespace sbk::core
             }
         }
 
-        auto weak() const noexcept -> TObjectWeak { return m_objectPtr; }
+        [[nodiscard]] auto weak() const noexcept -> TObjectWeak { return m_objectPtr; }
 
         /**
          * @brief Get raw pointer of the referenced object
          */
-        auto raw() const noexcept -> TObjectPtr { return shared().get(); }
+        [[nodiscard]] auto raw() const noexcept -> TObjectPtr { return shared().get(); }
 
-        auto lookup_raw() const noexcept -> TObjectPtr
+        [[nodiscard]] auto lookup_raw() const noexcept -> TObjectPtr
         {
             lookup();
             return raw();
@@ -115,30 +117,30 @@ namespace sbk::core
          * @brief Returns true if we hold a valid ID and can search for an
          * object at runtime
          */
-        auto has_id() const noexcept -> bool { return m_objectID != TIdentifierType(); }
+        [[nodiscard]] auto has_id() const noexcept -> bool { return m_objectID != TIdentifierType(); }
 
         /**
          * @brief Returns true if the object pointer is not set
          */
-        auto null() const noexcept -> bool { return m_null || m_objectPtr.expired(); }
+        [[nodiscard]] auto null() const noexcept -> bool { return m_null || m_objectPtr.expired(); }
 
         /**
          * @brief Returns true if we hold an ID but haven't found the live
          * object to point to yet
          */
-        auto pending() const noexcept -> bool { return has_id() && null(); }
+        [[nodiscard]] auto pending() const noexcept -> bool { return has_id() && null(); }
 
         /**
          * @brief Returns true if we previously referenced an object that has
          * been destroyed
          */
-        auto stale() const noexcept -> bool { return !m_null && m_objectPtr.expired(); }
+        [[nodiscard]] auto stale() const noexcept -> bool { return !m_null && m_objectPtr.expired(); }
 
         /**
          * @brief Returns true if we hold an ID and a valid pointer to the
          * object
          */
-        auto valid() const noexcept -> bool { return has_id() && !null(); }
+        [[nodiscard]] auto valid() const noexcept -> bool { return has_id() && !null(); }
 
         /**
          * @brief Find the live object referenced by the ID and store it
@@ -166,7 +168,7 @@ namespace sbk::core
             lookup();
         }
 
-        TThisType& operator=(TObjectShared object)
+        auto operator=(TObjectShared object) -> TThisType&
         {
             if (raw() != object.get())
             {
@@ -181,7 +183,7 @@ namespace sbk::core
          * @param object to assign to
          * @return this
          */
-        TThisType& operator=(TObjectPtr object)
+        auto operator=(TObjectPtr object) -> TThisType&
         {
             if (raw() != object)
             {
@@ -190,7 +192,7 @@ namespace sbk::core
             return *this;
         }
 
-        TThisType& operator=(const TThisType& other)
+        auto operator=(const TThisType& other) -> TThisType&
         {
             if (id() != other.id())
             {
@@ -202,7 +204,7 @@ namespace sbk::core
             return *this;
         }
 
-        TThisType& operator=(const TThisType&& other)
+        auto operator=(const TThisType&& other) -> TThisType&
         {
             if (id() != other.id())
             {
@@ -222,13 +224,13 @@ namespace sbk::core
         /**
          * @brief Returns true if this LazyPtr is invalid
          */
-        bool operator!() const { return !valid(); }
+        auto operator!() const -> bool { return !valid(); }
 
         /**
          * @brief Access the raw object
          * @return raw object
          */
-        TObjectPtr operator->() const { return raw(); }
+        auto operator->() const -> TObjectPtr { return raw(); }
 
     protected:
         sbk_id m_objectID;
@@ -236,16 +238,10 @@ namespace sbk::core
         mutable bool m_null;
     };
 
-    /**
-     * @brief Compare any two LazyPtr's IDs for equality
-     * @param lhs first LazyPtr to compare
-     * @param rhs second LazyPtr to compare
-     * @return true if the two LazyPtrs share the same ID
-     */
     template <typename T1, typename T2>
-    bool operator==(const database_ptr<T1>& lhs, const database_ptr<T2>& rhs)
+    auto operator<=>(const database_ptr<T1>& lhs, const database_ptr<T2>& rhs)
     {
-        return lhs.id() == rhs.id();
+        return lhs.id() <=> rhs.id();
     }
 
     /**
@@ -253,18 +249,9 @@ namespace sbk::core
      * @return true if the LazyPtr references the object
      */
     template <typename T>
-    bool operator==(const database_ptr<T>& lhs, const T* rhs)
+    auto operator==(const database_ptr<T>& lhs, const T* rhs) -> bool
     {
         return lhs.raw() == rhs;
-    }
-
-    /**
-     * @brief Compares the lhs ID with the rhs ID
-     */
-    template <typename T1, typename T2>
-    bool operator<(const database_ptr<T1>& lhs, const database_ptr<T2>& rhs)
-    {
-        return lhs.id() < rhs.id();
     }
 
     /**
@@ -317,21 +304,21 @@ namespace sbk::core
          */
         child_ptr(sbk_id id) : database_ptr<TObject>(id), m_ownerID(get_parent_id_from_id(id)) {}
 
-        TThisType& operator=(typename database_ptr<TObject>::TIdentifierType id)
+        auto operator=(typename database_ptr<TObject>::TIdentifierType id) -> TThisType&
         {
-            setID(id);
+            set_id(id);
 
             return *this;
         }
 
-        TThisType& operator=(typename database_ptr<TObject>::TObjectPtr object)
+        auto operator=(typename database_ptr<TObject>::TObjectPtr object) -> TThisType&
         {
             reset(object);
 
             return *this;
         }
 
-        TThisType& operator=(const TThisType& other)
+        auto operator=(const TThisType& other) -> TThisType&
         {
             if (database_ptr<TObject>::id() != other.id())
             {
@@ -366,7 +353,7 @@ namespace sbk::core
             return *this;
         }
 
-        void setID(typename database_ptr<TObject>::TIdentifierType id = 0)
+        auto set_id(typename database_ptr<TObject>::TIdentifierType id = 0) -> void
         {
             // Fill our get_parent ID if we didn't have it already
             if (m_ownerID == 0 && database_ptr<TObject>::m_objectID != 0)
@@ -391,7 +378,7 @@ namespace sbk::core
             }
         }
 
-        void reset(typename database_ptr<TObject>::TObjectPtr object = nullptr)
+        auto reset(typename database_ptr<TObject>::TObjectPtr object = nullptr) -> void
         {
             // Fill our get_parent ID if we didn't have it already
             if (m_ownerID == 0 && database_ptr<TObject>::m_objectID != 0)
@@ -430,13 +417,13 @@ namespace std
     template <typename T>
     struct hash<sbk::core::database_ptr<T>>
     {
-        size_t operator()(const sbk::core::database_ptr<T>& k) const { return hash<sbk_id>{}(k.id()); }
+        auto operator()(const sbk::core::database_ptr<T>& k) const -> size_t { return hash<sbk_id>{}(k.id()); }
     };
 
     template <typename T>
     struct hash<sbk::core::child_ptr<T>>
     {
-        size_t operator()(const sbk::core::child_ptr<T>& k) const { return hash<sbk_id>{}(k.id()); }
+        auto operator()(const sbk::core::child_ptr<T>& k) const -> size_t { return hash<sbk_id>{}(k.id()); }
     };
 }  // namespace std
 
@@ -450,12 +437,12 @@ namespace rttr
         using wrapped_type = decltype(sbk::core::child_ptr<T>(0).id());
         using type         = sbk::core::child_ptr<T>;
 
-        inline static wrapped_type get(const type& obj) { return obj.id(); }
+        inline static auto get(const type& obj) -> wrapped_type { return obj.id(); }
 
-        inline static type create(const wrapped_type& t) { return type(t); }
+        inline static auto create(const wrapped_type& t) -> type { return type(t); }
 
         template <typename T2>
-        inline static sbk::core::child_ptr<T2> convert(const type& source, bool& ok)
+        inline static auto convert(const type& source, bool& ok) -> sbk::core::child_ptr<T2>
         {
             sbk::core::child_ptr<T2> convertedLazyPtr(source.id());
 
@@ -471,12 +458,12 @@ namespace rttr
         using wrapped_type = decltype(sbk::core::database_ptr<T>().id());
         using type         = sbk::core::database_ptr<T>;
 
-        inline static wrapped_type get(const type& obj) { return obj.id(); }
+        inline static auto get(const type& obj) -> wrapped_type { return obj.id(); }
 
-        inline static type create(const wrapped_type& t) { return type(t); }
+        inline static auto create(const wrapped_type& t) -> type { return type(t); }
 
         template <typename T2>
-        inline static sbk::core::database_ptr<T2> convert(const type& source, bool& ok)
+        inline static auto convert(const type& source, bool& ok) -> sbk::core::database_ptr<T2>
         {
             sbk::core::database_ptr<T2> convertedLazyPtr(source.id());
 

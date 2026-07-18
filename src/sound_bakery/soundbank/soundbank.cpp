@@ -10,7 +10,7 @@
 DEFINE_REFLECTION(sbk::engine::soundbank)
 
 template <class T>
-std::shared_ptr<T> object_ptr_to_shared_ptr(sbk::core::object* ptr)
+auto object_ptr_to_shared_ptr(sbk::core::object* ptr) -> std::shared_ptr<T>
 {
     return ptr->casted_shared_from_this<T>();
 }
@@ -70,7 +70,7 @@ sbk::engine::soundbank_dependencies sbk::engine::soundbank::gather_dependencies(
 
             for (auto& action : event->m_actions)
             {
-                if (action.m_type != sbk::engine::SB_ACTION_PLAY)
+                if (action.m_type != sbk::engine::action_type::play)
                 {
                     continue;
                 }
@@ -84,8 +84,8 @@ sbk::engine::soundbank_dependencies sbk::engine::soundbank::gather_dependencies(
                     action.m_destination->try_convert_object<sbk::engine::node_base>();
 
                 nodesToSave.push_back(nodeBase);
-                nodeBase->gatherAllDescendants(nodesToSave);
-                nodeBase->gatherAllParents(nodesToSave);
+                nodeBase->gather_all_descendants(nodesToSave);
+                nodeBase->gather_all_parents(nodesToSave);
             }
         }
     }

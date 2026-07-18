@@ -1,153 +1,187 @@
 #include "video_element.h"
 
 #include "managers/workspace_manager.h"
-#include "subsystems/video_subsystem.h"
 
 namespace
 {
-    constexpr float g_videoControlRowHeight = 30.0f;
-    constexpr float g_videoControlRowHalfHeight = g_videoControlRowHeight / 2.0f;
-    constexpr int g_videoControlRows           = 3;
-    constexpr float g_totalVideoControlsHeight = g_videoControlRowHeight * g_videoControlRows;
-
-
-    constexpr float g_videoButtonsWidth   = g_videoControlRowHeight;
-    constexpr int g_videoButtonsCount          = 5;
-    constexpr float g_totalVideoButtonsWidth   = g_videoButtonsWidth * g_videoButtonsCount;
-    constexpr float g_progressLineThickness    = 1.0f;
-    constexpr float g_progressLinePadding      = 5.0f;
-    constexpr float g_progressHandleWidth      = 10.0f;
-    constexpr float g_progressHandleHeight     = g_videoControlRowHeight / 2.0f;
-    constexpr float g_minimumVideoPosition     = 0.0;
-    constexpr float g_commentBubbleRadius      = 10.0f;
-    constexpr float g_commentBubbleDiamter     = g_commentBubbleRadius * 2.0f;
+    constexpr float g_commentBubbleRadius = 10.0f;
 }
 
 video_element::video_element(const std::filesystem::path& videoFile, int64_t fileId)
-    : file_element(gluten::anchor_preset::stretch_full, videoFile, fileId)
+    : gluten::file_element(gluten::anchor_preset::stretch_full, videoFile), m_fileId(fileId), m_video(videoFile, fileId)
 {
-	if (m_videoSubsystem.expired())
-    {
-        m_videoSubsystem = gluten::app::get()->get_subsystem_by_class<video_subsystem>();
-    }
+    m_layout.set_layout_spacing(gluten::theme::padding);
+    m_layout.set_element_padding(gluten::theme::paddingVec);
 
-	if (std::shared_ptr<video_subsystem> videoSubsystem = m_videoSubsystem.lock())
-	{
-        m_videoTexture = videoSubsystem->get_video_texture(m_filePath.string());
+    m_playButton.set_element_active_color(gluten::theme::layerActive01);
+    m_pauseButton.set_element_active_color(gluten::theme::layerActive01);
+    m_previousFrameButton.set_element_active_color(gluten::theme::layerActive01);
+    m_nextFrameButton.set_element_active_color(gluten::theme::layerActive01);
+    m_addCommentButton.set_element_active_color(gluten::theme::layerActive01);
 
-		if (m_videoTexture == 0)
-        {
-            videoSubsystem->load_video(m_filePath);
-        }
+    m_playButton.set_element_hover_color(gluten::theme::layerHover01);
+    m_pauseButton.set_element_hover_color(gluten::theme::layerHover01);
+    m_previousFrameButton.set_element_hover_color(gluten::theme::layerHover01);
+    m_nextFrameButton.set_element_hover_color(gluten::theme::layerHover01);
+    m_addCommentButton.set_element_hover_color(gluten::theme::layerHover01);
 
-		m_videoTexture = videoSubsystem->get_video_texture(m_filePath.string());
+    m_filePositionText.set_element_anchor_preset(gluten::anchor_preset::center_middle);
+    m_fileDurationText.set_element_anchor_preset(gluten::anchor_preset::center_middle);
 
-        m_videoImage = gluten::image(m_videoTexture, 1920, 1080);
-	}
+    m_filePositionText.set_text_alignment(gluten::text_alignment::center);
+    m_fileDurationText.set_text_alignment(gluten::text_alignment::center);
 
-    m_videoControlsLayout.set_element_background_color(gluten::theme::background);
+    m_filePositionText.set_text("00:00");
+    m_fileDurationText.set_text("00:00");
 
-    m_videoCommentsLayout.set_element_padding(ImVec2(g_commentBubbleDiamter, 0.0f));
-    m_videoTimelineLayout.set_element_padding(ImVec2(g_commentBubbleDiamter, 0.0f));
+    m_controlButtonsLayout.set_element_alignment(ImVec2(-0.5f, 0.0f));
+    m_controlButtonsLayout.get_element_anchor().minOffset.x -= s_controlButtonsWidth + (s_buttonWidth * 3.0f);
+    m_controlButtonsLayout.get_element_anchor().maxOffset.x += s_controlButtonsWidth + (s_buttonWidth * 3.0f);
+    m_controlButtonsLayout.set_element_rounding(gluten::theme::rounding);
+    m_controlButtonsLayout.set_element_background_color(gluten::theme::layer02);
+    m_controlButtonsLayout.set_element_max_size(ImVec2(0.0f, s_controlButtonsWidth));
 }
 
 auto video_element::render_element(const gluten::element_render_info& renderInfo) -> bool
 {
-    file_element::render_element(renderInfo);
+    ZoneScoped;
 
-    std::shared_ptr<video_subsystem> videoSubsystem = m_videoSubsystem.lock();
-    if (!videoSubsystem || !renderInfo.isVisible)
+    m_layout.render(renderInfo.elementBox);
+
+    // m_video has its own get_element_content_size() opinion (video image aspect ratio + its internal
+    // timeline/overlay rows). Placing it through a layout helper (render_layout_element_pixels_vertical
+    // etc.) always takes max(requested, desired), so it can never actually be constrained to less than
+    // its own desired height that way - it would overflow into the control row whenever the desired
+    // height exceeds the space actually available here. Render it directly with an exact box instead,
+    // and use a null-element spacer to keep m_layout's own cursor in sync for the control row placed
+    // right after it.
+    const ImRect layoutRect = m_layout.get_element_rect();
+    const float videoHeight = std::max(0.0f, layoutRect.GetHeight() - s_controlHeight);
+
+    m_video.render(ImRect(layoutRect.GetTL(), ImVec2(layoutRect.Max.x, layoutRect.Min.y + videoHeight)));
+    m_layout.render_spacer_pixels(0.0f, videoHeight);
+
+    m_layout.render_layout_element_pixels_vertical(&m_controlButtonsLayout, s_controlHeight);
+
+    const bool createdComment = render_controls();
+
+    if (renderInfo.isVisible)
     {
-        return false;
+        handle_keyboard_controls(m_video.get_element_rect());
     }
 
-    m_videoImage.render(renderInfo.elementBox);
+    return createdComment;
+}
 
-    render_layouts(renderInfo.elementBox);
-    const bool newComment = render_controls();
-    render_timeline();
-    render_comments();
+auto video_element::get_element_content_size(const ImVec2& parentSize) -> ImVec2 const
+{
+    return ImVec2(parentSize.x, m_video.get_element_content_size(parentSize).y + s_controlHeight);
+}
 
-    handle_keyboard_controls(m_videoImage.get_element_rect());
-    handle_mouse_controls(m_videoImage.get_element_rect());
+auto video_element::render_controls() -> bool
+{
+    ZoneScoped;
+
+    m_filePositionText.set_text(fmt::format("{:02d}:{:02d}", static_cast<int>(m_filePosition) / 60, static_cast<int>(m_filePosition) % 60));
+    m_fileDurationText.set_text(fmt::format("{:02d}:{:02d}", static_cast<int>(m_fileDuration) / 60, static_cast<int>(m_fileDuration) % 60));
+
+    m_controlButtonsLayout.render_layout_element_pixels_horizontal(&m_filePositionText, s_buttonWidth);
+
+    if (m_controlButtonsLayout.render_layout_element_pixels_horizontal(&m_previousFrameButton, s_buttonWidth))
+    {
+        prev_frame();
+    }
+    ImGui::SetItemTooltip("Previous Frame");
+
+    if (m_controlButtonsLayout.render_layout_element_pixels_horizontal(&m_pauseButton, s_buttonWidth))
+    {
+        pause_file();
+    }
+    ImGui::SetItemTooltip("Pause");
+
+    if (m_controlButtonsLayout.render_layout_element_pixels_horizontal(&m_playButton, s_buttonWidth))
+    {
+        play_file();
+    }
+    ImGui::SetItemTooltip("Play");
+
+    const bool newComment = m_controlButtonsLayout.render_layout_element_pixels_horizontal(&m_addCommentButton, s_buttonWidth);
+    ImGui::SetItemTooltip("Add Comment At Time");
+
+    if (newComment)
+    {
+        pause_file();
+    }
+
+    if (m_controlButtonsLayout.render_layout_element_pixels_horizontal(&m_nextFrameButton, s_buttonWidth))
+    {
+        next_frame();
+    }
+    ImGui::SetItemTooltip("Next Frame");
+
+    m_controlButtonsLayout.render_layout_element_pixels_horizontal(&m_fileDurationText, s_buttonWidth);
 
     return newComment;
 }
 
-auto video_element::render_timeline() -> void
+auto video_element::get_file_play_position() const -> double
 {
-    const float timelineWidth = m_videoTimelineLayout.get_element_rect().GetWidth();
-
-    ImVec2 progressLineStart = m_videoTimelineLayout.get_element_rect().GetTL();
-    progressLineStart.y += g_videoControlRowHalfHeight;
-
-    ImVec2 progressLineEnd = progressLineStart;
-    progressLineEnd.x += timelineWidth;
-
-    if (ImDrawList* const drawList = ImGui::GetWindowDrawList())
-    {
-        drawList->AddLine(ImVec2(progressLineStart.x, progressLineStart.y),
-                          ImVec2(progressLineEnd.x, progressLineEnd.y),
-                          ImGui::ColorConvertFloat4ToU32(gluten::theme::textPrimary),
-                          g_progressLineThickness);
-
-        const ImGuiID videoGrabHandleId = ImGui::GetID("##VideoDragHandle");
-        ImGui::KeepAliveID(videoGrabHandleId);
-
-        ImRect grabRect(progressLineStart.x - (ImGui::GetStyle().GrabMinSize / 2.0f),
-                        progressLineStart.y - (g_videoControlRowHeight / 3.0f), 
-                        progressLineEnd.x + (ImGui::GetStyle().GrabMinSize / 2.0f),
-                        progressLineEnd.y + (g_videoControlRowHeight / 3.0f));
-
-        const bool hovered = ImGui::ItemHoverable(grabRect, videoGrabHandleId, ImGuiSliderFlags_NoInput);
-
-        const bool clicked    = hovered && ImGui::IsMouseClicked(0, ImGuiInputFlags_None, videoGrabHandleId);
-        const bool makeActive = (clicked || ImGui::GetCurrentContext()->NavActivateId == videoGrabHandleId);
-
-        if (makeActive && clicked)
-        {
-            ImGui::SetKeyOwner(ImGuiKey_MouseLeft, videoGrabHandleId);
-        }
-
-        if (makeActive)
-        {
-            ImGui::SetActiveID(videoGrabHandleId, ImGui::GetCurrentWindow());
-            ImGui::SetFocusID(videoGrabHandleId, ImGui::GetCurrentWindow());
-            ImGui::FocusWindow(ImGui::GetCurrentWindow());
-            ImGui::GetCurrentContext()->ActiveIdUsingNavDirMask |= (1 << ImGuiDir_Left) | (1 << ImGuiDir_Right);
-        }
-
-        ImRect outDrag;
-        if (ImGui::SliderBehavior(grabRect, videoGrabHandleId, ImGuiDataType_Double, &m_filePosition,
-                                  &g_minimumVideoPosition, &m_fileDuration, "%f", ImGuiSliderFlags_None, &outDrag))
-        {
-            ImGui::MarkItemEdited(videoGrabHandleId);
-            m_videoSubsystem.lock()->set_video_play_position(m_filePath, m_filePosition);
-        }
-
-        if (outDrag.Max.x > outDrag.Min.x)
-        {
-            drawList->AddRectFilled(outDrag.Min, outDrag.Max,
-                                    ImGui::ColorConvertFloat4ToU32(gluten::theme::interactive), 0.0f);
-        }        
-    }
+    return m_video.get_file_play_position();
 }
 
-auto video_element::render_comments() -> void
+auto video_element::get_file_duration() const -> double
 {
-    if (std::shared_ptr<workspace_manager> workspaceManager =
-            gluten::app::get()->get_manager_by_class<workspace_manager>())
+    return m_video.get_file_duration();
+}
+
+auto video_element::play_file() -> void
+{
+    m_video.play_file();
+}
+
+auto video_element::pause_file() -> void
+{
+    m_video.pause_file();
+}
+
+auto video_element::prev_frame() -> void
+{
+    m_video.prev_frame();
+}
+
+auto video_element::next_frame() -> void
+{
+    m_video.next_frame();
+}
+
+auto video_element::get_is_playing() -> bool
+{
+    return m_video.get_is_playing();
+}
+
+auto video_element::seek_to_position(double position) -> void
+{
+    m_video.seek_to_position(position);
+}
+
+video_element::inner_video_element::inner_video_element(const std::filesystem::path& filePath, int64_t fileId)
+    : gluten::video_element(filePath), m_fileId(fileId)
+{
+}
+
+auto video_element::inner_video_element::render_video_overlay() -> void
+{
+    if (std::shared_ptr<workspace_manager> workspaceManager = gluten::app::get()->get_manager_by_class<workspace_manager>())
     {
         if (ImDrawList* const drawList = ImGui::GetWindowDrawList())
         {
-            ImVec2 leftMiddle = m_videoCommentsLayout.get_element_rect().GetTL();
-            leftMiddle.y += g_videoControlRowHeight / 2.0f;
+            const ImRect overlayRect = m_videoOverlayLayout.get_element_rect();
+            const float rowMiddleY   = overlayRect.Min.y + (overlayRect.GetHeight() / 2.0f);
 
-            ImVec2 rightMiddle = m_videoCommentsLayout.get_element_rect().GetTR();
-            rightMiddle.y += g_videoControlRowHeight / 2.0f;
+            const ImVec2 leftMiddle(overlayRect.Min.x, rowMiddleY);
+            const ImVec2 rightMiddle(overlayRect.Max.x, rowMiddleY);
 
-            drawList->AddLine(leftMiddle, rightMiddle,
-                              ImGui::ColorConvertFloat4ToU32(gluten::theme::textPrimary), 1.0f);
+            drawList->AddLine(leftMiddle, rightMiddle, ImGui::ColorConvertFloat4ToU32(gluten::theme::textPrimary), 1.0f);
 
             const auto& comments = workspaceManager->get_all_comments_for_review(workspaceManager->get_selected_review().m_reviewId);
 
@@ -157,7 +191,7 @@ auto video_element::render_comments() -> void
                 {
                     if (comment.m_fileId == m_fileId)
                     {
-                        if (comment.m_timeStart >= 0.0) 
+                        if (comment.m_timeStart >= 0.0)
                         {
                             const float commentTimelineWidth = rightMiddle.x - leftMiddle.x;
                             const float commentPosition = leftMiddle.x + (commentTimelineWidth * (comment.m_timeStart / m_fileDuration));
@@ -175,7 +209,7 @@ auto video_element::render_comments() -> void
 
                                 if (ImGui::IsItemClicked())
                                 {
-                                    m_videoSubsystem.lock()->set_video_play_position(m_filePath, comment.m_timeStart);
+                                    seek_to_position(comment.m_timeStart);
                                 }
                             }
                         }
@@ -184,61 +218,4 @@ auto video_element::render_comments() -> void
             }
         }
     }
-}
-
-auto video_element::render_layouts(const ImRect& elementRect) -> void
-{
-    ImRect videoControlsRect = elementRect;
-    videoControlsRect.Min.y  = videoControlsRect.Max.y - g_totalVideoControlsHeight;
-    m_videoControlsLayout.render(videoControlsRect);
-
-    m_videoControlsLayout.render_layout_element_pixels_vertical(&m_controlButtonsLayout, g_videoControlRowHeight);
-    m_videoControlsLayout.render_layout_element_pixels_vertical(&m_videoTimelineLayout, g_videoControlRowHeight);
-    m_videoControlsLayout.render_layout_element_pixels_vertical(&m_videoCommentsLayout, g_videoControlRowHeight);
-}
-
-auto video_element::get_element_content_size(const ImVec2& parentSize) -> ImVec2 const
-{
-    const ImVec2 videoSize = m_videoImage.get_element_content_size(parentSize);
-    return ImVec2(videoSize.x, videoSize.y + g_totalVideoControlsHeight);
-}
-
-auto video_element::get_file_play_position() const -> double 
-{
-    return m_videoSubsystem.lock()->get_video_play_position(m_filePath);
-}
-
-auto video_element::get_file_duration() const -> double
-{
-    return m_videoSubsystem.lock()->get_video_duration(m_filePath);
-}
-
-auto video_element::play_file() -> void
-{
-    m_videoSubsystem.lock()->play_video(m_filePath);
-}
-
-auto video_element::pause_file() -> void
-{
-    m_videoSubsystem.lock()->pause_video(m_filePath);
-}
-
-auto video_element::seek_to_position(double position) -> void
-{
-    m_videoSubsystem.lock()->set_video_play_position(m_filePath, position);
-}
-
-auto video_element::prev_frame() -> void 
-{
-    m_videoSubsystem.lock()->set_video_prev_frame(m_filePath);
-}
-
-auto video_element::next_frame() -> void 
-{
-    m_videoSubsystem.lock()->set_video_next_frame(m_filePath);
-}
-
-auto video_element::get_is_playing() -> bool
-{
-    return m_videoSubsystem.lock()->get_video_is_playing(m_filePath);
 }

@@ -19,6 +19,9 @@ set(GLUTEN_SOURCES
   data/data_source.cpp
   data/data_cache.cpp
   elements/element.cpp
+  elements/audio_element.cpp
+  elements/file_element.cpp
+  elements/video_element.cpp
   elements/button.cpp
   elements/image_button.cpp
   elements/text.cpp
@@ -33,7 +36,9 @@ set(GLUTEN_SOURCES
   managers/manager.cpp
   subsystems/audio_subsystem.cpp
   subsystems/renderer_subsystem.cpp
+  subsystems/video_subsystem.cpp
   subsystems/widget_subsystem.cpp
+  glad/src/gl.cpp
   theme/theme.cpp
   utils/imgui_util_functions.cpp
   theme/window_images.embed
@@ -50,6 +55,9 @@ set(GLUTEN_HEADERS
   data/data_controller.h
   data/data_cache.h
   elements/element.h
+  elements/audio_element.h
+  elements/file_element.h
+  elements/video_element.h
   elements/button.h
   elements/image_button.h
   elements/text.h
@@ -64,7 +72,10 @@ set(GLUTEN_HEADERS
   managers/manager.h
   subsystems/audio_subsystem.h
   subsystems/renderer_subsystem.h
+  subsystems/video_subsystem.h
   subsystems/widget_subsystem.h
+  glad/include/glad/gl.h
+  glad/include/KHR/khrplatform.h
   theme/theme.h
   theme/carbon/carbon_colors.h
   theme/carbon/carbon_theme_g100.h
@@ -84,6 +95,9 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Header Files" FILES ${GLUT
 set(PCH_HEADER pch.h)
 set(PCH_SOURCE pch.cpp)
 
+message(STATUS "Fetching mpv")
+include(build_mpv)
+
 add_library(gluten STATIC
   ${PCH_SOURCE}
   ${GLUTEN_SOURCES}
@@ -98,9 +112,20 @@ add_library(SoundBakery::Gluten ALIAS gluten)
 
 target_include_directories(gluten
     PUBLIC ${PROJECT_SOURCE_DIR}/src
+    PUBLIC ${MPV_INCLUDE_DIRS}
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
+    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/glad/include
     PRIVATE ${stb_SOURCE_DIR}
 )
+
+# mpv/client.h declares its functions as extern function pointers when this is set, matching
+# video_subsystem's dlopen/dlsym-based loading. PUBLIC so any app including gluten's video_subsystem.h
+# (directly or transitively) sees the same declarations.
+target_compile_definitions(gluten PUBLIC "MPV_CPLUGIN_DYNAMIC_SYM")
+
+if(USE_MPV_WIN_BUILD)
+  add_dependencies(gluten mpv_dev)
+endif()
 
 target_precompile_headers(gluten PRIVATE ${PCH_HEADER})
 
@@ -143,13 +168,13 @@ CPMAddPackage("gh:nemtrif/utfcpp@4.0.6")
 
 CPMAddPackage(NAME sodium-cmake
   GITHUB_REPOSITORY robinlinden/libsodium-cmake
-  GIT_TAG master
+  GIT_TAG 9b2848dfc1b917a9410f0de9d81059b26cbfaa8d # master @ 2026-07-17
   OPTIONS "SODIUM_DISABLE_TESTS ON"
 )
 
 CPMAddPackage(NAME libebur128
   GITHUB_REPOSITORY jiixyj/libebur128
-  GIT_TAG master
+  GIT_TAG 67b33abe1558160ed76ada1322329b0e9e058b02 # master @ 2026-07-17
   OPTIONS "ENABLE_TESTS OFF" "BUILD_SHARED_LIBS OFF"
 )
 

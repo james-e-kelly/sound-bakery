@@ -4,17 +4,17 @@
 
 namespace sbk::engine
 {
-    enum SB_ACTION_TYPE
+    enum class action_type
     {
-        SB_ACTION_INVALID,
-        SB_ACTION_PLAY,
-        SB_ACTION_STOP,
-        SB_ACTION_NUM
+        invalid,
+        play,
+        stop,
+        num
     };
 
     struct SB_CLASS action
     {
-        SB_ACTION_TYPE m_type = SB_ACTION_PLAY;
+        action_type m_type = action_type::play;
         sbk::core::database_ptr<sbk::core::database_object> m_destination;
     };
 

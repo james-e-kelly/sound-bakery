@@ -39,7 +39,7 @@ static const char* sc_path_file_name(const char* path)
 static const ma_uint32 bankID      = SC_BANK_ID;
 static const ma_uint32 bankVersion = SC_BANK_VERSION;
 
-sbk_result sc_bank_init(sc_bank* bank, const char* outputFile, ma_open_mode_flags openFlags)
+sbk_status sc_bank_init(sc_bank* bank, const char* outputFile, ma_open_mode_flags openFlags)
 {
     SC_CHECK_ARG(outputFile);
     SC_CHECK_ARG(bank);
@@ -52,14 +52,14 @@ sbk_result sc_bank_init(sc_bank* bank, const char* outputFile, ma_open_mode_flag
     ma_vfs_file file = NULL;
 
     const ma_result openResult = ma_vfs_open(&vfs, outputFile, openFlags, &file);
-    SC_CHECK_RESULT(openResult);
+    SC_CHECK_STATUS(openResult);
 
     bank->outputFile = file;
 
     return openResult;
 }
 
-sbk_result sc_bank_uninit(sc_bank* bank)
+sbk_status sc_bank_uninit(sc_bank* bank)
 {
     SC_CHECK_ARG(bank);
     SC_CHECK(bank->outputFile != NULL, MA_INVALID_FILE);
@@ -98,7 +98,7 @@ sbk_result sc_bank_uninit(sc_bank* bank)
     return ma_vfs_close(&vfs, bank->outputFile);
 }
 
-sbk_result sc_bank_build(sc_bank* bank,
+sbk_status sc_bank_build(sc_bank* bank,
                         const char** inputFiles,
                         sc_encoding_format* inputFileFormats,
                         ma_uint32 inputFilesSize)
@@ -218,7 +218,7 @@ cleanup:
     return returnResult;
 }
 
-sbk_result sc_bank_read(sc_bank* bank)
+sbk_status sc_bank_read(sc_bank* bank)
 {
     SC_CHECK_ARG(bank != NULL);
     SC_CHECK_ARG(bank->outputFile != NULL);
@@ -237,27 +237,27 @@ sbk_result sc_bank_read(sc_bank* bank)
     ma_uint32 bankID = 0;
     size_t bytesRead = 0;
 
-    sbk_result readResult = ma_vfs_read(&vfs, bank->outputFile, &bankID, 4, &bytesRead);
-    SC_CHECK_RESULT(readResult);
+    sbk_status readResult = ma_vfs_read(&vfs, bank->outputFile, &bankID, 4, &bytesRead);
+    SC_CHECK_STATUS(readResult);
     SC_CHECK(bankID == SC_BANK_ID, MA_INVALID_DATA);
 
     size_t totalFileSize = 0;
 
     readResult = ma_vfs_read(&vfs, bank->outputFile, &totalFileSize, sizeof(totalFileSize), &bytesRead);
-    SC_CHECK_RESULT(readResult);
+    SC_CHECK_STATUS(readResult);
     SC_CHECK(totalFileSize > 4, MA_INVALID_DATA);
 
     ma_uint32 bankVersion = 0;
 
     readResult = ma_vfs_read(&vfs, bank->outputFile, &bankVersion, sizeof(bankVersion), &bytesRead);
-    SC_CHECK_RESULT(readResult);
+    SC_CHECK_STATUS(readResult);
     SC_CHECK(bankVersion == SC_BANK_VERSION, MA_INVALID_DATA);
 
     ma_uint32 headerSize = sizeof(ma_uint32) + sizeof(ma_uint32) + sizeof(ma_uint32);
     // SC_CHECK(totalFileSize == fileInfo.sizeInBytes - headerSize, MA_INVALID_DATA);
 
     readResult = ma_vfs_read(&vfs, bank->outputFile, &numOfSubchunks, sizeof(ma_uint32), &bytesRead);
-    SC_CHECK_RESULT(readResult);
+    SC_CHECK_STATUS(readResult);
     SC_CHECK(numOfSubchunks > 0, MA_INVALID_DATA);
 
     bank->riff = ma_malloc(sizeof(sc_riffChunk), NULL);
@@ -279,18 +279,18 @@ sbk_result sc_bank_read(sc_bank* bank)
         size_t bytesRead  = 0;
 
         readResult = ma_vfs_read(&vfs, bank->outputFile, &chunkID, 4, &bytesRead);
-        SC_CHECK_RESULT(readResult);
+        SC_CHECK_STATUS(readResult);
         SC_CHECK(chunkID == SC_BANK_SUB_ID, MA_INVALID_DATA);
 
         ma_uint32 chunkSize = 0;
 
         readResult = ma_vfs_read(&vfs, bank->outputFile, &chunkSize, 4, &bytesRead);
-        SC_CHECK_RESULT(readResult);
+        SC_CHECK_STATUS(readResult);
 
         char chunkName[SC_BANK_FILE_NAME_BUFFER_SIZE];
 
         readResult = ma_vfs_read(&vfs, bank->outputFile, &chunkName, SC_BANK_FILE_NAME_BUFFER_SIZE, &bytesRead);
-        SC_CHECK_RESULT(readResult);
+        SC_CHECK_STATUS(readResult);
 
         const size_t dataLength = chunkSize - SC_BANK_FILE_NAME_BUFFER_SIZE;
 
@@ -308,7 +308,7 @@ sbk_result sc_bank_read(sc_bank* bank)
 
         readResult =
             ma_vfs_read(&vfs, bank->outputFile, bank->riff->subChunks[chunkIndex]->data, dataLength, &bytesRead);
-        SC_CHECK_RESULT(readResult);
+        SC_CHECK_STATUS(readResult);
     }
 
     return MA_SUCCESS;

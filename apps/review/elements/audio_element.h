@@ -1,8 +1,13 @@
 #pragma once
 
-#include "elements/file_element.h"
+#include "gluten/elements/audio_element.h"
+#include "gluten/elements/file_element.h"
+#include "gluten/elements/icon_button.h"
+#include "gluten/elements/text.h"
 
-class audio_element : public file_element
+#include "IconsLucide.h"
+
+class audio_element : public gluten::file_element
 {
 public:
     audio_element(const std::filesystem::path& filePath, const int64_t fileId);
@@ -29,11 +34,7 @@ public:
 
 protected:
     auto render_element(const gluten::element_render_info& renderInfo) -> bool override;
-    auto render_waveform() -> void;
-    auto render_comments() -> bool;
     auto get_element_content_size(const ImVec2& parentSize) -> ImVec2 const override;
-
-    auto handle_mouse_control() -> void;
 
     auto get_file_play_position() const -> double override;
     auto get_file_duration() const -> double override;
@@ -45,12 +46,41 @@ protected:
     auto get_is_playing() -> bool override;
 
 private:
-    auto get_audio_height(float width) -> float;
+    static inline constexpr float s_buttonWidth          = 45.0f;
+    static inline constexpr float s_controlHeight        = s_buttonWidth;
+    static inline constexpr int s_controlButtonsCount    = 4;  // prev, pause, play, next
+    static inline constexpr float s_controlButtonsWidth  = s_buttonWidth * s_controlButtonsCount;
 
-    gluten::background m_audioBackground;
-    gluten::background m_loudnessBackground;
-    gluten::background m_controlsBackground;
+    /**
+     * @brief Extends Gluten's generic waveform display with review comment tags on the same plot.
+     */
+    class waveform_element : public gluten::audio_element
+    {
+    public:
+        waveform_element(const std::filesystem::path& filePath, int64_t fileId);
+
+    protected:
+        auto render_waveform_overlay(double plotTimeWidth) -> void override;
+
+    private:
+        int64_t m_fileId = -1;
+    };
+
+    auto render_controls() -> bool;
+
+    int64_t m_fileId = -1;
+
+    waveform_element m_waveform;
+
+    gluten::icon_button m_playButton = gluten::icon_button("##Play", ICON_LC_PLAY, gluten::fonts::regular_lucide_icons);
+    gluten::icon_button m_pauseButton = gluten::icon_button("##Pause", ICON_LC_PAUSE, gluten::fonts::regular_lucide_icons);
+    gluten::icon_button m_previousFrameButton = gluten::icon_button("##PrevFrame", ICON_LC_CHEVRON_LEFT, gluten::fonts::regular_lucide_icons);
+    gluten::icon_button m_nextFrameButton = gluten::icon_button("##NextFrame", ICON_LC_CHEVRON_RIGHT, gluten::fonts::regular_lucide_icons);
+    gluten::icon_button m_addCommentButton = gluten::icon_button("##AddComment", ICON_LC_PLUS, gluten::fonts::regular_lucide_icons);
+
+    gluten::text m_filePositionText;
+    gluten::text m_fileDurationText;
 
     gluten::layout m_layout = gluten::layout(gluten::layout_type::top_to_bottom, gluten::anchor_preset::stretch_full);
-    gluten::layout m_waveformAndLoudnessLayout = gluten::layout(gluten::layout_type::left_to_right, gluten::anchor_preset::stretch_full);
+    gluten::layout m_controlButtonsLayout = gluten::layout(gluten::layout_type::left_to_right, gluten::anchor_preset::stretch_center);
 };

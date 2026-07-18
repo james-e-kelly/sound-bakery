@@ -18,18 +18,11 @@ namespace sbk::engine
     public:
         game_object() = default;
 
-        virtual auto get_is_export() const -> bool override { return false; }
+        [[nodiscard]] virtual auto get_is_export() const -> bool override { return false; }
 
-        auto play_container(container* container, const pass_key<sbk::engine::system>& passkey) -> voice*;
-        auto post_event(event* event, const pass_key<sbk::engine::system>& passkey) -> void;
+        auto update() -> void;
 
-        auto stop_voice(voice* voice, const pass_key<sbk::engine::system>& passkey) -> void;
-        auto stop_container(container* container, const pass_key<sbk::engine::system>& passkey) -> void;
-        auto stop_all(const pass_key<sbk::engine::system>& passkey) -> void;
-
-        void update();
-
-        [[nodiscard]] bool is_playing() const noexcept;
+        [[nodiscard]] auto is_playing() const noexcept -> bool;
 
         /**
          * @brief Finds the parameter value on this gameobject.
@@ -38,7 +31,7 @@ namespace sbk::engine
          * @param parameter to get the value for.
          * @return value of the parameter.
          */
-        [[nodiscard]] float get_float_parameter_value(const sbk::core::database_ptr<float_parameter>& parameter) const;
+        [[nodiscard]] auto get_float_parameter_value(const sbk::core::database_ptr<float_parameter>& parameter) const -> float;
 
         /**
          * @brief Finds the parameter value on this gameobject.
@@ -47,12 +40,12 @@ namespace sbk::engine
          * @param parameter to get the value for.
          * @return value of the parameter.
          */
-        [[nodiscard]] sbk_id get_int_parameter_value(const sbk::core::database_ptr<named_parameter>& parameter) const;
+        [[nodiscard]] auto get_int_parameter_value(const sbk::core::database_ptr<named_parameter>& parameter) const -> sbk_id;
 
-        void set_float_parameter(const float_parameter::local_parameter_value_pair& parameterValue);
-        void set_int_parameter_value(const named_parameter::local_parameter_value_pair& parameterValue);
+        auto set_float_parameter(const float_parameter::local_parameter_value_pair& parameterValue) -> void;
+        auto set_int_parameter_value(const named_parameter::local_parameter_value_pair& parameterValue) -> void;
 
-        [[nodiscard]] local_parameter_list get_local_parameters() const { return m_parameters; }
+        [[nodiscard]] auto get_local_parameters() const -> local_parameter_list { return m_parameters; }
 
     private:
         local_parameter_list m_parameters;

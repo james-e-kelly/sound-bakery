@@ -9,17 +9,8 @@ set(DOXYGEN_OUT ${CMAKE_BINARY_DIR}/docs/build/Doxyfile)
 configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
 message(STATUS "Creating doxyfile")
 
-#execute_process(COMMAND ${DOXYGEN_EXECUTABLE} -w html header.html delete_me.html delete_me.css
- #   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/docs
-#)
-
 add_custom_target(doc_doxygen ALL
     COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
     COMMENT "Generating API documentation with Doxygen"
     VERBATIM
 )
-
-#execute_process(COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
- #   COMMENT "Generating doxygen documentation"
-  #  VERBATIM
-#)

@@ -1,71 +1,75 @@
-<h1>Sound Bakery</h1>
-
-| Windows | MacOS | Linux | License | C++<br>Standard | Version |
-| ------- | ----- | ----- | ------- | --------------- | ------- |
-| [![Windows](https://github.com/KarateKidzz/sound-bakery/actions/workflows/windows.yaml/badge.svg?branch=dev)](https://github.com/KarateKidzz/sound-bakery/actions/workflows/windows.yaml) | [![macOS](https://github.com/KarateKidzz/sound-bakery/actions/workflows/macos.yaml/badge.svg?branch=dev)](https://github.com/KarateKidzz/sound-bakery/actions/workflows/macos.yaml) |[![Linux](https://github.com/KarateKidzz/sound-bakery/actions/workflows/linux.yaml/badge.svg?branch=dev)](https://github.com/KarateKidzz/sound-bakery/actions/workflows/linux.yaml)  | [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT) | [![GitHub license](https://img.shields.io/badge/C%2B%2B-20-blue)](https://en.cppreference.com/w/cpp/compiler_support#cpp20) | ![WIP](https://img.shields.io/badge/Status-WIP-yellow) |
+# Sound Bakery
 
 <div align="center">
-    <a href="#why-choose-sound-bakery">Why?</a> • <a href="#goal">Goal</a> • <a href="#getting-started">Getting Started</a> • <a href="#contributing">Join</a>
-</div>
-<p></p>
 
-Sound Bakery is a free and open-source audio middleware tool. The tool comes packaged with an authoring application and C/C++ API for integration with game engines. It supports the entire audio pipeline, from asset management, sound selection, packaging, playback and debugging.
+[![Windows](https://github.com/KarateKidzz/sound-bakery/actions/workflows/windows.yaml/badge.svg?branch=dev)](https://github.com/KarateKidzz/sound-bakery/actions/workflows/windows.yaml)
+[![macOS](https://github.com/KarateKidzz/sound-bakery/actions/workflows/macos.yaml/badge.svg?branch=dev)](https://github.com/KarateKidzz/sound-bakery/actions/workflows/macos.yaml)
+[![Linux](https://github.com/KarateKidzz/sound-bakery/actions/workflows/linux.yaml/badge.svg?branch=dev)](https://github.com/KarateKidzz/sound-bakery/actions/workflows/linux.yaml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![C++20](https://img.shields.io/badge/C%2B%2B-20-blue)](https://en.cppreference.com/w/cpp/compiler_support#cpp20)
+[![Status](https://img.shields.io/badge/Status-WIP-yellow)](#)
+[![GitHub Stars](https://img.shields.io/github/stars/KarateKidzz/sound-bakery?style=flat)](https://github.com/KarateKidzz/sound-bakery)
+[![GitHub Contributors](https://img.shields.io/github/contributors/KarateKidzz/sound-bakery)](https://github.com/KarateKidzz/sound-bakery/graphs/contributors)
+
+[Why?](#why-choose-sound-bakery) • [Goal](#goal) • [Getting Started](#getting-started) • [Contributing](#contributing) • [Docs](https://soundbakery.jameskelly.audio)
+
+</div>
+
+**Sound Bakery** is a free and open-source audio middleware tool featuring a complete authoring application and C/C++ API. Integrate with game engines with full support for asset management, sound selection, packaging, playback, and debugging.
 
 ![](docs/img/sound-bakery-wip-02.png)
 
 ## Why Choose Sound Bakery?
 
-From Blender and Krita to Godot, more and more developers are choosing open-source alternatives for their projects. Sound Bakery is the open choice for game audio. 
+From Blender and Krita to Godot, more and more developers are choosing open-source alternatives. Sound Bakery is the open choice for game audio.
 
 | Effective | Modern | Open |
 | --- | --- | --- |
-| With a full authoring application, powerful API, and multithreading built in, Sound Bakery is a competitive choice. | Sound Bakery is a tool for the modern era - Github hosting with CI, C++ 20, CMake, modern libraries and more. | Don't be restricted by cost or license. Sound Bakery is free, modifiable and MIT licensed. |
+| Full authoring application, powerful API, and built-in multithreading make Sound Bakery a competitive choice. | Modern tech stack: GitHub CI/CD, C++ 20, CMake, and current libraries. | Free, modifiable, and MIT licensed. No restrictions on cost or usage. |
 
 ## Goal
 
-Sound Bakery aims to be a competitive option to Wwise and FMOD that is more collaborative and open. Imagine owning your audio engine and being able to customise its look, tools, behaviour, and more. Imagine receiving features and fixes from top studios, all collectively improving the tools of the industry.
+Sound Bakery aims to be a competitive, open alternative to Wwise and FMOD. Imagine owning your audio engine—customizing its look, tools, behavior, and more. Imagine receiving features and fixes from top studios, all collectively improving the industry's tools.
 
-Check out the [roadmap](docs/Roadmap.md) for where Sound Bakery is going!
+See our [Roadmap](docs/Roadmap.md) for upcoming features and direction.
 
 ## Getting Started
 
-Looking for binaries? Check out the [releases](https://github.com/KarateKidzz/sound-bakery/releases) page for prebuilt binaries and source code. Otherwise, see how to build from source.
+### Quick Start
 
-### Prerequisites
-Ensure the following are installed:
+Looking for binaries? Check out the [Releases](https://github.com/KarateKidzz/sound-bakery/releases) page for prebuilt binaries and source code.
 
-- A C++ compiler (e.g., GCC, Clang, MSVC)
-- CMake (version 3.28 or higher)
+### Build from Source
+
+**Prerequisites:**
+- C++ compiler (GCC, Clang, or MSVC)
+- CMake 3.28+
 - Git
 
-### Installation
-Clone the repository and build the project:
-
-```
+**Installation:**
+```bash
 git clone https://github.com/KarateKidzz/sound-bakery.git
 cd sound-bakery
-mkdir build
-cd build
+mkdir build && cd build
 cmake ..
 make
 ```
 
-### Usage
-Here's a simple example to get started with Sound Bakery:
+### Usage Example
 
 ```cpp
 #include "sound_chef.h"
 
 int main() {
-    sc_system* system = NULL;
+    sc_system* system = nullptr;
     sc_system_create(&system);
     sc_system_init(system);
- 
-    sc_sound* sound = NULL;
+
+    sc_sound* sound = nullptr;
     sc_system_create_sound(system, "some_sound.wav", SC_SOUND_MODE_DEFAULT, &sound);
- 
-    sc_sound_instance* instance = NULL;
-    sc_system_play_sound(system, sound, &instance, NULL, SC_FALSE);
+
+    sc_sound_instance* instance = nullptr;
+    sc_system_play_sound(system, sound, &instance, nullptr, SC_FALSE);
 
     return 0;
 }
@@ -73,38 +77,34 @@ int main() {
 
 ### Documentation
 
-For documentation and guides, visit [soundbakery.jameskelly.audio](https://soundbakery.jameskelly.audio).
+Full documentation is available at **[soundbakery.jameskelly.audio](https://soundbakery.jameskelly.audio)**.
 
 ## Contributing
-Sound Bakery needs **you**! From UI/UX artists to DSP programmers, the project needs yours skills.
 
-Found a bug or want to request a feature? Open an [issue](https://github.com/KarateKidzz/sound-bakery/issues).
+Sound Bakery welcomes contributions from developers of all backgrounds—UI/UX artists, DSP programmers, documentation writers, and more.
 
-Want to talk about the project? Start a [discussion](https://github.com/KarateKidzz/sound-bakery/discussions).
+- **Found a bug?** [Open an issue](https://github.com/KarateKidzz/sound-bakery/issues)
+- **Have an idea?** Start a [discussion](https://github.com/KarateKidzz/sound-bakery/discussions)
+- **Ready to code?** [Fork the repo](https://github.com/KarateKidzz/sound-bakery/fork) and submit a pull request
 
-Ready to make a change? Create a [fork](https://github.com/KarateKidzz/sound-bakery/fork).
-
-All contributions are welcome!
-
-For more details, check out our [contributing guidelines](CONTRIBUTING.md).
+See our [Contributing Guidelines](CONTRIBUTING.md) for more information.
 
 ## License
-Sound Bakery is licensed under the MIT License. See the LICENSE file for more information.
+
+Sound Bakery is licensed under the **[MIT License](LICENSE)**. You are free to use, modify, and distribute this software.
 
 ## Acknowledgements
-Sound Bakery relies on some amazing open-source libraries. Thank you to the following libraries, creators, contributors and maintainers.
 
-| Audio | Rendering/Editor | Code | Testing/Documentation |
-| ----- | ---------------- | ---- | --------------------- |
-| [miniaudio](https://github.com/mackron/miniaudio.git) | [Dear ImGui](https://github.com/ocornut/imgui.git) | [boost](https://www.boost.org) | [doctest](https://github.com/doctest/doctest.git) |
-| [ogg](https://github.com/xiph/ogg.git) | [GLFW](https://www.glfw.org) | [yaml-archive](https://github.com/james-e-kelly/yaml-archive.git) | [Doxygen](https://www.doxygen.nl) |
-| [vorbis](https://github.com/xiph/vorbis.git) | [ImPlot](https://github.com/epezent/implot.git) | [concurrencpp](https://github.com/james-e-kelly/concurrencpp.git) | [Doxygen Awesome](https://github.com/jothepro/doxygen-awesome-css.git) |
-| [opus](https://github.com/xiph/opus.git) | [Native File Dialog](https://github.com/mlabbe/nativefiledialog.git) | [{fmt}](https://github.com/fmtlib/fmt.git) | |
-| [CLAP](https://github.com/free-audio/clap.git) | [IconFontCppHeaders](https://github.com/juliettef/IconFontCppHeaders.git) | [spdlog](https://github.com/gabime/spdlog.git) | |
-| | | [rttr](https://github.com/KarateKidzz/rttr.git) | |
-| | | [CMakeRC](https://github.com/vector-of-bool/cmrc.git) | |
-| | | [Cpp Delegates](https://github.com/KarateKidzz/CppDelegates.git) | |
-| | | [stb](https://github.com/nothings/stb.git) | |
-| | | [bytesize](https://github.com/eudoxos/bytesize.git) | |
-| | | [dirent](https://github.com/tronkko/dirent.git) | |
-| | | [out_ptr](https://github.com/soasis/out_ptr.git) | |
+Sound Bakery stands on the shoulders of amazing open-source projects. We're grateful to the following libraries and their creators:
+
+**Audio**
+- [miniaudio](https://github.com/mackron/miniaudio) • [ogg](https://github.com/xiph/ogg) • [vorbis](https://github.com/xiph/vorbis) • [opus](https://github.com/xiph/opus) • [CLAP](https://github.com/free-audio/clap)
+
+**Rendering & Editor**
+- [Dear ImGui](https://github.com/ocornut/imgui) • [GLFW](https://www.glfw.org) • [ImPlot](https://github.com/epezent/implot) • [Native File Dialog](https://github.com/mlabbe/nativefiledialog) • [IconFontCppHeaders](https://github.com/juliettef/IconFontCppHeaders)
+
+**Core Libraries**
+- [boost](https://www.boost.org) • [yaml-archive](https://github.com/james-e-kelly/yaml-archive) • [concurrencpp](https://github.com/james-e-kelly/concurrencpp) • [{fmt}](https://github.com/fmtlib/fmt) • [spdlog](https://github.com/gabime/spdlog) • [rttr](https://github.com/KarateKidzz/rttr) • [CMakeRC](https://github.com/vector-of-bool/cmrc) • [Cpp Delegates](https://github.com/KarateKidzz/CppDelegates) • [stb](https://github.com/nothings/stb) • [bytesize](https://github.com/eudoxos/bytesize) • [dirent](https://github.com/tronkko/dirent) • [out_ptr](https://github.com/soasis/out_ptr)
+
+**Testing & Documentation**
+- [doctest](https://github.com/doctest/doctest) • [Doxygen](https://www.doxygen.nl) • [Doxygen Awesome](https://github.com/jothepro/doxygen-awesome-css)

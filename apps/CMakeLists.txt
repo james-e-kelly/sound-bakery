@@ -1,4 +1,4 @@
-if (${SOUND_BAKERY_EDITOR})
+if (SOUND_BAKERY_EDITOR)
     set(CMAKE_FOLDER apps)
 
     include(build_tracy)

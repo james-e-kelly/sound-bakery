@@ -65,12 +65,11 @@ auto editor_app::on_file_drop(const std::vector<std::string>& paths) -> void
                     const std::filesystem::path newFilePath = project->get_config().source_folder() / filePath.filename();
 
                     std::filesystem::copy_file(filePath, newFilePath);
-                    if (std::shared_ptr<sbk::engine::sound> createdSound =
-                            project->create_database_object<sbk::engine::sound>())
+                    auto createdSoundResult = project->create_database_object<sbk::engine::sound>();
+                    if (createdSoundResult.has_value())
                     {
-                        createdSound->set_object_name(newFilePath.filename().stem().string());
-                        createdSound->set_sound_name(
-                            std::filesystem::relative(newFilePath, project->get_config().source_folder()).string());
+                        createdSoundResult.value()->set_object_name(newFilePath.filename().stem().string());
+                        createdSoundResult.value()->set_sound_name(std::filesystem::relative(newFilePath, project->get_config().source_folder()).string());
                     }
                 }
             }
@@ -79,6 +78,6 @@ auto editor_app::on_file_drop(const std::vector<std::string>& paths) -> void
 
     if (const sbk::editor::project* const project = sbk::engine::system::get_project())
     {
-        project->save_project();
+        (void)project->save_project();
     }
 }

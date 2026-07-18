@@ -43,8 +43,8 @@ static ma_result ma_encoder_vorbis_write_stream(ma_encoder* encoder)
         assert(headerWriteResult == MA_SUCCESS);
         assert(bodyWriteResult == MA_SUCCESS);
 
-        SC_CHECK_RESULT(headerWriteResult);
-        SC_CHECK_RESULT(bodyWriteResult);
+        SC_CHECK_STATUS(headerWriteResult);
+        SC_CHECK_STATUS(bodyWriteResult);
     }
 
     return MA_SUCCESS;
@@ -126,7 +126,7 @@ ma_result sc_encoder_vorbis_write_pcm_frames(ma_encoder* encoder,
 
     if (!vorbisEncoder->hasWrittenHeader)
     {
-        sbk_result headerResult = sc_encoder_vorbis_write_header(encoder);
+        sbk_status headerResult = sc_encoder_vorbis_write_header(encoder);
         SC_CHECK(headerResult == MA_SUCCESS, MA_ERROR);
     }
 

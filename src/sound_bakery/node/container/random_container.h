@@ -4,10 +4,10 @@
 
 namespace sbk::engine
 {
-    class SB_CLASS RandomContainer : public container
+    class SB_CLASS random_container : public container
     {
     public:
-        virtual void gather_children_for_play(gather_children_context& context) const override
+        virtual auto gather_children_for_play(gather_children_context& context) const -> void override
         {
             switch (m_childNodes.size())
             {
@@ -18,15 +18,17 @@ namespace sbk::engine
                     break;
                 default:
                     int randomChildIndex = std::rand() % m_childNodes.size();
-                    std::unordered_set<sbk::core::database_ptr<node_base>>::const_iterator childIter =
-                        m_childNodes.begin();
+                    std::unordered_set<sbk::core::database_ptr<node_base>>::const_iterator childIter = m_childNodes.begin();
                     std::advance(childIter, randomChildIndex);
-                    context.sounds.push_back(childIter->lookup_raw()->try_convert_object<container>());
+                    if (childIter->lookup())
+                    {
+                        context.sounds.push_back(childIter->raw()->try_convert_object<container>());
+                    }
                     break;
             }
         }
 
-        REGISTER_REFLECTION(RandomContainer, container)
+        REGISTER_REFLECTION(random_container, container)
         RTTR_REGISTRATION_FRIEND
     };
 }  // namespace sbk::engine

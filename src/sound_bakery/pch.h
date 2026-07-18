@@ -39,19 +39,19 @@
 /**
  * @def Registers this type's get_parent classes (if any) and marks its private members visible to reflection.
  */
-#define REGISTER_REFLECTION(T, ...) \
-                                    \
-public:                             \
-    static rttr::type type();       \
-    RTTR_ENABLE(__VA_ARGS__)        \
-    RTTR_REGISTRATION_FRIEND        \
-    friend void sbk::reflection::registerReflectionTypes();
+#define REGISTER_REFLECTION(T, ...)      \
+                                         \
+public:                                  \
+    [[nodiscard]] static auto type() -> rttr::type; \
+    RTTR_ENABLE(__VA_ARGS__)             \
+    RTTR_REGISTRATION_FRIEND             \
+    friend auto sbk::reflection::register_reflection_types() -> void;
 
 /**
  * @def Defines the static function so it is compiled into the SoundBakery library and not the consuming application.
  */
 #define DEFINE_REFLECTION(T) \
-    rttr::type T::type() { return rttr::type::get<T>(); }
+    auto T::type() -> rttr::type { return rttr::type::get<T>(); }
 
 #define SBK_INFO(message) sbk_log(MA_LOG_LEVEL_INFO, message);              
 #define SBK_WARN(message) sbk_log(MA_LOG_LEVEL_WARNING, message);              

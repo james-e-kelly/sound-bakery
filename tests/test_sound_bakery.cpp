@@ -3,15 +3,45 @@
 
 #include "sound_bakery/system.h"
 
+#include "sound_bakery/core/property.h"
+#include "sound_bakery/event/event.h"
+#include "sound_bakery/gameobject/gameobject.h"
+#include "sound_bakery/parameter/parameter.h"
+
+namespace
+{
+    /**
+     * @brief RAII helper that spins up a real Sound Bakery system for the
+     * duration of a test and guarantees it is destroyed afterwards.
+     *
+     * Any test that needs reflection, the database, or object creation should
+     * declare one of these at the top of its body.
+     */
+    struct scoped_engine
+    {
+        scoped_engine()
+        {
+            const sbk_system_config config = sbk_system_config_init_default();
+
+            REQUIRE(sbk::engine::system::create().has_value());
+            REQUIRE(sbk::engine::system::get()->init(config).has_value());
+        }
+
+        ~scoped_engine() { sbk::engine::system::destroy(); }
+
+        [[nodiscard]] auto get() const -> sbk::engine::system* { return sbk::engine::system::get(); }
+    };
+}  // namespace
+
 TEST_SUITE("System")
 {
     TEST_CASE("System Creation Deletion")
     {
         sbk_system_config config = sbk_system_config_init_default();
 
-        REQUIRE(sbk::engine::system::create() == MA_SUCCESS);
-        REQUIRE(sbk::engine::system::init(config) == MA_SUCCESS);
-        REQUIRE(sbk::engine::system::update() == MA_SUCCESS);
+        REQUIRE(sbk::engine::system::create().has_value());
+        REQUIRE(sbk::engine::system::get()->init(config).has_value());
+        REQUIRE(sbk::engine::system::get()->update().has_value());
         sbk::engine::system::destroy();
         REQUIRE(sbk::engine::system::get() == nullptr);
     }
@@ -20,16 +50,406 @@ TEST_SUITE("System")
     {
         sbk_system_config config = sbk_system_config_init_default();
 
-        REQUIRE(sbk::engine::system::create() == MA_SUCCESS);
-        REQUIRE(sbk::engine::system::init(config) == MA_SUCCESS);
-        REQUIRE(sbk::engine::system::update() == MA_SUCCESS);
+        REQUIRE(sbk::engine::system::create().has_value());
+        REQUIRE(sbk::engine::system::get()->init(config).has_value());
+        REQUIRE(sbk::engine::system::get()->update().has_value());
         sbk::engine::system::destroy();
         REQUIRE(sbk::engine::system::get() == nullptr);
 
-        REQUIRE(sbk::engine::system::create() == MA_SUCCESS);
-        REQUIRE(sbk::engine::system::init(config) == MA_SUCCESS);
-        REQUIRE(sbk::engine::system::update() == MA_SUCCESS);
+        REQUIRE(sbk::engine::system::create().has_value());
+        REQUIRE(sbk::engine::system::get()->init(config).has_value());
+        REQUIRE(sbk::engine::system::get()->update().has_value());
         sbk::engine::system::destroy();
         REQUIRE(sbk::engine::system::get() == nullptr);
+    }
+
+    TEST_CASE("Get before create returns null")
+    {
+        // A fresh system should not exist until create() is called.
+        REQUIRE(sbk::engine::system::get() == nullptr);
+    }
+
+    TEST_CASE("Runtime operating mode without a project")
+    {
+        scoped_engine engine;
+
+        // With no project opened we should be in runtime mode and have no
+        // editor project.
+        CHECK(sbk::engine::system::get_operating_mode() == sbk::engine::system::operating_mode::runtime);
+        CHECK(sbk::engine::system::get_project() == nullptr);
+    }
+
+    TEST_CASE("Listener game object exists after init")
+    {
+        scoped_engine engine;
+
+        // The listener is created during init. The master bus, by contrast, is
+        // only established once a project/soundbank is loaded, so it stays null
+        // after a bare init.
+        CHECK(engine.get()->get_listener_game_object() != nullptr);
+        CHECK(engine.get()->get_master_bus() == nullptr);
+    }
+}
+
+TEST_SUITE("Property")
+{
+    using sbk::core::float_property;
+    using sbk::core::int_property;
+
+    TEST_CASE("Default construction")
+    {
+        float_property property;
+
+        CHECK(property.get() == doctest::Approx(0.0F));
+        CHECK(property.get_min() == doctest::Approx(0.0F));
+        CHECK(property.get_max() == doctest::Approx(1.0F));
+    }
+
+    TEST_CASE("Min/max construction stores the range")
+    {
+        float_property property(0.5F, 0.0F, 2.0F);
+
+        CHECK(property.get() == doctest::Approx(0.5F));
+
+        const auto minMax = property.get_min_max_pair();
+        CHECK(minMax.first == doctest::Approx(0.0F));
+        CHECK(minMax.second == doctest::Approx(2.0F));
+    }
+
+    TEST_CASE("Set within range succeeds and updates the value")
+    {
+        float_property property(0.0F, 0.0F, 1.0F);
+
+        CHECK(property.set(0.75F));
+        CHECK(property.get() == doctest::Approx(0.75F));
+    }
+
+    TEST_CASE("Set out of range is rejected")
+    {
+        float_property property(0.0F, 0.0F, 1.0F);
+
+        CHECK_FALSE(property.set(2.0F));    // above max
+        CHECK_FALSE(property.set(-1.0F));   // below min
+        CHECK(property.get() == doctest::Approx(0.0F));
+    }
+
+    TEST_CASE("Setting the same value is a no-op")
+    {
+        int_property property(5, 0, 10);
+
+        // Value is unchanged, so set() reports that nothing happened.
+        CHECK_FALSE(property.set(5));
+        CHECK(property.get() == 5);
+    }
+
+    TEST_CASE("Changing the value broadcasts the delegate with old and new")
+    {
+        float_property property(0.0F, 0.0F, 1.0F);
+
+        float broadcastOld = -1.0F;
+        float broadcastNew = -1.0F;
+        int   callCount    = 0;
+
+        property.get_delegate().AddLambda(
+            [&](float oldValue, float newValue)
+            {
+                broadcastOld = oldValue;
+                broadcastNew = newValue;
+                ++callCount;
+            });
+
+        REQUIRE(property.set(0.25F));
+
+        CHECK(callCount == 1);
+        CHECK(broadcastOld == doctest::Approx(0.0F));
+        CHECK(broadcastNew == doctest::Approx(0.25F));
+
+        // A rejected set must not fire the delegate.
+        CHECK_FALSE(property.set(5.0F));
+        CHECK(callCount == 1);
+    }
+}
+
+TEST_SUITE("Parameter")
+{
+    using sbk::engine::float_parameter;
+    using sbk::engine::int_parameter;
+
+    TEST_CASE("Float parameter get/set within default range")
+    {
+        float_parameter parameter;
+
+        parameter.set(0.5F);
+        CHECK(parameter.get() == doctest::Approx(0.5F));
+    }
+
+    TEST_CASE("Float parameter default value round-trips")
+    {
+        float_parameter parameter;
+
+        parameter.set_default(0.25F);
+        CHECK(parameter.get_default() == doctest::Approx(0.25F));
+    }
+
+    TEST_CASE("Int parameter rejects out-of-range set")
+    {
+        int_parameter parameter;
+
+        // Default int property range is [0, 1].
+        parameter.set(1);
+        CHECK(parameter.get() == 1);
+
+        parameter.set(5);          // outside range - ignored
+        CHECK(parameter.get() == 1);
+    }
+
+    TEST_CASE("Parameter set forwards to the change delegate")
+    {
+        float_parameter parameter;
+
+        int callCount = 0;
+        parameter.get_delegate().AddLambda([&](float, float) { ++callCount; });
+
+        parameter.set(0.5F);
+        CHECK(callCount == 1);
+    }
+
+    TEST_CASE("create_local_parameter_from_this copies the current value")
+    {
+        float_parameter parameter;
+        parameter.set(0.5F);
+
+        const auto local = parameter.create_local_parameter_from_this();
+        CHECK(local.second.get() == doctest::Approx(0.5F));
+    }
+}
+
+TEST_SUITE("Named Parameter")
+{
+    TEST_CASE("Adding values and selecting them")
+    {
+        scoped_engine engine;
+
+        auto parameterResult = engine.get()->create_database_object<sbk::engine::named_parameter>();
+        REQUIRE(parameterResult.has_value());
+
+        auto& parameter = parameterResult.value();
+
+        auto walkValue = parameter->add_new_value("Walk");
+        auto runValue  = parameter->add_new_value("Run");
+
+        REQUIRE(walkValue.valid());
+        REQUIRE(runValue.valid());
+
+        parameter->set_selected_value(runValue);
+        CHECK(parameter->get() == runValue.id());
+
+        const auto selected = parameter->get_selected_value();
+        CHECK(selected.id() == runValue.id());
+    }
+
+    TEST_CASE("Empty parameter lazily creates a 'None' value")
+    {
+        scoped_engine engine;
+
+        auto parameterResult = engine.get()->create_database_object<sbk::engine::named_parameter>();
+        REQUIRE(parameterResult.has_value());
+
+        auto& parameter = parameterResult.value();
+
+        // get_values() on an empty parameter should populate a default entry.
+        const auto values = parameter->get_values();
+        CHECK_FALSE(values.empty());
+    }
+
+    TEST_CASE("Empty name is ignored")
+    {
+        scoped_engine engine;
+
+        auto parameterResult = engine.get()->create_database_object<sbk::engine::named_parameter>();
+        REQUIRE(parameterResult.has_value());
+
+        auto& parameter = parameterResult.value();
+
+        const auto invalid = parameter->add_new_value("");
+        CHECK_FALSE(invalid.valid());
+    }
+}
+
+TEST_SUITE("Game Object")
+{
+    TEST_CASE("Local float parameter set/get round-trips")
+    {
+        scoped_engine engine;
+
+        sbk::engine::game_object gameObject;
+
+        constexpr sbk_id parameterId = 1234;
+        gameObject.set_float_parameter({parameterId, 0.75F});
+
+        const sbk::core::database_ptr<sbk::engine::float_parameter> parameterPtr(parameterId);
+        CHECK(gameObject.get_float_parameter_value(parameterPtr) == doctest::Approx(0.75F));
+    }
+
+    TEST_CASE("Local parameters are stored on the game object")
+    {
+        scoped_engine engine;
+
+        sbk::engine::game_object gameObject;
+        gameObject.set_float_parameter({4321, 0.5F});
+
+        const auto locals = gameObject.get_local_parameters();
+        CHECK(locals.floatParameters.size() == 1);
+    }
+
+    TEST_CASE("Fresh game object is not playing")
+    {
+        scoped_engine engine;
+
+        sbk::engine::game_object gameObject;
+        CHECK_FALSE(gameObject.is_playing());
+    }
+
+    TEST_CASE("Unknown float parameter falls back to zero")
+    {
+        scoped_engine engine;
+
+        sbk::engine::game_object gameObject;
+
+        // No local value and no such parameter in the database - expect the
+        // documented default of 0.
+        const sbk::core::database_ptr<sbk::engine::float_parameter> unknown(999999);
+        CHECK(gameObject.get_float_parameter_value(unknown) == doctest::Approx(0.0F));
+    }
+}
+
+TEST_SUITE("Database")
+{
+    TEST_CASE("Created object is findable by id")
+    {
+        scoped_engine engine;
+
+        auto objectResult = engine.get()->create_database_object<sbk::engine::float_parameter>();
+        REQUIRE(objectResult.has_value());
+
+        const sbk_id id = objectResult.value()->get_database_id();
+        REQUIRE(id != 0);
+
+        const auto found = engine.get()->try_find_database_object(id);
+        CHECK_FALSE(found.expired());
+    }
+
+    TEST_CASE("Object count grows when creating objects")
+    {
+        scoped_engine engine;
+
+        const std::size_t before = engine.get()->get_database_object_count();
+
+        auto objectResult = engine.get()->create_database_object<sbk::engine::float_parameter>();
+        REQUIRE(objectResult.has_value());
+
+        CHECK(engine.get()->get_database_object_count() == before + 1);
+    }
+
+    TEST_CASE("Removing an object from the database makes it unfindable")
+    {
+        scoped_engine engine;
+
+        auto objectResult = engine.get()->create_database_object<sbk::engine::float_parameter>();
+        REQUIRE(objectResult.has_value());
+
+        const sbk_id id = objectResult.value()->get_database_id();
+        engine.get()->remove_object_from_database(id);
+
+        const auto found = engine.get()->try_find_database_object(id);
+        CHECK(found.expired());
+    }
+}
+
+TEST_SUITE("Event")
+{
+    TEST_CASE("Default action is a play action")
+    {
+        sbk::engine::action action;
+        CHECK(action.m_type == sbk::engine::action_type::play);
+    }
+
+    TEST_CASE("Event can hold multiple actions")
+    {
+        scoped_engine engine;
+
+        auto eventResult = engine.get()->create_database_object<sbk::engine::event>();
+        REQUIRE(eventResult.has_value());
+
+        auto& event = eventResult.value();
+
+        event->m_actions.push_back(sbk::engine::action{sbk::engine::action_type::play, {}});
+        event->m_actions.push_back(sbk::engine::action{sbk::engine::action_type::stop, {}});
+
+        REQUIRE(event->m_actions.size() == 2);
+        CHECK(event->m_actions[0].m_type == sbk::engine::action_type::play);
+        CHECK(event->m_actions[1].m_type == sbk::engine::action_type::stop);
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Placeholder tests for APIs that don't exist yet.
+//
+// These are intentionally skipped (`* doctest::skip()`) so the suite stays
+// green while still documenting the behaviour we expect once the underlying
+// API is implemented. Remove the skip decorator and flesh out the body as
+// each feature lands.
+// ---------------------------------------------------------------------------
+TEST_SUITE("Future API")
+{
+    TEST_CASE("game_object::set_parameter unified setter" * doctest::skip())
+    {
+        // TODO: game_object currently exposes separate set_float_parameter and
+        // set_int_parameter_value. A single templated/overloaded
+        // set_parameter(parameter, value) would be nicer to use.
+        //
+        //   game_object gameObject;
+        //   gameObject.set_parameter(floatParameter, 0.5F);
+        //   CHECK(gameObject.get_float_parameter_value(floatParameter) == 0.5F);
+    }
+
+    TEST_CASE("game_object::reset_parameters clears local overrides" * doctest::skip())
+    {
+        // TODO: no way to clear local parameter overrides so a game object
+        // falls back to global values again.
+    }
+
+    TEST_CASE("voice::set_parameter applies to a playing voice" * doctest::skip())
+    {
+        // TODO: voice has no public set_parameter. Setting a parameter on a
+        // live voice should update the sounds it is currently playing.
+    }
+
+    TEST_CASE("voice::stop halts playback" * doctest::skip())
+    {
+        // TODO: voice exposes play_container and is_playing but no explicit
+        // stop(). Needed to test that a played voice can be stopped on demand.
+    }
+
+    TEST_CASE("named_parameter::remove_value deletes a discrete value" * doctest::skip())
+    {
+        // TODO: named_parameter can add_new_value but there is no remove_value.
+        // Removing the currently-selected value should reset the selection.
+    }
+
+    TEST_CASE("event executes its actions on a game object" * doctest::skip())
+    {
+        // TODO: event only stores a list of actions; there is no post/execute
+        // entry point that runs them against a game object.
+        //
+        //   event->post(gameObject);
+        //   CHECK(gameObject.is_playing());
+    }
+
+    TEST_CASE("container gather_children_for_play selects sounds" * doctest::skip())
+    {
+        // TODO: exercise gather_children_for_play on the concrete container
+        // types (random/sequence/blend/switch) once fixtures exist to build a
+        // small node graph for a test.
     }
 }

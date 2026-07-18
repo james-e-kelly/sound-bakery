@@ -78,6 +78,10 @@ typedef enum SB_OBJECT_CATEGORY
      * @brief Any runtime object
      */
     SB_CATEGORY_RUNTIME_OBJECT,
+    /**
+     * @brief System object, or anything that is global
+     */
+    SB_CATEGORY_SYSTEM,
     SB_CATEGORY_NUM
 } SB_OBJECT_CATEGORY;
 

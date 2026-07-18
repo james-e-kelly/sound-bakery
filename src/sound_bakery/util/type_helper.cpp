@@ -15,12 +15,12 @@
 
 using namespace sbk::util;
 
-bool type_comparator::operator()(const rttr::type lhs, const rttr::type rhs) const
+auto type_comparator::operator()(const rttr::type lhs, const rttr::type rhs) const -> bool
 {
     return std::strcmp(lhs.get_name().data(), rhs.get_name().data()) < 0;
 }
 
-SB_OBJECT_CATEGORY type_helper::getCategoryFromType(rttr::type type)
+auto type_helper::get_category_from_type(rttr::type type) -> SB_OBJECT_CATEGORY
 {
     SB_OBJECT_CATEGORY category = SB_CATEGORY_UNKNOWN;
 
@@ -71,15 +71,15 @@ SB_OBJECT_CATEGORY type_helper::getCategoryFromType(rttr::type type)
     return category;
 }
 
-std::set<rttr::type, type_comparator> type_helper::getTypesFromCategory(SB_OBJECT_CATEGORY category)
+auto type_helper::get_types_from_category(SB_OBJECT_CATEGORY category) -> std::set<rttr::type, type_comparator>
 {
     std::set<rttr::type, type_comparator> result;
 
     switch (category)
     {
         case SB_CATEGORY_NODE:
-            result.insert(rttr::type::get<sbk::engine::BlendContainer>());
-            result.insert(rttr::type::get<sbk::engine::RandomContainer>());
+            result.insert(rttr::type::get<sbk::engine::blend_container>());
+            result.insert(rttr::type::get<sbk::engine::random_container>());
             result.insert(rttr::type::get<sbk::engine::sequence_container>());
             result.insert(rttr::type::get<sbk::engine::sound_container>());
             result.insert(rttr::type::get<sbk::engine::switch_container>());
@@ -112,7 +112,7 @@ std::set<rttr::type, type_comparator> type_helper::getTypesFromCategory(SB_OBJEC
     return result;
 }
 
-rttr::string_view type_helper::get_display_name_from_type(rttr::type type)
+auto type_helper::get_display_name_from_type(rttr::type type) -> rttr::string_view
 {
     rttr::string_view result = type.get_name();
 
@@ -120,7 +120,7 @@ rttr::string_view type_helper::get_display_name_from_type(rttr::type type)
     {
         result = "Sound";
     }
-    else if (type == rttr::type::get<sbk::engine::RandomContainer>())
+    else if (type == rttr::type::get<sbk::engine::random_container>())
     {
         result = "Random";
     }
@@ -132,7 +132,7 @@ rttr::string_view type_helper::get_display_name_from_type(rttr::type type)
     {
         result = "Sequence";
     }
-    else if (type == rttr::type::get<sbk::engine::BlendContainer>())
+    else if (type == rttr::type::get<sbk::engine::blend_container>())
     {
         result = "Blend";
     }
@@ -176,7 +176,7 @@ rttr::string_view type_helper::get_display_name_from_type(rttr::type type)
     return result;
 }
 
-std::string sbk::util::type_helper::getFolderNameForObjectType(rttr::type type)
+auto sbk::util::type_helper::get_folder_name_for_object_type(rttr::type type) -> std::string
 {
     const rttr::string_view typeName = type.get_name();
 
@@ -192,7 +192,7 @@ std::string sbk::util::type_helper::getFolderNameForObjectType(rttr::type type)
     return typeNameString.substr(lastColonCharacterPos, std::string::npos);
 }
 
-std::string_view type_helper::getFileExtensionOfObjectCategory(SB_OBJECT_CATEGORY category)
+auto type_helper::get_file_extension_of_object_category(SB_OBJECT_CATEGORY category) -> std::string_view
 {
     std::string_view result = ".object";
 
@@ -225,7 +225,7 @@ std::string_view type_helper::getFileExtensionOfObjectCategory(SB_OBJECT_CATEGOR
     return result;
 }
 
-std::string_view type_helper::getPayloadFromType(rttr::type type)
+auto type_helper::get_payload_from_type(rttr::type type) -> std::string_view
 {
     std::string_view result = "OBJECT";
 
@@ -261,7 +261,7 @@ std::string_view type_helper::getPayloadFromType(rttr::type type)
     return result;
 }
 
-bool type_helper::isTypePlayable(const rttr::type& type)
+auto type_helper::is_type_playable(const rttr::type& type) -> bool
 {
     bool result = false;
 
@@ -274,36 +274,36 @@ bool type_helper::isTypePlayable(const rttr::type& type)
     return result;
 }
 
-rttr::enumeration type_helper::getObjectCategoryEnum()
+auto type_helper::get_object_category_enum() -> rttr::enumeration
 {
     return rttr::type::get<SB_OBJECT_CATEGORY>().get_enumeration();
 }
 
-rttr::string_view type_helper::getObjectCategoryName(const SB_OBJECT_CATEGORY& objectCategory)
+auto type_helper::get_object_category_name(const SB_OBJECT_CATEGORY& objectCategory) -> rttr::string_view
 {
     static const rttr::string_view defaultName  = "Unknown";
-    const rttr::enumeration objectCategoryEnum  = getObjectCategoryEnum();
+    const rttr::enumeration objectCategoryEnum  = get_object_category_enum();
 
     rttr::string_view name = objectCategoryEnum.value_to_name(objectCategory);
     return name.data() ? name : defaultName;
 }
 
-sbk::core::object* type_helper::getObjectFromInstance(const rttr::instance& instance)
+auto type_helper::get_object_from_instance(const rttr::instance& instance) -> sbk::core::object*
 {
     return instance.try_convert<sbk::core::object>();
 }
 
-sbk::core::database_object* type_helper::getDatabaseObjectFromInstance(const rttr::instance& instance)
+auto type_helper::get_database_object_from_instance(const rttr::instance& instance) -> sbk::core::database_object*
 {
     return instance.try_convert<sbk::core::database_object>();
 }
 
-sbk::engine::node* type_helper::getNodeFromInstance(const rttr::instance& instance)
+auto type_helper::get_node_from_instance(const rttr::instance& instance) -> sbk::engine::node*
 {
     return instance.try_convert<sbk::engine::node>();
 }
 
-sbk::engine::node_base* type_helper::getNodeBaseFromInstance(const rttr::instance& instance)
+auto type_helper::get_node_base_from_instance(const rttr::instance& instance) -> sbk::engine::node_base*
 {
     return instance.try_convert<sbk::engine::node_base>();
 }

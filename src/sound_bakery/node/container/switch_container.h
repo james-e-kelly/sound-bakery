@@ -7,25 +7,26 @@ namespace sbk::engine
     class SB_CLASS switch_container : public container
     {
     public:
-        void gather_children_for_play(gather_children_context& context) const override;
+        auto gather_children_for_play(gather_children_context& context) const -> void override;
 
-        void gatherParametersFromThis(global_parameter_list& parameters) override;
+        auto gather_parameters_from_this(global_parameter_list& parameters) -> void override;
 
-        void setSwitchParameter(sbk::core::database_ptr<named_parameter> parameter);
+        auto set_switch_parameter(sbk::core::database_ptr<named_parameter> parameter) -> void;
 
-        sbk::core::database_ptr<named_parameter> getSwitchParameter() const { return m_switchParameter; }
+        [[nodiscard]] auto get_switch_parameters() const -> sbk::core::database_ptr<named_parameter> { return m_switchParameter; }
 
-        std::unordered_map<sbk::core::database_ptr<named_parameter_value>, sbk::core::child_ptr<container>>
-            getSwitchToChildMap() const
+        [[nodiscard]] auto get_switch_to_child_map() const
+            -> std::unordered_map<sbk::core::database_ptr<named_parameter_value>, sbk::core::child_ptr<container>>
         {
             return m_switchToChild;
         }
 
     private:
-        void setSwitchToChild(
-            std::unordered_map<sbk::core::database_ptr<named_parameter_value>, sbk::core::child_ptr<container>> map);
+        auto set_switch_to_child(
+            std::unordered_map<sbk::core::database_ptr<named_parameter_value>, sbk::core::child_ptr<container>> map)
+            -> void;
 
-        void populateChildKeys();
+        auto populate_child_keys() -> void;
 
         /**
          * @brief Pointer to the parameter this container switches upon.

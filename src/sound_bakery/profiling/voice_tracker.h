@@ -18,10 +18,10 @@ namespace sbk::engine
             ~voice_tracker() = default;
 
         public:
-            void update(system* system);
+            auto update(system* system) -> void;
 
         public:
-            unsigned int getPlayingCountOfObject(sbk_id id) const;
+            [[nodiscard]] auto get_playing_count_of_object(sbk_id id) const -> unsigned int;
 
         private:
             std::unordered_set<sbk_id> m_playingNodeIDs;

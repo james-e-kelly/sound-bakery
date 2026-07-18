@@ -11,12 +11,12 @@ namespace sbk::memory
 {
     struct object_deleter
     {
-        void operator()(sbk::core::object* object);
+        auto operator()(sbk::core::object* object) -> void;
     };
 
-    void* malloc(std::size_t size, SB_OBJECT_CATEGORY category);
-    void* realloc(void* pointer, std::size_t size);
-    void free(void* pointer, SB_OBJECT_CATEGORY category);
+    auto malloc(std::size_t size, SB_OBJECT_CATEGORY category) -> void*;
+    auto realloc(void* pointer, std::size_t size) -> void*;
+    auto free(void* pointer, SB_OBJECT_CATEGORY category) -> void;
 
     auto thread_start(std::string_view threadName) -> void;
     auto thread_end(std::string_view threadName) -> void;

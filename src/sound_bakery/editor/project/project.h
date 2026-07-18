@@ -1,6 +1,7 @@
 #pragma once
 
 #include "sound_bakery/core/core_include.h"
+#include "sound_bakery/error/error.h"
 #include "sound_bakery/editor/project/project_configuration.h"
 
 namespace sbk::engine
@@ -18,26 +19,26 @@ namespace sbk::editor
     class SB_CLASS project : public sbk::core::object_owner
     {
     public:
-        bool open_project(const std::filesystem::path& projectFile);
-        void create_project(const std::filesystem::path& projectFile) {}
+        auto open_project(const std::filesystem::path& projectFile) -> sbk::result<void>;
+        auto create_project(const std::filesystem::path& projectFile) -> void {}
 
-        void save_project() const;
+        auto save_project() const -> sbk::result<void>;
 
-        void encode_all_media() const;
-        void build_soundbanks();
+        auto encode_all_media() const -> void;
+        auto build_soundbanks() -> sbk::result<void>;
 
-        [[nodiscard]] const project_configuration& get_config() const;
-        [[nodiscard]] std::weak_ptr<sbk::engine::sound_container> get_preview_container() const;
+        [[nodiscard]] auto get_config() const -> const project_configuration&;
+        [[nodiscard]] auto get_preview_container() const -> std::weak_ptr<sbk::engine::sound_container>;
 
     private:
-        void load_sounds();
-        void loadSystem();
-        void load_objects();
+        auto load_sounds() -> sbk::result<void>;
+        auto load_system() -> sbk::result<void>;
+        auto load_objects() -> sbk::result<void>;
 
-        void create_preview_container();
+        auto create_preview_container() -> sbk::result<void>;
 
-        void saveSystem() const;
-        void saveObjects() const;
+        auto save_system() const -> sbk::result<void>;
+        auto save_objects() const -> sbk::result<void>;
 
         project_configuration m_projectConfig;
         std::weak_ptr<sbk::engine::sound_container> m_previewSoundContainer;

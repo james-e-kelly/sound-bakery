@@ -7,7 +7,7 @@ using namespace sbk::engine;
 
 DEFINE_REFLECTION(sbk::engine::container)
 
-bool sbk::engine::container::can_add_child_type(const rttr::type& childType) const
+auto sbk::engine::container::can_add_child_type(const rttr::type& childType) const -> bool
 {
     return sbk::engine::node_base::can_add_child_type(childType) && childType.is_derived_from<sbk::engine::container>();
 }

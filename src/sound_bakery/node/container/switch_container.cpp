@@ -4,7 +4,7 @@
 
 DEFINE_REFLECTION(sbk::engine::switch_container)
 
-void sbk::engine::switch_container::gather_children_for_play(gather_children_context& context) const
+auto sbk::engine::switch_container::gather_children_for_play(gather_children_context& context) const -> void
 {
     sbk::core::database_ptr<named_parameter_value> selectedValue;
 
@@ -30,24 +30,24 @@ void sbk::engine::switch_container::gather_children_for_play(gather_children_con
     }
 }
 
-void sbk::engine::switch_container::gatherParametersFromThis(global_parameter_list& parameters)
+auto sbk::engine::switch_container::gather_parameters_from_this(global_parameter_list& parameters) -> void
 {
     parameters.intParameters.insert(m_switchParameter);
 }
 
-void sbk::engine::switch_container::setSwitchParameter(sbk::core::database_ptr<named_parameter> parameter)
+auto sbk::engine::switch_container::set_switch_parameter(sbk::core::database_ptr<named_parameter> parameter) -> void
 {
     m_switchParameter = parameter;
 
-    populateChildKeys();
+    populate_child_keys();
 }
 
-void sbk::engine::switch_container::setSwitchToChild(
-    std::unordered_map<sbk::core::database_ptr<named_parameter_value>, sbk::core::child_ptr<container>> map)
+auto sbk::engine::switch_container::set_switch_to_child(
+    std::unordered_map<sbk::core::database_ptr<named_parameter_value>, sbk::core::child_ptr<container>> map) -> void
 {
     if (map.empty())
     {
-        populateChildKeys();
+        populate_child_keys();
     }
     else
     {
@@ -55,7 +55,7 @@ void sbk::engine::switch_container::setSwitchToChild(
     }
 }
 
-void sbk::engine::switch_container::populateChildKeys()
+auto sbk::engine::switch_container::populate_child_keys() -> void
 {
     m_switchToChild.clear();
 

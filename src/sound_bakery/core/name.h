@@ -85,21 +85,21 @@ namespace sbk::core
         {
         }
 
-        auto parse() const -> parsed_database_name;  //< Split the database name into its component parts
-        auto valid() const -> bool;
+        [[nodiscard]] auto parse() const -> parsed_database_name;  //< Split the database name into its component parts
+        [[nodiscard]] auto valid() const -> bool;
 
         operator std::string() const { return databaseName; }
         operator std::string_view() const { return databaseName; }
         operator const char*() const { return databaseName.c_str(); }
-        bool operator==(const database_name& other) const { return databaseName.compare(other.databaseName) == 0; }
+        auto operator==(const database_name& other) const -> bool { return databaseName.compare(other.databaseName) == 0; }
 
-        database_name& operator/=(const std::string_view& data)
+        auto operator/=(const std::string_view& data) -> database_name&
         {
             databaseName.append("/").append(data);
             return *this;
         }
 
-        [[nodiscard]] friend database_name operator/(const database_name& left, const std::string_view& data)
+        [[nodiscard]] friend auto operator/(const database_name& left, const std::string_view& data) -> database_name
         {
             database_name temp = left;
             temp /= data;
@@ -107,7 +107,7 @@ namespace sbk::core
         }
 
         template <class archive_class>
-        void serialize(archive_class& archive, const unsigned int version)
+        auto serialize(archive_class& archive, const unsigned int version) -> void
         {
             archive& boost::serialization::make_nvp("Name", databaseName);
         }

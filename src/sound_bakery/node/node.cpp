@@ -8,35 +8,37 @@ DEFINE_REFLECTION(sbk::engine::node_base)
 
 DEFINE_REFLECTION(sbk::engine::node)
 
-void sbk::engine::node::gatherParameters(global_parameter_list& parameters)
+auto sbk::engine::node::gather_parameters(global_parameter_list& parameters) -> void
 {
     parameters.floatParameters.reserve(m_childNodes.size() + 1);
     parameters.intParameters.reserve(m_childNodes.size() + 1);
 
-    gatherParametersFromThis(parameters);
+    gather_parameters_from_this(parameters);
 
-    for (node_base* const child : getChildren())
+    for (node_base* const child : get_children())
     {
         if (child != nullptr)
         {
             if (node* const childNode = child->try_convert_object<node>())
             {
-                childNode->gatherParameters(parameters);
+                childNode->gather_parameters(parameters);
             }
         }
     }
 }
 
-void node::add_effect(sc_dsp_type type)
+auto node::add_effect(sc_dsp_type type) -> sbk::result<void>
 {
-    std::shared_ptr<effect_description> effect = get_owner()->create_database_object<effect_description>();
+    SBK_CHECK(get_owner() != nullptr, SBK_ERR_NULL);
+    SBK_TRY(auto effect, get_owner()->create_database_object<effect_description>());
     effect->set_dsp_type(type);
     m_effectDescriptions.emplace_back(effect);
 }
 
-auto node::add_effect_clap(clap_plugin_factory_t* clapFactory) -> void
+auto node::add_effect_clap(clap_plugin_factory_t* clapFactory) -> sbk::result<void>
 {
-    std::shared_ptr<effect_description> effect = get_owner()->create_database_object<effect_description>();
+    SBK_CHECK(get_owner() != nullptr, SBK_ERR_NULL);
+    SBK_TRY(auto effect, get_owner()->create_database_object<effect_description>());
     effect->set_dsp_clap(clapFactory);
     m_effectDescriptions.emplace_back(effect);
 }
@@ -52,7 +54,7 @@ node_base::~node_base()
     }
 }
 
-void sbk::engine::node_base::set_parent_node(const sbk::core::database_ptr<node_base>& parent)
+auto sbk::engine::node_base::set_parent_node(const sbk::core::database_ptr<node_base>& parent) -> void
 {
     if (m_onParentUpdateNameDelegate.IsValid())
     {
@@ -70,36 +72,36 @@ void sbk::engine::node_base::set_parent_node(const sbk::core::database_ptr<node_
     }
 }
 
-void sbk::engine::node_base::set_output_bus(const sbk::core::database_ptr<node_base>& bus) { m_outputBus = bus; }
+auto sbk::engine::node_base::set_output_bus(const sbk::core::database_ptr<node_base>& bus) -> void { m_outputBus = bus; }
 
-SB_NODE_STATUS sbk::engine::node_base::getNodeStatus() const noexcept
+auto sbk::engine::node_base::get_node_status() const noexcept -> node_status
 {
-    SB_NODE_STATUS status = SB_NODE_NULL;
+    node_status status = node_status::null;
 
     if (m_parentNode.has_id())
     {
-        status = SB_NODE_MIDDLE;
+        status = node_status::middle;
     }
     else if (m_outputBus.has_id())
     {
-        status = SB_NODE_TOP;
+        status = node_status::top;
     }
 
     return status;
 }
 
-node_base* sbk::engine::node_base::get_parent() const { return m_parentNode.lookup_raw(); }
+auto sbk::engine::node_base::get_parent() const -> node_base* { return m_parentNode.lookup_raw(); }
 
-node_base* sbk::engine::node_base::get_output_bus() const { return m_outputBus.lookup_raw(); }
+auto sbk::engine::node_base::get_output_bus() const -> node_base* { return m_outputBus.lookup_raw(); }
 
-bool sbk::engine::node_base::can_add_children() const { return true; }
+auto sbk::engine::node_base::can_add_children() const -> bool { return true; }
 
-bool sbk::engine::node_base::can_add_child_type(const rttr::type& childType) const
+auto sbk::engine::node_base::can_add_child_type(const rttr::type& childType) const -> bool
 {
     return childType.is_valid() && childType.is_derived_from<sbk::engine::node_base>();
 }
 
-bool sbk::engine::node_base::can_add_child(const sbk::core::database_ptr<node_base>& child) const
+auto sbk::engine::node_base::can_add_child(const sbk::core::database_ptr<node_base>& child) const -> bool
 {
     if (child.lookup())
     {
@@ -113,20 +115,20 @@ bool sbk::engine::node_base::can_add_child(const sbk::core::database_ptr<node_ba
     return false;
 }
 
-bool sbk::engine::node_base::can_add_parent() const { return true; }
+auto sbk::engine::node_base::can_add_parent() const -> bool { return true; }
 
-bool sbk::engine::node_base::can_add_parent_type(const rttr::type& parentType) const
+auto sbk::engine::node_base::can_add_parent_type(const rttr::type& parentType) const -> bool
 {
     return parentType.is_valid() && parentType.is_derived_from<sbk::engine::node_base>();
 }
 
-void sbk::engine::node_base::addChild(const sbk::core::database_ptr<node_base>& child)
+auto sbk::engine::node_base::add_child(const sbk::core::database_ptr<node_base>& child) -> void
 {
     if (can_add_child(child))
     {
         if (child.lookup() && child->get_parent())
         {
-            child->get_parent()->removeChild(child);
+            child->get_parent()->remove_child(child);
         }
 
         m_childNodes.insert(child);
@@ -138,7 +140,7 @@ void sbk::engine::node_base::addChild(const sbk::core::database_ptr<node_base>& 
     }
 }
 
-void sbk::engine::node_base::removeChild(const sbk::core::database_ptr<node_base>& child)
+auto sbk::engine::node_base::remove_child(const sbk::core::database_ptr<node_base>& child) -> void
 {
     if (child)
     {
@@ -148,7 +150,7 @@ void sbk::engine::node_base::removeChild(const sbk::core::database_ptr<node_base
     m_childNodes.erase(child);
 }
 
-std::vector<node_base*> sbk::engine::node_base::getChildren() const
+auto sbk::engine::node_base::get_children() const -> std::vector<node_base*>
 {
     std::vector<node_base*> children;
     children.reserve(m_childNodes.size());
@@ -164,30 +166,30 @@ std::vector<node_base*> sbk::engine::node_base::getChildren() const
     return children;
 }
 
-std::size_t sbk::engine::node_base::getChildCount() const { return m_childNodes.size(); }
+auto sbk::engine::node_base::get_child_count() const -> std::size_t { return m_childNodes.size(); }
 
-bool sbk::engine::node_base::hasChild(const sbk::core::database_ptr<node_base>& test) const
+auto sbk::engine::node_base::has_child(const sbk::core::database_ptr<node_base>& test) const -> bool
 {
     return m_childNodes.contains(test);
 }
 
-void sbk::engine::node_base::gatherAllDescendants(std::vector<node_base*>& descendants) const
+auto sbk::engine::node_base::gather_all_descendants(std::vector<node_base*>& descendants) const -> void
 {
-    for (auto& child : getChildren())
+    for (auto& child : get_children())
     {
         descendants.push_back(child);
 
-        child->gatherAllDescendants(descendants);
+        child->gather_all_descendants(descendants);
     }
 }
 
-void sbk::engine::node_base::gatherAllParents(std::vector<node_base*>& parents) const
+auto sbk::engine::node_base::gather_all_parents(std::vector<node_base*>& parents) const -> void
 {
     if (node_base* const nodeParent = get_parent())
     {
         parents.push_back(nodeParent);
 
-        nodeParent->gatherAllParents(parents);
+        nodeParent->gather_all_parents(parents);
     }
 }
 

@@ -50,8 +50,8 @@ namespace sbk::engine
     public:
         container() : node() {}
 
-        virtual auto get_is_export() const -> bool override { return false; }
-        bool can_add_child_type(const rttr::type& childType) const override;
+        [[nodiscard]] virtual auto get_is_export() const -> bool override { return false; }
+        [[nodiscard]] auto can_add_child_type(const rttr::type& childType) const -> bool override;
 
         /**
          * @brief Collects and gathers sounds on this node and its children for play.
@@ -61,7 +61,7 @@ namespace sbk::engine
          *
          * @param context for this gather sounds call.
          */
-        virtual void gather_children_for_play(gather_children_context& context) const = 0;
+        virtual auto gather_children_for_play(gather_children_context& context) const -> void = 0;
 
         REGISTER_REFLECTION(container, node)
         RTTR_REGISTRATION_FRIEND

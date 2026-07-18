@@ -1,10 +1,10 @@
 #include "blend_container.h"
 
-DEFINE_REFLECTION(sbk::engine::BlendContainer)
+DEFINE_REFLECTION(sbk::engine::blend_container)
 
-void sbk::engine::BlendContainer::gather_children_for_play(gather_children_context& context) const
+auto sbk::engine::blend_container::gather_children_for_play(gather_children_context& context) const -> void
 {
-    for (node_base* const child : getChildren())
+    for (node_base* const child : get_children())
     {
         if (child != nullptr)
         {

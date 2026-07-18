@@ -1,6 +1,7 @@
 message(STATUS "Adding Core Library")
 
 set(CORE_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/enum_flags.h
     ${CMAKE_CURRENT_SOURCE_DIR}/leak_detector.h
     ${CMAKE_CURRENT_SOURCE_DIR}/macros.h
     ${CMAKE_CURRENT_SOURCE_DIR}/logger.h

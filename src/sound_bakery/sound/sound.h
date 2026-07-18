@@ -20,7 +20,7 @@ namespace sbk::engine
 
     struct void_deleter
     {
-        void operator()(void* data)
+        auto operator()(void* data) -> void
         {
             if (data)
             {
@@ -42,7 +42,7 @@ namespace sbk::engine
 
         auto set_sound_name(std::string soundName) -> void;
         auto set_encoded_sound_name(std::string path) -> void;
-        auto get_encoded_sound_name() const -> std::string { return encodedSoundPath.string(); }
+        [[nodiscard]] auto get_encoded_sound_name() const -> std::string { return encodedSoundPath.string(); }
         auto set_is_streaming(bool streaming) -> void { m_streaming = streaming; }
         auto set_raw_sound_data(raw_sound_ptr& data, std::size_t size) -> void
         {  
@@ -50,10 +50,10 @@ namespace sbk::engine
             m_memorySoundDataSize = size;
         }
 
-        auto get_sound_name() const -> std::string;
+        [[nodiscard]] auto get_sound_name() const -> std::string;
         auto get_sound() -> sc_sound*;
-        auto get_is_streaming() const -> bool{ return m_streaming; }
-        auto get_encoding_sound_data() const -> encoding_sound;
+        [[nodiscard]] auto get_is_streaming() const -> bool{ return m_streaming; }
+        [[nodiscard]] auto get_encoding_sound_data() const -> encoding_sound;
 
     private:
         std::unique_ptr<sc_sound, SC_SOUND_DELETER> m_sound;

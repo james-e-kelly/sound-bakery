@@ -25,11 +25,11 @@ namespace sbk::core
         [[nodiscard]] auto get_database_object_count() const -> size_t;
         [[nodiscard]] auto get_database_object_at(size_t index) const -> std::weak_ptr<database_object>;
 
-        void clear_database() noexcept;
+        auto clear_database() noexcept -> void;
 
     private:
-        static auto create_new_id() -> sbk_id;
-        static auto create_new_name(const rttr::type& type) -> std::string;
+        [[nodiscard]] static auto create_new_id() -> sbk_id;
+        [[nodiscard]] static auto create_new_name(const rttr::type& type) -> std::string;
 
         auto update_id(sbk_id oldID, sbk_id newID) -> void;
         auto update_database_name(const database_name& oldName, const database_name& newName) -> void;

@@ -4,18 +4,18 @@
 
 DEFINE_REFLECTION(sbk::engine::sound_container)
 
-void sbk::engine::sound_container::gather_children_for_play(gather_children_context& context) const
+auto sbk::engine::sound_container::gather_children_for_play(gather_children_context& context) const -> void
 {
     context.sounds.push_back(const_cast<sbk::engine::sound_container*>(this));
 }
 
-bool sbk::engine::sound_container::can_add_parent_type(const rttr::type& parentType) const
+auto sbk::engine::sound_container::can_add_parent_type(const rttr::type& parentType) const -> bool
 {
     return sbk::engine::node_base::can_add_parent_type(parentType) &&
            parentType != sbk::engine::sound_container::type();
 }
 
-sbk::engine::sound* sbk::engine::sound_container::get_sound() const
+auto sbk::engine::sound_container::get_sound() const -> sbk::engine::sound*
 {
     if (m_sound.lookup())
     {
@@ -27,7 +27,7 @@ sbk::engine::sound* sbk::engine::sound_container::get_sound() const
     }
 }
 
-void sbk::engine::sound_container::set_sound(const sbk::core::database_ptr<sbk::engine::sound>& sound)
+auto sbk::engine::sound_container::set_sound(const sbk::core::database_ptr<sbk::engine::sound>& sound) -> void
 {
     m_sound = sound;
 }

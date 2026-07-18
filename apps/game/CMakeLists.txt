@@ -54,28 +54,25 @@ target_link_libraries(game
     SoundBakery::SoundBakery_Shared
 )
 
+target_compile_options(game PRIVATE ${PROJECT_WARNING_FLAGS})
+
 if(MSVC)
-  target_compile_options(game PRIVATE /W4)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
-else()
-  target_compile_options(game PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
 set(CMAKE_FOLDER apps)
 
 if (SOUND_BAKERY_FORMAT_SOURCE AND SOUND_BAKERY_CLANG_FORMAT_EXE)
-  get_target_property(SOUND_BAKERY_GAME_ALL_FILES game SOURCES)
-
   foreach(source IN LISTS GAME_SOURCES GAME_HEADERS PCH_HEADER PCH_SOURCE)
     list(APPEND SOUND_BAKERY_GAME_FORMAT_FILES "${CMAKE_CURRENT_SOURCE_DIR}/${source}")
   endforeach()
 
   add_custom_target(format_game
-  COMMAND clang-format --style=file -i ${SOUND_BAKERY_EDITOR_FORMAT_FILES}
+  COMMAND clang-format --style=file -i ${SOUND_BAKERY_GAME_FORMAT_FILES}
   COMMAND_EXPAND_LISTS
   COMMENT "Running clang-format"
   VERBATIM
   )
 endif()
 
-install(TARGETS editor DESTINATION apps)
+install(TARGETS game DESTINATION apps)

@@ -95,18 +95,15 @@ target_link_libraries(editor
     SoundBakery::SoundBakery_Static   
 )
 
+target_compile_options(editor PRIVATE ${PROJECT_WARNING_FLAGS})
+
 if(MSVC)
-  target_compile_options(editor PRIVATE /W4)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
-else()
-  target_compile_options(editor PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
 set(CMAKE_FOLDER apps)
 
 if (SOUND_BAKERY_FORMAT_SOURCE AND SOUND_BAKERY_CLANG_FORMAT_EXE)
-  get_target_property(SOUND_BAKERY_EDITOR_ALL_FILES editor SOURCES)
-
   foreach(source IN LISTS EDITOR_SOURCES EDITOR_HEADERS PCH_HEADER PCH_SOURCE)
     list(APPEND SOUND_BAKERY_EDITOR_FORMAT_FILES "${CMAKE_CURRENT_SOURCE_DIR}/${source}")
   endforeach()

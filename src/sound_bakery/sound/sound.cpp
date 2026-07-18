@@ -7,7 +7,7 @@ using namespace sbk::engine;
 
 DEFINE_REFLECTION(sbk::engine::sound)
 
-void sound::load_synchronous()
+auto sound::load_synchronous() -> void
 {
     ZoneScoped;
 
@@ -46,7 +46,7 @@ void sound::load_synchronous()
             }
             BOOST_ASSERT(std::filesystem::exists(finalSoundPath));
 
-            sbk_result result = sc_system_create_sound(sbk::engine::system::get(), finalSoundPath.string().c_str(), SC_SOUND_MODE_DEFAULT, &loadedSound);
+            sbk_status result = sc_system_create_sound(sbk::engine::system::get(), finalSoundPath.string().c_str(), SC_SOUND_MODE_DEFAULT, &loadedSound);
             BOOST_ASSERT(result == MA_SUCCESS);
             break;
         }
@@ -54,7 +54,7 @@ void sound::load_synchronous()
         {
             if (m_memorySoundData)
             {
-                sbk_result result =
+                sbk_status result =
                     sc_system_create_sound_memory(sbk::engine::system::get(), m_memorySoundData.get(),
                                                   m_memorySoundDataSize, SC_SOUND_MODE_DEFAULT, &loadedSound);
                 BOOST_ASSERT(result == MA_SUCCESS);
@@ -72,23 +72,23 @@ void sound::load_synchronous()
     }
 }
 
-void sound::load_asynchronous() { load_synchronous(); }
+auto sound::load_asynchronous() -> void { load_synchronous(); }
 
-void sound::set_sound_name(std::string soundName)
+auto sound::set_sound_name(std::string soundName) -> void
 {
     rawSoundPath = soundName;
     load_synchronous();
 }
 
-std::string sound::get_sound_name() const { return rawSoundPath.string().c_str(); }
+auto sound::get_sound_name() const -> std::string { return rawSoundPath.string().c_str(); }
 
-void sound::set_encoded_sound_name(std::string encodedSoundName)
+auto sound::set_encoded_sound_name(std::string encodedSoundName) -> void
 {
     encodedSoundPath = encodedSoundName;
     load_synchronous();
 }
 
-sc_sound* sound::get_sound()
+auto sound::get_sound() -> sc_sound*
 {
     if (!m_sound)
     {
@@ -98,7 +98,7 @@ sc_sound* sound::get_sound()
     return m_sound.get();
 }
 
-encoding_sound sound::get_encoding_sound_data() const
+auto sound::get_encoding_sound_data() const -> encoding_sound
 {
     const sbk::editor::project_configuration projectConfig = sbk::engine::system::get_project()->get_config();
 

@@ -1,19 +1,22 @@
 #pragma once
 
+#include "core/enum_flags.h"
 #include "core/leak_detector.h"
 #include "sound_bakery/core/object/object_owner.h"
 #include "sound_bakery/core/memory.h"
 #include "sound_bakery/core/name.h"
+#include <cstdint>
 #include <boost/core/noncopyable.hpp>
 #include <boost/serialization/nvp.hpp>
 
 namespace sbk::core
 {
-    enum object_flags
+    enum class object_flags : std::uint32_t
     {
-        object_flag_none    = 0x00000000, 
-        object_flag_loading = 0x00000001  //< Serializing is loading property data
+        none    = 0,
+        loading = BIT(0),  //< Serializing is loading property data
     };
+    DEFINE_ENUM_FLAG_OPERATORS(object_flags)
 
     /**
      * @brief Base object that all sound Bakery objects should inherit
@@ -62,7 +65,7 @@ namespace sbk::core
         auto set_object_name(std::string_view name) -> bool;
 
         template <class archive_class>
-        void serialize(archive_class& archive, const unsigned int fileVersion)
+        auto serialize(archive_class& archive, const unsigned int fileVersion) -> void
         {
             const rttr::type type = get_object_type();
             BOOST_ASSERT(type.is_valid());
@@ -96,14 +99,14 @@ namespace sbk::core
                         std::string loadedString = loadedVariant.convert<std::string>();
                         std::string_view loadedStringView = loadedString;
 
-                        if (has_flag(object_flag_loading))
+                        if (has_flag(object_flags::loading))
                         {
                             property.set_value(rttr::instance(this), loadedStringView);
                         }
                     }
                     else
                     {
-                        if (has_flag(object_flag_loading))
+                        if (has_flag(object_flags::loading))
                         {
                             loadedVariant.convert(property.get_type());
                             BOOST_ASSERT(loadedVariant.get_type() == property.get_type());
@@ -145,7 +148,7 @@ namespace sbk::core
 
         name m_objectName;
         object_owner* m_owner = nullptr;
-        object_flags m_flags  = object_flag_none;
+        object_flags m_flags  = object_flags::none;
 
         MulticastDelegate<std::string_view, std::string_view> m_onUpdateName;
 

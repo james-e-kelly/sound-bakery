@@ -6,7 +6,7 @@
 
 using namespace sbk::core;
 
-bool object_ptr_comparator::operator()(const object* lhs, const object* rhs) const 
+auto object_ptr_comparator::operator()(const object* lhs, const object* rhs) const -> bool
 {
     if (lhs && rhs)
     {
@@ -21,12 +21,12 @@ bool object_ptr_comparator::operator()(const object* lhs, const object* rhs) con
     return lhs < rhs;
 }
 
-void object_tracker::track_object(object* object)
+auto object_tracker::track_object(object* object) -> void
 {
     if (object != nullptr)
     {
         const rttr::type type             = object->get_object_type();
-        const SB_OBJECT_CATEGORY category = sbk::util::type_helper::getCategoryFromType(type);
+        const SB_OBJECT_CATEGORY category = sbk::util::type_helper::get_category_from_type(type);
 
         m_typeToObjects[type].emplace(object);
         m_categoryToObjects[category].emplace(object);
@@ -35,12 +35,12 @@ void object_tracker::track_object(object* object)
     }
 }
 
-void object_tracker::untrack_object(object* object, std::optional<rttr::type> typeOverride)
+auto object_tracker::untrack_object(object* object, std::optional<rttr::type> typeOverride) -> void
 {
     if (object != nullptr)
     {
         const rttr::type type             = typeOverride.has_value() ? typeOverride.value() : object->get_object_type();
-        const SB_OBJECT_CATEGORY category = sbk::util::type_helper::getCategoryFromType(type);
+        const SB_OBJECT_CATEGORY category = sbk::util::type_helper::get_category_from_type(type);
 
         if (type.is_valid())
         {
@@ -53,7 +53,7 @@ void object_tracker::untrack_object(object* object, std::optional<rttr::type> ty
     }
 }
 
-std::unordered_set<object*> object_tracker::get_objects_of_category(const SB_OBJECT_CATEGORY& category) const
+auto object_tracker::get_objects_of_category(const SB_OBJECT_CATEGORY& category) const -> std::unordered_set<object*>
 {
     if (m_categoryToObjects.find(category) != m_categoryToObjects.cend())
     {
@@ -63,7 +63,7 @@ std::unordered_set<object*> object_tracker::get_objects_of_category(const SB_OBJ
     return {};
 }
 
-std::unordered_set<object*> object_tracker::get_objects_of_type(const rttr::type& type) const
+auto object_tracker::get_objects_of_type(const rttr::type& type) const -> std::unordered_set<object*>
 {
     if (m_typeToObjects.find(type) != m_typeToObjects.cend())
     {
@@ -106,7 +106,7 @@ auto object_tracker::convert_to_ordered(const std::unordered_set<object*>& unord
     return result;
 }
 
-void object_tracker::on_object_destroyed(object* object)
+auto object_tracker::on_object_destroyed(object* object) -> void
 {
     if (object != nullptr)
     {

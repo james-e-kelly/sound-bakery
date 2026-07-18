@@ -16,6 +16,10 @@ option(SOUND_BAKERY_TESTS "Build test library" OFF)
 option(SOUND_BAKERY_FORMAT_SOURCE "Format source" ${SOUND_BAKERY_MAIN_PROJECT})
 option(SOUND_BAKERY_TIDY_SOURCE "Run clang-tidy on source files" OFF)
 
+include(build_sound_bakery_project)
+setup_clang_format()
+setup_clang_tidy()
+
 message(STATUS "C Compiler - ${CMAKE_C_COMPILER} ${CMAKE_C_COMPILER_VERSION}")
 message(STATUS "CXX Compiler - ${CMAKE_CXX_COMPILER} ${CMAKE_CXX_COMPILER_VERSION}")
 message(STATUS "SOUND_BAKERY_MAIN_PROJECT=${SOUND_BAKERY_MAIN_PROJECT}")

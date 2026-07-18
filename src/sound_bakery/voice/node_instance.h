@@ -1,6 +1,7 @@
 #pragma once
 
 #include "sound_bakery/core/core_include.h"
+#include "sound_bakery/error/error.h"
 
 #include "sound_bakery/node/container/sequence_container.h"
 
@@ -92,7 +93,7 @@ namespace sbk::engine
         struct SB_CLASS action_update
         {
             template <class event_class, class state_machine_class, class source_state_class, class target_state_class>
-            void operator()(event_class const& update, state_machine_class& stateMachine, source_state_class&, target_state_class&)
+            auto operator()(event_class const& update, state_machine_class& stateMachine, source_state_class&, target_state_class&) -> void
             {
                 ZoneScoped;
 
@@ -109,7 +110,7 @@ namespace sbk::engine
 
                     for (const auto& child : stateMachine.m_children)
                     {
-                        child->update();
+                        (void)child->update();
 
                         if (!child->is_playing())
                         {
@@ -148,7 +149,7 @@ namespace sbk::engine
         typedef state_uninit initial_state;  // the initial state of the player SM
 
         template <class FSM, class Event>
-        void no_transition(Event const& event, FSM& stateMachine, int state)
+        auto no_transition(Event const& event, FSM& stateMachine, int state) -> void
         {
             SBK_INFO(fmt::format("No transition from state {} on event {}", state, typeid(event).name()).c_str());
         }
@@ -165,12 +166,12 @@ namespace sbk::engine
             >
         {};
 
-        void init_parent();
-        void init_child();
-        auto init_node_group(const event_init& init) -> sbk_result;
-        void init_callbacks();
+        auto init_parent() -> sbk::result<void>;
+        auto init_child() -> sbk::result<void>;
+        [[nodiscard]] auto init_node_group(const event_init& init) -> sbk::result<void>;
+        auto init_callbacks() -> void;
 
-        static auto add_dsp_to_node_group(sc_node_group* nodeGroup, sc_dsp** dsp, const sc_dsp_config& config) -> sbk_result;
+        [[nodiscard]] static auto add_dsp_to_node_group(sc_node_group* nodeGroup, sc_dsp** dsp, const sc_dsp_config& config) -> sbk::result<void>;
 
         auto set_volume(float oldVolume, float newVolume) -> void;
         auto set_pitch(float oldPitch, float newPitch) -> void;
@@ -196,17 +197,17 @@ namespace sbk::engine
         REGISTER_REFLECTION(node_instance, sbk::core::object)
 
     public:
-        auto init(const event_init& init) -> sbk_result;
-        auto play() -> sbk_result;
-        auto stop(float fadeTime = 0.0f) -> sbk_result;
-        auto update() -> sbk_result;
+        [[nodiscard]] auto init(const event_init& init) -> sbk::result<void>;
+        [[nodiscard]] auto play() -> sbk::result<void>;
+        [[nodiscard]] auto stop(float fadeTime = 0.0f) -> sbk::result<void>;
+        [[nodiscard]] auto update() -> sbk::result<void>;
 
-        auto is_playing() const -> bool;
-        auto is_stopped() const -> bool;
+        [[nodiscard]] auto is_playing() const -> bool;
+        [[nodiscard]] auto is_stopped() const -> bool;
 
-        auto get_referencing_node() const noexcept -> std::shared_ptr<node>;
-        auto get_parent() const noexcept -> node_instance*;
-        auto get_bus() const noexcept -> sc_node_group*;
+        [[nodiscard]] auto get_referencing_node() const noexcept -> std::shared_ptr<node>;
+        [[nodiscard]] auto get_parent() const noexcept -> node_instance*;
+        [[nodiscard]] auto get_bus() const noexcept -> sc_node_group*;
 
     private:
         boost::msm::back::state_machine<node_instance_fsm> m_stateMachine;

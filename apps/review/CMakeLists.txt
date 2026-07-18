@@ -17,13 +17,10 @@ set(review_SOURCES
   elements/project_element.cpp
   elements/video_element.cpp
   elements/audio_element.cpp
-  elements/file_element.cpp
-  glad/src/gl.cpp
   managers/project_manager.cpp
   managers/review_manager.cpp
   managers/workspace_manager.cpp
   managers/intro_manager.cpp
-  subsystems/video_subsystem.cpp
   widgets/review_root_widget.cpp
   widgets/intro_widget.cpp
   widgets/workspace_widget.cpp
@@ -55,14 +52,10 @@ set(review_HEADERS
   elements/inline_user_display_element.h
   elements/video_element.h
   elements/audio_element.h
-  elements/file_element.h
-  glad/include/glad/gl.h
-  glad/include/KHR/khrplatform.h
   managers/project_manager.h
   managers/review_manager.h
   managers/workspace_manager.h
   managers/intro_manager.h
-  subsystems/video_subsystem.h
   widgets/review_root_widget.h
   widgets/intro_widget.h
   widgets/workspace_widget.h
@@ -81,38 +74,10 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Header Files" FILES ${revi
 set(PCH_HEADER pch.h)
 set(PCH_SOURCE pch.cpp)
 
-include(ExternalProject)
+# mpv is fetched by gluten (build_mpv.cmake), which video_subsystem now lives in.
+# review still needs libmpv-2.dll copied next to its own executable at runtime.
 
-function(get_mpv_win_dev name)
-  ExternalProject_Add(${name}
-    URL https://downloads.sourceforge.net/mpv-player-windows/mpv-dev-x86_64-20250713-git-bd21180.7z
-    URL_HASH SHA256=e75982d90a1fa3620b194204420386f590b4e96f03dc9daf46b996fccce3549f
-    DOWNLOAD_NO_PROGRESS ON
-    UPDATE_COMMAND ""
-    CONFIGURE_COMMAND ""
-    BUILD_COMMAND ""
-    INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory <SOURCE_DIR>/include <BINARY_DIR>/include
-            COMMAND ${CMAKE_COMMAND} -E copy <SOURCE_DIR>/libmpv.dll.a <BINARY_DIR>
-            COMMAND ${CMAKE_COMMAND} -E copy <SOURCE_DIR>/libmpv-2.dll <BINARY_DIR>
-            COMMAND ${CMAKE_COMMAND} -E copy <SOURCE_DIR>/libmpv-2.dll ${CMAKE_BINARY_DIR}
-    )
-  ExternalProject_Get_property(${name} BINARY_DIR)
-  set(MPV_DEV_DIR ${BINARY_DIR})
-
-  set(MPV_INCLUDE_DIRS ${MPV_DEV_DIR}/include PARENT_SCOPE)
-  set(MPV_LIBRARY_DIRS ${MPV_DEV_DIR} PARENT_SCOPE)
-  set(MPV_LIBRARIES mpv PARENT_SCOPE)
-endfunction()
-
-cmake_dependent_option(USE_MPV_WIN_BUILD "Use Prebuilt static mpv dll on Windows" ON "WIN32" OFF)
-
-if(USE_MPV_WIN_BUILD)
-  get_mpv_win_dev(mpv_dev)
-else()
-  pkg_search_module(MPV REQUIRED mpv>=0.33.0)
-endif()
-
-add_executable(review 
+add_executable(review
   ${PCH_SOURCE}
   ${review_SOURCES}
   ${review_HEADERS}
@@ -125,10 +90,8 @@ set_target_properties(review PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_
 cxx_20(review)
 
 target_include_directories(review
-    PRIVATE 
+    PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/glad/include
-    ${MPV_INCLUDE_DIRS}
 )
 
 target_precompile_headers(review PRIVATE ${PCH_HEADER})
@@ -145,27 +108,12 @@ set_target_properties(review PROPERTIES
     WIN32_EXECUTABLE TRUE
 )
 
-FetchContent_MakeAvailable(sqlitecpp)
-FetchContent_MakeAvailable(magicenum)
-FetchContent_MakeAvailable(httplib)
-
-set(OPENSSL_ROOT_DIR ${PROJECT_SOURCE_DIR}/extern/openssl/x64)
-set(OPENSSL_USE_STATIC_LIBS TRUE)
-find_package(OpenSSL REQUIRED)
-
-target_compile_definitions(review PRIVATE CPPHTTPLIB_OPENSSL_SUPPORT)
-
-target_include_directories(review PRIVATE ${OPENSSL_ROOT_DIR}/include)
+include(build_review)
+setup_review_dependencies(review)
 
 target_link_libraries(review
     PRIVATE
     SoundBakery::Gluten
-    SQLiteCpp
-    sqlite3
-    magic_enum::magic_enum
-    httplib::httplib
-    OpenSSL::SSL
-    OpenSSL::Crypto
 )
 
 if(USE_MPV_WIN_BUILD)
@@ -178,13 +126,25 @@ if(USE_MPV_WIN_BUILD)
   )
 endif()
 
-target_compile_definitions(review PRIVATE "MPV_CPLUGIN_DYNAMIC_SYM")
+target_compile_options(review PRIVATE ${PROJECT_WARNING_FLAGS})
 
 if(MSVC)
-  target_compile_options(review PRIVATE /W4)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
-else()
-  target_compile_options(review PRIVATE -Wall -Wextra -Wpedantic)
+endif()
+
+set(CMAKE_FOLDER apps)
+
+if (SOUND_BAKERY_FORMAT_SOURCE AND SOUND_BAKERY_CLANG_FORMAT_EXE)
+  foreach(source IN LISTS review_SOURCES review_HEADERS PCH_HEADER PCH_SOURCE)
+    list(APPEND SOUND_BAKERY_REVIEW_FORMAT_FILES "${CMAKE_CURRENT_SOURCE_DIR}/${source}")
+  endforeach()
+
+  add_custom_target(format_review
+  COMMAND clang-format --style=file -i ${SOUND_BAKERY_REVIEW_FORMAT_FILES}
+  COMMAND_EXPAND_LISTS
+  COMMENT "Running clang-format"
+  VERBATIM
+  )
 endif()
 
 install(TARGETS review DESTINATION apps)

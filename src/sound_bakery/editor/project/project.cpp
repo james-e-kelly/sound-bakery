@@ -1,5 +1,6 @@
 #include "project.h"
 
+#include "sound_bakery/error/result.h"
 #include "sound_bakery/event/event.h"
 #include "sound_bakery/node/container/sound_container.h"
 #include "sound_bakery/serialization/serializer.h"
@@ -9,36 +10,30 @@
 #include "sound_chef/sound_chef_bank.h"
 #include "sound_chef/sound_chef_encoder.h"
 
-bool sbk::editor::project::open_project(const std::filesystem::path& projectFile)
+auto sbk::editor::project::open_project(const std::filesystem::path& projectFile) -> sbk::result<void>
 {
-    if (projectFile.empty())
-    {
-        return false;
-    }
-
-    if (!std::filesystem::exists(projectFile))
-    {
-        return false;
-    }
+    SBK_CHECK(!projectFile.empty(), SBK_ERR_INVALID_PARAMETER);
+    SBK_CHECK_MSG(std::filesystem::exists(projectFile), SBK_ERR_INVALID_FILE, "project file '{}' does not exist", projectFile.string());
 
     m_projectConfig = project_configuration(projectFile);
 
     load_objects();
-    loadSystem();
+    load_system();
     load_sounds();
 
     create_preview_container();
 
-    return true;
+    return sbk::ok();
 }
 
-void sbk::editor::project::save_project() const
+auto sbk::editor::project::save_project() const -> sbk::result<void>
 {
-    saveSystem();
-    saveObjects();
+    SBK_TRYV(save_system());
+    SBK_TRYV(save_objects());
+    return sbk::ok();
 }
 
-void sbk::editor::project::encode_all_media() const
+auto sbk::editor::project::encode_all_media() const -> void
 {
     std::shared_ptr<concurrencpp::thread_pool_executor> threadPool = sbk::engine::system::get()->get_background_thread_executer();
 
@@ -65,9 +60,10 @@ void sbk::editor::project::encode_all_media() const
                 threadPool->post(
                     [sound, encoderConfig, encodedSoundFile, soundPath]
                     {
-                        sbk_result result = sc_encoder_write_from_file(
-                            soundPath.string().c_str(), encodedSoundFile.string().c_str(), &encoderConfig);
-                        BOOST_ASSERT(result == MA_SUCCESS);
+                        if (const sbk_status encodeResult = sc_encoder_write_from_file(soundPath.string().c_str(), encodedSoundFile.string().c_str(), &encoderConfig); encodeResult != SBK_SUCCESS)
+                        {
+                            sbk::log_error(encodeResult, "sc_encoder_write_from_file");  //< Async task; log and continue.
+                        }
 
                         concurrencpp::resume_on(sbk::engine::system::get()->get_game_thread_executer());
 
@@ -78,17 +74,16 @@ void sbk::editor::project::encode_all_media() const
     }
 }
 
-const sbk::editor::project_configuration& sbk::editor::project::get_config() const { return m_projectConfig; }
+auto sbk::editor::project::get_config() const -> const sbk::editor::project_configuration& { return m_projectConfig; }
 
-std::weak_ptr<sbk::engine::sound_container> sbk::editor::project::get_preview_container() const
+auto sbk::editor::project::get_preview_container() const -> std::weak_ptr<sbk::engine::sound_container>
 {
     return m_previewSoundContainer;
 }
 
-void sbk::editor::project::load_sounds()
+auto sbk::editor::project::load_sounds() -> sbk::result<void>
 {
-    for (const std::filesystem::directory_entry& p :
-         std::filesystem::recursive_directory_iterator(m_projectConfig.source_folder()))
+    for (const std::filesystem::directory_entry& p : std::filesystem::recursive_directory_iterator(m_projectConfig.source_folder()))
     {
         if (p.is_regular_file() && p.path().filename().string()[0] != '.')
         {
@@ -98,38 +93,34 @@ void sbk::editor::project::load_sounds()
             {
                 if (database->try_find_database_object(sbk::core::database_name(sbk::engine::sound::type().get_name().data(), filename.stem().string())).expired())
                 {
-                    if (const std::shared_ptr<sbk::core::database_object> createdSound =
-                            create_database_object<sbk::engine::sound>())
-                    {
-                        createdSound->set_object_name(filename.stem().string());
-
-                        if (sbk::engine::sound* const castedSound =
-                                sbk::reflection::cast<sbk::engine::sound*, sbk::core::database_object*>(
-                                    createdSound.get()))
-                        {
-                            castedSound->set_sound_name(p.path().string());
-                        }
-                    }
+                    SBK_TRY(const auto createdSound, create_database_object<sbk::engine::sound>());
+                    
+                    createdSound->set_object_name(filename.stem().string());
+                    createdSound->set_sound_name(p.path().string());
                 }
             }
         }
     }
+    return sbk::ok();
 }
 
-void sbk::editor::project::loadSystem()
+auto sbk::editor::project::load_system() -> sbk::result<void>
 {
-    for (const std::filesystem::directory_entry& p :
-         std::filesystem::directory_iterator(m_projectConfig.project_folder()))
+    int foundSystemFiles = 0;
+
+    for (const std::filesystem::directory_entry& p : std::filesystem::directory_iterator(m_projectConfig.project_folder()))
     {
         if (p.path().extension() == ".yaml")
         {
             sbk::core::serialization::yaml_serializer yamlSerializer;
-            yamlSerializer.load_object<sbk::core::serialization::serialized_system>(sbk::engine::system::get(), p.path());
+            SBK_TRYV(yamlSerializer.load_object<sbk::core::serialization::serialized_system>(sbk::engine::system::get(), p.path()));  //< Best-effort; failures log at origin.
+            SBK_CHECK_MSG(++foundSystemFiles == 1, SBK_ERR_BAKERY, "Multiple system files were found");
         }
     }
+    return sbk::ok();
 }
 
-void sbk::editor::project::load_objects()
+auto sbk::editor::project::load_objects() -> sbk::result<void>
 {
     const std::vector<std::filesystem::path> loadPaths{m_projectConfig.object_folder()};
 
@@ -137,35 +128,37 @@ void sbk::editor::project::load_objects()
     {
         std::filesystem::create_directories(path);
 
-        for (const std::filesystem::directory_entry& directoryEntry :
-             std::filesystem::recursive_directory_iterator(path))
+        for (const std::filesystem::directory_entry& directoryEntry : std::filesystem::recursive_directory_iterator(path))
         {
             if (directoryEntry.is_regular_file() && directoryEntry.path().extension() == ".yaml")
             {
                 sbk::core::serialization::yaml_serializer yamlSerializer;
-                yamlSerializer.load_object<sbk::core::serialization::serialized_standalone_object>(this, directoryEntry.path());
+                SBK_TRYV(yamlSerializer.load_object<sbk::core::serialization::serialized_standalone_object>(this, directoryEntry.path()));  //< Best-effort; failures log at origin.
             }
         }
     }
+
+    return sbk::ok();
 }
 
-void sbk::editor::project::create_preview_container()
+auto sbk::editor::project::create_preview_container() -> sbk::result<void>
 {
-    if (auto previewContainer = create_database_object<sbk::engine::sound_container>())
-    {
-        previewContainer->set_object_name("Preview Node");
-        previewContainer->set_editor_hidden(true);
+    SBK_TRY(auto previewContainer, create_database_object<sbk::engine::sound_container>());
+    
+    previewContainer->set_object_name("Preview Node");
+    previewContainer->set_editor_hidden(true);
 
-        m_previewSoundContainer = previewContainer;
-    }
+    m_previewSoundContainer = previewContainer;
+
+    return sbk::ok();
 }
 
-void sbk::editor::project::build_soundbanks()
+auto sbk::editor::project::build_soundbanks() -> sbk::result<void>
 {
-    std::unordered_set<sbk::core::object*> soundbankObjects =
-        sbk::engine::system::get()->get_objects_of_category(SB_CATEGORY_BANK);
+    std::unordered_set<sbk::core::object*> soundbankObjects = sbk::engine::system::get()->get_objects_of_category(SB_CATEGORY_BANK);
 
-    std::shared_ptr<sbk::engine::soundbank> initSoundbank = create_database_object<sbk::engine::soundbank>();
+    SBK_TRY(auto initSoundbank, create_database_object<sbk::engine::soundbank>());
+
     initSoundbank->set_editor_hidden(true);
     initSoundbank->set_object_name(m_projectConfig.initBankName);
     initSoundbank->set_init_soundbank(true);
@@ -181,24 +174,26 @@ void sbk::editor::project::build_soundbanks()
             std::shared_ptr<sbk::core::database_object> sharedDatabaseObject = soundbank->casted_shared_from_this<sbk::core::database_object>();
 
             sbk::core::serialization::binary_serializer binarySerializer;
-            binarySerializer.save_database_object<sbk::core::serialization::serialized_soundbank>(
+            (void)binarySerializer.save_database_object<sbk::core::serialization::serialized_soundbank>(
                 sharedDatabaseObject,
                 m_projectConfig.build_folder() / (std::string(soundbank->get_object_name()) + (std::string(m_projectConfig.outputBankExtensionWithDot))));
 
             sbk::core::serialization::yaml_serializer yamlSerializer;
-            yamlSerializer.save_database_object<sbk::core::serialization::serialized_soundbank>(
+            (void)yamlSerializer.save_database_object<sbk::core::serialization::serialized_soundbank>(
                 sharedDatabaseObject, m_projectConfig.build_folder() / ((std::string(soundbank->get_object_name()) + ".yaml")));
         }
     }
+
+    return sbk::ok();
 }
 
-void sbk::editor::project::saveSystem() const
+auto sbk::editor::project::save_system() const -> sbk::result<void>
 {
     sbk::core::serialization::yaml_serializer yamlSerializer;
-    yamlSerializer.save_system(m_projectConfig.project_folder() / "system.yaml");
+    return yamlSerializer.save_system(m_projectConfig.project_folder() / "system.yaml");
 }
 
-void sbk::editor::project::saveObjects() const
+auto sbk::editor::project::save_objects() const -> sbk::result<void>
 {
     for (const std::weak_ptr<sbk::core::database_object>& object : sbk::engine::system::get()->get_all_database_objects())
     {
@@ -209,9 +204,7 @@ void sbk::editor::project::saveObjects() const
                 continue;
             }
 
-            std::filesystem::path filePath = m_projectConfig.type_folder(sharedObject->get_object_type()) /
-                                                   m_projectConfig.get_filename_for_id(sharedObject.get());
-
+            std::filesystem::path filePath = m_projectConfig.type_folder(sharedObject->get_object_type()) / m_projectConfig.get_filename_for_id(sharedObject.get());
 
             std::filesystem::create_directories(filePath.parent_path());
 
@@ -225,7 +218,9 @@ void sbk::editor::project::saveObjects() const
             binarySerializer.save_database_object(sharedObject, filePath.replace_extension("bnk"));*/
 
             sbk::core::serialization::yaml_serializer yamlSerializer;
-            yamlSerializer.save_database_object<sbk::core::serialization::serialized_standalone_object>(sharedObject, filePath.replace_extension("yaml"));
+            SBK_TRYV(yamlSerializer.save_database_object<sbk::core::serialization::serialized_standalone_object>(sharedObject, filePath.replace_extension("yaml")));
         }
     }
+
+    return sbk::ok();
 }

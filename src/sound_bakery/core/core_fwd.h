@@ -1,5 +1,7 @@
 #pragma once
 
+#include <type_traits>
+
 namespace sbk
 {
     namespace core
@@ -10,7 +12,13 @@ namespace sbk
         template <typename T>
         class database_ptr;
 
+        /**
+         * @brief Restricts a template parameter to arithmetic types (integral or floating-point).
+         */
         template <typename T>
+        concept arithmetic = std::is_arithmetic_v<T>;
+
+        template <arithmetic T>
         class property;
     }  // namespace core
 }  // namespace sbk

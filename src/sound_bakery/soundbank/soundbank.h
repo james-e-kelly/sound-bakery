@@ -19,7 +19,7 @@ namespace sbk::engine
         sbk_id assetID;
 
         template <class archive_class>
-        void serialize(archive_class& archive, const unsigned int version)
+        auto serialize(archive_class& archive, const unsigned int version) -> void
         {
             archive & boost::serialization::make_nvp("AssetName", assetName);
             archive & boost::serialization::make_nvp("AssetID", assetID);
@@ -36,7 +36,7 @@ namespace sbk::engine
         auto fill_runtime_database() -> void;   //< Fill the sbk::engine::system database with the information serialized here
         
         template <class archive_class>
-        void serialize(archive_class& archive, const unsigned int version)
+        auto serialize(archive_class& archive, const unsigned int version) -> void
         {
             archive & boost::serialization::make_nvp("LookupDatabase", database);
 
@@ -72,15 +72,15 @@ namespace sbk::engine
         REGISTER_REFLECTION(soundbank, sbk::core::database_object)
 
     public:
-        std::vector<sbk::core::database_ptr<event>> get_events() const { return m_events; }
+        [[nodiscard]] auto get_events() const -> std::vector<sbk::core::database_ptr<event>> { return m_events; }
 
-        soundbank_dependencies gather_dependencies() const;
+        [[nodiscard]] auto gather_dependencies() const -> soundbank_dependencies;
 
         auto set_init_soundbank(bool init) -> void { m_initSoundbank = init; }
         auto set_lookup_soundbank(bool lookup) -> void { m_lookupSoundbank = lookup; }
 
-        auto is_init_soundbank() const -> bool { return m_initSoundbank; }
-        auto is_lookup_soundbank() const -> bool { return m_lookupSoundbank; }
+        [[nodiscard]] auto is_init_soundbank() const -> bool { return m_initSoundbank; }
+        [[nodiscard]] auto is_lookup_soundbank() const -> bool { return m_lookupSoundbank; }
 
     private:
         std::vector<sbk::core::database_ptr<event>> m_events;

@@ -1,5 +1,6 @@
 #include "video_subsystem.h"
 
+#include "gluten/app/app.h"
 #include "gluten/subsystems/renderer_subsystem.h"
 #include "sound_chef/sound_chef_internal.h"
 
@@ -31,7 +32,7 @@ namespace
     };
 }
 
-video_subsystem::mpv_context::mpv_context()
+gluten::video_subsystem::mpv_context::mpv_context()
 {
     m_mpvHandle = mpv_create();
     mpv_set_property_string(m_mpvHandle, "vo", "libmpv");
@@ -65,7 +66,7 @@ video_subsystem::mpv_context::mpv_context()
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-video_subsystem::mpv_context::~mpv_context()
+gluten::video_subsystem::mpv_context::~mpv_context()
 {
     if (m_waitEventResult)
     {
@@ -93,9 +94,9 @@ video_subsystem::mpv_context::~mpv_context()
         return 1;                                                           \
     }
 
-video_subsystem::~video_subsystem() { BOOST_ASSERT_MSG(m_mpvLibraryHandle == nullptr, "mpv was not released"); }
+gluten::video_subsystem::~video_subsystem() { BOOST_ASSERT_MSG(m_mpvLibraryHandle == nullptr, "mpv was not released"); }
 
-auto video_subsystem::load_video(const std::filesystem::path& absoluteFilePath) -> void
+auto gluten::video_subsystem::load_video(const std::filesystem::path& absoluteFilePath) -> void
 {
     std::unique_ptr<mpv_context> mpvContext = std::make_unique<mpv_context>();
 
@@ -108,7 +109,7 @@ auto video_subsystem::load_video(const std::filesystem::path& absoluteFilePath) 
     m_mpvContexts.insert({mpvContext->m_mpvHandle, std::move(mpvContext)});
 }
 
-auto video_subsystem::get_video_texture(const std::filesystem::path& file) const -> uint32_t
+auto gluten::video_subsystem::get_video_texture(const std::filesystem::path& file) const -> uint32_t
 {
     if (mpv_handle* handle = get_mpv_handle_from_file(file))
     {
@@ -124,7 +125,7 @@ auto video_subsystem::get_video_texture(const std::filesystem::path& file) const
     return 0U;
 }
 
-auto video_subsystem::play_video(const std::filesystem::path& absoluteFilePath) -> void
+auto gluten::video_subsystem::play_video(const std::filesystem::path& absoluteFilePath) -> void
 {
     // Pause everything so there is only one video playing at once
     for (const auto& handle : m_videoFileToContexts)
@@ -151,7 +152,7 @@ auto video_subsystem::play_video(const std::filesystem::path& absoluteFilePath) 
     }
 }
 
-auto video_subsystem::pause_video(const std::filesystem::path& absoluteFilePath) -> void
+auto gluten::video_subsystem::pause_video(const std::filesystem::path& absoluteFilePath) -> void
 {
     if (mpv_handle* const handle = get_mpv_handle_from_file(absoluteFilePath))
     {
@@ -164,7 +165,7 @@ auto video_subsystem::pause_video(const std::filesystem::path& absoluteFilePath)
     }
 }
 
-auto video_subsystem::get_video_play_position(const std::filesystem::path& absoluteFilePath) -> double
+auto gluten::video_subsystem::get_video_play_position(const std::filesystem::path& absoluteFilePath) -> double
 {
     mpv_handle* handle = get_mpv_handle_from_file(absoluteFilePath);
 
@@ -179,7 +180,7 @@ auto video_subsystem::get_video_play_position(const std::filesystem::path& absol
     return 0.0;
 }
 
-auto video_subsystem::get_video_duration(const std::filesystem::path& absoluteFilePath) -> double
+auto gluten::video_subsystem::get_video_duration(const std::filesystem::path& absoluteFilePath) -> double
 {
     mpv_handle* handle = get_mpv_handle_from_file(absoluteFilePath);
 
@@ -194,7 +195,7 @@ auto video_subsystem::get_video_duration(const std::filesystem::path& absoluteFi
     return 0.1; // Ensure there is slightly more duration than play position to stop divide by zeroes
 }
 
-auto video_subsystem::set_video_play_position(const std::filesystem::path& absoluteFilePath, double position) -> void
+auto gluten::video_subsystem::set_video_play_position(const std::filesystem::path& absoluteFilePath, double position) -> void
 {
     if (mpv_handle* handle = get_mpv_handle_from_file(absoluteFilePath))
     {
@@ -202,7 +203,7 @@ auto video_subsystem::set_video_play_position(const std::filesystem::path& absol
     }
 }
 
-auto video_subsystem::set_video_next_frame(const std::filesystem::path& absoluteFilePath) -> void
+auto gluten::video_subsystem::set_video_next_frame(const std::filesystem::path& absoluteFilePath) -> void
 {
     if (mpv_handle* handle = get_mpv_handle_from_file(absoluteFilePath))
     {
@@ -211,7 +212,7 @@ auto video_subsystem::set_video_next_frame(const std::filesystem::path& absolute
     }
 }
 
-auto video_subsystem::set_video_prev_frame(const std::filesystem::path& absoluteFilePath) -> void
+auto gluten::video_subsystem::set_video_prev_frame(const std::filesystem::path& absoluteFilePath) -> void
 {
     if (mpv_handle* handle = get_mpv_handle_from_file(absoluteFilePath))
     {
@@ -220,7 +221,7 @@ auto video_subsystem::set_video_prev_frame(const std::filesystem::path& absolute
     }
 }
 
-auto video_subsystem::get_video_is_playing(const std::filesystem::path& absoluteFilePath) const -> bool
+auto gluten::video_subsystem::get_video_is_playing(const std::filesystem::path& absoluteFilePath) const -> bool
 {
     bool playing = false;
 
@@ -235,7 +236,7 @@ auto video_subsystem::get_video_is_playing(const std::filesystem::path& absolute
     return playing;
 }
 
-auto video_subsystem::stop_all_videos() const -> void
+auto gluten::video_subsystem::stop_all_videos() const -> void
 {
     for (const auto& handle : m_videoFileToContexts)
     {
@@ -248,7 +249,7 @@ auto video_subsystem::stop_all_videos() const -> void
     }
 }
 
-auto video_subsystem::pre_init(const boost::program_options::variables_map& cliVariables) -> int
+auto gluten::video_subsystem::pre_init(const boost::program_options::variables_map& cliVariables) -> int
 {
     std::setlocale(LC_NUMERIC, "C");
 
@@ -285,7 +286,7 @@ typedef void* (*GLAddrLoadFunc)(const char* name);
 
 static GLAddrLoadFunc GetGLAddrFunc() { return (GLAddrLoadFunc)gluten::renderer_subsystem::glfw_get_proc_address; }
 
-auto video_subsystem::init() -> int
+auto gluten::video_subsystem::init() -> int
 {
     if (!gladLoadGL((GLADloadfunc)GetGLAddrFunc()))
     {
@@ -295,7 +296,7 @@ auto video_subsystem::init() -> int
     return 0;
 }
 
-auto video_subsystem::tick(double deltaTime) -> void
+auto gluten::video_subsystem::tick(double deltaTime) -> void
 {
     static double elapsed = 0.0;
 
@@ -311,7 +312,7 @@ auto video_subsystem::tick(double deltaTime) -> void
     }
 }
 
-auto video_subsystem::tick_rendering(double deltaTime) -> void
+auto gluten::video_subsystem::tick_rendering(double deltaTime) -> void
 {
     for (auto& mpvContext : m_mpvContexts)
     {
@@ -354,7 +355,7 @@ auto video_subsystem::tick_rendering(double deltaTime) -> void
     }
 }
 
-auto video_subsystem::exit() -> void
+auto gluten::video_subsystem::exit() -> void
 {
     m_mpvContexts.clear();
     m_videoFileToContexts.clear();
@@ -366,7 +367,7 @@ auto video_subsystem::exit() -> void
     }
 }
 
-auto video_subsystem::set_video_play_position(mpv_handle* handle, double playPosition) -> concurrencpp::result<void>
+auto gluten::video_subsystem::set_video_play_position(mpv_handle* handle, double playPosition) -> concurrencpp::result<void>
 {
     co_await concurrencpp::resume_on(get_app()->get_tick_executor());
 
@@ -376,7 +377,7 @@ auto video_subsystem::set_video_play_position(mpv_handle* handle, double playPos
     }
 }
 
-auto video_subsystem::set_video_duration(mpv_handle* handle, double duration) -> concurrencpp::result<void>
+auto gluten::video_subsystem::set_video_duration(mpv_handle* handle, double duration) -> concurrencpp::result<void>
 {
     co_await concurrencpp::resume_on(get_app()->get_tick_executor());
 
@@ -386,7 +387,7 @@ auto video_subsystem::set_video_duration(mpv_handle* handle, double duration) ->
     }
 }
 
-auto video_subsystem::set_video_end(mpv_handle* handle) -> concurrencpp::result<void> 
+auto gluten::video_subsystem::set_video_end(mpv_handle* handle) -> concurrencpp::result<void> 
 {
     co_await concurrencpp::resume_on(get_app()->get_tick_executor());
 
@@ -401,7 +402,7 @@ auto video_subsystem::set_video_end(mpv_handle* handle) -> concurrencpp::result<
     }
 }
 
-auto video_subsystem::wait_for_mpv_events(mpv_handle* handle) -> concurrencpp::result<void>
+auto gluten::video_subsystem::wait_for_mpv_events(mpv_handle* handle) -> concurrencpp::result<void>
 {
     if (handle == nullptr)
     {
@@ -459,7 +460,7 @@ auto video_subsystem::wait_for_mpv_events(mpv_handle* handle) -> concurrencpp::r
     co_return;
 }
 
-auto video_subsystem::get_mpv_handle_from_file(const std::filesystem::path& absoluteFilePath) const -> mpv_handle*
+auto gluten::video_subsystem::get_mpv_handle_from_file(const std::filesystem::path& absoluteFilePath) const -> mpv_handle*
 {
     if (m_videoFileToContexts.contains(absoluteFilePath.string()))
     {

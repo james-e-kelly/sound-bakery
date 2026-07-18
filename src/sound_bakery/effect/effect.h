@@ -26,7 +26,7 @@ namespace sbk::engine
     public:
         effect_description() : sbk::core::database_object(), m_config() { set_dsp_type(SC_DSP_TYPE_LOWPASS); }
 
-        void set_dsp_type(sc_dsp_type type)
+        auto set_dsp_type(sc_dsp_type type) -> void
         {
             m_parameterDescriptions.clear();
 
@@ -39,7 +39,7 @@ namespace sbk::engine
             }
         }
 
-        void set_dsp_clap(clap_plugin_factory* pluginFactory)
+        auto set_dsp_clap(clap_plugin_factory* pluginFactory) -> void
         {
             m_parameterDescriptions.clear();
 
@@ -52,12 +52,12 @@ namespace sbk::engine
             }
         }
 
-        [[nodiscard]] std::vector<effect_parameter_description> get_parameters() const
+        [[nodiscard]] auto get_parameters() const -> std::vector<effect_parameter_description>
         {
             return m_parameterDescriptions;
         }
-        [[nodiscard]] const sc_dsp_config* get_config() const { return &m_config; }
-        [[nodiscard]] sc_dsp_type get_dsp_type() const { return m_config.type; }
+        [[nodiscard]] auto get_config() const -> const sc_dsp_config* { return &m_config; }
+        [[nodiscard]] auto get_dsp_type() const -> sc_dsp_type { return m_config.type; }
 
     private:
         sc_dsp_config m_config;

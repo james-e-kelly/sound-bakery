@@ -7,20 +7,20 @@ using namespace sbk::engine;
 
 DEFINE_REFLECTION(sbk::engine::bus)
 
-bool sbk::engine::bus::can_add_child_type(const rttr::type& childType) const
+auto sbk::engine::bus::can_add_child_type(const rttr::type& childType) const -> bool
 {
     return sbk::engine::node_base::can_add_child_type(childType) && childType.is_derived_from<sbk::engine::bus>();
 }
 
-bool sbk::engine::bus::can_add_parent() const { return sbk::engine::node_base::can_add_parent() && !m_masterBus; }
+auto sbk::engine::bus::can_add_parent() const -> bool { return sbk::engine::node_base::can_add_parent() && !m_masterBus; }
 
-bool sbk::engine::bus::can_add_parent_type(const rttr::type& parentType) const
+auto sbk::engine::bus::can_add_parent_type(const rttr::type& parentType) const -> bool
 {
     // Busses can only have bus parents
     return sbk::engine::node_base::can_add_parent_type(parentType) && parentType == sbk::engine::bus::type();
 }
 
-void sbk::engine::bus::setMasterBus(bool isMaster)
+auto sbk::engine::bus::set_master_bus(bool isMaster) -> void
 {
     if (get_object_type() == rttr::type::get<bus>())
     {
@@ -33,23 +33,21 @@ void sbk::engine::bus::setMasterBus(bool isMaster)
     }
 }
 
-std::shared_ptr<node_instance> bus::lockAndCopy()
+auto bus::lock_and_copy() -> std::shared_ptr<node_instance>
 {
     if (m_busInstance.expired())
     {
         std::shared_ptr<node_instance> sharedBus = std::make_shared<node_instance>();
-        m_busInstance                            = sharedBus;
 
         event_init initData;
         initData.refNode = try_convert_object<node_base>();
         initData.type    = node_instance_type::bus;
 
-        sharedBus->init(initData);
-
-        return sharedBus;
+        if (sharedBus->init(initData).has_value())
+        {
+            m_busInstance = sharedBus;
+        }
     }
-    else
-    {
-        return m_busInstance.lock();
-    }
+    
+    return m_busInstance.lock();
 }

@@ -36,7 +36,10 @@ int gluten::audio_subsystem::init()
 
     if (m_soundBakery)
     {
-        CHECK_SC_RESULT(m_soundBakery->init(sbk_system_config_init_default()));
+        if (!m_soundBakery->init(sbk_system_config_init_default()).has_value())
+        {
+            return 1;
+        }
     }
 
     return 0;

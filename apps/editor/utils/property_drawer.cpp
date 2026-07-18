@@ -44,7 +44,7 @@ bool property_drawer::draw_property(rttr::property property, rttr::instance inst
 
     if (!readonly)
     {
-        readonly = property.get_metadata(sbk::editor::METADATA_KEY::readonly).to_bool();
+        readonly = property.get_metadata(sbk::editor::metadata_key::readonly).to_bool();
     }
 
     ImGui::PushID(property.get_name().data());
@@ -61,7 +61,7 @@ bool property_drawer::draw_property(rttr::property property, rttr::instance inst
     {
         draw_readonly_variant(propertyValue);
     }
-    else if (const rttr::variant payloadString = property.get_metadata(sbk::editor::METADATA_KEY::payload);
+    else if (const rttr::variant payloadString = property.get_metadata(sbk::editor::metadata_key::payload);
              payloadString.is_valid())
     {
         edited = draw_payload_drop(propertyValue, payloadString);
@@ -69,7 +69,7 @@ bool property_drawer::draw_property(rttr::property property, rttr::instance inst
     else
     {
         edited =
-            draw_variant(propertyValue, property.get_name(), property.get_metadata(sbk::editor::METADATA_KEY::MinMax));
+            draw_variant(propertyValue, property.get_name(), property.get_metadata(sbk::editor::metadata_key::min_max));
     }
 
     if (edited)
@@ -156,7 +156,7 @@ bool property_drawer::draw_variant(rttr::variant& variant, rttr::string_view nam
         sbk_id id               = variant.extract_wrapped_value().convert<sbk_id>();
         rttr::type templateType = *type.get_template_arguments().begin();
 
-        std::string payloadString = std::string(sbk::util::type_helper::getPayloadFromType(templateType));
+        std::string payloadString = std::string(sbk::util::type_helper::get_payload_from_type(templateType));
 
         sbk::core::database_ptr<sbk::core::object> objectPtr(id);
 

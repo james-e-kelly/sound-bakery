@@ -13,12 +13,10 @@ namespace sbk::engine
      *
      * Used for changing effect parameters, choosing sounds and anything else.
      */
-    template <typename parameter_type>
+    template <sbk::core::arithmetic parameter_type>
     class SB_CLASS parameter : public sbk::core::database_object
     {
         REGISTER_REFLECTION(parameter, database_object)
-
-        static_assert(std::is_arithmetic<parameter_type>::value);
 
     public:
         /**
@@ -56,21 +54,21 @@ namespace sbk::engine
         /**
          * @brief Get the current value of the parameter.
          */
-        [[nodiscard]] parameter_type get() const { return m_property.get(); }
-        [[nodiscard]] parameter_type get_default() const { return m_defaultValue; }
+        [[nodiscard]] auto get() const -> parameter_type { return m_property.get(); }
+        [[nodiscard]] auto get_default() const -> parameter_type { return m_defaultValue; }
 
         /**
          * @brief Set the value of the parameter.
          *
          * This sets the internal property and will therefore call any bound delegates.
          */
-        void set(parameter_type value) { m_property.set(value); }
-        void set_default(parameter_type value) { m_defaultValue = value; }
+        auto set(parameter_type value) -> void { m_property.set(value); }
+        auto set_default(parameter_type value) -> void { m_defaultValue = value; }
 
         /**
          * @brief Get the parameter delegate that fires when changing the value.
          */
-        [[nodiscard]] typename parameter_property::property_changed_delegate& get_delegate()
+        [[nodiscard]] auto get_delegate() -> typename parameter_property::property_changed_delegate&
         {
             return m_property.get_delegate();
         }
@@ -80,7 +78,7 @@ namespace sbk::engine
          * handling unique variations per game object etc.
          * @return The runtime version of this parameter.
          */
-        [[nodiscard]] local_parameter create_local_parameter_from_this() const
+        [[nodiscard]] auto create_local_parameter_from_this() const -> local_parameter
         {
             return local_parameter(get_database_id(), m_property);
         }
@@ -145,15 +143,17 @@ namespace sbk::engine
          * @param name Name of the parameter value
          * @return The newly created parameter value that's in the database
          */
-        sbk::core::database_ptr<named_parameter_value> add_new_value(const std::string_view name)
+        auto add_new_value(const std::string_view name) -> sbk::core::database_ptr<named_parameter_value>
         {
             sbk::core::database_ptr<named_parameter_value> result;
 
             if (!name.empty())
             {
-                if (const std::shared_ptr<named_parameter_value> parameterValue =
-                        create_database_object<named_parameter_value>())
+                auto parameterValueResult = create_database_object<named_parameter_value>();
+                
+                if (parameterValueResult.has_value())
                 {
+                    auto& parameterValue = parameterValueResult.value();
                     parameterValue->set_object_name(name);
                     parameterValue->parentParameter = this;
 
@@ -171,7 +171,7 @@ namespace sbk::engine
          *
          * If none exists, ensures at least the "None" value exists.
          */
-        std::unordered_set<sbk::core::database_ptr<named_parameter_value>> get_values()
+        auto get_values() -> std::unordered_set<sbk::core::database_ptr<named_parameter_value>>
         {
             if (m_values.empty())
             {
@@ -187,7 +187,7 @@ namespace sbk::engine
          * Internally sets the parameter with the DatabasePtr's ID.
          * @param value
          */
-        void set_selected_value(sbk::core::database_ptr<named_parameter_value> value)
+        auto set_selected_value(sbk::core::database_ptr<named_parameter_value> value) -> void
         {
             if (m_values.contains(value))
             {
@@ -205,7 +205,7 @@ namespace sbk::engine
          * Mainly used in reflection and for displaying in the editor.
          * @return
          */
-        [[nodiscard]] sbk::core::database_ptr<named_parameter_value> get_selected_value() const
+        [[nodiscard]] auto get_selected_value() const -> sbk::core::database_ptr<named_parameter_value>
         {
             sbk::core::database_ptr<named_parameter_value> selected(get());
             selected.lookup();

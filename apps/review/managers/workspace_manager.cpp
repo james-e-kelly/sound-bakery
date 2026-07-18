@@ -4,7 +4,7 @@
 #include "app/review_server.h"
 #include "app/review_client.h"
 #include "gluten/subsystems/audio_subsystem.h"
-#include "subsystems/video_subsystem.h"
+#include "gluten/subsystems/video_subsystem.h"
 #include "widgets/intro_widget.h"
 #include "widgets/user_flow_popup.h"
 #include "widgets/workspace_widget.h"
@@ -37,7 +37,7 @@ auto workspace_manager::open_client(const std::shared_ptr<review_client> client)
     m_client = client;
 
     get_app()->add_unique_subsystem_class<gluten::audio_subsystem>();
-    get_app()->add_unique_subsystem_class<video_subsystem>();
+    get_app()->add_unique_subsystem_class<gluten::video_subsystem>();
 
     const std::shared_ptr<gluten::loading_popup> loadingPopup = get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class_to_root<gluten::loading_popup>(false);
     loadingPopup->open_popup();
@@ -758,7 +758,7 @@ auto workspace_manager::stop_all_files() const -> void
         audioSubsystem->stop_all_sounds();
     }
 
-    if (std::shared_ptr<video_subsystem> videoSubsystem = get_app()->get_subsystem_by_class<video_subsystem>())
+    if (std::shared_ptr<gluten::video_subsystem> videoSubsystem = get_app()->get_subsystem_by_class<gluten::video_subsystem>())
     {
         videoSubsystem->stop_all_videos();
     }

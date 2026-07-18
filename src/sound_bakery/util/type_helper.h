@@ -12,36 +12,36 @@ namespace sbk::util
 {
     struct SB_CLASS type_comparator
     {
-        bool operator()(const rttr::type lhs, const rttr::type rhs) const;
+        auto operator()(const rttr::type lhs, const rttr::type rhs) const -> bool;
     };
 
     class SB_CLASS type_helper final
     {
     public:
-        static SB_OBJECT_CATEGORY getCategoryFromType(rttr::type type);
+        [[nodiscard]] static auto get_category_from_type(rttr::type type) -> SB_OBJECT_CATEGORY;
 
-        static std::set<rttr::type, type_comparator> getTypesFromCategory(SB_OBJECT_CATEGORY category);
+        [[nodiscard]] static auto get_types_from_category(SB_OBJECT_CATEGORY category) -> std::set<rttr::type, type_comparator>;
 
-        static rttr::string_view get_display_name_from_type(rttr::type type);
+        [[nodiscard]] static auto get_display_name_from_type(rttr::type type) -> rttr::string_view;
 
-        static std::string getFolderNameForObjectType(rttr::type type);
+        [[nodiscard]] static auto get_folder_name_for_object_type(rttr::type type) -> std::string;
 
-        static std::string_view getFileExtensionOfObjectCategory(SB_OBJECT_CATEGORY category);
+        [[nodiscard]] static auto get_file_extension_of_object_category(SB_OBJECT_CATEGORY category) -> std::string_view;
 
-        static std::string_view getPayloadFromType(rttr::type type);
+        [[nodiscard]] static auto get_payload_from_type(rttr::type type) -> std::string_view;
 
-        static bool isTypePlayable(const rttr::type& type);
+        [[nodiscard]] static auto is_type_playable(const rttr::type& type) -> bool;
 
-        static rttr::enumeration getObjectCategoryEnum();
+        [[nodiscard]] static auto get_object_category_enum() -> rttr::enumeration;
 
-        static rttr::string_view getObjectCategoryName(const SB_OBJECT_CATEGORY& objectCategory);
+        [[nodiscard]] static auto get_object_category_name(const SB_OBJECT_CATEGORY& objectCategory) -> rttr::string_view;
 
-        static sbk::core::object* getObjectFromInstance(const rttr::instance& instance);
+        [[nodiscard]] static auto get_object_from_instance(const rttr::instance& instance) -> sbk::core::object*;
 
-        static sbk::core::database_object* getDatabaseObjectFromInstance(const rttr::instance& instance);
+        [[nodiscard]] static auto get_database_object_from_instance(const rttr::instance& instance) -> sbk::core::database_object*;
 
-        static sbk::engine::node* getNodeFromInstance(const rttr::instance& instance);
+        [[nodiscard]] static auto get_node_from_instance(const rttr::instance& instance) -> sbk::engine::node*;
 
-        static sbk::engine::node_base* getNodeBaseFromInstance(const rttr::instance& instance);
+        [[nodiscard]] static auto get_node_base_from_instance(const rttr::instance& instance) -> sbk::engine::node_base*;
     };
 }  // namespace sbk::util

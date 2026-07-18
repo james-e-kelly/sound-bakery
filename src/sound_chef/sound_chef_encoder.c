@@ -35,7 +35,7 @@ sc_encoder_config sc_encoder_config_init(
     return config;
 }
 
-sbk_result sc_encoder_init(ma_encoder_write_proc onWrite,
+sbk_status sc_encoder_init(ma_encoder_write_proc onWrite,
                           ma_encoder_seek_proc onSeek,
                           void* userData,
                           const sc_encoder_config* config,
@@ -93,7 +93,7 @@ sbk_result sc_encoder_init(ma_encoder_write_proc onWrite,
     return result;
 }
 
-sbk_result sc_encoder_uninit(sc_encoder* encoder)
+sbk_status sc_encoder_uninit(sc_encoder* encoder)
 {
     SC_CHECK_ARG(encoder != NULL);
 
@@ -105,13 +105,13 @@ sbk_result sc_encoder_uninit(sc_encoder* encoder)
     if (encoder->baseEncoder.data.vfs.file != NULL)
     {
         ma_result closeResult = ma_vfs_close(&vfs, encoder->baseEncoder.data.vfs.file);
-        SC_CHECK_RESULT(closeResult);
+        SC_CHECK_STATUS(closeResult);
     }
 
     return MA_SUCCESS;
 }
 
-sbk_result sc_encoder_init_file(const char* filePath, const sc_encoder_config* config, sc_encoder* encoder)
+sbk_status sc_encoder_init_file(const char* filePath, const sc_encoder_config* config, sc_encoder* encoder)
 {
     SC_CHECK_ARG(filePath != NULL);
     SC_CHECK_ARG(config != NULL);
@@ -128,7 +128,7 @@ sbk_result sc_encoder_init_file(const char* filePath, const sc_encoder_config* c
     ma_vfs_file file = NULL;
 
     ma_result result = ma_vfs_open(&vfs, filePath, MA_OPEN_MODE_WRITE, &file);
-    SC_CHECK_RESULT(result);
+    SC_CHECK_STATUS(result);
 
     result = sc_encoder_init(sc_encoder_on_write_vfs, sc_encoder_on_seek_vfs, NULL, config, encoder);
     if (result != MA_SUCCESS)
@@ -142,7 +142,7 @@ sbk_result sc_encoder_init_file(const char* filePath, const sc_encoder_config* c
     return MA_SUCCESS;
 }
 
-sbk_result sc_encoder_write_pcm_frames(sc_encoder* encoder,
+sbk_status sc_encoder_write_pcm_frames(sc_encoder* encoder,
                                       const void* framesIn,
                                       ma_uint64 frameCount,
                                       ma_uint64* framesWritten)
@@ -157,7 +157,7 @@ sbk_result sc_encoder_write_pcm_frames(sc_encoder* encoder,
 
 //
 
-sbk_result sc_encoder_write_from_file(const char* decodeFilePath,
+sbk_status sc_encoder_write_from_file(const char* decodeFilePath,
                                      const char* encodeFilePath,
                                      const sc_encoder_config* config)
 {
@@ -169,7 +169,7 @@ sbk_result sc_encoder_write_from_file(const char* decodeFilePath,
     ma_decoder_config decoderConfig =
         ma_decoder_config_init(config->baseConfig.format, config->baseConfig.channels, config->baseConfig.sampleRate);
     ma_result decoderInitResult = ma_decoder_init_file(decodeFilePath, &decoderConfig, &decoder);
-    SC_CHECK_RESULT(decoderInitResult);
+    SC_CHECK_STATUS(decoderInitResult);
 
     sc_encoder_config configCopy = *config;
 
@@ -178,12 +178,12 @@ sbk_result sc_encoder_write_from_file(const char* decodeFilePath,
     {
         ma_result getChannelsResult =
             ma_decoder_get_data_format(&decoder, NULL, &configCopy.baseConfig.channels, NULL, NULL, 0);
-        SC_CHECK_RESULT(getChannelsResult);
+        SC_CHECK_STATUS(getChannelsResult);
     }
 
     sc_encoder encoder;
-    sbk_result encoderInitResult = sc_encoder_init_file(encodeFilePath, &configCopy, &encoder);
-    SC_CHECK_RESULT(encoderInitResult);
+    sbk_status encoderInitResult = sc_encoder_init_file(encodeFilePath, &configCopy, &encoder);
+    SC_CHECK_STATUS(encoderInitResult);
 
     const ma_uint64 desiredFrameCount = 1024;
     const ma_uint64 convertedBufferSize =
@@ -201,7 +201,7 @@ sbk_result sc_encoder_write_from_file(const char* decodeFilePath,
         }
 
         ma_uint64 framesEncoded = 0;
-        sbk_result encodeResult  = sc_encoder_write_pcm_frames(&encoder, outConvertedBuffer, framesRead, &framesEncoded);
+        sbk_status encodeResult  = sc_encoder_write_pcm_frames(&encoder, outConvertedBuffer, framesRead, &framesEncoded);
         assert(encodeResult == MA_SUCCESS);
 
         // Out of data

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "sound_bakery/pch.h"
+#include "sound_bakery/error/result.h"
 
 namespace sbk::core
 {
@@ -20,7 +21,7 @@ namespace sbk::core
          * Useful for non-critical scenarios like creating widgets for a UI.
          */
         template <typename T>
-        [[nodiscard]] auto create_raw_object() -> std::shared_ptr<T>;
+        [[nodiscard]] auto create_raw_object() -> sbk::result<std::shared_ptr<T>>;
 
         /**
          * @brief Create an object that is owned by this owner.
@@ -29,7 +30,7 @@ namespace sbk::core
          * 
          * Used for keeping count of our objects, useful for types like game objects.
          */
-        [[nodiscard]] auto create_runtime_object(const rttr::type& type) -> std::shared_ptr<object>;
+        [[nodiscard]] auto create_runtime_object(const rttr::type& type) -> sbk::result<std::shared_ptr<object>>;
 
         /**
          * @brief Create an object that derives from database_object. 
@@ -41,20 +42,19 @@ namespace sbk::core
          * @param addToDatabase to automatically track the object. If set to false, the user is responsible for adding
          * the object to the database.
          */
-        [[nodiscard]] auto create_database_object(const rttr::type& type,
-                                                  bool addToDatabase = true) -> std::shared_ptr<database_object>;
+        [[nodiscard]] auto create_database_object(const rttr::type& type, bool addToDatabase = true) -> sbk::result<std::shared_ptr<database_object>>;
 
         /**
          * @brief Templated version of create_runtime_object.
          */
         template <typename T>
-        [[nodiscard]] auto create_runtime_object() -> std::shared_ptr<T>;
+        [[nodiscard]] auto create_runtime_object() -> sbk::result<std::shared_ptr<T>>;
 
         /**
          * @brief Templated version of create_database_object.
          */
         template <typename T>
-        [[nodiscard]] auto create_database_object(bool addToDatabase = true) -> std::shared_ptr<T>;
+        [[nodiscard]] auto create_database_object(bool addToDatabase = true) -> sbk::result<std::shared_ptr<T>>;
 
         /**
          * @brief Track an already existing object.

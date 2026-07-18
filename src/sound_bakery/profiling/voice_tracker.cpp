@@ -8,7 +8,7 @@
 
 using namespace sbk::engine::profiling;
 
-void voice_tracker::update(system* system)
+auto voice_tracker::update(system* system) -> void
 {
     m_playingNodeIDs.clear();
     m_nodePlayingCount.clear();
@@ -60,7 +60,7 @@ void voice_tracker::update(system* system)
     }
 }
 
-unsigned int voice_tracker::getPlayingCountOfObject(sbk_id id) const
+auto voice_tracker::get_playing_count_of_object(sbk_id id) const -> unsigned int
 {
     unsigned int result = 0;
 

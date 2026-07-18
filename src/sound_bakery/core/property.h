@@ -4,11 +4,9 @@
 
 namespace sbk::core
 {
-    template <typename T>
+    template <arithmetic T>
     class SB_CLASS property
     {
-        static_assert(std::is_arithmetic<T>::value);
-
     public:
         using property_changed_delegate = MulticastDelegate<T, T>;
 
@@ -29,7 +27,7 @@ namespace sbk::core
         property(property&& other) = default;
         ~property()                = default;
 
-        property& operator=(const property& other)
+        auto operator=(const property& other) -> property&
         {
             if (this != &other)
             {
@@ -42,7 +40,7 @@ namespace sbk::core
             return *this;
         }
 
-        property& operator=(property&& other) = default;
+        auto operator=(property&& other) -> property& = default;
 
         auto set(T value) -> bool
         {

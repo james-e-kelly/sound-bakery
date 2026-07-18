@@ -4,12 +4,12 @@
 
 namespace sbk::engine
 {
-    class SB_CLASS BlendContainer : public container
+    class SB_CLASS blend_container : public container
     {
     public:
-        virtual void gather_children_for_play(gather_children_context& context) const override;
+        virtual auto gather_children_for_play(gather_children_context& context) const -> void override;
 
-        REGISTER_REFLECTION(BlendContainer, container)
+        REGISTER_REFLECTION(blend_container, container)
         RTTR_REGISTRATION_FRIEND
     };
 }  // namespace sbk::engine

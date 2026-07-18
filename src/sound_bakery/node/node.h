@@ -6,14 +6,14 @@
 
 namespace sbk::engine
 {
-    enum SB_NODE_STATUS
+    enum class node_status
     {
         // Has no get_parent and no bus
-        SB_NODE_NULL,
+        null,
         // Has a get_parent node
-        SB_NODE_MIDDLE,
+        middle,
         // Has no get_parent but outputs to a bus
-        SB_NODE_TOP
+        top
     };
 
     /**
@@ -24,31 +24,31 @@ namespace sbk::engine
     public:
         ~node_base();
 
-        virtual void set_parent_node(const sbk::core::database_ptr<node_base>& parent);
-        virtual void set_output_bus(const sbk::core::database_ptr<node_base>& bus);
+        virtual auto set_parent_node(const sbk::core::database_ptr<node_base>& parent) -> void;
+        virtual auto set_output_bus(const sbk::core::database_ptr<node_base>& bus) -> void;
 
-        node_base* get_parent() const;
-        node_base* get_output_bus() const;
+        [[nodiscard]] auto get_parent() const -> node_base*;
+        [[nodiscard]] auto get_output_bus() const -> node_base*;
 
-        SB_NODE_STATUS getNodeStatus() const noexcept;
+        [[nodiscard]] auto get_node_status() const noexcept -> node_status;
 
-        virtual bool can_add_children() const;                               //< Can any children be added to this node?
-        virtual bool can_add_child_type(const rttr::type& childType) const;  //< Can this type be added to the child?
-        bool can_add_child(const sbk::core::database_ptr<node_base>& child) const;  //< Can this runtime child be added?
+        [[nodiscard]] virtual auto can_add_children() const -> bool;                               //< Can any children be added to this node?
+        [[nodiscard]] virtual auto can_add_child_type(const rttr::type& childType) const -> bool;  //< Can this type be added to the child?
+        [[nodiscard]] auto can_add_child(const sbk::core::database_ptr<node_base>& child) const -> bool;  //< Can this runtime child be added?
 
-        virtual bool can_add_parent() const;  //< Can any parents be added to this node?
-        virtual bool can_add_parent_type(const rttr::type& parentType) const;  //< Can this type be added as a
+        [[nodiscard]] virtual auto can_add_parent() const -> bool;  //< Can any parents be added to this node?
+        [[nodiscard]] virtual auto can_add_parent_type(const rttr::type& parentType) const -> bool;  //< Can this type be added as a
                                                                                // get_parent?
 
-        void addChild(const sbk::core::database_ptr<node_base>& child);
-        void removeChild(const sbk::core::database_ptr<node_base>& child);
+        auto add_child(const sbk::core::database_ptr<node_base>& child) -> void;
+        auto remove_child(const sbk::core::database_ptr<node_base>& child) -> void;
 
-        std::vector<node_base*> getChildren() const;
-        std::size_t getChildCount() const;
-        bool hasChild(const sbk::core::database_ptr<node_base>& test) const;
+        [[nodiscard]] auto get_children() const -> std::vector<node_base*>;
+        [[nodiscard]] auto get_child_count() const -> std::size_t;
+        [[nodiscard]] auto has_child(const sbk::core::database_ptr<node_base>& test) const -> bool;
 
-        void gatherAllDescendants(std::vector<node_base*>& descendants) const;
-        void gatherAllParents(std::vector<node_base*>& parents) const;
+        auto gather_all_descendants(std::vector<node_base*>& descendants) const -> void;
+        auto gather_all_parents(std::vector<node_base*>& parents) const -> void;
 
     protected:
         sbk::core::database_ptr<node_base> m_parentNode;
@@ -79,19 +79,19 @@ namespace sbk::engine
         /**
          * @brief Gathers all parameters on this and child nodes that can effect the runtime output.
          */
-        virtual void gatherParameters(global_parameter_list& parameters);
+        virtual auto gather_parameters(global_parameter_list& parameters) -> void;
 
-        void add_effect(sc_dsp_type type);
-        auto add_effect_clap(clap_plugin_factory_t* clapFactory) -> void;
+        auto add_effect(sc_dsp_type type) -> sbk::result<void>;
+        auto add_effect_clap(clap_plugin_factory_t* clapFactory) -> sbk::result<void>;
 
     protected:
         /**
          * @brief Appends parameters from this node that are relevant to the runtime output.
          *
-         * Called from gatherParameters.
+         * Called from gather_parameters.
          * @param parameters to append to.
          */
-        virtual void gatherParametersFromThis(global_parameter_list& parameters) { (void)parameters; }
+        virtual auto gather_parameters_from_this(global_parameter_list& parameters) -> void { (void)parameters; }
 
         REGISTER_REFLECTION(node, node_base)
     };

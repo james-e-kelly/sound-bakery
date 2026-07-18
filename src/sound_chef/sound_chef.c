@@ -208,9 +208,9 @@ static void sc_system_clap_request_callback(const clap_host_t* host) {}
 static void sc_system_clap_request_process(const clap_host_t* host) {}
 static void sc_system_clap_request_restart(const clap_host_t* host) {}
 
-sbk_result sc_system_create(sc_system** outSystem)
+sbk_status sc_system_create(sc_system** outSystem)
 {
-    sbk_result result = SBK_ERR_CHEF;
+    sbk_status result = SBK_ERR_CHEF;
 
     if (outSystem)
     {
@@ -229,9 +229,9 @@ sbk_result sc_system_create(sc_system** outSystem)
     return result;
 }
 
-sbk_result sc_system_release(sc_system* system)
+sbk_status sc_system_release(sc_system* system)
 {
-    sbk_result result = SBK_ERR_CHEF;
+    sbk_status result = SBK_ERR_CHEF;
 
     if (system)
     {
@@ -244,16 +244,16 @@ sbk_result sc_system_release(sc_system* system)
     return result;
 }
 
-sbk_result sc_system_log_init(sc_system* system, ma_log_callback_proc callbackProc)
+sbk_status sc_system_log_init(sc_system* system, ma_log_callback_proc callbackProc)
 {
     SC_CHECK_ARG(system != NULL);
     SC_CHECK_ARG(callbackProc != NULL);
 
     ma_result logInitResult = ma_log_init(NULL, &system->log);
-    SC_CHECK_RESULT(logInitResult);
+    SC_CHECK_STATUS(logInitResult);
 
     ma_result registerResult = ma_log_register_callback(&system->log, ma_log_callback_init(callbackProc, NULL));
-    SC_CHECK_RESULT(registerResult);
+    SC_CHECK_STATUS(registerResult);
 
     ma_log_post(&system->log, MA_LOG_LEVEL_INFO, "Initialized Sound Chef Logging");
 
@@ -274,10 +274,10 @@ sc_system_config sc_system_config_init(const char* pluginPath)
     return config;
 }
 
-sbk_result sc_system_init(sc_system* system, const sc_system_config* systemConfig)
+sbk_status sc_system_init(sc_system* system, const sc_system_config* systemConfig)
 {
     ma_result maResult = MA_ERROR;
-    sbk_result result = SBK_ERR_CHEF;
+    sbk_status result = SBK_ERR_CHEF;
 
     if (system)
     {
@@ -296,7 +296,7 @@ sbk_result sc_system_init(sc_system* system, const sc_system_config* systemConfi
         resourceManagerConfig.pLog = &system->log;
 
         maResult = ma_resource_manager_init(&resourceManagerConfig, &system->resourceManager);
-        SC_CHECK_RESULT(maResult);
+        SC_CHECK_STATUS(maResult);
 
         ma_engine_config engineConfig = ma_engine_config_init();
         engineConfig.pResourceManager = &system->resourceManager;
@@ -382,9 +382,9 @@ sbk_result sc_system_init(sc_system* system, const sc_system_config* systemConfi
     return result;
 }
 
-sbk_result sc_system_close(sc_system* system)
+sbk_status sc_system_close(sc_system* system)
 {
-    sbk_result result = MA_SUCCESS;
+    sbk_status result = MA_SUCCESS;
 
     if (system)
     {
@@ -422,7 +422,7 @@ static ma_uint32 get_flags_from_mode(sc_sound_mode mode)
     return flags;
 }
 
-sbk_result sc_system_create_sound(sc_system* system, const char* fileName, sc_sound_mode mode, sc_sound** sound)
+sbk_status sc_system_create_sound(sc_system* system, const char* fileName, sc_sound_mode mode, sc_sound** sound)
 {
     SC_CHECK_ARG(system != NULL);
     SC_CHECK_ARG(fileName != NULL);
@@ -433,11 +433,11 @@ sbk_result sc_system_create_sound(sc_system* system, const char* fileName, sc_so
     (*sound)->mode = mode;
     (*sound)->owningSystem = system;
 
-    return (sbk_result)ma_sound_init_from_file((ma_engine*)system, fileName, get_flags_from_mode(mode), NULL, NULL,
+    return (sbk_status)ma_sound_init_from_file((ma_engine*)system, fileName, get_flags_from_mode(mode), NULL, NULL,
                                    &(*sound)->sound);
 }
 
-sbk_result sc_system_create_sound_memory(
+sbk_status sc_system_create_sound_memory(
     sc_system* system, void* data, size_t dataSize, sc_sound_mode mode, sc_sound** sound)
 {
     SC_CHECK_ARG(system != NULL);
@@ -465,11 +465,11 @@ sbk_result sc_system_create_sound_memory(
         return decoderInitResult;
     }
 
-    return (sbk_result)ma_sound_init_from_data_source((ma_engine*)system, (*sound)->memoryDecoder, get_flags_from_mode(mode), NULL,
+    return (sbk_status)ma_sound_init_from_data_source((ma_engine*)system, (*sound)->memoryDecoder, get_flags_from_mode(mode), NULL,
                                           &(*sound)->sound);
 }
 
-sbk_result sc_system_play_sound(sc_system* system, sc_sound* sound, sc_sound_instance** instance, sc_node_group* parent, sc_bool paused)
+sbk_status sc_system_play_sound(sc_system* system, sc_sound* sound, sc_sound_instance** instance, sc_node_group* parent, sc_bool paused)
 {
     SC_CHECK_ARG(system != NULL);
     SC_CHECK_ARG(sound != NULL);
@@ -495,44 +495,44 @@ sbk_result sc_system_play_sound(sc_system* system, sc_sound* sound, sc_sound_ins
 
             const ma_result initResult = ma_sound_init_from_data_source((ma_engine*)system, (*instance)->memoryDecoder,
                                                                         sound->mode, NULL, &(*instance)->sound);
-            SC_CHECK_RESULT(initResult);
+            SC_CHECK_STATUS(initResult);
         }
     }
     else
     {
         const ma_result copyResult =
             ma_sound_init_copy((ma_engine*)system, &sound->sound, sound->mode, NULL, &(*instance)->sound);
-        SC_CHECK_RESULT(copyResult);
+        SC_CHECK_STATUS(copyResult);
     }
 
     if (parent != NULL)
     {
         ma_result attachResult = ma_node_attach_output_bus(*instance, 0, parent->tail->state->userData, 0);
-        SC_CHECK_RESULT(attachResult);
+        SC_CHECK_STATUS(attachResult);
     }
     else if (system->masterNodeGroup != NULL)
     {
         ma_result attachResult = ma_node_attach_output_bus(*instance, 0, system->masterNodeGroup->tail->state->userData, 0);
-        SC_CHECK_RESULT(attachResult);
+        SC_CHECK_STATUS(attachResult);
     }
 
     if (paused == MA_FALSE)
     {
         ma_result startResult = ma_sound_start(&(*instance)->sound);
-        SC_CHECK_RESULT(startResult);
+        SC_CHECK_STATUS(startResult);
     }
 
     return SBK_SUCCESS;
 }
 
-sbk_result sc_system_create_node_group(sc_system* system, sc_node_group** nodeGroup)
+sbk_status sc_system_create_node_group(sc_system* system, sc_node_group** nodeGroup)
 {
     SC_CHECK_ARG(system != NULL);
     SC_CHECK_ARG(nodeGroup != NULL);
 
     sc_node_group* const master = system->masterNodeGroup;
 
-    sbk_result result = SBK_ERR_CHEF;
+    sbk_status result = SBK_ERR_CHEF;
 
     SC_CREATE(*nodeGroup, sc_node_group, system);
 
@@ -553,7 +553,7 @@ sbk_result sc_system_create_node_group(sc_system* system, sc_node_group** nodeGr
     return result;
 }
 
-sbk_result sc_system_create_dsp(sc_system* system, const sc_dsp_config* config, sc_dsp** dsp)
+sbk_status sc_system_create_dsp(sc_system* system, const sc_dsp_config* config, sc_dsp** dsp)
 {
     SC_CHECK_ARG(system != NULL);
     SC_CHECK_ARG(config != NULL);
@@ -562,7 +562,7 @@ sbk_result sc_system_create_dsp(sc_system* system, const sc_dsp_config* config, 
     SC_CHECK_ARG(config->vtable->release != NULL);
     SC_CHECK_ARG(dsp != NULL);
 
-    sbk_result result = SBK_ERR_CHEF;
+    sbk_status result = SBK_ERR_CHEF;
 
     *dsp = (sc_dsp*)ma_malloc(sizeof(sc_dsp), &system->engine.allocationCallbacks);
     SC_CHECK_MEM(*dsp);
@@ -596,7 +596,7 @@ sbk_result sc_system_create_dsp(sc_system* system, const sc_dsp_config* config, 
 
 #pragma region Sound
 
-sbk_result sc_sound_get_length(sc_sound* sound, float* lengthInSeconds)
+sbk_status sc_sound_get_length(sc_sound* sound, float* lengthInSeconds)
 {
     SC_CHECK_ARG(sound != NULL);
     SC_CHECK_ARG(lengthInSeconds != NULL);
@@ -606,7 +606,7 @@ sbk_result sc_sound_get_length(sc_sound* sound, float* lengthInSeconds)
     return SBK_SUCCESS;
 }
 
-sbk_result sc_sound_release(sc_sound* sound)
+sbk_status sc_sound_release(sc_sound* sound)
 {
     SC_CHECK_ARG(sound != NULL);
     ma_sound_uninit(&sound->sound);
@@ -622,7 +622,7 @@ sbk_result sc_sound_release(sc_sound* sound)
     return SBK_SUCCESS;
 }
 
-sbk_result sc_sound_instance_is_playing(sc_sound_instance* instance, sc_bool* isPlaying)
+sbk_status sc_sound_instance_is_playing(sc_sound_instance* instance, sc_bool* isPlaying)
 {
     SC_CHECK_ARG(instance != NULL);
     SC_CHECK_ARG(isPlaying != NULL);
@@ -632,7 +632,7 @@ sbk_result sc_sound_instance_is_playing(sc_sound_instance* instance, sc_bool* is
     return SBK_SUCCESS;
 }
 
-sbk_result sc_sound_instance_start(sc_sound_instance* instance)
+sbk_status sc_sound_instance_start(sc_sound_instance* instance)
 {
     SC_CHECK_ARG(instance != NULL);
 
@@ -641,7 +641,7 @@ sbk_result sc_sound_instance_start(sc_sound_instance* instance)
     return SBK_SUCCESS;
 }
 
-sbk_result sc_sound_instance_pause(sc_sound_instance* instance)
+sbk_status sc_sound_instance_pause(sc_sound_instance* instance)
 {
     SC_CHECK_ARG(instance != NULL);
 
@@ -650,7 +650,7 @@ sbk_result sc_sound_instance_pause(sc_sound_instance* instance)
     return SBK_SUCCESS;
 }
 
-sbk_result sc_sound_instance_get_cursor_in_seconds(sc_sound_instance* instance, float* seconds)
+sbk_status sc_sound_instance_get_cursor_in_seconds(sc_sound_instance* instance, float* seconds)
 {
     SC_CHECK_ARG(instance != NULL);
     SC_CHECK_ARG(seconds != NULL);
@@ -660,7 +660,7 @@ sbk_result sc_sound_instance_get_cursor_in_seconds(sc_sound_instance* instance, 
     return SBK_SUCCESS;
 }
 
-sbk_result sc_sound_instance_set_cursor_in_seconds(sc_sound_instance* instance, float seconds)
+sbk_status sc_sound_instance_set_cursor_in_seconds(sc_sound_instance* instance, float seconds)
 {
     SC_CHECK_ARG(instance != NULL);
     SC_CHECK_ARG(seconds >= 0.0f);
@@ -677,7 +677,7 @@ sbk_result sc_sound_instance_set_cursor_in_seconds(sc_sound_instance* instance, 
     return ma_sound_seek_to_pcm_frame(&instance->sound, frameIndexForSeconds);
 }
 
-sbk_result sc_sound_instance_get_loop_position_in_seconds(sc_sound_instance* instance, float* seconds)
+sbk_status sc_sound_instance_get_loop_position_in_seconds(sc_sound_instance* instance, float* seconds)
 {
     SC_CHECK_ARG(instance != NULL);
     SC_CHECK_ARG(seconds != NULL);
@@ -688,7 +688,7 @@ sbk_result sc_sound_instance_get_loop_position_in_seconds(sc_sound_instance* ins
         ma_uint64 loopPointInPCMFrames = 0;
         ma_uint32 sampleRate           = 0;
 
-        SC_CHECK_RESULT(ma_data_source_get_data_format(dataSource, NULL, NULL, &sampleRate, NULL, 0));
+        SC_CHECK_STATUS(ma_data_source_get_data_format(dataSource, NULL, NULL, &sampleRate, NULL, 0));
         ma_data_source_get_loop_point_in_pcm_frames(dataSource, NULL, &loopPointInPCMFrames);
 
         *seconds = (float)loopPointInPCMFrames / (float)sampleRate;
@@ -697,7 +697,7 @@ sbk_result sc_sound_instance_get_loop_position_in_seconds(sc_sound_instance* ins
     return SBK_SUCCESS;
 }
 
-sbk_result sc_sound_instance_set_loop_position_in_seconds(sc_sound_instance* instance, float loopStartSeconds, float loopEndSeconds)
+sbk_status sc_sound_instance_set_loop_position_in_seconds(sc_sound_instance* instance, float loopStartSeconds, float loopEndSeconds)
 {
     SC_CHECK_ARG(instance != NULL);
     SC_CHECK_ARG(loopStartSeconds >= 0.0f);
@@ -709,18 +709,18 @@ sbk_result sc_sound_instance_set_loop_position_in_seconds(sc_sound_instance* ins
     {
         ma_uint32 sampleRate           = 0;
 
-        SC_CHECK_RESULT(ma_data_source_get_data_format(dataSource, NULL, NULL, &sampleRate, NULL, 0));
+        SC_CHECK_STATUS(ma_data_source_get_data_format(dataSource, NULL, NULL, &sampleRate, NULL, 0));
 
         const ma_uint64 loopStartInPCMFrames = loopStartSeconds * sampleRate;
         const ma_uint64 loopEndInPCMFrames = loopEndSeconds * sampleRate;
 
-        SC_CHECK_RESULT(ma_data_source_set_loop_point_in_pcm_frames(dataSource, loopStartInPCMFrames, loopEndInPCMFrames));
+        SC_CHECK_STATUS(ma_data_source_set_loop_point_in_pcm_frames(dataSource, loopStartInPCMFrames, loopEndInPCMFrames));
     }
 
     return SBK_SUCCESS;
 }
 
-sbk_result sc_sound_instance_get_is_looping(sc_sound_instance* instance, sc_bool* looping)
+sbk_status sc_sound_instance_get_is_looping(sc_sound_instance* instance, sc_bool* looping)
 {
     SC_CHECK_ARG(instance != NULL);
     SC_CHECK_ARG(looping != NULL);
@@ -730,7 +730,7 @@ sbk_result sc_sound_instance_get_is_looping(sc_sound_instance* instance, sc_bool
     return SBK_SUCCESS;
 }
 
-sbk_result sc_sound_instance_set_looping(sc_sound_instance* instance, sc_bool looping)
+sbk_status sc_sound_instance_set_looping(sc_sound_instance* instance, sc_bool looping)
 {
     SC_CHECK_ARG(instance != NULL);
 
@@ -739,7 +739,7 @@ sbk_result sc_sound_instance_set_looping(sc_sound_instance* instance, sc_bool lo
     return SBK_SUCCESS;
 }
 
-sbk_result sc_sound_instance_release(sc_sound_instance* instance)
+sbk_status sc_sound_instance_release(sc_sound_instance* instance)
 {
     SC_CHECK_ARG(instance != NULL);
     ma_sound_uninit(&instance->sound);
@@ -751,7 +751,7 @@ sbk_result sc_sound_instance_release(sc_sound_instance* instance)
 
 #pragma region DSP
 
-sbk_result sc_dsp_get_parameter_float(sc_dsp* dsp, int index, float* value)
+sbk_status sc_dsp_get_parameter_float(sc_dsp* dsp, int index, float* value)
 {
     SC_CHECK_ARG(dsp != NULL);
     SC_CHECK_ARG(dsp->vtable != NULL);
@@ -763,7 +763,7 @@ sbk_result sc_dsp_get_parameter_float(sc_dsp* dsp, int index, float* value)
     return dsp->vtable->getFloat(dsp->state, index, value);
 }
 
-sbk_result sc_dsp_set_parameter_float(sc_dsp* dsp, int index, float value)
+sbk_status sc_dsp_set_parameter_float(sc_dsp* dsp, int index, float value)
 {
     SC_CHECK_ARG(dsp != NULL);
     SC_CHECK_ARG(dsp->vtable != NULL);
@@ -774,7 +774,7 @@ sbk_result sc_dsp_set_parameter_float(sc_dsp* dsp, int index, float value)
     return dsp->vtable->setFloat(dsp->state, index, value);
 }
 
-sbk_result sc_dsp_release(sc_dsp* dsp)
+sbk_status sc_dsp_release(sc_dsp* dsp)
 {
     SC_CHECK_ARG(dsp != NULL);
     SC_CHECK_ARG(dsp->vtable != NULL);
@@ -783,7 +783,7 @@ sbk_result sc_dsp_release(sc_dsp* dsp)
 
     const ma_allocation_callbacks* allocCallbacks = &((sc_system*)dsp->state->system)->engine.allocationCallbacks;
 
-    sbk_result result = dsp->vtable->release(dsp->state);
+    sbk_status result = dsp->vtable->release(dsp->state);
     ma_free(dsp->state, allocCallbacks);
     ma_free(dsp, allocCallbacks);
 
@@ -794,7 +794,7 @@ sbk_result sc_dsp_release(sc_dsp* dsp)
 
 #pragma region Node Group
 
-sbk_result sc_node_group_add_dsp(sc_node_group* nodeGroup, sc_dsp* dsp, sc_dsp_index index)
+sbk_status sc_node_group_add_dsp(sc_node_group* nodeGroup, sc_dsp* dsp, sc_dsp_index index)
 {
     SC_CHECK(index == SC_DSP_INDEX_HEAD, MA_NOT_IMPLEMENTED);
     SC_CHECK_ARG(nodeGroup != NULL);
@@ -804,7 +804,7 @@ sbk_result sc_node_group_add_dsp(sc_node_group* nodeGroup, sc_dsp* dsp, sc_dsp_i
     SC_CHECK(dsp->next == NULL,
              MA_NOT_IMPLEMENTED);  // don't have detatch logic
 
-    sbk_result result = SBK_ERR_CHEF;
+    sbk_status result = SBK_ERR_CHEF;
 
     switch ((int)index)
     {
@@ -822,12 +822,12 @@ sbk_result sc_node_group_add_dsp(sc_node_group* nodeGroup, sc_dsp* dsp, sc_dsp_i
             {
                 // Attach the dsp to the get_parent output
                 result = ma_node_attach_output_bus(dsp->state->userData, 0, currentParent, 0);
-                SC_CHECK_RESULT(result);
+                SC_CHECK_STATUS(result);
 
                 // Make the current head attach to the DSP (which is now the
                 // head)
                 result = ma_node_attach_output_bus(currentHead->state->userData, 0, dsp->state->userData, 0);
-                SC_CHECK_RESULT(result);
+                SC_CHECK_STATUS(result);
 
                 nodeGroup->head->next = dsp;
                 dsp->prev             = nodeGroup->head;
@@ -843,7 +843,7 @@ sbk_result sc_node_group_add_dsp(sc_node_group* nodeGroup, sc_dsp* dsp, sc_dsp_i
             sc_dsp* currentTail = nodeGroup->tail;
 
             result = ma_node_attach_output_bus(dsp->state->userData, 0, currentTail->state->userData, 0);
-            SC_CHECK_RESULT(result);
+            SC_CHECK_STATUS(result);
 
             break;
         }
@@ -856,7 +856,7 @@ sbk_result sc_node_group_add_dsp(sc_node_group* nodeGroup, sc_dsp* dsp, sc_dsp_i
     return result;
 }
 
-sbk_result sc_node_group_set_parent(sc_node_group* nodeGroup, sc_node_group* parent)
+sbk_status sc_node_group_set_parent(sc_node_group* nodeGroup, sc_node_group* parent)
 {
     SC_CHECK_ARG(nodeGroup != NULL);
     SC_CHECK_ARG(parent != NULL);
@@ -864,7 +864,7 @@ sbk_result sc_node_group_set_parent(sc_node_group* nodeGroup, sc_node_group* par
     return ma_node_attach_output_bus(nodeGroup->head->state->userData, 0, parent->tail->state->userData, 0);
 }
 
-sbk_result sc_node_group_set_parent_endpoint(sc_node_group* nodeGroup)
+sbk_status sc_node_group_set_parent_endpoint(sc_node_group* nodeGroup)
 {
     SC_CHECK_ARG(nodeGroup != NULL);
 
@@ -877,7 +877,7 @@ sbk_result sc_node_group_set_parent_endpoint(sc_node_group* nodeGroup)
     return ma_node_attach_output_bus(nodeGroup->head->state->userData, 0, endPoint, 0);
 }
 
-sbk_result sc_node_group_get_dsp(sc_node_group* nodeGroup, sc_dsp_type type, sc_dsp** dsp)
+sbk_status sc_node_group_get_dsp(sc_node_group* nodeGroup, sc_dsp_type type, sc_dsp** dsp)
 {
     SC_CHECK_ARG(nodeGroup != NULL);
     SC_CHECK_ARG(dsp != NULL);
@@ -900,7 +900,7 @@ sbk_result sc_node_group_get_dsp(sc_node_group* nodeGroup, sc_dsp_type type, sc_
     return MA_SUCCESS;
 }
 
-sbk_result sc_node_group_release(sc_node_group* nodeGroup)
+sbk_status sc_node_group_release(sc_node_group* nodeGroup)
 {
     SC_CHECK_ARG(nodeGroup != NULL);
 
@@ -932,7 +932,7 @@ enum
 
 #pragma region Fader
 
-static sbk_result sc_dsp_fader_create(sc_dsp_state* state)
+static sbk_status sc_dsp_fader_create(sc_dsp_state* state)
 {
     state->userData = ma_malloc(sizeof(ma_sound_group), &((sc_system*)state->system)->engine.allocationCallbacks);
     if (state->userData == NULL)
@@ -944,7 +944,7 @@ static sbk_result sc_dsp_fader_create(sc_dsp_state* state)
     return ma_sound_group_init_ex((ma_engine*)state->system, &config, (ma_sound_group*)state->userData);
 }
 
-static sbk_result sc_dsp_fader_release(sc_dsp_state* state)
+static sbk_status sc_dsp_fader_release(sc_dsp_state* state)
 {
     ma_sound_group_uninit((ma_sound_group*)state->userData);
     SC_FREE(state->userData, (sc_system*)state->system);
@@ -957,7 +957,7 @@ static sc_dsp_vtable s_faderVtable = {sc_dsp_fader_create, sc_dsp_fader_release}
 
 #pragma region Lowpass
 
-static sbk_result sc_dsp_lowpass_create(sc_dsp_state* state)
+static sbk_status sc_dsp_lowpass_create(sc_dsp_state* state)
 {
     state->userData = ma_malloc(sizeof(ma_lpf_node), &((sc_system*)state->system)->engine.allocationCallbacks);
     if (state->userData == NULL)
@@ -971,18 +971,18 @@ static sbk_result sc_dsp_lowpass_create(sc_dsp_state* state)
     return ma_lpf_node_init((ma_node_graph*)state->system, &config, NULL, (ma_lpf_node*)state->userData);
 }
 
-static sbk_result sc_dsp_lowpass_release(sc_dsp_state* state)
+static sbk_status sc_dsp_lowpass_release(sc_dsp_state* state)
 {
     ma_lpf_node_uninit((ma_lpf_node*)state->userData, NULL);
     SC_FREE(state->userData, (sc_system*)state->system);
     return SBK_SUCCESS;
 }
 
-static sbk_result sc_dsp_lowpass_set_param_float(sc_dsp_state* state, int index, float value)
+static sbk_status sc_dsp_lowpass_set_param_float(sc_dsp_state* state, int index, float value)
 {
     (void)value;
 
-    sbk_result result = SBK_ERR_CHEF;
+    sbk_status result = SBK_ERR_CHEF;
 
     ma_format format     = ma_format_f32;
     ma_uint32 channels   = ma_node_get_output_channels(state->userData, 0);
@@ -1004,12 +1004,12 @@ static sbk_result sc_dsp_lowpass_set_param_float(sc_dsp_state* state, int index,
     return result;
 }
 
-static sbk_result sc_dsp_lowpass_get_param_float(sc_dsp_state* const state, int index, float* const value)
+static sbk_status sc_dsp_lowpass_get_param_float(sc_dsp_state* const state, int index, float* const value)
 {
     (void)state;
     (void)value;
 
-    sbk_result result = SBK_ERR_CHEF;
+    sbk_status result = SBK_ERR_CHEF;
 
     switch (index)
     {
@@ -1034,7 +1034,7 @@ static sc_dsp_vtable s_lowpassVtable = {
 
 #pragma region Highpass
 
-static sbk_result sc_dsp_highpass_create(sc_dsp_state* state)
+static sbk_status sc_dsp_highpass_create(sc_dsp_state* state)
 {
     state->userData = ma_malloc(sizeof(ma_hpf_node), &((sc_system*)state->system)->engine.allocationCallbacks);
     if (state->userData == NULL)
@@ -1048,18 +1048,18 @@ static sbk_result sc_dsp_highpass_create(sc_dsp_state* state)
     return ma_hpf_node_init((ma_node_graph*)state->system, &config, NULL, (ma_hpf_node*)state->userData);
 }
 
-static sbk_result sc_dsp_highpass_release(sc_dsp_state* state)
+static sbk_status sc_dsp_highpass_release(sc_dsp_state* state)
 {
     ma_hpf_node_uninit((ma_hpf_node*)state->userData, NULL);
     SC_FREE(state->userData, (sc_system*)state->system);
     return MA_SUCCESS;
 }
 
-static sbk_result sc_dsp_highpass_set_param_float(sc_dsp_state* state, int index, float value)
+static sbk_status sc_dsp_highpass_set_param_float(sc_dsp_state* state, int index, float value)
 {
     (void)value;
 
-    sbk_result result = SBK_ERR_CHEF;
+    sbk_status result = SBK_ERR_CHEF;
 
     ma_format format     = ma_format_f32;
     ma_uint32 channels   = ma_node_get_output_channels(state->userData, 0);
@@ -1081,12 +1081,12 @@ static sbk_result sc_dsp_highpass_set_param_float(sc_dsp_state* state, int index
     return result;
 }
 
-static sbk_result sc_dsp_highpass_get_param_float(sc_dsp_state* state, int index, float* const value)
+static sbk_status sc_dsp_highpass_get_param_float(sc_dsp_state* state, int index, float* const value)
 {
     (void)state;
     (void)value;
 
-    sbk_result result = SBK_ERR_CHEF;
+    sbk_status result = SBK_ERR_CHEF;
 
     switch (index)
     {
@@ -1158,7 +1158,7 @@ static ma_node_vtable sc_meter_node_vtable = {sc_meter_node_process_pcm_frames, 
 
 static ma_uint32 channels = 2;
 
-static sbk_result sc_meter_node_init(ma_node_graph* nodeGraph,
+static sbk_status sc_meter_node_init(ma_node_graph* nodeGraph,
                                     const ma_allocation_callbacks* allocCallbacks,
                                     sc_meter_node* node)
 {
@@ -1174,7 +1174,7 @@ static void sc_meter_node_uninit(sc_meter_node* node, const ma_allocation_callba
     ma_node_uninit(node, allocationCallbacks);
 }
 
-static sbk_result sc_dsp_meter_create(sc_dsp_state* state)
+static sbk_status sc_dsp_meter_create(sc_dsp_state* state)
 {
     state->userData = ma_malloc(sizeof(sc_meter_node), &((sc_system*)state->system)->engine.allocationCallbacks);
     if (state->userData == NULL)
@@ -1185,7 +1185,7 @@ static sbk_result sc_dsp_meter_create(sc_dsp_state* state)
     return sc_meter_node_init((ma_node_graph*)state->system, NULL, (sc_meter_node*)state->userData);
 }
 
-static sbk_result sc_dsp_meter_release(sc_dsp_state* state)
+static sbk_status sc_dsp_meter_release(sc_dsp_state* state)
 {
     sc_meter_node_uninit((sc_meter_node*)state->userData, NULL);
     SC_FREE(state->userData, (sc_system*)state->system);
@@ -1194,7 +1194,7 @@ static sbk_result sc_dsp_meter_release(sc_dsp_state* state)
 
 static sc_dsp_vtable s_meterVtable = {sc_dsp_meter_create, sc_dsp_meter_release, NULL, NULL, NULL, 0};
 
-sbk_result sc_dsp_get_metering_info(sc_dsp* dsp, ma_uint32 channelIndex, sc_dsp_meter meterType, float* value)
+sbk_status sc_dsp_get_metering_info(sc_dsp* dsp, ma_uint32 channelIndex, sc_dsp_meter meterType, float* value)
 {
     SC_CHECK_ARG(dsp != NULL);
     SC_CHECK_ARG(dsp->type == SC_DSP_TYPE_METER);
@@ -1319,7 +1319,7 @@ static void sc_clap_node_process_pcm_frames(
 static ma_node_vtable sc_clap_node_vtable = {sc_clap_node_process_pcm_frames, NULL, SC_CLAP_INPUT_BUS,
                                              SC_CLAP_OUTPUT_BUS, 0};
 
-static sbk_result sc_clap_node_init(ma_node_graph* nodeGraph,
+static sbk_status sc_clap_node_init(ma_node_graph* nodeGraph,
                                    const ma_allocation_callbacks* allocCallbacks,
                                    sc_clap_node* node)
 {
@@ -1341,7 +1341,7 @@ static void sc_clap_node_uninit(sc_clap_node* node, const ma_allocation_callback
     ma_node_uninit(node, allocationCallbacks);
 }
 
-static sbk_result sc_dsp_clap_create(sc_dsp_state* state)
+static sbk_status sc_dsp_clap_create(sc_dsp_state* state)
 {
     SC_CREATE(state->userData, sc_clap_node, (sc_system*)state->system);
 
@@ -1374,7 +1374,7 @@ static sbk_result sc_dsp_clap_create(sc_dsp_state* state)
     return sc_clap_node_init((ma_node_graph*)system, NULL, clapNode);
 }
 
-static sbk_result sc_dsp_clap_release(sc_dsp_state* state)
+static sbk_status sc_dsp_clap_release(sc_dsp_state* state)
 {
     SC_CHECK_ARG(state != NULL);
     SC_CHECK_ARG(state->instance != NULL);
@@ -1395,12 +1395,12 @@ static sbk_result sc_dsp_clap_release(sc_dsp_state* state)
     return MA_SUCCESS;
 }
 
-static sbk_result sc_dsp_clap_set_floatParam(sc_dsp_state* dspState, int index, float value)
+static sbk_status sc_dsp_clap_set_floatParam(sc_dsp_state* dspState, int index, float value)
 {
     return MA_NOT_IMPLEMENTED;
 }
 
-static sbk_result sc_dsp_clap_get_floatParam(sc_dsp_state* dspState, int index, float* value)
+static sbk_status sc_dsp_clap_get_floatParam(sc_dsp_state* dspState, int index, float* value)
 {
     return MA_NOT_IMPLEMENTED;
 }
@@ -1453,7 +1453,7 @@ sc_dsp_config sc_dsp_config_init_clap(clap_plugin_factory_t* pluginFactory)
 
 #pragma endregion
 
-sbk_result sc_system_clap_get_count(sc_system* system, ma_uint32* count)
+sbk_status sc_system_clap_get_count(sc_system* system, ma_uint32* count)
 {
     SC_CHECK_ARG(system != NULL);
     SC_CHECK_ARG(count != NULL);
@@ -1463,7 +1463,7 @@ sbk_result sc_system_clap_get_count(sc_system* system, ma_uint32* count)
     return MA_SUCCESS;
 }
 
-sbk_result sc_system_clap_get_at(sc_system* system, ma_uint32 index, sc_clap** plugin)
+sbk_status sc_system_clap_get_at(sc_system* system, ma_uint32 index, sc_clap** plugin)
 {
     SC_CHECK_ARG(system != NULL);
     SC_CHECK_ARG(plugin != NULL);

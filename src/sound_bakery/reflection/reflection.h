@@ -8,7 +8,7 @@
 namespace sbk::reflection
 {
     template <typename Target_Type, typename Source_Type>
-    Target_Type cast(Source_Type object)
+    auto cast(Source_Type object) -> Target_Type
     {
         static_assert(rttr::detail::pointer_count<Target_Type>::value == 1, "Target type must be a pointer");
         static_assert(rttr::detail::pointer_count<Source_Type>::value == 1, "Source argument must be a pointer");
@@ -34,6 +34,6 @@ namespace sbk::reflection
                                                                  Arg_Type::type()));
     }
 
-    void registerReflectionTypes();
-    void unregisterReflectionTypes();
+    auto register_reflection_types() -> void;
+    auto unregister_reflection_types() -> void;
 }  // namespace sbk::reflection

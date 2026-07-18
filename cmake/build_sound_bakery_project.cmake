@@ -1,5 +1,5 @@
 macro(setup_clang_format)
-    if (${SOUND_BAKERY_FORMAT_SOURCE})
+    if (SOUND_BAKERY_FORMAT_SOURCE)
         find_program(SOUND_BAKERY_CLANG_FORMAT_EXE NAMES clang-format)
     endif()
 

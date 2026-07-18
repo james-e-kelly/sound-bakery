@@ -6,10 +6,10 @@ namespace sbk::editor
 {
     using MinMax = std::pair<float, float>;
 
-    enum class METADATA_KEY
+    enum class metadata_key
     {
         payload,
-        MinMax,
+        min_max,
         readonly
     };
 

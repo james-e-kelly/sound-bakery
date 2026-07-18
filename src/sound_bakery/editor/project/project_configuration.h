@@ -19,7 +19,7 @@ namespace sbk::editor
         /**
          * @brief Creates a new project inside the chosen directory.
          */
-        project_configuration(const std::filesystem::directory_entry& projectDirectory, const std::string& projectName);
+        project_configuration(const std::filesystem::directory_entry& projectDirectory, std::string_view projectName);
 
         static constexpr std::string_view projectExtension           = "bakery";
         static constexpr std::string_view projectExtensionWithDot    = ".bakery";
@@ -27,25 +27,25 @@ namespace sbk::editor
         static constexpr std::string_view outputBankExtensionWithDot = ".bnk";
         static constexpr std::string_view initBankName               = "Init";
 
-        [[nodiscard]] std::filesystem::path source_folder() const { return m_projectFolder / "Source"; }
-        [[nodiscard]] std::filesystem::path object_folder() const { return m_projectFolder / "Objects"; }
-        [[nodiscard]] std::filesystem::path build_folder() const { return m_projectFolder / "Build"; }
-        [[nodiscard]] std::filesystem::path saved_folder() const { return m_projectFolder / "Saved"; }
-        [[nodiscard]] std::filesystem::path encoded_folder() const { return build_folder() / "Encoded"; }
-        [[nodiscard]] std::filesystem::path log_folder() const { return saved_folder() / "Logs"; }
-        [[nodiscard]] std::filesystem::path plugin_folder() const { return m_projectFolder / "Plugins"; }
+        [[nodiscard]] auto source_folder() const -> std::filesystem::path { return m_projectFolder / "Source"; }
+        [[nodiscard]] auto object_folder() const -> std::filesystem::path { return m_projectFolder / "Objects"; }
+        [[nodiscard]] auto build_folder() const -> std::filesystem::path { return m_projectFolder / "Build"; }
+        [[nodiscard]] auto saved_folder() const -> std::filesystem::path { return m_projectFolder / "Saved"; }
+        [[nodiscard]] auto encoded_folder() const -> std::filesystem::path { return build_folder() / "Encoded"; }
+        [[nodiscard]] auto log_folder() const -> std::filesystem::path { return saved_folder() / "Logs"; }
+        [[nodiscard]] auto plugin_folder() const -> std::filesystem::path { return m_projectFolder / "Plugins"; }
 
-        [[nodiscard]] std::filesystem::path project_file() const { return m_projectFile; }
-        [[nodiscard]] std::filesystem::path project_folder() const { return m_projectFolder; }
-        [[nodiscard]] std::string_view project_name() const { return m_projectName; }
+        [[nodiscard]] auto project_file() const -> std::filesystem::path { return m_projectFile; }
+        [[nodiscard]] auto project_folder() const -> std::filesystem::path { return m_projectFolder; }
+        [[nodiscard]] auto project_name() const -> std::string_view { return m_projectName; }
 
-        [[nodiscard]] std::filesystem::path type_folder(const rttr::type& type) const;  //< Converts an object type to a
+        [[nodiscard]] auto type_folder(const rttr::type& type) const -> std::filesystem::path;  //< Converts an object type to a
                                                                                         // folder location
 
-        [[nodiscard]] static std::string get_filename_for_id(
-            sbk::core::database_object* databaseObject, std::optional<std::string> extensionOverride = std::nullopt);
+        [[nodiscard]] static auto get_filename_for_id(
+            sbk::core::database_object* databaseObject, std::optional<std::string> extensionOverride = std::nullopt) -> std::string;
 
-        [[nodiscard]] bool is_valid() const;  //< Returns true if the project file exists
+        [[nodiscard]] auto is_valid() const -> bool;  //< Returns true if the project file exists
 
     private:
         std::filesystem::path m_projectFile;

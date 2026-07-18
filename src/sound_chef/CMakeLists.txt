@@ -13,23 +13,30 @@ set(SOUND_CHEF_SOURCES
     encoders/vorbis_encode_test.c
 )
 
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Source Files" FILES ${ATLAS_SOURCES})
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Source Files" FILES ${SOUND_CHEF_SOURCES})
 
-set(SOUND_CHEF_HEADERS
+set(SOUND_CHEF_LOCAL_HEADERS
     sound_chef_bank.h
     sound_chef_encoder.h
     sound_chef_guide.h
     sound_chef_internal.h
 
     encoders/sound_chef_encoder_vorbis.h
+)
 
-    ${PROJECT_SOURCE_DIR}/inc/sound_chef/sound_chef.h    
-    ${PROJECT_SOURCE_DIR}/inc/sound_chef/sound_chef_common.h    
+set(SOUND_CHEF_PUBLIC_HEADERS
+    ${PROJECT_SOURCE_DIR}/inc/sound_chef/sound_chef.h
+    ${PROJECT_SOURCE_DIR}/inc/sound_chef/sound_chef_common.h
     ${PROJECT_SOURCE_DIR}/inc/sound_chef/sound_chef_dsp.h
     ${PROJECT_SOURCE_DIR}/inc/sound_chef/sound_chef_version.h
 )
 
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Header Files" FILES ${ATLAS_HEADERS})
+set(SOUND_CHEF_HEADERS ${SOUND_CHEF_LOCAL_HEADERS} ${SOUND_CHEF_PUBLIC_HEADERS})
+
+# Local and public headers live under different roots (src/sound_chef vs inc/sound_chef), so
+# source_group(TREE ...) - which requires a single common root - needs to be called once per root.
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Header Files" FILES ${SOUND_CHEF_LOCAL_HEADERS})
+source_group(TREE ${PROJECT_SOURCE_DIR}/inc/sound_chef PREFIX "Header Files" FILES ${SOUND_CHEF_PUBLIC_HEADERS})
 
 set(CMAKE_FOLDER src)
 
@@ -137,14 +144,6 @@ target_link_libraries(sound_chef_static
     PRIVATE vorbisenc
     PRIVATE Opus::opus
     PRIVATE OpusFile::opusfile)
-
-if(MSVC)
-  target_compile_options(sound_chef_shared PRIVATE /W4)
-  target_compile_options(sound_chef_static PRIVATE /W4)
-else()
-  target_compile_options(sound_chef_shared PRIVATE -Wall -Wextra -Wpedantic)
-  target_compile_options(sound_chef_static PRIVATE -Wall -Wextra -Wpedantic)
-endif()
 
 get_target_property(SOUND_CHEF_ALL_FILES sound_chef_shared SOURCES)
 foreach(source IN LISTS SOUND_CHEF_ALL_FILES)

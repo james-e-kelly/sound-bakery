@@ -55,7 +55,7 @@ auto sbk::core::object::get_object_name() const -> std::string_view
     return m_objectName;
 }
 
-void sbk::core::object::destroy()
+auto sbk::core::object::destroy() -> void
 {
     if (m_owner)
     {
@@ -70,12 +70,12 @@ auto sbk::core::object::get_flags() const -> object_flags
 
 auto sbk::core::object::set_flags(object_flags flagsToSet) -> void 
 {
-    m_flags = static_cast<object_flags>(m_flags | flagsToSet);
+    m_flags = m_flags | flagsToSet;
 }
 
 auto sbk::core::object::clear_flags(object_flags flagsToClear) -> void 
 { 
-    m_flags = static_cast<object_flags>(m_flags & ~flagsToClear);
+    m_flags = m_flags & ~flagsToClear;
 }
 
 auto sbk::core::object::has_flag(object_flags flagsToCheck) const -> bool

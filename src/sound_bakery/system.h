@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core/logger.h"
+#include "sound_bakery/error/error.h"
 #include "sound_bakery/core/core_fwd.h"
 #include "sound_bakery/core/database/database.h"
 #include "sound_bakery/core/database/database_ptr.h"
@@ -8,11 +9,6 @@
 
 namespace sbk
 {
-    namespace core
-    {
-        class object_owner;
-    }
-
     namespace editor
     {
         class project;
@@ -28,9 +24,9 @@ namespace sbk
         class bus;
         class game_object;
 
-        void* malloc(std::size_t size, SB_OBJECT_CATEGORY category);
-        void* realloc(void* pointer, std::size_t size);
-        void free(void* pointer, SB_OBJECT_CATEGORY category);
+        auto malloc(std::size_t size, SB_OBJECT_CATEGORY category) -> void*;
+        auto realloc(void* pointer, std::size_t size) -> void*;
+        auto free(void* pointer, SB_OBJECT_CATEGORY category) -> void;
 
         /**
          * @brief Manager of the whole Sound Bakery.
@@ -63,16 +59,12 @@ namespace sbk
             system(sbk::core::sbk_log_callback_proc logCallback);
             ~system();
 
-            static auto create() -> sbk_result;
-            static auto create(const std::filesystem::path logFile) -> sbk_result;
-            static auto init(const sbk_system_config& config) -> sbk_result;
-            static auto update() -> sbk_result;
+            [[nodiscard]] static auto create() -> sbk::result<void>;
+            [[nodiscard]] static auto create(const std::filesystem::path& logFile) -> sbk::result<void>;
             static auto destroy() -> void;
 
-            static auto post_event(const char* eventName, sbk_id gameObjectID) -> sbk_result;
-            static auto post_container(sbk_id containerID, sbk_id gameObjectID) -> sbk_result;
-            
-            static auto stop_all(sbk_id gameObjectID) -> sbk_result;
+            [[nodiscard]] auto init(const sbk_system_config& config) -> sbk::result<void>;
+            [[nodiscard]] auto update() -> sbk::result<void>;
 
             [[nodiscard]] static auto get() -> system*;
             [[nodiscard]] static auto get_operating_mode() -> operating_mode;
@@ -88,29 +80,25 @@ namespace sbk
             /**
              * @brief Creates an instance of Sound Bakery and opens the project.
              */
-            static auto open_project(const std::filesystem::path& projectFile, sbk::core::sbk_log_callback_proc logCallback) -> sbk_result;
+            [[nodiscard]] static auto open_project(const std::filesystem::path& projectFile, sbk::core::sbk_log_callback_proc logCallback) -> sbk::result<void>;
 
             /**
              * @brief Creates a project and initializes Sound Bakery.
              */
-            static auto create_project(const std::filesystem::directory_entry& projectDirectory,
-                                       const std::string& projectName) -> sbk_result;
-
-            static auto load_soundbank(const std::filesystem::path& file, sbk_id& outID) -> sbk_result;
+            [[nodiscard]] static auto create_project(const std::filesystem::directory_entry& projectDirectory,
+                                       std::string_view projectName) -> sbk::result<void>;
 
             auto set_master_bus(const std::shared_ptr<sbk::engine::bus>& masterBus) -> void;
 
             friend class boost::serialization::access;
 
             template <class archive_class>
-            void serialize(archive_class& archive, const unsigned int version)
+            auto serialize(archive_class& archive, const unsigned int version) -> void
             {
             }
 
         private:
             auto update_async() -> void;
-
-            static auto get_game_object(sbk_id gameObjectID) -> std::weak_ptr<sbk::core::database_object>;
 
             bool m_registeredReflection = false;
 

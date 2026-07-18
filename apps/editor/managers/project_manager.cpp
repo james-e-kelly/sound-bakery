@@ -2,7 +2,6 @@
 
 #include "app/app.h"
 #include "gluten/subsystems/widget_subsystem.h"
-#include "gluten/widgets/profiler_widget.h"
 #include "sound_bakery/core/database/database.h"
 #include "sound_bakery/core/object/object_tracker.h"
 #include "sound_bakery/editor/project/project.h"
@@ -21,7 +20,7 @@
 
 void project_manager::init_project(const std::filesystem::path& project_file)
 {
-    if (sbk::engine::system::open_project(project_file, nullptr) == MA_SUCCESS)
+    if (sbk::engine::system::open_project(project_file, nullptr).has_value())
     {
         setup_project();
     }
@@ -30,7 +29,7 @@ void project_manager::init_project(const std::filesystem::path& project_file)
 auto project_manager::create_project(const std::filesystem::directory_entry& projectDirectory,
                                      const std::string& projectName) -> void
 {
-    if (sbk::engine::system::create_project(projectDirectory, projectName) == MA_SUCCESS)
+    if (sbk::engine::system::create_project(projectDirectory, projectName).has_value())
     {
         setup_project();
     }
@@ -46,14 +45,12 @@ void project_manager::setup_project()
             m_playerWidget          = widgetSubsystem->add_widget_class_to_root<player_widget>(false);
             m_detailsWidget         = widgetSubsystem->add_widget_class_to_root<details_widget>(false);
             m_audioMeterWidget      = widgetSubsystem->add_widget_class_to_root<audio_meter_widget>(false);
-            m_profilerWidget        = widgetSubsystem->add_widget_class_to_root<profiler_widget>(false);
             m_databaseWidget        = widgetSubsystem->add_widget_class_to_root<database_widget>(false);
 
             m_projectExplorerWidget->set_visible_in_toolbar(true, true);
             m_playerWidget->set_visible_in_toolbar(true, true);
             m_detailsWidget->set_visible_in_toolbar(true, true);
             m_audioMeterWidget->set_visible_in_toolbar(true, true);
-            m_profilerWidget->set_visible_in_toolbar(true, true);
             m_databaseWidget->set_visible_in_toolbar(true, false);
 
             if (gluten::root_widget* const rootWidget = widgetSubsystem->get_root_widget())
@@ -71,7 +68,7 @@ void project_manager::setup_project()
 void project_manager::tick(double deltaTime)
 {
     ZoneScoped;
-    sbk::engine::system::update();
+    (void)sbk::engine::system::get()->update();
 }
 
 void project_manager::exit()
@@ -82,7 +79,7 @@ void project_manager::exit()
     get_app()->set_application_display_title(SBK_PRODUCT_NAME " " SBK_VERSION_STRING);
 }
 
-void project_manager::save_project() const { sbk::engine::system::get()->get_project()->save_project(); }
+void project_manager::save_project() const { (void)sbk::engine::system::get()->get_project()->save_project(); }
 
 sbk::engine::sound_container* project_manager::get_preview_sound_container() const
 {

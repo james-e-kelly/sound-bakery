@@ -12,7 +12,6 @@
 #include "elements/audio_element.h"
 #include "gluten/theme/things/things.h"
 #include "gluten/theme/carbon/carbon_theme_g100.h"
-#include "subsystems/video_subsystem.h"
 #include "widgets/create_comment_popup.h"
 #include "widgets/create_project_popup.h"
 #include "widgets/create_review_popup.h"

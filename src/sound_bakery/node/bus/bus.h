@@ -14,16 +14,16 @@ namespace sbk::engine
     public:
         bus() : node(), m_masterBus(false) {}
 
-        bool can_add_child_type(const rttr::type& childType) const override;
+        [[nodiscard]] auto can_add_child_type(const rttr::type& childType) const -> bool override;
 
-        bool can_add_parent() const override;
-        bool can_add_parent_type(const rttr::type& parentType) const override;
+        [[nodiscard]] auto can_add_parent() const -> bool override;
+        [[nodiscard]] auto can_add_parent_type(const rttr::type& parentType) const -> bool override;
 
-        void setMasterBus(bool isMaster);
+        auto set_master_bus(bool isMaster) -> void;
 
-        bool isMasterBus() const { return m_masterBus; }
+        [[nodiscard]] auto is_master_bus() const -> bool { return m_masterBus; }
 
-        std::shared_ptr<node_instance> lockAndCopy();
+        [[nodiscard]] auto lock_and_copy() -> std::shared_ptr<node_instance>;
 
     protected:
         std::weak_ptr<node_instance> m_busInstance;

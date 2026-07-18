@@ -17,19 +17,19 @@ namespace sbk::engine
         REGISTER_REFLECTION(voice, sbk::core::object)
 
     public:
-        void play_container(container* container);
+        auto play_container(container* container) -> sbk::result<void>;
 
-        void update();
+        auto update() -> void;
 
-        [[nodiscard]] bool playing_container(container* container) const noexcept;
+        [[nodiscard]] auto playing_container(container* container) const noexcept -> bool;
 
-        [[nodiscard]] const std::vector<std::shared_ptr<node_instance>> get_voices() const noexcept;
-        [[nodiscard]] std::size_t num_voices() const;
-        [[nodiscard]] node_instance* node_instance_at(std::size_t index) const;
+        [[nodiscard]] auto get_voices() const noexcept -> const std::vector<std::shared_ptr<node_instance>>;
+        [[nodiscard]] auto num_voices() const -> std::size_t;
+        [[nodiscard]] auto node_instance_at(std::size_t index) const -> node_instance*;
 
-        [[nodiscard]] bool is_playing() const;
+        [[nodiscard]] auto is_playing() const -> bool;
 
-        game_object* get_owning_game_object() const;
+        [[nodiscard]] auto get_owning_game_object() const -> game_object*;
 
     private:
         sbk::core::database_ptr<container> m_playingContainer;

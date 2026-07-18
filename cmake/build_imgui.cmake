@@ -22,18 +22,15 @@ CPMAddPackage(
 CPMAddPackage(
   NAME imspinner
   GITHUB_REPOSITORY dalerank/imspinner
-  GIT_TAG master
+  GIT_TAG ffe57a9cf741a92bdb6042cd4f8eb152b9c95b1d # master @ 2026-07-17
   DOWNLOAD_ONLY TRUE
 )
 
 CPMAddPackage(
   NAME glfw
   GITHUB_REPOSITORY TheCherno/glfw
-  GIT_TAG master
+  GIT_TAG 026a148d7dd78d597de380c4e77ca0869f0ceaab # master @ 2026-07-17
 )
-
-message("PRINTING IMGUI DIR")
-message(${imgui_SOURCE_DIR})
 
 add_library(imgui STATIC
   ${imgui_SOURCE_DIR}/imgui.cpp

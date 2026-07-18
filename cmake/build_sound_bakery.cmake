@@ -5,6 +5,8 @@ macro(set_sources)
 
     api/sound_bakery.cpp
 
+    error/error.cpp
+
     core/object/object.cpp
     core/object/object_tracker.cpp
     core/object/object_owner.cpp
@@ -61,6 +63,11 @@ set(SOUND_BAKERY_HEADERS
     sound_bakery_internal.h
     system.h
     pch.h
+
+    api/engine_api.h
+
+    error/error.h
+    error/result.h
 
     core/core_include.h
     core/core_fwd.h
@@ -130,6 +137,12 @@ endmacro()
 function(build_dependencies)
     set(CMAKE_FOLDER extern)
 
+    # These are global CACHE variables, forced here so the third-party dependencies fetched below
+    # (and by any FetchContent-based project added afterwards, e.g. gluten's glfw/imgui/etc.) build
+    # as static libraries. This relies on src/CMakeLists.txt's add_subdirectory() ordering
+    # (core, sound_chef, sound_bakery, gluten): anything already configured before sound_bakery's
+    # add_subdirectory() call is unaffected, but everything fetched afterwards will pick up these
+    # values unless it overrides them itself.
     set(BUILD_STATIC ON CACHE BOOL "" FORCE)
     set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
     set(BUILD_WITH_STATIC_RUNTIME_LIBS ON CACHE BOOL "" FORCE)

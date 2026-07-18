@@ -1,6 +1,3 @@
-# clang-tidy
-option(SOUND_BAKERY_TIDY "Run clang-tidy" ON)
-
 set(CMAKE_FOLDER extern)
 
 message(STATUS "Fetching CppDelegates")

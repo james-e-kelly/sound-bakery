@@ -44,7 +44,7 @@ namespace sbk::reflection
     template <typename DerivedClass>
     struct CreatePointerConversion<DerivedClass>
     {
-        static void perform()
+        static auto perform() -> void
         {
             rttr::type::register_converter_func(
                 rttr::wrapper_mapper<sbk::core::child_ptr<DerivedClass>>::template convert<sbk::core::database_object>);
@@ -67,7 +67,7 @@ namespace sbk::reflection
     template <typename DerivedClass, typename BaseClass, typename... U>
     struct CreatePointerConversion<DerivedClass, BaseClass, U...>
     {
-        static void perform()
+        static auto perform() -> void
         {
             static_assert(rttr::detail::has_base_class_list<BaseClass>::value);
 
@@ -109,13 +109,26 @@ namespace sbk::reflection
 
     template <class object_class>
     static auto create_sbk_object() -> object_class*
-    { 
-        return new (sbk::util::type_helper::getCategoryFromType(object_class::type())) object_class();
+    {
+        const SB_OBJECT_CATEGORY category = sbk::util::type_helper::get_category_from_type(object_class::type());
+
+        // Allocate first so we can check for out-of-memory before constructing. object::operator new
+        // routes to sbk::memory::malloc, which returns null (never throws) on failure. Constructing at
+        // a null address would be undefined behaviour, so bail out here; the OOM is logged at the
+        // memory choke point and the caller sees a null object.
+        void* const objectMemory = object_class::operator new(sizeof(object_class), category);
+
+        if (objectMemory == nullptr)
+        {
+            return nullptr;
+        }
+
+        return ::new (objectMemory) object_class();
     }
 
-    void unregisterReflectionTypes() { rttr::detail::get_registration_manager().unregister(); }
+    auto unregister_reflection_types() -> void { rttr::detail::get_registration_manager().unregister(); }
 
-    void registerReflectionTypes()
+    auto register_reflection_types() -> void
     {
         using namespace rttr;
         using namespace sbk::core;
@@ -139,9 +152,9 @@ namespace sbk::reflection
             value("Database", SB_CATEGORY_DATABASE_OBJECT),
             value("Runtime", SB_CATEGORY_RUNTIME_OBJECT));
 
-        registration::enumeration<SB_ACTION_TYPE>("sb_action_type")(
-            value("Play", SB_ACTION_PLAY),
-            value("Stop", SB_ACTION_STOP));
+        registration::enumeration<action_type>("action_type")(
+            value("Play", action_type::play),
+            value("Stop", action_type::stop));
 
         registration::enumeration<sc_encoding_format>("Encoding Format")(
             value("WAV", sc_encoding_format_wav), 
@@ -155,7 +168,7 @@ namespace sbk::reflection
         registration::class_<action>("action")
             .constructor<>()(policy::ctor::as_object)
             .property("Type", &action::m_type)
-            .property("Destination", &action::m_destination)(metadata(sbk::editor::METADATA_KEY::payload, sbk::editor::PayloadObject));
+            .property("Destination", &action::m_destination)(metadata(sbk::editor::metadata_key::payload, sbk::editor::PayloadObject));
 
         registration::class_<effect_description>("effect_description")
             .constructor<>(create_sbk_object<effect_description>)(policy::ctor::as_raw_ptr)
@@ -192,27 +205,27 @@ namespace sbk::reflection
 
         registration::class_<database_object>("database_object")
             .constructor<>(create_sbk_object<database_object>)(policy::ctor::as_raw_ptr)
-            .property("ObjectID", &database_object::get_database_id, &database_object::set_database_id)(metadata(sbk::editor::METADATA_KEY::readonly, true))
-            .property_readonly("DatabaseName", &database_object::get_database_name)(metadata(sbk::editor::METADATA_KEY::readonly, true));
+            .property("ObjectID", &database_object::get_database_id, &database_object::set_database_id)(metadata(sbk::editor::metadata_key::readonly, true))
+            .property_readonly("DatabaseName", &database_object::get_database_name)(metadata(sbk::editor::metadata_key::readonly, true));
 
         registration::class_<sound>("sound")
             .constructor<>(create_sbk_object<sound>)(policy::ctor::as_raw_ptr)
-            .property("Sound", &sound::get_sound_name, &sound::set_sound_name)(metadata(sbk::editor::METADATA_KEY::payload, sbk::editor::PayloadSound))
-            .property("Encoded Sound", &sound::get_encoded_sound_name, &sound::set_encoded_sound_name)(metadata(sbk::editor::METADATA_KEY::payload, sbk::editor::PayloadSound))
+            .property("Sound", &sound::get_sound_name, &sound::set_sound_name)(metadata(sbk::editor::metadata_key::payload, sbk::editor::PayloadSound))
+            .property("Encoded Sound", &sound::get_encoded_sound_name, &sound::set_encoded_sound_name)(metadata(sbk::editor::metadata_key::payload, sbk::editor::PayloadSound))
             .property("Encoding Format", &sound::m_encodingFormat);
 
         registration::class_<node_base>("node_base")
             .constructor<>(create_sbk_object<node_base>)(policy::ctor::as_raw_ptr)
-            .property("ParentNode", &node_base::m_parentNode)(metadata(sbk::editor::METADATA_KEY::readonly, true))
-            .property("OutputBus", &node_base::m_outputBus)(metadata(sbk::editor::METADATA_KEY::payload, sbk::editor::PayloadBus))
-            .property("ChildNodes", &node_base::m_childNodes)(metadata(sbk::editor::METADATA_KEY::readonly, true));
+            .property("ParentNode", &node_base::m_parentNode)(metadata(sbk::editor::metadata_key::readonly, true))
+            .property("OutputBus", &node_base::m_outputBus)(metadata(sbk::editor::metadata_key::payload, sbk::editor::PayloadBus))
+            .property("ChildNodes", &node_base::m_childNodes)(metadata(sbk::editor::metadata_key::readonly, true));
 
         registration::class_<node>("node")
             .constructor<>(create_sbk_object<node>)(policy::ctor::as_raw_ptr)
-            .property("Volume", &node::m_volume)(metadata(sbk::editor::METADATA_KEY::MinMax, std::pair<float, float>(0.0f, 1.0f)))
-            .property("Pitch", &node::m_pitch)(metadata(sbk::editor::METADATA_KEY::MinMax, std::pair<float, float>(0.0f, 2.0f)))
-            .property("Lowpass", &node::m_lowpass)(metadata(sbk::editor::METADATA_KEY::MinMax, std::pair<float, float>(0.0f, 100.0f)))
-            .property("Highass", &node::m_highpass)(metadata(sbk::editor::METADATA_KEY::MinMax, std::pair<float, float>(0.0f, 100.0f)))
+            .property("Volume", &node::m_volume)(metadata(sbk::editor::metadata_key::min_max, std::pair<float, float>(0.0f, 1.0f)))
+            .property("Pitch", &node::m_pitch)(metadata(sbk::editor::metadata_key::min_max, std::pair<float, float>(0.0f, 2.0f)))
+            .property("Lowpass", &node::m_lowpass)(metadata(sbk::editor::metadata_key::min_max, std::pair<float, float>(0.0f, 100.0f)))
+            .property("Highass", &node::m_highpass)(metadata(sbk::editor::metadata_key::min_max, std::pair<float, float>(0.0f, 100.0f)))
             .property("Effects", &node::m_effectDescriptions)
             .method("Add Effect", &node::add_effect)(parameter_names("Type"));
 
@@ -220,18 +233,18 @@ namespace sbk::reflection
 
         registration::class_<sound_container>("sound_container")
             .constructor<>(create_sbk_object<sound_container>)(policy::ctor::as_raw_ptr)
-            .property("Sound", &sound_container::m_sound)(metadata(sbk::editor::METADATA_KEY::payload, sbk::editor::PayloadSound));
+            .property("Sound", &sound_container::m_sound)(metadata(sbk::editor::metadata_key::payload, sbk::editor::PayloadSound));
 
-        registration::class_<BlendContainer>("blend_container")
-            .constructor<>(create_sbk_object<BlendContainer>)(policy::ctor::as_raw_ptr);
+        registration::class_<blend_container>("blend_container")
+            .constructor<>(create_sbk_object<blend_container>)(policy::ctor::as_raw_ptr);
 
         registration::class_<switch_container>("switch_container")
             .constructor<>(create_sbk_object<switch_container>)(policy::ctor::as_raw_ptr)
-            .property("Switch", &switch_container::getSwitchParameter, &switch_container::setSwitchParameter)(metadata(sbk::editor::METADATA_KEY::payload, sbk::editor::PayloadNamedParam))
-            .property("Mappings", &switch_container::getSwitchToChildMap, &switch_container::setSwitchToChild);
+            .property("Switch", &switch_container::get_switch_parameters, &switch_container::set_switch_parameter)(metadata(sbk::editor::metadata_key::payload, sbk::editor::PayloadNamedParam))
+            .property("Mappings", &switch_container::get_switch_to_child_map, &switch_container::set_switch_to_child);
 
-        registration::class_<RandomContainer>("random_container")
-            .constructor<>(create_sbk_object<RandomContainer>)(policy::ctor::as_raw_ptr);
+        registration::class_<random_container>("random_container")
+            .constructor<>(create_sbk_object<random_container>)(policy::ctor::as_raw_ptr);
 
         registration::class_<sequence_container>("sequence_container")
             .constructor<>(create_sbk_object<sequence_container>)(policy::ctor::as_raw_ptr)
@@ -239,7 +252,7 @@ namespace sbk::reflection
 
         registration::class_<bus>("bus")
             .constructor<>(create_sbk_object<bus>)(policy::ctor::as_raw_ptr)
-            .property("IsMasterBus", &bus::isMasterBus, &bus::setMasterBus)(metadata(sbk::editor::METADATA_KEY::readonly, true));
+            .property("IsMasterBus", &bus::is_master_bus, &bus::set_master_bus)(metadata(sbk::editor::metadata_key::readonly, true));
 
         registration::class_<aux_bus>("aux_bus")
             .constructor<>(create_sbk_object<aux_bus>)(policy::ctor::as_raw_ptr);
@@ -256,12 +269,12 @@ namespace sbk::reflection
 
         registration::class_<named_parameter>("named_parameter")
             .constructor<>(create_sbk_object<named_parameter>)(policy::ctor::as_raw_ptr)
-            .property("Values", &named_parameter::m_values)(metadata(sbk::editor::METADATA_KEY::readonly, true))
+            .property("Values", &named_parameter::m_values)(metadata(sbk::editor::metadata_key::readonly, true))
             .property("ParameterValue", &named_parameter::get_selected_value, &named_parameter::set_selected_value);
 
         registration::class_<named_parameter_value>("named_parameter_value")
             .constructor<>(create_sbk_object<named_parameter_value>)(policy::ctor::as_raw_ptr)
-            .property("Parent", &named_parameter_value::parentParameter)(metadata(sbk::editor::METADATA_KEY::readonly, true));
+            .property("Parent", &named_parameter_value::parentParameter)(metadata(sbk::editor::metadata_key::readonly, true));
 
         registration::class_<soundbank>("soundbank")
             .constructor<>(create_sbk_object<soundbank>)(policy::ctor::as_raw_ptr)
@@ -273,8 +286,8 @@ namespace sbk::reflection
             .constructor<>(create_sbk_object<node_instance>)(policy::ctor::as_raw_ptr);
 
         sbk::reflection::RegisterPointerConversionsForBaseClasses<aux_bus>();
-        sbk::reflection::RegisterPointerConversionsForBaseClasses<BlendContainer>();
-        sbk::reflection::RegisterPointerConversionsForBaseClasses<RandomContainer>();
+        sbk::reflection::RegisterPointerConversionsForBaseClasses<blend_container>();
+        sbk::reflection::RegisterPointerConversionsForBaseClasses<random_container>();
         sbk::reflection::RegisterPointerConversionsForBaseClasses<sequence_container>();
         sbk::reflection::RegisterPointerConversionsForBaseClasses<sound_container>();
         sbk::reflection::RegisterPointerConversionsForBaseClasses<switch_container>();

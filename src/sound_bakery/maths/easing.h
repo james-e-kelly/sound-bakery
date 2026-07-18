@@ -6,37 +6,37 @@ namespace sbk::maths
 {
     constexpr double PI = 3.1415926545;
 
-    double easeInSine(double t) { return sin(1.5707963 * t); }
+    auto ease_in_sine(double t) -> double { return sin(1.5707963 * t); }
 
-    double easeOutSine(double t) { return 1 + sin(1.5707963 * (--t)); }
+    auto ease_out_sine(double t) -> double { return 1 + sin(1.5707963 * (--t)); }
 
-    double easeInOutSine(double t) { return 0.5 * (1 + sin(3.1415926 * (t - 0.5))); }
+    auto ease_in_out_sine(double t) -> double { return 0.5 * (1 + sin(3.1415926 * (t - 0.5))); }
 
-    double easeInQuad(double t) { return t * t; }
+    auto ease_in_quad(double t) -> double { return t * t; }
 
-    double easeOutQuad(double t) { return t * (2 - t); }
+    auto ease_out_quad(double t) -> double { return t * (2 - t); }
 
-    double easeInOutQuad(double t) { return t < 0.5 ? 2 * t * t : t * (4 - 2 * t) - 1; }
+    auto ease_in_out_quad(double t) -> double { return t < 0.5 ? 2 * t * t : t * (4 - 2 * t) - 1; }
 
-    double easeInCubic(double t) { return t * t * t; }
+    auto ease_in_cubic(double t) -> double { return t * t * t; }
 
-    double easeOutCubic(double t) { return 1 + (--t) * t * t; }
+    auto ease_out_cubic(double t) -> double { return 1 + (--t) * t * t; }
 
-    double easeInOutCubic(double t) { return t < 0.5 ? 4 * t * t * t : 1 + (--t) * (2 * (--t)) * (2 * t); }
+    auto ease_in_out_cubic(double t) -> double { return t < 0.5 ? 4 * t * t * t : 1 + (--t) * (2 * (--t)) * (2 * t); }
 
-    double easeInQuart(double t)
+    auto ease_in_quart(double t) -> double
     {
         t *= t;
         return t * t;
     }
 
-    double easeOutQuart(double t)
+    auto ease_out_quart(double t) -> double
     {
         t = (--t) * t;
         return 1 - t * t;
     }
 
-    double easeInOutQuart(double t)
+    auto ease_in_out_quart(double t) -> double
     {
         if (t < 0.5)
         {
@@ -50,19 +50,19 @@ namespace sbk::maths
         }
     }
 
-    double easeInQuint(double t)
+    auto ease_in_quint(double t) -> double
     {
         double t2 = t * t;
         return t * t2 * t2;
     }
 
-    double easeOutQuint(double t)
+    auto ease_out_quint(double t) -> double
     {
         double t2 = (--t) * t;
         return 1 + t * t2 * t2;
     }
 
-    double easeInOutQuint(double t)
+    auto ease_in_out_quint(double t) -> double
     {
         double t2;
         if (t < 0.5)
@@ -77,11 +77,11 @@ namespace sbk::maths
         }
     }
 
-    double easeInExpo(double t) { return (pow(2, 8 * t) - 1) / 255; }
+    auto ease_in_expo(double t) -> double { return (pow(2, 8 * t) - 1) / 255; }
 
-    double easeOutExpo(double t) { return 1 - pow(2, -8 * t); }
+    auto ease_out_expo(double t) -> double { return 1 - pow(2, -8 * t); }
 
-    double easeInOutExpo(double t)
+    auto ease_in_out_expo(double t) -> double
     {
         if (t < 0.5)
         {
@@ -93,11 +93,11 @@ namespace sbk::maths
         }
     }
 
-    double easeInCirc(double t) { return 1 - sqrt(1 - t); }
+    auto ease_in_circ(double t) -> double { return 1 - sqrt(1 - t); }
 
-    double easeOutCirc(double t) { return sqrt(t); }
+    auto ease_out_circ(double t) -> double { return sqrt(t); }
 
-    double easeInOutCirc(double t)
+    auto ease_in_out_circ(double t) -> double
     {
         if (t < 0.5)
         {
@@ -109,11 +109,11 @@ namespace sbk::maths
         }
     }
 
-    double easeInBack(double t) { return t * t * (2.70158 * t - 1.70158); }
+    auto ease_in_back(double t) -> double { return t * t * (2.70158 * t - 1.70158); }
 
-    double easeOutBack(double t) { return 1 + (--t) * t * (2.70158 * t + 1.70158); }
+    auto ease_out_back(double t) -> double { return 1 + (--t) * t * (2.70158 * t + 1.70158); }
 
-    double easeInOutBack(double t)
+    auto ease_in_out_back(double t) -> double
     {
         if (t < 0.5)
         {
@@ -125,19 +125,19 @@ namespace sbk::maths
         }
     }
 
-    double easeInElastic(double t)
+    auto ease_in_elastic(double t) -> double
     {
         double t2 = t * t;
         return t2 * t2 * sin(t * PI * 4.5);
     }
 
-    double easeOutElastic(double t)
+    auto ease_out_elastic(double t) -> double
     {
         double t2 = (t - 1) * (t - 1);
         return 1 - t2 * t2 * cos(t * PI * 4.5);
     }
 
-    double easeInOutElastic(double t)
+    auto ease_in_out_elastic(double t) -> double
     {
         double t2;
         if (t < 0.45)
@@ -156,11 +156,11 @@ namespace sbk::maths
         }
     }
 
-    double easeInBounce(double t) { return pow(2, 6 * (t - 1)) * abs(sin(t * PI * 3.5)); }
+    auto ease_in_bounce(double t) -> double { return pow(2, 6 * (t - 1)) * abs(sin(t * PI * 3.5)); }
 
-    double easeOutBounce(double t) { return 1 - pow(2, -6 * t) * abs(cos(t * PI * 3.5)); }
+    auto ease_out_bounce(double t) -> double { return 1 - pow(2, -6 * t) * abs(cos(t * PI * 3.5)); }
 
-    double easeInOutBounce(double t)
+    auto ease_in_out_bounce(double t) -> double
     {
         if (t < 0.5)
         {

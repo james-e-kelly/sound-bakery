@@ -5,8 +5,8 @@
 namespace gluten
 {
     class audio_subsystem;
+    class video_subsystem;
 }
-class video_subsystem;
 class workspace_manager;
 class review_app_drop_target;
 class review_database;
@@ -37,7 +37,7 @@ private:
     auto set_is_drag_dropping(bool dragDropping) -> void;
 
     std::shared_ptr<gluten::audio_subsystem> m_audioSubsystem;
-    std::shared_ptr<video_subsystem> m_videoSubsystem;
+    std::shared_ptr<gluten::video_subsystem> m_videoSubsystem;
     std::unique_ptr<review_app_drop_target> m_dropTarget;
 
     mutable bool m_isDragDropping   = false;

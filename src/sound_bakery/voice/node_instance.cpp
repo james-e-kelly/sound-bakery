@@ -1,5 +1,6 @@
 #include "node_instance.h"
 
+#include "sound_bakery/error/result.h"
 #include "sound_bakery/gameobject/gameobject.h"
 #include "sound_bakery/maths/easing.h"
 #include "sound_bakery/node/bus/bus.h"
@@ -28,7 +29,7 @@ auto sbk::engine::node_instance_fsm::action_init(const event_init& init) -> void
 {
     ZoneScoped;
     m_referencingNode = std::static_pointer_cast<sbk::engine::node>(init.refNode.shared());
-    init_node_group(init);
+    (void)init_node_group(init);
     init_callbacks();
 
     switch (init.type)
@@ -72,9 +73,12 @@ auto sbk::engine::node_instance_fsm::action_play(const event_play& play) -> void
 
         if (sound)
         {
-            const sbk_result playSoundResult = sc_system_play_sound(sbk::engine::system::get(), sound, ztd::out_ptr::out_ptr(m_soundInstance),
+            if (const sbk_status playSoundResult = sc_system_play_sound(sbk::engine::system::get(), sound, ztd::out_ptr::out_ptr(m_soundInstance),
                                                          m_nodeGroup.nodeGroup.get(), MA_FALSE);
-            BOOST_ASSERT(playSoundResult == MA_SUCCESS);
+                playSoundResult != SBK_SUCCESS)
+            {
+                sbk::log_error(playSoundResult, "sc_system_play_sound");
+            }
         }
         else
         {
@@ -83,7 +87,7 @@ auto sbk::engine::node_instance_fsm::action_play(const event_play& play) -> void
     }
     else
     {
-        std::for_each(m_children.begin(), m_children.end(), [](const auto& child) { child->play(); });
+        std::for_each(m_children.begin(), m_children.end(), [](const auto& child) { (void)child->play(); });
     }
 }
 
@@ -115,32 +119,33 @@ auto sbk::engine::node_instance_fsm::guard_init(const event_init& init) -> bool
 
 // API //
 
-auto sbk::engine::node_instance::init(const event_init& init) -> sbk_result 
-{ 
+auto sbk::engine::node_instance::init(const event_init& init) -> sbk::result<void>
+{
     ZoneScoped;
     m_stateMachine.m_gameObject = init.m_owningGameObject;
     m_stateMachine.m_owner = this;
     m_stateMachine.start();
-    return m_stateMachine.process_event(init) ? SBK_SUCCESS : SBK_ERR_BAKERY; 
+    SBK_CHECK(m_stateMachine.process_event(init), SBK_ERR_BAKERY);
+    return sbk::ok();
 }
 
-auto sbk::engine::node_instance::play() -> sbk_result
+auto sbk::engine::node_instance::play() -> sbk::result<void>
 {
     m_stateMachine.process_event(event_play());
-    return SBK_SUCCESS;
+    return sbk::ok();
 }
 
-auto sbk::engine::node_instance::update() -> sbk_result
+auto sbk::engine::node_instance::update() -> sbk::result<void>
 {
     ZoneScoped;
     m_stateMachine.process_event(event_update());
-    return SBK_SUCCESS;
+    return sbk::ok();
 }
 
-auto sbk::engine::node_instance::stop(float fadeTime) -> sbk_result
+auto sbk::engine::node_instance::stop(float fadeTime) -> sbk::result<void>
 {
     m_stateMachine.process_event(event_stop{.stopTime = fadeTime});
-    return SBK_SUCCESS;
+    return sbk::ok();
 }
 
 // QUERIES
@@ -171,30 +176,30 @@ auto sbk::engine::node_instance::get_bus() const noexcept -> sc_node_group*
 
 auto sbk::engine::node_instance_fsm::add_dsp_to_node_group(sc_node_group* nodeGroup,
                                                        sc_dsp** dsp,
-                                                       const sc_dsp_config& config) -> sbk_result
+                                                       const sc_dsp_config& config) -> sbk::result<void>
 {
     ZoneScoped;
-    SC_CHECK_ARG(nodeGroup != nullptr);
-    SC_CHECK_ARG(dsp != nullptr);
-    SC_CHECK_ARG(config.vtable != nullptr);
-    SC_CHECK_RESULT(sc_system_create_dsp(sbk::engine::system::get(), &config, dsp));
-    SC_CHECK_RESULT(sc_node_group_add_dsp(nodeGroup, *dsp, SC_DSP_INDEX_HEAD));
-    return SBK_SUCCESS;
+    SBK_CHECK(nodeGroup != nullptr, SBK_ERR_INVALID_PARAMETER);
+    SBK_CHECK(dsp != nullptr, SBK_ERR_INVALID_PARAMETER);
+    SBK_CHECK(config.vtable != nullptr, SBK_ERR_INVALID_PARAMETER);
+    SBK_TRY_C(sc_system_create_dsp(sbk::engine::system::get(), &config, dsp));
+    SBK_TRY_C(sc_node_group_add_dsp(nodeGroup, *dsp, SC_DSP_INDEX_HEAD));
+    return sbk::ok();
 }
 
-auto sbk::engine::node_instance_fsm::init_node_group(const event_init& init) -> sbk_result
+auto sbk::engine::node_instance_fsm::init_node_group(const event_init& init) -> sbk::result<void>
 {
     ZoneScoped;
-    SC_CHECK_RESULT(sc_system_create_node_group(sbk::engine::system::get(), ztd::out_ptr::out_ptr(m_nodeGroup.nodeGroup)));
-    SC_CHECK_RESULT(add_dsp_to_node_group(m_nodeGroup.nodeGroup.get(), &m_nodeGroup.lowpass, sc_dsp_config_init(SC_DSP_TYPE_LOWPASS)));
-    SC_CHECK_RESULT(add_dsp_to_node_group(m_nodeGroup.nodeGroup.get(), &m_nodeGroup.highpass, sc_dsp_config_init(SC_DSP_TYPE_HIGHPASS)));
+    SBK_TRY_C(sc_system_create_node_group(sbk::engine::system::get(), ztd::out_ptr::out_ptr(m_nodeGroup.nodeGroup)));
+    SBK_TRYV(add_dsp_to_node_group(m_nodeGroup.nodeGroup.get(), &m_nodeGroup.lowpass, sc_dsp_config_init(SC_DSP_TYPE_LOWPASS)));
+    SBK_TRYV(add_dsp_to_node_group(m_nodeGroup.nodeGroup.get(), &m_nodeGroup.highpass, sc_dsp_config_init(SC_DSP_TYPE_HIGHPASS)));
 
     for (const sbk::core::database_ptr<sbk::engine::effect_description>& desc : m_referencingNode->m_effectDescriptions)
     {
         if (desc.lookup())
         {
             sc_dsp* dsp = nullptr;
-            add_dsp_to_node_group(m_nodeGroup.nodeGroup.get(), &dsp, *desc->get_config());
+            (void)add_dsp_to_node_group(m_nodeGroup.nodeGroup.get(), &dsp, *desc->get_config());
 
             int index = 0;
             for (const sbk::engine::effect_parameter_description& parameter : desc->get_parameters())
@@ -209,41 +214,47 @@ auto sbk::engine::node_instance_fsm::init_node_group(const event_init& init) -> 
         }
     }
 
-    return SBK_SUCCESS;
+    return sbk::ok();
 }
 
-void sbk::engine::node_instance_fsm::init_parent()
+auto sbk::engine::node_instance_fsm::init_parent() -> sbk::result<void>
 {
     ZoneScoped;
+    SBK_CHECK(m_referencingNode, SBK_ERR_NULL);
+    SBK_CHECK(m_owner, SBK_ERR_NULL);
+
     sbk::engine::node_base* nodeToReference = nullptr;
 
-    switch (m_referencingNode->getNodeStatus())
+    switch (m_referencingNode->get_node_status())
     {
-        case SB_NODE_TOP:
+        case node_status::top:
             nodeToReference = m_referencingNode->get_output_bus();
-            BOOST_ASSERT_MSG(nodeToReference, "Output bus must be valid");
+            SBK_CHECK_MSG(nodeToReference, SBK_ERR_BAKERY, "Output bus must be valid");
             break;
-        case SB_NODE_MIDDLE:
+        case node_status::middle:
             nodeToReference = m_referencingNode->get_parent();
-            BOOST_ASSERT_MSG(nodeToReference, "Parent must be valid");
+            SBK_CHECK_MSG(nodeToReference, SBK_ERR_BAKERY, "Parent must be valid");
             break;
-        case SB_NODE_NULL:
+        case node_status::null:
             nodeToReference = sbk::engine::system::get()->get_master_bus();
-            BOOST_ASSERT_MSG(nodeToReference, "Master Bus invalid");
+            SBK_CHECK_MSG(nodeToReference, SBK_ERR_BAKERY, "Master Bus invalid");
             break;
     }
 
-    if (nodeToReference && nodeToReference->get_database_id() != m_referencingNode->get_database_id())
-    {
-        event_init initData{.refNode = nodeToReference, .type = node_instance_type::bus, .m_owningGameObject = m_gameObject};
-        m_parent = m_owner->create_runtime_object<sbk::engine::node_instance>();
-        m_parent->init(initData);
-    }
+    SBK_CHECK(nodeToReference, SBK_ERR_NULL);
+    SBK_CHECK_MSG(nodeToReference->get_database_id() != m_referencingNode->get_database_id(), SBK_ERR_BAKERY, "Pointing to self. Cannot init parent");
+ 
+    event_init initData{.refNode = nodeToReference, .type = node_instance_type::bus, .m_owningGameObject = m_gameObject};
+    SBK_TRY(m_parent, m_owner->create_runtime_object<sbk::engine::node_instance>());
+    return m_parent->init(initData);
 }
 
-void sbk::engine::node_instance_fsm::init_child()
+auto sbk::engine::node_instance_fsm::init_child() -> sbk::result<void>
 {
     ZoneScoped;
+    SBK_CHECK(m_referencingNode, SBK_ERR_NULL);
+    SBK_CHECK(m_owner, SBK_ERR_NULL);
+
     if (const container* const container = m_referencingNode->try_convert_object<sbk::engine::container>())
     {
         gather_children_context context;
@@ -256,23 +267,23 @@ void sbk::engine::node_instance_fsm::init_child()
 
         for (sbk::engine::container* const child : context.sounds)
         {
-            if (child && child->get_database_id() != m_referencingNode->get_database_id())
-            {
-                m_children.push_back(m_owner->create_runtime_object<sbk::engine::node_instance>());
+            SBK_CHECK(child != nullptr, SBK_ERR_NULL);
+            SBK_CHECK_MSG(child->get_database_id() != m_referencingNode->get_database_id(), SBK_ERR_BAKERY, "Referenced node was found in its child list. Self references should not happen");
+            SBK_TRY(auto runtimeChild, m_owner->create_runtime_object<sbk::engine::node_instance>());
+            m_children.push_back(runtimeChild);
 
-                event_init childInit;
-                childInit.parentForChildren = m_owner;
-                childInit.type              = node_instance_type::child;
-                childInit.refNode           = child->get_database_id();
-                childInit.m_owningGameObject = m_gameObject;
+            event_init childInit;
+            childInit.parentForChildren = m_owner;
+            childInit.type              = node_instance_type::child;
+            childInit.refNode           = child->get_database_id();
+            childInit.m_owningGameObject = m_gameObject;
                 
-                m_children.back()->init(childInit);
-            }
+            SBK_TRYV(runtimeChild->init(childInit));
         }
     }
 }
 
-void sbk::engine::node_instance_fsm::init_callbacks()
+auto sbk::engine::node_instance_fsm::init_callbacks() -> void
 {
     ZoneScoped;
     m_referencingNode->m_volume.get_delegate().AddRaw(this, &node_instance_fsm::set_volume);
@@ -288,7 +299,7 @@ void sbk::engine::node_instance_fsm::init_callbacks()
 
 // CALLBACKS //
 
-void sbk::engine::node_instance_fsm::set_volume(float oldVolume, float newVolume)
+auto sbk::engine::node_instance_fsm::set_volume(float oldVolume, float newVolume) -> void
 {
     (void)oldVolume;
 
@@ -298,7 +309,7 @@ void sbk::engine::node_instance_fsm::set_volume(float oldVolume, float newVolume
     }
 }
 
-void sbk::engine::node_instance_fsm::set_pitch(float oldPitch, float newPitch)
+auto sbk::engine::node_instance_fsm::set_pitch(float oldPitch, float newPitch) -> void
 {
     (void)oldPitch;
 
@@ -308,22 +319,22 @@ void sbk::engine::node_instance_fsm::set_pitch(float oldPitch, float newPitch)
     }
 }
 
-void sbk::engine::node_instance_fsm::set_lowpass(float oldLowpass, float newLowpass)
+auto sbk::engine::node_instance_fsm::set_lowpass(float oldLowpass, float newLowpass) -> void
 {
     (void)oldLowpass;
 
-    const double percentage    = sbk::maths::easeOutCubic(newLowpass / 100.0);
+    const double percentage    = sbk::maths::ease_out_cubic(newLowpass / 100.0);
     const double lowpassCutoff = (19980 - (19980.0 * percentage)) + 20.0;
     BOOST_ASSERT(lowpassCutoff >= 20.0);
 
     sc_dsp_set_parameter_float(m_nodeGroup.lowpass, SC_DSP_LOWPASS_CUTOFF, static_cast<float>(lowpassCutoff));
 }
 
-void sbk::engine::node_instance_fsm::set_highpass(float oldHighpass, float newHighpass)
+auto sbk::engine::node_instance_fsm::set_highpass(float oldHighpass, float newHighpass) -> void
 {
     (void)oldHighpass;
 
-    const double percentage     = sbk::maths::easeInCubic(newHighpass / 100.0);
+    const double percentage     = sbk::maths::ease_in_cubic(newHighpass / 100.0);
     const double highpassCutoff = (19980.0 * percentage) + 20.0;
     BOOST_ASSERT(highpassCutoff >= 20.0);
 
