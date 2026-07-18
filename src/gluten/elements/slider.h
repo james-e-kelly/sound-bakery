@@ -27,6 +27,7 @@ namespace gluten
         template <valid_slider U>
         bool render_slider(const ImRect& elementBox)
         {
+            return false;
         }
 
     private:
