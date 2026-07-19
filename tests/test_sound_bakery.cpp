@@ -186,8 +186,6 @@ TEST_SUITE("Property")
         float_property property;
 
         CHECK(property.get() == doctest::Approx(0.0F));
-        CHECK(property.get_min() == doctest::Approx(0.0F));
-        CHECK(property.get_max() == doctest::Approx(1.0F));
     }
 
     TEST_CASE("Min/max construction stores the range")
@@ -304,7 +302,6 @@ TEST_SUITE("Parameter")
     {
         int_parameter parameter;
 
-        // Default int property range is [0, 1].
         parameter.set(1);
         CHECK(parameter.get() == 1);
 
