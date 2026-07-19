@@ -85,8 +85,7 @@ namespace sbk
             /**
              * @brief Creates a project and initializes Sound Bakery.
              */
-            [[nodiscard]] static auto create_project(const std::filesystem::directory_entry& projectDirectory,
-                                       std::string_view projectName) -> sbk::result<void>;
+            [[nodiscard]] static auto create_project(const std::filesystem::directory_entry& projectDirectory, std::string_view projectName) -> sbk::result<void>;
 
             auto set_master_bus(const std::shared_ptr<sbk::engine::bus>& masterBus) -> void;
 

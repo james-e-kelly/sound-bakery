@@ -6,6 +6,8 @@
 #include "sound_bakery/core/property.h"
 #include "sound_bakery/event/event.h"
 #include "sound_bakery/gameobject/gameobject.h"
+#include "sound_bakery/node/bus/bus.h"
+#include "sound_bakery/node/bus/aux_bus.h"
 #include "sound_bakery/parameter/parameter.h"
 
 namespace
@@ -24,6 +26,7 @@ namespace
             const sbk_system_config config = sbk_system_config_init_default();
 
             REQUIRE(sbk::engine::system::create().has_value());
+            REQUIRE(sbk::engine::system::get() != nullptr);
             REQUIRE(sbk::engine::system::get()->init(config).has_value());
         }
 
@@ -88,6 +91,89 @@ TEST_SUITE("System")
         // after a bare init.
         CHECK(engine.get()->get_listener_game_object() != nullptr);
         CHECK(engine.get()->get_master_bus() == nullptr);
+    }
+
+    TEST_CASE("System reports objects existing")
+    {
+        scoped_engine engine;
+
+        // The system should create the listener and master bus
+        // It should report having objects in the object owner
+        CHECK(engine.get()->get_objects_count() > 0);
+    }
+
+    TEST_CASE("System reports correct types")
+    {
+        scoped_engine engine;
+
+        // The listener should exist
+        CHECK(engine.get()->get_objects_of_type(sbk::engine::game_object::type()).size() > 0);
+    }
+
+    TEST_CASE("System reports correct categories")
+    {
+        scoped_engine engine;
+
+        // The listener should exist
+        CHECK(engine.get()->get_objects_of_category(SB_CATEGORY_RUNTIME_OBJECT).size() > 0);
+    }
+
+    TEST_CASE("Can set a different master bus")
+    {
+        scoped_engine engine;
+
+        auto bus = engine.get()->create_database_object<sbk::engine::bus>();
+        CHECK(bus.has_value());
+
+        auto busShared = bus.value();
+
+        busShared->set_master_bus(true);
+        engine.get()->set_master_bus(busShared);
+
+        CHECK(engine.get()->get_master_bus() == busShared);
+    }
+
+    TEST_CASE("Creating objects increases object count correctly")
+    {
+        scoped_engine engine;
+
+        const std::size_t countBefore = engine.get()->get_objects_count();
+
+        auto bus = engine.get()->create_database_object<sbk::engine::bus>();
+        CHECK(bus.has_value());
+        CHECK(engine.get()->get_objects_count() == countBefore + 1);
+
+        auto bus2 = engine.get()->create_database_object<sbk::engine::bus>();
+        CHECK(bus2.has_value());
+        CHECK(engine.get()->get_objects_count() == countBefore + 2);
+
+        auto auxBus = engine.get()->create_database_object<sbk::engine::aux_bus>();
+        CHECK(auxBus.has_value());
+        CHECK(engine.get()->get_objects_count() == countBefore + 3);
+        
+        auto auxBus2 = engine.get()->create_database_object<sbk::engine::aux_bus>();
+        CHECK(auxBus2.has_value());
+        CHECK(engine.get()->get_objects_count() == countBefore + 4);
+    }
+
+    TEST_CASE("Spamming update works")
+    {
+        scoped_engine engine;
+
+        CHECK(engine.get()->update().has_value());
+        CHECK(engine.get()->update().has_value());
+        CHECK(engine.get()->update().has_value());
+        CHECK(engine.get()->update().has_value());
+        CHECK(engine.get()->update().has_value());
+        CHECK(engine.get()->update().has_value());
+        CHECK(engine.get()->update().has_value());
+        CHECK(engine.get()->update().has_value());
+        CHECK(engine.get()->update().has_value());
+        CHECK(engine.get()->update().has_value());
+        CHECK(engine.get()->update().has_value());
+        CHECK(engine.get()->update().has_value());
+        CHECK(engine.get()->update().has_value());
+        CHECK(engine.get()->update().has_value());
     }
 }
 
