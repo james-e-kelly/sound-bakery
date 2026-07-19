@@ -80,6 +80,8 @@ var NAVTREEINDEX0 =
 "classsbk_1_1core_1_1object__owner.html#afc00b34d49c1378041bd7f51d0707f15":[12,0,2,0,9,1],
 "classsbk_1_1core_1_1object__tracker.html":[12,0,2,0,11],
 "classsbk_1_1core_1_1property.html":[12,0,2,0,13],
+"classsbk_1_1core_1_1property.html#a6583057cd7f5971309b144b5cf3ce048":[12,0,2,0,13,1],
+"classsbk_1_1core_1_1property.html#acf41415a8b3a9086374d73a0c46215f3":[12,0,2,0,13,0],
 "classsbk_1_1core_1_1serialization_1_1boost__serializer.html":[12,0,2,0,0,0],
 "classsbk_1_1editor_1_1project.html":[12,0,2,1,0],
 "classsbk_1_1engine_1_1aux__bus.html":[12,0,2,2,2],
@@ -130,6 +132,7 @@ var NAVTREEINDEX0 =
 "classsbk_1_1engine_1_1switch__container.html#a861256d6586fc119aa696a6b48e14e6f":[12,0,2,2,41,0],
 "classsbk_1_1engine_1_1switch__container.html#a877948762e5241cc95f81614657512bc":[12,0,2,2,41,1],
 "classsbk_1_1engine_1_1system.html":[12,0,2,2,42],
+"classsbk_1_1engine_1_1system.html#ae49b19eae280cf520cacebef66eb9b70":[12,0,2,2,42,0],
 "classsbk_1_1engine_1_1voice.html":[12,0,2,2,43],
 "classsbk_1_1error.html":[12,0,2,6],
 "classsbk_1_1util_1_1type__helper.html":[12,0,2,5,1],
@@ -246,8 +249,5 @@ var NAVTREEINDEX0 =
 "method__drawer_8h_source.html":[13,0,0,0,3,0],
 "name_8h_source.html":[13,0,2,0,1,5],
 "new__project__widget_8h_source.html":[13,0,0,0,4,6],
-"node_8h_source.html":[13,0,2,0,8,2],
-"node__instance_8h_source.html":[13,0,2,0,16,0],
-"object_8h_source.html":[13,0,2,0,1,1,0],
-"object__owner_8h_source.html":[13,0,2,0,1,1,1]
+"node_8h_source.html":[13,0,2,0,8,2]
 };

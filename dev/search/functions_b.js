@@ -15,6 +15,9 @@ var searchData=
   ['sc_5fsystem_5fplay_5fsound_12',['sc_system_play_sound',['../sound__chef_8h.html#a0f39000fef87f54d58934784869334ca',1,'sound_chef.c']]],
   ['sc_5fsystem_5frelease_13',['sc_system_release',['../sound__chef_8h.html#afa6086b793e2c93701ebcde793bca4b6',1,'sound_chef.c']]],
   ['set_14',['set',['../classsbk_1_1engine_1_1parameter.html#a2925e2a752e7981cdbcb839c7d6880d0',1,'sbk::engine::parameter']]],
-  ['set_5fselected_5fvalue_15',['set_selected_value',['../classsbk_1_1engine_1_1named__parameter.html#ab89a0450bb0fff8ceed16c34727472bc',1,'sbk::engine::named_parameter']]],
-  ['stale_16',['stale',['../classsbk_1_1core_1_1database__ptr.html#a1634ec848dd4b11a492e5f6d911072f8',1,'sbk::core::database_ptr']]]
+  ['set_5fmaster_5fbus_15',['set_master_bus',['../classsbk_1_1engine_1_1system.html#ae49b19eae280cf520cacebef66eb9b70',1,'sbk::engine::system']]],
+  ['set_5fmax_16',['set_max',['../classsbk_1_1core_1_1property.html#acf41415a8b3a9086374d73a0c46215f3',1,'sbk::core::property']]],
+  ['set_5fmin_17',['set_min',['../classsbk_1_1core_1_1property.html#a6583057cd7f5971309b144b5cf3ce048',1,'sbk::core::property']]],
+  ['set_5fselected_5fvalue_18',['set_selected_value',['../classsbk_1_1engine_1_1named__parameter.html#ab89a0450bb0fff8ceed16c34727472bc',1,'sbk::engine::named_parameter']]],
+  ['stale_19',['stale',['../classsbk_1_1core_1_1database__ptr.html#a1634ec848dd4b11a492e5f6d911072f8',1,'sbk::core::database_ptr']]]
 ];

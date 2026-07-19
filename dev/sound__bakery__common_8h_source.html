@@ -178,26 +178,27 @@ $(document).ready(function(){initNavTree('sound__bakery__common_8h_source.html',
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structsbk__system__config.html">   31</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structsbk__system__config.html">sbk_system_config</a></div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>{</div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <a class="code hl_struct" href="structsc__system__config.html">sc_system_config</a> soundChefConfig;</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>};</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordtype">bool</span> logToConsole;  <span class="comment">//&lt; Automatically set up the logger to print to the console. Normally left off so consuming applications can control Sound Bakery&#39;s logging</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>};</div>
 </div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="keyword">typedef</span> <span class="keyword">enum</span> SB_OBJECT_CATEGORY</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>{</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    SB_CATEGORY_UNKNOWN,</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    SB_CATEGORY_SOUND,</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    SB_CATEGORY_NODE,</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    SB_CATEGORY_BUS,</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    SB_CATEGORY_MUSIC,</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    SB_CATEGORY_EVENT,</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    SB_CATEGORY_BANK,</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    SB_CATEGORY_PARAMETER,</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    SB_CATEGORY_DATABASE_OBJECT,</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    SB_CATEGORY_RUNTIME_OBJECT,</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    SB_CATEGORY_SYSTEM,</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    SB_CATEGORY_NUM</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>} SB_OBJECT_CATEGORY;</div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="keyword">typedef</span> <span class="keyword">enum</span> SB_OBJECT_CATEGORY</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>{</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    SB_CATEGORY_UNKNOWN,</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    SB_CATEGORY_SOUND,</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    SB_CATEGORY_NODE,</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    SB_CATEGORY_BUS,</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    SB_CATEGORY_MUSIC,</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    SB_CATEGORY_EVENT,</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    SB_CATEGORY_BANK,</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    SB_CATEGORY_PARAMETER,</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    SB_CATEGORY_DATABASE_OBJECT,</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    SB_CATEGORY_RUNTIME_OBJECT,</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    SB_CATEGORY_SYSTEM,</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    SB_CATEGORY_NUM</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>} SB_OBJECT_CATEGORY;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="asound__chef_8h_html"><div class="ttname"><a href="sound__chef_8h.html">sound_chef.h</a></div><div class="ttdoc">A wrapper library for miniaudio that emulates functionality of FMOD.</div></div>
 <div class="ttc" id="astructsbk__system__config_html"><div class="ttname"><a href="structsbk__system__config.html">sbk_system_config</a></div><div class="ttdef"><b>Definition</b> sound_bakery_common.h:32</div></div>
 <div class="ttc" id="astructsc__system__config_html"><div class="ttname"><a href="structsc__system__config.html">sc_system_config</a></div><div class="ttdoc">Configuration for initializing the sc_system.</div><div class="ttdef"><b>Definition</b> sound_chef_common.h:304</div></div>

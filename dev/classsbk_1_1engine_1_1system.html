@@ -238,17 +238,16 @@ auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_system_thread_exe
 <tr class="memitem:ae59ea355521becc060203b9e7775628b" id="r_ae59ea355521becc060203b9e7775628b"><td class="memItemLeft" align="right" valign="top"><a id="ae59ea355521becc060203b9e7775628b" name="ae59ea355521becc060203b9e7775628b"></a>
 auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_background_thread_executer</b> () const -&gt; std::shared_ptr&lt; concurrencpp::thread_pool_executor &gt;</td></tr>
 <tr class="separator:ae59ea355521becc060203b9e7775628b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa6a26e6d3946a8aa8f36cb99c6fb995d" id="r_aa6a26e6d3946a8aa8f36cb99c6fb995d"><td class="memItemLeft" align="right" valign="top"><a id="aa6a26e6d3946a8aa8f36cb99c6fb995d" name="aa6a26e6d3946a8aa8f36cb99c6fb995d"></a>
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_listener_game_object</b> () const -&gt; <a class="el" href="classsbk_1_1engine_1_1game__object.html">sbk::engine::game_object</a> *</td></tr>
-<tr class="separator:aa6a26e6d3946a8aa8f36cb99c6fb995d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a320f3f1b7d3e29282dd3f163cb91a944" id="r_a320f3f1b7d3e29282dd3f163cb91a944"><td class="memItemLeft" align="right" valign="top"><a id="a320f3f1b7d3e29282dd3f163cb91a944" name="a320f3f1b7d3e29282dd3f163cb91a944"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_listener_game_object</b> () const -&gt; std::shared_ptr&lt; <a class="el" href="classsbk_1_1engine_1_1game__object.html">sbk::engine::game_object</a> &gt;</td></tr>
+<tr class="separator:a320f3f1b7d3e29282dd3f163cb91a944"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6061566095b68385ace73b317203a630" id="r_a6061566095b68385ace73b317203a630"><td class="memItemLeft" align="right" valign="top"><a id="a6061566095b68385ace73b317203a630" name="a6061566095b68385ace73b317203a630"></a>
 auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_master_bus</b> () const -&gt; std::shared_ptr&lt; <a class="el" href="classsbk_1_1engine_1_1bus.html">sbk::engine::bus</a> &gt;</td></tr>
 <tr class="separator:a6061566095b68385ace73b317203a630"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a61da1570ae3622d9cff32c41b2d81b19" id="r_a61da1570ae3622d9cff32c41b2d81b19"><td class="memItemLeft" align="right" valign="top"><a id="a61da1570ae3622d9cff32c41b2d81b19" name="a61da1570ae3622d9cff32c41b2d81b19"></a>
 auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_current_object_owner</b> () -&gt; <a class="el" href="classsbk_1_1core_1_1object__owner.html">sbk::core::object_owner</a> *</td></tr>
 <tr class="separator:a61da1570ae3622d9cff32c41b2d81b19"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae49b19eae280cf520cacebef66eb9b70" id="r_ae49b19eae280cf520cacebef66eb9b70"><td class="memItemLeft" align="right" valign="top"><a id="ae49b19eae280cf520cacebef66eb9b70" name="ae49b19eae280cf520cacebef66eb9b70"></a>
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>set_master_bus</b> (const std::shared_ptr&lt; <a class="el" href="classsbk_1_1engine_1_1bus.html">sbk::engine::bus</a> &gt; &amp;masterBus) -&gt; void</td></tr>
+<tr class="memitem:ae49b19eae280cf520cacebef66eb9b70" id="r_ae49b19eae280cf520cacebef66eb9b70"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsbk_1_1engine_1_1system.html#ae49b19eae280cf520cacebef66eb9b70">set_master_bus</a> (const std::shared_ptr&lt; <a class="el" href="classsbk_1_1engine_1_1bus.html">sbk::engine::bus</a> &gt; &amp;masterBus) -&gt; void</td></tr>
 <tr class="separator:ae49b19eae280cf520cacebef66eb9b70"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a60a9a9992ce9349fac914bafb07ec878" id="r_a60a9a9992ce9349fac914bafb07ec878"><td class="memTemplParams" colspan="2"><a id="a60a9a9992ce9349fac914bafb07ec878" name="a60a9a9992ce9349fac914bafb07ec878"></a>
 template&lt;class archive_class &gt; </td></tr>
@@ -416,7 +415,27 @@ clap_host_t&#160;</td><td class="memItemRight" valign="bottom"><b>clapHost</b></
 <div class="textblock"><p>Manager of the whole Sound Bakery. </p>
 <p>The system tracks all objects created during Sound Bakery's lifetime.</p>
 <p>It owns all loaded Soundbanks, listener game object, and busses. </p>
-</div><hr/>The documentation for this class was generated from the following files:<ul>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="ae49b19eae280cf520cacebef66eb9b70" name="ae49b19eae280cf520cacebef66eb9b70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae49b19eae280cf520cacebef66eb9b70">&#9670;&#160;</a></span>set_master_bus()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto sbk::engine::system::set_master_bus </td>
+          <td>(</td>
+          <td class="paramtype">const std::shared_ptr&lt; <a class="el" href="classsbk_1_1engine_1_1bus.html">sbk::engine::bus</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>masterBus</em></td><td>)</td>
+          <td> -&gt; void</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000001">Todo:</a></b></dt><dd>What do we need to do about the old master bus, if there is one? Is it safe to destroy any original master bus - like a serialized bus is loaded and overrides the default one? </dd></dl>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/sound_bakery/<a class="el" href="system_8h_source.html">system.h</a></li>
 <li>src/sound_bakery/<b>system.cpp</b></li>
 </ul>

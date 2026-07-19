@@ -36,7 +36,7 @@ var annotated_dup =
         [ "object_ptr_comparator", "structsbk_1_1core_1_1object__ptr__comparator.html", null ],
         [ "object_tracker", "classsbk_1_1core_1_1object__tracker.html", null ],
         [ "parsed_database_name", "structsbk_1_1core_1_1parsed__database__name.html", null ],
-        [ "property", "classsbk_1_1core_1_1property.html", null ]
+        [ "property", "classsbk_1_1core_1_1property.html", "classsbk_1_1core_1_1property" ]
       ] ],
       [ "editor", null, [
         [ "project", "classsbk_1_1editor_1_1project.html", null ],
@@ -87,7 +87,7 @@ var annotated_dup =
         [ "soundbank_database_entry", "structsbk_1_1engine_1_1soundbank__database__entry.html", null ],
         [ "soundbank_dependencies", "structsbk_1_1engine_1_1soundbank__dependencies.html", null ],
         [ "switch_container", "classsbk_1_1engine_1_1switch__container.html", "classsbk_1_1engine_1_1switch__container" ],
-        [ "system", "classsbk_1_1engine_1_1system.html", null ],
+        [ "system", "classsbk_1_1engine_1_1system.html", "classsbk_1_1engine_1_1system" ],
         [ "voice", "classsbk_1_1engine_1_1voice.html", null ],
         [ "void_deleter", "structsbk_1_1engine_1_1void__deleter.html", null ]
       ] ],

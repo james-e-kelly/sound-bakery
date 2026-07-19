@@ -171,17 +171,16 @@ $(document).ready(function(){initNavTree('object__tracker_8h_source.html',''); i
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        [[nodiscard]] <span class="keyword">auto</span> get_all_category_to_objects() <span class="keyword">const</span> -&gt; <span class="keyword">const</span> std::unordered_map&lt;SB_OBJECT_CATEGORY, std::unordered_set&lt;object*&gt;&gt;&amp;;</div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        [[nodiscard]] <span class="keyword">auto</span> get_all_type_to_objects() <span class="keyword">const</span> -&gt; <span class="keyword">const</span> std::unordered_map&lt;rttr::type, std::unordered_set&lt;object*&gt;&gt;&amp;;</div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        [[nodiscard]] <span class="keyword">auto</span> convert_to_ordered(<span class="keyword">const</span> std::unordered_set&lt;object*&gt;&amp; unordered) <span class="keyword">const</span></div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>            -&gt; std::set&lt;object*, object_ptr_comparator&gt;;</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        <span class="keyword">auto</span> on_object_destroyed(<span class="keywordtype">object</span>* <span class="keywordtype">object</span>) -&gt; void;</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        std::unordered_map&lt;SB_OBJECT_CATEGORY, std::unordered_set&lt;object*&gt;&gt; m_categoryToObjects;</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        std::unordered_map&lt;rttr::type, std::unordered_set&lt;object*&gt;&gt; m_typeToObjects;</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    };</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        [[nodiscard]] <span class="keyword">auto</span> convert_to_ordered(<span class="keyword">const</span> std::unordered_set&lt;object*&gt;&amp; unordered) <span class="keyword">const</span> -&gt; std::set&lt;object*, object_ptr_comparator&gt;;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        <span class="keyword">auto</span> on_object_destroyed(<span class="keywordtype">object</span>* <span class="keywordtype">object</span>) -&gt; void;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        std::unordered_map&lt;SB_OBJECT_CATEGORY, std::unordered_set&lt;object*&gt;&gt; m_categoryToObjects;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        std::unordered_map&lt;rttr::type, std::unordered_set&lt;object*&gt;&gt; m_typeToObjects;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    };</div>
 </div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>}  <span class="comment">// namespace sbk::core</span></div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>}  <span class="comment">// namespace sbk::core</span></div>
 <div class="ttc" id="aclasssbk_1_1core_1_1object__tracker_html"><div class="ttname"><a href="classsbk_1_1core_1_1object__tracker.html">sbk::core::object_tracker</a></div><div class="ttdoc">Tracks object categories and types.</div><div class="ttdef"><b>Definition</b> object_tracker.h:24</div></div>
 <div class="ttc" id="astructsbk_1_1core_1_1object__ptr__comparator_html"><div class="ttname"><a href="structsbk_1_1core_1_1object__ptr__comparator.html">sbk::core::object_ptr_comparator</a></div><div class="ttdef"><b>Definition</b> object_tracker.h:9</div></div>
 </div><!-- fragment --></div><!-- contents -->
