@@ -253,8 +253,7 @@ sbk_status sc_system_log_init(sc_system* system, ma_log_callback_proc callbackPr
     const sbk_status logInitResult = SBK_FROM_MA(ma_log_init(NULL, &system->log));
     SC_CHECK_STATUS(logInitResult);
 
-    const sbk_status registerResult =
-        SBK_FROM_MA(ma_log_register_callback(&system->log, ma_log_callback_init(callbackProc, NULL)));
+    const sbk_status registerResult = SBK_FROM_MA(ma_log_register_callback(&system->log, ma_log_callback_init(callbackProc, NULL)));
     SC_CHECK_STATUS(registerResult);
 
     ma_log_post(&system->log, MA_LOG_LEVEL_INFO, "Initialized Sound Chef Logging");

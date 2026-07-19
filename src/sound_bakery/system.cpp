@@ -44,32 +44,26 @@ namespace
     sbk::engine::system* s_system = nullptr;
     bool s_registeredReflection   = false;
 
-    const std::string s_soundChefLoggerName("LogSoundChef");
+    const std::string s_soundChefLoggerName("sound_chef");
+    const std::string s_soundBakeryLoggerName("sound_bakery");
 
     auto miniaudio_log_callback(void* pUserData, ma_uint32 level, const char* pMessage) -> void
     {
         (void)pUserData;
 
-        auto soundChefLogger = spdlog::get(s_soundChefLoggerName);
-
-        if (!soundChefLogger)
-        {
-            return;
-        }
-
         switch (level)
         {
             case MA_LOG_LEVEL_DEBUG:
-                soundChefLogger->debug("{}", pMessage);
+                // Purposefully drop debug messages for now
                 break;
             case MA_LOG_LEVEL_INFO:
-                soundChefLogger->info("{}", pMessage);
+                SBK_INFO(pMessage);
                 break;
             case MA_LOG_LEVEL_WARNING:
-                soundChefLogger->warn("{}", pMessage);
+                SBK_WARN(pMessage);
                 break;
             case MA_LOG_LEVEL_ERROR:
-                soundChefLogger->error("{}", pMessage);
+                SBK_ERROR(pMessage);
                 break;
             default:
                 break;
@@ -78,11 +72,8 @@ namespace
 }  // namespace
 
 system::system()
-    : sc_system(), sbk::core::logger("SoundBakery")
+    : sc_system(), sbk::core::logger(s_soundBakeryLoggerName)
 {
-    BOOST_ASSERT(s_system == nullptr);
-    s_system = this;
-
     concurrencpp::runtime_options runtimeOptions;
     runtimeOptions.thread_started_callback = [](std::string_view threadName) -> void { sbk::memory::thread_start(threadName); };
     runtimeOptions.thread_terminated_callback = [](std::string_view threadName) -> void { sbk::memory::thread_end(threadName); };
@@ -98,47 +89,15 @@ system::system()
 }
 
 system::system(const std::filesystem::path& logFile)
-    : sbk::core::logger("SoundBakery")
+    : system()
 {
-    BOOST_ASSERT(s_system == nullptr);
-    s_system = this;
-
     add_file_sink(logFile.string());
-
-    concurrencpp::runtime_options runtimeOptions;
-    runtimeOptions.thread_started_callback = [](std::string_view threadName) -> void { sbk::memory::thread_start(threadName); };
-    runtimeOptions.thread_terminated_callback = [](std::string_view threadName) -> void { sbk::memory::thread_end(threadName); };
-
-    m_threadRuntime             = std::make_unique<concurrencpp::runtime>(runtimeOptions);
-    m_gameThreadExecuter        = std::make_shared<concurrencpp::manual_executor>();
-    m_studioThreadExecuter      = std::make_shared<concurrencpp::manual_executor>();
-    m_workerThread = std::make_shared<concurrencpp::worker_thread_executor>(runtimeOptions.thread_started_callback,
-                                                                            runtimeOptions.thread_terminated_callback);
-
-    const sbk_status initLogResult = sc_system_log_init(this, miniaudio_log_callback);
-    sbk::log_error(initLogResult, "sc_system_log_init");
 }
 
 system::system(sbk::core::sbk_log_callback_proc logCallback)
-    : sbk::core::logger("SoundBakery")
+    : system()
 {
-    BOOST_ASSERT(s_system == nullptr);
-    s_system = this;
-
     add_external_log(logCallback);
-
-    concurrencpp::runtime_options runtimeOptions;
-    runtimeOptions.thread_started_callback = [](std::string_view threadName) -> void { sbk::memory::thread_start(threadName); };
-    runtimeOptions.thread_terminated_callback = [](std::string_view threadName) -> void { sbk::memory::thread_end(threadName); };
-
-    m_threadRuntime             = std::make_unique<concurrencpp::runtime>(runtimeOptions);
-    m_gameThreadExecuter        = std::make_shared<concurrencpp::manual_executor>();
-    m_studioThreadExecuter      = std::make_shared<concurrencpp::manual_executor>();
-    m_workerThread = std::make_shared<concurrencpp::worker_thread_executor>(runtimeOptions.thread_started_callback,
-                                                                            runtimeOptions.thread_terminated_callback);
-
-    const sbk_status initLogResult = sc_system_log_init(this, miniaudio_log_callback);
-    sbk::log_error(initLogResult, "sc_system_log_init");
 }
 
 system::~system()
@@ -155,16 +114,6 @@ system::~system()
     if (m_project)
     {
         m_project.reset();
-    }
-
-    if (m_listenerGameObject)
-    {
-        m_listenerGameObject.reset();
-    }
-
-    if (m_masterBus)
-    {
-        m_masterBus.reset();
     }
 
     remove_all();
@@ -251,9 +200,6 @@ auto system::init(const sbk_system_config& config) -> sbk::result<void>
     configCopy.soundChefConfig.allocationCallbacks.onMalloc = ma_malloc;
     configCopy.soundChefConfig.allocationCallbacks.onRealloc = ma_realloc;
     configCopy.soundChefConfig.allocationCallbacks.onFree = ma_free;
-
-    masterNodeGroup = nullptr;
-    clapPlugins     = nullptr;
 
     if (configCopy.logToConsole)
     {
