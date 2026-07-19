@@ -97,8 +97,8 @@ namespace sbk::engine
         REGISTER_REFLECTION(float_parameter, parameter)
 
     public:
-        float_parameter() : parameter<int>(0.0F, 1.0F) {}
-        float_parameter(float min, float max) : parameter<float>(min, max) {}
+        float_parameter() : parameter(0.0F, 1.0F) {}
+        float_parameter(float min, float max) : parameter(min, max) {}
     };
 
     class SB_CLASS int_parameter : public parameter<int>
@@ -106,8 +106,8 @@ namespace sbk::engine
         REGISTER_REFLECTION(int_parameter, parameter)
 
     public:
-        int_parameter() : parameter<int>(0, 100) {}
-        int_parameter(int min, int max) : parameter<int>(min, max) {}
+        int_parameter() : parameter(0, 100) {}
+        int_parameter(int min, int max) : parameter(min, max) {}
     };
 
     /**
