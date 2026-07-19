@@ -1,0 +1,85 @@
+name: Coverage
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main", "dev" ]
+  pull_request:
+    branches: [ "main", "dev" ]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  coverage:
+    name: Test coverage
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download Dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y libgtk-3-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev wayland-protocols libwayland-dev libxkbcommon-dev freeglut3-dev gcovr
+
+      - name: Cache CMake dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            build/_deps
+            build/cpm/cache
+          key: deps-v1-coverage-${{ runner.os }}-${{ hashFiles('cmake/external_dependencies.cmake', 'cmake/build_sound_bakery.cmake', 'cmake/build_mpv.cmake', 'src/gluten/CMakeLists.txt') }}
+
+      - name: Configure
+        run: >
+          cmake -B build
+          -DSOUND_BAKERY_TESTS=ON
+          -DCMAKE_C_COMPILER=gcc
+          -DCMAKE_CXX_COMPILER=g++
+          -DCMAKE_BUILD_TYPE=Debug
+          -DCMAKE_C_FLAGS="--coverage -O0 -g"
+          -DCMAKE_CXX_FLAGS="--coverage -O0 -g"
+          -DCMAKE_EXE_LINKER_FLAGS="--coverage"
+          -DCMAKE_SHARED_LINKER_FLAGS="--coverage"
+          -S .
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      - name: Test
+        working-directory: build
+        run: ctest --output-on-failure
+
+      - name: Generate coverage report
+        # Report on our own code only - exclude fetched dependencies and tests.
+        run: |
+          gcovr --root . \
+            --exclude 'build/_deps/.*' \
+            --exclude '.*/[Tt]ests?/.*' \
+            --xml-pretty -o coverage.xml \
+            --html-details coverage.html \
+            --print-summary
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: |
+            coverage.xml
+            coverage*.html
+          if-no-files-found: error
+          retention-days: 7
+
+      # Optional: send to Codecov for PR coverage comments and trends.
+      # Requires the CODECOV_TOKEN secret (repo -> Settings -> Secrets).
+      # - name: Upload to Codecov
+      #   uses: codecov/codecov-action@v4
+      #   with:
+      #     files: coverage.xml
+      #     token: ${{ secrets.CODECOV_TOKEN }}

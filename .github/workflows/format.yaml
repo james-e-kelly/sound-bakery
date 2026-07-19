@@ -1,0 +1,40 @@
+name: Format
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main", "dev" ]
+  pull_request:
+    branches: [ "main", "dev" ]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  clang-format:
+    name: clang-format
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install clang-format
+        # Pin the version so formatting is deterministic. This must match the
+        # clang-format you run locally - bump both together to avoid spurious diffs.
+        run: |
+          sudo apt update
+          sudo apt install -y clang-format-18
+
+      - name: Check formatting
+        run: |
+          # Mirror the files the in-tree format_* targets cover: our own sources,
+          # excluding generated code (glad) and embedded resource blobs.
+          mapfile -t files < <(find src apps -type f \
+            \( -name '*.cpp' -o -name '*.h' -o -name '*.hpp' -o -name '*.inl' \) \
+            -not -path '*/glad/*')
+          echo "Checking ${#files[@]} files with $(clang-format-18 --version)"
+          clang-format-18 --dry-run --Werror --style=file "${files[@]}"

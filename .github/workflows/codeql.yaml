@@ -1,0 +1,58 @@
+name: CodeQL
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main", "dev" ]
+  schedule:
+    - cron: '30 2 * * 1'   # Mondays 02:30 UTC
+
+permissions:
+  contents: read
+  security-events: write   # required to upload results to the Security tab
+  actions: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  analyze:
+    name: Analyze C++
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download Dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y libgtk-3-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev wayland-protocols libwayland-dev libxkbcommon-dev freeglut3-dev
+
+      - name: Cache CMake dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            build/_deps
+            build/cpm/cache
+          key: deps-v1-codeql-${{ runner.os }}-${{ hashFiles('cmake/external_dependencies.cmake', 'cmake/build_sound_bakery.cmake', 'cmake/build_mpv.cmake', 'src/gluten/CMakeLists.txt') }}
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: c-cpp
+
+      # Manual build so CodeQL observes our sources compiling. Dependencies come
+      # from the cache and aren't recompiled, so only our own code is analysed.
+      - name: Configure and build
+        run: |
+          cmake -B build -DSOUND_BAKERY_TESTS=ON -DCMAKE_BUILD_TYPE=Release -S .
+          cmake --build build --parallel
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:c-cpp"

@@ -1,0 +1,81 @@
+# Runtime bug detection: instruments the build and runs the test suite under
+# AddressSanitizer/UBSan and (separately) ThreadSanitizer. These are intended as
+# NON-REQUIRED checks - they may be red until existing issues are fixed, and
+# that's expected. Once a sanitizer is green, add it to branch protection to keep
+# it that way.
+name: Sanitizers
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [ "main", "dev" ]
+  push:
+    branches: [ "main" ]
+  schedule:
+    - cron: '0 3 * * 1'   # Mondays 03:00 UTC
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  sanitize:
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: ASan + UBSan
+            key: asan-ubsan
+            flags: "-fsanitize=address,undefined -fno-sanitize-recover=all -fno-omit-frame-pointer -g"
+          - name: TSan
+            key: tsan
+            flags: "-fsanitize=thread -fno-omit-frame-pointer -g"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download Dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y libgtk-3-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev wayland-protocols libwayland-dev libxkbcommon-dev freeglut3-dev
+
+      - name: Cache CMake dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            build/_deps
+            build/cpm/cache
+          # Distinct per-sanitizer key: instrumented objects must not be shared
+          # with the normal (uninstrumented) build cache.
+          key: deps-v1-${{ matrix.key }}-${{ runner.os }}-${{ hashFiles('cmake/external_dependencies.cmake', 'cmake/build_sound_bakery.cmake', 'cmake/build_mpv.cmake', 'src/gluten/CMakeLists.txt') }}
+
+      - name: Configure
+        run: >
+          cmake -B build
+          -DSOUND_BAKERY_TESTS=ON
+          -DCMAKE_C_COMPILER=clang
+          -DCMAKE_CXX_COMPILER=clang++
+          -DCMAKE_BUILD_TYPE=Debug
+          -DCMAKE_C_FLAGS="${{ matrix.flags }}"
+          -DCMAKE_CXX_FLAGS="${{ matrix.flags }}"
+          -DCMAKE_EXE_LINKER_FLAGS="${{ matrix.flags }}"
+          -DCMAKE_SHARED_LINKER_FLAGS="${{ matrix.flags }}"
+          -S .
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      - name: Test
+        working-directory: build
+        env:
+          ASAN_OPTIONS: halt_on_error=1:abort_on_error=1:detect_leaks=1
+          UBSAN_OPTIONS: halt_on_error=1:print_stacktrace=1
+          TSAN_OPTIONS: halt_on_error=1:second_deadlock_stack=1
+        run: ctest --output-on-failure
