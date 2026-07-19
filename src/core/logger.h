@@ -97,8 +97,7 @@ namespace sbk::core
             const time_t tnow = spdlog::log_clock::to_time_t(now);
             const tm nowtm   = spdlog::details::os::localtime(tnow);
 
-            const auto dailySink = std::make_shared<spdlog::sinks::daily_file_sink_mt>(
-                file.string(), nowtm.tm_hour, nowtm.tm_min, true, uint16_t{0}, spdlog::file_event_handlers{});
+            const auto dailySink = std::make_shared<spdlog::sinks::daily_file_sink_mt>(file.string(), nowtm.tm_hour, nowtm.tm_min, true, uint16_t{0}, spdlog::file_event_handlers{});
             dailySink->set_level(spdlog::level::trace);
 
             const auto basicFileSink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(file.string(), true);

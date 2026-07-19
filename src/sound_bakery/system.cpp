@@ -246,8 +246,6 @@ auto system::destroy() -> void
 
 auto system::init(const sbk_system_config& config) -> sbk::result<void>
 {
-    SBK_INFO("Initializing Sound Bakery");
-
     sbk_system_config configCopy = config;
     configCopy.soundChefConfig.allocationCallbacks.pUserData = this;
     configCopy.soundChefConfig.allocationCallbacks.onMalloc = ma_malloc;
@@ -256,6 +254,13 @@ auto system::init(const sbk_system_config& config) -> sbk::result<void>
 
     masterNodeGroup = nullptr;
     clapPlugins     = nullptr;
+
+    if (configCopy.logToConsole)
+    {
+        add_console_sink();
+    }
+    
+    SBK_INFO("Initializing Sound Bakery");
 
     SBK_TRY_C(sc_system_init(this, &configCopy.soundChefConfig));  //< Logs and forwards the error if init fails.
     m_initSoundChef = true;
@@ -275,8 +280,7 @@ auto system::init(const sbk_system_config& config) -> sbk::result<void>
     // Add way of turning off profiling
     m_voiceTracker = std::make_unique<profiling::voice_tracker>();
 
-    m_studioThreadTimer = m_threadRuntime->timer_queue()->make_timer(0ms, 20ms, m_workerThread,
-                                                         [this] { update_async(); });
+    m_studioThreadTimer = m_threadRuntime->timer_queue()->make_timer(0ms, 20ms, m_workerThread, [this] { update_async(); });
 
     return sbk::ok();
 }

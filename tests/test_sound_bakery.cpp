@@ -23,7 +23,8 @@ namespace
     {
         scoped_engine()
         {
-            const sbk_system_config config = sbk_system_config_init_default();
+            sbk_system_config config = sbk_system_config_init_default();
+            config.logToConsole      = true;
 
             REQUIRE(sbk::engine::system::create().has_value());
             REQUIRE(sbk::engine::system::get() != nullptr);

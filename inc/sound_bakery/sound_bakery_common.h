@@ -31,6 +31,7 @@ static_assert(sizeof(sbk_id) == sizeof(uintptr_t));
 struct sbk_system_config
 {
     sc_system_config soundChefConfig;
+    bool logToConsole;  //< Automatically set up the logger to print to the console. Normally left off so consuming applications can control Sound Bakery's logging
 };
 
 /**
