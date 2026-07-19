@@ -56,6 +56,8 @@ namespace sbk::engine
          */
         [[nodiscard]] auto get() const -> parameter_type { return m_property.get(); }
         [[nodiscard]] auto get_default() const -> parameter_type { return m_defaultValue; }
+        [[nodiscard]] auto get_min() const -> parameter_type { return m_property.get_min(); }
+        [[nodiscard]] auto get_max() const -> parameter_type { return m_property.get_max(); }
 
         /**
          * @brief Set the value of the parameter.
@@ -64,6 +66,8 @@ namespace sbk::engine
          */
         auto set(parameter_type value) -> void { m_property.set(value); }
         auto set_default(parameter_type value) -> void { m_defaultValue = value; }
+        auto set_min(parameter_type value) -> void { m_property.set_min(value); }
+        auto set_max(parameter_type value) -> void { m_property.set_max(value); }
 
         /**
          * @brief Get the parameter delegate that fires when changing the value.
@@ -91,17 +95,25 @@ namespace sbk::engine
     class SB_CLASS float_parameter : public parameter<float>
     {
         REGISTER_REFLECTION(float_parameter, parameter)
+
+    public:
+        float_parameter() : parameter<int>(0.0F, 1.0F) {}
+        float_parameter(float min, float max) : parameter<float>(min, max) {}
     };
 
     class SB_CLASS int_parameter : public parameter<int>
     {
         REGISTER_REFLECTION(int_parameter, parameter)
+
+    public:
+        int_parameter() : parameter<int>(0, 100) {}
+        int_parameter(int min, int max) : parameter<int>(min, max) {}
     };
 
     /**
      * @brief Represents a discrete value for a @ref named_parameter.
      *
-     * The object inherits from SB::Core::DatabaseObject to be universally
+     * The object inherits from @r sbk::core::database_object to be universally
      * referencable and have a display name. The object knows its get_parent
      * named_parameter.
      *
