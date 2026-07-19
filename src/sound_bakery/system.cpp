@@ -266,9 +266,10 @@ auto system::init(const sbk_system_config& config) -> sbk::result<void>
         s_registeredReflection = true;
     }
 
-    SBK_TRY(m_listenerGameObject, create_database_object<sbk::engine::game_object>());
-    m_listenerGameObject->set_object_name("Listener");
-    m_listenerGameObject->set_editor_hidden(true);
+    SBK_TRY(auto listener, create_database_object<sbk::engine::game_object>());
+    listener->set_object_name("Listener");
+    listener->set_editor_hidden(true);
+    m_listenerGameObject = listener;
 
     // TODO
     // Add way of turning off profiling
@@ -363,8 +364,7 @@ auto system::open_project(const std::filesystem::path& projectFile, sbk::core::s
     return sbk::ok();
 }
 
-auto sbk::engine::system::create_project(const std::filesystem::directory_entry& projectDirectory,
-                                        std::string_view projectName) -> sbk::result<void>
+auto sbk::engine::system::create_project(const std::filesystem::directory_entry& projectDirectory, std::string_view projectName) -> sbk::result<void>
 {
     const sbk::editor::project_configuration projectConfig(projectDirectory, projectName);
 
@@ -413,14 +413,19 @@ auto sbk::engine::system::get_background_thread_executer() const -> std::shared_
     return m_threadRuntime ? m_threadRuntime->background_executor() : std::shared_ptr<concurrencpp::thread_pool_executor>{};
 }
 
-auto sbk::engine::system::get_listener_game_object() const -> sbk::engine::game_object*
+auto sbk::engine::system::get_listener_game_object() const -> std::shared_ptr<sbk::engine::game_object>
 {
-    return m_listenerGameObject.get(); }
+    return m_listenerGameObject.lock();
+}
 
-auto sbk::engine::system::get_master_bus() const -> std::shared_ptr<sbk::engine::bus> { return m_masterBus; }
+auto sbk::engine::system::get_master_bus() const -> std::shared_ptr<sbk::engine::bus> 
+{ 
+    return m_masterBus.lock(); 
+}
 
 auto sbk::engine::system::set_master_bus(const std::shared_ptr<sbk::engine::bus>& masterBus) -> void
 {
-    BOOST_ASSERT(!m_masterBus);
+    /// @todo What do we need to do about the old master bus, if there is one?
+    /// Is it safe to destroy any original master bus - like a serialized bus is loaded and overrides the default one?
     m_masterBus = masterBus;
 }

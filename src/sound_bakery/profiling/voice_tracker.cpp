@@ -13,7 +13,7 @@ auto voice_tracker::update(system* system) -> void
     m_playingNodeIDs.clear();
     m_nodePlayingCount.clear();
 
-    if (const game_object* const listener = system->get_listener_game_object())
+    if (const auto listener = system->get_listener_game_object())
     {
         for (const std::shared_ptr<sbk::core::object>& object : listener->get_objects())
         {

@@ -73,7 +73,7 @@ namespace sbk
             [[nodiscard]] auto get_game_thread_executer() const -> std::shared_ptr<concurrencpp::manual_executor>;
             [[nodiscard]] auto get_system_thread_executer() const -> std::shared_ptr<concurrencpp::manual_executor>;
             [[nodiscard]] auto get_background_thread_executer() const -> std::shared_ptr<concurrencpp::thread_pool_executor>;
-            [[nodiscard]] auto get_listener_game_object() const -> sbk::engine::game_object*;
+            [[nodiscard]] auto get_listener_game_object() const -> std::shared_ptr<sbk::engine::game_object>;
             [[nodiscard]] auto get_master_bus() const -> std::shared_ptr<sbk::engine::bus>;
             [[nodiscard]] auto get_current_object_owner() -> sbk::core::object_owner*;  //< Either project for editor or system for runtime
 
@@ -102,8 +102,8 @@ namespace sbk
             bool m_registeredReflection = false;
             bool m_initSoundChef        = false;
 
-            std::shared_ptr<sbk::engine::game_object> m_listenerGameObject;
-            std::shared_ptr<sbk::engine::bus> m_masterBus;
+            std::weak_ptr<sbk::engine::game_object> m_listenerGameObject;
+            std::weak_ptr<sbk::engine::bus> m_masterBus;
             std::unique_ptr<sbk::editor::project> m_project;
             std::unique_ptr<profiling::voice_tracker> m_voiceTracker;
             std::unique_ptr<concurrencpp::runtime> m_threadRuntime;

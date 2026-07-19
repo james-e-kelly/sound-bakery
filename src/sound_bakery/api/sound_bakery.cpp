@@ -352,11 +352,9 @@ namespace sbk::engine
         system->get_system_thread_executer()->post(
             [container, gameObject]()
             {
-                if (std::shared_ptr<sbk::engine::game_object> sharedGameObject =
-                        std::static_pointer_cast<sbk::engine::game_object>(gameObject.lock()))
+                if (std::shared_ptr<sbk::engine::game_object> sharedGameObject = std::static_pointer_cast<sbk::engine::game_object>(gameObject.lock()))
                 {
-                    if (std::shared_ptr<sbk::engine::container> sharedContainer =
-                            std::static_pointer_cast<sbk::engine::container>(container.lock()))
+                    if (std::shared_ptr<sbk::engine::container> sharedContainer = std::static_pointer_cast<sbk::engine::container>(container.lock()))
                     {
                         (void)play_container(sharedGameObject.get(), sharedContainer.get());
                     }
@@ -374,7 +372,7 @@ namespace sbk::engine
         {
             if (gameObjectID == 0)
             {
-                if (game_object* const listener = system->get_listener_game_object())
+                if (const auto listener = system->get_listener_game_object())
                 {
                     return system->try_find_database_object(listener->get_database_id());
                 }

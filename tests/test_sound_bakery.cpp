@@ -97,8 +97,7 @@ TEST_SUITE("System")
     {
         scoped_engine engine;
 
-        // The system should create the listener and master bus
-        // It should report having objects in the object owner
+        // The listener should exist
         CHECK(engine.get()->get_objects_count() > 0);
     }
 
@@ -118,18 +117,17 @@ TEST_SUITE("System")
         CHECK(engine.get()->get_objects_of_category(SB_CATEGORY_RUNTIME_OBJECT).size() > 0);
     }
 
-    TEST_CASE("Can set a different master bus")
+    TEST_CASE("Can set the master bus")
     {
         scoped_engine engine;
 
-        auto bus = engine.get()->create_database_object<sbk::engine::bus>();
+        auto bus = engine.get()->create_database_object<sbk::engine::bus>(false);
         CHECK(bus.has_value());
 
         auto busShared = bus.value();
 
         busShared->set_master_bus(true);
-        engine.get()->set_master_bus(busShared);
-
+        CHECK(busShared->is_master_bus() == true);
         CHECK(engine.get()->get_master_bus() == busShared);
     }
 
@@ -277,6 +275,30 @@ TEST_SUITE("Parameter")
         CHECK(parameter.get_default() == doctest::Approx(0.25F));
     }
 
+    TEST_CASE("Setting min and max")
+    {
+        float_parameter parameter;
+
+        parameter.set_min(-100.0F);
+        CHECK(parameter.get_min() == doctest::Approx(-100.0F));
+
+        parameter.set_max(200.0f);
+        CHECK(parameter.get_max() == doctest::Approx(200.0F));
+    }
+
+    TEST_CASE("Setting min or max clamps the value")
+    {
+        float_parameter parameter;
+
+        parameter.set_min(0.0F);
+        parameter.set_max(100.0F);
+        parameter.set(100.0F);
+        CHECK(parameter.get() == doctest::Approx(100.0F));
+
+        parameter.set_max(1.0F);
+        CHECK(parameter.get() == doctest::Approx(1.0F));
+    }
+
     TEST_CASE("Int parameter rejects out-of-range set")
     {
         int_parameter parameter;
@@ -285,7 +307,8 @@ TEST_SUITE("Parameter")
         parameter.set(1);
         CHECK(parameter.get() == 1);
 
-        parameter.set(5);          // outside range - ignored
+        parameter.set_max(500);
+        parameter.set(600);
         CHECK(parameter.get() == 1);
     }
 
@@ -330,8 +353,14 @@ TEST_SUITE("Named Parameter")
         parameter->set_selected_value(runValue);
         CHECK(parameter->get() == runValue.id());
 
-        const auto selected = parameter->get_selected_value();
+        auto selected = parameter->get_selected_value();
         CHECK(selected.id() == runValue.id());
+
+        parameter->set_selected_value(walkValue);
+        CHECK(parameter->get() == walkValue.id());
+
+        selected = parameter->get_selected_value();
+        CHECK(selected.id() == walkValue.id());
     }
 
     TEST_CASE("Empty parameter lazily creates a 'None' value")
@@ -425,6 +454,20 @@ TEST_SUITE("Database")
         CHECK_FALSE(found.expired());
     }
 
+    TEST_CASE("Objects not added to the database cannot be found")
+    {
+        scoped_engine engine;
+
+        auto objectResult = engine.get()->create_database_object<sbk::engine::float_parameter>(false);
+        REQUIRE(objectResult.has_value());
+
+        const sbk_id id = objectResult.value()->get_database_id();
+        REQUIRE(id == 0); // IDs should be null. This is so serialization can set it later. Or the user can
+
+        const auto found = engine.get()->try_find_database_object(id);
+        CHECK(found.expired());
+    }
+
     TEST_CASE("Object count grows when creating objects")
     {
         scoped_engine engine;
@@ -445,10 +488,14 @@ TEST_SUITE("Database")
         REQUIRE(objectResult.has_value());
 
         const sbk_id id = objectResult.value()->get_database_id();
+
+        const auto validFound = engine.get()->try_find_database_object(id);
+        CHECK_FALSE(validFound.expired());
+
         engine.get()->remove_object_from_database(id);
 
-        const auto found = engine.get()->try_find_database_object(id);
-        CHECK(found.expired());
+        const auto invalidFound = engine.get()->try_find_database_object(id);
+        CHECK(invalidFound.expired());
     }
 }
 
