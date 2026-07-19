@@ -57,6 +57,28 @@ namespace sbk::core
             return false;
         }
 
+        /**
+         * @brief Set the min value and clamp the property's value to fit.
+         * @tody Add the ability for the user to choose between clamping and scaling the value
+         */
+        auto set_min(T value) -> void
+        {
+            m_min = value;
+            T clampedValue = std::clamp(m_value, m_min, m_max);
+            set(clampedValue);
+        }
+
+        /**
+         * @brief Set the min value and clamp the property's value to fit.
+         * @tody Add the ability for the user to choose between clamping and scaling the value
+         */
+        auto set_max(T value) -> void
+        {
+            m_max = value;
+            T clampedValue = std::clamp(m_value, m_min, m_max);
+            set(clampedValue);
+        }
+
         [[nodiscard]] auto get() const -> T { return m_value; }
         [[nodiscard]] auto get_min() const -> T { return m_min; }
         [[nodiscard]] auto get_max() const -> T { return m_max; }
