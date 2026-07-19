@@ -2,6 +2,7 @@
 
 #include "sound_bakery/editor/editor_defines.h"
 #include "sound_bakery/event/event.h"
+#include "sound_bakery/gameobject/gameobject.h"
 #include "sound_bakery/node/bus/aux_bus.h"
 #include "sound_bakery/node/bus/bus.h"
 #include "sound_bakery/node/container/blend_container.h"
@@ -26,6 +27,7 @@ auto type_helper::get_category_from_type(rttr::type type) -> SB_OBJECT_CATEGORY
 
     if (!type.is_valid())
     {
+        BOOST_ASSERT_MSG(false, "Type was invalid. Cannot get its category");
         return category;
     }
 
@@ -54,6 +56,10 @@ auto type_helper::get_category_from_type(rttr::type type) -> SB_OBJECT_CATEGORY
     else if (type == rttr::type::get<sbk::engine::soundbank>())
     {
         category = SB_CATEGORY_BANK;
+    }
+    else if (type.is_derived_from<sbk::engine::game_object>())
+    {
+        category = SB_CATEGORY_RUNTIME_OBJECT;
     }
     else if (type.is_derived_from<sbk::core::database_object>())
     {
