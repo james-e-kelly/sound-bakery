@@ -41,6 +41,10 @@ macro(set_sources)
     node/container/switch_container.cpp
 
     parameter/parameter.cpp
+
+    profiling/property_broadcaster.cpp
+    profiling/remote_session.cpp
+    profiling/remote_session_host.cpp
     profiling/voice_tracker.cpp
 
     reflection/reflection.cpp
@@ -111,6 +115,11 @@ set(SOUND_BAKERY_HEADERS
     node/container/switch_container.h
 
     parameter/parameter.h
+
+    profiling/property_broadcaster.h
+    profiling/remote_session.h
+    profiling/remote_protocol.h
+    profiling/remote_session_host.h
     profiling/voice_tracker.h
 
     reflection/reflection.h

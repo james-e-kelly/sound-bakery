@@ -18,7 +18,11 @@ namespace sbk
     {
         namespace profiling
         {
+            class property_broadcaster;
+            class remote_session;
+            class remote_session_host;
             class voice_tracker;
+            struct set_property_command;
         }
 
         class bus;
@@ -70,6 +74,7 @@ namespace sbk
             [[nodiscard]] static auto get_operating_mode() -> operating_mode;
             [[nodiscard]] static auto get_project() -> sbk::editor::project*;
             [[nodiscard]] static auto get_voice_tracker() -> sbk::engine::profiling::voice_tracker*;
+            [[nodiscard]] static auto get_remote_session_host() -> sbk::engine::profiling::remote_session_host*;
             [[nodiscard]] auto get_game_thread_executer() const -> std::shared_ptr<concurrencpp::manual_executor>;
             [[nodiscard]] auto get_system_thread_executer() const -> std::shared_ptr<concurrencpp::manual_executor>;
             [[nodiscard]] auto get_background_thread_executer() const -> std::shared_ptr<concurrencpp::thread_pool_executor>;
@@ -89,6 +94,33 @@ namespace sbk
 
             auto set_master_bus(const std::shared_ptr<sbk::engine::bus>& masterBus) -> void;
 
+            /**
+             * @brief Starts the remote session host so external tools can connect, receive telemetry, and push live edits.
+             *
+             * Telemetry is published from update(). Pass 0 for an OS-chosen port.
+             */
+            [[nodiscard]] auto host_remote_session(uint16_t port) -> sbk::result<void>;
+
+            /**
+             * @brief Stops the remote session host and disconnects every tool.
+             */
+            auto stop_hosting_remote_session() -> void;
+
+            /**
+             * @brief Connects this (authoring) instance to a remote runtime hosting a session.
+             *
+             * Once connected, every object property exposed via
+             * gather_synced_properties syncs automatically: current values are
+             * pushed on connect (so pre-connection edits arrive like Wwise's
+             * remote sessions), and later edits broadcast the moment they
+             * happen. No editor code is involved.
+             */
+            [[nodiscard]] auto connect_remote_session(std::string_view host, uint16_t port) -> sbk::result<void>;
+
+            auto disconnect_remote_session() -> void;
+
+            [[nodiscard]] auto get_remote_session() -> profiling::remote_session*;
+
             friend class boost::serialization::access;
 
             template <class archive_class>
@@ -98,6 +130,7 @@ namespace sbk
 
         private:
             auto update_async() -> void;
+            auto apply_remote_property_command(const profiling::set_property_command& command) -> void;
 
             bool m_registeredReflection = false;
             bool m_initSoundChef        = false;
@@ -106,6 +139,9 @@ namespace sbk
             std::weak_ptr<sbk::engine::bus> m_masterBus;
             std::unique_ptr<sbk::editor::project> m_project;
             std::unique_ptr<profiling::voice_tracker> m_voiceTracker;
+            std::unique_ptr<profiling::remote_session_host> m_remoteSessionHost;
+            std::unique_ptr<profiling::remote_session> m_remoteSession;
+            std::unique_ptr<profiling::property_broadcaster> m_propertyBroadcaster;
             std::unique_ptr<concurrencpp::runtime> m_threadRuntime;
             std::shared_ptr<concurrencpp::manual_executor> m_gameThreadExecuter;
             std::shared_ptr<concurrencpp::manual_executor> m_studioThreadExecuter;

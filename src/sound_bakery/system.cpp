@@ -4,6 +4,11 @@
 #include "sound_bakery/editor/project/project.h"
 #include "sound_bakery/gameobject/gameobject.h"
 #include "sound_bakery/node/bus/bus.h"
+#include "sound_bakery/node/node.h"
+#include "sound_bakery/profiling/property_broadcaster.h"
+#include "sound_bakery/profiling/remote_session.h"
+#include "sound_bakery/profiling/remote_protocol.h"
+#include "sound_bakery/profiling/remote_session_host.h"
 #include "sound_bakery/profiling/voice_tracker.h"
 #include "sound_bakery/util/type_helper.h"
 #include "spdlog/sinks/daily_file_sink.h"
@@ -243,13 +248,17 @@ auto system::update() -> sbk::result<void>
 
     m_gameThreadExecuter->loop(32);
 
+    const std::size_t gameObjectCount   = get_objects_of_type(sbk::engine::game_object::type()).size();
+    const std::size_t voiceCount        = get_objects_of_type(sbk::engine::voice::type()).size();
+    const std::size_t nodeInstanceCount = get_objects_of_type(sbk::engine::node_instance::type()).size();
+
     TracyPlotConfig(profiling_strings::s_gameObjectPlotName, tracy::PlotFormatType::Number, true, false, 0);
     TracyPlotConfig(profiling_strings::s_nodeInstancePlotName, tracy::PlotFormatType::Number, true, false, 0);
     TracyPlotConfig(profiling_strings::s_voicePlotName, tracy::PlotFormatType::Number, true, false, 0);
 
-    TracyPlot(profiling_strings::s_gameObjectPlotName, (int64_t)get_objects_of_type(sbk::engine::game_object::type()).size());
-    TracyPlot(profiling_strings::s_voicePlotName, (int64_t)get_objects_of_type(sbk::engine::voice::type()).size());
-    TracyPlot(profiling_strings::s_nodeInstancePlotName, (int64_t)get_objects_of_type(sbk::engine::node_instance::type()).size());
+    TracyPlot(profiling_strings::s_gameObjectPlotName, (int64_t)gameObjectCount);
+    TracyPlot(profiling_strings::s_voicePlotName, (int64_t)voiceCount);
+    TracyPlot(profiling_strings::s_nodeInstancePlotName, (int64_t)nodeInstanceCount);
 
     rpmalloc_global_statistics_t stats;
     rpmalloc_global_statistics(&stats);
@@ -259,6 +268,34 @@ auto system::update() -> sbk::result<void>
 
     TracyPlotConfig(profiling_strings::s_currentMemory, tracy::PlotFormatType::Memory, true, true, 0);
     TracyPlot(profiling_strings::s_currentMemory, (int64_t)stats.mapped);
+
+    if (m_remoteSessionHost)
+    {
+        profiling::telemetry_snapshot snapshot;
+        snapshot.playingVoices      = static_cast<uint32_t>(voiceCount);
+        snapshot.nodeInstances      = static_cast<uint32_t>(nodeInstanceCount);
+        snapshot.gameObjects        = static_cast<uint32_t>(gameObjectCount);
+        snapshot.memoryCurrentBytes = stats.mapped;
+        snapshot.memoryTotalBytes   = stats.mapped_total;
+
+        m_remoteSessionHost->publish_telemetry(snapshot);
+        m_remoteSessionHost->update();
+
+        for (const profiling::set_property_command& command : m_remoteSessionHost->consume_property_commands())
+        {
+            apply_remote_property_command(command);
+        }
+    }
+
+    if (m_remoteSession)
+    {
+        m_remoteSession->update();
+
+        sbk::core::object_owner* objectOwner = get_current_object_owner();
+        m_propertyBroadcaster->update(*m_remoteSession,
+                                      objectOwner != nullptr ? *objectOwner
+                                                             : *static_cast<sbk::core::object_owner*>(this));
+    }
 
     FrameMarkEnd(profiling_strings::s_updateName);
 
@@ -346,6 +383,68 @@ auto system::get_voice_tracker() -> sbk::engine::profiling::voice_tracker*
     }
 
     return nullptr;
+}
+
+auto system::get_remote_session_host() -> sbk::engine::profiling::remote_session_host*
+{
+    if (s_system != nullptr)
+    {
+        return s_system->m_remoteSessionHost.get();
+    }
+
+    return nullptr;
+}
+
+auto system::host_remote_session(const uint16_t port) -> sbk::result<void>
+{
+    if (!m_remoteSessionHost)
+    {
+        m_remoteSessionHost = std::make_unique<profiling::remote_session_host>();
+    }
+
+    return m_remoteSessionHost->open(port);
+}
+
+auto system::stop_hosting_remote_session() -> void { m_remoteSessionHost.reset(); }
+
+auto system::connect_remote_session(const std::string_view host, const uint16_t port) -> sbk::result<void>
+{
+    if (!m_remoteSession)
+    {
+        m_remoteSession = std::make_unique<profiling::remote_session>();
+        m_propertyBroadcaster = std::make_unique<profiling::property_broadcaster>();
+    }
+
+    return m_remoteSession->connect(host, port);
+}
+
+auto system::disconnect_remote_session() -> void
+{
+    m_propertyBroadcaster.reset();
+    m_remoteSession.reset();
+}
+
+auto system::get_remote_session() -> profiling::remote_session*
+{
+    return m_remoteSession.get();
+}
+
+auto system::apply_remote_property_command(const profiling::set_property_command& command) -> void
+{
+    const std::shared_ptr<sbk::core::database_object> object = try_find_database_object(command.objectID).lock();
+
+    if (!object)
+    {
+        SBK_WARN(fmt::format("Remote edit ignored: no object with ID {}", command.objectID).c_str());
+        return;
+    }
+
+    if (!object->set_synced_property(command.property, command.value))
+    {
+        SBK_WARN(fmt::format("Remote edit ignored: could not set property {} to {} on object {}", command.property,
+                             command.value, command.objectID)
+                     .c_str());
+    }
 }
 
 auto sbk::engine::system::get_game_thread_executer() const -> std::shared_ptr<concurrencpp::manual_executor>

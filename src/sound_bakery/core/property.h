@@ -95,4 +95,24 @@ namespace sbk::core
     using int_property   = property<int32_t>;
     using id_property    = property<sbk_id>;
     using float_property = property<float>;
+
+    /**
+     * @brief Stable wire ID for a reflected property name (FNV-1a, 32-bit).
+     *
+     * Properties tagged with metadata_key::synced are addressed over remote
+     * connections by the hash of their registered reflection name, so adding
+     * a synced property is just a metadata tag - no enum to maintain.
+     */
+    [[nodiscard]] constexpr auto synced_property_id(const std::string_view propertyName) -> std::uint32_t
+    {
+        std::uint32_t hash = 2166136261U;
+
+        for (const char character : propertyName)
+        {
+            hash ^= static_cast<unsigned char>(character);
+            hash *= 16777619U;
+        }
+
+        return hash;
+    }
 }  // namespace sbk::core

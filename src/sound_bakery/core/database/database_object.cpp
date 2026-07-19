@@ -1,6 +1,7 @@
 #include "database_object.h"
 
 #include "sound_bakery/core/database/database.h"
+#include "sound_bakery/editor/editor_defines.h"
 #include "sound_bakery/node/node.h"
 #include "sound_bakery/system.h"
 
@@ -104,6 +105,93 @@ auto sbk::core::database_object::set_editor_hidden(bool hidden) -> void { editor
 auto sbk::core::database_object::get_on_update_id() -> MulticastDelegate<sbk_id, sbk_id>& { return m_onUpdateID; }
 
 auto sbk::core::database_object::get_on_update_database_name() -> update_database_name_delegate& { return m_onUpdateDatabaseName; }
+
+namespace
+{
+    struct cached_synced_property
+    {
+        std::uint32_t propertyID;
+        rttr::property property;
+    };
+
+    /**
+     * @brief Synced properties per rttr type, discovered once.
+     *
+     * Metadata filtering and name hashing are too slow to repeat per object
+     * per poll at 50k+ objects. Game-thread only, like the database.
+     */
+    auto get_synced_properties_for_type(const rttr::type& type) -> const std::vector<cached_synced_property>&
+    {
+        static std::unordered_map<rttr::type::type_id, std::vector<cached_synced_property>> cache;
+
+        const auto found = cache.find(type.get_id());
+
+        if (found != cache.end())
+        {
+            return found->second;
+        }
+
+        std::vector<cached_synced_property>& properties = cache[type.get_id()];
+
+        for (const rttr::property& property : type.get_properties())
+        {
+            if (!property.get_metadata(sbk::editor::metadata_key::synced).to_bool())
+            {
+                continue;
+            }
+
+            const rttr::string_view name = property.get_name();
+            properties.push_back(
+                {sbk::core::synced_property_id(std::string_view(name.data(), name.size())), property});
+        }
+
+        return properties;
+    }
+}  // namespace
+
+auto sbk::core::database_object::get_synced_property_values(std::vector<synced_property_value>& outValues) -> void
+{
+    for (const cached_synced_property& cached : get_synced_properties_for_type(get_object_type()))
+    {
+        const rttr::variant value = cached.property.get_value(*this);
+
+        if (value.is_type<float_property>())
+        {
+            outValues.push_back({cached.propertyID, value.get_value<float_property>().get()});
+        }
+    }
+}
+
+auto sbk::core::database_object::set_synced_property(const std::uint32_t propertyID, const float value) -> bool
+{
+    for (const cached_synced_property& cached : get_synced_properties_for_type(get_object_type()))
+    {
+        if (cached.propertyID != propertyID)
+        {
+            continue;
+        }
+
+        const rttr::variant variant = cached.property.get_value(*this);
+
+        if (!variant.is_type<float_property>())
+        {
+            return false;
+        }
+
+        // Same flow as the editor's property drawer: copy out, set() so range
+        // clamping and change delegates behave normally, write back.
+        float_property floatProperty = variant.get_value<float_property>();
+
+        if (!floatProperty.set(value))
+        {
+            return false;
+        }
+
+        return cached.property.set_value(*this, floatProperty);
+    }
+
+    return false;
+}
 
 auto sbk::core::database_object::on_update_name(std::string_view oldName, std::string_view newName) -> void
 {

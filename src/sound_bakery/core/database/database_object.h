@@ -1,6 +1,9 @@
 #pragma once
 
 #include "sound_bakery/core/object/object.h"
+#include "sound_bakery/core/property.h"
+
+#include <vector>
 
 namespace sbk::core
 {
@@ -41,6 +44,39 @@ namespace sbk::core
 
         [[nodiscard]] auto get_on_update_id() -> update_id_delegate&;
         [[nodiscard]] auto get_on_update_database_name() -> update_database_name_delegate&;
+
+        /**
+         * @brief A reflected property's current value, addressed by its stable wire ID.
+         */
+        struct synced_property_value
+        {
+            std::uint32_t propertyID = 0;  //< synced_property_id of the reflected property name.
+            float value              = 0.0F;
+        };
+
+        /**
+         * @brief Appends the current values of every reflected property tagged with metadata_key::synced.
+         *
+         * Opting a property into remote live editing is declarative, like
+         * Unreal's UPROPERTY(Replicated): tag it in the reflection
+         * registration and this discovers it - no per-class code. The remote
+         * layer polls these values and broadcasts changes automatically.
+         *
+         * Discovery (metadata filtering and name hashing) is cached per rttr
+         * type, and the caller supplies the buffer, so polling large projects
+         * costs only the value reads. Game-thread only, like the database.
+         */
+        auto get_synced_property_values(std::vector<synced_property_value>& outValues) -> void;
+
+        /**
+         * @brief Applies a remote edit to the synced property with this wire ID.
+         *
+         * Mirrors the editor's property flow: copy out via reflection, set()
+         * so range clamping and change delegates behave normally, write back.
+         *
+         * @return false if no synced property matches or the value was rejected.
+         */
+        [[nodiscard]] auto set_synced_property(std::uint32_t propertyID, float value) -> bool;
 
     private:
         auto on_update_name(std::string_view oldName, std::string_view newName) -> void;

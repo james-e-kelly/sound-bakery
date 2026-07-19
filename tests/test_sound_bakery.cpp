@@ -9,6 +9,10 @@
 #include "sound_bakery/node/bus/bus.h"
 #include "sound_bakery/node/bus/aux_bus.h"
 #include "sound_bakery/parameter/parameter.h"
+#include "sound_bakery/profiling/remote_session.h"
+#include "sound_bakery/profiling/remote_session_host.h"
+
+#include <chrono>
 
 namespace
 {
@@ -523,64 +527,152 @@ TEST_SUITE("Event")
     }
 }
 
-// ---------------------------------------------------------------------------
-// Placeholder tests for APIs that don't exist yet.
-//
-// These are intentionally skipped (`* doctest::skip()`) so the suite stays
-// green while still documenting the behaviour we expect once the underlying
-// API is implemented. Remove the skip decorator and flesh out the body as
-// each feature lands.
-// ---------------------------------------------------------------------------
-TEST_SUITE("Future API")
+TEST_SUITE("Remote Profiling")
 {
-    TEST_CASE("game_object::set_parameter unified setter" * doctest::skip())
+    TEST_CASE("Session receives telemetry over loopback")
     {
-        // TODO: game_object currently exposes separate set_float_parameter and
-        // set_int_parameter_value. A single templated/overloaded
-        // set_parameter(parameter, value) would be nicer to use.
-        //
-        //   game_object gameObject;
-        //   gameObject.set_parameter(floatParameter, 0.5F);
-        //   CHECK(gameObject.get_float_parameter_value(floatParameter) == 0.5F);
+        scoped_engine engine;
+
+        // Port 0 asks the OS for a free port so the test can never collide.
+        REQUIRE(engine.get()->host_remote_session(0).has_value());
+
+        sbk::engine::profiling::remote_session_host* const host = sbk::engine::system::get_remote_session_host();
+        REQUIRE(host != nullptr);
+        REQUIRE(host->is_open());
+        REQUIRE(host->get_port() != 0);
+
+        sbk::engine::profiling::remote_session session;
+        REQUIRE(session.connect("127.0.0.1", host->get_port()).has_value());
+
+        // Both ends are polled manually (no threads), so pump both sides until
+        // telemetry lands or we give up.
+        const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(5);
+        while (!session.get_latest_telemetry().has_value() && std::chrono::steady_clock::now() < deadline)
+        {
+            REQUIRE(engine.get()->update().has_value());  //< Publishes telemetry and pumps the host.
+            session.update();
+        }
+
+        CHECK(session.is_connected());
+        CHECK(host->get_connection_count() == 1);
+        REQUIRE(session.get_latest_telemetry().has_value());
+        CHECK(session.get_telemetry_count() > 0);
+
+        session.disconnect();
+        engine.get()->stop_hosting_remote_session();
+        CHECK(sbk::engine::system::get_remote_session_host() == nullptr);
     }
 
-    TEST_CASE("game_object::reset_parameters clears local overrides" * doctest::skip())
+    TEST_CASE("Session live-updates a bus volume on the runtime")
     {
-        // TODO: no way to clear local parameter overrides so a game object
-        // falls back to global values again.
+        constexpr float defaultVolume = 1.0F;
+        constexpr float editedVolume  = 0.25F;
+
+        scoped_engine engine;
+
+        auto bus = engine.get()->create_database_object<sbk::engine::bus>();
+        REQUIRE(bus.has_value());
+        REQUIRE(bus.value()->m_volume.get() == doctest::Approx(defaultVolume));
+
+        REQUIRE(engine.get()->host_remote_session(0).has_value());
+        const uint16_t port = sbk::engine::system::get_remote_session_host()->get_port();
+
+        sbk::engine::profiling::remote_session session;
+        REQUIRE(session.connect("127.0.0.1", port).has_value());
+
+        // Sending immediately is legal: commands queue until the connect lands.
+        REQUIRE(session
+                    .send_set_property(bus.value()->get_database_id(), sbk::core::synced_property_id("Volume"), editedVolume)
+                    .has_value());
+
+        const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(5);
+        while (bus.value()->m_volume.get() != doctest::Approx(editedVolume) && std::chrono::steady_clock::now() < deadline)
+        {
+            session.update();
+            REQUIRE(engine.get()->update().has_value());  //< Pumps the host and applies received edits.
+        }
+
+        CHECK(bus.value()->m_volume.get() == doctest::Approx(editedVolume));
+
+        session.disconnect();
+        engine.get()->stop_hosting_remote_session();
     }
 
-    TEST_CASE("voice::set_parameter applies to a playing voice" * doctest::skip())
+    TEST_CASE("Properties sync automatically, including edits made before connecting")
     {
-        // TODO: voice has no public set_parameter. Setting a parameter on a
-        // live voice should update the sounds it is currently playing.
+        using sbk::engine::profiling::set_property_command;
+
+        scoped_engine engine;
+
+        auto busResult = engine.get()->create_database_object<sbk::engine::bus>();
+        REQUIRE(busResult.has_value());
+        auto bus           = busResult.value();
+        const sbk_id busID = bus->get_database_id();
+
+        // Edit made BEFORE connecting - must arrive via the initial sync.
+        REQUIRE(bus->m_volume.set(0.6F));
+
+        // Standalone host plays the "game runtime" role so the test can
+        // inspect the raw commands it receives.
+        sbk::engine::profiling::remote_session_host host;
+        REQUIRE(host.open(0).has_value());
+
+        REQUIRE(engine.get()->connect_remote_session("127.0.0.1", host.get_port()).has_value());
+
+        std::vector<set_property_command> received;
+
+        const auto pumpUntilVolumeCommand = [&](const float expectedValue) -> bool
+        {
+            const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(5);
+
+            while (std::chrono::steady_clock::now() < deadline)
+            {
+                REQUIRE(engine.get()->update().has_value());  //< Pumps the remote session + broadcaster.
+                host.update();
+
+                for (const set_property_command& command : host.consume_property_commands())
+                {
+                    received.push_back(command);
+                }
+
+                for (const set_property_command& command : received)
+                {
+                    if (command.objectID == busID &&
+                        command.property == sbk::core::synced_property_id("Volume") &&
+                        command.value == doctest::Approx(expectedValue))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        };
+
+        // The pre-connect edit arrives without anyone calling send.
+        CHECK(pumpUntilVolumeCommand(0.6F));
+
+        // A live edit broadcasts automatically via the property's delegate.
+        received.clear();
+        REQUIRE(bus->m_volume.set(0.35F));
+        CHECK(pumpUntilVolumeCommand(0.35F));
+
+        engine.get()->disconnect_remote_session();
+        host.close();
     }
 
-    TEST_CASE("voice::stop halts playback" * doctest::skip())
+    TEST_CASE("Host rebinds after close")
     {
-        // TODO: voice exposes play_container and is_playing but no explicit
-        // stop(). Needed to test that a played voice can be stopped on demand.
-    }
+        scoped_engine engine;
 
-    TEST_CASE("named_parameter::remove_value deletes a discrete value" * doctest::skip())
-    {
-        // TODO: named_parameter can add_new_value but there is no remove_value.
-        // Removing the currently-selected value should reset the selection.
-    }
+        REQUIRE(engine.get()->host_remote_session(0).has_value());
+        const uint16_t firstPort = sbk::engine::system::get_remote_session_host()->get_port();
+        CHECK(firstPort != 0);
 
-    TEST_CASE("event executes its actions on a game object" * doctest::skip())
-    {
-        // TODO: event only stores a list of actions; there is no post/execute
-        // entry point that runs them against a game object.
-        //
-        //   event->post(gameObject);
-        //   CHECK(gameObject.is_playing());
-    }
+        // Re-opening must drop the old acceptor and bind cleanly again.
+        REQUIRE(engine.get()->host_remote_session(0).has_value());
+        CHECK(sbk::engine::system::get_remote_session_host()->is_open());
 
-    TEST_CASE("container gather_children_for_play selects sounds" * doctest::skip())
-    {
-        // TODO: exercise gather_children_for_play on the concrete container
-        // types (random/sequence/blend/switch) once fixtures exist to build a
-        // small node graph for a test.
+        engine.get()->stop_hosting_remote_session();
     }
 }

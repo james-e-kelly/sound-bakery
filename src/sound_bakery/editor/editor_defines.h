@@ -10,7 +10,8 @@ namespace sbk::editor
     {
         payload,
         min_max,
-        readonly
+        readonly,
+        synced  //< Property replicates over a remote session (like Unreal's UPROPERTY(Replicated)).
     };
 
     inline std::string PayloadObject        = "OBJECT";

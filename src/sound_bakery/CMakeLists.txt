@@ -47,6 +47,7 @@ target_link_libraries(sound_bakery_static PUBLIC
   concurrencpp::concurrencpp
   Boost::serialization
   Boost::msm
+  Boost::asio
   ztd::out_ptr
   yaml-archive
   Tracy::TracyClient
@@ -54,7 +55,7 @@ target_link_libraries(sound_bakery_static PUBLIC
   sbk::rpmalloc
 )
 
-target_link_libraries(sound_bakery_shared PUBLIC 
+target_link_libraries(sound_bakery_shared PUBLIC
   SoundBakery::Core
   SoundBakery::SoundChef_Shared
   RTTR::Core_Lib
@@ -62,6 +63,7 @@ target_link_libraries(sound_bakery_shared PUBLIC
   spdlog::spdlog
   Boost::serialization
   Boost::msm
+  Boost::asio
   ztd::out_ptr
   yaml-archive
   Tracy::TracyClient
@@ -76,6 +78,13 @@ install(FILES
   ${PROJECT_SOURCE_DIR}/inc/sound_bakery/sound_bakery_version.h 
   ${PROJECT_SOURCE_DIR}/inc/sound_bakery/sound_bakery.h
   DESTINATION inc/sound_bakery)
+
+# MSVC links the winsock libraries through Boost.Asio's #pragma comment; other
+# Windows toolchains (MinGW/clang-gnu) need them spelled out.
+if(WIN32 AND NOT MSVC)
+  target_link_libraries(sound_bakery_static PUBLIC ws2_32 mswsock)
+  target_link_libraries(sound_bakery_shared PUBLIC ws2_32 mswsock)
+endif()
 
 add_library(SoundBakery::SoundBakery_Shared ALIAS sound_bakery_shared)
 add_library(SoundBakery::SoundBakery_Static ALIAS sound_bakery_static)

@@ -222,10 +222,10 @@ namespace sbk::reflection
 
         registration::class_<node>("node")
             .constructor<>(create_sbk_object<node>)(policy::ctor::as_raw_ptr)
-            .property("Volume", &node::m_volume)(metadata(sbk::editor::metadata_key::min_max, std::pair<float, float>(0.0f, 1.0f)))
-            .property("Pitch", &node::m_pitch)(metadata(sbk::editor::metadata_key::min_max, std::pair<float, float>(0.0f, 2.0f)))
-            .property("Lowpass", &node::m_lowpass)(metadata(sbk::editor::metadata_key::min_max, std::pair<float, float>(0.0f, 100.0f)))
-            .property("Highass", &node::m_highpass)(metadata(sbk::editor::metadata_key::min_max, std::pair<float, float>(0.0f, 100.0f)))
+            .property("Volume", &node::m_volume)(metadata(sbk::editor::metadata_key::min_max, std::pair<float, float>(0.0f, 1.0f)), metadata(sbk::editor::metadata_key::synced, true))
+            .property("Pitch", &node::m_pitch)(metadata(sbk::editor::metadata_key::min_max, std::pair<float, float>(0.0f, 2.0f)), metadata(sbk::editor::metadata_key::synced, true))
+            .property("Lowpass", &node::m_lowpass)(metadata(sbk::editor::metadata_key::min_max, std::pair<float, float>(0.0f, 100.0f)), metadata(sbk::editor::metadata_key::synced, true))
+            .property("Highpass", &node::m_highpass)(metadata(sbk::editor::metadata_key::min_max, std::pair<float, float>(0.0f, 100.0f)), metadata(sbk::editor::metadata_key::synced, true))
             .property("Effects", &node::m_effectDescriptions)
             .method("Add Effect", &node::add_effect)(parameter_names("Type"));
 
