@@ -69,8 +69,8 @@ target_link_libraries(sound_bakery_shared PUBLIC
   sbk::rpmalloc
 )
 
-install(TARGETS sound_bakery_shared DESTINATION lib/sound_bakery)
-install(TARGETS sound_bakery_static DESTINATION lib/sound_bakery)
+install(TARGETS sound_bakery_shared DESTINATION lib/${SBK_INSTALL_CONFIG_SUBDIR}/sound_bakery)
+install(TARGETS sound_bakery_static DESTINATION lib/${SBK_INSTALL_CONFIG_SUBDIR}/sound_bakery)
 install(FILES 
   ${PROJECT_SOURCE_DIR}/inc/sound_bakery/sound_bakery_common.h    
   ${PROJECT_SOURCE_DIR}/inc/sound_bakery/sound_bakery_version.h 
