@@ -30,8 +30,10 @@ static_assert(sizeof(sbk_id) == sizeof(uintptr_t));
 
 struct sbk_system_config
 {
-    sc_system_config soundChefConfig;
-    bool logToConsole;  //< Automatically set up the logger to print to the console. Normally left off so consuming applications can control Sound Bakery's logging
+    sc_system_config    soundChefConfig;
+    bool                singleThreadedUpdate;   //< Update the database/studio thread when @r sbk::engine::system::update is called. Helpful for when consuming applications need to access Sound Bakery non-realtime data safely
+    bool                enableProfiling;        //< Enable voice tracking, CPU usage, etc.
+    bool                logToConsole;           //< Automatically set up the logger to print to the console. Normally left off so consuming applications can control Sound Bakery's logging
 };
 
 /**

@@ -61,8 +61,7 @@ extern "C"
                                             sc_sound_mode mode,
                                             sc_sound** sound);
 
-    sbk_status SC_API sc_system_create_sound_memory(
-        sc_system* system, void* memoryLocation, size_t soundSize, sc_sound_mode mode, sc_sound** sound);
+    sbk_status SC_API sc_system_create_sound_memory(sc_system* system, const void* memoryLocation, size_t soundSize, sc_sound_mode mode, sc_sound** sound);
 
     /**
      * @brief Plays a sound and returns the playing instance.
