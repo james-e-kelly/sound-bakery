@@ -2,7 +2,17 @@ name: Linux
 
 on:
   workflow_dispatch:
+    inputs:
+      build_types:
+        description: "Space-separated CMake configurations to build, test and install"
+        default: "Release"
+        type: string
   workflow_call:
+    inputs:
+      build_types:
+        description: "Space-separated CMake configurations to build, test and install"
+        default: "Release"
+        type: string
   push:
     branches: [ "main", "dev" ]
   pull_request:
@@ -24,14 +34,15 @@ concurrency:
 jobs:
   build:
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 90
+    # Release builds compile every configuration (Debug/Profile/Release) in
+    # series, so this is generous compared with the Release-only PR/push runs.
+    timeout-minutes: 150
 
     strategy:
       fail-fast: false
 
       matrix:
         os: [ubuntu-latest]
-        build_type: [Release]
         c_compiler: [gcc, clang]
         include:
           - os: ubuntu-latest
@@ -44,12 +55,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Set reusable strings
-      id: strings
-      shell: bash
-      run: |
-        echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
-
     - name: Download Dependencies
       shell: bash
       run: |
@@ -59,33 +64,39 @@ jobs:
     - name: Cache CMake dependencies
       uses: actions/cache@v4
       with:
+        # Single-config generators need one build tree per configuration, so the
+        # per-config dependency caches are globbed together under build-*/.
         path: |
-          build/_deps
-          build/cpm/cache
+          build-*/_deps
+          build-*/cpm/cache
         # Exact key only (no restore-keys): when a dependency pin changes the
         # cache is rebuilt from scratch rather than partially restored, so stale
         # artifacts can't leak in. Bump the "v1" token if a runner toolchain
         # update ever leaves incompatible cached objects behind.
-        key: deps-v1-${{ runner.os }}-${{ matrix.c_compiler }}-${{ matrix.build_type }}-${{ hashFiles('cmake/external_dependencies.cmake', 'cmake/build_sound_bakery.cmake', 'cmake/build_mpv.cmake', 'src/gluten/CMakeLists.txt') }}
+        key: deps-v1-${{ runner.os }}-${{ matrix.c_compiler }}-${{ hashFiles('cmake/external_dependencies.cmake', 'cmake/build_sound_bakery.cmake', 'cmake/build_mpv.cmake', 'src/gluten/CMakeLists.txt') }}
 
-    - name: Configure CMake
-      run: >
-        cmake -B ${{ steps.strings.outputs.build-output-dir }}
-        -DSOUND_BAKERY_TESTS=ON
-        -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
-        -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
-        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-        -S ${{ github.workspace }}
-
-    - name: Build
-      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} --parallel
-
-    - name: Test
-      working-directory: ${{ steps.strings.outputs.build-output-dir }}
-      run: ctest --build-config ${{ matrix.build_type }} --output-on-failure
-
-    - name: Install
-      run: cmake --install ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
+    - name: Build, test and install configurations
+      shell: bash
+      # BUILD_TYPES is Release for PR/push runs and the full set for releases.
+      # Every configuration installs into the same dist tree; the per-config
+      # install layout (lib/<Config>/…) keeps them from clobbering each other.
+      env:
+        BUILD_TYPES: ${{ inputs.build_types || 'Release' }}
+      run: |
+        set -euo pipefail
+        for cfg in $BUILD_TYPES; do
+          echo "::group::Configure/build/test/install $cfg"
+          cmake -B "build-$cfg" \
+            -DSOUND_BAKERY_TESTS=ON \
+            -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} \
+            -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} \
+            -DCMAKE_BUILD_TYPE="$cfg" \
+            -S "${{ github.workspace }}"
+          cmake --build "build-$cfg" --parallel
+          ctest --test-dir "build-$cfg" --build-config "$cfg" --output-on-failure
+          cmake --install "build-$cfg"
+          echo "::endgroup::"
+        done
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4

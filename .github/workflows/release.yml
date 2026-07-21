@@ -43,18 +43,28 @@ jobs:
             exit 1
           fi
 
+  # Ship every configuration a game might link against: Debug (full checks,
+  # debug CRT), Profile (optimized + logging + profiling) and Release (stripped).
+  # Each platform build installs all three into one dist tree under Wwise-style
+  # per-config folders. PR/push runs keep the workflows' Release-only default.
   build_linux:
     name: Build On Linux GCC And Clang
     needs: check_version
     uses: ./.github/workflows/linux.yaml
+    with:
+      build_types: "Debug RelWithDebInfo Release"
   build_mac:
     name: Build On Mac
     needs: check_version
     uses: ./.github/workflows/macos.yaml
+    with:
+      build_types: "Debug RelWithDebInfo Release"
   build_windows:
     name: Build On Windows
     needs: check_version
     uses: ./.github/workflows/windows.yaml
+    with:
+      build_types: "Debug RelWithDebInfo Release"
 
   release:
     name: Create Release
