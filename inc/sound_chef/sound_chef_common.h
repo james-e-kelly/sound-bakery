@@ -6,6 +6,42 @@
     #define MA_DLL
 #endif
 
+/*
+ * Build configuration guards, shared by Sound Chef (C) and Sound Bakery (C++).
+ *
+ * Normally defined by CMake via the SoundBakery::BuildConfig target
+ * (cmake/setup_build_config.cmake), which maps them Wwise/FMOD-style:
+ *
+ *   SBK_CONFIG_DEBUG    - full checks, everything on           (CMake Debug)
+ *   SBK_CONFIG_PROFILE  - optimized but instrumented           (CMake RelWithDebInfo)
+ *   SBK_CONFIG_RELEASE  - optimized, tooling compiled out      (CMake Release/MinSizeRel)
+ *   SBK_CONFIG_ENABLE_LOGGING  - logging compiled in                  (default: not Release)
+ *   SBK_CONFIG_ENABLE_PROFILING- profiling/remote connections compiled in (default: not Release)
+ *
+ * Always defined to 0 or 1 - test with `#if`, never `#ifdef`. The fallbacks
+ * below only apply when building against the headers without the CMake
+ * target, and derive a sensible mapping from NDEBUG.
+ */
+#ifndef SBK_HAS_BUILD_CONFIG
+    #if defined(NDEBUG)
+        #define SBK_CONFIG_DEBUG   0
+        #define SBK_CONFIG_PROFILE 0
+        #define SBK_CONFIG_RELEASE 1
+    #else
+        #define SBK_CONFIG_DEBUG   1
+        #define SBK_CONFIG_PROFILE 0
+        #define SBK_CONFIG_RELEASE 0
+    #endif
+
+    #ifndef SBK_CONFIG_ENABLE_LOGGING
+        #define SBK_CONFIG_ENABLE_LOGGING (!SBK_CONFIG_RELEASE)
+    #endif
+
+    #ifndef SBK_CONFIG_ENABLE_PROFILING
+        #define SBK_CONFIG_ENABLE_PROFILING (!SBK_CONFIG_RELEASE)
+    #endif
+#endif
+
 #define MA_COINIT_VALUE 0x2 //< COINIT_APARTMENTTHREADED
 
 #include "miniaudio.h"
