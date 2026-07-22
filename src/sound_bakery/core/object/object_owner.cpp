@@ -1,6 +1,7 @@
 #include "object_owner.h"
 
 #include "sound_bakery/core/memory.h"
+#include "sound_bakery/core/thread_domain.h"
 #include "sound_bakery/error/result.h"
 #include "sound_bakery/serialization/serializer.h"
 #include "sound_bakery/system.h"
@@ -8,6 +9,8 @@
 
 auto sbk::core::object_owner::create_runtime_object(const rttr::type& type) -> sbk::result<std::shared_ptr<sbk::core::object>>
 {
+    SBK_EXPECT_STUDIO_THREAD();
+
     sbk::engine::system* const system = sbk::engine::system::get();
 
     SBK_CHECK(system != nullptr, SBK_ERR_BAKERY_UNINITIALIZED);
@@ -41,6 +44,7 @@ auto sbk::core::object_owner::create_runtime_object(const rttr::type& type) -> s
     {
         // All object allocation funnels through here, so this is the one place we guard against
         // exceptions thrown while constructing an object or growing our bookkeeping (e.g. std::bad_alloc).
+        /// @todo Compile without exceptions
         return sbk::make_error(SBK_ERR_OUT_OF_MEMORY, exception.what());
     }
 }
@@ -77,6 +81,8 @@ auto sbk::core::object_owner::create_database_object(const rttr::type& type, boo
 
 auto sbk::core::object_owner::add_reference_to_object(std::shared_ptr<database_object>& object) -> void
 {
+    SBK_EXPECT_STUDIO_THREAD();
+
     if (object)
     {
         m_objects.push_back(object);
@@ -85,6 +91,8 @@ auto sbk::core::object_owner::add_reference_to_object(std::shared_ptr<database_o
 
 auto sbk::core::object_owner::remove_object(const std::shared_ptr<object>& object) -> std::vector<std::shared_ptr<sbk::core::object>>::iterator
 {
+    SBK_EXPECT_STUDIO_THREAD();
+
     if (object)
     {
         for (auto iter = m_objects.begin(); iter != m_objects.end(); ++iter)
@@ -98,7 +106,12 @@ auto sbk::core::object_owner::remove_object(const std::shared_ptr<object>& objec
     return m_objects.end();
 }
 
-auto sbk::core::object_owner::remove_all() -> void { m_objects.clear(); }
+auto sbk::core::object_owner::remove_all() -> void
+{
+    SBK_EXPECT_STUDIO_THREAD();
+
+    m_objects.clear();
+}
 
 auto sbk::core::object_owner::get_objects() -> std::vector<std::shared_ptr<object>>& { return m_objects; }
 

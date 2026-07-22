@@ -1,5 +1,6 @@
 #include "system.h"
 
+#include "sound_bakery/core/thread_domain.h"
 #include "sound_bakery/error/result.h"
 #include "sound_bakery/editor/project/project.h"
 #include "sound_bakery/gameobject/gameobject.h"
@@ -41,7 +42,19 @@ auto ma_free(void* pointer, void* userData) -> void
 
 namespace
 {
-    sbk::engine::system* s_system = nullptr;
+    // The single global system instance.
+    //
+    // Threading model (FMOD-style): create() and destroy() are lifecycle operations the
+    // caller must serialize against each other and against all other API use - in practice,
+    // create once at startup and destroy once at shutdown, with no other thread calling into
+    // Sound Bakery during either. While the system is alive, get() and the runtime operations
+    // it feeds (logging in particular) are safe to call from any thread.
+    //
+    // The atomic makes the steady-state read in get() formally race-free for those concurrent
+    // callers; it does NOT by itself make it safe to destroy the system while another thread is
+    // still using the returned pointer - that safety comes from the create/destroy contract
+    // above, not from the atomic.
+    std::atomic<sbk::engine::system*> s_system{nullptr};
     bool s_registeredReflection   = false;
 
     const std::string s_soundChefLoggerName("sound_chef");
@@ -102,9 +115,6 @@ system::system(sbk::core::sbk_log_callback_proc logCallback)
 
 system::~system()
 {
-    SBK_INFO("Closing Sound Bakery");
-
-    // Close threads
     m_studioThreadTimer.cancel();
     m_workerThread->shutdown();
     get_background_thread_executer()->shutdown();
@@ -129,21 +139,18 @@ system::~system()
     spdlog::shutdown();
 }
 
-auto system::get() -> sbk::engine::system* { return s_system; }
+auto system::get() -> sbk::engine::system* { return s_system.load(std::memory_order_acquire); }
 
 auto sbk::engine::system::get_operating_mode() -> operating_mode
 {
-    if (s_system)
+    if (m_project)
     {
-        if (s_system->m_project)
-        {
-            return operating_mode::editor;
-        }
+        return operating_mode::editor;
+    }
 
-        if (s_system->get_objects_count())
-        {
-            return operating_mode::runtime;
-        }
+    if (get_objects_count())
+    {
+        return operating_mode::runtime;
     }
 
     return operating_mode::unkown;
@@ -151,24 +158,24 @@ auto sbk::engine::system::get_operating_mode() -> operating_mode
 
 auto system::create() -> sbk::result<void>
 {
-    if (s_system == nullptr)
+    if (s_system.load(std::memory_order_acquire) == nullptr)
     {
         void* const systemMemory = sbk::memory::malloc(sizeof(system), SB_OBJECT_CATEGORY::SB_CATEGORY_SYSTEM);
 
         if (systemMemory == nullptr)
         {
-            return sbk::make_error(SBK_ERR_NULL, "Could not create the system object");
+            return sbk::make_error(SBK_ERR_OUT_OF_MEMORY, "Could not create the system object");
         }
-        s_system = ::new (systemMemory) system();
+        s_system.store(::new (systemMemory) system(), std::memory_order_release);
     }
 
-    SBK_CHECK(s_system != nullptr, SBK_ERR_OUT_OF_MEMORY);
+    SBK_CHECK(s_system.load(std::memory_order_acquire) != nullptr, SBK_ERR_OUT_OF_MEMORY);
     return sbk::ok();
 }
 
 auto system::create(const std::filesystem::path& logFile) -> sbk::result<void>
 {
-    if (s_system == nullptr)
+    if (s_system.load(std::memory_order_acquire) == nullptr)
     {
         void* const systemMemory = sbk::memory::malloc(sizeof(system), SB_OBJECT_CATEGORY::SB_CATEGORY_SYSTEM);
 
@@ -176,20 +183,23 @@ auto system::create(const std::filesystem::path& logFile) -> sbk::result<void>
         {
             return sbk::make_error(SBK_ERR_NULL, "Could not create the system object");
         }
-        s_system = ::new (systemMemory) system(logFile);
+        s_system.store(::new (systemMemory) system(logFile), std::memory_order_release);
     }
 
-    SBK_CHECK(s_system != nullptr, SBK_ERR_OUT_OF_MEMORY);
+    SBK_CHECK(s_system.load(std::memory_order_acquire) != nullptr, SBK_ERR_OUT_OF_MEMORY);
     return sbk::ok();
 }
 
 auto system::destroy() -> void
 {
-    if (s_system != nullptr)
+    system* const sys = s_system.load(std::memory_order_acquire);
+    if (sys != nullptr)
     {
-        s_system->~system();
-        sbk::memory::free(s_system, SB_CATEGORY_SYSTEM);
-        s_system = nullptr;
+        SBK_INFO("Closing and destroying Sound Bakery");
+
+        s_system.store(nullptr, std::memory_order_acquire);
+        sys->~system();
+        sbk::memory::free(sys, SB_CATEGORY_SYSTEM);
     }
 }
 
@@ -222,11 +232,25 @@ auto system::init(const sbk_system_config& config) -> sbk::result<void>
     listener->set_editor_hidden(true);
     m_listenerGameObject = listener;
 
-    // TODO
-    // Add way of turning off profiling
-    m_voiceTracker = std::make_unique<profiling::voice_tracker>();
+#if SBK_CONFIG_ENABLE_PROFILING
+    if (config.enableProfiling)
+    {
+        m_voiceTracker = std::make_unique<profiling::voice_tracker>();
+    }
+#endif
 
-    m_studioThreadTimer = m_threadRuntime->timer_queue()->make_timer(0ms, 20ms, m_workerThread, [this] { update_async(); });
+    // The config chooses the threading mode; mirror it to the thread-domain
+    // checks so single-threaded (editor) access outside a drain scope is allowed.
+    sbk::core::set_single_threaded_mode(config.singleThreadedUpdate);
+
+    if (!config.singleThreadedUpdate)
+    {
+        m_studioThreadTimer = m_threadRuntime->timer_queue()->make_timer(0ms, 20ms, m_workerThread,
+            [this]
+            {
+                update_async();
+            });
+    }
 
     return sbk::ok();
 }
@@ -236,12 +260,22 @@ auto system::update() -> sbk::result<void>
     FrameMarkStart(profiling_strings::s_updateName);
     ZoneScoped;
 
+    // If we're not running the update_async on a different thread, run it during update
+    // This operating mode lets consuming applications (the editor) access database data safely
+    if (!m_studioThreadTimer)
+    {
+        update_async();
+    }
+
+    const sbk::core::scoped_thread_domain gameDomain(sbk::core::thread_domain::game);
+
+    m_gameThreadExecuter->loop(m_gameThreadExecuter->size());
+
+#if SBK_CONFIG_ENABLE_PROFILING
     if (m_voiceTracker)
     {
         m_voiceTracker->update(this);
     }
-
-    m_gameThreadExecuter->loop(32);
 
     TracyPlotConfig(profiling_strings::s_gameObjectPlotName, tracy::PlotFormatType::Number, true, false, 0);
     TracyPlotConfig(profiling_strings::s_nodeInstancePlotName, tracy::PlotFormatType::Number, true, false, 0);
@@ -259,6 +293,7 @@ auto system::update() -> sbk::result<void>
 
     TracyPlotConfig(profiling_strings::s_currentMemory, tracy::PlotFormatType::Memory, true, true, 0);
     TracyPlot(profiling_strings::s_currentMemory, (int64_t)stats.mapped);
+#endif
 
     FrameMarkEnd(profiling_strings::s_updateName);
 
@@ -269,9 +304,13 @@ auto sbk::engine::system::update_async() -> void
 {
     ZoneScoped;
 
+    // The whole drain window is the studio domain - the executor tasks and
+    // the game object updates below both count as studio-owned work.
+    const sbk::core::scoped_thread_domain studioDomain(sbk::core::thread_domain::studio);
+
     m_studioThreadExecuter->loop(m_studioThreadExecuter->size());
 
-    for (auto& object : get_objects_of_type(sbk::engine::game_object::type()))
+    for (const auto& object : get_objects_of_type(sbk::engine::game_object::type()))
     {
         if (object)
         {
@@ -293,21 +332,24 @@ auto system::open_project(const std::filesystem::path& projectFile, sbk::core::s
 
     SBK_TRYV(create(tempProject.log_folder() / (std::string(tempProject.project_name()) + ".txt")));
 
+    // create() above succeeded, so s_system is now set.
+    system* const sys = s_system.load(std::memory_order_acquire);
+
     if (logCallback)
     {
-        s_system->add_external_log(logCallback);
+        sys->add_external_log(logCallback);
     }
 
     const std::string pluginFolder      = tempProject.plugin_folder().string();
     const sbk_system_config systemConfig = sbk_system_config_init(pluginFolder.c_str());
 
-    SBK_TRYV(s_system->init(systemConfig));
+    SBK_TRYV(sys->init(systemConfig));
 
-    s_system->m_project = std::make_unique<sbk::editor::project>();
+    sys->m_project = std::make_unique<sbk::editor::project>();
 
-    if (sbk::result<void> opened = s_system->m_project->open_project(projectFile); !opened.has_value())
+    if (sbk::result<void> opened = sys->m_project->open_project(projectFile); !opened.has_value())
     {
-        s_system->m_project.reset();
+        sys->m_project.reset();
         return tl::make_unexpected(std::move(opened).error());  //< Already logged at origin; forward it.
     }
 
@@ -319,13 +361,16 @@ auto sbk::engine::system::create_project(const std::filesystem::directory_entry&
     const sbk::editor::project_configuration projectConfig(projectDirectory, projectName);
 
     SBK_TRYV(open_project(projectConfig.project_file(), nullptr));
-    SBK_CHECK_MSG(s_system->m_project != nullptr, SBK_ERR_BAKERY, "System's project variable was null");
 
-    SBK_TRY(auto masterBus, s_system->m_project->create_database_object<sbk::engine::bus>());
+    // open_project() above succeeded, so s_system is now set.
+    system* const sys = s_system.load(std::memory_order_acquire);
+    SBK_CHECK_MSG(sys->m_project != nullptr, SBK_ERR_BAKERY, "System's project variable was null");
+
+    SBK_TRY(auto masterBus, sys->m_project->create_database_object<sbk::engine::bus>());
     masterBus->set_object_name("Master Bus");
     masterBus->set_master_bus(true);
 
-    return s_system->m_project->save_project();
+    return sys->m_project->save_project();
 }
 
 auto system::get_project() const -> sbk::editor::project*

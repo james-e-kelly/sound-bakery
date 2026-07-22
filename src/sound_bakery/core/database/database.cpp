@@ -1,9 +1,11 @@
  #include "database.h"
 
+#include "sound_bakery/core/thread_domain.h"
 #include "sound_bakery/util/type_helper.h"
 
 auto sbk::core::database::add_object_to_database(const std::shared_ptr<database_object>& object) -> sbk::result<void>
 {
+    SBK_EXPECT_STUDIO_THREAD();
     SBK_CHECK_MSG(object, SBK_ERR_INVALID_PARAMETER, "Cannot add a null object to the database");
 
     sbk_id objectID = object->get_database_id();
@@ -31,6 +33,7 @@ auto sbk::core::database::add_object_to_database(const std::shared_ptr<database_
 
 auto sbk::core::database::assign_name_to_id(sbk_id id, const database_name& name) -> sbk::result<void>
 {
+    SBK_EXPECT_STUDIO_THREAD();
     SBK_CHECK(id != SBK_INVALID_ID, SBK_ERR_INVALID_PARAMETER);
     SBK_CHECK(name.valid(), SBK_ERR_INVALID_PARAMETER);
 
@@ -44,6 +47,7 @@ auto sbk::core::database::assign_name_to_id(sbk_id id, const database_name& name
 
 auto sbk::core::database::remove_object_from_database(sbk_id objectID, const database_name& objectName) -> sbk::result<void>
 {
+    SBK_EXPECT_STUDIO_THREAD();
     SBK_CHECK(objectID != SBK_INVALID_ID, SBK_ERR_INVALID_PARAMETER);
 
     auto nameIter       = m_nameToIdMap.find(objectName);
@@ -62,10 +66,6 @@ auto sbk::core::database::remove_object_from_database(sbk_id objectID, const dat
             object->get_on_destroy().RemoveObject(this);
             object->get_on_update_id().RemoveObject(this);
             object->get_on_update_name().RemoveObject(this);
-        }
-        else
-        {
-            objectExpired = true;
         }
 
         m_idToPointerMap.erase(idIter);
@@ -163,6 +163,7 @@ auto sbk::core::database::get_database_object_at(size_t index) const -> std::wea
 
 auto sbk::core::database::clear_database() noexcept -> void
 {
+    SBK_EXPECT_STUDIO_THREAD();
     m_idToPointerMap.clear();
     m_nameToIdMap.clear();
 }

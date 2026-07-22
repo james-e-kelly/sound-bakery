@@ -4,11 +4,19 @@
 #include "sound_bakery/system.h"
 
 #include "sound_bakery/core/property.h"
+#include "sound_bakery/core/thread_domain.h"
 #include "sound_bakery/event/event.h"
 #include "sound_bakery/gameobject/gameobject.h"
 #include "sound_bakery/node/bus/bus.h"
 #include "sound_bakery/node/bus/aux_bus.h"
+#include "sound_bakery/node/container/sound_container.h"
+#include "sound_bakery/node/container/random_container.h"
 #include "sound_bakery/parameter/parameter.h"
+#include "sound_bakery/sound/sound.h"
+
+#include <atomic>
+#include <chrono>
+#include <thread>
 
 namespace
 {
@@ -80,7 +88,7 @@ TEST_SUITE("System")
         // With no project opened we should be in runtime mode and have no
         // editor project.
         CHECK(sbk::engine::system::get_operating_mode() == sbk::engine::system::operating_mode::runtime);
-        CHECK(sbk::engine::system::get_project() == nullptr);
+        CHECK(sbk::engine::system::get()->get_project() == nullptr);
     }
 
     TEST_CASE("Listener game object exists after init")
@@ -490,7 +498,7 @@ TEST_SUITE("Database")
         const auto validFound = engine.get()->try_find_database_object(id);
         CHECK_FALSE(validFound.expired());
 
-        engine.get()->remove_object_from_database(id);
+        REQUIRE(engine.get()->remove_object_from_database(id, objectResult.value()->get_database_name()).has_value());
 
         const auto invalidFound = engine.get()->try_find_database_object(id);
         CHECK(invalidFound.expired());
@@ -582,5 +590,91 @@ TEST_SUITE("Future API")
         // TODO: exercise gather_children_for_play on the concrete container
         // types (random/sequence/blend/switch) once fixtures exist to build a
         // small node graph for a test.
+    }
+}
+
+TEST_SUITE("Thread Domain")
+{
+    TEST_CASE("Scopes mark the game and studio domains")
+    {
+        scoped_engine engine;
+
+        // Outside any pump, the calling thread belongs to no domain.
+        CHECK(sbk::core::get_current_thread_domain() == sbk::core::thread_domain::unknown);
+
+        // Tasks drained by update() run inside the game domain.
+        std::atomic<sbk::core::thread_domain> observedGame{sbk::core::thread_domain::unknown};
+        engine.get()->get_game_thread_executer()->post( [&observedGame] { observedGame = sbk::core::get_current_thread_domain(); });
+
+        REQUIRE(engine.get()->update().has_value());
+        CHECK(observedGame.load() == sbk::core::thread_domain::game);
+
+        // Tasks posted to the studio executor drain on the studio timer
+        // inside update_async, which marks the studio domain.
+        std::atomic<sbk::core::thread_domain> observedStudio{sbk::core::thread_domain::unknown};
+        std::atomic<bool> studioTaskRan{false};
+
+        engine.get()->get_system_thread_executer()->post(
+            [&observedStudio, &studioTaskRan]
+            {
+                observedStudio = sbk::core::get_current_thread_domain();
+                studioTaskRan  = true;
+            });
+
+        const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(5);
+        while (!studioTaskRan.load() && std::chrono::steady_clock::now() < deadline)
+        {
+            std::this_thread::yield();
+        }
+
+        REQUIRE(studioTaskRan.load());
+        CHECK(observedStudio.load() == sbk::core::thread_domain::studio);
+    }
+
+    TEST_CASE("Nested scopes restore the previous domain")
+    {
+        CHECK(sbk::core::get_current_thread_domain() == sbk::core::thread_domain::unknown);
+
+        {
+            const sbk::core::scoped_thread_domain gameScope(sbk::core::thread_domain::game);
+            CHECK(sbk::core::get_current_thread_domain() == sbk::core::thread_domain::game);
+
+            {
+                const sbk::core::scoped_thread_domain studioScope(sbk::core::thread_domain::studio);
+                CHECK(sbk::core::get_current_thread_domain() == sbk::core::thread_domain::studio);
+            }
+
+            CHECK(sbk::core::get_current_thread_domain() == sbk::core::thread_domain::game);
+        }
+
+        CHECK(sbk::core::get_current_thread_domain() == sbk::core::thread_domain::unknown);
+    }
+}
+
+TEST_SUITE("Stress tests")
+{
+    TEST_CASE("Create huge database")
+    {
+        scoped_engine engine;
+
+        constexpr std::size_t numberOfObjectsToCreate = 100000;
+        const std::initializer_list<rttr::type> objectTypesToCreate =
+            {
+                sbk::engine::sound::type(),
+                sbk::engine::sound_container::type(),
+                sbk::engine::random_container::type(),
+                sbk::engine::float_parameter::type()
+            };
+
+        for (const rttr::type& type : objectTypesToCreate)
+        {
+            for (std::size_t index = 0; index < numberOfObjectsToCreate; ++index)
+            {
+                auto creationResult = engine.get()->create_database_object(type);
+                REQUIRE(creationResult.has_value());
+            }
+        }
+
+        engine.get()->remove_all();
     }
 }
