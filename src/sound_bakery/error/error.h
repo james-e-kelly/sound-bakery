@@ -1,12 +1,6 @@
 #pragma once
 
-#include "sound_chef/sound_chef_common.h"  // sbk_status and its codes
-#include "tl/expected.hpp"
-
-#include <source_location>
-#include <string>
-#include <string_view>
-#include <utility>
+#include "sound_bakery/pch.h"
 
 /**
  * @file error.h
@@ -84,6 +78,15 @@ namespace sbk
      */
     template <class T = void>
     using result = tl::expected<T, error>;
+
+    /**
+     * @brief An asynchronous result of a fallible operation that can be co_await'd.
+     * 
+     * This is a @r concurrencpp::result object that is used to make a function a coroutine.
+     * Coroutines can use co_await to suspend execution and await a result.
+     */
+    template <class T = void>
+    using async_result = concurrencpp::result<sbk::result<T>>;
 
     /**
      * @brief Success value for a @c result<void> function.
