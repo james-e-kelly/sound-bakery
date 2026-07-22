@@ -131,9 +131,18 @@ namespace
 
 sbk_status sbk_log(ma_log_level level, const char* message)
 {
-    SBK_STATUS_CHECK(message != NULL, SBK_ERR_INVALID_PARAMETER);
+    // Can't do any logging inside the log function so just return the error codes
+
+    if (message == NULL)
+    {
+        return SBK_ERR_INVALID_PARAMETER;
+    }
     const sbk::engine::system* const system = sbk::engine::system::get();
-    SBK_STATUS_CHECK(system != nullptr, SBK_ERR_BAKERY_UNINITIALIZED);
+
+    if (system == NULL)
+    {
+        return SBK_ERR_BAKERY_UNINITIALIZED;
+    }
 
     switch (level)
     {
