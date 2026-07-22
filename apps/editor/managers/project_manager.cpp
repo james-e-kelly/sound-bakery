@@ -60,7 +60,7 @@ void project_manager::setup_project()
         }
 
         app->set_application_display_title(
-            fmt::format("{} - {} {}", sbk::engine::system::get_project()->get_config().project_name(), SBK_PRODUCT_NAME,
+            fmt::format("{} - {} {}", sbk::engine::system::get()->get_project()->get_config().project_name(), SBK_PRODUCT_NAME,
                         SBK_VERSION_STRING));
     }
 }
@@ -83,5 +83,5 @@ void project_manager::save_project() const { (void)sbk::engine::system::get()->g
 
 sbk::engine::sound_container* project_manager::get_preview_sound_container() const
 {
-    return sbk::engine::system::get_project()->get_preview_container().lock().get();
+    return sbk::engine::system::get()->get_project()->get_preview_container().lock().get();
 }

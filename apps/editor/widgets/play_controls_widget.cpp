@@ -196,7 +196,7 @@ void player_widget::play_selected()
                  s_lastPlayableSelection.selectedObject->try_convert_object<sbk::engine::sound>())
     {
         if (sbk::engine::sound_container* previewContainer =
-                sbk::engine::system::get_project()->get_preview_container().lock().get())
+                sbk::engine::system::get()->get_project()->get_preview_container().lock().get())
         {
             previewContainer->set_sound(sound);
 

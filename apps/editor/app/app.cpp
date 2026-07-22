@@ -60,7 +60,7 @@ auto editor_app::on_file_drop(const std::vector<std::string>& paths) -> void
             }
             else if (filePath.extension() == ".wav")
             {
-                if (sbk::editor::project* const project = sbk::engine::system::get_project())
+                if (sbk::editor::project* const project = sbk::engine::system::get()->get_project())
                 {
                     const std::filesystem::path newFilePath = project->get_config().source_folder() / filePath.filename();
 
@@ -76,7 +76,7 @@ auto editor_app::on_file_drop(const std::vector<std::string>& paths) -> void
         }
     }
 
-    if (const sbk::editor::project* const project = sbk::engine::system::get_project())
+    if (const sbk::editor::project* const project = sbk::engine::system::get()->get_project())
     {
         (void)project->save_project();
     }

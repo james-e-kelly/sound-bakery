@@ -68,12 +68,12 @@ auto root_widget::render_menu_implementation() -> void
                 ImGui::Separator();
                 if (ImGui::MenuItem(ICON_LC_HAMMER " Convert Files", nullptr, nullptr))
                 {
-                    sbk::engine::system::get_project()->encode_all_media();
+                    sbk::engine::system::get()->get_project()->encode_all_media();
                 }
 
                 if (ImGui::MenuItem(ICON_LC_WRENCH " Build Soundbanks", nullptr, nullptr))
                 {
-                    sbk::engine::system::get_project()->build_soundbanks();
+                    sbk::engine::system::get()->get_project()->build_soundbanks();
                 }
             }
 

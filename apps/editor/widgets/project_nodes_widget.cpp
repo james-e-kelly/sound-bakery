@@ -235,7 +235,7 @@ void project_nodes_widget::render_single_node(rttr::type type, rttr::instance in
                 {
                     ImGui::Text(ICON_FAD_FILTER_BELL " %s", object->get_object_name().data());
 
-                    if (unsigned int playingCount = sbk::engine::system::get_voice_tracker()->get_playing_count_of_object(
+                    if (unsigned int playingCount = sbk::engine::system::get()->get_voice_tracker()->get_playing_count_of_object(
                                 object->get_database_id()))
                     {
                         ImGui::SameLine();

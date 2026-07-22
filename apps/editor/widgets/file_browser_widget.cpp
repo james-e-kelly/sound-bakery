@@ -231,7 +231,7 @@ void file_browser_widget::start_implementation()
 {
     widget::start_implementation();
 
-    m_currentDirectory = sbk::engine::system::get_project()->get_config().source_folder();
+    m_currentDirectory = sbk::engine::system::get()->get_project()->get_config().source_folder();
     m_topDir           = m_currentDirectory;
     m_selectedItemID   = std::numeric_limits<uint32_t>::max();
 }

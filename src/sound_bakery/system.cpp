@@ -328,24 +328,14 @@ auto sbk::engine::system::create_project(const std::filesystem::directory_entry&
     return s_system->m_project->save_project();
 }
 
-auto system::get_project() -> sbk::editor::project*
+auto system::get_project() const -> sbk::editor::project*
 {
-    if (s_system != nullptr)
-    {
-        return s_system->m_project.get();
-    }
-
-    return nullptr;
+    return m_project.get();
 }
 
-auto system::get_voice_tracker() -> sbk::engine::profiling::voice_tracker*
+auto system::get_voice_tracker() const -> sbk::engine::profiling::voice_tracker*
 {
-    if (s_system != nullptr)
-    {
-        return s_system->m_voiceTracker.get();
-    }
-
-    return nullptr;
+    return m_voiceTracker.get();
 }
 
 auto sbk::engine::system::get_game_thread_executer() const -> std::shared_ptr<concurrencpp::manual_executor>

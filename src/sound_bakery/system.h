@@ -67,9 +67,9 @@ namespace sbk
             [[nodiscard]] auto update() -> sbk::result<void>;
 
             [[nodiscard]] static auto get() -> system*;
-            [[nodiscard]] static auto get_operating_mode() -> operating_mode;
-            [[nodiscard]] static auto get_project() -> sbk::editor::project*;
-            [[nodiscard]] static auto get_voice_tracker() -> sbk::engine::profiling::voice_tracker*;
+            [[nodiscard]] auto get_operating_mode() -> operating_mode; //< @todo Remove this. Users should just try and get the objects they want
+            [[nodiscard]] auto get_project() const -> sbk::editor::project*;
+            [[nodiscard]] auto get_voice_tracker() const -> sbk::engine::profiling::voice_tracker*;
             [[nodiscard]] auto get_game_thread_executer() const -> std::shared_ptr<concurrencpp::manual_executor>;
             [[nodiscard]] auto get_system_thread_executer() const -> std::shared_ptr<concurrencpp::manual_executor>;
             [[nodiscard]] auto get_background_thread_executer() const -> std::shared_ptr<concurrencpp::thread_pool_executor>;
