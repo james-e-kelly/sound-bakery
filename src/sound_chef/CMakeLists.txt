@@ -130,6 +130,7 @@ if (WIN32)
 endif()
 
 target_link_libraries(sound_chef_shared
+    PUBLIC SoundBakery::BuildConfig
     PUBLIC clap
     PRIVATE vorbis
     PRIVATE vorbisfile
@@ -138,6 +139,7 @@ target_link_libraries(sound_chef_shared
     PRIVATE OpusFile::opusfile)
 
 target_link_libraries(sound_chef_static
+    PUBLIC SoundBakery::BuildConfig
     PUBLIC clap
     PRIVATE vorbis
     PRIVATE vorbisfile

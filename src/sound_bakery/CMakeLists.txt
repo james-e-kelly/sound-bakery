@@ -40,7 +40,8 @@ setup_format_sources()
 setup_linter_targets()
 fix_msvc_linters()
 
-target_link_libraries(sound_bakery_static PUBLIC 
+target_link_libraries(sound_bakery_static PUBLIC
+  SoundBakery::BuildConfig
   SoundBakery::Core
   SoundBakery::SoundChef_Static
   RTTR::Core_Lib
@@ -54,7 +55,8 @@ target_link_libraries(sound_bakery_static PUBLIC
   sbk::rpmalloc
 )
 
-target_link_libraries(sound_bakery_shared PUBLIC 
+target_link_libraries(sound_bakery_shared PUBLIC
+  SoundBakery::BuildConfig
   SoundBakery::Core
   SoundBakery::SoundChef_Shared
   RTTR::Core_Lib

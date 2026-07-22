@@ -16,8 +16,9 @@ cxx_20(sound_bakery_core)
 
 CPMAddPackage("gh:TartanLlama/expected@1.2.0")
 
-target_link_libraries(sound_bakery_core PUBLIC 
-  SoundBakery::Delegates 
+target_link_libraries(sound_bakery_core PUBLIC
+  SoundBakery::BuildConfig
+  SoundBakery::Delegates
   Boost::assert
   tl::expected
   spdlog::spdlog
