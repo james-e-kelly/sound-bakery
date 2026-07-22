@@ -22,6 +22,10 @@ namespace sbk::core
      * from.
      *
      * Objects can own other objects.
+     * 
+     * @todo Remove the object class. There should be a greater split between data and runtime.
+     * The object class only exists to give a base class to runtime objects.
+     * However, all runtime objects should be small structs in a single array - not full objects with reflection.
      */
     class SB_CLASS object : public object_owner, public std::enable_shared_from_this<object>, public boost::noncopyable
     {
