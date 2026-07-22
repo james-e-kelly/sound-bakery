@@ -18,6 +18,7 @@ macro(set_sources)
     core/memory.cpp
     core/name.cpp
     core/property.cpp
+    core/thread_domain.cpp
 
     editor/project/project.cpp
     editor/project/project_configuration.cpp
@@ -72,6 +73,7 @@ set(SOUND_BAKERY_HEADERS
     core/core_include.h
     core/core_fwd.h
     core/property.h
+    core/thread_domain.h
     core/name.h
 
     core/object/object.h
