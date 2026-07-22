@@ -1,6 +1,11 @@
 #ifndef SOUND_BAKERY_H
 #define SOUND_BAKERY_H
 
+/**
+ * @file
+ * @brief An open-source audio middleware tool with an authoring application and programmer's API.
+ */
+
 #include "sound_bakery_common.h"
 
 #ifdef __cplusplus
