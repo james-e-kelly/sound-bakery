@@ -197,9 +197,9 @@ auto system::destroy() -> void
     {
         SBK_INFO("Closing and destroying Sound Bakery");
 
-        s_system.store(nullptr, std::memory_order_acquire);
         sys->~system();
         sbk::memory::free(sys, SB_CATEGORY_SYSTEM);
+        s_system.store(nullptr, std::memory_order_release);
     }
 }
 
