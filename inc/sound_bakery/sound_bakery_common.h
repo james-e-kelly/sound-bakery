@@ -16,12 +16,6 @@
 
 typedef struct sbk_system_config sbk_system_config;
 
-/* Object Types */
-/* Sound Bakery C types are wrappers/facades. */ 
-/* Each pointer maps to a sbk_id. The sbk_id is used to look up the object */
-typedef struct sbk_system sbk_system;
-typedef struct sbk_soundbank sbk_soundbank;
-
 typedef uint64_t sbk_id;
 #define SBK_INVALID_ID 0
 

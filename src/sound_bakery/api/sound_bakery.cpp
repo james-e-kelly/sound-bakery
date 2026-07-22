@@ -132,29 +132,27 @@ namespace
 sbk_status sbk_log(ma_log_level level, const char* message)
 {
     SBK_STATUS_CHECK(message != NULL, SBK_ERR_INVALID_PARAMETER);
+    const sbk::engine::system* const system = sbk::engine::system::get();
+    SBK_STATUS_CHECK(system != nullptr, SBK_ERR_BAKERY_UNINITIALIZED);
 
-    if (const sbk::engine::system* const system = sbk::engine::system::get())
+    switch (level)
     {
-        switch (level)
-        {
-            case MA_LOG_LEVEL_DEBUG:
-                system->get_logger()->log(spdlog::level::debug, message);
-                TracyMessageC(message, strlen(message), 0xffffff);
-                break;
-            case MA_LOG_LEVEL_INFO:
-                system->get_logger()->log(spdlog::level::info, message);
-                TracyMessageC(message, strlen(message), 0xff4500);
-                break;
-            case MA_LOG_LEVEL_WARNING:
-                system->get_logger()->log(spdlog::level::warn, message);
-                TracyMessageC(message, strlen(message), 0xff0000);
-                break;
-            case MA_LOG_LEVEL_ERROR:
-                system->get_logger()->log(spdlog::level::err, message);
-                TracyMessageC(message, strlen(message), 0x8b0000);
-                break;
-        }
-
+        case MA_LOG_LEVEL_DEBUG:
+            system->get_logger()->log(spdlog::level::debug, message);
+            TracyMessageC(message, strlen(message), 0xffffff);
+            break;
+        case MA_LOG_LEVEL_INFO:
+            system->get_logger()->log(spdlog::level::info, message);
+            TracyMessageC(message, strlen(message), 0xff4500);
+            break;
+        case MA_LOG_LEVEL_WARNING:
+            system->get_logger()->log(spdlog::level::warn, message);
+            TracyMessageC(message, strlen(message), 0xff0000);
+            break;
+        case MA_LOG_LEVEL_ERROR:
+            system->get_logger()->log(spdlog::level::err, message);
+            TracyMessageC(message, strlen(message), 0x8b0000);
+            break;
     }
 
     return SBK_SUCCESS;
@@ -213,52 +211,13 @@ sbk_status sbk_system_destroy()
     });
 }
 
-sbk_status sbk_system_get_object_count(uint64_t* count)
-{
-    ZoneScoped;
-    return c_api_guard([&]() -> sbk_status
-    {
-        SBK_STATUS_CHECK(count != NULL, SBK_ERR_INVALID_PARAMETER);
-        sbk::engine::system* const system = sbk::engine::system::get();
-        SBK_STATUS_CHECK(system != NULL, SBK_ERR_BAKERY_UNINITIALIZED);
-
-        *count = system->get_database_object_count();
-        return SBK_SUCCESS;
-    });
-}
-
-sbk_status sbk_system_get_object_info(uint64_t index, sbk_id* id, char* name, uint64_t nameSize, uint64_t* actualNameSize)
-{
-    ZoneScoped;
-    return c_api_guard([&]() -> sbk_status
-    {
-        SBK_STATUS_CHECK(name != NULL, SBK_ERR_INVALID_PARAMETER);
-        SBK_STATUS_CHECK(nameSize > 0, SBK_ERR_INVALID_PARAMETER);
-        SBK_STATUS_CHECK(actualNameSize != NULL, SBK_ERR_INVALID_PARAMETER);
-
-        sbk::engine::system* const system = sbk::engine::system::get();
-        SBK_STATUS_CHECK(system != NULL, SBK_ERR_BAKERY_UNINITIALIZED);
-
-        if (const std::shared_ptr<sbk::core::database_object> object = system->get_database_object_at(index).lock())
-        {
-            const sbk_id objectID        = object->get_database_id();
-            const std::string objectName = object->get_database_name();
-
-            *id = objectID;
-            *actualNameSize = objectName.copy(name, nameSize);
-            return SBK_SUCCESS;
-        }
-        return SBK_ERR_BAKERY_OBJECT_NOT_FOUND;
-    });
-}
-
-sbk_status sbk_system_load_soundbank(const char* soundbankFilePath, sbk_soundbank** outSoundbank)
+sbk_status sbk_system_load_soundbank(const char* soundbankFilePath, sbk_id* outSoundbankID)
 {
     ZoneScoped;
     return c_api_guard([&]() -> sbk_status
     {
         SBK_STATUS_CHECK(soundbankFilePath != NULL, SBK_ERR_INVALID_PARAMETER);
-        SBK_STATUS_CHECK(outSoundbank != NULL, SBK_ERR_INVALID_PARAMETER);
+        SBK_STATUS_CHECK(outSoundbankID != NULL, SBK_ERR_INVALID_PARAMETER);
 
         sbk::engine::system* const system = sbk::engine::system::get();
         SBK_STATUS_CHECK(system != NULL, SBK_ERR_BAKERY_UNINITIALIZED);
@@ -268,7 +227,7 @@ sbk_status sbk_system_load_soundbank(const char* soundbankFilePath, sbk_soundban
         const sbk::result<sbk_id> soundbankID = binarySerializer.load_object<sbk::core::serialization::serialized_soundbank>(system, soundbankFilePath);
         SBK_STATUS_CHECK_MSG(soundbankID.has_value(), SBK_ERR_BAKERY_SERIALIZATION, "failed to load soundbank '{}'", soundbankFilePath);
 
-        *outSoundbank = convert_id_to_pointer<sbk_soundbank>(soundbankID.value());
+        *outSoundbankID = soundbankID.value();
         return SBK_SUCCESS;
     });
 }
@@ -283,8 +242,7 @@ sbk_status sbk_system_post_event(const char* eventName, sbk_id gameObjectID)
         sbk::engine::system* const system = sbk::engine::system::get();
         SBK_STATUS_CHECK(system != NULL, SBK_ERR_BAKERY_UNINITIALIZED);
 
-        std::weak_ptr<sbk::core::database_object> event =
-            system->try_find_database_object(sbk::core::database_name(eventName));
+        std::weak_ptr<sbk::core::database_object> event = system->try_find_database_object(sbk::core::database_name(eventName));
         SBK_STATUS_CHECK_MSG(!event.expired(), SBK_ERR_BAKERY_OBJECT_NOT_FOUND, "no event named '{}'", eventName);
 
         std::weak_ptr<sbk::core::database_object> gameObject = sbk::engine::get_game_object(gameObjectID);
@@ -293,11 +251,9 @@ sbk_status sbk_system_post_event(const char* eventName, sbk_id gameObjectID)
         system->get_system_thread_executer()->post(
             [event, gameObject]()
             {
-                if (std::shared_ptr<sbk::engine::game_object> sharedGameObject =
-                        std::static_pointer_cast<sbk::engine::game_object>(gameObject.lock()))
+                if (std::shared_ptr<sbk::engine::game_object> sharedGameObject = std::static_pointer_cast<sbk::engine::game_object>(gameObject.lock()))
                 {
-                    if (std::shared_ptr<sbk::engine::event> sharedEvent =
-                            std::static_pointer_cast<sbk::engine::event>(event.lock()))
+                    if (std::shared_ptr<sbk::engine::event> sharedEvent = std::static_pointer_cast<sbk::engine::event>(event.lock()))
                     {
                         (void)dispatch_event(sharedGameObject.get(), sharedEvent.get());
                     }
