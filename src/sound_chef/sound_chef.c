@@ -437,8 +437,7 @@ sbk_status sc_system_create_sound(sc_system* system, const char* fileName, sc_so
                                    &(*sound)->sound);
 }
 
-sbk_status sc_system_create_sound_memory(
-    sc_system* system, void* data, size_t dataSize, sc_sound_mode mode, sc_sound** sound)
+sbk_status sc_system_create_sound_memory(sc_system* system, const void* data, size_t dataSize, sc_sound_mode mode, sc_sound** sound)
 {
     SC_CHECK_ARG(system != NULL);
     SC_CHECK_ARG(data != NULL);
