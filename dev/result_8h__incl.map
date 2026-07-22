@@ -85,7 +85,7 @@
 <area shape="rect" id="Node000008" title=" " alt="" coords="397,350,472,375"/>
 <area shape="poly" id="edge7_Node000004_Node000008" title=" " alt="" coords="396,294,423,336,418,339,392,296"/>
 <area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="144,380,259,423,257,428,142,385"/>
-<area shape="rect" id="Node000012" href="$sound__bakery_8h_source.html" title=" " alt="" coords="921,343,1076,383"/>
+<area shape="rect" id="Node000012" href="$sound__bakery_8h.html" title="An open&#45;source audio middleware tool with an authoring application and programmer&#39;s API." alt="" coords="921,343,1076,383"/>
 <area shape="poly" id="edge11_Node000011_Node000012" title=" " alt="" coords="1001,288,1001,329,996,329,996,288"/>
 <area shape="rect" id="Node000013" href="$sound__bakery__common_8h_source.html" title=" " alt="" coords="905,431,1093,456"/>
 <area shape="poly" id="edge12_Node000012_Node000013" title=" " alt="" coords="1001,383,1001,417,996,417,996,383"/>

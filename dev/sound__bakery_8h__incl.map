@@ -1,0 +1,27 @@
+<map id="inc/sound_bakery/sound_bakery.h" name="inc/sound_bakery/sound_bakery.h">
+<area shape="rect" id="Node000001" title="An open&#45;source audio middleware tool with an authoring application and programmer&#39;s API." alt="" coords="523,5,701,45"/>
+<area shape="rect" id="Node000002" href="$sound__bakery__common_8h_source.html" title=" " alt="" coords="518,93,706,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="615,46,615,79,609,79,609,46"/>
+<area shape="rect" id="Node000003" href="$sound__chef_8h.html" title="A wrapper library for miniaudio that emulates functionality of FMOD." alt="" coords="325,174,510,199"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="585,121,459,171,457,166,583,116"/>
+<area shape="rect" id="Node000012" href="$sound__bakery__version_8h_source.html" title=" " alt="" coords="535,167,689,207"/>
+<area shape="poly" id="edge11_Node000002_Node000012" title=" " alt="" coords="615,119,615,153,609,153,609,119"/>
+<area shape="rect" id="Node000013" title=" " alt="" coords="714,174,785,199"/>
+<area shape="poly" id="edge12_Node000002_Node000013" title=" " alt="" coords="634,117,719,165,716,169,631,121"/>
+<area shape="rect" id="Node000004" href="$sound__chef__common_8h_source.html" title=" " alt="" coords="242,255,414,280"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="406,202,353,248,350,244,402,198"/>
+<area shape="rect" id="Node000011" href="$sound__chef__dsp_8h.html" title="DSP object definitions." alt="" coords="439,255,577,280"/>
+<area shape="poly" id="edge10_Node000003_Node000011" title=" " alt="" coords="432,197,486,244,483,248,429,202"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="5,335,104,361"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="287,283,117,331,105,334,104,329,115,325,285,278"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="129,335,205,361"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="306,282,203,332,201,327,303,278"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="229,335,321,361"/>
+<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="322,282,293,325,288,322,318,279"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="345,335,420,361"/>
+<area shape="poly" id="edge7_Node000004_Node000008" title=" " alt="" coords="338,279,369,323,365,326,334,282"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="445,335,515,361"/>
+<area shape="poly" id="edge8_Node000004_Node000009" title=" " alt="" coords="352,278,447,327,444,331,349,283"/>
+<area shape="rect" id="Node000010" href="$sound__chef__version_8h_source.html" title=" " alt="" coords="539,328,714,368"/>
+<area shape="poly" id="edge9_Node000004_Node000010" title=" " alt="" coords="372,277,542,322,541,327,371,283"/>
+</map>
