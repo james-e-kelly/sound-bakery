@@ -151,7 +151,7 @@ namespace sbk::engine
         template <class FSM, class Event>
         auto no_transition(Event const& event, FSM& stateMachine, int state) -> void
         {
-            SBK_INFO(fmt::format("No transition from state {} on event {}", state, typeid(event).name()).c_str());
+            SBK_INFO("No transition from state {} on event {}", state, typeid(event).name());
         }
 
         struct transition_table : boost::mpl::vector

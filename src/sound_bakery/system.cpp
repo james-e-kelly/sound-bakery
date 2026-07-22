@@ -57,13 +57,13 @@ namespace
                 // Purposefully drop debug messages for now
                 break;
             case MA_LOG_LEVEL_INFO:
-                SBK_INFO(pMessage);
+                SBK_INFO("{}", pMessage);
                 break;
             case MA_LOG_LEVEL_WARNING:
-                SBK_WARN(pMessage);
+                SBK_WARN("{}", pMessage);
                 break;
             case MA_LOG_LEVEL_ERROR:
-                SBK_ERROR(pMessage);
+                SBK_ERROR("{}", pMessage);
                 break;
             default:
                 break;

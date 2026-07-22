@@ -73,6 +73,8 @@ auto sbk::core::database::remove_object_from_database(sbk_id objectID) -> sbk::r
     }
     else if (objectExpired)
     {
+        SBK_WARN("Could not find {} in the database. Doing slow iteration to ensure any names that point to {} are removed", static_cast<const char*>(objectName), objectID);
+
         // Removing objects is meant to happen before their destruction
         // It should be very unlikely any code removes an ID alone
         // However, in the rare chance it happens, do a slow search for the ID in the name map
