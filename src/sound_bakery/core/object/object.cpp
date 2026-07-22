@@ -1,16 +1,21 @@
 #include "sound_bakery/core/object/object.h"
 
 #include "sound_bakery/core/object/object_tracker.h"
+#include "sound_bakery/core/thread_domain.h"
 #include "sound_bakery/system.h"
 
 DEFINE_REFLECTION(sbk::core::object)
 
 sbk::core::object::object() : m_objectName("New Object", "?,.#~@<>|*:\"\\") 
 {
-
+    SBK_EXPECT_STUDIO_THREAD();
 }
 
-sbk::core::object::~object() { m_onDestroyEvent.Broadcast(this); }
+sbk::core::object::~object() 
+{
+    SBK_EXPECT_STUDIO_THREAD();
+    m_onDestroyEvent.Broadcast(this); 
+}
 
 auto sbk::core::object::get_owner() const -> object_owner* { return m_owner; }
 
