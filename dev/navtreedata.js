@@ -26,64 +26,71 @@ var NAVTREE =
 [
   [ "Sound Bakery", "index.html", [
     [ "Why Choose Sound Bakery?", "index.html#autotoc_md1", null ],
-    [ "Goal", "index.html#autotoc_md2", null ],
-    [ "Getting Started", "index.html#autotoc_md3", [
-      [ "Quick Start", "index.html#autotoc_md4", null ],
-      [ "Build from Source", "index.html#autotoc_md5", null ],
-      [ "Usage Example", "index.html#autotoc_md6", null ],
-      [ "Documentation", "index.html#autotoc_md7", null ]
+    [ "Goal", "index.html#autotoc_md2", [
+      [ "A hardened runtime", "index.html#autotoc_md3", null ]
     ] ],
-    [ "Contributing", "index.html#autotoc_md8", null ],
-    [ "License", "index.html#autotoc_md9", null ],
-    [ "Acknowledgements", "index.html#autotoc_md10", null ],
+    [ "Getting Started", "index.html#autotoc_md4", [
+      [ "Quick Start", "index.html#autotoc_md5", null ],
+      [ "Build from Source", "index.html#autotoc_md6", null ],
+      [ "Usage Example", "index.html#autotoc_md7", null ],
+      [ "Documentation", "index.html#autotoc_md8", null ]
+    ] ],
+    [ "Contributing", "index.html#autotoc_md9", null ],
+    [ "License", "index.html#autotoc_md10", null ],
+    [ "Acknowledgements", "index.html#autotoc_md11", null ],
     [ "Changelog", "md_CHANGELOG.html", [
-      [ "[Unreleased]", "md_CHANGELOG.html#autotoc_md12", [
-        [ "Added", "md_CHANGELOG.html#autotoc_md13", null ],
-        [ "Removed", "md_CHANGELOG.html#autotoc_md14", null ],
-        [ "Changed", "md_CHANGELOG.html#autotoc_md15", null ],
-        [ "Fixed", "md_CHANGELOG.html#autotoc_md16", null ]
+      [ "[Unreleased]", "md_CHANGELOG.html#autotoc_md13", [
+        [ "Added", "md_CHANGELOG.html#autotoc_md14", null ],
+        [ "Removed", "md_CHANGELOG.html#autotoc_md15", null ],
+        [ "Changed", "md_CHANGELOG.html#autotoc_md16", null ],
+        [ "Fixed", "md_CHANGELOG.html#autotoc_md17", null ]
       ] ],
-      [ "[0.3.0]", "md_CHANGELOG.html#autotoc_md17", [
-        [ "Added", "md_CHANGELOG.html#autotoc_md18", null ]
+      [ "[0.3.0]", "md_CHANGELOG.html#autotoc_md18", [
+        [ "Added", "md_CHANGELOG.html#autotoc_md19", null ]
       ] ],
-      [ "[0.2.0] - 2024-02-18", "md_CHANGELOG.html#autotoc_md19", [
-        [ "Added", "md_CHANGELOG.html#autotoc_md20", null ],
-        [ "Changed", "md_CHANGELOG.html#autotoc_md21", null ],
-        [ "Fixed", "md_CHANGELOG.html#autotoc_md22", null ]
+      [ "[0.2.0] - 2024-02-18", "md_CHANGELOG.html#autotoc_md20", [
+        [ "Added", "md_CHANGELOG.html#autotoc_md21", null ],
+        [ "Changed", "md_CHANGELOG.html#autotoc_md22", null ],
+        [ "Fixed", "md_CHANGELOG.html#autotoc_md23", null ]
       ] ],
-      [ "[0.1.0] - 2023-01-10", "md_CHANGELOG.html#autotoc_md23", [
-        [ "Added", "md_CHANGELOG.html#autotoc_md24", null ]
+      [ "[0.1.0] - 2023-01-10", "md_CHANGELOG.html#autotoc_md24", [
+        [ "Added", "md_CHANGELOG.html#autotoc_md25", null ]
       ] ]
     ] ],
     [ "Contributing to Sound Bakery", "md_CONTRIBUTING.html", [
-      [ "Table of Contents", "md_CONTRIBUTING.html#autotoc_md26", null ],
-      [ "How to Contribute", "md_CONTRIBUTING.html#autotoc_md27", null ],
-      [ "Reporting Issues", "md_CONTRIBUTING.html#autotoc_md28", null ],
-      [ "Suggesting UI UX", "md_CONTRIBUTING.html#autotoc_md29", null ],
-      [ "Submitting Pull Requests", "md_CONTRIBUTING.html#autotoc_md30", null ],
-      [ "Code Style", "md_CONTRIBUTING.html#autotoc_md31", null ],
-      [ "Testing", "md_CONTRIBUTING.html#autotoc_md32", null ],
-      [ "Documentation", "md_CONTRIBUTING.html#autotoc_md33", [
-        [ "Using Doxygen", "md_CONTRIBUTING.html#autotoc_md34", null ]
+      [ "Table of Contents", "md_CONTRIBUTING.html#autotoc_md27", null ],
+      [ "How to Contribute", "md_CONTRIBUTING.html#autotoc_md28", null ],
+      [ "Reporting Issues", "md_CONTRIBUTING.html#autotoc_md29", null ],
+      [ "Suggesting UI UX", "md_CONTRIBUTING.html#autotoc_md30", null ],
+      [ "Submitting Pull Requests", "md_CONTRIBUTING.html#autotoc_md31", null ],
+      [ "Code Style", "md_CONTRIBUTING.html#autotoc_md32", null ],
+      [ "Testing", "md_CONTRIBUTING.html#autotoc_md33", null ],
+      [ "Documentation", "md_CONTRIBUTING.html#autotoc_md34", [
+        [ "Using Doxygen", "md_CONTRIBUTING.html#autotoc_md35", null ]
       ] ],
-      [ "Community", "md_CONTRIBUTING.html#autotoc_md35", null ]
+      [ "Community", "md_CONTRIBUTING.html#autotoc_md36", null ]
     ] ],
     [ "Inspiration", "md_docs_2Inspiration.html", [
-      [ "Audio Tools", "md_docs_2Inspiration.html#autotoc_md41", null ],
-      [ "Open-Source Projects", "md_docs_2Inspiration.html#autotoc_md42", null ],
-      [ "UI/UX", "md_docs_2Inspiration.html#autotoc_md43", null ]
+      [ "Audio Tools", "md_docs_2Inspiration.html#autotoc_md44", null ],
+      [ "Open-Source Projects", "md_docs_2Inspiration.html#autotoc_md45", null ],
+      [ "UI/UX", "md_docs_2Inspiration.html#autotoc_md46", null ]
     ] ],
     [ "User Manual", "UserManual.html", [
       [ "Design Philosophy", "Design.html", [
-        [ "Interacting With Sound Bakery", "Design.html#autotoc_md37", [
-          [ "Editor", "Design.html#autotoc_md38", null ],
-          [ "API", "Design.html#autotoc_md39", null ]
-        ] ]
+        [ "Interacting With Sound Bakery", "Design.html#autotoc_md38", [
+          [ "Editor", "Design.html#autotoc_md39", null ],
+          [ "API", "Design.html#autotoc_md40", null ]
+        ] ],
+        [ "The Runtime", "Design.html#autotoc_md41", null ],
+        [ "Built for Scale and Teams", "Design.html#autotoc_md42", null ]
       ] ],
       [ "Roadmap", "Roadmap.html", [
-        [ "0.1.0 MVP", "Roadmap.html#autotoc_md44", null ],
-        [ "1.0.0", "Roadmap.html#autotoc_md45", null ],
-        [ "1.0.0+", "Roadmap.html#autotoc_md46", null ]
+        [ "The runtime contract", "Roadmap.html#autotoc_md47", null ],
+        [ "0.1.0 — MVP", "Roadmap.html#autotoc_md49", null ],
+        [ "0.2.0 – 0.9.0 — Game Jam Ready", "Roadmap.html#autotoc_md50", null ],
+        [ "1.0.0 — Indie ready", "Roadmap.html#autotoc_md51", null ],
+        [ "2.0.0 — AA ready", "Roadmap.html#autotoc_md52", null ],
+        [ "3.0.0+ — Console & AAA", "Roadmap.html#autotoc_md53", null ]
       ] ],
       [ "Guides", "Guides.html", [
         [ "User Guide", "UserGuide.html", null ],
@@ -119,7 +126,7 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "ChefProgrammerGuide.html",
-"node__instance_8h_source.html"
+"md_docs_2Inspiration.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

@@ -181,12 +181,11 @@ Collaboration diagram for sbk::engine::sound:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a8824b61d129645ea5c3ceb8c6f30740f" id="r_a8824b61d129645ea5c3ceb8c6f30740f"><td class="memItemLeft" align="right" valign="top"><a id="a8824b61d129645ea5c3ceb8c6f30740f" name="a8824b61d129645ea5c3ceb8c6f30740f"></a>
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>load_synchronous</b> () -&gt; void</td></tr>
-<tr class="separator:a8824b61d129645ea5c3ceb8c6f30740f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a91a5311326a2eb434e13a0119029e156" id="r_a91a5311326a2eb434e13a0119029e156"><td class="memItemLeft" align="right" valign="top"><a id="a91a5311326a2eb434e13a0119029e156" name="a91a5311326a2eb434e13a0119029e156"></a>
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>load_asynchronous</b> () -&gt; void</td></tr>
-<tr class="separator:a91a5311326a2eb434e13a0119029e156"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6892e0d032b92ea76848a305e5a9023" id="r_ab6892e0d032b92ea76848a305e5a9023"><td class="memItemLeft" align="right" valign="top"><a id="ab6892e0d032b92ea76848a305e5a9023" name="ab6892e0d032b92ea76848a305e5a9023"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>load_synchronous</b> () -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt; void &gt;</td></tr>
+<tr class="separator:ab6892e0d032b92ea76848a305e5a9023"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c8a5799885b2eb0acf5a73793cf4001" id="r_a3c8a5799885b2eb0acf5a73793cf4001"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsbk_1_1engine_1_1sound.html#a3c8a5799885b2eb0acf5a73793cf4001">load_asynchronous</a> () -&gt; <a class="el" href="error_8h.html#aee977876b8bb376d95439834597abea1">sbk::async_result</a>&lt; void &gt;</td></tr>
+<tr class="separator:a3c8a5799885b2eb0acf5a73793cf4001"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7990f69026a2d81d30d405bd0ba3510c" id="r_a7990f69026a2d81d30d405bd0ba3510c"><td class="memItemLeft" align="right" valign="top"><a id="a7990f69026a2d81d30d405bd0ba3510c" name="a7990f69026a2d81d30d405bd0ba3510c"></a>
 auto&#160;</td><td class="memItemRight" valign="bottom"><b>set_sound_name</b> (std::string soundName) -&gt; void</td></tr>
 <tr class="separator:a7990f69026a2d81d30d405bd0ba3510c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -367,6 +366,25 @@ static void&#160;</td><td class="memItemRight" valign="bottom"><b>operator delet
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>operator delete</b> (void *pointer, SB_OBJECT_CATEGORY category)</td></tr>
 <tr class="separator:a819cff6f90a0523f203f85026c6fd977 inherit pub_static_methods_classsbk_1_1core_1_1object"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a3c8a5799885b2eb0acf5a73793cf4001" name="a3c8a5799885b2eb0acf5a73793cf4001"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c8a5799885b2eb0acf5a73793cf4001">&#9670;&#160;</a></span>load_asynchronous()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto sound::load_asynchronous </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> -&gt; <a class="el" href="error_8h.html#aee977876b8bb376d95439834597abea1">sbk::async_result</a>&lt;void&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000004">Todo:</a></b></dt><dd>Properly load this on another thread </dd></dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/sound_bakery/sound/<a class="el" href="sound_8h_source.html">sound.h</a></li>
 <li>src/sound_bakery/sound/<b>sound.cpp</b></li>

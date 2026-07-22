@@ -19,5 +19,6 @@ var searchData=
   ['set_5fmax_16',['set_max',['../classsbk_1_1core_1_1property.html#acf41415a8b3a9086374d73a0c46215f3',1,'sbk::core::property']]],
   ['set_5fmin_17',['set_min',['../classsbk_1_1core_1_1property.html#a6583057cd7f5971309b144b5cf3ce048',1,'sbk::core::property']]],
   ['set_5fselected_5fvalue_18',['set_selected_value',['../classsbk_1_1engine_1_1named__parameter.html#ab89a0450bb0fff8ceed16c34727472bc',1,'sbk::engine::named_parameter']]],
-  ['stale_19',['stale',['../classsbk_1_1core_1_1database__ptr.html#a1634ec848dd4b11a492e5f6d911072f8',1,'sbk::core::database_ptr']]]
+  ['set_5fsingle_5fthreaded_5fmode_19',['set_single_threaded_mode',['../thread__domain_8h.html#a0b8ea399f2137b4f06dbe394f8cdd644',1,'sbk::core']]],
+  ['stale_20',['stale',['../classsbk_1_1core_1_1database__ptr.html#a1634ec848dd4b11a492e5f6d911072f8',1,'sbk::core::database_ptr']]]
 ];

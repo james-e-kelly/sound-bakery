@@ -162,46 +162,42 @@ $(document).ready(function(){initNavTree('sound__bakery__common_8h_source.html',
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code hl_struct" href="structsbk__system__config.html">sbk_system_config</a> <a class="code hl_struct" href="structsbk__system__config.html">sbk_system_config</a>;</div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="comment">/* Object Types */</span></div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="comment">/* Sound Bakery C types are wrappers/facades. */</span> </div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="comment">/* Each pointer maps to a sbk_id. The sbk_id is used to look up the object */</span></div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">typedef</span> <span class="keyword">struct </span>sbk_system sbk_system;</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">typedef</span> <span class="keyword">struct </span>sbk_soundbank sbk_soundbank;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">typedef</span> uint64_t sbk_id;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#define SBK_INVALID_ID 0</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">static_assert</span>(<span class="keyword">sizeof</span>(<span class="keywordtype">void</span>*) == <span class="keyword">sizeof</span>(sbk_id));</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">static_assert</span>(<span class="keyword">sizeof</span>(sbk_id) == <span class="keyword">sizeof</span>(uintptr_t));</div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">typedef</span> uint64_t sbk_id;</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="preprocessor">#define SBK_INVALID_ID 0</span></div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="keyword">static_assert</span>(<span class="keyword">sizeof</span>(<span class="keywordtype">void</span>*) == <span class="keyword">sizeof</span>(sbk_id));</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="keyword">static_assert</span>(<span class="keyword">sizeof</span>(sbk_id) == <span class="keyword">sizeof</span>(uintptr_t));</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
-<div class="foldopen" id="foldopen00031" data-start="{" data-end="};">
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structsbk__system__config.html">   31</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structsbk__system__config.html">sbk_system_config</a></div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>{</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <a class="code hl_struct" href="structsc__system__config.html">sc_system_config</a> soundChefConfig;</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordtype">bool</span> logToConsole;  <span class="comment">//&lt; Automatically set up the logger to print to the console. Normally left off so consuming applications can control Sound Bakery&#39;s logging</span></div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>};</div>
+<div class="foldopen" id="foldopen00025" data-start="{" data-end="};">
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structsbk__system__config.html">   25</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structsbk__system__config.html">sbk_system_config</a></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>{</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <a class="code hl_struct" href="structsc__system__config.html">sc_system_config</a>    soundChefConfig;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keywordtype">bool</span>                singleThreadedUpdate;   <span class="comment">//&lt; Update the database/studio thread when @r sbk::engine::system::update is called. Helpful for when consuming applications need to access Sound Bakery non-realtime data safely</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordtype">bool</span>                enableProfiling;        <span class="comment">//&lt; Enable voice tracking, CPU usage, etc.</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordtype">bool</span>                logToConsole;           <span class="comment">//&lt; Automatically set up the logger to print to the console. Normally left off so consuming applications can control Sound Bakery&#39;s logging</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>};</div>
 </div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="keyword">typedef</span> <span class="keyword">enum</span> SB_OBJECT_CATEGORY</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>{</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    SB_CATEGORY_UNKNOWN,</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    SB_CATEGORY_SOUND,</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    SB_CATEGORY_NODE,</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    SB_CATEGORY_BUS,</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    SB_CATEGORY_MUSIC,</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    SB_CATEGORY_EVENT,</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    SB_CATEGORY_BANK,</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    SB_CATEGORY_PARAMETER,</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    SB_CATEGORY_DATABASE_OBJECT,</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    SB_CATEGORY_RUNTIME_OBJECT,</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    SB_CATEGORY_SYSTEM,</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    SB_CATEGORY_NUM</div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>} SB_OBJECT_CATEGORY;</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="keyword">typedef</span> <span class="keyword">enum</span> SB_OBJECT_CATEGORY</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>{</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    SB_CATEGORY_UNKNOWN,</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    SB_CATEGORY_SOUND,</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    SB_CATEGORY_NODE,</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    SB_CATEGORY_BUS,</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    SB_CATEGORY_MUSIC,</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    SB_CATEGORY_EVENT,</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    SB_CATEGORY_BANK,</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    SB_CATEGORY_PARAMETER,</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    SB_CATEGORY_DATABASE_OBJECT,</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    SB_CATEGORY_RUNTIME_OBJECT,</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    SB_CATEGORY_SYSTEM,</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    SB_CATEGORY_NUM</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>} SB_OBJECT_CATEGORY;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="asound__chef_8h_html"><div class="ttname"><a href="sound__chef_8h.html">sound_chef.h</a></div><div class="ttdoc">A wrapper library for miniaudio that emulates functionality of FMOD.</div></div>
-<div class="ttc" id="astructsbk__system__config_html"><div class="ttname"><a href="structsbk__system__config.html">sbk_system_config</a></div><div class="ttdef"><b>Definition</b> sound_bakery_common.h:32</div></div>
-<div class="ttc" id="astructsc__system__config_html"><div class="ttname"><a href="structsc__system__config.html">sc_system_config</a></div><div class="ttdoc">Configuration for initializing the sc_system.</div><div class="ttdef"><b>Definition</b> sound_chef_common.h:304</div></div>
+<div class="ttc" id="astructsbk__system__config_html"><div class="ttname"><a href="structsbk__system__config.html">sbk_system_config</a></div><div class="ttdef"><b>Definition</b> sound_bakery_common.h:26</div></div>
+<div class="ttc" id="astructsc__system__config_html"><div class="ttname"><a href="structsc__system__config.html">sc_system_config</a></div><div class="ttdoc">Configuration for initializing the sc_system.</div><div class="ttdef"><b>Definition</b> sound_chef_common.h:340</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

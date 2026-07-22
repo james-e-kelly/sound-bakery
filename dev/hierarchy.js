@@ -144,6 +144,7 @@ var hierarchy =
       [ "sbk::engine::system", "classsbk_1_1engine_1_1system.html", null ]
     ] ],
     [ "sc_system_config", "structsc__system__config.html", null ],
+    [ "sbk::core::scoped_thread_domain", "classsbk_1_1core_1_1scoped__thread__domain.html", null ],
     [ "selection", "structselection.html", null ],
     [ "sbk::core::serialization::serialized_associative_container", "structsbk_1_1core_1_1serialization_1_1serialized__associative__container.html", null ],
     [ "sbk::core::serialization::serialized_child_class", "structsbk_1_1core_1_1serialization_1_1serialized__child__class.html", null ],

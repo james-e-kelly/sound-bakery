@@ -36,7 +36,8 @@ var annotated_dup =
         [ "object_ptr_comparator", "structsbk_1_1core_1_1object__ptr__comparator.html", null ],
         [ "object_tracker", "classsbk_1_1core_1_1object__tracker.html", null ],
         [ "parsed_database_name", "structsbk_1_1core_1_1parsed__database__name.html", null ],
-        [ "property", "classsbk_1_1core_1_1property.html", "classsbk_1_1core_1_1property" ]
+        [ "property", "classsbk_1_1core_1_1property.html", "classsbk_1_1core_1_1property" ],
+        [ "scoped_thread_domain", "classsbk_1_1core_1_1scoped__thread__domain.html", null ]
       ] ],
       [ "editor", null, [
         [ "project", "classsbk_1_1editor_1_1project.html", null ],
@@ -80,7 +81,7 @@ var annotated_dup =
         [ "parameter", "classsbk_1_1engine_1_1parameter.html", "classsbk_1_1engine_1_1parameter" ],
         [ "random_container", "classsbk_1_1engine_1_1random__container.html", "classsbk_1_1engine_1_1random__container" ],
         [ "sequence_container", "classsbk_1_1engine_1_1sequence__container.html", "classsbk_1_1engine_1_1sequence__container" ],
-        [ "sound", "classsbk_1_1engine_1_1sound.html", null ],
+        [ "sound", "classsbk_1_1engine_1_1sound.html", "classsbk_1_1engine_1_1sound" ],
         [ "sound_container", "classsbk_1_1engine_1_1sound__container.html", "classsbk_1_1engine_1_1sound__container" ],
         [ "soundbank", "classsbk_1_1engine_1_1soundbank.html", null ],
         [ "soundbank_database", "structsbk_1_1engine_1_1soundbank__database.html", null ],

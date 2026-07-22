@@ -353,7 +353,8 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>database</b></td></t
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Base object that all sound Bakery objects should inherit from. </p>
-<p>Objects can own other objects. </p>
+<p>Objects can own other objects.</p>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000002">Todo:</a></b></dt><dd>Remove the object class. There should be a greater split between data and runtime. The object class only exists to give a base class to runtime objects. However, all runtime objects should be small structs in a single array - not full objects with reflection. </dd></dl>
 </div><hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/sound_bakery/core/object/<a class="el" href="object_8h_source.html">object.h</a></li>
 <li>src/sound_bakery/core/object/<b>object.cpp</b></li>

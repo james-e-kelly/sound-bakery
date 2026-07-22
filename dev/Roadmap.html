@@ -139,10 +139,26 @@ $(document).ready(function(){initNavTree('Roadmap.html',''); initResizable(); })
   <div class="headertitle"><div class="title">Roadmap</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><h1><a class="anchor" id="autotoc_md44"></a>
-0.1.0 MVP</h1>
+<div class="textblock"><p>Sound Bakery's long-term goal is to be a competitive, open alternative to Wwise and FMOD. When a team is starting a project and choosing an audio tool, Sound Bakery should be a viable choice. But there is no specific feature or version number that this roadmap can point to for when that happens. Instead, we mark the road with goals of who can trust us.</p>
+<p>As we go through major versions, the tool should be trustable to more and more people, and be able to tackle harder and harder problems. We start with the hobbyists and jammers, then work our work up to small titles, then indies, AA, and finally consoles and AAA.</p>
 <blockquote class="doxtable">
-<p>&zwj;The MVP release will mark the first version that provides a complete game audio experience. Users can use an editor tool to create playback logic, package the audio, and play it in a consuming application. </p>
+<p>&zwj;<b>Versioning note.</b> Sound Bakery is pre-1.0. Anything may change, including the project and soundbank serialization formats. We will document breaking changes, but do not treat pre-1.0 releases as stable to build a shipping title on. Within each milestone below there are many smaller minor and patch releases. </p>
+</blockquote>
+<h1><a class="anchor" id="autotoc_md47"></a>
+The runtime contract</h1>
+<p>Every milestone is built on the same foundation: the authoring tools are free to inovate and push the boundaries, but once the game is live and in the hands of users, it must hold up. That means:</p>
+<ul>
+<li><b>No allocations</b> on the audio thread — runtime memory is preallocated and bounded.</li>
+<li><b>No locks</b> on the audio path — game-to-runtime communication is lock-free.</li>
+<li><b>Fast</b> — data-oriented hot paths designed for hundreds of concurrent voices.</li>
+<li><b>Stable</b> — graceful degradation under load; never a glitch, never a stall.</li>
+<li><b>Memory-smart</b> — predictable, budgetable footprint with no runtime surprises.</li>
+</ul>
+<hr  />
+<h1><a class="anchor" id="autotoc_md49"></a>
+0.1.0 — MVP</h1>
+<blockquote class="doxtable">
+<p>&zwj;<b>Ready for:</b> internal use, experiments, and learning. The first version that provides a complete game audio loop — author playback logic in an editor, package it, and play it back in a consuming application. </p>
 </blockquote>
 <ul>
 <li>Audio playback</li>
@@ -160,59 +176,90 @@ $(document).ready(function(){initNavTree('Roadmap.html',''); initResizable(); })
 </li>
 <li>Basic runtime</li>
 </ul>
-<h1><a class="anchor" id="autotoc_md45"></a>
-1.0.0</h1>
+<h1><a class="anchor" id="autotoc_md50"></a>
+0.2.0 – 0.9.0 — Game Jam Ready</h1>
 <blockquote class="doxtable">
-<p>&zwj;The 1.0.0 release marks the first version that is semi-comparable to the offerings of Wwise or FMOD. Users can create adaptive audio and music, optimise their content and package, run their audio inside leading engines, and debug at runtime. </p>
+<p>&zwj;<b>Ready for:</b> game jams, prototypes, and hobby projects — anything where money is not at stake. The tool is usable, but users might encounter a few rough edges. </p>
 </blockquote>
 <ul>
-<li>Adaptive music<ul>
-<li>Editor</li>
+<li>Runtime hardening, pass one<ul>
+<li>Allocation-free mix callback</li>
+<li>Lock-free game-to-runtime boundary</li>
 </ul>
 </li>
+<li>Voice management<ul>
+<li>Virtualisation and graceful voice limiting under load</li>
+</ul>
+</li>
+<li>Serialization stable enough to survive a project's lifetime (breaking changes documented)</li>
+<li>At least one engine integration — a real path to hearing audio in a game</li>
+<li>Editor stability and core UX polish</li>
+<li>Basic metering and profiling</li>
+</ul>
+<h1><a class="anchor" id="autotoc_md51"></a>
+1.0.0 — Indie ready</h1>
+<blockquote class="doxtable">
+<p>&zwj;<b>Ready for:</b> shipping a small commercial title, solo or as a small team. At this point, Sound Bakery is reliable and performant. Not every feature exists, but you can trust the tool to do its job. </p>
+</blockquote>
+<ul>
+<li><b>Hardened runtime</b> — the runtime contract above, held and verified: no allocations, no locks, stable under load, budgetable memory</li>
+<li><b>Stable serialization</b> — a versioned project and soundbank format with a migration path; no silent breaks</li>
+<li>Core adaptive audio, plus foundational interactive music</li>
+<li>One or two first-class engine integrations (UE5, Unity, or Godot)</li>
 <li>Profiling tools<ul>
 <li>CPU insights</li>
 <li>Memory insights</li>
 <li>Voice graph</li>
 <li>Metering</li>
-<li>Remote debugging</li>
 </ul>
 </li>
-<li>Encoding formats<ul>
-<li>ADPCM</li>
-<li>Vorbis</li>
-<li>Opus</li>
+<li>Encoding formats (ADPCM, Vorbis, Opus)</li>
+<li>One language binding (C#)</li>
+<li>Source-control-friendly project format — mergeable and diffable in Git</li>
+<li>Documentation and onboarding: time-to-first-sound measured in minutes</li>
 </ul>
-</li>
-<li>Language bindings<ul>
-<li>C#</li>
-<li>Python</li>
-<li>Rust</li>
-</ul>
-</li>
-<li>Engine integrations<ul>
-<li>UE5</li>
-<li>Unity</li>
-<li>Godot</li>
-</ul>
-</li>
-</ul>
-<h1><a class="anchor" id="autotoc_md46"></a>
-1.0.0+</h1>
+<h1><a class="anchor" id="autotoc_md52"></a>
+2.0.0 — AA ready</h1>
 <blockquote class="doxtable">
-<p>&zwj;Here are future features Sound Bakery aims to provide. </p>
+<p>&zwj;<b>Ready for:</b> mid-size teams and AA productions. This is where Sound Bakery's unique features start to shine. The tool is reliable and has shipped games. Now, it starts becoming a viable option for bigger projects. </p>
 </blockquote>
 <ul>
-<li>Source control integration</li>
-<li>Auxillary outputs</li>
-<li>Geometric simulation<ul>
-<li>Runtime tool for occlusion and diffraction</li>
+<li><b>Scale</b> — project management for tens of thousands of assets<ul>
+<li>Fast searchable, taggable browser with saved smart views</li>
+<li>First-class metadata and tagging</li>
+<li>Project-wide analysis: loudness, true peak, clipping, orphans, dead assets</li>
+<li>Dependency graphs and safe bulk operations</li>
 </ul>
 </li>
-<li>Numeric simulation<ul>
-<li>Baked tool for occlusion and diffraction </li>
+<li><b>Collaboration</b> — keeping teams aligned on quality<ul>
+<li>In-editor review: A/B before-and-after changes, comment, approve</li>
+<li>Change history and blame for audio objects</li>
+<li>Documentation that lives in the project, next to the assets it describes</li>
 </ul>
 </li>
+<li>Full interactive music system</li>
+<li><b>Environmental audio made easy</b><ul>
+<li>Occlusion and obstruction with strong defaults and progressive disclosure</li>
+<li>Perceptual distance modelling (transient softening, air absorption)</li>
+<li>Reverb zones and portals</li>
+</ul>
+</li>
+<li>Remote profiling — connect the authoring tool to a running game</li>
+<li>Additional engine integrations</li>
+<li>Additional language bindings (Python, Rust)</li>
+<li>CI-friendly headless tooling and quality gates</li>
+<li>Auxiliary outputs and advanced mixing</li>
+</ul>
+<h1><a class="anchor" id="autotoc_md53"></a>
+3.0.0+ — Console &amp; AAA</h1>
+<blockquote class="doxtable">
+<p>&zwj;<b>Ready for:</b> console shipping and AAA-scale productions. Not so much a specific feature, but a marker that Sound Bakery is a tool that can be trusted to tackle any challenge. Sound Bakery has clear reasons to use it, teams have used it for years to build smaller projects, and it is giving businesses a reason to consider it. </p>
+</blockquote>
+<ul>
+<li>Controlled, replaceable core libraries (reflection, allocator, threading, I/O) behind stable seams</li>
+<li>Cert-readiness: deterministic memory budgets, suspend/resume, platform I/O, long-soak reliability</li>
+<li><b>Console platform backends</b> delivered via private, access-controlled repos under NDA, implementing the public backend interface — the public core stays clean and open</li>
+<li>Deep spatial audio: geometry, diffraction, and both baked and runtime simulation </li>
 </ul>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->

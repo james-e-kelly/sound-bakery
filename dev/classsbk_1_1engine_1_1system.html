@@ -229,6 +229,15 @@ auto&#160;</td><td class="memItemRight" valign="bottom"><b>init</b> (const <a cl
 <tr class="memitem:a4a85b3bb6f72821f3789f5c8ed7efba4" id="r_a4a85b3bb6f72821f3789f5c8ed7efba4"><td class="memItemLeft" align="right" valign="top"><a id="a4a85b3bb6f72821f3789f5c8ed7efba4" name="a4a85b3bb6f72821f3789f5c8ed7efba4"></a>
 auto&#160;</td><td class="memItemRight" valign="bottom"><b>update</b> () -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt; void &gt;</td></tr>
 <tr class="separator:a4a85b3bb6f72821f3789f5c8ed7efba4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5b1ac077a7227699fbac19a41c8c2fb" id="r_af5b1ac077a7227699fbac19a41c8c2fb"><td class="memItemLeft" align="right" valign="top"><a id="af5b1ac077a7227699fbac19a41c8c2fb" name="af5b1ac077a7227699fbac19a41c8c2fb"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_operating_mode</b> () -&gt; operating_mode</td></tr>
+<tr class="separator:af5b1ac077a7227699fbac19a41c8c2fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b6213f6d2380e9d35618ddc01cd1f87" id="r_a7b6213f6d2380e9d35618ddc01cd1f87"><td class="memItemLeft" align="right" valign="top"><a id="a7b6213f6d2380e9d35618ddc01cd1f87" name="a7b6213f6d2380e9d35618ddc01cd1f87"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_project</b> () const -&gt; <a class="el" href="classsbk_1_1editor_1_1project.html">sbk::editor::project</a> *</td></tr>
+<tr class="separator:a7b6213f6d2380e9d35618ddc01cd1f87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed70644ad1df19a26dc5d1d6ddf57f0b" id="r_aed70644ad1df19a26dc5d1d6ddf57f0b"><td class="memItemLeft" align="right" valign="top"><a id="aed70644ad1df19a26dc5d1d6ddf57f0b" name="aed70644ad1df19a26dc5d1d6ddf57f0b"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_voice_tracker</b> () const -&gt; <a class="el" href="classsbk_1_1engine_1_1profiling_1_1voice__tracker.html">sbk::engine::profiling::voice_tracker</a> *</td></tr>
+<tr class="separator:aed70644ad1df19a26dc5d1d6ddf57f0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adb46f566b3c84b4aa4acb034d55df34a" id="r_adb46f566b3c84b4aa4acb034d55df34a"><td class="memItemLeft" align="right" valign="top"><a id="adb46f566b3c84b4aa4acb034d55df34a" name="adb46f566b3c84b4aa4acb034d55df34a"></a>
 auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_game_thread_executer</b> () const -&gt; std::shared_ptr&lt; concurrencpp::manual_executor &gt;</td></tr>
 <tr class="separator:adb46f566b3c84b4aa4acb034d55df34a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -322,9 +331,9 @@ auto&#160;</td><td class="memItemRight" valign="bottom"><b>convert_to_ordered</b
 <tr class="memitem:af41782b748c74c112623e632b46b9579 inherit pub_methods_classsbk_1_1core_1_1database" id="r_af41782b748c74c112623e632b46b9579"><td class="memItemLeft" align="right" valign="top">
 auto&#160;</td><td class="memItemRight" valign="bottom"><b>add_object_to_database</b> (const std::shared_ptr&lt; <a class="el" href="classsbk_1_1core_1_1database__object.html">database_object</a> &gt; &amp;<a class="el" href="classsbk_1_1core_1_1object.html">object</a>) -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt; void &gt;</td></tr>
 <tr class="separator:af41782b748c74c112623e632b46b9579 inherit pub_methods_classsbk_1_1core_1_1database"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa9f4c08782780575ab8a9653713ed876 inherit pub_methods_classsbk_1_1core_1_1database" id="r_aa9f4c08782780575ab8a9653713ed876"><td class="memItemLeft" align="right" valign="top">
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>remove_object_from_database</b> (sbk_id objectID) -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt; void &gt;</td></tr>
-<tr class="separator:aa9f4c08782780575ab8a9653713ed876 inherit pub_methods_classsbk_1_1core_1_1database"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a43bf9c56017b6d10b5d74dfd4fe8978d inherit pub_methods_classsbk_1_1core_1_1database" id="r_a43bf9c56017b6d10b5d74dfd4fe8978d"><td class="memItemLeft" align="right" valign="top">
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>remove_object_from_database</b> (sbk_id objectID, const <a class="el" href="structsbk_1_1core_1_1database__name.html">database_name</a> &amp;objectName) -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt; void &gt;</td></tr>
+<tr class="separator:a43bf9c56017b6d10b5d74dfd4fe8978d inherit pub_methods_classsbk_1_1core_1_1database"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6a6287ddc348bf0f492e2d703465d603 inherit pub_methods_classsbk_1_1core_1_1database" id="r_a6a6287ddc348bf0f492e2d703465d603"><td class="memItemLeft" align="right" valign="top">
 auto&#160;</td><td class="memItemRight" valign="bottom"><b>assign_name_to_id</b> (sbk_id id, const <a class="el" href="structsbk_1_1core_1_1database__name.html">database_name</a> &amp;<a class="el" href="classsbk_1_1core_1_1name.html">name</a>) -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt; void &gt;</td></tr>
 <tr class="memdesc:a6a6287ddc348bf0f492e2d703465d603 inherit pub_methods_classsbk_1_1core_1_1database"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds an entry to the name -&gt; ID lookup. Allows functions to find the ID of an object from its name before the live object exists. <br /></td></tr>
@@ -365,15 +374,6 @@ static auto&#160;</td><td class="memItemRight" valign="bottom"><b>destroy</b> ()
 <tr class="memitem:ae8e63bd9b37b2e86cd4dbd1d220e219d" id="r_ae8e63bd9b37b2e86cd4dbd1d220e219d"><td class="memItemLeft" align="right" valign="top"><a id="ae8e63bd9b37b2e86cd4dbd1d220e219d" name="ae8e63bd9b37b2e86cd4dbd1d220e219d"></a>
 static auto&#160;</td><td class="memItemRight" valign="bottom"><b>get</b> () -&gt; <a class="el" href="classsbk_1_1engine_1_1system.html">system</a> *</td></tr>
 <tr class="separator:ae8e63bd9b37b2e86cd4dbd1d220e219d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af5b1ac077a7227699fbac19a41c8c2fb" id="r_af5b1ac077a7227699fbac19a41c8c2fb"><td class="memItemLeft" align="right" valign="top"><a id="af5b1ac077a7227699fbac19a41c8c2fb" name="af5b1ac077a7227699fbac19a41c8c2fb"></a>
-static auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_operating_mode</b> () -&gt; operating_mode</td></tr>
-<tr class="separator:af5b1ac077a7227699fbac19a41c8c2fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac55947dbce1b84b1082674aad300c3e7" id="r_ac55947dbce1b84b1082674aad300c3e7"><td class="memItemLeft" align="right" valign="top"><a id="ac55947dbce1b84b1082674aad300c3e7" name="ac55947dbce1b84b1082674aad300c3e7"></a>
-static auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_project</b> () -&gt; <a class="el" href="classsbk_1_1editor_1_1project.html">sbk::editor::project</a> *</td></tr>
-<tr class="separator:ac55947dbce1b84b1082674aad300c3e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3439e02c2378d9c115cc9f9d2a8782bf" id="r_a3439e02c2378d9c115cc9f9d2a8782bf"><td class="memItemLeft" align="right" valign="top"><a id="a3439e02c2378d9c115cc9f9d2a8782bf" name="a3439e02c2378d9c115cc9f9d2a8782bf"></a>
-static auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_voice_tracker</b> () -&gt; <a class="el" href="classsbk_1_1engine_1_1profiling_1_1voice__tracker.html">sbk::engine::profiling::voice_tracker</a> *</td></tr>
-<tr class="separator:a3439e02c2378d9c115cc9f9d2a8782bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2c2ddf8c952ad422d2447af7acfae24a" id="r_a2c2ddf8c952ad422d2447af7acfae24a"><td class="memItemLeft" align="right" valign="top"><a id="a2c2ddf8c952ad422d2447af7acfae24a" name="a2c2ddf8c952ad422d2447af7acfae24a"></a>
 static auto&#160;</td><td class="memItemRight" valign="bottom"><b>open_project</b> (const std::filesystem::path &amp;projectFile, sbk::core::sbk_log_callback_proc logCallback) -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt; void &gt;</td></tr>
 <tr class="memdesc:a2c2ddf8c952ad422d2447af7acfae24a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an instance of Sound Bakery and opens the project. <br /></td></tr>
@@ -431,7 +431,7 @@ clap_host_t&#160;</td><td class="memItemRight" valign="bottom"><b>clapHost</b></
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000001">Todo:</a></b></dt><dd>What do we need to do about the old master bus, if there is one? Is it safe to destroy any original master bus - like a serialized bus is loaded and overrides the default one? </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000005">Todo:</a></b></dt><dd>What do we need to do about the old master bus, if there is one? Is it safe to destroy any original master bus - like a serialized bus is loaded and overrides the default one? </dd></dl>
 
 </div>
 </div>
