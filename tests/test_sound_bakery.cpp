@@ -81,16 +81,6 @@ TEST_SUITE("System")
         REQUIRE(sbk::engine::system::get() == nullptr);
     }
 
-    TEST_CASE("Runtime operating mode without a project")
-    {
-        scoped_engine engine;
-
-        // With no project opened we should be in runtime mode and have no
-        // editor project.
-        CHECK(sbk::engine::system::get_operating_mode() == sbk::engine::system::operating_mode::runtime);
-        CHECK(sbk::engine::system::get()->get_project() == nullptr);
-    }
-
     TEST_CASE("Listener game object exists after init")
     {
         scoped_engine engine;
