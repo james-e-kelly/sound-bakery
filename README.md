@@ -31,7 +31,11 @@ From Blender and Krita to Godot, more and more developers are choosing open-sour
 
 Sound Bakery aims to be a competitive, open alternative to Wwise and FMOD. Imagine owning your audio engine—customizing its look, tools, behavior, and more. Imagine receiving features and fixes from top studios, all collectively improving the industry's tools.
 
-See our [Roadmap](docs/Roadmap.md) for upcoming features and direction.
+This is a difficult goal to achieve and we're not there yet. Before we get there, we have set smaller, more achievable goals. First, we prove that Sound Bakery can serve a game by helping ship small game jam projects. Then, we expand, supporting indie titles, then AA, then consoles and finally AAA. See our [Roadmap](docs/Roadmap.md) for the milestones and how we get there.
+
+### A hardened runtime
+
+Underpinning everything, our goal is to build a hardened runtime that can be trusted to tackle the most challenging of projects. No glitches, no ballooning, leaky memory, no stealing CPU time for longer than is needed. Sound Bakery should be fast, memory-smart, and stable. While Sound Bakery tries to innovate through its tooling and user experience, this should not loosen the requirements of the runtime.
 
 ## Getting Started
 
@@ -52,7 +56,7 @@ git clone https://github.com/KarateKidzz/sound-bakery.git
 cd sound-bakery
 mkdir build && cd build
 cmake ..
-make
+cmake --build .
 ```
 
 ### Usage Example
