@@ -15,7 +15,7 @@ namespace sbk::core
     {
     public:
         auto add_object_to_database(const std::shared_ptr<database_object>& object) -> sbk::result<void>;
-        auto remove_object_from_database(sbk_id objectID) -> sbk::result<void>;
+        auto remove_object_from_database(sbk_id objectID, const database_name& objectName) -> sbk::result<void>;
 
         /**
          * @brief Adds an entry to the name -> ID lookup. Allows functions to find the ID of an object from its name before the live object exists.

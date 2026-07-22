@@ -42,18 +42,22 @@ auto sbk::core::database::assign_name_to_id(sbk_id id, const database_name& name
     return sbk::ok();
 }
 
-auto sbk::core::database::remove_object_from_database(sbk_id objectID) -> sbk::result<void>
+auto sbk::core::database::remove_object_from_database(sbk_id objectID, const database_name& objectName) -> sbk::result<void>
 {
     SBK_CHECK(objectID != SBK_INVALID_ID, SBK_ERR_INVALID_PARAMETER);
 
-    auto nameIter       = m_nameToIdMap.end();
-    bool objectExpired  = false;
+    auto nameIter       = m_nameToIdMap.find(objectName);
 
     if (const auto idIter = m_idToPointerMap.find(objectID); idIter != m_idToPointerMap.end())
     {
         if (const std::shared_ptr<sbk::core::database_object> object = idIter->second.lock())
         {
-            nameIter = m_nameToIdMap.find(object->get_database_name());
+            // Users should be passing valid database names
+            // But if they don't, try and get a valid one so we don't have to take a slow removal path
+            if (nameIter == m_nameToIdMap.end())
+            {
+                nameIter = m_nameToIdMap.find(object->get_database_name());
+            }
 
             object->get_on_destroy().RemoveObject(this);
             object->get_on_update_id().RemoveObject(this);
@@ -71,7 +75,7 @@ auto sbk::core::database::remove_object_from_database(sbk_id objectID) -> sbk::r
     {
         m_nameToIdMap.erase(nameIter);
     }
-    else if (objectExpired)
+    else
     {
         SBK_WARN("Could not find {} in the database. Doing slow iteration to ensure any names that point to {} are removed", static_cast<const char*>(objectName), objectID);
 
@@ -249,9 +253,9 @@ auto sbk::core::database::on_object_destroyed(object* object) -> void
 {
     if (object != nullptr)
     {
-        if (database_object* databaseObject = object->try_convert_object<database_object>())
+        if (auto databaseObject = object->try_convert_object<database_object>())
         {
-            (void)remove_object_from_database(databaseObject->get_database_id());
+            (void)remove_object_from_database(databaseObject->get_database_id(), databaseObject->get_database_name());
         }
     }
 }
