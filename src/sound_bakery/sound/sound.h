@@ -37,8 +37,8 @@ namespace sbk::engine
         LEAK_DETECTOR(sound)
 
     public:
-        auto load_synchronous() -> void;
-        auto load_asynchronous() -> void;
+        auto load_synchronous() -> sbk::result<void>;
+        auto load_asynchronous() -> sbk::async_result<void>;
 
         auto set_sound_name(std::string soundName) -> void;
         auto set_encoded_sound_name(std::string path) -> void;
