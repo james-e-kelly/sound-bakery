@@ -29,10 +29,11 @@ namespace
      */
     struct scoped_engine
     {
-        scoped_engine()
+        scoped_engine(bool singleThreaded = true)
         {
             sbk_system_config config = sbk_system_config_init_default();
             config.logToConsole      = true;
+            config.singleThreadedUpdate = singleThreaded;
 
             REQUIRE(sbk::engine::system::create().has_value());
             REQUIRE(sbk::engine::system::get() != nullptr);
@@ -587,7 +588,7 @@ TEST_SUITE("Thread Domain")
 {
     TEST_CASE("Scopes mark the game and studio domains")
     {
-        scoped_engine engine;
+        scoped_engine engine(false);
 
         // Outside any pump, the calling thread belongs to no domain.
         CHECK(sbk::core::get_current_thread_domain() == sbk::core::thread_domain::unknown);
