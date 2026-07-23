@@ -115,6 +115,33 @@ extern "C"
 	 * @return SBK_SUCCESS if the message was enqueued correctly
 	 */
 	SBK_NODISCARD sbk_status SB_API sbk_system_stop_all(sbk_id gameObjectID);
+    
+	/**
+	 * @brief Gets the number of objects in the database.
+	 * 
+	 * The count can be used in @r sbk_system_get_object_info to retrieve object information.
+	 * 
+	 * @param count number of database objects
+	 * @return SBK_SUCCESS if the result could be retrieved. Does not mean that count is greater than 0
+	 */
+	SBK_NODISCARD sbk_status SB_API sbk_system_get_object_count(uint64_t* count);
+
+    /**
+     * @brief Get the ID and name of the database object at the index.
+	 * 
+	 * The information from this function can help to start generating assets inside an engine.
+	 * The name can be used to create assets. The name contains both the type, path, and name of the object.
+	 * The asset can be saved with the ID. That ID can then be used in functions like @sbk_system_post_event.
+	 * 
+     * @param index the index of the object to get information about. Should not exceed the count retrieved from @r sbk_system_get_object_count
+     * @param id the ID of the object at the index
+     * @param name the name of the object at the index. Will be in the form of "type:path/name"
+     * @param nameSize size of the buffer allocated for @r name. Should be allocated by the user
+     * @param actualNameSize the actual size of the name from the database
+     * @return SBK_SUCCESS if the object was found and id and name set
+	 * @return SBK_ERR_BAKERY_OBJECT_NOT_FOUND if the object was not found
+     */
+    SBK_NODISCARD sbk_status SB_API sbk_system_get_object_info(uint64_t index, sbk_id* id, char* name, uint64_t nameSize, uint64_t* actualNameSize);
 
 #ifdef __cplusplus
 }
