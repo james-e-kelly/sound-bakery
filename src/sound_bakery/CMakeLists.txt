@@ -48,7 +48,6 @@ target_link_libraries(sound_bakery_static PUBLIC
   concurrencpp::concurrencpp
   Boost::serialization
   Boost::msm
-  ztd::out_ptr
   yaml-archive
   Tracy::TracyClient
   PRIVATE
@@ -64,7 +63,6 @@ target_link_libraries(sound_bakery_shared PUBLIC
   spdlog::spdlog
   Boost::serialization
   Boost::msm
-  ztd::out_ptr
   yaml-archive
   Tracy::TracyClient
   PRIVATE

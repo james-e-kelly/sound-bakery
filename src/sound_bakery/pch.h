@@ -2,7 +2,6 @@
 
 #include "sound_bakery/reflection/reflection.h" //< Must be included here and not individual files. @todo Investigate rttr strangeness when included in multiple files
 
-
 #include "Delegates.h"
 #include "concurrencpp/concurrencpp.h"
 #include "sound_bakery_internal.h"
@@ -12,7 +11,6 @@
 #include "tl/expected.hpp"
 #include "tracy/Tracy.hpp"
 #include "tracy/TracyC.h"
-#include "ztd/out_ptr.hpp"
 
 #define BOOST_SPIRIT_DEBUG
 

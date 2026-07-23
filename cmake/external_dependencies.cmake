@@ -204,14 +204,6 @@ FetchContent_Declare(
 )
 
 FetchContent_Declare(
-  out_ptr
-  GIT_REPOSITORY https://github.com/soasis/out_ptr.git
-  GIT_TAG 02a577edfcf25e2519e380a95c16743b7e5878a1 # main @ 2026-07-17
-  GIT_PROGRESS TRUE
-  EXCLUDE_FROM_ALL
-)
-
-FetchContent_Declare(
   sbk_rpmalloc_content
   GIT_REPOSITORY https://github.com/mjansson/rpmalloc.git
   GIT_TAG 1.4.5

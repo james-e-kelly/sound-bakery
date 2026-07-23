@@ -123,6 +123,8 @@ set(SOUND_BAKERY_HEADERS
 
     sound/sound.h
 
+    task/task.h
+
     util/type_helper.h
 
     voice/voice.h
@@ -177,9 +179,6 @@ function(build_dependencies)
 
     message(STATUS "Fetching boost-yaml")
     FetchContent_MakeAvailable(boost-yaml)
-
-    message(STATUS "Fetching out_ptr")
-    FetchContent_MakeAvailable(out_ptr)
 
     # Tracy (v0.13.1) has no option to disable its install() rules: it always
     # installs TracyClient.lib, its headers and a CMake package config into the
