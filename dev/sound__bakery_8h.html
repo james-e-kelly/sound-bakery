@@ -336,6 +336,12 @@ Functions</h2></td></tr>
 <tr class="memitem:ae14f7db95a7fa1621223497905e0886d" id="r_ae14f7db95a7fa1621223497905e0886d"><td class="memItemLeft" align="right" valign="top">SBK_NODISCARD sbk_status SB_API&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sound__bakery_8h.html#ae14f7db95a7fa1621223497905e0886d">sbk_system_stop_all</a> (sbk_id gameObjectID)</td></tr>
 <tr class="memdesc:ae14f7db95a7fa1621223497905e0886d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stop all events and sounds on the game object.  <br /></td></tr>
 <tr class="separator:ae14f7db95a7fa1621223497905e0886d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5288e2986d5c942e5f0556b237a44bb0" id="r_a5288e2986d5c942e5f0556b237a44bb0"><td class="memItemLeft" align="right" valign="top">SBK_NODISCARD sbk_status SB_API&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sound__bakery_8h.html#a5288e2986d5c942e5f0556b237a44bb0">sbk_system_get_object_count</a> (uint64_t *count)</td></tr>
+<tr class="memdesc:a5288e2986d5c942e5f0556b237a44bb0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the number of objects in the database.  <br /></td></tr>
+<tr class="separator:a5288e2986d5c942e5f0556b237a44bb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9edb9e15f98e8bc1b48913372c3140c3" id="r_a9edb9e15f98e8bc1b48913372c3140c3"><td class="memItemLeft" align="right" valign="top">SBK_NODISCARD sbk_status SB_API&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sound__bakery_8h.html#a9edb9e15f98e8bc1b48913372c3140c3">sbk_system_get_object_info</a> (uint64_t index, sbk_id *id, char *name, uint64_t nameSize, uint64_t *actualNameSize)</td></tr>
+<tr class="memdesc:a9edb9e15f98e8bc1b48913372c3140c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the ID and name of the database object at the index.  <br /></td></tr>
+<tr class="separator:a9edb9e15f98e8bc1b48913372c3140c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>An open-source audio middleware tool with an authoring application and programmer's API. </p>
@@ -473,6 +479,96 @@ SBK_ERR_OUT_OF_MEMORY if the system could not be created </dd></dl>
 <p>Destroy the system object and release all memory. </p>
 <p>Everything, including threads, <a class="el" href="structsc__system.html" title="Object that manages the node graph, sounds, output etc.">sc_system</a>, jobs, and data is destroyed and released.</p>
 <p>@warn @r sbk_system_create and @r sbk_system_destroy are not thread-safe. Calling either of these functions concurrently with any other API function may cause undefined behavior. </p><dl class="section return"><dt>Returns</dt><dd></dd></dl>
+
+</div>
+</div>
+<a id="a5288e2986d5c942e5f0556b237a44bb0" name="a5288e2986d5c942e5f0556b237a44bb0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5288e2986d5c942e5f0556b237a44bb0">&#9670;&#160;</a></span>sbk_system_get_object_count()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">SBK_NODISCARD sbk_status SB_API sbk_system_get_object_count </td>
+          <td>(</td>
+          <td class="paramtype">uint64_t *&#160;</td>
+          <td class="paramname"><em>count</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets the number of objects in the database. </p>
+<p>The count can be used in @r sbk_system_get_object_info to retrieve object information.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">count</td><td>number of database objects </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>SBK_SUCCESS if the result could be retrieved. Does not mean that count is greater than 0 </dd></dl>
+
+</div>
+</div>
+<a id="a9edb9e15f98e8bc1b48913372c3140c3" name="a9edb9e15f98e8bc1b48913372c3140c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9edb9e15f98e8bc1b48913372c3140c3">&#9670;&#160;</a></span>sbk_system_get_object_info()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">SBK_NODISCARD sbk_status SB_API sbk_system_get_object_info </td>
+          <td>(</td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">sbk_id *&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>nameSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint64_t *&#160;</td>
+          <td class="paramname"><em>actualNameSize</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the ID and name of the database object at the index. </p>
+<p>The information from this function can help to start generating assets inside an engine. The name can be used to create assets. The name contains both the type, path, and name of the object. The asset can be saved with the ID. That ID can then be used in functions like @sbk_system_post_event.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">index</td><td>the index of the object to get information about. Should not exceed the count retrieved from @r sbk_system_get_object_count </td></tr>
+    <tr><td class="paramname">id</td><td>the ID of the object at the index </td></tr>
+    <tr><td class="paramname">name</td><td>the name of the object at the index. Will be in the form of "type:path/name" </td></tr>
+    <tr><td class="paramname">nameSize</td><td>size of the buffer allocated for @r name. Should be allocated by the user </td></tr>
+    <tr><td class="paramname">actualNameSize</td><td>the actual size of the name from the database </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>SBK_SUCCESS if the object was found and id and name set </dd>
+<dd>
+SBK_ERR_BAKERY_OBJECT_NOT_FOUND if the object was not found </dd></dl>
 
 </div>
 </div>
