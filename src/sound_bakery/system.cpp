@@ -6,7 +6,11 @@
 #include "sound_bakery/gameobject/gameobject.h"
 #include "sound_bakery/node/bus/bus.h"
 #include "sound_bakery/profiling/voice_tracker.h"
+#include "sound_bakery/task/task.h"
 #include "sound_bakery/util/type_helper.h"
+#include "sound_bakery/task/command_queue.h"
+#include "sound_bakery/task/manual_executor.h"
+#include "sound_bakery/task/thread_executor.h"
 #include "spdlog/sinks/daily_file_sink.h"
 #include "spdlog/sinks/rotating_file_sink.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
@@ -87,16 +91,6 @@ namespace
 system::system()
     : sc_system(), sbk::core::logger(s_soundBakeryLoggerName)
 {
-    concurrencpp::runtime_options runtimeOptions;
-    runtimeOptions.thread_started_callback = [](std::string_view threadName) -> void { sbk::memory::thread_start(threadName); };
-    runtimeOptions.thread_terminated_callback = [](std::string_view threadName) -> void { sbk::memory::thread_end(threadName); };
-
-    m_threadRuntime             = std::make_unique<concurrencpp::runtime>(runtimeOptions);
-    m_gameThreadExecuter        = std::make_shared<concurrencpp::manual_executor>();
-    m_studioThreadExecuter      = std::make_shared<concurrencpp::manual_executor>();
-    m_workerThread = std::make_shared<concurrencpp::worker_thread_executor>(runtimeOptions.thread_started_callback,
-                                                                            runtimeOptions.thread_terminated_callback);
-
     const sbk_status initLogResult = sc_system_log_init(this, miniaudio_log_callback);
     sbk::log_error(initLogResult, "sc_system_log_init");
 }
@@ -115,12 +109,6 @@ system::system(sbk::core::sbk_log_callback_proc logCallback)
 
 system::~system()
 {
-    m_studioThreadTimer.cancel();
-    m_workerThread->shutdown();
-    get_background_thread_executer()->shutdown();
-    get_game_thread_executer()->shutdown();
-    get_system_thread_executer()->shutdown();
-
     if (m_project)
     {
         m_project.reset();
@@ -128,6 +116,14 @@ system::~system()
 
     remove_all();
     BOOST_ASSERT(get_objects_count() == 0);
+
+    (void)m_systemExecutor->drain();
+    (void)m_gameExecutor->drain();
+    (void)m_workerThread->drain();
+    if (m_systemThread)
+    {
+        (void)m_systemThread->drain();
+    }
 
     if (m_initSoundChef)
     {
@@ -205,6 +201,8 @@ auto system::destroy() -> void
 
 auto system::init(const sbk_system_config& config) -> sbk::result<void>
 {
+    sbk::task<void> hello;
+
     sbk_system_config configCopy = config;
     configCopy.soundChefConfig.allocationCallbacks.pUserData = this;
     configCopy.soundChefConfig.allocationCallbacks.onMalloc = ma_malloc;
@@ -243,14 +241,21 @@ auto system::init(const sbk_system_config& config) -> sbk::result<void>
     // checks so single-threaded (editor) access outside a drain scope is allowed.
     sbk::core::set_single_threaded_mode(config.singleThreadedUpdate);
 
-    if (!config.singleThreadedUpdate)
+    m_gameExecutor          = std::make_shared<sbk::manual_executor>("Game Thread");
+    m_workerThread          = std::make_shared<sbk::thread_executor>("Worker Thread");
+    auto studioCommandQueue = std::make_shared<sbk::command_queue>("System Command Queue");
+
+    if (config.singleThreadedUpdate)
     {
-        m_studioThreadTimer = m_threadRuntime->timer_queue()->make_timer(0ms, 20ms, m_workerThread,
-            [this]
-            {
-                update_async();
-            });
+        studioCommandQueue->m_target = m_gameExecutor.get();
     }
+    else
+    {
+        m_systemThread = std::make_shared<sbk::thread_executor>("System Thread");
+        studioCommandQueue->m_target = m_systemThread.get();
+    }
+
+    m_systemExecutor = studioCommandQueue;
 
     return sbk::ok();
 }
@@ -260,16 +265,11 @@ auto system::update() -> sbk::result<void>
     FrameMarkStart(profiling_strings::s_updateName);
     ZoneScoped;
 
-    // If we're not running the update_async on a different thread, run it during update
-    // This operating mode lets consuming applications (the editor) access database data safely
-    if (!m_studioThreadTimer)
-    {
-        update_async();
-    }
+    SBK_TRYV(m_systemExecutor->post_work([this]() { update_async(); }));
+    SBK_TRYV(m_systemExecutor->flush());
 
     const sbk::core::scoped_thread_domain gameDomain(sbk::core::thread_domain::game);
-
-    m_gameThreadExecuter->loop(m_gameThreadExecuter->size());
+    SBK_TRYV(m_gameExecutor->drain());
 
 #if SBK_CONFIG_ENABLE_PROFILING
     if (m_voiceTracker)
@@ -303,12 +303,6 @@ auto system::update() -> sbk::result<void>
 auto sbk::engine::system::update_async() -> void
 {
     ZoneScoped;
-
-    // The whole drain window is the studio domain - the executor tasks and
-    // the game object updates below both count as studio-owned work.
-    const sbk::core::scoped_thread_domain studioDomain(sbk::core::thread_domain::studio);
-
-    m_studioThreadExecuter->loop(m_studioThreadExecuter->size());
 
     for (const auto& object : get_objects_of_type(sbk::engine::game_object::type()))
     {
@@ -383,19 +377,19 @@ auto system::get_voice_tracker() const -> sbk::engine::profiling::voice_tracker*
     return m_voiceTracker.get();
 }
 
-auto sbk::engine::system::get_game_thread_executer() const -> std::shared_ptr<concurrencpp::manual_executor>
+auto sbk::engine::system::get_game_executer() const -> std::shared_ptr<sbk::executor>
 {
-    return m_gameThreadExecuter;
+    return m_gameExecutor;
 }
 
-auto sbk::engine::system::get_system_thread_executer() const -> std::shared_ptr<concurrencpp::manual_executor>
+auto sbk::engine::system::get_system_executer() const -> std::shared_ptr<sbk::executor>
 {
-    return m_studioThreadExecuter;
+    return m_systemExecutor;
 }
 
-auto sbk::engine::system::get_background_thread_executer() const -> std::shared_ptr<concurrencpp::thread_pool_executor>
+auto sbk::engine::system::get_worker_executer() const -> std::shared_ptr<sbk::executor>
 {
-    return m_threadRuntime ? m_threadRuntime->background_executor() : std::shared_ptr<concurrencpp::thread_pool_executor>{};
+    return m_workerThread;
 }
 
 auto sbk::engine::system::get_listener_game_object() const -> std::shared_ptr<sbk::engine::game_object>

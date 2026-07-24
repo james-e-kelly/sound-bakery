@@ -1,10 +1,7 @@
 #pragma once
 
+#include "sound_bakery/pch.h"
 #include "sound_bakery/error/error.h"
-
-#include <spdlog/fmt/fmt.h>
-
-#include <utility>
 
 /**
  * @file result.h

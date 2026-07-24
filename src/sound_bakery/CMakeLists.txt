@@ -45,7 +45,6 @@ target_link_libraries(sound_bakery_static PUBLIC
   SoundBakery::Core
   SoundBakery::SoundChef_Static
   RTTR::Core_Lib
-  concurrencpp::concurrencpp
   Boost::serialization
   Boost::msm
   yaml-archive
@@ -59,7 +58,6 @@ target_link_libraries(sound_bakery_shared PUBLIC
   SoundBakery::Core
   SoundBakery::SoundChef_Shared
   RTTR::Core_Lib
-  concurrencpp::concurrencpp
   spdlog::spdlog
   Boost::serialization
   Boost::msm

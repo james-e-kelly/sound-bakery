@@ -257,7 +257,7 @@ sbk_status sbk_system_post_event(const char* eventName, sbk_id gameObjectID)
         std::weak_ptr<sbk::core::database_object> gameObject = sbk::engine::get_game_object(gameObjectID);
         SBK_STATUS_CHECK(!gameObject.expired(), SBK_ERR_BAKERY_OBJECT_NOT_FOUND);
 
-        system->get_system_thread_executer()->post(
+        auto result = system->get_system_executer()->post_work(
             [event, gameObject]()
             {
                 if (std::shared_ptr<sbk::engine::game_object> sharedGameObject = std::static_pointer_cast<sbk::engine::game_object>(gameObject.lock()))
@@ -269,6 +269,10 @@ sbk_status sbk_system_post_event(const char* eventName, sbk_id gameObjectID)
                 }
             });
 
+        if (!result.has_value())
+        {
+            return result.error().code();
+        }
         return SBK_SUCCESS;
     });
 }
@@ -284,16 +288,19 @@ sbk_status sbk_system_stop_all(sbk_id gameObjectID)
         std::weak_ptr<sbk::core::database_object> gameObject = sbk::engine::get_game_object(gameObjectID);
         SBK_STATUS_CHECK(!gameObject.expired(), SBK_ERR_BAKERY_OBJECT_NOT_FOUND);
 
-        system->get_system_thread_executer()->post(
+        auto result = system->get_system_executer()->post_work(
             [gameObject]()
             {
-                if (std::shared_ptr<sbk::engine::game_object> sharedGameObject =
-                        std::static_pointer_cast<sbk::engine::game_object>(gameObject.lock()))
+                if (std::shared_ptr<sbk::engine::game_object> sharedGameObject = std::static_pointer_cast<sbk::engine::game_object>(gameObject.lock()))
                 {
                     sharedGameObject->remove_all();  //< Assuming a game object only ever owns voices
                 }
             });
 
+        if (!result.has_value())
+        {
+            return result.error().code();
+        }
         return SBK_SUCCESS;
     });
 }
@@ -353,7 +360,7 @@ namespace sbk::engine
         std::weak_ptr<sbk::core::database_object> gameObject = get_game_object(gameObjectID);
         SBK_CHECK(!gameObject.expired(), SBK_ERR_BAKERY_OBJECT_NOT_FOUND);
 
-        system->get_system_thread_executer()->post(
+        return system->get_system_executer()->post_work(
             [container, gameObject]()
             {
                 if (std::shared_ptr<sbk::engine::game_object> sharedGameObject = std::static_pointer_cast<sbk::engine::game_object>(gameObject.lock()))
@@ -364,8 +371,6 @@ namespace sbk::engine
                     }
                 }
             });
-
-        return sbk::ok();
     }
 
     auto get_game_object(sbk_id gameObjectID) -> std::weak_ptr<sbk::core::database_object>

@@ -595,7 +595,7 @@ TEST_SUITE("Thread Domain")
 
         // Tasks drained by update() run inside the game domain.
         std::atomic<sbk::core::thread_domain> observedGame{sbk::core::thread_domain::unknown};
-        engine.get()->get_game_thread_executer()->post( [&observedGame] { observedGame = sbk::core::get_current_thread_domain(); });
+        engine.get()->get_game_executer()->post_work( [&observedGame] { observedGame = sbk::core::get_current_thread_domain(); });
 
         REQUIRE(engine.get()->update().has_value());
         CHECK(observedGame.load() == sbk::core::thread_domain::game);
@@ -605,12 +605,14 @@ TEST_SUITE("Thread Domain")
         std::atomic<sbk::core::thread_domain> observedStudio{sbk::core::thread_domain::unknown};
         std::atomic<bool> studioTaskRan{false};
 
-        engine.get()->get_system_thread_executer()->post(
+        engine.get()->get_system_executer()->post_work(
             [&observedStudio, &studioTaskRan]
             {
                 observedStudio = sbk::core::get_current_thread_domain();
                 studioTaskRan  = true;
             });
+
+        (void)engine.get()->update();
 
         const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(5);
         while (!studioTaskRan.load() && std::chrono::steady_clock::now() < deadline)

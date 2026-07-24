@@ -80,15 +80,6 @@ namespace sbk
     using result = tl::expected<T, error>;
 
     /**
-     * @brief An asynchronous result of a fallible operation that can be co_await'd.
-     * 
-     * This is a @r concurrencpp::result object that is used to make a function a coroutine.
-     * Coroutines can use co_await to suspend execution and await a result.
-     */
-    template <class T = void>
-    using async_result = concurrencpp::result<sbk::result<T>>;
-
-    /**
      * @brief Success value for a @c result<void> function.
      */
     [[nodiscard]] inline auto ok() -> result<void> { return {}; }

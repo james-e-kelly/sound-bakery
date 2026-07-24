@@ -123,6 +123,10 @@ set(SOUND_BAKERY_HEADERS
 
     sound/sound.h
 
+    task/executor.h
+    task/command_queue.h
+    task/manual_executor.h
+    task/thread_executor.h
     task/task.h
 
     util/type_helper.h

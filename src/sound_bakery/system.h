@@ -6,6 +6,7 @@
 #include "sound_bakery/core/database/database.h"
 #include "sound_bakery/core/database/database_ptr.h"
 #include "sound_bakery/core/object/object_tracker.h"
+#include "sound_bakery/task/executor.h"
 
 namespace sbk
 {
@@ -70,9 +71,9 @@ namespace sbk
             [[nodiscard]] auto get_operating_mode() -> operating_mode; //< @todo Remove this. Users should just try and get the objects they want
             [[nodiscard]] auto get_project() const -> sbk::editor::project*;
             [[nodiscard]] auto get_voice_tracker() const -> sbk::engine::profiling::voice_tracker*;
-            [[nodiscard]] auto get_game_thread_executer() const -> std::shared_ptr<concurrencpp::manual_executor>;
-            [[nodiscard]] auto get_system_thread_executer() const -> std::shared_ptr<concurrencpp::manual_executor>;
-            [[nodiscard]] auto get_background_thread_executer() const -> std::shared_ptr<concurrencpp::thread_pool_executor>;
+            [[nodiscard]] auto get_game_executer() const -> std::shared_ptr<sbk::executor>;
+            [[nodiscard]] auto get_system_executer() const -> std::shared_ptr<sbk::executor>;
+            [[nodiscard]] auto get_worker_executer() const -> std::shared_ptr<sbk::executor>;
             [[nodiscard]] auto get_listener_game_object() const -> std::shared_ptr<sbk::engine::game_object>;
             [[nodiscard]] auto get_master_bus() const -> std::shared_ptr<sbk::engine::bus>;
             [[nodiscard]] auto get_current_object_owner() -> sbk::core::object_owner*;  //< Either project for editor or system for runtime
@@ -106,11 +107,11 @@ namespace sbk
             std::weak_ptr<sbk::engine::bus> m_masterBus;
             std::unique_ptr<sbk::editor::project> m_project;
             std::unique_ptr<profiling::voice_tracker> m_voiceTracker;
-            std::unique_ptr<concurrencpp::runtime> m_threadRuntime;
-            std::shared_ptr<concurrencpp::manual_executor> m_gameThreadExecuter;
-            std::shared_ptr<concurrencpp::manual_executor> m_studioThreadExecuter;
-            std::shared_ptr<concurrencpp::worker_thread_executor> m_workerThread;
-            concurrencpp::timer m_studioThreadTimer;
+
+            std::shared_ptr<sbk::executor> m_gameExecutor;      //< Manual executor that runs during @r update
+            std::shared_ptr<sbk::executor> m_systemExecutor;    //< Command queue that either flushes to a worker thread or the game thread for single threaded mode
+            std::shared_ptr<sbk::executor> m_systemThread;      //< System worker thread. Can be null if in single threaded mode
+            std::shared_ptr<sbk::executor> m_workerThread;      //< Worker thread for loading and decoding
         };
     }  // namespace engine
 }  // namespace sbk

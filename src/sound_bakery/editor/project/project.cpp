@@ -7,6 +7,7 @@
 #include "sound_bakery/sound/sound.h"
 #include "sound_bakery/soundbank/soundbank.h"
 #include "sound_bakery/system.h"
+#include "sound_bakery/task/task.h"
 #include "sound_chef/sound_chef_bank.h"
 #include "sound_chef/sound_chef_encoder.h"
 
@@ -17,11 +18,11 @@ auto sbk::editor::project::open_project(const std::filesystem::path& projectFile
 
     m_projectConfig = project_configuration(projectFile);
 
-    (void)load_objects();
-    (void)load_system();
-    (void)load_sounds();
+    SBK_TRYV(load_objects());
+    SBK_TRYV(load_system());
+    SBK_TRYV(load_sounds());
 
-    (void)create_preview_container();
+    SBK_TRYV(create_preview_container());
 
     return sbk::ok();
 }
@@ -33,43 +34,64 @@ auto sbk::editor::project::save_project() const -> sbk::result<void>
     return sbk::ok();
 }
 
+namespace
+{
+    // The per-sound encode, as a named fire-and-forget coroutine. Everything it needs is passed BY
+    // VALUE, so it stays valid across the co_await thread hops (a coroutine's parameters live in its
+    // frame; a temporary lambda's captures would dangle after the first suspension).
+    auto encode_sound(sbk::engine::sound* sound,
+                      sc_encoder_config encoderConfig,
+                      std::filesystem::path source,
+                      std::filesystem::path destination,
+                      std::shared_ptr<sbk::executor> worker,
+                      std::shared_ptr<sbk::executor> systemThread) -> sbk::detached_task
+    {
+        // Do the heavy encode off the calling thread.
+        co_await worker->schedule();
+
+        if (const sbk_status encodeResult = sc_encoder_write_from_file(source.string().c_str(), destination.string().c_str(), &encoderConfig); encodeResult != SBK_SUCCESS)
+        {
+            sbk::log_error(encodeResult, "sc_encoder_write_from_file");  //< Detached task; log and stop.
+            co_return;
+        }
+
+        // Hop to the system thread to mutate the object.
+        co_await systemThread->schedule();
+        sound->set_encoded_sound_name(destination.string());
+    }
+}  // namespace
+
 auto sbk::editor::project::encode_all_media() const -> void
 {
-    std::shared_ptr<concurrencpp::thread_pool_executor> threadPool = sbk::engine::system::get()->get_background_thread_executer();
-
-    if (sbk::core::object_tracker* const objectTracker = sbk::engine::system::get())
+    sbk::engine::system* const system = sbk::engine::system::get();
+    if (system == nullptr)
     {
-        for (sbk::core::object* const soundObject : objectTracker->get_objects_of_type(sbk::engine::sound::type()))
+        return;
+    }
+
+    std::shared_ptr<sbk::executor> workerThread = system->get_worker_executer();
+    std::shared_ptr<sbk::executor> systemThread = system->get_system_executer();
+
+    for (sbk::core::object* const soundObject : system->get_objects_of_type(sbk::engine::sound::type()))
+    {
+        if (sbk::engine::sound* const sound = soundObject->try_convert_object<sbk::engine::sound>())
         {
-            if (sbk::engine::sound* const sound = soundObject->try_convert_object<sbk::engine::sound>())
+            const std::filesystem::path encodedSoundFile =
+                m_projectConfig.encoded_folder() / (std::to_string(sound->get_database_id()) + ".ogg");
+            std::filesystem::create_directories(encodedSoundFile.parent_path());
+
+            const sc_encoder_config encoderConfig = sc_encoder_config_init(sc_encoding_format_vorbis, ma_format_f32,
+                                                                           0, ma_standard_sample_rate_48000, 8);
+
+            std::filesystem::path soundPath = sound->get_sound_name();
+
+            if (!std::filesystem::exists(soundPath))
             {
-                const std::filesystem::path encodedSoundFile =
-                    m_projectConfig.encoded_folder() / (std::to_string(sound->get_database_id()) + ".ogg");
-                std::filesystem::create_directories(encodedSoundFile.parent_path());
-
-                const sc_encoder_config encoderConfig = sc_encoder_config_init(sc_encoding_format_vorbis, ma_format_f32,
-                                                                               0, ma_standard_sample_rate_48000, 8);
-
-                std::filesystem::path soundPath = sound->get_sound_name();
-
-                if (!std::filesystem::exists(soundPath))
-                {
-                    soundPath = m_projectConfig.source_folder() / soundPath;
-                }
-
-                threadPool->post(
-                    [sound, encoderConfig, encodedSoundFile, soundPath]
-                    {
-                        if (const sbk_status encodeResult = sc_encoder_write_from_file(soundPath.string().c_str(), encodedSoundFile.string().c_str(), &encoderConfig); encodeResult != SBK_SUCCESS)
-                        {
-                            sbk::log_error(encodeResult, "sc_encoder_write_from_file");  //< Async task; log and continue.
-                        }
-
-                        concurrencpp::resume_on(sbk::engine::system::get()->get_game_thread_executer());
-
-                        sound->set_encoded_sound_name(encodedSoundFile.string());
-                    });
+                soundPath = m_projectConfig.source_folder() / soundPath;
             }
+
+            // Fire and forget: the coroutine owns itself and hops onto the worker thread on its own.
+            encode_sound(sound, encoderConfig, soundPath, encodedSoundFile, workerThread, systemThread);
         }
     }
 }

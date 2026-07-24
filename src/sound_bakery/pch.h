@@ -3,7 +3,6 @@
 #include "sound_bakery/reflection/reflection.h" //< Must be included here and not individual files. @todo Investigate rttr strangeness when included in multiple files
 
 #include "Delegates.h"
-#include "concurrencpp/concurrencpp.h"
 #include "sound_bakery_internal.h"
 #include "spdlog/async.h"
 #include "spdlog/fmt/fmt.h"
@@ -20,11 +19,14 @@
 #include <boost/range/algorithm.hpp>
 #include <boost/assert.hpp>
 #include <boost/serialization/utility.hpp>
+#include <condition_variable>
+#include <coroutine>
 #include <cstdint>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <mutex>
 #include <new>
 #include <optional>
 #include <random>
@@ -33,12 +35,14 @@
 #include <string>
 #include <string_view>
 #include <source_location>
+#include <thread>
 #include <type_traits>
 #include <unordered_map>
 #include <unordered_set>
 #include <utility>
 #include <variant>
 #include <vector>
+#include <queue>
 
 /**
  * @def Registers this type's get_parent classes (if any) and marks its private members visible to reflection.
