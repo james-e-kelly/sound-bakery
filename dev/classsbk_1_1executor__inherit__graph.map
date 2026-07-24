@@ -1,0 +1,9 @@
+<map id="sbk::executor" name="sbk::executor">
+<area shape="rect" id="Node000001" title="Abstract execution context: somewhere coroutines and work items can be posted to run." alt="" coords="223,5,332,31"/>
+<area shape="rect" id="Node000002" href="$classsbk_1_1command__queue.html" title="Queues tasks until it is &quot;flushed&quot; onto another executor." alt="" coords="5,79,171,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="235,38,120,81,118,76,233,33"/>
+<area shape="rect" id="Node000003" href="$classsbk_1_1manual__executor.html" title="An @r executor with no thread of its own: work is queued, then run all at once by whoever calls @r dr..." alt="" coords="195,79,360,104"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="280,44,280,79,275,79,275,44"/>
+<area shape="rect" id="Node000004" href="$classsbk_1_1thread__executor.html" title="An @r executor that owns one OS thread and runs posted work as soon as it arrives." alt="" coords="385,79,543,104"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="321,33,434,76,433,81,319,38"/>
+</map>

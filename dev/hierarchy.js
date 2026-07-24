@@ -6,6 +6,7 @@ var hierarchy =
       [ "editor_app", "classeditor__app.html", null ]
     ] ],
     [ "audio_meter_utils::audio_meter_draw_info", "structaudio__meter__utils_1_1audio__meter__draw__info.html", null ],
+    [ "sbk::task< T >::awaiter", "structsbk_1_1task_1_1awaiter.html", null ],
     [ "sbk::core::serialization::boost_serializer< load_archive, save_archive, inputMode, outputMode >", "classsbk_1_1core_1_1serialization_1_1boost__serializer.html", null ],
     [ "sbk::reflection::CreatePointerConversion< DerivedClass, T >", "structsbk_1_1reflection_1_1CreatePointerConversion.html", null ],
     [ "sbk::reflection::CreatePointerConversion< DerivedClass >", "structsbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_01_4.html", null ],
@@ -27,6 +28,7 @@ var hierarchy =
     [ "sbk::core::database_ptr< sbk::engine::named_parameter >", "classsbk_1_1core_1_1database__ptr.html", null ],
     [ "sbk::core::database_ptr< sbk::engine::node_base >", "classsbk_1_1core_1_1database__ptr.html", null ],
     [ "sbk::core::database_ptr< sbk::engine::sound >", "classsbk_1_1core_1_1database__ptr.html", null ],
+    [ "sbk::detached_task", "structsbk_1_1detached__task.html", null ],
     [ "sbk::engine::effect_parameter_description", "classsbk_1_1engine_1_1effect__parameter__description.html", null ],
     [ "gluten::element", null, [
       [ "add_effect_button", "classadd__effect__button.html", null ]
@@ -78,6 +80,12 @@ var hierarchy =
     [ "sbk::engine::event_stop", "structsbk_1_1engine_1_1event__stop.html", null ],
     [ "sbk::engine::event_update", "structsbk_1_1engine_1_1event__update.html", null ],
     [ "sbk::engine::event_virtualise", "structsbk_1_1engine_1_1event__virtualise.html", null ],
+    [ "sbk::executor", "classsbk_1_1executor.html", [
+      [ "sbk::command_queue", "classsbk_1_1command__queue.html", null ],
+      [ "sbk::manual_executor", "classsbk_1_1manual__executor.html", null ],
+      [ "sbk::thread_executor", "classsbk_1_1thread__executor.html", null ]
+    ] ],
+    [ "sbk::final_awaiter", "structsbk_1_1final__awaiter.html", null ],
     [ "sbk::engine::flag_playing", "structsbk_1_1engine_1_1flag__playing.html", null ],
     [ "sbk::engine::flag_stopped", "structsbk_1_1engine_1_1flag__stopped.html", null ],
     [ "sbk::engine::gather_children_context", "structsbk_1_1engine_1_1gather__children__context.html", null ],
@@ -110,9 +118,11 @@ var hierarchy =
     [ "sbk::core::parsed_database_name", "structsbk_1_1core_1_1parsed__database__name.html", null ],
     [ "playable_selection", "structplayable__selection.html", null ],
     [ "sbk::editor::project_configuration", "structsbk_1_1editor_1_1project__configuration.html", null ],
+    [ "sbk::detached_task::promise_type", "structsbk_1_1detached__task_1_1promise__type.html", null ],
     [ "sbk::core::property< T >", "classsbk_1_1core_1_1property.html", null ],
     [ "sbk::core::property< parameter_type >", "classsbk_1_1core_1_1property.html", null ],
     [ "property_drawer", "classproperty__drawer.html", null ],
+    [ "sbk::ready_result_awaiter< U >", "structsbk_1_1ready__result__awaiter.html", null ],
     [ "sbk::reflection::RegisterPointerConversionsForBaseClasses< T >", "structsbk_1_1reflection_1_1RegisterPointerConversionsForBaseClasses.html", null ],
     [ "gluten::root_widget", null, [
       [ "root_widget", "classroot__widget.html", null ]
@@ -144,6 +154,7 @@ var hierarchy =
       [ "sbk::engine::system", "classsbk_1_1engine_1_1system.html", null ]
     ] ],
     [ "sc_system_config", "structsc__system__config.html", null ],
+    [ "sbk::executor::schedule_awaiter", "structsbk_1_1executor_1_1schedule__awaiter.html", null ],
     [ "sbk::core::scoped_thread_domain", "classsbk_1_1core_1_1scoped__thread__domain.html", null ],
     [ "selection", "structselection.html", null ],
     [ "sbk::core::serialization::serialized_associative_container", "structsbk_1_1core_1_1serialization_1_1serialized__associative__container.html", null ],
@@ -173,6 +184,9 @@ var hierarchy =
       [ "sbk::engine::node_instance_fsm", "structsbk_1_1engine_1_1node__instance__fsm.html", null ]
     ] ],
     [ "stbi_io_callbacks", "structstbi__io__callbacks.html", null ],
+    [ "sbk::task< T >", "classsbk_1_1task.html", null ],
+    [ "sbk::task_promise< T >", "structsbk_1_1task__promise.html", null ],
+    [ "sbk::task_promise< void >", "structsbk_1_1task__promise_3_01void_01_4.html", null ],
     [ "sbk::util::type_comparator", "structsbk_1_1util_1_1type__comparator.html", null ],
     [ "sbk::util::type_helper", "classsbk_1_1util_1_1type__helper.html", null ],
     [ "boost::mpl::vector", null, [

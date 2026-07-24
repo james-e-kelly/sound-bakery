@@ -1,0 +1,5 @@
+<map id="sbk::manual_executor" name="sbk::manual_executor">
+<area shape="rect" id="Node000001" title="An @r executor with no thread of its own: work is queued, then run all at once by whoever calls @r dr..." alt="" coords="5,79,171,104"/>
+<area shape="rect" id="Node000002" href="$classsbk_1_1executor.html" title="Abstract execution context: somewhere coroutines and work items can be posted to run." alt="" coords="33,5,143,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="91,44,91,79,85,79,85,44"/>
+</map>

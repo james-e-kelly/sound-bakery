@@ -15,6 +15,7 @@ var dir_c849dcb4e7379c1d4c8da40341161ac3 =
     [ "serialization", "dir_b20da27cefee483b28bf10beb26b1d36.html", "dir_b20da27cefee483b28bf10beb26b1d36" ],
     [ "sound", "dir_396fe3aba99ed81a05a14abacc49ee61.html", "dir_396fe3aba99ed81a05a14abacc49ee61" ],
     [ "soundbank", "dir_8de27a79e173ff29d2d14db251963da3.html", "dir_8de27a79e173ff29d2d14db251963da3" ],
+    [ "task", "dir_215ae6e2d2b50fa94130dfef6e40aa8c.html", "dir_215ae6e2d2b50fa94130dfef6e40aa8c" ],
     [ "util", "dir_035c92f05e923c4e04bf7d5d73392fce.html", "dir_035c92f05e923c4e04bf7d5d73392fce" ],
     [ "voice", "dir_2d6bb5ce29d94ffe4800e0beb7f63c3f.html", "dir_2d6bb5ce29d94ffe4800e0beb7f63c3f" ],
     [ "pch.h", "src_2sound__bakery_2pch_8h_source.html", null ],

@@ -12,7 +12,8 @@ var searchData=
   ['project_5fexplorer_5fwidget_9',['project_explorer_widget',['../classproject__explorer__widget.html',1,'']]],
   ['project_5fmanager_10',['project_manager',['../classproject__manager.html',1,'']]],
   ['project_5fnodes_5fwidget_11',['project_nodes_widget',['../classproject__nodes__widget.html',1,'']]],
-  ['property_12',['property',['../classsbk_1_1core_1_1property.html',1,'sbk::core']]],
-  ['property_3c_20parameter_5ftype_20_3e_13',['property&lt; parameter_type &gt;',['../classsbk_1_1core_1_1property.html',1,'sbk::core']]],
-  ['property_5fdrawer_14',['property_drawer',['../classproperty__drawer.html',1,'']]]
+  ['promise_5ftype_12',['promise_type',['../structsbk_1_1detached__task_1_1promise__type.html',1,'sbk::detached_task']]],
+  ['property_13',['property',['../classsbk_1_1core_1_1property.html',1,'sbk::core']]],
+  ['property_3c_20parameter_5ftype_20_3e_14',['property&lt; parameter_type &gt;',['../classsbk_1_1core_1_1property.html',1,'sbk::core']]],
+  ['property_5fdrawer_15',['property_drawer',['../classproperty__drawer.html',1,'']]]
 ];

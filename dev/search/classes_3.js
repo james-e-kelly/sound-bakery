@@ -12,5 +12,6 @@ var searchData=
   ['database_5fptr_3c_20sbk_3a_3aengine_3a_3anode_5fbase_20_3e_9',['database_ptr&lt; sbk::engine::node_base &gt;',['../classsbk_1_1core_1_1database__ptr.html',1,'sbk::core']]],
   ['database_5fptr_3c_20sbk_3a_3aengine_3a_3asound_20_3e_10',['database_ptr&lt; sbk::engine::sound &gt;',['../classsbk_1_1core_1_1database__ptr.html',1,'sbk::core']]],
   ['database_5fwidget_11',['database_widget',['../classdatabase__widget.html',1,'']]],
-  ['details_5fwidget_12',['details_widget',['../classdetails__widget.html',1,'']]]
+  ['detached_5ftask_12',['detached_task',['../structsbk_1_1detached__task.html',1,'sbk']]],
+  ['details_5fwidget_13',['details_widget',['../classdetails__widget.html',1,'']]]
 ];

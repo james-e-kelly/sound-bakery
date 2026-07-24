@@ -1,0 +1,5 @@
+<map id="sbk::thread_executor" name="sbk::thread_executor">
+<area shape="rect" id="Node000001" title="An @r executor that owns one OS thread and runs posted work as soon as it arrives." alt="" coords="5,79,164,104"/>
+<area shape="rect" id="Node000002" href="$classsbk_1_1executor.html" title="Abstract execution context: somewhere coroutines and work items can be posted to run." alt="" coords="30,5,139,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="87,44,87,79,82,79,82,44"/>
+</map>

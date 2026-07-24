@@ -106,7 +106,17 @@ var annotated_dup =
         [ "type_comparator", "structsbk_1_1util_1_1type__comparator.html", null ],
         [ "type_helper", "classsbk_1_1util_1_1type__helper.html", null ]
       ] ],
-      [ "error", "classsbk_1_1error.html", null ]
+      [ "command_queue", "classsbk_1_1command__queue.html", "classsbk_1_1command__queue" ],
+      [ "detached_task", "structsbk_1_1detached__task.html", "structsbk_1_1detached__task" ],
+      [ "error", "classsbk_1_1error.html", null ],
+      [ "executor", "classsbk_1_1executor.html", "classsbk_1_1executor" ],
+      [ "final_awaiter", "structsbk_1_1final__awaiter.html", null ],
+      [ "manual_executor", "classsbk_1_1manual__executor.html", "classsbk_1_1manual__executor" ],
+      [ "ready_result_awaiter", "structsbk_1_1ready__result__awaiter.html", null ],
+      [ "task", "classsbk_1_1task.html", "classsbk_1_1task" ],
+      [ "task_promise", "structsbk_1_1task__promise.html", null ],
+      [ "task_promise< void >", "structsbk_1_1task__promise_3_01void_01_4.html", null ],
+      [ "thread_executor", "classsbk_1_1thread__executor.html", "classsbk_1_1thread__executor" ]
     ] ],
     [ "add_effect_button", "classadd__effect__button.html", null ],
     [ "app_manager", "classapp__manager.html", null ],

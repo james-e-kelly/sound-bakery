@@ -1,0 +1,5 @@
+<map id="sbk::executor::schedule_awaiter" name="sbk::executor::schedule_awaiter">
+<area shape="rect" id="Node000001" title="Awaitable that puts a coroutine on this executor." alt="" coords="5,93,180,133"/>
+<area shape="rect" id="Node000002" href="$classsbk_1_1executor.html" title="Abstract execution context: somewhere coroutines and work items can be posted to run." alt="" coords="38,5,147,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="95,44,95,93,90,93,90,44"/>
+</map>
