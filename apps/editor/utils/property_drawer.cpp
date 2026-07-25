@@ -1,14 +1,15 @@
 #include "property_drawer.h"
 
-#include "gluten/theme/theme.h"
-#include "gluten/utils/imgui_util_functions.h"
-#include "gluten/utils/imgui_util_structures.h"
-#include "imgui.h"
 #include "sound_bakery/core/object/object.h"
 #include "sound_bakery/editor/editor_defines.h"
 #include "sound_bakery/node/node.h"
 #include "sound_bakery/system.h"
 #include "sound_bakery/util/type_helper.h"
+
+#include "gluten/theme/theme.h"
+#include "gluten/utils/imgui_util_functions.h"
+#include "gluten/utils/imgui_util_structures.h"
+#include "imgui.h"
 
 void property_drawer::draw_object(rttr::type type, rttr::instance instance)
 {

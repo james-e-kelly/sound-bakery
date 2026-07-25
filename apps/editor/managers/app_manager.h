@@ -1,8 +1,8 @@
 #pragma once
 
 #include "gluten/managers/manager.h"
-#include "widgets/splash_widget.h"
 #include "widgets/new_project_widget.h"
+#include "widgets/splash_widget.h"
 
 namespace gluten
 {

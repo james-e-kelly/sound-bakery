@@ -1,13 +1,14 @@
 #include "method_drawer.h"
 
-#include "gluten/theme/theme.h"
-#include "gluten/utils/imgui_util_functions.h"
-#include "gluten/utils/imgui_util_structures.h"
-#include "imgui.h"
 #include "sound_bakery/core/database/database_object.h"
 #include "sound_bakery/editor/editor_defines.h"
 #include "sound_bakery/system.h"
 #include "sound_bakery/util/type_helper.h"
+
+#include "gluten/theme/theme.h"
+#include "gluten/utils/imgui_util_functions.h"
+#include "gluten/utils/imgui_util_structures.h"
+#include "imgui.h"
 
 using MethodIndex    = uint32_t;
 using ParameterIndex = uint32_t;

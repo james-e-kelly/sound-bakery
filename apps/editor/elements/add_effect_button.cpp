@@ -1,8 +1,9 @@
 #include "add_effect_button.h"
 
+#include "sound_bakery/node/node.h"
+
 #include "app/app.h"
 #include "managers/project_manager.h"
-#include "sound_bakery/node/node.h"
 
 namespace add_effect_button_utils
 {
@@ -10,8 +11,8 @@ namespace add_effect_button_utils
 }
 
 auto add_effect_button::render_element(const gluten::element_render_info& renderInfo) -> bool
-{ 
-	if (std::shared_ptr<project_manager> projectManager = gluten::app::get()->get_manager_by_class<project_manager>())
+{
+    if (std::shared_ptr<project_manager> projectManager = gluten::app::get()->get_manager_by_class<project_manager>())
     {
         selection& selection = projectManager->get_selection();
         if (sbk::core::object* const selected = selection.get_selected())
@@ -76,5 +77,5 @@ auto add_effect_button::render_element(const gluten::element_render_info& render
         }
     }
 
-	return false; 
+    return false;
 }

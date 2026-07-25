@@ -1,10 +1,11 @@
 #include "app_manager.h"
 
+#include "sound_bakery/editor/project/project.h"
+
 #include "app/app.h"
 #include "gluten/subsystems/widget_subsystem.h"
 #include "imgui.h"
 #include "nfd.h"  // native file dialog
-#include "sound_bakery/editor/project/project.h"
 
 void app_manager::init(gluten::app* app)
 {

@@ -1,10 +1,11 @@
 #include "app.h"
 
+#include "sound_bakery/editor/project/project.h"
+#include "sound_bakery/sound/sound.h"
+
 #include "gluten/subsystems/widget_subsystem.h"
 #include "managers/app_manager.h"
 #include "managers/project_manager.h"
-#include "sound_bakery/editor/project/project.h"
-#include "sound_bakery/sound/sound.h"
 #include "widgets/root_widget.h"
 
 namespace PathHelpers

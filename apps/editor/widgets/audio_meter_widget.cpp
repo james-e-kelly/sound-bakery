@@ -28,18 +28,21 @@ namespace audio_meter_utils
         audio_meter_draw_info()
         {
             std::transform(raw_volume_values.begin(), raw_volume_values.end(), volume_labels_storage.begin(),
-                           [](double value) { return std::to_string(int(value)); });
+                           [](double value)
+                           { return std::to_string(int(value)); });
 
             std::transform(volume_labels_storage.begin(), volume_labels_storage.end(), volume_labels.begin(),
-                           [](std::string& value) { return value.c_str(); });
+                           [](std::string& value)
+                           { return value.c_str(); });
 
             std::transform(raw_volume_values.begin(), raw_volume_values.end(), offset_volume_values.begin(),
-                           [](double value) { return value + volume_offset; });
+                           [](double value)
+                           { return value + volume_offset; });
         }
 
         // Values we want to show the user
         std::array<double, meter_ticks> raw_volume_values{-100.0, -90.0, -80.0, -70.0, -60.0, -50.0, -40.0,
-                                                          -30.0,  -20.0, -10.0, -5.0,  0.0,   5.0,   10.0};
+                                                          -30.0, -20.0, -10.0, -5.0, 0.0, 5.0, 10.0};
 
         // Strings to display to the user
         std::array<const char*, meter_ticks> volume_labels;

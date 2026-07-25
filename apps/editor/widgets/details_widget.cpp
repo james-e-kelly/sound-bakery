@@ -1,6 +1,7 @@
 #include "details_widget.h"
 
 #include "app/app.h"
+#include "elements/add_effect_button.h"
 #include "gluten/theme/theme.h"
 #include "gluten/utils/imgui_util_functions.h"
 #include "gluten/utils/imgui_util_structures.h"
@@ -8,7 +9,6 @@
 #include "managers/project_manager.h"
 #include "utils/method_drawer.h"
 #include "utils/property_drawer.h"
-#include "elements/add_effect_button.h"
 
 void details_widget::render_implementation()
 {

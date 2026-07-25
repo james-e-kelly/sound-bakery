@@ -1,7 +1,8 @@
 #pragma once
 
-#include "gluten/widgets/widget.h"
 #include "sound_bakery/system.h"
+
+#include "gluten/widgets/widget.h"
 
 class sc_dsp;
 

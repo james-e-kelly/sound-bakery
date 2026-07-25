@@ -1,13 +1,5 @@
 #include "project_nodes_widget.h"
 
-#include "app/app.h"
-#include "gluten/theme/theme.h"
-#include "gluten/theme/theme.h"
-#include "gluten/utils/imgui_util_functions.h"
-#include "gluten/utils/imgui_util_structures.h"
-#include "imgui.h"
-#include "imgui_internal.h"
-#include "managers/project_manager.h"
 #include "sound_bakery/core/database/database.h"
 #include "sound_bakery/core/object/object_tracker.h"
 #include "sound_bakery/editor/editor_defines.h"
@@ -19,6 +11,14 @@
 #include "sound_bakery/sound/sound.h"
 #include "sound_bakery/system.h"
 #include "sound_bakery/util/type_helper.h"
+
+#include "app/app.h"
+#include "gluten/theme/theme.h"
+#include "gluten/utils/imgui_util_functions.h"
+#include "gluten/utils/imgui_util_structures.h"
+#include "imgui.h"
+#include "imgui_internal.h"
+#include "managers/project_manager.h"
 #include "widgets/file_browser_widget.h"
 
 static const std::vector<SB_OBJECT_CATEGORY> s_objectPageCategories{SB_CATEGORY_PARAMETER, SB_CATEGORY_BUS,
@@ -236,7 +236,7 @@ void project_nodes_widget::render_single_node(rttr::type type, rttr::instance in
                     ImGui::Text(ICON_FAD_FILTER_BELL " %s", object->get_object_name().data());
 
                     if (unsigned int playingCount = sbk::engine::system::get()->get_voice_tracker()->get_playing_count_of_object(
-                                object->get_database_id()))
+                            object->get_database_id()))
                     {
                         ImGui::SameLine();
                         ImGui::Text("|%u|", playingCount);

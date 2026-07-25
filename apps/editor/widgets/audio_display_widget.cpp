@@ -1,13 +1,14 @@
 #include "audio_display_widget.h"
 
-#include "app/app.h"
-#include "imgui.h"
-#include "managers/project_manager.h"
 #include "sound_bakery/gameobject/gameobject.h"
 #include "sound_bakery/node/container/sound_container.h"
 #include "sound_bakery/sound/sound.h"
 #include "sound_bakery/system.h"
 #include "sound_bakery/voice/node_instance.h"
+
+#include "app/app.h"
+#include "imgui.h"
+#include "managers/project_manager.h"
 
 int littleEndian24Bit(const void* bytes)
 {

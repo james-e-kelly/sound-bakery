@@ -1,7 +1,5 @@
 #include "project_manager.h"
 
-#include "app/app.h"
-#include "gluten/subsystems/widget_subsystem.h"
 #include "sound_bakery/core/database/database.h"
 #include "sound_bakery/core/object/object_tracker.h"
 #include "sound_bakery/editor/project/project.h"
@@ -11,12 +9,15 @@
 #include "sound_bakery/soundbank/soundbank.h"
 #include "sound_bakery/system.h"
 #include "sound_bakery/util/type_helper.h"
+
+#include "app/app.h"
+#include "gluten/subsystems/widget_subsystem.h"
 #include "widgets/audio_meter_widget.h"
+#include "widgets/database_widget.h"
 #include "widgets/details_widget.h"
 #include "widgets/play_controls_widget.h"
 #include "widgets/project_explorer_widget.h"
 #include "widgets/root_widget.h"
-#include "widgets/database_widget.h"
 
 void project_manager::init_project(const std::filesystem::path& project_file)
 {

@@ -1,25 +1,26 @@
 #include "new_project_widget.h"
 
-#include "nfd.h"
 #include "app/app.h"
-#include "gluten/theme/theme.h"
 #include "gluten/elements/button.h"
 #include "gluten/elements/layouts/layout.h"
+#include "gluten/theme/theme.h"
 #include "gluten/utils/imgui_util_structures.h"
+#include "nfd.h"
 
-auto new_project_widget::open_new_project_popup() -> void 
-{ 
-    set_visibile(true); 
+auto new_project_widget::open_new_project_popup() -> void
+{
+    set_visibile(true);
     ImGui::OpenPopup(get_widget_name().data());
 }
 
-auto new_project_widget::close_new_project_popup() -> void 
+auto new_project_widget::close_new_project_popup() -> void
 {
     ImGui::CloseCurrentPopup();
     set_visibile(false);
 }
 
-void new_project_widget::start_implementation() {
+void new_project_widget::start_implementation()
+{
 }
 
 void new_project_widget::render_implementation()
@@ -42,7 +43,7 @@ void new_project_widget::render_implementation()
 
         static std::string projectNameString;
         static std::string projectFolderString;
-        
+
         ImGui::NewLine();
 
         if (ImGui::InputText("Project Name", projectName, 512))
@@ -53,7 +54,6 @@ void new_project_widget::render_implementation()
         if (ImGui::InputText("Project Folder", projectFolder, 512))
         {
             projectFolderString = projectFolder;
-
         }
         ImGui::SameLine();
         if (ImGui::Button("...###OpenProjectFolder"))

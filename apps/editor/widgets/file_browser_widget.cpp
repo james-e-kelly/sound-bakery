@@ -1,14 +1,15 @@
 #include "file_browser_widget.h"
 
+#include "sound_bakery/editor/editor_defines.h"
+#include "sound_bakery/editor/project/project.h"
+#include "sound_bakery/node/container/sound_container.h"
+
 #include "IconsFontAwesome6.h"
 #include "IconsFontaudio.h"
 #include "app/app.h"
 #include "imgui.h"
 #include "imgui_internal.h"
 #include "managers/project_manager.h"
-#include "sound_bakery/editor/editor_defines.h"
-#include "sound_bakery/editor/project/project.h"
-#include "sound_bakery/node/container/sound_container.h"
 
 void file_browser_widget::unselect_item() noexcept { m_selectedItemID = std::numeric_limits<uint32_t>::max(); }
 

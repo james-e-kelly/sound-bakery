@@ -1,8 +1,9 @@
 #pragma once
 
-#include "gluten/managers/manager.h"
 #include "sound_bakery/core/database/database_object.h"
 #include "sound_bakery/system.h"
+
+#include "gluten/managers/manager.h"
 
 namespace sbk::engine
 {

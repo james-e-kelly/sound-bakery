@@ -1,14 +1,5 @@
 #include "play_controls_widget.h"
 
-#include "IconsLucide.h"
-#include "app/app.h"
-#include "audio_display_widget.h"
-#include "gluten/elements/image_button.h"
-#include "gluten/elements/toolbar.h"
-#include "gluten/theme/theme.h"
-#include "gluten/utils/imgui_util_structures.h"
-#include "imgui.h"
-#include "managers/project_manager.h"
 #include "sound_bakery/api/engine_api.h"
 #include "sound_bakery/editor/project/project.h"
 #include "sound_bakery/event/event.h"
@@ -19,6 +10,16 @@
 #include "sound_bakery/util/type_helper.h"
 #include "sound_bakery/voice/node_instance.h"
 #include "sound_bakery/voice/voice.h"
+
+#include "IconsLucide.h"
+#include "app/app.h"
+#include "audio_display_widget.h"
+#include "gluten/elements/image_button.h"
+#include "gluten/elements/toolbar.h"
+#include "gluten/theme/theme.h"
+#include "gluten/utils/imgui_util_structures.h"
+#include "imgui.h"
+#include "managers/project_manager.h"
 
 #include <rttr/type>
 
