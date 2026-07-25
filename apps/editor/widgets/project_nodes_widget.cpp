@@ -235,11 +235,13 @@ void project_nodes_widget::render_single_node(rttr::type type, rttr::instance in
                 {
                     ImGui::Text(ICON_FAD_FILTER_BELL " %s", object->get_object_name().data());
 
-                    if (unsigned int playingCount = sbk::engine::system::get()->get_voice_tracker()->get_playing_count_of_object(
-                            object->get_database_id()))
+                    if (sbk::engine::profiling::voice_tracker* const voiceTracker = sbk::engine::system::get()->get_voice_tracker())
                     {
-                        ImGui::SameLine();
-                        ImGui::Text("|%u|", playingCount);
+                        if (unsigned int playingCount = voiceTracker->get_playing_count_of_object(object->get_database_id()))
+                        {
+                            ImGui::SameLine();
+                            ImGui::Text("|%u|", playingCount);
+                        }
                     }
                 }
 
