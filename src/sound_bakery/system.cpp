@@ -362,7 +362,8 @@ auto system::open_project(const std::filesystem::path& projectFile, sbk::core::s
     }
 
     const std::string pluginFolder       = tempProject.plugin_folder().string();
-    const sbk_system_config systemConfig = sbk_system_config_init(pluginFolder.c_str());
+    sbk_system_config systemConfig = sbk_system_config_init(pluginFolder.c_str());
+    systemConfig.singleThreadedUpdate    = true; // If we're opening a project, we are in the editor and must be single threaded
 
     SBK_TRYV(sys->init(systemConfig));
 
