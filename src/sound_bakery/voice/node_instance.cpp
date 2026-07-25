@@ -189,10 +189,9 @@ auto sbk::engine::node_instance_fsm::init_node_group(const event_init& init) -> 
     sc_node_group* nodeGroup = nullptr;
 
     SBK_TRY_C(sc_system_create_node_group(sbk::engine::system::get(), &nodeGroup));
+    m_nodeGroup.nodeGroup.reset(nodeGroup);
     SBK_TRYV(add_dsp_to_node_group(m_nodeGroup.nodeGroup.get(), &m_nodeGroup.lowpass, sc_dsp_config_init(SC_DSP_TYPE_LOWPASS)));
     SBK_TRYV(add_dsp_to_node_group(m_nodeGroup.nodeGroup.get(), &m_nodeGroup.highpass, sc_dsp_config_init(SC_DSP_TYPE_HIGHPASS)));
-
-    m_nodeGroup.nodeGroup.reset(nodeGroup);
 
     for (const sbk::core::database_ptr<sbk::engine::effect_description>& desc : m_referencingNode->m_effectDescriptions)
     {
