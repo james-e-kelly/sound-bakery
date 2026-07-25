@@ -1,10 +1,10 @@
 #include "soundbank.h"
 
-#include "sound_bakery/node/bus/bus.h"
 #include "sound_bakery/event/event.h"
+#include "sound_bakery/node/bus/bus.h"
 #include "sound_bakery/node/container/sound_container.h"
-#include "sound_bakery/sound/sound.h"
 #include "sound_bakery/parameter/parameter.h"
+#include "sound_bakery/sound/sound.h"
 #include "sound_bakery/system.h"
 
 DEFINE_REFLECTION(sbk::engine::soundbank)
@@ -16,7 +16,7 @@ auto object_ptr_to_shared_ptr(sbk::core::object* ptr) -> std::shared_ptr<T>
 }
 
 auto sbk::engine::soundbank_database::fill_runtime_database() -> void
-{ 
+{
     if (sbk::engine::system* const system = sbk::engine::system::get())
     {
         for (const soundbank_database_entry& entry : database)
@@ -25,7 +25,6 @@ auto sbk::engine::soundbank_database::fill_runtime_database() -> void
         }
     }
 }
-
 
 sbk::engine::soundbank_dependencies sbk::engine::soundbank::gather_dependencies() const
 {
@@ -49,8 +48,8 @@ sbk::engine::soundbank_dependencies sbk::engine::soundbank::gather_dependencies(
 
     if (m_initSoundbank)
     {
-        auto busPointers = sbk::engine::system::get()->get_objects_of_category(SB_CATEGORY_BUS);
-        auto intParameterPointers = sbk::engine::system::get()->get_objects_of_type(sbk::engine::int_parameter::type());
+        auto busPointers            = sbk::engine::system::get()->get_objects_of_category(SB_CATEGORY_BUS);
+        auto intParameterPointers   = sbk::engine::system::get()->get_objects_of_type(sbk::engine::int_parameter::type());
         auto floatParameterPointers = sbk::engine::system::get()->get_objects_of_type(sbk::engine::float_parameter::type());
         auto namedParameterPointers = sbk::engine::system::get()->get_objects_of_type(sbk::engine::named_parameter::type());
 

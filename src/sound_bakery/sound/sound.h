@@ -1,6 +1,7 @@
 #pragma once
 
 #include "sound_bakery/core/core_include.h"
+
 #include "sound_chef/sound_chef.h"
 #include "sound_chef/sound_chef_encoder.h"
 
@@ -45,14 +46,14 @@ namespace sbk::engine
         [[nodiscard]] auto get_encoded_sound_name() const -> std::string { return encodedSoundPath.string(); }
         auto set_is_streaming(bool streaming) -> void { m_streaming = streaming; }
         auto set_raw_sound_data(raw_sound_ptr& data, std::size_t size) -> void
-        {  
-            m_memorySoundData = std::move(data);
+        {
+            m_memorySoundData     = std::move(data);
             m_memorySoundDataSize = size;
         }
 
         [[nodiscard]] auto get_sound_name() const -> std::string;
         auto get_sound() -> sc_sound*;
-        [[nodiscard]] auto get_is_streaming() const -> bool{ return m_streaming; }
+        [[nodiscard]] auto get_is_streaming() const -> bool { return m_streaming; }
         [[nodiscard]] auto get_encoding_sound_data() const -> encoding_sound;
 
     private:
@@ -66,6 +67,5 @@ namespace sbk::engine
         sc_encoding_format m_encodingFormat = sc_encoding_format_vorbis;
 
         bool m_streaming = false;
-
     };
 }  // namespace sbk::engine

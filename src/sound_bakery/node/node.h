@@ -32,13 +32,13 @@ namespace sbk::engine
 
         [[nodiscard]] auto get_node_status() const noexcept -> node_status;
 
-        [[nodiscard]] virtual auto can_add_children() const -> bool;                               //< Can any children be added to this node?
-        [[nodiscard]] virtual auto can_add_child_type(const rttr::type& childType) const -> bool;  //< Can this type be added to the child?
+        [[nodiscard]] virtual auto can_add_children() const -> bool;                                      //< Can any children be added to this node?
+        [[nodiscard]] virtual auto can_add_child_type(const rttr::type& childType) const -> bool;         //< Can this type be added to the child?
         [[nodiscard]] auto can_add_child(const sbk::core::database_ptr<node_base>& child) const -> bool;  //< Can this runtime child be added?
 
-        [[nodiscard]] virtual auto can_add_parent() const -> bool;  //< Can any parents be added to this node?
+        [[nodiscard]] virtual auto can_add_parent() const -> bool;                                   //< Can any parents be added to this node?
         [[nodiscard]] virtual auto can_add_parent_type(const rttr::type& parentType) const -> bool;  //< Can this type be added as a
-                                                                               // get_parent?
+                                                                                                     // get_parent?
 
         auto add_child(const sbk::core::database_ptr<node_base>& child) -> void;
         auto remove_child(const sbk::core::database_ptr<node_base>& child) -> void;

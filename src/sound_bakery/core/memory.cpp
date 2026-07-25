@@ -11,12 +11,12 @@ static std::size_t s_totalMemory = 0;
 struct rpmalloc_wrapper
 {
     rpmalloc_wrapper()
-    { 
+    {
         rpmalloc_initialize();
     }
 
     ~rpmalloc_wrapper()
-    { 
+    {
         rpmalloc_finalize();
     }
 };
@@ -61,9 +61,9 @@ auto sbk::memory::free(void* pointer, SB_OBJECT_CATEGORY category) -> void
     rpfree(pointer);
 }
 
-auto sbk::memory::thread_start(std::string_view threadName) -> void 
-{ 
-    rpmalloc_thread_initialize(); 
+auto sbk::memory::thread_start(std::string_view threadName) -> void
+{
+    rpmalloc_thread_initialize();
 }
 
 auto sbk::memory::thread_end(std::string_view threadName) -> void

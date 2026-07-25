@@ -50,7 +50,8 @@ sbk::core::database_object::database_object()
     m_onUpdateNameHandle = get_on_update_name().AddRaw(this, &database_object::on_update_name);
 }
 
-sbk::core::database_object::~database_object() {
+sbk::core::database_object::~database_object()
+{
     get_on_update_name().Remove(m_onUpdateNameHandle);
 }
 
@@ -74,7 +75,7 @@ auto sbk::core::database_object::get_database_path(std::string& path) const -> v
 }
 
 auto sbk::core::database_object::get_database_name() const -> database_name
-{ 
+{
     std::string path;
     get_database_path(path);
 
@@ -83,7 +84,7 @@ auto sbk::core::database_object::get_database_name() const -> database_name
 
 auto sbk::core::database_object::set_database_id(sbk_id id) -> void
 {
-    //BOOST_ASSERT_MSG(m_objectID == 0, "Shouldn't update an object's ID at runtime");
+    // BOOST_ASSERT_MSG(m_objectID == 0, "Shouldn't update an object's ID at runtime");
 
     if (id != 0)
     {
@@ -108,7 +109,7 @@ auto sbk::core::database_object::get_on_update_database_name() -> update_databas
 auto sbk::core::database_object::on_update_name(std::string_view oldName, std::string_view newName) -> void
 {
     const database_name oldDatabaseName = get_database_name();
-    
+
     parsed_database_name parsedDatabaseName = oldDatabaseName.parse();
     parsedDatabaseName.objectName           = newName;
 

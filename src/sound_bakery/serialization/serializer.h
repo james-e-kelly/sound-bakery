@@ -1,6 +1,14 @@
 #pragma once
 
-#include <rttr/type.h>
+#include "sound_bakery/core/database/database_object.h"
+#include "sound_bakery/core/object/object_owner.h"
+#include "sound_bakery/error/result.h"
+#include "sound_bakery/event/event.h"
+#include "sound_bakery/node/bus/bus.h"
+#include "sound_bakery/sound/sound.h"
+#include "sound_bakery/soundbank/soundbank.h"
+#include "sound_bakery/system.h"
+
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
@@ -11,15 +19,7 @@
 #include <boost/archive/yaml_oarchive.hpp>
 #include <boost/serialization/binary_object.hpp>
 #include <boost/serialization/vector.hpp>
-
-#include "sound_bakery/error/result.h"
-#include "sound_bakery/system.h"
-#include "sound_bakery/node/bus/bus.h"
-#include "sound_bakery/core/database/database_object.h"
-#include "sound_bakery/core/object/object_owner.h"
-#include "sound_bakery/event/event.h"
-#include "sound_bakery/sound/sound.h"
-#include "sound_bakery/soundbank/soundbank.h"
+#include <rttr/type.h>
 
 namespace sbk::core
 {
@@ -36,9 +36,9 @@ namespace sbk::core::serialization
 {
     enum class sound_bakery_serialization_version : int
     {
-        start = 1,
+        start             = 1,
         soundbanks_lookup = 2,  //< Soundbanks can contain lookup info for integrations to get a list of all objects
-        new_type_names = 3,
+        new_type_names    = 3,
 
         /** ADD NEW VERSIONS ABOVE */
         plus_one,
@@ -50,7 +50,7 @@ namespace sbk::core::serialization
 
     /**
      * @brief Stores the version of Sound Bakery.
-     * 
+     *
      * Once loaded, can check whether the serialized version is compatible with this version.
      */
     struct SB_CLASS serialized_version
@@ -64,9 +64,9 @@ namespace sbk::core::serialization
         template <class archive_class>
         auto serialize(archive_class& archive, const unsigned int version) -> void
         {
-            archive & boost::serialization::make_nvp("Major", major);
-            archive & boost::serialization::make_nvp("Minor", minor);
-            archive & boost::serialization::make_nvp("Patch", patch);
+            archive& boost::serialization::make_nvp("Major", major);
+            archive& boost::serialization::make_nvp("Minor", minor);
+            archive& boost::serialization::make_nvp("Patch", patch);
         }
     };
 
@@ -85,7 +85,7 @@ namespace sbk::core::serialization
         template <class archive_class>
         auto serialize(archive_class& archive, const unsigned int fileVersion) -> void
         {
-            archive & boost::serialization::make_nvp("Type", typeString);
+            archive& boost::serialization::make_nvp("Type", typeString);
         }
     };
 
@@ -95,8 +95,8 @@ namespace sbk::core::serialization
     struct SB_CLASS serialized_object
     {
         serialized_object() = delete;
-        serialized_object(const std::shared_ptr<sbk::core::database_object>& object, sbk::core::object_owner* objectOwner) 
-            : object(object), objectOwner(objectOwner) 
+        serialized_object(const std::shared_ptr<sbk::core::database_object>& object, sbk::core::object_owner* objectOwner)
+            : object(object), objectOwner(objectOwner)
         {
             if (object)
             {
@@ -119,8 +119,8 @@ namespace sbk::core::serialization
         template <class archive_class>
         auto serialize(archive_class& archive, const unsigned int v) -> void
         {
-            archive & boost::serialization::make_nvp("Type", type);
-            archive & boost::serialization::make_nvp("ID", id);
+            archive& boost::serialization::make_nvp("Type", type);
+            archive& boost::serialization::make_nvp("ID", id);
 
             if (typename archive_class::is_loading())
             {
@@ -142,9 +142,9 @@ namespace sbk::core::serialization
                     objectOwner->add_reference_to_object(object);
                 }
             }
-            
+
             BOOST_ASSERT(object);
-            archive & boost::serialization::make_nvp("ObjectData", *object.get());
+            archive& boost::serialization::make_nvp("ObjectData", *object.get());
 
             if (typename archive_class::is_loading())
             {
@@ -157,14 +157,14 @@ namespace sbk::core::serialization
 
     /**
      * @brief Header for an object that saves to a single file.
-     * 
+     *
      * Contains version information, the object type and its property data.
      */
     struct SB_CLASS serialized_standalone_object
     {
         serialized_standalone_object() = delete;
         serialized_standalone_object(const std::shared_ptr<sbk::core::database_object>& object, sbk::core::object_owner* objectOwner)
-            : object(object, objectOwner){}
+            : object(object, objectOwner) {}
 
         serialized_version version;
         serialized_object object;
@@ -174,16 +174,16 @@ namespace sbk::core::serialization
         template <class archive_class>
         auto serialize(archive_class& archive, const unsigned int v) -> void
         {
-            archive & boost::serialization::make_nvp("Version", version);
+            archive& boost::serialization::make_nvp("Version", version);
             BOOST_ASSERT_MSG(version.version_compatible(), "Cross version serialization not implemented yet");
-            archive & boost::serialization::make_nvp("Object", object);
+            archive& boost::serialization::make_nvp("Object", object);
         }
     };
 
     struct SB_CLASS serialized_system
     {
         serialized_system() = delete;
-        serialized_system(const std::shared_ptr<sbk::core::database_object>& object, sbk::core::object_owner* objectOwner){}
+        serialized_system(const std::shared_ptr<sbk::core::database_object>& object, sbk::core::object_owner* objectOwner) {}
 
         serialized_version version;
 
@@ -195,9 +195,9 @@ namespace sbk::core::serialization
             sbk::engine::system* system = sbk::engine::system::get();
             BOOST_ASSERT(system != nullptr);
 
-            archive & boost::serialization::make_nvp("Version", version);
+            archive& boost::serialization::make_nvp("Version", version);
             BOOST_ASSERT_MSG(version.version_compatible(), "Cross version serialization not implemented yet");
-            archive & boost::serialization::make_nvp("System", *system);
+            archive& boost::serialization::make_nvp("System", *system);
         }
     };
 
@@ -210,27 +210,27 @@ namespace sbk::core::serialization
             : objects(objects), count(objects.size()), objectOwner(nullptr) {}
 
         sbk::core::object_owner* objectOwner = nullptr;
-        std::size_t count = 0;
+        std::size_t count                    = 0;
         std::vector<std::shared_ptr<object_class>> objects;
 
         template <class archive_class>
         auto serialize(archive_class& archive, const unsigned int v) -> void
         {
-            archive & boost::serialization::make_nvp("Count", count);
-            
+            archive& boost::serialization::make_nvp("Count", count);
+
             for (std::size_t index = 0; index < count; ++index)
             {
                 if (typename archive_class::is_loading())
                 {
                     serialized_object serializedObject({}, objectOwner);
-                    archive & boost::serialization::make_nvp("Object", serializedObject);
+                    archive& boost::serialization::make_nvp("Object", serializedObject);
                 }
                 else
                 {
                     std::shared_ptr<sbk::core::database_object> convertedObject =
                         std::static_pointer_cast<sbk::core::database_object, object_class>(objects[index]);
                     serialized_object serializedObject(convertedObject, objectOwner);
-                    archive & boost::serialization::make_nvp("Object", serializedObject);
+                    archive& boost::serialization::make_nvp("Object", serializedObject);
                 }
             }
         }
@@ -253,28 +253,28 @@ namespace sbk::core::serialization
             if (typename archive_class::is_saving())
             {
                 const sbk::engine::encoding_sound encodingSound = sound->get_encoding_sound_data();
-                const bool validFile = std::filesystem::exists(encodingSound.encodedSoundPath) &&
+                const bool validFile                            = std::filesystem::exists(encodingSound.encodedSoundPath) &&
                                        std::filesystem::is_regular_file(encodingSound.encodedSoundPath);
                 const std::vector<uint8_t> buffer = validFile ? read_binary_file(encodingSound.encodedSoundPath) : std::vector<uint8_t>();
-                std::size_t size                                = buffer.size();
+                std::size_t size                  = buffer.size();
 
-                archive & boost::serialization::make_nvp("Size", size);
-                archive & boost::serialization::make_nvp("Data", boost::serialization::make_binary_object(buffer.data(), size));
+                archive& boost::serialization::make_nvp("Size", size);
+                archive& boost::serialization::make_nvp("Data", boost::serialization::make_binary_object(buffer.data(), size));
             }
             else
             {
                 std::size_t size = 0;
-                archive & boost::serialization::make_nvp("Size", size);
+                archive& boost::serialization::make_nvp("Size", size);
 
                 sbk::engine::raw_sound_ptr rawSound(std::malloc(size));
-                archive & boost::serialization::make_nvp("Data", boost::serialization::make_binary_object(rawSound.get(), size));
+                archive& boost::serialization::make_nvp("Data", boost::serialization::make_binary_object(rawSound.get(), size));
 
                 sound->set_raw_sound_data(rawSound, size);
             }
         }
     };
 
-    template<>
+    template <>
     struct SB_CLASS serialized_object_vector<sbk::engine::sound>
     {
         serialized_object_vector() = delete;
@@ -298,18 +298,18 @@ namespace sbk::core::serialization
                 if (typename archive_class::is_loading())
                 {
                     serialized_object serializedObject({}, objectOwner);
-                    archive & boost::serialization::make_nvp("Object", serializedObject);
-                    
+                    archive& boost::serialization::make_nvp("Object", serializedObject);
+
                     serialized_sound serializedSound(serializedObject.object);
-                    archive & boost::serialization::make_nvp("RawSound", serializedSound);
+                    archive& boost::serialization::make_nvp("RawSound", serializedSound);
                 }
                 else
                 {
                     serialized_object serializedObject(objects[index], objectOwner);
-                    archive & boost::serialization::make_nvp("Object", serializedObject);
-                    
+                    archive& boost::serialization::make_nvp("Object", serializedObject);
+
                     serialized_sound serializedSound(objects[index]);
-                    archive & boost::serialization::make_nvp("RawSound", serializedSound);
+                    archive& boost::serialization::make_nvp("RawSound", serializedSound);
                 }
             }
         }
@@ -331,10 +331,10 @@ namespace sbk::core::serialization
         template <class archive_class>
         auto serialize(archive_class& archive, const unsigned int version) -> void
         {
-            archive & boost::serialization::make_nvp("Version", serializedVersion);
+            archive& boost::serialization::make_nvp("Version", serializedVersion);
             BOOST_ASSERT_MSG(serializedVersion.version_compatible(), "Cross version serialization not implemented yet");
 
-            archive & boost::serialization::make_nvp("Soundbank", serializedSoundbank);
+            archive& boost::serialization::make_nvp("Soundbank", serializedSoundbank);
             BOOST_ASSERT_MSG(serializedSoundbank.object->get_object_type().is_derived_from<sbk::engine::soundbank>(), "Must be saving a soundbank type");
 
             sbk::engine::soundbank* soundbank = serializedSoundbank.object->try_convert_object<sbk::engine::soundbank>();
@@ -355,11 +355,11 @@ namespace sbk::core::serialization
                     serialized_object_vector<sbk::engine::int_parameter> serializedIntParameters(soundbank);
                     serialized_object_vector<sbk::engine::float_parameter> serializedFloatParameters(soundbank);
                     serialized_object_vector<sbk::engine::named_parameter> serializedNamedParameters(soundbank);
-                    
-                    archive & boost::serialization::make_nvp("Busses", serializedBusses);
-                    archive & boost::serialization::make_nvp("IntParameters", serializedIntParameters);
-                    archive & boost::serialization::make_nvp("FloatParameters", serializedFloatParameters);
-                    archive & boost::serialization::make_nvp("NamedParameters", serializedNamedParameters);
+
+                    archive& boost::serialization::make_nvp("Busses", serializedBusses);
+                    archive& boost::serialization::make_nvp("IntParameters", serializedIntParameters);
+                    archive& boost::serialization::make_nvp("FloatParameters", serializedFloatParameters);
+                    archive& boost::serialization::make_nvp("NamedParameters", serializedNamedParameters);
                 }
 
                 if (version >= static_cast<unsigned int>(sound_bakery_serialization_version::soundbanks_lookup))
@@ -367,7 +367,7 @@ namespace sbk::core::serialization
                     if (soundbank->is_lookup_soundbank())
                     {
                         sbk::engine::soundbank_database database;
-                        archive & boost::serialization::make_nvp("Database", database);
+                        archive& boost::serialization::make_nvp("Database", database);
                     }
                 }
             }
@@ -379,9 +379,9 @@ namespace sbk::core::serialization
                 serialized_object_vector<sbk::engine::node_base> serializedNodes(soundbankDependencies.nodes);
                 serialized_object_vector<sbk::engine::event> serializedEvents(soundbankDependencies.events);
 
-                archive & boost::serialization::make_nvp("Sounds", serializedSounds);
-                archive & boost::serialization::make_nvp("Nodes", serializedNodes);
-                archive & boost::serialization::make_nvp("Events", serializedEvents);
+                archive& boost::serialization::make_nvp("Sounds", serializedSounds);
+                archive& boost::serialization::make_nvp("Nodes", serializedNodes);
+                archive& boost::serialization::make_nvp("Events", serializedEvents);
 
                 if (soundbank->is_init_soundbank())
                 {
@@ -389,16 +389,16 @@ namespace sbk::core::serialization
                     serialized_object_vector<sbk::engine::int_parameter> serializedIntParameters(soundbankDependencies.intParameters);
                     serialized_object_vector<sbk::engine::float_parameter> serializedFloatParameters(soundbankDependencies.floatParameters);
                     serialized_object_vector<sbk::engine::named_parameter> serializedNamedParameters(soundbankDependencies.namedParameters);
-                    
-                    archive & boost::serialization::make_nvp("Busses", serializedBusses);
-                    archive & boost::serialization::make_nvp("IntParameters", serializedIntParameters);
-                    archive & boost::serialization::make_nvp("FloatParameters", serializedFloatParameters);
-                    archive & boost::serialization::make_nvp("NamedParameters", serializedNamedParameters);
+
+                    archive& boost::serialization::make_nvp("Busses", serializedBusses);
+                    archive& boost::serialization::make_nvp("IntParameters", serializedIntParameters);
+                    archive& boost::serialization::make_nvp("FloatParameters", serializedFloatParameters);
+                    archive& boost::serialization::make_nvp("NamedParameters", serializedNamedParameters);
                 }
 
                 if (soundbank->is_lookup_soundbank())
                 {
-                    archive & boost::serialization::make_nvp("Database", soundbankDependencies.lookupDatabase);
+                    archive& boost::serialization::make_nvp("Database", soundbankDependencies.lookupDatabase);
                 }
             }
         }
@@ -407,7 +407,7 @@ namespace sbk::core::serialization
     struct SB_CLASS serialized_child_class
     {
         serialized_child_class() = default;
-        serialized_child_class(rttr::variant& variant) : child(variant), type(variant.get_type()) 
+        serialized_child_class(rttr::variant& variant) : child(variant), type(variant.get_type())
         {
             BOOST_ASSERT(variant.is_valid());
             BOOST_ASSERT(type.is_class());
@@ -428,7 +428,7 @@ namespace sbk::core::serialization
                 {
                     rttr::variant loaded = make_default_variant(property.get_type());
                     BOOST_ASSERT(loaded.is_valid());
-                    archive & boost::serialization::make_nvp(property.get_name().data(), loaded);
+                    archive& boost::serialization::make_nvp(property.get_name().data(), loaded);
                     loaded.convert(property.get_type());
                     BOOST_ASSERT(loaded.get_type() == property.get_type());
                     property.set_value(child, loaded);
@@ -436,7 +436,7 @@ namespace sbk::core::serialization
                 else
                 {
                     rttr::variant variantToSave = property.get_value(child);
-                    archive & boost::serialization::make_nvp(property.get_name().data(), variantToSave);
+                    archive& boost::serialization::make_nvp(property.get_name().data(), variantToSave);
                 }
             }
         }
@@ -460,7 +460,7 @@ namespace sbk::core::serialization
             if (typename archive_class::is_loading())
             {
                 size_t size = 0;
-                archive & boost::serialization::make_nvp("Count", size);
+                archive& boost::serialization::make_nvp("Count", size);
 
                 view.set_size(size);
 
@@ -470,7 +470,7 @@ namespace sbk::core::serialization
                 {
                     rttr::variant loadedVariant = make_default_variant(valueType);
                     BOOST_ASSERT(loadedVariant.is_valid());
-                    archive & boost::serialization::make_nvp("Item", loadedVariant);
+                    archive& boost::serialization::make_nvp("Item", loadedVariant);
 
                     loadedVariant.convert((rttr::type)valueType);
                     if (needToCreate)
@@ -486,11 +486,11 @@ namespace sbk::core::serialization
             else
             {
                 size_t size = view.get_size();
-                archive & boost::serialization::make_nvp("Count", size);
+                archive& boost::serialization::make_nvp("Count", size);
 
                 for (rttr::variant item : view)
                 {
-                    archive & boost::serialization::make_nvp("Item", item);
+                    archive& boost::serialization::make_nvp("Item", item);
                 }
             }
         }
@@ -500,12 +500,13 @@ namespace sbk::core::serialization
     {
         serialized_associative_container() = delete;
         serialized_associative_container(rttr::variant& variant)
-            : originalVariant(variant), 
-            view(variant.create_associative_view()), 
-            keyType(view.get_key_type()), 
-            valueType(view.is_key_only_type() ? view.get_key_type()
-                                                           : view.get_value_type())
-        { }
+            : originalVariant(variant),
+              view(variant.create_associative_view()),
+              keyType(view.get_key_type()),
+              valueType(view.is_key_only_type() ? view.get_key_type()
+                                                : view.get_value_type())
+        {
+        }
 
         rttr::variant& originalVariant;
         rttr::variant_associative_view view;
@@ -527,14 +528,14 @@ namespace sbk::core::serialization
                     if (view.is_key_only_type())
                     {
                         rttr::variant loadedKey = make_default_variant(keyType);
-                        archive & boost::serialization::make_nvp("Key", loadedKey);
+                        archive& boost::serialization::make_nvp("Key", loadedKey);
                         loadedKey.convert((rttr::type)keyType);
                         view.insert(loadedKey);
                     }
                     else
                     {
                         std::pair<rttr::variant, rttr::variant> loadedPair(make_default_variant(keyType), make_default_variant(valueType));
-                        archive & boost::serialization::make_nvp("KeyValue", loadedPair);
+                        archive& boost::serialization::make_nvp("KeyValue", loadedPair);
                         loadedPair.first.convert((rttr::type)keyType);
                         loadedPair.second.convert((rttr::type)valueType);
                         view.insert(loadedPair.first, loadedPair.second);
@@ -544,7 +545,7 @@ namespace sbk::core::serialization
             else
             {
                 size_t size = view.get_size();
-                archive & boost::serialization::make_nvp("Count", size);
+                archive& boost::serialization::make_nvp("Count", size);
 
                 for (rttr::variant item : view)
                 {
@@ -553,8 +554,8 @@ namespace sbk::core::serialization
 
                     if (view.is_key_only_type())
                     {
-                        rttr::variant key   = valuePair.first.extract_wrapped_value();
-                        archive & boost::serialization::make_nvp("Key", key);
+                        rttr::variant key = valuePair.first.extract_wrapped_value();
+                        archive& boost::serialization::make_nvp("Key", key);
                     }
                     else
                     {
@@ -584,7 +585,7 @@ namespace sbk::core::serialization
                 save_archive archive(outputStream);
                 serialize_class serialize(object, nullptr);
 
-                archive & boost::serialization::make_nvp("Data", serialize);
+                archive& boost::serialization::make_nvp("Data", serialize);
             }
             catch (const std::exception& exception)
             {
@@ -604,7 +605,7 @@ namespace sbk::core::serialization
                 save_archive archive(outputStream);
                 serialized_system serialize({}, nullptr);
 
-                archive & boost::serialization::make_nvp("System", serialize);
+                archive& boost::serialization::make_nvp("System", serialize);
             }
             catch (const std::exception& exception)
             {
@@ -625,7 +626,7 @@ namespace sbk::core::serialization
                 load_archive archive(inputStream);
                 serialize_class object({}, objectOwner);
 
-                archive & boost::serialization::make_nvp("Data", object);
+                archive& boost::serialization::make_nvp("Data", object);
                 return static_cast<sbk_id>(object);
             }
             catch (const std::exception& exception)
@@ -636,9 +637,9 @@ namespace sbk::core::serialization
     };
 
     using binary_serializer = boost_serializer<boost::archive::binary_iarchive, boost::archive::binary_oarchive, std::ios_base::in | std::ios_base::binary, std::ios_base::out | std::ios_base::binary>;
-    using text_serializer = boost_serializer<boost::archive::text_iarchive, boost::archive::text_oarchive, std::ios_base::in, std::ios_base::out>;
-    using xml_serializer = boost_serializer<boost::archive::xml_iarchive, boost::archive::xml_oarchive, std::ios_base::in, std::ios_base::out>;
-    using yaml_serializer = boost_serializer<boost::archive::yaml_iarchive, boost::archive::yaml_oarchive, std::ios_base::in, std::ios_base::out>;
+    using text_serializer   = boost_serializer<boost::archive::text_iarchive, boost::archive::text_oarchive, std::ios_base::in, std::ios_base::out>;
+    using xml_serializer    = boost_serializer<boost::archive::xml_iarchive, boost::archive::xml_oarchive, std::ios_base::in, std::ios_base::out>;
+    using yaml_serializer   = boost_serializer<boost::archive::yaml_iarchive, boost::archive::yaml_oarchive, std::ios_base::in, std::ios_base::out>;
 }  // namespace sbk::core::serialization
 
 BOOST_CLASS_VERSION(sbk::core::serialization::serialized_type, static_cast<int>(sbk::core::serialization::sound_bakery_serialization_version::cur))
@@ -661,13 +662,13 @@ namespace boost
             if (typename archive_class::is_loading())
             {
                 T loadedValue;
-                archive & boost::serialization::make_nvp("Value", loadedValue);
+                archive& boost::serialization::make_nvp("Value", loadedValue);
                 variant = loadedValue;
             }
             else
             {
                 T valueToSave = variant.convert<T>();
-                archive & boost::serialization::make_nvp("Value", valueToSave);
+                archive& boost::serialization::make_nvp("Value", valueToSave);
             }
         }
 
@@ -677,14 +678,14 @@ namespace boost
             if (typename archive_class::is_loading())
             {
                 std::string loaded;
-                archive & boost::serialization::make_nvp("Value", loaded);
+                archive& boost::serialization::make_nvp("Value", loaded);
                 variant = loaded;
             }
             else
             {
                 std::string_view valueToSave = variant.convert<std::string_view>();
                 std::string valueToSaveConverted(valueToSave);
-                archive & boost::serialization::make_nvp("Value", valueToSaveConverted);
+                archive& boost::serialization::make_nvp("Value", valueToSaveConverted);
             }
         }
 
@@ -774,21 +775,21 @@ namespace boost
                         archive& boost::serialization::make_nvp("Value", savingString);
                     }
                 }
-            }            
+            }
             else if (type.is_associative_container())
             {
                 sbk::core::serialization::serialized_associative_container serializedAssociativeContainer(variant);
-                archive & boost::serialization::make_nvp("AssociativeContainer", serializedAssociativeContainer);
+                archive& boost::serialization::make_nvp("AssociativeContainer", serializedAssociativeContainer);
             }
             else if (type.is_sequential_container())
             {
                 sbk::core::serialization::serialized_sequential_container serializedSequentialContainer(variant);
-                archive & boost::serialization::make_nvp("SeqContainer", serializedSequentialContainer);
+                archive& boost::serialization::make_nvp("SeqContainer", serializedSequentialContainer);
             }
             else if (type.is_class())
             {
                 sbk::core::serialization::serialized_child_class childClass(variant);
-                archive & boost::serialization::make_nvp("Child", childClass);
+                archive& boost::serialization::make_nvp("Child", childClass);
             }
         }
 

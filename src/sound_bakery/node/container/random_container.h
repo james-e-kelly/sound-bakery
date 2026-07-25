@@ -21,7 +21,7 @@ namespace sbk::engine
                     break;
                 default:
                     const int randomChildIndex = std::rand() % m_childNodes.size();
-                    auto childIter = m_childNodes.begin();
+                    auto childIter             = m_childNodes.begin();
                     std::advance(childIter, randomChildIndex);
                     if (auto sound = childIter->shared())
                     {

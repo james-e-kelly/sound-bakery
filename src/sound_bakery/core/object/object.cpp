@@ -6,15 +6,15 @@
 
 DEFINE_REFLECTION(sbk::core::object)
 
-sbk::core::object::object() : m_objectName("New Object", "?,.#~@<>|*:\"\\") 
+sbk::core::object::object() : m_objectName("New Object", "?,.#~@<>|*:\"\\")
 {
     SBK_EXPECT_STUDIO_THREAD();
 }
 
-sbk::core::object::~object() 
+sbk::core::object::~object()
 {
     SBK_EXPECT_STUDIO_THREAD();
-    m_onDestroyEvent.Broadcast(this); 
+    m_onDestroyEvent.Broadcast(this);
 }
 
 auto sbk::core::object::get_owner() const -> object_owner* { return m_owner; }
@@ -69,17 +69,17 @@ auto sbk::core::object::destroy() -> void
 }
 
 auto sbk::core::object::get_flags() const -> object_flags
-{ 
-    return m_flags; 
+{
+    return m_flags;
 }
 
-auto sbk::core::object::set_flags(object_flags flagsToSet) -> void 
+auto sbk::core::object::set_flags(object_flags flagsToSet) -> void
 {
     m_flags = m_flags | flagsToSet;
 }
 
-auto sbk::core::object::clear_flags(object_flags flagsToClear) -> void 
-{ 
+auto sbk::core::object::clear_flags(object_flags flagsToClear) -> void
+{
     m_flags = m_flags & ~flagsToClear;
 }
 
@@ -89,7 +89,7 @@ auto sbk::core::object::has_flag(object_flags flagsToCheck) const -> bool
 }
 
 auto sbk::core::object::set_object_name(std::string_view name) -> bool
-{ 
+{
     if (m_objectName.test_set(name))
     {
         m_onUpdateName.Broadcast(m_objectName.get(), name);

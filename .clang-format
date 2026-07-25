@@ -44,15 +44,23 @@ UseTab:          Never
 SortIncludes: CaseSensitive
 IncludeBlocks: Regroup
 IncludeCategories:
-  # Headers in <> without extension.
+  # Precompiled header - always the very first include, even above the main
+  # header. Negative priority is what sorts it before the file's own header.
+  # Matches "pch.h", "sound_bakery/pch.h", "gluten/pch.h", etc.
+  - Regex:           '"(.*/)?pch\.h"'
+    Priority:        -1
+  # Our own headers, kept in a section ahead of any third-party dependency.
+  - Regex:           '"sound_bakery/([A-Za-z0-9.\Q/-_\E])+"'
+    Priority:        1
+  # Other headers in "" with extension (vendored / relative third-party).
+  - Regex:           '"([A-Za-z0-9.\Q/-_\E])+"'
+    Priority:        2
+  # Headers in <> without extension (C++ standard library).
   - Regex:           '<([A-Za-z0-9\Q/-_\E])+>'
     Priority:        4
-  # Headers in <> with extension.
+  # Headers in <> with extension (third-party libraries).
   - Regex:           '<([A-Za-z0-9.\Q/-_\E])+>'
-    Priority:        2
-  # Headers in "" with extension.
-  - Regex:           '"([A-Za-z0-9.\Q/-_\E])+"'
-    Priority:        1
+    Priority:        3
 SortUsingDeclarations: Lexicographic
 SpaceAfterCStyleCast: false
 BreakBeforeBraces: Allman

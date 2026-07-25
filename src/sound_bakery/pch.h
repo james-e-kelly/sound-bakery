@@ -1,6 +1,6 @@
 #pragma once
 
-#include "sound_bakery/reflection/reflection.h" //< Must be included here and not individual files. @todo Investigate rttr strangeness when included in multiple files
+#include "sound_bakery/reflection/reflection.h"  //< Must be included here and not individual files. @todo Investigate rttr strangeness when included in multiple files
 
 #include "Delegates.h"
 #include "sound_bakery_internal.h"
@@ -13,12 +13,13 @@
 
 #define BOOST_SPIRIT_DEBUG
 
-#include <atomic>
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/regex.hpp>
-#include <boost/range/algorithm.hpp>
 #include <boost/assert.hpp>
+#include <boost/range/algorithm.hpp>
 #include <boost/serialization/utility.hpp>
+
+#include <atomic>
 #include <condition_variable>
 #include <coroutine>
 #include <cstdint>
@@ -29,12 +30,13 @@
 #include <mutex>
 #include <new>
 #include <optional>
+#include <queue>
 #include <random>
 #include <set>
 #include <shared_mutex>
+#include <source_location>
 #include <string>
 #include <string_view>
-#include <source_location>
 #include <thread>
 #include <type_traits>
 #include <unordered_map>
@@ -42,17 +44,16 @@
 #include <utility>
 #include <variant>
 #include <vector>
-#include <queue>
 
 /**
  * @def Registers this type's get_parent classes (if any) and marks its private members visible to reflection.
  */
-#define REGISTER_REFLECTION(T, ...)      \
-                                         \
-public:                                  \
+#define REGISTER_REFLECTION(T, ...)                 \
+                                                    \
+public:                                             \
     [[nodiscard]] static auto type() -> rttr::type; \
-    RTTR_ENABLE(__VA_ARGS__)             \
-    RTTR_REGISTRATION_FRIEND             \
+    RTTR_ENABLE(__VA_ARGS__)                        \
+    RTTR_REGISTRATION_FRIEND                        \
     friend auto sbk::reflection::register_reflection_types() -> void;
 
 /**

@@ -48,6 +48,6 @@ auto bus::lock_and_copy() -> std::shared_ptr<node_instance>
             m_busInstance = sharedBus;
         }
     }
-    
+
     return m_busInstance.lock();
 }

@@ -1,5 +1,3 @@
-#include "rttr/detail/misc/register_wrapper_mapper_conversion.h"
-#include "rttr/detail/type/base_classes.h"
 #include "sound_bakery/editor/editor_defines.h"
 #include "sound_bakery/event/event.h"
 #include "sound_bakery/gameobject/gameobject.h"
@@ -16,6 +14,9 @@
 #include "sound_bakery/system.h"
 #include "sound_bakery/util/type_helper.h"
 #include "sound_bakery/voice/voice.h"
+
+#include "rttr/detail/misc/register_wrapper_mapper_conversion.h"
+#include "rttr/detail/type/base_classes.h"
 #include "sound_chef/sound_chef_encoder.h"
 
 #include <rttr/registration>
@@ -135,18 +136,18 @@ namespace sbk::reflection
         using namespace sbk::engine;
 
         registration::enumeration<sc_dsp_type>("sc_dsp_type")(
-            value("Fader", SC_DSP_TYPE_FADER), 
+            value("Fader", SC_DSP_TYPE_FADER),
             value("Lowpass", SC_DSP_TYPE_LOWPASS),
-            value("Highpass", SC_DSP_TYPE_HIGHPASS), 
+            value("Highpass", SC_DSP_TYPE_HIGHPASS),
             value("Delay", SC_DSP_TYPE_DELAY));
 
         registration::enumeration<SB_OBJECT_CATEGORY>("sb_object_category")(
-            value("Unkown", SB_CATEGORY_UNKNOWN), 
-            value("Sound", SB_CATEGORY_SOUND), 
+            value("Unkown", SB_CATEGORY_UNKNOWN),
+            value("Sound", SB_CATEGORY_SOUND),
             value("Node", SB_CATEGORY_NODE),
-            value("Bus", SB_CATEGORY_BUS), 
-            value("Music", SB_CATEGORY_MUSIC), 
-            value("Event", SB_CATEGORY_EVENT), 
+            value("Bus", SB_CATEGORY_BUS),
+            value("Music", SB_CATEGORY_MUSIC),
+            value("Event", SB_CATEGORY_EVENT),
             value("Soundbank", SB_CATEGORY_BANK),
             value("Parameter", SB_CATEGORY_PARAMETER),
             value("Database", SB_CATEGORY_DATABASE_OBJECT),
@@ -157,9 +158,9 @@ namespace sbk::reflection
             value("Stop", action_type::stop));
 
         registration::enumeration<sc_encoding_format>("Encoding Format")(
-            value("WAV", sc_encoding_format_wav), 
+            value("WAV", sc_encoding_format_wav),
             value("ADPCM", sc_encoding_format_adpcm),
-            value("Vorbis", sc_encoding_format_vorbis), 
+            value("Vorbis", sc_encoding_format_vorbis),
             value("Opus", sc_encoding_format_opus));
 
         registration::class_<sc_dsp_parameter>("sc_dsp_parameter")

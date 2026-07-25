@@ -1,4 +1,4 @@
- #include "database.h"
+#include "database.h"
 
 #include "sound_bakery/core/thread_domain.h"
 #include "sound_bakery/util/type_helper.h"
@@ -21,8 +21,8 @@ auto sbk::core::database::add_object_to_database(const std::shared_ptr<database_
     auto idIter = m_idToPointerMap.find(objectID);
     SBK_CHECK_MSG(idIter == m_idToPointerMap.end(), SBK_ERR_BAKERY_OBJECT_EXISTS, "Adding an object to the database should only happen once. There is already an object with this ID");
 
-    m_idToPointerMap[objectID]                  = object;
-    m_nameToIdMap[object->get_database_name()]  = objectID;
+    m_idToPointerMap[objectID]                 = object;
+    m_nameToIdMap[object->get_database_name()] = objectID;
 
     object->get_on_destroy().AddRaw(this, &sbk::core::database::on_object_destroyed);
     object->get_on_update_id().AddRaw(this, &sbk::core::database::update_id);
@@ -41,7 +41,7 @@ auto sbk::core::database::assign_name_to_id(sbk_id id, const database_name& name
     SBK_CHECK_MSG(nameIter == m_nameToIdMap.end(), SBK_ERR_BAKERY_OBJECT_EXISTS, "Assigning a name to an ID should only happen once");
 
     m_nameToIdMap[name] = id;
-    
+
     return sbk::ok();
 }
 
@@ -50,7 +50,7 @@ auto sbk::core::database::remove_object_from_database(sbk_id objectID, const dat
     SBK_EXPECT_STUDIO_THREAD();
     SBK_CHECK(objectID != SBK_INVALID_ID, SBK_ERR_INVALID_PARAMETER);
 
-    auto nameIter       = m_nameToIdMap.find(objectName);
+    auto nameIter = m_nameToIdMap.find(objectName);
 
     if (const auto idIter = m_idToPointerMap.find(objectID); idIter != m_idToPointerMap.end())
     {

@@ -19,15 +19,15 @@ auto sbk::engine::voice::play_container(container* container) -> sbk::result<voi
     SBK_TRY(const auto voiceInstance, create_runtime_object<node_instance>());
 
     event_init initData;
-    initData.refNode     = container->try_convert_object<node_base>();
-    initData.type        = sbk::engine::node_instance_type::main;
+    initData.refNode            = container->try_convert_object<node_base>();
+    initData.type               = sbk::engine::node_instance_type::main;
     initData.m_owningGameObject = get_owning_game_object();
 
     if (voiceInstance->init(initData).has_value())
     {
         return voiceInstance->play();
     }
-    
+
     remove_all();
     return sbk::make_error(SBK_ERR_BAKERY, "Failed to initialize the voice instance");
 }

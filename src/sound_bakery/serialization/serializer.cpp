@@ -34,7 +34,7 @@ auto sbk::core::serialization::make_default_variant(const rttr::type& type) -> r
     }
     else if (type.is_enumeration())
     {
-        rttr::enumeration enumeration = type.get_enumeration();
+        rttr::enumeration enumeration           = type.get_enumeration();
         rttr::array_range<rttr::variant> values = enumeration.get_values();
         BOOST_ASSERT_MSG(!values.empty(), "Enums must have values so we can create a default one");
         return *values.begin();
@@ -54,7 +54,7 @@ auto sbk::core::serialization::make_default_variant(const rttr::type& type) -> r
     return type.create_default();
 }
 
-auto sbk::core::serialization::read_binary_file(const std::filesystem::path& file) -> std::vector<uint8_t> 
+auto sbk::core::serialization::read_binary_file(const std::filesystem::path& file) -> std::vector<uint8_t>
 {
     std::ifstream fileStream(file, std::ios_base::binary);
 

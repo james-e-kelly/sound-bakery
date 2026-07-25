@@ -19,7 +19,7 @@ auto object_owner::create_runtime_object() -> sbk::result<std::shared_ptr<T>>
     static_assert(std::is_base_of_v<sbk::core::object, T>, "Runtime objects must derive from sbk::core::object");
 
     SBK_TRY(auto object, create_runtime_object(rttr::type::get<T>()));
-    
+
     if (std::shared_ptr<T> castedObject = std::static_pointer_cast<T>(object))
     {
         return castedObject;

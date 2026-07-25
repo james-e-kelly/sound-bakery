@@ -40,7 +40,7 @@ namespace sbk::editor
         [[nodiscard]] auto project_name() const -> std::string_view { return m_projectName; }
 
         [[nodiscard]] auto type_folder(const rttr::type& type) const -> std::filesystem::path;  //< Converts an object type to a
-                                                                                        // folder location
+                                                                                                // folder location
 
         [[nodiscard]] static auto get_filename_for_id(
             sbk::core::database_object* databaseObject, std::optional<std::string> extensionOverride = std::nullopt) -> std::string;

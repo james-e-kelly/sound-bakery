@@ -10,21 +10,36 @@ namespace sbk
     {
         switch (code)
         {
-            case SBK_SUCCESS:                     return "Success";
-            case SBK_ERR_USER:                    return "User error";
-            case SBK_ERR_INVALID_PARAMETER:       return "Invalid parameter passed to the function";
-            case SBK_ERR_CHEF:                    return "Error from Sound Chef";
-            case SBK_ERR_CHEF_UNITIALIZED:        return "Sound Chef is not initialized";
-            case SBK_ERR_BAKERY:                  return "Generic Sound Bakery error";
-            case SBK_ERR_BAKERY_UNINITIALIZED:    return "Sound Bakery is not initialized";
-            case SBK_ERR_BAKERY_SERIALIZATION:    return "Error occurred while serializing";
-            case SBK_ERR_BAKERY_OBJECT_NOT_FOUND: return "Could not find an object with the ID or name";
-            case SBK_ERR_BAKERY_OBJECT_EXISTS:    return "An object with the ID or name already exists";
-            case SBK_ERR_SYSTEM:                  return "The running system / computer encountered an error";
-            case SBK_ERR_OUT_OF_MEMORY:           return "Could not allocate memory or general memory error";
-            case SBK_ERR_INVALID_FILE:            return "File was invalid";
-            case SBK_ERR_NULL:                    return "Tried to access a null variable";
-            case SBK_ERROR_MAX:                   break;
+            case SBK_SUCCESS:
+                return "Success";
+            case SBK_ERR_USER:
+                return "User error";
+            case SBK_ERR_INVALID_PARAMETER:
+                return "Invalid parameter passed to the function";
+            case SBK_ERR_CHEF:
+                return "Error from Sound Chef";
+            case SBK_ERR_CHEF_UNITIALIZED:
+                return "Sound Chef is not initialized";
+            case SBK_ERR_BAKERY:
+                return "Generic Sound Bakery error";
+            case SBK_ERR_BAKERY_UNINITIALIZED:
+                return "Sound Bakery is not initialized";
+            case SBK_ERR_BAKERY_SERIALIZATION:
+                return "Error occurred while serializing";
+            case SBK_ERR_BAKERY_OBJECT_NOT_FOUND:
+                return "Could not find an object with the ID or name";
+            case SBK_ERR_BAKERY_OBJECT_EXISTS:
+                return "An object with the ID or name already exists";
+            case SBK_ERR_SYSTEM:
+                return "The running system / computer encountered an error";
+            case SBK_ERR_OUT_OF_MEMORY:
+                return "Could not allocate memory or general memory error";
+            case SBK_ERR_INVALID_FILE:
+                return "File was invalid";
+            case SBK_ERR_NULL:
+                return "Tried to access a null variable";
+            case SBK_ERROR_MAX:
+                break;
         }
 
         // Negative codes are miniaudio (ma_result) errors surfaced through sbk_status.

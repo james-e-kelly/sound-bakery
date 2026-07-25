@@ -1,11 +1,13 @@
 #pragma once
 
-#include "core/enum_flags.h"
-#include "core/leak_detector.h"
-#include "sound_bakery/core/object/object_owner.h"
 #include "sound_bakery/core/memory.h"
 #include "sound_bakery/core/name.h"
+#include "sound_bakery/core/object/object_owner.h"
 #include "sound_bakery/task/task.h"
+
+#include "core/enum_flags.h"
+#include "core/leak_detector.h"
+
 #include <boost/core/noncopyable.hpp>
 #include <boost/serialization/nvp.hpp>
 
@@ -23,7 +25,7 @@ namespace sbk::core
      * from.
      *
      * Objects can own other objects.
-     * 
+     *
      * @todo Remove the object class. There should be a greater split between data and runtime.
      * The object class only exists to give a base class to runtime objects.
      * However, all runtime objects should be small structs in a single array - not full objects with reflection.
@@ -39,7 +41,7 @@ namespace sbk::core
 
         template <typename T>
         [[nodiscard]] auto casted_shared_from_this() -> std::shared_ptr<T>;
-        
+
         /**
          * @brief Gets the most derived type of this object and upcasts it to T
          */
@@ -88,19 +90,19 @@ namespace sbk::core
                 if (typename archive_class::is_saving())
                 {
                     rttr::variant propertyVariant = property.get_value(rttr::instance(this));
-                    archive & boost::serialization::make_nvp(propertyName.c_str(), propertyVariant);
+                    archive& boost::serialization::make_nvp(propertyName.c_str(), propertyVariant);
                 }
                 else if (typename archive_class::is_loading())
                 {
                     rttr::variant loadedVariant = property.get_value(rttr::instance(this));
                     BOOST_VERIFY(loadedVariant.is_valid());
                     BOOST_VERIFY(loadedVariant.get_type().is_valid());
-                    archive & boost::serialization::make_nvp(propertyName.c_str(), loadedVariant);
+                    archive& boost::serialization::make_nvp(propertyName.c_str(), loadedVariant);
 
                     if (property.get_type() == rttr::type::get<std::string_view>() &&
                         loadedVariant.get_type() == rttr::type::get<std::string>())
                     {
-                        std::string loadedString = loadedVariant.convert<std::string>();
+                        std::string loadedString          = loadedVariant.convert<std::string>();
                         std::string_view loadedStringView = loadedString;
 
                         if (has_flag(object_flags::loading))
@@ -139,7 +141,7 @@ namespace sbk::core
         }
 
         static void operator delete(void* pointer, SB_OBJECT_CATEGORY category)
-        { 
+        {
             return sbk::memory::free(pointer, category);
         }
 

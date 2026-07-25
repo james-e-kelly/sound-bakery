@@ -89,18 +89,18 @@ namespace sbk::core
  * would make it unusable before the threading cleanup lands. Once a call
  * site is clean, these graduate to asserts by strengthening the macro.
  */
-#define SBK_DETAIL_EXPECT_THREAD_DOMAIN(expectedDomain)                                          \
-    do                                                                                           \
-    {                                                                                            \
-        if (!::sbk::core::current_thread_satisfies(expectedDomain)) [[unlikely]]                 \
-        {                                                                                        \
-            static std::atomic<bool> sbkWarnedThreadDomain{false};                               \
-            if (!sbkWarnedThreadDomain.exchange(true))                                           \
-            {                                                                                    \
-                ::sbk::core::detail::warn_wrong_thread_domain((expectedDomain),                  \
+#define SBK_DETAIL_EXPECT_THREAD_DOMAIN(expectedDomain)                                         \
+    do                                                                                          \
+    {                                                                                           \
+        if (!::sbk::core::current_thread_satisfies(expectedDomain)) [[unlikely]]                \
+        {                                                                                       \
+            static std::atomic<bool> sbkWarnedThreadDomain{false};                              \
+            if (!sbkWarnedThreadDomain.exchange(true))                                          \
+            {                                                                                   \
+                ::sbk::core::detail::warn_wrong_thread_domain((expectedDomain),                 \
                                                               std::source_location::current()); \
-            }                                                                                    \
-        }                                                                                        \
+            }                                                                                   \
+        }                                                                                       \
     } while (0)
 
 #define SBK_EXPECT_STUDIO_THREAD() SBK_DETAIL_EXPECT_THREAD_DOMAIN(::sbk::core::thread_domain::studio)

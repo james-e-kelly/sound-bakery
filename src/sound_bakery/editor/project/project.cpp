@@ -8,6 +8,7 @@
 #include "sound_bakery/soundbank/soundbank.h"
 #include "sound_bakery/system.h"
 #include "sound_bakery/task/task.h"
+
 #include "sound_chef/sound_chef_bank.h"
 #include "sound_chef/sound_chef_encoder.h"
 
@@ -116,7 +117,7 @@ auto sbk::editor::project::load_sounds() -> sbk::result<void>
                 if (database->try_find_database_object(sbk::core::database_name(sbk::engine::sound::type().get_name().data(), filename.stem().string())).expired())
                 {
                     SBK_TRY(const auto createdSound, create_database_object<sbk::engine::sound>());
-                    
+
                     createdSound->set_object_name(filename.stem().string());
                     createdSound->set_sound_name(p.path().string());
                 }
@@ -166,7 +167,7 @@ auto sbk::editor::project::load_objects() -> sbk::result<void>
 auto sbk::editor::project::create_preview_container() -> sbk::result<void>
 {
     SBK_TRY(auto previewContainer, create_database_object<sbk::engine::sound_container>());
-    
+
     previewContainer->set_object_name("Preview Node");
     previewContainer->set_editor_hidden(true);
 
@@ -185,7 +186,7 @@ auto sbk::editor::project::build_soundbanks() -> sbk::result<void>
     initSoundbank->set_object_name(m_projectConfig.initBankName);
     initSoundbank->set_init_soundbank(true);
     initSoundbank->set_lookup_soundbank(true);
-    remove_object(initSoundbank);   // Will delete when going out of this scope
+    remove_object(initSoundbank);  // Will delete when going out of this scope
 
     soundbankObjects.insert(initSoundbank.get());
 

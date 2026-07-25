@@ -20,4 +20,4 @@ namespace sbk::memory
 
     auto thread_start(std::string_view threadName) -> void;
     auto thread_end(std::string_view threadName) -> void;
-}
+}  // namespace sbk::memory

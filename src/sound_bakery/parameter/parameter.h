@@ -162,7 +162,7 @@ namespace sbk::engine
             if (!name.empty())
             {
                 auto parameterValueResult = create_database_object<named_parameter_value>();
-                
+
                 if (parameterValueResult.has_value())
                 {
                     auto& parameterValue = parameterValueResult.value();

@@ -35,7 +35,7 @@ namespace
         SBK_TRY_C(sc_system_create_sound_memory(sbk::engine::system::get(), rawSound.get(), size, SC_SOUND_MODE_DEFAULT, &loadedSound));
         return loadedSound;
     }
-}
+}  // namespace
 
 auto sound::load_synchronous() -> sbk::result<void>
 {
@@ -52,12 +52,13 @@ auto sound::load_synchronous() -> sbk::result<void>
         const std::filesystem::path sourceFolder  = project->get_config().source_folder();
 
         SBK_TRY(loadedSound, get_first_existing_file(
-            {
-                encodedSoundPath,
-                encodedFolder / encodedSoundPath,
-                rawSoundPath,
-                sourceFolder / rawSoundPath,
-            }).and_then(create_sound_from_file));
+                                 {
+                                     encodedSoundPath,
+                                     encodedFolder / encodedSoundPath,
+                                     rawSoundPath,
+                                     sourceFolder / rawSoundPath,
+                                 })
+                                 .and_then(create_sound_from_file));
     }
     else
     {
@@ -65,16 +66,16 @@ auto sound::load_synchronous() -> sbk::result<void>
     }
 
     SBK_CHECK(loadedSound != nullptr, SBK_ERR_NULL);
-    
+
     m_sound.reset(loadedSound);
-    
+
     return sbk::ok();
 }
 
-auto sound::load_asynchronous() -> sbk::async_result<void> 
+auto sound::load_asynchronous() -> sbk::async_result<void>
 {
     /// @todo Properly load this on another thread
-    co_return load_synchronous(); 
+    co_return load_synchronous();
 }
 
 auto sound::set_sound_name(std::string soundName) -> void

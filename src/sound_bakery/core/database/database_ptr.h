@@ -1,7 +1,8 @@
 #pragma once
 
-#include "sound_bakery/core/database/database_object.h"
 #include "sound_bakery/pch.h"
+
+#include "sound_bakery/core/database/database_object.h"
 
 #include <compare>
 
@@ -156,7 +157,7 @@ namespace sbk::core
 
         auto reset(const TObjectShared& object) -> void
         {
-            m_objectID = object ? static_cast<TIdentifierType>(*object.get()) : TIdentifierType();
+            m_objectID  = object ? static_cast<TIdentifierType>(*object.get()) : TIdentifierType();
             m_objectPtr = object;
             m_null      = m_objectPtr.expired();
         }

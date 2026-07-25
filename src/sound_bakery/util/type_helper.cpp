@@ -287,8 +287,8 @@ auto type_helper::get_object_category_enum() -> rttr::enumeration
 
 auto type_helper::get_object_category_name(const SB_OBJECT_CATEGORY& objectCategory) -> rttr::string_view
 {
-    static const rttr::string_view defaultName  = "Unknown";
-    const rttr::enumeration objectCategoryEnum  = get_object_category_enum();
+    static const rttr::string_view defaultName = "Unknown";
+    const rttr::enumeration objectCategoryEnum = get_object_category_enum();
 
     rttr::string_view name = objectCategoryEnum.value_to_name(objectCategory);
     return name.data() ? name : defaultName;

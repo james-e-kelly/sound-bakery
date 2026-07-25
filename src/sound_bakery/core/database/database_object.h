@@ -4,7 +4,6 @@
 
 namespace sbk::core
 {
-    
 
     struct database_name_comparator
     {
@@ -21,7 +20,7 @@ namespace sbk::core
         LEAK_DETECTOR(database_object)
 
     public:
-        using update_id_delegate = MulticastDelegate<sbk_id, sbk_id>;
+        using update_id_delegate            = MulticastDelegate<sbk_id, sbk_id>;
         using update_database_name_delegate = MulticastDelegate<const database_name&, const database_name&>;
 
         database_object();
@@ -32,7 +31,7 @@ namespace sbk::core
         [[nodiscard]] auto get_database_path(std::string& path) const -> void;  //< Get the absolute path name of the object
         [[nodiscard]] auto get_database_name() const -> database_name;          //< Get a unique name that uses the type, path, and name
         [[nodiscard]] auto get_editor_hidden() const -> bool;
-        [[nodiscard]] virtual auto get_is_export() const -> bool;           //< Whether this object should be exported and made public to integrations. In Unreal, any object exported will end up as a UAsset
+        [[nodiscard]] virtual auto get_is_export() const -> bool;  //< Whether this object should be exported and made public to integrations. In Unreal, any object exported will end up as a UAsset
 
         auto set_database_id(sbk_id id) -> void;
         auto set_editor_hidden(bool hidden) -> void;
@@ -58,7 +57,7 @@ namespace sbk::core
 
 namespace std
 {
-    template<>
+    template <>
     struct hash<sbk::core::database_name>
     {
         auto operator()(const sbk::core::database_name& k) const -> size_t { return hash<std::string>{}(k.databaseName); }

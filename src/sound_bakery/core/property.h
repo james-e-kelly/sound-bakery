@@ -1,6 +1,7 @@
 #pragma once
 
 #include "sound_bakery/pch.h"
+
 #include "sound_bakery/core/core_fwd.h"
 
 namespace sbk::core
@@ -63,7 +64,7 @@ namespace sbk::core
          */
         auto set_min(T value) -> void
         {
-            m_min = value;
+            m_min          = value;
             T clampedValue = std::clamp(m_value, m_min, m_max);
             set(clampedValue);
         }
@@ -74,7 +75,7 @@ namespace sbk::core
          */
         auto set_max(T value) -> void
         {
-            m_max = value;
+            m_max          = value;
             T clampedValue = std::clamp(m_value, m_min, m_max);
             set(clampedValue);
         }

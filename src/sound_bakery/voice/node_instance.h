@@ -2,15 +2,14 @@
 
 #include "sound_bakery/core/core_include.h"
 #include "sound_bakery/error/error.h"
-
 #include "sound_bakery/node/container/sequence_container.h"
 
 #include <boost/msm/back/state_machine.hpp>
-#include <boost/msm/front/state_machine_def.hpp>
-#include <boost/msm/front/functor_row.hpp>
 #include <boost/msm/front/euml/common.hpp>
 #include <boost/msm/front/euml/operator.hpp>
 #include <boost/msm/front/euml/state_grammar.hpp>
+#include <boost/msm/front/functor_row.hpp>
+#include <boost/msm/front/state_machine_def.hpp>
 
 namespace sbk::engine
 {
@@ -37,8 +36,8 @@ namespace sbk::engine
     struct event_init
     {
         sbk::core::database_ptr<node_base> refNode;
-        node_instance_type type          = node_instance_type::main;
-        node_instance* parentForChildren = nullptr;
+        node_instance_type type                      = node_instance_type::main;
+        node_instance* parentForChildren             = nullptr;
         sbk::engine::game_object* m_owningGameObject = nullptr;
     };
     struct event_play
@@ -61,16 +60,24 @@ namespace sbk::engine
     {
         float deltaTime = 0.0f;
     };
-    
-    struct flag_playing{};
-    struct flag_stopped{};
+
+    struct flag_playing
+    {
+    };
+    struct flag_stopped
+    {
+    };
 
     struct SB_CLASS node_instance_fsm : public boost::msm::front::state_machine_def<node_instance_fsm>
     {
         ~node_instance_fsm();
 
-        struct state_uninit : public boost::msm::front::state<>{};
-        struct state_init : public boost::msm::front::state<>{};
+        struct state_uninit : public boost::msm::front::state<>
+        {
+        };
+        struct state_init : public boost::msm::front::state<>
+        {
+        };
         struct state_playing : public boost::msm::front::state<>
         {
             typedef boost::mpl::vector1<flag_playing> flag_list;
@@ -154,17 +161,16 @@ namespace sbk::engine
             SBK_INFO("No transition from state {} on event {}", state, typeid(event).name());
         }
 
-        struct transition_table : boost::mpl::vector
-            <
-                  // Start, Event, Next, Action, Guard
-                  row<state_uninit, event_init, state_init, &node_instance_fsm::action_init, &node_instance_fsm::guard_init>,
-                  a_row<state_init, event_play, state_playing, &node_instance_fsm::action_play>,
-                  a_row<state_playing, event_stop, state_stopped, &node_instance_fsm::action_stop>,
-                  a_row<state_playing, event_virtualise, state_virtual, &node_instance_fsm::action_virtualise>,
-                  a_row<state_virtual, event_devirtualise, state_playing, &node_instance_fsm::action_devirtualise>,
-                  boost::msm::front::Row<state_playing, event_update, boost::msm::front::none, action_update, boost::msm::front::none>
-            >
-        {};
+        struct transition_table : boost::mpl::vector<
+                                      // Start, Event, Next, Action, Guard
+                                      row<state_uninit, event_init, state_init, &node_instance_fsm::action_init, &node_instance_fsm::guard_init>,
+                                      a_row<state_init, event_play, state_playing, &node_instance_fsm::action_play>,
+                                      a_row<state_playing, event_stop, state_stopped, &node_instance_fsm::action_stop>,
+                                      a_row<state_playing, event_virtualise, state_virtual, &node_instance_fsm::action_virtualise>,
+                                      a_row<state_virtual, event_devirtualise, state_playing, &node_instance_fsm::action_devirtualise>,
+                                      boost::msm::front::Row<state_playing, event_update, boost::msm::front::none, action_update, boost::msm::front::none>>
+        {
+        };
 
         auto init_parent() -> sbk::result<void>;
         auto init_child() -> sbk::result<void>;
@@ -180,7 +186,7 @@ namespace sbk::engine
 
         std::shared_ptr<node> m_referencingNode;
         class sbk::engine::node_instance* m_owner = nullptr;
-        sbk::engine::game_object* m_gameObject = nullptr;
+        sbk::engine::game_object* m_gameObject    = nullptr;
         node_group_instance m_nodeGroup;
         std::shared_ptr<node_instance> m_parent;
         std::vector<std::shared_ptr<node_instance>> m_children;

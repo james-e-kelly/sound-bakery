@@ -11,7 +11,7 @@ namespace sbk::core
         name() = delete;
         name(std::string_view data, std::string_view illegalCharacters)
             : m_data(data),
-            m_illegalCharacters(illegalCharacters)
+              m_illegalCharacters(illegalCharacters)
         {
             BOOST_ASSERT_MSG(!m_data.empty(), "Strings cannot be set to empty");
         }
@@ -41,8 +41,8 @@ namespace sbk::core
             return get();
         }
 
-        auto operator=(std::string_view data) -> bool 
-        { 
+        auto operator=(std::string_view data) -> bool
+        {
             return set(data);
         }
 
@@ -114,4 +114,4 @@ namespace sbk::core
 
         std::string databaseName;
     };
-}
+}  // namespace sbk::core

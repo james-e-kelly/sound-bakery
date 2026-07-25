@@ -1,6 +1,7 @@
 #pragma once
 
 #include "sound_bakery/core/core_include.h"
+
 #include "sound_chef/sound_chef_encoder.h"
 
 namespace sbk::engine
@@ -21,24 +22,24 @@ namespace sbk::engine
         template <class archive_class>
         auto serialize(archive_class& archive, const unsigned int version) -> void
         {
-            archive & boost::serialization::make_nvp("AssetName", assetName);
-            archive & boost::serialization::make_nvp("AssetID", assetID);
+            archive& boost::serialization::make_nvp("AssetName", assetName);
+            archive& boost::serialization::make_nvp("AssetID", assetID);
         }
     };
 
     /**
-     * @brief Contains 
+     * @brief Contains
      */
     struct SB_CLASS soundbank_database
     {
         std::vector<soundbank_database_entry> database;
 
-        auto fill_runtime_database() -> void;   //< Fill the sbk::engine::system database with the information serialized here
-        
+        auto fill_runtime_database() -> void;  //< Fill the sbk::engine::system database with the information serialized here
+
         template <class archive_class>
         auto serialize(archive_class& archive, const unsigned int version) -> void
         {
-            archive & boost::serialization::make_nvp("LookupDatabase", database);
+            archive& boost::serialization::make_nvp("LookupDatabase", database);
 
             if (typename archive_class::is_loading())
             {
@@ -84,7 +85,7 @@ namespace sbk::engine
 
     private:
         std::vector<sbk::core::database_ptr<event>> m_events;
-        bool m_initSoundbank = false; //< Determines whether we package bussess, parameters, etc.
-        bool m_lookupSoundbank = false; //< Determines whether this bank contains string -> id lookup information
+        bool m_initSoundbank   = false;  //< Determines whether we package bussess, parameters, etc.
+        bool m_lookupSoundbank = false;  //< Determines whether this bank contains string -> id lookup information
     };
 }  // namespace sbk::engine

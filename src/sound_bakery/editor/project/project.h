@@ -1,8 +1,8 @@
 #pragma once
 
 #include "sound_bakery/core/core_include.h"
-#include "sound_bakery/error/error.h"
 #include "sound_bakery/editor/project/project_configuration.h"
+#include "sound_bakery/error/error.h"
 
 namespace sbk::engine
 {

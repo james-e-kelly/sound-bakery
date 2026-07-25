@@ -26,7 +26,7 @@ namespace sbk::core
         [[nodiscard]] auto try_find_database_object(const database_name& name) const -> std::weak_ptr<database_object>;
         [[nodiscard]] auto get_all_database_objects() const -> std::vector<std::weak_ptr<database_object>>;
         [[nodiscard]] auto get_all_database_names() const -> std::vector<database_name>;
-        [[nodiscard]] auto get_database_object_count() const -> size_t; //< Returns the number of "live IDs -> Objects" in the database. Ignores "name -> ID" as it's possible they are not real objects yet (soundbank hasn't loaded it yet)
+        [[nodiscard]] auto get_database_object_count() const -> size_t;  //< Returns the number of "live IDs -> Objects" in the database. Ignores "name -> ID" as it's possible they are not real objects yet (soundbank hasn't loaded it yet)
         [[nodiscard]] auto get_database_object_at(size_t index) const -> std::weak_ptr<database_object>;
 
         auto clear_database() noexcept -> void;

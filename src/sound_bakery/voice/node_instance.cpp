@@ -67,13 +67,13 @@ auto sbk::engine::node_instance_fsm::action_play(const event_play& play) -> void
     ZoneScoped;
     if (m_referencingNode->get_object_type() == rttr::type::get<sound_container>())
     {
-        const sbk::engine::sound_container* const soundContainer    = m_referencingNode->try_convert_object<sound_container>();
-        auto engineSound                                            = soundContainer->get_sound();
-        sc_sound* const sound                                       = engineSound ? engineSound->get_sound() : nullptr;
+        const sbk::engine::sound_container* const soundContainer = m_referencingNode->try_convert_object<sound_container>();
+        auto engineSound                                         = soundContainer->get_sound();
+        sc_sound* const sound                                    = engineSound ? engineSound->get_sound() : nullptr;
 
         if (sound)
         {
-            sc_sound_instance* soundInstance = nullptr; 
+            sc_sound_instance* soundInstance = nullptr;
             if (const sbk_status playSoundResult = sc_system_play_sound(sbk::engine::system::get(), sound, &soundInstance, m_nodeGroup.nodeGroup.get(), MA_FALSE); playSoundResult != SBK_SUCCESS)
             {
                 sbk::log_error(playSoundResult, "sc_system_play_sound");
@@ -87,14 +87,15 @@ auto sbk::engine::node_instance_fsm::action_play(const event_play& play) -> void
     }
     else
     {
-        std::for_each(m_children.begin(), m_children.end(), [](const auto& child) { (void)child->play(); });
+        std::for_each(m_children.begin(), m_children.end(), [](const auto& child)
+                      { (void)child->play(); });
     }
 }
 
 auto sbk::engine::node_instance_fsm::action_stop(const event_stop& stop) -> void
-{ 
+{
     ZoneScoped;
-    m_soundInstance.reset(); 
+    m_soundInstance.reset();
     m_children.clear();
     m_parent.reset();
 }
@@ -118,7 +119,7 @@ auto sbk::engine::node_instance::init(const event_init& init) -> sbk::result<voi
 {
     ZoneScoped;
     m_stateMachine.m_gameObject = init.m_owningGameObject;
-    m_stateMachine.m_owner = this;
+    m_stateMachine.m_owner      = this;
     m_stateMachine.start();
     SBK_CHECK(m_stateMachine.process_event(init), SBK_ERR_BAKERY);
     return sbk::ok();
@@ -151,8 +152,8 @@ auto sbk::engine::node_instance::is_playing() const -> bool
 }
 
 auto sbk::engine::node_instance::is_stopped() const -> bool
-{ 
-    return m_stateMachine.is_flag_active<flag_stopped>(); 
+{
+    return m_stateMachine.is_flag_active<flag_stopped>();
 }
 
 auto sbk::engine::node_instance::get_referencing_node() const noexcept -> std::shared_ptr<node>
@@ -170,8 +171,8 @@ auto sbk::engine::node_instance::get_bus() const noexcept -> sc_node_group*
 // INIT //
 
 auto sbk::engine::node_instance_fsm::add_dsp_to_node_group(sc_node_group* nodeGroup,
-                                                       sc_dsp** dsp,
-                                                       const sc_dsp_config& config) -> sbk::result<void>
+                                                           sc_dsp** dsp,
+                                                           const sc_dsp_config& config) -> sbk::result<void>
 {
     ZoneScoped;
     SBK_CHECK(nodeGroup != nullptr, SBK_ERR_INVALID_PARAMETER);
@@ -242,7 +243,7 @@ auto sbk::engine::node_instance_fsm::init_parent() -> sbk::result<void>
 
     SBK_CHECK(nodeToReference, SBK_ERR_NULL);
     SBK_CHECK_MSG(nodeToReference->get_database_id() != m_referencingNode->get_database_id(), SBK_ERR_BAKERY, "Pointing to self. Cannot init parent");
- 
+
     const event_init initData{.refNode = nodeToReference, .type = node_instance_type::bus, .m_owningGameObject = m_gameObject};
     SBK_TRY(m_parent, m_owner->create_runtime_object<sbk::engine::node_instance>());
     return m_parent->init(initData);
@@ -258,7 +259,7 @@ auto sbk::engine::node_instance_fsm::init_child() -> sbk::result<void>
     {
         gather_children_context context;
         context.numTimesPlayed = m_numTimesPlayed;
-        context.parameters = m_gameObject->get_local_parameters();
+        context.parameters     = m_gameObject->get_local_parameters();
 
         container->gather_children_for_play(context);
 
@@ -272,11 +273,11 @@ auto sbk::engine::node_instance_fsm::init_child() -> sbk::result<void>
             m_children.push_back(runtimeChild);
 
             event_init childInit;
-            childInit.parentForChildren = m_owner;
-            childInit.type              = node_instance_type::child;
-            childInit.refNode           = child->get_database_id();
+            childInit.parentForChildren  = m_owner;
+            childInit.type               = node_instance_type::child;
+            childInit.refNode            = child->get_database_id();
             childInit.m_owningGameObject = m_gameObject;
-                
+
             SBK_TRYV(runtimeChild->init(childInit));
         }
     }

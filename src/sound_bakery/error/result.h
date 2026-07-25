@@ -1,6 +1,7 @@
 #pragma once
 
 #include "sound_bakery/pch.h"
+
 #include "sound_bakery/error/error.h"
 
 /**
@@ -80,12 +81,12 @@
 /**
  * @brief Calls a C function returning @c sbk_status; on failure logs at this site and forwards the error.
  */
-#define SBK_TRY_C(expr)                                                     \
-    do                                                                      \
-    {                                                                       \
-        const sbk_status SBK_DETAIL_UNIQUE(sbkCode_) = (expr);              \
-        if (SBK_DETAIL_UNIQUE(sbkCode_) != SBK_SUCCESS) [[unlikely]]        \
-            return ::sbk::make_error(SBK_DETAIL_UNIQUE(sbkCode_), #expr);   \
+#define SBK_TRY_C(expr)                                                   \
+    do                                                                    \
+    {                                                                     \
+        const sbk_status SBK_DETAIL_UNIQUE(sbkCode_) = (expr);            \
+        if (SBK_DETAIL_UNIQUE(sbkCode_) != SBK_SUCCESS) [[unlikely]]      \
+            return ::sbk::make_error(SBK_DETAIL_UNIQUE(sbkCode_), #expr); \
     } while (0)
 
 /**
@@ -106,11 +107,11 @@
 /**
  * @brief Guards @p cond; if false, logs and returns @p code as an error (message defaults to the condition).
  */
-#define SBK_CHECK(cond, code)                                                       \
-    do                                                                              \
-    {                                                                               \
-        if (!(cond)) [[unlikely]]                                                   \
-            return ::sbk::make_error((code), "check failed: " #cond);               \
+#define SBK_CHECK(cond, code)                                         \
+    do                                                                \
+    {                                                                 \
+        if (!(cond)) [[unlikely]]                                     \
+            return ::sbk::make_error((code), "check failed: " #cond); \
     } while (0)
 
 /**
@@ -120,11 +121,11 @@
  *   SBK_CHECK_MSG(voice != nullptr, SBK_ERR_NULL, "voice playback is broken: no voice for '{}'", name);
  * @endcode
  */
-#define SBK_CHECK_MSG(cond, code, ...)                                              \
-    do                                                                              \
-    {                                                                               \
-        if (!(cond)) [[unlikely]]                                                   \
-            return ::sbk::make_error((code), ::fmt::format(__VA_ARGS__));           \
+#define SBK_CHECK_MSG(cond, code, ...)                                    \
+    do                                                                    \
+    {                                                                     \
+        if (!(cond)) [[unlikely]]                                         \
+            return ::sbk::make_error((code), ::fmt::format(__VA_ARGS__)); \
     } while (0)
 
 /**
@@ -141,66 +142,66 @@
 /**
  * @brief Guards @p cond; if false, logs and returns @p code (message defaults to the condition).
  */
-#define SBK_STATUS_CHECK(cond, code)                                                \
-    do                                                                              \
-    {                                                                               \
-        if (!(cond)) [[unlikely]]                                                   \
-        {                                                                           \
-            ::sbk::log_error((code), "check failed: " #cond);                       \
-            return (code);                                                          \
-        }                                                                           \
+#define SBK_STATUS_CHECK(cond, code)                          \
+    do                                                        \
+    {                                                         \
+        if (!(cond)) [[unlikely]]                             \
+        {                                                     \
+            ::sbk::log_error((code), "check failed: " #cond); \
+            return (code);                                    \
+        }                                                     \
     } while (0)
 
 /**
  * @brief Guards @p cond; if false, logs a fmt-formatted @p message and returns @p code.
  */
-#define SBK_STATUS_CHECK_MSG(cond, code, ...)                                       \
-    do                                                                              \
-    {                                                                               \
-        if (!(cond)) [[unlikely]]                                                   \
-        {                                                                           \
-            ::sbk::log_error((code), ::fmt::format(__VA_ARGS__));                   \
-            return (code);                                                          \
-        }                                                                           \
+#define SBK_STATUS_CHECK_MSG(cond, code, ...)                     \
+    do                                                            \
+    {                                                             \
+        if (!(cond)) [[unlikely]]                                 \
+        {                                                         \
+            ::sbk::log_error((code), ::fmt::format(__VA_ARGS__)); \
+            return (code);                                        \
+        }                                                         \
     } while (0)
 
 /**
  * @brief Calls a C function returning @c sbk_status; on failure logs and returns the same code.
  */
-#define SBK_STATUS_TRY_C(expr)                                                      \
-    do                                                                              \
-    {                                                                               \
-        const sbk_status SBK_DETAIL_UNIQUE(sbkCode_) = (expr);                      \
-        if (SBK_DETAIL_UNIQUE(sbkCode_) != SBK_SUCCESS) [[unlikely]]                \
-        {                                                                           \
-            ::sbk::log_error(SBK_DETAIL_UNIQUE(sbkCode_), #expr);                   \
-            return SBK_DETAIL_UNIQUE(sbkCode_);                                     \
-        }                                                                           \
+#define SBK_STATUS_TRY_C(expr)                                       \
+    do                                                               \
+    {                                                                \
+        const sbk_status SBK_DETAIL_UNIQUE(sbkCode_) = (expr);       \
+        if (SBK_DETAIL_UNIQUE(sbkCode_) != SBK_SUCCESS) [[unlikely]] \
+        {                                                            \
+            ::sbk::log_error(SBK_DETAIL_UNIQUE(sbkCode_), #expr);    \
+            return SBK_DETAIL_UNIQUE(sbkCode_);                      \
+        }                                                            \
     } while (0)
 
 /**
  * @brief Like @c SBK_STATUS_TRY_C, but attaches a fmt-formatted context message.
  */
-#define SBK_STATUS_TRY_C_MSG(expr, ...)                                             \
-    do                                                                              \
-    {                                                                               \
-        const sbk_status SBK_DETAIL_UNIQUE(sbkCode_) = (expr);                      \
-        if (SBK_DETAIL_UNIQUE(sbkCode_) != SBK_SUCCESS) [[unlikely]]                \
-        {                                                                           \
-            ::sbk::log_error(SBK_DETAIL_UNIQUE(sbkCode_),                           \
-                             ::fmt::format(__VA_ARGS__) + " [" #expr "]");          \
-            return SBK_DETAIL_UNIQUE(sbkCode_);                                     \
-        }                                                                           \
+#define SBK_STATUS_TRY_C_MSG(expr, ...)                                    \
+    do                                                                     \
+    {                                                                      \
+        const sbk_status SBK_DETAIL_UNIQUE(sbkCode_) = (expr);             \
+        if (SBK_DETAIL_UNIQUE(sbkCode_) != SBK_SUCCESS) [[unlikely]]       \
+        {                                                                  \
+            ::sbk::log_error(SBK_DETAIL_UNIQUE(sbkCode_),                  \
+                             ::fmt::format(__VA_ARGS__) + " [" #expr "]"); \
+            return SBK_DETAIL_UNIQUE(sbkCode_);                            \
+        }                                                                  \
     } while (0)
 
 /**
  * @brief Unconditionally logs a fmt-formatted message and returns @p code.
  */
-#define SBK_STATUS_FAIL(code, ...)                                                  \
-    do                                                                              \
-    {                                                                               \
-        ::sbk::log_error((code), ::fmt::format(__VA_ARGS__));                       \
-        return (code);                                                              \
+#define SBK_STATUS_FAIL(code, ...)                            \
+    do                                                        \
+    {                                                         \
+        ::sbk::log_error((code), ::fmt::format(__VA_ARGS__)); \
+        return (code);                                        \
     } while (0)
 
 // ===========================================================================
@@ -210,25 +211,25 @@
 /**
  * @brief Guards @p cond; if false, logs @p code and returns @c SBK_INVALID_ID (for @c sbk_id functions).
  */
-#define SBK_ID_CHECK(cond, code)                                                    \
-    do                                                                              \
-    {                                                                               \
-        if (!(cond)) [[unlikely]]                                                   \
-        {                                                                           \
-            ::sbk::log_error((code), "check failed: " #cond);                       \
-            return SBK_INVALID_ID;                                                  \
-        }                                                                           \
+#define SBK_ID_CHECK(cond, code)                              \
+    do                                                        \
+    {                                                         \
+        if (!(cond)) [[unlikely]]                             \
+        {                                                     \
+            ::sbk::log_error((code), "check failed: " #cond); \
+            return SBK_INVALID_ID;                            \
+        }                                                     \
     } while (0)
 
 /**
  * @brief Guards @p cond; if false, logs a fmt-formatted @p message and returns @c SBK_INVALID_ID.
  */
-#define SBK_ID_CHECK_MSG(cond, code, ...)                                           \
-    do                                                                              \
-    {                                                                               \
-        if (!(cond)) [[unlikely]]                                                   \
-        {                                                                           \
-            ::sbk::log_error((code), ::fmt::format(__VA_ARGS__));                   \
-            return SBK_INVALID_ID;                                                  \
-        }                                                                           \
+#define SBK_ID_CHECK_MSG(cond, code, ...)                         \
+    do                                                            \
+    {                                                             \
+        if (!(cond)) [[unlikely]]                                 \
+        {                                                         \
+            ::sbk::log_error((code), ::fmt::format(__VA_ARGS__)); \
+            return SBK_INVALID_ID;                                \
+        }                                                         \
     } while (0)

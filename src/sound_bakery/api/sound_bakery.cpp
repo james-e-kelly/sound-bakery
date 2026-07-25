@@ -9,7 +9,7 @@
 #include "sound_bakery/system.h"
 #include "sound_bakery/voice/voice.h"
 
-template<class T>
+template <class T>
 static auto convert_id_to_pointer(sbk_id id) -> T*
 {
     return reinterpret_cast<T*>(id);
@@ -24,7 +24,7 @@ namespace
      *
      * A C++ exception propagating out of an `extern "C"` function is undefined behaviour, so every
      * public sbk_* entry point funnels its body through here.
-     * 
+     *
      * TODO: Compile with -fno-exceptions and remove all code that throws to remove the need for catching exceptions
      */
     template <class body_fn>
@@ -88,9 +88,9 @@ namespace
             SBK_CHECK(action.m_type != action_type::invalid, SBK_ERR_BAKERY);
             SBK_CHECK(action.m_type != action_type::num, SBK_ERR_BAKERY);
 
-            sbk::engine::container* container           = nullptr;
-            sbk::engine::event* childEvent              = nullptr;
-            sbk::engine::game_object* targetGameObject  = nullptr;
+            sbk::engine::container* container          = nullptr;
+            sbk::engine::event* childEvent             = nullptr;
+            sbk::engine::game_object* targetGameObject = nullptr;
 
             if (const auto destination = action.m_destination.shared())
             {
@@ -177,7 +177,7 @@ sbk_system_config sbk_system_config_init_default()
 
 sbk_system_config sbk_system_config_init(const char* pluginPath)
 {
-    sbk_system_config config           = sbk_system_config_init_default();
+    sbk_system_config config          = sbk_system_config_init_default();
     config.soundChefConfig.pluginPath = pluginPath;
     return config;
 }
@@ -185,46 +185,44 @@ sbk_system_config sbk_system_config_init(const char* pluginPath)
 sbk_status sbk_system_create()
 {
     ZoneScoped;
-    return c_api_guard([&]() -> sbk_status { return sbk::to_status(sbk::engine::system::create()); });
+    return c_api_guard([&]() -> sbk_status
+                       { return sbk::to_status(sbk::engine::system::create()); });
 }
 
 sbk_status sbk_system_init(sbk_system_config config)
 {
     ZoneScoped;
     return c_api_guard([&]() -> sbk_status
-    {
+                       {
         sbk::engine::system* const system = sbk::engine::system::get();
         SBK_STATUS_CHECK(system != NULL, SBK_ERR_BAKERY_UNINITIALIZED);
-        return sbk::to_status(system->init(config));
-    });
+        return sbk::to_status(system->init(config)); });
 }
 
 sbk_status sbk_system_update()
 {
     ZoneScoped;
     return c_api_guard([&]() -> sbk_status
-    {
+                       {
         sbk::engine::system* const system = sbk::engine::system::get();
         SBK_STATUS_CHECK(system != NULL, SBK_ERR_BAKERY_UNINITIALIZED);
-        return sbk::to_status(system->update());
-    });
+        return sbk::to_status(system->update()); });
 }
 
 sbk_status sbk_system_destroy()
 {
     ZoneScoped;
     return c_api_guard([&]() -> sbk_status
-    {
+                       {
         sbk::engine::system::destroy();
-        return SBK_SUCCESS;
-    });
+        return SBK_SUCCESS; });
 }
 
 sbk_status sbk_system_load_soundbank(const char* soundbankFilePath, sbk_id* outSoundbankID)
 {
     ZoneScoped;
     return c_api_guard([&]() -> sbk_status
-    {
+                       {
         SBK_STATUS_CHECK(soundbankFilePath != NULL, SBK_ERR_INVALID_PARAMETER);
         SBK_STATUS_CHECK(outSoundbankID != NULL, SBK_ERR_INVALID_PARAMETER);
 
@@ -237,15 +235,14 @@ sbk_status sbk_system_load_soundbank(const char* soundbankFilePath, sbk_id* outS
         SBK_STATUS_CHECK_MSG(soundbankID.has_value(), SBK_ERR_BAKERY_SERIALIZATION, "failed to load soundbank '{}'", soundbankFilePath);
 
         *outSoundbankID = soundbankID.value();
-        return SBK_SUCCESS;
-    });
+        return SBK_SUCCESS; });
 }
 
 sbk_status sbk_system_post_event(const char* eventName, sbk_id gameObjectID)
 {
     ZoneScoped;
     return c_api_guard([&]() -> sbk_status
-    {
+                       {
         SBK_STATUS_CHECK(eventName != NULL, SBK_ERR_INVALID_PARAMETER);
 
         sbk::engine::system* const system = sbk::engine::system::get();
@@ -273,15 +270,14 @@ sbk_status sbk_system_post_event(const char* eventName, sbk_id gameObjectID)
         {
             return result.error().code();
         }
-        return SBK_SUCCESS;
-    });
+        return SBK_SUCCESS; });
 }
 
 sbk_status sbk_system_stop_all(sbk_id gameObjectID)
 {
     ZoneScoped;
     return c_api_guard([&]() -> sbk_status
-    {
+                       {
         sbk::engine::system* const system = sbk::engine::system::get();
         SBK_STATUS_CHECK(system != NULL, SBK_ERR_BAKERY_UNINITIALIZED);
 
@@ -301,29 +297,27 @@ sbk_status sbk_system_stop_all(sbk_id gameObjectID)
         {
             return result.error().code();
         }
-        return SBK_SUCCESS;
-    });
+        return SBK_SUCCESS; });
 }
 
 sbk_status sbk_system_get_object_count(uint64_t* count)
 {
     ZoneScoped;
     return c_api_guard([&]() -> sbk_status
-    {
+                       {
         SBK_STATUS_CHECK(count != NULL, SBK_ERR_INVALID_PARAMETER);
         sbk::engine::system* const system = sbk::engine::system::get();
         SBK_STATUS_CHECK(system != NULL, SBK_ERR_BAKERY_UNINITIALIZED);
 
         *count = system->get_database_object_count();
-        return SBK_SUCCESS; 
-    });
+        return SBK_SUCCESS; });
 }
 
 sbk_status sbk_system_get_object_info(uint64_t index, sbk_id* id, char* name, uint64_t nameSize, uint64_t* actualNameSize)
 {
     ZoneScoped;
     return c_api_guard([&]() -> sbk_status
-    {
+                       {
         SBK_STATUS_CHECK(name != NULL, SBK_ERR_INVALID_PARAMETER);
         SBK_STATUS_CHECK(nameSize > 0, SBK_ERR_INVALID_PARAMETER);
         SBK_STATUS_CHECK(actualNameSize != NULL, SBK_ERR_INVALID_PARAMETER);
@@ -340,8 +334,7 @@ sbk_status sbk_system_get_object_info(uint64_t index, sbk_id* id, char* name, ui
             *actualNameSize = objectName.copy(name, nameSize);
             return SBK_SUCCESS;
         }
-        return SBK_ERR_BAKERY_OBJECT_NOT_FOUND; 
-    });
+        return SBK_ERR_BAKERY_OBJECT_NOT_FOUND; });
 }
 
 namespace sbk::engine
@@ -391,4 +384,4 @@ namespace sbk::engine
 
         return result;
     }
-}
+}  // namespace sbk::engine
