@@ -13,7 +13,7 @@ namespace
     {
         for (const std::filesystem::path& candidate : candidates)
         {
-            if (!candidate.empty() && std::filesystem::exists(candidate))
+            if (!candidate.empty() && std::filesystem::is_regular_file(candidate) && std::filesystem::exists(candidate))
             {
                 return candidate;
             }
