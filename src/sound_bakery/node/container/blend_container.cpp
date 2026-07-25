@@ -4,6 +4,7 @@ DEFINE_REFLECTION(sbk::engine::blend_container)
 
 auto sbk::engine::blend_container::gather_children_for_play(gather_children_context& context) const -> void
 {
+    ZoneScoped;
     for (const auto& child : get_children())
     {
         if (child)

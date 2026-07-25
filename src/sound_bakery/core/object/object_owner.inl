@@ -3,6 +3,7 @@
 template <typename T>
 auto object_owner::create_raw_object() -> sbk::result<std::shared_ptr<T>>
 {
+    ZoneScoped;
     std::shared_ptr<T> result = std::make_shared<T>();
 
     m_objects.emplace_back(result);
@@ -16,6 +17,7 @@ auto object_owner::create_raw_object() -> sbk::result<std::shared_ptr<T>>
 template <typename T>
 auto object_owner::create_runtime_object() -> sbk::result<std::shared_ptr<T>>
 {
+    ZoneScoped;
     static_assert(std::is_base_of_v<sbk::core::object, T>, "Runtime objects must derive from sbk::core::object");
 
     SBK_TRY(auto object, create_runtime_object(rttr::type::get<T>()));
@@ -31,6 +33,7 @@ auto object_owner::create_runtime_object() -> sbk::result<std::shared_ptr<T>>
 template <typename T>
 auto object_owner::create_database_object(bool addToDatabase) -> sbk::result<std::shared_ptr<T>>
 {
+    ZoneScoped;
     static_assert(std::is_base_of_v<sbk::core::database_object, T>, "Database objects must derive from sbk::core::database_object");
 
     SBK_TRY(auto object, create_database_object(rttr::type::get<T>(), addToDatabase));

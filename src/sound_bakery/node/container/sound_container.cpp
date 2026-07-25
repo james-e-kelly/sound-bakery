@@ -6,6 +6,7 @@ DEFINE_REFLECTION(sbk::engine::sound_container)
 
 auto sbk::engine::sound_container::gather_children_for_play(gather_children_context& context) const -> void
 {
+    ZoneScoped;
     context.sounds.push_back(sbk::core::database_ptr<sbk::engine::sound_container>(const_cast<sbk::engine::sound_container*>(this)).shared());
 }
 

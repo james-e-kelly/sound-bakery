@@ -127,6 +127,7 @@ auto sbk::engine::node_instance::init(const event_init& init) -> sbk::result<voi
 
 auto sbk::engine::node_instance::play() -> sbk::result<void>
 {
+    ZoneScoped;
     m_stateMachine.process_event(event_play());
     return sbk::ok();
 }
@@ -140,6 +141,7 @@ auto sbk::engine::node_instance::update() -> sbk::result<void>
 
 auto sbk::engine::node_instance::stop(float fadeTime) -> sbk::result<void>
 {
+    ZoneScoped;
     m_stateMachine.process_event(event_stop{.stopTime = fadeTime});
     return sbk::ok();
 }

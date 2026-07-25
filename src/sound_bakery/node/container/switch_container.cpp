@@ -6,6 +6,7 @@ DEFINE_REFLECTION(sbk::engine::switch_container)
 
 auto sbk::engine::switch_container::gather_children_for_play(gather_children_context& context) const -> void
 {
+    ZoneScoped;
     sbk::core::database_ptr<named_parameter_value> selectedValue;
 
     if (auto findLocalValue = context.parameters.intParameters.find(m_switchParameter); findLocalValue != context.parameters.intParameters.cend())

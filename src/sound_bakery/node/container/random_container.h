@@ -9,6 +9,7 @@ namespace sbk::engine
     public:
         auto gather_children_for_play(gather_children_context& context) const -> void override
         {
+            ZoneScoped;
             switch (m_childNodes.size())
             {
                 case 0:

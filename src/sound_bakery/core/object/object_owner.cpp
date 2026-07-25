@@ -11,6 +11,8 @@ auto sbk::core::object_owner::create_runtime_object(const rttr::type& type) -> s
 {
     SBK_EXPECT_STUDIO_THREAD();
 
+    ZoneScoped;
+
     sbk::engine::system* const system = sbk::engine::system::get();
 
     SBK_CHECK(system != nullptr, SBK_ERR_BAKERY_UNINITIALIZED);
@@ -51,6 +53,8 @@ auto sbk::core::object_owner::create_runtime_object(const rttr::type& type) -> s
 
 auto sbk::core::object_owner::create_database_object(const rttr::type& type, bool addToDatabase) -> sbk::result<std::shared_ptr<sbk::core::database_object>>
 {
+    ZoneScoped;
+
     sbk::engine::system* const system = sbk::engine::system::get();
 
     SBK_CHECK(system != nullptr, SBK_ERR_BAKERY_UNINITIALIZED);
