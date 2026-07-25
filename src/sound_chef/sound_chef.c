@@ -5,9 +5,11 @@
 #define MA_NO_VORBIS
 #define MA_NO_OPUS
 
+// clang-format off
+#include "sound_chef/sound_chef_internal.h" //< Must be included first. Includes all miniaudio structs for libopus and libvorbis
 #include "extras/miniaudio_libopus.h"
 #include "extras/miniaudio_libvorbis.h"
-#include "sound_chef/sound_chef_internal.h"
+// clang-format on
 #include "sound_chef_encoder.h"
 
 #include <dirent.h>
