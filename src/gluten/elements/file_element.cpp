@@ -28,9 +28,9 @@ namespace gluten
     {
         if (ImGui::IsWindowFocused() && ImGui::IsMouseHoveringRect(contentArea.Min, contentArea.Max))
         {
-            const bool clicked = ImGui::IsMouseClicked(ImGuiMouseButton_Left);
+            const bool clicked       = ImGui::IsMouseClicked(ImGuiMouseButton_Left);
             const bool doubleClicked = ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left);
-            const bool dragging = ImGui::IsMouseDragging(ImGuiMouseButton_Left);
+            const bool dragging      = ImGui::IsMouseDragging(ImGuiMouseButton_Left);
 
             if (doubleClicked)
             {
@@ -38,7 +38,6 @@ namespace gluten
             }
             else if (dragging)
             {
-
             }
 
             if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))

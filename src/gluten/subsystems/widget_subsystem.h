@@ -6,7 +6,7 @@
 
 namespace gluten
 {
-    template<typename T>
+    template <typename T>
     auto add_widget_class_to_root(bool rootOwnsChild) -> std::shared_ptr<T>;
 
     /**

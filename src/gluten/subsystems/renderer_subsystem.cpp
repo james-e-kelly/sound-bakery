@@ -2,8 +2,8 @@
 
 #include "app/app.h"
 #include "gluten/subsystems/widget_subsystem.h"
-#include "gluten/theme/things/things.h"
 #include "gluten/theme/carbon/carbon_theme_g100.h"
+#include "gluten/theme/things/things.h"
 #include "gluten/widgets/root_widget.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -182,7 +182,7 @@ int renderer_subsystem::init_imgui()
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;    // Enable Multi-Viewport / Platform
     io.IniFilename = nullptr;
 
-    //theme::carbon_g100::apply_colours();
+    // theme::carbon_g100::apply_colours();
     theme::things::apply_colours(theme::things::darkModeBackgroundColor, true);
 
     theme::apply_styles();
@@ -233,7 +233,7 @@ void renderer_subsystem::pre_tick(double deltaTime)
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-        glfwPollEvents();   // Is this risky to poll afterwards? We're doing this so callbacks happen inside a frame and ImGui is valid
+        glfwPollEvents();  // Is this risky to poll afterwards? We're doing this so callbacks happen inside a frame and ImGui is valid
     }
 }
 
@@ -259,7 +259,6 @@ void renderer_subsystem::tick_rendering(double deltaTime)
                      clear_color.w);
         glClear(GL_COLOR_BUFFER_BIT);
     }
-
 
     {
         ZoneScopedN("imgui_draw");

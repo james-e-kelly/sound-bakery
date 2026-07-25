@@ -1,7 +1,6 @@
 #include "loading_spinner.h"
 
 #include "gluten/theme/theme.h"
-
 #include "imspinner.h"
 
 auto gluten::loading_spinner::render_element(const element_render_info& renderInfo) -> bool

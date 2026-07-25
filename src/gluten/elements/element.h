@@ -1,6 +1,7 @@
 #pragma once
 
 #include "gluten/pch.h"
+
 #include "core/leak_detector.h"
 #include "imgui.h"
 #include "imgui_internal.h"
@@ -161,8 +162,8 @@ namespace gluten
 
     struct element_render_info
     {
-        ImRect  elementBox;     //< Box the element should render inside
-        bool    isVisible;      //< Whether this element is visible. If invisible, you can skip rendering and just add dummy elements to keep the same sizing
+        ImRect elementBox;  //< Box the element should render inside
+        bool isVisible;     //< Whether this element is visible. If invisible, you can skip rendering and just add dummy elements to keep the same sizing
     };
 
     /**
@@ -176,7 +177,7 @@ namespace gluten
 
     public:
         using anchor_preset = ::gluten::anchor_preset;
-        using anchor_info = ::gluten::anchor_info;
+        using anchor_info   = ::gluten::anchor_info;
 
         element() = default;
         element(const anchor_preset& anchorPreset);
@@ -186,8 +187,8 @@ namespace gluten
         auto get_element_scale() const -> float;
 
         auto virtual set_element_content_font_size(float size) -> element&;
-        auto virtual set_element_content_scale(float scale) -> element&;                //< Set the content scale. Content scale is used by text, buttons, sliders, etc.
-        auto virtual set_element_scale(float scale) -> element&;                        //< Set an element scale that scales the rendering rect.
+        auto virtual set_element_content_scale(float scale) -> element&;  //< Set the content scale. Content scale is used by text, buttons, sliders, etc.
+        auto virtual set_element_scale(float scale) -> element&;          //< Set an element scale that scales the rendering rect.
         auto virtual set_element_background_color(ImU32 color) -> element&;
         auto virtual set_element_background_color(ImVec4 color) -> element&;
         auto virtual set_element_hover_color(ImU32 color) -> element&;
@@ -219,10 +220,9 @@ namespace gluten
         bool render_window();  //< Render using the window as the container
         bool render_cursor();  //< Render where the draw cursor is currently
 
-        virtual auto get_element_content_size(const ImVec2& parentSize = ImVec2(0,0)) -> ImVec2 const { return ImVec2(0, 0); }
+        virtual auto get_element_content_size(const ImVec2& parentSize = ImVec2(0, 0)) -> ImVec2 const { return ImVec2(0, 0); }
 
     protected:
-
         virtual auto pre_render_element() -> void {}
         virtual auto post_render_element() -> void {}
         virtual auto render_element(const element_render_info& renderInfo) -> bool { return false; }
@@ -254,9 +254,9 @@ namespace gluten
         float m_scale = 1.0f;
 
     public:
-        static inline bool s_debug              = false;
-        static inline bool s_debugVertical      = false;
-        static inline bool s_debugHorizontal    = false;
+        static inline bool s_debug           = false;
+        static inline bool s_debugVertical   = false;
+        static inline bool s_debugHorizontal = false;
     };
 
     class background : public element

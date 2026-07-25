@@ -1,6 +1,7 @@
 #pragma once
 
 #include "gluten/pch.h"
+
 #include "gluten/elements/element.h"
 
 #include <cmrc/cmrc.hpp>
@@ -38,7 +39,7 @@ namespace gluten
 
         auto set_image_size(const ImVec2& size) -> void
         {
-            m_width = size.x;
+            m_width  = size.x;
             m_height = size.y;
         }
 
@@ -50,9 +51,9 @@ namespace gluten
         auto get_image_data(unsigned char* data, int dataLength) -> data_ptr;
         void bind_image_data(const data_ptr& imageData);
 
-        uint32_t m_openGlId = 0;
-        int m_width         = 0;
-        int m_height        = 0;
+        uint32_t m_openGlId   = 0;
+        int m_width           = 0;
+        int m_height          = 0;
         image_render m_render = image_render::square;
         bool m_ownsTexture    = true;
     };

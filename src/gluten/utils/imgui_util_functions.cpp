@@ -148,7 +148,7 @@ bool gluten::imgui::update_window_manual_resize(ImGuiWindow* window, ImVec2& new
             new_size                         = ImMax(new_size, g.Style.WindowMinSize);
             new_size.y                       = ImMax(new_size.y, decoration_up_height +
                                                                      ImMax(0.0f, g.Style.WindowRounding - 1.0f));  // Reduce artifacts with
-                                                                                             // very small windows
+                                                                                                                   // very small windows
         }
         return new_size;
     };
@@ -192,7 +192,7 @@ bool gluten::imgui::update_window_manual_resize(ImGuiWindow* window, ImVec2& new
             // small), we are growing the size on the other axis to compensate for expected scrollbar. FIXME: Might turn
             // bigger than ViewportSize-WindowPadding.
             ImVec2 size_auto_fit_after_constraint = CalcWindowSizeAfterConstraint(window, size_auto_fit);
-            bool will_have_scrollbar_x = (size_auto_fit_after_constraint.x - size_pad.x - 0.0f < size_contents.x &&
+            bool will_have_scrollbar_x            = (size_auto_fit_after_constraint.x - size_pad.x - 0.0f < size_contents.x &&
                                           !(window->Flags & ImGuiWindowFlags_NoScrollbar) &&
                                           (window->Flags & ImGuiWindowFlags_HorizontalScrollbar)) ||
                                          (window->Flags & ImGuiWindowFlags_AlwaysHorizontalScrollbar);
@@ -260,10 +260,10 @@ bool gluten::imgui::update_window_manual_resize(ImGuiWindow* window, ImVec2& new
         [CalcWindowSizeAfterConstraint](ImGuiWindow* window, const ImVec2& corner_target, const ImVec2& corner_norm,
                                         ImVec2* out_pos, ImVec2* out_size)
     {
-        ImVec2 pos_min       = ImLerp(corner_target, window->Pos, corner_norm);  // Expected window upper-left
-        ImVec2 pos_max       = ImLerp({window->Pos.x + window->Size.x, window->Pos.y + window->Size.y}, corner_target,
-                                      corner_norm);  // Expected window lower-right
-        ImVec2 size_expected = {pos_max.x - pos_min.x, pos_max.y - pos_min.y};
+        ImVec2 pos_min          = ImLerp(corner_target, window->Pos, corner_norm);  // Expected window upper-left
+        ImVec2 pos_max          = ImLerp({window->Pos.x + window->Size.x, window->Pos.y + window->Size.y}, corner_target,
+                                         corner_norm);  // Expected window lower-right
+        ImVec2 size_expected    = {pos_max.x - pos_min.x, pos_max.y - pos_min.y};
         ImVec2 size_constrained = CalcWindowSizeAfterConstraint(window, size_expected);
         *out_pos                = pos_min;
         if (corner_norm.x == 0.0f)
@@ -321,8 +321,8 @@ bool gluten::imgui::update_window_manual_resize(ImGuiWindow* window, ImVec2& new
                                      // window.
         return false;
 
-    bool ret_auto_fit             = false;
-    const int resize_border_count = g.IO.ConfigWindowsResizeFromEdges ? 4 : 0;
+    bool ret_auto_fit                 = false;
+    const int resize_border_count     = g.IO.ConfigWindowsResizeFromEdges ? 4 : 0;
     const float grip_draw_size        = IM_TRUNC(ImMax(g.FontSize * 1.35f, window->WindowRounding + 1.0f + g.FontSize * 0.2f));
     const float grip_hover_inner_size = IM_TRUNC(grip_draw_size * 0.75f);
     const float grip_hover_outer_size = g.IO.ConfigWindowsResizeFromEdges ? WINDOWS_HOVER_PADDING : 0.0f;
@@ -425,7 +425,7 @@ bool gluten::imgui::update_window_manual_resize(ImGuiWindow* window, ImVec2& new
     for (int border_n = 0; border_n < resize_border_count; border_n++)
     {
         const ImGuiResizeBorderDef& def = resize_border_def[border_n];
-        const ImGuiAxis axis = (border_n == ImGuiDir_Left || border_n == ImGuiDir_Right) ? ImGuiAxis_X : ImGuiAxis_Y;
+        const ImGuiAxis axis            = (border_n == ImGuiDir_Left || border_n == ImGuiDir_Right) ? ImGuiAxis_X : ImGuiAxis_Y;
 
         bool hovered, held;
         ImRect border_rect = GetResizeBorderRect(window, border_n, grip_hover_inner_size, WINDOWS_HOVER_PADDING);

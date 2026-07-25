@@ -1,6 +1,7 @@
 #pragma once
 
 #include "gluten/pch.h"
+
 #include "core/leak_detector.h"
 
 namespace gluten

@@ -28,11 +28,11 @@ namespace gluten
         layout& set_layout_type(const layout_type& type);  //< Set the type of layout (direction the children are laid out in)
         layout& set_layout_spacing(float spacing);         //< Adds a gap between child elements
 
-        void render_spacer_pixels(float horizonalPixels, float verticalPixels);     //< Render a "blank" element with a set size in pixels
-        void render_spacer_percent(float horizontalPercent, float verticalPercent); //< Render a "blank" element with a set size as a percentage of this layout's size
+        void render_spacer_pixels(float horizonalPixels, float verticalPixels);      //< Render a "blank" element with a set size in pixels
+        void render_spacer_percent(float horizontalPercent, float verticalPercent);  //< Render a "blank" element with a set size as a percentage of this layout's size
 
-        bool render_layout_element_full(element* element);      //< Render an element and give it the size of this layout as the box to render inside
-        bool render_layout_element_remaining(element* element); //< Render an element and give it the remaining space in the layout
+        bool render_layout_element_full(element* element);       //< Render an element and give it the size of this layout as the box to render inside
+        bool render_layout_element_remaining(element* element);  //< Render an element and give it the remaining space in the layout
 
         bool render_layout_element_pixels(element* element, float horizontalPixels, float verticalPixels);
         bool render_layout_element_pixels_horizontal(element* element, float horizontalPixels);
@@ -63,10 +63,10 @@ namespace gluten
     private:
         void setup_layout_begin(const ImRect& thisBox);
 
-        bool render_element(const element_render_info& renderInfo) override 
+        bool render_element(const element_render_info& renderInfo) override
         {
             ImGui::Dummy(renderInfo.elementBox.GetSize());
-            return false; 
+            return false;
         }
 
         bool render_layout_element_internal(const ImRect& thisBox,

@@ -17,7 +17,6 @@ namespace gluten
     image::image(uint32_t imageTexture, int width, int height)
         : m_openGlId(imageTexture), m_width(width), m_height(height), m_ownsTexture(false)
     {
-
     }
 
     image::image(const cmrc::embedded_filesystem& filesystem, const std::string& filePath)
@@ -48,7 +47,7 @@ namespace gluten
             {
                 const ImVec2 elementRectSize = renderInfo.elementBox.GetSize();
                 const ImVec2 imageSize       = get_element_content_size(renderInfo.elementBox.GetSize());
-                
+
                 const float newStartX = renderInfo.elementBox.Min.x + (elementRectSize.x / 2) - (imageSize.x / 2);
                 const float newStartY = renderInfo.elementBox.Min.y + (elementRectSize.y / 2) - (imageSize.y / 2);
 
@@ -83,7 +82,8 @@ namespace gluten
 
         const float imageWidthRatio              = std::clamp(parentSize.x, m_minSize.x, m_maxSize.x) / m_width;
         const float imageHeightRatio             = std::clamp(parentSize.y, m_minSize.y, m_maxSize.y) / m_height;
-        const float lengthWithLeastAmountOfSpace = parentSize.x <= 0.0f ? imageHeightRatio : parentSize.y <= 0.0f ? imageWidthRatio : std::min(imageWidthRatio, imageHeightRatio);
+        const float lengthWithLeastAmountOfSpace = parentSize.x <= 0.0f ? imageHeightRatio : parentSize.y <= 0.0f ? imageWidthRatio
+                                                                                                                  : std::min(imageWidthRatio, imageHeightRatio);
 
         const float newImageWidth  = m_width * lengthWithLeastAmountOfSpace;
         const float newImageHeight = m_height * lengthWithLeastAmountOfSpace;

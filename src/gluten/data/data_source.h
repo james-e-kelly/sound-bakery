@@ -5,6 +5,7 @@
 #include <boost/archive/xml_iarchive.hpp>
 #include <boost/archive/xml_oarchive.hpp>
 #include <boost/serialization/nvp.hpp>
+
 #include <rttr/type>
 
 namespace gluten
@@ -13,7 +14,7 @@ namespace gluten
 
     constexpr const char* dataSourceSerializeName = "DataSource";
 
-    template<typename T>
+    template <typename T>
     struct data_source_deleter
     {
         auto operator()(T* data) -> void
@@ -29,10 +30,12 @@ namespace gluten
                 // Need a better way of checking if a type can be serialized
                 try
                 {
-                    archive & boost::serialization::make_nvp(dataSourceSerializeName, *data);
+                    archive& boost::serialization::make_nvp(dataSourceSerializeName, *data);
                 }
-                catch (...) {}
-                
+                catch (...)
+                {
+                }
+
                 delete data;
             }
         }
@@ -41,12 +44,12 @@ namespace gluten
     /**
      * @brief Data sources are global pieces of data that can be saved to disk upon destruction and their values reloaded.
      */
-	template <typename T>
-	class data_source
-	{
+    template <typename T>
+    class data_source
+    {
     public:
-        data_source() 
-        { 
+        data_source()
+        {
             m_localData = static_get_data();
         }
 
@@ -73,7 +76,7 @@ namespace gluten
 
             if (m_weakData.expired())
             {
-                result = std::shared_ptr<T>(new T, data_source_deleter<T>());
+                result     = std::shared_ptr<T>(new T, data_source_deleter<T>());
                 m_weakData = result;
 
                 const std::filesystem::path configFile = get_config_file(rttr::type::get<T>());
@@ -85,9 +88,11 @@ namespace gluten
                     // Need a better way of checking if a type can be serialized
                     try
                     {
-                        archive & boost::serialization::make_nvp(dataSourceSerializeName, *result.get());
+                        archive& boost::serialization::make_nvp(dataSourceSerializeName, *result.get());
                     }
-                    catch (...) {}
+                    catch (...)
+                    {
+                    }
                 }
             }
             else
@@ -101,5 +106,5 @@ namespace gluten
     private:
         static inline std::weak_ptr<T> m_weakData;
         std::shared_ptr<T> m_localData;
-	};
-}
+    };
+}  // namespace gluten

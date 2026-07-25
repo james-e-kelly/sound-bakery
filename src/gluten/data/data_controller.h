@@ -7,7 +7,7 @@ namespace gluten
     /**
      * @brief Inherit this class to add helper functions on top of the data sources.
      */
-    template<typename T>
+    template <typename T>
     struct data_controller
     {
         auto get_data() -> T*
@@ -33,4 +33,4 @@ namespace gluten
     private:
         data_source<T> m_data;
     };
-}
+}  // namespace gluten

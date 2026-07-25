@@ -1,24 +1,25 @@
 #pragma once
 
 #include "gluten/pch.h"
+
 #include "core/leak_detector.h"
 
 /**
  * @def Macro to quickly create the basic constructors for a widget.
  */
-#define WIDGET_CONSTRUCT(type, name)                                                    \
-                                                                                        \
-public:                                                                                 \
-    type(gluten::widget_subsystem* parentSubsystem) : widget(parentSubsystem, name) {}  \
+#define WIDGET_CONSTRUCT(type, name)                                                   \
+                                                                                       \
+public:                                                                                \
+    type(gluten::widget_subsystem* parentSubsystem) : widget(parentSubsystem, name) {} \
     type(gluten::widget* parent) : gluten::widget(parent, name) {}
 
 /**
  * @def Macro to quickly create the basic constructors for a widget that is a subtype of a widget.
  */
-#define WIDGET_CONSTRUCT_PARENT(type, name, parentType)                                     \
-                                                                                            \
-public:                                                                                     \
-    type(gluten::widget_subsystem* parentSubsystem) : parentType(parentSubsystem, name) {}  \
+#define WIDGET_CONSTRUCT_PARENT(type, name, parentType)                                    \
+                                                                                           \
+public:                                                                                    \
+    type(gluten::widget_subsystem* parentSubsystem) : parentType(parentSubsystem, name) {} \
     type(gluten::widget* parent) : parentType(parent, name) {}
 
 namespace gluten
@@ -64,7 +65,7 @@ namespace gluten
         template <class T, typename... Args>
             requires std::derived_from<T, widget>
         [[nodiscard]] std::shared_ptr<T> add_child_widget(bool widgetOwns, Args&&... args);
-        
+
         auto has_started() const -> bool;
         auto is_visible() const -> bool;
 
@@ -74,12 +75,12 @@ namespace gluten
 
         static inline bool s_renderMenu = true;
 
-        static inline const char* const s_fileMenuName = "File";
-        static inline const char* const s_editMenuName = "Edit";
+        static inline const char* const s_fileMenuName    = "File";
+        static inline const char* const s_editMenuName    = "Edit";
         static inline const char* const s_actionsMenuName = "Actions";
         static inline const char* const s_windowsMenuName = "Windows";
         static inline const char* const s_layoutsMenuName = "Layouts";
-        static inline const char* const s_helpMenuName = "Help";
+        static inline const char* const s_helpMenuName    = "Help";
 
     protected:
         auto virtual start_implementation() -> void {}
@@ -98,8 +99,8 @@ namespace gluten
         widget* get_parent_widget() const;
         widget_subsystem* get_parent_subsystem() const;
 
-        bool m_autoRenderChildren           = true;
-        bool m_visible                      = true;
+        bool m_autoRenderChildren = true;
+        bool m_visible            = true;
 
     private:
         widget_subsystem* m_parentSubsystem = nullptr;
@@ -111,9 +112,9 @@ namespace gluten
         double m_tickFrequency              = 0.0;
         double m_timeSinceLastTick          = 0.0;
 
-        std::map<rttr::type, std::weak_ptr<widget>> m_childWidgets; //< Child widgets to iterate over
-        std::vector<std::shared_ptr<widget>> m_owningChildWidgets;  //< References to widgets that are owned. Not
-                                                                    // iterated over
+        std::map<rttr::type, std::weak_ptr<widget>> m_childWidgets;  //< Child widgets to iterate over
+        std::vector<std::shared_ptr<widget>> m_owningChildWidgets;   //< References to widgets that are owned. Not
+                                                                     // iterated over
 
         friend class widget_subsystem;
 

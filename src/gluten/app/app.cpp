@@ -3,26 +3,26 @@
 #include "IconsFontAwesome6.h"
 #include "IconsFontaudio.h"
 #include "IconsLucide.h"
+#include "nfd.h"
 #include "subsystems/renderer_subsystem.h"
 #include "subsystems/widget_subsystem.h"
-#include "nfd.h"
-//#include "Fontawesome"
+// #include "Fontawesome"
 
 #include <cmrc/cmrc.hpp>
 
 #ifdef _WIN32
-#include <windows.h>
+    #include <windows.h>
 #endif
 
 CMRC_DECLARE(sbk::fonts);
 
 namespace gluten_cli_arguments
 {
-    static constexpr const char* s_help = "help";
-    static constexpr const char* s_headless = "headless";
-    static constexpr const char* s_console = "console";
+    static constexpr const char* s_help       = "help";
+    static constexpr const char* s_headless   = "headless";
+    static constexpr const char* s_console    = "console";
     static constexpr const char* s_fullscreen = "fullscreen";
-}
+}  // namespace gluten_cli_arguments
 
 static gluten::app* s_app = nullptr;
 
@@ -39,11 +39,7 @@ int gluten::app::run(int argc, char** argv)
     m_tickExecutor = make_manual_executor();
 
     boost::program_options::options_description cliDescription;
-    cliDescription.add_options()
-        (gluten_cli_arguments::s_help, "prints help information")
-        (gluten_cli_arguments::s_console, "adds a console window")
-        (gluten_cli_arguments::s_fullscreen, "maximises the window on start")
-        (gluten_cli_arguments::s_headless, "removes rendering");
+    cliDescription.add_options()(gluten_cli_arguments::s_help, "prints help information")(gluten_cli_arguments::s_console, "adds a console window")(gluten_cli_arguments::s_fullscreen, "maximises the window on start")(gluten_cli_arguments::s_headless, "removes rendering");
 
     cli_setup(cliDescription);
 
@@ -52,8 +48,8 @@ int gluten::app::run(int argc, char** argv)
     boost::program_options::notify(cliVariables);
 
     const bool headless = cliVariables.count(gluten_cli_arguments::s_headless);
-    const bool console = headless || cliVariables.count(gluten_cli_arguments::s_console);
-    const bool gui = !headless;
+    const bool console  = headless || cliVariables.count(gluten_cli_arguments::s_console);
+    const bool gui      = !headless;
 
     const bool maximise = cliVariables.count(gluten_cli_arguments::s_fullscreen);
 
@@ -69,7 +65,6 @@ int gluten::app::run(int argc, char** argv)
         freopen_s(&fp, "CONOUT$", "w", stdout);
         freopen_s(&fp, "CONOUT$", "w", stderr);
         freopen_s(&fp, "CONIN$", "r", stdin);
-
 
 #endif
         get_logger()->info("Created Console Window");
@@ -183,7 +178,7 @@ auto gluten::app::tick() -> void
     tick_begin();
     m_tickExecutor->loop(m_tickExecutor->size());
     tick_implementation();
-    tick_end(); 
+    tick_end();
     FrameMark;
 }
 
@@ -324,7 +319,7 @@ retry:
     switch (pickFolderResult)
     {
         case NFD_OKAY:
-            result              = outPath;
+            result = outPath;
             break;
 
         case NFD_CANCEL:

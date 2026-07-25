@@ -11,21 +11,21 @@ widget::widget(widget_subsystem* parentSubsystem, const std::string& name) : m_p
 widget::widget(widget* parentWidget, const std::string& name) : m_parentWidget(parentWidget), m_widgetName(name) {}
 
 auto widget::start() -> void
-{ 
+{
     ZoneScoped;
 
     if (!m_hasStarted)
     {
         start_implementation();
-        m_hasStarted = true; 
+        m_hasStarted = true;
 
-         for (auto& child : m_childWidgets)
-         {
-             if (std::shared_ptr<widget> sharedChild = child.second.lock())
-             {
-                 sharedChild->start();
-             }
-         }
+        for (auto& child : m_childWidgets)
+        {
+            if (std::shared_ptr<widget> sharedChild = child.second.lock())
+            {
+                sharedChild->start();
+            }
+        }
     }
 }
 
@@ -97,12 +97,12 @@ auto widget::render_menu() -> void
             {
                 ImGui::EndMenu();
             }
-        
+
             if (ImGui::BeginMenu(s_editMenuName))
             {
                 ImGui::EndMenu();
             }
-        
+
             if (ImGui::BeginMenu(s_windowsMenuName))
             {
                 if (m_inToolbar)
@@ -111,17 +111,17 @@ auto widget::render_menu() -> void
                 }
                 ImGui::EndMenu();
             }
-        
+
             if (ImGui::BeginMenu(s_layoutsMenuName))
             {
                 ImGui::EndMenu();
             }
-        
+
             if (ImGui::BeginMenu(s_helpMenuName))
             {
                 ImGui::EndMenu();
             }
-        
+
             render_menu_implementation();
         }
 
@@ -156,7 +156,7 @@ void gluten::widget::end()
 auto gluten::widget::set_visible_in_toolbar(bool visibleInToolBar, bool defaultRender) -> void
 {
     m_inToolbar = visibleInToolBar;
-    m_visible = defaultRender;
+    m_visible   = defaultRender;
 }
 
 auto gluten::widget::set_visibile(bool visible) -> void
@@ -190,7 +190,7 @@ auto gluten::widget::get_widget_name() const -> std::string_view { return m_widg
 
 auto gluten::widget::set_tick_frequency(double tickFrequency) -> void
 {
-    m_tickFrequency = tickFrequency;
+    m_tickFrequency     = tickFrequency;
     m_timeSinceLastTick = 0.0;
 }
 
@@ -223,7 +223,7 @@ widget* widget::get_parent_widget() const { return m_parentWidget; }
 
 widget_subsystem* widget::get_parent_subsystem() const { return m_parentSubsystem; }
 
- auto gluten::widget::has_started() const -> bool { return m_hasStarted; }
+auto gluten::widget::has_started() const -> bool { return m_hasStarted; }
 
 auto gluten::widget::is_visible() const -> bool
 {

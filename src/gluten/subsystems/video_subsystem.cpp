@@ -2,37 +2,36 @@
 
 #if GLUTEN_ENABLE_VIDEO
 
-#include "gluten/app/app.h"
-#include "gluten/subsystems/renderer_subsystem.h"
-#include "sound_chef/sound_chef_internal.h"
+    #include "glad/include/glad/gl.h"
+    #include "gluten/app/app.h"
+    #include "gluten/subsystems/renderer_subsystem.h"
+    #include "sound_chef/sound_chef_internal.h"
 
-#include "glad/include/glad/gl.h"
-
-#ifdef _WIN32
-    #define WIN32_LEAN_AND_MEAN
-    #include <Windows.h>
-    #undef WIN32_LEAN_AND_MEAN
-#endif
+    #ifdef _WIN32
+        #define WIN32_LEAN_AND_MEAN
+        #include <Windows.h>
+        #undef WIN32_LEAN_AND_MEAN
+    #endif
 
 namespace
 {
-    constexpr std::string_view g_mpvDllFilename     = "libmpv-2.dll";
-    constexpr int32_t g_mpvAdvancedControl          = 1;
+    constexpr std::string_view g_mpvDllFilename = "libmpv-2.dll";
+    constexpr int32_t g_mpvAdvancedControl      = 1;
 
-    mpv_opengl_init_params openglInitParams = 
-    {
-        .get_proc_address = (void* (*)(void*, const char*)) &gluten::renderer_subsystem::glfw_get_proc_address_with_context,
-        .get_proc_address_ctx = nullptr,
+    mpv_opengl_init_params openglInitParams =
+        {
+            .get_proc_address     = (void* (*)(void*, const char*)) & gluten::renderer_subsystem::glfw_get_proc_address_with_context,
+            .get_proc_address_ctx = nullptr,
     };
 
-    mpv_render_param g_mpvRenderParams[]  = 
-    {
-        {MPV_RENDER_PARAM_API_TYPE, const_cast<char*>(MPV_RENDER_API_TYPE_OPENGL)},
-        {MPV_RENDER_PARAM_OPENGL_INIT_PARAMS, &openglInitParams},
-        {MPV_RENDER_PARAM_ADVANCED_CONTROL, (void*)&g_mpvAdvancedControl},
-        {MPV_RENDER_PARAM_INVALID, nullptr},
+    mpv_render_param g_mpvRenderParams[] =
+        {
+            {MPV_RENDER_PARAM_API_TYPE, const_cast<char*>(MPV_RENDER_API_TYPE_OPENGL)},
+            {MPV_RENDER_PARAM_OPENGL_INIT_PARAMS, &openglInitParams},
+            {MPV_RENDER_PARAM_ADVANCED_CONTROL, (void*)&g_mpvAdvancedControl},
+            {MPV_RENDER_PARAM_INVALID, nullptr},
     };
-}
+}  // namespace
 
 gluten::video_subsystem::mpv_context::mpv_context()
 {
@@ -45,12 +44,10 @@ gluten::video_subsystem::mpv_context::mpv_context()
 
     mpv_render_context_create(&m_mpvRenderContext, m_mpvHandle, g_mpvRenderParams);
 
-    mpv_render_context_set_update_callback(m_mpvRenderContext,
-        [](void* context)
-        {
+    mpv_render_context_set_update_callback(m_mpvRenderContext, [](void* context)
+                                           {
             mpv_context* const mpvContext = reinterpret_cast<mpv_context*>(context);
-            mpvContext->m_needsRender.store(true);
-        }, this);
+            mpvContext->m_needsRender.store(true); }, this);
 
     glGenTextures(1, &videoTexture);
     assert(videoTexture != 0);
@@ -86,15 +83,15 @@ gluten::video_subsystem::mpv_context::~mpv_context()
     }
 }
 
-/**
- * @def Loads an mpv symbol pointer so functions can be used.
- */
-#define LOAD_MPV_SYMBOL(name) \
-    name = (decltype(name))sc_dlsym(nullptr, m_mpvLibraryHandle, #name);    \
-    if (!name)                                                              \
-    {                                                                       \
-        return 1;                                                           \
-    }
+    /**
+     * @def Loads an mpv symbol pointer so functions can be used.
+     */
+    #define LOAD_MPV_SYMBOL(name)                                            \
+        name = (decltype(name))sc_dlsym(nullptr, m_mpvLibraryHandle, #name); \
+        if (!name)                                                           \
+        {                                                                    \
+            return 1;                                                        \
+        }
 
 gluten::video_subsystem::~video_subsystem() { BOOST_ASSERT_MSG(m_mpvLibraryHandle == nullptr, "mpv was not released"); }
 
@@ -194,7 +191,7 @@ auto gluten::video_subsystem::get_video_duration(const std::filesystem::path& ab
         }
     }
 
-    return 0.1; // Ensure there is slightly more duration than play position to stop divide by zeroes
+    return 0.1;  // Ensure there is slightly more duration than play position to stop divide by zeroes
 }
 
 auto gluten::video_subsystem::set_video_play_position(const std::filesystem::path& absoluteFilePath, double position) -> void
@@ -255,7 +252,7 @@ auto gluten::video_subsystem::pre_init(const boost::program_options::variables_m
 {
     std::setlocale(LC_NUMERIC, "C");
 
-	m_mpvLibraryHandle = sc_dlopen(nullptr, g_mpvDllFilename.data());
+    m_mpvLibraryHandle = sc_dlopen(nullptr, g_mpvDllFilename.data());
 
     if (!m_mpvLibraryHandle)
     {
@@ -389,7 +386,7 @@ auto gluten::video_subsystem::set_video_duration(mpv_handle* handle, double dura
     }
 }
 
-auto gluten::video_subsystem::set_video_end(mpv_handle* handle) -> concurrencpp::result<void> 
+auto gluten::video_subsystem::set_video_end(mpv_handle* handle) -> concurrencpp::result<void>
 {
     co_await concurrencpp::resume_on(get_app()->get_tick_executor());
 
@@ -397,10 +394,8 @@ auto gluten::video_subsystem::set_video_end(mpv_handle* handle) -> concurrencpp:
     {
         m_mpvContexts.erase(handle);
 
-        m_videoFileToContexts.erase(std::find_if(m_videoFileToContexts.begin(), m_videoFileToContexts.end(), [handle](const auto& pair) 
-            {
-                return pair.second == handle;
-            }));
+        m_videoFileToContexts.erase(std::find_if(m_videoFileToContexts.begin(), m_videoFileToContexts.end(), [handle](const auto& pair)
+                                                 { return pair.second == handle; }));
     }
 }
 

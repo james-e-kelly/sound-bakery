@@ -6,8 +6,8 @@
 using namespace gluten;
 
 auto widget_subsystem::get_root_widget() const -> root_widget*
-{ 
-    return dynamic_cast<root_widget*>(m_rootWidget.get()); 
+{
+    return dynamic_cast<root_widget*>(m_rootWidget.get());
 }
 
 void widget_subsystem::start()

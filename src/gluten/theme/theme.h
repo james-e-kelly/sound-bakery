@@ -1,7 +1,8 @@
 #pragma once
 
-#include "imgui.h"
 #include "gluten/pch.h"
+
+#include "imgui.h"
 
 namespace gluten::theme
 {
@@ -145,12 +146,12 @@ namespace gluten::theme
     // layer-accent-03
     extern ImVec4 layerAccent03;
     extern ImVec4 layerAccentActive03;
-    extern ImVec4 layerAccentHover03; 
+    extern ImVec4 layerAccentHover03;
 
     // Field
     // field-01
     extern ImVec4 field01;
-    extern ImVec4 fieldHover01;  
+    extern ImVec4 fieldHover01;
 
     // field-02
     extern ImVec4 field02;
@@ -200,35 +201,35 @@ namespace gluten::theme
     extern ImVec4 textSecondary;
     extern ImVec4 textPlaceholder;
     extern ImVec4 textHelper;
-    extern ImVec4 textError;         
-    extern ImVec4 textInverse;         
-    extern ImVec4 textOnColor;        
+    extern ImVec4 textError;
+    extern ImVec4 textInverse;
+    extern ImVec4 textOnColor;
     extern ImVec4 textOnColorDisabled;
     extern ImVec4 textDisabled;
 
     // Link
-    extern ImVec4 linkPrimary;    
-    extern ImVec4 linkPrimaryHover; 
+    extern ImVec4 linkPrimary;
+    extern ImVec4 linkPrimaryHover;
     extern ImVec4 linkSecondary;
-    extern ImVec4 linkInverse;   
-    extern ImVec4 linkVisited;     
+    extern ImVec4 linkInverse;
+    extern ImVec4 linkVisited;
     extern ImVec4 linkInverseActive;
     extern ImVec4 linkInverseHover;
 
     // Icon
-    extern ImVec4 iconPrimary;  
-    extern ImVec4 iconSecondary;     
-    extern ImVec4 iconInverse;     
-    extern ImVec4 iconOnColor;       
+    extern ImVec4 iconPrimary;
+    extern ImVec4 iconSecondary;
+    extern ImVec4 iconInverse;
+    extern ImVec4 iconOnColor;
     extern ImVec4 iconOnColorDisabled;
     extern ImVec4 iconDisabled;
-    extern ImVec4 iconInteractive;    
+    extern ImVec4 iconInteractive;
 
     // Support
     extern ImVec4 supportError;
-    extern ImVec4 supportSuccess;          
-    extern ImVec4 supportWarning;         
-    extern ImVec4 supportInfo;         
+    extern ImVec4 supportSuccess;
+    extern ImVec4 supportWarning;
+    extern ImVec4 supportInfo;
 
     // Focus
     extern ImVec4 focus;

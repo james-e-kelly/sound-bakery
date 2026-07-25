@@ -1,10 +1,10 @@
 #pragma once
 
-#include "gluten/subsystems/subsystem.h"
-
-#include "gluten/data/data_cache.h"
-#include "concurrencpp/concurrencpp.h"
 #include "sound_bakery/system.h"
+
+#include "concurrencpp/concurrencpp.h"
+#include "gluten/data/data_cache.h"
+#include "gluten/subsystems/subsystem.h"
 
 namespace gluten
 {
@@ -25,9 +25,9 @@ namespace gluten
      */
     struct channel_frame
     {
-        float min       = 0.0f; // min sample value within the time frame. only written to when downsampling
-        float max       = 0.0f; // max sample value within the time frame. only written to when downsampling
-        float sample    = 0.0f; // the actual sample value at this frame. only written to when showing the full resolution
+        float min    = 0.0f;  // min sample value within the time frame. only written to when downsampling
+        float max    = 0.0f;  // max sample value within the time frame. only written to when downsampling
+        float sample = 0.0f;  // the actual sample value at this frame. only written to when showing the full resolution
     };
 
     /**
@@ -35,10 +35,10 @@ namespace gluten
      */
     struct stereo_data
     {
-        float midMin    = 0.0f;
-        float midMax    = 0.0f;
-        float sideMin   = 0.0f;
-        float sideMax   = 0.0f;
+        float midMin  = 0.0f;
+        float midMax  = 0.0f;
+        float sideMin = 0.0f;
+        float sideMax = 0.0f;
     };
 
     /**
@@ -46,7 +46,7 @@ namespace gluten
      */
     struct frame_data
     {
-        float rms = 0.0f;
+        float rms               = 0.0f;
         float channelSumAverage = 0.0f;
         float lowAverage        = 0.0f;
         float midAverage        = 0.0f;
@@ -54,13 +54,13 @@ namespace gluten
 
         loudness_lufs lufs;
     };
-    
+
     struct waveform
     {
         using global_frame_cache_type = single_data_cache<std::vector<frame_data>>;
 
         waveform() = default;
-        waveform(std::size_t frames, std::size_t channels) 
+        waveform(std::size_t frames, std::size_t channels)
             : channelFrames(channels, std::vector<channel_frame>(frames, channel_frame()))
         {
             if (channels == 2)
@@ -72,7 +72,7 @@ namespace gluten
         std::vector<std::vector<channel_frame>> channelFrames;  // indexed [channel][frame] so each channel can be sent to ImPlot asap
         std::vector<stereo_data> stereoFrames;                  // Only valid when there are only two channels
         global_frame_cache_type globalFramesCache;              // Total volume sums
-        
+
         loudness_lufs_global lufs;
 
         auto is_stereo() const -> bool
@@ -87,13 +87,13 @@ namespace gluten
         waveform lodWaveform;
     };
 
-	/**
-	 * @brief A simple audio subsystem that can play audio using Sound Bakery.
-	 */
-	class audio_subsystem : public subsystem
-	{
+    /**
+     * @brief A simple audio subsystem that can play audio using Sound Bakery.
+     */
+    class audio_subsystem : public subsystem
+    {
     public:
-        using loudness_cache_type = data_cache<loudness_lufs, key_cache_key<std::filesystem::path>, key_cache_key_hasher<std::filesystem::path>>;
+        using loudness_cache_type     = data_cache<loudness_lufs, key_cache_key<std::filesystem::path>, key_cache_key_hasher<std::filesystem::path>>;
         using waveform_lod_cache_type = single_data_cache<waveform_lod>;
 
         struct waveform_lods
@@ -144,7 +144,7 @@ namespace gluten
         struct loop_data
         {
             float m_loopStart = -1.0f;
-            float m_loopEnd = -1.0f;
+            float m_loopEnd   = -1.0f;
         };
 
         auto get_sound_loop_info(const std::filesystem::path& filePath) -> loop_data*;
@@ -162,6 +162,6 @@ namespace gluten
 
         std::unordered_map<std::filesystem::path, waveform> m_filesToWaveforms;
         waveform_lods_cache_type m_waveformLodCache;
-        loudness_cache_type m_filesToLoudnessCache; 
-	};
-}
+        loudness_cache_type m_filesToLoudnessCache;
+    };
+}  // namespace gluten

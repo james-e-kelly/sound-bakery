@@ -19,8 +19,8 @@ namespace gluten
 
         auto get_element_content_size(const ImVec2& parentSize) -> ImVec2 const override;
 
-        auto set_font(fonts font) -> icon& 
-        { 
+        auto set_font(fonts font) -> icon&
+        {
             m_font = font;
             return *this;
         }

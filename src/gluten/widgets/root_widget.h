@@ -7,25 +7,25 @@ namespace gluten
 {
     /**
      * @brief Handles refreshing the dockspace.
-     * 
+     *
      * Upon deletion of the object, the dockspace is submitted for the user.
      */
     struct dockspace_refresh
     {
-        const ImGuiID dockspaceID = 0;
+        const ImGuiID dockspaceID  = 0;
         const widget* owningWidget = nullptr;
 
-        ImGuiID leftColumnID = 0;
+        ImGuiID leftColumnID   = 0;
         ImGuiID centerColumnID = 0;
-        ImGuiID rightColumnID = 0;
-        ImGuiID topRowID = 0;
-        ImGuiID bottomRowID = 0;
+        ImGuiID rightColumnID  = 0;
+        ImGuiID topRowID       = 0;
+        ImGuiID bottomRowID    = 0;
 
         dockspace_refresh() = delete;
         dockspace_refresh(ImGuiID id, widget* widget) : dockspaceID(id), owningWidget(widget) { assert(owningWidget); }
 
         ~dockspace_refresh()
-        { 
+        {
             ImGui::DockBuilderFinish(dockspaceID);
         }
 
@@ -46,15 +46,16 @@ namespace gluten
         widget_layout(const std::string_view& layoutName, const std::function<void(dockspace_refresh&)>& callback)
             : name(layoutName),
               onRefreshDockspace(callback)
-        {}
+        {
+        }
 
         std::string name;
-        std::function<void(dockspace_refresh&)> onRefreshDockspace; //< Should setup the layout during this callback
+        std::function<void(dockspace_refresh&)> onRefreshDockspace;  //< Should setup the layout during this callback
     };
 
     /**
      * @brief The base widget with titlebar and open/close icons.
-     * 
+     *
      * Holds the dockspace and widgets can be docked inside this.
      */
     class root_widget : public widget

@@ -23,10 +23,10 @@ namespace gluten
         }
     };
 
-    template<typename key_type>
+    template <typename key_type>
     struct key_cache_key
     {
-        key_cache_key() = default;
+        key_cache_key()  = default;
         ~key_cache_key() = default;
 
         key_cache_key(const key_type& key) : m_key(key) {}
@@ -48,10 +48,10 @@ namespace gluten
         }
     };
 
-    template<typename token_type>
+    template <typename token_type>
     struct token_cache_key
     {
-        token_cache_key() = default;
+        token_cache_key()  = default;
         ~token_cache_key() = default;
 
         token_cache_key(const token_type& token) : m_token(token) {}
@@ -64,7 +64,7 @@ namespace gluten
         }
     };
 
-    template<typename token_type>
+    template <typename token_type>
     struct token_cache_key_hasher
     {
         std::size_t operator()(const token_cache_key<token_type>& tokenCacheKey) const
@@ -101,21 +101,21 @@ namespace gluten
 
     enum class cache_state
     {
-        no_data,        //< Either initial state or has not been supplied any data after requesting it
-        loading,        //< Has an async function that is loading the data. The data will be available later
-        has_data,       //< Has data and is ready to use
-        expired,        //< Any current data is out of date and needs a new load
-        failed          //< Either something threw an exception or something else went wrong
+        no_data,   //< Either initial state or has not been supplied any data after requesting it
+        loading,   //< Has an async function that is loading the data. The data will be available later
+        has_data,  //< Has data and is ready to use
+        expired,   //< Any current data is out of date and needs a new load
+        failed     //< Either something threw an exception or something else went wrong
     };
 
     template <typename data_type, typename key_type, typename key_hasher>
-	class data_cache
-	{
+    class data_cache
+    {
     public:
-        data_cache() = default;
+        data_cache()  = default;
         ~data_cache() = default;
 
-        data_cache(const data_cache&) = delete;
+        data_cache(const data_cache&)           = delete;
         data_cache(data_cache&& other) noexcept = default;
 
         auto operator=(const data_cache&) -> data_cache& = delete;
@@ -132,7 +132,7 @@ namespace gluten
         struct cached_data
         {
             cached_data()
-                : m_createdAt(std::chrono::steady_clock::now()) 
+                : m_createdAt(std::chrono::steady_clock::now())
             {
             }
 
@@ -157,10 +157,10 @@ namespace gluten
             }
         };
 
-        using async_cache_result    = concurrencpp::shared_result<data_type>;
-        using cache_result          = const cached_data&;
-        using cache_key_type        = key_type;
-        using cache_data_type       = data_type;
+        using async_cache_result = concurrencpp::shared_result<data_type>;
+        using cache_result       = const cached_data&;
+        using cache_key_type     = key_type;
+        using cache_data_type    = data_type;
 
         /**
          * @brief Query the cache state. The user should should begin filling new data if the state is == no_data || expired
@@ -224,7 +224,7 @@ namespace gluten
             assert(get_cache_state(key) != cache_state::loading);
             assert(static_cast<bool>(m_asyncCache[key]) == false);
             m_cache[key].m_state = cache_state::loading;
-            m_asyncCache[key] = std::move(asyncResult);
+            m_asyncCache[key]    = std::move(asyncResult);
         }
 
         template <typename K = key_type, std::enable_if_t<std::is_same_v<K, null_cache_key>, int> = 0>
@@ -247,10 +247,10 @@ namespace gluten
 
         /**
          * @brief Get the cached data.
-         * 
+         *
          * This returns a const reference to the data to avoid copying.
          * Read the cache state to know if the data is valid, loading, etc.
-         * 
+         *
          * This function checks if the async loading is ready and, if so, fills the cache.
          * Therefore, this is not a const function as the data can change.
          */
@@ -264,7 +264,7 @@ namespace gluten
                     switch (asyncResult.status())
                     {
                         case concurrencpp::result_status::value:
-                            m_cache[key] = std::move(asyncResult.get());
+                            m_cache[key]         = std::move(asyncResult.get());
                             m_cache[key].m_state = cache_state::has_data;
                             m_asyncCache.erase(key);
                             break;
@@ -314,9 +314,9 @@ namespace gluten
         mutable std::unordered_map<key_type, cached_data, key_hasher> m_cache;              //< The cache, ready to be used by the caller
         mutable std::unordered_map<key_type, async_cache_result, key_hasher> m_asyncCache;  //< The async request to fill the cache
 
-        std::chrono::seconds m_expirySeconds = std::chrono::seconds(60 * 10); 
-	};
+        std::chrono::seconds m_expirySeconds = std::chrono::seconds(60 * 10);
+    };
 
     template <typename data_type>
     using single_data_cache = data_cache<data_type, null_cache_key, null_cache_key_hasher>;
-}
+}  // namespace gluten

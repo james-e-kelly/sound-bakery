@@ -108,7 +108,7 @@ namespace gluten::theme::carbon_g100
 
     // Text
     static ImVec4 textPrimary         = gray10;
-    static ImVec4 textSecondary       = gray20;  
+    static ImVec4 textSecondary       = gray20;
     static ImVec4 textPlaceholder     = adjust_alpha(textPrimary, 0.4f);
     static ImVec4 textHelper          = gray50;  // Changed from gray40
     static ImVec4 textError           = red40;
@@ -166,56 +166,56 @@ namespace gluten::theme::carbon_g100
 
     inline void apply_colours()
     {
-        gluten::theme::background           = background;
-        gluten::theme::layer01              = layer01;
-        gluten::theme::layer02              = layer02;
-        gluten::theme::layer03              = layer03;
-        gluten::theme::layerHover01         = layerHover01;
-        gluten::theme::layerHover02         = layerHover02;
-        gluten::theme::layerHover03         = layerHover03;
-        gluten::theme::layerActive01        = layerActive01;
-        gluten::theme::layerActive02        = layerActive02;
-        gluten::theme::layerActive03        = layerActive03;
-        gluten::theme::backgroundHover      = backgroundHover;
-        gluten::theme::backgroundActive     = backgroundActive;
-        gluten::theme::field01              = field01;
-        gluten::theme::field02              = field02;
-        gluten::theme::field03              = field03;
-        gluten::theme::fieldHover01         = fieldHover01;
-        gluten::theme::fieldHover02         = fieldHover02;
-        gluten::theme::fieldHover03         = fieldHover03;
-        gluten::theme::layerAccent01        = layerAccent01;
-        gluten::theme::layerAccent02        = layerAccent02;
-        gluten::theme::layerAccent03        = layerAccent03;
-        gluten::theme::layerAccentHover01   = layerAccentHover01;
-        gluten::theme::layerAccentHover02   = layerAccentHover02;
-        gluten::theme::layerAccentHover03   = layerAccentHover03;
-        gluten::theme::layerAccentActive01  = layerAccentActive01;
-        gluten::theme::layerAccentActive02  = layerAccentActive02;
-        gluten::theme::layerAccentActive03  = layerAccentActive03;
-        gluten::theme::borderSubtle00       = borderSubtle00;
-        gluten::theme::borderSubtle01       = borderSubtle01;
-        gluten::theme::borderSubtle02       = borderSubtle02;
-        gluten::theme::borderSubtle03       = borderSubtle03;
-        gluten::theme::borderStrong01       = borderStrong01;
-        gluten::theme::borderStrong02       = borderStrong02;
-        gluten::theme::borderStrong03       = borderStrong03;
-        gluten::theme::borderInteractive    = borderInteractive;
-        gluten::theme::textPrimary          = textPrimary;
-        gluten::theme::textSecondary        = textSecondary;
-        gluten::theme::textDisabled         = textDisabled;
-        gluten::theme::supportError         = supportError;
-        gluten::theme::supportSuccess       = supportSuccess;
-        gluten::theme::supportWarning       = supportWarning;
-        gluten::theme::interactive          = interactive;
-        gluten::theme::interactiveHover     = interactiveHover;
-        gluten::theme::interactiveActive    = interactiveActive;
+        gluten::theme::background          = background;
+        gluten::theme::layer01             = layer01;
+        gluten::theme::layer02             = layer02;
+        gluten::theme::layer03             = layer03;
+        gluten::theme::layerHover01        = layerHover01;
+        gluten::theme::layerHover02        = layerHover02;
+        gluten::theme::layerHover03        = layerHover03;
+        gluten::theme::layerActive01       = layerActive01;
+        gluten::theme::layerActive02       = layerActive02;
+        gluten::theme::layerActive03       = layerActive03;
+        gluten::theme::backgroundHover     = backgroundHover;
+        gluten::theme::backgroundActive    = backgroundActive;
+        gluten::theme::field01             = field01;
+        gluten::theme::field02             = field02;
+        gluten::theme::field03             = field03;
+        gluten::theme::fieldHover01        = fieldHover01;
+        gluten::theme::fieldHover02        = fieldHover02;
+        gluten::theme::fieldHover03        = fieldHover03;
+        gluten::theme::layerAccent01       = layerAccent01;
+        gluten::theme::layerAccent02       = layerAccent02;
+        gluten::theme::layerAccent03       = layerAccent03;
+        gluten::theme::layerAccentHover01  = layerAccentHover01;
+        gluten::theme::layerAccentHover02  = layerAccentHover02;
+        gluten::theme::layerAccentHover03  = layerAccentHover03;
+        gluten::theme::layerAccentActive01 = layerAccentActive01;
+        gluten::theme::layerAccentActive02 = layerAccentActive02;
+        gluten::theme::layerAccentActive03 = layerAccentActive03;
+        gluten::theme::borderSubtle00      = borderSubtle00;
+        gluten::theme::borderSubtle01      = borderSubtle01;
+        gluten::theme::borderSubtle02      = borderSubtle02;
+        gluten::theme::borderSubtle03      = borderSubtle03;
+        gluten::theme::borderStrong01      = borderStrong01;
+        gluten::theme::borderStrong02      = borderStrong02;
+        gluten::theme::borderStrong03      = borderStrong03;
+        gluten::theme::borderInteractive   = borderInteractive;
+        gluten::theme::textPrimary         = textPrimary;
+        gluten::theme::textSecondary       = textSecondary;
+        gluten::theme::textDisabled        = textDisabled;
+        gluten::theme::supportError        = supportError;
+        gluten::theme::supportSuccess      = supportSuccess;
+        gluten::theme::supportWarning      = supportWarning;
+        gluten::theme::interactive         = interactive;
+        gluten::theme::interactiveHover    = interactiveHover;
+        gluten::theme::interactiveActive   = interactiveActive;
     }
 
     inline void apply_styles()
     {
-        gluten::theme::padding = padding;
+        gluten::theme::padding   = padding;
         gluten::theme::noPadding = noPadding;
         gluten::theme::rounding  = rounding;
     }
-}  // namespace gluten::theme
+}  // namespace gluten::theme::carbon_g100

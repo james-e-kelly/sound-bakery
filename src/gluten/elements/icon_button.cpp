@@ -6,7 +6,7 @@ gluten::icon_button::icon_button(const char* buttonID, const char* icon, fonts f
     : m_button(buttonID, true), m_text(icon)
 {
     set_element_anchor_preset(anchor_preset::stretch_full);
-    
+
     m_button.set_element_anchor_preset(anchor_preset::stretch_full);
 
     m_text
@@ -29,7 +29,7 @@ bool gluten::icon_button::render_element(const element_render_info& renderInfo)
 auto gluten::icon::get_element_content_size(const ImVec2& parentSize) -> ImVec2 const
 {
     const float scale = get_element_scale();
-    return ImVec2(g_baseIconFontSize * scale, g_baseIconFontSize * scale); 
+    return ImVec2(g_baseIconFontSize * scale, g_baseIconFontSize * scale);
 }
 
 auto gluten::icon::pre_render_element() -> void

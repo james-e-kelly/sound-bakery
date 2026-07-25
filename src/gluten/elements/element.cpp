@@ -12,8 +12,8 @@ static ImVec2 operator*(const ImVec2& lhs, const ImVec2& rhs) { return ImVec2(lh
 static ImVec2 operator*(const ImVec2& lhs, float rhs) { return ImVec2(lhs.x * rhs, lhs.y * rhs); }
 
 static ImRect operator+(const ImRect& lhs, const ImVec2& rhs) { return ImRect(lhs.Min + rhs, lhs.Max + rhs); }
-static ImRect operator*(const ImRect& lhs, const float& rhs) 
-{ 
+static ImRect operator*(const ImRect& lhs, const float& rhs)
+{
     ImVec2 expandSize = (lhs.GetSize() * rhs) - lhs.GetSize();
     ImRect result(lhs);
     result.Expand(expandSize);
@@ -143,9 +143,9 @@ auto gluten::element::set_element_content_font_size(float size) -> element&
     return *this;
 }
 
-auto gluten::element::set_element_content_scale(float scale) -> element& 
-{ 
-    m_contentScale = scale; 
+auto gluten::element::set_element_content_scale(float scale) -> element&
+{
+    m_contentScale = scale;
     return *this;
 }
 
@@ -159,9 +159,9 @@ auto gluten::element::has_element_scale() const -> bool { return m_contentScale.
 
 auto gluten::element::get_element_scale() const -> float { return has_element_scale() ? m_contentScale.value() : 1.0f; }
 
-auto gluten::element::set_element_background_color(ImU32 color) -> element& 
-{ 
-    m_backgroundColor = color; 
+auto gluten::element::set_element_background_color(ImU32 color) -> element&
+{
+    m_backgroundColor = color;
     return *this;
 }
 
@@ -171,9 +171,9 @@ auto gluten::element::set_element_background_color(ImVec4 color) -> element&
     return *this;
 }
 
-auto gluten::element::set_element_hover_color(ImU32 color) -> element& 
-{ 
-    m_hoverColor = color; 
+auto gluten::element::set_element_hover_color(ImU32 color) -> element&
+{
+    m_hoverColor = color;
     return *this;
 }
 
@@ -183,7 +183,7 @@ auto gluten::element::set_element_hover_color(ImVec4 color) -> element&
     return *this;
 }
 
-auto gluten::element::set_element_active_color(ImU32 color) -> element& 
+auto gluten::element::set_element_active_color(ImU32 color) -> element&
 {
     m_activeColor = color;
     return *this;
@@ -195,27 +195,27 @@ auto gluten::element::set_element_active_color(ImVec4 color) -> element&
     return *this;
 }
 
-auto gluten::element::set_element_active(bool active) -> element& 
+auto gluten::element::set_element_active(bool active) -> element&
 {
     m_active = active;
     return *this;
 }
 
-auto gluten::element::set_element_padding(const ImVec2& padding) -> element& 
-{ 
-    m_padding = padding; 
+auto gluten::element::set_element_padding(const ImVec2& padding) -> element&
+{
+    m_padding = padding;
     return *this;
 }
 
-auto gluten::element::set_element_window_padding() -> element& 
-{ 
-    m_padding = ImGui::GetStyle().WindowPadding; 
+auto gluten::element::set_element_window_padding() -> element&
+{
+    m_padding = ImGui::GetStyle().WindowPadding;
     return *this;
 }
 
-auto gluten::element::set_element_frame_padding() -> element& 
-{ 
-    m_padding = ImGui::GetStyle().FramePadding; 
+auto gluten::element::set_element_frame_padding() -> element&
+{
+    m_padding = ImGui::GetStyle().FramePadding;
     return *this;
 }
 
@@ -253,18 +253,18 @@ bool gluten::element::render(const ImRect& parent)
     }
 
     const std::pair<ImRect, ImRect> elementBoxes = get_element_box_from_parent(parent, m_minSize, get_element_content_size(parent.GetSize()), m_alignment, m_padding, m_anchor);
-    const ImRect elementBox = (elementBoxes.first * m_scale) + m_translation;
-    const ImRect elementBoxNoPadding = (elementBoxes.second * m_scale) + m_translation;
-    m_currentRect = elementBox;
-    
-    ImDrawList* const windowDrawList     = ImGui::GetWindowDrawList();
+    const ImRect elementBox                      = (elementBoxes.first * m_scale) + m_translation;
+    const ImRect elementBoxNoPadding             = (elementBoxes.second * m_scale) + m_translation;
+    m_currentRect                                = elementBox;
+
+    ImDrawList* const windowDrawList = ImGui::GetWindowDrawList();
 
     ImGui::SetCursorScreenPos(elementBoxNoPadding.Min);
-    ImGui::Dummy(elementBoxNoPadding.GetSize()); 
+    ImGui::Dummy(elementBoxNoPadding.GetSize());
     ImGui::SetCursorScreenPos(elementBox.Min);
 
     const bool isItemVisible = ImGui::IsRectVisible(elementBox.Min, elementBox.Max);
-    const bool hovered = ImGui::IsMouseHoveringRect(elementBox.Min, elementBox.Max);
+    const bool hovered       = ImGui::IsMouseHoveringRect(elementBox.Min, elementBox.Max);
 
     if (windowDrawList && m_borderSize.has_value())
     {
@@ -365,9 +365,9 @@ bool gluten::element::render_cursor()
     return render(rect);
 }
 
-auto gluten::element::set_element_alignment(const ImVec2& alignment) -> element& 
-{ 
-    m_alignment = alignment; 
+auto gluten::element::set_element_alignment(const ImVec2& alignment) -> element&
+{
+    m_alignment = alignment;
     return *this;
 }
 
@@ -377,15 +377,15 @@ auto gluten::element::set_element_anchor_preset(const anchor_preset& preset) -> 
     return *this;
 }
 
-auto gluten::element::set_element_min_size(const ImVec2& minSize) -> element& 
-{ 
-    m_minSize = minSize; 
+auto gluten::element::set_element_min_size(const ImVec2& minSize) -> element&
+{
+    m_minSize = minSize;
     return *this;
 }
 
-auto gluten::element::set_element_max_size(const ImVec2& maxSize) -> element& 
-{ 
-    m_maxSize = maxSize; 
+auto gluten::element::set_element_max_size(const ImVec2& maxSize) -> element&
+{
+    m_maxSize = maxSize;
     return *this;
 }
 
@@ -441,11 +441,11 @@ ImVec2 gluten::element::get_anchor_end_position(const ImVec2& startPosition,
 }
 
 std::pair<ImRect, ImRect> gluten::element::get_element_start_position(const ImVec2& anchorStartPosition,
-                                                   const ImVec2& anchorEndPosition,
-                                                   const ImVec2& minSize,
-                                                   const ImVec2& desiredSize,
-                                                   const ImVec2& alignment,
-                                                   const ImVec2& padding)
+                                                                      const ImVec2& anchorEndPosition,
+                                                                      const ImVec2& minSize,
+                                                                      const ImVec2& desiredSize,
+                                                                      const ImVec2& alignment,
+                                                                      const ImVec2& padding)
 {
     const ImVec2 desiredEnd = anchorStartPosition + desiredSize;
     const ImVec2 minEnd     = anchorStartPosition + minSize;
@@ -471,11 +471,11 @@ std::pair<ImRect, ImRect> gluten::element::get_element_start_position(const ImVe
 }
 
 std::pair<ImRect, ImRect> gluten::element::get_element_box_from_parent(const ImRect& parent,
-                                                    const ImVec2& minSize,
-                                                    const ImVec2& desiredSize,
-                                                    const ImVec2& alignment,
-                                                    const ImVec2& padding,
-                                                    const anchor_info& anchor)
+                                                                       const ImVec2& minSize,
+                                                                       const ImVec2& desiredSize,
+                                                                       const ImVec2& alignment,
+                                                                       const ImVec2& padding,
+                                                                       const anchor_info& anchor)
 {
     const ImVec2 anchorStart = get_anchor_start_position(parent.Min, parent.GetSize(), anchor);
     const ImVec2 anchorEnd   = get_anchor_end_position(anchorStart, parent.Min, parent.GetSize(), anchor);

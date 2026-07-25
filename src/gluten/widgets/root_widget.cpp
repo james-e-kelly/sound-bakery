@@ -28,8 +28,8 @@ static const ImGuiWindowFlags rootWindowFlags =
     ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
     ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
-static const char* rootWindowName       = "RootWindow";
-static const char* rootDockspaceName    = "RootWindow";
+static const char* rootWindowName    = "RootWindow";
+static const char* rootDockspaceName = "RootWindow";
 
 namespace root_widget_utils
 {
@@ -67,7 +67,7 @@ namespace root_widget_utils
     {
         if (ImGuiViewport* const viewport = ImGui::GetWindowViewport())
         {
-            const ImVec2 windowTopLeft = viewport->Pos;
+            const ImVec2 windowTopLeft     = viewport->Pos;
             const ImVec2 windowBottomRight = ImVec2(windowTopLeft.x + viewport->Size.x, windowTopLeft.y + viewport->Size.y);
 
             return ImRect(windowTopLeft.x, windowTopLeft.y + root_widget_utils::titleBarHeight(), windowBottomRight.x,
@@ -141,7 +141,7 @@ auto gluten::dockspace_refresh::split_one_large_column_one_side() -> void
 }
 
 auto gluten::dockspace_refresh::split_two_rows() -> void
-{ 
+{
     ImGui::DockBuilderSplitNode(dockspaceID, ImGuiDir_Down, 0.5f, &bottomRowID, &topRowID);
 }
 
@@ -155,7 +155,7 @@ auto gluten::dockspace_refresh::assign_widget_to_node(const rttr::type& widgetTy
     }
     else
     {
-        //assert(false);
+        // assert(false);
     }
 }
 
@@ -378,7 +378,7 @@ auto root_widget::render_menu_implementation() -> void
                 std::system(fmt::format("start {} -a 127.0.0.1", tracyExe.string()).c_str());
 #endif
 
-                //get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class_to_root<profiler_widget>(true);
+                // get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class_to_root<profiler_widget>(true);
             }
 
             ImGui::EndMenu();
@@ -445,9 +445,9 @@ auto gluten::root_widget::refresh_dockspace() -> dockspace_refresh
     return dockspace_refresh(m_dockspaceID, this);
 }
 
-auto gluten::root_widget::add_layout(const widget_layout& layout) -> void 
-{ 
-    m_layouts.push_back(layout); 
+auto gluten::root_widget::add_layout(const widget_layout& layout) -> void
+{
+    m_layouts.push_back(layout);
 }
 
 auto gluten::root_widget::set_layout(widget_layout& layout) -> void

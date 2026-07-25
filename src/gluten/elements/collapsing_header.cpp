@@ -32,7 +32,7 @@ auto gluten::collapsing_header::render_element(const element_render_info& render
 {
     gluten::imgui::scoped_id id(m_label.c_str());
 
-	gluten::background background;
+    gluten::background background;
     background.set_element_background_color(ImGui::GetStyleColorVec4(ImGuiCol_Header));
     background.set_element_hover_color(ImGui::GetStyleColorVec4(ImGuiCol_HeaderHovered));
     background.set_element_rounding(m_elementRounding);

@@ -1,15 +1,15 @@
 #pragma once
 
-#include "utils/boost_serialization_extensions.h"
-
-#include <rttr/type>
 #include "Delegates.h"
 #include "imgui.h"
 #include "imspinner.h"
 #include "imspinner_demo.h"
 #include "tracy/Tracy.hpp"
+#include "utils/boost_serialization_extensions.h"
 
 #include <fmt/core.h>
+
+#include <rttr/type>
 #define BYTESIZE_FMTLIB_FORMATTER
 #include <bytesize.hh>
 #include <stdio.h>

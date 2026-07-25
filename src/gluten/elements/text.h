@@ -28,7 +28,6 @@ namespace gluten
 
         auto get_element_content_size(const ImVec2& parentSize) -> ImVec2 const override;
 
-
     protected:
         auto render_element(const element_render_info& renderInfo) -> bool override;
         auto pre_render_element() -> void override;

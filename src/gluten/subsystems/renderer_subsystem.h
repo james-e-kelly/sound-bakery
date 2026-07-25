@@ -39,7 +39,7 @@ namespace gluten
             return m_window.m_window;
         }
 
-        int m_startWindowWidth = 1920;
+        int m_startWindowWidth  = 1920;
         int m_startWindowHeight = 1080;
 
     private:

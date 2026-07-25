@@ -35,8 +35,8 @@ namespace gluten
 
     private:
         virtual auto render_implementation() -> void override;
-        
-        bool m_closable = true;
+
+        bool m_closable     = true;
         popup_style m_style = popup_style::modal;
     };
 

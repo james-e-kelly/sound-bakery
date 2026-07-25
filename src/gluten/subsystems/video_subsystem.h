@@ -1,15 +1,14 @@
 #pragma once
 
-#include "gluten/subsystems/subsystem.h"
-
 #include "concurrencpp/concurrencpp.h"
+#include "gluten/subsystems/subsystem.h"
 #include "imgui.h"
 #include "sound_chef/sound_chef.h"
 
 #if GLUTEN_ENABLE_VIDEO
     #include "mpv/client.h"
-    #include "mpv/render_gl.h"
     #include "mpv/render.h"
+    #include "mpv/render_gl.h"
 #endif
 
 namespace gluten
@@ -74,7 +73,7 @@ namespace gluten
 
             std::atomic<bool> m_needsRender;
 
-            concurrencpp::result<void> m_waitEventResult;   //< Storing as a result so we can wait on it at the end to close everything out
+            concurrencpp::result<void> m_waitEventResult;  //< Storing as a result so we can wait on it at the end to close everything out
         };
 
         std::unordered_map<mpv_handle*, std::unique_ptr<mpv_context>> m_mpvContexts;

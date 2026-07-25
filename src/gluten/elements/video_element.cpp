@@ -6,18 +6,18 @@
 
 namespace
 {
-    constexpr float g_videoControlRowHeight = 30.0f;
+    constexpr float g_videoControlRowHeight     = 30.0f;
     constexpr float g_videoControlRowHalfHeight = g_videoControlRowHeight / 2.0f;
-    constexpr int g_videoControlRows           = 2;  // timeline + overlay
-    constexpr float g_totalVideoControlsHeight = g_videoControlRowHeight * g_videoControlRows;
+    constexpr int g_videoControlRows            = 2;  // timeline + overlay
+    constexpr float g_totalVideoControlsHeight  = g_videoControlRowHeight * g_videoControlRows;
 
-    constexpr float g_progressLineThickness    = 1.0f;
-    constexpr float g_minimumVideoPosition     = 0.0;
+    constexpr float g_progressLineThickness = 1.0f;
+    constexpr float g_minimumVideoPosition  = 0.0;
 
     // Shared horizontal inset for the timeline and overlay rows, so the timeline's draggable range
     // and any markers an overlay draws line up on the same x-range.
     constexpr float g_overlayRowInset = 20.0f;
-}
+}  // namespace
 
 namespace gluten
 {

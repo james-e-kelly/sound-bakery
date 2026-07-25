@@ -26,16 +26,16 @@ namespace gluten
             const std::string extension = filePath.extension().string();
 
             static const std::unordered_set<std::string> videoExtensions = {
-                ".yuv",  ".y4m",   ".m2ts", ".m2t",    ".mts",   ".mtv",  ".ts",    ".tsv",
-                ".tsa",  ".tts",   ".trp",  ".mpeg",   ".mpg",   ".mpe",  ".mpeg2", ".m1v",
-                ".m2v",  ".mp2v",  ".mpv",  ".mpv2",   ".mod",   ".vob",  ".vro",   ".evob",
-                ".evo",  ".mpeg4", ".m4v",  ".mp4",    ".mp4v",  ".mpg4", ".h264",  ".avc",
-                ".x264", ".264",   ".hevc", ".h265",   ".x265",  ".265",  ".ogv",   ".ogm",
-                ".ogx",  ".mkv",   ".mk3d", ".webm",   ".avi",   ".vfw",  ".divx",  ".3iv",
-                ".xvid", ".nut",   ".flic", ".fli",    ".flc",   ".nsv",  ".gxf",   ".mxf",
-                ".wm",   ".wmv",   ".asf",  ".dvr-ms", ".dvr",   ".wtv",  ".dv",    ".hdv",
-                ".flv",  ".f4v",   ".qt",   ".mov",    ".hdmov", ".rm",   ".rmvb",  ".3gpp",
-                ".3gp",  ".3gp2",  ".3g2"};
+                ".yuv", ".y4m", ".m2ts", ".m2t", ".mts", ".mtv", ".ts", ".tsv",
+                ".tsa", ".tts", ".trp", ".mpeg", ".mpg", ".mpe", ".mpeg2", ".m1v",
+                ".m2v", ".mp2v", ".mpv", ".mpv2", ".mod", ".vob", ".vro", ".evob",
+                ".evo", ".mpeg4", ".m4v", ".mp4", ".mp4v", ".mpg4", ".h264", ".avc",
+                ".x264", ".264", ".hevc", ".h265", ".x265", ".265", ".ogv", ".ogm",
+                ".ogx", ".mkv", ".mk3d", ".webm", ".avi", ".vfw", ".divx", ".3iv",
+                ".xvid", ".nut", ".flic", ".fli", ".flc", ".nsv", ".gxf", ".mxf",
+                ".wm", ".wmv", ".asf", ".dvr-ms", ".dvr", ".wtv", ".dv", ".hdv",
+                ".flv", ".f4v", ".qt", ".mov", ".hdmov", ".rm", ".rmvb", ".3gpp",
+                ".3gp", ".3gp2", ".3g2"};
 
             return videoExtensions.contains(extension);
         }

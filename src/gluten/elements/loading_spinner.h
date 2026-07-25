@@ -6,12 +6,12 @@
 
 namespace gluten
 {
-	class loading_spinner : public element
-	{
+    class loading_spinner : public element
+    {
     public:
         loading_spinner() : element(anchor_preset::stretch_full) {}
 
-	protected:
+    protected:
         auto render_element(const element_render_info& renderInfo) -> bool override;
-	};
-}
+    };
+}  // namespace gluten

@@ -1,14 +1,15 @@
 #pragma once
 
+#include "boost/program_options.hpp"
+#include "concurrencpp/concurrencpp.h"
 #include "core/leak_detector.h"
 #include "core/logger.h"
-#include "boost/program_options.hpp"
-#include <boost/archive/xml_iarchive.hpp>
-#include <boost/archive/xml_oarchive.hpp>
 #include "gluten/managers/manager.h"
 #include "gluten/subsystems/subsystem.h"
-#include "concurrencpp/concurrencpp.h"
 #include "imgui.h"
+
+#include <boost/archive/xml_iarchive.hpp>
+#include <boost/archive/xml_oarchive.hpp>
 
 #include <rttr/type>
 
@@ -16,11 +17,11 @@ namespace gluten
 {
     static inline constexpr const char* g_serializedEntryName = "data";
     static inline constexpr float g_baseFontSize              = 16.0f;
-    static inline constexpr float g_baseIconFontSize         = g_baseFontSize * (2.0f / 3.0f);
+    static inline constexpr float g_baseIconFontSize          = g_baseFontSize * (2.0f / 3.0f);
 
     /**
      * @brief Manages application lifetime and object owning.
-     * 
+     *
      * The app class is intended to pass application behaviour to manager and subsystem classes.
      */
     class app : public concurrencpp::runtime, public sbk::core::logger
@@ -66,7 +67,7 @@ namespace gluten
         static auto open_select_folder_dialog() -> std::filesystem::path;
         static auto open_select_file_dialog(const std::string& name, const std::string& fileExtensionNoDots) -> std::filesystem::path;
 
-        template<typename T>
+        template <typename T>
         static auto save_data_to_disk(const std::filesystem::path& file, const T& data) -> void
         {
             std::filesystem::create_directories(file.parent_path());
@@ -74,7 +75,7 @@ namespace gluten
             std::ofstream outputStream(file, std::ios_base::out);
             boost::archive::xml_oarchive archive(outputStream);
 
-            archive & boost::serialization::make_nvp(g_serializedEntryName, data);
+            archive& boost::serialization::make_nvp(g_serializedEntryName, data);
         }
 
         template <typename T>
@@ -83,7 +84,7 @@ namespace gluten
             std::ifstream inputStream(file, std::ios_base::in);
             boost::archive::xml_iarchive archive(inputStream);
 
-            archive & boost::serialization::make_nvp(g_serializedEntryName, data);
+            archive& boost::serialization::make_nvp(g_serializedEntryName, data);
         }
 
         auto get_tick_executor() const -> std::shared_ptr<concurrencpp::manual_executor>
@@ -99,17 +100,17 @@ namespace gluten
     protected:
         /**
          * @brief Runs at the earliest possible time and before the parsing of command line arguments.
-         * 
+         *
          * Use this function to set up command line arguments. Read the parsed values in @see pre_init.
          */
         virtual auto cli_setup(boost::program_options::options_description& options) -> void {}
 
         /**
          * @brief Runs after subsystems are created and before any init functions are called.
-         * 
+         *
          * Use this function to create the root widget, managers, more subsystems or general initialization.
          */
-        virtual auto pre_init(const boost::program_options::variables_map& cliVariables) -> void{}
+        virtual auto pre_init(const boost::program_options::variables_map& cliVariables) -> void {}
 
         /**
          * @brief Runs after all init functions were called and before start.
@@ -118,7 +119,7 @@ namespace gluten
 
         /**
          * @brief Runs before everything has exited and when the app is about to exit.
-         * 
+         *
          * The subsystems and managers will still be valid at this point.
          */
         virtual auto exit() -> void {}

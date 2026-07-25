@@ -30,7 +30,7 @@ namespace
             str.pop_back();
         }
     }
-}
+}  // namespace
 
 gluten::text::text(const std::string& displayText) : m_displayText(displayText) {}
 
@@ -40,21 +40,21 @@ gluten::text::text(const std::string& displayText, const ImVec2& alignment, cons
     m_alignment = alignment;
 }
 
-auto gluten::text::set_text(const std::string& displayText) -> text& 
-{ 
-    m_displayText = displayText; 
+auto gluten::text::set_text(const std::string& displayText) -> text&
+{
+    m_displayText = displayText;
     return *this;
 }
 
-auto gluten::text::set_font(const fonts& font) -> text& 
-{ 
-    m_font = font; 
+auto gluten::text::set_font(const fonts& font) -> text&
+{
+    m_font = font;
     return *this;
 }
 
-auto gluten::text::set_url(const std::string& url) -> text& 
-{ 
-    m_url = url; 
+auto gluten::text::set_url(const std::string& url) -> text&
+{
+    m_url = url;
     return *this;
 }
 
@@ -75,7 +75,7 @@ bool gluten::text::render_element(const element_render_info& renderInfo)
 {
     if (!m_displayText.empty())
     {
-        ImGuiContext& context     = *GImGui;
+        ImGuiContext& context = *GImGui;
 
         if (ImGuiWindow* const window = context.CurrentWindow)
         {
@@ -93,7 +93,7 @@ bool gluten::text::render_element(const element_render_info& renderInfo)
                     // TODO: Make truncation faster or cached. Without testing, this seems like a slow approach
 
                     const float currentHeight = renderInfo.elementBox.GetHeight();
-                    
+
                     m_truncatedText = m_displayText;
 
                     textSize = ImGui::CalcTextSize(m_truncatedText.c_str(), nullptr, false, renderInfo.elementBox.GetWidth());
@@ -116,7 +116,7 @@ bool gluten::text::render_element(const element_render_info& renderInfo)
                     }
                     else
                     {
-                        gluten::imgui::scoped_color urlColor(ImGuiCol_TextLink, ImGui::GetColorU32(ImGuiCol_Text));   
+                        gluten::imgui::scoped_color urlColor(ImGuiCol_TextLink, ImGui::GetColorU32(ImGuiCol_Text));
                         ImGui::TextLinkOpenURL(m_truncatedText.c_str(), m_url.c_str());
                     }
                 }

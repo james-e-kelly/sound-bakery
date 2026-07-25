@@ -19,15 +19,15 @@ gluten::layout::layout(const anchor_preset& anchorPreset)
 {
 }
 
-gluten::layout& gluten::layout::set_layout_type(const layout_type& type) 
-{ 
-    m_layoutType = type; 
+gluten::layout& gluten::layout::set_layout_type(const layout_type& type)
+{
+    m_layoutType = type;
     return *this;
 }
 
-gluten::layout& gluten::layout::set_layout_spacing(float spacing) 
-{ 
-    m_spacing = spacing; 
+gluten::layout& gluten::layout::set_layout_spacing(float spacing)
+{
+    m_spacing = spacing;
     return *this;
 }
 
@@ -48,11 +48,11 @@ bool gluten::layout::render_layout_element_full(element* element)
     return render_layout_element_internal(elementBox, element, elementBox.GetSize().x, elementBox.GetSize().y);
 }
 
-bool gluten::layout::render_layout_element_remaining(element* element) 
-{ 
+bool gluten::layout::render_layout_element_remaining(element* element)
+{
     if (m_currentLayoutPos.has_value())
     {
-        const ImRect elementBox = get_element_rect(); 
+        const ImRect elementBox    = get_element_rect();
         const ImVec2 remainingSize = get_remaining_layout_size();
         return render_layout_element_internal(elementBox, element, remainingSize.x, remainingSize.y);
     }
@@ -229,16 +229,14 @@ ImVec2 gluten::layout::get_current_layout_pos_local() const
     return layoutPos - ImGui::GetWindowPos();
 }
 
-
-auto gluten::layout::get_remaining_layout_size() const -> ImVec2 
+auto gluten::layout::get_remaining_layout_size() const -> ImVec2
 {
     ImVec2 sizeRemain;
 
     if (m_currentLayoutPos.has_value())
     {
-        const ImRect elementBox = get_element_rect();
+        const ImRect elementBox       = get_element_rect();
         const ImVec2 currentLayoutPos = m_currentLayoutPos.value();
-
 
         switch (m_layoutType)
         {
@@ -256,7 +254,7 @@ auto gluten::layout::get_remaining_layout_size() const -> ImVec2
                 break;
         }
     }
-    
+
     return sizeRemain;
 }
 

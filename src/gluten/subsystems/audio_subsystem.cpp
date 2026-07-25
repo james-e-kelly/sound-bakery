@@ -3,10 +3,10 @@
 #include "ebur128/ebur128.h"
 #include "gluten/app/app.h"
 
-#define CHECK_SC_RESULT(result)     \
-    if (result != SBK_SUCCESS)      \
-    {                               \
-        return 1;                   \
+#define CHECK_SC_RESULT(result) \
+    if (result != SBK_SUCCESS)  \
+    {                           \
+        return 1;               \
     }
 
 static void sbk_log_callback(unsigned int level, const char* message)
@@ -49,16 +49,16 @@ auto gluten::audio_subsystem::play_sound(const std::filesystem::path& filePath) 
 {
     loop_data* loopData = get_sound_loop_info(filePath);
 
-    const auto try_set_loop_points = [](sc_sound_instance* soundInstance, loop_data* loopData) 
-        { 
-            if (soundInstance && loopData)
+    const auto try_set_loop_points = [](sc_sound_instance* soundInstance, loop_data* loopData)
+    {
+        if (soundInstance && loopData)
+        {
+            if (loopData->m_loopStart >= 0.0f && loopData->m_loopEnd >= 0.0f)
             {
-                if (loopData->m_loopStart >= 0.0f && loopData->m_loopEnd >= 0.0f)
-                {
-                    sc_sound_instance_set_loop_position_in_seconds(soundInstance, loopData->m_loopStart, loopData->m_loopEnd);
-                }
+                sc_sound_instance_set_loop_position_in_seconds(soundInstance, loopData->m_loopStart, loopData->m_loopEnd);
             }
-        };
+        }
+    };
 
     if (sc_sound_instance* const soundInstance = get_sound_instance(filePath))
     {
@@ -190,7 +190,7 @@ auto gluten::audio_subsystem::get_sound_length(const std::filesystem::path& file
 
     float seconds = 0.0f;
 
-   if (sc_sound* const sound = get_or_load_audio_handle(filePath))
+    if (sc_sound* const sound = get_or_load_audio_handle(filePath))
     {
         sc_sound_get_length(sound, &seconds);
     }
@@ -397,7 +397,7 @@ auto gluten::audio_subsystem::generate_downsampled_resolution_waveform(std::shar
     }
 
     const std::size_t frameCount = audioData->size() / channels;
-    size_t framesToRead = frameCount / targetSamples;
+    size_t framesToRead          = frameCount / targetSamples;
     if (framesToRead < 1)
     {
         framesToRead = 1;
@@ -412,7 +412,7 @@ auto gluten::audio_subsystem::generate_downsampled_resolution_waveform(std::shar
         ENTER_FIBER;
     }
 
-    const float channelsReciprocal = 1.0f / channels;
+    const float channelsReciprocal     = 1.0f / channels;
     const float framesToReadReciprocal = 1.0f / framesToRead;
 
     for (ma_uint64 samplingIndex = 0; samplingIndex < targetSamples; ++samplingIndex)
@@ -425,7 +425,7 @@ auto gluten::audio_subsystem::generate_downsampled_resolution_waveform(std::shar
             {
                 const ma_uint64 sampleIndex = (samplingIndex * framesToRead * channels) + (frame * channels) + channel;
 
-                const float& sampleValue     = audioData->at(sampleIndex);
+                const float& sampleValue = audioData->at(sampleIndex);
 
                 allChannelsSum += std::abs(sampleValue) * channelsReciprocal;
 
@@ -435,17 +435,17 @@ auto gluten::audio_subsystem::generate_downsampled_resolution_waveform(std::shar
 
             if (channels == 2)
             {
-                const ma_uint64 leftSampleIndex     = (samplingIndex * framesToRead * channels) + (frame * channels) + 0;
-                const ma_uint64 rightSampleIndex    = (samplingIndex * framesToRead * channels) + (frame * channels) + 1;
+                const ma_uint64 leftSampleIndex  = (samplingIndex * framesToRead * channels) + (frame * channels) + 0;
+                const ma_uint64 rightSampleIndex = (samplingIndex * framesToRead * channels) + (frame * channels) + 1;
 
-                const float leftSampleValue = audioData->at(leftSampleIndex);
+                const float leftSampleValue  = audioData->at(leftSampleIndex);
                 const float rightSampleValue = audioData->at(rightSampleIndex);
 
-                const float midValue = (leftSampleValue + rightSampleValue) * channelsReciprocal;
+                const float midValue  = (leftSampleValue + rightSampleValue) * channelsReciprocal;
                 const float sideValue = (leftSampleValue - rightSampleValue) * channelsReciprocal;
 
-                result.stereoFrames[samplingIndex].midMin = std::min<float>(result.stereoFrames[samplingIndex].midMin, midValue);
-                result.stereoFrames[samplingIndex].midMax = std::max<float>(result.stereoFrames[samplingIndex].midMax, midValue);
+                result.stereoFrames[samplingIndex].midMin  = std::min<float>(result.stereoFrames[samplingIndex].midMin, midValue);
+                result.stereoFrames[samplingIndex].midMax  = std::max<float>(result.stereoFrames[samplingIndex].midMax, midValue);
                 result.stereoFrames[samplingIndex].sideMin = std::min<float>(result.stereoFrames[samplingIndex].sideMin, sideValue);
                 result.stereoFrames[samplingIndex].sideMax = std::max<float>(result.stereoFrames[samplingIndex].sideMax, sideValue);
             }
@@ -525,7 +525,7 @@ auto gluten::audio_subsystem::generate_downsampled_resolution_global_frames(std:
     const float channelsReciprocal     = 1.0f / channels;
     const float framesToReadReciprocal = 1.0f / framesToRead;
 
-    const bool calculateLufs = resolution <= 10;    // Keep a very low resolution for LUFS. It doesn't change very fast
+    const bool calculateLufs = resolution <= 10;  // Keep a very low resolution for LUFS. It doesn't change very fast
 
     for (ma_uint64 samplingIndex = 0; samplingIndex < targetSamples; ++samplingIndex)
     {
@@ -604,12 +604,12 @@ auto gluten::audio_subsystem::generate_sample_resolution_waveform(std::shared_pt
     const ma_uint64 frameCount = audioData->size() / channels;
 
     waveform result(frameCount, channels);
-    
+
     for (ma_uint64 frame = 0; frame < frameCount; ++frame)
     {
         for (ma_uint64 channel = 0; channel < channels; ++channel)
         {
-            const ma_uint64 sampleIndex = (frame * channels) + channel;
+            const ma_uint64 sampleIndex                 = (frame * channels) + channel;
             result.channelFrames[channel][frame].sample = audioData->at(sampleIndex);
         }
     }
@@ -618,7 +618,7 @@ auto gluten::audio_subsystem::generate_sample_resolution_waveform(std::shared_pt
         ZoneScopedN("Calculate LUFS");
 
         ebur128_state* eburState = ebur128_init(channels, ma_standard_sample_rate_48000, EBUR128_MODE_I | EBUR128_MODE_LRA | EBUR128_MODE_HISTOGRAM);
-    
+
         ebur128_add_frames_float(eburState, audioData->data(), frameCount);
         ebur128_loudness_global(eburState, &result.lufs.integrated);
         ebur128_loudness_range(eburState, &result.lufs.range);

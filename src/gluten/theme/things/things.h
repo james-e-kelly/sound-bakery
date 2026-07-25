@@ -4,8 +4,8 @@
 
 namespace gluten::theme::things
 {
-    static ImVec4 base00 = ImColor::HSV(220 / 360.f, 13 / 100.0f, 12 / 100.f);
-    static ImVec4 darkModeBackgroundColor = ImColor::HSV(220 / 360.f, 13 / 100.0f, 12 / 100.f);
+    static ImVec4 base00                   = ImColor::HSV(220 / 360.f, 13 / 100.0f, 12 / 100.f);
+    static ImVec4 darkModeBackgroundColor  = ImColor::HSV(220 / 360.f, 13 / 100.0f, 12 / 100.f);
     static ImVec4 lightModeBackgroundColor = ImColor::HSV(220 / 360.f, 13 / 100.0f, 90 / 100.f);
 
     static ImVec4 blue   = hex_to_imgui_imvec4(0x2e80f2);
@@ -43,10 +43,10 @@ namespace gluten::theme::things
 
     inline void apply_colours(ImVec4 backgroundColor, bool darkMode)
     {
-        gluten::theme::background   = backgroundColor;
-        gluten::theme::layer01      = create_next_layer(gluten::theme::background, darkMode);
-        gluten::theme::layer02      = create_next_layer(gluten::theme::layer01, darkMode);
-        gluten::theme::layer03      = create_next_layer(gluten::theme::layer02, darkMode);
+        gluten::theme::background = backgroundColor;
+        gluten::theme::layer01    = create_next_layer(gluten::theme::background, darkMode);
+        gluten::theme::layer02    = create_next_layer(gluten::theme::layer01, darkMode);
+        gluten::theme::layer03    = create_next_layer(gluten::theme::layer02, darkMode);
 
         gluten::theme::layerHover01 = create_hover_color(gluten::theme::layer01, darkMode);
         gluten::theme::layerHover02 = create_hover_color(gluten::theme::layer02, darkMode);
@@ -74,7 +74,7 @@ namespace gluten::theme::things
         gluten::theme::layerAccentHover01 = create_hover_color(gluten::theme::layerAccent01, darkMode);
         gluten::theme::layerAccentHover02 = create_hover_color(gluten::theme::layerAccent02, darkMode);
         gluten::theme::layerAccentHover03 = create_hover_color(gluten::theme::layerAccent03, darkMode);
-        
+
         gluten::theme::layerAccentActive01 = create_active_color(gluten::theme::layerAccent01, darkMode);
         gluten::theme::layerAccentActive02 = create_active_color(gluten::theme::layerAccent02, darkMode);
         gluten::theme::layerAccentActive03 = create_active_color(gluten::theme::layerAccent03, darkMode);
@@ -94,18 +94,18 @@ namespace gluten::theme::things
         gluten::theme::textSecondary = color_with_multiplied_value(gluten::theme::textPrimary, 0.8f * (darkMode ? 1.0f : -1.0f));
         gluten::theme::textDisabled  = color_with_multiplied_value(gluten::theme::textPrimary, 0.5f * (darkMode ? 1.0f : -1.0f));
 
-        gluten::theme::supportError = red;
+        gluten::theme::supportError   = red;
         gluten::theme::supportSuccess = green;
         gluten::theme::supportWarning = yellow;
         gluten::theme::supportInfo    = color_with_multiplied_value(color_with_multiplied_saturation(blue, 0.5f), 0.75f);
 
-        gluten::theme::interactive = blue;
+        gluten::theme::interactive       = blue;
         gluten::theme::interactiveHover  = create_hover_color(blue, darkMode);
         gluten::theme::interactiveActive = create_active_color(blue, darkMode);
 
-        gluten::theme::interactiveSecondary = gluten::theme::layer01;
+        gluten::theme::interactiveSecondary      = gluten::theme::layer01;
         gluten::theme::interactiveSecondaryHover = gluten::theme::layerHover01;
 
         gluten::theme::shadow = ImVec4(borderStrong01.x, borderStrong01.y, borderStrong01.z, 0.5f);
     }
-}
+}  // namespace gluten::theme::things

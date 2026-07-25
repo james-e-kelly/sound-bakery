@@ -6,11 +6,11 @@
 
 auto gluten::popup_widget::open_popup() -> void
 {
-	if (!ImGui::IsPopupOpen(get_widget_name().data()))
-	{
-		ImGui::OpenPopup(get_widget_name().data());
+    if (!ImGui::IsPopupOpen(get_widget_name().data()))
+    {
+        ImGui::OpenPopup(get_widget_name().data());
         set_visibile(true);
-	}
+    }
 }
 
 auto gluten::popup_widget::close_popup() -> void
@@ -84,8 +84,8 @@ auto gluten::confirmation_popup::render_popup() -> void
     }
 }
 
-auto gluten::loading_popup::start_implementation() -> void 
-{ 
+auto gluten::loading_popup::start_implementation() -> void
+{
     set_closable(false);
 }
 
