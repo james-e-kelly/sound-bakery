@@ -194,7 +194,7 @@ auto video_element::inner_video_element::render_video_overlay() -> void
                         if (comment.m_timeStart >= 0.0)
                         {
                             const float commentTimelineWidth = rightMiddle.x - leftMiddle.x;
-                            const float commentPosition = leftMiddle.x + (commentTimelineWidth * (comment.m_timeStart / m_fileDuration));
+                            const float commentPosition      = leftMiddle.x + (commentTimelineWidth * (comment.m_timeStart / m_fileDuration));
 
                             if (std::abs(commentPosition) < 10000.0f)
                             {

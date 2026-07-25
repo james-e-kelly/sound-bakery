@@ -5,78 +5,78 @@
 
 namespace review_app_test_connect
 {
-	auto test_server_connection(std::string serverAddress) -> concurrencpp::result<bool>
-	{
+    auto test_server_connection(std::string serverAddress) -> concurrencpp::result<bool>
+    {
         co_await concurrencpp::resume_on(gluten::app::get()->background_executor());
 
         httplib::SSLClient testClient(serverAddress, 8080);
-		testClient.enable_server_certificate_verification(false);
+        testClient.enable_server_certificate_verification(false);
 
-		httplib::Result testConnectionResult = testClient.Get(review_app_endpoints::me);
+        httplib::Result testConnectionResult = testClient.Get(review_app_endpoints::me);
 
-		co_return static_cast<bool>(testConnectionResult);
-	}
-}
+        co_return static_cast<bool>(testConnectionResult);
+    }
+}  // namespace review_app_test_connect
 
 auto intro_manager::init(gluten::app* app) -> void
 {
-	if (m_userSettingsData->server_address_valid())
-	{
+    if (m_userSettingsData->server_address_valid())
+    {
         m_testServerConnectionResult = review_app_test_connect::test_server_connection(m_userSettingsData->m_serverIpAddress);
-		if (auto widgetSubsystem = app->get_subsystem_by_class<gluten::widget_subsystem>())
-		{
-			m_loadingPopup = widgetSubsystem->add_widget_class_to_root<gluten::loading_popup>(false);
-		}
-	}
+        if (auto widgetSubsystem = app->get_subsystem_by_class<gluten::widget_subsystem>())
+        {
+            m_loadingPopup = widgetSubsystem->add_widget_class_to_root<gluten::loading_popup>(false);
+        }
+    }
     else if (m_userSettingsData->workspace_exists())
-	{
+    {
         review_app::set_up_server(m_userSettingsData->m_workspaceFilePath);
-	}
-	else
-	{
-		m_introWidget = gluten::add_widget_class_to_root<intro_widget>(false);
-	}
+    }
+    else
+    {
+        m_introWidget = gluten::add_widget_class_to_root<intro_widget>(false);
+    }
 }
 
 auto intro_manager::start() -> void
 {
-	if (m_loadingPopup)
-	{
-		m_loadingPopup->open_popup();
-	}
+    if (m_loadingPopup)
+    {
+        m_loadingPopup->open_popup();
+    }
 
-	if (m_introWidget)
-	{
+    if (m_introWidget)
+    {
         gluten::dockspace_refresh refresh = get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->get_root_widget()->set_manual_layout();
-		refresh.assign_widget_to_node(rttr::type::get<intro_widget>(), refresh.dockspaceID);
-	}
+        refresh.assign_widget_to_node(rttr::type::get<intro_widget>(), refresh.dockspaceID);
+    }
 }
 
 auto intro_manager::tick(double deltaTime) -> void
-{ 
-	if (m_testServerConnectionResult)
-	{
-		if (m_testServerConnectionResult.status() == concurrencpp::result_status::value)
-		{
-			if (m_loadingPopup)
-			{
-				const bool serverConnectionOkay = m_testServerConnectionResult.get();
+{
+    if (m_testServerConnectionResult)
+    {
+        if (m_testServerConnectionResult.status() == concurrencpp::result_status::value)
+        {
+            if (m_loadingPopup)
+            {
+                const bool serverConnectionOkay = m_testServerConnectionResult.get();
 
-				if (serverConnectionOkay)
-				{
-					review_app::set_up_client(m_userSettingsData->m_serverIpAddress);
-				}
-			}
-		}
-	}
-	else if (m_loadingPopup)
-	{
+                if (serverConnectionOkay)
+                {
+                    review_app::set_up_client(m_userSettingsData->m_serverIpAddress);
+                }
+            }
+        }
+    }
+    else if (m_loadingPopup)
+    {
         m_loadingPopup.reset();
-	}
+    }
     else if (!m_introWidget)
-	{
-		m_introWidget = gluten::add_widget_class_to_root<intro_widget>(false);
-		gluten::dockspace_refresh refresh = get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->get_root_widget()->set_manual_layout();
-		refresh.assign_widget_to_node(rttr::type::get<intro_widget>(), refresh.dockspaceID);
-	}
+    {
+        m_introWidget                     = gluten::add_widget_class_to_root<intro_widget>(false);
+        gluten::dockspace_refresh refresh = get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->get_root_widget()->set_manual_layout();
+        refresh.assign_widget_to_node(rttr::type::get<intro_widget>(), refresh.dockspaceID);
+    }
 }

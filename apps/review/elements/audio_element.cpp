@@ -1,8 +1,8 @@
 #include "audio_element.h"
 
-#include "managers/workspace_manager.h"
 #include "implot.h"
 #include "implot_internal.h"
+#include "managers/workspace_manager.h"
 
 audio_element::audio_element(const std::filesystem::path& filePath, const int64_t fileId)
     : gluten::file_element(gluten::anchor_preset::stretch_full, filePath), m_fileId(fileId), m_waveform(filePath, fileId)
@@ -51,7 +51,7 @@ auto audio_element::render_element(const gluten::element_render_info& renderInfo
     // overflow into the control row whenever the desired height exceeds the space actually available
     // here. Render it directly with an exact box instead, and use a null-element spacer to keep
     // m_layout's own cursor in sync for the control row placed right after it.
-    const ImRect layoutRect     = m_layout.get_element_rect();
+    const ImRect layoutRect    = m_layout.get_element_rect();
     const float waveformHeight = std::max(0.0f, layoutRect.GetHeight() - s_controlHeight);
 
     m_waveform.render(ImRect(layoutRect.GetTL(), ImVec2(layoutRect.Max.x, layoutRect.Min.y + waveformHeight)));

@@ -1,7 +1,7 @@
 ﻿#include "review_app.h"
 
-#include "app/review_database.h"
 #include "app/review_client.h"
+#include "app/review_database.h"
 #include "app/review_server.h"
 #include "managers/intro_manager.h"
 #include "managers/workspace_manager.h"
@@ -13,9 +13,9 @@
 
 namespace review_app_cli_arguments
 {
-    static constexpr const char* s_remoteServerAddress  = "remote_ip";
-    static constexpr const char* s_databaseFile         = "workspace";
-}
+    static constexpr const char* s_remoteServerAddress = "remote_ip";
+    static constexpr const char* s_databaseFile        = "workspace";
+}  // namespace review_app_cli_arguments
 
 class review_app_drop_target : public IDropTarget
 {
@@ -47,7 +47,7 @@ public:
 
     HRESULT DragEnter(IDataObject* pDataObj, DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override
     {
-        *pdwEffect = DROPEFFECT_COPY;
+        *pdwEffect                          = DROPEFFECT_COPY;
         review_app::get()->m_isDragDropping = true;
 
         FORMATETC formatEtc = {
@@ -116,16 +116,14 @@ auto get_file_cache_directory() -> std::filesystem::path
     return std::filesystem::path(sago::getCacheDir()) / "SoundCheck" / "cache" / "downloaded";
 }
 
-auto create_application() -> gluten::app* 
+auto create_application() -> gluten::app*
 {
-	return new review_app();
+    return new review_app();
 }
 
 auto review_app::cli_setup(boost::program_options::options_description& options) -> void
 {
-    options.add_options()
-        (review_app_cli_arguments::s_remoteServerAddress, boost::program_options::value<std::string>(), "set the IP address of the remote server")
-        (review_app_cli_arguments::s_databaseFile, boost::program_options::value<std::string>(), "set the file path to the workspace to open as a server");
+    options.add_options()(review_app_cli_arguments::s_remoteServerAddress, boost::program_options::value<std::string>(), "set the IP address of the remote server")(review_app_cli_arguments::s_databaseFile, boost::program_options::value<std::string>(), "set the file path to the workspace to open as a server");
 }
 
 auto review_app::pre_init(const boost::program_options::variables_map& cliVariables) -> void
@@ -143,7 +141,7 @@ auto review_app::pre_init(const boost::program_options::variables_map& cliVariab
     }
 
     const bool hasWorkspaceFile = cliVariables.count(review_app_cli_arguments::s_databaseFile);
-    const bool hasRemoteIp = cliVariables.count(review_app_cli_arguments::s_remoteServerAddress);
+    const bool hasRemoteIp      = cliVariables.count(review_app_cli_arguments::s_remoteServerAddress);
 
     if (hasWorkspaceFile)
     {
@@ -211,7 +209,7 @@ auto review_app::tick_implementation() -> void
         // Fallback if nothing took our drag drop files
         if (dragDropReadyFrames++ > 1)
         {
-            m_isDragDropping = false;
+            m_isDragDropping  = false;
             m_isDragDropReady = false;
         }
     }
@@ -240,7 +238,7 @@ auto review_app::get_drag_drop_files() const -> std::unordered_set<std::filesyst
 {
     if (m_isDragDropReady && m_dropTarget)
     {
-        m_isDragDropping = false;
+        m_isDragDropping  = false;
         m_isDragDropReady = false;
         return m_dropTarget->m_payloadPaths;
     }
@@ -270,7 +268,7 @@ auto review_app::set_up_client(const std::string& serverAddress) -> void
         if (std::shared_ptr<gluten::renderer_subsystem> rendererSubsystem = app->get_subsystem_by_class<gluten::renderer_subsystem>())
         {
             const HRESULT initializeResult = OleInitialize(nullptr);
-            
+
             if (initializeResult == S_OK)
             {
                 const HRESULT result = RegisterDragDrop(glfwGetWin32Window(rendererSubsystem->get_glfw_window()), app->m_dropTarget.get());

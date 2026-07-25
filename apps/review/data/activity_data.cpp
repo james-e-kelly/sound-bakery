@@ -2,9 +2,9 @@
 
 auto get_activity_type_string(activity_type activityType) -> std::string
 {
-	std::string result;
+    std::string result;
 
-	switch (activityType)
+    switch (activityType)
     {
         case activity_type::project_created:
             result = "Created a project";

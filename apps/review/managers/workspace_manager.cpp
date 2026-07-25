@@ -1,8 +1,8 @@
 #include "workspace_manager.h"
 
 #include "app/review_app.h"
-#include "app/review_server.h"
 #include "app/review_client.h"
+#include "app/review_server.h"
 #include "gluten/subsystems/audio_subsystem.h"
 #include "gluten/subsystems/video_subsystem.h"
 #include "widgets/intro_widget.h"
@@ -11,12 +11,12 @@
 
 namespace
 {
-    constexpr const char* g_workspaceExtension			= "workspace";
-    constexpr const char* g_workspaceExtensionWithDot	= ".workspace";
-    constexpr const char* g_projectDirectoryName		= "Projects";
-    constexpr const char* g_userDirectoryName			= "Users";
-    constexpr const char* g_projectFileExtension		= "project";
-}
+    constexpr const char* g_workspaceExtension        = "workspace";
+    constexpr const char* g_workspaceExtensionWithDot = ".workspace";
+    constexpr const char* g_projectDirectoryName      = "Projects";
+    constexpr const char* g_userDirectoryName         = "Users";
+    constexpr const char* g_projectFileExtension      = "project";
+}  // namespace
 
 workspace_manager::~workspace_manager()
 {
@@ -41,7 +41,7 @@ auto workspace_manager::open_client(const std::shared_ptr<review_client> client)
 
     const std::shared_ptr<gluten::loading_popup> loadingPopup = get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class_to_root<gluten::loading_popup>(false);
     loadingPopup->open_popup();
-        
+
     co_await concurrencpp::resume_on(review_app::get()->thread_pool_executor());
 
     if (get_user_session_token().empty() || get_user_session_has_expired() || co_await m_client->user_table_is_empty())
@@ -87,30 +87,25 @@ auto workspace_manager::async_get_users_for_review(int64_t reviewId) -> concurre
         {
             co_await concurrencpp::resume_on(review_app::get()->background_executor());
 
-            auto usersIter = users.begin();
+            auto usersIter     = users.begin();
             auto reviewersIter = reviewers.begin();
             for (; usersIter != users.end(); ++usersIter, ++reviewersIter)
             {
                 review_vote vote = co_await m_client->get_review_vote(reviewId, usersIter->m_userId);
-                *reviewersIter = reviewer_data(*usersIter, vote);
+                *reviewersIter   = reviewer_data(*usersIter, vote);
             }
 
             std::sort(reviewers.begin(), reviewers.end(), [userSettings = m_userSettingsData](const reviewer_data& lhs, const reviewer_data& rhs) -> bool
-                {
-                    return std::strcmp(userSettings->m_loggedInUser.m_email.c_str(), lhs.m_email.c_str()) == 0;
-                });
+                      { return std::strcmp(userSettings->m_loggedInUser.m_email.c_str(), lhs.m_email.c_str()) == 0; });
 
-            std::sort(reviewers.begin() + 1, reviewers.end(), [](const reviewer_data& lhs, const reviewer_data& rhs) 
-                {
-                    return std::strcmp(lhs.m_displayName.c_str(), rhs.m_displayName.c_str()) < 0;
-                });
+            std::sort(reviewers.begin() + 1, reviewers.end(), [](const reviewer_data& lhs, const reviewer_data& rhs)
+                      { return std::strcmp(lhs.m_displayName.c_str(), rhs.m_displayName.c_str()) < 0; });
         }
-
     }
     co_return reviewers;
 }
 
-auto workspace_manager::open_workspace_widget() -> void 
+auto workspace_manager::open_workspace_widget() -> void
 {
     m_userFlowPopup.reset();
     m_workspaceWidget = get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class_to_root<workspace_widget>(false);
@@ -194,7 +189,7 @@ auto workspace_manager::delete_project(const std::string& projectName) -> concur
     auto& rawProjects = m_cachedProjects.get_raw_data(key);
 
     const auto foundProjectIter = std::find_if(rawProjects.begin(), rawProjects.end(), [projectName](const project_data& project)
-                                  { return projectName == project.m_projectName; });
+                                               { return projectName == project.m_projectName; });
 
     if (foundProjectIter != rawProjects.end())
     {
@@ -245,7 +240,7 @@ auto workspace_manager::has_selected_project() const -> bool { return m_selected
 
 auto workspace_manager::close_workspace() -> void
 {
-	m_workspaceWidget.reset();
+    m_workspaceWidget.reset();
     m_selectedProject = project_data();
     m_cachedProjects.clear();
     m_userSettingsData->m_workspaceFilePath.clear();
@@ -309,7 +304,7 @@ auto workspace_manager::select_review(int64_t reviewId) -> void
 
     if (reviewId == 0)
     {
-        m_selectedReview  = review_data();
+        m_selectedReview = review_data();
         return;
     }
 
@@ -331,7 +326,7 @@ auto workspace_manager::get_selected_review() const -> const review_data&
     return m_selectedReview;
 }
 
-auto workspace_manager::create_review(const new_frontend_review_data newReview) -> concurrencpp::result<void> 
+auto workspace_manager::create_review(const new_frontend_review_data newReview) -> concurrencpp::result<void>
 {
     if (get_user_session_has_expired())
     {
@@ -383,10 +378,8 @@ auto workspace_manager::delete_review(int64_t reviewId) -> concurrencpp::result<
 
     m_selectedReview = review_data();
     auto& rawReviews = m_cachedReviews.get_raw_data(key);
-    rawReviews.erase(std::find_if(rawReviews.begin(), rawReviews.end(), [reviewId](const review_data& review) 
-        {
-            return reviewId == review.m_reviewId;
-        }));
+    rawReviews.erase(std::find_if(rawReviews.begin(), rawReviews.end(), [reviewId](const review_data& review)
+                                  { return reviewId == review.m_reviewId; }));
 
     co_await m_client->delete_review(reviewId);
 
@@ -409,7 +402,7 @@ auto workspace_manager::create_review_version(int64_t reviewId, new_frontend_rev
 
         const gluten::key_and_token_cache_key key(m_selectedProject.m_id, get_user_session_token());
         const auto newReviewDataResult = co_await m_client->get_all_reviews(m_selectedProject.m_id);
-    
+
         m_cachedReviews.set_cache_data(key, newReviewDataResult);
         select_review(reviewId);
     }
@@ -429,7 +422,8 @@ auto workspace_manager::set_review_status(database_id reviewId, review_status st
 
     const gluten::key_and_token_cache_key key(m_selectedProject.m_id, get_user_session_token());
 
-    const auto foundReviewIter = std::find_if(m_cachedReviews.get_raw_data(key).begin(), m_cachedReviews.get_raw_data(key).end(), [reviewId](const review_data& review){return reviewId == review.m_reviewId;});
+    const auto foundReviewIter = std::find_if(m_cachedReviews.get_raw_data(key).begin(), m_cachedReviews.get_raw_data(key).end(), [reviewId](const review_data& review)
+                                              { return reviewId == review.m_reviewId; });
 
     if (foundReviewIter != m_cachedReviews.get_raw_data(key).end())
     {
@@ -457,7 +451,7 @@ auto workspace_manager::get_all_comments_for_review(int64_t reviewId) -> typenam
     {
         m_cachedComments.set_async_fill_cache(key, m_client->get_all_comments_for_review(reviewId));
     }
-    
+
     return m_cachedComments.get_cached_data(key);
 }
 
@@ -468,7 +462,7 @@ auto workspace_manager::create_comment(const new_comment_data newComment) -> con
     const comment_data createdComment = co_await m_client->post_comment(newComment);
 
     co_await concurrencpp::resume_on(get_app()->get_tick_executor());
-    
+
     auto& rawComments = m_cachedComments.get_raw_data(key);
     rawComments.insert(rawComments.begin(), createdComment);
 
@@ -500,7 +494,7 @@ auto workspace_manager::open_create_user_popup() -> void
     }
 }
 
-auto workspace_manager::create_user(const new_user_data newUser, std::optional<std::string> userToken) -> concurrencpp::result<tl::expected<bool, database_error>> 
+auto workspace_manager::create_user(const new_user_data newUser, std::optional<std::string> userToken) -> concurrencpp::result<tl::expected<bool, database_error>>
 {
     user_data createdUserData = co_await m_client->post_user(newUser);
 
@@ -521,7 +515,7 @@ auto workspace_manager::create_user_and_login(new_user_data newUser) -> concurre
     co_await create_user(newUser, {});
 
     login_request_data loginRequest;
-    loginRequest.m_email = newUser.m_email;
+    loginRequest.m_email       = newUser.m_email;
     loginRequest.m_rawPassword = newUser.m_rawPassword;
 
     co_return co_await login_user(loginRequest);
@@ -554,7 +548,7 @@ auto workspace_manager::login_user(login_request_data loginData) -> concurrencpp
 
 auto workspace_manager::logout() -> void
 {
-    m_selectedReview = review_data();
+    m_selectedReview  = review_data();
     m_selectedProject = project_data();
 
     m_cachedActivity.clear();
@@ -623,10 +617,10 @@ auto workspace_manager::delete_user(database_id userId) -> concurrencpp::result<
 
         m_cachedUsers.get_raw_data(key).erase(
             std::find_if(m_cachedUsers.get_raw_data(key).begin(), m_cachedUsers.get_raw_data(key).end(),
-            [userId](const user_data& user) -> bool 
-            {
-                return userId == user.m_userId;
-            }));
+                         [userId](const user_data& user) -> bool
+                         {
+                             return userId == user.m_userId;
+                         }));
 
         const bool deletingSelf = userId == m_userSettingsData->m_loggedInUser.m_userId;
 
@@ -650,7 +644,8 @@ auto workspace_manager::get_user(int64_t userId) -> user_data
 {
     const auto& users = get_all_users();
 
-    const auto foundUserIter = std::find_if(users.m_cache.begin(), users.m_cache.end(), [userId](const user_data& user) { return user.m_userId == userId; });
+    const auto foundUserIter = std::find_if(users.m_cache.begin(), users.m_cache.end(), [userId](const user_data& user)
+                                            { return user.m_userId == userId; });
     if (foundUserIter == users.m_cache.end())
     {
         return user_data();
@@ -684,10 +679,8 @@ auto workspace_manager::set_review_vote(int64_t reviewId, int64_t userId, review
 
     auto& rawReviewUsers = m_reviewUsersCache.get_raw_data({reviewId, userSettings->m_loggedInUser.m_sessionToken});
 
-    auto foundReviewer = std::find_if(rawReviewUsers.begin(), rawReviewUsers.end(), [userId](const reviewer_data& reviewer) 
-        {
-            return reviewer.m_userId == userId;
-        });
+    auto foundReviewer = std::find_if(rawReviewUsers.begin(), rawReviewUsers.end(), [userId](const reviewer_data& reviewer)
+                                      { return reviewer.m_userId == userId; });
 
     if (foundReviewer != rawReviewUsers.end())
     {
@@ -704,7 +697,7 @@ auto workspace_manager::get_user_session_token() const -> std::string
 
 auto workspace_manager::get_user_session_has_expired() const -> bool
 {
-    const time_t now   = std::time(nullptr);
+    const time_t now = std::time(nullptr);
     return get_user_session_token().empty() || now >= m_userSettingsData->m_loggedInUser.m_expiryTime;
 }
 
@@ -747,7 +740,7 @@ auto workspace_manager::async_get_review_file(std::filesystem::path relativeFile
         std::ofstream stream(absoluteFilePath.string(), std::ios::binary | std::ios::out);
         stream.write(reinterpret_cast<const char*>(fileData.m_fileData.data()), fileData.m_fileData.size());
     }
-    
+
     co_return absoluteFilePath;
 }
 

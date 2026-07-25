@@ -31,13 +31,13 @@ protected:
 private:
     static inline constexpr std::size_t textBufferSize = 512;
 
-    char m_emailBuffer[textBufferSize]        = {0};
-    char m_passwordBuffer[g_rawPasswordSize]  = {0};
-    char m_titleBuffer[textBufferSize]        = {0};
-    char m_displayNameBuffer[textBufferSize]  = {0};
-    user_privileges m_privileges            = user_privileges::guest;
+    char m_emailBuffer[textBufferSize]       = {0};
+    char m_passwordBuffer[g_rawPasswordSize] = {0};
+    char m_titleBuffer[textBufferSize]       = {0};
+    char m_displayNameBuffer[textBufferSize] = {0};
+    user_privileges m_privileges             = user_privileges::guest;
 
-    user_flow_type m_type = user_flow_type::login_user;
+    user_flow_type m_type    = user_flow_type::login_user;
     bool m_firstUserCreation = false;
 
     gluten::data_source<user_settings_data> m_userSettings;

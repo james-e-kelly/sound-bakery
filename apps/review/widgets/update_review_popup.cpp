@@ -1,7 +1,7 @@
 #include "update_review_popup.h"
 
-#include "managers/workspace_manager.h"
 #include "data/user_data.h"
+#include "managers/workspace_manager.h"
 
 auto update_review_popup::set_review_data(const review_data& reviewData) -> void
 {
@@ -59,7 +59,7 @@ auto update_review_popup::render_popup() -> void
 
     const std::shared_ptr<workspace_manager> workspaceManager = get_app()->get_manager_by_class<workspace_manager>();
 
-    const typename workspace_manager::global_cache_type<user_data>::cache_result& allUsers = workspaceManager->get_all_users();
+    const typename workspace_manager::global_cache_type<user_data>::cache_result& allUsers       = workspaceManager->get_all_users();
     const typename workspace_manager::default_cache_type<reviewer_data>::cache_result& reviewers = workspaceManager->get_review_users(m_reviewData.m_reviewId);
 
     if (!m_newReviewers.has_value() && reviewers.m_state == gluten::cache_state::has_data)
@@ -130,7 +130,7 @@ auto update_review_popup::render_popup() -> void
     {
         if (std::shared_ptr<workspace_manager> workspaceManager = get_app()->get_manager_by_class<workspace_manager>())
         {
-            m_reviewData.m_reviewName = reviewNameBuffer;
+            m_reviewData.m_reviewName        = reviewNameBuffer;
             m_reviewData.m_reviewDescription = reviewDescriptionBuffer;
             m_reviewData.m_reviewTaskUrl     = reviewUrlBuffer;
 
@@ -141,7 +141,8 @@ auto update_review_popup::render_popup() -> void
 
             std::transform(m_newReviewers.value().begin(),
                            m_newReviewers.value().end(), userIds.begin(),
-                           [](const user_data& user) { return user.m_userId; });
+                           [](const user_data& user)
+                           { return user.m_userId; });
 
             workspaceManager->set_review_users(m_reviewData.m_reviewId, userIds);
         }

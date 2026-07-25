@@ -17,8 +17,8 @@ enum class review_app_theme
  */
 struct user_settings_data
 {
-    std::filesystem::path m_workspaceFilePath;      //< File opened by the server
-    std::string m_serverIpAddress;                  //< Server address connected to by the client
+    std::filesystem::path m_workspaceFilePath;  //< File opened by the server
+    std::string m_serverIpAddress;              //< Server address connected to by the client
 
     logged_in_user_data m_loggedInUser;
     review_app_theme m_theme = review_app_theme::dark;
@@ -36,21 +36,21 @@ struct user_settings_data
     template <class archive_class>
     auto serialize(archive_class& archive, const unsigned int version) -> void
     {
-        archive & boost::serialization::make_nvp("Workspace", m_workspaceFilePath);
+        archive& boost::serialization::make_nvp("Workspace", m_workspaceFilePath);
 
         if (version >= review_app_user_tokens)
         {
-            archive & boost::serialization::make_nvp("UserLogin", m_loggedInUser);
+            archive& boost::serialization::make_nvp("UserLogin", m_loggedInUser);
         }
 
         if (version >= review_app_first_settings)
         {
-            archive & boost::serialization::make_nvp("theme", m_theme);
+            archive& boost::serialization::make_nvp("theme", m_theme);
         }
 
         if (version >= review_app_ip_address)
         {
-            archive & BOOST_SERIALIZATION_NVP(m_serverIpAddress);
+            archive& BOOST_SERIALIZATION_NVP(m_serverIpAddress);
         }
     }
 };

@@ -5,25 +5,25 @@
 #include "app/review_database.h"
 #include "data/activity_data.h"
 #include "data/comment_data.h"
-#include "data/user_data.h"
-#include "data/review_data.h"
-#include "data/workspace_data.h"
 #include "data/project_data.h"
+#include "data/review_data.h"
+#include "data/user_data.h"
 #include "data/user_settings_data.h"
+#include "data/workspace_data.h"
 
 class review_client;
 class review_database;
 class user_flow_popup;
 class workspace_widget;
 
-class workspace_manager : public gluten::manager	
+class workspace_manager : public gluten::manager
 {
 public:
-    template<typename data_type>
+    template <typename data_type>
     using default_cache_type = gluten::data_cache<std::vector<data_type>, gluten::key_and_token_cache_key<int64_t, std::string>, gluten::key_and_token_cache_key_hasher<int64_t, std::string>>;
 
     // Cache type that doesn't need any lookup. The logged in user is the only key
-    template<typename data_type>
+    template <typename data_type>
     using global_cache_type = gluten::data_cache<std::vector<data_type>, gluten::token_cache_key<std::string>, gluten::token_cache_key_hasher<std::string>>;
 
     using string_cache_type = gluten::data_cache<std::string, gluten::token_cache_key<std::string>, gluten::token_cache_key_hasher<std::string>>;
@@ -40,7 +40,7 @@ public:
     [[nodiscard]] auto get_workspace_directory() const -> std::filesystem::path;
     auto open_client(const std::shared_ptr<review_client> client) -> concurrencpp::result<void>;
     auto close_workspace() -> void;
-    
+
     // Projects
     [[nodiscard]] auto get_selected_project() const -> const project_data&;
     [[nodiscard]] auto get_all_projects() -> typename global_cache_type<project_data>::cache_result;
@@ -48,7 +48,7 @@ public:
     auto create_project(const std::string& projectName, const std::string& projectDescription) -> void;
     auto select_project(const std::string projectName) -> concurrencpp::result<void>;
     auto delete_project(const std::string& proejctName) -> concurrencpp::result<void>;
-    auto get_project_users(database_id projectId) -> typename default_cache_type<user_data>::cache_result; // Users assigned to this project. It is viewable to them and possibly editable if they have the user privileges
+    auto get_project_users(database_id projectId) -> typename default_cache_type<user_data>::cache_result;  // Users assigned to this project. It is viewable to them and possibly editable if they have the user privileges
     auto set_project_users(database_id projectId, std::vector<user_data> users) -> concurrencpp::result<void>;
 
     // Reviews

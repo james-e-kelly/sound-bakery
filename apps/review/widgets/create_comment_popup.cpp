@@ -27,7 +27,7 @@ auto create_comment_popup::render_popup() -> void
         if (std::shared_ptr<workspace_manager> workspaceManager = get_app()->get_manager_by_class<workspace_manager>())
         {
             new_comment_data newComment;
-            newComment.m_comment = commentBuffer;
+            newComment.m_comment   = commentBuffer;
             newComment.m_timeStart = m_videoPosition;
             newComment.m_reviewId  = m_reviewId;
             newComment.m_fileId    = m_fileId;

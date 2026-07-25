@@ -32,7 +32,8 @@ auto review_element::render_element(const gluten::element_render_info& renderInf
     reviewDescriptionText.get_element_anchor().min = ImVec2(0.0f, 0.5f);
     reviewDescriptionText.get_element_anchor().max = ImVec2(0.8f, 1.0f);
 
-    const std::string reviewText = fmt::format("{}", m_review.m_reviewStatus == review_status::open ? ICON_LC_EYE : m_review.m_reviewStatus == review_status::closed ? ICON_LC_CHECK_LINE : ICON_LC_ARCHIVE);
+    const std::string reviewText = fmt::format("{}", m_review.m_reviewStatus == review_status::open ? ICON_LC_EYE : m_review.m_reviewStatus == review_status::closed ? ICON_LC_CHECK_LINE
+                                                                                                                                                                     : ICON_LC_ARCHIVE);
 
     gluten::text openReviewsText(reviewText.c_str(), ImVec2(1.0f, -1.0f), anchor_preset::right_top);
     openReviewsText.set_font(gluten::fonts::regular_lucide_icons).set_element_content_font_size(20.0f);
@@ -55,7 +56,7 @@ auto review_element::render_element(const gluten::element_render_info& renderInf
         if (ImGui::Selectable("Delete Review"))
         {
             if (std::shared_ptr<workspace_manager> workspaceManager =
-                gluten::app::get()->get_manager_by_class<workspace_manager>())
+                    gluten::app::get()->get_manager_by_class<workspace_manager>())
             {
                 workspaceManager->delete_review(m_review.m_reviewId);
             }

@@ -10,7 +10,7 @@ struct workspace_data
     template <class archive_class>
     auto serialize(archive_class& archive, unsigned int fileVersion)
     {
-        archive & boost::serialization::make_nvp("name", m_workspaceName);
+        archive& boost::serialization::make_nvp("name", m_workspaceName);
     }
 };
 

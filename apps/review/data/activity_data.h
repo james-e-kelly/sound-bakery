@@ -35,12 +35,12 @@ struct activity_data
     template <class archive_class>
     auto serialize(archive_class& archive, const unsigned int version) -> void
     {
-        archive & BOOST_SERIALIZATION_NVP(m_activityId);
-        archive & BOOST_SERIALIZATION_NVP(m_reviewId);
-        archive & BOOST_SERIALIZATION_NVP(m_projectId);
-        archive & BOOST_SERIALIZATION_NVP(m_userId);
-        archive & BOOST_SERIALIZATION_NVP(m_activityType);
-        archive & BOOST_SERIALIZATION_NVP(m_activityText);
-        archive & BOOST_SERIALIZATION_NVP(m_activityTimestamp);
+        archive& BOOST_SERIALIZATION_NVP(m_activityId);
+        archive& BOOST_SERIALIZATION_NVP(m_reviewId);
+        archive& BOOST_SERIALIZATION_NVP(m_projectId);
+        archive& BOOST_SERIALIZATION_NVP(m_userId);
+        archive& BOOST_SERIALIZATION_NVP(m_activityType);
+        archive& BOOST_SERIALIZATION_NVP(m_activityText);
+        archive& BOOST_SERIALIZATION_NVP(m_activityTimestamp);
     }
 };

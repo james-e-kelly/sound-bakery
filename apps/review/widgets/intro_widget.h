@@ -2,13 +2,13 @@
 
 #include "pch.h"
 
-#include "gluten/widgets/window_widget.h"
 #include "gluten/widgets/popup_widget.h"
+#include "gluten/widgets/window_widget.h"
 
 class create_workspace_popup : public gluten::popup_widget
 {
 public:
-    create_workspace_popup(gluten::widget* parent) : gluten::popup_widget(parent, "Create Workspace"){}
+    create_workspace_popup(gluten::widget* parent) : gluten::popup_widget(parent, "Create Workspace") {}
 
 private:
     virtual auto render_popup() -> void override;

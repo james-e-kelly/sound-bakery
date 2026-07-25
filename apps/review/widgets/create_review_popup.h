@@ -27,7 +27,7 @@ private:
 
     char reviewNameBuffer[textBufferSize]        = {0};
     char reviewDescriptionBuffer[textBufferSize] = {0};
-    char reviewUrlBuffer[textBufferSize] = {0};
+    char reviewUrlBuffer[textBufferSize]         = {0};
     new_frontend_review_data m_reviewData;
 
     std::optional<int64_t> m_existingReviewId;

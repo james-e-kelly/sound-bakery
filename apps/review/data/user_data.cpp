@@ -26,20 +26,20 @@ auto get_user_privileges_string(user_privileges privilege) -> std::string
 
 new_user_data::new_user_data()
 {
-	sodium_mlock(m_rawPassword.data(), g_rawPasswordSize);
+    sodium_mlock(m_rawPassword.data(), g_rawPasswordSize);
 }
 
 new_user_data::~new_user_data()
 {
-	sodium_munlock(m_rawPassword.data(), g_rawPasswordSize);
+    sodium_munlock(m_rawPassword.data(), g_rawPasswordSize);
 }
 
 login_request_data::login_request_data()
 {
-	sodium_mlock(m_rawPassword.data(), g_rawPasswordSize);
+    sodium_mlock(m_rawPassword.data(), g_rawPasswordSize);
 }
 
 login_request_data::~login_request_data()
 {
-	sodium_munlock(m_rawPassword.data(), g_rawPasswordSize);
+    sodium_munlock(m_rawPassword.data(), g_rawPasswordSize);
 }

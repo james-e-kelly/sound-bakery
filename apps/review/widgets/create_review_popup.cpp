@@ -73,33 +73,33 @@ auto create_review_popup::render_popup() -> void
     }
     if (review_app::get()->get_is_drag_dropping())
     {
-       file_drop_element contextFilesDrop("Context Files");
-       file_drop_element reviewFilesDrop("Review Files");
+        file_drop_element contextFilesDrop("Context Files");
+        file_drop_element reviewFilesDrop("Review Files");
 
-       if (contextFilesDrop.render_cursor())
-       {
-           for (const auto& file : contextFilesDrop.m_droppedFiles)
-           {
-               if (!m_reviewData.m_absoluteContextFiles.contains(file))
-               {
-                   m_reviewData.m_absoluteContextFiles.insert(file);
-               }
-           }
-       }
-       
-       if (reviewFilesDrop.render_cursor())
-       {
-           for (const auto& file : reviewFilesDrop.m_droppedFiles)
-           {
-               if (!m_reviewData.m_absoluteReviewFiles.contains(file))
-               {
-                   m_reviewData.m_absoluteReviewFiles.insert(file);
-               }
-           }
-       }
+        if (contextFilesDrop.render_cursor())
+        {
+            for (const auto& file : contextFilesDrop.m_droppedFiles)
+            {
+                if (!m_reviewData.m_absoluteContextFiles.contains(file))
+                {
+                    m_reviewData.m_absoluteContextFiles.insert(file);
+                }
+            }
+        }
+
+        if (reviewFilesDrop.render_cursor())
+        {
+            for (const auto& file : reviewFilesDrop.m_droppedFiles)
+            {
+                if (!m_reviewData.m_absoluteReviewFiles.contains(file))
+                {
+                    m_reviewData.m_absoluteReviewFiles.insert(file);
+                }
+            }
+        }
     }
 
-    m_reviewData.m_reviewName = reviewNameBuffer;
+    m_reviewData.m_reviewName        = reviewNameBuffer;
     m_reviewData.m_reviewDescription = reviewDescriptionBuffer;
     m_reviewData.m_reviewTaskUrl     = reviewUrlBuffer;
 
@@ -120,7 +120,8 @@ auto create_review_popup::render_popup() -> void
                 std::transform(m_newUsers.value().begin(),
                                m_newUsers.value().end(),
                                m_reviewData.m_reviewerIds.begin(),
-                               [](const user_data& user) { return user.m_userId; });
+                               [](const user_data& user)
+                               { return user.m_userId; });
             }
 
             if (m_existingReviewId.has_value())

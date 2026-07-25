@@ -10,6 +10,6 @@ protected:
 private:
     static inline constexpr std::size_t textBufferSize = 512;
 
-    char projectNameBuffer[textBufferSize] = {0};
+    char projectNameBuffer[textBufferSize]        = {0};
     char projectDescriptionBuffer[textBufferSize] = {0};
 };

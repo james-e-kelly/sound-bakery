@@ -78,7 +78,7 @@ auto get_review_status_string(review_status status) -> std::string
     return result;
 }
 
-new_transit_review_data::new_transit_review_data(const new_frontend_review_data& frontendData) : new_review_data_base(frontendData) 
+new_transit_review_data::new_transit_review_data(const new_frontend_review_data& frontendData) : new_review_data_base(frontendData)
 {
     for (const auto& contextFile : frontendData.m_absoluteContextFiles)
     {

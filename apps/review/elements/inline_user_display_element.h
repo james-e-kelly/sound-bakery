@@ -2,9 +2,9 @@
 
 #include "pch.h"
 
-#include "gluten/elements/image.h"
 #include "data/review_data.h"
 #include "data/user_settings_data.h"
+#include "gluten/elements/image.h"
 
 class user_avatar_element : public gluten::element
 {
@@ -13,7 +13,7 @@ public:
 
     auto set_avatar_render(gluten::image_render render) -> void;
 
-    auto get_image_rect() const -> ImRect 
+    auto get_image_rect() const -> ImRect
     {
         return avatarImage ? avatarImage->get_element_rect() : get_element_rect();
     }

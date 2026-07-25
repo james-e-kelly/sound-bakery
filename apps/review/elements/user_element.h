@@ -1,7 +1,7 @@
 #include "pch.h"
 
-#include "gluten/elements/element.h"
 #include "data/user_data.h"
+#include "gluten/elements/element.h"
 
 class user_element : public gluten::element
 {
@@ -9,7 +9,7 @@ public:
     user_element() = delete;
     user_element(const user_data& user)
         : gluten::element(anchor_preset::stretch_full),
-        m_user(user)
+          m_user(user)
     {
         set_element_background_color(gluten::theme::field03);
     }
@@ -42,7 +42,8 @@ protected:
         reviewDescriptionText.get_element_anchor().min = ImVec2(0.0f, 0.5f);
         reviewDescriptionText.get_element_anchor().max = ImVec2(0.8f, 1.0f);
 
-        const std::string reviewText = fmt::format("{}", m_user.m_privileges == user_privileges::admin ? ICON_LC_USER_COG : m_user.m_privileges == user_privileges::user ? ICON_LC_USER_PEN : ICON_LC_USER);
+        const std::string reviewText = fmt::format("{}", m_user.m_privileges == user_privileges::admin ? ICON_LC_USER_COG : m_user.m_privileges == user_privileges::user ? ICON_LC_USER_PEN
+                                                                                                                                                                         : ICON_LC_USER);
 
         gluten::text openReviewsText(reviewText.c_str(), ImVec2(1.0f, -1.0f), anchor_preset::right_top);
         openReviewsText

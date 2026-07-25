@@ -72,7 +72,7 @@ protected:
 
         ImVec2 elementEnd = get_element_rect_local().GetBL();
         elementEnd.y += ImGui::GetCurrentContext()->Style.FramePadding.y;
-        
+
         ImGui::SetCursorPos(elementEnd);
 
         return dropped;

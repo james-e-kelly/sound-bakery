@@ -40,7 +40,7 @@ enum class review_vote
 {
     no_vote,
     upvote,
-    downvote    //< We have downvotes but try not to use or show them
+    downvote  //< We have downvotes but try not to use or show them
 };
 
 enum class review_file_type
@@ -52,16 +52,16 @@ enum class review_file_type
 
 struct versionable_review_asset
 {
-    database_id m_fileId;    //< Database ID of the file
-    std::string m_fileName;             //< Filename for displaying
-    std::map<std::size_t, std::filesystem::path> m_versionsToRelativeFiles; //< Relative paths of each version of the asset
+    database_id m_fileId;                                                    //< Database ID of the file
+    std::string m_fileName;                                                  //< Filename for displaying
+    std::map<std::size_t, std::filesystem::path> m_versionsToRelativeFiles;  //< Relative paths of each version of the asset
 
     template <class archive_class>
     auto serialize(archive_class& archive, const unsigned int version) -> void
     {
-        archive & BOOST_SERIALIZATION_NVP(m_fileId);
-        archive & BOOST_SERIALIZATION_NVP(m_fileName);
-        archive & BOOST_SERIALIZATION_NVP(m_versionsToRelativeFiles);
+        archive& BOOST_SERIALIZATION_NVP(m_fileId);
+        archive& BOOST_SERIALIZATION_NVP(m_fileName);
+        archive& BOOST_SERIALIZATION_NVP(m_versionsToRelativeFiles);
     }
 };
 
@@ -71,26 +71,26 @@ struct review_data
     std::string m_reviewName;
     std::string m_reviewTaskUrl;
     std::string m_reviewDescription;
-    review_phase m_reviewPhase = review_phase::first_pass;
+    review_phase m_reviewPhase     = review_phase::first_pass;
     review_quality m_reviewQuality = review_quality::c;
     review_status m_reviewStatus   = review_status::open;
-    std::vector<versionable_review_asset> m_relativeContextFiles;   //< Context files are also versionable in case new context is required
+    std::vector<versionable_review_asset> m_relativeContextFiles;  //< Context files are also versionable in case new context is required
     std::vector<versionable_review_asset> m_reviewAssets;
     std::vector<database_id> m_reviewUserIds;
 
     template <class archive_class>
     auto serialize(archive_class& archive, const unsigned int version) -> void
     {
-        archive & BOOST_SERIALIZATION_NVP(m_reviewId);
-        archive & BOOST_SERIALIZATION_NVP(m_reviewName);
-        archive & BOOST_SERIALIZATION_NVP(m_reviewTaskUrl);
-        archive & BOOST_SERIALIZATION_NVP(m_reviewDescription);
-        archive & BOOST_SERIALIZATION_NVP(m_reviewPhase);
-        archive & BOOST_SERIALIZATION_NVP(m_reviewQuality);
-        archive & BOOST_SERIALIZATION_NVP(m_reviewStatus);
-        archive & BOOST_SERIALIZATION_NVP(m_relativeContextFiles);
-        archive & BOOST_SERIALIZATION_NVP(m_reviewAssets);
-        archive & BOOST_SERIALIZATION_NVP(m_reviewUserIds);
+        archive& BOOST_SERIALIZATION_NVP(m_reviewId);
+        archive& BOOST_SERIALIZATION_NVP(m_reviewName);
+        archive& BOOST_SERIALIZATION_NVP(m_reviewTaskUrl);
+        archive& BOOST_SERIALIZATION_NVP(m_reviewDescription);
+        archive& BOOST_SERIALIZATION_NVP(m_reviewPhase);
+        archive& BOOST_SERIALIZATION_NVP(m_reviewQuality);
+        archive& BOOST_SERIALIZATION_NVP(m_reviewStatus);
+        archive& BOOST_SERIALIZATION_NVP(m_relativeContextFiles);
+        archive& BOOST_SERIALIZATION_NVP(m_reviewAssets);
+        archive& BOOST_SERIALIZATION_NVP(m_reviewUserIds);
     }
 
     bool operator<(const review_data& review) const
@@ -101,7 +101,7 @@ struct review_data
 
 /**
  * @brief Basic data for a new review.
- * 
+ *
  * Contains no information about files as the representation of that data depends on whether we are the frontend or backend.
  */
 struct new_review_data_base
@@ -109,25 +109,25 @@ struct new_review_data_base
     std::string m_reviewName;
     std::string m_reviewTaskUrl;
     std::string m_reviewDescription;
-    review_phase m_reviewPhase = review_phase::first_pass;
+    review_phase m_reviewPhase     = review_phase::first_pass;
     review_quality m_reviewQuality = review_quality::c;
     std::vector<database_id> m_reviewerIds;
 
     template <class archive_class>
     auto serialize(archive_class& archive, const unsigned int version) -> void
     {
-        archive & BOOST_SERIALIZATION_NVP(m_reviewName);
-        archive & BOOST_SERIALIZATION_NVP(m_reviewTaskUrl);
-        archive & BOOST_SERIALIZATION_NVP(m_reviewDescription);
-        archive & BOOST_SERIALIZATION_NVP(m_reviewPhase);
-        archive & BOOST_SERIALIZATION_NVP(m_reviewQuality);
-        archive & BOOST_SERIALIZATION_NVP(m_reviewerIds);
+        archive& BOOST_SERIALIZATION_NVP(m_reviewName);
+        archive& BOOST_SERIALIZATION_NVP(m_reviewTaskUrl);
+        archive& BOOST_SERIALIZATION_NVP(m_reviewDescription);
+        archive& BOOST_SERIALIZATION_NVP(m_reviewPhase);
+        archive& BOOST_SERIALIZATION_NVP(m_reviewQuality);
+        archive& BOOST_SERIALIZATION_NVP(m_reviewerIds);
     }
 };
 
 /**
  * @brief Review data specifically for the frontend.
- * 
+ *
  * Files are kept as just paths to the file and are not streamed into memory.
  */
 struct new_frontend_review_data : public new_review_data_base
@@ -138,22 +138,22 @@ struct new_frontend_review_data : public new_review_data_base
 
 struct review_file_data
 {
-    std::string m_fileName;             //< my_file.wav, some_other_file.mp3, my_video.mp4, my_compressed_file.ogg, etc.
-    std::vector<uint8_t> m_fileData;    //< Raw bytes of the file
+    std::string m_fileName;           //< my_file.wav, some_other_file.mp3, my_video.mp4, my_compressed_file.ogg, etc.
+    std::vector<uint8_t> m_fileData;  //< Raw bytes of the file
 
     template <class archive_class>
     auto serialize(archive_class& archive, const unsigned int version) -> void
     {
-        archive & BOOST_SERIALIZATION_NVP(m_fileName);
-        archive & BOOST_SERIALIZATION_NVP(m_fileData);
+        archive& BOOST_SERIALIZATION_NVP(m_fileName);
+        archive& BOOST_SERIALIZATION_NVP(m_fileData);
     }
 };
 
 /**
  * @brief Review data that will be passed over the network and received by the server.
- * 
+ *
  * All files are stored as arrays of bytes. Once received by the database, it can recreate the files on disk.
- * 
+ *
  * Review files are then referenced as file paths again.
  */
 struct new_transit_review_data : public new_review_data_base
@@ -167,7 +167,7 @@ struct new_transit_review_data : public new_review_data_base
     template <class archive_class>
     auto serialize(archive_class& archive, const unsigned int version) -> void
     {
-        archive & BOOST_SERIALIZATION_BASE_OBJECT_NVP(new_review_data_base);
+        archive& BOOST_SERIALIZATION_BASE_OBJECT_NVP(new_review_data_base);
     }
 };
 

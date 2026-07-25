@@ -4,9 +4,9 @@
 #include "app/review_database.h"
 #include "managers/workspace_manager.h"
 
+#include <openssl/applink.c>  // required for file writing
 #include <openssl/pem.h>
 #include <openssl/x509.h>
-#include <openssl/applink.c>    // required for file writing
 
 namespace
 {
@@ -15,7 +15,7 @@ namespace
         if (EVP_PKEY* const pkey = EVP_PKEY_new())
         {
             RSA* const rsa = RSA_generate_key(2048, RSA_F4, NULL, NULL);
-            
+
             if (EVP_PKEY_assign_RSA(pkey, rsa))
             {
                 return pkey;
@@ -78,11 +78,11 @@ namespace
         return false;
     }
 
-    template<typename data_type>
+    template <typename data_type>
     auto add_database_get_endpoint(const std::unique_ptr<httplib::SSLServer>& server, const std::string& pattern, std::function<review_database::database_result<data_type>(std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)> databaseFunction, const std::weak_ptr<review_database>& weakDatabase)
     {
-        server->Get(pattern, [weakDatabase, function = std::move(databaseFunction)](const httplib::Request& request, httplib::Response& response) 
-            {
+        server->Get(pattern, [weakDatabase, function = std::move(databaseFunction)](const httplib::Request& request, httplib::Response& response)
+                    {
                 if (auto database = weakDatabase.lock())
                 {
                     const auto databaseResult = function(database, httplib::get_bearer_token_auth(request), request).get();
@@ -113,14 +113,13 @@ namespace
                 {
                     gluten::app::get()->get_logger()->error("[SERVER] Error 500");
                     response.status = httplib::StatusCode::InternalServerError_500;
-                }
-            });
+                } });
     }
 
     auto add_database_post_endpoint(const std::unique_ptr<httplib::SSLServer>& server, const std::string& pattern, std::function<void(std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)> databaseFunction, const std::weak_ptr<review_database>& weakDatabase)
     {
-        server->Post(pattern, [weakDatabase, function = std::move(databaseFunction)](const httplib::Request& request, httplib::Response& response) 
-            {
+        server->Post(pattern, [weakDatabase, function = std::move(databaseFunction)](const httplib::Request& request, httplib::Response& response)
+                     {
                 if (auto database = weakDatabase.lock())
                 {
                     function(database, httplib::get_bearer_token_auth(request), request);
@@ -131,14 +130,13 @@ namespace
                 {
                     gluten::app::get()->get_logger()->error("[SERVER] Error 500");
                     response.status = httplib::StatusCode::InternalServerError_500;
-                }
-            });
+                } });
     }
 
     auto add_database_post_form_endpoint(const std::unique_ptr<httplib::SSLServer>& server, const std::string& pattern, std::function<void(std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request, httplib::Response& response)> databaseFunction, const std::weak_ptr<review_database>& weakDatabase)
     {
-        server->Post(pattern, [weakDatabase, function = std::move(databaseFunction)](const httplib::Request& request, httplib::Response& response) 
-            {
+        server->Post(pattern, [weakDatabase, function = std::move(databaseFunction)](const httplib::Request& request, httplib::Response& response)
+                     {
                 if (auto database = weakDatabase.lock())
                 {
                     function(database, httplib::get_bearer_token_auth(request), request, response);
@@ -152,14 +150,13 @@ namespace
                 {
                     gluten::app::get()->get_logger()->error("[SERVER] Error 500");
                     response.status = httplib::StatusCode::InternalServerError_500;
-                }
-            });
+                } });
     }
 
     auto add_database_put_endpoint(const std::unique_ptr<httplib::SSLServer>& server, const std::string& pattern, std::function<void(std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request, httplib::Response& response)> databaseFunction, const std::weak_ptr<review_database>& weakDatabase)
     {
-        server->Put(pattern, [weakDatabase, function = std::move(databaseFunction)](const httplib::Request& request, httplib::Response& response) 
-            {
+        server->Put(pattern, [weakDatabase, function = std::move(databaseFunction)](const httplib::Request& request, httplib::Response& response)
+                    {
                 if (auto database = weakDatabase.lock())
                 {
                     function(database, httplib::get_bearer_token_auth(request), request, response);
@@ -173,14 +170,13 @@ namespace
                 {
                     gluten::app::get()->get_logger()->error("[SERVER] Error 500");
                     response.status = httplib::StatusCode::InternalServerError_500;
-                }
-            });
+                } });
     }
 
     auto add_database_delete_endpoint(const std::unique_ptr<httplib::SSLServer>& server, const std::string& pattern, std::function<void(std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request, httplib::Response& response)> databaseFunction, const std::weak_ptr<review_database>& weakDatabase)
     {
-        server->Delete(pattern, [weakDatabase, function = std::move(databaseFunction)](const httplib::Request& request, httplib::Response& response) 
-            {
+        server->Delete(pattern, [weakDatabase, function = std::move(databaseFunction)](const httplib::Request& request, httplib::Response& response)
+                       {
                 if (auto database = weakDatabase.lock())
                 {
                     function(database, httplib::get_bearer_token_auth(request), request, response);
@@ -194,10 +190,9 @@ namespace
                 {
                     gluten::app::get()->get_logger()->error("[SERVER] Error 500");
                     response.status = httplib::StatusCode::InternalServerError_500;
-                }
-            });
+                } });
     }
-}
+}  // namespace
 
 review_server::review_server(gluten::app* app, const std::filesystem::path& workspaceFile)
     : gluten::manager(app)
@@ -230,8 +225,8 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
         std::filesystem::remove(certPath, errorCode);
         std::filesystem::remove(keyPath, errorCode);
 
-        EVP_PKEY* const key     = generate_key();
-        X509* const cert        = generate_x509(key);
+        EVP_PKEY* const key = generate_key();
+        X509* const cert    = generate_x509(key);
         write_to_disk(key, cert, keyPath, certPath);
     }
 
@@ -242,7 +237,7 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
     // GET
 
     add_database_get_endpoint<bool>(m_server, review_app_endpoints::me, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)
-        {
+                                    {
             gluten::app::get()->get_logger()->info("[SERVER] /me");
 
             if (request.has_param(review_app_parameters::activityType))
@@ -254,25 +249,22 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
             else
             {
                 return database->user_has_privilege(userToken, user_privileges::guest);
-            }
-        }, m_database);
+            } }, m_database);
 
     add_database_get_endpoint<workspace_data>(m_server, review_app_endpoints::workspace, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)
-        {
+                                              {
             gluten::app::get()->get_logger()->info("[SERVER] /workspace");
 
-            return database->get_workspace(userToken);
-        }, m_database);
+            return database->get_workspace(userToken); }, m_database);
 
     add_database_get_endpoint<std::vector<project_data>>(m_server, review_app_endpoints::projects, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)
-        {
+                                                         {
             gluten::app::get()->get_logger()->info("[SERVER] /projects");
 
-            return database->get_all_projects(userToken);
-        }, m_database);
+            return database->get_all_projects(userToken); }, m_database);
 
     add_database_get_endpoint<std::vector<review_data>>(m_server, review_app_endpoints::reviews, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)
-        {
+                                                        {
             gluten::app::get()->get_logger()->info("[SERVER] /reviews");
 
             database_id projectId = 0;
@@ -282,11 +274,10 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
                 projectId = std::stol(request.get_param_value(review_app_parameters::projectId));
             }
 
-            return database->get_all_reviews(projectId, userToken);
-        }, m_database);
+            return database->get_all_reviews(projectId, userToken); }, m_database);
 
     add_database_get_endpoint<std::vector<review_vote>>(m_server, review_app_endpoints::reviewVotes, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)
-        {
+                                                        {
             gluten::app::get()->get_logger()->info("[SERVER] /reviewVotes");
 
             database_id reviewId = 0;
@@ -302,11 +293,10 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
                 userId = std::stol(request.get_param_value(review_app_parameters::userId));
             }
 
-            return database->get_review_votes(reviewId, userId, userToken);
-        }, m_database);
+            return database->get_review_votes(reviewId, userId, userToken); }, m_database);
 
     add_database_get_endpoint<std::vector<user_data>>(m_server, review_app_endpoints::users, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)
-        {
+                                                      {
             gluten::app::get()->get_logger()->info("[SERVER] /users");
 
             database_id userId = 0;
@@ -339,11 +329,10 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
             else
             {
                 return database->get_all_users(userId, userToken);
-            }
-        }, m_database);
+            } }, m_database);
 
     add_database_get_endpoint<bool>(m_server, review_app_endpoints::queries, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)
-        {
+                                    {
             gluten::app::get()->get_logger()->info("[SERVER] /queries");
 
             std::string query;
@@ -357,11 +346,10 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
             {
             }
 
-            return database->user_table_empty();
-        }, m_database);
+            return database->user_table_empty(); }, m_database);
 
     add_database_get_endpoint<std::vector<comment_data>>(m_server, review_app_endpoints::comments, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)
-        {
+                                                         {
             gluten::app::get()->get_logger()->info("[SERVER] /comments");
 
             database_id reviewId = 0;
@@ -371,11 +359,10 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
                 reviewId = std::stol(request.get_param_value(review_app_parameters::reviewId));
             }
 
-            return database->get_all_comments(reviewId, 0, userToken);
-        }, m_database);
+            return database->get_all_comments(reviewId, 0, userToken); }, m_database);
 
     add_database_get_endpoint<std::vector<activity_data>>(m_server, review_app_endpoints::activity, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)
-        {
+                                                          {
             gluten::app::get()->get_logger()->info("[SERVER] /activity");
 
             database_id reviewId = 0;
@@ -385,11 +372,10 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
                 reviewId = std::stol(request.get_param_value(review_app_parameters::reviewId));
             }
 
-            return database->get_all_review_activity(reviewId, userToken);
-        }, m_database);
+            return database->get_all_review_activity(reviewId, userToken); }, m_database);
 
-    m_server->Get(review_app_endpoints::files, [weakDatabase = std::weak_ptr<review_database>(m_database), workspaceFile](const httplib::Request& request, httplib::Response& response) 
-    {
+    m_server->Get(review_app_endpoints::files, [weakDatabase = std::weak_ptr<review_database>(m_database), workspaceFile](const httplib::Request& request, httplib::Response& response)
+                  {
         gluten::app::get()->get_logger()->info("[SERVER] /files");
 
         if (auto database = weakDatabase.lock())
@@ -414,23 +400,21 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
         else
         {
             response.status = httplib::StatusCode::InternalServerError_500;
-        }
-    });
+        } });
 
     // POST
 
     add_database_post_endpoint(m_server, review_app_endpoints::projects, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request)
-        {
+                               {
             gluten::app::get()->get_logger()->info("[SERVER] post/projects");
 
             const std::string name = request.get_param_value(review_app_parameters::name);
             const std::string description = request.get_param_value(review_app_parameters::description);
 
-            return database->create_project(name, description, userToken);
-        }, m_database);
+            return database->create_project(name, description, userToken); }, m_database);
 
     add_database_post_form_endpoint(m_server, review_app_endpoints::reviews, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request, httplib::Response& response)
-        {
+                                    {
             gluten::app::get()->get_logger()->info("[SERVER] post/reviews");
 
             new_transit_review_data newReviewTransitData = review_app_serialization::deserialize_from_xml<new_transit_review_data>(request.form.get_field(review_app_parameters::data));
@@ -465,11 +449,10 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
                 newReviewData = newReviewResult.value();
             }
 
-            response.set_content(review_app_serialization::serialize_to_xml<review_data>(newReviewData), "application/xml");
-        }, m_database);
+            response.set_content(review_app_serialization::serialize_to_xml<review_data>(newReviewData), "application/xml"); }, m_database);
 
     add_database_post_form_endpoint(m_server, fmt::format("{}/:id", review_app_endpoints::reviews), [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request, httplib::Response& response)
-        {
+                                    {
             gluten::app::get()->get_logger()->info("[SERVER] post/reviews/id");
 
             new_transit_review_data newReviewTransitData;
@@ -504,11 +487,10 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
                 newReviewData = newReviewVersionResult.value();
             }
 
-            response.set_content(review_app_serialization::serialize_to_xml<review_data>(newReviewData), "application/xml");
-        }, m_database);
+            response.set_content(review_app_serialization::serialize_to_xml<review_data>(newReviewData), "application/xml"); }, m_database);
 
     add_database_post_form_endpoint(m_server, review_app_endpoints::comments, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request, httplib::Response& response)
-        {
+                                    {
             gluten::app::get()->get_logger()->info("[SERVER] post/comments");
 
             new_comment_data newCommentData = review_app_serialization::deserialize_from_xml<new_comment_data>(request.form.get_field(review_app_parameters::data));
@@ -522,11 +504,10 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
                 createdComment = newCommentResult.value();
             }
 
-            response.set_content(review_app_serialization::serialize_to_xml<comment_data>(createdComment), "application/xml");
-        }, m_database);
+            response.set_content(review_app_serialization::serialize_to_xml<comment_data>(createdComment), "application/xml"); }, m_database);
 
     add_database_post_form_endpoint(m_server, review_app_endpoints::users, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request, httplib::Response& response)
-        {
+                                    {
             gluten::app::get()->get_logger()->info("[SERVER] post/users");
 
             new_user_data newUserData = review_app_serialization::deserialize_from_xml<new_user_data>(request.form.get_field(review_app_parameters::data));
@@ -540,11 +521,10 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
                 createdUser = newUserResult.value();
             }
 
-            response.set_content(review_app_serialization::serialize_to_xml<user_data>(createdUser), "application/xml");
-        }, m_database);
+            response.set_content(review_app_serialization::serialize_to_xml<user_data>(createdUser), "application/xml"); }, m_database);
 
     add_database_post_form_endpoint(m_server, review_app_endpoints::login, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request, httplib::Response& response)
-        {
+                                    {
             gluten::app::get()->get_logger()->info("[SERVER] post/login");
 
             login_request_data loginRequestData = review_app_serialization::deserialize_from_xml<login_request_data>(request.form.get_field(review_app_parameters::data));
@@ -558,13 +538,12 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
                 loggedInUserData = loggedInUserResult.value();
                 
                 response.set_content(review_app_serialization::serialize_to_xml<logged_in_user_data>(loggedInUserData), "application/xml");
-            }
-        }, m_database);
+            } }, m_database);
 
     // PUT
 
     add_database_put_endpoint(m_server, review_app_endpoints::reviews, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request, httplib::Response& response)
-        {
+                              {
             gluten::app::get()->get_logger()->info("[SERVER] put/reviews");
 
             if (request.has_param(review_app_parameters::reviewId))
@@ -583,11 +562,10 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
                 review_data reviewData = review_app_serialization::deserialize_from_xml<review_data>(request.form.get_field(review_app_parameters::data));
 
                 database->update_review(reviewData, userToken);
-            }
-        }, m_database);
+            } }, m_database);
 
     add_database_put_endpoint(m_server, review_app_endpoints::reviewVotes, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request, httplib::Response& response)
-        {
+                              {
             gluten::app::get()->get_logger()->info("[SERVER] put/reviewVotes");
 
             database_id reviewId = 0;
@@ -609,11 +587,10 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
                 vote = (review_vote)std::stoi(request.get_param_value(review_app_parameters::reviewVote));
             }
 
-            database->set_review_vote(reviewId, userId, vote, userToken).get();
-        }, m_database);
+            database->set_review_vote(reviewId, userId, vote, userToken).get(); }, m_database);
 
     add_database_put_endpoint(m_server, review_app_endpoints::reviewUsers, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request, httplib::Response& response)
-        {
+                              {
             gluten::app::get()->get_logger()->info("[SERVER] put/reviewUsers");
 
             if (request.form.has_field(review_app_parameters::users) && request.form.has_field(review_app_parameters::reviewId))
@@ -622,11 +599,10 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
                 const std::vector<database_id> reviewUsers = review_app_serialization::deserialize_from_xml<std::vector<database_id>>(request.form.get_field(review_app_parameters::users));
 
                 database->set_review_users(reviewId, reviewUsers, userToken);
-            }
-        }, m_database);
+            } }, m_database);
 
     add_database_put_endpoint(m_server, review_app_endpoints::projects, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request, httplib::Response& response)
-        {
+                              {
             gluten::app::get()->get_logger()->info("[SERVER] put/projects");
 
             if (request.form.has_field(review_app_parameters::users) && request.form.has_field(review_app_parameters::projectId))
@@ -635,13 +611,12 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
                 const std::vector<database_id> projectUsers = review_app_serialization::deserialize_from_xml<std::vector<database_id>>(request.form.get_field(review_app_parameters::users));
 
                 database->set_project_users(projectId, projectUsers, userToken);
-            }
-        }, m_database);
+            } }, m_database);
 
     // DELETE
 
     add_database_delete_endpoint(m_server, review_app_endpoints::projects, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request, httplib::Response& response)
-        {
+                                 {
             gluten::app::get()->get_logger()->info("[SERVER] delete/projects");
 
             database_id projectId = 0;
@@ -658,11 +633,10 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
             else
             {
                 response.status = httplib::StatusCode::BadRequest_400;
-            }
-        }, m_database);
+            } }, m_database);
 
     add_database_delete_endpoint(m_server, review_app_endpoints::reviews, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request, httplib::Response& response)
-        {
+                                 {
             gluten::app::get()->get_logger()->info("[SERVER] delete/reviews");
 
             database_id reviewId = 0;
@@ -679,11 +653,10 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
             else
             {
                 response.status = httplib::StatusCode::BadRequest_400;
-            }
-        }, m_database);
+            } }, m_database);
 
     add_database_delete_endpoint(m_server, review_app_endpoints::comments, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request, httplib::Response& response)
-        {
+                                 {
             gluten::app::get()->get_logger()->info("[SERVER] delete/comments");
 
             database_id commentId = 0;
@@ -700,8 +673,7 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
             else
             {
                 response.status = httplib::StatusCode::BadRequest_400;
-            }
-        }, m_database);
+            } }, m_database);
 }
 
 auto review_server::start() -> void
@@ -714,13 +686,12 @@ auto review_server::start() -> void
     m_serverWidget->set_window_class(windowClass);
 
     gluten::dockspace_refresh refresh = get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->get_root_widget()->set_manual_layout();
-	refresh.assign_widget_to_node(rttr::type::get<server_widget>(), refresh.dockspaceID);
+    refresh.assign_widget_to_node(rttr::type::get<server_widget>(), refresh.dockspaceID);
 
-    get_app()->background_executor()->submit([this]() 
-        {
+    get_app()->background_executor()->submit([this]()
+                                             {
             get_app()->get_logger()->info("[SERVER] Listening to 0.0.0.0:8080");
-            m_server->listen("0.0.0.0", 8080);
-        });
+            m_server->listen("0.0.0.0", 8080); });
 }
 
 auto review_server::exit() -> void

@@ -6,7 +6,7 @@ namespace gluten
 {
     class audio_subsystem;
     class video_subsystem;
-}
+}  // namespace gluten
 class workspace_manager;
 class review_app_drop_target;
 class review_database;
@@ -40,13 +40,13 @@ private:
     std::shared_ptr<gluten::video_subsystem> m_videoSubsystem;
     std::unique_ptr<review_app_drop_target> m_dropTarget;
 
-    mutable bool m_isDragDropping   = false;
-    mutable bool m_isDragDropReady  = false;
+    mutable bool m_isDragDropping  = false;
+    mutable bool m_isDragDropReady = false;
 
     std::optional<std::string> m_remoteIpAddress;
     std::optional<std::string> m_workspaceFile;
 
-    bool m_hasRemoteIp = false;
+    bool m_hasRemoteIp      = false;
     bool m_hasWorkspaceFile = false;
 
     std::shared_ptr<concurrencpp::worker_thread_executor> m_databaseThread;

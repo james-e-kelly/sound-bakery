@@ -1,9 +1,8 @@
 #include "user_flow_popup.h"
 
 #include "app/review_app.h"
-#include "managers/workspace_manager.h"
-
 #include "gluten/widgets/popup_widget.h"
+#include "managers/workspace_manager.h"
 #include "sodium.h"
 
 auto user_flow_popup::start_implementation() -> void
@@ -61,7 +60,7 @@ auto user_flow_popup::render_popup() -> void
         else
         {
             m_emailIsValid = false;
-            m_errorText = "Invalid email address";
+            m_errorText    = "Invalid email address";
         }
     }
 
@@ -85,8 +84,8 @@ auto user_flow_popup::render_popup() -> void
             {
                 m_privileges = user_privileges::guest;
             }
-            
-            const bool loggedIn = !m_userSettings->m_loggedInUser.m_sessionToken.empty();
+
+            const bool loggedIn       = !m_userSettings->m_loggedInUser.m_sessionToken.empty();
             const bool canCreateUsers = loggedIn && m_userSettings->m_loggedInUser.m_privileges == user_privileges::admin;
 
             if (canCreateUsers)
@@ -110,12 +109,12 @@ auto user_flow_popup::render_popup() -> void
         ImGui::EndDisabled();
     }
 
-    const bool emailIsFilled = m_emailBuffer[0] != '\0';
-    const bool passwordIsFilled = m_passwordBuffer[0] != '\0';
+    const bool emailIsFilled       = m_emailBuffer[0] != '\0';
+    const bool passwordIsFilled    = m_passwordBuffer[0] != '\0';
     const bool displayNameIsFilled = m_displayNameBuffer[0] != '\0';
-    const bool titleIsFilled = m_titleBuffer[0] != '\0';
+    const bool titleIsFilled       = m_titleBuffer[0] != '\0';
 
-    const bool detailsAreValid = m_emailIsValid && emailIsFilled && passwordIsFilled;
+    const bool detailsAreValid      = m_emailIsValid && emailIsFilled && passwordIsFilled;
     const bool extraDetailsAreValid = displayNameIsFilled && titleIsFilled;
 
     switch (m_type)

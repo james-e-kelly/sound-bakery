@@ -1,6 +1,7 @@
 #pragma once
 
 #include "pch.h"
+
 #include "data/user_settings_data.h"
 
 class intro_widget;
@@ -21,7 +22,6 @@ protected:
     auto tick(double deltaTime) -> void override;
 
 private:
-
     concurrencpp::result<bool> m_testServerConnectionResult;
     gluten::data_source<user_settings_data> m_userSettingsData;
     std::shared_ptr<gluten::loading_popup> m_loadingPopup;

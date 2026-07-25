@@ -1,20 +1,18 @@
 #include "inline_user_display_element.h"
 
-#include "windows.h"
-
 #include "app/review_app.h"
-#include "managers/workspace_manager.h"
-
-#include "boost/algorithm/string/trim.hpp"
 #include "boost/algorithm/string/case_conv.hpp"
+#include "boost/algorithm/string/trim.hpp"
+#include "managers/workspace_manager.h"
 #include "openssl/sha.h"
+#include "windows.h"
 
 namespace
 {
     constexpr LPCSTR g_gravatarEnvironmentVariableName = "SOUND_CHECK_GRAVATAR_API_KEY";
-    constexpr std::size_t g_bufferSize                   = 1024;
+    constexpr std::size_t g_bufferSize                 = 1024;
     constexpr const char* g_gravatarApiUrl             = "https://api.gravatar.com/v3";
-    constexpr const char* g_gravatarUrl                  = "gravatar.com";
+    constexpr const char* g_gravatarUrl                = "gravatar.com";
 
     auto sha256_hex(const std::string& input) -> std::string
     {
@@ -114,7 +112,7 @@ namespace
 
         gluten::data_cache<std::unique_ptr<gluten::image>, avatar_identifier, avatar_indentifier_hasher> m_cache;
     };
-}
+}  // namespace
 
 auto user_avatar_element::set_avatar_render(gluten::image_render render) -> void { m_render = render; }
 
@@ -166,8 +164,8 @@ auto reviewer_display_element::render_element(const gluten::element_render_info&
         {
             const ImU32 circleColor =
                 ImGui::GetColorU32(m_vote == review_vote::upvote     ? gluten::theme::supportSuccess
-                                    : m_vote == review_vote::downvote ? gluten::theme::supportError
-                                                                        : gluten::theme::layer03);
+                                   : m_vote == review_vote::downvote ? gluten::theme::supportError
+                                                                     : gluten::theme::layer03);
 
             drawList->AddCircle(avatar.get_image_rect().GetCenter(), avatar.get_element_rect().GetSize().x / 2.0f, circleColor, 0, m_vote == review_vote::no_vote ? 2.0f : 4.0f);
         }
