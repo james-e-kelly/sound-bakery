@@ -438,8 +438,8 @@ $(document).ready(function(){initNavTree('sound__chef__common_8h_source.html',''
 <div class="foldopen" id="foldopen00323" data-start="{" data-end="};">
 <div class="line"><a id="l00323" name="l00323"></a><span class="lineno"><a class="line" href="structsc__system.html">  323</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structsc__system.html">sc_system</a></div>
 <div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>{</div>
-<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>    ma_engine engine;</div>
-<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>    ma_resource_manager resourceManager; <span class="comment">//&lt; We need a custom resource manager for custom decoders</span></div>
+<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>    ma_engine engine;                     <span class="comment">//&lt; Must stay first for miniaudio node API</span></div>
+<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>    ma_resource_manager resourceManager;  <span class="comment">//&lt; We need a custom resource manager for custom decoders</span></div>
 <div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>    ma_log log;</div>
 <div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span> </div>
 <div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>    clap_host_t clapHost;</div>
@@ -454,14 +454,15 @@ $(document).ready(function(){initNavTree('sound__chef__common_8h_source.html',''
 <div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span>{</div>
 <div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span>    <span class="keyword">const</span> <span class="keywordtype">char</span>* pluginPath; <span class="comment">//&lt; Folder path containing CLAP plugins to load</span></div>
 <div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span>    ma_allocation_callbacks allocationCallbacks;</div>
-<div class="line"><a id="l00343" name="l00343"></a><span class="lineno">  343</span>};</div>
+<div class="line"><a id="l00343" name="l00343"></a><span class="lineno">  343</span>    ma_device_data_proc dataCallback; <span class="comment">//&lt; Device render callback. Overriden in Sound Bakery for profiling</span></div>
+<div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span>};</div>
 </div>
-<div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span> </div>
-<div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span><span class="preprocessor">#ifdef __cplusplus</span></div>
-<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span>}</div>
-<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span> </div>
-<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span> </div>
+<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span><span class="preprocessor">#ifdef __cplusplus</span></div>
+<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span>}</div>
+<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span> </div>
+<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="astructsc__clap_html"><div class="ttname"><a href="structsc__clap.html">sc_clap</a></div><div class="ttdoc">Holds a DLL handle and plugin entry for a CLAP plugin.</div><div class="ttdef"><b>Definition</b> sound_chef_common.h:303</div></div>
 <div class="ttc" id="astructsc__dsp__config_html"><div class="ttname"><a href="structsc__dsp__config.html">sc_dsp_config</a></div><div class="ttdef"><b>Definition</b> sound_chef_common.h:252</div></div>
 <div class="ttc" id="astructsc__dsp__parameter_html"><div class="ttname"><a href="structsc__dsp__parameter.html">sc_dsp_parameter</a></div><div class="ttdef"><b>Definition</b> sound_chef_dsp.h:34</div></div>

@@ -25,6 +25,6 @@ var searchData=
   ['aux_5fbus_22',['aux_bus',['../classsbk_1_1engine_1_1aux__bus.html',1,'sbk::engine']]],
   ['available_20dsp_20effects_23',['Available DSP Effects',['../ChefProgrammerGuide.html#autotoc_md71',1,'']]],
   ['await_5fready_24',['await_ready',['../structsbk_1_1executor_1_1schedule__awaiter.html#a0d5eb7e0b26689a4c8ff3dc2c6cb4995',1,'sbk::executor::schedule_awaiter']]],
-  ['await_5fsuspend_25',['await_suspend',['../structsbk_1_1executor_1_1schedule__awaiter.html#a4ccc38298aa44bda467d7c37de549cd0',1,'sbk::executor::schedule_awaiter']]],
+  ['await_5fsuspend_25',['await_suspend',['../structsbk_1_1executor_1_1schedule__awaiter.html#a0f19cabed866e991c7d60c39d5fd2efa',1,'sbk::executor::schedule_awaiter']]],
   ['awaiter_26',['awaiter',['../structsbk_1_1task_1_1awaiter.html',1,'sbk::task']]]
 ];

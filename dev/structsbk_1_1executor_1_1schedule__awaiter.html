@@ -163,8 +163,9 @@ Collaboration diagram for sbk::executor::schedule_awaiter:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a0d5eb7e0b26689a4c8ff3dc2c6cb4995" id="r_a0d5eb7e0b26689a4c8ff3dc2c6cb4995"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsbk_1_1executor_1_1schedule__awaiter.html#a0d5eb7e0b26689a4c8ff3dc2c6cb4995">await_ready</a> () const noexcept -&gt; bool</td></tr>
 <tr class="separator:a0d5eb7e0b26689a4c8ff3dc2c6cb4995"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4ccc38298aa44bda467d7c37de549cd0" id="r_a4ccc38298aa44bda467d7c37de549cd0"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsbk_1_1executor_1_1schedule__awaiter.html#a4ccc38298aa44bda467d7c37de549cd0">await_suspend</a> (std::coroutine_handle&lt;&gt; h) const -&gt; bool</td></tr>
-<tr class="separator:a4ccc38298aa44bda467d7c37de549cd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f19cabed866e991c7d60c39d5fd2efa" id="r_a0f19cabed866e991c7d60c39d5fd2efa"><td class="memTemplParams" colspan="2">template&lt;class Promise &gt; </td></tr>
+<tr class="memitem:a0f19cabed866e991c7d60c39d5fd2efa"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structsbk_1_1executor_1_1schedule__awaiter.html#a0f19cabed866e991c7d60c39d5fd2efa">await_suspend</a> (std::coroutine_handle&lt; Promise &gt; h) const -&gt; bool</td></tr>
+<tr class="separator:a0f19cabed866e991c7d60c39d5fd2efa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a031108c6c018c83e80859a8778b31a19" id="r_a031108c6c018c83e80859a8778b31a19"><td class="memItemLeft" align="right" valign="top"><a id="a031108c6c018c83e80859a8778b31a19" name="a031108c6c018c83e80859a8778b31a19"></a>
 auto&#160;</td><td class="memItemRight" valign="bottom"><b>await_resume</b> () const noexcept -&gt; void</td></tr>
 <tr class="separator:a031108c6c018c83e80859a8778b31a19"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -213,11 +214,13 @@ false if the coroutine should suspend and be re-posted </dd></dl>
 
 </div>
 </div>
-<a id="a4ccc38298aa44bda467d7c37de549cd0" name="a4ccc38298aa44bda467d7c37de549cd0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4ccc38298aa44bda467d7c37de549cd0">&#9670;&#160;</a></span>await_suspend()</h2>
+<a id="a0f19cabed866e991c7d60c39d5fd2efa" name="a0f19cabed866e991c7d60c39d5fd2efa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f19cabed866e991c7d60c39d5fd2efa">&#9670;&#160;</a></span>await_suspend()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<div class="memtemplate">
+template&lt;class Promise &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -225,7 +228,7 @@ false if the coroutine should suspend and be re-posted </dd></dl>
         <tr>
           <td class="memname">auto sbk::executor::schedule_awaiter::await_suspend </td>
           <td>(</td>
-          <td class="paramtype">std::coroutine_handle&lt;&gt;&#160;</td>
+          <td class="paramtype">std::coroutine_handle&lt; Promise &gt;&#160;</td>
           <td class="paramname"><em>h</em></td><td>)</td>
           <td> const -&gt; bool
             </td>
@@ -239,7 +242,8 @@ false if the coroutine should suspend and be re-posted </dd></dl>
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>true if the job was enqueued (suspend) </dd>
 <dd>
-false if the job failed to enqueue and should run synchronously instead of hanging forever on a thread that will never run it </dd></dl>
+false if the job failed to enqueue and should run synchronously instead of hanging forever on a thread that will never run it</dd></dl>
+<p>Templated on the awaiting coroutine's promise so that, when Tracy is enabled and that promise carries a fiber name (every @r task / @r <a class="el" href="structsbk_1_1detached__task.html" title="A fire-and-forget coroutine. Starts running immediately, owns itself, and destroys its own frame when...">detached_task</a> does, via @r <a class="el" href="structsbk_1_1fiber__promise.html">fiber_promise</a>), the resume is bracketed by @r TracyFiberEnter / @r TracyFiberLeave. The coroutine then shows up in Tracy as its own fiber lane, staying continuous as it hops between executors. Promises without a fiber_name(), and non-Tracy builds, take the plain @r post path. </p>
 
 </div>
 </div>

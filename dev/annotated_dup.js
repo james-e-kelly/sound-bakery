@@ -110,6 +110,7 @@ var annotated_dup =
       [ "detached_task", "structsbk_1_1detached__task.html", "structsbk_1_1detached__task" ],
       [ "error", "classsbk_1_1error.html", null ],
       [ "executor", "classsbk_1_1executor.html", "classsbk_1_1executor" ],
+      [ "fiber_promise", "structsbk_1_1fiber__promise.html", null ],
       [ "final_awaiter", "structsbk_1_1final__awaiter.html", null ],
       [ "manual_executor", "classsbk_1_1manual__executor.html", "classsbk_1_1manual__executor" ],
       [ "ready_result_awaiter", "structsbk_1_1ready__result__awaiter.html", null ],

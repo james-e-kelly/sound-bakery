@@ -85,6 +85,11 @@ var hierarchy =
       [ "sbk::manual_executor", "classsbk_1_1manual__executor.html", null ],
       [ "sbk::thread_executor", "classsbk_1_1thread__executor.html", null ]
     ] ],
+    [ "sbk::fiber_promise", "structsbk_1_1fiber__promise.html", [
+      [ "sbk::detached_task::promise_type", "structsbk_1_1detached__task_1_1promise__type.html", null ],
+      [ "sbk::task_promise< T >", "structsbk_1_1task__promise.html", null ],
+      [ "sbk::task_promise< void >", "structsbk_1_1task__promise_3_01void_01_4.html", null ]
+    ] ],
     [ "sbk::final_awaiter", "structsbk_1_1final__awaiter.html", null ],
     [ "sbk::engine::flag_playing", "structsbk_1_1engine_1_1flag__playing.html", null ],
     [ "sbk::engine::flag_stopped", "structsbk_1_1engine_1_1flag__stopped.html", null ],
@@ -118,7 +123,6 @@ var hierarchy =
     [ "sbk::core::parsed_database_name", "structsbk_1_1core_1_1parsed__database__name.html", null ],
     [ "playable_selection", "structplayable__selection.html", null ],
     [ "sbk::editor::project_configuration", "structsbk_1_1editor_1_1project__configuration.html", null ],
-    [ "sbk::detached_task::promise_type", "structsbk_1_1detached__task_1_1promise__type.html", null ],
     [ "sbk::core::property< T >", "classsbk_1_1core_1_1property.html", null ],
     [ "sbk::core::property< parameter_type >", "classsbk_1_1core_1_1property.html", null ],
     [ "property_drawer", "classproperty__drawer.html", null ],
@@ -185,8 +189,6 @@ var hierarchy =
     ] ],
     [ "stbi_io_callbacks", "structstbi__io__callbacks.html", null ],
     [ "sbk::task< T >", "classsbk_1_1task.html", null ],
-    [ "sbk::task_promise< T >", "structsbk_1_1task__promise.html", null ],
-    [ "sbk::task_promise< void >", "structsbk_1_1task__promise_3_01void_01_4.html", null ],
     [ "sbk::util::type_comparator", "structsbk_1_1util_1_1type__comparator.html", null ],
     [ "sbk::util::type_helper", "classsbk_1_1util_1_1type__helper.html", null ],
     [ "boost::mpl::vector", null, [

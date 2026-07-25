@@ -262,17 +262,17 @@ studio work?" stays true even if the drain ever moves to another thread. </p>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">    <span class="keywordflow">do</span>                                                                                           \</div>
-<div class="line">    {                                                                                            \</div>
-<div class="line">        if (!::sbk::core::current_thread_satisfies(expectedDomain)) [[unlikely]]                 \</div>
-<div class="line">        {                                                                                        \</div>
-<div class="line">            <span class="keyword">static</span> std::atomic&lt;bool&gt; sbkWarnedThreadDomain{<span class="keyword">false</span>};                               \</div>
-<div class="line">            if (!sbkWarnedThreadDomain.exchange(<span class="keyword">true</span>))                                           \</div>
-<div class="line">            {                                                                                    \</div>
-<div class="line">                ::sbk::core::detail::warn_wrong_thread_domain((expectedDomain),                  \</div>
+<b>Value:</b><div class="fragment"><div class="line">    <span class="keywordflow">do</span>                                                                                          \</div>
+<div class="line">    {                                                                                           \</div>
+<div class="line">        if (!::sbk::core::current_thread_satisfies(expectedDomain)) [[unlikely]]                \</div>
+<div class="line">        {                                                                                       \</div>
+<div class="line">            <span class="keyword">static</span> std::atomic&lt;bool&gt; sbkWarnedThreadDomain{<span class="keyword">false</span>};                              \</div>
+<div class="line">            if (!sbkWarnedThreadDomain.exchange(<span class="keyword">true</span>))                                          \</div>
+<div class="line">            {                                                                                   \</div>
+<div class="line">                ::sbk::core::detail::warn_wrong_thread_domain((expectedDomain),                 \</div>
 <div class="line">                                                              std::source_location::current()); \</div>
-<div class="line">            }                                                                                    \</div>
-<div class="line">        }                                                                                        \</div>
+<div class="line">            }                                                                                   \</div>
+<div class="line">        }                                                                                       \</div>
 <div class="line">    } <span class="keywordflow">while</span> (0)</div>
 </div><!-- fragment -->
 </div>
