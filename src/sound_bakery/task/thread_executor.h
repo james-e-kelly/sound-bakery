@@ -2,6 +2,7 @@
 
 #include "sound_bakery/pch.h"
 
+#include "sound_bakery/core/memory.h"
 #include "sound_bakery/error/result.h"
 #include "sound_bakery/task/executor.h"
 
@@ -87,8 +88,7 @@ namespace sbk
     private:
         auto run_loop() -> void
         {
-            // Name this OS thread after the executor (game, system, loading, ...) so it shows up as a
-            // named lane in Tracy -- the thread's own zones and every task fiber it resumes hang off it.
+            sbk::memory::thread_start(name());
             tracy::SetThreadName(name().c_str());
 
             {
@@ -110,7 +110,7 @@ namespace sbk
                         if (m_stop)
                         {
                             m_stopped = true;  // set under lock: any later post_work is rejected
-                            return;
+                            break;             // lock released by unique_lock's destructor as we leave the scope
                         }
                         continue;
                     }
@@ -124,6 +124,9 @@ namespace sbk
                 ZoneScopedN("thread_executor dispatch");
                 work();
             }
+
+            // Worker is exiting: tear down rpmalloc's per-thread heap. Runs with no lock held.
+            sbk::memory::thread_end(name());
         }
 
         std::mutex m_mutex;
