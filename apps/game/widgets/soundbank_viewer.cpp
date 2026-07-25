@@ -2,12 +2,12 @@
 
 #include "sound_bakery/event/event.h"
 #include "sound_bakery/gameobject/gameobject.h"
-#include "sound_chef/sound_chef_bank.h"
 
 #include "imgui.h"
+#include "sound_chef/sound_chef_bank.h"
 
 void soundbank_viewer_widget::start_implementation()
-{ 
+{
     sbk_system_config config = sbk_system_config_init_default();
 
     (void)sbk::engine::system::create();
@@ -56,7 +56,7 @@ void soundbank_viewer_widget::render_implementation()
     ImGui::End();
 }
 
-void soundbank_viewer_widget::end_implementation() 
+void soundbank_viewer_widget::end_implementation()
 {
     sbk::engine::system::destroy();
 }

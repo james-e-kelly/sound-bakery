@@ -1,8 +1,8 @@
 #include "root_widget.h"
 
-#include "app/app.h"
 #include "IconsFontAwesome6.h"
 #include "IconsFontaudio.h"
+#include "app/app.h"
 #include "imgui.h"
 
 void root_widget::render_menu_implementation()

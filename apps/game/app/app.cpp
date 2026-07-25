@@ -1,10 +1,9 @@
 #include "app.h"
 
-#include "gluten/subsystems/widget_subsystem.h"
 #include "sound_bakery/editor/project/project.h"
 
+#include "gluten/subsystems/widget_subsystem.h"
 #include "nfd.h"
-
 #include "widgets/root_widget.h"
 #include "widgets/soundbank_viewer.h"
 
@@ -15,7 +14,7 @@ namespace PathHelpers
 
 gluten::app* create_application() { return new game_app(); }
 
-void game_app::post_init() 
+void game_app::post_init()
 {
     std::shared_ptr<gluten::widget_subsystem> widgetSubsystem = get_subsystem_by_class<gluten::widget_subsystem>();
 
