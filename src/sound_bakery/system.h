@@ -1,12 +1,13 @@
 #pragma once
 
-#include "core/logger.h"
-#include "sound_bakery/error/error.h"
 #include "sound_bakery/core/core_fwd.h"
 #include "sound_bakery/core/database/database.h"
 #include "sound_bakery/core/database/database_ptr.h"
 #include "sound_bakery/core/object/object_tracker.h"
+#include "sound_bakery/error/error.h"
 #include "sound_bakery/task/executor.h"
+
+#include "core/logger.h"
 
 namespace sbk
 {
@@ -37,7 +38,7 @@ namespace sbk
          * It owns all loaded Soundbanks, listener game object, and busses.
          */
         class SB_CLASS system final : public sc_system,
-                                      public sbk::core::logger,  
+                                      public sbk::core::logger,
                                       public sbk::core::object_owner,
                                       public sbk::core::object_tracker,
                                       public sbk::core::database,
@@ -49,9 +50,9 @@ namespace sbk
         public:
             enum class operating_mode : uint8_t
             {
-                unkown, //< Unkown/unset
-                editor, //< We have a project
-                runtime //< We are loading soundbanks
+                unkown,  //< Unkown/unset
+                editor,  //< We have a project
+                runtime  //< We are loading soundbanks
             };
 
         public:
@@ -68,7 +69,7 @@ namespace sbk
             [[nodiscard]] auto update() -> sbk::result<void>;
 
             [[nodiscard]] static auto get() -> system*;
-            [[nodiscard]] auto get_operating_mode() -> operating_mode; //< @todo Remove this. Users should just try and get the objects they want
+            [[nodiscard]] auto get_operating_mode() -> operating_mode;  //< @todo Remove this. Users should just try and get the objects they want
             [[nodiscard]] auto get_project() const -> sbk::editor::project*;
             [[nodiscard]] auto get_voice_tracker() const -> sbk::engine::profiling::voice_tracker*;
             [[nodiscard]] auto get_game_executer() const -> std::shared_ptr<sbk::executor>;
@@ -108,10 +109,10 @@ namespace sbk
             std::unique_ptr<sbk::editor::project> m_project;
             std::unique_ptr<profiling::voice_tracker> m_voiceTracker;
 
-            std::shared_ptr<sbk::executor> m_gameExecutor;      //< Manual executor that runs during @r update
-            std::shared_ptr<sbk::executor> m_systemExecutor;    //< Command queue that either flushes to a worker thread or the game thread for single threaded mode
-            std::shared_ptr<sbk::executor> m_systemThread;      //< System worker thread. Can be null if in single threaded mode
-            std::shared_ptr<sbk::executor> m_workerThread;      //< Worker thread for loading and decoding
+            std::shared_ptr<sbk::executor> m_gameExecutor;    //< Manual executor that runs during @r update
+            std::shared_ptr<sbk::executor> m_systemExecutor;  //< Command queue that either flushes to a worker thread or the game thread for single threaded mode
+            std::shared_ptr<sbk::executor> m_systemThread;    //< System worker thread. Can be null if in single threaded mode
+            std::shared_ptr<sbk::executor> m_workerThread;    //< Worker thread for loading and decoding
         };
     }  // namespace engine
 }  // namespace sbk

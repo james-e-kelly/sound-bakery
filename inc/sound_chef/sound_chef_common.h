@@ -322,8 +322,8 @@ struct sc_clap
  */
 struct sc_system
 {
-    ma_engine engine;
-    ma_resource_manager resourceManager; //< We need a custom resource manager for custom decoders
+    ma_engine engine;                     //< Must stay first for miniaudio node API
+    ma_resource_manager resourceManager;  //< We need a custom resource manager for custom decoders
     ma_log log;
 
     clap_host_t clapHost;
@@ -340,6 +340,7 @@ struct sc_system_config
 {
     const char* pluginPath; //< Folder path containing CLAP plugins to load
     ma_allocation_callbacks allocationCallbacks;
+    ma_device_data_proc dataCallback; //< Device render callback. Overriden in Sound Bakery for profiling
 };
 
 #ifdef __cplusplus

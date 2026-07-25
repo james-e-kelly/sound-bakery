@@ -1,20 +1,21 @@
 #include "system.h"
 
 #include "sound_bakery/core/thread_domain.h"
-#include "sound_bakery/error/result.h"
 #include "sound_bakery/editor/project/project.h"
+#include "sound_bakery/error/result.h"
 #include "sound_bakery/gameobject/gameobject.h"
 #include "sound_bakery/node/bus/bus.h"
 #include "sound_bakery/profiling/voice_tracker.h"
-#include "sound_bakery/task/task.h"
-#include "sound_bakery/util/type_helper.h"
 #include "sound_bakery/task/command_queue.h"
 #include "sound_bakery/task/manual_executor.h"
+#include "sound_bakery/task/task.h"
 #include "sound_bakery/task/thread_executor.h"
+#include "sound_bakery/util/type_helper.h"
+
+#include "rpmalloc/rpmalloc.h"
 #include "spdlog/sinks/daily_file_sink.h"
 #include "spdlog/sinks/rotating_file_sink.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
-#include "rpmalloc/rpmalloc.h"
 
 using namespace sbk::engine;
 using namespace std::chrono_literals;
@@ -59,10 +60,30 @@ namespace
     // still using the returned pointer - that safety comes from the create/destroy contract
     // above, not from the atomic.
     std::atomic<sbk::engine::system*> s_system{nullptr};
-    bool s_registeredReflection   = false;
+    bool s_registeredReflection = false;
 
     const std::string s_soundChefLoggerName("sound_chef");
     const std::string s_soundBakeryLoggerName("sound_bakery");
+
+    /**
+     * @brief Device audio callback. Customised to add profiling.
+     */
+    void sbk_audio_data_callback(ma_device* device, void* output, const void* input, ma_uint32 frameCount)
+    {
+        (void)input;
+
+#ifdef TRACY_ENABLE
+        thread_local bool nameSet = false;
+        if (!nameSet)
+        {
+            tracy::SetThreadName("Sound Bakery Audio");
+            nameSet = true;
+        }
+
+        ZoneScopedN("Audio Render");
+#endif
+        (void)ma_engine_read_pcm_frames(static_cast<ma_engine*>(device->pUserData), output, frameCount, nullptr);
+    }
 
     auto miniaudio_log_callback(void* pUserData, ma_uint32 level, const char* pMessage) -> void
     {
@@ -203,17 +224,22 @@ auto system::init(const sbk_system_config& config) -> sbk::result<void>
 {
     sbk::task<void> hello;
 
-    sbk_system_config configCopy = config;
+    sbk_system_config configCopy                             = config;
     configCopy.soundChefConfig.allocationCallbacks.pUserData = this;
-    configCopy.soundChefConfig.allocationCallbacks.onMalloc = ma_malloc;
+    configCopy.soundChefConfig.allocationCallbacks.onMalloc  = ma_malloc;
     configCopy.soundChefConfig.allocationCallbacks.onRealloc = ma_realloc;
-    configCopy.soundChefConfig.allocationCallbacks.onFree = ma_free;
+    configCopy.soundChefConfig.allocationCallbacks.onFree    = ma_free;
+
+    // Override the engine device's data callback so the mix runs (and is profiled) inside Sound
+    // Bakery. miniaudio still creates and owns the device and its thread; only the callback body is
+    // ours. See sbk_audio_data_callback above.
+    configCopy.soundChefConfig.dataCallback = &sbk_audio_data_callback;
 
     if (configCopy.logToConsole)
     {
         add_console_sink();
     }
-    
+
     SBK_INFO("Initializing Sound Bakery");
 
     SBK_TRY_C(sc_system_init(this, &configCopy.soundChefConfig));  //< Logs and forwards the error if init fails.
@@ -251,7 +277,7 @@ auto system::init(const sbk_system_config& config) -> sbk::result<void>
     }
     else
     {
-        m_systemThread = std::make_shared<sbk::thread_executor>("System Thread");
+        m_systemThread               = std::make_shared<sbk::thread_executor>("System Thread");
         studioCommandQueue->m_target = m_systemThread.get();
     }
 
@@ -265,7 +291,8 @@ auto system::update() -> sbk::result<void>
     FrameMarkStart(profiling_strings::s_updateName);
     ZoneScoped;
 
-    SBK_TRYV(m_systemExecutor->post_work([this]() { update_async(); }));
+    SBK_TRYV(m_systemExecutor->post_work([this]()
+                                         { update_async(); }));
     SBK_TRYV(m_systemExecutor->flush());
 
     const sbk::core::scoped_thread_domain gameDomain(sbk::core::thread_domain::game);
@@ -289,7 +316,7 @@ auto system::update() -> sbk::result<void>
     rpmalloc_global_statistics(&stats);
 
     TracyPlotConfig(profiling_strings::s_totalMemory, tracy::PlotFormatType::Memory, true, true, 0);
-    TracyPlot(profiling_strings::s_totalMemory,(int64_t) stats.mapped_total);
+    TracyPlot(profiling_strings::s_totalMemory, (int64_t)stats.mapped_total);
 
     TracyPlotConfig(profiling_strings::s_currentMemory, tracy::PlotFormatType::Memory, true, true, 0);
     TracyPlot(profiling_strings::s_currentMemory, (int64_t)stats.mapped);
@@ -334,7 +361,7 @@ auto system::open_project(const std::filesystem::path& projectFile, sbk::core::s
         sys->add_external_log(logCallback);
     }
 
-    const std::string pluginFolder      = tempProject.plugin_folder().string();
+    const std::string pluginFolder       = tempProject.plugin_folder().string();
     const sbk_system_config systemConfig = sbk_system_config_init(pluginFolder.c_str());
 
     SBK_TRYV(sys->init(systemConfig));
@@ -397,9 +424,9 @@ auto sbk::engine::system::get_listener_game_object() const -> std::shared_ptr<sb
     return m_listenerGameObject.lock();
 }
 
-auto sbk::engine::system::get_master_bus() const -> std::shared_ptr<sbk::engine::bus> 
-{ 
-    return m_masterBus.lock(); 
+auto sbk::engine::system::get_master_bus() const -> std::shared_ptr<sbk::engine::bus>
+{
+    return m_masterBus.lock();
 }
 
 auto sbk::engine::system::set_master_bus(const std::shared_ptr<sbk::engine::bus>& masterBus) -> void

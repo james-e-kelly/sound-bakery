@@ -306,6 +306,7 @@ sbk_status sc_system_init(sc_system* system, const sc_system_config* systemConfi
         engineConfig.sampleRate       = ma_standard_sample_rate_48000;
         engineConfig.pLog             = &system->log;
         engineConfig.allocationCallbacks = systemConfig->allocationCallbacks;
+        engineConfig.dataCallback = systemConfig->dataCallback;
 
         maResult = ma_engine_init(&engineConfig, engine);
 
