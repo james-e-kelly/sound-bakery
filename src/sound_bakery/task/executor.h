@@ -1,6 +1,7 @@
 #pragma once
 
 #include "sound_bakery/pch.h"
+
 #include "sound_bakery/error/result.h"
 
 namespace sbk
@@ -22,7 +23,7 @@ namespace sbk
     class executor
     {
     public:
-        executor()          = delete;
+        executor() = delete;
         executor(std::string name) : m_name(std::move(name)) {}
         virtual ~executor() = default;
 
@@ -38,7 +39,12 @@ namespace sbk
          */
         auto post(std::coroutine_handle<> h) -> sbk::result<>
         {
-            return post_work([h] { h.resume(); });
+            return post_work(
+                [h]
+                {
+                    ZoneScopedN("coroutine resume");
+                    h.resume();
+                });
         }
 
         /**
@@ -89,8 +95,8 @@ namespace sbk
          */
         struct schedule_awaiter
         {
-            executor* exec  = nullptr;
-            bool      force = false;   // true = always reschedule (yield())
+            executor* exec = nullptr;
+            bool force     = false;  // true = always reschedule (yield())
 
             /**
              * @return true if the coroutine should run on the current thread without suspending
@@ -105,10 +111,33 @@ namespace sbk
              * @return true if the job was enqueued (suspend)
              * @return false if the job failed to enqueue and should run synchronously instead of
              *         hanging forever on a thread that will never run it
+             *
+             * Templated on the awaiting coroutine's promise so that, when Tracy is enabled and that
+             * promise carries a fiber name (every @r task / @r detached_task does, via @r fiber_promise),
+             * the resume is bracketed by @r TracyFiberEnter / @r TracyFiberLeave. The coroutine then
+             * shows up in Tracy as its own fiber lane, staying continuous as it hops between executors.
+             * Promises without a fiber_name(), and non-Tracy builds, take the plain @r post path.
              */
-            auto await_suspend(std::coroutine_handle<> h) const -> bool
+            template <class Promise>
+            auto await_suspend(std::coroutine_handle<Promise> h) const -> bool
             {
+#ifdef TRACY_ENABLE
+                if constexpr (requires { h.promise().fiber_name(); })
+                {
+                    const char* const fiberName = h.promise().fiber_name();
+                    return exec
+                        ->post_work(
+                            [h, fiberName]
+                            {
+                                TracyFiberEnter(fiberName);
+                                h.resume();
+                                TracyFiberLeave;
+                            })
+                        .has_value();
+                }
+#else
                 return exec->post(h).has_value();
+#endif
             }
 
             auto await_resume() const noexcept -> void {}
@@ -120,7 +149,11 @@ namespace sbk
         // Always bounce through the queue, even when already on this executor.
         [[nodiscard]] auto yield() -> schedule_awaiter { return schedule_awaiter{.exec = this, .force = true}; }
 
+    protected:
+        // The executor's name, used by concrete executors e.g. to name their OS thread in Tracy.
+        [[nodiscard]] auto name() const noexcept -> const std::string& { return m_name; }
+
     private:
         std::string m_name;
     };
-}
+}  // namespace sbk

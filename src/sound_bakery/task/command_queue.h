@@ -1,6 +1,7 @@
 #pragma once
 
 #include "sound_bakery/pch.h"
+
 #include "sound_bakery/core/thread_domain.h"
 #include "sound_bakery/error/result.h"
 #include "sound_bakery/task/executor.h"
@@ -9,7 +10,7 @@ namespace sbk
 {
     /**
      * @brief Queues tasks until it is "flushed" onto another executor.
-     * 
+     *
      * For Sound Bakery, this means queuing all commands from the game thread, or any thread, then flushing it to the system thread.
      */
     class command_queue : public executor
@@ -31,6 +32,8 @@ namespace sbk
          */
         auto flush() -> sbk::result<> override
         {
+            ZoneScopedN("command_queue flush");
+
             std::vector<std::function<void()>> batch;
             {
                 const std::lock_guard lock(m_mutex);
@@ -75,10 +78,10 @@ namespace sbk
         }
 
     private:
-        executor*                          m_target;
-        std::mutex                         m_mutex;
+        executor* m_target;
+        std::mutex m_mutex;
         std::vector<std::function<void()>> m_staging;
-        bool                               m_stopped = false;
+        bool m_stopped = false;
         friend class ::sbk::engine::system;
     };
-}
+}  // namespace sbk

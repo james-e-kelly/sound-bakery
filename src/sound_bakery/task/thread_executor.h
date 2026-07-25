@@ -1,6 +1,7 @@
 #pragma once
 
 #include "sound_bakery/pch.h"
+
 #include "sound_bakery/error/result.h"
 #include "sound_bakery/task/executor.h"
 
@@ -19,12 +20,14 @@ namespace sbk
     public:
         thread_executor(std::string name) : executor(name)
         {
-            m_thread = std::thread([this] { run_loop(); });
+            m_thread = std::thread([this]
+                                   { run_loop(); });
 
             // Block until the worker has recorded its own thread id, so that
             // on_this_thread() is reliable the instant the constructor returns.
             std::unique_lock lock(m_mutex);
-            m_cv.wait(lock, [this] { return m_started; });
+            m_cv.wait(lock, [this]
+                      { return m_started; });
         }
 
         ~thread_executor() override
@@ -65,7 +68,7 @@ namespace sbk
                 const std::lock_guard lock(m_mutex);
                 if (m_stop)
                 {
-                    return;   // already draining / shut down
+                    return;  // already draining / shut down
                 }
                 m_stop = true;
             }
@@ -84,24 +87,29 @@ namespace sbk
     private:
         auto run_loop() -> void
         {
+            // Name this OS thread after the executor (game, system, loading, ...) so it shows up as a
+            // named lane in Tracy -- the thread's own zones and every task fiber it resumes hang off it.
+            tracy::SetThreadName(name().c_str());
+
             {
                 const std::lock_guard lock(m_mutex);
                 m_id      = std::this_thread::get_id();
                 m_started = true;
             }
-            m_cv.notify_all();   // release the constructor waiting on m_started
+            m_cv.notify_all();  // release the constructor waiting on m_started
 
             for (;;)
             {
                 std::function<void()> work;
                 {
                     std::unique_lock lock(m_mutex);
-                    m_cv.wait(lock, [this] { return m_stop || !m_queue.empty(); });
+                    m_cv.wait(lock, [this]
+                              { return m_stop || !m_queue.empty(); });
                     if (m_queue.empty())
                     {
                         if (m_stop)
                         {
-                            m_stopped = true;   // set under lock: any later post_work is rejected
+                            m_stopped = true;  // set under lock: any later post_work is rejected
                             return;
                         }
                         continue;
@@ -109,17 +117,22 @@ namespace sbk
                     work = std::move(m_queue.front());
                     m_queue.pop();
                 }
+
+                // A busy slice on this named thread lane per work item. Any task fiber the item
+                // resumes enters and leaves within work(), so this zone opens and closes in the
+                // thread's own context -- it nests cleanly around the fiber excursion.
+                ZoneScopedN("thread_executor dispatch");
                 work();
             }
         }
 
-        std::mutex                           m_mutex;
-        std::condition_variable              m_cv;
-        std::queue<std::function<void()>>    m_queue;
-        std::thread::id                      m_id;
-        bool                                 m_started = false;
-        bool                                 m_stop    = false;   // drain requested (shutdown called)
-        bool                                 m_stopped = false;   // worker has exited; no longer accepts work
-        std::thread                          m_thread;
+        std::mutex m_mutex;
+        std::condition_variable m_cv;
+        std::queue<std::function<void()>> m_queue;
+        std::thread::id m_id;
+        bool m_started = false;
+        bool m_stop    = false;  // drain requested (shutdown called)
+        bool m_stopped = false;  // worker has exited; no longer accepts work
+        std::thread m_thread;
     };
-}
+}  // namespace sbk

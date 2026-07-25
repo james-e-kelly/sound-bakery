@@ -1,6 +1,7 @@
 #pragma once
 
 #include "sound_bakery/pch.h"
+
 #include "sound_bakery/error/result.h"
 #include "sound_bakery/task/executor.h"
 
@@ -51,6 +52,8 @@ namespace sbk
          */
         auto drain() -> sbk::result<> override
         {
+            ZoneScopedN("manual_executor drain");
+
             m_drainThread.store(std::this_thread::get_id(), std::memory_order_relaxed);
 
             for (;;)
@@ -84,9 +87,9 @@ namespace sbk
         }
 
     private:
-        std::mutex                        m_mutex;
+        std::mutex m_mutex;
         std::queue<std::function<void()>> m_queue;
-        std::atomic<std::thread::id>      m_drainThread{};
-        bool                              m_stopped = false;
+        std::atomic<std::thread::id> m_drainThread{};
+        bool m_stopped = false;
     };
-}
+}  // namespace sbk

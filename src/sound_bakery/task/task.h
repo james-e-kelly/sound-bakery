@@ -1,12 +1,53 @@
 #pragma once
 
 #include "sound_bakery/pch.h"
+
 #include "sound_bakery/error/result.h"
 
 namespace sbk
 {
     template <class T>
     class task;
+
+    // ---------------------------------------------------------------------------
+    // Tracy fibers
+    //
+    // A scheduled coroutine can migrate between executor threads across its
+    // co_await hops, so ordinary per-thread zones can never show its true
+    // timeline. Tracy models this with "fibers": each coroutine gets its own lane
+    // and an executor marks when it enters (resumes) and leaves (suspends) that
+    // lane -- see @r executor::schedule_awaiter.
+    //
+    // Tracy identifies a fiber by the *address* of its name and reads the text on
+    // demand, so the name must have a stable, unique address for as long as the
+    // coroutine lives. The coroutine frame is exactly that owner, so we hang the
+    // name off the promise. Mixed into every task/detached promise; empty (and
+    // free) when Tracy is compiled out.
+    // ---------------------------------------------------------------------------
+#ifdef TRACY_ENABLE
+    struct fiber_promise
+    {
+        // Minted lazily the first time an executor schedules this coroutine, so a
+        // task that never hops threads pays nothing. The counter only has to make
+        // the lane unique; it is not tied to the source function.
+        [[nodiscard]] auto fiber_name() -> const char*
+        {
+            if (m_fiberName.empty())
+            {
+                static std::atomic<std::uint64_t> counter{0};
+                m_fiberName = fmt::format("task {}", counter.fetch_add(1, std::memory_order_relaxed));
+            }
+            return m_fiberName.c_str();
+        }
+
+    private:
+        std::string m_fiberName;
+    };
+#else
+    struct fiber_promise
+    {
+    };
+#endif
 
     // When a task finishes, it resumes whoever awaited it (its "continuation"),
     // via symmetric transfer. If nobody is waiting, park on noop_coroutine so
@@ -26,13 +67,13 @@ namespace sbk
     };
 
     template <class T>
-    struct task_promise
+    struct task_promise : fiber_promise
     {
-        result<T>               outcome;   // filled by co_return
-        std::coroutine_handle<> continuation{};      // who awaited us
+        result<T> outcome;                       // filled by co_return
+        std::coroutine_handle<> continuation{};  // who awaited us
 
         auto get_return_object() noexcept -> task<T>;
-        auto initial_suspend() noexcept -> std::suspend_always { return {}; }   // LAZY
+        auto initial_suspend() noexcept -> std::suspend_always { return {}; }  // LAZY
         auto final_suspend() noexcept -> final_awaiter { return {}; }
 
         // Two ways to finish:
@@ -51,9 +92,9 @@ namespace sbk
     };
 
     template <>
-    struct task_promise<void>
+    struct task_promise<void> : fiber_promise
     {
-        result<void>            outcome;
+        result<void> outcome;
         std::coroutine_handle<> continuation{};
 
         auto get_return_object() noexcept -> task<void>;
@@ -188,16 +229,16 @@ namespace sbk
      */
     struct detached_task
     {
-        struct promise_type
+        struct promise_type : fiber_promise
         {
             auto get_return_object() noexcept -> detached_task { return {}; }
-            auto initial_suspend() noexcept -> std::suspend_never { return {}; }   // eager: start now
-            auto final_suspend() noexcept -> std::suspend_never { return {}; }     // self-destroy when done
+            auto initial_suspend() noexcept -> std::suspend_never { return {}; }  // eager: start now
+            auto final_suspend() noexcept -> std::suspend_never { return {}; }    // self-destroy when done
             auto return_void() noexcept -> void {}
             auto unhandled_exception() noexcept -> void { std::abort(); }
         };
     };
-}
+}  // namespace sbk
 
 // ===========================================================================
 // Coroutine control-flow macros -- the co_return form of SBK_TRY / SBK_TRYV.
@@ -216,19 +257,19 @@ namespace sbk
  *   SBK_CO_TRY(auto object, create_database_object(...));   // awaits/hops, unwraps, or forwards
  * @endcode
  */
-#define SBK_CO_TRY(decl, expr)                                                                \
-    auto&& SBK_DETAIL_UNIQUE(sbkCoResult_) = co_await (expr);                                 \
-    if (!SBK_DETAIL_UNIQUE(sbkCoResult_).has_value()) [[unlikely]]                            \
-        co_return ::tl::make_unexpected(std::move(SBK_DETAIL_UNIQUE(sbkCoResult_)).error());  \
+#define SBK_CO_TRY(decl, expr)                                                               \
+    auto&& SBK_DETAIL_UNIQUE(sbkCoResult_) = co_await (expr);                                \
+    if (!SBK_DETAIL_UNIQUE(sbkCoResult_).has_value()) [[unlikely]]                           \
+        co_return ::tl::make_unexpected(std::move(SBK_DETAIL_UNIQUE(sbkCoResult_)).error()); \
     decl = std::move(SBK_DETAIL_UNIQUE(sbkCoResult_)).value()
 
 /**
  * @brief Co_awaits @p expr (value ignored, e.g. a task<void>); co_returns its error on failure.
  */
-#define SBK_CO_TRYV(expr)                                                                     \
-    do                                                                                        \
-    {                                                                                         \
-        auto&& SBK_DETAIL_UNIQUE(sbkCoResult_) = co_await (expr);                             \
-        if (!SBK_DETAIL_UNIQUE(sbkCoResult_).has_value()) [[unlikely]]                        \
+#define SBK_CO_TRYV(expr)                                                                        \
+    do                                                                                           \
+    {                                                                                            \
+        auto&& SBK_DETAIL_UNIQUE(sbkCoResult_) = co_await (expr);                                \
+        if (!SBK_DETAIL_UNIQUE(sbkCoResult_).has_value()) [[unlikely]]                           \
             co_return ::tl::make_unexpected(std::move(SBK_DETAIL_UNIQUE(sbkCoResult_)).error()); \
     } while (0)
