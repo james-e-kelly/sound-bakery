@@ -61,9 +61,9 @@ extern "C"
     sbk_status SC_API sc_bank_uninit(sc_bank* bank);
 
     sbk_status SC_API sc_bank_build(sc_bank* bank,
-                                   const char** inputFiles,
-                                   sc_encoding_format* inputFileFormats,
-                                   ma_uint32 inputFilesSize);
+                                    const char** inputFiles,
+                                    sc_encoding_format* inputFileFormats,
+                                    ma_uint32 inputFilesSize);
     sbk_status SC_API sc_bank_read(sc_bank* bank);
 
 #ifdef __cplusplus

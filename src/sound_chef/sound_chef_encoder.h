@@ -38,25 +38,25 @@ extern "C"
                                                     ma_uint8 quality);
 
     sbk_status SC_API sc_encoder_init(ma_encoder_write_proc onWrite,
-                                     ma_encoder_seek_proc onSeek,
-                                     void* userData,
-                                     const sc_encoder_config* config,
-                                     sc_encoder* encoder);
+                                      ma_encoder_seek_proc onSeek,
+                                      void* userData,
+                                      const sc_encoder_config* config,
+                                      sc_encoder* encoder);
 
     sbk_status SC_API sc_encoder_init_file(const char* filePath, const sc_encoder_config* config, sc_encoder* encoder);
 
     sbk_status SC_API sc_encoder_write_pcm_frames(sc_encoder* encoder,
-                                                 const void* framesIn,
-                                                 ma_uint64 frameCount,
-                                                 ma_uint64* framesWritten);
+                                                  const void* framesIn,
+                                                  ma_uint64 frameCount,
+                                                  ma_uint64* framesWritten);
 
     sbk_status SC_API sc_encoder_uninit(sc_encoder* encoder);
 
     //
 
     sbk_status SC_API sc_encoder_write_from_file(const char* decodeFilePath,
-                                                const char* encodeFilePath,
-                                                const sc_encoder_config* config);
+                                                 const char* encodeFilePath,
+                                                 const sc_encoder_config* config);
 
 #ifdef __cplusplus
 }

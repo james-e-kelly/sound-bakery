@@ -36,10 +36,10 @@ sc_encoder_config sc_encoder_config_init(
 }
 
 sbk_status sc_encoder_init(ma_encoder_write_proc onWrite,
-                          ma_encoder_seek_proc onSeek,
-                          void* userData,
-                          const sc_encoder_config* config,
-                          sc_encoder* encoder)
+                           ma_encoder_seek_proc onSeek,
+                           void* userData,
+                           const sc_encoder_config* config,
+                           sc_encoder* encoder)
 {
     SC_CHECK_ARG(config != NULL);
     SC_CHECK_ARG(onWrite != NULL);
@@ -143,9 +143,9 @@ sbk_status sc_encoder_init_file(const char* filePath, const sc_encoder_config* c
 }
 
 sbk_status sc_encoder_write_pcm_frames(sc_encoder* encoder,
-                                      const void* framesIn,
-                                      ma_uint64 frameCount,
-                                      ma_uint64* framesWritten)
+                                       const void* framesIn,
+                                       ma_uint64 frameCount,
+                                       ma_uint64* framesWritten)
 {
     SC_CHECK_ARG(encoder != NULL);
     SC_CHECK_ARG(framesIn != NULL);
@@ -158,8 +158,8 @@ sbk_status sc_encoder_write_pcm_frames(sc_encoder* encoder,
 //
 
 sbk_status sc_encoder_write_from_file(const char* decodeFilePath,
-                                     const char* encodeFilePath,
-                                     const sc_encoder_config* config)
+                                      const char* encodeFilePath,
+                                      const sc_encoder_config* config)
 {
     SC_CHECK_ARG(decodeFilePath != NULL);
     SC_CHECK_ARG(encodeFilePath != NULL);

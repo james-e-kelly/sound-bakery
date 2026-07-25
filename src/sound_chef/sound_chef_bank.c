@@ -99,9 +99,9 @@ sbk_status sc_bank_uninit(sc_bank* bank)
 }
 
 sbk_status sc_bank_build(sc_bank* bank,
-                        const char** inputFiles,
-                        sc_encoding_format* inputFileFormats,
-                        ma_uint32 inputFilesSize)
+                         const char** inputFiles,
+                         sc_encoding_format* inputFileFormats,
+                         ma_uint32 inputFilesSize)
 {
     SC_CHECK_ARG(bank != NULL);
     SC_CHECK_ARG(inputFiles != NULL);
@@ -190,7 +190,7 @@ sbk_status sc_bank_build(sc_bank* bank,
         SC_CHECK_AND_GOTO(writeResult == MA_SUCCESS, cleanup);
 
         const char* filename = finalFilenames + (index * SC_BANK_FILE_NAME_BUFFER_SIZE);
-        writeResult = ma_vfs_write(&vfs, bank->outputFile, filename, SC_BANK_FILE_NAME_BUFFER_SIZE, &bytesWritten);
+        writeResult          = ma_vfs_write(&vfs, bank->outputFile, filename, SC_BANK_FILE_NAME_BUFFER_SIZE, &bytesWritten);
         SC_CHECK_AND_GOTO(writeResult == MA_SUCCESS, cleanup);
 
         writeResult = ma_vfs_write(&vfs, bank->outputFile, finalData[index], chunkSize - SC_BANK_FILE_NAME_BUFFER_SIZE,

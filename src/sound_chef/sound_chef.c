@@ -5,9 +5,9 @@
 #define MA_NO_VORBIS
 #define MA_NO_OPUS
 
-#include "sound_chef/sound_chef_internal.h"
 #include "extras/miniaudio_libopus.h"
 #include "extras/miniaudio_libvorbis.h"
+#include "sound_chef/sound_chef_internal.h"
 #include "sound_chef_encoder.h"
 
 #include <dirent.h>
@@ -278,7 +278,7 @@ sc_system_config sc_system_config_init(const char* pluginPath)
 sbk_status sc_system_init(sc_system* system, const sc_system_config* systemConfig)
 {
     ma_result maResult = MA_ERROR;
-    sbk_status result = SBK_ERR_CHEF;
+    sbk_status result  = SBK_ERR_CHEF;
 
     if (system)
     {
@@ -299,14 +299,14 @@ sbk_status sc_system_init(sc_system* system, const sc_system_config* systemConfi
         maResult = ma_resource_manager_init(&resourceManagerConfig, &system->resourceManager);
         SC_CHECK_STATUS(SBK_FROM_MA(maResult));
 
-        ma_engine_config engineConfig = ma_engine_config_init();
-        engineConfig.pResourceManager = &system->resourceManager;
-        engineConfig.listenerCount    = 1;
-        engineConfig.channels         = 2;
-        engineConfig.sampleRate       = ma_standard_sample_rate_48000;
-        engineConfig.pLog             = &system->log;
+        ma_engine_config engineConfig    = ma_engine_config_init();
+        engineConfig.pResourceManager    = &system->resourceManager;
+        engineConfig.listenerCount       = 1;
+        engineConfig.channels            = 2;
+        engineConfig.sampleRate          = ma_standard_sample_rate_48000;
+        engineConfig.pLog                = &system->log;
         engineConfig.allocationCallbacks = systemConfig->allocationCallbacks;
-        engineConfig.dataCallback = systemConfig->dataCallback;
+        engineConfig.dataCallback        = systemConfig->dataCallback;
 
         maResult = ma_engine_init(&engineConfig, engine);
 
@@ -320,7 +320,7 @@ sbk_status sc_system_init(sc_system* system, const sc_system_config* systemConfi
             const sc_dsp_config meterConfig = sc_dsp_config_init(SC_DSP_TYPE_METER);
             sc_dsp* meterDSP                = NULL;
             result                          = sc_system_create_dsp(system, &meterConfig, &meterDSP);
-            result = sc_node_group_add_dsp(system->masterNodeGroup, meterDSP, SC_DSP_INDEX_HEAD);
+            result                          = sc_node_group_add_dsp(system->masterNodeGroup, meterDSP, SC_DSP_INDEX_HEAD);
 
             if (result == SBK_SUCCESS)
             {
@@ -431,11 +431,11 @@ sbk_status sc_system_create_sound(sc_system* system, const char* fileName, sc_so
 
     SC_CREATE(*sound, sc_sound, system);
 
-    (*sound)->mode = mode;
+    (*sound)->mode         = mode;
     (*sound)->owningSystem = system;
 
     return (sbk_status)ma_sound_init_from_file((ma_engine*)system, fileName, get_flags_from_mode(mode), NULL, NULL,
-                                   &(*sound)->sound);
+                                               &(*sound)->sound);
 }
 
 sbk_status sc_system_create_sound_memory(sc_system* system, const void* data, size_t dataSize, sc_sound_mode mode, sc_sound** sound)
@@ -448,7 +448,7 @@ sbk_status sc_system_create_sound_memory(sc_system* system, const void* data, si
     SC_CREATE(*sound, sc_sound, system);
     SC_CREATE((*sound)->memoryDecoder, ma_decoder, system);
 
-    (*sound)->mode = mode;
+    (*sound)->mode         = mode;
     (*sound)->owningSystem = system;
 
     ma_decoder_config decoderConfig      = ma_decoder_config_init_default();
@@ -466,7 +466,7 @@ sbk_status sc_system_create_sound_memory(sc_system* system, const void* data, si
     }
 
     return (sbk_status)ma_sound_init_from_data_source((ma_engine*)system, (*sound)->memoryDecoder, get_flags_from_mode(mode), NULL,
-                                          &(*sound)->sound);
+                                                      &(*sound)->sound);
 }
 
 sbk_status sc_system_play_sound(sc_system* system, sc_sound* sound, sc_sound_instance** instance, sc_node_group* parent, sc_bool paused)
@@ -476,7 +476,7 @@ sbk_status sc_system_play_sound(sc_system* system, sc_sound* sound, sc_sound_ins
     SC_CHECK_ARG(instance != NULL);
 
     SC_CREATE(*instance, sc_sound_instance, system);
-    (*instance)->mode = sound->mode;
+    (*instance)->mode         = sound->mode;
     (*instance)->owningSystem = sound->owningSystem;
 
     if (sound->memoryDecoder != NULL)
@@ -709,7 +709,7 @@ sbk_status sc_sound_instance_set_loop_position_in_seconds(sc_sound_instance* ins
         ma_sound_get_data_source(&instance->sound);
     if (dataSource)
     {
-        ma_uint32 sampleRate           = 0;
+        ma_uint32 sampleRate = 0;
 
         SC_CHECK_STATUS(SBK_FROM_MA(ma_data_source_get_data_format(dataSource, NULL, NULL, &sampleRate, NULL, 0)));
 
@@ -1030,8 +1030,8 @@ static sc_dsp_parameter s_lowpassCutoffParam = {SC_DSP_PARAMETER_TYPE_FLOAT, "Cu
 static sc_dsp_parameter* s_lowpassParams[SC_DSP_LOWPASS_NUM_PARAM] = {&s_lowpassCutoffParam};
 
 static sc_dsp_vtable s_lowpassVtable = {
-    sc_dsp_lowpass_create,          sc_dsp_lowpass_release, sc_dsp_lowpass_set_param_float,
-    sc_dsp_lowpass_get_param_float, s_lowpassParams,        SC_DSP_LOWPASS_NUM_PARAM};
+    sc_dsp_lowpass_create, sc_dsp_lowpass_release, sc_dsp_lowpass_set_param_float,
+    sc_dsp_lowpass_get_param_float, s_lowpassParams, SC_DSP_LOWPASS_NUM_PARAM};
 
 #pragma endregion
 
@@ -1107,8 +1107,8 @@ static sc_dsp_parameter s_highpassCutoffParam = {SC_DSP_PARAMETER_TYPE_FLOAT, "C
 static sc_dsp_parameter* s_highpassParams[SC_DSP_HIGHPASS_NUM_PARAM] = {&s_highpassCutoffParam};
 
 static sc_dsp_vtable s_highpassVtable = {
-    sc_dsp_highpass_create,          sc_dsp_highpass_release, sc_dsp_highpass_set_param_float,
-    sc_dsp_highpass_get_param_float, s_highpassParams,        SC_DSP_HIGHPASS_NUM_PARAM};
+    sc_dsp_highpass_create, sc_dsp_highpass_release, sc_dsp_highpass_set_param_float,
+    sc_dsp_highpass_get_param_float, s_highpassParams, SC_DSP_HIGHPASS_NUM_PARAM};
 
 #pragma endregion
 
@@ -1162,8 +1162,8 @@ static ma_node_vtable sc_meter_node_vtable = {sc_meter_node_process_pcm_frames, 
 static ma_uint32 s_meterChannels = 2;
 
 static sbk_status sc_meter_node_init(ma_node_graph* nodeGraph,
-                                    const ma_allocation_callbacks* allocCallbacks,
-                                    sc_meter_node* node)
+                                     const ma_allocation_callbacks* allocCallbacks,
+                                     sc_meter_node* node)
 {
     ma_node_config baseNodeConfig  = ma_node_config_init();
     baseNodeConfig.vtable          = &sc_meter_node_vtable;
@@ -1283,7 +1283,7 @@ static void sc_clap_node_process_pcm_frames(
 
         for (ma_uint32 channel = 0; channel < inputChannels; ++channel)
         {
-            deinterleavedInputFrames[channel] = ma_malloc(ma_get_bytes_per_sample(ma_format_f32) * *frameCountIn, &((ma_engine*)clapNode->baseNode.pNodeGraph)->allocationCallbacks);
+            deinterleavedInputFrames[channel]  = ma_malloc(ma_get_bytes_per_sample(ma_format_f32) * *frameCountIn, &((ma_engine*)clapNode->baseNode.pNodeGraph)->allocationCallbacks);
             deinterleavedOutputFrames[channel] = ma_malloc(ma_get_bytes_per_sample(ma_format_f32) * *frameCountOut, &((ma_engine*)clapNode->baseNode.pNodeGraph)->allocationCallbacks);
         }
 
@@ -1333,8 +1333,8 @@ static ma_node_vtable sc_clap_node_vtable = {sc_clap_node_process_pcm_frames, NU
                                              SC_CLAP_OUTPUT_BUS, 0};
 
 static sbk_status sc_clap_node_init(ma_node_graph* nodeGraph,
-                                   const ma_allocation_callbacks* allocCallbacks,
-                                   sc_clap_node* node)
+                                    const ma_allocation_callbacks* allocCallbacks,
+                                    sc_clap_node* node)
 {
     SC_CHECK_ARG(nodeGraph != NULL);
     SC_CHECK_ARG(node != NULL);
