@@ -26,10 +26,6 @@ namespace sbk
         class bus;
         class game_object;
 
-        auto malloc(std::size_t size, SB_OBJECT_CATEGORY category) -> void*;
-        auto realloc(void* pointer, std::size_t size) -> void*;
-        auto free(void* pointer, SB_OBJECT_CATEGORY category) -> void;
-
         /**
          * @brief Manager of the whole Sound Bakery.
          *
