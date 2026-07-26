@@ -45,15 +45,9 @@ auto sbk::core::database_name::parse() const -> parsed_database_name
 
 auto sbk::core::database_name::valid() const -> bool { return !databaseName.empty(); }
 
-sbk::core::database_object::database_object()
-{
-    m_onUpdateNameHandle = get_on_update_name().AddRaw(this, &database_object::on_update_name);
-}
+sbk::core::database_object::database_object() = default;
 
-sbk::core::database_object::~database_object()
-{
-    get_on_update_name().Remove(m_onUpdateNameHandle);
-}
+sbk::core::database_object::~database_object() = default;
 
 auto sbk::core::database_object::get_database_id() const -> sbk_id { return m_objectID; }
 
@@ -64,12 +58,16 @@ auto sbk::core::database_object::get_asset_name() const -> std::string
 
 auto sbk::core::database_object::get_database_path(std::string& path) const -> void
 {
-    if (const sbk::engine::node_base* const nodeThis = try_convert_object<sbk::engine::node>())
+    if (const auto database = sbk::engine::system::get())
     {
-        if (const auto parent = nodeThis->get_parent())
+        if (const sbk::engine::node_base* const nodeThis = try_convert_object<sbk::engine::node>())
         {
-            parent->get_database_path(path);
+            if (const auto parent = nodeThis->get_parent())
+            {
+                parent->get_database_path(path);
+            }
         }
+        
     }
     path.append(fmt::format("/{}", get_object_name()));
 }
@@ -103,17 +101,3 @@ auto sbk::core::database_object::get_is_export() const -> bool
 auto sbk::core::database_object::set_editor_hidden(bool hidden) -> void { editorHidden = hidden; }
 
 auto sbk::core::database_object::get_on_update_id() -> MulticastDelegate<sbk_id, sbk_id>& { return m_onUpdateID; }
-
-auto sbk::core::database_object::get_on_update_database_name() -> update_database_name_delegate& { return m_onUpdateDatabaseName; }
-
-auto sbk::core::database_object::on_update_name(std::string_view oldName, std::string_view newName) -> void
-{
-    const database_name oldDatabaseName = get_database_name();
-
-    parsed_database_name parsedDatabaseName = oldDatabaseName.parse();
-    parsedDatabaseName.objectName           = newName;
-
-    const database_name newDatabaseName = database_name(parsedDatabaseName);
-
-    m_onUpdateDatabaseName.Broadcast(oldDatabaseName, newDatabaseName);
-}

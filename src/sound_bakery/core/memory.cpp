@@ -28,6 +28,7 @@ auto sbk::memory::object_deleter::operator()(sbk::core::object* object) -> void
     if (object)
     {
         const SB_OBJECT_CATEGORY objectCategory = sbk::util::type_helper::get_category_from_type(object->get_object_type());
+        object->pre_destroy();
         object->~object();
         sbk::memory::free(object, objectCategory);
     }

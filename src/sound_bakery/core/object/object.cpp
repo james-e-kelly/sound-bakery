@@ -9,12 +9,20 @@ DEFINE_REFLECTION(sbk::core::object)
 sbk::core::object::object() : m_objectName("New Object", "?,.#~@<>|*:\"\\")
 {
     SBK_EXPECT_STUDIO_THREAD();
+
+    set_flags(object_flags::default_name);
 }
 
 sbk::core::object::~object()
 {
     SBK_EXPECT_STUDIO_THREAD();
+}
+
+auto sbk::core::object::pre_destroy() -> void
+{
+    SBK_EXPECT_STUDIO_THREAD();
     m_onDestroyEvent.Broadcast(this);
+    pre_destroy_implementation();
 }
 
 auto sbk::core::object::get_owner() const -> object_owner* { return m_owner; }
@@ -94,6 +102,7 @@ auto sbk::core::object::set_object_name(std::string_view name) -> bool
     {
         m_onUpdateName.Broadcast(m_objectName.get(), name);
         m_objectName.set(name, true);
+        clear_flags(object_flags::default_name);
         return true;
     }
     return false;

@@ -58,20 +58,7 @@ node_base::~node_base()
 
 auto sbk::engine::node_base::set_parent_node(const sbk::core::database_ptr<node_base>& parent) -> void
 {
-    if (m_onParentUpdateNameDelegate.IsValid())
-    {
-        if (std::shared_ptr<node_base> currentParent = m_parentNode.shared())
-        {
-            currentParent->get_on_update_name().Remove(m_onParentUpdateNameDelegate);
-        }
-    }
-
     m_parentNode = parent;
-
-    if (std::shared_ptr<node_base> newParent = m_parentNode.shared())
-    {
-        m_onParentUpdateNameDelegate = newParent->get_on_update_database_name().AddRaw(this, &node_base::on_parent_update_database_name);
-    }
 }
 
 auto sbk::engine::node_base::set_output_bus(const sbk::core::database_ptr<node_base>& bus) -> void { m_outputBus = bus; }
@@ -194,10 +181,3 @@ auto sbk::engine::node_base::gather_all_parents(std::vector<std::shared_ptr<node
     }
 }
 
-auto sbk::engine::node_base::on_parent_update_database_name(const sbk::core::database_name& oldName,
-                                                            const sbk::core::database_name& newName) -> void
-{
-    const sbk::core::database_name thisOldDatabaseName = oldName / get_object_name();
-    const sbk::core::database_name thisNewDatabaseName = newName / get_object_name();
-    get_on_update_database_name().Broadcast(thisOldDatabaseName, thisNewDatabaseName);
-}

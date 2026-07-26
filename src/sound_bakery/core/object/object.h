@@ -15,8 +15,9 @@ namespace sbk::core
 {
     enum class object_flags : std::uint32_t
     {
-        none    = 0,
-        loading = BIT(0),  //< Serializing is loading property data
+        none         = 0,
+        loading      = BIT(0),  //< Serializing is loading property data
+        default_name = BIT(1),  //< Object still carries its placeholder name; nothing meaningful has been assigned yet
     };
     DEFINE_ENUM_FLAG_OPERATORS(object_flags)
 
@@ -142,13 +143,18 @@ namespace sbk::core
 
         static void operator delete(void* pointer, SB_OBJECT_CATEGORY category)
         {
-            return sbk::memory::free(pointer, category);
+            sbk::memory::free(pointer, category);
         }
 
+    protected:
+        virtual auto pre_destroy_implementation() -> void {}
+
     private:
+        friend struct ::sbk::memory::object_deleter;
         friend class object_owner;
         friend class database;
 
+        auto pre_destroy() -> void;
         auto set_owner(object_owner* newOwner) -> void;
         auto cache_type() -> void;
 

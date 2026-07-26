@@ -97,6 +97,17 @@ extern "C"
 	SBK_NODISCARD sbk_status SB_API sbk_system_load_soundbank(const char* soundbankFilePath, sbk_id* outSoundbankID);
 
 	/**
+	 * @brief Post an event to the system by its ID.
+	 * 
+	 * Call @r sbk_system_update to submit the command to the system thread for processing.
+	 * 
+	 * @param eventID id of the event
+	 * @param gameObjectID game object to post the event on. If gameObjectID == 0, it is posted on the global object
+	 * @return SBK_SUCCESS if the message was enqueued correctly
+	 */
+	SBK_NODISCARD sbk_status SB_API sbk_system_post_event(sbk_id eventID, sbk_id gameObjectID);
+
+	/**
 	 * @brief Post an event to the system by its name.
 	 * 
 	 * Call @r sbk_system_update to submit the command to the system thread for processing.
@@ -105,7 +116,7 @@ extern "C"
 	 * @param gameObjectID game object to post the event on. If gameObjectID == 0, it is posted on the global object
 	 * @return SBK_SUCCESS if the message was enqueued correctly
 	 */
-	SBK_NODISCARD sbk_status SB_API sbk_system_post_event(const char* eventName, sbk_id gameObjectID);
+	SBK_NODISCARD sbk_status SB_API sbk_system_post_event_name(const char* eventName, sbk_id gameObjectID);
 
 	/**
 	 * @brief Stop all events and sounds on the game object.

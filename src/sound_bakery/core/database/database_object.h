@@ -20,8 +20,7 @@ namespace sbk::core
         LEAK_DETECTOR(database_object)
 
     public:
-        using update_id_delegate            = MulticastDelegate<sbk_id, sbk_id>;
-        using update_database_name_delegate = MulticastDelegate<const database_name&, const database_name&>;
+        using update_id_delegate = MulticastDelegate<sbk_id, sbk_id>;
 
         database_object();
         virtual ~database_object();
@@ -39,14 +38,9 @@ namespace sbk::core
         operator sbk_id() const { return m_objectID; }
 
         [[nodiscard]] auto get_on_update_id() -> update_id_delegate&;
-        [[nodiscard]] auto get_on_update_database_name() -> update_database_name_delegate&;
 
     private:
-        auto on_update_name(std::string_view oldName, std::string_view newName) -> void;
-        DelegateHandle m_onUpdateNameHandle;
-
         update_id_delegate m_onUpdateID;
-        update_database_name_delegate m_onUpdateDatabaseName;
         sbk_id m_objectID = 0;
         bool editorHidden = false;  //< If true, the object won't render in the editor or be saved
 

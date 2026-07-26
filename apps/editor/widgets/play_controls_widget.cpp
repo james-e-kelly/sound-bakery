@@ -207,7 +207,7 @@ void player_widget::play_selected()
     else if (sbk::engine::event* event =
                  s_lastPlayableSelection.selectedObject->try_convert_object<sbk::engine::event>())
     {
-        sbk_system_post_event(event->get_database_name(), 0);
+        sbk_system_post_event(event->get_database_id(), 0);
     }
 }
 

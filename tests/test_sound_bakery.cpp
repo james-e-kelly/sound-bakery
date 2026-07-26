@@ -388,6 +388,116 @@ TEST_SUITE("Named Parameter")
     }
 }
 
+TEST_SUITE("Node Containers")
+{
+    TEST_CASE("Can create nested containers")
+    {
+        scoped_engine engine;
+
+        auto parent = engine.get()->create_database_object<sbk::engine::node>();
+        REQUIRE(parent.has_value());
+
+        auto child = engine.get()->create_database_object<sbk::engine::node>();
+        REQUIRE(child.has_value());
+
+        parent.value()->add_child(sbk::core::database_ptr<sbk::engine::node_base>(child.value()));
+        auto returnedParent = child.value()->get_parent();
+        REQUIRE(returnedParent);
+        CHECK(returnedParent->get_database_id() == parent.value()->get_database_id());
+
+        REQUIRE(parent.value()->get_child_count() > 0);
+        REQUIRE(parent.value()->get_children()[0]->get_database_id() == child.value()->get_database_id());
+    }
+
+    TEST_CASE("Cannot assign to self")
+    {
+        scoped_engine engine;
+
+        auto parent = engine.get()->create_database_object<sbk::engine::node>();
+
+        parent.value()->add_child(sbk::core::database_ptr<sbk::engine::node_base>(parent.value()));
+        REQUIRE(parent.value()->get_child_count() == 0);
+    }
+
+    TEST_CASE("Deep hierarchy tears down cleanly via remove_all")
+    {
+        scoped_engine engine;
+
+        using node_ptr = std::shared_ptr<sbk::engine::node>;
+
+        const auto make_node = [&]() -> node_ptr
+        {
+            auto created = engine.get()->create_database_object<sbk::engine::node>();
+            REQUIRE(created.has_value());
+            return created.value();
+        };
+
+        node_ptr root = make_node();
+
+        std::vector<node_ptr> currentLevel{root};
+
+        constexpr int depth        = 5;
+        constexpr int childrenEach = 4;
+
+        for (int level = 0; level < depth; ++level)
+        {
+            std::vector<node_ptr> nextLevel;
+            for (const node_ptr& parent : currentLevel)
+            {
+                for (int i = 0; i < childrenEach; ++i)
+                {
+                    node_ptr child = make_node();
+                    parent->add_child(sbk::core::database_ptr<sbk::engine::node_base>(child));
+                    nextLevel.push_back(child);
+                }
+            }
+            currentLevel = std::move(nextLevel);
+        }
+
+        // A leaf carries a multi-segment path name built by walking its parents, and it
+        // resolves by ID while alive. We capture identity by value and deliberately keep no
+        // shared_ptr to it, so remove_all() is free to destroy it.
+        const sbk::core::database_name leafName = currentLevel.front()->get_database_name();
+        const sbk_id leafID                     = currentLevel.front()->get_database_id();
+
+        CHECK(std::string_view(static_cast<const char*>(leafName)).find('/') != std::string_view::npos);
+        CHECK_FALSE(engine.get()->try_find_database_object(leafID).expired());
+
+        // Release our own references so the system owns the only strong refs, then tear everything down. 
+        currentLevel.clear();
+        root.reset();
+
+        engine.get()->remove_all();
+
+        CHECK(engine.get()->try_find_database_object(leafID).expired());
+    }
+
+    TEST_CASE("Reparenting updates the derived name with no bookkeeping")
+    {
+        scoped_engine engine;
+
+        auto parentA = engine.get()->create_database_object<sbk::engine::node>();
+        auto parentB = engine.get()->create_database_object<sbk::engine::node>();
+        auto child   = engine.get()->create_database_object<sbk::engine::node>();
+        REQUIRE(parentA.has_value());
+        REQUIRE(parentB.has_value());
+        REQUIRE(child.has_value());
+
+        const auto childPtr = sbk::core::database_ptr<sbk::engine::node_base>(child.value());
+
+        parentA.value()->add_child(childPtr);
+        const sbk::core::database_name underA = child.value()->get_database_name();
+
+        parentB.value()->add_child(childPtr);
+        const sbk::core::database_name underB = child.value()->get_database_name();
+
+        CHECK_FALSE(underA == underB);
+
+        CHECK_FALSE(engine.get()->try_find_database_object(underB).expired());
+        CHECK(engine.get()->try_find_database_object(underA).expired());
+    }
+}
+
 TEST_SUITE("Game Object")
 {
     TEST_CASE("Local float parameter set/get round-trips")
@@ -489,7 +599,7 @@ TEST_SUITE("Database")
         const auto validFound = engine.get()->try_find_database_object(id);
         CHECK_FALSE(validFound.expired());
 
-        REQUIRE(engine.get()->remove_object_from_database(id, objectResult.value()->get_database_name()).has_value());
+        REQUIRE(engine.get()->remove_object_from_database(id).has_value());
 
         const auto invalidFound = engine.get()->try_find_database_object(id);
         CHECK(invalidFound.expired());

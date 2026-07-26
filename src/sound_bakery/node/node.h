@@ -24,7 +24,6 @@ namespace sbk::engine
     public:
         ~node_base();
 
-        virtual auto set_parent_node(const sbk::core::database_ptr<node_base>& parent) -> void;
         virtual auto set_output_bus(const sbk::core::database_ptr<node_base>& bus) -> void;
 
         [[nodiscard]] auto get_parent() const -> std::shared_ptr<node_base>;
@@ -51,15 +50,16 @@ namespace sbk::engine
         auto gather_all_parents(std::vector<std::shared_ptr<node_base>>& parents) const -> void;
 
     protected:
+        /**
+         * @brief Set the parent node. Does not add this node to the parent's child list.
+         */
+        virtual auto set_parent_node(const sbk::core::database_ptr<node_base>& parent) -> void;
+
         sbk::core::database_ptr<node_base> m_parentNode;
         sbk::core::database_ptr<node_base> m_outputBus;
         std::unordered_set<sbk::core::database_ptr<node_base>> m_childNodes;
 
     private:
-        auto on_parent_update_database_name(const sbk::core::database_name& oldName,
-                                            const sbk::core::database_name& newName) -> void;
-        DelegateHandle m_onParentUpdateNameDelegate;
-
         REGISTER_REFLECTION(node_base, sbk::core::database_object)
     };
 
