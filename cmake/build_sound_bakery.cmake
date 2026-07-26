@@ -46,6 +46,8 @@ macro(set_sources)
 
     reflection/reflection.cpp
 
+    runtime/runtime.cpp
+
     serialization/serializer.cpp
 
     soundbank/soundbank.cpp
@@ -116,6 +118,8 @@ set(SOUND_BAKERY_HEADERS
     profiling/voice_tracker.h
 
     reflection/reflection.h
+
+    runtime/runtime.h
 
     serialization/serializer.h
 

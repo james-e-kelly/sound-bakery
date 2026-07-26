@@ -11,6 +11,7 @@
 #include "sound_bakery/node/bus/aux_bus.h"
 #include "sound_bakery/node/container/sound_container.h"
 #include "sound_bakery/node/container/random_container.h"
+#include "sound_bakery/runtime/runtime.h"
 #include "sound_bakery/parameter/parameter.h"
 #include "sound_bakery/sound/sound.h"
 
@@ -82,6 +83,12 @@ TEST_SUITE("System")
         REQUIRE(sbk::engine::system::get() == nullptr);
     }
 
+    TEST_CASE("Runtime exists after creation")
+    {
+        scoped_engine engine;
+        REQUIRE(engine.get()->get_runtime() != nullptr);
+    }
+
     TEST_CASE("Listener game object exists after init")
     {
         scoped_engine engine;
@@ -89,8 +96,8 @@ TEST_SUITE("System")
         // The listener is created during init. The master bus, by contrast, is
         // only established once a project/soundbank is loaded, so it stays null
         // after a bare init.
-        CHECK(engine.get()->get_listener_game_object() != nullptr);
-        CHECK(engine.get()->get_master_bus() == nullptr);
+        CHECK(engine.get()->get_runtime()->get_listener_game_object() != nullptr);
+        CHECK(engine.get()->get_runtime()->get_master_bus() == nullptr);
     }
 
     TEST_CASE("System reports objects existing")
@@ -117,39 +124,25 @@ TEST_SUITE("System")
         CHECK(engine.get()->get_objects_of_category(SB_CATEGORY_RUNTIME_OBJECT).size() > 0);
     }
 
-    TEST_CASE("Can set the master bus")
-    {
-        scoped_engine engine;
-
-        auto bus = engine.get()->create_database_object<sbk::engine::bus>(false);
-        CHECK(bus.has_value());
-
-        auto busShared = bus.value();
-
-        busShared->set_master_bus(true);
-        CHECK(busShared->is_master_bus() == true);
-        CHECK(engine.get()->get_master_bus() == busShared);
-    }
-
     TEST_CASE("Creating objects increases object count correctly")
     {
         scoped_engine engine;
 
         const std::size_t countBefore = engine.get()->get_objects_count();
 
-        auto bus = engine.get()->create_database_object<sbk::engine::bus>();
+        auto bus = engine.get()->get_runtime()->create_database_object<sbk::engine::bus>();
         CHECK(bus.has_value());
         CHECK(engine.get()->get_objects_count() == countBefore + 1);
 
-        auto bus2 = engine.get()->create_database_object<sbk::engine::bus>();
+        auto bus2 = engine.get()->get_runtime()->create_database_object<sbk::engine::bus>();
         CHECK(bus2.has_value());
         CHECK(engine.get()->get_objects_count() == countBefore + 2);
 
-        auto auxBus = engine.get()->create_database_object<sbk::engine::aux_bus>();
+        auto auxBus = engine.get()->get_runtime()->create_database_object<sbk::engine::aux_bus>();
         CHECK(auxBus.has_value());
         CHECK(engine.get()->get_objects_count() == countBefore + 3);
         
-        auto auxBus2 = engine.get()->create_database_object<sbk::engine::aux_bus>();
+        auto auxBus2 = engine.get()->get_runtime()->create_database_object<sbk::engine::aux_bus>();
         CHECK(auxBus2.has_value());
         CHECK(engine.get()->get_objects_count() == countBefore + 4);
     }
@@ -336,7 +329,7 @@ TEST_SUITE("Named Parameter")
     {
         scoped_engine engine;
 
-        auto parameterResult = engine.get()->create_database_object<sbk::engine::named_parameter>();
+        auto parameterResult = engine.get()->get_runtime()->create_database_object<sbk::engine::named_parameter>();
         REQUIRE(parameterResult.has_value());
 
         auto& parameter = parameterResult.value();
@@ -364,7 +357,7 @@ TEST_SUITE("Named Parameter")
     {
         scoped_engine engine;
 
-        auto parameterResult = engine.get()->create_database_object<sbk::engine::named_parameter>();
+        auto parameterResult = engine.get()->get_runtime()->create_database_object<sbk::engine::named_parameter>();
         REQUIRE(parameterResult.has_value());
 
         auto& parameter = parameterResult.value();
@@ -378,7 +371,7 @@ TEST_SUITE("Named Parameter")
     {
         scoped_engine engine;
 
-        auto parameterResult = engine.get()->create_database_object<sbk::engine::named_parameter>();
+        auto parameterResult = engine.get()->get_runtime()->create_database_object<sbk::engine::named_parameter>();
         REQUIRE(parameterResult.has_value());
 
         auto& parameter = parameterResult.value();
@@ -394,10 +387,10 @@ TEST_SUITE("Node Containers")
     {
         scoped_engine engine;
 
-        auto parent = engine.get()->create_database_object<sbk::engine::node>();
+        auto parent = engine.get()->get_runtime()->create_database_object<sbk::engine::node>();
         REQUIRE(parent.has_value());
 
-        auto child = engine.get()->create_database_object<sbk::engine::node>();
+        auto child = engine.get()->get_runtime()->create_database_object<sbk::engine::node>();
         REQUIRE(child.has_value());
 
         parent.value()->add_child(sbk::core::database_ptr<sbk::engine::node_base>(child.value()));
@@ -413,7 +406,7 @@ TEST_SUITE("Node Containers")
     {
         scoped_engine engine;
 
-        auto parent = engine.get()->create_database_object<sbk::engine::node>();
+        auto parent = engine.get()->get_runtime()->create_database_object<sbk::engine::node>();
 
         parent.value()->add_child(sbk::core::database_ptr<sbk::engine::node_base>(parent.value()));
         REQUIRE(parent.value()->get_child_count() == 0);
@@ -427,7 +420,7 @@ TEST_SUITE("Node Containers")
 
         const auto make_node = [&]() -> node_ptr
         {
-            auto created = engine.get()->create_database_object<sbk::engine::node>();
+            auto created = engine.get()->get_runtime()->create_database_object<sbk::engine::node>();
             REQUIRE(created.has_value());
             return created.value();
         };
@@ -467,7 +460,7 @@ TEST_SUITE("Node Containers")
         currentLevel.clear();
         root.reset();
 
-        engine.get()->remove_all();
+        engine.get()->get_runtime()->remove_all();
 
         CHECK(engine.get()->try_find_database_object(leafID).expired());
     }
@@ -476,9 +469,9 @@ TEST_SUITE("Node Containers")
     {
         scoped_engine engine;
 
-        auto parentA = engine.get()->create_database_object<sbk::engine::node>();
-        auto parentB = engine.get()->create_database_object<sbk::engine::node>();
-        auto child   = engine.get()->create_database_object<sbk::engine::node>();
+        auto parentA = engine.get()->get_runtime()->create_database_object<sbk::engine::node>();
+        auto parentB = engine.get()->get_runtime()->create_database_object<sbk::engine::node>();
+        auto child   = engine.get()->get_runtime()->create_database_object<sbk::engine::node>();
         REQUIRE(parentA.has_value());
         REQUIRE(parentB.has_value());
         REQUIRE(child.has_value());
@@ -551,7 +544,7 @@ TEST_SUITE("Database")
     {
         scoped_engine engine;
 
-        auto objectResult = engine.get()->create_database_object<sbk::engine::float_parameter>();
+        auto objectResult = engine.get()->get_runtime()->create_database_object<sbk::engine::float_parameter>();
         REQUIRE(objectResult.has_value());
 
         const sbk_id id = objectResult.value()->get_database_id();
@@ -565,7 +558,7 @@ TEST_SUITE("Database")
     {
         scoped_engine engine;
 
-        auto objectResult = engine.get()->create_database_object<sbk::engine::float_parameter>(false);
+        auto objectResult = engine.get()->get_runtime()->create_database_object<sbk::engine::float_parameter>(false);
         REQUIRE(objectResult.has_value());
 
         const sbk_id id = objectResult.value()->get_database_id();
@@ -581,7 +574,7 @@ TEST_SUITE("Database")
 
         const std::size_t before = engine.get()->get_database_object_count();
 
-        auto objectResult = engine.get()->create_database_object<sbk::engine::float_parameter>();
+        auto objectResult = engine.get()->get_runtime()->create_database_object<sbk::engine::float_parameter>();
         REQUIRE(objectResult.has_value());
 
         CHECK(engine.get()->get_database_object_count() == before + 1);
@@ -591,7 +584,7 @@ TEST_SUITE("Database")
     {
         scoped_engine engine;
 
-        auto objectResult = engine.get()->create_database_object<sbk::engine::float_parameter>();
+        auto objectResult = engine.get()->get_runtime()->create_database_object<sbk::engine::float_parameter>();
         REQUIRE(objectResult.has_value());
 
         const sbk_id id = objectResult.value()->get_database_id();
@@ -618,7 +611,7 @@ TEST_SUITE("Event")
     {
         scoped_engine engine;
 
-        auto eventResult = engine.get()->create_database_object<sbk::engine::event>();
+        auto eventResult = engine.get()->get_runtime()->create_database_object<sbk::engine::event>();
         REQUIRE(eventResult.has_value());
 
         auto& event = eventResult.value();
@@ -773,11 +766,11 @@ TEST_SUITE("Stress tests")
         {
             for (std::size_t index = 0; index < numberOfObjectsToCreate; ++index)
             {
-                auto creationResult = engine.get()->create_database_object(type);
+                auto creationResult = engine.get()->get_runtime()->create_database_object(type);
                 REQUIRE(creationResult.has_value());
             }
         }
 
-        engine.get()->remove_all();
+        engine.get()->get_runtime()->remove_all();
     }
 }

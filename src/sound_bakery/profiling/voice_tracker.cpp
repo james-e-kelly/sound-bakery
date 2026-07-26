@@ -2,6 +2,7 @@
 
 #include "sound_bakery/gameobject/gameobject.h"
 #include "sound_bakery/node/node.h"
+#include "sound_bakery/runtime/runtime.h"
 #include "sound_bakery/system.h"
 #include "sound_bakery/voice/node_instance.h"
 #include "sound_bakery/voice/voice.h"
@@ -13,43 +14,46 @@ auto voice_tracker::update(system* system) -> void
     m_playingNodeIDs.clear();
     m_nodePlayingCount.clear();
 
-    if (const auto listener = system->get_listener_game_object())
+    if (const sbk::engine::runtime* const runtime = system->get_runtime())
     {
-        for (const std::shared_ptr<sbk::core::object>& object : listener->get_objects())
+        if (const auto listener = runtime->get_listener_game_object())
         {
-            if (const sbk::engine::voice* const voice = object->try_convert_object<sbk::engine::voice>())
+            for (const std::shared_ptr<sbk::core::object>& object : listener->get_objects())
             {
-                std::unordered_set<const node_instance*> trackedNodes;
-
-                for (std::size_t j = 0; j < voice->num_voices(); ++j)
+                if (const sbk::engine::voice* const voice = object->try_convert_object<sbk::engine::voice>())
                 {
-                    if (const node_instance* const nodeInstance = voice->node_instance_at(j))
+                    std::unordered_set<const node_instance*> trackedNodes;
+
+                    for (std::size_t j = 0; j < voice->num_voices(); ++j)
                     {
-                        if (!trackedNodes.contains(nodeInstance))
+                        if (const node_instance* const nodeInstance = voice->node_instance_at(j))
                         {
-                            trackedNodes.insert(nodeInstance);
-
-                            if (const std::shared_ptr<node> node = nodeInstance->get_referencing_node())
+                            if (!trackedNodes.contains(nodeInstance))
                             {
-                                m_playingNodeIDs.insert(node->get_database_id());
-                                m_nodePlayingCount[node->get_database_id()]++;
-                            }
+                                trackedNodes.insert(nodeInstance);
 
-                            const node_instance* parent = nodeInstance->get_parent();
-
-                            if (!trackedNodes.contains(parent))
-                            {
-                                trackedNodes.insert(parent);
-
-                                while (parent)
+                                if (const std::shared_ptr<node> node = nodeInstance->get_referencing_node())
                                 {
-                                    if (const std::shared_ptr<node> node = parent->get_referencing_node())
-                                    {
-                                        m_playingNodeIDs.insert(node->get_database_id());
-                                        m_nodePlayingCount[node->get_database_id()]++;
-                                    }
+                                    m_playingNodeIDs.insert(node->get_database_id());
+                                    m_nodePlayingCount[node->get_database_id()]++;
+                                }
 
-                                    parent = parent->get_parent();
+                                const node_instance* parent = nodeInstance->get_parent();
+
+                                if (!trackedNodes.contains(parent))
+                                {
+                                    trackedNodes.insert(parent);
+
+                                    while (parent)
+                                    {
+                                        if (const std::shared_ptr<node> node = parent->get_referencing_node())
+                                        {
+                                            m_playingNodeIDs.insert(node->get_database_id());
+                                            m_nodePlayingCount[node->get_database_id()]++;
+                                        }
+
+                                        parent = parent->get_parent();
+                                    }
                                 }
                             }
                         }

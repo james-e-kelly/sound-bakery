@@ -1,10 +1,12 @@
 #include "sound_bakery/sound_bakery.h"
 
 #include "sound_bakery/api/engine_api.h"
+#include "sound_bakery/editor/project/project.h"
 #include "sound_bakery/error/result.h"
 #include "sound_bakery/event/event.h"
 #include "sound_bakery/gameobject/gameobject.h"
 #include "sound_bakery/node/container/container.h"
+#include "sound_bakery/runtime/runtime.h"
 #include "sound_bakery/serialization/serializer.h"
 #include "sound_bakery/system.h"
 #include "sound_bakery/voice/voice.h"
@@ -231,7 +233,7 @@ sbk_status sbk_system_load_soundbank(const char* soundbankFilePath, sbk_id* outS
         SBK_STATUS_CHECK(std::filesystem::exists(soundbankFilePath), SBK_ERR_INVALID_FILE);
 
         sbk::core::serialization::binary_serializer binarySerializer;
-        const sbk::result<sbk_id> soundbankID = binarySerializer.load_object<sbk::core::serialization::serialized_soundbank>(system, soundbankFilePath);
+        const sbk::result<sbk_id> soundbankID = binarySerializer.load_object<sbk::core::serialization::serialized_soundbank>(system->get_current_object_owner(), soundbankFilePath);
         SBK_STATUS_CHECK_MSG(soundbankID.has_value(), SBK_ERR_BAKERY_SERIALIZATION, "failed to load soundbank '{}'", soundbankFilePath);
 
         *outSoundbankID = soundbankID.value();
@@ -374,6 +376,46 @@ sbk_status sbk_system_get_object_info(uint64_t index, sbk_id* id, char* name, ui
 
 namespace sbk::engine
 {
+    auto open_project(const std::filesystem::path& projectFile, sbk::core::sbk_log_callback_proc logCallback) -> sbk::result<void>
+    {
+        sbk::engine::system::destroy();
+
+        const sbk::editor::project_configuration tempProject = sbk::editor::project_configuration(projectFile);
+
+        SBK_TRYV(sbk::engine::system::create(tempProject.log_folder() / (std::string(tempProject.project_name()) + ".txt")));
+        system* const system = sbk::engine::system::get();
+
+        if (logCallback)
+        {
+            system->add_external_log(logCallback);
+        }
+
+        const std::string pluginFolder    = tempProject.plugin_folder().string();
+        sbk_system_config systemConfig    = sbk_system_config_init(pluginFolder.c_str());
+        systemConfig.singleThreadedUpdate = true;  // If we're opening a project, we are in the editor and must be single threaded
+
+        SBK_TRYV(system->init(systemConfig));
+
+        SBK_TRY(sbk::editor::project* project, system->create_project());
+        return project->open_project(projectFile);
+    }
+
+    auto create_project(const std::filesystem::directory_entry& projectDirectory, std::string_view projectName) -> sbk::result<void>
+    {
+        const sbk::editor::project_configuration projectConfig(projectDirectory, projectName);
+
+        SBK_TRYV(open_project(projectConfig.project_file(), nullptr));
+        system* const system = sbk::engine::system::get();
+        sbk::editor::project* const project = system->get_project();
+        SBK_CHECK_MSG(project != nullptr, SBK_ERR_BAKERY, "Project variable was null. This should have been created");
+
+        SBK_TRY(auto masterBus, project->create_database_object<sbk::engine::bus>());
+        masterBus->set_object_name("Master Bus");
+        masterBus->set_master_bus(true);
+
+        return project->save_project();
+    }
+
     auto post_container(sbk_id containerID, sbk_id gameObjectID) -> sbk::result<void>
     {
         ZoneScoped;
@@ -409,9 +451,12 @@ namespace sbk::engine
         {
             if (gameObjectID == 0)
             {
-                if (const auto listener = system->get_listener_game_object())
+                if (const sbk::engine::runtime* const runtime = system->get_runtime())
                 {
-                    return system->try_find_database_object(listener->get_database_id());
+                    if (const auto listener = runtime->get_listener_game_object())
+                    {
+                        return system->try_find_database_object(listener->get_database_id());
+                    }
                 }
             }
             return system->try_find_database_object(gameObjectID);

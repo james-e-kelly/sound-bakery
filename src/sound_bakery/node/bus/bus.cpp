@@ -25,11 +25,6 @@ auto sbk::engine::bus::set_master_bus(bool isMaster) -> void
     if (get_object_type() == rttr::type::get<bus>())
     {
         m_masterBus = isMaster;
-
-        if (isMaster)
-        {
-            sbk::engine::system::get()->set_master_bus(std::static_pointer_cast<sbk::engine::bus>(shared_from_this()));
-        }
     }
 }
 

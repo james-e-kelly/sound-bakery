@@ -6,6 +6,7 @@
 #include "sound_bakery/gameobject/gameobject.h"
 #include "sound_bakery/node/bus/bus.h"
 #include "sound_bakery/profiling/voice_tracker.h"
+#include "sound_bakery/runtime/runtime.h"
 #include "sound_bakery/task/command_queue.h"
 #include "sound_bakery/task/manual_executor.h"
 #include "sound_bakery/task/task.h"
@@ -85,35 +86,34 @@ namespace
         (void)ma_engine_read_pcm_frames(static_cast<ma_engine*>(device->pUserData), output, frameCount, nullptr);
     }
 
-    auto miniaudio_log_callback(void* pUserData, ma_uint32 level, const char* pMessage) -> void
+    /**
+     * @brief Allocate memory for the system and store it in s_system.
+     * 
+     * The object will not be constructed.
+     */
+    auto allocate_system_memory() -> sbk::result<>
     {
-        (void)pUserData;
-
-        switch (level)
+        if (s_system.load(std::memory_order_acquire) == nullptr)
         {
-            case MA_LOG_LEVEL_DEBUG:
-                // Purposefully drop debug messages for now
-                break;
-            case MA_LOG_LEVEL_INFO:
-                SBK_INFO("{}", pMessage);
-                break;
-            case MA_LOG_LEVEL_WARNING:
-                SBK_WARN("{}", pMessage);
-                break;
-            case MA_LOG_LEVEL_ERROR:
-                SBK_ERROR("{}", pMessage);
-                break;
-            default:
-                break;
+            void* const systemMemory = sbk::memory::malloc(sizeof(sbk::engine::system), SB_OBJECT_CATEGORY::SB_CATEGORY_SYSTEM);
+
+            if (systemMemory == nullptr)
+            {
+                return sbk::make_error(SBK_ERR_NULL, "Could not create the system object");
+            }
+            s_system.store(static_cast<sbk::engine::system*>(systemMemory), std::memory_order_release);
         }
+        else
+        {
+            return sbk::make_error(SBK_ERR_BAKERY_OBJECT_EXISTS, "System memory was already allocated. Should not call the constructor on it");
+        }
+        return sbk::ok();
     }
 }  // namespace
 
 system::system()
     : sc_system(), sbk::core::logger(s_soundBakeryLoggerName)
 {
-    const sbk_status initLogResult = sc_system_log_init(this, miniaudio_log_callback);
-    sbk::log_error(initLogResult, "sc_system_log_init");
 }
 
 system::system(const std::filesystem::path& logFile)
@@ -135,9 +135,6 @@ system::~system()
         m_project.reset();
     }
 
-    remove_all();
-    BOOST_ASSERT(get_objects_count() == 0);
-
     (void)m_systemExecutor->drain();
     (void)m_gameExecutor->drain();
     (void)m_workerThread->drain();
@@ -146,11 +143,9 @@ system::~system()
         (void)m_systemThread->drain();
     }
 
-    if (m_initSoundChef)
+    if (m_runtime)
     {
-        const sbk_status closeResult = sc_system_close(this);
-        sbk::log_error(closeResult, "sc_system_close");
-        m_initSoundChef = false;
+        m_runtime.reset();
     }
 
     spdlog::shutdown();
@@ -158,52 +153,24 @@ system::~system()
 
 auto system::get() -> sbk::engine::system* { return s_system.load(std::memory_order_acquire); }
 
-auto sbk::engine::system::get_operating_mode() -> operating_mode
-{
-    if (m_project)
-    {
-        return operating_mode::editor;
-    }
-
-    if (get_objects_count())
-    {
-        return operating_mode::runtime;
-    }
-
-    return operating_mode::unkown;
-}
-
 auto system::create() -> sbk::result<void>
 {
-    if (s_system.load(std::memory_order_acquire) == nullptr)
-    {
-        void* const systemMemory = sbk::memory::malloc(sizeof(system), SB_OBJECT_CATEGORY::SB_CATEGORY_SYSTEM);
-
-        if (systemMemory == nullptr)
-        {
-            return sbk::make_error(SBK_ERR_OUT_OF_MEMORY, "Could not create the system object");
-        }
-        s_system.store(::new (systemMemory) system(), std::memory_order_release);
-    }
-
-    SBK_CHECK(s_system.load(std::memory_order_acquire) != nullptr, SBK_ERR_OUT_OF_MEMORY);
+    SBK_TRYV(allocate_system_memory());
+    ::new (s_system.load(std::memory_order_relaxed)) sbk::engine::system();
     return sbk::ok();
 }
 
 auto system::create(const std::filesystem::path& logFile) -> sbk::result<void>
 {
-    if (s_system.load(std::memory_order_acquire) == nullptr)
-    {
-        void* const systemMemory = sbk::memory::malloc(sizeof(system), SB_OBJECT_CATEGORY::SB_CATEGORY_SYSTEM);
+    SBK_TRYV(allocate_system_memory());
+    ::new (s_system.load(std::memory_order_relaxed)) sbk::engine::system(logFile);
+    return sbk::ok();
+}
 
-        if (systemMemory == nullptr)
-        {
-            return sbk::make_error(SBK_ERR_NULL, "Could not create the system object");
-        }
-        s_system.store(::new (systemMemory) system(logFile), std::memory_order_release);
-    }
-
-    SBK_CHECK(s_system.load(std::memory_order_acquire) != nullptr, SBK_ERR_OUT_OF_MEMORY);
+auto system::create(sbk::core::sbk_log_callback_proc logCallback) -> sbk::result<void>
+{
+    SBK_TRYV(allocate_system_memory());
+    ::new (s_system.load(std::memory_order_relaxed)) sbk::engine::system(logCallback);
     return sbk::ok();
 }
 
@@ -222,7 +189,7 @@ auto system::destroy() -> void
 
 auto system::init(const sbk_system_config& config) -> sbk::result<void>
 {
-    sbk::task<void> hello;
+    m_runtime = std::make_unique<sbk::engine::runtime>();
 
     sbk_system_config configCopy                             = config;
     configCopy.soundChefConfig.allocationCallbacks.pUserData = this;
@@ -242,19 +209,13 @@ auto system::init(const sbk_system_config& config) -> sbk::result<void>
 
     SBK_INFO("Initializing Sound Bakery");
 
-    SBK_TRY_C(sc_system_init(this, &configCopy.soundChefConfig));  //< Logs and forwards the error if init fails.
-    m_initSoundChef = true;
-
     if (!s_registeredReflection)
     {
         sbk::reflection::register_reflection_types();
         s_registeredReflection = true;
     }
 
-    SBK_TRY(auto listener, create_database_object<sbk::engine::game_object>());
-    listener->set_object_name("Listener");
-    listener->set_editor_hidden(true);
-    m_listenerGameObject = listener;
+    SBK_TRYV(m_runtime->init(configCopy.soundChefConfig));
 
 #if SBK_CONFIG_ENABLE_PROFILING
     if (config.enableProfiling)
@@ -263,8 +224,6 @@ auto system::init(const sbk_system_config& config) -> sbk::result<void>
     }
 #endif
 
-    // The config chooses the threading mode; mirror it to the thread-domain
-    // checks so single-threaded (editor) access outside a drain scope is allowed.
     sbk::core::set_single_threaded_mode(config.singleThreadedUpdate);
 
     m_gameExecutor          = std::make_shared<sbk::manual_executor>("Game Thread");
@@ -343,61 +302,24 @@ auto sbk::engine::system::update_async() -> void
     }
 }
 
-auto system::get_current_object_owner() -> sbk::core::object_owner* { return m_project.get(); }
-
-auto system::open_project(const std::filesystem::path& projectFile, sbk::core::sbk_log_callback_proc logCallback) -> sbk::result<void>
-{
-    destroy();
-
-    const sbk::editor::project_configuration tempProject = sbk::editor::project_configuration(projectFile);
-
-    SBK_TRYV(create(tempProject.log_folder() / (std::string(tempProject.project_name()) + ".txt")));
-
-    // create() above succeeded, so s_system is now set.
-    system* const sys = s_system.load(std::memory_order_acquire);
-
-    if (logCallback)
+auto system::get_current_object_owner() -> sbk::core::object_owner* 
+{ 
+    if (m_project)
     {
-        sys->add_external_log(logCallback);
+        return m_project.get();
     }
 
-    const std::string pluginFolder       = tempProject.plugin_folder().string();
-    sbk_system_config systemConfig = sbk_system_config_init(pluginFolder.c_str());
-    systemConfig.singleThreadedUpdate    = true; // If we're opening a project, we are in the editor and must be single threaded
-
-    SBK_TRYV(sys->init(systemConfig));
-
-    sys->m_project = std::make_unique<sbk::editor::project>();
-
-    if (sbk::result<void> opened = sys->m_project->open_project(projectFile); !opened.has_value())
-    {
-        sys->m_project.reset();
-        return tl::make_unexpected(std::move(opened).error());  //< Already logged at origin; forward it.
-    }
-
-    return sbk::ok();
-}
-
-auto sbk::engine::system::create_project(const std::filesystem::directory_entry& projectDirectory, std::string_view projectName) -> sbk::result<void>
-{
-    const sbk::editor::project_configuration projectConfig(projectDirectory, projectName);
-
-    SBK_TRYV(open_project(projectConfig.project_file(), nullptr));
-
-    // open_project() above succeeded, so s_system is now set.
-    system* const sys = s_system.load(std::memory_order_acquire);
-    SBK_CHECK_MSG(sys->m_project != nullptr, SBK_ERR_BAKERY, "System's project variable was null");
-
-    SBK_TRY(auto masterBus, sys->m_project->create_database_object<sbk::engine::bus>());
-    masterBus->set_object_name("Master Bus");
-    masterBus->set_master_bus(true);
-
-    return sys->m_project->save_project();
+    return m_runtime.get();
 }
 
 auto system::get_project() const -> sbk::editor::project*
 {
     return m_project.get();
+}
+
+auto system::get_runtime() const -> sbk::engine::runtime*
+{
+    return m_runtime.get();
 }
 
 auto system::get_voice_tracker() const -> sbk::engine::profiling::voice_tracker*
@@ -420,19 +342,12 @@ auto sbk::engine::system::get_worker_executer() const -> std::shared_ptr<sbk::ex
     return m_workerThread;
 }
 
-auto sbk::engine::system::get_listener_game_object() const -> std::shared_ptr<sbk::engine::game_object>
+auto sbk::engine::system::create_project() -> sbk::result<sbk::editor::project*>
 {
-    return m_listenerGameObject.lock();
-}
-
-auto sbk::engine::system::get_master_bus() const -> std::shared_ptr<sbk::engine::bus>
-{
-    return m_masterBus.lock();
-}
-
-auto sbk::engine::system::set_master_bus(const std::shared_ptr<sbk::engine::bus>& masterBus) -> void
-{
-    /// @todo What do we need to do about the old master bus, if there is one?
-    /// Is it safe to destroy any original master bus - like a serialized bus is loaded and overrides the default one?
-    m_masterBus = masterBus;
+    m_project = std::make_unique<sbk::editor::project>();
+    if (m_project)
+    {
+        return m_project.get();
+    }
+    return sbk::make_error(SBK_ERR_OUT_OF_MEMORY);
 }

@@ -1,5 +1,6 @@
 #include "project_manager.h"
 
+#include "sound_bakery/api/engine_api.h"
 #include "sound_bakery/core/database/database.h"
 #include "sound_bakery/core/object/object_tracker.h"
 #include "sound_bakery/editor/project/project.h"
@@ -21,7 +22,7 @@
 
 void project_manager::init_project(const std::filesystem::path& project_file)
 {
-    if (sbk::engine::system::open_project(project_file, nullptr).has_value())
+    if (sbk::engine::open_project(project_file, nullptr).has_value())
     {
         setup_project();
     }
@@ -30,7 +31,7 @@ void project_manager::init_project(const std::filesystem::path& project_file)
 auto project_manager::create_project(const std::filesystem::directory_entry& projectDirectory,
                                      const std::string& projectName) -> void
 {
-    if (sbk::engine::system::create_project(projectDirectory, projectName).has_value())
+    if (sbk::engine::create_project(projectDirectory, projectName).has_value())
     {
         setup_project();
     }

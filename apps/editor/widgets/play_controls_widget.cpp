@@ -5,6 +5,7 @@
 #include "sound_bakery/event/event.h"
 #include "sound_bakery/gameobject/gameobject.h"
 #include "sound_bakery/node/container/sound_container.h"
+#include "sound_bakery/runtime/runtime.h"
 #include "sound_bakery/sound/sound.h"
 #include "sound_bakery/system.h"
 #include "sound_bakery/util/type_helper.h"
@@ -215,7 +216,7 @@ void player_widget::stop_selected() { sbk_system_stop_all(0); }
 
 void player_widget::toggle_play_selected()
 {
-    if (sbk::engine::system::get()->get_listener_game_object()->is_playing())
+    if (sbk::engine::system::get()->get_runtime()->get_listener_game_object()->is_playing())
     {
         stop_selected();
     }

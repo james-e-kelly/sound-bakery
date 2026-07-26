@@ -129,15 +129,16 @@ auto sbk::editor::project::load_sounds() -> sbk::result<void>
 
 auto sbk::editor::project::load_system() -> sbk::result<void>
 {
-    int foundSystemFiles = 0;
+    //int foundSystemFiles = 0;
 
     for (const std::filesystem::directory_entry& p : std::filesystem::directory_iterator(m_projectConfig.project_folder()))
     {
         if (p.path().extension() == ".yaml")
         {
-            sbk::core::serialization::yaml_serializer yamlSerializer;
-            SBK_TRYV(yamlSerializer.load_object<sbk::core::serialization::serialized_system>(sbk::engine::system::get(), p.path()));  //< Best-effort; failures log at origin.
-            SBK_CHECK_MSG(++foundSystemFiles == 1, SBK_ERR_BAKERY, "Multiple system files were found");
+            /// @todo Determine if we still need to load the system object
+            //sbk::core::serialization::yaml_serializer yamlSerializer;
+            //SBK_TRYV(yamlSerializer.load_object<sbk::core::serialization::serialized_system>(sbk::engine::system::get(), p.path()));  //< Best-effort; failures log at origin.
+            //SBK_CHECK_MSG(++foundSystemFiles == 1, SBK_ERR_BAKERY, "Multiple system files were found");
         }
     }
     return sbk::ok();

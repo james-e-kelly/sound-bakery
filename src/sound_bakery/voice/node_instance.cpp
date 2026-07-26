@@ -6,6 +6,7 @@
 #include "sound_bakery/node/bus/bus.h"
 #include "sound_bakery/node/container/sequence_container.h"
 #include "sound_bakery/node/container/sound_container.h"
+#include "sound_bakery/runtime/runtime.h"
 #include "sound_bakery/sound/sound.h"
 #include "sound_bakery/system.h"
 #include "sound_bakery/voice/voice.h"
@@ -223,6 +224,10 @@ auto sbk::engine::node_instance_fsm::init_parent() -> sbk::result<void>
     ZoneScoped;
     SBK_CHECK(m_referencingNode, SBK_ERR_NULL);
     SBK_CHECK(m_owner, SBK_ERR_NULL);
+    const sbk::engine::system* const system = sbk::engine::system::get();
+    SBK_CHECK(system != nullptr, SBK_ERR_NULL);
+    const sbk::engine::runtime* const runtime = system->get_runtime();
+    SBK_CHECK(runtime != nullptr, SBK_ERR_NULL);
 
     std::shared_ptr<sbk::engine::node_base> nodeToReference;
 
@@ -237,7 +242,7 @@ auto sbk::engine::node_instance_fsm::init_parent() -> sbk::result<void>
             SBK_CHECK_MSG(nodeToReference, SBK_ERR_BAKERY, "Parent must be valid");
             break;
         case node_status::null:
-            nodeToReference = sbk::engine::system::get()->get_master_bus();
+            nodeToReference = runtime->get_master_bus();
             SBK_CHECK_MSG(nodeToReference, SBK_ERR_BAKERY, "Master Bus invalid");
             break;
     }
