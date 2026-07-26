@@ -108,13 +108,14 @@ var hierarchy =
     [ "sbk::engine::node_group_instance", "structsbk_1_1engine_1_1node__group__instance.html", null ],
     [ "boost::noncopyable", null, [
       [ "sbk::core::object", "classsbk_1_1core_1_1object.html", null ],
+      [ "sbk::engine::runtime", "classsbk_1_1engine_1_1runtime.html", null ],
       [ "sbk::engine::system", "classsbk_1_1engine_1_1system.html", null ]
     ] ],
     [ "sbk::memory::object_deleter", "structsbk_1_1memory_1_1object__deleter.html", null ],
     [ "sbk::core::object_owner", "classsbk_1_1core_1_1object__owner.html", [
       [ "sbk::core::object", "classsbk_1_1core_1_1object.html", null ],
       [ "sbk::editor::project", "classsbk_1_1editor_1_1project.html", null ],
-      [ "sbk::engine::system", "classsbk_1_1engine_1_1system.html", null ]
+      [ "sbk::engine::runtime", "classsbk_1_1engine_1_1runtime.html", null ]
     ] ],
     [ "sbk::core::object_ptr_comparator", "structsbk_1_1core_1_1object__ptr__comparator.html", null ],
     [ "sbk::core::object_tracker", "classsbk_1_1core_1_1object__tracker.html", [
@@ -155,6 +156,7 @@ var hierarchy =
     [ "SC_SOUND_DELETER", "structSC__SOUND__DELETER.html", null ],
     [ "SC_SOUND_INSTANCE_DELETER", "structSC__SOUND__INSTANCE__DELETER.html", null ],
     [ "sc_system", "structsc__system.html", [
+      [ "sbk::engine::runtime", "classsbk_1_1engine_1_1runtime.html", null ],
       [ "sbk::engine::system", "classsbk_1_1engine_1_1system.html", null ]
     ] ],
     [ "sc_system_config", "structsc__system__config.html", null ],

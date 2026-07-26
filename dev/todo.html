@@ -141,15 +141,13 @@ $(document).ready(function(){initNavTree('todo.html',''); initResizable(); });
 <div class="contents">
 <div class="textblock"><dl class="reflist">
 <dt>Member <a class="el" href="classproperty__drawer.html#a326315f8e5facee70197f2a331736161">property_drawer::draw_associate_container</a>  (rttr::variant_associative_view &amp;view, rttr::string_view name)</dt>
-<dd><a class="anchor" id="_todo000006"></a>Can we construct basic types without any manual work?  </dd>
+<dd><a class="anchor" id="_todo000007"></a>Can we construct basic types without any manual work?  </dd>
 <dt>Class <a class="el" href="classsbk_1_1core_1_1object.html">sbk::core::object</a>  </dt>
-<dd><a class="anchor" id="_todo000002"></a>Remove the object class. There should be a greater split between data and runtime. The object class only exists to give a base class to runtime objects. However, all runtime objects should be small structs in a single array - not full objects with reflection.  </dd>
+<dd><a class="anchor" id="_todo000003"></a>Remove the object class. There should be a greater split between data and runtime. The object class only exists to give a base class to runtime objects. However, all runtime objects should be small structs in a single array - not full objects with reflection.  </dd>
 <dt>Member <a class="el" href="classsbk_1_1core_1_1object__owner.html#a3bc63e07294238980342d33d68b510a3">sbk::core::object_owner::create_runtime_object</a>  (const rttr::type &amp;type) -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7" title="The result of a fallible operation: a value of type T, or an sbk::error.">sbk::result</a>&lt; std::shared_ptr&lt; object &gt; &gt;</dt>
-<dd><a class="anchor" id="_todo000003"></a>Compile without exceptions  </dd>
+<dd><a class="anchor" id="_todo000004"></a>Compile without exceptions  </dd>
 <dt>Member <a class="el" href="classsbk_1_1engine_1_1sound.html#a3c8a5799885b2eb0acf5a73793cf4001">sbk::engine::sound::load_asynchronous</a>  () -&gt; sbk::async_result&lt; void &gt;</dt>
-<dd><a class="anchor" id="_todo000004"></a>Properly load this on another thread  </dd>
-<dt>Member <a class="el" href="classsbk_1_1engine_1_1system.html#ae49b19eae280cf520cacebef66eb9b70">sbk::engine::system::set_master_bus</a>  (const std::shared_ptr&lt; sbk::engine::bus &gt; &amp;masterBus) -&gt; void</dt>
-<dd><a class="anchor" id="_todo000005"></a>What do we need to do about the old master bus, if there is one? Is it safe to destroy any original master bus - like a serialized bus is loaded and overrides the default one?  </dd>
+<dd><a class="anchor" id="_todo000006"></a>Properly load this on another thread  </dd>
 <dt>Member <a class="el" href="sound__bakery_8h.html#a3bc10a8018a47eb6cc919cd482093469">sbk_system_load_soundbank</a>  (const char *soundbankFilePath, sbk_id *outSoundbankID)</dt>
 <dd><a class="anchor" id="_todo000001"></a>Make soundbank loading happen on the system thread </dd>
 </dl>

@@ -1,9 +1,9 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
 <area shape="rect" id="Node000000" href="$classsbk_1_1executor.html" title="Abstract execution context: somewhere coroutines and work items can be posted to run." alt="" coords="5,55,115,80"/>
 <area shape="rect" id="Node000001" href="$classsbk_1_1command__queue.html" title="Queues tasks until it is &quot;flushed&quot; onto another executor." alt="" coords="163,5,328,31"/>
-<area shape="poly" id="edge62_Node000000_Node000001" title=" " alt="" coords="121,49,196,28,197,33,122,54"/>
+<area shape="poly" id="edge64_Node000000_Node000001" title=" " alt="" coords="121,49,196,28,197,33,122,54"/>
 <area shape="rect" id="Node000002" href="$classsbk_1_1manual__executor.html" title="An @r executor with no thread of its own: work is queued, then run all at once by whoever calls @r dr..." alt="" coords="163,55,328,80"/>
-<area shape="poly" id="edge63_Node000000_Node000002" title=" " alt="" coords="129,65,162,65,162,70,129,70"/>
+<area shape="poly" id="edge65_Node000000_Node000002" title=" " alt="" coords="129,65,162,65,162,70,129,70"/>
 <area shape="rect" id="Node000003" href="$classsbk_1_1thread__executor.html" title="An @r executor that owns one OS thread and runs posted work as soon as it arrives." alt="" coords="166,104,325,129"/>
-<area shape="poly" id="edge64_Node000000_Node000003" title=" " alt="" coords="122,81,197,101,196,106,121,86"/>
+<area shape="poly" id="edge66_Node000000_Node000003" title=" " alt="" coords="122,81,197,101,196,106,121,86"/>
 </map>

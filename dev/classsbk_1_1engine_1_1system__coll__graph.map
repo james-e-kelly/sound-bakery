@@ -1,7 +1,7 @@
 <map id="sbk::engine::system" name="sbk::engine::system">
-<area shape="rect" id="Node000001" title="Manager of the whole Sound Bakery." alt="" coords="1459,156,1612,181"/>
+<area shape="rect" id="Node000001" title="Manager of the whole Sound Bakery." alt="" coords="1459,131,1612,156"/>
 <area shape="rect" id="Node000002" href="$structsc__system.html" title="Object that manages the node graph, sounds, output etc." alt="" coords="1273,32,1364,57"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1378,54,1411,66,1445,87,1477,111,1524,154,1520,158,1473,115,1442,91,1408,71,1376,59"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1378,55,1410,66,1471,98,1518,128,1515,133,1468,102,1408,71,1377,60"/>
 <area shape="rect" id="Node000003" href="$structsc__clap.html" title="Holds a DLL handle and plugin entry for a CLAP plugin." alt="" coords="961,9,1032,35"/>
 <area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="1046,23,1273,39,1273,44,1046,28"/>
 <area shape="rect" id="Node000004" href="$structsc__node__group.html" title="Groups nodes/DSPs together into one." alt="" coords="937,59,1056,84"/>
@@ -19,13 +19,11 @@
 <area shape="rect" id="Node000009" href="$structsc__dsp__parameter__float.html" title=" " alt="" coords="5,144,183,169"/>
 <area shape="poly" id="edge9_Node000008_Node000009" title=" " alt="" coords="197,154,332,154,332,159,197,159"/>
 <area shape="rect" id="Node000010" title=" " alt="" coords="1253,81,1384,107"/>
-<area shape="poly" id="edge11_Node000001_Node000010" title=" " alt="" coords="1386,108,1410,115,1507,153,1505,158,1408,121,1384,113"/>
-<area shape="rect" id="Node000011" href="$classsbk_1_1core_1_1object__owner.html" title="Creates, owns and tracks objects." alt="" coords="1231,131,1407,156"/>
-<area shape="poly" id="edge12_Node000001_Node000011" title=" " alt="" coords="1421,153,1459,157,1458,162,1420,158"/>
-<area shape="rect" id="Node000012" href="$classsbk_1_1core_1_1object__tracker.html" title="Tracks object categories and types." alt="" coords="1228,180,1409,205"/>
-<area shape="poly" id="edge13_Node000001_Node000012" title=" " alt="" coords="1423,178,1458,174,1459,180,1423,184"/>
-<area shape="rect" id="Node000013" href="$classsbk_1_1core_1_1database.html" title="Runtime lookup of objects, using their ID or name." alt="" coords="1244,229,1393,255"/>
-<area shape="poly" id="edge14_Node000001_Node000013" title=" " alt="" coords="1380,223,1408,214,1502,179,1504,184,1410,219,1382,228"/>
-<area shape="rect" id="Node000014" title=" " alt="" coords="1244,279,1393,304"/>
-<area shape="poly" id="edge15_Node000001_Node000014" title=" " alt="" coords="1393,272,1408,265,1442,245,1473,222,1520,180,1523,184,1476,226,1445,249,1411,270,1395,277"/>
+<area shape="poly" id="edge11_Node000001_Node000010" title=" " alt="" coords="1389,107,1479,128,1478,133,1388,112"/>
+<area shape="rect" id="Node000011" href="$classsbk_1_1core_1_1object__tracker.html" title="Tracks object categories and types." alt="" coords="1228,131,1409,156"/>
+<area shape="poly" id="edge12_Node000001_Node000011" title=" " alt="" coords="1423,141,1458,141,1458,146,1423,146"/>
+<area shape="rect" id="Node000012" href="$classsbk_1_1core_1_1database.html" title="Runtime lookup of objects, using their ID or name." alt="" coords="1244,180,1393,205"/>
+<area shape="poly" id="edge13_Node000001_Node000012" title=" " alt="" coords="1388,174,1478,153,1479,159,1389,180"/>
+<area shape="rect" id="Node000013" title=" " alt="" coords="1244,229,1393,255"/>
+<area shape="poly" id="edge14_Node000001_Node000013" title=" " alt="" coords="1389,223,1408,216,1468,184,1515,154,1518,158,1471,189,1410,220,1391,228"/>
 </map>

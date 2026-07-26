@@ -15,6 +15,6 @@ var searchData=
   ['roadmap_12',['Roadmap',['../Roadmap.html',1,'UserManual']]],
   ['root_5fwidget_13',['root_widget',['../classroot__widget.html',1,'']]],
   ['rpmalloc_5fwrapper_14',['rpmalloc_wrapper',['../structrpmalloc__wrapper.html',1,'']]],
-  ['runtime_15',['runtime',['../index.html#autotoc_md3',1,'A hardened runtime'],['../Design.html#autotoc_md41',1,'The Runtime']]],
+  ['runtime_15',['runtime',['../index.html#autotoc_md3',1,'A hardened runtime'],['../classsbk_1_1engine_1_1runtime.html',1,'sbk::engine::runtime'],['../Design.html#autotoc_md41',1,'The Runtime']]],
   ['runtime_20contract_16',['The runtime contract',['../Roadmap.html#autotoc_md47',1,'']]]
 ];

@@ -28,12 +28,11 @@ var searchData=
   ['sc_5fsystem_5fplay_5fsound_25',['sc_system_play_sound',['../sound__chef_8h.html#a0f39000fef87f54d58934784869334ca',1,'sound_chef.c']]],
   ['sc_5fsystem_5frelease_26',['sc_system_release',['../sound__chef_8h.html#afa6086b793e2c93701ebcde793bca4b6',1,'sound_chef.c']]],
   ['set_27',['set',['../classsbk_1_1engine_1_1parameter.html#a2925e2a752e7981cdbcb839c7d6880d0',1,'sbk::engine::parameter']]],
-  ['set_5fmaster_5fbus_28',['set_master_bus',['../classsbk_1_1engine_1_1system.html#ae49b19eae280cf520cacebef66eb9b70',1,'sbk::engine::system']]],
-  ['set_5fmax_29',['set_max',['../classsbk_1_1core_1_1property.html#acf41415a8b3a9086374d73a0c46215f3',1,'sbk::core::property']]],
-  ['set_5fmin_30',['set_min',['../classsbk_1_1core_1_1property.html#a6583057cd7f5971309b144b5cf3ce048',1,'sbk::core::property']]],
-  ['set_5fparent_5fnode_31',['set_parent_node',['../classsbk_1_1engine_1_1node__base.html#a9f32518b7ef4c009b911ad44caa6e3c1',1,'sbk::engine::node_base']]],
-  ['set_5fselected_5fvalue_32',['set_selected_value',['../classsbk_1_1engine_1_1named__parameter.html#ab89a0450bb0fff8ceed16c34727472bc',1,'sbk::engine::named_parameter']]],
-  ['set_5fsingle_5fthreaded_5fmode_33',['set_single_threaded_mode',['../thread__domain_8h.html#a0b8ea399f2137b4f06dbe394f8cdd644',1,'sbk::core']]],
-  ['shutdown_34',['shutdown',['../classsbk_1_1thread__executor.html#a36808cd29b08df8a29f370f18146086a',1,'sbk::thread_executor::shutdown()'],['../classsbk_1_1manual__executor.html#adc54f47c2c855ae889b84d99439916ba',1,'sbk::manual_executor::shutdown()'],['../classsbk_1_1executor.html#a22d018ab51e0c3048b957a40c7659647',1,'sbk::executor::shutdown()'],['../classsbk_1_1command__queue.html#aa08d098c343e60c36362b1d3b567dc25',1,'sbk::command_queue::shutdown()']]],
-  ['stale_35',['stale',['../classsbk_1_1core_1_1database__ptr.html#a1634ec848dd4b11a492e5f6d911072f8',1,'sbk::core::database_ptr']]]
+  ['set_5fmax_28',['set_max',['../classsbk_1_1core_1_1property.html#acf41415a8b3a9086374d73a0c46215f3',1,'sbk::core::property']]],
+  ['set_5fmin_29',['set_min',['../classsbk_1_1core_1_1property.html#a6583057cd7f5971309b144b5cf3ce048',1,'sbk::core::property']]],
+  ['set_5fparent_5fnode_30',['set_parent_node',['../classsbk_1_1engine_1_1node__base.html#a9f32518b7ef4c009b911ad44caa6e3c1',1,'sbk::engine::node_base']]],
+  ['set_5fselected_5fvalue_31',['set_selected_value',['../classsbk_1_1engine_1_1named__parameter.html#ab89a0450bb0fff8ceed16c34727472bc',1,'sbk::engine::named_parameter']]],
+  ['set_5fsingle_5fthreaded_5fmode_32',['set_single_threaded_mode',['../thread__domain_8h.html#a0b8ea399f2137b4f06dbe394f8cdd644',1,'sbk::core']]],
+  ['shutdown_33',['shutdown',['../classsbk_1_1thread__executor.html#a36808cd29b08df8a29f370f18146086a',1,'sbk::thread_executor::shutdown()'],['../classsbk_1_1manual__executor.html#adc54f47c2c855ae889b84d99439916ba',1,'sbk::manual_executor::shutdown()'],['../classsbk_1_1executor.html#a22d018ab51e0c3048b957a40c7659647',1,'sbk::executor::shutdown()'],['../classsbk_1_1command__queue.html#aa08d098c343e60c36362b1d3b567dc25',1,'sbk::command_queue::shutdown()']]],
+  ['stale_34',['stale',['../classsbk_1_1core_1_1database__ptr.html#a1634ec848dd4b11a492e5f6d911072f8',1,'sbk::core::database_ptr']]]
 ];
