@@ -42,8 +42,12 @@ namespace sbk
                 break;
         }
 
-        // Negative codes are miniaudio (ma_result) errors surfaced through sbk_status.
-        return code < 0 ? "SBK_ERR_MINIAUDIO" : "SBK_ERR_UNKNOWN";
+        if (code < 0)
+        {
+            return ma_result_description(static_cast<ma_result>(code));
+        }
+
+        return "SBK_ERR_UNKNOWN";
     }
 
     namespace
