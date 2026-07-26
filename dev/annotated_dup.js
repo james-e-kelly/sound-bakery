@@ -74,7 +74,7 @@ var annotated_dup =
         [ "named_parameter", "classsbk_1_1engine_1_1named__parameter.html", "classsbk_1_1engine_1_1named__parameter" ],
         [ "named_parameter_value", "classsbk_1_1engine_1_1named__parameter__value.html", null ],
         [ "node", "classsbk_1_1engine_1_1node.html", "classsbk_1_1engine_1_1node" ],
-        [ "node_base", "classsbk_1_1engine_1_1node__base.html", null ],
+        [ "node_base", "classsbk_1_1engine_1_1node__base.html", "classsbk_1_1engine_1_1node__base" ],
         [ "node_group_instance", "structsbk_1_1engine_1_1node__group__instance.html", null ],
         [ "node_instance", "classsbk_1_1engine_1_1node__instance.html", null ],
         [ "node_instance_fsm", "structsbk_1_1engine_1_1node__instance__fsm.html", "structsbk_1_1engine_1_1node__instance__fsm" ],

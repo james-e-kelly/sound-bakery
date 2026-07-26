@@ -163,9 +163,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:af41782b748c74c112623e632b46b9579" id="r_af41782b748c74c112623e632b46b9579"><td class="memItemLeft" align="right" valign="top"><a id="af41782b748c74c112623e632b46b9579" name="af41782b748c74c112623e632b46b9579"></a>
 auto&#160;</td><td class="memItemRight" valign="bottom"><b>add_object_to_database</b> (const std::shared_ptr&lt; <a class="el" href="classsbk_1_1core_1_1database__object.html">database_object</a> &gt; &amp;<a class="el" href="classsbk_1_1core_1_1object.html">object</a>) -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt; void &gt;</td></tr>
 <tr class="separator:af41782b748c74c112623e632b46b9579"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a43bf9c56017b6d10b5d74dfd4fe8978d" id="r_a43bf9c56017b6d10b5d74dfd4fe8978d"><td class="memItemLeft" align="right" valign="top"><a id="a43bf9c56017b6d10b5d74dfd4fe8978d" name="a43bf9c56017b6d10b5d74dfd4fe8978d"></a>
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>remove_object_from_database</b> (sbk_id objectID, const <a class="el" href="structsbk_1_1core_1_1database__name.html">database_name</a> &amp;objectName) -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt; void &gt;</td></tr>
-<tr class="separator:a43bf9c56017b6d10b5d74dfd4fe8978d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9f4c08782780575ab8a9653713ed876" id="r_aa9f4c08782780575ab8a9653713ed876"><td class="memItemLeft" align="right" valign="top"><a id="aa9f4c08782780575ab8a9653713ed876" name="aa9f4c08782780575ab8a9653713ed876"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>remove_object_from_database</b> (sbk_id objectID) -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt; void &gt;</td></tr>
+<tr class="separator:aa9f4c08782780575ab8a9653713ed876"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6a6287ddc348bf0f492e2d703465d603" id="r_a6a6287ddc348bf0f492e2d703465d603"><td class="memItemLeft" align="right" valign="top"><a id="a6a6287ddc348bf0f492e2d703465d603" name="a6a6287ddc348bf0f492e2d703465d603"></a>
 auto&#160;</td><td class="memItemRight" valign="bottom"><b>assign_name_to_id</b> (sbk_id id, const <a class="el" href="structsbk_1_1core_1_1database__name.html">database_name</a> &amp;<a class="el" href="classsbk_1_1core_1_1name.html">name</a>) -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt; void &gt;</td></tr>
 <tr class="memdesc:a6a6287ddc348bf0f492e2d703465d603"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds an entry to the name -&gt; ID lookup. Allows functions to find the ID of an object from its name before the live object exists. <br /></td></tr>
@@ -182,6 +182,9 @@ auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_all_database_obje
 <tr class="memitem:ad64cd44a958da4f768628a220b1b48fc" id="r_ad64cd44a958da4f768628a220b1b48fc"><td class="memItemLeft" align="right" valign="top"><a id="ad64cd44a958da4f768628a220b1b48fc" name="ad64cd44a958da4f768628a220b1b48fc"></a>
 auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_all_database_names</b> () const -&gt; std::vector&lt; <a class="el" href="structsbk_1_1core_1_1database__name.html">database_name</a> &gt;</td></tr>
 <tr class="separator:ad64cd44a958da4f768628a220b1b48fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4052eaecd6d2130359c2ccc91c76e770" id="r_a4052eaecd6d2130359c2ccc91c76e770"><td class="memItemLeft" align="right" valign="top"><a id="a4052eaecd6d2130359c2ccc91c76e770" name="a4052eaecd6d2130359c2ccc91c76e770"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_database_object_name</b> (sbk_id objectID) const -&gt; <a class="el" href="structsbk_1_1core_1_1database__name.html">database_name</a></td></tr>
+<tr class="separator:a4052eaecd6d2130359c2ccc91c76e770"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a917eba5da0f71d80701f2b4134e3df56" id="r_a917eba5da0f71d80701f2b4134e3df56"><td class="memItemLeft" align="right" valign="top"><a id="a917eba5da0f71d80701f2b4134e3df56" name="a917eba5da0f71d80701f2b4134e3df56"></a>
 auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_database_object_count</b> () const -&gt; size_t</td></tr>
 <tr class="separator:a917eba5da0f71d80701f2b4134e3df56"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -194,8 +197,8 @@ auto&#160;</td><td class="memItemRight" valign="bottom"><b>clear_database</b> ()
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Runtime lookup of objects, using their ID or name. </p>
-<p>The database holds weak pointers to objects.</p>
-<p>Another object should own the shared_ptr objects to the <a class="el" href="classsbk_1_1core_1_1database__object.html" title="Base object type for any object that can exist in the editor/database. Holds an ID and name.">database_object</a>. </p>
+<p>Identity is the ID. The ID -&gt; object map is the single source of truth; the database holds weak pointers, and another object owns the shared_ptr to each <a class="el" href="classsbk_1_1core_1_1database__object.html" title="Base object type for any object that can exist in the editor/database. Holds an ID and name.">database_object</a>.</p>
+<p>An object's name is a <em>derived</em> value - database_object::get_database_name walks the parent graph on demand - so it is never stored per-object here and reparenting costs no bookkeeping. Name -&gt; ID is a decoupled index populated explicitly via assign_name_to_id (soundbanks bake a flat table for the immutable runtime graph). Name lookups check that table first and, for the mutable editor graph, fall back to resolving against the live objects. </p>
 </div><hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/sound_bakery/core/database/<a class="el" href="database_8h_source.html">database.h</a></li>
 <li>src/sound_bakery/core/database/<b>database.cpp</b></li>

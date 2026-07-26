@@ -9,7 +9,8 @@ var sound__bakery_8h =
     [ "sbk_system_get_object_info", "sound__bakery_8h.html#a9edb9e15f98e8bc1b48913372c3140c3", null ],
     [ "sbk_system_init", "sound__bakery_8h.html#af61958cf0118c52a326289cb772503ff", null ],
     [ "sbk_system_load_soundbank", "sound__bakery_8h.html#a3bc10a8018a47eb6cc919cd482093469", null ],
-    [ "sbk_system_post_event", "sound__bakery_8h.html#a0e9c6d947606a03f5988b2db0da610cf", null ],
+    [ "sbk_system_post_event", "sound__bakery_8h.html#a98155c7baffe75f2c664e6a87f6012f0", null ],
+    [ "sbk_system_post_event_name", "sound__bakery_8h.html#a71fa9c1f8874a10ac3bac6e3f6e8bc4d", null ],
     [ "sbk_system_stop_all", "sound__bakery_8h.html#ae14f7db95a7fa1621223497905e0886d", null ],
     [ "sbk_system_update", "sound__bakery_8h.html#aa61559c4c792b231ae15142af1762c83", null ]
 ];

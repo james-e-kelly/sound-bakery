@@ -126,7 +126,7 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "ChefProgrammerGuide.html",
-"md_CHANGELOG.html"
+"manual__executor_8h_source.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

@@ -120,6 +120,7 @@ var NAVTREEINDEX0 =
 "classsbk_1_1engine_1_1node.html#abf1935e3ebb876fd54f0406b65f5d151":[12,0,2,2,27,0],
 "classsbk_1_1engine_1_1node.html#ac246fa89a15aefc3b9707c390f341bbc":[12,0,2,2,27,1],
 "classsbk_1_1engine_1_1node__base.html":[12,0,2,2,28],
+"classsbk_1_1engine_1_1node__base.html#a9f32518b7ef4c009b911ad44caa6e3c1":[12,0,2,2,28,0],
 "classsbk_1_1engine_1_1node__instance.html":[12,0,2,2,30],
 "classsbk_1_1engine_1_1parameter.html":[12,0,2,2,32],
 "classsbk_1_1engine_1_1parameter.html#a241d5058cdfda16c57cb79dbe99dd8a0":[12,0,2,2,32,6],
@@ -248,6 +249,5 @@ var NAVTREEINDEX0 =
 "index.html#autotoc_md7":[2,2],
 "index.html#autotoc_md8":[2,3],
 "index.html#autotoc_md9":[3],
-"log__widget_8h_source.html":[13,0,0,0,4,5],
-"manual__executor_8h_source.html":[13,0,2,0,15,2]
+"log__widget_8h_source.html":[13,0,0,0,4,5]
 };
