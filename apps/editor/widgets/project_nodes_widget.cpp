@@ -340,7 +340,7 @@ bool project_nodes_widget::render_node_context_menu(rttr::type type, rttr::insta
                 {
                     if (ImGui::MenuItem("Create Sound Node"))
                     {
-                        auto createdSoundNodeResult = object->get_owner_object()->create_database_object<sbk::engine::sound_container>();
+                        auto createdSoundNodeResult = object->get_owner()->create_database_object<sbk::engine::sound_container>();
                         if (createdSoundNodeResult.has_value())
                         {
                             createdSoundNodeResult.value()->set_object_name(object->get_database_name());
@@ -375,7 +375,7 @@ bool project_nodes_widget::render_node_context_menu(rttr::type type, rttr::insta
                 if (ImGui::MenuItem("Delete"))
                 {
                     get_app()->get_manager_by_class<project_manager>()->get_selection().selected_object(nullptr);
-                    object->destroy();
+                    object->get_owner()->remove_object(object->shared_from_this());
                     result = false;
                 }
 
