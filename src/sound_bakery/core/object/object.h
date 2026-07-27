@@ -38,7 +38,7 @@ namespace sbk::core
 
     public:
         object();
-        virtual ~object();
+        virtual ~object() override;
 
         template <typename T>
         [[nodiscard]] auto casted_shared_from_this() -> std::shared_ptr<T>;
@@ -57,8 +57,6 @@ namespace sbk::core
 
         [[nodiscard]] auto get_object_type() const -> rttr::type;
         [[nodiscard]] auto get_object_name() const -> std::string_view;
-        [[nodiscard]] auto get_owner() const -> object_owner*;
-        [[nodiscard]] auto get_owner_object() const -> object*;
         [[nodiscard]] auto get_on_update_name() -> MulticastDelegate<std::string_view, std::string_view>&;
 
         [[nodiscard]] auto get_flags() const -> object_flags;
@@ -145,14 +143,12 @@ namespace sbk::core
 
     private:
         friend struct ::sbk::memory::object_deleter;
-        friend class object_owner;
         friend class database;
+        friend class object_owner; // Friend for cache_type()
 
-        auto set_owner(object_owner* newOwner) -> void;
         auto cache_type() -> void;
 
         name m_objectName;
-        object_owner* m_owner = nullptr;
         object_flags m_flags  = object_flags::none;
 
         MulticastDelegate<std::string_view, std::string_view> m_onUpdateName;

@@ -4,16 +4,29 @@
 
 #include "sound_bakery/error/result.h"
 
+namespace sbk::engine
+{
+    class system;
+}
+
 namespace sbk::core
 {
     /**
-     * @brief Creates, owns and tracks objects.
+     * @brief Creates, owns and tracks objects. Is owned by other object owners.
      *
-     * This is the central location for object creation.
+     * This is the central location for object creation and management.
+     * 
+     * Through this, users can find the owners of objects and the owning sysytem object.
      */
     class SB_CLASS object_owner
     {
     public:
+        virtual ~object_owner() = default;
+
+        /**
+         * @name Creation functions.
+         */
+        /**@{*/
         /**
          * @brief Create a raw object that is not globally tracked.
          *
@@ -56,6 +69,10 @@ namespace sbk::core
          */
         template <typename T>
         [[nodiscard]] auto create_database_object(bool addToDatabase = true) -> sbk::result<std::shared_ptr<T>>;
+        /**@}*/
+
+        [[nodiscard]] auto get_owner() const -> object_owner* { return m_owner; }
+        [[nodiscard]] auto get_system() const noexcept -> sbk::engine::system*;
 
         /**
          * @brief Track an already existing object.
@@ -80,7 +97,11 @@ namespace sbk::core
         [[nodiscard]] auto get_objects() const -> const std::vector<std::shared_ptr<object>>&;
         [[nodiscard]] auto get_objects_size() const -> std::size_t;  //< Get number of objects this object owns
 
+    protected:
+        auto set_owner(object_owner* newOwner) -> void;
+
     private:
+        object_owner* m_owner = nullptr;
         std::vector<std::shared_ptr<object>> m_objects;
     };
 

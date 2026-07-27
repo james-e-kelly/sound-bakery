@@ -18,16 +18,6 @@ sbk::core::object::~object()
     SBK_EXPECT_STUDIO_THREAD();
 }
 
-auto sbk::core::object::get_owner() const -> object_owner* { return m_owner; }
-
-auto sbk::core::object::get_owner_object() const -> object* { return static_cast<sbk::core::object*>(get_owner()); }
-
-auto sbk::core::object::set_owner(object_owner* newOwner) -> void
-{
-    BOOST_ASSERT(m_owner == nullptr);
-    m_owner = newOwner;
-}
-
 auto sbk::core::object::cache_type() -> void
 {
     if (!m_type.has_value())

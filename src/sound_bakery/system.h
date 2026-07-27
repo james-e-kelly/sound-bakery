@@ -35,6 +35,7 @@ namespace sbk
          * It owns all loaded Soundbanks, listener game object, and busses.
          */
         class SB_CLASS system final : public sc_system,
+                                      public sbk::core::object_owner,
                                       public sbk::core::logger,
                                       public sbk::core::object_tracker,
                                       public sbk::core::database,
@@ -95,6 +96,12 @@ namespace sbk
             }
 
         private:
+            // Ideally, no one should use the system publically to create objects.
+            // The system owns objects it creates itself and is used as the top-most owner of objects.
+            using object_owner::create_raw_object;
+            using object_owner::create_runtime_object;
+            using object_owner::create_database_object;
+
             auto update_async() -> void;
 
             bool m_registeredReflection = false;

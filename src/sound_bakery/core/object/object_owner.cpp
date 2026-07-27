@@ -7,6 +7,23 @@
 #include "sound_bakery/system.h"
 #include "sound_bakery/util/type_helper.h"
 
+auto sbk::core::object_owner::get_system() const noexcept -> sbk::engine::system*
+{
+    for (object_owner* owner = const_cast<object_owner*>(this); owner; owner = owner->m_owner)
+    {
+        if (sbk::engine::system* const system = dynamic_cast<sbk::engine::system*>(owner))
+        {
+            return system;
+        }
+    }
+    return nullptr;
+}
+
+auto sbk::core::object_owner::set_owner(object_owner* newOwner) -> void
+{
+    m_owner = newOwner;
+}
+
 auto sbk::core::object_owner::create_runtime_object(const rttr::type& type) -> sbk::result<std::shared_ptr<sbk::core::object>>
 {
     SBK_EXPECT_STUDIO_THREAD();

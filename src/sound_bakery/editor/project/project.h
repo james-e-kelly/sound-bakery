@@ -19,6 +19,7 @@ namespace sbk::editor
     class SB_CLASS project : public sbk::core::object_owner
     {
     public:
+
         auto open_project(const std::filesystem::path& projectFile) -> sbk::result<void>;
         auto create_project(const std::filesystem::path& projectFile) -> void {}
 
@@ -31,6 +32,8 @@ namespace sbk::editor
         [[nodiscard]] auto get_preview_container() const -> std::weak_ptr<sbk::engine::sound_container>;
 
     private:
+        using object_owner::create_runtime_object; //< Ideally, projects shouldn't be creating runtime objects
+
         auto load_sounds() -> sbk::result<void>;
         auto load_system() -> sbk::result<void>;
         auto load_objects() -> sbk::result<void>;
