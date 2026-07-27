@@ -55,8 +55,6 @@ namespace sbk::core
         template <typename T>
         [[nodiscard]] auto try_convert_object() const noexcept -> const T*;
 
-        auto destroy() -> void;
-
         [[nodiscard]] auto get_object_type() const -> rttr::type;
         [[nodiscard]] auto get_object_name() const -> std::string_view;
         [[nodiscard]] auto get_owner() const -> object_owner*;
