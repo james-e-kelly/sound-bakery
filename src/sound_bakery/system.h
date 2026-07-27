@@ -106,9 +106,9 @@ namespace sbk
 
             bool m_registeredReflection = false;
 
-            std::unique_ptr<sbk::editor::project> m_project;
-            std::unique_ptr<sbk::engine::runtime> m_runtime;
-            std::unique_ptr<profiling::voice_tracker> m_voiceTracker;
+            sbk::owned_ptr<sbk::editor::project> m_project;
+            sbk::owned_ptr<sbk::engine::runtime> m_runtime;
+            sbk::owned_ptr<profiling::voice_tracker> m_voiceTracker;
 
             std::shared_ptr<sbk::executor> m_gameExecutor;    //< Manual executor that runs during @r update
             std::shared_ptr<sbk::executor> m_systemExecutor;  //< Command queue that either flushes to a worker thread or the game thread for single threaded mode

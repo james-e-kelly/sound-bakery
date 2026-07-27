@@ -2,6 +2,7 @@
 
 #include "sound_bakery/pch.h"
 
+#include "sound_bakery/core/memory.h"
 #include "sound_bakery/error/result.h"
 
 namespace sbk::engine
@@ -36,6 +37,12 @@ namespace sbk::core
          */
         template <typename T>
         [[nodiscard]] auto create_raw_object() -> sbk::result<std::shared_ptr<T>>;
+
+        /**
+         * @brief Create an object that is fully owned by the caller.
+         */
+        template<typename T>
+        [[nodiscard]] auto create_owned(SB_OBJECT_CATEGORY category) -> sbk::result<sbk::owned_ptr<T>>;
 
         /**
          * @brief Create an object that is owned by this owner.
@@ -117,6 +124,31 @@ namespace sbk::core
         result->cache_type();
 
         return result;
+    }
+
+    template <typename T>
+    auto object_owner::create_owned(SB_OBJECT_CATEGORY category) -> sbk::result<sbk::owned_ptr<T>>
+    {
+        static_assert(std::is_base_of_v<object_owner, T>, "create_owned is for graph nodes; they must derive from object_owner");
+
+        ZoneScoped;
+
+        void* const memory = sbk::memory::malloc(sizeof(T), category);
+        SBK_CHECK(memory != nullptr, SBK_ERR_OUT_OF_MEMORY);
+
+        try
+        {
+            T* const raw = ::new (memory) T();
+            raw->set_owner(this); // owned objects still not their parent/owner
+            return sbk::owned_ptr<T>(raw, sbk::memory::owned_object_deleter<T>{category});
+        }
+        catch (const std::exception& exception)
+        {
+            // Constructor threw: the placement-new never completed, so free the raw
+            // block ourselves — no destructor to run. Mirrors create_runtime_object.
+            sbk::memory::free(memory, category);
+            return sbk::make_error(SBK_ERR_OUT_OF_MEMORY, exception.what());
+        }
     }
 
     template <typename T>

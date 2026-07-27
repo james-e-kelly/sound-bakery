@@ -189,8 +189,8 @@ auto system::destroy() -> void
 
 auto system::init(const sbk_system_config& config) -> sbk::result<void>
 {
-    m_runtime = std::make_unique<sbk::engine::runtime>();
-
+    SBK_TRY(m_runtime, create_owned<sbk::engine::runtime>(SB_CATEGORY_SYSTEM));
+     
     sbk_system_config configCopy                             = config;
     configCopy.soundChefConfig.allocationCallbacks.pUserData = this;
     configCopy.soundChefConfig.allocationCallbacks.onMalloc  = ma_malloc;
@@ -220,7 +220,7 @@ auto system::init(const sbk_system_config& config) -> sbk::result<void>
 #if SBK_CONFIG_ENABLE_PROFILING
     if (config.enableProfiling)
     {
-        m_voiceTracker = std::make_unique<profiling::voice_tracker>();
+        SBK_TRY(m_voiceTracker, create_owned<sbk::engine::profiling::voice_tracker>(SB_CATEGORY_SYSTEM));
     }
 #endif
 
@@ -344,10 +344,6 @@ auto sbk::engine::system::get_worker_executer() const -> std::shared_ptr<sbk::ex
 
 auto sbk::engine::system::create_project() -> sbk::result<sbk::editor::project*>
 {
-    m_project = std::make_unique<sbk::editor::project>();
-    if (m_project)
-    {
-        return m_project.get();
-    }
-    return sbk::make_error(SBK_ERR_OUT_OF_MEMORY);
+    SBK_TRY(m_project, create_owned<sbk::editor::project>(SB_CATEGORY_SYSTEM));
+    return m_project.get();
 }

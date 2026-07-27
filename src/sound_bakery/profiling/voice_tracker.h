@@ -2,6 +2,8 @@
 
 #include "sound_bakery/pch.h"
 
+#include "sound_bakery/core/object/object_owner.h"
+
 namespace sbk::engine
 {
     class system;
@@ -11,7 +13,7 @@ namespace sbk::engine
         /**
          * @brief Tracks every active voice with helper functions
          */
-        class SB_CLASS voice_tracker final
+        class SB_CLASS voice_tracker final : public sbk::core::object_owner
         {
         public:
             voice_tracker()  = default;

@@ -24,7 +24,7 @@ struct rpmalloc_wrapper
 
 static rpmalloc_wrapper s_rpmalloc;
 
-auto sbk::memory::object_deleter::operator()(sbk::core::object* object) -> void
+auto sbk::memory::object_deleter::operator()(sbk::core::object* object)  const noexcept -> void
 {
     if (object != nullptr)
     {

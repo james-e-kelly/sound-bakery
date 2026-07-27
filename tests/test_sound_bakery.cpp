@@ -168,6 +168,19 @@ TEST_SUITE("System")
     }
 }
 
+TEST_SUITE("Object")
+{
+    TEST_CASE("Objects can find the system through their owners")
+    {
+        scoped_engine engine;
+
+        auto createdObject = engine.get()->get_runtime()->create_runtime_object<sbk::core::object>();
+        REQUIRE(createdObject.has_value());
+
+        CHECK(createdObject.value()->get_system() == sbk::engine::system::get());
+    }
+}
+
 TEST_SUITE("Property")
 {
     using sbk::core::float_property;
