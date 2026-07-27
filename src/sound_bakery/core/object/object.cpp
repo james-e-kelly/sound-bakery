@@ -18,18 +18,9 @@ sbk::core::object::~object()
     SBK_EXPECT_STUDIO_THREAD();
 }
 
-auto sbk::core::object::pre_destroy() -> void
-{
-    SBK_EXPECT_STUDIO_THREAD();
-    m_onDestroyEvent.Broadcast(this);
-    pre_destroy_implementation();
-}
-
 auto sbk::core::object::get_owner() const -> object_owner* { return m_owner; }
 
 auto sbk::core::object::get_owner_object() const -> object* { return static_cast<sbk::core::object*>(get_owner()); }
-
-auto sbk::core::object::get_on_destroy() -> MulticastDelegate<object*>& { return m_onDestroyEvent; }
 
 auto sbk::core::object::set_owner(object_owner* newOwner) -> void
 {
@@ -66,14 +57,6 @@ auto sbk::core::object::get_object_type() const -> rttr::type
 auto sbk::core::object::get_object_name() const -> std::string_view
 {
     return m_objectName;
-}
-
-auto sbk::core::object::destroy() -> void
-{
-    if (m_owner)
-    {
-        m_owner->remove_object(shared_from_this());
-    }
 }
 
 auto sbk::core::object::get_flags() const -> object_flags

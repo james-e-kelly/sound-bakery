@@ -26,7 +26,6 @@ auto sbk::core::database::add_object_to_database(const std::shared_ptr<database_
 
     m_idToPointerMap[objectID] = object;
 
-    object->get_on_destroy().AddRaw(this, &sbk::core::database::on_object_destroyed);
     object->get_on_update_id().AddRaw(this, &sbk::core::database::update_id);
 
     return sbk::ok();
@@ -55,7 +54,6 @@ auto sbk::core::database::remove_object_from_database(sbk_id objectID) -> sbk::r
     {
         if (const std::shared_ptr<sbk::core::database_object> object = idIter->second.lock())
         {
-            object->get_on_destroy().RemoveObject(this);
             object->get_on_update_id().RemoveObject(this);
         }
 

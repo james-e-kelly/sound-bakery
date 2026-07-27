@@ -2,6 +2,7 @@
 
 #include "sound_bakery/core/object/object.h"
 #include "sound_bakery/error/error.h"
+#include "sound_bakery/system.h"
 #include "sound_bakery/util/type_helper.h"
 
 #include "rpmalloc/rpmalloc.h"
@@ -25,10 +26,23 @@ static rpmalloc_wrapper s_rpmalloc;
 
 auto sbk::memory::object_deleter::operator()(sbk::core::object* object) -> void
 {
-    if (object)
+    if (object != nullptr)
     {
         const SB_OBJECT_CATEGORY objectCategory = sbk::util::type_helper::get_category_from_type(object->get_object_type());
-        object->pre_destroy();
+
+        if (sbk::engine::system* const system = sbk::engine::system::get())
+        {
+            if (object->get_type().is_derived_from<sbk::core::database_object>())
+            {
+                (void)system->remove_object_from_database(sbk::reflection::cast<sbk::core::database_object*>(object)->get_database_id());
+            }
+
+            if (object->get_type().is_derived_from<sbk::core::object>())
+            {
+                system->untrack_object(object);
+            }
+        }
+
         object->~object();
         sbk::memory::free(object, objectCategory);
     }

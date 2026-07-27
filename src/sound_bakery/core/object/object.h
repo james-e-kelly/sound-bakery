@@ -59,7 +59,6 @@ namespace sbk::core
         [[nodiscard]] auto get_object_name() const -> std::string_view;
         [[nodiscard]] auto get_owner() const -> object_owner*;
         [[nodiscard]] auto get_owner_object() const -> object*;
-        [[nodiscard]] auto get_on_destroy() -> MulticastDelegate<object*>&;
         [[nodiscard]] auto get_on_update_name() -> MulticastDelegate<std::string_view, std::string_view>&;
 
         [[nodiscard]] auto get_flags() const -> object_flags;
@@ -144,15 +143,11 @@ namespace sbk::core
             sbk::memory::free(pointer, category);
         }
 
-    protected:
-        virtual auto pre_destroy_implementation() -> void {}
-
     private:
         friend struct ::sbk::memory::object_deleter;
         friend class object_owner;
         friend class database;
 
-        auto pre_destroy() -> void;
         auto set_owner(object_owner* newOwner) -> void;
         auto cache_type() -> void;
 
@@ -167,8 +162,6 @@ namespace sbk::core
          * destruction
          */
         mutable std::optional<rttr::type> m_type = std::nullopt;
-
-        MulticastDelegate<object*> m_onDestroyEvent;
     };
 
     template <typename T>

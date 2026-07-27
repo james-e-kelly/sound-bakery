@@ -30,8 +30,6 @@ auto object_tracker::track_object(object* object) -> void
 
         m_typeToObjects[type].emplace(object);
         m_categoryToObjects[category].emplace(object);
-
-        object->get_on_destroy().AddRaw(this, &object_tracker::on_object_destroyed);
     }
 }
 
@@ -48,8 +46,6 @@ auto object_tracker::untrack_object(object* object, std::optional<rttr::type> ty
         }
 
         m_categoryToObjects[category].erase(object);
-
-        object->get_on_destroy().RemoveObject(this);
     }
 }
 
