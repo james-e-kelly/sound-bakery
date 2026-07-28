@@ -18,5 +18,6 @@ include(c++_standards)
 include(c++_warnings)
 include(setup_build_config)
 include(setup_installation)
+include(setup_install_suppression)
 
 set(CPM_SOURCE_CACHE "${CMAKE_BINARY_DIR}/cpm/cache" CACHE PATH "" FORCE)

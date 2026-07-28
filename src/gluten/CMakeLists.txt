@@ -173,7 +173,10 @@ FetchContent_MakeAvailable(platform-folders)
 
 include(build_imgui)
 
-CPMAddPackage("gh:nemtrif/utfcpp@4.0.6")
+# libsodium and libebur128 each install() their own headers, libs and
+# CMake package config. We link them statically, so suppress those install rules
+# (see setup_install_suppression.cmake) to keep them out of our dist tree.
+set_property(GLOBAL PROPERTY SBK_SUPPRESS_INSTALL ON)
 
 CPMAddPackage(NAME sodium-cmake
   GITHUB_REPOSITORY robinlinden/libsodium-cmake
@@ -186,6 +189,8 @@ CPMAddPackage(NAME libebur128
   GIT_TAG 67b33abe1558160ed76ada1322329b0e9e058b02 # master @ 2026-07-17
   OPTIONS "ENABLE_TESTS OFF" "BUILD_SHARED_LIBS OFF"
 )
+
+set_property(GLOBAL PROPERTY SBK_SUPPRESS_INSTALL OFF)
 
 target_include_directories(gluten PUBLIC
   ${fonts_SOURCE_DIR}
@@ -211,7 +216,6 @@ target_link_libraries(gluten
     Tracy::TracyClient
     RTTR::Core_Lib
     sago::platform_folders
-    utf8cpp
     sodium
     ebur128
 )

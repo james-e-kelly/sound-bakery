@@ -197,25 +197,12 @@ function(build_dependencies)
 
     # Tracy (v0.13.1) has no option to disable its install() rules: it always
     # installs TracyClient.lib, its headers and a CMake package config into the
-    # prefix, using its own flat/per-config scheme. We statically link
-    # TracyClient into our own libraries, so consumers never need it standalone,
-    # and letting it install would pollute the dist root and - because we ship
-    # multiple configurations into one tree - clobber a config-specific lib at a
-    # shared path.
-    #
-    # Override install() exactly once with a wrapper that forwards to the real
-    # command (CMake exposes the overridden builtin as _install) unless a global
-    # flag is set. We raise the flag only across Tracy's add_subdirectory, so
-    # just its install rules are dropped and every other target still installs.
-    # (Overriding install() a second time to "restore" it would rebind _install
-    # to the wrapper, silently dropping all subsequent install rules.)
+    # prefix, using its own flat/per-config scheme, which would pollute the dist
+    # root and - because we ship multiple configurations into one tree - clobber a
+    # config-specific lib at a shared path. We statically link TracyClient into our
+    # own libraries, so consumers never need it standalone. Suppress its install
+    # rules via the shared override (see setup_install_suppression.cmake).
     set_property(GLOBAL PROPERTY SBK_SUPPRESS_INSTALL ON)
-    function(install)
-        get_property(_sbk_suppress_install GLOBAL PROPERTY SBK_SUPPRESS_INSTALL)
-        if(NOT _sbk_suppress_install)
-            _install(${ARGN})
-        endif()
-    endfunction()
 
     CPMAddPackage(
     NAME tracy
