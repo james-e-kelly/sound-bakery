@@ -78,7 +78,8 @@ ma_result sc_encoder_vorbis_on_init(ma_encoder* encoder)
 {
     SC_CHECK(encoder != NULL, MA_INVALID_ARGS);
 
-    sc_encoder_vorbis* vorbisEncoder = (sc_encoder_vorbis*)ma_malloc(sizeof(sc_encoder_vorbis), NULL);
+    sc_encoder_vorbis* vorbisEncoder =
+        (sc_encoder_vorbis*)ma_malloc(sizeof(sc_encoder_vorbis), &encoder->config.allocationCallbacks);
     SC_CHECK(vorbisEncoder != NULL, MA_OUT_OF_MEMORY);
     SC_ZERO_OBJECT(vorbisEncoder);
 
