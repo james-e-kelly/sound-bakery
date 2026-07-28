@@ -69,6 +69,7 @@ target_link_libraries(sound_bakery_shared PUBLIC
   sbk::rpmalloc
 )
 
+if (SOUND_BAKERY_INSTALL)
 install(TARGETS sound_bakery_shared DESTINATION lib/${SBK_INSTALL_CONFIG_SUBDIR}/sound_bakery)
 install(TARGETS sound_bakery_static DESTINATION lib/${SBK_INSTALL_CONFIG_SUBDIR}/sound_bakery)
 install(FILES 
@@ -76,6 +77,7 @@ install(FILES
   ${PROJECT_SOURCE_DIR}/inc/sound_bakery/sound_bakery_version.h 
   ${PROJECT_SOURCE_DIR}/inc/sound_bakery/sound_bakery.h
   DESTINATION inc/sound_bakery)
+endif()
 
 add_library(SoundBakery::SoundBakery_Shared ALIAS sound_bakery_shared)
 add_library(SoundBakery::SoundBakery_Static ALIAS sound_bakery_static)

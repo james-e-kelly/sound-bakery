@@ -179,6 +179,7 @@ if(SOUND_BAKERY_TIDY_SOURCE AND SOUND_BAKERY_CLANG_TIDY_EXE AND MSVC)
   )
 endif()
 
+if (SOUND_BAKERY_INSTALL)
 install(TARGETS sound_chef_shared DESTINATION lib/${SBK_INSTALL_CONFIG_SUBDIR}/sound_chef)
 install(TARGETS sound_chef_static DESTINATION lib/${SBK_INSTALL_CONFIG_SUBDIR}/sound_chef)
 
@@ -186,3 +187,4 @@ install(FILES ${SOUND_CHEF_HEADERS} DESTINATION inc/sound_chef)
 install(FILES ${miniaudio_SOURCE_DIR}/miniaudio.h DESTINATION inc/sound_chef)
 install(FILES ${stb_SOURCE_DIR}/stb_ds.h DESTINATION inc/sound_chef)
 install(DIRECTORY ${clap_SOURCE_DIR}/include/clap DESTINATION inc/sound_chef)
+endif()

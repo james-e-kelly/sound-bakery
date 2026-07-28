@@ -10,6 +10,7 @@ project(
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/setup_init.cmake)
 
 option(SOUND_BAKERY_EDITOR "Build the Sound Bakery editor" ${SOUND_BAKERY_MAIN_PROJECT})
+option(SOUND_BAKERY_INSTALL "Install Sound Bakery headers, libraries, and apps" ${SOUND_BAKERY_MAIN_PROJECT})
 option(SOUND_BAKERY_SHARED "Build Sound Bakery and Sound Chef as shared libraries" OFF)
 option(SOUND_BAKERY_DOCS "Build doxygen docs" OFF)
 option(SOUND_BAKERY_TESTS "Build test library" OFF)
