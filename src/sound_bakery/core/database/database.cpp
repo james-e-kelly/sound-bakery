@@ -14,6 +14,7 @@ auto sbk::core::database::add_object_to_database(const std::shared_ptr<database_
     {
         objectID           = create_new_id();
         object->m_objectID = objectID;  // calling the function would trigger the callbacks so set directly
+        object->clear_flags(object_flags::default_id);
     }
 
     const auto idIter = m_idToPointerMap.find(objectID);

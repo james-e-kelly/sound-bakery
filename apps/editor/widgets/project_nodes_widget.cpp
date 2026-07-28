@@ -431,7 +431,7 @@ void project_nodes_widget::render_create_parent_or_child_menu(SB_OBJECT_CATEGORY
 
                 setup_rename_node(newObjectResult.value().get());
 
-                sbk::engine::node* newNode = sbk::reflection::cast<sbk::engine::node*, sbk::core::object*>(newObjectResult.value().get());
+                sbk::engine::node* newNode = sbk::cast<sbk::engine::node*, sbk::core::object*>(newObjectResult.value().get());
 
                 if (newNode)
                 {

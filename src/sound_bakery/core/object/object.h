@@ -18,6 +18,7 @@ namespace sbk::core
         none         = 0,
         loading      = BIT(0),  //< Serializing is loading property data
         default_name = BIT(1),  //< Object still carries its placeholder name; nothing meaningful has been assigned yet
+        default_id   = BIT(2),  //< Object holds the initial ID of 0
     };
     DEFINE_ENUM_FLAG_OPERATORS(object_flags)
 
@@ -169,20 +170,12 @@ namespace sbk::core
     template <typename T>
     [[nodiscard]] auto object::try_convert_object() noexcept -> T*
     {
-        if (get_object_type().is_derived_from(T::type()) || get_object_type() == T::type())
-        {
-            return sbk::reflection::cast<T*, object*>(this);
-        }
-        return nullptr;
+        return sbk::cast<T*, object*>(this);
     }
 
     template <typename T>
     [[nodiscard]] auto object::try_convert_object() const noexcept -> const T*
     {
-        if (get_object_type().is_derived_from(T::type()) || get_object_type() == T::type())
-        {
-            return sbk::reflection::cast<const T*, const object*>(this);
-        }
-        return nullptr;
+        return sbk::cast<const T*, const object*>(this);
     }
 }  // namespace sbk::core

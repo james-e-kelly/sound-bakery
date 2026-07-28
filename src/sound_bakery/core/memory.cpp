@@ -32,15 +32,19 @@ auto sbk::memory::object_deleter::operator()(sbk::core::object* object)  const n
 
         if (sbk::engine::system* const system = sbk::engine::system::get())
         {
-            if (object->get_type().is_derived_from<sbk::core::database_object>())
+            if (const sbk::core::database_object* const databaseObject = sbk::cast<sbk::core::database_object*>(object))
             {
-                (void)system->remove_object_from_database(sbk::reflection::cast<sbk::core::database_object*>(object)->get_database_id());
+                if (const sbk_id id = databaseObject->get_database_id(); id != SBK_INVALID_ID)
+                {
+                    (void)system->remove_object_from_database(id);
+                }
+                else
+                {
+                    BOOST_ASSERT(databaseObject->has_flag(sbk::core::object_flags::default_name));
+                }
             }
 
-            if (object->get_type().is_derived_from<sbk::core::object>())
-            {
-                system->untrack_object(object);
-            }
+            system->untrack_object(object);
         }
 
         object->~object();

@@ -5,7 +5,7 @@
 #include <rttr/registration_friend>
 #include <rttr/type>
 
-namespace sbk::reflection
+namespace sbk
 {
     template <typename Target_Type, typename Source_Type>
     auto cast(Source_Type object) -> Target_Type
@@ -30,9 +30,12 @@ namespace sbk::reflection
         using source_type_no_cv = typename std::remove_cv<typename std::remove_pointer<Source_Type>::type>::type;
         return static_cast<Target_Type>(rttr::type::apply_offset(const_cast<source_type_no_cv*>(object)->get_ptr(),
                                                                  const_cast<source_type_no_cv*>(object)->get_type(),
-                                                                 Arg_Type::type()));
+                                                                 Return_Type::type()));
     }
 
-    auto register_reflection_types() -> void;
-    auto unregister_reflection_types() -> void;
-}  // namespace sbk::reflection
+    namespace reflection
+    {
+        auto register_reflection_types() -> void;
+        auto unregister_reflection_types() -> void;
+    }
+}  // namespace sbk

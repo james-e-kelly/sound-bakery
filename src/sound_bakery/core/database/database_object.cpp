@@ -45,7 +45,10 @@ auto sbk::core::database_name::parse() const -> parsed_database_name
 
 auto sbk::core::database_name::valid() const -> bool { return !databaseName.empty(); }
 
-sbk::core::database_object::database_object() = default;
+sbk::core::database_object::database_object()
+{
+    set_flags(object_flags::default_id);
+}
 
 sbk::core::database_object::~database_object() = default;
 
@@ -82,7 +85,7 @@ auto sbk::core::database_object::get_database_name() const -> database_name
 
 auto sbk::core::database_object::set_database_id(sbk_id id) -> void
 {
-    // BOOST_ASSERT_MSG(m_objectID == 0, "Shouldn't update an object's ID at runtime");
+    clear_flags(object_flags::default_id);
 
     if (id != 0)
     {
