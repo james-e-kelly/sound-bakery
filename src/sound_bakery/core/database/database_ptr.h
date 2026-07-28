@@ -235,16 +235,6 @@ namespace sbk::core
     }
 
     /**
-     * @brief Compare a LazyPtr with a pointer for equality
-     * @return true if the LazyPtr references the object
-     */
-    template <typename T>
-    auto operator==(const database_ptr<T>& lhs, const T* rhs) -> bool
-    {
-        return lhs.raw() == rhs;
-    }
-
-    /**
      * @brief Syntactic type to define a pointer that must be a child of the
      * owning object.
      */
