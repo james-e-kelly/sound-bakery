@@ -39,3 +39,15 @@ add_subdirectory(src)
 add_subdirectory(apps)
 
 include(setup_tests)
+
+# Assemble and install third-party licence notices. Done last, after every
+# add_subdirectory() above has populated its dependencies, so the generator sees
+# them all. Main-project only: a consumer embedding Sound Bakery ships its own.
+if(SOUND_BAKERY_MAIN_PROJECT)
+  include(setup_third_party_licenses)
+  sbk_write_third_party_licenses(SBK_THIRD_PARTY_LICENSES_FILE)
+  install(FILES
+    "${CMAKE_SOURCE_DIR}/LICENSE"
+    "${SBK_THIRD_PARTY_LICENSES_FILE}"
+    DESTINATION .)
+endif()
