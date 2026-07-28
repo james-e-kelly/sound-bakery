@@ -226,9 +226,9 @@ auto system::init(const sbk_system_config& config) -> sbk::result<void>
 
     sbk::core::set_single_threaded_mode(config.singleThreadedUpdate);
 
-    m_gameExecutor          = std::make_shared<sbk::manual_executor>("Game Thread");
-    m_workerThread          = std::make_shared<sbk::thread_executor>("Worker Thread");
-    auto studioCommandQueue = std::make_shared<sbk::command_queue>("System Command Queue");
+    SBK_TRY(m_gameExecutor, create_owned<sbk::manual_executor>(SB_CATEGORY_SYSTEM, "Game Thread"));
+    SBK_TRY(m_workerThread, create_owned<sbk::thread_executor>(SB_CATEGORY_SYSTEM, "Sound Bakery Worker Thread"));
+    SBK_TRY(auto studioCommandQueue, create_owned<sbk::command_queue>(SB_CATEGORY_SYSTEM, "Sound Bakery Command Queue"));
 
     if (config.singleThreadedUpdate)
     {
@@ -236,11 +236,11 @@ auto system::init(const sbk_system_config& config) -> sbk::result<void>
     }
     else
     {
-        m_systemThread               = std::make_shared<sbk::thread_executor>("System Thread");
+        SBK_TRY(m_systemThread, create_owned<sbk::thread_executor>(SB_CATEGORY_SYSTEM, "System Thread"));
         studioCommandQueue->m_target = m_systemThread.get();
     }
 
-    m_systemExecutor = studioCommandQueue;
+    m_systemExecutor.reset(studioCommandQueue.release());
 
     return sbk::ok();
 }
@@ -327,19 +327,19 @@ auto system::get_voice_tracker() const -> sbk::engine::profiling::voice_tracker*
     return m_voiceTracker.get();
 }
 
-auto sbk::engine::system::get_game_executer() const -> std::shared_ptr<sbk::executor>
+auto sbk::engine::system::get_game_executer() const -> sbk::executor*
 {
-    return m_gameExecutor;
+    return m_gameExecutor.get();
 }
 
-auto sbk::engine::system::get_system_executer() const -> std::shared_ptr<sbk::executor>
+auto sbk::engine::system::get_system_executer() const -> sbk::executor*
 {
-    return m_systemExecutor;
+    return m_systemExecutor.get();
 }
 
-auto sbk::engine::system::get_worker_executer() const -> std::shared_ptr<sbk::executor>
+auto sbk::engine::system::get_worker_executer() const -> sbk::executor*
 {
-    return m_workerThread;
+    return m_workerThread.get();
 }
 
 auto sbk::engine::system::create_project() -> sbk::result<sbk::editor::project*>

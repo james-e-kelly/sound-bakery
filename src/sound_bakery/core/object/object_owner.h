@@ -41,8 +41,8 @@ namespace sbk::core
         /**
          * @brief Create an object that is fully owned by the caller.
          */
-        template<typename T>
-        [[nodiscard]] auto create_owned(SB_OBJECT_CATEGORY category) -> sbk::result<sbk::owned_ptr<T>>;
+        template <typename T, typename... Args>
+        [[nodiscard]] auto create_owned(SB_OBJECT_CATEGORY category, Args&&... args) -> sbk::result<sbk::owned_ptr<T>>;
 
         /**
          * @brief Create an object that is owned by this owner.
@@ -126,8 +126,8 @@ namespace sbk::core
         return result;
     }
 
-    template <typename T>
-    auto object_owner::create_owned(SB_OBJECT_CATEGORY category) -> sbk::result<sbk::owned_ptr<T>>
+    template <typename T, typename... Args>
+    auto object_owner::create_owned(SB_OBJECT_CATEGORY category, Args&&... args) -> sbk::result<sbk::owned_ptr<T>>
     {
         static_assert(std::is_base_of_v<object_owner, T>, "create_owned is for graph nodes; they must derive from object_owner");
 
@@ -138,7 +138,7 @@ namespace sbk::core
 
         try
         {
-            T* const raw = ::new (memory) T();
+            T* const raw = ::new (memory) T(std::forward<Args>(args)...);
             raw->set_owner(this); // owned objects still not their parent/owner
             return sbk::owned_ptr<T>(raw, sbk::memory::owned_object_deleter<T>{category});
         }

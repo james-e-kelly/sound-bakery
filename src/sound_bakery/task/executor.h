@@ -2,6 +2,7 @@
 
 #include "sound_bakery/pch.h"
 
+#include "sound_bakery/core/object/object_owner.h"
 #include "sound_bakery/error/result.h"
 
 namespace sbk
@@ -20,7 +21,7 @@ namespace sbk
      * From this, most functions are expected to return @r sbk::async_result and set themselves up to
      * run on their desired thread via `co_await executor->schedule()`.
      */
-    class executor
+    class executor : public sbk::core::object_owner // Object owner so the system can create it as an owned object
     {
     public:
         executor() = delete;

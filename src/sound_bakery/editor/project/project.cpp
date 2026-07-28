@@ -44,8 +44,8 @@ namespace
                       sc_encoder_config encoderConfig,
                       std::filesystem::path source,
                       std::filesystem::path destination,
-                      std::shared_ptr<sbk::executor> worker,
-                      std::shared_ptr<sbk::executor> systemThread) -> sbk::detached_task
+                      sbk::executor* worker,
+                      sbk::executor* systemThread) -> sbk::detached_task
     {
         // Do the heavy encode off the calling thread.
         co_await worker->schedule();
@@ -70,8 +70,8 @@ auto sbk::editor::project::encode_all_media() const -> void
         return;
     }
 
-    std::shared_ptr<sbk::executor> workerThread = system->get_worker_executer();
-    std::shared_ptr<sbk::executor> systemThread = system->get_system_executer();
+    sbk::executor* workerThread = system->get_worker_executer();
+    sbk::executor* systemThread = system->get_system_executer();
 
     for (sbk::core::object* const soundObject : system->get_objects_of_type(sbk::engine::sound::type()))
     {

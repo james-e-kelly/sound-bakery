@@ -26,13 +26,17 @@ namespace sbk::memory
     {
         SB_OBJECT_CATEGORY category = SB_CATEGORY_UNKNOWN;
 
+        owned_object_deleter() = default;
+        explicit owned_object_deleter(SB_OBJECT_CATEGORY inCategory) noexcept : category(inCategory) {}
+
+        template <typename U, std::enable_if_t<std::is_convertible_v<U*, T*>, int> = 0>
+        owned_object_deleter(const owned_object_deleter<U>& other) noexcept : category(other.category) {}
+
         auto operator()(T* object) const noexcept -> void
         {
-            if (object)
-            {
-                object->~T();
-                sbk::memory::free(object, category);
-            }
+            static_assert(0 < sizeof(T), "can't delete an incomplete type");
+            object->~T();
+            sbk::memory::free(object, category);
         }
     };
 }  // namespace sbk::memory

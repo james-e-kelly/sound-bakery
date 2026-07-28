@@ -80,9 +80,9 @@ namespace sbk
             [[nodiscard]] auto get_voice_tracker() const -> sbk::engine::profiling::voice_tracker*;
             [[nodiscard]] auto get_current_object_owner() -> sbk::core::object_owner*;  //< Either an editor project or the runtime
 
-            [[nodiscard]] auto get_game_executer() const -> std::shared_ptr<sbk::executor>;
-            [[nodiscard]] auto get_system_executer() const -> std::shared_ptr<sbk::executor>;
-            [[nodiscard]] auto get_worker_executer() const -> std::shared_ptr<sbk::executor>;
+            [[nodiscard]] auto get_game_executer() const -> sbk::executor*;
+            [[nodiscard]] auto get_system_executer() const -> sbk::executor*;
+            [[nodiscard]] auto get_worker_executer() const -> sbk::executor*;
 
             [[nodiscard]] auto create_project() -> sbk::result<sbk::editor::project*>;
 
@@ -110,10 +110,10 @@ namespace sbk
             sbk::owned_ptr<sbk::engine::runtime> m_runtime;
             sbk::owned_ptr<profiling::voice_tracker> m_voiceTracker;
 
-            std::shared_ptr<sbk::executor> m_gameExecutor;    //< Manual executor that runs during @r update
-            std::shared_ptr<sbk::executor> m_systemExecutor;  //< Command queue that either flushes to a worker thread or the game thread for single threaded mode
-            std::shared_ptr<sbk::executor> m_systemThread;    //< System worker thread. Can be null if in single threaded mode
-            std::shared_ptr<sbk::executor> m_workerThread;    //< Worker thread for loading and decoding
+            sbk::owned_ptr<sbk::executor> m_gameExecutor;    //< Manual executor that runs during @r update
+            sbk::owned_ptr<sbk::executor> m_systemExecutor;  //< Command queue that either flushes to a worker thread or the game thread for single threaded mode
+            sbk::owned_ptr<sbk::executor> m_systemThread;    //< System worker thread. Can be null if in single threaded mode
+            sbk::owned_ptr<sbk::executor> m_workerThread;    //< Worker thread for loading and decoding
         };
     }  // namespace engine
 }  // namespace sbk
