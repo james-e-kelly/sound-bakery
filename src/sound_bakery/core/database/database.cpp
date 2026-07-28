@@ -209,14 +209,3 @@ auto sbk::core::database::update_id(sbk_id oldID, sbk_id newID) -> void
         m_idToPointerMap[newID] = object;
     }
 }
-
-auto sbk::core::database::on_object_destroyed(object* object) -> void
-{
-    if (object != nullptr)
-    {
-        if (auto* databaseObject = object->try_convert_object<database_object>())
-        {
-            (void)remove_object_from_database(databaseObject->get_database_id());
-        }
-    }
-}

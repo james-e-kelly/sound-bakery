@@ -51,7 +51,6 @@ namespace sbk::core
         [[nodiscard]] auto resolve_name_in_graph(const database_name& name) const -> std::weak_ptr<database_object>;
 
         auto update_id(sbk_id oldID, sbk_id newID) -> void;
-        auto on_object_destroyed(object* object) -> void;
 
         std::unordered_map<sbk_id, std::weak_ptr<database_object>> m_idToPointerMap;
         std::unordered_map<database_name, sbk_id> m_nameToIdMap;    //< Main runtime map to lookup IDs from names. In the editor, this can be a little stale, but the editor is generally working off of IDs anyway
