@@ -88,7 +88,28 @@ FetchContent_Declare(
   GIT_TAG        53b007ba3721d99ec3aa6c39dd228638798d54e4 # master @ 2026-07-17
   GIT_PROGRESS TRUE
   OVERRIDE_FIND_PACKAGE
-  EXCLUDE_FROM_ALL 
+  EXCLUDE_FROM_ALL
+)
+
+FetchContent_Declare(
+  eabase
+  GIT_REPOSITORY https://github.com/electronicarts/EABase.git
+  GIT_TAG        0699a15efdfd20b6cecf02153bfa5663decb653c # matches EASTL 3.27.01's pinned EABase
+  GIT_SUBMODULES ""
+  GIT_PROGRESS TRUE
+  OVERRIDE_FIND_PACKAGE
+  EXCLUDE_FROM_ALL
+)
+
+FetchContent_Declare(
+  eastl
+  GIT_REPOSITORY https://github.com/electronicarts/EASTL.git
+  GIT_TAG        3.27.01
+  GIT_SHALLOW    TRUE
+  GIT_SUBMODULES ""
+  GIT_PROGRESS TRUE
+  OVERRIDE_FIND_PACKAGE
+  EXCLUDE_FROM_ALL
 )
 
 FetchContent_Declare(

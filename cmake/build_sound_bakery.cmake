@@ -169,6 +169,15 @@ function(build_dependencies)
     message(STATUS "Fetching concurrencpp...")
     FetchContent_MakeAvailable(concurrencpp)
 
+    message(STATUS "Fetching EABase...")
+    FetchContent_MakeAvailable(eabase)
+
+    set(EASTL_BUILD_BENCHMARK OFF CACHE BOOL "" FORCE)
+    set(EASTL_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+
+    message(STATUS "Fetching EASTL...")
+    FetchContent_MakeAvailable(eastl)
+
     # Make fmt available before spdlog and point spdlog at it, so the whole build
     # links a single fmt (fmt::fmt) instead of spdlog also compiling its bundled
     # copy. spdlog's CMake uses fmt::fmt directly when the target already exists.

@@ -49,6 +49,7 @@ target_link_libraries(sound_bakery_static PUBLIC
   Boost::msm
   yaml-archive
   Tracy::TracyClient
+  EASTL
   PRIVATE
   sbk::rpmalloc
 )
@@ -63,6 +64,7 @@ target_link_libraries(sound_bakery_shared PUBLIC
   Boost::msm
   yaml-archive
   Tracy::TracyClient
+  EASTL
   PRIVATE
   sbk::rpmalloc
 )
