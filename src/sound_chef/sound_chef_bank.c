@@ -158,8 +158,17 @@ sbk_status sc_bank_build(sc_bank* bank,
 
         finalData[index]     = inputFileData;
         finalDataSize[index] = inputFileDataSize + SC_BANK_FILE_NAME_BUFFER_SIZE;
-        memcpy(finalFilenames + (index * SC_BANK_FILE_NAME_BUFFER_SIZE), filename,
-               strlen(filename));
+
+        // The stored name slot is a fixed SC_BANK_FILE_NAME_BUFFER_SIZE bytes. Cap the copy so a
+        // long filename can't overrun into the next slot; finalFilenames is zero-filled, so
+        // truncating here leaves the trailing byte as a null terminator for the reader.
+        const size_t maxNameLength = SC_BANK_FILE_NAME_BUFFER_SIZE - 1;
+        size_t filenameLength      = strlen(filename);
+        if (filenameLength > maxNameLength)
+        {
+            filenameLength = maxNameLength;
+        }
+        memcpy(finalFilenames + (index * SC_BANK_FILE_NAME_BUFFER_SIZE), filename, filenameLength);
         totalDataSize += SC_CHUNK_MIN_SIZE + SC_BANK_FILE_NAME_BUFFER_SIZE + inputFileDataSize;
 
         ++filesRead;
@@ -257,6 +266,12 @@ sbk_status sc_bank_read(sc_bank* bank)
     SC_CHECK_STATUS(readResult);
     SC_CHECK(numOfSubchunks > 0, SBK_FROM_MA(MA_INVALID_DATA));
 
+    // A corrupt or hostile bank could claim a subchunk count far larger than the file can hold. Each
+    // subchunk needs at least its id, size and name on disk, so bound the count to the file size
+    // before allocating the pointer array below.
+    const ma_uint64 minBytesPerSubchunk = (ma_uint64)SC_CHUNK_MIN_SIZE + SC_BANK_FILE_NAME_BUFFER_SIZE;
+    SC_CHECK(numOfSubchunks <= fileInfo.sizeInBytes / minBytesPerSubchunk, SBK_FROM_MA(MA_INVALID_DATA));
+
     bank->riff = ma_malloc(sizeof(sc_riffChunk), NULL);
     SC_CHECK_MEM(bank->riff);
     memset(bank->riff, 0, sizeof(sc_riffChunk));
@@ -282,6 +297,12 @@ sbk_status sc_bank_read(sc_bank* bank)
 
         readResult = SBK_FROM_MA(ma_vfs_read(&vfs, bank->outputFile, &chunkSize, 4, &bytesRead));
         SC_CHECK_STATUS(readResult);
+
+        // chunkSize covers the name buffer plus the audio payload. Guard against an underflow when
+        // subtracting the name buffer, and against a value larger than the whole file, which would
+        // otherwise request an absurd allocation for the chunk data below.
+        SC_CHECK(chunkSize >= SC_BANK_FILE_NAME_BUFFER_SIZE, SBK_FROM_MA(MA_INVALID_DATA));
+        SC_CHECK(chunkSize <= fileInfo.sizeInBytes, SBK_FROM_MA(MA_INVALID_DATA));
 
         char chunkName[SC_BANK_FILE_NAME_BUFFER_SIZE];
 
