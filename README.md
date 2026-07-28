@@ -108,7 +108,7 @@ Sound Bakery stands on the shoulders of amazing open-source projects. We're grat
 - [Dear ImGui](https://github.com/ocornut/imgui) • [GLFW](https://www.glfw.org) • [ImPlot](https://github.com/epezent/implot) • [Native File Dialog](https://github.com/mlabbe/nativefiledialog) • [IconFontCppHeaders](https://github.com/juliettef/IconFontCppHeaders)
 
 **Core Libraries**
-- [boost](https://www.boost.org) • [yaml-archive](https://github.com/james-e-kelly/yaml-archive) • [concurrencpp](https://github.com/james-e-kelly/concurrencpp) • [{fmt}](https://github.com/fmtlib/fmt) • [spdlog](https://github.com/gabime/spdlog) • [rttr](https://github.com/KarateKidzz/rttr) • [CMakeRC](https://github.com/vector-of-bool/cmrc) • [Cpp Delegates](https://github.com/KarateKidzz/CppDelegates) • [stb](https://github.com/nothings/stb) • [bytesize](https://github.com/eudoxos/bytesize) • [dirent](https://github.com/tronkko/dirent)
+- [boost](https://www.boost.org) • [yaml-archive](https://github.com/james-e-kelly/yaml-archive) • [concurrencpp](https://github.com/james-e-kelly/concurrencpp) • [{fmt}](https://github.com/fmtlib/fmt) • [spdlog](https://github.com/gabime/spdlog) • [rttr](https://github.com/KarateKidzz/rttr) • [CMakeRC](https://github.com/vector-of-bool/cmrc) • [Cpp Delegates](https://github.com/KarateKidzz/CppDelegates) • [stb](https://github.com/nothings/stb) • [bytesize](https://github.com/eudoxos/bytesize) • [dirent](https://github.com/tronkko/dirent) • [EASTL](https://github.com/electronicarts/EASTL)
 
 **Testing & Documentation**
 - [doctest](https://github.com/doctest/doctest) • [Doxygen](https://www.doxygen.nl) • [Doxygen Awesome](https://github.com/jothepro/doxygen-awesome-css)
