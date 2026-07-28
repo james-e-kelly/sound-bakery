@@ -248,13 +248,6 @@ FetchContent_Declare(
 )
 
 FetchContent_Declare(
-  magicenum
-  GIT_REPOSITORY https://github.com/Neargye/magic_enum.git
-  GIT_TAG 6336b3a8295f9c9ff0522ed37f4f444f2e56c881 # master @ 2026-07-17
-  EXCLUDE_FROM_ALL
-)
-
-FetchContent_Declare(
   httplib
   GIT_REPOSITORY https://github.com/yhirose/cpp-httplib.git
   GIT_TAG 0c1cc8c9866bb567ff11c1cd0d09779e8c5f8585 # master @ 2026-07-17

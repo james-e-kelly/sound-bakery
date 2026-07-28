@@ -2,9 +2,6 @@ function(setup_review_dependencies target)
     message(STATUS "Fetching SQLiteCpp")
     FetchContent_MakeAvailable(sqlitecpp)
 
-    message(STATUS "Fetching magic_enum")
-    FetchContent_MakeAvailable(magicenum)
-
     message(STATUS "Fetching httplib")
     FetchContent_MakeAvailable(httplib)
 
@@ -19,7 +16,6 @@ function(setup_review_dependencies target)
         PRIVATE
         SQLiteCpp
         sqlite3
-        magic_enum::magic_enum
         httplib::httplib
         OpenSSL::SSL
         OpenSSL::Crypto
