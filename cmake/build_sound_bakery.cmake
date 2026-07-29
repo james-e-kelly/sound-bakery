@@ -195,23 +195,16 @@ function(build_dependencies)
     message(STATUS "Fetching boost-yaml")
     FetchContent_MakeAvailable(boost-yaml)
 
-    # Tracy (v0.13.1) has no option to disable its install() rules: it always
-    # installs TracyClient.lib, its headers and a CMake package config into the
-    # prefix, using its own flat/per-config scheme, which would pollute the dist
-    # root and - because we ship multiple configurations into one tree - clobber a
-    # config-specific lib at a shared path. We statically link TracyClient into our
-    # own libraries, so consumers never need it standalone. Suppress its install
-    # rules via the shared override (see setup_install_suppression.cmake).
-    set_property(GLOBAL PROPERTY SBK_SUPPRESS_INSTALL ON)
-
+    # Tracy (v0.13.1) has no option to disable its install() rules (TracyClient.lib,
+    # its headers and CMake package config); they are suppressed by default like
+    # every dependency (see setup_install_suppression.cmake). We statically link
+    # TracyClient into our own libraries, so consumers never need it standalone.
     CPMAddPackage(
     NAME tracy
     GITHUB_REPOSITORY wolfpld/tracy
     GIT_TAG v0.13.1
     OPTIONS "TRACY_ON_DEMAND ON" "TRACY_NO_VSYNC_CAPTURE ON" "TRACY_NO_FRAME_IMAGE ON" "TRACY_FIBERS ON"
     )
-
-    set_property(GLOBAL PROPERTY SBK_SUPPRESS_INSTALL OFF)
 
     message(STATUS "Fetching rpmalloc")
     FetchContent_MakeAvailable(sbk_rpmalloc_content)

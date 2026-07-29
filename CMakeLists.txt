@@ -17,6 +17,8 @@ option(SOUND_BAKERY_TESTS "Build test library" OFF)
 option(SOUND_BAKERY_FORMAT_SOURCE "Format source" ${SOUND_BAKERY_MAIN_PROJECT})
 option(SOUND_BAKERY_TIDY_SOURCE "Run clang-tidy on source files" OFF)
 
+set_property(GLOBAL PROPERTY SBK_SUPPRESS_INSTALL ${SOUND_BAKERY_INSTALL})
+
 include(build_sound_bakery_project)
 setup_clang_format()
 setup_clang_tidy()
@@ -48,7 +50,7 @@ include(setup_tests)
 if(SOUND_BAKERY_MAIN_PROJECT)
   include(setup_third_party_licenses)
   sbk_write_third_party_licenses(SBK_THIRD_PARTY_LICENSES_FILE)
-  install(FILES
+  sbk_install(FILES
     "${CMAKE_SOURCE_DIR}/LICENSE"
     "${SBK_THIRD_PARTY_LICENSES_FILE}"
     DESTINATION .)

@@ -70,11 +70,11 @@ target_link_libraries(sound_bakery_shared PUBLIC
 )
 
 if (SOUND_BAKERY_INSTALL)
-install(TARGETS sound_bakery_shared DESTINATION lib/${SBK_INSTALL_CONFIG_SUBDIR}/sound_bakery)
-install(TARGETS sound_bakery_static DESTINATION lib/${SBK_INSTALL_CONFIG_SUBDIR}/sound_bakery)
-install(FILES 
-  ${PROJECT_SOURCE_DIR}/inc/sound_bakery/sound_bakery_common.h    
-  ${PROJECT_SOURCE_DIR}/inc/sound_bakery/sound_bakery_version.h 
+sbk_install(TARGETS sound_bakery_shared DESTINATION lib/${SBK_INSTALL_CONFIG_SUBDIR}/sound_bakery)
+sbk_install(TARGETS sound_bakery_static DESTINATION lib/${SBK_INSTALL_CONFIG_SUBDIR}/sound_bakery)
+sbk_install(FILES
+  ${PROJECT_SOURCE_DIR}/inc/sound_bakery/sound_bakery_common.h
+  ${PROJECT_SOURCE_DIR}/inc/sound_bakery/sound_bakery_version.h
   ${PROJECT_SOURCE_DIR}/inc/sound_bakery/sound_bakery.h
   DESTINATION inc/sound_bakery)
 endif()

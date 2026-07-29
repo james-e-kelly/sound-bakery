@@ -173,11 +173,8 @@ FetchContent_MakeAvailable(platform-folders)
 
 include(build_imgui)
 
-# libsodium and libebur128 each install() their own headers, libs and
-# CMake package config. We link them statically, so suppress those install rules
-# (see setup_install_suppression.cmake) to keep them out of our dist tree.
-set_property(GLOBAL PROPERTY SBK_SUPPRESS_INSTALL ON)
-
+# libsodium and libebur128 each install() their own headers/libs/config;
+# suppressed by default like every dependency (see setup_install_suppression.cmake).
 CPMAddPackage(NAME sodium-cmake
   GITHUB_REPOSITORY robinlinden/libsodium-cmake
   GIT_TAG 9b2848dfc1b917a9410f0de9d81059b26cbfaa8d # master @ 2026-07-17
@@ -189,8 +186,6 @@ CPMAddPackage(NAME libebur128
   GIT_TAG 67b33abe1558160ed76ada1322329b0e9e058b02 # master @ 2026-07-17
   OPTIONS "ENABLE_TESTS OFF" "BUILD_SHARED_LIBS OFF"
 )
-
-set_property(GLOBAL PROPERTY SBK_SUPPRESS_INSTALL OFF)
 
 target_include_directories(gluten PUBLIC
   ${fonts_SOURCE_DIR}
