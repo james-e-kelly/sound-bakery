@@ -2,7 +2,7 @@
 <area shape="rect" id="Node000001" title="Audio runtime, powered by Sound Chef." alt="" coords="130,79,286,104"/>
 <area shape="rect" id="Node000002" href="$structsc__system.html" title="Object that manages the node graph, sounds, output etc." alt="" coords="5,5,96,31"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="90,34,183,76,181,81,87,39"/>
-<area shape="rect" id="Node000003" href="$classsbk_1_1core_1_1object__owner.html" title="Creates, owns and tracks objects." alt="" coords="120,5,296,31"/>
+<area shape="rect" id="Node000003" href="$classsbk_1_1core_1_1object__owner.html" title="Creates, owns and tracks objects. Is owned by other object owners." alt="" coords="120,5,296,31"/>
 <area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="211,44,211,79,205,79,205,44"/>
 <area shape="rect" id="Node000004" title=" " alt="" coords="320,5,469,31"/>
 <area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="353,38,239,81,238,76,351,33"/>

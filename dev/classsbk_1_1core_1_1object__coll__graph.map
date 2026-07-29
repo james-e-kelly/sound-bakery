@@ -1,6 +1,6 @@
 <map id="sbk::core::object" name="sbk::core::object">
 <area shape="rect" id="Node000001" title="Base object that all sound Bakery objects should inherit from." alt="" coords="222,93,351,119"/>
-<area shape="rect" id="Node000002" href="$classsbk_1_1core_1_1object__owner.html" title="Creates, owns and tracks objects." alt="" coords="5,13,181,38"/>
+<area shape="rect" id="Node000002" href="$classsbk_1_1core_1_1object__owner.html" title="Creates, owns and tracks objects. Is owned by other object owners." alt="" coords="5,13,181,38"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="135,41,260,91,258,96,133,45"/>
 <area shape="rect" id="Node000003" title=" " alt="" coords="206,5,367,45"/>
 <area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="289,59,289,93,284,93,284,59"/>

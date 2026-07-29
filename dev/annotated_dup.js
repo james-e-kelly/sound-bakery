@@ -94,7 +94,8 @@ var annotated_dup =
         [ "void_deleter", "structsbk_1_1engine_1_1void__deleter.html", null ]
       ] ],
       [ "memory", null, [
-        [ "object_deleter", "structsbk_1_1memory_1_1object__deleter.html", null ]
+        [ "object_deleter", "structsbk_1_1memory_1_1object__deleter.html", null ],
+        [ "owned_object_deleter", "structsbk_1_1memory_1_1owned__object__deleter.html", null ]
       ] ],
       [ "reflection", null, [
         [ "CreatePointerConversion", "structsbk_1_1reflection_1_1CreatePointerConversion.html", null ],

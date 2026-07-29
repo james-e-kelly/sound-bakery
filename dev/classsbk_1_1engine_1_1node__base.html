@@ -161,7 +161,7 @@ Inheritance diagram for sbk::engine::node_base:</div>
 <area shape="poly" title=" " alt="" coords="570,145,604,145,604,150,570,150"/>
 <area shape="rect" href="classsbk_1_1core_1_1object.html" title="Base object that all sound Bakery objects should inherit from." alt="" coords="229,135,359,160"/>
 <area shape="poly" title=" " alt="" coords="372,145,406,145,406,150,372,150"/>
-<area shape="rect" href="classsbk_1_1core_1_1object__owner.html" title="Creates, owns and tracks objects." alt="" coords="5,77,181,103"/>
+<area shape="rect" href="classsbk_1_1core_1_1object__owner.html" title="Creates, owns and tracks objects. Is owned by other object owners." alt="" coords="5,77,181,103"/>
 <area shape="poly" title=" " alt="" coords="152,104,250,132,248,137,151,109"/>
 <area shape="rect" title=" " alt="" coords="13,127,174,167"/>
 <area shape="poly" title=" " alt="" coords="187,145,229,145,229,150,187,150"/>
@@ -195,7 +195,7 @@ Collaboration diagram for sbk::engine::node_base:</div>
 <area shape="poly" title=" " alt="" coords="313,226,373,299,368,303,309,230"/>
 <area shape="rect" href="classsbk_1_1core_1_1object.html" title="Base object that all sound Bakery objects should inherit from." alt="" coords="222,95,351,120"/>
 <area shape="poly" title=" " alt="" coords="289,134,289,177,284,177,284,134"/>
-<area shape="rect" href="classsbk_1_1core_1_1object__owner.html" title="Creates, owns and tracks objects." alt="" coords="5,13,181,38"/>
+<area shape="rect" href="classsbk_1_1core_1_1object__owner.html" title="Creates, owns and tracks objects. Is owned by other object owners." alt="" coords="5,13,181,38"/>
 <area shape="poly" title=" " alt="" coords="135,41,260,92,258,97,133,46"/>
 <area shape="rect" title=" " alt="" coords="206,5,367,45"/>
 <area shape="poly" title=" " alt="" coords="289,59,289,94,284,94,284,59"/>
@@ -302,24 +302,12 @@ template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a661e0f374855f0803ab3f08b022d5c96 inherit pub_methods_classsbk_1_1core_1_1object"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><b>try_convert_object</b> () const noexcept -&gt; const T *</td></tr>
 <tr class="memdesc:a661e0f374855f0803ab3f08b022d5c96 inherit pub_methods_classsbk_1_1core_1_1object"><td class="mdescLeft">&#160;</td><td class="mdescRight">Const version of try_convert_object. <br /></td></tr>
 <tr class="separator:a661e0f374855f0803ab3f08b022d5c96 inherit pub_methods_classsbk_1_1core_1_1object"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a72f1c193104b514e3c7e8834b8b87aad inherit pub_methods_classsbk_1_1core_1_1object" id="r_a72f1c193104b514e3c7e8834b8b87aad"><td class="memItemLeft" align="right" valign="top">
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>destroy</b> () -&gt; void</td></tr>
-<tr class="separator:a72f1c193104b514e3c7e8834b8b87aad inherit pub_methods_classsbk_1_1core_1_1object"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac7a08a1553c4f0e99ad00714edd75ed5 inherit pub_methods_classsbk_1_1core_1_1object" id="r_ac7a08a1553c4f0e99ad00714edd75ed5"><td class="memItemLeft" align="right" valign="top">
 auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_object_type</b> () const -&gt; rttr::type</td></tr>
 <tr class="separator:ac7a08a1553c4f0e99ad00714edd75ed5 inherit pub_methods_classsbk_1_1core_1_1object"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adc0d1864ec8cb494716686e6a0f04d33 inherit pub_methods_classsbk_1_1core_1_1object" id="r_adc0d1864ec8cb494716686e6a0f04d33"><td class="memItemLeft" align="right" valign="top">
 auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_object_name</b> () const -&gt; std::string_view</td></tr>
 <tr class="separator:adc0d1864ec8cb494716686e6a0f04d33 inherit pub_methods_classsbk_1_1core_1_1object"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a904bd5ff81a172346e65e16cdcceb6af inherit pub_methods_classsbk_1_1core_1_1object" id="r_a904bd5ff81a172346e65e16cdcceb6af"><td class="memItemLeft" align="right" valign="top">
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_owner</b> () const -&gt; <a class="el" href="classsbk_1_1core_1_1object__owner.html">object_owner</a> *</td></tr>
-<tr class="separator:a904bd5ff81a172346e65e16cdcceb6af inherit pub_methods_classsbk_1_1core_1_1object"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abcb27b63a283d0da26fda854dc919655 inherit pub_methods_classsbk_1_1core_1_1object" id="r_abcb27b63a283d0da26fda854dc919655"><td class="memItemLeft" align="right" valign="top">
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_owner_object</b> () const -&gt; <a class="el" href="classsbk_1_1core_1_1object.html">object</a> *</td></tr>
-<tr class="separator:abcb27b63a283d0da26fda854dc919655 inherit pub_methods_classsbk_1_1core_1_1object"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae23e9987549fa256898fb3c38e6ace5c inherit pub_methods_classsbk_1_1core_1_1object" id="r_ae23e9987549fa256898fb3c38e6ace5c"><td class="memItemLeft" align="right" valign="top">
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_on_destroy</b> () -&gt; MulticastDelegate&lt; <a class="el" href="classsbk_1_1core_1_1object.html">object</a> * &gt; &amp;</td></tr>
-<tr class="separator:ae23e9987549fa256898fb3c38e6ace5c inherit pub_methods_classsbk_1_1core_1_1object"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a17e38b9ce6012859cf37fc2c28b1acd8 inherit pub_methods_classsbk_1_1core_1_1object" id="r_a17e38b9ce6012859cf37fc2c28b1acd8"><td class="memItemLeft" align="right" valign="top">
 auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_on_update_name</b> () -&gt; MulticastDelegate&lt; std::string_view, std::string_view &gt; &amp;</td></tr>
 <tr class="separator:a17e38b9ce6012859cf37fc2c28b1acd8 inherit pub_methods_classsbk_1_1core_1_1object"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -343,26 +331,12 @@ template&lt;class archive_class &gt; </td></tr>
 <tr class="memitem:a6f3806d7a32225dffc010496340c989d inherit pub_methods_classsbk_1_1core_1_1object"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><b>serialize</b> (archive_class &amp;archive, const unsigned int fileVersion) -&gt; void</td></tr>
 <tr class="separator:a6f3806d7a32225dffc010496340c989d inherit pub_methods_classsbk_1_1core_1_1object"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classsbk_1_1core_1_1object__owner"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classsbk_1_1core_1_1object__owner')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classsbk_1_1core_1_1object__owner.html">sbk::core::object_owner</a></td></tr>
-<tr class="memitem:a588158520d3f23e7f6423d76d8b7f7e0 inherit pub_methods_classsbk_1_1core_1_1object__owner" id="r_a588158520d3f23e7f6423d76d8b7f7e0"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a588158520d3f23e7f6423d76d8b7f7e0 inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classsbk_1_1core_1_1object__owner.html#a588158520d3f23e7f6423d76d8b7f7e0">create_raw_object</a> () -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt; std::shared_ptr&lt; T &gt; &gt;</td></tr>
-<tr class="memdesc:a588158520d3f23e7f6423d76d8b7f7e0 inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a raw object that is not globally tracked.  <br /></td></tr>
-<tr class="separator:a588158520d3f23e7f6423d76d8b7f7e0 inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3bc63e07294238980342d33d68b510a3 inherit pub_methods_classsbk_1_1core_1_1object__owner" id="r_a3bc63e07294238980342d33d68b510a3"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsbk_1_1core_1_1object__owner.html#a3bc63e07294238980342d33d68b510a3">create_runtime_object</a> (const rttr::type &amp;type) -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt; std::shared_ptr&lt; <a class="el" href="classsbk_1_1core_1_1object.html">object</a> &gt; &gt;</td></tr>
-<tr class="memdesc:a3bc63e07294238980342d33d68b510a3 inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an object that is owned by this owner.  <br /></td></tr>
-<tr class="separator:a3bc63e07294238980342d33d68b510a3 inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a67ca2889c938c105f32f76438bb0bf79 inherit pub_methods_classsbk_1_1core_1_1object__owner" id="r_a67ca2889c938c105f32f76438bb0bf79"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsbk_1_1core_1_1object__owner.html#a67ca2889c938c105f32f76438bb0bf79">create_database_object</a> (const rttr::type &amp;type, bool addToDatabase=true) -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt; std::shared_ptr&lt; <a class="el" href="classsbk_1_1core_1_1database__object.html">database_object</a> &gt; &gt;</td></tr>
-<tr class="memdesc:a67ca2889c938c105f32f76438bb0bf79 inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an object that derives from <a class="el" href="classsbk_1_1core_1_1database__object.html" title="Base object type for any object that can exist in the editor/database. Holds an ID and name.">database_object</a>.  <br /></td></tr>
-<tr class="separator:a67ca2889c938c105f32f76438bb0bf79 inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a89b7b7bf1159b2ea4dcfa402c81cd98b inherit pub_methods_classsbk_1_1core_1_1object__owner" id="r_a89b7b7bf1159b2ea4dcfa402c81cd98b"><td class="memTemplParams" colspan="2">
-template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a89b7b7bf1159b2ea4dcfa402c81cd98b inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><b>create_runtime_object</b> () -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt; std::shared_ptr&lt; T &gt; &gt;</td></tr>
-<tr class="memdesc:a89b7b7bf1159b2ea4dcfa402c81cd98b inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="mdescLeft">&#160;</td><td class="mdescRight">Templated version of create_runtime_object. <br /></td></tr>
-<tr class="separator:a89b7b7bf1159b2ea4dcfa402c81cd98b inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afc00b34d49c1378041bd7f51d0707f15 inherit pub_methods_classsbk_1_1core_1_1object__owner" id="r_afc00b34d49c1378041bd7f51d0707f15"><td class="memTemplParams" colspan="2">
-template&lt;typename T &gt; </td></tr>
-<tr class="memitem:afc00b34d49c1378041bd7f51d0707f15 inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><b>create_database_object</b> (bool addToDatabase=true) -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt; std::shared_ptr&lt; T &gt; &gt;</td></tr>
-<tr class="memdesc:afc00b34d49c1378041bd7f51d0707f15 inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="mdescLeft">&#160;</td><td class="mdescRight">Templated version of create_database_object. <br /></td></tr>
-<tr class="separator:afc00b34d49c1378041bd7f51d0707f15 inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab98fcc538b96a167942899d9db107c67 inherit pub_methods_classsbk_1_1core_1_1object__owner" id="r_ab98fcc538b96a167942899d9db107c67"><td class="memItemLeft" align="right" valign="top">
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_owner</b> () const -&gt; <a class="el" href="classsbk_1_1core_1_1object__owner.html">object_owner</a> *</td></tr>
+<tr class="separator:ab98fcc538b96a167942899d9db107c67 inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1310cbaf1e3f14a84d2504a004b94d38 inherit pub_methods_classsbk_1_1core_1_1object__owner" id="r_a1310cbaf1e3f14a84d2504a004b94d38"><td class="memItemLeft" align="right" valign="top">
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_system</b> () const noexcept -&gt; <a class="el" href="classsbk_1_1engine_1_1system.html">sbk::engine::system</a> *</td></tr>
+<tr class="separator:a1310cbaf1e3f14a84d2504a004b94d38 inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a89b480460c28d19375fd233b0cb8d1bb inherit pub_methods_classsbk_1_1core_1_1object__owner" id="r_a89b480460c28d19375fd233b0cb8d1bb"><td class="memItemLeft" align="right" valign="top">
 auto&#160;</td><td class="memItemRight" valign="bottom"><b>add_reference_to_object</b> (std::shared_ptr&lt; <a class="el" href="classsbk_1_1core_1_1database__object.html">database_object</a> &gt; &amp;<a class="el" href="classsbk_1_1core_1_1object.html">object</a>) -&gt; void</td></tr>
 <tr class="memdesc:a89b480460c28d19375fd233b0cb8d1bb inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="mdescLeft">&#160;</td><td class="mdescRight">Track an already existing object. <br /></td></tr>
@@ -382,6 +356,31 @@ auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_objects</b> () co
 <tr class="memitem:a77e0009de1342cf5e6e47d5f84f47992 inherit pub_methods_classsbk_1_1core_1_1object__owner" id="r_a77e0009de1342cf5e6e47d5f84f47992"><td class="memItemLeft" align="right" valign="top">
 auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_objects_size</b> () const -&gt; std::size_t</td></tr>
 <tr class="separator:a77e0009de1342cf5e6e47d5f84f47992 inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a588158520d3f23e7f6423d76d8b7f7e0 inherit pub_methods_classsbk_1_1core_1_1object__owner" id="r_a588158520d3f23e7f6423d76d8b7f7e0"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a588158520d3f23e7f6423d76d8b7f7e0 inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classsbk_1_1core_1_1object__owner.html#a588158520d3f23e7f6423d76d8b7f7e0">create_raw_object</a> () -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt; std::shared_ptr&lt; T &gt; &gt;</td></tr>
+<tr class="memdesc:a588158520d3f23e7f6423d76d8b7f7e0 inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a raw object that is not globally tracked.  <br /></td></tr>
+<tr class="separator:a588158520d3f23e7f6423d76d8b7f7e0 inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4a651eeedbd91ca192962bfcd881024 inherit pub_methods_classsbk_1_1core_1_1object__owner" id="r_ad4a651eeedbd91ca192962bfcd881024"><td class="memTemplParams" colspan="2">
+template&lt;typename T , typename... Args&gt; </td></tr>
+<tr class="memitem:ad4a651eeedbd91ca192962bfcd881024 inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><b>create_owned</b> (SB_OBJECT_CATEGORY category, Args &amp;&amp;... args) -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt; sbk::owned_ptr&lt; T &gt; &gt;</td></tr>
+<tr class="memdesc:ad4a651eeedbd91ca192962bfcd881024 inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an object that is fully owned by the caller. <br /></td></tr>
+<tr class="separator:ad4a651eeedbd91ca192962bfcd881024 inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3bc63e07294238980342d33d68b510a3 inherit pub_methods_classsbk_1_1core_1_1object__owner" id="r_a3bc63e07294238980342d33d68b510a3"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsbk_1_1core_1_1object__owner.html#a3bc63e07294238980342d33d68b510a3">create_runtime_object</a> (const rttr::type &amp;type) -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt; std::shared_ptr&lt; <a class="el" href="classsbk_1_1core_1_1object.html">object</a> &gt; &gt;</td></tr>
+<tr class="memdesc:a3bc63e07294238980342d33d68b510a3 inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an object that is owned by this owner.  <br /></td></tr>
+<tr class="separator:a3bc63e07294238980342d33d68b510a3 inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a67ca2889c938c105f32f76438bb0bf79 inherit pub_methods_classsbk_1_1core_1_1object__owner" id="r_a67ca2889c938c105f32f76438bb0bf79"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsbk_1_1core_1_1object__owner.html#a67ca2889c938c105f32f76438bb0bf79">create_database_object</a> (const rttr::type &amp;type, bool addToDatabase=true) -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt; std::shared_ptr&lt; <a class="el" href="classsbk_1_1core_1_1database__object.html">database_object</a> &gt; &gt;</td></tr>
+<tr class="memdesc:a67ca2889c938c105f32f76438bb0bf79 inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an object that derives from <a class="el" href="classsbk_1_1core_1_1database__object.html" title="Base object type for any object that can exist in the editor/database. Holds an ID and name.">database_object</a>.  <br /></td></tr>
+<tr class="separator:a67ca2889c938c105f32f76438bb0bf79 inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89b7b7bf1159b2ea4dcfa402c81cd98b inherit pub_methods_classsbk_1_1core_1_1object__owner" id="r_a89b7b7bf1159b2ea4dcfa402c81cd98b"><td class="memTemplParams" colspan="2">
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a89b7b7bf1159b2ea4dcfa402c81cd98b inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><b>create_runtime_object</b> () -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt; std::shared_ptr&lt; T &gt; &gt;</td></tr>
+<tr class="memdesc:a89b7b7bf1159b2ea4dcfa402c81cd98b inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="mdescLeft">&#160;</td><td class="mdescRight">Templated version of create_runtime_object. <br /></td></tr>
+<tr class="separator:a89b7b7bf1159b2ea4dcfa402c81cd98b inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc00b34d49c1378041bd7f51d0707f15 inherit pub_methods_classsbk_1_1core_1_1object__owner" id="r_afc00b34d49c1378041bd7f51d0707f15"><td class="memTemplParams" colspan="2">
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:afc00b34d49c1378041bd7f51d0707f15 inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><b>create_database_object</b> (bool addToDatabase=true) -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt; std::shared_ptr&lt; T &gt; &gt;</td></tr>
+<tr class="memdesc:afc00b34d49c1378041bd7f51d0707f15 inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="mdescLeft">&#160;</td><td class="mdescRight">Templated version of create_database_object. <br /></td></tr>
+<tr class="separator:afc00b34d49c1378041bd7f51d0707f15 inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -389,10 +388,10 @@ Protected Member Functions</h2></td></tr>
 virtual auto&#160;</td><td class="memItemRight" valign="bottom"><b>set_parent_node</b> (const <a class="el" href="classsbk_1_1core_1_1database__ptr.html">sbk::core::database_ptr</a>&lt; <a class="el" href="classsbk_1_1engine_1_1node__base.html">node_base</a> &gt; &amp;parent) -&gt; void</td></tr>
 <tr class="memdesc:a9f32518b7ef4c009b911ad44caa6e3c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the parent node. Does not add this node to the parent's child list. <br /></td></tr>
 <tr class="separator:a9f32518b7ef4c009b911ad44caa6e3c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pro_methods_classsbk_1_1core_1_1object"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classsbk_1_1core_1_1object')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classsbk_1_1core_1_1object.html">sbk::core::object</a></td></tr>
-<tr class="memitem:a44293d044891e38e6248c6923a7756fa inherit pro_methods_classsbk_1_1core_1_1object" id="r_a44293d044891e38e6248c6923a7756fa"><td class="memItemLeft" align="right" valign="top">
-virtual auto&#160;</td><td class="memItemRight" valign="bottom"><b>pre_destroy_implementation</b> () -&gt; void</td></tr>
-<tr class="separator:a44293d044891e38e6248c6923a7756fa inherit pro_methods_classsbk_1_1core_1_1object"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_methods_classsbk_1_1core_1_1object__owner"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classsbk_1_1core_1_1object__owner')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classsbk_1_1core_1_1object__owner.html">sbk::core::object_owner</a></td></tr>
+<tr class="memitem:ab1b37ddb016a88ea9c2931e62c8c7bce inherit pro_methods_classsbk_1_1core_1_1object__owner" id="r_ab1b37ddb016a88ea9c2931e62c8c7bce"><td class="memItemLeft" align="right" valign="top">
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>set_owner</b> (<a class="el" href="classsbk_1_1core_1_1object__owner.html">object_owner</a> *newOwner) -&gt; void</td></tr>
+<tr class="separator:ab1b37ddb016a88ea9c2931e62c8c7bce inherit pro_methods_classsbk_1_1core_1_1object__owner"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>

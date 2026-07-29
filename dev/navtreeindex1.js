@@ -1,5 +1,6 @@
 var NAVTREEINDEX1 =
 {
+"index.html#autotoc_md9":[3],
 "log__widget_8h_source.html":[13,0,0,0,4,5],
 "manual__executor_8h_source.html":[13,0,2,0,16,2],
 "md_CHANGELOG.html":[6],
@@ -188,6 +189,7 @@ var NAVTREEINDEX1 =
 "structsbk_1_1fiber__promise.html":[12,0,2,10],
 "structsbk_1_1final__awaiter.html":[12,0,2,11],
 "structsbk_1_1memory_1_1object__deleter.html":[12,0,2,3,0],
+"structsbk_1_1memory_1_1owned__object__deleter.html":[12,0,2,3,1],
 "structsbk_1_1ready__result__awaiter.html":[12,0,2,13],
 "structsbk_1_1reflection_1_1CreatePointerConversion.html":[12,0,2,4,0],
 "structsbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_00_01BaseClass_00_01U_8_8_8_01_4.html":[12,0,2,4,2],

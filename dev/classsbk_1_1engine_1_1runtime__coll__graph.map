@@ -18,7 +18,7 @@
 <area shape="poly" id="edge8_Node000007_Node000008" title=" " alt="" coords="283,133,262,226,257,224,278,131"/>
 <area shape="rect" id="Node000009" href="$structsc__dsp__parameter__float.html" title=" " alt="" coords="197,5,375,31"/>
 <area shape="poly" id="edge9_Node000008_Node000009" title=" " alt="" coords="289,45,289,93,283,93,283,45"/>
-<area shape="rect" id="Node000010" href="$classsbk_1_1core_1_1object__owner.html" title="Creates, owns and tracks objects." alt="" coords="165,523,341,548"/>
+<area shape="rect" id="Node000010" href="$classsbk_1_1core_1_1object__owner.html" title="Creates, owns and tracks objects. Is owned by other object owners." alt="" coords="165,523,341,548"/>
 <area shape="poly" id="edge11_Node000001_Node000010" title=" " alt="" coords="255,562,255,597,250,597,250,562"/>
 <area shape="rect" id="Node000011" title=" " alt="" coords="365,523,514,548"/>
 <area shape="poly" id="edge12_Node000001_Node000011" title=" " alt="" coords="398,555,283,600,281,595,396,550"/>

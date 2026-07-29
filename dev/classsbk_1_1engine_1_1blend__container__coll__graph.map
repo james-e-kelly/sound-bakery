@@ -10,7 +10,7 @@
 <area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="313,226,373,299,368,303,309,230"/>
 <area shape="rect" id="Node000006" href="$classsbk_1_1core_1_1object.html" title="Base object that all sound Bakery objects should inherit from." alt="" coords="222,95,351,120"/>
 <area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="289,134,289,177,284,177,284,134"/>
-<area shape="rect" id="Node000007" href="$classsbk_1_1core_1_1object__owner.html" title="Creates, owns and tracks objects." alt="" coords="5,13,181,38"/>
+<area shape="rect" id="Node000007" href="$classsbk_1_1core_1_1object__owner.html" title="Creates, owns and tracks objects. Is owned by other object owners." alt="" coords="5,13,181,38"/>
 <area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="135,41,260,92,258,97,133,46"/>
 <area shape="rect" id="Node000008" title=" " alt="" coords="206,5,367,45"/>
 <area shape="poly" id="edge7_Node000006_Node000008" title=" " alt="" coords="289,59,289,94,284,94,284,59"/>

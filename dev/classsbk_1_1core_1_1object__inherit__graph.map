@@ -6,7 +6,7 @@
 <area shape="poly" id="edge28_Node000001_Node000029" title=" " alt="" coords="372,379,406,379,406,384,372,384"/>
 <area shape="rect" id="Node000030" href="$classsbk_1_1engine_1_1voice.html" title="A runtime graph of nodes and busses, playing a sound or many." alt="" coords="436,418,576,443"/>
 <area shape="poly" id="edge29_Node000001_Node000030" title=" " alt="" coords="363,395,451,415,450,421,362,400"/>
-<area shape="rect" id="Node000002" href="$classsbk_1_1core_1_1object__owner.html" title="Creates, owns and tracks objects." alt="" coords="5,311,181,337"/>
+<area shape="rect" id="Node000002" href="$classsbk_1_1core_1_1object__owner.html" title="Creates, owns and tracks objects. Is owned by other object owners." alt="" coords="5,311,181,337"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="152,338,250,366,248,371,151,343"/>
 <area shape="rect" id="Node000003" title=" " alt="" coords="13,361,174,401"/>
 <area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="187,379,229,379,229,384,187,384"/>

@@ -151,7 +151,7 @@ $(document).ready(function(){initNavTree('reflection_8h_source.html',''); initRe
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;rttr/registration_friend&gt;</span></div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;rttr/type&gt;</span></div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span>sbk::reflection</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span>sbk</div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>{</div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> Target_Type, <span class="keyword">typename</span> Source_Type&gt;</div>
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <span class="keyword">auto</span> cast(Source_Type <span class="keywordtype">object</span>) -&gt; Target_Type</div>
@@ -176,12 +176,15 @@ $(document).ready(function(){initNavTree('reflection_8h_source.html',''); initRe
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        <span class="keyword">using </span>source_type_no_cv = <span class="keyword">typename</span> std::remove_cv&lt;typename std::remove_pointer&lt;Source_Type&gt;::type&gt;::type;</div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>Target_Type<span class="keyword">&gt;</span>(rttr::type::apply_offset(<span class="keyword">const_cast&lt;</span>source_type_no_cv*<span class="keyword">&gt;</span>(<span class="keywordtype">object</span>)-&gt;get_ptr(),</div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>                                                                 <span class="keyword">const_cast&lt;</span>source_type_no_cv*<span class="keyword">&gt;</span>(<span class="keywordtype">object</span>)-&gt;get_type(),</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>                                                                 Arg_Type::type()));</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>                                                                 Return_Type::type()));</div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    }</div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keyword">auto</span> register_reflection_types() -&gt; void;</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keyword">auto</span> unregister_reflection_types() -&gt; void;</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>}  <span class="comment">// namespace sbk::reflection</span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keyword">namespace </span>reflection</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        <span class="keyword">auto</span> register_reflection_types() -&gt; void;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        <span class="keyword">auto</span> unregister_reflection_types() -&gt; void;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    }</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>}  <span class="comment">// namespace sbk</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

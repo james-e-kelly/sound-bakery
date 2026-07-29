@@ -80,11 +80,6 @@ var hierarchy =
     [ "sbk::engine::event_stop", "structsbk_1_1engine_1_1event__stop.html", null ],
     [ "sbk::engine::event_update", "structsbk_1_1engine_1_1event__update.html", null ],
     [ "sbk::engine::event_virtualise", "structsbk_1_1engine_1_1event__virtualise.html", null ],
-    [ "sbk::executor", "classsbk_1_1executor.html", [
-      [ "sbk::command_queue", "classsbk_1_1command__queue.html", null ],
-      [ "sbk::manual_executor", "classsbk_1_1manual__executor.html", null ],
-      [ "sbk::thread_executor", "classsbk_1_1thread__executor.html", null ]
-    ] ],
     [ "sbk::fiber_promise", "structsbk_1_1fiber__promise.html", [
       [ "sbk::detached_task::promise_type", "structsbk_1_1detached__task_1_1promise__type.html", null ],
       [ "sbk::task_promise< T >", "structsbk_1_1task__promise.html", null ],
@@ -115,12 +110,20 @@ var hierarchy =
     [ "sbk::core::object_owner", "classsbk_1_1core_1_1object__owner.html", [
       [ "sbk::core::object", "classsbk_1_1core_1_1object.html", null ],
       [ "sbk::editor::project", "classsbk_1_1editor_1_1project.html", null ],
-      [ "sbk::engine::runtime", "classsbk_1_1engine_1_1runtime.html", null ]
+      [ "sbk::engine::profiling::voice_tracker", "classsbk_1_1engine_1_1profiling_1_1voice__tracker.html", null ],
+      [ "sbk::engine::runtime", "classsbk_1_1engine_1_1runtime.html", null ],
+      [ "sbk::engine::system", "classsbk_1_1engine_1_1system.html", null ],
+      [ "sbk::executor", "classsbk_1_1executor.html", [
+        [ "sbk::command_queue", "classsbk_1_1command__queue.html", null ],
+        [ "sbk::manual_executor", "classsbk_1_1manual__executor.html", null ],
+        [ "sbk::thread_executor", "classsbk_1_1thread__executor.html", null ]
+      ] ]
     ] ],
     [ "sbk::core::object_ptr_comparator", "structsbk_1_1core_1_1object__ptr__comparator.html", null ],
     [ "sbk::core::object_tracker", "classsbk_1_1core_1_1object__tracker.html", [
       [ "sbk::engine::system", "classsbk_1_1engine_1_1system.html", null ]
     ] ],
+    [ "sbk::memory::owned_object_deleter< T >", "structsbk_1_1memory_1_1owned__object__deleter.html", null ],
     [ "sbk::core::parsed_database_name", "structsbk_1_1core_1_1parsed__database__name.html", null ],
     [ "playable_selection", "structplayable__selection.html", null ],
     [ "sbk::editor::project_configuration", "structsbk_1_1editor_1_1project__configuration.html", null ],
@@ -196,7 +199,6 @@ var hierarchy =
     [ "boost::mpl::vector", null, [
       [ "sbk::engine::node_instance_fsm::transition_table", "structsbk_1_1engine_1_1node__instance__fsm_1_1transition__table.html", null ]
     ] ],
-    [ "sbk::engine::profiling::voice_tracker", "classsbk_1_1engine_1_1profiling_1_1voice__tracker.html", null ],
     [ "sbk::engine::void_deleter", "structsbk_1_1engine_1_1void__deleter.html", null ],
     [ "gluten::widget", null, [
       [ "audio_display_widget", "classaudio__display__widget.html", null ],

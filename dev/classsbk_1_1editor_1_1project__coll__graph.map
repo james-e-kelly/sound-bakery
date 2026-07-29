@@ -1,5 +1,5 @@
 <map id="sbk::editor::project" name="sbk::editor::project">
 <area shape="rect" id="Node000001" title="Manages a project file and the objects contained within it." alt="" coords="21,79,165,104"/>
-<area shape="rect" id="Node000002" href="$classsbk_1_1core_1_1object__owner.html" title="Creates, owns and tracks objects." alt="" coords="5,5,181,31"/>
+<area shape="rect" id="Node000002" href="$classsbk_1_1core_1_1object__owner.html" title="Creates, owns and tracks objects. Is owned by other object owners." alt="" coords="5,5,181,31"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="96,44,96,79,91,79,91,44"/>
 </map>

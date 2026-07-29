@@ -11,5 +11,6 @@ var searchData=
   ['open_20source_20projects_8',['Open-Source Projects',['../md_docs_2Inspiration.html#autotoc_md45',1,'']]],
   ['operator_20bool_9',['operator bool',['../classsbk_1_1core_1_1database__ptr.html#a39acf815e109b156deaa162f09c33f63',1,'sbk::core::database_ptr']]],
   ['operator_21_10',['operator!',['../classsbk_1_1core_1_1database__ptr.html#a5ace7b469a06d5b658afe148d2205640',1,'sbk::core::database_ptr']]],
-  ['operator_3d_11',['operator=',['../classsbk_1_1core_1_1database__ptr.html#aa588629ecfe7928d90450cc15759394f',1,'sbk::core::database_ptr']]]
+  ['operator_3d_11',['operator=',['../classsbk_1_1core_1_1database__ptr.html#aa588629ecfe7928d90450cc15759394f',1,'sbk::core::database_ptr']]],
+  ['owned_5fobject_5fdeleter_12',['owned_object_deleter',['../structsbk_1_1memory_1_1owned__object__deleter.html',1,'sbk::memory']]]
 ];
