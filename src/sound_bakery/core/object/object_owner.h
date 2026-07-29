@@ -145,7 +145,7 @@ namespace sbk::core
         catch (const std::exception& exception)
         {
             // Constructor threw: the placement-new never completed, so free the raw
-            // block ourselves — no destructor to run. Mirrors create_runtime_object.
+            // block ourselves -- no destructor to run. Mirrors create_runtime_object.
             sbk::memory::free(memory, category);
             return sbk::make_error(SBK_ERR_OUT_OF_MEMORY, exception.what());
         }
