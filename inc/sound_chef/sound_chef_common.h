@@ -101,6 +101,9 @@
 #define SC_ALIGN(x, a)           (((x) + ((a)-1)) & ~((a)-1))
 #define SC_ALIGN_64(x)           ma_align(x, 8)
 
+#define SC_MAX_CHANNELS         36      //< Support a max of 5th order ambisonics
+#define SC_MAX_FRAME_COUNT      2048    //< Safe default for allocating staging areas in memory
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -328,6 +331,8 @@ struct sc_system
 
     clap_host_t clapHost;
     sc_clap* clapPlugins; //< Dynamic array of opened CLAP plugins
+    float clapPluginScratch[SC_MAX_CHANNELS][SC_MAX_FRAME_COUNT];  //< CLAP plugins process deinterleaved audio. miniaudio processes interleaved. We need a space for CLAP plugins to output to, then can interleave it
+    float* clapPluginChannels[SC_MAX_CHANNELS];                    //< CLAP processing expects pointers for each channel
 
     sc_node_group* masterNodeGroup;
 };

@@ -62,7 +62,7 @@ extern "C"
 
     enum
     {
-        SC_DSP_METER_MAX_CHANNELS = 36   //< Meter up to 5th order ambisonics
+        SC_DSP_METER_MAX_CHANNELS = SC_MAX_CHANNELS
     };
 
     typedef struct sc_meter
@@ -82,6 +82,7 @@ extern "C"
     {
         ma_node_base baseNode;
         const clap_plugin_t* clapPlugin;
+        sc_bool isProcessing;  //< Whether start_processing() has been called on the plugin.
     } sc_clap_node;
 
 #ifdef __cplusplus
