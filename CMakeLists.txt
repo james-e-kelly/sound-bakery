@@ -4,7 +4,7 @@ project(
   "Sound Bakery" 
   VERSION 0.3.0 
   DESCRIPTION "An open-source audio middleware tool with an authoring application and programmer's API"
-  HOMEPAGE_URL "https://soundbakery.jameskelly.audio"
+  HOMEPAGE_URL "https://github.com/james-e-kelly/sound-bakery"
 )
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/setup_init.cmake)

@@ -111,7 +111,7 @@ auto root_widget::render_menu_implementation() -> void
                 ImGuiContext* const context = ImGui::GetCurrentContext();
                 if (context->PlatformIO.Platform_OpenInShellFn != NULL)
                 {
-                    context->PlatformIO.Platform_OpenInShellFn(context, "https://soundbakery.jameskelly.audio");
+                    context->PlatformIO.Platform_OpenInShellFn(context, "https://james-e-kelly.github.io/sound-bakery/dev/");
                 }
             }
 
@@ -146,7 +146,7 @@ void root_widget::render_about_window(bool& showAbout)
 
         ImGui::TextLinkOpenURL("Homepage", "https://github.com/james-e-kelly/sound-bakery");
         ImGui::SameLine();
-        ImGui::TextLinkOpenURL("Documentation", "https://soundbakery.jameskelly.audio");
+        ImGui::TextLinkOpenURL("Documentation", "https://james-e-kelly.github.io/sound-bakery/dev/");
         ImGui::SameLine();
         ImGui::TextLinkOpenURL("Releases", "https://github.com/james-e-kelly/sound-bakery/releases");
 

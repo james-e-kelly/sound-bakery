@@ -11,7 +11,7 @@
 [![Stars](https://img.shields.io/github/stars/KarateKidzz/sound-bakery?style=flat&label=Stars)](https://github.com/james-e-kelly/sound-bakery/stargazers)
 [![Contributors](https://img.shields.io/github/contributors/KarateKidzz/sound-bakery?label=Contributors)](https://github.com/KarateKidzz/sound-bakery/graphs/contributors)
 
-[Why?](#why-choose-sound-bakery) • [Goal](#goal) • [Getting Started](#getting-started) • [Contributing](#contributing) • [Docs](https://soundbakery.jameskelly.audio)
+[Why?](#why-choose-sound-bakery) • [Goal](#goal) • [Getting Started](#getting-started) • [Contributing](#contributing) • [Docs](https://james-e-kelly.github.io/sound-bakery/dev/)
 
 </div>
 
@@ -81,7 +81,7 @@ int main() {
 
 ### Documentation
 
-Full documentation is available at **[soundbakery.jameskelly.audio](https://soundbakery.jameskelly.audio)**.
+Full documentation is available at **[james-e-kelly.github.io/sound-bakery/dev/](https://james-e-kelly.github.io/sound-bakery/dev/)**.
 
 ## Contributing
 
