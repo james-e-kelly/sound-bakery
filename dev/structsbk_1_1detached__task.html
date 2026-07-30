@@ -142,7 +142,7 @@ $(document).ready(function(){initNavTree('structsbk_1_1detached__task.html','');
 </div><!--header-->
 <div class="contents">
 
-<p>A fire-and-forget coroutine. Starts running immediately, owns itself, and destroys its own frame when it finishes. Nobody awaits it, so it returns nothing &ndash; any failure is logged at its origin (via @r sbk::log_error / @r sbk::make_error) rather than propagated.  
+<p>A fire-and-forget coroutine. Starts running immediately and destroys its own frame when it finishes. Nobody awaits it, so it returns nothing &ndash; any failure is logged at its origin (via @r sbk::log_error / @r sbk::make_error) rather than propagated.  
  <a href="structsbk_1_1detached__task.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="task_8h_source.html">task.h</a>&gt;</code></p>
@@ -153,16 +153,18 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>A fire-and-forget coroutine. Starts running immediately, owns itself, and destroys its own frame when it finishes. Nobody awaits it, so it returns nothing &ndash; any failure is logged at its origin (via @r sbk::log_error / @r sbk::make_error) rather than propagated. </p>
-<p>Use this to launch detached background work, e.g. <code>co_await workerExecutor-&gt;schedule()</code> at the top to move onto a worker thread. Write it as a NAMED function whose inputs are passed BY VALUE: coroutine parameters are copied into the frame and stay alive across every co_await, unlike the captures of a temporary lambda (which dangle after the first suspension). Do not launch a <a class="el" href="structsbk_1_1detached__task.html" title="A fire-and-forget coroutine. Starts running immediately, owns itself, and destroys its own frame when...">detached_task</a> from a lambda that captures state it uses after a suspend.</p>
+<div class="textblock"><p>A fire-and-forget coroutine. Starts running immediately and destroys its own frame when it finishes. Nobody awaits it, so it returns nothing &ndash; any failure is logged at its origin (via @r sbk::log_error / @r sbk::make_error) rather than propagated. </p>
+<p>Use this to launch detached background work, e.g. <code>co_await workerExecutor-&gt;schedule()</code> at the top to move onto a worker thread. Write it as a NAMED function whose inputs are passed BY VALUE: coroutine parameters are copied into the frame and stay alive across every co_await, unlike the captures of a temporary lambda (which dangle after the first suspension). Do not launch a <a class="el" href="structsbk_1_1detached__task.html" title="A fire-and-forget coroutine. Starts running immediately and destroys its own frame when it finishes....">detached_task</a> from a lambda that captures state it uses after a suspend.</p>
+<p>The frame is owned by the resuming thread while running and by the executor slot holding it while suspended, so an executor torn down mid-flight reclaims its parked frames as it clears its queue &ndash; see @r <a class="el" href="classsbk_1_1work__item.html" title="A move-only unit of work queued on an @r executor.">work_item</a>.</p>
 <div class="fragment"><div class="line"><span class="keyword">auto</span> encode_sound(<a class="code hl_class" href="classsbk_1_1engine_1_1sound.html">engine::sound</a>* sound, <a class="code hl_struct" href="structsc__encoder__config.html">sc_encoder_config</a> cfg, std::filesystem::path src,</div>
-<div class="line">                  std::filesystem::path dst, std::shared_ptr&lt;executor&gt; worker) -&gt; <a class="code hl_struct" href="structsbk_1_1detached__task.html">detached_task</a></div>
+<div class="line">                  std::filesystem::path dst, <a class="code hl_class" href="classsbk_1_1executor.html">executor</a>* worker) -&gt; <a class="code hl_struct" href="structsbk_1_1detached__task.html">detached_task</a></div>
 <div class="line">{</div>
 <div class="line">    <span class="keyword">co_await</span> worker-&gt;schedule();</div>
 <div class="line">    <span class="comment">// ... heavy work using the by-value parameters ...</span></div>
 <div class="line">}</div>
 <div class="ttc" id="aclasssbk_1_1engine_1_1sound_html"><div class="ttname"><a href="classsbk_1_1engine_1_1sound.html">sbk::engine::sound</a></div><div class="ttdef"><b>Definition</b> sound.h:36</div></div>
-<div class="ttc" id="astructsbk_1_1detached__task_html"><div class="ttname"><a href="structsbk_1_1detached__task.html">sbk::detached_task</a></div><div class="ttdoc">A fire-and-forget coroutine. Starts running immediately, owns itself, and destroys its own frame when...</div><div class="ttdef"><b>Definition</b> task.h:231</div></div>
+<div class="ttc" id="aclasssbk_1_1executor_html"><div class="ttname"><a href="classsbk_1_1executor.html">sbk::executor</a></div><div class="ttdoc">Abstract executor.</div><div class="ttdef"><b>Definition</b> executor.h:28</div></div>
+<div class="ttc" id="astructsbk_1_1detached__task_html"><div class="ttname"><a href="structsbk_1_1detached__task.html">sbk::detached_task</a></div><div class="ttdoc">A fire-and-forget coroutine. Starts running immediately and destroys its own frame when it finishes....</div><div class="ttdef"><b>Definition</b> task.h:223</div></div>
 <div class="ttc" id="astructsc__encoder__config_html"><div class="ttname"><a href="structsc__encoder__config.html">sc_encoder_config</a></div><div class="ttdef"><b>Definition</b> sound_chef_encoder.h:22</div></div>
 </div><!-- fragment --> </div><hr/>The documentation for this struct was generated from the following file:<ul>
 <li>src/sound_bakery/task/<a class="el" href="task_8h_source.html">task.h</a></li>

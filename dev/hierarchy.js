@@ -196,6 +196,8 @@ var hierarchy =
     [ "sbk::task< T >", "classsbk_1_1task.html", null ],
     [ "sbk::util::type_comparator", "structsbk_1_1util_1_1type__comparator.html", null ],
     [ "sbk::util::type_helper", "classsbk_1_1util_1_1type__helper.html", null ],
+    [ "sbk::unique_coroutine< Promise >", "classsbk_1_1unique__coroutine.html", null ],
+    [ "sbk::unique_coroutine< sbk::task_promise >", "classsbk_1_1unique__coroutine.html", null ],
     [ "boost::mpl::vector", null, [
       [ "sbk::engine::node_instance_fsm::transition_table", "structsbk_1_1engine_1_1node__instance__fsm_1_1transition__table.html", null ]
     ] ],
@@ -213,6 +215,7 @@ var hierarchy =
       [ "project_nodes_widget", "classproject__nodes__widget.html", null ],
       [ "splash_widget", "classsplash__widget.html", null ]
     ] ],
+    [ "sbk::work_item", "classsbk_1_1work__item.html", null ],
     [ "rttr::wrapper_mapper< sbk::core::child_ptr< T > >", "structrttr_1_1wrapper__mapper_3_01sbk_1_1core_1_1child__ptr_3_01T_01_4_01_4.html", null ],
     [ "rttr::wrapper_mapper< sbk::core::database_ptr< T > >", "structrttr_1_1wrapper__mapper_3_01sbk_1_1core_1_1database__ptr_3_01T_01_4_01_4.html", null ]
 ];

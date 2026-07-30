@@ -155,33 +155,24 @@ Public Types</h2></td></tr>
 <tr class="memitem:ad273f6e7bad4493f0ff8107190f45a34" id="r_ad273f6e7bad4493f0ff8107190f45a34"><td class="memItemLeft" align="right" valign="top"><a id="ad273f6e7bad4493f0ff8107190f45a34" name="ad273f6e7bad4493f0ff8107190f45a34"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>promise_type</b> = <a class="el" href="structsbk_1_1task__promise.html">task_promise</a>&lt; T &gt;</td></tr>
 <tr class="separator:ad273f6e7bad4493f0ff8107190f45a34"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a431f169acaf24d73e2400a3e3c4c1161" id="r_a431f169acaf24d73e2400a3e3c4c1161"><td class="memItemLeft" align="right" valign="top"><a id="a431f169acaf24d73e2400a3e3c4c1161" name="a431f169acaf24d73e2400a3e3c4c1161"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>handle_type</b> = std::coroutine_handle&lt; <a class="el" href="structsbk_1_1task__promise.html">promise_type</a> &gt;</td></tr>
+<tr class="separator:a431f169acaf24d73e2400a3e3c4c1161"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a3b4a73b23a04b5b6c6a56b6479bbfdde" id="r_a3b4a73b23a04b5b6c6a56b6479bbfdde"><td class="memItemLeft" align="right" valign="top"><a id="a3b4a73b23a04b5b6c6a56b6479bbfdde" name="a3b4a73b23a04b5b6c6a56b6479bbfdde"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>task</b> (std::coroutine_handle&lt; <a class="el" href="structsbk_1_1task__promise.html">promise_type</a> &gt; h)</td></tr>
-<tr class="separator:a3b4a73b23a04b5b6c6a56b6479bbfdde"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a22d2cb475518b5a2e8cd778e8c7c9d66" id="r_a22d2cb475518b5a2e8cd778e8c7c9d66"><td class="memItemLeft" align="right" valign="top"><a id="a22d2cb475518b5a2e8cd778e8c7c9d66" name="a22d2cb475518b5a2e8cd778e8c7c9d66"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>task</b> (<a class="el" href="classsbk_1_1task.html">task</a> &amp;&amp;other) noexcept</td></tr>
-<tr class="separator:a22d2cb475518b5a2e8cd778e8c7c9d66"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3894fc6bc071fbb0225223c0b1c7a31e" id="r_a3894fc6bc071fbb0225223c0b1c7a31e"><td class="memItemLeft" align="right" valign="top"><a id="a3894fc6bc071fbb0225223c0b1c7a31e" name="a3894fc6bc071fbb0225223c0b1c7a31e"></a>
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classsbk_1_1task.html">task</a> &amp;&amp;other) noexcept -&gt; <a class="el" href="classsbk_1_1task.html">task</a> &amp;</td></tr>
-<tr class="separator:a3894fc6bc071fbb0225223c0b1c7a31e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a79f639ac92bf9ae937de25cd862710cf" id="r_a79f639ac92bf9ae937de25cd862710cf"><td class="memItemLeft" align="right" valign="top"><a id="a79f639ac92bf9ae937de25cd862710cf" name="a79f639ac92bf9ae937de25cd862710cf"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>task</b> (const <a class="el" href="classsbk_1_1task.html">task</a> &amp;)=delete</td></tr>
-<tr class="separator:a79f639ac92bf9ae937de25cd862710cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aee24cd90c11304713aff4189a1609c42" id="r_aee24cd90c11304713aff4189a1609c42"><td class="memItemLeft" align="right" valign="top"><a id="aee24cd90c11304713aff4189a1609c42" name="aee24cd90c11304713aff4189a1609c42"></a>
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classsbk_1_1task.html">task</a> &amp;) -&gt; <a class="el" href="classsbk_1_1task.html">task</a> &amp;=delete</td></tr>
-<tr class="separator:aee24cd90c11304713aff4189a1609c42"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a378206080a12feab930ca93e24541284" id="r_a378206080a12feab930ca93e24541284"><td class="memItemLeft" align="right" valign="top"><a id="a378206080a12feab930ca93e24541284" name="a378206080a12feab930ca93e24541284"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>task</b> (handle_type h)</td></tr>
+<tr class="separator:a378206080a12feab930ca93e24541284"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5af9b2cc91f27537ffd60884635216dd" id="r_a5af9b2cc91f27537ffd60884635216dd"><td class="memItemLeft" align="right" valign="top"><a id="a5af9b2cc91f27537ffd60884635216dd" name="a5af9b2cc91f27537ffd60884635216dd"></a>
 auto&#160;</td><td class="memItemRight" valign="bottom"><b>operator co_await</b> () &amp;&amp;noexcept -&gt; <a class="el" href="structsbk_1_1task_1_1awaiter.html">awaiter</a></td></tr>
 <tr class="separator:a5af9b2cc91f27537ffd60884635216dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a09d4dd013678b74f54aa29f74a609a7d" id="r_a09d4dd013678b74f54aa29f74a609a7d"><td class="memItemLeft" align="right" valign="top"><a id="a09d4dd013678b74f54aa29f74a609a7d" name="a09d4dd013678b74f54aa29f74a609a7d"></a>
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>handle</b> () const noexcept -&gt; std::coroutine_handle&lt; <a class="el" href="structsbk_1_1task__promise.html">promise_type</a> &gt;</td></tr>
-<tr class="separator:a09d4dd013678b74f54aa29f74a609a7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a15a34c022203a2035cdad19c31fc6d58" id="r_a15a34c022203a2035cdad19c31fc6d58"><td class="memItemLeft" align="right" valign="top"><a id="a15a34c022203a2035cdad19c31fc6d58" name="a15a34c022203a2035cdad19c31fc6d58"></a>
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>release</b> () noexcept -&gt; std::coroutine_handle&lt; <a class="el" href="structsbk_1_1task__promise.html">promise_type</a> &gt;</td></tr>
-<tr class="separator:a15a34c022203a2035cdad19c31fc6d58"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac69afabe7ab5c7c107846ce9cbec7ef5" id="r_ac69afabe7ab5c7c107846ce9cbec7ef5"><td class="memItemLeft" align="right" valign="top"><a id="ac69afabe7ab5c7c107846ce9cbec7ef5" name="ac69afabe7ab5c7c107846ce9cbec7ef5"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>handle</b> () const noexcept -&gt; handle_type</td></tr>
+<tr class="separator:ac69afabe7ab5c7c107846ce9cbec7ef5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac40b6d8320d6bfa6bec3fa17ee82ba9c" id="r_ac40b6d8320d6bfa6bec3fa17ee82ba9c"><td class="memItemLeft" align="right" valign="top"><a id="ac40b6d8320d6bfa6bec3fa17ee82ba9c" name="ac40b6d8320d6bfa6bec3fa17ee82ba9c"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>release</b> () noexcept -&gt; handle_type</td></tr>
+<tr class="separator:ac40b6d8320d6bfa6bec3fa17ee82ba9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>src/sound_bakery/task/<a class="el" href="task_8h_source.html">task.h</a></li>

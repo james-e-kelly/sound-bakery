@@ -72,7 +72,7 @@
 <area shape="poly" id="edge56_Node000034_Node000035" title=" " alt="" coords="198,327,242,327,242,333,198,333"/>
 <area shape="rect" id="Node000036" href="$classsbk_1_1engine_1_1profiling_1_1voice__tracker.html" title="Tracks every active voice with helper functions." alt="" coords="235,367,393,407"/>
 <area shape="poly" id="edge57_Node000034_Node000036" title=" " alt="" coords="159,344,238,365,237,370,158,349"/>
-<area shape="rect" id="Node000039" href="$classsbk_1_1executor.html" title="Abstract execution context: somewhere coroutines and work items can be posted to run." alt="" coords="259,432,369,457"/>
+<area shape="rect" id="Node000039" href="$classsbk_1_1executor.html" title="Abstract executor." alt="" coords="259,432,369,457"/>
 <area shape="poly" id="edge60_Node000034_Node000039" title=" " alt="" coords="126,349,176,383,236,417,267,429,266,434,234,422,173,388,123,353"/>
 <area shape="rect" id="Node000040" href="$classsbk_1_1command__queue.html" title="Queues tasks until it is &quot;flushed&quot; onto another executor." alt="" coords="474,383,639,408"/>
 <area shape="poly" id="edge61_Node000039_Node000040" title=" " alt="" coords="382,428,493,405,494,411,383,433"/>

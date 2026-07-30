@@ -12,9 +12,11 @@ var searchData=
   ['reset_9',['reset',['../classsbk_1_1core_1_1database__ptr.html#a4b9b1c7493d42bfbae31626136cfc263',1,'sbk::core::database_ptr']]],
   ['result_10',['result',['../error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7',1,'sbk']]],
   ['result_2eh_11',['result.h',['../result_8h.html',1,'']]],
-  ['roadmap_12',['Roadmap',['../Roadmap.html',1,'UserManual']]],
-  ['root_5fwidget_13',['root_widget',['../classroot__widget.html',1,'']]],
-  ['rpmalloc_5fwrapper_14',['rpmalloc_wrapper',['../structrpmalloc__wrapper.html',1,'']]],
-  ['runtime_15',['runtime',['../index.html#autotoc_md3',1,'A hardened runtime'],['../classsbk_1_1engine_1_1runtime.html',1,'sbk::engine::runtime'],['../Design.html#autotoc_md41',1,'The Runtime']]],
-  ['runtime_20contract_16',['The runtime contract',['../Roadmap.html#autotoc_md47',1,'']]]
+  ['resume_5fborrowed_12',['resume_borrowed',['../classsbk_1_1work__item.html#aa0ed77cfbaf75691e335b693fdfef197',1,'sbk::work_item']]],
+  ['resume_5fowning_13',['resume_owning',['../classsbk_1_1work__item.html#a5cfe430340ec4abc78a54429322b62b0',1,'sbk::work_item']]],
+  ['roadmap_14',['Roadmap',['../Roadmap.html',1,'UserManual']]],
+  ['root_5fwidget_15',['root_widget',['../classroot__widget.html',1,'']]],
+  ['rpmalloc_5fwrapper_16',['rpmalloc_wrapper',['../structrpmalloc__wrapper.html',1,'']]],
+  ['runtime_17',['runtime',['../index.html#autotoc_md3',1,'A hardened runtime'],['../classsbk_1_1engine_1_1runtime.html',1,'sbk::engine::runtime'],['../Design.html#autotoc_md41',1,'The Runtime']]],
+  ['runtime_20contract_18',['The runtime contract',['../Roadmap.html#autotoc_md47',1,'']]]
 ];

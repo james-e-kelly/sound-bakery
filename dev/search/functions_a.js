@@ -1,8 +1,8 @@
 var searchData=
 [
-  ['parameter_0',['parameter',['../classsbk_1_1engine_1_1parameter.html#a2bdf2c84d01f5490daa2d8d27729c901',1,'sbk::engine::parameter']]],
-  ['pending_1',['pending',['../classsbk_1_1core_1_1database__ptr.html#a46a1eea3ffcb3ec4a5501f02f3f45cdf',1,'sbk::core::database_ptr']]],
-  ['post_2',['post',['../classsbk_1_1executor.html#ae26febe26de3298dda7b86241652cc75',1,'sbk::executor']]],
-  ['post_5fwork_3',['post_work',['../classsbk_1_1command__queue.html#aebd5d26b4a2e7439cfc83f633e580a03',1,'sbk::command_queue::post_work()'],['../classsbk_1_1executor.html#a64cd39d4b0855934061029f56071e880',1,'sbk::executor::post_work()'],['../classsbk_1_1manual__executor.html#a02e16a369a7fe69c1580f9185b9cb28c',1,'sbk::manual_executor::post_work()'],['../classsbk_1_1thread__executor.html#adba9c47006386f60237fc4965b93c992',1,'sbk::thread_executor::post_work()']]],
-  ['project_5fconfiguration_4',['project_configuration',['../structsbk_1_1editor_1_1project__configuration.html#ad84933983f20736d00e3589efd2a0def',1,'sbk::editor::project_configuration::project_configuration(const std::filesystem::path &amp;projectFile)'],['../structsbk_1_1editor_1_1project__configuration.html#a87918e391ae6c6d0ee0887272368ba54',1,'sbk::editor::project_configuration::project_configuration(const std::filesystem::directory_entry &amp;projectDirectory, std::string_view projectName)']]]
+  ['ok_0',['ok',['../error_8h.html#ae4829ae601d7136d4d51f4bbad4e8d7b',1,'sbk']]],
+  ['on_5fthis_5fthread_1',['on_this_thread',['../classsbk_1_1executor.html#a280f823ea3c8b52825a17047701b4dd0',1,'sbk::executor::on_this_thread()'],['../classsbk_1_1manual__executor.html#aa3adee1b7110565a70e80b1e9c7f5611',1,'sbk::manual_executor::on_this_thread()'],['../classsbk_1_1thread__executor.html#abbbf8aee0126a356c9f77f40b75047b8',1,'sbk::thread_executor::on_this_thread()']]],
+  ['operator_20bool_2',['operator bool',['../classsbk_1_1core_1_1database__ptr.html#a39acf815e109b156deaa162f09c33f63',1,'sbk::core::database_ptr']]],
+  ['operator_21_3',['operator!',['../classsbk_1_1core_1_1database__ptr.html#a5ace7b469a06d5b658afe148d2205640',1,'sbk::core::database_ptr']]],
+  ['operator_3d_4',['operator=',['../classsbk_1_1core_1_1database__ptr.html#aa588629ecfe7928d90450cc15759394f',1,'sbk::core::database_ptr']]]
 ];

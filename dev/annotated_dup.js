@@ -119,7 +119,9 @@ var annotated_dup =
       [ "task", "classsbk_1_1task.html", "classsbk_1_1task" ],
       [ "task_promise", "structsbk_1_1task__promise.html", null ],
       [ "task_promise< void >", "structsbk_1_1task__promise_3_01void_01_4.html", null ],
-      [ "thread_executor", "classsbk_1_1thread__executor.html", "classsbk_1_1thread__executor" ]
+      [ "thread_executor", "classsbk_1_1thread__executor.html", "classsbk_1_1thread__executor" ],
+      [ "unique_coroutine", "classsbk_1_1unique__coroutine.html", null ],
+      [ "work_item", "classsbk_1_1work__item.html", null ]
     ] ],
     [ "add_effect_button", "classadd__effect__button.html", null ],
     [ "app_manager", "classapp__manager.html", null ],

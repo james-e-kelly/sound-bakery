@@ -4,5 +4,7 @@ var dir_215ae6e2d2b50fa94130dfef6e40aa8c =
     [ "executor.h", "executor_8h_source.html", null ],
     [ "manual_executor.h", "manual__executor_8h_source.html", null ],
     [ "task.h", "task_8h_source.html", null ],
-    [ "thread_executor.h", "thread__executor_8h_source.html", null ]
+    [ "thread_executor.h", "thread__executor_8h_source.html", null ],
+    [ "unique_coroutine.h", "unique__coroutine_8h_source.html", null ],
+    [ "work_item.h", "work__item_8h_source.html", null ]
 ];
