@@ -33,51 +33,51 @@ namespace sbk
 
         ~thread_executor() override
         {
-            shutdown();
+            if (m_thread.joinable())
+            {
+                m_thread.join();
+            }
         }
 
         /**
-         * @brief Enqueue a generic function on this executor's thread.
-         * @param work function to execute
+         * @brief Enqueue an item on this executor's thread.
          * @return SBK_SUCCESS if successfully enqueued
-         * @return SBK_ERR_BAKERY if the executor has finished shutting down and can no longer run work
-         *
-         * Note the guard is @r m_stopped, not @r m_stop: while a shutdown() is draining the queue,
-         * tasks are still allowed to post their continuations so they can finish. Only once the worker
-         * has actually exited (queue empty) does enqueuing fail.
+         * @return SBK_ERR_BAKERY if the worker has finished exiting and can no longer run work
          */
-        auto post_work(std::function<void()> work) -> sbk::result<> override
+        auto enqueue(work_item item) -> sbk::result<> override
         {
             {
                 const std::lock_guard lock(m_mutex);
                 SBK_CHECK_MSG(m_stopped == false, SBK_ERR_BAKERY, "Cannot enqueue work. Executor shut down");
-                m_queue.push(std::move(work));
+                m_queue.push(std::move(item));
             }
             m_cv.notify_one();
             return sbk::ok();
         }
 
         /**
-         * @brief Finish all queued work, then stop the thread.
-         *
-         * Sets the drain flag and lets the worker process everything still in the queue -- including
-         * continuations posted by those tasks -- before joining. Nothing queued is dropped. Idempotent.
+         * @brief Finish the item already running, drop the rest of the queue, then join.
          */
-        auto shutdown() -> void override
+        auto abandon() -> void override
         {
             {
                 const std::lock_guard lock(m_mutex);
                 if (m_stop)
                 {
-                    return;  // already draining / shut down
+                    return;
                 }
-                m_stop = true;
+                m_stop    = true;
+                m_abandon = true;
             }
             m_cv.notify_one();
             if (m_thread.joinable())
             {
                 m_thread.join();
             }
+
+            const std::lock_guard lock(m_mutex);
+            std::queue<work_item> dropped;
+            m_queue.swap(dropped);
         }
 
         [[nodiscard]] auto on_this_thread() const noexcept -> bool override
@@ -100,17 +100,22 @@ namespace sbk
 
             for (;;)
             {
-                std::function<void()> work;
+                work_item work;
                 {
                     std::unique_lock lock(m_mutex);
                     m_cv.wait(lock, [this]
                               { return m_stop || !m_queue.empty(); });
+                    if (m_abandon)
+                    {
+                        m_stopped = true;
+                        break;
+                    }
                     if (m_queue.empty())
                     {
                         if (m_stop)
                         {
-                            m_stopped = true;  // set under lock: any later post_work is rejected
-                            break;             // lock released by unique_lock's destructor as we leave the scope
+                            m_stopped = true;
+                            break;
                         }
                         continue;
                     }
@@ -118,23 +123,20 @@ namespace sbk
                     m_queue.pop();
                 }
 
-                // A busy slice on this named thread lane per work item. Any task fiber the item
-                // resumes enters and leaves within work(), so this zone opens and closes in the
-                // thread's own context -- it nests cleanly around the fiber excursion.
                 ZoneScopedN("thread_executor dispatch");
                 work();
             }
 
-            // Worker is exiting: tear down rpmalloc's per-thread heap. Runs with no lock held.
             sbk::memory::thread_end(name());
         }
 
         std::mutex m_mutex;
         std::condition_variable m_cv;
-        std::queue<std::function<void()>> m_queue;
+        std::queue<work_item> m_queue;
         std::thread::id m_id;
         bool m_started = false;
-        bool m_stop    = false;  // drain requested (shutdown called)
+        bool m_stop    = false;  // stop requested (shutdown or abandon)
+        bool m_abandon = false;  // stop requested via abandon: drop the backlog rather than draining it
         bool m_stopped = false;  // worker has exited; no longer accepts work
         std::thread m_thread;
     };

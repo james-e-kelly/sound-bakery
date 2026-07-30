@@ -130,6 +130,8 @@ set(SOUND_BAKERY_HEADERS
     task/manual_executor.h
     task/thread_executor.h
     task/task.h
+    task/unique_coroutine.h
+    task/work_item.h
 
     util/type_helper.h
 

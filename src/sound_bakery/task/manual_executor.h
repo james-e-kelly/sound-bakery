@@ -10,10 +10,6 @@ namespace sbk
     /**
      * @brief An @r executor with no thread of its own: work is queued, then run all at once by whoever calls @r drain.
      *
-     * This is for domains whose thread Sound Bakery does not own -- above all the game thread. The
-     * game posts commands and callbacks throughout its frame, then calls drain() inside update() to
-     * run through all of them "there and then", synchronously, on the game thread.
-     *
      * While draining, on_this_thread() reports true for the draining thread, so a game-thread-affine
      * function reached from inside the pump (`co_await gameExecutor->schedule()`) runs inline instead
      * of deferring to the next drain.
@@ -25,15 +21,14 @@ namespace sbk
 
         /**
          * @brief Queue a function to run at the next @r drain.
-         * @param work function to execute
          * @return SBK_SUCCESS if queued
          * @return SBK_ERR_BAKERY if the executor has been shut down
          */
-        auto post_work(std::function<void()> work) -> sbk::result<> override
+        auto enqueue(work_item item) -> sbk::result<> override
         {
             const std::lock_guard lock(m_mutex);
             SBK_CHECK_MSG(m_stopped == false, SBK_ERR_BAKERY, "Cannot enqueue work. Executor shut down");
-            m_queue.push(std::move(work));
+            m_queue.push(std::move(item));
             return sbk::ok();
         }
 
@@ -43,7 +38,7 @@ namespace sbk
         }
 
         /**
-         * @brief Run all queued work on the calling thread. Call this from the game's update().
+         * @brief Run all queued work on the calling thread.
          *
          * Work queued during the drain is included (the loop runs until the queue is empty), so a
          * task's continuations finish within the same pump rather than waiting for the next one.
@@ -58,7 +53,7 @@ namespace sbk
 
             for (;;)
             {
-                std::function<void()> work;
+                work_item work;
                 {
                     const std::lock_guard lock(m_mutex);
                     if (m_queue.empty())
@@ -76,19 +71,19 @@ namespace sbk
         }
 
         /**
-         * @brief Finish everything still queued (a final @r drain on the calling thread), then refuse
-         *        further work. Idempotent.
+         * @brief Drop whatever is queued and refuse further work. Idempotent.
          */
-        auto shutdown() -> void override
+        auto abandon() -> void override
         {
-            (void)drain();
             const std::lock_guard lock(m_mutex);
             m_stopped = true;
+            std::queue<work_item> dropped;
+            m_queue.swap(dropped);
         }
 
     private:
         std::mutex m_mutex;
-        std::queue<std::function<void()>> m_queue;
+        std::queue<work_item> m_queue;
         std::atomic<std::thread::id> m_drainThread{};
         bool m_stopped = false;
     };

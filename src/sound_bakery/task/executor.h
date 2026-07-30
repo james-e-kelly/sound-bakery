@@ -4,16 +4,19 @@
 
 #include "sound_bakery/core/object/object_owner.h"
 #include "sound_bakery/error/result.h"
+#include "sound_bakery/task/work_item.h"
 
 namespace sbk
 {
     /**
-     * @brief Abstract execution context: somewhere coroutines and work items can be posted to run.
+     * @brief Abstract executor.
      *
-     * The idea behind the executor is to make async coroutines easy. The system holds its executors
-     * by base pointer, so a domain (game, studio, loading, ...) can be backed by a real OS thread
-     * (@r thread_executor), a deferred command channel (@r command_queue), or -- in single-threaded /
-     * editor mode -- simply an alias of another domain, e.g. `m_studioThread = m_gameThread`.
+     * Sound Bakery uses coroutines to make async programming easy to think about.
+     * It also uses coroutines so thread pools are easy to design and for us to utilise all system resources.
+     * 
+     * Executors are what lets coroutines uses threads in an easy way.
+     * Most coroutines eventually end up on a @r thread_executor. Thread executors are simple executors that just run all tasks.
+     * Other executors, like the @r command_queue, allow work to be queued up (likely from the game) and moved to a @r thread_executor at a defined time.
      *
      * A concrete executor implements one thing: @r post_work for a generic work item. Posting a
      * coroutine, and the schedule()/yield() thread-domain guards, are built on top of it.
@@ -34,26 +37,40 @@ namespace sbk
         auto operator=(executor&&) -> executor&      = delete;
 
         /**
-         * @brief Enqueue a coroutine to be resumed on this executor.
-         * @param h coroutine handle
-         * @return SBK_SUCCESS if successfully enqueued
-         */
-        auto post(std::coroutine_handle<> h) -> sbk::result<>
-        {
-            return post_work(
-                [h]
-                {
-                    ZoneScopedN("coroutine resume");
-                    h.resume();
-                });
-        }
-
-        /**
-         * @brief Enqueue a generic function to run on this executor. The one operation a concrete executor must provide.
-         * @param work function to execute
+         * @brief Take ownership of a work item and arrange for it to run. The one operation a concrete executor MUST provide.
          * @return SBK_SUCCESS if successfully enqueued, otherwise a failure the caller can forward
          */
-        virtual auto post_work(std::function<void()> work) -> sbk::result<> = 0;
+        virtual auto enqueue(work_item item) -> sbk::result<> = 0;
+
+        /**
+         * @brief Enqueue a generic callable to run on this executor.
+         * @return SBK_SUCCESS if successfully enqueued
+         */
+        auto post_work(std::function<void()> work) -> sbk::result<> { return enqueue(work_item{std::move(work)}); }
+
+        /**
+         * @brief Enqueue a coroutine to be resumed on this executor.
+         * @return SBK_SUCCESS if successfully enqueued
+         */
+        template <class Promise>
+        auto post(std::coroutine_handle<Promise> h) -> sbk::result<>
+        {
+            [[maybe_unused]] const char* fiberName = nullptr;
+#ifdef TRACY_ENABLE
+            if constexpr (requires { h.promise().fiber_name(); })
+            {
+                fiberName = h.promise().fiber_name();
+            }
+#endif
+            if constexpr (promise_self_owns_frame_v<Promise>)
+            {
+                return enqueue(work_item::resume_owning(h, fiberName));
+            }
+            else
+            {
+                return enqueue(work_item::resume_borrowed(h, fiberName));
+            }
+        }
 
         /**
          * @brief For executors like the @r command_queue, moves all tasks to the target executor.
@@ -61,18 +78,14 @@ namespace sbk
         virtual auto flush() -> sbk::result<> { return sbk::ok(); }
 
         /**
-         * @brief Drain all tasks and run them now. Can do nothing on certain executors.
+         * @brief For executors like the @r manual_executor, drain all tasks and run them now.
          */
         virtual auto drain() -> sbk::result<> { return sbk::ok(); }
 
         /**
-         * @brief Finish and stop the executor. Overridden by executors that own work or a thread; by default there is nothing to shut down.
-         *
-         * Implementations must run every task still queued (including continuations those tasks post)
-         * to completion rather than dropping them, and must be idempotent -- the system may call
-         * shutdown() explicitly and again from the destructor, and aliased domains may share one object.
+         * @brief Stop the executor. Drop everything still queued and refuse further work.
          */
-        virtual auto shutdown() -> void {}
+        virtual auto abandon() -> void {}
 
         /**
          * @brief Whether the caller is already running "on" this executor.
@@ -112,46 +125,31 @@ namespace sbk
              * @return true if the job was enqueued (suspend)
              * @return false if the job failed to enqueue and should run synchronously instead of
              *         hanging forever on a thread that will never run it
-             *
-             * Templated on the awaiting coroutine's promise so that, when Tracy is enabled and that
-             * promise carries a fiber name (every @r task / @r detached_task does, via @r fiber_promise),
-             * the resume is bracketed by @r TracyFiberEnter / @r TracyFiberLeave. The coroutine then
-             * shows up in Tracy as its own fiber lane, staying continuous as it hops between executors.
-             * Promises without a fiber_name(), and non-Tracy builds, take the plain @r post path.
              */
             template <class Promise>
             auto await_suspend(std::coroutine_handle<Promise> h) const -> bool
             {
-#ifdef TRACY_ENABLE
-                if constexpr (requires { h.promise().fiber_name(); })
-                {
-                    const char* const fiberName = h.promise().fiber_name();
-                    return exec
-                        ->post_work(
-                            [h, fiberName]
-                            {
-                                TracyFiberEnter(fiberName);
-                                h.resume();
-                                TracyFiberLeave;
-                            })
-                        .has_value();
-                }
-#else
                 return exec->post(h).has_value();
-#endif
             }
 
             auto await_resume() const noexcept -> void {}
         };
 
-        // Route onto this executor only if we are not already on it.
+        /**
+         * @brief Schedule a coroutine to run on this executor by co_awaiting the result.
+         * 
+         * If the caller is already on the executor's thread, the coroutine does not suspend.
+         */
         [[nodiscard]] auto schedule() -> schedule_awaiter { return schedule_awaiter{.exec = this, .force = false}; }
 
         // Always bounce through the queue, even when already on this executor.
+
+        /**
+         * @brief Suspend and yield the current coroutine. The coroutine is queued to run on this executor at a later date.
+         */
         [[nodiscard]] auto yield() -> schedule_awaiter { return schedule_awaiter{.exec = this, .force = true}; }
 
     protected:
-        // The executor's name, used by concrete executors e.g. to name their OS thread in Tracy.
         [[nodiscard]] auto name() const noexcept -> const std::string& { return m_name; }
 
     private:

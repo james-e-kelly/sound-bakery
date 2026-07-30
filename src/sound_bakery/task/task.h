@@ -3,6 +3,7 @@
 #include "sound_bakery/pch.h"
 
 #include "sound_bakery/error/result.h"
+#include "sound_bakery/task/unique_coroutine.h"
 
 namespace sbk
 {
@@ -111,38 +112,17 @@ namespace sbk
     {
     public:
         using promise_type = task_promise<T>;
+        using handle_type  = std::coroutine_handle<promise_type>;
 
         task() = default;
-        explicit task(std::coroutine_handle<promise_type> h) : m_handle(h) {}
-        task(task&& other) noexcept : m_handle(std::exchange(other.m_handle, {})) {}
-        auto operator=(task&& other) noexcept -> task&
-        {
-            if (this != &other)
-            {
-                if (m_handle)
-                {
-                    m_handle.destroy();
-                }
-                m_handle = std::exchange(other.m_handle, {});
-            }
-            return *this;
-        }
-        task(const task&)                    = delete;
-        auto operator=(const task&) -> task& = delete;
-        ~task()
-        {
-            if (m_handle)
-            {
-                m_handle.destroy();
-            }
-        }
+        explicit task(handle_type h) : m_coro(h) {}
 
         // Awaiting a task starts it (symmetric transfer into its body) and, when
         // it finishes, hands back its result<T>. This is where one coroutine
         // plugs into another.
         struct awaiter
         {
-            std::coroutine_handle<promise_type> handle;
+            handle_type handle;
 
             [[nodiscard]] auto await_ready() const noexcept -> bool { return false; }
 
@@ -158,18 +138,13 @@ namespace sbk
             }
         };
 
-        auto operator co_await() && noexcept -> awaiter { return awaiter{m_handle}; }
+        auto operator co_await() && noexcept -> awaiter { return awaiter{m_coro.get()}; }
 
-        [[nodiscard]] auto handle() const noexcept -> std::coroutine_handle<promise_type> { return m_handle; }
-
-        // Give up ownership of the frame (for fire-and-forget scheduling).
-        [[nodiscard]] auto release() noexcept -> std::coroutine_handle<promise_type>
-        {
-            return std::exchange(m_handle, {});
-        }
+        [[nodiscard]] auto handle() const noexcept -> handle_type { return m_coro.get(); }
+        [[nodiscard]] auto release() noexcept -> handle_type { return m_coro.release(); }
 
     private:
-        std::coroutine_handle<promise_type> m_handle{};
+        unique_coroutine<promise_type> m_coro;
     };
 
     template <class T>
@@ -207,10 +182,23 @@ namespace sbk
     template <class T = void>
     using async_result = task<T>;
 
+#if SBK_CONFIG_DEBUG
+    namespace detail
+    {
+        // Count of live @r detached_task frames. Teardown asserts this reaches zero once every executor
+        // is abandoned, catching any frame that escaped reclamation (e.g. a hop into a dead executor).
+        [[nodiscard]] inline auto live_detached_tasks() noexcept -> std::atomic<int>&
+        {
+            static std::atomic<int> counter{0};
+            return counter;
+        }
+    }  // namespace detail
+#endif
+
     /**
-     * @brief A fire-and-forget coroutine. Starts running immediately, owns itself, and destroys its
-     *        own frame when it finishes. Nobody awaits it, so it returns nothing -- any failure is
-     *        logged at its origin (via @r sbk::log_error / @r sbk::make_error) rather than propagated.
+     * @brief A fire-and-forget coroutine. Starts running immediately and destroys its own frame when
+     *        it finishes. Nobody awaits it, so it returns nothing -- any failure is logged at its
+     *        origin (via @r sbk::log_error / @r sbk::make_error) rather than propagated.
      *
      * Use this to launch detached background work, e.g. `co_await workerExecutor->schedule()` at the
      * top to move onto a worker thread. Write it as a NAMED function whose inputs are passed BY VALUE:
@@ -218,9 +206,13 @@ namespace sbk
      * captures of a temporary lambda (which dangle after the first suspension). Do not launch a
      * detached_task from a lambda that captures state it uses after a suspend.
      *
+     * The frame is owned by the resuming thread while running and by the executor slot holding it
+     * while suspended, so an executor torn down mid-flight reclaims its parked frames as it clears
+     * its queue -- see @r work_item.
+     *
      * @code
      *   auto encode_sound(engine::sound* sound, sc_encoder_config cfg, std::filesystem::path src,
-     *                     std::filesystem::path dst, std::shared_ptr<executor> worker) -> detached_task
+     *                     std::filesystem::path dst, executor* worker) -> detached_task
      *   {
      *       co_await worker->schedule();
      *       // ... heavy work using the by-value parameters ...
@@ -231,6 +223,14 @@ namespace sbk
     {
         struct promise_type : fiber_promise
         {
+            // No return object holds this frame, so an executor parking it must take ownership.
+            static constexpr bool self_owns_frame = true;
+
+#if SBK_CONFIG_DEBUG
+            promise_type() noexcept { detail::live_detached_tasks().fetch_add(1, std::memory_order_relaxed); }
+            ~promise_type() noexcept { detail::live_detached_tasks().fetch_sub(1, std::memory_order_relaxed); }
+#endif
+
             auto get_return_object() noexcept -> detached_task { return {}; }
             auto initial_suspend() noexcept -> std::suspend_never { return {}; }  // eager: start now
             auto final_suspend() noexcept -> std::suspend_never { return {}; }    // self-destroy when done

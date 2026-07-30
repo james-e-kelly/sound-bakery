@@ -130,17 +130,46 @@ system::system(sbk::core::sbk_log_callback_proc logCallback)
 
 system::~system()
 {
+    // We abandon any queued commands, finish up any running tasks, and join threads.
+    // We cannot allow coroutines to be jumping around during shutdown.
+    // Coroutines are owned by their executors. On destruction, the coroutine frames are destroyed and memory released.
+
+    if (m_workerThread)
+    {
+        m_workerThread->abandon();
+        m_workerThread.reset();
+    }
+
+    if (m_systemThread)
+    {
+        m_systemThread->abandon();
+        m_systemThread.reset();
+    }
+
+    if (m_systemExecutor)
+    {
+        m_systemExecutor->abandon();
+        m_systemExecutor.reset();
+    }
+
+    if (m_gameExecutor)
+    {
+        m_gameExecutor->abandon();
+        m_gameExecutor.reset();
+    }
+
+#if SBK_CONFIG_DEBUG
+    BOOST_ASSERT_MSG(sbk::detail::live_detached_tasks().load(std::memory_order_relaxed) == 0, "detached task still in flight after executor teardown (hop cycle into an abandoned executor?)");
+#endif
+
     if (m_project)
     {
         m_project.reset();
     }
 
-    (void)m_systemExecutor->drain();
-    (void)m_gameExecutor->drain();
-    (void)m_workerThread->drain();
-    if (m_systemThread)
+    if (m_voiceTracker)
     {
-        (void)m_systemThread->drain();
+        m_voiceTracker.reset();
     }
 
     if (m_runtime)

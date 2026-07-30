@@ -18,11 +18,11 @@ namespace sbk
     public:
         command_queue(std::string name) : executor(name) {}
 
-        auto post_work(std::function<void()> work) -> sbk::result<> override
+        auto enqueue(work_item item) -> sbk::result<> override
         {
             const std::lock_guard lock(m_mutex);
             SBK_CHECK_MSG(m_stopped == false, SBK_ERR_BAKERY, "Cannot enqueue command. Command queue shut down");
-            m_staging.push_back(std::move(work));
+            m_staging.push_back(std::move(item));
             return sbk::ok();
         }
 
@@ -34,7 +34,7 @@ namespace sbk
         {
             ZoneScopedN("command_queue flush");
 
-            std::vector<std::function<void()>> batch;
+            std::vector<work_item> batch;
             {
                 const std::lock_guard lock(m_mutex);
                 m_staging.swap(batch);
@@ -45,7 +45,7 @@ namespace sbk
                 return sbk::ok();
             }
 
-            return m_target->post_work(
+            return m_target->enqueue(work_item{
                 [commands = std::move(batch)]() mutable
                 {
                     const sbk::core::scoped_thread_domain studioDomain(sbk::core::thread_domain::studio);
@@ -53,34 +53,24 @@ namespace sbk
                     {
                         command();
                     }
-                });
+                }});
         }
 
         /**
-         * @brief Moves all tasks to the target executor. That executor can then handle draining all tasks.
+         * @brief Drop all staged commands and refuse further work. Does not flush.
          */
-        auto drain() -> sbk::result<> override
+        auto abandon() -> void override
         {
-            return flush();
-        }
-
-        /**
-         * @brief Hand any staged commands to the target so none are dropped, then refuse further work.
-         *
-         * The target executor must still be alive: shut down command queues before the executors they
-         * flush into.
-         */
-        auto shutdown() -> void override
-        {
-            (void)flush();
             const std::lock_guard lock(m_mutex);
             m_stopped = true;
+            std::vector<work_item> dropped;
+            m_staging.swap(dropped);
         }
 
     private:
         executor* m_target;
         std::mutex m_mutex;
-        std::vector<std::function<void()>> m_staging;
+        std::vector<work_item> m_staging;
         bool m_stopped = false;
         friend class ::sbk::engine::system;
     };
