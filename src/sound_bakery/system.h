@@ -8,6 +8,7 @@
 #include "sound_bakery/task/executor.h"
 
 #include "core/logger.h"
+#include "eastl/fixed_allocator.h"
 
 namespace sbk
 {
@@ -34,8 +35,7 @@ namespace sbk
          *
          * It owns all loaded Soundbanks, listener game object, and busses.
          */
-        class SB_CLASS system final : public sc_system,
-                                      public sbk::core::object_owner,
+        class SB_CLASS system final : public sbk::core::object_owner,
                                       public sbk::core::logger,
                                       public sbk::core::object_tracker,
                                       public sbk::core::database,
@@ -105,6 +105,8 @@ namespace sbk
             auto update_async() -> void;
 
             bool m_registeredReflection = false;
+
+            sbk::memory::rpmalloc_allocator m_systemAllocator;   //< Used to allocate system-owned objects
 
             sbk::owned_ptr<sbk::editor::project> m_project;
             sbk::owned_ptr<sbk::engine::runtime> m_runtime;

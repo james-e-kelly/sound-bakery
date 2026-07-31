@@ -2,6 +2,8 @@
 
 #include "sound_bakery/pch.h"
 
+#include "eastl/allocator.h"
+
 namespace sbk::core
 {
     class object;
@@ -38,6 +40,46 @@ namespace sbk::memory
             object->~T();
             sbk::memory::free(object, category);
         }
+    };
+
+    class rpmalloc_allocator : public eastl::allocator
+    {
+    public:
+        rpmalloc_allocator() = delete;
+        rpmalloc_allocator(SB_OBJECT_CATEGORY objectCategory) : eastl::allocator("rpmalloc_allocator"), m_objectCategory(m_objectCategory) {}
+
+        void* allocate(size_t n, int flags = 0)
+        {
+            (flags);
+            return malloc(n, m_objectCategory);
+        }
+
+        void* allocate(size_t n, size_t alignment, size_t offset, int flags = 0)
+        {
+            (alignment);
+            (offset);
+            (flags);
+            return malloc(n, m_objectCategory);
+        }
+
+        void deallocate(void* p, size_t n)
+        {
+            (n);
+            free(p, m_objectCategory);
+        }
+
+    private:
+        SB_OBJECT_CATEGORY m_objectCategory{};
+    };
+
+    class arena_allocator
+    {
+    public:
+        arena_allocator() = delete;
+        arena_allocator(SB_OBJECT_CATEGORY objectCategory) : m_privateAllocator(objectCategory) {}
+
+    private: 
+        rpmalloc_allocator m_privateAllocator;
     };
 }  // namespace sbk::memory
 

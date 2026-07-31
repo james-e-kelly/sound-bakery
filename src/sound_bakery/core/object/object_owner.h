@@ -42,7 +42,7 @@ namespace sbk::core
          * @brief Create an object that is fully owned by the caller.
          */
         template <typename T, typename... Args>
-        [[nodiscard]] auto create_owned(SB_OBJECT_CATEGORY category, Args&&... args) -> sbk::result<sbk::owned_ptr<T>>;
+        [[nodiscard]] auto create_owned(SB_OBJECT_CATEGORY category, eastl::allocator& allocator, Args&&... args) -> sbk::result<sbk::owned_ptr<T>>;
 
         /**
          * @brief Create an object that is owned by this owner.
@@ -127,13 +127,13 @@ namespace sbk::core
     }
 
     template <typename T, typename... Args>
-    auto object_owner::create_owned(SB_OBJECT_CATEGORY category, Args&&... args) -> sbk::result<sbk::owned_ptr<T>>
+    auto object_owner::create_owned(SB_OBJECT_CATEGORY category, eastl::allocator& allocator, Args&&... args) -> sbk::result<sbk::owned_ptr<T>>
     {
         static_assert(std::is_base_of_v<object_owner, T>, "create_owned is for graph nodes; they must derive from object_owner");
 
         ZoneScoped;
 
-        void* const memory = sbk::memory::malloc(sizeof(T), category);
+        void* const memory = allocator.allocate(sizeof(T));
         SBK_CHECK(memory != nullptr, SBK_ERR_OUT_OF_MEMORY);
 
         try
@@ -146,7 +146,7 @@ namespace sbk::core
         {
             // Constructor threw: the placement-new never completed, so free the raw
             // block ourselves -- no destructor to run. Mirrors create_runtime_object.
-            sbk::memory::free(memory, category);
+            allocator.deallocate(memory);
             return sbk::make_error(SBK_ERR_OUT_OF_MEMORY, exception.what());
         }
     }
