@@ -4,6 +4,7 @@
 #include "sound_bakery/core/database/database.h"
 #include "sound_bakery/core/database/database_ptr.h"
 #include "sound_bakery/core/object/object_tracker.h"
+#include "sound_bakery/core/memory.h"
 #include "sound_bakery/error/error.h"
 #include "sound_bakery/task/executor.h"
 
@@ -109,8 +110,8 @@ namespace sbk
 
             // Declared before any owned_ptr member below so their deleters (which call back
             // into these resources) run before the resources themselves are destroyed.
-            sbk::memory::rpmalloc_resource         m_generalResource{SB_CATEGORY_SYSTEM};
-            sbk::memory::monotonic_buffer_resource m_systemArena{SB_CATEGORY_SYSTEM};
+            sbk::memory::rpmalloc_resource m_generalResource{sbk::memory::object_category::system};
+            sbk::memory::monotonic_buffer_resource m_systemArena{sbk::memory::object_category::system};
 
             sbk::owned_ptr<sbk::editor::project> m_project;
             sbk::owned_ptr<sbk::engine::runtime> m_runtime;

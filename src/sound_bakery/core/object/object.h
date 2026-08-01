@@ -126,7 +126,7 @@ namespace sbk::core
             return std::malloc(size);
         }
 
-        static void* operator new(std::size_t size, SB_OBJECT_CATEGORY category)
+        static void* operator new(std::size_t size, sbk::memory::object_category category)
         {
             // The compiler passes only sizeof(Derived) here, not alignof(Derived); the standard
             // rule for operator new without align_val_t is that std::max_align_t is sufficient.
@@ -140,7 +140,7 @@ namespace sbk::core
             std::free(pointer);
         }
 
-        static void operator delete(void* pointer, SB_OBJECT_CATEGORY category)
+        static void operator delete(void* pointer, sbk::memory::object_category category)
         {
             sbk::memory::free(pointer, category);
         }

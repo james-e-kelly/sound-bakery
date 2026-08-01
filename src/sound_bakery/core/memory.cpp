@@ -30,7 +30,7 @@ void* operator new[](size_t size, const char* pName, int flags, unsigned debugFl
     (void)debugFlags;
     (void)file;
     (void)line;
-    return sbk::memory::malloc(size, sbk::memory::default_alignment, SB_CATEGORY_UNKNOWN);
+    return sbk::memory::malloc(size, sbk::memory::default_alignment, sbk::memory::object_category::data);
 }
 
 void* operator new[](size_t size, size_t alignment, size_t alignmentOffset, const char* pName, int flags, unsigned debugFlags, const char* file, int line)
@@ -41,7 +41,7 @@ void* operator new[](size_t size, size_t alignment, size_t alignmentOffset, cons
     (void)debugFlags;
     (void)file;
     (void)line;
-    return sbk::memory::malloc(size, alignment, SB_CATEGORY_UNKNOWN);
+    return sbk::memory::malloc(size, alignment, sbk::memory::object_category::data);
 }
 
 auto sbk::memory::default_eastl_allocator() noexcept -> polymorphic_allocator*
@@ -68,7 +68,7 @@ auto sbk::memory::object_deleter::operator()(sbk::core::object* object)  const n
 {
     if (object != nullptr)
     {
-        const SB_OBJECT_CATEGORY objectCategory = sbk::util::type_helper::get_category_from_type(object->get_object_type());
+        const sbk::memory::object_category objectCategory = sbk::util::type_helper::get_category_from_type(object->get_object_type());
 
         if (sbk::engine::system* const system = sbk::engine::system::get())
         {
@@ -92,7 +92,7 @@ auto sbk::memory::object_deleter::operator()(sbk::core::object* object)  const n
     }
 }
 
-auto sbk::memory::malloc(std::size_t size, std::size_t alignment, SB_OBJECT_CATEGORY category) -> void*
+auto sbk::memory::malloc(std::size_t size, std::size_t alignment, sbk::memory::object_category category) -> void*
 {
     // rpaligned_alloc short-circuits to the standard rpmalloc path when alignment <= 16, so
     // small-alignment callers pay no measurable cost. Anything more (SIMD, cache-line padded)
@@ -117,7 +117,7 @@ auto sbk::memory::realloc(void* pointer, std::size_t size) -> void*
     return rprealloc(pointer, size);
 }
 
-auto sbk::memory::free(void* pointer, SB_OBJECT_CATEGORY category) -> void
+auto sbk::memory::free(void* pointer, sbk::memory::object_category category) -> void
 {
     TracyFreeN(pointer, sbk::util::type_helper::get_object_category_name(category).data());
     rpfree(pointer);

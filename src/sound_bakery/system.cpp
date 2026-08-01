@@ -33,7 +33,7 @@ namespace profiling_strings
 
 auto ma_malloc(std::size_t size, void* userData) -> void*
 {
-    return sbk::memory::malloc(size, sbk::memory::default_alignment, SB_CATEGORY_UNKNOWN);
+    return sbk::memory::malloc(size, sbk::memory::default_alignment, sbk::memory::object_category::sound_chef);
 }
 
 auto ma_realloc(void* pointer, std::size_t size, void* userData) -> void*
@@ -43,7 +43,7 @@ auto ma_realloc(void* pointer, std::size_t size, void* userData) -> void*
 
 auto ma_free(void* pointer, void* userData) -> void
 {
-    sbk::memory::free(pointer, SB_CATEGORY_UNKNOWN);
+    sbk::memory::free(pointer, sbk::memory::object_category::sound_chef);
 }
 
 namespace
@@ -99,7 +99,7 @@ namespace
             // failed create() followed by a retry is safe.
             sbk::memory::init();
 
-            void* const systemMemory = sbk::memory::malloc(sizeof(sbk::engine::system), alignof(sbk::engine::system), SB_OBJECT_CATEGORY::SB_CATEGORY_SYSTEM);
+            void* const systemMemory = sbk::memory::malloc(sizeof(sbk::engine::system), alignof(sbk::engine::system), sbk::memory::object_category::system);
 
             if (systemMemory == nullptr)
             {
@@ -215,7 +215,7 @@ auto system::destroy() -> void
         SBK_INFO("Closing and destroying Sound Bakery");
 
         sys->~system();
-        sbk::memory::free(sys, SB_CATEGORY_SYSTEM);
+        sbk::memory::free(sys, sbk::memory::object_category::system);
         s_system.store(nullptr, std::memory_order_release);
 
         // Release the underlying allocator only after the last free -- the system dtor above
@@ -233,7 +233,7 @@ auto system::init(const sbk_system_config& config) -> sbk::result<void>
     const std::size_t variableMemorySize    = (config.singleThreadedUpdate ? 0U : sizeof(sbk::thread_executor)) + (config.enableProfiling ? sizeof(sbk::engine::profiling::voice_tracker) : 0U);
 
     SBK_TRYV(m_systemArena.init(staticMemorySize + variableMemorySize));
-    SBK_TRY(m_runtime, create_owned<sbk::engine::runtime>(SB_CATEGORY_SYSTEM, m_systemArena));
+    SBK_TRY(m_runtime, create_owned<sbk::engine::runtime>(m_systemArena));
      
     sbk_system_config configCopy                             = config;
     configCopy.soundChefConfig.allocationCallbacks.pUserData = this;
@@ -264,15 +264,15 @@ auto system::init(const sbk_system_config& config) -> sbk::result<void>
 #if SBK_CONFIG_ENABLE_PROFILING
     if (config.enableProfiling)
     {
-        SBK_TRY(m_voiceTracker, create_owned<sbk::engine::profiling::voice_tracker>(SB_CATEGORY_SYSTEM, m_systemArena));
+        SBK_TRY(m_voiceTracker, create_owned<sbk::engine::profiling::voice_tracker>(m_systemArena));
     }
 #endif
 
     sbk::core::set_single_threaded_mode(config.singleThreadedUpdate);
 
-    SBK_TRY(m_gameExecutor, create_owned<sbk::manual_executor>(SB_CATEGORY_SYSTEM, m_systemArena, "Game Thread"));
-    SBK_TRY(m_workerThread, create_owned<sbk::thread_executor>(SB_CATEGORY_SYSTEM, m_systemArena, "Sound Bakery Worker Thread"));
-    SBK_TRY(auto studioCommandQueue, create_owned<sbk::command_queue>(SB_CATEGORY_SYSTEM, m_systemArena, "Sound Bakery Command Queue"));
+    SBK_TRY(m_gameExecutor, create_owned<sbk::manual_executor>(m_systemArena, "Game Thread"));
+    SBK_TRY(m_workerThread, create_owned<sbk::thread_executor>(m_systemArena, "Sound Bakery Worker Thread"));
+    SBK_TRY(auto studioCommandQueue, create_owned<sbk::command_queue>(m_systemArena, "Sound Bakery Command Queue"));
 
     if (config.singleThreadedUpdate)
     {
@@ -280,7 +280,7 @@ auto system::init(const sbk_system_config& config) -> sbk::result<void>
     }
     else
     {
-        SBK_TRY(m_systemThread, create_owned<sbk::thread_executor>(SB_CATEGORY_SYSTEM, m_systemArena, "System Thread"));
+        SBK_TRY(m_systemThread, create_owned<sbk::thread_executor>(m_systemArena, "System Thread"));
         studioCommandQueue->m_target = m_systemThread.get();
     }
 
@@ -388,6 +388,6 @@ auto sbk::engine::system::get_worker_executer() const -> sbk::executor*
 
 auto sbk::engine::system::create_project() -> sbk::result<sbk::editor::project*>
 {
-    SBK_TRY(m_project, create_owned<sbk::editor::project>(SB_CATEGORY_SYSTEM, m_generalResource));
+    SBK_TRY(m_project, create_owned<sbk::editor::project>(m_generalResource));
     return m_project.get();
 }

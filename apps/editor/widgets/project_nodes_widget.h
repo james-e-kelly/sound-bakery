@@ -2,6 +2,8 @@
 
 #include "sound_bakery/pch.h"
 
+#include "sound_bakery/core/memory.h"
+
 #include "IconsFontaudio.h"
 #include "gluten/widgets/widget.h"
 #include "imgui.h"
@@ -26,13 +28,13 @@ public:
     project_nodes_widget(widget* parentWidget) : widget(parentWidget, "Project Nodes Widget"), m_renameID(0) {}
 
 public:
-    void render_page(const std::vector<SB_OBJECT_CATEGORY>& categories);
+    void render_page(const std::vector<sbk::memory::object_category>& categories);
     void render_objects_page();
     void render_events_page();
     void render_soundbank_page();
 
 public:
-    void render_category(SB_OBJECT_CATEGORY category);
+    void render_category(sbk::memory::object_category category);
     void render_single_node(rttr::type type, rttr::instance instance);
     void render_rename_object(sbk::core::database_object* const& object);
 
@@ -44,7 +46,7 @@ public:
 private:
     bool render_node_context_menu(rttr::type type, rttr::instance instance);
 
-    void render_create_parent_or_child_menu(SB_OBJECT_CATEGORY category,
+    void render_create_parent_or_child_menu(sbk::memory::object_category category,
                                             rttr::instance node,
                                             node_creation_type creationType);
 

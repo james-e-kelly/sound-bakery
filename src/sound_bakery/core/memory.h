@@ -33,6 +33,66 @@ namespace sbk::memory
     inline constexpr std::size_t default_alignment = alignof(std::max_align_t);
 
     /**
+     * @brief Defines groups of objects that are rendered together/in the same tree
+     */
+    enum class object_category : std::uint8_t
+    {
+        /**
+         * @brief Unkown category
+         */
+        unknown,
+        /**
+         * @brief Sound file
+         */
+        sound,
+        /**
+         * @brief Every sound, random, blend etc.
+         */
+        node,
+        /**
+         * @brief Bus or aux busses
+         */
+        bus,
+        /**
+         * @brief Music nodes like music segments
+         */
+        music,
+        /**
+         * @brief Events
+         */
+        event,
+        /**
+         * @brief Soundbanks
+         */
+        bank,
+        /**
+         * @brief Parameter types
+         */
+        parameter,
+        /**
+         * @brief Any identifiable object not categorised above
+         */
+        database_object,
+        /**
+         * @brief Any runtime object
+         */
+        runtime_object,
+        /**
+         * @brief System object, or anything that is global
+         */
+        system,
+        /**
+         * @brief Low-level audio allocations from Sound Chef
+         */
+        sound_chef,
+        /**
+         * @brief General data and structures allocated from vectors, queues, strings etc.
+         */
+        data,
+        num
+    };
+
+    /**
      * @name Lifecycle of the underlying allocator.
      *
      * init() must be called before the first malloc(). shutdown() must be called after the last
@@ -48,9 +108,9 @@ namespace sbk::memory
      * @name Low-level allocation for all of Sound Bakery.
      */
     /**@{*/
-    auto malloc(std::size_t size, std::size_t alignment, SB_OBJECT_CATEGORY category) -> void*;
+    auto malloc(std::size_t size, std::size_t alignment, sbk::memory::object_category category) -> void*;
     auto realloc(void* pointer, std::size_t size) -> void*;
-    auto free(void* pointer, SB_OBJECT_CATEGORY category) -> void;
+    auto free(void* pointer, sbk::memory::object_category category) -> void;
     /**@}*/
 
     /**
@@ -239,7 +299,7 @@ namespace sbk::memory
     {
     public:
         rpmalloc_resource() = default;
-        explicit rpmalloc_resource(SB_OBJECT_CATEGORY category) noexcept : m_category(category) {}
+        explicit rpmalloc_resource(sbk::memory::object_category category) noexcept : m_category(category) {}
 
     protected:
         auto do_allocate(std::size_t bytes, std::size_t alignment) noexcept -> void* override
@@ -253,7 +313,7 @@ namespace sbk::memory
         }
 
     private:
-        SB_OBJECT_CATEGORY m_category{SB_CATEGORY_UNKNOWN};
+        sbk::memory::object_category m_category{sbk::memory::object_category::unknown};
     };
 
     /**
@@ -272,7 +332,7 @@ namespace sbk::memory
     public:
         monotonic_buffer_resource() = delete;
 
-        monotonic_buffer_resource(SB_OBJECT_CATEGORY category) noexcept : m_category(category) {}
+        monotonic_buffer_resource(sbk::memory::object_category category) noexcept : m_category(category) {}
 
         ~monotonic_buffer_resource() noexcept override
         {
@@ -351,7 +411,7 @@ namespace sbk::memory
             return offset_ptr(p, adjust);
         }
 
-        SB_OBJECT_CATEGORY m_category{SB_CATEGORY_UNKNOWN};
+        sbk::memory::object_category m_category{sbk::memory::object_category::unknown};
         std::uint8_t*      m_buffer{};
         std::uint8_t*      m_bump{};
         std::size_t        m_capacity{};

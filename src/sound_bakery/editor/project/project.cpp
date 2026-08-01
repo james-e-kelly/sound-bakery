@@ -179,7 +179,7 @@ auto sbk::editor::project::create_preview_container() -> sbk::result<void>
 
 auto sbk::editor::project::build_soundbanks() -> sbk::result<void>
 {
-    std::unordered_set<sbk::core::object*> soundbankObjects = sbk::engine::system::get()->get_objects_of_category(SB_CATEGORY_BANK);
+    std::unordered_set<sbk::core::object*> soundbankObjects = sbk::engine::system::get()->get_objects_of_category(sbk::memory::object_category::bank);
 
     SBK_TRY(auto initSoundbank, create_database_object<sbk::engine::soundbank>());
 

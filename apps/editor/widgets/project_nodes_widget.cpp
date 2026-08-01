@@ -21,14 +21,14 @@
 #include "managers/project_manager.h"
 #include "widgets/file_browser_widget.h"
 
-static const std::vector<SB_OBJECT_CATEGORY> s_objectPageCategories{SB_CATEGORY_PARAMETER, SB_CATEGORY_BUS,
-                                                                    SB_CATEGORY_NODE, SB_CATEGORY_MUSIC};
+static const std::vector<sbk::memory::object_category> s_objectPageCategories{sbk::memory::object_category::parameter, sbk::memory::object_category::bus,
+                                                                              sbk::memory::object_category::node, sbk::memory::object_category::music};
 
-static const std::vector<SB_OBJECT_CATEGORY> s_eventPageCategories{SB_CATEGORY_EVENT};
+static const std::vector<sbk::memory::object_category> s_eventPageCategories{sbk::memory::object_category::event};
 
-static const std::vector<SB_OBJECT_CATEGORY> s_soundbankPageCategories{SB_CATEGORY_BANK};
+static const std::vector<sbk::memory::object_category> s_soundbankPageCategories{sbk::memory::object_category::bank};
 
-void project_nodes_widget::render_page(const std::vector<SB_OBJECT_CATEGORY>& categories)
+void project_nodes_widget::render_page(const std::vector<sbk::memory::object_category>& categories)
 {
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
     const gluten::imgui::scoped_color frameIsBackgroundColor(ImGuiCol_FrameBg, gluten::theme::background);
@@ -38,7 +38,7 @@ void project_nodes_widget::render_page(const std::vector<SB_OBJECT_CATEGORY>& ca
     {
         ImGui::PopStyleVar();
 
-        for (const SB_OBJECT_CATEGORY category : categories)
+        for (const sbk::memory::object_category category : categories)
         {
             rttr::string_view categoryName = sbk::util::type_helper::get_object_category_name(category);
 
@@ -74,7 +74,7 @@ void project_nodes_widget::render_soundbank_page() { render_page(s_soundbankPage
 
 static int numNodesRendered = 0;
 
-void project_nodes_widget::render_category(SB_OBJECT_CATEGORY category)
+void project_nodes_widget::render_category(sbk::memory::object_category category)
 {
     const std::set<sbk::core::object*, sbk::core::object_ptr_comparator> categoryObjects =
         sbk::engine::system::get()->convert_to_ordered(sbk::engine::system::get()->get_objects_of_category(category));
@@ -320,7 +320,7 @@ bool project_nodes_widget::render_node_context_menu(rttr::type type, rttr::insta
         {
             if (ImGui::BeginPopupContextItem(std::to_string(object->get_database_id()).c_str()))
             {
-                const SB_OBJECT_CATEGORY category = sbk::util::type_helper::get_category_from_type(type);
+                const sbk::memory::object_category category = sbk::util::type_helper::get_category_from_type(type);
 
                 if (object->get_object_type().is_derived_from(sbk::engine::node_base::type()))
                 {
@@ -387,7 +387,7 @@ bool project_nodes_widget::render_node_context_menu(rttr::type type, rttr::insta
     return result;
 }
 
-void project_nodes_widget::render_create_parent_or_child_menu(SB_OBJECT_CATEGORY category,
+void project_nodes_widget::render_create_parent_or_child_menu(sbk::memory::object_category category,
                                                               rttr::instance node,
                                                               node_creation_type creationType)
 {

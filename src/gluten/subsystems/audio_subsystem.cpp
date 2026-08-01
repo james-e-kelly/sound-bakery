@@ -1,5 +1,7 @@
 #include "audio_subsystem.h"
 
+#include "sound_bakery/runtime/runtime.h"
+
 #include "ebur128/ebur128.h"
 #include "gluten/app/app.h"
 
@@ -74,7 +76,7 @@ auto gluten::audio_subsystem::play_sound(const std::filesystem::path& filePath) 
     else if (sc_sound* const sound = get_or_load_audio_handle(filePath))
     {
         sc_sound_instance* soundInstance = nullptr;
-        sc_system_play_sound(m_soundBakery.get(), sound, &soundInstance, nullptr, SBK_FALSE);
+        sc_system_play_sound(m_soundBakery.get()->get_runtime(), sound, &soundInstance, nullptr, SBK_FALSE);
         try_set_loop_points(soundInstance, loopData);
         m_filesToSoundInstancesMap[filePath].reset(soundInstance);
     }
@@ -115,7 +117,7 @@ auto gluten::audio_subsystem::set_sound_cursor_position(const std::filesystem::p
     else if (sc_sound* const sound = get_or_load_audio_handle(filePath))
     {
         sc_sound_instance* soundInstance = nullptr;
-        sc_system_play_sound(m_soundBakery.get(), sound, &soundInstance, nullptr, SBK_TRUE);
+        sc_system_play_sound(m_soundBakery.get()->get_runtime(), sound, &soundInstance, nullptr, SBK_TRUE);
         sc_sound_instance_set_cursor_in_seconds(soundInstance, cursorPosition);
         sc_sound_instance_set_looping(soundInstance, SBK_FALSE);
         m_filesToSoundInstancesMap[filePath].reset(soundInstance);
@@ -247,7 +249,7 @@ auto gluten::audio_subsystem::get_or_load_audio_handle(const std::filesystem::pa
         {
             sound = m_filesToSoundsMap.at(filePath).get();
         }
-        else if (sc_system_create_sound(m_soundBakery.get(), filePath.string().c_str(), SC_SOUND_MODE_DECODE, &sound) == SBK_SUCCESS)
+        else if (sc_system_create_sound(m_soundBakery.get()->get_runtime(), filePath.string().c_str(), SC_SOUND_MODE_DECODE, &sound) == SBK_SUCCESS)
         {
             m_filesToSoundsMap[filePath].reset(sound);
         }

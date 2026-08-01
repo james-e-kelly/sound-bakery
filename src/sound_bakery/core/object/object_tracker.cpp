@@ -26,7 +26,7 @@ auto object_tracker::track_object(object* object) -> void
     if (object != nullptr)
     {
         const rttr::type type             = object->get_object_type();
-        const SB_OBJECT_CATEGORY category = sbk::util::type_helper::get_category_from_type(type);
+        const sbk::memory::object_category category = sbk::util::type_helper::get_category_from_type(type);
 
         m_typeToObjects[type].emplace(object);
         m_categoryToObjects[category].emplace(object);
@@ -38,7 +38,7 @@ auto object_tracker::untrack_object(object* object, std::optional<rttr::type> ty
     if (object != nullptr)
     {
         const rttr::type type             = typeOverride.has_value() ? typeOverride.value() : object->get_object_type();
-        const SB_OBJECT_CATEGORY category = sbk::util::type_helper::get_category_from_type(type);
+        const sbk::memory::object_category category = sbk::util::type_helper::get_category_from_type(type);
 
         if (type.is_valid())
         {
@@ -49,7 +49,7 @@ auto object_tracker::untrack_object(object* object, std::optional<rttr::type> ty
     }
 }
 
-auto object_tracker::get_objects_of_category(const SB_OBJECT_CATEGORY& category) const -> std::unordered_set<object*>
+auto object_tracker::get_objects_of_category(const sbk::memory::object_category& category) const -> std::unordered_set<object*>
 {
     if (m_categoryToObjects.find(category) != m_categoryToObjects.cend())
     {
@@ -81,7 +81,7 @@ auto object_tracker::get_objects_count() const -> size_t
     return count;
 }
 
-auto object_tracker::get_all_category_to_objects() const -> const std::unordered_map<SB_OBJECT_CATEGORY, std::unordered_set<object*>>&
+auto object_tracker::get_all_category_to_objects() const -> const std::unordered_map<sbk::memory::object_category, std::unordered_set<object*>>&
 {
     return m_categoryToObjects;
 }

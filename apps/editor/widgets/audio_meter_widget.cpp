@@ -1,5 +1,7 @@
 #include "audio_meter_widget.h"
 
+#include "sound_bakery/runtime/runtime.h"
+
 #include "gluten/elements/layouts/layout.h"
 #include "gluten/elements/slider.h"
 #include "imgui.h"
@@ -74,7 +76,7 @@ void audio_meter_widget::start_implementation()
 {
     m_rmsVolumes.fill(audio_meter_utils::rendered_min_volume);
 
-    if (sc_node_group* const masterNodeGroup = sbk::engine::system::get()->masterNodeGroup)
+    if (sc_node_group* const masterNodeGroup = sbk::engine::system::get()->get_runtime()->masterNodeGroup)
     {
         sc_node_group_get_dsp(masterNodeGroup, SC_DSP_TYPE_METER, &m_meterDsp);
     }

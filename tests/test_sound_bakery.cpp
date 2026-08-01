@@ -123,7 +123,7 @@ TEST_SUITE("System")
         scoped_engine engine;
 
         // The listener should exist
-        CHECK(engine.get()->get_objects_of_category(SB_CATEGORY_RUNTIME_OBJECT).size() > 0);
+        CHECK(engine.get()->get_objects_of_category(sbk::memory::object_category::runtime_object).size() > 0);
     }
 
     TEST_CASE("Creating objects increases object count correctly")

@@ -3,6 +3,7 @@
 #include "sound_bakery/pch.h"
 
 #include "sound_bakery/core/core_fwd.h"
+#include "sound_bakery/core/memory.h"
 
 namespace sbk::core
 {
@@ -27,10 +28,10 @@ namespace sbk::core
         auto track_object(object* object) -> void;
         auto untrack_object(object* object, std::optional<rttr::type> typeOverride = std::nullopt) -> void;
 
-        [[nodiscard]] auto get_objects_of_category(const SB_OBJECT_CATEGORY& category) const -> std::unordered_set<object*>;
+        [[nodiscard]] auto get_objects_of_category(const sbk::memory::object_category& category) const -> std::unordered_set<object*>;
         [[nodiscard]] auto get_objects_of_type(const rttr::type& type) const -> std::unordered_set<object*>;
         [[nodiscard]] auto get_objects_count() const -> size_t;
-        [[nodiscard]] auto get_all_category_to_objects() const -> const std::unordered_map<SB_OBJECT_CATEGORY, std::unordered_set<object*>>&;
+        [[nodiscard]] auto get_all_category_to_objects() const -> const std::unordered_map<sbk::memory::object_category, std::unordered_set<object*>>&;
         [[nodiscard]] auto get_all_type_to_objects() const -> const std::unordered_map<rttr::type, std::unordered_set<object*>>&;
 
         [[nodiscard]] auto convert_to_ordered(const std::unordered_set<object*>& unordered) const -> std::set<object*, object_ptr_comparator>;
@@ -38,7 +39,7 @@ namespace sbk::core
     private:
         auto on_object_destroyed(object* object) -> void;
 
-        std::unordered_map<SB_OBJECT_CATEGORY, std::unordered_set<object*>> m_categoryToObjects;
+        std::unordered_map<sbk::memory::object_category, std::unordered_set<object*>> m_categoryToObjects;
         std::unordered_map<rttr::type, std::unordered_set<object*>> m_typeToObjects;
     };
 }  // namespace sbk::core
