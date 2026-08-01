@@ -19,3 +19,7 @@ namespace sbk::memory
 
 #define EASTLAllocatorType    sbk::memory::polymorphic_allocator
 #define EASTLAllocatorDefault sbk::memory::default_eastl_allocator
+// Do NOT override the per-container defaults like EASTL_VECTOR_DEFAULT_ALLOCATOR. EASTL's own
+// definition (`allocator_type(EASTL_VECTOR_DEFAULT_NAME)`) is an expression that constructs an
+// allocator from a name -- overriding it with just a type name breaks noexcept-expr contexts.
+// polymorphic_allocator has a `(const char*)` constructor so the default expansion Just Works.

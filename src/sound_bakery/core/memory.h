@@ -211,6 +211,11 @@ namespace sbk::memory
         {
         }
 
+        // Name-only constructor. EASTL container defaults expand to `allocator_type("EASTL <container>")`,
+        // so every EASTL default-constructed container reaches this ctor with the container's tag as
+        // its name. The resource stays null and resolves through sbk::engine::system on each allocate.
+        explicit polymorphic_allocator(const char* name) noexcept : m_name(name) {}
+
         // EASTL name accessors (used only when EASTL_NAME_ENABLED).
         [[nodiscard]] auto get_name() const noexcept -> const char* { return m_name; }
         auto set_name(const char* name) noexcept -> void { m_name = name; }

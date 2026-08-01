@@ -5,6 +5,8 @@
 #include "sound_bakery/core/memory.h"
 #include "sound_bakery/error/result.h"
 
+#include "EASTL/vector.h"
+
 namespace sbk::engine
 {
     class system;
@@ -91,7 +93,7 @@ namespace sbk::core
          *
          * The object is not guaranteed to be destroyed as other objects might still hold references to it.
          */
-        auto remove_object(const std::shared_ptr<object>& object) -> std::vector<std::shared_ptr<sbk::core::object>>::iterator;
+        auto remove_object(const std::shared_ptr<object>& object) -> eastl::vector<std::shared_ptr<sbk::core::object>>::iterator;
 
         /**
          * @brief Remove all references.
@@ -100,8 +102,8 @@ namespace sbk::core
          */
         auto remove_all() -> void;
 
-        [[nodiscard]] auto get_objects() -> std::vector<std::shared_ptr<object>>&;
-        [[nodiscard]] auto get_objects() const -> const std::vector<std::shared_ptr<object>>&;
+        [[nodiscard]] auto get_objects() -> eastl::vector<std::shared_ptr<object>>&;
+        [[nodiscard]] auto get_objects() const -> const eastl::vector<std::shared_ptr<object>>&;
         [[nodiscard]] auto get_objects_size() const -> std::size_t;  //< Get number of objects this object owns
 
     protected:
@@ -109,7 +111,7 @@ namespace sbk::core
 
     private:
         object_owner* m_owner = nullptr;
-        std::vector<std::shared_ptr<object>> m_objects;
+        eastl::vector<std::shared_ptr<object>> m_objects;
     };
 
     template <typename T>
