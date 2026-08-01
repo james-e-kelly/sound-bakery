@@ -53,12 +53,13 @@ namespace
         if (const sbk_status encodeResult = sc_encoder_write_from_file(source.string().c_str(), destination.string().c_str(), &encoderConfig); encodeResult != SBK_SUCCESS)
         {
             sbk::log_error(encodeResult, "sc_encoder_write_from_file");  //< Detached task; log and stop.
-            co_return;
+            co_return sbk::ok();
         }
 
         // Hop to the system thread to mutate the object.
         co_await systemThread->schedule();
         sound->set_encoded_sound_name(destination.string());
+        co_return sbk::ok();
     }
 }  // namespace
 
