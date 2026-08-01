@@ -789,3 +789,36 @@ TEST_SUITE("Stress tests")
         engine.get()->get_runtime()->remove_all();
     }
 }
+
+TEST_SUITE("Tasks")
+{
+    static auto test_detatched_task(std::reference_wrapper<std::atomic<bool>> ranStudio, std::reference_wrapper<std::atomic<sbk::core::thread_domain>> observed) -> sbk::detached_task
+    {
+        co_await sbk::engine::system::get()->get_system_executer()->schedule();
+        observed.get() = sbk::core::get_current_thread_domain();
+        ranStudio.get() = true;
+    }
+
+    TEST_CASE("Can spawn detatched task and have it move to different threads")
+    {
+        scoped_engine engine(false);
+
+        std::atomic<sbk::core::thread_domain> observedSystem{sbk::core::thread_domain::unknown};
+        std::atomic<bool> studioTaskRan{false};
+        
+        test_detatched_task(studioTaskRan, observedSystem);
+
+        REQUIRE(engine.get()->update().has_value());
+
+        (void)engine.get()->update();
+
+        const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(5);
+        while (!studioTaskRan.load() && std::chrono::steady_clock::now() < deadline)
+        {
+            std::this_thread::yield();
+        }
+
+        REQUIRE(studioTaskRan.load());
+        CHECK(observedSystem.load() == sbk::core::thread_domain::studio);
+    }
+}
