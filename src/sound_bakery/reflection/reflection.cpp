@@ -117,7 +117,7 @@ namespace sbk::reflection
         // routes to sbk::memory::malloc, which returns null (never throws) on failure. Constructing at
         // a null address would be undefined behaviour, so bail out here; the OOM is logged at the
         // memory choke point and the caller sees a null object.
-        void* const objectMemory = object_class::operator new(sizeof(object_class), category);
+        void* const objectMemory = object_class::operator new(sizeof(object_class), alignof(object_class), category);
 
         if (objectMemory == nullptr)
         {
