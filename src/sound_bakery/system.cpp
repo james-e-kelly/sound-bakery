@@ -112,7 +112,7 @@ namespace
 }  // namespace
 
 system::system()
-    : sc_system(), sbk::core::logger(s_soundBakeryLoggerName)
+    : sbk::core::logger(s_soundBakeryLoggerName)
 {
 }
 
