@@ -16,6 +16,8 @@ namespace sbk
                 return "User error";
             case SBK_ERR_INVALID_PARAMETER:
                 return "Invalid parameter passed to the function";
+            case SBK_ERR_ALREADY_INITIALIZED:
+                return "The resource was already initialized and should not be initialized again";
             case SBK_ERR_CHEF:
                 return "Error from Sound Chef";
             case SBK_ERR_CHEF_UNITIALIZED:

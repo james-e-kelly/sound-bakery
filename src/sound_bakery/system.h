@@ -8,7 +8,6 @@
 #include "sound_bakery/task/executor.h"
 
 #include "core/logger.h"
-#include "eastl/fixed_allocator.h"
 
 namespace sbk
 {
@@ -84,6 +83,8 @@ namespace sbk
             [[nodiscard]] auto get_system_executer() const -> sbk::executor*;
             [[nodiscard]] auto get_worker_executer() const -> sbk::executor*;
 
+            [[nodiscard]] auto get_default_memory_resource() noexcept -> sbk::memory::memory_resource* { return &m_generalResource; }
+
             [[nodiscard]] auto create_project() -> sbk::result<sbk::editor::project*>;
 
             friend class boost::serialization::access;
@@ -106,7 +107,10 @@ namespace sbk
 
             bool m_registeredReflection = false;
 
-            sbk::memory::rpmalloc_allocator m_systemAllocator;   //< Used to allocate system-owned objects
+            // Declared before any owned_ptr member below so their deleters (which call back
+            // into these resources) run before the resources themselves are destroyed.
+            sbk::memory::rpmalloc_resource         m_generalResource{SB_CATEGORY_SYSTEM};
+            sbk::memory::monotonic_buffer_resource m_systemArena{SB_CATEGORY_SYSTEM};
 
             sbk::owned_ptr<sbk::editor::project> m_project;
             sbk::owned_ptr<sbk::engine::runtime> m_runtime;

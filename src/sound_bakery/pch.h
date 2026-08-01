@@ -1,5 +1,9 @@
 #pragma once
 
+// Must precede every EASTL header so the EASTLAllocatorType override is in effect
+// when EASTL's config.h is first processed.
+#include "sound_bakery/core/eastl_config.h"
+
 #include "sound_bakery/reflection/reflection.h"  //< Must be included here and not individual files. @todo Investigate rttr strangeness when included in multiple files
 
 #include "Delegates.h"

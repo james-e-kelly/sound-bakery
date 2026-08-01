@@ -33,7 +33,7 @@ namespace profiling_strings
 
 auto ma_malloc(std::size_t size, void* userData) -> void*
 {
-    return sbk::memory::malloc(size, SB_CATEGORY_UNKNOWN);
+    return sbk::memory::malloc(size, sbk::memory::default_alignment, SB_CATEGORY_UNKNOWN);
 }
 
 auto ma_realloc(void* pointer, std::size_t size, void* userData) -> void*
@@ -95,7 +95,11 @@ namespace
     {
         if (s_system.load(std::memory_order_acquire) == nullptr)
         {
-            void* const systemMemory = sbk::memory::malloc(sizeof(sbk::engine::system), SB_OBJECT_CATEGORY::SB_CATEGORY_SYSTEM);
+            // Bring the underlying allocator online before the first malloc. Idempotent, so a
+            // failed create() followed by a retry is safe.
+            sbk::memory::init();
+
+            void* const systemMemory = sbk::memory::malloc(sizeof(sbk::engine::system), alignof(sbk::engine::system), SB_OBJECT_CATEGORY::SB_CATEGORY_SYSTEM);
 
             if (systemMemory == nullptr)
             {
@@ -213,12 +217,23 @@ auto system::destroy() -> void
         sys->~system();
         sbk::memory::free(sys, SB_CATEGORY_SYSTEM);
         s_system.store(nullptr, std::memory_order_release);
+
+        // Release the underlying allocator only after the last free -- the system dtor above
+        // walks the owned graph and returns memory through sbk::memory::free.
+        sbk::memory::shutdown();
     }
 }
 
 auto system::init(const sbk_system_config& config) -> sbk::result<void>
 {
-    SBK_TRY(m_runtime, create_owned<sbk::engine::runtime>(SB_CATEGORY_SYSTEM));
+    // Be the system thread during creation as we don't do initialization work on the system thread as it doesn't exist
+    const sbk::core::scoped_thread_domain systemDomain(sbk::core::thread_domain::studio);
+
+    constexpr std::size_t staticMemorySize  = sizeof(sbk::engine::runtime) + sizeof(sbk::manual_executor) + sizeof(sbk::command_queue) + sizeof(sbk::thread_executor);
+    const std::size_t variableMemorySize    = (config.singleThreadedUpdate ? 0U : sizeof(sbk::thread_executor)) + (config.enableProfiling ? sizeof(sbk::engine::profiling::voice_tracker) : 0U);
+
+    SBK_TRYV(m_systemArena.init(staticMemorySize + variableMemorySize));
+    SBK_TRY(m_runtime, create_owned<sbk::engine::runtime>(SB_CATEGORY_SYSTEM, m_systemArena));
      
     sbk_system_config configCopy                             = config;
     configCopy.soundChefConfig.allocationCallbacks.pUserData = this;
@@ -249,15 +264,15 @@ auto system::init(const sbk_system_config& config) -> sbk::result<void>
 #if SBK_CONFIG_ENABLE_PROFILING
     if (config.enableProfiling)
     {
-        SBK_TRY(m_voiceTracker, create_owned<sbk::engine::profiling::voice_tracker>(SB_CATEGORY_SYSTEM));
+        SBK_TRY(m_voiceTracker, create_owned<sbk::engine::profiling::voice_tracker>(SB_CATEGORY_SYSTEM, m_systemArena));
     }
 #endif
 
     sbk::core::set_single_threaded_mode(config.singleThreadedUpdate);
 
-    SBK_TRY(m_gameExecutor, create_owned<sbk::manual_executor>(SB_CATEGORY_SYSTEM, "Game Thread"));
-    SBK_TRY(m_workerThread, create_owned<sbk::thread_executor>(SB_CATEGORY_SYSTEM, "Sound Bakery Worker Thread"));
-    SBK_TRY(auto studioCommandQueue, create_owned<sbk::command_queue>(SB_CATEGORY_SYSTEM, "Sound Bakery Command Queue"));
+    SBK_TRY(m_gameExecutor, create_owned<sbk::manual_executor>(SB_CATEGORY_SYSTEM, m_systemArena, "Game Thread"));
+    SBK_TRY(m_workerThread, create_owned<sbk::thread_executor>(SB_CATEGORY_SYSTEM, m_systemArena, "Sound Bakery Worker Thread"));
+    SBK_TRY(auto studioCommandQueue, create_owned<sbk::command_queue>(SB_CATEGORY_SYSTEM, m_systemArena, "Sound Bakery Command Queue"));
 
     if (config.singleThreadedUpdate)
     {
@@ -265,7 +280,7 @@ auto system::init(const sbk_system_config& config) -> sbk::result<void>
     }
     else
     {
-        SBK_TRY(m_systemThread, create_owned<sbk::thread_executor>(SB_CATEGORY_SYSTEM, "System Thread"));
+        SBK_TRY(m_systemThread, create_owned<sbk::thread_executor>(SB_CATEGORY_SYSTEM, m_systemArena, "System Thread"));
         studioCommandQueue->m_target = m_systemThread.get();
     }
 
@@ -373,6 +388,6 @@ auto sbk::engine::system::get_worker_executer() const -> sbk::executor*
 
 auto sbk::engine::system::create_project() -> sbk::result<sbk::editor::project*>
 {
-    SBK_TRY(m_project, create_owned<sbk::editor::project>(SB_CATEGORY_SYSTEM));
+    SBK_TRY(m_project, create_owned<sbk::editor::project>(SB_CATEGORY_SYSTEM, m_generalResource));
     return m_project.get();
 }

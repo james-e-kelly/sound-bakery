@@ -52,6 +52,7 @@ TEST_SUITE("System")
     TEST_CASE("System Creation Deletion")
     {
         sbk_system_config config = sbk_system_config_init_default();
+        config.logToConsole      = true;
 
         REQUIRE(sbk::engine::system::create().has_value());
         REQUIRE(sbk::engine::system::get()->init(config).has_value());
@@ -63,6 +64,7 @@ TEST_SUITE("System")
     TEST_CASE("Re-init")
     {
         sbk_system_config config = sbk_system_config_init_default();
+        config.logToConsole      = true;
 
         REQUIRE(sbk::engine::system::create().has_value());
         REQUIRE(sbk::engine::system::get()->init(config).has_value());

@@ -9,20 +9,60 @@
 
 static std::size_t s_totalMemory = 0;
 
-struct rpmalloc_wrapper
+auto sbk::memory::init() -> void
 {
-    rpmalloc_wrapper()
-    {
-        rpmalloc_initialize();
-    }
+    // rpmalloc_initialize is idempotent (guarded by rpmalloc's own initialized flag), so a
+    // duplicate create() is safe.
+    rpmalloc_initialize();
+}
 
-    ~rpmalloc_wrapper()
-    {
-        rpmalloc_finalize();
-    }
-};
+auto sbk::memory::shutdown() -> void
+{
+    rpmalloc_finalize();
+}
 
-static rpmalloc_wrapper s_rpmalloc;
+// EASTL still declares these globals in its <EASTL/allocator.h>; we override EASTLAllocatorType
+// so nothing here should be reached, but the definitions must exist to satisfy the link.
+void* operator new[](size_t size, const char* pName, int flags, unsigned debugFlags, const char* file, int line)
+{
+    (void)pName;
+    (void)flags;
+    (void)debugFlags;
+    (void)file;
+    (void)line;
+    return sbk::memory::malloc(size, sbk::memory::default_alignment, SB_CATEGORY_UNKNOWN);
+}
+
+void* operator new[](size_t size, size_t alignment, size_t alignmentOffset, const char* pName, int flags, unsigned debugFlags, const char* file, int line)
+{
+    (void)alignmentOffset;
+    (void)pName;
+    (void)flags;
+    (void)debugFlags;
+    (void)file;
+    (void)line;
+    return sbk::memory::malloc(size, alignment, SB_CATEGORY_UNKNOWN);
+}
+
+auto sbk::memory::default_eastl_allocator() noexcept -> polymorphic_allocator*
+{
+    // The single unavoidable static footprint of the EASTL integration: 16 bytes of a
+    // stateless polymorphic_allocator whose m_resource is null. Every EASTL container that
+    // default-constructs copies from this pointer, and the copy's allocate() then resolves
+    // through system_default_resource() on each call -- so the "default" tracks the current
+    // sbk::engine::system rather than being frozen at first use.
+    static polymorphic_allocator instance;
+    return &instance;
+}
+
+auto sbk::memory::system_default_resource() noexcept -> memory_resource*
+{
+    if (sbk::engine::system* const sys = sbk::engine::system::get())
+    {
+        return sys->get_default_memory_resource();
+    }
+    return nullptr;
+}
 
 auto sbk::memory::object_deleter::operator()(sbk::core::object* object)  const noexcept -> void
 {
@@ -52,9 +92,12 @@ auto sbk::memory::object_deleter::operator()(sbk::core::object* object)  const n
     }
 }
 
-auto sbk::memory::malloc(std::size_t size, SB_OBJECT_CATEGORY category) -> void*
+auto sbk::memory::malloc(std::size_t size, std::size_t alignment, SB_OBJECT_CATEGORY category) -> void*
 {
-    void* pointer = rpmalloc(size);
+    // rpaligned_alloc short-circuits to the standard rpmalloc path when alignment <= 16, so
+    // small-alignment callers pay no measurable cost. Anything more (SIMD, cache-line padded)
+    // gets honoured for free rather than silently misaligned.
+    void* pointer = rpaligned_alloc(alignment, size);
 
     if (pointer == nullptr)
     {
