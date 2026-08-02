@@ -23,7 +23,7 @@ namespace sbk::engine
 
         [[nodiscard]] auto playing_container(container* container) const noexcept -> bool;
 
-        [[nodiscard]] auto get_voices() const noexcept -> const std::vector<std::shared_ptr<node_instance>>;
+        [[nodiscard]] auto get_voices() const noexcept -> const eastl::vector<std::shared_ptr<node_instance>>;
         [[nodiscard]] auto num_voices() const -> std::size_t;
         [[nodiscard]] auto node_instance_at(std::size_t index) const -> node_instance*;
 

@@ -287,6 +287,12 @@ auto type_helper::get_object_category_enum() -> rttr::enumeration
 
 auto type_helper::get_object_category_name(const sbk::memory::object_category& objectCategory) -> rttr::string_view
 {
+    // When the system is first created, it allocates memory under the system object type, but the system doesn't exist yet for reflection
+    if (objectCategory == sbk::memory::object_category::system)
+    {
+        return "System";
+    }
+
     static const rttr::string_view defaultName = "Unknown";
     const rttr::enumeration objectCategoryEnum = get_object_category_enum();
 

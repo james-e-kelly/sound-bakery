@@ -104,9 +104,9 @@ auto sbk::core::database::resolve_name_in_graph(const database_name& name) const
     return {};
 }
 
-auto sbk::core::database::get_all_database_objects() const -> std::vector<std::weak_ptr<sbk::core::database_object>>
+auto sbk::core::database::get_all_database_objects() const -> eastl::vector<std::weak_ptr<sbk::core::database_object>>
 {
-    std::vector<std::weak_ptr<sbk::core::database_object>> result;
+    eastl::vector<std::weak_ptr<sbk::core::database_object>> result;
     result.reserve(m_idToPointerMap.size());
 
     for (const auto& i : m_idToPointerMap)
@@ -117,10 +117,10 @@ auto sbk::core::database::get_all_database_objects() const -> std::vector<std::w
     return result;
 }
 
-auto sbk::core::database::get_all_database_names() const -> std::vector<database_name>
+auto sbk::core::database::get_all_database_names() const -> eastl::vector<database_name>
 {
     // Names are derived, so build the list from the live objects rather than the (bank-only) index.
-    std::vector<database_name> result;
+    eastl::vector<database_name> result;
     result.reserve(m_idToPointerMap.size());
 
     for (const auto& [id, weakObject] : m_idToPointerMap)

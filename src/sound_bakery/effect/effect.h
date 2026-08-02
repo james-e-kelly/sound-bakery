@@ -52,7 +52,7 @@ namespace sbk::engine
             }
         }
 
-        [[nodiscard]] auto get_parameters() const -> std::vector<effect_parameter_description>
+        [[nodiscard]] auto get_parameters() const -> eastl::vector<effect_parameter_description>
         {
             return m_parameterDescriptions;
         }
@@ -61,6 +61,6 @@ namespace sbk::engine
 
     private:
         sc_dsp_config m_config;
-        std::vector<effect_parameter_description> m_parameterDescriptions;
+        eastl::vector<effect_parameter_description> m_parameterDescriptions;
     };
 }  // namespace sbk::engine

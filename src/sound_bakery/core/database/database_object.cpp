@@ -15,6 +15,8 @@ sbk::core::parsed_database_name::parsed_database_name(const database_name* datab
 {
     if (databaseName)
     {
+        // boost::algorithm::split_regex fills the target via std forward iterators, which
+        // eastl::vector's range ctor won't accept -- keep this intermediate as std::vector.
         std::vector<std::string> typeSplit;
         boost::algorithm::split_regex(typeSplit, databaseName->databaseName, boost::regex(":/"));
 

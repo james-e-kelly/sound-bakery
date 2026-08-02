@@ -138,9 +138,9 @@ auto sbk::engine::node_base::remove_child(const sbk::core::database_ptr<node_bas
     m_childNodes.erase(child);
 }
 
-auto sbk::engine::node_base::get_children() const -> std::vector<std::shared_ptr<node_base>>
+auto sbk::engine::node_base::get_children() const -> eastl::vector<std::shared_ptr<node_base>>
 {
-    std::vector<std::shared_ptr<node_base>> children;
+    eastl::vector<std::shared_ptr<node_base>> children;
     children.reserve(m_childNodes.size());
 
     for (const auto& child : m_childNodes)
@@ -161,7 +161,7 @@ auto sbk::engine::node_base::has_child(const sbk::core::database_ptr<node_base>&
     return m_childNodes.contains(test);
 }
 
-auto sbk::engine::node_base::gather_all_descendants(std::vector<std::shared_ptr<node_base>>& descendants) const -> void
+auto sbk::engine::node_base::gather_all_descendants(eastl::vector<std::shared_ptr<node_base>>& descendants) const -> void
 {
     for (auto& child : get_children())
     {
@@ -171,7 +171,7 @@ auto sbk::engine::node_base::gather_all_descendants(std::vector<std::shared_ptr<
     }
 }
 
-auto sbk::engine::node_base::gather_all_parents(std::vector<std::shared_ptr<node_base>>& parents) const -> void
+auto sbk::engine::node_base::gather_all_parents(eastl::vector<std::shared_ptr<node_base>>& parents) const -> void
 {
     if (auto nodeParent = get_parent())
     {

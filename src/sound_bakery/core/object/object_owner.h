@@ -5,8 +5,6 @@
 #include "sound_bakery/core/memory.h"
 #include "sound_bakery/error/result.h"
 
-#include "EASTL/vector.h"
-
 namespace sbk::engine
 {
     class system;

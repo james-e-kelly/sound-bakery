@@ -42,12 +42,12 @@ namespace sbk::engine
         auto add_child(const sbk::core::database_ptr<node_base>& child) -> void;
         auto remove_child(const sbk::core::database_ptr<node_base>& child) -> void;
 
-        [[nodiscard]] auto get_children() const -> std::vector<std::shared_ptr<node_base>>;
+        [[nodiscard]] auto get_children() const -> eastl::vector<std::shared_ptr<node_base>>;
         [[nodiscard]] auto get_child_count() const -> std::size_t;
         [[nodiscard]] auto has_child(const sbk::core::database_ptr<node_base>& test) const -> bool;
 
-        auto gather_all_descendants(std::vector<std::shared_ptr<node_base>>& descendants) const -> void;
-        auto gather_all_parents(std::vector<std::shared_ptr<node_base>>& parents) const -> void;
+        auto gather_all_descendants(eastl::vector<std::shared_ptr<node_base>>& descendants) const -> void;
+        auto gather_all_parents(eastl::vector<std::shared_ptr<node_base>>& parents) const -> void;
 
     protected:
         /**
@@ -74,7 +74,7 @@ namespace sbk::engine
         sbk::core::float_property m_lowpass  = sbk::core::float_property(1.0f, 0.0f, 100.0f);
         sbk::core::float_property m_highpass = sbk::core::float_property(1.0f, 0.0f, 100.0f);
 
-        std::vector<sbk::core::database_ptr<effect_description>> m_effectDescriptions;
+        eastl::vector<sbk::core::database_ptr<effect_description>> m_effectDescriptions;
 
         /**
          * @brief Gathers all parameters on this and child nodes that can effect the runtime output.

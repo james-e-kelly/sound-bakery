@@ -104,9 +104,9 @@ auto sbk::engine::voice::playing_container(container* container) const noexcept 
     return std::find_if(get_objects().begin(), get_objects().end(), containerEqual) != get_objects().end();
 }
 
-auto sbk::engine::voice::get_voices() const noexcept -> const std::vector<std::shared_ptr<node_instance>>
+auto sbk::engine::voice::get_voices() const noexcept -> const eastl::vector<std::shared_ptr<node_instance>>
 {
-    std::vector<std::shared_ptr<node_instance>> nodeInstances;
+    eastl::vector<std::shared_ptr<node_instance>> nodeInstances;
 
     for (std::size_t index = 0; index < get_objects().size(); ++index)
     {

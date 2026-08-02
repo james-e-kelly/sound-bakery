@@ -59,7 +59,7 @@ sbk::engine::soundbank_dependencies sbk::engine::soundbank::gather_dependencies(
         std::transform(namedParameterPointers.begin(), namedParameterPointers.end(), std::back_inserter(dependencies.namedParameters), object_ptr_to_shared_ptr<sbk::engine::named_parameter>);
     }
 
-    std::vector<std::shared_ptr<sbk::engine::node_base>> nodesToSave;
+    eastl::vector<std::shared_ptr<sbk::engine::node_base>> nodesToSave;
 
     for (auto& event : get_events())
     {

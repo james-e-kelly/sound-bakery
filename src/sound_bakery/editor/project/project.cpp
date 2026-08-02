@@ -147,7 +147,7 @@ auto sbk::editor::project::load_system() -> sbk::result<void>
 
 auto sbk::editor::project::load_objects() -> sbk::result<void>
 {
-    const std::vector<std::filesystem::path> loadPaths{m_projectConfig.object_folder()};
+    const eastl::vector<std::filesystem::path> loadPaths{m_projectConfig.object_folder()};
 
     for (const std::filesystem::path& path : loadPaths)
     {

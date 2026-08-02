@@ -23,6 +23,6 @@ namespace sbk::engine
         REGISTER_REFLECTION(event, sbk::core::database_object)
 
     public:
-        std::vector<action> m_actions;
+        eastl::vector<action> m_actions;
     };
 }  // namespace sbk::engine

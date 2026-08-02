@@ -19,50 +19,25 @@ static auto convert_id_to_pointer(sbk_id id) -> T*
 
 namespace
 {
-    /**
-     * @brief Runs a public-API body and converts any escaping exception into a sbk_status.
-     *
-     * A C++ exception propagating out of an `extern "C"` function is undefined behaviour, so every
-     * public sbk_* entry point funnels its body through here.
-     *
-     * TODO: Compile with -fno-exceptions and remove all code that throws to remove the need for catching exceptions
-     */
-    template <class body_fn>
-    auto c_api_guard(body_fn&& body) -> sbk_status
+    auto play_container(sbk::engine::system* system, sbk::engine::game_object* gameObject, sbk::engine::container* container) -> sbk::async_result<>
     {
-        try
-        {
-            return body();
-        }
-        catch (const std::exception& exception)
-        {
-            sbk::log_error(SBK_ERR_SYSTEM, exception.what());
-            return SBK_ERR_SYSTEM;
-        }
-        catch (...)
-        {
-            sbk::log_error(SBK_ERR_SYSTEM, "unknown exception reached the C API boundary");
-            return SBK_ERR_SYSTEM;
-        }
-    }
-
-    auto play_container(sbk::engine::game_object* gameObject, sbk::engine::container* container) -> sbk::async_result<>
-    {
+        SBK_CO_CHECK(system != nullptr, SBK_ERR_BAKERY_UNINITIALIZED);
         SBK_CO_CHECK(gameObject != nullptr, SBK_ERR_INVALID_PARAMETER);
         SBK_CO_CHECK(container != nullptr, SBK_ERR_INVALID_PARAMETER);
 
-        co_await gameObject->get_system()->get_system_executer()->schedule();
+        co_await system->get_system_executer()->schedule();
 
         SBK_CO_TRY(auto voice, gameObject->create_runtime_object<sbk::engine::voice>());
         co_return voice->play_container(container);
     }
 
-    auto stop_container(sbk::engine::game_object* gameObject, sbk::engine::container* container) -> sbk::async_result<>
+    auto stop_container(sbk::engine::system* system, sbk::engine::game_object* gameObject, sbk::engine::container* container) -> sbk::async_result<>
     {
+        SBK_CO_CHECK(system != nullptr, SBK_ERR_BAKERY_UNINITIALIZED);
         SBK_CO_CHECK(gameObject != nullptr, SBK_ERR_INVALID_PARAMETER);
         SBK_CO_CHECK(container != nullptr, SBK_ERR_INVALID_PARAMETER);
 
-        co_await gameObject->get_system()->get_system_executer()->schedule();
+        co_await system->get_system_executer()->schedule();
 
         for (auto iter = gameObject->get_objects().begin(); iter != gameObject->get_objects().end(); ++iter)
         {
@@ -78,14 +53,13 @@ namespace
         co_return sbk::ok();
     }
 
-    auto dispatch_event(sbk::engine::game_object* gameObject, sbk::engine::event* event) -> sbk::async_result<>
+    auto dispatch_event(sbk::engine::system* system, sbk::engine::game_object* gameObject, sbk::engine::event* event) -> sbk::async_result<>
     {
-        ZoneScoped;
-
+        SBK_CO_CHECK(system != nullptr, SBK_ERR_BAKERY_UNINITIALIZED);
         SBK_CO_CHECK(gameObject != nullptr, SBK_ERR_INVALID_PARAMETER);
         SBK_CO_CHECK(event != nullptr, SBK_ERR_INVALID_PARAMETER);
 
-        co_await gameObject->get_system()->get_system_executer()->schedule();
+        co_await system->get_system_executer()->schedule();
 
         SBK_INFO("Posting Event");
 
@@ -110,17 +84,17 @@ namespace
                 case sbk::engine::action_type::play:
                     if (container)
                     {
-                        SBK_CO_TRYV(play_container(gameObject, container));
+                        SBK_CO_TRYV(play_container(system, gameObject, container));
                     }
                     else if (childEvent)
                     {
-                        co_await dispatch_event(gameObject, childEvent);
+                        co_await dispatch_event(system, gameObject, childEvent);
                     }
                     break;
                 case sbk::engine::action_type::stop:
                     if (container)
                     {
-                        SBK_CO_TRYV(stop_container(gameObject, container));
+                        SBK_CO_TRYV(stop_container(system, gameObject, container));
                     }
                     else if (targetGameObject)
                     {
@@ -133,13 +107,32 @@ namespace
         }
         co_return sbk::ok();
     }
-    
-    auto post_event(sbk_id eventID, sbk_id gameObjectID) -> sbk::detached_task
+
+    auto post_container(sbk::engine::system* system, sbk_id containerID, sbk_id gameObjectID) -> sbk::detached_task
     {
+        SBK_CO_CHECK(system != nullptr, SBK_ERR_BAKERY_UNINITIALIZED);
+        SBK_CO_CHECK(containerID != SBK_INVALID_ID, SBK_ERR_INVALID_PARAMETER);
+
+        co_await system->get_system_executer()->schedule();
+
+        std::weak_ptr<sbk::core::database_object> container = system->try_find_database_object(containerID);
+        SBK_CO_CHECK(!container.expired(), SBK_ERR_BAKERY_OBJECT_NOT_FOUND);
+
+        std::weak_ptr<sbk::core::database_object> gameObject = sbk::engine::get_game_object(gameObjectID);
+        SBK_CO_CHECK(!gameObject.expired(), SBK_ERR_BAKERY_OBJECT_NOT_FOUND);
+
+        auto sharedContainer  = std::static_pointer_cast<sbk::engine::container>(container.lock());
+        auto sharedGameObject = std::static_pointer_cast<sbk::engine::game_object>(gameObject.lock());
+        SBK_CO_CHECK(sharedContainer && sharedGameObject, SBK_ERR_BAKERY_OBJECT_NOT_FOUND);
+
+        co_return co_await play_container(system, sharedGameObject.get(), sharedContainer.get());
+    }
+    
+    auto post_event(sbk::engine::system* system, sbk_id eventID, sbk_id gameObjectID) -> sbk::detached_task
+    {
+        SBK_CO_CHECK(system != nullptr, SBK_ERR_BAKERY_UNINITIALIZED);
         SBK_CO_CHECK(eventID != SBK_INVALID_ID, SBK_ERR_INVALID_PARAMETER);
 
-        sbk::engine::system* const system = sbk::engine::system::get();
-        SBK_CO_CHECK(system != nullptr, SBK_ERR_BAKERY_UNINITIALIZED);
         co_await system->get_system_executer()->schedule();
 
         auto event = system->try_find_database_object(eventID);
@@ -152,16 +145,14 @@ namespace
         auto sharedGameObject = std::static_pointer_cast<sbk::engine::game_object>(gameObject.lock());
         SBK_CO_CHECK(sharedEvent && sharedGameObject, SBK_ERR_BAKERY_OBJECT_NOT_FOUND);
 
-        dispatch_event(sharedGameObject.get(), sharedEvent.get());
-        co_return sbk::ok();
+        co_return co_await dispatch_event(system, sharedGameObject.get(), sharedEvent.get());
     }
 
-    auto post_event_name(const char* eventName, sbk_id gameObjectID) -> sbk::detached_task
+    auto post_event_name(sbk::engine::system* system, const char* eventName, sbk_id gameObjectID) -> sbk::detached_task
     {
+        SBK_CO_CHECK(system != nullptr, SBK_ERR_BAKERY_UNINITIALIZED);
         SBK_CO_CHECK(eventName != nullptr, SBK_ERR_INVALID_PARAMETER);
 
-        sbk::engine::system* const system = sbk::engine::system::get();
-        SBK_CO_CHECK(system != nullptr, SBK_ERR_BAKERY_UNINITIALIZED);
         co_await system->get_system_executer()->schedule();
 
         auto event = system->try_find_database_object(sbk::core::database_name(eventName));
@@ -174,17 +165,16 @@ namespace
         auto sharedGameObject = std::static_pointer_cast<sbk::engine::game_object>(gameObject.lock());
         SBK_CO_CHECK(sharedEvent && sharedGameObject, SBK_ERR_BAKERY_OBJECT_NOT_FOUND);
 
-        dispatch_event(sharedGameObject.get(), sharedEvent.get());
+        dispatch_event(system, sharedGameObject.get(), sharedEvent.get());
         co_return sbk::ok();
     }
 
-    auto load_soundbank(const char* soundbankFilePath) -> sbk::detached_task
+    auto load_soundbank(sbk::engine::system* system, const char* soundbankFilePath) -> sbk::detached_task
     {
+        SBK_CO_CHECK(system != NULL, SBK_ERR_BAKERY_UNINITIALIZED);
         SBK_CO_CHECK(soundbankFilePath != NULL, SBK_ERR_INVALID_PARAMETER);
         SBK_CO_CHECK(std::filesystem::exists(soundbankFilePath), SBK_ERR_INVALID_FILE);
 
-        sbk::engine::system* const system = sbk::engine::system::get();
-        SBK_CO_CHECK(system != NULL, SBK_ERR_BAKERY_UNINITIALIZED);
         co_await system->get_system_executer()->schedule();
 
         sbk::core::serialization::binary_serializer binarySerializer;
@@ -192,10 +182,10 @@ namespace
         SBK_CO_CHECK_MSG(soundbankID.has_value(), SBK_ERR_BAKERY_SERIALIZATION, "failed to load soundbank '{}'", soundbankFilePath);
     }
 
-    auto stop_all(sbk_id gameObjectID) -> sbk::detached_task
+    auto stop_all(sbk::engine::system* system, sbk_id gameObjectID) -> sbk::detached_task
     {
-        sbk::engine::system* const system = sbk::engine::system::get();
         SBK_CO_CHECK(system != NULL, SBK_ERR_BAKERY_UNINITIALIZED);
+        
         co_await system->get_system_executer()->schedule();
 
         const std::weak_ptr<sbk::core::database_object> gameObject = sbk::engine::get_game_object(gameObjectID);
@@ -264,122 +254,142 @@ sbk_system_config sbk_system_config_init(const char* pluginPath)
 sbk_status sbk_system_create()
 {
     ZoneScoped;
-    return c_api_guard([&]() -> sbk_status
-                       { return sbk::to_status(sbk::engine::system::create()); });
+
+    return sbk::to_status(sbk::engine::system::create());
 }
 
 sbk_status sbk_system_init(sbk_system_config config)
 {
     ZoneScoped;
-    return c_api_guard([&]() -> sbk_status
-                       {
-        sbk::engine::system* const system = sbk::engine::system::get();
-        SBK_STATUS_CHECK(system != NULL, SBK_ERR_BAKERY_UNINITIALIZED);
-        return sbk::to_status(system->init(config)); });
+
+    if (sbk::engine::system* const system = sbk::engine::system::get())
+    {
+        return sbk::to_status(system->init(config));
+    }
+
+    return SBK_ERR_BAKERY_UNINITIALIZED;
 }
 
 sbk_status sbk_system_update()
 {
     ZoneScoped;
-    return c_api_guard([&]() -> sbk_status
-                       {
-        sbk::engine::system* const system = sbk::engine::system::get();
-        SBK_STATUS_CHECK(system != NULL, SBK_ERR_BAKERY_UNINITIALIZED);
-        return sbk::to_status(system->update()); });
+
+    if (sbk::engine::system* const system = sbk::engine::system::get())
+    {
+        return sbk::to_status(system->update());
+    }
+
+    return SBK_ERR_BAKERY_UNINITIALIZED;
 }
 
 sbk_status sbk_system_destroy()
 {
     ZoneScoped;
-    return c_api_guard([&]() -> sbk_status
-                       {
-        sbk::engine::system::destroy();
-        return SBK_SUCCESS; });
+
+    sbk::engine::system::destroy();
+    return SBK_SUCCESS;
 }
 
 sbk_status sbk_system_load_soundbank(const char* soundbankFilePath, sbk_id* outSoundbankID)
 {
+    (void)outSoundbankID;
+    
     ZoneScoped;
-    return c_api_guard([&]() -> sbk_status
+
+    if (sbk::engine::system* const system = sbk::engine::system::get())
     {
-        /// @todo Soundbank loading is now async. We need to give the caller something they can reference for unloading
-        (void)outSoundbankID;
-        load_soundbank(soundbankFilePath);
-        return SBK_SUCCESS; 
-    });
+        ::load_soundbank(system, soundbankFilePath);
+        return SBK_SUCCESS;
+    }
+
+    return SBK_ERR_BAKERY_UNINITIALIZED;
 }
 
 sbk_status sbk_system_post_event(sbk_id eventID, sbk_id gameObjectID)
 {
     ZoneScoped;
-    return c_api_guard([&]() -> sbk_status
+
+    if (sbk::engine::system* const system = sbk::engine::system::get())
     {
-        post_event(eventID, gameObjectID);
+        ::post_event(system, eventID, gameObjectID);
         return SBK_SUCCESS;
-    });
+    }
+
+    return SBK_ERR_BAKERY_UNINITIALIZED;
 }
 
 sbk_status sbk_system_post_event_name(const char* eventName, sbk_id gameObjectID)
 {
     ZoneScoped;
-    return c_api_guard([&]() -> sbk_status
+
+    if (sbk::engine::system* const system = sbk::engine::system::get())
     {
-        post_event_name(eventName, gameObjectID);
+        ::post_event_name(system, eventName, gameObjectID);
         return SBK_SUCCESS;
-    });
+    }
+
+    return SBK_ERR_BAKERY_UNINITIALIZED;
 }
 
 sbk_status sbk_system_stop_all(sbk_id gameObjectID)
 {
     ZoneScoped;
-    return c_api_guard([&]() -> sbk_status
+
+    if (sbk::engine::system* const system = sbk::engine::system::get())
     {
-        stop_all(gameObjectID);
+        ::stop_all(system, gameObjectID);
         return SBK_SUCCESS;
-    });
+    }
+
+    return SBK_ERR_BAKERY_UNINITIALIZED;
 }
 
 sbk_status sbk_system_get_object_count(uint64_t* count)
 {
     ZoneScoped;
-    return c_api_guard([&]() -> sbk_status
-                       {
-        SBK_STATUS_CHECK(count != NULL, SBK_ERR_INVALID_PARAMETER);
-        sbk::engine::system* const system = sbk::engine::system::get();
-        SBK_STATUS_CHECK(system != NULL, SBK_ERR_BAKERY_UNINITIALIZED);
 
+    SBK_STATUS_CHECK(count != NULL, SBK_ERR_INVALID_PARAMETER);
+
+    if (sbk::engine::system* const system = sbk::engine::system::get())
+    {
         *count = system->get_database_object_count();
-        return SBK_SUCCESS; });
+        return SBK_SUCCESS;
+    }
+
+    return SBK_ERR_BAKERY_UNINITIALIZED;
 }
 
 sbk_status sbk_system_get_object_info(uint64_t index, sbk_id* id, char* name, uint64_t nameSize, uint64_t* actualNameSize)
 {
     ZoneScoped;
-    return c_api_guard([&]() -> sbk_status
-                       {
-        SBK_STATUS_CHECK(name != NULL, SBK_ERR_INVALID_PARAMETER);
-        SBK_STATUS_CHECK(nameSize > 0, SBK_ERR_INVALID_PARAMETER);
-        SBK_STATUS_CHECK(actualNameSize != NULL, SBK_ERR_INVALID_PARAMETER);
 
-        sbk::engine::system* const system = sbk::engine::system::get();
-        SBK_STATUS_CHECK(system != NULL, SBK_ERR_BAKERY_UNINITIALIZED);
+    SBK_STATUS_CHECK(name != NULL, SBK_ERR_INVALID_PARAMETER);
+    SBK_STATUS_CHECK(nameSize > 0, SBK_ERR_INVALID_PARAMETER);
+    SBK_STATUS_CHECK(actualNameSize != NULL, SBK_ERR_INVALID_PARAMETER);
 
-        if (const std::shared_ptr<sbk::core::database_object> object = system->get_database_object_at(index).lock())
-        {
-            const sbk_id objectID        = object->get_database_id();
-            const std::string objectName = object->get_database_name();
+    if (sbk::engine::system* const system = sbk::engine::system::get())
+    {
+        const std::shared_ptr<sbk::core::database_object> object = system->get_database_object_at(index).lock();
+        SBK_STATUS_CHECK(object, SBK_ERR_BAKERY_OBJECT_NOT_FOUND);
+        
+        const sbk_id objectID        = object->get_database_id();
+        const std::string objectName = object->get_database_name();
 
-            *id = objectID;
-            *actualNameSize = objectName.copy(name, nameSize);
-            return SBK_SUCCESS;
-        }
-        return SBK_ERR_BAKERY_OBJECT_NOT_FOUND; });
+        *id = objectID;
+        *actualNameSize = objectName.copy(name, nameSize);
+
+        return SBK_SUCCESS;
+    }
+
+    return SBK_ERR_BAKERY_UNINITIALIZED;
 }
 
 namespace sbk::engine
 {
     auto open_project(const std::filesystem::path& projectFile, sbk::core::sbk_log_callback_proc logCallback) -> sbk::result<void>
     {
+        ZoneScoped;
+
         sbk::engine::system::destroy();
 
         const sbk::editor::project_configuration tempProject = sbk::editor::project_configuration(projectFile);
@@ -404,6 +414,8 @@ namespace sbk::engine
 
     auto create_project(const std::filesystem::directory_entry& projectDirectory, std::string_view projectName) -> sbk::result<void>
     {
+        ZoneScoped;
+
         const sbk::editor::project_configuration projectConfig(projectDirectory, projectName);
 
         SBK_TRYV(open_project(projectConfig.project_file(), nullptr));
@@ -421,32 +433,18 @@ namespace sbk::engine
     auto post_container(sbk_id containerID, sbk_id gameObjectID) -> sbk::result<void>
     {
         ZoneScoped;
-        SBK_CHECK(containerID != 0, SBK_ERR_INVALID_PARAMETER);
 
         sbk::engine::system* const system = sbk::engine::system::get();
-        SBK_CHECK(system != NULL, SBK_ERR_BAKERY_UNINITIALIZED);
+        SBK_CHECK(system != nullptr, SBK_ERR_BAKERY_UNINITIALIZED);
 
-        std::weak_ptr<sbk::core::database_object> container = system->try_find_database_object(containerID);
-        SBK_CHECK(!container.expired(), SBK_ERR_BAKERY_OBJECT_NOT_FOUND);
-
-        std::weak_ptr<sbk::core::database_object> gameObject = get_game_object(gameObjectID);
-        SBK_CHECK(!gameObject.expired(), SBK_ERR_BAKERY_OBJECT_NOT_FOUND);
-
-        return system->get_system_executer()->post_work(
-            [container, gameObject]()
-            {
-                if (std::shared_ptr<sbk::engine::game_object> sharedGameObject = std::static_pointer_cast<sbk::engine::game_object>(gameObject.lock()))
-                {
-                    if (std::shared_ptr<sbk::engine::container> sharedContainer = std::static_pointer_cast<sbk::engine::container>(container.lock()))
-                    {
-                        (void)play_container(sharedGameObject.get(), sharedContainer.get());
-                    }
-                }
-            });
+        ::post_container(system, containerID, gameObjectID);
+        return sbk::ok();
     }
 
     auto get_game_object(sbk_id gameObjectID) -> std::weak_ptr<sbk::core::database_object>
     {
+        ZoneScoped;
+
         std::weak_ptr<sbk::core::database_object> result;
 
         if (sbk::engine::system* const system = sbk::engine::system::get())

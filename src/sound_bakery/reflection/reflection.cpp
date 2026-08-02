@@ -151,7 +151,11 @@ namespace sbk::reflection
             value("Soundbank", sbk::memory::object_category::bank),
             value("Parameter", sbk::memory::object_category::parameter),
             value("Database", sbk::memory::object_category::database_object),
-            value("Runtime", sbk::memory::object_category::runtime_object));
+            value("Runtime", sbk::memory::object_category::runtime_object),
+            value("System", sbk::memory::object_category::system),
+            value("Sound Chef", sbk::memory::object_category::sound_chef),
+            value("Data", sbk::memory::object_category::data)
+            );
 
         registration::enumeration<action_type>("action_type")(
             value("Play", action_type::play),
