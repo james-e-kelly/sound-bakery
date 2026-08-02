@@ -1,0 +1,5 @@
+<map id="sbk::memory::monotonic_buffer_resource" name="sbk::memory::monotonic_buffer_resource">
+<area shape="rect" id="Node000001" title="Bump&#45;allocator memory_resource over a fixed rpmalloc&#45;owned block." alt="" coords="5,93,189,133"/>
+<area shape="rect" id="Node000002" href="$classsbk_1_1memory_1_1memory__resource.html" title="Virtual, noexcept memory&#45;source interface." alt="" coords="12,5,183,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="100,59,100,93,95,93,95,59"/>
+</map>

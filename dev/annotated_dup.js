@@ -4,6 +4,7 @@ var annotated_dup =
       [ "audio_meter_draw_info", "structaudio__meter__utils_1_1audio__meter__draw__info.html", null ]
     ] ],
     [ "rttr", null, [
+      [ "sequential_container_mapper< eastl::vector< T, Allocator > >", "structrttr_1_1sequential__container__mapper_3_01eastl_1_1vector_3_01T_00_01Allocator_01_4_01_4.html", null ],
       [ "wrapper_mapper< sbk::core::child_ptr< T > >", "structrttr_1_1wrapper__mapper_3_01sbk_1_1core_1_1child__ptr_3_01T_01_4_01_4.html", null ],
       [ "wrapper_mapper< sbk::core::database_ptr< T > >", "structrttr_1_1wrapper__mapper_3_01sbk_1_1core_1_1database__ptr_3_01T_01_4_01_4.html", null ]
     ] ],
@@ -94,8 +95,12 @@ var annotated_dup =
         [ "void_deleter", "structsbk_1_1engine_1_1void__deleter.html", null ]
       ] ],
       [ "memory", null, [
+        [ "memory_resource", "classsbk_1_1memory_1_1memory__resource.html", null ],
+        [ "monotonic_buffer_resource", "classsbk_1_1memory_1_1monotonic__buffer__resource.html", "classsbk_1_1memory_1_1monotonic__buffer__resource" ],
         [ "object_deleter", "structsbk_1_1memory_1_1object__deleter.html", null ],
-        [ "owned_object_deleter", "structsbk_1_1memory_1_1owned__object__deleter.html", null ]
+        [ "owned_object_deleter", "structsbk_1_1memory_1_1owned__object__deleter.html", null ],
+        [ "polymorphic_allocator", "classsbk_1_1memory_1_1polymorphic__allocator.html", null ],
+        [ "rpmalloc_resource", "classsbk_1_1memory_1_1rpmalloc__resource.html", null ]
       ] ],
       [ "reflection", null, [
         [ "CreatePointerConversion", "structsbk_1_1reflection_1_1CreatePointerConversion.html", null ],
@@ -115,6 +120,7 @@ var annotated_dup =
       [ "fiber_promise", "structsbk_1_1fiber__promise.html", null ],
       [ "final_awaiter", "structsbk_1_1final__awaiter.html", null ],
       [ "manual_executor", "classsbk_1_1manual__executor.html", "classsbk_1_1manual__executor" ],
+      [ "promise_base", "classsbk_1_1promise__base.html", null ],
       [ "ready_result_awaiter", "structsbk_1_1ready__result__awaiter.html", null ],
       [ "task", "classsbk_1_1task.html", "classsbk_1_1task" ],
       [ "task_promise", "structsbk_1_1task__promise.html", null ],
@@ -141,7 +147,6 @@ var annotated_dup =
     [ "project_nodes_widget", "classproject__nodes__widget.html", null ],
     [ "property_drawer", "classproperty__drawer.html", null ],
     [ "root_widget", "classroot__widget.html", null ],
-    [ "rpmalloc_wrapper", "structrpmalloc__wrapper.html", null ],
     [ "sbk_system_config", "structsbk__system__config.html", null ],
     [ "sc_audioChunk", "structsc__audioChunk.html", null ],
     [ "sc_bank", "structsc__bank.html", null ],

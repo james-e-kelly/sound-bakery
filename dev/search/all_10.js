@@ -6,6 +6,8 @@ var searchData=
   ['manual_3',['User Manual',['../UserManual.html',1,'']]],
   ['manual_5fexecutor_4',['manual_executor',['../classsbk_1_1manual__executor.html',1,'sbk']]],
   ['memory_20management_5',['Memory Management',['../ChefProgrammerGuide.html#autotoc_md70',1,'']]],
-  ['method_5fdrawer_6',['method_drawer',['../classmethod__drawer.html',1,'']]],
-  ['mvp_7',['0.1.0 — MVP',['../Roadmap.html#autotoc_md49',1,'']]]
+  ['memory_5fresource_6',['memory_resource',['../classsbk_1_1memory_1_1memory__resource.html',1,'sbk::memory']]],
+  ['method_5fdrawer_7',['method_drawer',['../classmethod__drawer.html',1,'']]],
+  ['monotonic_5fbuffer_5fresource_8',['monotonic_buffer_resource',['../classsbk_1_1memory_1_1monotonic__buffer__resource.html',1,'sbk::memory']]],
+  ['mvp_9',['0.1.0 — MVP',['../Roadmap.html#autotoc_md49',1,'']]]
 ];

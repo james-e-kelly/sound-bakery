@@ -1,5 +1,7 @@
 <map id="sbk::detached_task::promise_type" name="sbk::detached_task::promise_type">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,79,153,119"/>
-<area shape="rect" id="Node000002" href="$structsbk_1_1fiber__promise.html" title=" " alt="" coords="8,5,151,31"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="82,44,82,79,77,79,77,44"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="87,79,235,119"/>
+<area shape="rect" id="Node000002" href="$classsbk_1_1promise__base.html" title=" " alt="" coords="5,5,149,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="101,38,143,77,139,80,98,42"/>
+<area shape="rect" id="Node000003" href="$structsbk_1_1fiber__promise.html" title=" " alt="" coords="174,5,317,31"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="225,42,183,80,180,77,221,38"/>
 </map>

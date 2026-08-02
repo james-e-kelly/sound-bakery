@@ -1,0 +1,5 @@
+<map id="sbk::memory::owned_object_deleter&lt; T &gt;" name="sbk::memory::owned_object_deleter&lt; T &gt;">
+<area shape="rect" id="Node000001" title="Deleter for sbk::owned_ptr. Runs the destructor and returns the block to the memory_resource that pro..." alt="" coords="11,108,171,148"/>
+<area shape="rect" id="Node000002" href="$classsbk_1_1memory_1_1memory__resource.html" title="Virtual, noexcept memory&#45;source interface." alt="" coords="5,5,176,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="93,59,93,108,88,108,88,59"/>
+</map>

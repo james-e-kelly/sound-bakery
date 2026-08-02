@@ -98,6 +98,10 @@ var hierarchy =
       [ "app_manager", "classapp__manager.html", null ],
       [ "project_manager", "classproject__manager.html", null ]
     ] ],
+    [ "sbk::memory::memory_resource", "classsbk_1_1memory_1_1memory__resource.html", [
+      [ "sbk::memory::monotonic_buffer_resource", "classsbk_1_1memory_1_1monotonic__buffer__resource.html", null ],
+      [ "sbk::memory::rpmalloc_resource", "classsbk_1_1memory_1_1rpmalloc__resource.html", null ]
+    ] ],
     [ "method_drawer", "classmethod__drawer.html", null ],
     [ "sbk::core::name", "classsbk_1_1core_1_1name.html", null ],
     [ "sbk::engine::node_group_instance", "structsbk_1_1engine_1_1node__group__instance.html", null ],
@@ -126,7 +130,13 @@ var hierarchy =
     [ "sbk::memory::owned_object_deleter< T >", "structsbk_1_1memory_1_1owned__object__deleter.html", null ],
     [ "sbk::core::parsed_database_name", "structsbk_1_1core_1_1parsed__database__name.html", null ],
     [ "playable_selection", "structplayable__selection.html", null ],
+    [ "sbk::memory::polymorphic_allocator", "classsbk_1_1memory_1_1polymorphic__allocator.html", null ],
     [ "sbk::editor::project_configuration", "structsbk_1_1editor_1_1project__configuration.html", null ],
+    [ "sbk::promise_base", "classsbk_1_1promise__base.html", [
+      [ "sbk::detached_task::promise_type", "structsbk_1_1detached__task_1_1promise__type.html", null ],
+      [ "sbk::task_promise< T >", "structsbk_1_1task__promise.html", null ],
+      [ "sbk::task_promise< void >", "structsbk_1_1task__promise_3_01void_01_4.html", null ]
+    ] ],
     [ "sbk::core::property< T >", "classsbk_1_1core_1_1property.html", null ],
     [ "sbk::core::property< parameter_type >", "classsbk_1_1core_1_1property.html", null ],
     [ "property_drawer", "classproperty__drawer.html", null ],
@@ -135,7 +145,6 @@ var hierarchy =
     [ "gluten::root_widget", null, [
       [ "root_widget", "classroot__widget.html", null ]
     ] ],
-    [ "rpmalloc_wrapper", "structrpmalloc__wrapper.html", null ],
     [ "sbk_system_config", "structsbk__system__config.html", null ],
     [ "sc_audioChunk", "structsc__audioChunk.html", null ],
     [ "sc_bank", "structsc__bank.html", null ],
@@ -159,13 +168,13 @@ var hierarchy =
     [ "SC_SOUND_DELETER", "structSC__SOUND__DELETER.html", null ],
     [ "SC_SOUND_INSTANCE_DELETER", "structSC__SOUND__INSTANCE__DELETER.html", null ],
     [ "sc_system", "structsc__system.html", [
-      [ "sbk::engine::runtime", "classsbk_1_1engine_1_1runtime.html", null ],
-      [ "sbk::engine::system", "classsbk_1_1engine_1_1system.html", null ]
+      [ "sbk::engine::runtime", "classsbk_1_1engine_1_1runtime.html", null ]
     ] ],
     [ "sc_system_config", "structsc__system__config.html", null ],
     [ "sbk::executor::schedule_awaiter", "structsbk_1_1executor_1_1schedule__awaiter.html", null ],
     [ "sbk::core::scoped_thread_domain", "classsbk_1_1core_1_1scoped__thread__domain.html", null ],
     [ "selection", "structselection.html", null ],
+    [ "rttr::sequential_container_mapper< eastl::vector< T, Allocator > >", "structrttr_1_1sequential__container__mapper_3_01eastl_1_1vector_3_01T_00_01Allocator_01_4_01_4.html", null ],
     [ "sbk::core::serialization::serialized_associative_container", "structsbk_1_1core_1_1serialization_1_1serialized__associative__container.html", null ],
     [ "sbk::core::serialization::serialized_child_class", "structsbk_1_1core_1_1serialization_1_1serialized__child__class.html", null ],
     [ "sbk::core::serialization::serialized_object", "structsbk_1_1core_1_1serialization_1_1serialized__object.html", null ],

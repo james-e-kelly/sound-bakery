@@ -162,71 +162,73 @@ $(document).ready(function(){initNavTree('manual__executor_8h_source.html',''); 
 <div class="foldopen" id="foldopen00027" data-start="{" data-end="}">
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="classsbk_1_1manual__executor.html#a452c48fa862d0cd7474718894806f4d4">   27</a></span>        <span class="keyword">auto</span> <a class="code hl_function" href="classsbk_1_1manual__executor.html#a452c48fa862d0cd7474718894806f4d4">enqueue</a>(<a class="code hl_class" href="classsbk_1_1work__item.html">work_item</a> item) -&gt; <a class="code hl_typedef" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result&lt;&gt;</a> <span class="keyword">override</span></div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        {</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>            <span class="keyword">const</span> std::lock_guard lock(m_mutex);</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>            <a class="code hl_define" href="result_8h.html#a7e4bd26979df494c87e16f2492fac1b4">SBK_CHECK_MSG</a>(m_stopped == <span class="keyword">false</span>, SBK_ERR_BAKERY, <span class="stringliteral">&quot;Cannot enqueue work. Executor shut down&quot;</span>);</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>            m_queue.push(std::move(item));</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>            <span class="keywordflow">return</span> <a class="code hl_function" href="error_8h.html#ae4829ae601d7136d4d51f4bbad4e8d7b">sbk::ok</a>();</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        }</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>            ZoneScopedN(<span class="stringliteral">&quot;manual_executor enqueue&quot;</span>);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>            <span class="keyword">const</span> std::lock_guard lock(m_mutex);</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>            <a class="code hl_define" href="result_8h.html#a7e4bd26979df494c87e16f2492fac1b4">SBK_CHECK_MSG</a>(m_stopped == <span class="keyword">false</span>, SBK_ERR_BAKERY, <span class="stringliteral">&quot;Cannot enqueue work. Executor shut down&quot;</span>);</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>            m_queue.push(std::move(item));</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>            <span class="keywordflow">return</span> <a class="code hl_function" href="error_8h.html#ae4829ae601d7136d4d51f4bbad4e8d7b">sbk::ok</a>();</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        }</div>
 </div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
-<div class="foldopen" id="foldopen00035" data-start="{" data-end="}">
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="classsbk_1_1manual__executor.html#aa3adee1b7110565a70e80b1e9c7f5611">   35</a></span>        [[nodiscard]] <span class="keyword">auto</span> <a class="code hl_function" href="classsbk_1_1manual__executor.html#aa3adee1b7110565a70e80b1e9c7f5611">on_this_thread</a>() const noexcept -&gt; <span class="keywordtype">bool</span><span class="keyword"> override</span></div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="keyword">        </span>{</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>            <span class="keywordflow">return</span> std::this_thread::get_id() == m_drainThread.load(std::memory_order_relaxed);</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        }</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="foldopen" id="foldopen00036" data-start="{" data-end="}">
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classsbk_1_1manual__executor.html#aa3adee1b7110565a70e80b1e9c7f5611">   36</a></span>        [[nodiscard]] <span class="keyword">auto</span> <a class="code hl_function" href="classsbk_1_1manual__executor.html#aa3adee1b7110565a70e80b1e9c7f5611">on_this_thread</a>() const noexcept -&gt; <span class="keywordtype">bool</span><span class="keyword"> override</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="keyword">        </span>{</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>            <span class="keywordflow">return</span> std::this_thread::get_id() == m_drainThread.load(std::memory_order_relaxed);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        }</div>
 </div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
-<div class="foldopen" id="foldopen00048" data-start="{" data-end="}">
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="classsbk_1_1manual__executor.html#aea69d6ea07a4342e1ed6a716e308f1b1">   48</a></span>        <span class="keyword">auto</span> <a class="code hl_function" href="classsbk_1_1manual__executor.html#aea69d6ea07a4342e1ed6a716e308f1b1">drain</a>() -&gt; <a class="code hl_typedef" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result&lt;&gt;</a> <span class="keyword">override</span></div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        {</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>            ZoneScopedN(<span class="stringliteral">&quot;manual_executor drain&quot;</span>);</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            m_drainThread.store(std::this_thread::get_id(), std::memory_order_relaxed);</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>            <span class="keywordflow">for</span> (;;)</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>            {</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>                <a class="code hl_class" href="classsbk_1_1work__item.html">work_item</a> work;</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>                {</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>                    <span class="keyword">const</span> std::lock_guard lock(m_mutex);</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>                    <span class="keywordflow">if</span> (m_queue.empty())</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>                    {</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>                        <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>                    }</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>                    work = std::move(m_queue.front());</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>                    m_queue.pop();</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>                }</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>                work();</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>            }</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>            m_drainThread.store(std::thread::id{}, std::memory_order_relaxed);</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>            <span class="keywordflow">return</span> <a class="code hl_function" href="error_8h.html#ae4829ae601d7136d4d51f4bbad4e8d7b">sbk::ok</a>();</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        }</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="foldopen" id="foldopen00049" data-start="{" data-end="}">
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="classsbk_1_1manual__executor.html#aea69d6ea07a4342e1ed6a716e308f1b1">   49</a></span>        <span class="keyword">auto</span> <a class="code hl_function" href="classsbk_1_1manual__executor.html#aea69d6ea07a4342e1ed6a716e308f1b1">drain</a>() -&gt; <a class="code hl_typedef" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result&lt;&gt;</a> <span class="keyword">override</span></div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        {</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>            ZoneScopedN(<span class="stringliteral">&quot;manual_executor drain&quot;</span>);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>            m_drainThread.store(std::this_thread::get_id(), std::memory_order_relaxed);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>            <span class="keywordflow">for</span> (;;)</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>            {</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>                <a class="code hl_class" href="classsbk_1_1work__item.html">work_item</a> work;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>                {</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>                    <span class="keyword">const</span> std::lock_guard lock(m_mutex);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>                    <span class="keywordflow">if</span> (m_queue.empty())</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>                    {</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>                        <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>                    }</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>                    work = std::move(m_queue.front());</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>                    m_queue.pop();</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>                }</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>                work();</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>            }</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>            m_drainThread.store(std::thread::id{}, std::memory_order_relaxed);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>            <span class="keywordflow">return</span> <a class="code hl_function" href="error_8h.html#ae4829ae601d7136d4d51f4bbad4e8d7b">sbk::ok</a>();</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        }</div>
 </div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
-<div class="foldopen" id="foldopen00076" data-start="{" data-end="}">
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="classsbk_1_1manual__executor.html#a8ffe7b675d97992c8b5c6f1e440ba007">   76</a></span>        <span class="keyword">auto</span> <a class="code hl_function" href="classsbk_1_1manual__executor.html#a8ffe7b675d97992c8b5c6f1e440ba007">abandon</a>() -&gt; <span class="keywordtype">void</span> <span class="keyword">override</span></div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        {</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>            <span class="keyword">const</span> std::lock_guard lock(m_mutex);</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>            m_stopped = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>            std::queue&lt;work_item&gt; dropped;</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>            m_queue.swap(dropped);</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        }</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="foldopen" id="foldopen00077" data-start="{" data-end="}">
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="classsbk_1_1manual__executor.html#a8ffe7b675d97992c8b5c6f1e440ba007">   77</a></span>        <span class="keyword">auto</span> <a class="code hl_function" href="classsbk_1_1manual__executor.html#a8ffe7b675d97992c8b5c6f1e440ba007">abandon</a>() -&gt; <span class="keywordtype">void</span> <span class="keyword">override</span></div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        {</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>            ZoneScopedN(<span class="stringliteral">&quot;manual_executor abandon&quot;</span>);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>            <span class="keyword">const</span> std::lock_guard lock(m_mutex);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>            m_stopped = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>            std::queue&lt;work_item&gt; dropped;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>            m_queue.swap(dropped);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        }</div>
 </div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        std::mutex m_mutex;</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        std::queue&lt;work_item&gt; m_queue;</div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        std::atomic&lt;std::thread::id&gt; m_drainThread{};</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        <span class="keywordtype">bool</span> m_stopped = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    };</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        std::mutex m_mutex;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        std::queue&lt;work_item&gt; m_queue;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        std::atomic&lt;std::thread::id&gt; m_drainThread{};</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        <span class="keywordtype">bool</span> m_stopped = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    };</div>
 </div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>}  <span class="comment">// namespace sbk</span></div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>}  <span class="comment">// namespace sbk</span></div>
 <div class="ttc" id="aclasssbk_1_1executor_html"><div class="ttname"><a href="classsbk_1_1executor.html">sbk::executor</a></div><div class="ttdoc">Abstract executor.</div><div class="ttdef"><b>Definition</b> executor.h:28</div></div>
 <div class="ttc" id="aclasssbk_1_1manual__executor_html"><div class="ttname"><a href="classsbk_1_1manual__executor.html">sbk::manual_executor</a></div><div class="ttdoc">An @r executor with no thread of its own: work is queued, then run all at once by whoever calls @r dr...</div><div class="ttdef"><b>Definition</b> manual_executor.h:18</div></div>
 <div class="ttc" id="aclasssbk_1_1manual__executor_html_a452c48fa862d0cd7474718894806f4d4"><div class="ttname"><a href="classsbk_1_1manual__executor.html#a452c48fa862d0cd7474718894806f4d4">sbk::manual_executor::enqueue</a></div><div class="ttdeci">auto enqueue(work_item item) -&gt; sbk::result&lt;&gt; override</div><div class="ttdoc">Queue a function to run at the next @r drain.</div><div class="ttdef"><b>Definition</b> manual_executor.h:27</div></div>
-<div class="ttc" id="aclasssbk_1_1manual__executor_html_a8ffe7b675d97992c8b5c6f1e440ba007"><div class="ttname"><a href="classsbk_1_1manual__executor.html#a8ffe7b675d97992c8b5c6f1e440ba007">sbk::manual_executor::abandon</a></div><div class="ttdeci">auto abandon() -&gt; void override</div><div class="ttdoc">Drop whatever is queued and refuse further work. Idempotent.</div><div class="ttdef"><b>Definition</b> manual_executor.h:76</div></div>
-<div class="ttc" id="aclasssbk_1_1manual__executor_html_aa3adee1b7110565a70e80b1e9c7f5611"><div class="ttname"><a href="classsbk_1_1manual__executor.html#aa3adee1b7110565a70e80b1e9c7f5611">sbk::manual_executor::on_this_thread</a></div><div class="ttdeci">auto on_this_thread() const noexcept -&gt; bool override</div><div class="ttdoc">Whether the caller is already running &quot;on&quot; this executor.</div><div class="ttdef"><b>Definition</b> manual_executor.h:35</div></div>
-<div class="ttc" id="aclasssbk_1_1manual__executor_html_aea69d6ea07a4342e1ed6a716e308f1b1"><div class="ttname"><a href="classsbk_1_1manual__executor.html#aea69d6ea07a4342e1ed6a716e308f1b1">sbk::manual_executor::drain</a></div><div class="ttdeci">auto drain() -&gt; sbk::result&lt;&gt; override</div><div class="ttdoc">Run all queued work on the calling thread.</div><div class="ttdef"><b>Definition</b> manual_executor.h:48</div></div>
+<div class="ttc" id="aclasssbk_1_1manual__executor_html_a8ffe7b675d97992c8b5c6f1e440ba007"><div class="ttname"><a href="classsbk_1_1manual__executor.html#a8ffe7b675d97992c8b5c6f1e440ba007">sbk::manual_executor::abandon</a></div><div class="ttdeci">auto abandon() -&gt; void override</div><div class="ttdoc">Drop whatever is queued and refuse further work. Idempotent.</div><div class="ttdef"><b>Definition</b> manual_executor.h:77</div></div>
+<div class="ttc" id="aclasssbk_1_1manual__executor_html_aa3adee1b7110565a70e80b1e9c7f5611"><div class="ttname"><a href="classsbk_1_1manual__executor.html#aa3adee1b7110565a70e80b1e9c7f5611">sbk::manual_executor::on_this_thread</a></div><div class="ttdeci">auto on_this_thread() const noexcept -&gt; bool override</div><div class="ttdoc">Whether the caller is already running &quot;on&quot; this executor.</div><div class="ttdef"><b>Definition</b> manual_executor.h:36</div></div>
+<div class="ttc" id="aclasssbk_1_1manual__executor_html_aea69d6ea07a4342e1ed6a716e308f1b1"><div class="ttname"><a href="classsbk_1_1manual__executor.html#aea69d6ea07a4342e1ed6a716e308f1b1">sbk::manual_executor::drain</a></div><div class="ttdeci">auto drain() -&gt; sbk::result&lt;&gt; override</div><div class="ttdoc">Run all queued work on the calling thread.</div><div class="ttdef"><b>Definition</b> manual_executor.h:49</div></div>
 <div class="ttc" id="aclasssbk_1_1work__item_html"><div class="ttname"><a href="classsbk_1_1work__item.html">sbk::work_item</a></div><div class="ttdoc">A move-only unit of work queued on an @r executor.</div><div class="ttdef"><b>Definition</b> work_item.h:29</div></div>
 <div class="ttc" id="aerror_8h_html_a390f3d2c4f8f4a52fc2076794fd8e7c7"><div class="ttname"><a href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a></div><div class="ttdeci">tl::expected&lt; T, error &gt; result</div><div class="ttdoc">The result of a fallible operation: a value of type T, or an sbk::error.</div><div class="ttdef"><b>Definition</b> error.h:80</div></div>
 <div class="ttc" id="aerror_8h_html_ae4829ae601d7136d4d51f4bbad4e8d7b"><div class="ttname"><a href="error_8h.html#ae4829ae601d7136d4d51f4bbad4e8d7b">sbk::ok</a></div><div class="ttdeci">auto ok() -&gt; result&lt; void &gt;</div><div class="ttdoc">Success value for a result&lt;void&gt; function.</div><div class="ttdef"><b>Definition</b> error.h:85</div></div>

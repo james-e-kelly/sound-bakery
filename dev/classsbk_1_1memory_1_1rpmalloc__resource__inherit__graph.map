@@ -1,0 +1,5 @@
+<map id="sbk::memory::rpmalloc_resource" name="sbk::memory::rpmalloc_resource">
+<area shape="rect" id="Node000001" title="General&#45;purpose memory_resource backed by sbk::memory::malloc/free (rpmalloc)." alt="" coords="5,93,177,133"/>
+<area shape="rect" id="Node000002" href="$classsbk_1_1memory_1_1memory__resource.html" title="Virtual, noexcept memory&#45;source interface." alt="" coords="6,5,177,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="94,59,94,93,89,93,89,59"/>
+</map>

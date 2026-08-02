@@ -1,31 +1,13 @@
 <map id="sbk::engine::system" name="sbk::engine::system">
-<area shape="rect" id="Node000001" title="Manager of the whole Sound Bakery." alt="" coords="1459,156,1612,181"/>
-<area shape="rect" id="Node000002" href="$structsc__system.html" title="Object that manages the node graph, sounds, output etc." alt="" coords="1273,32,1364,57"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1378,54,1411,66,1445,87,1477,111,1524,154,1520,158,1473,115,1442,91,1408,71,1376,59"/>
-<area shape="rect" id="Node000003" href="$structsc__clap.html" title="Holds a DLL handle and plugin entry for a CLAP plugin." alt="" coords="961,9,1032,35"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="1046,23,1273,39,1273,44,1046,28"/>
-<area shape="rect" id="Node000004" href="$structsc__node__group.html" title="Groups nodes/DSPs together into one." alt="" coords="937,59,1056,84"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="1070,64,1204,54,1273,47,1274,52,1204,59,1070,69"/>
-<area shape="rect" id="Node000005" href="$structsc__dsp.html" title="ma_node with an additional enum descriptor." alt="" coords="784,59,851,84"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="865,69,937,69,937,74,865,74"/>
-<area shape="poly" id="edge10_Node000005_Node000005" title=" " alt="" coords="801,44,806,36,817,32,827,35,833,41,831,59,826,58,828,43,824,39,817,37,810,40,806,46"/>
-<area shape="rect" id="Node000006" href="$structsc__dsp__state.html" title="Holds instance data for a single sc_dsp." alt="" coords="349,57,456,83"/>
-<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="469,53,497,49,578,45,658,49,784,63,784,69,658,54,578,51,498,54,470,58"/>
-<area shape="rect" id="Node000007" href="$structsc__dsp__vtable.html" title=" " alt="" coords="576,99,691,124"/>
-<area shape="poly" id="edge7_Node000007_Node000006" title=" " alt="" coords="440,86,468,98,498,107,537,112,576,113,576,118,537,118,497,113,466,103,438,91"/>
-<area shape="poly" id="edge6_Node000005_Node000007" title=" " alt="" coords="704,93,783,76,785,81,705,99"/>
-<area shape="rect" id="Node000008" href="$structsc__dsp__parameter.html" title=" " alt="" coords="332,144,473,169"/>
-<area shape="poly" id="edge8_Node000007_Node000008" title=" " alt="" coords="487,145,551,134,596,121,597,127,553,139,488,151"/>
-<area shape="rect" id="Node000009" href="$structsc__dsp__parameter__float.html" title=" " alt="" coords="5,144,183,169"/>
-<area shape="poly" id="edge9_Node000008_Node000009" title=" " alt="" coords="197,154,332,154,332,159,197,159"/>
-<area shape="rect" id="Node000010" href="$classsbk_1_1core_1_1object__owner.html" title="Creates, owns and tracks objects. Is owned by other object owners." alt="" coords="1231,81,1407,107"/>
-<area shape="poly" id="edge11_Node000001_Node000010" title=" " alt="" coords="1386,108,1410,115,1507,153,1505,158,1408,121,1384,113"/>
-<area shape="rect" id="Node000011" title=" " alt="" coords="1253,131,1384,156"/>
-<area shape="poly" id="edge12_Node000001_Node000011" title=" " alt="" coords="1398,150,1459,157,1458,162,1397,155"/>
-<area shape="rect" id="Node000012" href="$classsbk_1_1core_1_1object__tracker.html" title="Tracks object categories and types." alt="" coords="1228,180,1409,205"/>
-<area shape="poly" id="edge13_Node000001_Node000012" title=" " alt="" coords="1423,178,1458,174,1459,180,1423,184"/>
-<area shape="rect" id="Node000013" href="$classsbk_1_1core_1_1database.html" title="Runtime lookup of objects, using their ID or name." alt="" coords="1244,229,1393,255"/>
-<area shape="poly" id="edge14_Node000001_Node000013" title=" " alt="" coords="1380,223,1408,214,1502,179,1504,184,1410,219,1382,228"/>
-<area shape="rect" id="Node000014" title=" " alt="" coords="1244,279,1393,304"/>
-<area shape="poly" id="edge15_Node000001_Node000014" title=" " alt="" coords="1393,272,1408,265,1442,245,1473,222,1520,180,1523,184,1476,226,1445,249,1411,270,1395,277"/>
+<area shape="rect" id="Node000001" title="Manager of the whole Sound Bakery." alt="" coords="235,104,388,129"/>
+<area shape="rect" id="Node000002" href="$classsbk_1_1core_1_1object__owner.html" title="Creates, owns and tracks objects. Is owned by other object owners." alt="" coords="8,5,184,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="168,32,188,40,247,71,294,102,291,106,245,75,186,44,166,37"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="31,55,161,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="166,80,256,101,254,107,164,86"/>
+<area shape="rect" id="Node000004" href="$classsbk_1_1core_1_1object__tracker.html" title="Tracks object categories and types." alt="" coords="5,104,187,129"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="200,114,235,114,235,119,200,119"/>
+<area shape="rect" id="Node000005" href="$classsbk_1_1core_1_1database.html" title="Runtime lookup of objects, using their ID or name." alt="" coords="21,153,171,179"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="164,148,254,127,256,132,166,153"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="21,203,171,228"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="163,196,186,188,244,157,291,127,293,132,247,162,188,192,165,201"/>
 </map>
