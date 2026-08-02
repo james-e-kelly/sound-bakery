@@ -26,6 +26,7 @@ namespace sbk
          */
         auto enqueue(work_item item) -> sbk::result<> override
         {
+            ZoneScopedN("manual_executor enqueue");
             const std::lock_guard lock(m_mutex);
             SBK_CHECK_MSG(m_stopped == false, SBK_ERR_BAKERY, "Cannot enqueue work. Executor shut down");
             m_queue.push(std::move(item));
@@ -75,6 +76,7 @@ namespace sbk
          */
         auto abandon() -> void override
         {
+            ZoneScopedN("manual_executor abandon");
             const std::lock_guard lock(m_mutex);
             m_stopped = true;
             std::queue<work_item> dropped;

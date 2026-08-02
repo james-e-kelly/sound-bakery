@@ -111,13 +111,13 @@ namespace sbk::reflection
     template <class object_class>
     static auto create_sbk_object() -> object_class*
     {
-        const SB_OBJECT_CATEGORY category = sbk::util::type_helper::get_category_from_type(object_class::type());
+        const sbk::memory::object_category category = sbk::util::type_helper::get_category_from_type(object_class::type());
 
         // Allocate first so we can check for out-of-memory before constructing. object::operator new
         // routes to sbk::memory::malloc, which returns null (never throws) on failure. Constructing at
         // a null address would be undefined behaviour, so bail out here; the OOM is logged at the
         // memory choke point and the caller sees a null object.
-        void* const objectMemory = object_class::operator new(sizeof(object_class), category);
+        void* const objectMemory = object_class::operator new(sizeof(object_class), alignof(object_class), category);
 
         if (objectMemory == nullptr)
         {
@@ -141,17 +141,21 @@ namespace sbk::reflection
             value("Highpass", SC_DSP_TYPE_HIGHPASS),
             value("Delay", SC_DSP_TYPE_DELAY));
 
-        registration::enumeration<SB_OBJECT_CATEGORY>("sb_object_category")(
-            value("Unkown", SB_CATEGORY_UNKNOWN),
-            value("Sound", SB_CATEGORY_SOUND),
-            value("Node", SB_CATEGORY_NODE),
-            value("Bus", SB_CATEGORY_BUS),
-            value("Music", SB_CATEGORY_MUSIC),
-            value("Event", SB_CATEGORY_EVENT),
-            value("Soundbank", SB_CATEGORY_BANK),
-            value("Parameter", SB_CATEGORY_PARAMETER),
-            value("Database", SB_CATEGORY_DATABASE_OBJECT),
-            value("Runtime", SB_CATEGORY_RUNTIME_OBJECT));
+        registration::enumeration<sbk::memory::object_category>("sb_object_category")(
+            value("Unkown", sbk::memory::object_category::unknown),
+            value("Sound", sbk::memory::object_category::sound),
+            value("Node", sbk::memory::object_category::node),
+            value("Bus", sbk::memory::object_category::bus),
+            value("Music", sbk::memory::object_category::music),
+            value("Event", sbk::memory::object_category::event),
+            value("Soundbank", sbk::memory::object_category::bank),
+            value("Parameter", sbk::memory::object_category::parameter),
+            value("Database", sbk::memory::object_category::database_object),
+            value("Runtime", sbk::memory::object_category::runtime_object),
+            value("System", sbk::memory::object_category::system),
+            value("Sound Chef", sbk::memory::object_category::sound_chef),
+            value("Data", sbk::memory::object_category::data)
+            );
 
         registration::enumeration<action_type>("action_type")(
             value("Play", action_type::play),

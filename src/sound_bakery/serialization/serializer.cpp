@@ -54,7 +54,7 @@ auto sbk::core::serialization::make_default_variant(const rttr::type& type) -> r
     return type.create_default();
 }
 
-auto sbk::core::serialization::read_binary_file(const std::filesystem::path& file) -> std::vector<uint8_t>
+auto sbk::core::serialization::read_binary_file(const std::filesystem::path& file) -> eastl::vector<uint8_t>
 {
     std::ifstream fileStream(file, std::ios_base::binary);
 
@@ -62,7 +62,7 @@ auto sbk::core::serialization::read_binary_file(const std::filesystem::path& fil
     const std::streampos length = fileStream.tellg();
     fileStream.seekg(0, std::ios_base::beg);
 
-    std::vector<uint8_t> buffer(length);
+    eastl::vector<uint8_t> buffer(length);
     fileStream.read((char*)buffer.data(), length);
 
     return buffer;

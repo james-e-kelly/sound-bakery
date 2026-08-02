@@ -107,7 +107,7 @@ namespace sbk::core
         }
 
         template <class archive_class>
-        auto serialize(archive_class& archive, const unsigned int version) -> void
+        auto serialize(archive_class& archive, const unsigned int) -> void
         {
             archive& boost::serialization::make_nvp("Name", databaseName);
         }

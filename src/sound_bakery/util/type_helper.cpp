@@ -21,9 +21,9 @@ auto type_comparator::operator()(const rttr::type lhs, const rttr::type rhs) con
     return std::strcmp(lhs.get_name().data(), rhs.get_name().data()) < 0;
 }
 
-auto type_helper::get_category_from_type(rttr::type type) -> SB_OBJECT_CATEGORY
+auto type_helper::get_category_from_type(rttr::type type) -> sbk::memory::object_category
 {
-    SB_OBJECT_CATEGORY category = SB_CATEGORY_UNKNOWN;
+    sbk::memory::object_category category = sbk::memory::object_category::unknown;
 
     if (!type.is_valid())
     {
@@ -33,41 +33,41 @@ auto type_helper::get_category_from_type(rttr::type type) -> SB_OBJECT_CATEGORY
 
     if (type.is_derived_from(rttr::type::get<sbk::engine::bus>()))
     {
-        category = SB_CATEGORY_BUS;
+        category = sbk::memory::object_category::bus;
     }
     else if (type.is_derived_from(rttr::type::get<sbk::engine::container>()))
     {
-        category = SB_CATEGORY_NODE;
+        category = sbk::memory::object_category::node;
     }
     else if (type == rttr::type::get<sbk::engine::event>())
     {
-        category = SB_CATEGORY_EVENT;
+        category = sbk::memory::object_category::event;
     }
     else if (type == rttr::type::get<sbk::engine::sound>())
     {
-        category = SB_CATEGORY_SOUND;
+        category = sbk::memory::object_category::sound;
     }
     else if (type == rttr::type::get<sbk::engine::float_parameter>() ||
              type == rttr::type::get<sbk::engine::int_parameter>() ||
              type == rttr::type::get<sbk::engine::named_parameter>())
     {
-        category = SB_CATEGORY_PARAMETER;
+        category = sbk::memory::object_category::parameter;
     }
     else if (type == rttr::type::get<sbk::engine::soundbank>())
     {
-        category = SB_CATEGORY_BANK;
+        category = sbk::memory::object_category::bank;
     }
     else if (type.is_derived_from<sbk::engine::game_object>())
     {
-        category = SB_CATEGORY_RUNTIME_OBJECT;
+        category = sbk::memory::object_category::runtime_object;
     }
     else if (type.is_derived_from<sbk::core::database_object>())
     {
-        category = SB_CATEGORY_DATABASE_OBJECT;
+        category = sbk::memory::object_category::database_object;
     }
     else if (type.is_derived_from<sbk::core::object>())
     {
-        category = SB_CATEGORY_RUNTIME_OBJECT;
+        category = sbk::memory::object_category::runtime_object;
     }
     else
     {
@@ -77,39 +77,39 @@ auto type_helper::get_category_from_type(rttr::type type) -> SB_OBJECT_CATEGORY
     return category;
 }
 
-auto type_helper::get_types_from_category(SB_OBJECT_CATEGORY category) -> std::set<rttr::type, type_comparator>
+auto type_helper::get_types_from_category(sbk::memory::object_category category) -> std::set<rttr::type, type_comparator>
 {
     std::set<rttr::type, type_comparator> result;
 
     switch (category)
     {
-        case SB_CATEGORY_NODE:
+        case sbk::memory::object_category::node:
             result.insert(rttr::type::get<sbk::engine::blend_container>());
             result.insert(rttr::type::get<sbk::engine::random_container>());
             result.insert(rttr::type::get<sbk::engine::sequence_container>());
             result.insert(rttr::type::get<sbk::engine::sound_container>());
             result.insert(rttr::type::get<sbk::engine::switch_container>());
             break;
-        case SB_CATEGORY_BUS:
+        case sbk::memory::object_category::bus:
             result.insert(rttr::type::get<sbk::engine::bus>());
             result.insert(rttr::type::get<sbk::engine::aux_bus>());
             break;
-        case SB_CATEGORY_MUSIC:
+        case sbk::memory::object_category::music:
             break;
-        case SB_CATEGORY_EVENT:
+        case sbk::memory::object_category::event:
             result.insert(rttr::type::get<sbk::engine::event>());
             break;
-        case SB_CATEGORY_BANK:
+        case sbk::memory::object_category::bank:
             result.insert(rttr::type::get<sbk::engine::soundbank>());
             break;
-        case SB_CATEGORY_SOUND:
+        case sbk::memory::object_category::sound:
             result.insert(rttr::type::get<sbk::engine::sound>());
             break;
-        case SB_CATEGORY_PARAMETER:
+        case sbk::memory::object_category::parameter:
             result.insert(rttr::type::get<sbk::engine::float_parameter>());
             result.insert(rttr::type::get<sbk::engine::named_parameter>());
             break;
-        case SB_CATEGORY_NUM:
+        case sbk::memory::object_category::num:
             break;
         default:
             break;
@@ -198,31 +198,31 @@ auto sbk::util::type_helper::get_folder_name_for_object_type(rttr::type type) ->
     return typeNameString.substr(lastColonCharacterPos, std::string::npos);
 }
 
-auto type_helper::get_file_extension_of_object_category(SB_OBJECT_CATEGORY category) -> std::string_view
+auto type_helper::get_file_extension_of_object_category(sbk::memory::object_category category) -> std::string_view
 {
     std::string_view result = ".object";
 
     switch (category)
     {
-        case SB_CATEGORY_NODE:
+        case sbk::memory::object_category::node:
             result = ".node";
             break;
-        case SB_CATEGORY_BUS:
+        case sbk::memory::object_category::bus:
             result = ".bus";
             break;
-        case SB_CATEGORY_MUSIC:
+        case sbk::memory::object_category::music:
             result = ".music";
             break;
-        case SB_CATEGORY_EVENT:
+        case sbk::memory::object_category::event:
             result = ".event";
             break;
-        case SB_CATEGORY_SOUND:
+        case sbk::memory::object_category::sound:
             result = ".sound";
             break;
-        case SB_CATEGORY_BANK:
+        case sbk::memory::object_category::bank:
             result = ".bank";
             break;
-        case SB_CATEGORY_NUM:
+        case sbk::memory::object_category::num:
             break;
         default:
             break;
@@ -282,11 +282,17 @@ auto type_helper::is_type_playable(const rttr::type& type) -> bool
 
 auto type_helper::get_object_category_enum() -> rttr::enumeration
 {
-    return rttr::type::get<SB_OBJECT_CATEGORY>().get_enumeration();
+    return rttr::type::get<sbk::memory::object_category>().get_enumeration();
 }
 
-auto type_helper::get_object_category_name(const SB_OBJECT_CATEGORY& objectCategory) -> rttr::string_view
+auto type_helper::get_object_category_name(const sbk::memory::object_category& objectCategory) -> rttr::string_view
 {
+    // When the system is first created, it allocates memory under the system object type, but the system doesn't exist yet for reflection
+    if (objectCategory == sbk::memory::object_category::system)
+    {
+        return "System";
+    }
+
     static const rttr::string_view defaultName = "Unknown";
     const rttr::enumeration objectCategoryEnum = get_object_category_enum();
 

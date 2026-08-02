@@ -20,9 +20,30 @@
 #include "widgets/project_explorer_widget.h"
 #include "widgets/root_widget.h"
 
+static void sbk_log_callback(unsigned int level, const char* message)
+{
+    const sbk::core::sbk_log_level logLevel = static_cast<sbk::core::sbk_log_level>(level);
+
+    switch (logLevel)
+    {
+        case sbk::core::SBK_LOG_LEVEL_DEBUG:
+            gluten::app::get()->get_logger()->log(spdlog::level::debug, message);
+            break;
+        case sbk::core::SBK_LOG_LEVEL_INFO:
+            gluten::app::get()->get_logger()->log(spdlog::level::info, message);
+            break;
+        case sbk::core::SBK_LOG_LEVEL_WARNING:
+            gluten::app::get()->get_logger()->log(spdlog::level::warn, message);
+            break;
+        case sbk::core::SBK_LOG_LEVEL_ERROR:
+            gluten::app::get()->get_logger()->log(spdlog::level::err, message);
+            break;
+    }
+}
+
 void project_manager::init_project(const std::filesystem::path& project_file)
 {
-    if (sbk::engine::open_project(project_file, nullptr).has_value())
+    if (sbk::engine::open_project(project_file, sbk_log_callback).has_value())
     {
         setup_project();
     }

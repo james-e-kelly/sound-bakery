@@ -1,5 +1,9 @@
 #pragma once
 
+// Must precede every EASTL header so the EASTLAllocatorType override is in effect
+// when EASTL's config.h is first processed.
+#include "sound_bakery/core/eastl_config.h"
+
 #include "sound_bakery/reflection/reflection.h"  //< Must be included here and not individual files. @todo Investigate rttr strangeness when included in multiple files
 
 #include "Delegates.h"
@@ -10,6 +14,12 @@
 #include "tl/expected.hpp"
 #include "tracy/Tracy.hpp"
 #include "tracy/TracyC.h"
+
+#include "EASTL/vector.h"
+
+// Must follow both EASTL/vector.h and reflection.h (so rttr headers are already known)
+// and precede any REGISTER_REFLECTION on a class that owns an eastl container.
+#include "sound_bakery/reflection/eastl_reflection.h"
 
 #define BOOST_SPIRIT_DEBUG
 
@@ -43,7 +53,6 @@
 #include <unordered_set>
 #include <utility>
 #include <variant>
-#include <vector>
 
 /**
  * @def Registers this type's get_parent classes (if any) and marks its private members visible to reflection.
@@ -71,9 +80,6 @@ public:                                             \
 // string is a compile-time literal, so fmt checks the placeholders against the argument
 // types at compile time. To log a runtime string that may itself contain braces, pass it
 // as an argument rather than as the format string: SBK_INFO("{}", runtimeMessage).
-//
-// fmt::format returns a temporary std::string; its c_str() stays valid for the full
-// expression, which is all sbk_log needs (it logs synchronously before returning).
 #if SBK_CONFIG_ENABLE_LOGGING
     #define SBK_DEBUG(...) sbk_log(MA_LOG_LEVEL_DEBUG, ::fmt::format(__VA_ARGS__).c_str())
     #define SBK_INFO(...)  sbk_log(MA_LOG_LEVEL_INFO, ::fmt::format(__VA_ARGS__).c_str())

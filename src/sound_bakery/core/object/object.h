@@ -126,9 +126,9 @@ namespace sbk::core
             return std::malloc(size);
         }
 
-        static void* operator new(std::size_t size, SB_OBJECT_CATEGORY category)
+        static void* operator new(std::size_t size, std::size_t alignment, sbk::memory::object_category category)
         {
-            return sbk::memory::malloc(size, category);
+            return sbk::memory::malloc(size, alignment, category);
         }
 
         static void operator delete(void* pointer)
@@ -137,7 +137,7 @@ namespace sbk::core
             std::free(pointer);
         }
 
-        static void operator delete(void* pointer, SB_OBJECT_CATEGORY category)
+        static void operator delete(void* pointer, sbk::memory::object_category category)
         {
             sbk::memory::free(pointer, category);
         }

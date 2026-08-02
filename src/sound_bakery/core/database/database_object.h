@@ -54,6 +54,6 @@ namespace std
     template <>
     struct hash<sbk::core::database_name>
     {
-        auto operator()(const sbk::core::database_name& k) const -> size_t { return hash<std::string>{}(k.databaseName); }
+        auto operator()(const sbk::core::database_name& k) const -> size_t { return std::hash<std::string>{}(k.databaseName); }
     };
 }  // namespace std

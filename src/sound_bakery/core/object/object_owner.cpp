@@ -9,7 +9,7 @@
 
 auto sbk::core::object_owner::get_system() const noexcept -> sbk::engine::system*
 {
-    for (object_owner* owner = const_cast<object_owner*>(this); owner; owner = owner->m_owner)
+    for (object_owner* owner = const_cast<object_owner*>(this); owner != nullptr; owner = owner->m_owner)
     {
         if (sbk::engine::system* const system = dynamic_cast<sbk::engine::system*>(owner))
         {
@@ -110,7 +110,7 @@ auto sbk::core::object_owner::add_reference_to_object(std::shared_ptr<database_o
     }
 }
 
-auto sbk::core::object_owner::remove_object(const std::shared_ptr<object>& object) -> std::vector<std::shared_ptr<sbk::core::object>>::iterator
+auto sbk::core::object_owner::remove_object(const std::shared_ptr<object>& object) -> eastl::vector<std::shared_ptr<sbk::core::object>>::iterator
 {
     SBK_EXPECT_STUDIO_THREAD();
 
@@ -134,8 +134,8 @@ auto sbk::core::object_owner::remove_all() -> void
     m_objects.clear();
 }
 
-auto sbk::core::object_owner::get_objects() -> std::vector<std::shared_ptr<object>>& { return m_objects; }
+auto sbk::core::object_owner::get_objects() -> eastl::vector<std::shared_ptr<object>>& { return m_objects; }
 
-auto sbk::core::object_owner::get_objects() const -> const std::vector<std::shared_ptr<object>>& { return m_objects; }
+auto sbk::core::object_owner::get_objects() const -> const eastl::vector<std::shared_ptr<object>>& { return m_objects; }
 
 auto sbk::core::object_owner::get_objects_size() const -> std::size_t { return m_objects.size(); }

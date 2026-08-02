@@ -4,6 +4,7 @@
 #include "sound_bakery/core/database/database.h"
 #include "sound_bakery/core/database/database_ptr.h"
 #include "sound_bakery/core/object/object_tracker.h"
+#include "sound_bakery/core/memory.h"
 #include "sound_bakery/error/error.h"
 #include "sound_bakery/task/executor.h"
 
@@ -34,8 +35,7 @@ namespace sbk
          *
          * It owns all loaded Soundbanks, listener game object, and busses.
          */
-        class SB_CLASS system final : public sc_system,
-                                      public sbk::core::object_owner,
+        class SB_CLASS system final : public sbk::core::object_owner,
                                       public sbk::core::logger,
                                       public sbk::core::object_tracker,
                                       public sbk::core::database,
@@ -84,6 +84,8 @@ namespace sbk
             [[nodiscard]] auto get_system_executer() const -> sbk::executor*;
             [[nodiscard]] auto get_worker_executer() const -> sbk::executor*;
 
+            [[nodiscard]] auto get_default_memory_resource() noexcept -> sbk::memory::memory_resource* { return &m_generalResource; }
+
             [[nodiscard]] auto create_project() -> sbk::result<sbk::editor::project*>;
 
             friend class boost::serialization::access;
@@ -105,6 +107,11 @@ namespace sbk
             auto update_async() -> void;
 
             bool m_registeredReflection = false;
+
+            // Declared before any owned_ptr member below so their deleters (which call back
+            // into these resources) run before the resources themselves are destroyed.
+            sbk::memory::rpmalloc_resource m_generalResource{sbk::memory::object_category::system};
+            sbk::memory::monotonic_buffer_resource m_systemArena{sbk::memory::object_category::system};
 
             sbk::owned_ptr<sbk::editor::project> m_project;
             sbk::owned_ptr<sbk::engine::runtime> m_runtime;

@@ -1,6 +1,7 @@
 #include "add_effect_button.h"
 
 #include "sound_bakery/node/node.h"
+#include "sound_bakery/runtime/runtime.h"
 
 #include "app/app.h"
 #include "managers/project_manager.h"
@@ -46,12 +47,12 @@ auto add_effect_button::render_element(const gluten::element_render_info& render
                     if (ImGui::BeginMenu("CLAP"))
                     {
                         ma_uint32 clapCount = 0;
-                        if (sc_system_clap_get_count(sbk::engine::system::get(), &clapCount) == SBK_SUCCESS)
+                        if (sc_system_clap_get_count(sbk::engine::system::get()->get_runtime(), &clapCount) == SBK_SUCCESS)
                         {
                             for (int index = 0; index < clapCount; ++index)
                             {
                                 sc_clap* clapPlugin = nullptr;
-                                if (sc_system_clap_get_at(sbk::engine::system::get(), index, &clapPlugin) == SBK_SUCCESS)
+                                if (sc_system_clap_get_at(sbk::engine::system::get()->get_runtime(), index, &clapPlugin) == SBK_SUCCESS)
                                 {
                                     if (const clap_plugin_descriptor_t* const pluginDescriptor =
                                             clapPlugin->pluginFactory->get_plugin_descriptor(clapPlugin->pluginFactory,

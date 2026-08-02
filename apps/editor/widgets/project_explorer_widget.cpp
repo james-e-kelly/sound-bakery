@@ -34,7 +34,7 @@ void project_explorer_widget::render_implementation()
 
                 if (m_projectNodesWidget)
                 {
-                    m_projectNodesWidget->render_page({SB_CATEGORY_SOUND});
+                    m_projectNodesWidget->render_page({sbk::memory::object_category::sound});
                 }
                 ImGui::EndTabItem();
             }

@@ -53,12 +53,13 @@ namespace
         if (const sbk_status encodeResult = sc_encoder_write_from_file(source.string().c_str(), destination.string().c_str(), &encoderConfig); encodeResult != SBK_SUCCESS)
         {
             sbk::log_error(encodeResult, "sc_encoder_write_from_file");  //< Detached task; log and stop.
-            co_return;
+            co_return sbk::ok();
         }
 
         // Hop to the system thread to mutate the object.
         co_await systemThread->schedule();
         sound->set_encoded_sound_name(destination.string());
+        co_return sbk::ok();
     }
 }  // namespace
 
@@ -146,7 +147,7 @@ auto sbk::editor::project::load_system() -> sbk::result<void>
 
 auto sbk::editor::project::load_objects() -> sbk::result<void>
 {
-    const std::vector<std::filesystem::path> loadPaths{m_projectConfig.object_folder()};
+    const eastl::vector<std::filesystem::path> loadPaths{m_projectConfig.object_folder()};
 
     for (const std::filesystem::path& path : loadPaths)
     {
@@ -179,7 +180,7 @@ auto sbk::editor::project::create_preview_container() -> sbk::result<void>
 
 auto sbk::editor::project::build_soundbanks() -> sbk::result<void>
 {
-    std::unordered_set<sbk::core::object*> soundbankObjects = sbk::engine::system::get()->get_objects_of_category(SB_CATEGORY_BANK);
+    std::unordered_set<sbk::core::object*> soundbankObjects = sbk::engine::system::get()->get_objects_of_category(sbk::memory::object_category::bank);
 
     SBK_TRY(auto initSoundbank, create_database_object<sbk::engine::soundbank>());
 

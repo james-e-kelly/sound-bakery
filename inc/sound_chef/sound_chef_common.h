@@ -123,6 +123,7 @@ typedef enum
     // 1-100: User Errors
     SBK_ERR_USER = 1,               //< Generic user error
     SBK_ERR_INVALID_PARAMETER,      //< Invalid parameter given to the function
+    SBK_ERR_ALREADY_INITIALIZED,    //< The resource was already initialized
 
     // 101-200: Sound Chef Errors
     SBK_ERR_CHEF = 101,             //< Generic Sound Chef error
@@ -137,7 +138,7 @@ typedef enum
 
     // 301-400: System Errors
     SBK_ERR_SYSTEM = 301,           //< Generic System error
-    SBK_ERR_OUT_OF_MEMORY,         
+    SBK_ERR_OUT_OF_MEMORY,          //< Could not allocate memory       
     SBK_ERR_INVALID_FILE,
     SBK_ERR_NULL,                   //< Found a null pointer where there shouldn't be one
 

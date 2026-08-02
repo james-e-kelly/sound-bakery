@@ -32,7 +32,7 @@ namespace sbk::engine
      */
     struct SB_CLASS soundbank_database
     {
-        std::vector<soundbank_database_entry> database;
+        eastl::vector<soundbank_database_entry> database;
 
         auto fill_runtime_database() -> void;  //< Fill the sbk::engine::system database with the information serialized here
 
@@ -53,14 +53,14 @@ namespace sbk::engine
      */
     struct SB_CLASS soundbank_dependencies
     {
-        std::vector<std::shared_ptr<sbk::engine::event>> events;
-        std::vector<std::shared_ptr<sbk::engine::sound>> sounds;
-        std::vector<std::shared_ptr<sbk::engine::node_base>> nodes;
+        eastl::vector<std::shared_ptr<sbk::engine::event>> events;
+        eastl::vector<std::shared_ptr<sbk::engine::sound>> sounds;
+        eastl::vector<std::shared_ptr<sbk::engine::node_base>> nodes;
 
-        std::vector<std::shared_ptr<sbk::engine::bus>> busses;
-        std::vector<std::shared_ptr<sbk::engine::int_parameter>> intParameters;
-        std::vector<std::shared_ptr<sbk::engine::float_parameter>> floatParameters;
-        std::vector<std::shared_ptr<sbk::engine::named_parameter>> namedParameters;
+        eastl::vector<std::shared_ptr<sbk::engine::bus>> busses;
+        eastl::vector<std::shared_ptr<sbk::engine::int_parameter>> intParameters;
+        eastl::vector<std::shared_ptr<sbk::engine::float_parameter>> floatParameters;
+        eastl::vector<std::shared_ptr<sbk::engine::named_parameter>> namedParameters;
 
         soundbank_database lookupDatabase;
     };
@@ -73,7 +73,7 @@ namespace sbk::engine
         REGISTER_REFLECTION(soundbank, sbk::core::database_object)
 
     public:
-        [[nodiscard]] auto get_events() const -> std::vector<sbk::core::database_ptr<event>> { return m_events; }
+        [[nodiscard]] auto get_events() const -> eastl::vector<sbk::core::database_ptr<event>> { return m_events; }
 
         [[nodiscard]] auto gather_dependencies() const -> soundbank_dependencies;
 
@@ -84,7 +84,7 @@ namespace sbk::engine
         [[nodiscard]] auto is_lookup_soundbank() const -> bool { return m_lookupSoundbank; }
 
     private:
-        std::vector<sbk::core::database_ptr<event>> m_events;
+        eastl::vector<sbk::core::database_ptr<event>> m_events;
         bool m_initSoundbank   = false;  //< Determines whether we package bussess, parameters, etc.
         bool m_lookupSoundbank = false;  //< Determines whether this bank contains string -> id lookup information
     };

@@ -2,6 +2,8 @@
 
 #include "sound_bakery/pch.h"
 
+#include "sound_bakery/core/memory.h"
+
 namespace sbk::engine
 {
     class node_base;
@@ -18,15 +20,15 @@ namespace sbk::util
     class SB_CLASS type_helper final
     {
     public:
-        [[nodiscard]] static auto get_category_from_type(rttr::type type) -> SB_OBJECT_CATEGORY;
+        [[nodiscard]] static auto get_category_from_type(rttr::type type) -> sbk::memory::object_category;
 
-        [[nodiscard]] static auto get_types_from_category(SB_OBJECT_CATEGORY category) -> std::set<rttr::type, type_comparator>;
+        [[nodiscard]] static auto get_types_from_category(sbk::memory::object_category category) -> std::set<rttr::type, type_comparator>;
 
         [[nodiscard]] static auto get_display_name_from_type(rttr::type type) -> rttr::string_view;
 
         [[nodiscard]] static auto get_folder_name_for_object_type(rttr::type type) -> std::string;
 
-        [[nodiscard]] static auto get_file_extension_of_object_category(SB_OBJECT_CATEGORY category) -> std::string_view;
+        [[nodiscard]] static auto get_file_extension_of_object_category(sbk::memory::object_category category) -> std::string_view;
 
         [[nodiscard]] static auto get_payload_from_type(rttr::type type) -> std::string_view;
 
@@ -34,7 +36,7 @@ namespace sbk::util
 
         [[nodiscard]] static auto get_object_category_enum() -> rttr::enumeration;
 
-        [[nodiscard]] static auto get_object_category_name(const SB_OBJECT_CATEGORY& objectCategory) -> rttr::string_view;
+        [[nodiscard]] static auto get_object_category_name(const sbk::memory::object_category& objectCategory) -> rttr::string_view;
 
         [[nodiscard]] static auto get_object_from_instance(const rttr::instance& instance) -> sbk::core::object*;
 

@@ -5,6 +5,7 @@
 #include "sound_bakery/error/result.h"
 #include "sound_bakery/event/event.h"
 #include "sound_bakery/node/bus/bus.h"
+#include "sound_bakery/serialization/eastl_serialization.h"
 #include "sound_bakery/sound/sound.h"
 #include "sound_bakery/soundbank/soundbank.h"
 #include "sound_bakery/system.h"
@@ -42,11 +43,11 @@ namespace sbk::core::serialization
 
         /** ADD NEW VERSIONS ABOVE */
         plus_one,
-        cur = static_cast<int>(plus_one) - 1
+        cur = plus_one - 1
     };
 
     auto make_default_variant(const rttr::type& type) -> rttr::variant;
-    auto read_binary_file(const std::filesystem::path& file) -> std::vector<uint8_t>;
+    auto read_binary_file(const std::filesystem::path& file) -> eastl::vector<uint8_t>;
 
     /**
      * @brief Stores the version of Sound Bakery.
@@ -206,12 +207,12 @@ namespace sbk::core::serialization
     {
         serialized_object_vector() = delete;
         serialized_object_vector(sbk::core::object_owner* objectOwner) : objectOwner(objectOwner) {}
-        serialized_object_vector(const std::vector<std::shared_ptr<object_class>>& objects)
+        serialized_object_vector(const eastl::vector<std::shared_ptr<object_class>>& objects)
             : objects(objects), count(objects.size()), objectOwner(nullptr) {}
 
         sbk::core::object_owner* objectOwner = nullptr;
         std::size_t count                    = 0;
-        std::vector<std::shared_ptr<object_class>> objects;
+        eastl::vector<std::shared_ptr<object_class>> objects;
 
         template <class archive_class>
         auto serialize(archive_class& archive, const unsigned int v) -> void
@@ -255,7 +256,7 @@ namespace sbk::core::serialization
                 const sbk::engine::encoding_sound encodingSound = sound->get_encoding_sound_data();
                 const bool validFile                            = std::filesystem::exists(encodingSound.encodedSoundPath) &&
                                        std::filesystem::is_regular_file(encodingSound.encodedSoundPath);
-                const std::vector<uint8_t> buffer = validFile ? read_binary_file(encodingSound.encodedSoundPath) : std::vector<uint8_t>();
+                const eastl::vector<uint8_t> buffer = validFile ? read_binary_file(encodingSound.encodedSoundPath) : eastl::vector<uint8_t>();
                 std::size_t size                  = buffer.size();
 
                 archive& boost::serialization::make_nvp("Size", size);
@@ -279,14 +280,14 @@ namespace sbk::core::serialization
     {
         serialized_object_vector() = delete;
         serialized_object_vector(sbk::core::object_owner* objectOwner) : objectOwner(objectOwner) {}
-        serialized_object_vector(const std::vector<std::shared_ptr<sbk::engine::sound>>& objects)
+        serialized_object_vector(const eastl::vector<std::shared_ptr<sbk::engine::sound>>& objects)
             : objects(objects), count(objects.size()), objectOwner(nullptr)
         {
         }
 
         sbk::core::object_owner* objectOwner = nullptr;
         std::size_t count                    = 0;
-        std::vector<std::shared_ptr<sbk::engine::sound>> objects;
+        eastl::vector<std::shared_ptr<sbk::engine::sound>> objects;
 
         template <class archive_class>
         auto serialize(archive_class& archive, const unsigned int v) -> void
@@ -589,7 +590,7 @@ namespace sbk::core::serialization
             }
             catch (const std::exception& exception)
             {
-                return sbk::make_error(SBK_ERR_BAKERY_SERIALIZATION, exception.what());
+                return sbk::make_error(SBK_ERR_BAKERY_SERIALIZATION, fmt::format("{} exception thrown when saving '{}' [{}] to {}", exception.what(), static_cast<const char*>(object->get_database_name()), object->get_database_id(), file.string()));
             }
 
             return sbk::ok();
@@ -609,7 +610,7 @@ namespace sbk::core::serialization
             }
             catch (const std::exception& exception)
             {
-                return sbk::make_error(SBK_ERR_BAKERY_SERIALIZATION, exception.what());
+                return sbk::make_error(SBK_ERR_BAKERY_SERIALIZATION, fmt::format("{} exception thrown when saving the system to {}", exception.what(), file.string()));
             }
 
             return sbk::ok();
@@ -631,7 +632,7 @@ namespace sbk::core::serialization
             }
             catch (const std::exception& exception)
             {
-                return sbk::make_error(SBK_ERR_BAKERY_SERIALIZATION, exception.what());
+                return sbk::make_error(SBK_ERR_BAKERY_SERIALIZATION, fmt::format("{} exception thrown when loading {}", exception.what(), file.string()));
             }
         }
     };

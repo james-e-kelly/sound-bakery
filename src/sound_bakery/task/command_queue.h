@@ -20,7 +20,9 @@ namespace sbk
 
         auto enqueue(work_item item) -> sbk::result<> override
         {
+            ZoneScopedN("command_queue enqueue");
             const std::lock_guard lock(m_mutex);
+            LockMark(m_mutex);
             SBK_CHECK_MSG(m_stopped == false, SBK_ERR_BAKERY, "Cannot enqueue command. Command queue shut down");
             m_staging.push_back(std::move(item));
             return sbk::ok();
@@ -34,9 +36,10 @@ namespace sbk
         {
             ZoneScopedN("command_queue flush");
 
-            std::vector<work_item> batch;
+            eastl::vector<work_item> batch;
             {
                 const std::lock_guard lock(m_mutex);
+                LockMark(m_mutex);
                 m_staging.swap(batch);
             }
 
@@ -49,8 +52,10 @@ namespace sbk
                 [commands = std::move(batch)]() mutable
                 {
                     const sbk::core::scoped_thread_domain studioDomain(sbk::core::thread_domain::studio);
+                    ZoneScopedN("command_queue execute all commands");
                     for (auto& command : commands)
                     {
+                        ZoneScopedN("command_queue execute command");
                         command();
                     }
                 }});
@@ -61,16 +66,18 @@ namespace sbk
          */
         auto abandon() -> void override
         {
+            ZoneScopedN("command_queue abandon");
             const std::lock_guard lock(m_mutex);
+            LockMark(m_mutex);
             m_stopped = true;
-            std::vector<work_item> dropped;
+            eastl::vector<work_item> dropped;
             m_staging.swap(dropped);
         }
 
     private:
         executor* m_target;
-        std::mutex m_mutex;
-        std::vector<work_item> m_staging;
+        TracyLockableN(std::mutex, m_mutex, "command_queue mutex");
+        eastl::vector<work_item> m_staging;
         bool m_stopped = false;
         friend class ::sbk::engine::system;
     };

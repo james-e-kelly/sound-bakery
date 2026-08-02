@@ -87,6 +87,8 @@ set(SOUND_BAKERY_HEADERS
     core/database/database_ptr.h
 
     core/memory.h
+    core/allocator.h
+    core/eastl_config.h
 
     editor/editor_defines.h
     editor/project/project.h
@@ -116,10 +118,12 @@ set(SOUND_BAKERY_HEADERS
     profiling/voice_tracker.h
 
     reflection/reflection.h
+    reflection/eastl_reflection.h
 
     runtime/runtime.h
 
     serialization/serializer.h
+    serialization/eastl_serialization.h
 
     soundbank/soundbank.h
 

@@ -189,7 +189,7 @@ namespace sbk::engine
         sbk::engine::game_object* m_gameObject    = nullptr;
         node_group_instance m_nodeGroup;
         std::shared_ptr<node_instance> m_parent;
-        std::vector<std::shared_ptr<node_instance>> m_children;
+        eastl::vector<std::shared_ptr<node_instance>> m_children;
         std::unique_ptr<sc_sound_instance, SC_SOUND_INSTANCE_DELETER> m_soundInstance;
         unsigned int m_numTimesPlayed = 0;
     };

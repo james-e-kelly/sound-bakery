@@ -2,6 +2,7 @@
 
 #include "sound_bakery/pch.h"
 
+#include "sound_bakery/core/memory.h"
 #include "sound_bakery/error/result.h"
 #include "sound_bakery/task/unique_coroutine.h"
 
@@ -9,6 +10,23 @@ namespace sbk
 {
     template <class T>
     class task;
+
+    class promise_base
+    {
+    public:
+        promise_base()    = default;
+        ~promise_base() = default;
+
+        static void* operator new(std::size_t size)
+        {
+            return sbk::memory::malloc(size, sbk::memory::default_alignment, sbk::memory::object_category::data);
+        }
+
+        static void operator delete(void* pointer)
+        {
+            sbk::memory::free(pointer, sbk::memory::object_category::data);
+        }
+    };
 
     // ---------------------------------------------------------------------------
     // Tracy fibers
@@ -68,7 +86,7 @@ namespace sbk
     };
 
     template <class T>
-    struct task_promise : fiber_promise
+    struct task_promise : public promise_base, fiber_promise
     {
         result<T> outcome;                       // filled by co_return
         std::coroutine_handle<> continuation{};  // who awaited us
@@ -93,7 +111,7 @@ namespace sbk
     };
 
     template <>
-    struct task_promise<void> : fiber_promise
+    struct task_promise<void> : public promise_base, fiber_promise
     {
         result<void> outcome;
         std::coroutine_handle<> continuation{};
@@ -221,7 +239,7 @@ namespace sbk
      */
     struct detached_task
     {
-        struct promise_type : fiber_promise
+        struct promise_type : public promise_base, fiber_promise
         {
             // No return object holds this frame, so an executor parking it must take ownership.
             static constexpr bool self_owns_frame = true;
@@ -234,7 +252,14 @@ namespace sbk
             auto get_return_object() noexcept -> detached_task { return {}; }
             auto initial_suspend() noexcept -> std::suspend_never { return {}; }  // eager: start now
             auto final_suspend() noexcept -> std::suspend_never { return {}; }    // self-destroy when done
-            auto return_void() noexcept -> void {}
+
+            // Nobody awaits a detached task, so any error is at the top of its own stack. We still
+            // want the SBK_CO_* macros to work here (they co_return a result/error), so the promise
+            // accepts both. The value is dropped -- errors were already logged where they were born
+            // (make_error / log_error / the SBK_ macros), per the log-once-at-origin discipline.
+            // Natural completion: `co_return sbk::ok();`.
+            auto return_value(result<void>) noexcept -> void {}
+            auto return_value(error) noexcept -> void {}
             auto unhandled_exception() noexcept -> void { std::abort(); }
         };
     };
@@ -272,4 +297,26 @@ namespace sbk
         auto&& SBK_DETAIL_UNIQUE(sbkCoResult_) = co_await (expr);                                \
         if (!SBK_DETAIL_UNIQUE(sbkCoResult_).has_value()) [[unlikely]]                           \
             co_return ::tl::make_unexpected(std::move(SBK_DETAIL_UNIQUE(sbkCoResult_)).error()); \
+    } while (0)
+
+/**
+ * @brief Guards @p cond; if false, logs and returns @p code as an error (message defaults to the condition).
+ */
+#define SBK_CO_CHECK(cond, code)                                            \
+    do                                                                      \
+    {                                                                       \
+        if (!(cond)) [[unlikely]]                                           \
+            co_return ::sbk::make_error((code), "check failed: " #cond);    \
+    } while (0)
+
+/**
+ * @brief Guards @p cond; if false, logs a fmt-formatted @p message and returns @p code.
+ */
+#define SBK_CO_CHECK_MSG(cond, code, ...)                                       \
+    do                                                                          \
+    {                                                                           \
+        if (!(cond)) [[unlikely]]                                               \
+        {                                                                       \
+            co_return ::sbk::make_error((code), ::fmt::format(__VA_ARGS__));    \
+        }                                                                       \
     } while (0)
