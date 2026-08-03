@@ -5,6 +5,7 @@
 
 auto sbk::core::database::add_object_to_database(const std::shared_ptr<database_object>& object) -> sbk::result<void>
 {
+    ZoneScoped;
     SBK_EXPECT_STUDIO_THREAD();
     SBK_CHECK_MSG(object, SBK_ERR_INVALID_PARAMETER, "Cannot add a null object to the database");
 
@@ -34,6 +35,7 @@ auto sbk::core::database::add_object_to_database(const std::shared_ptr<database_
 
 auto sbk::core::database::assign_name_to_id(sbk_id id, const database_name& name) -> sbk::result<void>
 {
+    ZoneScoped;
     SBK_EXPECT_STUDIO_THREAD();
     SBK_CHECK(id != SBK_INVALID_ID, SBK_ERR_INVALID_PARAMETER);
     SBK_CHECK(name.valid(), SBK_ERR_INVALID_PARAMETER);
@@ -48,6 +50,7 @@ auto sbk::core::database::assign_name_to_id(sbk_id id, const database_name& name
 
 auto sbk::core::database::remove_object_from_database(sbk_id objectID) -> sbk::result<void>
 {
+    ZoneScoped;
     SBK_EXPECT_STUDIO_THREAD();
     SBK_CHECK(objectID != SBK_INVALID_ID, SBK_ERR_INVALID_PARAMETER);
 
@@ -67,6 +70,7 @@ auto sbk::core::database::remove_object_from_database(sbk_id objectID) -> sbk::r
 
 auto sbk::core::database::try_find_database_object(sbk_id objectID) const -> std::weak_ptr<sbk::core::database_object>
 {
+    ZoneScoped;
     std::weak_ptr<sbk::core::database_object> result;
 
     if (auto iter = m_idToPointerMap.find(objectID); iter != m_idToPointerMap.end())
@@ -79,6 +83,7 @@ auto sbk::core::database::try_find_database_object(sbk_id objectID) const -> std
 
 auto sbk::core::database::try_find_database_object(const database_name& name) const -> std::weak_ptr<sbk::core::database_object>
 {
+    ZoneScoped;
     if (const auto iter = m_nameToIdMap.find(name); iter != m_nameToIdMap.end())
     {
         return try_find_database_object(iter->second);
@@ -90,6 +95,7 @@ auto sbk::core::database::try_find_database_object(const database_name& name) co
 
 auto sbk::core::database::resolve_name_in_graph(const database_name& name) const -> std::weak_ptr<sbk::core::database_object>
 {
+    ZoneScoped;
     for (const auto& [id, weakObject] : m_idToPointerMap)
     {
         if (const std::shared_ptr<sbk::core::database_object> object = weakObject.lock())
@@ -106,6 +112,7 @@ auto sbk::core::database::resolve_name_in_graph(const database_name& name) const
 
 auto sbk::core::database::get_all_database_objects() const -> eastl::vector<std::weak_ptr<sbk::core::database_object>>
 {
+    ZoneScoped;
     eastl::vector<std::weak_ptr<sbk::core::database_object>> result;
     result.reserve(m_idToPointerMap.size());
 
@@ -119,6 +126,7 @@ auto sbk::core::database::get_all_database_objects() const -> eastl::vector<std:
 
 auto sbk::core::database::get_all_database_names() const -> eastl::vector<database_name>
 {
+    ZoneScoped;
     // Names are derived, so build the list from the live objects rather than the (bank-only) index.
     eastl::vector<database_name> result;
     result.reserve(m_idToPointerMap.size());
@@ -136,6 +144,7 @@ auto sbk::core::database::get_all_database_names() const -> eastl::vector<databa
 
 auto sbk::core::database::get_database_object_name(sbk_id objectID) const -> database_name
 {
+    ZoneScoped;
     if (const auto iter = m_idToPointerMap.find(objectID); iter != m_idToPointerMap.end())
     {
         if (const std::shared_ptr<sbk::core::database_object> object = iter->second.lock())
@@ -154,6 +163,7 @@ auto sbk::core::database::get_database_object_count() const -> size_t
 
 auto sbk::core::database::get_database_object_at(size_t index) const -> std::weak_ptr<database_object>
 {
+    ZoneScoped;
     auto iter = m_idToPointerMap.cbegin();
     if (iter != m_idToPointerMap.cend() && index < m_idToPointerMap.size())
     {
@@ -164,6 +174,7 @@ auto sbk::core::database::get_database_object_at(size_t index) const -> std::wea
 
 auto sbk::core::database::clear_database() noexcept -> void
 {
+    ZoneScoped;
     SBK_EXPECT_STUDIO_THREAD();
     m_idToPointerMap.clear();
     m_nameToIdMap.clear();
@@ -180,6 +191,7 @@ auto sbk::core::database::create_new_id() -> sbk_id
 
 auto sbk::core::database::create_new_name(const rttr::type& type) -> std::string
 {
+    ZoneScoped;
     static std::atomic<int> serialNumberGenerator = 0;
 
     BOOST_ASSERT(type.is_valid());
@@ -190,6 +202,7 @@ auto sbk::core::database::create_new_name(const rttr::type& type) -> std::string
 
 auto sbk::core::database::update_id(sbk_id oldID, sbk_id newID) -> void
 {
+    ZoneScoped;
     if (oldID == SBK_INVALID_ID)
     {
         SBK_ERROR("Cannot update database ID. Old ID is invalid");

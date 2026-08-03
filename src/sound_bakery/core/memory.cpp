@@ -94,6 +94,8 @@ auto sbk::memory::object_deleter::operator()(sbk::core::object* object)  const n
 
 auto sbk::memory::malloc(std::size_t size, std::size_t alignment, sbk::memory::object_category category) -> void*
 {
+    ZoneScoped;
+
     // rpaligned_alloc short-circuits to the standard rpmalloc path when alignment <= 16, so
     // small-alignment callers pay no measurable cost. Anything more (SIMD, cache-line padded)
     // gets honoured for free rather than silently misaligned.
@@ -114,11 +116,13 @@ auto sbk::memory::malloc(std::size_t size, std::size_t alignment, sbk::memory::o
 
 auto sbk::memory::realloc(void* pointer, std::size_t size) -> void*
 {
+    ZoneScoped;
     return rprealloc(pointer, size);
 }
 
 auto sbk::memory::free(void* pointer, sbk::memory::object_category category) -> void
 {
+    ZoneScoped;
     TracyFreeN(pointer, sbk::util::type_helper::get_object_category_name(category).data());
     rpfree(pointer);
 }
