@@ -2,6 +2,8 @@
 
 #include "sound_bakery/core/core_fwd.h"
 
+#include "tracy/Tracy.hpp"
+
 #include <rttr/registration_friend>
 #include <rttr/type>
 
@@ -10,6 +12,7 @@ namespace sbk
     template <typename Target_Type, typename Source_Type>
     auto cast(Source_Type object) -> Target_Type
     {
+        ZoneScoped;
         static_assert(rttr::detail::pointer_count<Target_Type>::value == 1, "Target type must be a pointer");
         static_assert(rttr::detail::pointer_count<Source_Type>::value == 1, "Source argument must be a pointer");
         static_assert(rttr::detail::has_get_type_func<Source_Type>::value, "Class has not type defined - please use the macro RTTR_ENABLE().");

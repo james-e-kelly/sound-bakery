@@ -23,6 +23,7 @@ auto type_comparator::operator()(const rttr::type lhs, const rttr::type rhs) con
 
 auto type_helper::get_category_from_type(rttr::type type) -> sbk::memory::object_category
 {
+    ZoneScoped;
     sbk::memory::object_category category = sbk::memory::object_category::unknown;
 
     if (!type.is_valid())
@@ -79,6 +80,7 @@ auto type_helper::get_category_from_type(rttr::type type) -> sbk::memory::object
 
 auto type_helper::get_types_from_category(sbk::memory::object_category category) -> std::set<rttr::type, type_comparator>
 {
+    ZoneScoped;
     std::set<rttr::type, type_comparator> result;
 
     switch (category)
@@ -120,6 +122,7 @@ auto type_helper::get_types_from_category(sbk::memory::object_category category)
 
 auto type_helper::get_display_name_from_type(rttr::type type) -> rttr::string_view
 {
+    ZoneScoped;
     rttr::string_view result = type.get_name();
 
     if (type == rttr::type::get<sbk::engine::sound_container>())
@@ -184,6 +187,7 @@ auto type_helper::get_display_name_from_type(rttr::type type) -> rttr::string_vi
 
 auto sbk::util::type_helper::get_folder_name_for_object_type(rttr::type type) -> std::string
 {
+    ZoneScoped;
     const rttr::string_view typeName = type.get_name();
 
     std::string typeNameString = typeName.to_string();
@@ -200,6 +204,7 @@ auto sbk::util::type_helper::get_folder_name_for_object_type(rttr::type type) ->
 
 auto type_helper::get_file_extension_of_object_category(sbk::memory::object_category category) -> std::string_view
 {
+    ZoneScoped;
     std::string_view result = ".object";
 
     switch (category)
@@ -233,6 +238,7 @@ auto type_helper::get_file_extension_of_object_category(sbk::memory::object_cate
 
 auto type_helper::get_payload_from_type(rttr::type type) -> std::string_view
 {
+    ZoneScoped;
     std::string_view result = "OBJECT";
 
     if (type == rttr::type::get<sbk::engine::sound>())
@@ -269,6 +275,7 @@ auto type_helper::get_payload_from_type(rttr::type type) -> std::string_view
 
 auto type_helper::is_type_playable(const rttr::type& type) -> bool
 {
+    ZoneScoped;
     bool result = false;
 
     if (type.is_valid())
@@ -282,11 +289,13 @@ auto type_helper::is_type_playable(const rttr::type& type) -> bool
 
 auto type_helper::get_object_category_enum() -> rttr::enumeration
 {
+    ZoneScoped;
     return rttr::type::get<sbk::memory::object_category>().get_enumeration();
 }
 
 auto type_helper::get_object_category_name(const sbk::memory::object_category& objectCategory) -> rttr::string_view
 {
+    ZoneScoped;
     // When the system is first created, it allocates memory under the system object type, but the system doesn't exist yet for reflection
     if (objectCategory == sbk::memory::object_category::system)
     {

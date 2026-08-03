@@ -9,6 +9,7 @@
 
 auto sbk::core::object_owner::get_system() const noexcept -> sbk::engine::system*
 {
+    ZoneScoped;
     for (object_owner* owner = const_cast<object_owner*>(this); owner != nullptr; owner = owner->m_owner)
     {
         if (sbk::engine::system* const system = dynamic_cast<sbk::engine::system*>(owner))
@@ -102,6 +103,7 @@ auto sbk::core::object_owner::create_database_object(const rttr::type& type, boo
 
 auto sbk::core::object_owner::add_reference_to_object(std::shared_ptr<database_object>& object) -> void
 {
+    ZoneScoped;
     SBK_EXPECT_STUDIO_THREAD();
 
     if (object)
@@ -112,6 +114,7 @@ auto sbk::core::object_owner::add_reference_to_object(std::shared_ptr<database_o
 
 auto sbk::core::object_owner::remove_object(const std::shared_ptr<object>& object) -> eastl::vector<std::shared_ptr<sbk::core::object>>::iterator
 {
+    ZoneScoped;
     SBK_EXPECT_STUDIO_THREAD();
 
     if (object)
@@ -129,6 +132,7 @@ auto sbk::core::object_owner::remove_object(const std::shared_ptr<object>& objec
 
 auto sbk::core::object_owner::remove_all() -> void
 {
+    ZoneScoped;
     SBK_EXPECT_STUDIO_THREAD();
 
     m_objects.clear();

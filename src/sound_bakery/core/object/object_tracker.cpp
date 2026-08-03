@@ -23,6 +23,7 @@ auto object_ptr_comparator::operator()(const object* lhs, const object* rhs) con
 
 auto object_tracker::track_object(object* object) -> void
 {
+    ZoneScoped;
     if (object != nullptr)
     {
         const rttr::type type             = object->get_object_type();
@@ -35,6 +36,7 @@ auto object_tracker::track_object(object* object) -> void
 
 auto object_tracker::untrack_object(object* object, std::optional<rttr::type> typeOverride) -> void
 {
+    ZoneScoped;
     if (object != nullptr)
     {
         const rttr::type type             = typeOverride.has_value() ? typeOverride.value() : object->get_object_type();
@@ -51,6 +53,7 @@ auto object_tracker::untrack_object(object* object, std::optional<rttr::type> ty
 
 auto object_tracker::get_objects_of_category(const sbk::memory::object_category& category) const -> std::unordered_set<object*>
 {
+    ZoneScoped;
     if (m_categoryToObjects.find(category) != m_categoryToObjects.cend())
     {
         return m_categoryToObjects.at(category);
@@ -61,6 +64,7 @@ auto object_tracker::get_objects_of_category(const sbk::memory::object_category&
 
 auto object_tracker::get_objects_of_type(const rttr::type& type) const -> std::unordered_set<object*>
 {
+    ZoneScoped;
     if (m_typeToObjects.find(type) != m_typeToObjects.cend())
     {
         return m_typeToObjects.at(type);
@@ -71,6 +75,7 @@ auto object_tracker::get_objects_of_type(const rttr::type& type) const -> std::u
 
 auto object_tracker::get_objects_count() const -> size_t
 {
+    ZoneScoped;
     size_t count = 0;
 
     for (auto& keyValuePair : m_categoryToObjects)
@@ -94,6 +99,7 @@ auto object_tracker::get_all_type_to_objects() const -> const std::unordered_map
 auto object_tracker::convert_to_ordered(const std::unordered_set<object*>& unordered) const
     -> std::set<object*, object_ptr_comparator>
 {
+    ZoneScoped;
     std::set<object*, object_ptr_comparator> result;
     for (object* object : unordered)
     {
