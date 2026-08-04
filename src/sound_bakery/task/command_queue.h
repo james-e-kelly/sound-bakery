@@ -28,6 +28,8 @@ namespace sbk
      * @remark This is guaranteed to be thread-safe when there is only one consumer.
      * @remark The indexes grow infinitely but when indexing into the buffer, it is wrapped by a mask.
      * @remark Indexes are allowed to integer overflow.
+     * 
+     * @see https://github.com/bowtoyourlord/MPSCQueue
      */
     class mpsc_ring_buffer final
     {
