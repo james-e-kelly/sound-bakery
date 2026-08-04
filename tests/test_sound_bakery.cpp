@@ -975,22 +975,24 @@ TEST_SUITE("Ring Buffer")
 
     TEST_CASE("Reader should see all values from producers")
     {
-        scoped_memory memory;
-
-        sbk::mpsc_ring_buffer ringBuffer;
-        sbk::memory::rpmalloc_resource rpmalloc(sbk::memory::object_category::system);
-
-        REQUIRE(ringBuffer.init(2 * sizeof(std::size_t), rpmalloc).has_value());
-
-        std::unordered_set<std::size_t> uniqueThreadValues = {1, 7, 777, 999, 1024, 50202502};
-        std::vector<std::jthread> writerThreads;
-
-        constexpr std::size_t writesPerThread = 1024;
-
-        for (std::size_t writerValue : uniqueThreadValues)
+        for (std::size_t iteration = 0; iteration < 16; ++iteration)
         {
-            std::jthread writerThread([&, threadValue = writerValue]() 
-                {
+            scoped_memory memory;
+
+            sbk::mpsc_ring_buffer ringBuffer;
+            sbk::memory::rpmalloc_resource rpmalloc(sbk::memory::object_category::system);
+
+            REQUIRE(ringBuffer.init(512 * sizeof(std::size_t), rpmalloc).has_value());
+
+            std::unordered_set<std::size_t> uniqueThreadValues = {1, 7, 777, 999, 1024, 50202502};
+            std::vector<std::jthread> writerThreads;
+
+            constexpr std::size_t writesPerThread = 1024;
+
+            for (std::size_t writerValue : uniqueThreadValues)
+            {
+                std::jthread writerThread([&, threadValue = writerValue]()
+                                          {
                     std::size_t valueToWrite = threadValue;
                     for (std::size_t index = 0; index < writesPerThread; )
                     {
@@ -998,13 +1000,12 @@ TEST_SUITE("Ring Buffer")
                         {
                             ++index; // Only move on once we've full written everything
                         }
-                    }
-                });
-            writerThreads.push_back(std::move(writerThread));
-        }
+                    } });
+                writerThreads.push_back(std::move(writerThread));
+            }
 
-        std::jthread readThread([&]()
-                                { 
+            std::jthread readThread([&]()
+                                    { 
                 std::unordered_map<std::size_t, std::size_t> threadValueToTimesRead;
 
                 std::size_t readValue{};
@@ -1023,13 +1024,13 @@ TEST_SUITE("Ring Buffer")
                 for (std::size_t uniqueValue : uniqueThreadValues)
                 {
                     CHECK(threadValueToTimesRead[uniqueValue] == writesPerThread);
-                }
-            });
+                } });
 
-        for (auto& thread : writerThreads)
-        {
-            thread.join();
+            for (auto& thread : writerThreads)
+            {
+                thread.join();
+            }
+            readThread.join();
         }
-        readThread.join();
     }
 }
