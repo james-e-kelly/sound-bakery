@@ -98,7 +98,8 @@ namespace sbk
 
             m_capacity = std::bit_ceil(size);
             m_mask     = m_capacity - 1;
-            SBK_CHECK(std::_Is_pow_2(m_capacity), SBK_ERR_BAKERY);  // Probably impossible but better safe than sorry
+            const bool isPowerOf2 = (m_capacity & (m_capacity - 1)) == 0;
+            SBK_CHECK(isPowerOf2, SBK_ERR_BAKERY);  // Probably impossible but better safe than sorry
 
             m_buffer   = static_cast<std::uint8_t*>(allocator.allocate(m_capacity, sbk::memory::default_alignment));
             SBK_CHECK(m_buffer != nullptr, SBK_ERR_OUT_OF_MEMORY);
@@ -187,7 +188,7 @@ namespace sbk
         using atomic = std::atomic<std::size_t>;
 
         static_assert(atomic::is_always_lock_free);
-        static constexpr std::size_t atomic_alignment = std::hardware_destructive_interference_size;
+        static constexpr std::size_t atomic_alignment = 64U; // std::hardware_destructive_interference_size is not available on all compilers so hard code for now
 
         sbk::memory::memory_resource* m_memoryResource{};
 
