@@ -9,5 +9,6 @@ var searchData=
   ['memory_5fresource_6',['memory_resource',['../classsbk_1_1memory_1_1memory__resource.html',1,'sbk::memory']]],
   ['method_5fdrawer_7',['method_drawer',['../classmethod__drawer.html',1,'']]],
   ['monotonic_5fbuffer_5fresource_8',['monotonic_buffer_resource',['../classsbk_1_1memory_1_1monotonic__buffer__resource.html',1,'sbk::memory']]],
-  ['mvp_9',['0.1.0 — MVP',['../Roadmap.html#autotoc_md49',1,'']]]
+  ['mpsc_5fring_5fbuffer_9',['mpsc_ring_buffer',['../classsbk_1_1mpsc__ring__buffer.html',1,'sbk']]],
+  ['mvp_10',['0.1.0 — MVP',['../Roadmap.html#autotoc_md49',1,'']]]
 ];

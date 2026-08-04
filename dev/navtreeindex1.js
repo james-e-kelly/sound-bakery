@@ -1,5 +1,9 @@
 var NAVTREEINDEX1 =
 {
+"functions_func.html":[12,3,1],
+"functions_type.html":[12,3,3],
+"functions_vars.html":[12,3,2],
+"gameobject_8h_source.html":[13,0,2,0,6,0],
 "globals.html":[13,1,0],
 "globals_defs.html":[13,1,2],
 "globals_func.html":[13,1,1],
@@ -205,15 +209,15 @@ var NAVTREEINDEX1 =
 "structsbk_1_1final__awaiter.html":[12,0,2,11],
 "structsbk_1_1memory_1_1object__deleter.html":[12,0,2,3,2],
 "structsbk_1_1memory_1_1owned__object__deleter.html":[12,0,2,3,3],
-"structsbk_1_1ready__result__awaiter.html":[12,0,2,14],
+"structsbk_1_1ready__result__awaiter.html":[12,0,2,15],
 "structsbk_1_1reflection_1_1CreatePointerConversion.html":[12,0,2,4,0],
 "structsbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_00_01BaseClass_00_01U_8_8_8_01_4.html":[12,0,2,4,2],
 "structsbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_00_01rttr_1_1type__list_3_01BaseClassList_8_8_8_01_4_01_4.html":[12,0,2,4,3],
 "structsbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_01_4.html":[12,0,2,4,1],
 "structsbk_1_1reflection_1_1RegisterPointerConversionsForBaseClasses.html":[12,0,2,4,4],
-"structsbk_1_1task_1_1awaiter.html":[12,0,2,15,0],
-"structsbk_1_1task__promise.html":[12,0,2,16],
-"structsbk_1_1task__promise_3_01void_01_4.html":[12,0,2,17],
+"structsbk_1_1task_1_1awaiter.html":[12,0,2,16,0],
+"structsbk_1_1task__promise.html":[12,0,2,17],
+"structsbk_1_1task__promise_3_01void_01_4.html":[12,0,2,18],
 "structsbk_1_1util_1_1type__comparator.html":[12,0,2,5,0],
 "structsbk__system__config.html":[12,0,21],
 "structsc__audioChunk.html":[12,0,22],
@@ -245,9 +249,5 @@ var NAVTREEINDEX1 =
 "thread__domain_8h.html#a0b8ea399f2137b4f06dbe394f8cdd644":[13,0,2,0,1,9,2],
 "thread__domain_8h.html#a4483ceec7f874495b7b6942b9af34e3c":[13,0,2,0,1,9,1],
 "thread__domain_8h_source.html":[13,0,2,0,1,9],
-"thread__executor_8h_source.html":[13,0,2,0,16,4],
-"todo.html":[10],
-"type__helper_8h_source.html":[13,0,2,0,17,0],
-"unique__coroutine_8h_source.html":[13,0,2,0,16,5],
-"voice_8h_source.html":[13,0,2,0,18,1]
+"thread__executor_8h_source.html":[13,0,2,0,16,4]
 };

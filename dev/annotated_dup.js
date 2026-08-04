@@ -120,6 +120,7 @@ var annotated_dup =
       [ "fiber_promise", "structsbk_1_1fiber__promise.html", null ],
       [ "final_awaiter", "structsbk_1_1final__awaiter.html", null ],
       [ "manual_executor", "classsbk_1_1manual__executor.html", "classsbk_1_1manual__executor" ],
+      [ "mpsc_ring_buffer", "classsbk_1_1mpsc__ring__buffer.html", "classsbk_1_1mpsc__ring__buffer" ],
       [ "promise_base", "classsbk_1_1promise__base.html", null ],
       [ "ready_result_awaiter", "structsbk_1_1ready__result__awaiter.html", null ],
       [ "task", "classsbk_1_1task.html", "classsbk_1_1task" ],

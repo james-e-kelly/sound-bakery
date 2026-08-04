@@ -103,6 +103,7 @@ var hierarchy =
       [ "sbk::memory::rpmalloc_resource", "classsbk_1_1memory_1_1rpmalloc__resource.html", null ]
     ] ],
     [ "method_drawer", "classmethod__drawer.html", null ],
+    [ "sbk::mpsc_ring_buffer", "classsbk_1_1mpsc__ring__buffer.html", null ],
     [ "sbk::core::name", "classsbk_1_1core_1_1name.html", null ],
     [ "sbk::engine::node_group_instance", "structsbk_1_1engine_1_1node__group__instance.html", null ],
     [ "boost::noncopyable", null, [
