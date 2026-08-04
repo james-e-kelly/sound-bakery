@@ -218,188 +218,189 @@ $(document).ready(function(){initNavTree('command__queue_8h_source.html',''); in
 <div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
 <div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>            m_capacity = std::bit_ceil(size);</div>
 <div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>            m_mask     = m_capacity - 1;</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>            <a class="code hl_define" href="result_8h.html#a4956774c47aa4c29c7ce9f4e0cf8659e">SBK_CHECK</a>(std::_Is_pow_2(m_capacity), SBK_ERR_BAKERY);  <span class="comment">// Probably impossible but better safe than sorry</span></div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>            m_buffer   = <span class="keyword">static_cast&lt;</span>std::uint8_t*<span class="keyword">&gt;</span>(allocator.allocate(m_capacity, sbk::memory::default_alignment));</div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>            <a class="code hl_define" href="result_8h.html#a4956774c47aa4c29c7ce9f4e0cf8659e">SBK_CHECK</a>(m_buffer != <span class="keyword">nullptr</span>, SBK_ERR_OUT_OF_MEMORY);</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>            m_memoryResource = &amp;allocator;</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>            </div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>            <span class="keywordflow">return</span> <a class="code hl_function" href="error_8h.html#ae4829ae601d7136d4d51f4bbad4e8d7b">sbk::ok</a>();</div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        }</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>            <span class="keyword">const</span> <span class="keywordtype">bool</span> isPowerOf2 = (m_capacity &amp; (m_capacity - 1)) == 0;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>            <a class="code hl_define" href="result_8h.html#a4956774c47aa4c29c7ce9f4e0cf8659e">SBK_CHECK</a>(isPowerOf2, SBK_ERR_BAKERY);  <span class="comment">// Probably impossible but better safe than sorry</span></div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>            m_buffer   = <span class="keyword">static_cast&lt;</span>std::uint8_t*<span class="keyword">&gt;</span>(allocator.allocate(m_capacity, sbk::memory::default_alignment));</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>            <a class="code hl_define" href="result_8h.html#a4956774c47aa4c29c7ce9f4e0cf8659e">SBK_CHECK</a>(m_buffer != <span class="keyword">nullptr</span>, SBK_ERR_OUT_OF_MEMORY);</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>            m_memoryResource = &amp;allocator;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>            </div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>            <span class="keywordflow">return</span> <a class="code hl_function" href="error_8h.html#ae4829ae601d7136d4d51f4bbad4e8d7b">sbk::ok</a>();</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        }</div>
 </div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span> </div>
-<div class="foldopen" id="foldopen00116" data-start="{" data-end="}">
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno"><a class="line" href="classsbk_1_1mpsc__ring__buffer.html#a84d7d0ae823148ce2e3c6a0541a8153f">  116</a></span>        [[nodiscard]] <span class="keyword">auto</span> <a class="code hl_function" href="classsbk_1_1mpsc__ring__buffer.html#a84d7d0ae823148ce2e3c6a0541a8153f">write</a>(<span class="keywordtype">void</span>* message, std::size_t messageSize) <span class="keyword">noexcept</span> -&gt; sbk_status</div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>        {</div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>            <span class="keywordflow">if</span> (message == <span class="keyword">nullptr</span> || messageSize == 0)</div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>            {</div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>                <span class="keywordflow">return</span> SBK_ERR_INVALID_PARAMETER;</div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>            }</div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span> </div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>            <span class="keywordflow">while</span> (<span class="keyword">true</span>)</div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>            {</div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>                <span class="keyword">const</span> std::size_t <a class="code hl_function" href="classsbk_1_1mpsc__ring__buffer.html#ae97f4e49cd18ad49688e8fea7db8fe70">read</a>   = m_readIndex.load(std::memory_order_relaxed);</div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>                std::size_t reserveWrite = m_reserveWriteIndex.load(std::memory_order_relaxed);</div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span> </div>
-<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>                <span class="keyword">const</span> <span class="keywordtype">bool</span> isFull = reserveWrite - <a class="code hl_function" href="classsbk_1_1mpsc__ring__buffer.html#ae97f4e49cd18ad49688e8fea7db8fe70">read</a> == m_capacity;</div>
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>                <span class="keyword">const</span> <span class="keywordtype">bool</span> hasEnoughSpace = reserveWrite + messageSize - <a class="code hl_function" href="classsbk_1_1mpsc__ring__buffer.html#ae97f4e49cd18ad49688e8fea7db8fe70">read</a> &lt;= m_capacity;</div>
-<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span> </div>
-<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>                <span class="keywordflow">if</span> (isFull || !hasEnoughSpace)</div>
-<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>                {</div>
-<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>                    <span class="keywordflow">return</span> SBK_ERR_BAKERY;</div>
-<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>                }</div>
-<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span> </div>
-<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>                <span class="keywordflow">if</span> (m_reserveWriteIndex.compare_exchange_weak(reserveWrite, reserveWrite + messageSize, std::memory_order_relaxed))</div>
-<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>                {</div>
-<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>                    std::memcpy(m_buffer + (reserveWrite &amp; m_mask), message, messageSize);</div>
-<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span> </div>
-<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>                    std::size_t expected = reserveWrite;</div>
-<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>                    <span class="keywordflow">while</span> (!m_committedWriteIndex.compare_exchange_weak(expected, reserveWrite + messageSize, std::memory_order_release, std::memory_order_relaxed))</div>
-<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>                    {</div>
-<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>                        expected = reserveWrite;</div>
-<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>                        std::this_thread::yield();</div>
-<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>                    }</div>
-<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>                    <span class="keywordflow">return</span> SBK_SUCCESS;</div>
-<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>                }</div>
-<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>            }</div>
-<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>        }</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
+<div class="foldopen" id="foldopen00117" data-start="{" data-end="}">
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno"><a class="line" href="classsbk_1_1mpsc__ring__buffer.html#a84d7d0ae823148ce2e3c6a0541a8153f">  117</a></span>        [[nodiscard]] <span class="keyword">auto</span> <a class="code hl_function" href="classsbk_1_1mpsc__ring__buffer.html#a84d7d0ae823148ce2e3c6a0541a8153f">write</a>(<span class="keywordtype">void</span>* message, std::size_t messageSize) <span class="keyword">noexcept</span> -&gt; sbk_status</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        {</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>            <span class="keywordflow">if</span> (message == <span class="keyword">nullptr</span> || messageSize == 0)</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>            {</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>                <span class="keywordflow">return</span> SBK_ERR_INVALID_PARAMETER;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>            }</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span> </div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>            <span class="keywordflow">while</span> (<span class="keyword">true</span>)</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>            {</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>                <span class="keyword">const</span> std::size_t <a class="code hl_function" href="classsbk_1_1mpsc__ring__buffer.html#ae97f4e49cd18ad49688e8fea7db8fe70">read</a>   = m_readIndex.load(std::memory_order_relaxed);</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>                std::size_t reserveWrite = m_reserveWriteIndex.load(std::memory_order_relaxed);</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> </div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>                <span class="keyword">const</span> <span class="keywordtype">bool</span> isFull = reserveWrite - <a class="code hl_function" href="classsbk_1_1mpsc__ring__buffer.html#ae97f4e49cd18ad49688e8fea7db8fe70">read</a> == m_capacity;</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>                <span class="keyword">const</span> <span class="keywordtype">bool</span> hasEnoughSpace = reserveWrite + messageSize - <a class="code hl_function" href="classsbk_1_1mpsc__ring__buffer.html#ae97f4e49cd18ad49688e8fea7db8fe70">read</a> &lt;= m_capacity;</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span> </div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>                <span class="keywordflow">if</span> (isFull || !hasEnoughSpace)</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>                {</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>                    <span class="keywordflow">return</span> SBK_ERR_BAKERY;</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>                }</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span> </div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>                <span class="keywordflow">if</span> (m_reserveWriteIndex.compare_exchange_weak(reserveWrite, reserveWrite + messageSize, std::memory_order_relaxed))</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>                {</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>                    std::memcpy(m_buffer + (reserveWrite &amp; m_mask), message, messageSize);</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span> </div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>                    std::size_t expected = reserveWrite;</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>                    <span class="keywordflow">while</span> (!m_committedWriteIndex.compare_exchange_weak(expected, reserveWrite + messageSize, std::memory_order_release, std::memory_order_relaxed))</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>                    {</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>                        expected = reserveWrite;</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>                        std::this_thread::yield();</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>                    }</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>                    <span class="keywordflow">return</span> SBK_SUCCESS;</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>                }</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>            }</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>        }</div>
 </div>
-<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span> </div>
-<div class="foldopen" id="foldopen00156" data-start="{" data-end="}">
-<div class="line"><a id="l00156" name="l00156"></a><span class="lineno"><a class="line" href="classsbk_1_1mpsc__ring__buffer.html#ae97f4e49cd18ad49688e8fea7db8fe70">  156</a></span>        [[nodiscard]] <span class="keyword">auto</span> <a class="code hl_function" href="classsbk_1_1mpsc__ring__buffer.html#ae97f4e49cd18ad49688e8fea7db8fe70">read</a>(<span class="keywordtype">void</span>* outBuffer, std::size_t readBytes) <span class="keyword">noexcept</span> -&gt; sbk_status</div>
-<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>        {</div>
-<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>            <span class="keywordflow">if</span> (readBytes == 0 || outBuffer == <span class="keyword">nullptr</span>)</div>
-<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>            {</div>
-<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>                <span class="keywordflow">return</span> SBK_ERR_INVALID_PARAMETER;</div>
-<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>            }</div>
-<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span> </div>
-<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>            <span class="keyword">const</span> std::size_t <a class="code hl_function" href="classsbk_1_1mpsc__ring__buffer.html#ae97f4e49cd18ad49688e8fea7db8fe70">read</a> = m_readIndex.load(std::memory_order_relaxed);</div>
-<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>            <span class="keyword">const</span> std::size_t committedWrite = m_committedWriteIndex.load(std::memory_order_acquire);</div>
-<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span> </div>
-<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>            <span class="keyword">const</span> <span class="keywordtype">bool</span> bufferEmpty = <a class="code hl_function" href="classsbk_1_1mpsc__ring__buffer.html#ae97f4e49cd18ad49688e8fea7db8fe70">read</a> == committedWrite;</div>
-<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>            <span class="keyword">const</span> <span class="keywordtype">bool</span> canReadBytes = <a class="code hl_function" href="classsbk_1_1mpsc__ring__buffer.html#ae97f4e49cd18ad49688e8fea7db8fe70">read</a> + readBytes &lt;= committedWrite;</div>
-<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span> </div>
-<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>            <span class="keywordflow">if</span> (bufferEmpty || !canReadBytes)</div>
-<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>            {</div>
-<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>                <span class="keywordflow">return</span> SBK_ERR_BAKERY;</div>
-<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>            }</div>
-<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span> </div>
-<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>            std::memcpy(outBuffer, m_buffer + (<a class="code hl_function" href="classsbk_1_1mpsc__ring__buffer.html#ae97f4e49cd18ad49688e8fea7db8fe70">read</a> &amp; m_mask), readBytes);</div>
-<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span> </div>
-<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>            m_readIndex.store(<a class="code hl_function" href="classsbk_1_1mpsc__ring__buffer.html#ae97f4e49cd18ad49688e8fea7db8fe70">read</a> + readBytes, std::memory_order_relaxed);</div>
-<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span> </div>
-<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>            <span class="keywordflow">return</span> SBK_SUCCESS;</div>
-<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>        }</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span> </div>
+<div class="foldopen" id="foldopen00157" data-start="{" data-end="}">
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno"><a class="line" href="classsbk_1_1mpsc__ring__buffer.html#ae97f4e49cd18ad49688e8fea7db8fe70">  157</a></span>        [[nodiscard]] <span class="keyword">auto</span> <a class="code hl_function" href="classsbk_1_1mpsc__ring__buffer.html#ae97f4e49cd18ad49688e8fea7db8fe70">read</a>(<span class="keywordtype">void</span>* outBuffer, std::size_t readBytes) <span class="keyword">noexcept</span> -&gt; sbk_status</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>        {</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>            <span class="keywordflow">if</span> (readBytes == 0 || outBuffer == <span class="keyword">nullptr</span>)</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>            {</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>                <span class="keywordflow">return</span> SBK_ERR_INVALID_PARAMETER;</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>            }</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span> </div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>            <span class="keyword">const</span> std::size_t <a class="code hl_function" href="classsbk_1_1mpsc__ring__buffer.html#ae97f4e49cd18ad49688e8fea7db8fe70">read</a> = m_readIndex.load(std::memory_order_relaxed);</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>            <span class="keyword">const</span> std::size_t committedWrite = m_committedWriteIndex.load(std::memory_order_acquire);</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span> </div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>            <span class="keyword">const</span> <span class="keywordtype">bool</span> bufferEmpty = <a class="code hl_function" href="classsbk_1_1mpsc__ring__buffer.html#ae97f4e49cd18ad49688e8fea7db8fe70">read</a> == committedWrite;</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>            <span class="keyword">const</span> <span class="keywordtype">bool</span> canReadBytes = <a class="code hl_function" href="classsbk_1_1mpsc__ring__buffer.html#ae97f4e49cd18ad49688e8fea7db8fe70">read</a> + readBytes &lt;= committedWrite;</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span> </div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>            <span class="keywordflow">if</span> (bufferEmpty || !canReadBytes)</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>            {</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>                <span class="keywordflow">return</span> SBK_ERR_BAKERY;</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>            }</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span> </div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>            std::memcpy(outBuffer, m_buffer + (<a class="code hl_function" href="classsbk_1_1mpsc__ring__buffer.html#ae97f4e49cd18ad49688e8fea7db8fe70">read</a> &amp; m_mask), readBytes);</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span> </div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>            m_readIndex.store(<a class="code hl_function" href="classsbk_1_1mpsc__ring__buffer.html#ae97f4e49cd18ad49688e8fea7db8fe70">read</a> + readBytes, std::memory_order_relaxed);</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span> </div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>            <span class="keywordflow">return</span> SBK_SUCCESS;</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>        }</div>
 </div>
-<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span> </div>
-<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>        [[nodiscard]] <span class="keyword">auto</span> get_capacity() const noexcept -&gt; std::<span class="keywordtype">size_t</span></div>
-<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>        {</div>
-<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>            <span class="keywordflow">return</span> m_capacity;</div>
-<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>        }</div>
-<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span> </div>
-<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>        <span class="keyword">using </span>atomic = std::atomic&lt;std::size_t&gt;;</div>
-<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span> </div>
-<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>        <span class="keyword">static_assert</span>(atomic::is_always_lock_free);</div>
-<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>        <span class="keyword">static</span> <span class="keyword">constexpr</span> std::size_t atomic_alignment = std::hardware_destructive_interference_size;</div>
-<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span> </div>
-<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>        <a class="code hl_class" href="classsbk_1_1memory_1_1memory__resource.html">sbk::memory::memory_resource</a>* m_memoryResource{};</div>
-<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span> </div>
-<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>        std::uint8_t* m_buffer{};</div>
-<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>        std::size_t m_capacity{};</div>
-<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>        std::size_t m_mask{};</div>
-<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span> </div>
-<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span><span class="preprocessor">#pragma warning(disable : 4324)  </span><span class="comment">// Disable &quot;structure was padded due to alignment specifier&quot;</span></div>
-<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>        <span class="keyword">alignas</span> (atomic_alignment) atomic m_reserveWriteIndex{0};</div>
-<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>        <span class="keyword">alignas</span> (atomic_alignment) atomic m_committedWriteIndex{0};</div>
-<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>        <span class="keyword">alignas</span> (atomic_alignment) atomic m_readIndex{0};</div>
-<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span><span class="preprocessor">#pragma warning(default : 4324)</span></div>
-<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>    };</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span> </div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>        [[nodiscard]] <span class="keyword">auto</span> get_capacity() const noexcept -&gt; std::<span class="keywordtype">size_t</span></div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>        {</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>            <span class="keywordflow">return</span> m_capacity;</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>        }</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span> </div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>    <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>        <span class="keyword">using </span>atomic = std::atomic&lt;std::size_t&gt;;</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span> </div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>        <span class="keyword">static_assert</span>(atomic::is_always_lock_free);</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>        <span class="keyword">static</span> <span class="keyword">constexpr</span> std::size_t atomic_alignment = 64U; <span class="comment">// std::hardware_destructive_interference_size is not available on all compilers so hard code for now</span></div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span> </div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>        <a class="code hl_class" href="classsbk_1_1memory_1_1memory__resource.html">sbk::memory::memory_resource</a>* m_memoryResource{};</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span> </div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>        std::uint8_t* m_buffer{};</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>        std::size_t m_capacity{};</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>        std::size_t m_mask{};</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span> </div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span><span class="preprocessor">#pragma warning(disable : 4324)  </span><span class="comment">// Disable &quot;structure was padded due to alignment specifier&quot;</span></div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>        <span class="keyword">alignas</span> (atomic_alignment) atomic m_reserveWriteIndex{0};</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>        <span class="keyword">alignas</span> (atomic_alignment) atomic m_committedWriteIndex{0};</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>        <span class="keyword">alignas</span> (atomic_alignment) atomic m_readIndex{0};</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span><span class="preprocessor">#pragma warning(default : 4324)</span></div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>    };</div>
 </div>
-<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span> </div>
-<div class="foldopen" id="foldopen00210" data-start="{" data-end="};">
-<div class="line"><a id="l00210" name="l00210"></a><span class="lineno"><a class="line" href="classsbk_1_1command__queue.html">  210</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classsbk_1_1command__queue.html">command_queue</a> : <span class="keyword">public</span> <a class="code hl_class" href="classsbk_1_1executor.html">executor</a></div>
-<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>    {</div>
-<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>    <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>        <a class="code hl_class" href="classsbk_1_1command__queue.html">command_queue</a>(std::string name) : <a class="code hl_class" href="classsbk_1_1executor.html">executor</a>(name) {}</div>
-<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span> </div>
-<div class="foldopen" id="foldopen00215" data-start="{" data-end="}">
-<div class="line"><a id="l00215" name="l00215"></a><span class="lineno"><a class="line" href="classsbk_1_1command__queue.html#ab93642175293463a221660e9c267ff32">  215</a></span>        <span class="keyword">auto</span> <a class="code hl_function" href="classsbk_1_1command__queue.html#ab93642175293463a221660e9c267ff32">enqueue</a>(<a class="code hl_class" href="classsbk_1_1work__item.html">work_item</a> item) -&gt; <a class="code hl_typedef" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result&lt;&gt;</a> <span class="keyword">override</span></div>
-<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>        {</div>
-<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>            ZoneScopedN(<span class="stringliteral">&quot;command_queue enqueue&quot;</span>);</div>
-<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>            <span class="keyword">const</span> std::lock_guard lock(m_mutex);</div>
-<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>            LockMark(m_mutex);</div>
-<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>            <a class="code hl_define" href="result_8h.html#a7e4bd26979df494c87e16f2492fac1b4">SBK_CHECK_MSG</a>(m_stopped == <span class="keyword">false</span>, SBK_ERR_BAKERY, <span class="stringliteral">&quot;Cannot enqueue command. Command queue shut down&quot;</span>);</div>
-<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>            m_staging.push_back(std::move(item));</div>
-<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>            <span class="keywordflow">return</span> <a class="code hl_function" href="error_8h.html#ae4829ae601d7136d4d51f4bbad4e8d7b">sbk::ok</a>();</div>
-<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>        }</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span> </div>
+<div class="foldopen" id="foldopen00211" data-start="{" data-end="};">
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno"><a class="line" href="classsbk_1_1command__queue.html">  211</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classsbk_1_1command__queue.html">command_queue</a> : <span class="keyword">public</span> <a class="code hl_class" href="classsbk_1_1executor.html">executor</a></div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>    {</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>    <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>        <a class="code hl_class" href="classsbk_1_1command__queue.html">command_queue</a>(std::string name) : <a class="code hl_class" href="classsbk_1_1executor.html">executor</a>(name) {}</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span> </div>
+<div class="foldopen" id="foldopen00216" data-start="{" data-end="}">
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno"><a class="line" href="classsbk_1_1command__queue.html#ab93642175293463a221660e9c267ff32">  216</a></span>        <span class="keyword">auto</span> <a class="code hl_function" href="classsbk_1_1command__queue.html#ab93642175293463a221660e9c267ff32">enqueue</a>(<a class="code hl_class" href="classsbk_1_1work__item.html">work_item</a> item) -&gt; <a class="code hl_typedef" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result&lt;&gt;</a> <span class="keyword">override</span></div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>        {</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>            ZoneScopedN(<span class="stringliteral">&quot;command_queue enqueue&quot;</span>);</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>            <span class="keyword">const</span> std::lock_guard lock(m_mutex);</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>            LockMark(m_mutex);</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>            <a class="code hl_define" href="result_8h.html#a7e4bd26979df494c87e16f2492fac1b4">SBK_CHECK_MSG</a>(m_stopped == <span class="keyword">false</span>, SBK_ERR_BAKERY, <span class="stringliteral">&quot;Cannot enqueue command. Command queue shut down&quot;</span>);</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>            m_staging.push_back(std::move(item));</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>            <span class="keywordflow">return</span> <a class="code hl_function" href="error_8h.html#ae4829ae601d7136d4d51f4bbad4e8d7b">sbk::ok</a>();</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>        }</div>
 </div>
-<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span> </div>
-<div class="foldopen" id="foldopen00229" data-start="{" data-end="}">
-<div class="line"><a id="l00229" name="l00229"></a><span class="lineno"><a class="line" href="classsbk_1_1command__queue.html#a5916f2a33b3ebcd41df4d6f752317532">  229</a></span>        <span class="keyword">auto</span> <a class="code hl_function" href="classsbk_1_1command__queue.html#a5916f2a33b3ebcd41df4d6f752317532">flush</a>() -&gt; <a class="code hl_typedef" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result&lt;&gt;</a> <span class="keyword">override</span></div>
-<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>        {</div>
-<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>            ZoneScopedN(<span class="stringliteral">&quot;command_queue flush&quot;</span>);</div>
-<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span> </div>
-<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>            eastl::vector&lt;work_item&gt; batch;</div>
-<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>            {</div>
-<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>                <span class="keyword">const</span> std::lock_guard lock(m_mutex);</div>
-<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>                LockMark(m_mutex);</div>
-<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>                m_staging.swap(batch);</div>
-<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>            }</div>
-<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span> </div>
-<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>            <span class="keywordflow">if</span> (batch.empty())</div>
-<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>            {</div>
-<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>                <span class="keywordflow">return</span> <a class="code hl_function" href="error_8h.html#ae4829ae601d7136d4d51f4bbad4e8d7b">sbk::ok</a>();</div>
-<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>            }</div>
-<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span> </div>
-<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>            <span class="keywordflow">return</span> m_target-&gt;<a class="code hl_function" href="classsbk_1_1executor.html#a5b1715cf800d8dcc2f5b6199d36f9137">enqueue</a>(<a class="code hl_class" href="classsbk_1_1work__item.html">work_item</a>{</div>
-<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>                [commands = std::move(batch)]() <span class="keyword">mutable</span></div>
-<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>                {</div>
-<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>                    <span class="keyword">const</span> <a class="code hl_class" href="classsbk_1_1core_1_1scoped__thread__domain.html">sbk::core::scoped_thread_domain</a> studioDomain(sbk::core::thread_domain::studio);</div>
-<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>                    ZoneScopedN(<span class="stringliteral">&quot;command_queue execute all commands&quot;</span>);</div>
-<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>                    <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; command : commands)</div>
-<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>                    {</div>
-<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>                        ZoneScopedN(<span class="stringliteral">&quot;command_queue execute command&quot;</span>);</div>
-<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>                        command();</div>
-<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>                    }</div>
-<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>                }});</div>
-<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>        }</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span> </div>
+<div class="foldopen" id="foldopen00230" data-start="{" data-end="}">
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno"><a class="line" href="classsbk_1_1command__queue.html#a5916f2a33b3ebcd41df4d6f752317532">  230</a></span>        <span class="keyword">auto</span> <a class="code hl_function" href="classsbk_1_1command__queue.html#a5916f2a33b3ebcd41df4d6f752317532">flush</a>() -&gt; <a class="code hl_typedef" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result&lt;&gt;</a> <span class="keyword">override</span></div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>        {</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>            ZoneScopedN(<span class="stringliteral">&quot;command_queue flush&quot;</span>);</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span> </div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>            eastl::vector&lt;work_item&gt; batch;</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>            {</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>                <span class="keyword">const</span> std::lock_guard lock(m_mutex);</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>                LockMark(m_mutex);</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>                m_staging.swap(batch);</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>            }</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span> </div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>            <span class="keywordflow">if</span> (batch.empty())</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>            {</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>                <span class="keywordflow">return</span> <a class="code hl_function" href="error_8h.html#ae4829ae601d7136d4d51f4bbad4e8d7b">sbk::ok</a>();</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>            }</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span> </div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>            <span class="keywordflow">return</span> m_target-&gt;<a class="code hl_function" href="classsbk_1_1executor.html#a5b1715cf800d8dcc2f5b6199d36f9137">enqueue</a>(<a class="code hl_class" href="classsbk_1_1work__item.html">work_item</a>{</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>                [commands = std::move(batch)]() <span class="keyword">mutable</span></div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>                {</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>                    <span class="keyword">const</span> <a class="code hl_class" href="classsbk_1_1core_1_1scoped__thread__domain.html">sbk::core::scoped_thread_domain</a> studioDomain(sbk::core::thread_domain::studio);</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>                    ZoneScopedN(<span class="stringliteral">&quot;command_queue execute all commands&quot;</span>);</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>                    <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; command : commands)</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>                    {</div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>                        ZoneScopedN(<span class="stringliteral">&quot;command_queue execute command&quot;</span>);</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>                        command();</div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>                    }</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>                }});</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>        }</div>
 </div>
-<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span> </div>
-<div class="foldopen" id="foldopen00261" data-start="{" data-end="}">
-<div class="line"><a id="l00261" name="l00261"></a><span class="lineno"><a class="line" href="classsbk_1_1command__queue.html#a711a635f13a7bfa0e7650b51cf0860c9">  261</a></span>        <span class="keyword">auto</span> <a class="code hl_function" href="classsbk_1_1command__queue.html#a711a635f13a7bfa0e7650b51cf0860c9">abandon</a>() -&gt; <span class="keywordtype">void</span> <span class="keyword">override</span></div>
-<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>        {</div>
-<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>            ZoneScopedN(<span class="stringliteral">&quot;command_queue abandon&quot;</span>);</div>
-<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>            <span class="keyword">const</span> std::lock_guard lock(m_mutex);</div>
-<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>            LockMark(m_mutex);</div>
-<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>            m_stopped = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>            eastl::vector&lt;work_item&gt; dropped;</div>
-<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>            m_staging.swap(dropped);</div>
-<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>        }</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span> </div>
+<div class="foldopen" id="foldopen00262" data-start="{" data-end="}">
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno"><a class="line" href="classsbk_1_1command__queue.html#a711a635f13a7bfa0e7650b51cf0860c9">  262</a></span>        <span class="keyword">auto</span> <a class="code hl_function" href="classsbk_1_1command__queue.html#a711a635f13a7bfa0e7650b51cf0860c9">abandon</a>() -&gt; <span class="keywordtype">void</span> <span class="keyword">override</span></div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>        {</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>            ZoneScopedN(<span class="stringliteral">&quot;command_queue abandon&quot;</span>);</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>            <span class="keyword">const</span> std::lock_guard lock(m_mutex);</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>            LockMark(m_mutex);</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>            m_stopped = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>            eastl::vector&lt;work_item&gt; dropped;</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>            m_staging.swap(dropped);</div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>        }</div>
 </div>
-<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span> </div>
-<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>    <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>        <a class="code hl_class" href="classsbk_1_1executor.html">executor</a>* m_target{};</div>
-<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>        TracyLockableN(std::mutex, m_mutex, <span class="stringliteral">&quot;command_queue mutex&quot;</span>);</div>
-<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>        eastl::vector&lt;work_item&gt; m_staging;</div>
-<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>        <span class="keywordtype">bool</span> m_stopped = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>        <span class="keyword">friend</span> class ::sbk::engine::system;</div>
-<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>    };</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span> </div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>    <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>        <a class="code hl_class" href="classsbk_1_1executor.html">executor</a>* m_target{};</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>        TracyLockableN(std::mutex, m_mutex, <span class="stringliteral">&quot;command_queue mutex&quot;</span>);</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>        eastl::vector&lt;work_item&gt; m_staging;</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>        <span class="keywordtype">bool</span> m_stopped = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>        <span class="keyword">friend</span> class ::sbk::engine::system;</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>    };</div>
 </div>
-<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>}  <span class="comment">// namespace sbk</span></div>
-<div class="ttc" id="aclasssbk_1_1command__queue_html"><div class="ttname"><a href="classsbk_1_1command__queue.html">sbk::command_queue</a></div><div class="ttdoc">Queues tasks until it is &quot;flushed&quot; onto another executor.</div><div class="ttdef"><b>Definition</b> command_queue.h:211</div></div>
-<div class="ttc" id="aclasssbk_1_1command__queue_html_a5916f2a33b3ebcd41df4d6f752317532"><div class="ttname"><a href="classsbk_1_1command__queue.html#a5916f2a33b3ebcd41df4d6f752317532">sbk::command_queue::flush</a></div><div class="ttdeci">auto flush() -&gt; sbk::result&lt;&gt; override</div><div class="ttdoc">Flush all tasks to the target executor.</div><div class="ttdef"><b>Definition</b> command_queue.h:229</div></div>
-<div class="ttc" id="aclasssbk_1_1command__queue_html_a711a635f13a7bfa0e7650b51cf0860c9"><div class="ttname"><a href="classsbk_1_1command__queue.html#a711a635f13a7bfa0e7650b51cf0860c9">sbk::command_queue::abandon</a></div><div class="ttdeci">auto abandon() -&gt; void override</div><div class="ttdoc">Drop all staged commands and refuse further work. Does not flush.</div><div class="ttdef"><b>Definition</b> command_queue.h:261</div></div>
-<div class="ttc" id="aclasssbk_1_1command__queue_html_ab93642175293463a221660e9c267ff32"><div class="ttname"><a href="classsbk_1_1command__queue.html#ab93642175293463a221660e9c267ff32">sbk::command_queue::enqueue</a></div><div class="ttdeci">auto enqueue(work_item item) -&gt; sbk::result&lt;&gt; override</div><div class="ttdoc">Take ownership of a work item and arrange for it to run. The one operation a concrete executor MUST p...</div><div class="ttdef"><b>Definition</b> command_queue.h:215</div></div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>}  <span class="comment">// namespace sbk</span></div>
+<div class="ttc" id="aclasssbk_1_1command__queue_html"><div class="ttname"><a href="classsbk_1_1command__queue.html">sbk::command_queue</a></div><div class="ttdoc">Queues tasks until it is &quot;flushed&quot; onto another executor.</div><div class="ttdef"><b>Definition</b> command_queue.h:212</div></div>
+<div class="ttc" id="aclasssbk_1_1command__queue_html_a5916f2a33b3ebcd41df4d6f752317532"><div class="ttname"><a href="classsbk_1_1command__queue.html#a5916f2a33b3ebcd41df4d6f752317532">sbk::command_queue::flush</a></div><div class="ttdeci">auto flush() -&gt; sbk::result&lt;&gt; override</div><div class="ttdoc">Flush all tasks to the target executor.</div><div class="ttdef"><b>Definition</b> command_queue.h:230</div></div>
+<div class="ttc" id="aclasssbk_1_1command__queue_html_a711a635f13a7bfa0e7650b51cf0860c9"><div class="ttname"><a href="classsbk_1_1command__queue.html#a711a635f13a7bfa0e7650b51cf0860c9">sbk::command_queue::abandon</a></div><div class="ttdeci">auto abandon() -&gt; void override</div><div class="ttdoc">Drop all staged commands and refuse further work. Does not flush.</div><div class="ttdef"><b>Definition</b> command_queue.h:262</div></div>
+<div class="ttc" id="aclasssbk_1_1command__queue_html_ab93642175293463a221660e9c267ff32"><div class="ttname"><a href="classsbk_1_1command__queue.html#ab93642175293463a221660e9c267ff32">sbk::command_queue::enqueue</a></div><div class="ttdeci">auto enqueue(work_item item) -&gt; sbk::result&lt;&gt; override</div><div class="ttdoc">Take ownership of a work item and arrange for it to run. The one operation a concrete executor MUST p...</div><div class="ttdef"><b>Definition</b> command_queue.h:216</div></div>
 <div class="ttc" id="aclasssbk_1_1core_1_1scoped__thread__domain_html"><div class="ttname"><a href="classsbk_1_1core_1_1scoped__thread__domain.html">sbk::core::scoped_thread_domain</a></div><div class="ttdoc">RAII marker: code inside this scope belongs to domain.</div><div class="ttdef"><b>Definition</b> thread_domain.h:62</div></div>
 <div class="ttc" id="aclasssbk_1_1executor_html"><div class="ttname"><a href="classsbk_1_1executor.html">sbk::executor</a></div><div class="ttdoc">Abstract executor.</div><div class="ttdef"><b>Definition</b> executor.h:28</div></div>
 <div class="ttc" id="aclasssbk_1_1executor_html_a5b1715cf800d8dcc2f5b6199d36f9137"><div class="ttname"><a href="classsbk_1_1executor.html#a5b1715cf800d8dcc2f5b6199d36f9137">sbk::executor::enqueue</a></div><div class="ttdeci">virtual auto enqueue(work_item item) -&gt; sbk::result&lt;&gt;=0</div><div class="ttdoc">Take ownership of a work item and arrange for it to run. The one operation a concrete executor MUST p...</div></div>
 <div class="ttc" id="aclasssbk_1_1memory_1_1memory__resource_html"><div class="ttname"><a href="classsbk_1_1memory_1_1memory__resource.html">sbk::memory::memory_resource</a></div><div class="ttdoc">Virtual, noexcept memory-source interface.</div><div class="ttdef"><b>Definition</b> allocator.h:66</div></div>
 <div class="ttc" id="aclasssbk_1_1mpsc__ring__buffer_html"><div class="ttname"><a href="classsbk_1_1mpsc__ring__buffer.html">sbk::mpsc_ring_buffer</a></div><div class="ttdoc">A multi-producer, single-consumer ring buffer that operates on bytes.</div><div class="ttdef"><b>Definition</b> command_queue.h:35</div></div>
 <div class="ttc" id="aclasssbk_1_1mpsc__ring__buffer_html_a0e06c722025f3a7c20568ccb575851f2"><div class="ttname"><a href="classsbk_1_1mpsc__ring__buffer.html#a0e06c722025f3a7c20568ccb575851f2">sbk::mpsc_ring_buffer::init</a></div><div class="ttdeci">auto init(std::size_t size, sbk::memory::memory_resource &amp;allocator) noexcept -&gt; sbk::result&lt;&gt;</div><div class="ttdoc">Initialize the buffer and indexes.</div><div class="ttdef"><b>Definition</b> command_queue.h:91</div></div>
-<div class="ttc" id="aclasssbk_1_1mpsc__ring__buffer_html_a84d7d0ae823148ce2e3c6a0541a8153f"><div class="ttname"><a href="classsbk_1_1mpsc__ring__buffer.html#a84d7d0ae823148ce2e3c6a0541a8153f">sbk::mpsc_ring_buffer::write</a></div><div class="ttdeci">auto write(void *message, std::size_t messageSize) noexcept -&gt; sbk_status</div><div class="ttdoc">Write @r message into the buffer.</div><div class="ttdef"><b>Definition</b> command_queue.h:116</div></div>
-<div class="ttc" id="aclasssbk_1_1mpsc__ring__buffer_html_ae97f4e49cd18ad49688e8fea7db8fe70"><div class="ttname"><a href="classsbk_1_1mpsc__ring__buffer.html#ae97f4e49cd18ad49688e8fea7db8fe70">sbk::mpsc_ring_buffer::read</a></div><div class="ttdeci">auto read(void *outBuffer, std::size_t readBytes) noexcept -&gt; sbk_status</div><div class="ttdef"><b>Definition</b> command_queue.h:156</div></div>
+<div class="ttc" id="aclasssbk_1_1mpsc__ring__buffer_html_a84d7d0ae823148ce2e3c6a0541a8153f"><div class="ttname"><a href="classsbk_1_1mpsc__ring__buffer.html#a84d7d0ae823148ce2e3c6a0541a8153f">sbk::mpsc_ring_buffer::write</a></div><div class="ttdeci">auto write(void *message, std::size_t messageSize) noexcept -&gt; sbk_status</div><div class="ttdoc">Write @r message into the buffer.</div><div class="ttdef"><b>Definition</b> command_queue.h:117</div></div>
+<div class="ttc" id="aclasssbk_1_1mpsc__ring__buffer_html_ae97f4e49cd18ad49688e8fea7db8fe70"><div class="ttname"><a href="classsbk_1_1mpsc__ring__buffer.html#ae97f4e49cd18ad49688e8fea7db8fe70">sbk::mpsc_ring_buffer::read</a></div><div class="ttdeci">auto read(void *outBuffer, std::size_t readBytes) noexcept -&gt; sbk_status</div><div class="ttdef"><b>Definition</b> command_queue.h:157</div></div>
 <div class="ttc" id="aclasssbk_1_1work__item_html"><div class="ttname"><a href="classsbk_1_1work__item.html">sbk::work_item</a></div><div class="ttdoc">A move-only unit of work queued on an @r executor.</div><div class="ttdef"><b>Definition</b> work_item.h:29</div></div>
 <div class="ttc" id="aerror_8h_html_a390f3d2c4f8f4a52fc2076794fd8e7c7"><div class="ttname"><a href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a></div><div class="ttdeci">tl::expected&lt; T, error &gt; result</div><div class="ttdoc">The result of a fallible operation: a value of type T, or an sbk::error.</div><div class="ttdef"><b>Definition</b> error.h:80</div></div>
 <div class="ttc" id="aerror_8h_html_ae4829ae601d7136d4d51f4bbad4e8d7b"><div class="ttname"><a href="error_8h.html#ae4829ae601d7136d4d51f4bbad4e8d7b">sbk::ok</a></div><div class="ttdeci">auto ok() -&gt; result&lt; void &gt;</div><div class="ttdoc">Success value for a result&lt;void&gt; function.</div><div class="ttdef"><b>Definition</b> error.h:85</div></div>
