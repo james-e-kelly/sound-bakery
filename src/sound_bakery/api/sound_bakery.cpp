@@ -180,6 +180,8 @@ namespace
         sbk::core::serialization::binary_serializer binarySerializer;
         const sbk::result<sbk_id> soundbankID = binarySerializer.load_object<sbk::core::serialization::serialized_soundbank>(system->get_current_object_owner(), soundbankFilePath);
         SBK_CO_CHECK_MSG(soundbankID.has_value(), SBK_ERR_BAKERY_SERIALIZATION, "failed to load soundbank '{}'", soundbankFilePath);
+
+        co_return sbk::ok();
     }
 
     auto stop_all(sbk::engine::system* system, sbk_id gameObjectID) -> sbk::detached_task
@@ -195,6 +197,8 @@ namespace
         SBK_CO_CHECK(sharedGameObject, SBK_ERR_BAKERY_OBJECT_NOT_FOUND);
 
         sharedGameObject->remove_all();
+
+        co_return sbk::ok();
     }
 }  // namespace
 
