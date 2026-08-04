@@ -76,9 +76,9 @@ namespace sbk::memory
             return sbk::memory::malloc(bytes, alignment, m_category);
         }
 
-        auto do_deallocate(void* pointer, std::size_t /*size*/, std::size_t /*alignment*/) noexcept -> void override
+        auto do_deallocate(void* deallocatePtr, std::size_t /*size*/, std::size_t /*alignment*/) noexcept -> void override
         {
-            sbk::memory::free(pointer, m_category);
+            sbk::memory::free(deallocatePtr, m_category);
         }
 
     private:
@@ -151,7 +151,7 @@ namespace sbk::memory
             const auto used = static_cast<std::size_t>(aligned - m_buffer);
             const bool overCapacity = used > m_capacity;
             const std::ptrdiff_t freeSpace = m_capacity - used;
-            const bool noRoom              = bytes > freeSpace;
+            const bool noRoom              = bytes > static_cast<std::size_t>(freeSpace);
 
             if (overCapacity || noRoom)
             {

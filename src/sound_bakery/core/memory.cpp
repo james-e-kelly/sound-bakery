@@ -97,9 +97,9 @@ auto sbk::memory::malloc(std::size_t size, std::size_t alignment, sbk::memory::o
     // rpaligned_alloc short-circuits to the standard rpmalloc path when alignment <= 16, so
     // small-alignment callers pay no measurable cost. Anything more (SIMD, cache-line padded)
     // gets honoured for free rather than silently misaligned.
-    void* pointer = rpaligned_alloc(alignment, size);
+    void* allocatedPtr = rpaligned_alloc(alignment, size);
 
-    if (pointer == nullptr)
+    if (allocatedPtr == nullptr)
     {
         // Central allocation choke point: rpmalloc returns null (it does not throw) on failure.
         // Log here; callers propagate the null (e.g. object creation returns an empty shared_ptr).
@@ -107,20 +107,20 @@ auto sbk::memory::malloc(std::size_t size, std::size_t alignment, sbk::memory::o
         return nullptr;
     }
 
-    TracyAllocN(pointer, size, sbk::util::type_helper::get_object_category_name(category).data());
+    TracyAllocN(allocatedPtr, size, sbk::util::type_helper::get_object_category_name(category).data());
     s_totalMemory += size;
-    return pointer;
+    return allocatedPtr;
 }
 
-auto sbk::memory::realloc(void* pointer, std::size_t size) -> void*
+auto sbk::memory::realloc(void* reallocPtr, std::size_t size) -> void*
 {
-    return rprealloc(pointer, size);
+    return rprealloc(reallocPtr, size);
 }
 
-auto sbk::memory::free(void* pointer, sbk::memory::object_category category) -> void
+auto sbk::memory::free(void* freePtr, sbk::memory::object_category category) -> void
 {
-    TracyFreeN(pointer, sbk::util::type_helper::get_object_category_name(category).data());
-    rpfree(pointer);
+    TracyFreeN(freePtr, sbk::util::type_helper::get_object_category_name(category).data());
+    rpfree(freePtr);
 }
 
 auto sbk::memory::thread_start(std::string_view threadName) -> void
