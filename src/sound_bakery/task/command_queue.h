@@ -135,8 +135,10 @@ namespace sbk
                 {
                     std::memcpy(m_buffer + (reserveWrite & m_mask), message, messageSize);
 
-                    while (!m_committedWriteIndex.compare_exchange_weak(reserveWrite, reserveWrite + messageSize, std::memory_order_release, std::memory_order_relaxed))
+                    std::size_t expected = reserveWrite;
+                    while (!m_committedWriteIndex.compare_exchange_weak(expected, reserveWrite + messageSize, std::memory_order_release, std::memory_order_relaxed))
                     {
+                        expected = reserveWrite;
                         std::this_thread::yield();
                     }
                     return SBK_SUCCESS;
