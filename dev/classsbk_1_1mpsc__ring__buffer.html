@@ -178,10 +178,10 @@ auto&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a cla
 auto&#160;</td><td class="memItemRight" valign="bottom"><b>read_begin</b> (std::uint8_t **outBuffer, std::size_t *outReadIndex, std::size_t size, std::size_t *outActualSize) noexcept -&gt; sbk_status</td></tr>
 <tr class="memdesc:afddd7043e628613d5fe6b1c12d539992"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tries to read @r size bytes. If the size would go past the end of the buffer, it reads only the remaining size, and sets @r outActualSize to the number of bytes it read. <br /></td></tr>
 <tr class="separator:afddd7043e628613d5fe6b1c12d539992"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3d7eadac22bb87068bc2b0d99c9aa192" id="r_a3d7eadac22bb87068bc2b0d99c9aa192"><td class="memItemLeft" align="right" valign="top"><a id="a3d7eadac22bb87068bc2b0d99c9aa192" name="a3d7eadac22bb87068bc2b0d99c9aa192"></a>
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>read_end</b> (std::size_t readIndex, std::size_t size) noexcept -&gt; sbk_status</td></tr>
-<tr class="memdesc:a3d7eadac22bb87068bc2b0d99c9aa192"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stores the read index so producers can see how much space is in the buffer. <br /></td></tr>
-<tr class="separator:a3d7eadac22bb87068bc2b0d99c9aa192"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c61904e3c8561abbde7c2254bec0a1b" id="r_a4c61904e3c8561abbde7c2254bec0a1b"><td class="memItemLeft" align="right" valign="top"><a id="a4c61904e3c8561abbde7c2254bec0a1b" name="a4c61904e3c8561abbde7c2254bec0a1b"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>read_end</b> (std::size_t size) noexcept -&gt; sbk_status</td></tr>
+<tr class="memdesc:a4c61904e3c8561abbde7c2254bec0a1b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Increments the read pointer so producers can see the new capacity. <br /></td></tr>
+<tr class="separator:a4c61904e3c8561abbde7c2254bec0a1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7f2b90800a3dc3332f78cea1b07e12b6" id="r_a7f2b90800a3dc3332f78cea1b07e12b6"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsbk_1_1mpsc__ring__buffer.html#a7f2b90800a3dc3332f78cea1b07e12b6">read</a> (void *outBuffer, std::size_t size) noexcept -&gt; sbk_status</td></tr>
 <tr class="separator:a7f2b90800a3dc3332f78cea1b07e12b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0dd3523bbfc816722a99d0d703921f50" id="r_a0dd3523bbfc816722a99d0d703921f50"><td class="memItemLeft" align="right" valign="top"><a id="a0dd3523bbfc816722a99d0d703921f50" name="a0dd3523bbfc816722a99d0d703921f50"></a>

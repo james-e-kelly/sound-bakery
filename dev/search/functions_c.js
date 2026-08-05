@@ -2,7 +2,7 @@ var searchData=
 [
   ['read_0',['read',['../classsbk_1_1mpsc__ring__buffer.html#a7f2b90800a3dc3332f78cea1b07e12b6',1,'sbk::mpsc_ring_buffer']]],
   ['read_5fbegin_1',['read_begin',['../classsbk_1_1mpsc__ring__buffer.html#afddd7043e628613d5fe6b1c12d539992',1,'sbk::mpsc_ring_buffer']]],
-  ['read_5fend_2',['read_end',['../classsbk_1_1mpsc__ring__buffer.html#a3d7eadac22bb87068bc2b0d99c9aa192',1,'sbk::mpsc_ring_buffer']]],
+  ['read_5fend_2',['read_end',['../classsbk_1_1mpsc__ring__buffer.html#a4c61904e3c8561abbde7c2254bec0a1b',1,'sbk::mpsc_ring_buffer']]],
   ['remove_5fall_3',['remove_all',['../classsbk_1_1core_1_1object__owner.html#af74e8ef7867fe3352541dcc30e83c00c',1,'sbk::core::object_owner']]],
   ['remove_5fobject_4',['remove_object',['../classsbk_1_1core_1_1object__owner.html#a9ba5ec1f202674f8c5f0584b520e5b02',1,'sbk::core::object_owner']]],
   ['reserve_5fwrite_5',['reserve_write',['../classsbk_1_1mpsc__ring__buffer.html#a3e4f570211055c16244b309098f44f20',1,'sbk::mpsc_ring_buffer']]],

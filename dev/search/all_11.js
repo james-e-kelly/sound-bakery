@@ -12,5 +12,7 @@ var searchData=
   ['node_5finstance_9',['node_instance',['../classsbk_1_1engine_1_1node__instance.html',1,'sbk::engine']]],
   ['node_5finstance_5ffsm_10',['node_instance_fsm',['../structsbk_1_1engine_1_1node__instance__fsm.html',1,'sbk::engine']]],
   ['null_11',['null',['../classsbk_1_1core_1_1database__ptr.html#aa8b3f67ced3b2a8c948e50dab9b4092b',1,'sbk::core::database_ptr']]],
-  ['numtimesplayed_12',['numTimesPlayed',['../structsbk_1_1engine_1_1gather__children__context.html#af87660d1dbcdf2a40eefa5ff6840a674',1,'sbk::engine::gather_children_context']]]
+  ['numeric_5ftype_12',['numeric_type',['../structsbk_1_1numeric__type.html',1,'sbk']]],
+  ['numeric_5ftype_3c_20t_20_3e_13',['numeric_type&lt; T &gt;',['../structsbk_1_1numeric__type_3_01T_01_4.html',1,'sbk']]],
+  ['numtimesplayed_14',['numTimesPlayed',['../structsbk_1_1engine_1_1gather__children__context.html#af87660d1dbcdf2a40eefa5ff6840a674',1,'sbk::engine::gather_children_context']]]
 ];

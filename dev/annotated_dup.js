@@ -122,6 +122,8 @@ var annotated_dup =
       [ "manual_executor", "classsbk_1_1manual__executor.html", "classsbk_1_1manual__executor" ],
       [ "message_queue", "classsbk_1_1message__queue.html", "classsbk_1_1message__queue" ],
       [ "mpsc_ring_buffer", "classsbk_1_1mpsc__ring__buffer.html", "classsbk_1_1mpsc__ring__buffer" ],
+      [ "numeric_type", "structsbk_1_1numeric__type.html", null ],
+      [ "numeric_type< T >", "structsbk_1_1numeric__type_3_01T_01_4.html", null ],
       [ "promise_base", "classsbk_1_1promise__base.html", null ],
       [ "ready_result_awaiter", "structsbk_1_1ready__result__awaiter.html", null ],
       [ "task", "classsbk_1_1task.html", "classsbk_1_1task" ],

@@ -3,7 +3,7 @@ var searchData=
   ['random_5fcontainer_0',['random_container',['../classsbk_1_1engine_1_1random__container.html',1,'sbk::engine']]],
   ['read_1',['read',['../classsbk_1_1mpsc__ring__buffer.html#a7f2b90800a3dc3332f78cea1b07e12b6',1,'sbk::mpsc_ring_buffer']]],
   ['read_5fbegin_2',['read_begin',['../classsbk_1_1mpsc__ring__buffer.html#afddd7043e628613d5fe6b1c12d539992',1,'sbk::mpsc_ring_buffer']]],
-  ['read_5fend_3',['read_end',['../classsbk_1_1mpsc__ring__buffer.html#a3d7eadac22bb87068bc2b0d99c9aa192',1,'sbk::mpsc_ring_buffer']]],
+  ['read_5fend_3',['read_end',['../classsbk_1_1mpsc__ring__buffer.html#a4c61904e3c8561abbde7c2254bec0a1b',1,'sbk::mpsc_ring_buffer']]],
   ['ready_4',['ready',['../Roadmap.html#autotoc_md50',1,'0.2.0 – 0.9.0 — Game Jam Ready'],['../Roadmap.html#autotoc_md51',1,'1.0.0 — Indie ready'],['../Roadmap.html#autotoc_md52',1,'2.0.0 — AA ready']]],
   ['ready_5fresult_5fawaiter_5',['ready_result_awaiter',['../structsbk_1_1ready__result__awaiter.html',1,'sbk']]],
   ['registerpointerconversionsforbaseclasses_6',['RegisterPointerConversionsForBaseClasses',['../structsbk_1_1reflection_1_1RegisterPointerConversionsForBaseClasses.html',1,'sbk::reflection']]],

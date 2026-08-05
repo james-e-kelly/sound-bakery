@@ -151,124 +151,171 @@ $(document).ready(function(){initNavTree('message__queue_8h_source.html',''); in
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="keyword">namespace </span>sbk</div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span>{</div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="conceptsbk_1_1message__flag.html">   11</a></span>    <span class="keyword">concept </span><a class="code hl_concept" href="conceptsbk_1_1message__flag.html">message_flag</a> = std::is_integral_v&lt;T&gt;;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="conceptsbk_1_1message__type.html">   11</a></span>    <span class="keyword">concept </span><a class="code hl_concept" href="conceptsbk_1_1message__type.html">message_type</a> = std::is_integral_v&lt;T&gt; || std::is_enum_v&lt;T&gt;;</div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="conceptsbk_1_1pod.html">   14</a></span>    <span class="keyword">concept </span><a class="code hl_concept" href="conceptsbk_1_1pod.html">pod</a> = std::is_pod_v&lt;T&gt;;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="conceptsbk_1_1pod.html">   14</a></span>    <span class="keyword">concept </span><a class="code hl_concept" href="conceptsbk_1_1pod.html">pod</a> = std::is_trivial_v&lt;T&gt;;</div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keyword">template</span> &lt;message_flag message_flag_type = std::u<span class="keywordtype">int</span>32_t&gt;</div>
-<div class="foldopen" id="foldopen00024" data-start="{" data-end="};">
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="classsbk_1_1message__queue.html">   24</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classsbk_1_1message__queue.html">message_queue</a> final</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    {</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="classsbk_1_1message__queue.html#a492862da5ccac1ad50cc95aa2961db8b">   30</a></span>        <span class="keyword">static</span> <span class="keyword">constexpr</span> message_flag_type <a class="code hl_variable" href="classsbk_1_1message__queue.html#a492862da5ccac1ad50cc95aa2961db8b">s_skipFlag</a> = message_flag_type{} - 1;</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
-<div class="foldopen" id="foldopen00032" data-start="{" data-end="};">
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structsbk_1_1message__queue_1_1message__header.html">   32</a></span>        <span class="keyword">struct </span><a class="code hl_struct" href="structsbk_1_1message__queue_1_1message__header.html">message_header</a></div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        {</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>            message_flag_type m_type{};     <span class="comment">//&lt; The type of message, used by consumers to handle each message in a different way (HandlePostEvent / HandleSetRTPC etc)</span></div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>            std::size_t m_messageSize{};    <span class="comment">//&lt; Message size, including the header</span></div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        };</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="foldopen" id="foldopen00017" data-start="{" data-end="};">
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structsbk_1_1numeric__type.html">   17</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structsbk_1_1numeric__type.html">numeric_type</a> {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        <span class="keyword">using </span>type = T;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    };</div>
 </div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        [[nodiscard]] <span class="keyword">auto</span> init(std::size_t size, <a class="code hl_class" href="classsbk_1_1memory_1_1memory__resource.html">sbk::memory::memory_resource</a>&amp; allocator) <span class="keyword">noexcept</span> -&gt; <a class="code hl_typedef" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result&lt;&gt;</a></div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        {</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>            <a class="code hl_define" href="result_8h.html#a7e4bd26979df494c87e16f2492fac1b4">SBK_CHECK_MSG</a>(size &gt; (<span class="keyword">sizeof</span>(<a class="code hl_struct" href="structsbk_1_1message__queue_1_1message__header.html">message_header</a>) + <span class="keyword">sizeof</span>(std::byte)), SBK_ERR_INVALID_PARAMETER, <span class="stringliteral">&quot;The message queue needs to be big enough to hold a header and, at least, a small payload&quot;</span>);</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>            <span class="keywordflow">return</span> m_ringBuffer.<a class="code hl_function" href="classsbk_1_1mpsc__ring__buffer.html#a0e06c722025f3a7c20568ccb575851f2">init</a>(size, allocator);</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        }</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="keyword">template</span> &lt;pod T&gt;</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        [[nodiscard]] <span class="keyword">auto</span> write_message(<span class="keyword">const</span> T&amp; message) <span class="keyword">noexcept</span> -&gt; sbk_status</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        {</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>            <a class="code hl_define" href="result_8h.html#a4956774c47aa4c29c7ce9f4e0cf8659e">SBK_CHECK</a>(message != <span class="keyword">nullptr</span>, SBK_ERR_INVALID_PARAMETER);</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>            <a class="code hl_define" href="result_8h.html#a7e4bd26979df494c87e16f2492fac1b4">SBK_CHECK_MSG</a>(message-&gt;m_type != <a class="code hl_variable" href="classsbk_1_1message__queue.html#a492862da5ccac1ad50cc95aa2961db8b">s_skipFlag</a>, SBK_ERR_INVALID_PARAMETER, <span class="stringliteral">&quot;Users should not create messages with a flag equal to s_skipFlag. This should only be used by the message_queue to automically wrap around the end of the buffer&quot;</span>);</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>            std::uint8_t* messageBuffer{};</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            std::uint8_t* paddingBuffer{};</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>            std::size_t paddingSize{};</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>            std::size_t reserveIndex{};</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>            <span class="keyword">constexpr</span> std::size_t size = <span class="keyword">sizeof</span>(T);</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>            <span class="keywordflow">if</span> (m_ringBuffer.<a class="code hl_function" href="classsbk_1_1mpsc__ring__buffer.html#a3e4f570211055c16244b309098f44f20">reserve_write</a>(&amp;messageBuffer, size, &amp;reserveIndex, &amp;paddingBuffer, &amp;paddingSize) == SBK_SUCCESS)</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            {</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>                <span class="comment">// Add a skip message into end of the buffer. Write the actual message as normal</span></div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>                <span class="keywordflow">if</span> (paddingSize &gt; 0U)</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>                {</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>                    BOOST_ASSERT(paddingSize &gt;= <span class="keyword">sizeof</span>(message_header));</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>                    message_header skipHeader{.m_type = <a class="code hl_variable" href="classsbk_1_1message__queue.html#a492862da5ccac1ad50cc95aa2961db8b">s_skipFlag</a>, .m_messageSize = paddingSize};</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>                    std::memcpy(paddingBuffer, &amp;skipHeader, <span class="keyword">sizeof</span>(message_header));</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>                }</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keyword">requires</span> std::is_enum_v&lt;T&gt;</div>
+<div class="foldopen" id="foldopen00023" data-start="{" data-end="};">
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structsbk_1_1numeric__type_3_01T_01_4.html">   23</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structsbk_1_1numeric__type.html">numeric_type</a>&lt;T&gt; {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        <span class="keyword">using </span>type = std::underlying_type_t&lt;T&gt;;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    };</div>
+</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keyword">constexpr</span> <span class="keyword">auto</span> to_numeric(T value) <span class="keyword">noexcept</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    {</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_enum_v&lt;T&gt;)</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        {</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>            <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>std::underlying_type_t&lt;T&gt;<span class="keyword">&gt;</span>(value);</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        }</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>            <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>T<span class="keyword">&gt;</span>(value);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        }</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    }</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keyword">template</span> &lt;message_type T = std::u<span class="keywordtype">int</span>32_t&gt;</div>
+<div class="foldopen" id="foldopen00048" data-start="{" data-end="};">
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="classsbk_1_1message__queue.html">   48</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classsbk_1_1message__queue.html">message_queue</a> final</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    {</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keyword">using </span>numeric_message_type = <span class="keyword">typename</span> numeric_type&lt;T&gt;::type;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="keyword">using </span>message_size_type = std::uint8_t;   <span class="comment">//&lt; Keep it as small as possible</span></div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <span class="keyword">struct </span>message_header</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        {</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            numeric_message_type m_type{};      <span class="comment">//&lt; The type of message, used by consumers to handle each message in a different way (HandlePostEvent / HandleSetRTPC etc)</span></div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>            message_size_type m_payloadSize{};  <span class="comment">//&lt; Message size, including the header</span></div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        };</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="classsbk_1_1message__queue.html#afb7f6080ca6c9660f3a88eebc35a8e7c">   67</a></span>        <span class="keyword">static</span> <span class="keyword">constexpr</span> numeric_message_type <a class="code hl_variable" href="classsbk_1_1message__queue.html#afb7f6080ca6c9660f3a88eebc35a8e7c">s_skipFlag</a> = std::numeric_limits&lt;numeric_message_type&gt;::max();</div>
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>                std::memcpy(messageBuffer, &amp;message, size);</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>                <a class="code hl_define" href="result_8h.html#a7ebb4135568fb21c491bbd0b3be93215">SBK_STATUS_TRY_C</a>(m_ringBuffer.<a class="code hl_function" href="classsbk_1_1mpsc__ring__buffer.html#a46d4215ce066bc7e4c20b430579fe8e7">commit_write</a>(reserveIndex, size));</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>            }</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>            <span class="keywordflow">return</span> SBK_SUCCESS;</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        }</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        [[nodiscard]] <span class="keyword">auto</span> read_begin(message_header* header, std::size_t* outReadIndex) <span class="keyword">noexcept</span> -&gt; sbk_status</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        {</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>            <a class="code hl_define" href="result_8h.html#a4956774c47aa4c29c7ce9f4e0cf8659e">SBK_CHECK</a>(header != <span class="keyword">nullptr</span>, SBK_ERR_INVALID_PARAMETER);</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>            <a class="code hl_define" href="result_8h.html#a4956774c47aa4c29c7ce9f4e0cf8659e">SBK_CHECK</a>(outReadIndex != <span class="keyword">nullptr</span>, SBK_ERR_INVALID_PARAMETER);</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>            </div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>            std::uint8_t* messageBuffer{};</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>            std::size_t readIndex{};</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>            std::size_t bytesRead{};</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>            <span class="keyword">constexpr</span> std::size_t size = <span class="keyword">sizeof</span>(message_header);</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>            <a class="code hl_define" href="result_8h.html#a7ebb4135568fb21c491bbd0b3be93215">SBK_STATUS_TRY_C</a>(m_ringBuffer.<a class="code hl_function" href="classsbk_1_1mpsc__ring__buffer.html#afddd7043e628613d5fe6b1c12d539992">read_begin</a>(&amp;messageBuffer, &amp;readIndex, size, &amp;bytesRead));</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>            </div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>            <span class="comment">// If we reached the end of the buffer:</span></div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>            <span class="comment">// - Advance the read pointer by the skip message&#39;s size</span></div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>            <span class="comment">// - Read again to the user is given the actual message</span></div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>            <span class="keywordflow">if</span> (bytesRead &lt; size)</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>            {</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>                header = <span class="keyword">static_cast&lt;</span>message_header*<span class="keyword">&gt;</span>(messageBuffer);</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>                BOOST_ASSERT(header-&gt;m_type == <a class="code hl_variable" href="classsbk_1_1message__queue.html#a492862da5ccac1ad50cc95aa2961db8b">s_skipFlag</a>);</div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>                m_ringBuffer.<a class="code hl_function" href="classsbk_1_1mpsc__ring__buffer.html#a3d7eadac22bb87068bc2b0d99c9aa192">read_end</a>(readIndex, header-&gt;m_messageSize - size); </div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>                 </div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>                <span class="keywordflow">if</span> (m_ringBuffer.<a class="code hl_function" href="classsbk_1_1mpsc__ring__buffer.html#afddd7043e628613d5fe6b1c12d539992">read_begin</a>(&amp;messageBuffer, &amp;readIndex, size, &amp;bytesRead))</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>                {</div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>                    BOOST_ASSERT(bytesRead == size);</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>                }</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>            }</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>            header = <span class="keyword">static_cast&lt;</span>message_header*<span class="keyword">&gt;</span>(messageBuffer);</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>            *outReadIndex = readIndex;</div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>            <span class="keywordflow">return</span> SBK_SUCCESS;</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>        }</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        [[nodiscard]] <span class="keyword">auto</span> read_end(<span class="keyword">const</span> message_header* header, <span class="keyword">const</span> std::size_t readIndex) <span class="keyword">noexcept</span> -&gt; sbk_status</div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        {</div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>            <a class="code hl_define" href="result_8h.html#a4956774c47aa4c29c7ce9f4e0cf8659e">SBK_CHECK</a>(header != <span class="keyword">nullptr</span>, SBK_ERR_INVALID_PARAMETER);</div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>            <span class="keywordflow">return</span> m_ringBuffer.<a class="code hl_function" href="classsbk_1_1mpsc__ring__buffer.html#a3d7eadac22bb87068bc2b0d99c9aa192">read_end</a>(readIndex, header-&gt;m_messageSize - <span class="keyword">sizeof</span>(message_header));</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        }</div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span> </div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>        mpsc_ring_buffer m_ringBuffer;</div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    };</div>
+<div class="foldopen" id="foldopen00072" data-start="{" data-end="};">
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="structsbk_1_1message__queue_1_1message__view.html">   72</a></span>        <span class="keyword">struct </span><a class="code hl_struct" href="structsbk_1_1message__queue_1_1message__view.html">message_view</a></div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        {</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>            T m_type{};                         <span class="comment">//&lt; The type of message, used by consumers to handle each message in a different way (HandlePostEvent / HandleSetRTPC etc)</span></div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>            message_size_type m_payloadSize{};  <span class="comment">//&lt; Payload/message size</span></div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>            <span class="keyword">const</span> <span class="keywordtype">void</span>* payload{};              <span class="comment">//&lt; Pointer to the message payload. Can be null</span></div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        };</div>
 </div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>}</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        [[nodiscard]] <span class="keyword">auto</span> init(std::size_t size, <a class="code hl_class" href="classsbk_1_1memory_1_1memory__resource.html">sbk::memory::memory_resource</a>&amp; allocator) <span class="keyword">noexcept</span> -&gt; <a class="code hl_typedef" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result&lt;&gt;</a></div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        {</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>            <a class="code hl_define" href="result_8h.html#a7e4bd26979df494c87e16f2492fac1b4">SBK_CHECK_MSG</a>(size &gt;= get_header_size(), SBK_ERR_INVALID_PARAMETER, <span class="stringliteral">&quot;The message queue needs to be big enough to hold a header and, at least, a small payload&quot;</span>);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>            <span class="keywordflow">return</span> m_ringBuffer.<a class="code hl_function" href="classsbk_1_1mpsc__ring__buffer.html#a0e06c722025f3a7c20568ccb575851f2">init</a>(size, allocator);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        }</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        <span class="keyword">template</span> &lt;pod U&gt;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        [[nodiscard]] <span class="keyword">auto</span> write_message(T type, <span class="keyword">const</span> U&amp; message) <span class="keyword">noexcept</span> -&gt; sbk_status</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        {</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>            <a class="code hl_define" href="result_8h.html#ab4998c7e49990e0d3835f48759973b9a">SBK_STATUS_CHECK_MSG</a>(to_numeric(type) != <a class="code hl_variable" href="classsbk_1_1message__queue.html#afb7f6080ca6c9660f3a88eebc35a8e7c">s_skipFlag</a>, SBK_ERR_INVALID_PARAMETER, <span class="stringliteral">&quot;Users should not create messages with a flag equal to s_skipFlag. This should only be used by the message_queue to automically wrap around the end of the buffer&quot;</span>);</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>            std::uint8_t* messageBuffer{};</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>            std::uint8_t* paddingBuffer{};</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>            std::size_t paddingSize{};</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>            std::size_t reserveIndex{};</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>            message_header header{.m_type = to_numeric(type), .m_payloadSize = <span class="keyword">sizeof</span>(U)};</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>            <a class="code hl_define" href="result_8h.html#a7ebb4135568fb21c491bbd0b3be93215">SBK_STATUS_TRY_C</a>(m_ringBuffer.<a class="code hl_function" href="classsbk_1_1mpsc__ring__buffer.html#a3e4f570211055c16244b309098f44f20">reserve_write</a>(&amp;messageBuffer, <span class="keyword">sizeof</span>(message_header) + header.m_payloadSize, &amp;reserveIndex, &amp;paddingBuffer, &amp;paddingSize));</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>            <span class="comment">// If we were given padding, it means the buffer is split</span></div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>            <span class="comment">// Add a skip message into end of the buffer. Write the actual message as normal</span></div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>            <span class="keywordflow">if</span> (paddingSize &gt; 0U)</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>            {</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>                BOOST_ASSERT(paddingSize &gt;= <span class="keyword">sizeof</span>(message_header));</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>                BOOST_ASSERT(paddingSize &lt;= std::numeric_limits&lt;message_size_type&gt;::max());</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>                BOOST_ASSERT(paddingBuffer &gt; messageBuffer);</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>                message_header skipHeader{.m_type = <a class="code hl_variable" href="classsbk_1_1message__queue.html#afb7f6080ca6c9660f3a88eebc35a8e7c">s_skipFlag</a>, .m_payloadSize = <span class="keyword">static_cast&lt;</span>message_size_type<span class="keyword">&gt;</span>(paddingSize) - <span class="keyword">sizeof</span>(message_header)};</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>                std::memcpy(paddingBuffer, &amp;skipHeader, <span class="keyword">sizeof</span>(message_header));</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>            }</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>            std::memcpy(messageBuffer, &amp;header, <span class="keyword">sizeof</span>(message_header));</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>            std::memcpy(messageBuffer + <span class="keyword">sizeof</span>(message_header), &amp;message, header.m_payloadSize);</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>            <a class="code hl_define" href="result_8h.html#a7ebb4135568fb21c491bbd0b3be93215">SBK_STATUS_TRY_C</a>(m_ringBuffer.<a class="code hl_function" href="classsbk_1_1mpsc__ring__buffer.html#a46d4215ce066bc7e4c20b430579fe8e7">commit_write</a>(reserveIndex, <span class="keyword">sizeof</span>(message_header) + header.m_payloadSize + paddingSize));</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>            <span class="keywordflow">return</span> SBK_SUCCESS;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        }</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>        [[nodiscard]] <span class="keyword">auto</span> read_begin(message_view* outMessageView) <span class="keyword">noexcept</span> -&gt; sbk_status</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        {</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>            <a class="code hl_define" href="result_8h.html#a1ab9d77dab8b2f50d23067ef7af60c98">SBK_STATUS_CHECK</a>(outMessageView != <span class="keyword">nullptr</span>, SBK_ERR_INVALID_PARAMETER);</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>            std::uint8_t* messageBuffer{};</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>            std::size_t readIndex{};</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>            std::size_t bytesRead{};</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>            numeric_message_type messageType = <a class="code hl_variable" href="classsbk_1_1message__queue.html#afb7f6080ca6c9660f3a88eebc35a8e7c">s_skipFlag</a>;</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>            message_size_type payloadSize{};</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span> </div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>            <span class="keywordflow">do</span></div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>            {</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>                <span class="comment">// READ HEADER</span></div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span> </div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>                <a class="code hl_define" href="result_8h.html#a7ebb4135568fb21c491bbd0b3be93215">SBK_STATUS_TRY_C</a>(m_ringBuffer.<a class="code hl_function" href="classsbk_1_1mpsc__ring__buffer.html#afddd7043e628613d5fe6b1c12d539992">read_begin</a>(&amp;messageBuffer, &amp;readIndex, <span class="keyword">sizeof</span>(message_header), &amp;bytesRead));</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>                message_header* header = <span class="keyword">reinterpret_cast&lt;</span>message_header*<span class="keyword">&gt;</span>(messageBuffer);</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>                messageType            = header-&gt;m_type;</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>                payloadSize            = header-&gt;m_payloadSize;</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>                <a class="code hl_define" href="result_8h.html#a7ebb4135568fb21c491bbd0b3be93215">SBK_STATUS_TRY_C</a>(m_ringBuffer.<a class="code hl_function" href="classsbk_1_1mpsc__ring__buffer.html#a4c61904e3c8561abbde7c2254bec0a1b">read_end</a>(<span class="keyword">sizeof</span>(message_header)));</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span> </div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>                <span class="comment">// AUTO READ SKIP PAYLOAD</span></div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span> </div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>                <span class="keywordflow">if</span> (header-&gt;m_type == <a class="code hl_variable" href="classsbk_1_1message__queue.html#afb7f6080ca6c9660f3a88eebc35a8e7c">s_skipFlag</a>)</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>                {</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>                    <a class="code hl_define" href="result_8h.html#a7ebb4135568fb21c491bbd0b3be93215">SBK_STATUS_TRY_C</a>(m_ringBuffer.<a class="code hl_function" href="classsbk_1_1mpsc__ring__buffer.html#afddd7043e628613d5fe6b1c12d539992">read_begin</a>(&amp;messageBuffer, &amp;readIndex, payloadSize, &amp;bytesRead));</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>                    <a class="code hl_define" href="result_8h.html#a7ebb4135568fb21c491bbd0b3be93215">SBK_STATUS_TRY_C</a>(m_ringBuffer.<a class="code hl_function" href="classsbk_1_1mpsc__ring__buffer.html#a4c61904e3c8561abbde7c2254bec0a1b">read_end</a>(payloadSize));</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>                }</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span> </div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>            } <span class="keywordflow">while</span> (messageType == <a class="code hl_variable" href="classsbk_1_1message__queue.html#afb7f6080ca6c9660f3a88eebc35a8e7c">s_skipFlag</a>);</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span> </div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>            outMessageView-&gt;m_type        = <span class="keyword">static_cast&lt;</span>T<span class="keyword">&gt;</span>(messageType);</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>            outMessageView-&gt;m_payloadSize = payloadSize;</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>            outMessageView-&gt;payload       = messageBuffer + <span class="keyword">sizeof</span>(message_header);</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>            <span class="keywordflow">return</span> SBK_SUCCESS;</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>        }</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span> </div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>        [[nodiscard]] <span class="keyword">auto</span> read_end(<span class="keyword">const</span> message_view&amp; message) <span class="keyword">noexcept</span> -&gt; sbk_status</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>        {</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>            <span class="keywordflow">return</span> m_ringBuffer.<a class="code hl_function" href="classsbk_1_1mpsc__ring__buffer.html#a4c61904e3c8561abbde7c2254bec0a1b">read_end</a>(<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(message.m_payloadSize));</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>        }</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span> </div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>        [[nodiscard]] <span class="keyword">constexpr</span> <span class="keyword">auto</span> get_header_size() const noexcept -&gt; std::<span class="keywordtype">size_t</span></div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>        {</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>            <span class="keywordflow">return</span> <span class="keyword">sizeof</span>(message_header);</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>        }</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span> </div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>        mpsc_ring_buffer m_ringBuffer;</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    };</div>
+</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>}</div>
 <div class="ttc" id="aclasssbk_1_1memory_1_1memory__resource_html"><div class="ttname"><a href="classsbk_1_1memory_1_1memory__resource.html">sbk::memory::memory_resource</a></div><div class="ttdoc">Virtual, noexcept memory-source interface.</div><div class="ttdef"><b>Definition</b> allocator.h:66</div></div>
-<div class="ttc" id="aclasssbk_1_1message__queue_html"><div class="ttname"><a href="classsbk_1_1message__queue.html">sbk::message_queue</a></div><div class="ttdoc">Lock-free, multi-producer, single-consumer queue of arbitrary sized messages.</div><div class="ttdef"><b>Definition</b> message_queue.h:25</div></div>
-<div class="ttc" id="aclasssbk_1_1message__queue_html_a492862da5ccac1ad50cc95aa2961db8b"><div class="ttname"><a href="classsbk_1_1message__queue.html#a492862da5ccac1ad50cc95aa2961db8b">sbk::message_queue::s_skipFlag</a></div><div class="ttdeci">static constexpr message_flag_type s_skipFlag</div><div class="ttdoc">A special flag that tells the reader to just read the message size and move on because it was the end...</div><div class="ttdef"><b>Definition</b> message_queue.h:30</div></div>
+<div class="ttc" id="aclasssbk_1_1message__queue_html"><div class="ttname"><a href="classsbk_1_1message__queue.html">sbk::message_queue</a></div><div class="ttdoc">Lock-free, multi-producer, single-consumer queue of arbitrary sized messages.</div><div class="ttdef"><b>Definition</b> message_queue.h:49</div></div>
+<div class="ttc" id="aclasssbk_1_1message__queue_html_afb7f6080ca6c9660f3a88eebc35a8e7c"><div class="ttname"><a href="classsbk_1_1message__queue.html#afb7f6080ca6c9660f3a88eebc35a8e7c">sbk::message_queue::s_skipFlag</a></div><div class="ttdeci">static constexpr numeric_message_type s_skipFlag</div><div class="ttdoc">A special flag that tells the reader to just read the message size and move on because it was the end...</div><div class="ttdef"><b>Definition</b> message_queue.h:67</div></div>
 <div class="ttc" id="aclasssbk_1_1mpsc__ring__buffer_html_a0e06c722025f3a7c20568ccb575851f2"><div class="ttname"><a href="classsbk_1_1mpsc__ring__buffer.html#a0e06c722025f3a7c20568ccb575851f2">sbk::mpsc_ring_buffer::init</a></div><div class="ttdeci">auto init(std::size_t size, sbk::memory::memory_resource &amp;allocator) noexcept -&gt; sbk::result&lt;&gt;</div><div class="ttdoc">Initialize the buffer and indexes.</div><div class="ttdef"><b>Definition</b> ring_buffer.h:92</div></div>
-<div class="ttc" id="aclasssbk_1_1mpsc__ring__buffer_html_a3d7eadac22bb87068bc2b0d99c9aa192"><div class="ttname"><a href="classsbk_1_1mpsc__ring__buffer.html#a3d7eadac22bb87068bc2b0d99c9aa192">sbk::mpsc_ring_buffer::read_end</a></div><div class="ttdeci">auto read_end(std::size_t readIndex, std::size_t size) noexcept -&gt; sbk_status</div><div class="ttdoc">Stores the read index so producers can see how much space is in the buffer.</div><div class="ttdef"><b>Definition</b> ring_buffer.h:299</div></div>
 <div class="ttc" id="aclasssbk_1_1mpsc__ring__buffer_html_a3e4f570211055c16244b309098f44f20"><div class="ttname"><a href="classsbk_1_1mpsc__ring__buffer.html#a3e4f570211055c16244b309098f44f20">sbk::mpsc_ring_buffer::reserve_write</a></div><div class="ttdeci">auto reserve_write(std::uint8_t **outBuffer, std::size_t size, std::size_t *outReserveIndex, std::uint8_t **outPadding, std::size_t *outPaddingSize) noexcept -&gt; sbk_status</div><div class="ttdoc">Reserve a pointer to a contiguous region of the buffer for writing by the user.</div><div class="ttdef"><b>Definition</b> ring_buffer.h:121</div></div>
-<div class="ttc" id="aclasssbk_1_1mpsc__ring__buffer_html_a46d4215ce066bc7e4c20b430579fe8e7"><div class="ttname"><a href="classsbk_1_1mpsc__ring__buffer.html#a46d4215ce066bc7e4c20b430579fe8e7">sbk::mpsc_ring_buffer::commit_write</a></div><div class="ttdeci">auto commit_write(std::size_t reserveIndex, std::size_t size) noexcept -&gt; sbk_status</div><div class="ttdoc">Commits @r size so the reader can read the newly written values.</div><div class="ttdef"><b>Definition</b> ring_buffer.h:189</div></div>
-<div class="ttc" id="aclasssbk_1_1mpsc__ring__buffer_html_afddd7043e628613d5fe6b1c12d539992"><div class="ttname"><a href="classsbk_1_1mpsc__ring__buffer.html#afddd7043e628613d5fe6b1c12d539992">sbk::mpsc_ring_buffer::read_begin</a></div><div class="ttdeci">auto read_begin(std::uint8_t **outBuffer, std::size_t *outReadIndex, std::size_t size, std::size_t *outActualSize) noexcept -&gt; sbk_status</div><div class="ttdoc">Tries to read @r size bytes. If the size would go past the end of the buffer, it reads only the remai...</div><div class="ttdef"><b>Definition</b> ring_buffer.h:259</div></div>
-<div class="ttc" id="aconceptsbk_1_1message__flag_html"><div class="ttname"><a href="conceptsbk_1_1message__flag.html">sbk::message_flag</a></div><div class="ttdoc">The enum, or something else, that defines the message's type (PostEvent, SetRTPC).</div><div class="ttdef"><b>Definition</b> message_queue.h:11</div></div>
+<div class="ttc" id="aclasssbk_1_1mpsc__ring__buffer_html_a46d4215ce066bc7e4c20b430579fe8e7"><div class="ttname"><a href="classsbk_1_1mpsc__ring__buffer.html#a46d4215ce066bc7e4c20b430579fe8e7">sbk::mpsc_ring_buffer::commit_write</a></div><div class="ttdeci">auto commit_write(std::size_t reserveIndex, std::size_t size) noexcept -&gt; sbk_status</div><div class="ttdoc">Commits @r size so the reader can read the newly written values.</div><div class="ttdef"><b>Definition</b> ring_buffer.h:174</div></div>
+<div class="ttc" id="aclasssbk_1_1mpsc__ring__buffer_html_a4c61904e3c8561abbde7c2254bec0a1b"><div class="ttname"><a href="classsbk_1_1mpsc__ring__buffer.html#a4c61904e3c8561abbde7c2254bec0a1b">sbk::mpsc_ring_buffer::read_end</a></div><div class="ttdeci">auto read_end(std::size_t size) noexcept -&gt; sbk_status</div><div class="ttdoc">Increments the read pointer so producers can see the new capacity.</div><div class="ttdef"><b>Definition</b> ring_buffer.h:258</div></div>
+<div class="ttc" id="aclasssbk_1_1mpsc__ring__buffer_html_afddd7043e628613d5fe6b1c12d539992"><div class="ttname"><a href="classsbk_1_1mpsc__ring__buffer.html#afddd7043e628613d5fe6b1c12d539992">sbk::mpsc_ring_buffer::read_begin</a></div><div class="ttdeci">auto read_begin(std::uint8_t **outBuffer, std::size_t *outReadIndex, std::size_t size, std::size_t *outActualSize) noexcept -&gt; sbk_status</div><div class="ttdoc">Tries to read @r size bytes. If the size would go past the end of the buffer, it reads only the remai...</div><div class="ttdef"><b>Definition</b> ring_buffer.h:232</div></div>
+<div class="ttc" id="aconceptsbk_1_1message__type_html"><div class="ttname"><a href="conceptsbk_1_1message__type.html">sbk::message_type</a></div><div class="ttdoc">The enum, or something else, that defines the message's type (PostEvent, SetRTPC).</div><div class="ttdef"><b>Definition</b> message_queue.h:11</div></div>
 <div class="ttc" id="aconceptsbk_1_1pod_html"><div class="ttname"><a href="conceptsbk_1_1pod.html">sbk::pod</a></div><div class="ttdef"><b>Definition</b> message_queue.h:14</div></div>
 <div class="ttc" id="aerror_8h_html_a390f3d2c4f8f4a52fc2076794fd8e7c7"><div class="ttname"><a href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a></div><div class="ttdeci">tl::expected&lt; T, error &gt; result</div><div class="ttdoc">The result of a fallible operation: a value of type T, or an sbk::error.</div><div class="ttdef"><b>Definition</b> error.h:80</div></div>
-<div class="ttc" id="aresult_8h_html_a4956774c47aa4c29c7ce9f4e0cf8659e"><div class="ttname"><a href="result_8h.html#a4956774c47aa4c29c7ce9f4e0cf8659e">SBK_CHECK</a></div><div class="ttdeci">#define SBK_CHECK(cond, code)</div><div class="ttdoc">Guards cond; if false, logs and returns code as an error (message defaults to the condition).</div><div class="ttdef"><b>Definition</b> result.h:110</div></div>
+<div class="ttc" id="aresult_8h_html_a1ab9d77dab8b2f50d23067ef7af60c98"><div class="ttname"><a href="result_8h.html#a1ab9d77dab8b2f50d23067ef7af60c98">SBK_STATUS_CHECK</a></div><div class="ttdeci">#define SBK_STATUS_CHECK(cond, code)</div><div class="ttdoc">Guards cond; if false, logs and returns code (message defaults to the condition).</div><div class="ttdef"><b>Definition</b> result.h:145</div></div>
 <div class="ttc" id="aresult_8h_html_a7e4bd26979df494c87e16f2492fac1b4"><div class="ttname"><a href="result_8h.html#a7e4bd26979df494c87e16f2492fac1b4">SBK_CHECK_MSG</a></div><div class="ttdeci">#define SBK_CHECK_MSG(cond, code,...)</div><div class="ttdoc">Guards cond; if false, logs a fmt-formatted message and returns code as an error.</div><div class="ttdef"><b>Definition</b> result.h:124</div></div>
 <div class="ttc" id="aresult_8h_html_a7ebb4135568fb21c491bbd0b3be93215"><div class="ttname"><a href="result_8h.html#a7ebb4135568fb21c491bbd0b3be93215">SBK_STATUS_TRY_C</a></div><div class="ttdeci">#define SBK_STATUS_TRY_C(expr)</div><div class="ttdoc">Calls a C function returning sbk_status; on failure logs and returns the same code.</div><div class="ttdef"><b>Definition</b> result.h:171</div></div>
-<div class="ttc" id="astructsbk_1_1message__queue_1_1message__header_html"><div class="ttname"><a href="structsbk_1_1message__queue_1_1message__header.html">sbk::message_queue::message_header</a></div><div class="ttdef"><b>Definition</b> message_queue.h:33</div></div>
+<div class="ttc" id="aresult_8h_html_ab4998c7e49990e0d3835f48759973b9a"><div class="ttname"><a href="result_8h.html#ab4998c7e49990e0d3835f48759973b9a">SBK_STATUS_CHECK_MSG</a></div><div class="ttdeci">#define SBK_STATUS_CHECK_MSG(cond, code,...)</div><div class="ttdoc">Guards cond; if false, logs a fmt-formatted message and returns code.</div><div class="ttdef"><b>Definition</b> result.h:158</div></div>
+<div class="ttc" id="astructsbk_1_1message__queue_1_1message__view_html"><div class="ttname"><a href="structsbk_1_1message__queue_1_1message__view.html">sbk::message_queue::message_view</a></div><div class="ttdoc">Returned data from the buffer. Not the actual raw data inside the buffer.</div><div class="ttdef"><b>Definition</b> message_queue.h:73</div></div>
+<div class="ttc" id="astructsbk_1_1numeric__type_html"><div class="ttname"><a href="structsbk_1_1numeric__type.html">sbk::numeric_type</a></div><div class="ttdef"><b>Definition</b> message_queue.h:17</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

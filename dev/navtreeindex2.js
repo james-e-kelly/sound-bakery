@@ -1,5 +1,7 @@
 var NAVTREEINDEX2 =
 {
+"structsc__riffChunk.html":[12,0,39],
+"structsc__sound.html":[12,0,40],
 "structsc__system.html":[12,0,43],
 "structsc__system__config.html":[12,0,44],
 "structselection.html":[12,0,45],

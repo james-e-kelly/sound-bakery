@@ -1,10 +1,10 @@
 var searchData=
 [
   ['s_20guide_0',['s guide',['../ProgrammerGuide.html',1,'Programmer&apos;s Guide'],['../ChefProgrammerGuide.html',1,'Sound Chef Programmer&apos;s Guide']]],
-  ['s_5fskipflag_1',['s_skipFlag',['../classsbk_1_1message__queue.html#a492862da5ccac1ad50cc95aa2961db8b',1,'sbk::message_queue']]],
+  ['s_5fskipflag_1',['s_skipFlag',['../classsbk_1_1message__queue.html#afb7f6080ca6c9660f3a88eebc35a8e7c',1,'sbk::message_queue']]],
   ['sbk_3a_3acore_3a_3aarithmetic_2',['arithmetic',['../conceptsbk_1_1core_1_1arithmetic.html',1,'sbk::core']]],
   ['sbk_3a_3amemory_3a_3apointer_3',['pointer',['../conceptsbk_1_1memory_1_1pointer.html',1,'sbk::memory']]],
-  ['sbk_3a_3amessage_5fflag_4',['message_flag',['../conceptsbk_1_1message__flag.html',1,'sbk']]],
+  ['sbk_3a_3amessage_5ftype_4',['message_type',['../conceptsbk_1_1message__type.html',1,'sbk']]],
   ['sbk_3a_3apod_5',['pod',['../conceptsbk_1_1pod.html',1,'sbk']]],
   ['sbk_5fcheck_6',['SBK_CHECK',['../result_8h.html#a4956774c47aa4c29c7ce9f4e0cf8659e',1,'result.h']]],
   ['sbk_5fcheck_5fmsg_7',['SBK_CHECK_MSG',['../result_8h.html#a7e4bd26979df494c87e16f2492fac1b4',1,'result.h']]],

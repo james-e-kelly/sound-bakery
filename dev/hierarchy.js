@@ -102,8 +102,8 @@ var hierarchy =
       [ "sbk::memory::monotonic_buffer_resource", "classsbk_1_1memory_1_1monotonic__buffer__resource.html", null ],
       [ "sbk::memory::rpmalloc_resource", "classsbk_1_1memory_1_1rpmalloc__resource.html", null ]
     ] ],
-    [ "sbk::message_queue< message_flag_type >::message_header", "structsbk_1_1message__queue_1_1message__header.html", null ],
-    [ "sbk::message_queue< message_flag_type >", "classsbk_1_1message__queue.html", null ],
+    [ "sbk::message_queue< T >", "classsbk_1_1message__queue.html", null ],
+    [ "sbk::message_queue< T >::message_view", "structsbk_1_1message__queue_1_1message__view.html", null ],
     [ "method_drawer", "classmethod__drawer.html", null ],
     [ "sbk::mpsc_ring_buffer", "classsbk_1_1mpsc__ring__buffer.html", null ],
     [ "sbk::core::name", "classsbk_1_1core_1_1name.html", null ],
@@ -113,6 +113,8 @@ var hierarchy =
       [ "sbk::engine::runtime", "classsbk_1_1engine_1_1runtime.html", null ],
       [ "sbk::engine::system", "classsbk_1_1engine_1_1system.html", null ]
     ] ],
+    [ "sbk::numeric_type< T >", "structsbk_1_1numeric__type.html", null ],
+    [ "sbk::numeric_type< T >", "structsbk_1_1numeric__type_3_01T_01_4.html", null ],
     [ "sbk::memory::object_deleter", "structsbk_1_1memory_1_1object__deleter.html", null ],
     [ "sbk::core::object_owner", "classsbk_1_1core_1_1object__owner.html", [
       [ "sbk::core::object", "classsbk_1_1core_1_1object.html", null ],
