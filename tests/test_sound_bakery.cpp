@@ -1130,21 +1130,18 @@ TEST_SUITE("Message Queue")
                                 const start_message* startMessage = reinterpret_cast<const start_message*>(view.payload);
                                 REQUIRE(startMessage->a == 7);
                                 REQUIRE(startMessage->b == 9);
-                                std::cout << "Start" << std::endl;
                             }
                             break;
                             case message_type::update:
                             {
                                 const update_message* updateMessage = reinterpret_cast<const update_message*>(view.payload);
                                 REQUIRE(updateMessage->iter == updates++);
-                                std::cout << "Update " << updateMessage->iter << std::endl;
                             }
                             break;
                             case message_type::end:
                             {
                                 const end_message* endMessage = reinterpret_cast<const end_message*>(view.payload);
                                 end                     = true;
-                                std::cout << "End"  << std::endl;
                             }
                             break;
                         }
