@@ -171,7 +171,7 @@ var NAVTREEINDEX0 =
 "classsbk_1_1memory_1_1rpmalloc__resource.html":[12,0,2,3,5],
 "classsbk_1_1mpsc__ring__buffer.html":[12,0,2,13],
 "classsbk_1_1mpsc__ring__buffer.html#a0e06c722025f3a7c20568ccb575851f2":[12,0,2,13,0],
-"classsbk_1_1mpsc__ring__buffer.html#a84d7d0ae823148ce2e3c6a0541a8153f":[12,0,2,13,2],
+"classsbk_1_1mpsc__ring__buffer.html#ae053fbf82f09386e889286ef197e7290":[12,0,2,13,2],
 "classsbk_1_1mpsc__ring__buffer.html#ae97f4e49cd18ad49688e8fea7db8fe70":[12,0,2,13,1],
 "classsbk_1_1promise__base.html":[12,0,2,14],
 "classsbk_1_1task.html":[12,0,2,16],
