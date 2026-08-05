@@ -120,15 +120,8 @@ namespace sbk
          */
         [[nodiscard]] auto reserve_write(std::uint8_t** outBuffer, std::size_t size, std::size_t* outReserveIndex, std::uint8_t** outPadding, std::size_t* outPaddingSize) noexcept -> sbk_status
         {
-            if (outBuffer == nullptr || outPadding == nullptr || outReserveIndex == nullptr || outPaddingSize == nullptr || size == 0 || size > m_capacity)
-            {
-                return SBK_ERR_INVALID_PARAMETER;
-            }
-
-            if (m_buffer == nullptr || m_capacity == 0)
-            {
-                return SBK_ERR_UNITIALIZED;
-            }
+            SBK_STATUS_CHECK(outBuffer && outPadding && outReserveIndex && outPaddingSize && size != 0 && size <= m_capacity, SBK_ERR_INVALID_PARAMETER);
+            SBK_STATUS_CHECK(m_buffer && m_capacity > 0, SBK_ERR_UNITIALIZED);
 
             *outPadding     = nullptr;
             *outPaddingSize = 0U;
@@ -138,11 +131,7 @@ namespace sbk
                 const std::size_t read   = m_readIndex.load(std::memory_order_relaxed);
                 std::size_t reserveWrite = m_reserveWriteIndex.load(std::memory_order_relaxed);
 
-                if (is_buffer_full(reserveWrite, read))
-                {
-                    // The buffer is completely full. The reader needs to read more bytes
-                    return SBK_ERR_FULL;
-                }
+                SBK_STATUS_CHECK(!is_buffer_full(reserveWrite, read), SBK_ERR_FULL);
 
                 const std::size_t writeOffset = reserveWrite & m_mask;
                 const std::size_t firstBlockSize        = std::min(size, m_capacity - writeOffset);
@@ -150,13 +139,9 @@ namespace sbk
 
                 const bool needsWrapping = firstBlockSize < size;
 
-                const std::size_t reserveSize = size + needsWrapping ? spaceFromWriteTillEnd : 0U;
+                const std::size_t reserveSize = size + (needsWrapping ? spaceFromWriteTillEnd : 0U);
 
-                if (!can_reserve_bytes(reserveWrite, read, reserveSize))
-                {
-                    // There is space in the buffer but this message was too large
-                    return SBK_ERR_TOO_LARGE;
-                }
+                SBK_STATUS_CHECK(can_reserve_bytes(reserveWrite, read, size), SBK_ERR_TOO_LARGE);
 
                 if (m_reserveWriteIndex.compare_exchange_weak(reserveWrite, reserveWrite + reserveSize, std::memory_order_relaxed))
                 {
@@ -188,12 +173,14 @@ namespace sbk
          */
         [[nodiscard]] auto commit_write(std::size_t reserveIndex, std::size_t size) noexcept -> sbk_status
         {
+            SBK_STATUS_CHECK(m_buffer && m_capacity > 0, SBK_ERR_UNITIALIZED);
             std::size_t expected = reserveIndex;
             while (!m_committedWriteIndex.compare_exchange_weak(expected, reserveIndex + size, std::memory_order_release, std::memory_order_relaxed))
             {
                 expected = reserveIndex;
                 std::this_thread::yield();
             }
+            return SBK_SUCCESS;
         }
 
         /**
@@ -203,32 +190,18 @@ namespace sbk
          */
         [[nodiscard]] auto write(const void* message, std::size_t size) noexcept -> sbk_status
         {
-            if (message == nullptr || size == 0 || size > m_capacity)
-            {
-                return SBK_ERR_INVALID_PARAMETER;
-            }
-
-            if (m_buffer == nullptr || m_capacity == 0)
-            {
-                return SBK_ERR_UNITIALIZED;
-            }
+            SBK_STATUS_CHECK(message && size > 0 && size <= m_capacity, SBK_ERR_INVALID_PARAMETER);
+            SBK_STATUS_CHECK(m_buffer && m_capacity > 0, SBK_ERR_UNITIALIZED);
 
             while (true)
             {
                 const std::size_t read   = m_readIndex.load(std::memory_order_relaxed);
                 std::size_t reserveWrite = m_reserveWriteIndex.load(std::memory_order_relaxed);
 
-                if (is_buffer_full(reserveWrite, read))
-                {
-                    // The buffer is completely full. The reader needs to read more bytes
-                    return SBK_ERR_FULL;
-                }
+                BOOST_ASSERT(reserveWrite >= read);
 
-                if (!can_reserve_bytes(reserveWrite, read, size))
-                {
-                    // There is space in the buffer but this message was too large
-                    return SBK_ERR_TOO_LARGE;
-                }
+                SBK_STATUS_CHECK(!is_buffer_full(reserveWrite, read), SBK_ERR_FULL);
+                SBK_STATUS_CHECK(can_reserve_bytes(reserveWrite, read, size), SBK_ERR_TOO_LARGE);
 
                 if (m_reserveWriteIndex.compare_exchange_weak(reserveWrite, reserveWrite + size, std::memory_order_relaxed))
                 {
@@ -258,30 +231,16 @@ namespace sbk
          */
         [[nodiscard]] auto read_begin(std::uint8_t** outBuffer, std::size_t* outReadIndex, std::size_t size, std::size_t* outActualSize) noexcept -> sbk_status
         {
-            if (outBuffer == nullptr || outReadIndex == nullptr || outActualSize == nullptr || size == 0 || size > m_capacity)
-            {
-                return SBK_ERR_INVALID_PARAMETER;
-            }
-
-            if (m_buffer == nullptr || m_capacity == 0)
-            {
-                return SBK_ERR_UNITIALIZED;
-            }
+            SBK_STATUS_CHECK(outBuffer && outReadIndex && outActualSize && size > 0 && size <= m_capacity, SBK_ERR_INVALID_PARAMETER);
+            SBK_STATUS_CHECK(m_buffer && m_capacity > 0, SBK_ERR_UNITIALIZED);
 
             const std::size_t read           = m_readIndex.load(std::memory_order_relaxed);
             const std::size_t committedWrite = m_committedWriteIndex.load(std::memory_order_acquire);
 
-            if (is_buffer_empty(committedWrite, read))
-            {
-                // The reader is completely caught up to the writers. Producers need to write more data
-                return SBK_ERR_EMPTY;
-            }
+            BOOST_ASSERT(committedWrite >= read);
 
-            if (!can_read_bytes(committedWrite, read, size))
-            {
-                // There is data to be read, but this request was too large
-                return SBK_ERR_TOO_LARGE;
-            }
+            SBK_STATUS_CHECK(!is_buffer_empty(committedWrite, read), SBK_ERR_EMPTY);          // The reader is completely caught up to the writers. Producers need to write more data
+            SBK_STATUS_CHECK(can_read_bytes(committedWrite, read, size), SBK_ERR_TOO_LARGE);  // There is data to be read, but this request was too large
 
             const std::size_t readOffset     = read & m_mask;
             const std::size_t firstChunkSize = std::min(size, m_capacity - readOffset);
@@ -294,11 +253,12 @@ namespace sbk
         }
 
         /**
-         * @brief Stores the read index so producers can see how much space is in the buffer.
+         * @brief Increments the read pointer so producers can see the new capacity.
          */
-        [[nodiscard]] auto read_end(std::size_t readIndex, std::size_t size) noexcept -> sbk_status
+        [[nodiscard]] auto read_end(std::size_t size) noexcept -> sbk_status
         {
-            m_readIndex.store(readIndex + size, std::memory_order_relaxed);
+            SBK_STATUS_CHECK(m_buffer && m_capacity > 0, SBK_ERR_UNITIALIZED);
+            m_readIndex.fetch_add(size, std::memory_order_relaxed);
             return SBK_SUCCESS;
         }
 
@@ -309,30 +269,14 @@ namespace sbk
          */
         [[nodiscard]] auto read(void* outBuffer, std::size_t size) noexcept -> sbk_status
         {
-            if (size == 0 || outBuffer == nullptr || size > m_capacity)
-            {
-                return SBK_ERR_INVALID_PARAMETER;
-            }
-
-            if (m_buffer == nullptr || m_capacity == 0)
-            {
-                return SBK_ERR_UNITIALIZED;
-            }
+            SBK_STATUS_CHECK(size > 0 && outBuffer && size <= m_capacity, SBK_ERR_INVALID_PARAMETER);
+            SBK_STATUS_CHECK(m_buffer && m_capacity > 0, SBK_ERR_UNITIALIZED);
 
             const std::size_t read           = m_readIndex.load(std::memory_order_relaxed);
             const std::size_t committedWrite = m_committedWriteIndex.load(std::memory_order_acquire);
 
-            if (is_buffer_empty(committedWrite, read))
-            {
-                // The reader is completely caught up to the writers. Producers need to write more data
-                return SBK_ERR_EMPTY;
-            }
-
-            if (!can_read_bytes(committedWrite, read, size))
-            {
-                // There is data to be read, but this request was too large
-                return SBK_ERR_TOO_LARGE;
-            }
+            SBK_STATUS_CHECK(!is_buffer_empty(committedWrite, read), SBK_ERR_EMPTY);            // The reader is completely caught up to the writers. Producers need to write more data
+            SBK_STATUS_CHECK(can_read_bytes(committedWrite, read, size), SBK_ERR_TOO_LARGE);    // There is data to be read, but this request was too large
 
             const std::size_t readOffset     = read & m_mask;
             const std::size_t firstChunkSize = std::min(size, m_capacity - readOffset);
@@ -354,30 +298,14 @@ namespace sbk
          */
         [[nodiscard]] auto advance_read_index(std::size_t size) noexcept -> sbk_status
         {
-            if (size == 0 || size > m_capacity)
-            {
-                return SBK_ERR_INVALID_PARAMETER;
-            }
-
-            if (m_buffer == nullptr || m_capacity == 0)
-            {
-                return SBK_ERR_UNITIALIZED;
-            }
+            SBK_STATUS_CHECK(size > 0 && size <= m_capacity, SBK_ERR_INVALID_PARAMETER);
+            SBK_STATUS_CHECK(m_buffer && m_capacity > 0, SBK_ERR_UNITIALIZED);
 
             const std::size_t read           = m_readIndex.load(std::memory_order_relaxed);
             const std::size_t committedWrite = m_committedWriteIndex.load(std::memory_order_acquire);
 
-            if (is_buffer_empty(committedWrite, read))
-            {
-                // The reader is completely caught up to the writers. Producers need to write more data
-                return SBK_ERR_EMPTY;
-            }
-
-            if (!can_read_bytes(committedWrite, read, size))
-            {
-                // There is data to be read, but this request was too large
-                return SBK_ERR_TOO_LARGE;
-            }
+            SBK_STATUS_CHECK(!is_buffer_empty(committedWrite, read), SBK_ERR_EMPTY);            // The reader is completely caught up to the writers. Producers need to write more data
+            SBK_STATUS_CHECK(can_read_bytes(committedWrite, read, size), SBK_ERR_TOO_LARGE);    // There is data to be read, but this request was too large
 
             m_readIndex.store(read + size, std::memory_order_relaxed);
 

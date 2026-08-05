@@ -8,10 +8,34 @@ namespace sbk
      * @brief The enum, or something else, that defines the message's type (PostEvent, SetRTPC).
      */
     template<typename T>
-    concept message_flag = std::is_integral_v<T>;
+    concept message_type = std::is_integral_v<T> || std::is_enum_v<T>;
 
     template<typename T>
-    concept pod = std::is_pod_v<T>;
+    concept pod = std::is_trivial_v<T>;
+
+    template <typename T>
+    struct numeric_type {
+        using type = T;
+    };
+
+    template <typename T>
+    requires std::is_enum_v<T>
+    struct numeric_type<T> {
+        using type = std::underlying_type_t<T>;
+    };
+
+    template <typename T>
+    constexpr auto to_numeric(T value) noexcept
+    {
+        if constexpr (std::is_enum_v<T>)
+        {
+            return static_cast<std::underlying_type_t<T>>(value);
+        }
+        else
+        {
+            return static_cast<T>(value);
+        }
+    }
 
     /**
      * @brief Lock-free, multi-producer, single-consumer queue of arbitrary sized messages.
@@ -20,97 +44,120 @@ namespace sbk
      * 
      * The message queue uses @see reserve_write and @see commit_write on the ring buffer to ensure all messages are placed in contiguous blocks. This queue fills the end of buffers with special messages that makes the reader move past it.
      */
-    template <message_flag message_flag_type = std::uint32_t>
+    template <message_type T = std::uint32_t>
     class message_queue final
     {
+    private:
+        using numeric_message_type = typename numeric_type<T>::type;
+        using message_size_type = std::uint8_t;   //< Keep it as small as possible
+
+        /**
+         * @brief Basic header of all messages. Written to the buffer.
+         */
+        struct message_header
+        {
+            numeric_message_type m_type{};      //< The type of message, used by consumers to handle each message in a different way (HandlePostEvent / HandleSetRTPC etc)
+            message_size_type m_payloadSize{};  //< Message size, including the header
+        };
+
     public:
         /**
          * @brief A special flag that tells the reader to just read the message size and move on because it was the end of the buffer and the message didn't fit.
          */
-        static constexpr message_flag_type s_skipFlag = message_flag_type{} - 1;
+        static constexpr numeric_message_type s_skipFlag = std::numeric_limits<numeric_message_type>::max();
 
-        struct message_header
+        /**
+         * @brief Returned data from the buffer. Not the actual raw data inside the buffer.
+         */
+        struct message_view
         {
-            message_flag_type m_type{};     //< The type of message, used by consumers to handle each message in a different way (HandlePostEvent / HandleSetRTPC etc)
-            std::size_t m_messageSize{};    //< Message size, including the header
+            T m_type{};                         //< The type of message, used by consumers to handle each message in a different way (HandlePostEvent / HandleSetRTPC etc)
+            message_size_type m_payloadSize{};  //< Payload/message size
+            const void* payload{};              //< Pointer to the message payload. Can be null
         };
 
         [[nodiscard]] auto init(std::size_t size, sbk::memory::memory_resource& allocator) noexcept -> sbk::result<>
         {
-            SBK_CHECK_MSG(size > (sizeof(message_header) + sizeof(std::byte)), SBK_ERR_INVALID_PARAMETER, "The message queue needs to be big enough to hold a header and, at least, a small payload");
+            SBK_CHECK_MSG(size >= get_header_size(), SBK_ERR_INVALID_PARAMETER, "The message queue needs to be big enough to hold a header and, at least, a small payload");
 
             return m_ringBuffer.init(size, allocator);
         }
 
-        template <pod T>
-        [[nodiscard]] auto write_message(const T& message) noexcept -> sbk_status
+        template <pod U>
+        [[nodiscard]] auto write_message(T type, const U& message) noexcept -> sbk_status
         {
-            SBK_CHECK(message != nullptr, SBK_ERR_INVALID_PARAMETER);
-            SBK_CHECK_MSG(message->m_type != s_skipFlag, SBK_ERR_INVALID_PARAMETER, "Users should not create messages with a flag equal to s_skipFlag. This should only be used by the message_queue to automically wrap around the end of the buffer");
+            SBK_STATUS_CHECK_MSG(to_numeric(type) != s_skipFlag, SBK_ERR_INVALID_PARAMETER, "Users should not create messages with a flag equal to s_skipFlag. This should only be used by the message_queue to automically wrap around the end of the buffer");
 
             std::uint8_t* messageBuffer{};
             std::uint8_t* paddingBuffer{};
             std::size_t paddingSize{};
             std::size_t reserveIndex{};
 
-            constexpr std::size_t size = sizeof(T);
+            message_header header{.m_type = to_numeric(type), .m_payloadSize = sizeof(U)};
+            SBK_STATUS_TRY_C(m_ringBuffer.reserve_write(&messageBuffer, sizeof(message_header) + header.m_payloadSize, &reserveIndex, &paddingBuffer, &paddingSize));
 
-            if (m_ringBuffer.reserve_write(&messageBuffer, size, &reserveIndex, &paddingBuffer, &paddingSize) == SBK_SUCCESS)
+            // If we were given padding, it means the buffer is split
+            // Add a skip message into end of the buffer. Write the actual message as normal
+            if (paddingSize > 0U)
             {
-                // Add a skip message into end of the buffer. Write the actual message as normal
-                if (paddingSize > 0U)
-                {
-                    BOOST_ASSERT(paddingSize >= sizeof(message_header));
-
-                    message_header skipHeader{.m_type = s_skipFlag, .m_messageSize = paddingSize};
-                    std::memcpy(paddingBuffer, &skipHeader, sizeof(message_header));
-                }
-
-                std::memcpy(messageBuffer, &message, size);
-
-                SBK_STATUS_TRY_C(m_ringBuffer.commit_write(reserveIndex, size));
+                BOOST_ASSERT(paddingSize >= sizeof(message_header));
+                BOOST_ASSERT(paddingSize <= std::numeric_limits<message_size_type>::max());
+                BOOST_ASSERT(paddingBuffer > messageBuffer);
+                message_header skipHeader{.m_type = s_skipFlag, .m_payloadSize = static_cast<message_size_type>(paddingSize) - sizeof(message_header)};
+                std::memcpy(paddingBuffer, &skipHeader, sizeof(message_header));
             }
+
+            std::memcpy(messageBuffer, &header, sizeof(message_header));
+            std::memcpy(messageBuffer + sizeof(message_header), &message, header.m_payloadSize);
+
+            SBK_STATUS_TRY_C(m_ringBuffer.commit_write(reserveIndex, sizeof(message_header) + header.m_payloadSize + paddingSize));
             return SBK_SUCCESS;
         }
 
-        [[nodiscard]] auto read_begin(message_header* header, std::size_t* outReadIndex) noexcept -> sbk_status
+        [[nodiscard]] auto read_begin(message_view* outMessageView) noexcept -> sbk_status
         {
-            SBK_CHECK(header != nullptr, SBK_ERR_INVALID_PARAMETER);
-            SBK_CHECK(outReadIndex != nullptr, SBK_ERR_INVALID_PARAMETER);
-            
+            SBK_STATUS_CHECK(outMessageView != nullptr, SBK_ERR_INVALID_PARAMETER);
+
             std::uint8_t* messageBuffer{};
             std::size_t readIndex{};
             std::size_t bytesRead{};
+            numeric_message_type messageType = s_skipFlag;
+            message_size_type payloadSize{};
 
-            constexpr std::size_t size = sizeof(message_header);
-
-            SBK_STATUS_TRY_C(m_ringBuffer.read_begin(&messageBuffer, &readIndex, size, &bytesRead));
-            
-            // If we reached the end of the buffer:
-            // - Advance the read pointer by the skip message's size
-            // - Read again to the user is given the actual message
-            if (bytesRead < size)
+            do
             {
-                header = static_cast<message_header*>(messageBuffer);
-                BOOST_ASSERT(header->m_type == s_skipFlag);
-                m_ringBuffer.read_end(readIndex, header->m_messageSize - size); 
-                 
-                if (m_ringBuffer.read_begin(&messageBuffer, &readIndex, size, &bytesRead))
-                {
-                    BOOST_ASSERT(bytesRead == size);
-                }
-            }
+                // READ HEADER
 
-            header = static_cast<message_header*>(messageBuffer);
-            *outReadIndex = readIndex;
+                SBK_STATUS_TRY_C(m_ringBuffer.read_begin(&messageBuffer, &readIndex, sizeof(message_header), &bytesRead));
+                message_header* header = reinterpret_cast<message_header*>(messageBuffer);
+                messageType            = header->m_type;
+                payloadSize            = header->m_payloadSize;
+                SBK_STATUS_TRY_C(m_ringBuffer.read_end(sizeof(message_header)));
+
+                // AUTO READ SKIP PAYLOAD
+
+                if (header->m_type == s_skipFlag)
+                {
+                    SBK_STATUS_TRY_C(m_ringBuffer.read_begin(&messageBuffer, &readIndex, payloadSize, &bytesRead));
+                    SBK_STATUS_TRY_C(m_ringBuffer.read_end(payloadSize));
+                }
+
+            } while (messageType == s_skipFlag);
+
+            outMessageView->m_type        = static_cast<T>(messageType);
+            outMessageView->m_payloadSize = payloadSize;
+            outMessageView->payload       = messageBuffer + sizeof(message_header);
             return SBK_SUCCESS;
         }
 
-        [[nodiscard]] auto read_end(const message_header* header, const std::size_t readIndex) noexcept -> sbk_status
+        [[nodiscard]] auto read_end(const message_view& message) noexcept -> sbk_status
         {
-            SBK_CHECK(header != nullptr, SBK_ERR_INVALID_PARAMETER);
+            return m_ringBuffer.read_end(static_cast<std::size_t>(message.m_payloadSize));
+        }
 
-            return m_ringBuffer.read_end(readIndex, header->m_messageSize - sizeof(message_header));
+        [[nodiscard]] constexpr auto get_header_size() const noexcept -> std::size_t
+        {
+            return sizeof(message_header);
         }
 
     private:

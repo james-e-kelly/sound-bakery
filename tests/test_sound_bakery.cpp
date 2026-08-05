@@ -1054,16 +1054,113 @@ TEST_SUITE("Message Queue")
     {
         scoped_memory memory;
 
-        enum class messages : std::uint8_t
+        enum class message_type : std::uint8_t
         {
             start,
             update,
             end
         };
 
-        sbk::message_queue<std::uint8_t> messageQueue;
+        struct start_message
+        {
+            int a;
+            int b;
+        };
+
+        struct update_message
+        {
+            std::size_t iter;
+        };
+
+        struct end_message
+        {
+            int c;
+        };
+
+        sbk::message_queue<message_type> messageQueue;
         sbk::memory::rpmalloc_resource rpmalloc(sbk::memory::object_category::system);
 
-        REQUIRE(messageQueue.init(512, rpmalloc).has_value());
+        REQUIRE(messageQueue.init(messageQueue.get_header_size() + sizeof(update_message), rpmalloc).has_value());
+
+        constexpr std::size_t updateLoops = 512;
+
+        std::jthread writeThread([&]()
+            {
+                sbk_status result;
+                std::size_t iteration{};
+
+                do
+                {
+                    result = messageQueue.write_message(message_type::start, start_message{.a = 7, .b = 9});
+                } while (result != SBK_SUCCESS);
+
+                do
+                {
+                    result = messageQueue.write_message(message_type::update, update_message{.iter = iteration});
+                    if (result == SBK_SUCCESS)
+                    {
+                        ++iteration;
+                    }
+                } while (iteration < updateLoops);
+
+                do
+                {
+                    result = messageQueue.write_message(message_type::end, end_message{.c = 11});
+                } while (result != SBK_SUCCESS);
+            });
+        std::jthread readThread([&]()
+            {
+                bool end = false;
+                std::size_t updates{};
+
+                for (;;)
+                {
+                    sbk::message_queue<message_type>::message_view view{};
+
+                    if (messageQueue.read_begin(&view) == SBK_SUCCESS)
+                    {
+                        message_type messageType = view.m_type;
+                        const bool correctMessageType = messageType == message_type::start || messageType == message_type::update || messageType == message_type::end;
+                        REQUIRE(correctMessageType);
+
+                        switch (messageType)
+                        {
+                            case message_type::start:
+                            {
+                                const start_message* startMessage = reinterpret_cast<const start_message*>(view.payload);
+                                REQUIRE(startMessage->a == 7);
+                                REQUIRE(startMessage->b == 9);
+                                std::cout << "Start" << std::endl;
+                            }
+                            break;
+                            case message_type::update:
+                            {
+                                const update_message* updateMessage = reinterpret_cast<const update_message*>(view.payload);
+                                REQUIRE(updateMessage->iter == updates++);
+                                std::cout << "Update " << updateMessage->iter << std::endl;
+                            }
+                            break;
+                            case message_type::end:
+                            {
+                                const end_message* endMessage = reinterpret_cast<const end_message*>(view.payload);
+                                end                     = true;
+                                std::cout << "End"  << std::endl;
+                            }
+                            break;
+                        }
+
+                        REQUIRE(messageQueue.read_end(view) == SBK_SUCCESS);
+                    }
+
+                    if (end)
+                    {
+                        REQUIRE(updates == updateLoops);
+                        return;
+                    }
+                }
+            });
+
+        writeThread.join();
+        readThread.join();
     }
 }
