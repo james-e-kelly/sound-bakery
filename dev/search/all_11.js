@@ -3,7 +3,7 @@ var searchData=
   ['name_0',['name',['../classsbk_1_1core_1_1name.html',1,'sbk::core']]],
   ['named_5fparameter_1',['named_parameter',['../classsbk_1_1engine_1_1named__parameter.html',1,'sbk::engine::named_parameter'],['../classsbk_1_1engine_1_1named__parameter.html#a6511286a6f6e0daf658643d08cf37a83',1,'sbk::engine::named_parameter::named_parameter()']]],
   ['named_5fparameter_5fvalue_2',['named_parameter_value',['../classsbk_1_1engine_1_1named__parameter__value.html',1,'sbk::engine']]],
-  ['new_20error_20code_3',['Adding a new error code',['..//home/runner/work/sound-bakery/sound-bakery/src/sound_bakery/error/README.md#autotoc_md59',1,'']]],
+  ['new_20error_20code_3',['Adding a new error code',['..//home/runner/work/sound-bakery/sound-bakery/src/sound_bakery/core/error/README.md#autotoc_md59',1,'']]],
   ['new_5fproject_5fwidget_4',['new_project_widget',['../classnew__project__widget.html',1,'']]],
   ['node_5',['node',['../classsbk_1_1engine_1_1node.html',1,'sbk::engine']]],
   ['node_20groups_6',['Node Groups',['../ChefProgrammerGuide.html#autotoc_md66',1,'']]],

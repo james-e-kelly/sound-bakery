@@ -188,7 +188,7 @@ class sbk::unique_coroutine&lt; Promise &gt;</div><p>Move-only RAII ownership of
 <p>A raw <code>std::coroutine_handle</code> is a non-owning pointer to the heap-allocated frame; nothing reclaims it unless someone calls <code>destroy</code>. Holding the handle in this wrapper makes the ownership single: exactly one owner, destroyed on scope exit unless handed off via @r release.</p>
 <p>Templated on the promise so the same primitive serves a typed owner (@r task, which needs <code>promise()</code>) and a type-erased owner (@r <a class="el" href="classsbk_1_1work__item.html" title="A move-only unit of work queued on an @r executor.">work_item</a>). <code>Promise</code> defaults to <code>void</code>. </p>
 </div><hr/>The documentation for this class was generated from the following file:<ul>
-<li>src/sound_bakery/task/<a class="el" href="unique__coroutine_8h_source.html">unique_coroutine.h</a></li>
+<li>src/sound_bakery/core/task/<a class="el" href="unique__coroutine_8h_source.html">unique_coroutine.h</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

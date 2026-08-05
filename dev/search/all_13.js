@@ -10,7 +10,7 @@ var searchData=
   ['pending_7',['pending',['../classsbk_1_1core_1_1database__ptr.html#a46a1eea3ffcb3ec4a5501f02f3f45cdf',1,'sbk::core::database_ptr']]],
   ['performance_20tips_8',['Performance Tips',['../ChefProgrammerGuide.html#autotoc_md72',1,'']]],
   ['philosophy_9',['Design Philosophy',['../Design.html',1,'UserManual']]],
-  ['picking_20a_20macro_10',['Picking a macro',['..//home/runner/work/sound-bakery/sound-bakery/src/sound_bakery/error/README.md#autotoc_md55',1,'']]],
+  ['picking_20a_20macro_10',['Picking a macro',['..//home/runner/work/sound-bakery/sound-bakery/src/sound_bakery/core/error/README.md#autotoc_md55',1,'']]],
   ['playable_5fselection_11',['playable_selection',['../structplayable__selection.html',1,'']]],
   ['player_5fwidget_12',['player_widget',['../classplayer__widget.html',1,'']]],
   ['playing_20a_20sound_13',['Playing A Sound',['../ChefProgrammerGuide.html#autotoc_md64',1,'']]],

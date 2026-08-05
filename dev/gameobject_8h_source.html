@@ -146,50 +146,48 @@ $(document).ready(function(){initNavTree('gameobject_8h_source.html',''); initRe
 <div class="contents">
 <div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
-<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;sound_bakery/core/core_include.h&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;sound_bakery/core/database/database_object.h&quot;</span></div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;sound_bakery/parameter/parameter.h&quot;</span></div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;sound_bakery/system.h&quot;</span></div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;sound_bakery/voice/voice.h&quot;</span></div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span>sbk::engine</div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>{</div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    <span class="keyword">class </span>container;</div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <span class="keyword">class </span>event;</div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <span class="keyword">class </span>voice;</div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
-<div class="foldopen" id="foldopen00014" data-start="{" data-end="};">
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="classsbk_1_1engine_1_1game__object.html">   14</a></span>    <span class="keyword">class </span>SB_CLASS <a class="code hl_class" href="classsbk_1_1engine_1_1game__object.html">game_object</a> : <span class="keyword">public</span> <a class="code hl_class" href="classsbk_1_1core_1_1database__object.html">sbk::core::database_object</a></div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    {</div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>        REGISTER_REFLECTION(<a class="code hl_class" href="classsbk_1_1engine_1_1game__object.html">game_object</a>, <a class="code hl_class" href="classsbk_1_1core_1_1database__object.html">sbk::core::database_object</a>)</div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>        <a class="code hl_class" href="classsbk_1_1engine_1_1game__object.html">game_object</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span>sbk::engine</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span>{</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>    <span class="keyword">class </span>container;</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>    <span class="keyword">class </span>event;</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    <span class="keyword">class </span>voice;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="foldopen" id="foldopen00012" data-start="{" data-end="};">
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="classsbk_1_1engine_1_1game__object.html">   12</a></span>    <span class="keyword">class </span>SB_CLASS <a class="code hl_class" href="classsbk_1_1engine_1_1game__object.html">game_object</a> : <span class="keyword">public</span> <a class="code hl_class" href="classsbk_1_1core_1_1database__object.html">sbk::core::database_object</a></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>        REGISTER_REFLECTION(<a class="code hl_class" href="classsbk_1_1engine_1_1game__object.html">game_object</a>, <a class="code hl_class" href="classsbk_1_1core_1_1database__object.html">sbk::core::database_object</a>)</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        <a class="code hl_class" href="classsbk_1_1engine_1_1game__object.html">game_object</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>        [[nodiscard]] <span class="keyword">virtual</span> <span class="keyword">auto</span> get_is_export() <span class="keyword">const</span> -&gt; <span class="keywordtype">bool</span> <span class="keyword">override</span> { <span class="keywordflow">return</span> <span class="keyword">false</span>; }</div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        [[nodiscard]] <span class="keyword">virtual</span> <span class="keyword">auto</span> get_is_export() <span class="keyword">const</span> -&gt; <span class="keywordtype">bool</span> <span class="keyword">override</span> { <span class="keywordflow">return</span> <span class="keyword">false</span>; }</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        <span class="keyword">auto</span> update() -&gt; void;</div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>        <span class="keyword">auto</span> update() -&gt; void;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>        [[nodiscard]] <span class="keyword">auto</span> is_playing() <span class="keyword">const</span> <span class="keyword">noexcept</span> -&gt; bool;</div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        [[nodiscard]] <span class="keyword">auto</span> is_playing() <span class="keyword">const</span> <span class="keyword">noexcept</span> -&gt; bool;</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        [[nodiscard]] <span class="keyword">auto</span> get_float_parameter_value(<span class="keyword">const</span> <a class="code hl_class" href="classsbk_1_1core_1_1database__ptr.html">sbk::core::database_ptr&lt;float_parameter&gt;</a>&amp; <a class="code hl_class" href="classsbk_1_1engine_1_1parameter.html">parameter</a>) <span class="keyword">const</span> -&gt; float;</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        [[nodiscard]] <span class="keyword">auto</span> get_int_parameter_value(<span class="keyword">const</span> <a class="code hl_class" href="classsbk_1_1core_1_1database__ptr.html">sbk::core::database_ptr&lt;named_parameter&gt;</a>&amp; <a class="code hl_class" href="classsbk_1_1engine_1_1parameter.html">parameter</a>) <span class="keyword">const</span> -&gt; sbk_id;</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="keyword">auto</span> set_float_parameter(<span class="keyword">const</span> float_parameter::local_parameter_value_pair&amp; parameterValue) -&gt; void;</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        <span class="keyword">auto</span> set_int_parameter_value(<span class="keyword">const</span> named_parameter::local_parameter_value_pair&amp; parameterValue) -&gt; void;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        [[nodiscard]] <span class="keyword">auto</span> get_float_parameter_value(<span class="keyword">const</span> <a class="code hl_class" href="classsbk_1_1core_1_1database__ptr.html">sbk::core::database_ptr&lt;float_parameter&gt;</a>&amp; <a class="code hl_class" href="classsbk_1_1engine_1_1parameter.html">parameter</a>) <span class="keyword">const</span> -&gt; float;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        [[nodiscard]] <span class="keyword">auto</span> get_int_parameter_value(<span class="keyword">const</span> <a class="code hl_class" href="classsbk_1_1core_1_1database__ptr.html">sbk::core::database_ptr&lt;named_parameter&gt;</a>&amp; <a class="code hl_class" href="classsbk_1_1engine_1_1parameter.html">parameter</a>) <span class="keyword">const</span> -&gt; sbk_id;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        <span class="keyword">auto</span> set_float_parameter(<span class="keyword">const</span> float_parameter::local_parameter_value_pair&amp; parameterValue) -&gt; void;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        <span class="keyword">auto</span> set_int_parameter_value(<span class="keyword">const</span> named_parameter::local_parameter_value_pair&amp; parameterValue) -&gt; void;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        [[nodiscard]] <span class="keyword">auto</span> get_local_parameters() <span class="keyword">const</span> -&gt; <a class="code hl_struct" href="structsbk_1_1engine_1_1local__parameter__list.html">local_parameter_list</a> { <span class="keywordflow">return</span> m_parameters; }</div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        [[nodiscard]] <span class="keyword">auto</span> get_local_parameters() <span class="keyword">const</span> -&gt; <a class="code hl_struct" href="structsbk_1_1engine_1_1local__parameter__list.html">local_parameter_list</a> { <span class="keywordflow">return</span> m_parameters; }</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <a class="code hl_struct" href="structsbk_1_1engine_1_1local__parameter__list.html">local_parameter_list</a> m_parameters;</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    };</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <a class="code hl_struct" href="structsbk_1_1engine_1_1local__parameter__list.html">local_parameter_list</a> m_parameters;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    };</div>
 </div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>}  <span class="comment">// namespace sbk::engine</span></div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>}  <span class="comment">// namespace sbk::engine</span></div>
 <div class="ttc" id="aclasssbk_1_1core_1_1database__object_html"><div class="ttname"><a href="classsbk_1_1core_1_1database__object.html">sbk::core::database_object</a></div><div class="ttdoc">Base object type for any object that can exist in the editor/database. Holds an ID and name.</div><div class="ttdef"><b>Definition</b> database_object.h:18</div></div>
-<div class="ttc" id="aclasssbk_1_1core_1_1database__ptr_html"><div class="ttname"><a href="classsbk_1_1core_1_1database__ptr.html">sbk::core::database_ptr</a></div><div class="ttdef"><b>Definition</b> database_ptr.h:26</div></div>
-<div class="ttc" id="aclasssbk_1_1engine_1_1game__object_html"><div class="ttname"><a href="classsbk_1_1engine_1_1game__object.html">sbk::engine::game_object</a></div><div class="ttdef"><b>Definition</b> gameobject.h:15</div></div>
-<div class="ttc" id="aclasssbk_1_1engine_1_1parameter_html"><div class="ttname"><a href="classsbk_1_1engine_1_1parameter.html">sbk::engine::parameter</a></div><div class="ttdoc">Defines a database object with a changeable property.</div><div class="ttdef"><b>Definition</b> parameter.h:18</div></div>
-<div class="ttc" id="astructsbk_1_1engine_1_1local__parameter__list_html"><div class="ttname"><a href="structsbk_1_1engine_1_1local__parameter__list.html">sbk::engine::local_parameter_list</a></div><div class="ttdoc">Holds a list of parameters and their local value.</div><div class="ttdef"><b>Definition</b> parameter.h:249</div></div>
+<div class="ttc" id="aclasssbk_1_1core_1_1database__ptr_html"><div class="ttname"><a href="classsbk_1_1core_1_1database__ptr.html">sbk::core::database_ptr</a></div><div class="ttdef"><b>Definition</b> database_ptr.h:24</div></div>
+<div class="ttc" id="aclasssbk_1_1engine_1_1game__object_html"><div class="ttname"><a href="classsbk_1_1engine_1_1game__object.html">sbk::engine::game_object</a></div><div class="ttdef"><b>Definition</b> gameobject.h:13</div></div>
+<div class="ttc" id="aclasssbk_1_1engine_1_1parameter_html"><div class="ttname"><a href="classsbk_1_1engine_1_1parameter.html">sbk::engine::parameter</a></div><div class="ttdoc">Defines a database object with a changeable property.</div><div class="ttdef"><b>Definition</b> parameter.h:20</div></div>
+<div class="ttc" id="astructsbk_1_1engine_1_1local__parameter__list_html"><div class="ttname"><a href="structsbk_1_1engine_1_1local__parameter__list.html">sbk::engine::local_parameter_list</a></div><div class="ttdoc">Holds a list of parameters and their local value.</div><div class="ttdef"><b>Definition</b> parameter.h:251</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

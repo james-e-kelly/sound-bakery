@@ -9,7 +9,7 @@ var searchData=
   ['the_20runtime_6',['The Runtime',['../Design.html#autotoc_md41',1,'']]],
   ['the_20runtime_20contract_7',['The runtime contract',['../Roadmap.html#autotoc_md47',1,'']]],
   ['the_20system_20object_8',['Creating The System Object',['../ChefProgrammerGuide.html#autotoc_md63',1,'']]],
-  ['the_20two_20worlds_9',['Bridging the two worlds',['..//home/runner/work/sound-bakery/sound-bakery/src/sound_bakery/error/README.md#autotoc_md58',1,'']]],
+  ['the_20two_20worlds_9',['Bridging the two worlds',['..//home/runner/work/sound-bakery/sound-bakery/src/sound_bakery/core/error/README.md#autotoc_md58',1,'']]],
   ['thread_5fdomain_2eh_10',['thread_domain.h',['../thread__domain_8h.html',1,'']]],
   ['thread_5fexecutor_11',['thread_executor',['../classsbk_1_1thread__executor.html',1,'sbk']]],
   ['tips_12',['Performance Tips',['../ChefProgrammerGuide.html#autotoc_md72',1,'']]],
@@ -20,8 +20,8 @@ var searchData=
   ['tools_17',['Audio Tools',['../md_docs_2Inspiration.html#autotoc_md44',1,'']]],
   ['transition_5ftable_18',['transition_table',['../structsbk_1_1engine_1_1node__instance__fsm_1_1transition__table.html',1,'sbk::engine::node_instance_fsm']]],
   ['try_5fconvert_5fobject_19',['try_convert_object',['../classsbk_1_1core_1_1object.html#a661e0f374855f0803ab3f08b022d5c96',1,'sbk::core::object::try_convert_object() const noexcept -&gt; const T *'],['../classsbk_1_1core_1_1object.html#a1d68fcd7d044f2e09a922bb30e3582e1',1,'sbk::core::object::try_convert_object() noexcept -&gt; T *']]],
-  ['tt_20system_3a_3acreate_5fproject_20tt_20',['Worked example: &lt;tt&gt;system::create_project&lt;/tt&gt;',['..//home/runner/work/sound-bakery/sound-bakery/src/sound_bakery/error/README.md#autotoc_md57',1,'']]],
-  ['two_20worlds_21',['Bridging the two worlds',['..//home/runner/work/sound-bakery/sound-bakery/src/sound_bakery/error/README.md#autotoc_md58',1,'']]],
+  ['tt_20system_3a_3acreate_5fproject_20tt_20',['Worked example: &lt;tt&gt;system::create_project&lt;/tt&gt;',['..//home/runner/work/sound-bakery/sound-bakery/src/sound_bakery/core/error/README.md#autotoc_md57',1,'']]],
+  ['two_20worlds_21',['Bridging the two worlds',['..//home/runner/work/sound-bakery/sound-bakery/src/sound_bakery/core/error/README.md#autotoc_md58',1,'']]],
   ['type_5fcomparator_22',['type_comparator',['../structsbk_1_1util_1_1type__comparator.html',1,'sbk::util']]],
   ['type_5fhelper_23',['type_helper',['../classsbk_1_1util_1_1type__helper.html',1,'sbk::util']]]
 ];

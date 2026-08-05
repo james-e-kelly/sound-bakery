@@ -8,7 +8,7 @@ var searchData=
   ['encoding_5fsound_5',['encoding_sound',['../structsbk_1_1engine_1_1encoding__sound.html',1,'sbk::engine']]],
   ['enqueue_6',['enqueue',['../classsbk_1_1command__queue.html#ab93642175293463a221660e9c267ff32',1,'sbk::command_queue::enqueue()'],['../classsbk_1_1thread__executor.html#aecbf79866e1cdf59a02d9b92b293e9d2',1,'sbk::thread_executor::enqueue()'],['../classsbk_1_1manual__executor.html#a452c48fa862d0cd7474718894806f4d4',1,'sbk::manual_executor::enqueue()'],['../classsbk_1_1executor.html#a5b1715cf800d8dcc2f5b6199d36f9137',1,'sbk::executor::enqueue()']]],
   ['error_7',['error',['../classsbk_1_1error.html',1,'sbk']]],
-  ['error_20code_8',['Adding a new error code',['..//home/runner/work/sound-bakery/sound-bakery/src/sound_bakery/error/README.md#autotoc_md59',1,'']]],
+  ['error_20code_8',['Adding a new error code',['..//home/runner/work/sound-bakery/sound-bakery/src/sound_bakery/core/error/README.md#autotoc_md59',1,'']]],
   ['error_20handling_9',['Error Handling',['../ChefProgrammerGuide.html#autotoc_md68',1,'']]],
   ['error_2eh_10',['error.h',['../error_8h.html',1,'']]],
   ['event_11',['event',['../classsbk_1_1engine_1_1event.html',1,'sbk::engine']]],
@@ -21,6 +21,6 @@ var searchData=
   ['event_5fvirtualise_18',['event_virtualise',['../structsbk_1_1engine_1_1event__virtualise.html',1,'sbk::engine']]],
   ['example_19',['Usage Example',['../index.html#autotoc_md7',1,'']]],
   ['example_3a_20interactive_20footstep_20system_20',['Complete Example: Interactive Footstep System',['../ChefProgrammerGuide.html#autotoc_md67',1,'']]],
-  ['example_3a_20tt_20system_3a_3acreate_5fproject_20tt_21',['Worked example: &lt;tt&gt;system::create_project&lt;/tt&gt;',['..//home/runner/work/sound-bakery/sound-bakery/src/sound_bakery/error/README.md#autotoc_md57',1,'']]],
+  ['example_3a_20tt_20system_3a_3acreate_5fproject_20tt_21',['Worked example: &lt;tt&gt;system::create_project&lt;/tt&gt;',['..//home/runner/work/sound-bakery/sound-bakery/src/sound_bakery/core/error/README.md#autotoc_md57',1,'']]],
   ['executor_22',['executor',['../classsbk_1_1executor.html',1,'sbk']]]
 ];

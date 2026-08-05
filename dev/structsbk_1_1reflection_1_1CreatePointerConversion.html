@@ -148,7 +148,7 @@ struct sbk::reflection::CreatePointerConversion&lt; DerivedClass, T &gt;</div><p
 <p>Implementation is taken from rttr's basic conversion tempates but adapts it to our use case.</p>
 <p>Once large difference is rttr assumes wrappers to wrap object types. However, our pointers wrap the SB_ID type. This means it cannot automatically find the base_class_list. In our custom version, we remove the auto deduction of wrapper types and just use our DatabasePtr and child_ptr wrappers. </p>
 </div><hr/>The documentation for this struct was generated from the following file:<ul>
-<li>src/sound_bakery/reflection/<b>reflection.cpp</b></li>
+<li>src/sound_bakery/core/reflection/<b>reflection.cpp</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

@@ -148,8 +148,8 @@ $(document).ready(function(){initNavTree('object__owner_8h_source.html',''); ini
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;sound_bakery/pch.h&quot;</span></div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;sound_bakery/core/memory.h&quot;</span></div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="result_8h.html">sound_bakery/error/result.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;sound_bakery/core/memory/memory.h&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="result_8h.html">sound_bakery/core/error/result.h</a>&quot;</span></div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span>sbk::engine</div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>{</div>
@@ -291,7 +291,7 @@ $(document).ready(function(){initNavTree('object__owner_8h_source.html',''); ini
 <div class="ttc" id="aresult_8h_html"><div class="ttname"><a href="result_8h.html">result.h</a></div><div class="ttdoc">sbk::result and the control-flow macros that make error handling automatic.</div></div>
 <div class="ttc" id="aresult_8h_html_a4956774c47aa4c29c7ce9f4e0cf8659e"><div class="ttname"><a href="result_8h.html#a4956774c47aa4c29c7ce9f4e0cf8659e">SBK_CHECK</a></div><div class="ttdeci">#define SBK_CHECK(cond, code)</div><div class="ttdoc">Guards cond; if false, logs and returns code as an error (message defaults to the condition).</div><div class="ttdef"><b>Definition</b> result.h:110</div></div>
 <div class="ttc" id="aresult_8h_html_a4e7f09f13582f17371d0441b86f116d0"><div class="ttname"><a href="result_8h.html#a4e7f09f13582f17371d0441b86f116d0">SBK_TRY</a></div><div class="ttdeci">#define SBK_TRY(decl, expr)</div><div class="ttdoc">Evaluates expr (a sbk::result&lt;U&gt;), binds its value via decl, else forwards the error.</div><div class="ttdef"><b>Definition</b> result.h:64</div></div>
-<div class="ttc" id="astructsbk_1_1memory_1_1owned__object__deleter_html"><div class="ttname"><a href="structsbk_1_1memory_1_1owned__object__deleter.html">sbk::memory::owned_object_deleter</a></div><div class="ttdoc">Deleter for sbk::owned_ptr. Runs the destructor and returns the block to the memory_resource that pro...</div><div class="ttdef"><b>Definition</b> memory.h:196</div></div>
+<div class="ttc" id="astructsbk_1_1memory_1_1owned__object__deleter_html"><div class="ttname"><a href="structsbk_1_1memory_1_1owned__object__deleter.html">sbk::memory::owned_object_deleter</a></div><div class="ttdoc">Deleter for sbk::owned_ptr. Runs the destructor and returns the block to the memory_resource that pro...</div><div class="ttdef"><b>Definition</b> memory.h:207</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

@@ -201,7 +201,7 @@ virtual auto&#160;</td><td class="memItemRight" valign="bottom"><b>do_is_equal</
 <div class="textblock"><p>Virtual, noexcept memory-source interface. </p>
 <p>Sound Bakery's version of std::pmr::memory_resource. Deliberately not derived from std::pmr because (a) we do not want to participate in std::pmr's process-global default registry and (b) do_allocate is not noexcept in std::pmr and standard resources throw bad_alloc on failure. Every override here must be noexcept and must return nullptr on failure. Callers turn nullptr into an <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7" title="The result of a fallible operation: a value of type T, or an sbk::error.">sbk::result</a> error. </p>
 </div><hr/>The documentation for this class was generated from the following file:<ul>
-<li>src/sound_bakery/core/<a class="el" href="allocator_8h_source.html">allocator.h</a></li>
+<li>src/sound_bakery/core/memory/<a class="el" href="allocator_8h_source.html">allocator.h</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

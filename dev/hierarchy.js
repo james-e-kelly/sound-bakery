@@ -102,6 +102,8 @@ var hierarchy =
       [ "sbk::memory::monotonic_buffer_resource", "classsbk_1_1memory_1_1monotonic__buffer__resource.html", null ],
       [ "sbk::memory::rpmalloc_resource", "classsbk_1_1memory_1_1rpmalloc__resource.html", null ]
     ] ],
+    [ "sbk::message_queue< message_flag_type >::message_header", "structsbk_1_1message__queue_1_1message__header.html", null ],
+    [ "sbk::message_queue< message_flag_type >", "classsbk_1_1message__queue.html", null ],
     [ "method_drawer", "classmethod__drawer.html", null ],
     [ "sbk::mpsc_ring_buffer", "classsbk_1_1mpsc__ring__buffer.html", null ],
     [ "sbk::core::name", "classsbk_1_1core_1_1name.html", null ],
