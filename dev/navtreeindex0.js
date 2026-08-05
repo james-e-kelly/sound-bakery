@@ -170,6 +170,10 @@ var NAVTREEINDEX0 =
 "classsbk_1_1memory_1_1polymorphic__allocator.html":[12,0,2,3,4],
 "classsbk_1_1memory_1_1rpmalloc__resource.html":[12,0,2,3,5],
 "classsbk_1_1message__queue.html":[12,0,2,13],
+"classsbk_1_1message__queue.html#a244bea66580be5561144cbf6d93c5b66":[12,0,2,13,2],
+"classsbk_1_1message__queue.html#a30e19c78ca020826d0af5335aad50c96":[12,0,2,13,3],
+"classsbk_1_1message__queue.html#a6a0c34025509473594c30dd045ff9f77":[12,0,2,13,1],
+"classsbk_1_1message__queue.html#ae0c13235bc3393e139d2270cffb91c7c":[12,0,2,13,4],
 "classsbk_1_1mpsc__ring__buffer.html":[12,0,2,14],
 "classsbk_1_1mpsc__ring__buffer.html#a0dd3523bbfc816722a99d0d703921f50":[12,0,2,14,0],
 "classsbk_1_1mpsc__ring__buffer.html#a0e06c722025f3a7c20568ccb575851f2":[12,0,2,14,2],
@@ -245,9 +249,5 @@ var NAVTREEINDEX0 =
 "easing_8h_source.html":[13,0,2,0,6,0],
 "eastl__config_8h_source.html":[13,0,2,0,1,3,1],
 "eastl__reflection_8h_source.html":[13,0,2,0,1,5,0],
-"eastl__serialization_8h_source.html":[13,0,2,0,11,0],
-"editor__defines_8h_source.html":[13,0,2,0,2,1],
-"effect_8h_source.html":[13,0,2,0,3,0],
-"engine__api_8h_source.html":[13,0,2,0,0,0],
-"error_8h.html":[13,0,2,0,1,2,0]
+"eastl__serialization_8h_source.html":[13,0,2,0,11,0]
 };

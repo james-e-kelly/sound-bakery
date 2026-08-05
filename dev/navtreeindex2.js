@@ -1,5 +1,9 @@
 var NAVTREEINDEX2 =
 {
+"structsc__encoder__vorbis.html":[12,0,34],
+"structsc__meter.html":[12,0,35],
+"structsc__meter__node.html":[12,0,36],
+"structsc__node__group.html":[12,0,37],
 "structsc__riffChunk.html":[12,0,39],
 "structsc__sound.html":[12,0,40],
 "structsc__system.html":[12,0,43],

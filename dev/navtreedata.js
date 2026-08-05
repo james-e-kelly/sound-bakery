@@ -126,8 +126,8 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "ChefProgrammerGuide.html",
-"error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7",
-"structsc__riffChunk.html"
+"editor__defines_8h_source.html",
+"structsc__encoder__vorbis.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

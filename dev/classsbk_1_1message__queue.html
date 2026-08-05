@@ -139,7 +139,6 @@ $(document).ready(function(){initNavTree('classsbk_1_1message__queue.html',''); 
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pub-static-attribs">Static Public Attributes</a> &#124;
 <a href="classsbk_1_1message__queue-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">sbk::message_queue&lt; T &gt; Class Template Reference<span class="mlabels"><span class="mlabel">final</span></span></div></div>
 </div><!--header-->
@@ -153,43 +152,184 @@ $(document).ready(function(){initNavTree('classsbk_1_1message__queue.html',''); 
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsbk_1_1message__queue_1_1message__view.html">message_view</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returned data from the buffer. Not the actual raw data inside the buffer.  <a href="structsbk_1_1message__queue_1_1message__view.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returned data from the buffer. Not the actual raw data that was inside the buffer - just a pointer to it.  <a href="structsbk_1_1message__queue_1_1message__view.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a6a0c34025509473594c30dd045ff9f77" id="r_a6a0c34025509473594c30dd045ff9f77"><td class="memItemLeft" align="right" valign="top"><a id="a6a0c34025509473594c30dd045ff9f77" name="a6a0c34025509473594c30dd045ff9f77"></a>
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>init</b> (std::size_t size, <a class="el" href="classsbk_1_1memory_1_1memory__resource.html">sbk::memory::memory_resource</a> &amp;allocator) noexcept -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt;&gt;</td></tr>
+<tr class="memitem:a6a0c34025509473594c30dd045ff9f77" id="r_a6a0c34025509473594c30dd045ff9f77"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsbk_1_1message__queue.html#a6a0c34025509473594c30dd045ff9f77">init</a> (std::size_t size, <a class="el" href="classsbk_1_1memory_1_1memory__resource.html">sbk::memory::memory_resource</a> &amp;allocator) noexcept -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt;&gt;</td></tr>
+<tr class="memdesc:a6a0c34025509473594c30dd045ff9f77"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize the message queue.  <br /></td></tr>
 <tr class="separator:a6a0c34025509473594c30dd045ff9f77"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae0c13235bc3393e139d2270cffb91c7c" id="r_ae0c13235bc3393e139d2270cffb91c7c"><td class="memTemplParams" colspan="2"><a id="ae0c13235bc3393e139d2270cffb91c7c" name="ae0c13235bc3393e139d2270cffb91c7c"></a>
-template&lt;pod U&gt; </td></tr>
-<tr class="memitem:ae0c13235bc3393e139d2270cffb91c7c"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><b>write_message</b> (T type, const U &amp;message) noexcept -&gt; sbk_status</td></tr>
+<tr class="memitem:ae0c13235bc3393e139d2270cffb91c7c" id="r_ae0c13235bc3393e139d2270cffb91c7c"><td class="memTemplParams" colspan="2">template&lt;pod U&gt; </td></tr>
+<tr class="memitem:ae0c13235bc3393e139d2270cffb91c7c"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classsbk_1_1message__queue.html#ae0c13235bc3393e139d2270cffb91c7c">write_message</a> (T type, const U &amp;message) noexcept -&gt; sbk_status</td></tr>
+<tr class="memdesc:ae0c13235bc3393e139d2270cffb91c7c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write a message to the queue.  <br /></td></tr>
 <tr class="separator:ae0c13235bc3393e139d2270cffb91c7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a244bea66580be5561144cbf6d93c5b66" id="r_a244bea66580be5561144cbf6d93c5b66"><td class="memItemLeft" align="right" valign="top"><a id="a244bea66580be5561144cbf6d93c5b66" name="a244bea66580be5561144cbf6d93c5b66"></a>
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>read_begin</b> (<a class="el" href="structsbk_1_1message__queue_1_1message__view.html">message_view</a> *outMessageView) noexcept -&gt; sbk_status</td></tr>
+<tr class="memitem:a244bea66580be5561144cbf6d93c5b66" id="r_a244bea66580be5561144cbf6d93c5b66"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsbk_1_1message__queue.html#a244bea66580be5561144cbf6d93c5b66">read_begin</a> (<a class="el" href="structsbk_1_1message__queue_1_1message__view.html">message_view</a> *outMessageView) noexcept -&gt; sbk_status</td></tr>
+<tr class="memdesc:a244bea66580be5561144cbf6d93c5b66"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start reading, giving the user a chance to use the data before producers write more data.  <br /></td></tr>
 <tr class="separator:a244bea66580be5561144cbf6d93c5b66"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a30e19c78ca020826d0af5335aad50c96" id="r_a30e19c78ca020826d0af5335aad50c96"><td class="memItemLeft" align="right" valign="top"><a id="a30e19c78ca020826d0af5335aad50c96" name="a30e19c78ca020826d0af5335aad50c96"></a>
 auto&#160;</td><td class="memItemRight" valign="bottom"><b>read_end</b> (const <a class="el" href="structsbk_1_1message__queue_1_1message__view.html">message_view</a> &amp;message) noexcept -&gt; sbk_status</td></tr>
+<tr class="memdesc:a30e19c78ca020826d0af5335aad50c96"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finish reading, allowing producers to write over the previously read data. <br /></td></tr>
 <tr class="separator:a30e19c78ca020826d0af5335aad50c96"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad77cef9b118fe018ffca9c2bb8250815" id="r_ad77cef9b118fe018ffca9c2bb8250815"><td class="memItemLeft" align="right" valign="top"><a id="ad77cef9b118fe018ffca9c2bb8250815" name="ad77cef9b118fe018ffca9c2bb8250815"></a>
 constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_header_size</b> () const noexcept -&gt; std::size_t</td></tr>
 <tr class="separator:ad77cef9b118fe018ffca9c2bb8250815"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
-Static Public Attributes</h2></td></tr>
-<tr class="memitem:afb7f6080ca6c9660f3a88eebc35a8e7c" id="r_afb7f6080ca6c9660f3a88eebc35a8e7c"><td class="memItemLeft" align="right" valign="top"><a id="afb7f6080ca6c9660f3a88eebc35a8e7c" name="afb7f6080ca6c9660f3a88eebc35a8e7c"></a>
-static constexpr numeric_message_type&#160;</td><td class="memItemRight" valign="bottom"><b>s_skipFlag</b> = std::numeric_limits&lt;numeric_message_type&gt;::max()</td></tr>
-<tr class="memdesc:afb7f6080ca6c9660f3a88eebc35a8e7c"><td class="mdescLeft">&#160;</td><td class="mdescRight">A special flag that tells the reader to just read the message size and move on because it was the end of the buffer and the message didn't fit. <br /></td></tr>
-<tr class="separator:afb7f6080ca6c9660f3a88eebc35a8e7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;message_type T = std::uint32_t&gt;<br />
 class sbk::message_queue&lt; T &gt;</div><p>Lock-free, multi-producer, single-consumer queue of arbitrary sized messages. </p>
-<p>Uses a </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="classsbk_1_1mpsc__ring__buffer.html" title="A multi-producer, single-consumer ring buffer that operates on bytes.">mpsc_ring_buffer</a> to handle reading and writing bytes in a thread-safe way.</dd></dl>
-<p>The message queue uses </p><dl class="section see"><dt>See also</dt><dd>reserve_write and </dd>
-<dd>
-commit_write on the ring buffer to ensure all messages are placed in contiguous blocks. This queue fills the end of buffers with special messages that makes the reader move past it. </dd></dl>
-</div><hr/>The documentation for this class was generated from the following file:<ul>
+<p>Messages are identified by a "message header" that contains a type and payload size. The type can be any integral type, or an enum. The queue handles all conversions for the user. The payload size is used to store size of the user's section of the message.</p>
+<p>On every read, the queue tries to read <code>sizeof(message_header)</code>. Once it has the header, it reads a further number of bytes, equal to the payload size. The data is returned to the user as a @s <a class="el" href="structsbk_1_1message__queue_1_1message__view.html" title="Returned data from the buffer. Not the actual raw data that was inside the buffer - just a pointer to...">message_view</a>. This gives the user the pointer into the buffer for reading, and the message type.</p>
+<p>Users are expected to cast <code>payload</code> to their message type: <code>const start_message* startMessage = reinterpret_cast&lt;const start_message*&gt;(view.payload);</code></p>
+<p>When writing, the write function reserves space in the buffer, then memcpy's the message into the buffer. This makes it relatively simple to add data into the queue: <code>messageQueue.write_message(message_type::start, start_message{.a = 7, .b = 9});</code></p>
+<p>The message type is not deduced from the message structure, so the user must pass in the type explicitly.</p>
+<p>The queue uses a </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="classsbk_1_1mpsc__ring__buffer.html" title="A multi-producer, single-consumer ring buffer that operates on bytes.">mpsc_ring_buffer</a> to handle reading and writing bytes in a thread-safe way.</dd></dl>
+<dl class="section remark"><dt>Remarks</dt><dd>To ensure payloads are returned to the user as contiguous blocks of memory, messages "wrap". When a message won't fit at the end of the buffer, the end of the buffer is filled with a special "skip" header. This skip message tells the reader (automatically, no concern for the user) to read all bytes at the end of the buffer. The user's message is then written to the start of the buffer and the user is given a contiguous block of memory when reading. </dd></dl>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="a6a0c34025509473594c30dd045ff9f77" name="a6a0c34025509473594c30dd045ff9f77"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a0c34025509473594c30dd045ff9f77">&#9670;&#160;</a></span>init()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;message_type T = std::uint32_t&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto <a class="el" href="classsbk_1_1message__queue.html">sbk::message_queue</a>&lt; T &gt;::init </td>
+          <td>(</td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classsbk_1_1memory_1_1memory__resource.html">sbk::memory::memory_resource</a> &amp;&#160;</td>
+          <td class="paramname"><em>allocator</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt;&gt;
+        </td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Initialize the message queue. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">size</td><td>size of the queue in bytes </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>SBK_ERR_INVALID_PARAMETER if the size is not large enough to fit the message header </dd></dl>
+
+</div>
+</div>
+<a id="a244bea66580be5561144cbf6d93c5b66" name="a244bea66580be5561144cbf6d93c5b66"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a244bea66580be5561144cbf6d93c5b66">&#9670;&#160;</a></span>read_begin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;message_type T = std::uint32_t&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto <a class="el" href="classsbk_1_1message__queue.html">sbk::message_queue</a>&lt; T &gt;::read_begin </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structsbk_1_1message__queue_1_1message__view.html">message_view</a> *&#160;</td>
+          <td class="paramname"><em>outMessageView</em></td><td>)</td>
+          <td> -&gt; sbk_status
+        </td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Start reading, giving the user a chance to use the data before producers write more data. </p>
+<p>Must call </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="classsbk_1_1message__queue.html#a30e19c78ca020826d0af5335aad50c96" title="Finish reading, allowing producers to write over the previously read data.">read_end</a> after finished with the data.</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">outMessageView</td><td>data to access the buffer </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ae0c13235bc3393e139d2270cffb91c7c" name="ae0c13235bc3393e139d2270cffb91c7c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0c13235bc3393e139d2270cffb91c7c">&#9670;&#160;</a></span>write_message()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;message_type T = std::uint32_t&gt; </div>
+<div class="memtemplate">
+template&lt;pod U&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto <a class="el" href="classsbk_1_1message__queue.html">sbk::message_queue</a>&lt; T &gt;::write_message </td>
+          <td>(</td>
+          <td class="paramtype">T&#160;</td>
+          <td class="paramname"><em>type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const U &amp;&#160;</td>
+          <td class="paramname"><em>message</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> -&gt; sbk_status
+        </td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Write a message to the queue. </p>
+<p>The write function automatically handles wrapping the messages and ensuring messages are placed in contiguous blocks of memory.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">U</td><td>user message type </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">type</td><td>type of message </td></tr>
+    <tr><td class="paramname">message</td><td>message data </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following file:<ul>
 <li>src/sound_bakery/core/containers/<a class="el" href="message__queue_8h_source.html">message_queue.h</a></li>
 </ul>
 </div><!-- contents -->

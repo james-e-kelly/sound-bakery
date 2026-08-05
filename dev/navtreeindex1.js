@@ -1,5 +1,9 @@
 var NAVTREEINDEX1 =
 {
+"editor__defines_8h_source.html":[13,0,2,0,2,1],
+"effect_8h_source.html":[13,0,2,0,3,0],
+"engine__api_8h_source.html":[13,0,2,0,0,0],
+"error_8h.html":[13,0,2,0,1,2,0],
 "error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7":[13,0,2,0,1,2,0,1],
 "error_8h.html#ac7024b50a770dfcbd2f396f4469e7067":[13,0,2,0,1,2,0,3],
 "error_8h.html#ae4829ae601d7136d4d51f4bbad4e8d7b":[13,0,2,0,1,2,0,2],
@@ -245,9 +249,5 @@ var NAVTREEINDEX1 =
 "structsc__dsp__state.html":[12,0,30],
 "structsc__dsp__vtable.html":[12,0,31],
 "structsc__encoder.html":[12,0,32],
-"structsc__encoder__config.html":[12,0,33],
-"structsc__encoder__vorbis.html":[12,0,34],
-"structsc__meter.html":[12,0,35],
-"structsc__meter__node.html":[12,0,36],
-"structsc__node__group.html":[12,0,37]
+"structsc__encoder__config.html":[12,0,33]
 };
