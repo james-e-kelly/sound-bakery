@@ -11,7 +11,7 @@
 // because eastl::compressed_pair instantiates eastl::is_empty on the allocator type when
 // EASTL container templates are processed.
 
-#include "sound_bakery/core/allocator.h"
+#include "sound_bakery/core/memory/allocator.h"
 
 #define EASTLAllocatorType    sbk::memory::polymorphic_allocator
 #define EASTLAllocatorDefault sbk::memory::default_eastl_allocator

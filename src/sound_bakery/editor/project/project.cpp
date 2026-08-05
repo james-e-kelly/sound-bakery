@@ -1,13 +1,13 @@
 #include "project.h"
 
-#include "sound_bakery/error/result.h"
+#include "sound_bakery/core/error/result.h"
 #include "sound_bakery/event/event.h"
 #include "sound_bakery/node/container/sound_container.h"
 #include "sound_bakery/serialization/serializer.h"
 #include "sound_bakery/sound/sound.h"
 #include "sound_bakery/soundbank/soundbank.h"
 #include "sound_bakery/system.h"
-#include "sound_bakery/task/task.h"
+#include "sound_bakery/core/task/task.h"
 
 #include "sound_chef/sound_chef_bank.h"
 #include "sound_chef/sound_chef_encoder.h"

@@ -1,8 +1,8 @@
 #include "object_owner.h"
 
-#include "sound_bakery/core/memory.h"
+#include "sound_bakery/core/error/result.h"
+#include "sound_bakery/core/memory/memory.h"
 #include "sound_bakery/core/thread_domain.h"
-#include "sound_bakery/error/result.h"
 #include "sound_bakery/serialization/serializer.h"
 #include "sound_bakery/system.h"
 #include "sound_bakery/util/type_helper.h"

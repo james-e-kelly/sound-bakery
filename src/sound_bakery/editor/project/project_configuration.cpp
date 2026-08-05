@@ -1,5 +1,7 @@
 #include "project_configuration.h"
 
+#include "sound_bakery/core/database/database_object.h"
+
 sbk::editor::project_configuration::project_configuration(const std::filesystem::path& projectFile)
     : m_projectFile(projectFile),
       m_projectName(projectFile.filename().stem().string()),

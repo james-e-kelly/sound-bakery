@@ -1,6 +1,6 @@
 #pragma once
 
-#include "sound_bakery/core/core_include.h"
+#include "sound_bakery/core/object/object.h"
 #include "sound_bakery/voice/node_instance.h"
 
 namespace sbk::engine

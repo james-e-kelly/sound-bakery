@@ -1,7 +1,6 @@
 #include "memory.h"
 
 #include "sound_bakery/core/object/object.h"
-#include "sound_bakery/error/error.h"
 #include "sound_bakery/system.h"
 #include "sound_bakery/util/type_helper.h"
 

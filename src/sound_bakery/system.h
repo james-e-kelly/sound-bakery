@@ -4,9 +4,9 @@
 #include "sound_bakery/core/database/database.h"
 #include "sound_bakery/core/database/database_ptr.h"
 #include "sound_bakery/core/object/object_tracker.h"
-#include "sound_bakery/core/memory.h"
-#include "sound_bakery/error/error.h"
-#include "sound_bakery/task/executor.h"
+#include "sound_bakery/core/memory/memory.h"
+#include "sound_bakery/core/error/error.h"
+#include "sound_bakery/core/task/executor.h"
 
 #include "core/logger.h"
 

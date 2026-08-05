@@ -4,8 +4,6 @@
 
 #include "sound_bakery/core/database/database_object.h"
 
-#include <compare>
-
 namespace sbk::core
 {
     class database_object;

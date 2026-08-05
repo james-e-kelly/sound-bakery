@@ -1,6 +1,6 @@
 #include "node_instance.h"
 
-#include "sound_bakery/error/result.h"
+#include "sound_bakery/core/error/result.h"
 #include "sound_bakery/gameobject/gameobject.h"
 #include "sound_bakery/maths/easing.h"
 #include "sound_bakery/node/bus/bus.h"

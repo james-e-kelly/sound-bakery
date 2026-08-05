@@ -2,9 +2,9 @@
 
 #include "sound_bakery/pch.h"
 
-#include "sound_bakery/core/memory.h"
-#include "sound_bakery/error/result.h"
-#include "sound_bakery/task/executor.h"
+#include "sound_bakery/core/memory/memory.h"
+#include "sound_bakery/core/error/result.h"
+#include "sound_bakery/core/task/executor.h"
 
 namespace sbk
 {

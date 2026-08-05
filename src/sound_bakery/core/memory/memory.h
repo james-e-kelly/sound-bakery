@@ -1,8 +1,9 @@
 #pragma once
 
-#include "sound_bakery/core/allocator.h"
-#include "sound_bakery/error/result.h"
 #include "sound_bakery/pch.h"
+
+#include "sound_bakery/core/memory/allocator.h"
+#include "sound_bakery/core/error/result.h"
 
 namespace sbk::core
 {
@@ -20,9 +21,14 @@ namespace sbk::memory
     concept pointer = std::is_pointer_v<T>;
 
     template <pointer T>
-    [[nodiscard]] constexpr auto offset_ptr(T ptr, std::size_t offset) noexcept -> T
+    [[nodiscard]] constexpr inline auto offset_ptr(T ptr, std::size_t offset) noexcept -> T
     {
         return static_cast<std::uint8_t*>(ptr) + offset;
+    }
+
+    [[nodiscard]] constexpr inline auto is_pow_2(const std::size_t value) noexcept -> bool
+    {
+        return value != 0 && (value & (value - 1)) == 0;
     }
 
     /**
@@ -31,6 +37,11 @@ namespace sbk::memory
      * std::max_align_t.
      */
     inline constexpr std::size_t default_alignment = alignof(std::max_align_t);
+
+    /**
+     * @brief Minimum offset between two objects to avoid false sharing.
+     */
+    inline constexpr std::size_t hardware_destructive_interference_size = 64ULL;
 
     /**
      * @name Lifecycle of the underlying allocator.

@@ -10,7 +10,7 @@
 // eastl::is_empty on it) plus its memory_resource base. Kept deliberately small so
 // including it from pch.h does not drag in rpmalloc, the object system, or anything
 // else. The rest of the memory subsystem (rpmalloc_resource, monotonic_buffer_resource,
-// malloc/free, owned_object_deleter, ...) lives in sound_bakery/core/memory.h.
+// malloc/free, owned_object_deleter, ...) lives in sound_bakery/core/memory/memory.h.
 
 namespace sbk::memory
 {

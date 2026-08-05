@@ -2,10 +2,10 @@
 
 // Must precede every EASTL header so the EASTLAllocatorType override is in effect
 // when EASTL's config.h is first processed.
-#include "sound_bakery/core/eastl_config.h"
+#include "sound_bakery/core/memory/eastl_config.h"
+#include "sound_bakery/core/reflection/reflection.h"  //< Must be included here and not individual files. @todo Investigate rttr strangeness when included in multiple files
 
-#include "sound_bakery/reflection/reflection.h"  //< Must be included here and not individual files. @todo Investigate rttr strangeness when included in multiple files
-
+#include "core/logger.h"
 #include "Delegates.h"
 #include "sound_bakery_internal.h"
 #include "spdlog/async.h"
@@ -19,7 +19,7 @@
 
 // Must follow both EASTL/vector.h and reflection.h (so rttr headers are already known)
 // and precede any REGISTER_REFLECTION on a class that owns an eastl container.
-#include "sound_bakery/reflection/eastl_reflection.h"
+#include "sound_bakery/core/reflection/eastl_reflection.h"
 
 #define BOOST_SPIRIT_DEBUG
 
@@ -32,6 +32,7 @@
 #include <atomic>
 #include <condition_variable>
 #include <coroutine>
+#include <compare>
 #include <cstdint>
 #include <filesystem>
 #include <fstream>

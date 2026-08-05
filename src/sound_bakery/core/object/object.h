@@ -1,9 +1,9 @@
 #pragma once
 
-#include "sound_bakery/core/memory.h"
 #include "sound_bakery/core/name.h"
+#include "sound_bakery/core/memory/memory.h"
 #include "sound_bakery/core/object/object_owner.h"
-#include "sound_bakery/task/task.h"
+#include "sound_bakery/core/task/task.h"
 
 #include "core/enum_flags.h"
 #include "core/leak_detector.h"

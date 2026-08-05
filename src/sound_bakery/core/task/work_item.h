@@ -2,7 +2,7 @@
 
 #include "sound_bakery/pch.h"
 
-#include "sound_bakery/task/unique_coroutine.h"
+#include "sound_bakery/core/task/unique_coroutine.h"
 
 namespace sbk
 {

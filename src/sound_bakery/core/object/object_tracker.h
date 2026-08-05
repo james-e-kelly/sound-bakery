@@ -3,7 +3,7 @@
 #include "sound_bakery/pch.h"
 
 #include "sound_bakery/core/core_fwd.h"
-#include "sound_bakery/core/memory.h"
+#include "sound_bakery/core/memory/memory.h"
 
 namespace sbk::core
 {

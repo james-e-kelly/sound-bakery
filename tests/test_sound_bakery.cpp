@@ -3,7 +3,10 @@
 
 #include "sound_bakery/system.h"
 
+#include "sound_bakery/core/containers/ring_buffer.h"
 #include "sound_bakery/core/property.h"
+#include "sound_bakery/core/memory/memory.h"
+#include "sound_bakery/core/task/command_queue.h"
 #include "sound_bakery/core/thread_domain.h"
 #include "sound_bakery/event/event.h"
 #include "sound_bakery/gameobject/gameobject.h"
@@ -14,7 +17,6 @@
 #include "sound_bakery/parameter/parameter.h"
 #include "sound_bakery/runtime/runtime.h"
 #include "sound_bakery/sound/sound.h"
-#include "sound_bakery/task/command_queue.h"
 
 #include <atomic>
 #include <chrono>

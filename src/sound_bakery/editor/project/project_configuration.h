@@ -1,6 +1,6 @@
 #pragma once
 
-#include "sound_bakery/core/core_include.h"
+#include "sound_bakery/pch.h"
 
 namespace sbk::editor
 {

@@ -1,7 +1,6 @@
 #pragma once
 
-#include "sound_bakery/core/core_include.h"
-#include "sound_bakery/error/error.h"
+#include "sound_bakery/core/database/database_object.h"
 #include "sound_bakery/node/container/sequence_container.h"
 
 #include <boost/msm/back/state_machine.hpp>

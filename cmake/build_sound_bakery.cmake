@@ -4,21 +4,24 @@ macro(set_sources)
     pch.cpp
 
     api/sound_bakery.cpp
+    
+    core/name.cpp
+    core/property.cpp
+    core/thread_domain.cpp
+    
+    core/error/error.cpp
 
-    error/error.cpp
+    core/database/database.cpp
+    core/database/database_object.cpp
+    core/database/database_ptr.cpp
+    
+    core/memory/memory.cpp
 
     core/object/object.cpp
     core/object/object_tracker.cpp
     core/object/object_owner.cpp
 
-    core/database/database.cpp
-    core/database/database_object.cpp
-    core/database/database_ptr.cpp
-
-    core/memory.cpp
-    core/name.cpp
-    core/property.cpp
-    core/thread_domain.cpp
+    core/reflection/reflection.cpp
 
     editor/project/project.cpp
     editor/project/project_configuration.cpp
@@ -44,8 +47,6 @@ macro(set_sources)
     parameter/parameter.cpp
     profiling/voice_tracker.cpp
 
-    reflection/reflection.cpp
-
     runtime/runtime.cpp
 
     serialization/serializer.cpp
@@ -69,26 +70,38 @@ set(SOUND_BAKERY_HEADERS
 
     api/engine_api.h
 
-    error/error.h
-    error/result.h
-
-    core/core_include.h
     core/core_fwd.h
     core/property.h
     core/thread_domain.h
     core/name.h
-
+    
+    core/error/error.h
+    core/error/result.h
+    
+    core/containers/ring_buffer.h
+    
+    core/database/database.h
+    core/database/database_object.h
+    core/database/database_ptr.h
+    
+    core/memory/allocator.h
+    core/memory/eastl_config.h
+    core/memory/memory.h
+    
     core/object/object.h
     core/object/object_tracker.h
     core/object/object_owner.h
 
-    core/database/database.h
-    core/database/database_object.h
-    core/database/database_ptr.h
+    core/reflection/reflection.h
+    core/reflection/eastl_reflection.h
 
-    core/memory.h
-    core/allocator.h
-    core/eastl_config.h
+    core/task/executor.h
+    core/task/command_queue.h
+    core/task/manual_executor.h
+    core/task/thread_executor.h
+    core/task/task.h
+    core/task/unique_coroutine.h
+    core/task/work_item.h
 
     editor/editor_defines.h
     editor/project/project.h
@@ -115,10 +128,8 @@ set(SOUND_BAKERY_HEADERS
     node/container/switch_container.h
 
     parameter/parameter.h
-    profiling/voice_tracker.h
 
-    reflection/reflection.h
-    reflection/eastl_reflection.h
+    profiling/voice_tracker.h
 
     runtime/runtime.h
 
@@ -128,14 +139,6 @@ set(SOUND_BAKERY_HEADERS
     soundbank/soundbank.h
 
     sound/sound.h
-
-    task/executor.h
-    task/command_queue.h
-    task/manual_executor.h
-    task/thread_executor.h
-    task/task.h
-    task/unique_coroutine.h
-    task/work_item.h
 
     util/type_helper.h
 

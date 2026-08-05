@@ -2,35 +2,34 @@
 
 #include "sound_bakery/pch.h"
 
-#include "sound_bakery/core/thread_domain.h"
-#include "sound_bakery/error/result.h"
-#include "sound_bakery/task/executor.h"
+#include "sound_bakery/core/error/result.h"
+#include "sound_bakery/core/memory/memory.h"
 
 namespace sbk
 {
     /**
      * @brief A multi-producer, single-consumer ring buffer that operates on bytes.
-     * 
+     *
      * The class is created to address two problems:
      * 1. Speed of command queues
      * 2. Memory allocation and deallocation
-     * 
+     *
      * To address speed, the buffer:
      * - Is lock free. Acquiring a lock could be slow
      * - Uses a fixed-size buffer so no allocations or deallocations happen during push/pop
-     * 
+     *
      * To address memory, the buffer:
      * - Allocates a fixed-pool once and never allocates memory on the heap for write or read
      * - Does not use double or triple buffering
      * - Does not use lists
-     * 
+     *
      * @remark The ring buffer size is rounded up to the nearest power of two. This is so indexes can be wrapped quickly and avoid the modulo operator that can be slow on some architectures.
      * @remark This is guaranteed to be thread-safe when there is only one consumer.
      * @remark The indexes grow infinitely but when indexing into the buffer, it is wrapped by a mask.
      * @remark Indexes are allowed to integer overflow.
-     * @remark To avoid straddled writes, writes can be split up. Given an 8-byte buffer, allocating 6 bytes, then 4, will write 2 bytes, then 2 bytes at the start of the buffer. 
+     * @remark To avoid straddled writes, writes can be split up. Given an 8-byte buffer, allocating 6 bytes, then 4, will write 2 bytes, then 2 bytes at the start of the buffer.
      * Consuming containers should consider fixed-size messages to avoid this.
-     * 
+     *
      * @see https://github.com/bowtoyourlord/MPSCQueue
      */
     class mpsc_ring_buffer final
@@ -48,7 +47,7 @@ namespace sbk
             m_memoryResource = nullptr;
         }
 
-        mpsc_ring_buffer(const mpsc_ring_buffer&) noexcept = delete;
+        mpsc_ring_buffer(const mpsc_ring_buffer&) noexcept                    = delete;
         auto operator=(const mpsc_ring_buffer&) noexcept -> mpsc_ring_buffer& = delete;
 
         mpsc_ring_buffer(mpsc_ring_buffer&& other) noexcept
@@ -70,7 +69,7 @@ namespace sbk
                 {
                     BOOST_ASSERT(m_memoryResource != nullptr);
                     m_memoryResource->deallocate(m_buffer, m_capacity, sbk::memory::default_alignment);
-                    m_buffer = nullptr;
+                    m_buffer         = nullptr;
                     m_memoryResource = nullptr;
                 }
 
@@ -87,10 +86,10 @@ namespace sbk
 
         /**
          * @brief Initialize the buffer and indexes.
-         * 
+         *
          * @param size requested buffer size, in bytes. Rounded up to nearest power of two
          */
-        [[nodiscard]] auto init(std::size_t size, sbk::memory::memory_resource& allocator) noexcept -> sbk::result<> 
+        [[nodiscard]] auto init(std::size_t size, sbk::memory::memory_resource& allocator) noexcept -> sbk::result<>
         {
             SBK_CHECK(m_buffer == nullptr, SBK_ERR_ALREADY_INITIALIZED);
             SBK_CHECK(m_capacity == 0, SBK_ERR_ALREADY_INITIALIZED);
@@ -98,22 +97,21 @@ namespace sbk
             SBK_CHECK_MSG(size > 2, SBK_ERR_INVALID_PARAMETER, "Size was too small");
             SBK_CHECK_MSG(decltype(m_readIndex)::is_always_lock_free, SBK_ERR_SYSTEM, "Atomic was found to not be lock free");
 
-            m_capacity = std::bit_ceil(size);
-            m_mask     = m_capacity - 1;
-            const bool isPowerOf2 = (m_capacity & (m_capacity - 1)) == 0;
-            SBK_CHECK(isPowerOf2, SBK_ERR_BAKERY);  // Probably impossible but better safe than sorry
+            m_capacity            = std::bit_ceil(size);
+            m_mask                = m_capacity - 1;
+            SBK_CHECK(sbk::memory::is_pow_2(m_capacity), SBK_ERR_BAKERY);  // Probably impossible but better safe than sorry
 
-            m_buffer   = static_cast<std::uint8_t*>(allocator.allocate(m_capacity, sbk::memory::default_alignment));
+            m_buffer = static_cast<std::uint8_t*>(allocator.allocate(m_capacity, sbk::memory::default_alignment));
             SBK_CHECK(m_buffer != nullptr, SBK_ERR_OUT_OF_MEMORY);
 
             m_memoryResource = &allocator;
-            
+
             return sbk::ok();
         }
 
         /**
          * @brief Write @r message into the buffer.
-         * 
+         *
          * @remark Can be called from any producer thread.
          */
         [[nodiscard]] auto write(const void* message, std::size_t messageSize) noexcept -> sbk_status
@@ -128,7 +126,7 @@ namespace sbk
                 const std::size_t read   = m_readIndex.load(std::memory_order_relaxed);
                 std::size_t reserveWrite = m_reserveWriteIndex.load(std::memory_order_relaxed);
 
-                const bool isFull = reserveWrite - read == m_capacity;
+                const bool isFull         = reserveWrite - read == m_capacity;
                 const bool hasEnoughSpace = reserveWrite + messageSize - read <= m_capacity;
 
                 if (isFull)
@@ -168,7 +166,7 @@ namespace sbk
 
         /**
          * Read @r readBytes of data from the buffer into @r outBuffer.
-         * 
+         *
          * @remark Must be called from the same consumer thread.
          */
         [[nodiscard]] auto read(void* outBuffer, std::size_t readBytes) noexcept -> sbk_status
@@ -178,10 +176,10 @@ namespace sbk
                 return SBK_ERR_INVALID_PARAMETER;
             }
 
-            const std::size_t read = m_readIndex.load(std::memory_order_relaxed);
+            const std::size_t read           = m_readIndex.load(std::memory_order_relaxed);
             const std::size_t committedWrite = m_committedWriteIndex.load(std::memory_order_acquire);
 
-            const bool bufferEmpty = read == committedWrite;
+            const bool bufferEmpty  = read == committedWrite;
             const bool canReadBytes = read + readBytes <= committedWrite;
 
             if (bufferEmpty)
@@ -217,10 +215,7 @@ namespace sbk
         }
 
     private:
-        using atomic = std::atomic<std::size_t>;
-
-        static_assert(atomic::is_always_lock_free);
-        static constexpr std::size_t atomic_alignment = 64U; // std::hardware_destructive_interference_size is not available on all compilers so hard code for now
+        static_assert(std::atomic<std::size_t>::is_always_lock_free);
 
         sbk::memory::memory_resource* m_memoryResource{};
 
@@ -229,83 +224,9 @@ namespace sbk
         std::size_t m_mask{};
 
 #pragma warning(disable : 4324)  // Disable "structure was padded due to alignment specifier"
-        alignas (atomic_alignment) atomic m_reserveWriteIndex{0};
-        alignas (atomic_alignment) atomic m_committedWriteIndex{0};
-        alignas (atomic_alignment) atomic m_readIndex{0};
+        alignas(sbk::memory::hardware_destructive_interference_size) std::atomic<std::size_t> m_reserveWriteIndex{0};
+        alignas(sbk::memory::hardware_destructive_interference_size) std::atomic<std::size_t> m_committedWriteIndex{0};
+        alignas(sbk::memory::hardware_destructive_interference_size) std::atomic<std::size_t> m_readIndex{0};
 #pragma warning(default : 4324)
     };
-
-    /**
-     * @brief Queues tasks until it is "flushed" onto another executor.
-     *
-     * For Sound Bakery, this means queuing all commands from the game thread, or any thread, then flushing it to the system thread.
-     */
-    class command_queue : public executor
-    {
-    public:
-        command_queue(std::string name) : executor(name) {}
-
-        auto enqueue(work_item item) -> sbk::result<> override
-        {
-            ZoneScopedN("command_queue enqueue");
-            const std::lock_guard lock(m_mutex);
-            LockMark(m_mutex);
-            SBK_CHECK_MSG(m_stopped == false, SBK_ERR_BAKERY, "Cannot enqueue command. Command queue shut down");
-            m_staging.push_back(std::move(item));
-            return sbk::ok();
-        }
-
-        /**
-         * @brief Flush all tasks to the target executor.
-         * @return SBK_SUCCESS if the command queue was empty, or successfully flushed
-         */
-        auto flush() -> sbk::result<> override
-        {
-            ZoneScopedN("command_queue flush");
-
-            eastl::vector<work_item> batch;
-            {
-                const std::lock_guard lock(m_mutex);
-                LockMark(m_mutex);
-                m_staging.swap(batch);
-            }
-
-            if (batch.empty())
-            {
-                return sbk::ok();
-            }
-
-            return m_target->enqueue(work_item{
-                [commands = std::move(batch)]() mutable
-                {
-                    const sbk::core::scoped_thread_domain studioDomain(sbk::core::thread_domain::studio);
-                    ZoneScopedN("command_queue execute all commands");
-                    for (auto& command : commands)
-                    {
-                        ZoneScopedN("command_queue execute command");
-                        command();
-                    }
-                }});
-        }
-
-        /**
-         * @brief Drop all staged commands and refuse further work. Does not flush.
-         */
-        auto abandon() -> void override
-        {
-            ZoneScopedN("command_queue abandon");
-            const std::lock_guard lock(m_mutex);
-            LockMark(m_mutex);
-            m_stopped = true;
-            eastl::vector<work_item> dropped;
-            m_staging.swap(dropped);
-        }
-
-    private:
-        executor* m_target{};
-        TracyLockableN(std::mutex, m_mutex, "command_queue mutex");
-        eastl::vector<work_item> m_staging;
-        bool m_stopped = false;
-        friend class ::sbk::engine::system;
-    };
-}  // namespace sbk
+}

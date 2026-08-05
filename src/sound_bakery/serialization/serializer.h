@@ -2,7 +2,7 @@
 
 #include "sound_bakery/core/database/database_object.h"
 #include "sound_bakery/core/object/object_owner.h"
-#include "sound_bakery/error/result.h"
+#include "sound_bakery/core/error/result.h"
 #include "sound_bakery/event/event.h"
 #include "sound_bakery/node/bus/bus.h"
 #include "sound_bakery/serialization/eastl_serialization.h"

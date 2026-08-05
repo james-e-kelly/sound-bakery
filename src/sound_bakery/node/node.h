@@ -1,6 +1,6 @@
 #pragma once
 
-#include "sound_bakery/core/core_include.h"
+#include "sound_bakery/core/database/database_object.h"
 #include "sound_bakery/effect/effect.h"
 #include "sound_bakery/parameter/parameter.h"
 

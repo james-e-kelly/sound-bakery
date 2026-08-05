@@ -1,9 +1,7 @@
 #pragma once
 
-#include "sound_bakery/core/core_include.h"
+#include "sound_bakery/core/database/database_object.h"
 #include "sound_bakery/parameter/parameter.h"
-#include "sound_bakery/system.h"
-#include "sound_bakery/voice/voice.h"
 
 namespace sbk::engine
 {

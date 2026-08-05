@@ -1,6 +1,4 @@
-#include "sound_bakery/error/error.h"
-
-#include "sound_bakery/sound_bakery.h"  // sbk_log + ma_log_level
+#include "sound_bakery/core/error/error.h"
 
 #include <spdlog/fmt/fmt.h>
 
