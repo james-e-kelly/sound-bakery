@@ -2,7 +2,7 @@
 
 #include "sound_bakery/pch.h"
 
-#include "sound_bakery/core/memory.h"
+#include "sound_bakery/core/memory/memory.h"
 
 #include "IconsFontaudio.h"
 #include "gluten/widgets/widget.h"
