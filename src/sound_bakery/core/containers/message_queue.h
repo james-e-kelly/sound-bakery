@@ -5,11 +5,14 @@
 namespace sbk
 {
     /**
-     * @brief The enum, or something else, that defines the message's type (PostEvent, SetRTPC).
+     * @brief The enum, or something else, that defines the message's type.
      */
     template<typename T>
     concept message_type = std::is_integral_v<T> || std::is_enum_v<T>;
 
+    /**
+     * @brief User messages must be POD types so they can be memcpy'd easily.
+     */
     template<typename T>
     concept pod = std::is_trivial_v<T>;
 
@@ -23,33 +26,45 @@ namespace sbk
     struct numeric_type<T> {
         using type = std::underlying_type_t<T>;
     };
-
-    template <typename T>
-    constexpr auto to_numeric(T value) noexcept
-    {
-        if constexpr (std::is_enum_v<T>)
-        {
-            return static_cast<std::underlying_type_t<T>>(value);
-        }
-        else
-        {
-            return static_cast<T>(value);
-        }
-    }
-
+    
     /**
      * @brief Lock-free, multi-producer, single-consumer queue of arbitrary sized messages.
      * 
-     * Uses a @see mpsc_ring_buffer to handle reading and writing bytes in a thread-safe way.
+     * Messages are identified by a "message header" that contains a type and payload size.
+     * The type can be any integral type, or an enum. The queue handles all conversions for the user.
+     * The payload size is used to store size of the user's section of the message. 
      * 
-     * The message queue uses @see reserve_write and @see commit_write on the ring buffer to ensure all messages are placed in contiguous blocks. This queue fills the end of buffers with special messages that makes the reader move past it.
+     * On every read, the queue tries to read `sizeof(message_header)`.
+     * Once it has the header, it reads a further number of bytes, equal to the payload size.
+     * The data is returned to the user as a @s message_view. 
+     * This gives the user the pointer into the buffer for reading, and the message type.
+     * 
+     * Users are expected to cast `payload` to their message type:
+     * `const start_message* startMessage = reinterpret_cast<const start_message*>(view.payload);`
+     * 
+     * When writing, the write function reserves space in the buffer, then memcpy's the message into the buffer.
+     * This makes it relatively simple to add data into the queue:
+     * `messageQueue.write_message(message_type::start, start_message{.a = 7, .b = 9});`
+     * 
+     * The message type is not deduced from the message structure, so the user must pass in the type explicitly.
+     * 
+     * The queue uses a @see mpsc_ring_buffer to handle reading and writing bytes in a thread-safe way.
+     * 
+     * @remark To ensure payloads are returned to the user as contiguous blocks of memory, messages "wrap".
+     * When a message won't fit at the end of the buffer, the end of the buffer is filled with a special "skip" header.
+     * This skip message tells the reader (automatically, no concern for the user) to read all bytes at the end of the buffer.
+     * The user's message is then written to the start of the buffer and the user is given a contiguous block of memory when reading.
      */
     template <message_type T = std::uint32_t>
     class message_queue final
     {
-    private:
         using numeric_message_type = typename numeric_type<T>::type;
         using message_size_type = std::uint8_t;   //< Keep it as small as possible
+
+        /**
+         * @brief A special flag that tells the reader to just read the message size and move on because it was the end of the buffer and the message didn't fit.
+         */
+        static constexpr numeric_message_type s_skipFlag = std::numeric_limits<numeric_message_type>::max();
 
         /**
          * @brief Basic header of all messages. Written to the buffer.
@@ -60,22 +75,35 @@ namespace sbk
             message_size_type m_payloadSize{};  //< Message size, including the header
         };
 
+        template <typename T>
+        constexpr auto to_numeric(T value) noexcept
+        {
+            if constexpr (std::is_enum_v<T>)
+            {
+                return static_cast<std::underlying_type_t<T>>(value);
+            }
+            else
+            {
+                return static_cast<T>(value);
+            }
+        }
+
     public:
         /**
-         * @brief A special flag that tells the reader to just read the message size and move on because it was the end of the buffer and the message didn't fit.
-         */
-        static constexpr numeric_message_type s_skipFlag = std::numeric_limits<numeric_message_type>::max();
-
-        /**
-         * @brief Returned data from the buffer. Not the actual raw data inside the buffer.
+         * @brief Returned data from the buffer. Not the actual raw data that was inside the buffer - just a pointer to it.
          */
         struct message_view
         {
-            T m_type{};                         //< The type of message, used by consumers to handle each message in a different way (HandlePostEvent / HandleSetRTPC etc)
-            message_size_type m_payloadSize{};  //< Payload/message size
+            T m_type{};                         //< The type of message, used by consumers to handle each message and cast the payload to the correct type
+            message_size_type m_payloadSize{};  //< Payload/message size. Used by read_end. Should not be edited
             const void* payload{};              //< Pointer to the message payload. Can be null
         };
 
+        /**
+         * @brief Initialize the message queue.
+         * @param size size of the queue in bytes
+         * @return SBK_ERR_INVALID_PARAMETER if the size is not large enough to fit the message header
+         */
         [[nodiscard]] auto init(std::size_t size, sbk::memory::memory_resource& allocator) noexcept -> sbk::result<>
         {
             SBK_CHECK_MSG(size >= get_header_size(), SBK_ERR_INVALID_PARAMETER, "The message queue needs to be big enough to hold a header and, at least, a small payload");
@@ -83,6 +111,15 @@ namespace sbk
             return m_ringBuffer.init(size, allocator);
         }
 
+        /**
+         * @brief Write a message to the queue.
+         * 
+         * The write function automatically handles wrapping the messages and ensuring messages are placed in contiguous blocks of memory.
+         * 
+         * @tparam U user message type
+         * @param type type of message
+         * @param message message data
+         */
         template <pod U>
         [[nodiscard]] auto write_message(T type, const U& message) noexcept -> sbk_status
         {
@@ -114,6 +151,13 @@ namespace sbk
             return SBK_SUCCESS;
         }
 
+        /**
+         * @brief Start reading, giving the user a chance to use the data before producers write more data.
+         * 
+         * Must call @see read_end after finished with the data.
+         * 
+         * @param outMessageView data to access the buffer
+         */
         [[nodiscard]] auto read_begin(message_view* outMessageView) noexcept -> sbk_status
         {
             SBK_STATUS_CHECK(outMessageView != nullptr, SBK_ERR_INVALID_PARAMETER);
@@ -150,6 +194,9 @@ namespace sbk
             return SBK_SUCCESS;
         }
 
+        /**
+         * @brief Finish reading, allowing producers to write over the previously read data.
+         */
         [[nodiscard]] auto read_end(const message_view& message) noexcept -> sbk_status
         {
             return m_ringBuffer.read_end(static_cast<std::size_t>(message.m_payloadSize));
