@@ -211,6 +211,9 @@ auto system::create(sbk::core::sbk_log_callback_proc logCallback) -> sbk::result
 
 auto system::destroy() -> void
 {
+    // Be the system thread during destruction
+    const sbk::core::scoped_thread_domain systemDomain(sbk::core::thread_domain::studio);
+
     system* const sys = s_system.load(std::memory_order_acquire);
     if (sys != nullptr)
     {
