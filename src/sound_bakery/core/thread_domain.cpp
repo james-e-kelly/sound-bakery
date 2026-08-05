@@ -61,5 +61,5 @@ auto sbk::core::detail::warn_wrong_thread_domain(const thread_domain expected,
 
     sbk_log(MA_LOG_LEVEL_WARNING, message.c_str());
 
-    BOOST_ASSERT(false, "Thread contract violation");
+    BOOST_ASSERT_MSG(false, "Thread contract violation");
 }

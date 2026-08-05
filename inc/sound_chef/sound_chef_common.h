@@ -124,6 +124,7 @@ typedef enum
     SBK_ERR_USER = 1,               //< Generic user error
     SBK_ERR_INVALID_PARAMETER,      //< Invalid parameter given to the function
     SBK_ERR_ALREADY_INITIALIZED,    //< The resource was already initialized
+    SBK_ERR_UNITIALIZED,            //< The resource was not initialized
 
     // 101-200: Sound Chef Errors
     SBK_ERR_CHEF = 101,             //< Generic Sound Chef error

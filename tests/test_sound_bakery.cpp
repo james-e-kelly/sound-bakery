@@ -3,6 +3,7 @@
 
 #include "sound_bakery/system.h"
 
+#include "sound_bakery/core/containers/message_queue.h"
 #include "sound_bakery/core/containers/ring_buffer.h"
 #include "sound_bakery/core/property.h"
 #include "sound_bakery/core/memory/memory.h"
@@ -782,7 +783,7 @@ TEST_SUITE("Thread Domain")
     }
 }
 
-TEST_SUITE("Stress tests")
+TEST_SUITE("Stress Tests")
 {
     TEST_CASE("Create huge database")
     {
@@ -1034,5 +1035,35 @@ TEST_SUITE("Ring Buffer")
             }
             readThread.join();
         }
+    }
+}
+
+TEST_SUITE("Message Queue")
+{
+    TEST_CASE("Init")
+    {
+        scoped_memory memory;
+
+        sbk::message_queue messageQueue;
+        sbk::memory::rpmalloc_resource rpmalloc(sbk::memory::object_category::system);
+
+        REQUIRE(messageQueue.init(512, rpmalloc).has_value());
+    }
+
+    TEST_CASE("Read and write messages")
+    {
+        scoped_memory memory;
+
+        enum class messages : std::uint8_t
+        {
+            start,
+            update,
+            end
+        };
+
+        sbk::message_queue<std::uint8_t> messageQueue;
+        sbk::memory::rpmalloc_resource rpmalloc(sbk::memory::object_category::system);
+
+        REQUIRE(messageQueue.init(512, rpmalloc).has_value());
     }
 }

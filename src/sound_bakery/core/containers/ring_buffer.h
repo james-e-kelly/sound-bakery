@@ -110,15 +110,107 @@ namespace sbk
         }
 
         /**
+         * @brief Reserve a pointer to a contiguous region of the buffer for writing by the user.
+         * 
+         * Will try to reserve a contiguous region. If it can't (at the end of the buffer), it will reserve a padding + size, so that the user can fill the padding (end of buffer) with their own message.
+         * 
+         * @see write for a function that splits memory when the size can't easily fit into the buffer.
+         * 
+         * @remark Can be called from any producer thread.
+         */
+        [[nodiscard]] auto reserve_write(std::uint8_t** outBuffer, std::size_t size, std::size_t* outReserveIndex, std::uint8_t** outPadding, std::size_t* outPaddingSize) noexcept -> sbk_status
+        {
+            if (outBuffer == nullptr || outPadding == nullptr || outReserveIndex == nullptr || outPaddingSize == nullptr || size == 0 || size > m_capacity)
+            {
+                return SBK_ERR_INVALID_PARAMETER;
+            }
+
+            if (m_buffer == nullptr || m_capacity == 0)
+            {
+                return SBK_ERR_UNITIALIZED;
+            }
+
+            *outPadding     = nullptr;
+            *outPaddingSize = 0U;
+
+            while (true)
+            {
+                const std::size_t read   = m_readIndex.load(std::memory_order_relaxed);
+                std::size_t reserveWrite = m_reserveWriteIndex.load(std::memory_order_relaxed);
+
+                if (is_buffer_full(reserveWrite, read))
+                {
+                    // The buffer is completely full. The reader needs to read more bytes
+                    return SBK_ERR_FULL;
+                }
+
+                const std::size_t writeOffset = reserveWrite & m_mask;
+                const std::size_t firstBlockSize        = std::min(size, m_capacity - writeOffset);
+                const std::size_t spaceFromWriteTillEnd = m_capacity - writeOffset;
+
+                const bool needsWrapping = firstBlockSize < size;
+
+                const std::size_t reserveSize = size + needsWrapping ? spaceFromWriteTillEnd : 0U;
+
+                if (!can_reserve_bytes(reserveWrite, read, reserveSize))
+                {
+                    // There is space in the buffer but this message was too large
+                    return SBK_ERR_TOO_LARGE;
+                }
+
+                if (m_reserveWriteIndex.compare_exchange_weak(reserveWrite, reserveWrite + reserveSize, std::memory_order_relaxed))
+                {
+                    *outReserveIndex = reserveWrite;
+
+                    if (needsWrapping)
+                    {
+                        *outBuffer = m_buffer;
+                        
+                        *outPadding = m_buffer + writeOffset;
+                        *outPaddingSize = firstBlockSize;
+                    }
+                    else
+                    {
+                        *outBuffer = m_buffer + writeOffset;
+                    }
+
+                    return SBK_SUCCESS;
+                }
+            }
+        }
+
+        /**
+         * @brief Commits @r size so the reader can read the newly written values.
+         * 
+         * Expects @r reserve_write to be called before this.
+         * 
+         * @remark Can be called from any producer thread.
+         */
+        [[nodiscard]] auto commit_write(std::size_t reserveIndex, std::size_t size) noexcept -> sbk_status
+        {
+            std::size_t expected = reserveIndex;
+            while (!m_committedWriteIndex.compare_exchange_weak(expected, reserveIndex + size, std::memory_order_release, std::memory_order_relaxed))
+            {
+                expected = reserveIndex;
+                std::this_thread::yield();
+            }
+        }
+
+        /**
          * @brief Write @r message into the buffer.
          *
          * @remark Can be called from any producer thread.
          */
-        [[nodiscard]] auto write(const void* message, std::size_t messageSize) noexcept -> sbk_status
+        [[nodiscard]] auto write(const void* message, std::size_t size) noexcept -> sbk_status
         {
-            if (message == nullptr || messageSize == 0 || messageSize > m_capacity)
+            if (message == nullptr || size == 0 || size > m_capacity)
             {
                 return SBK_ERR_INVALID_PARAMETER;
+            }
+
+            if (m_buffer == nullptr || m_capacity == 0)
+            {
+                return SBK_ERR_UNITIALIZED;
             }
 
             while (true)
@@ -126,35 +218,32 @@ namespace sbk
                 const std::size_t read   = m_readIndex.load(std::memory_order_relaxed);
                 std::size_t reserveWrite = m_reserveWriteIndex.load(std::memory_order_relaxed);
 
-                const bool isFull         = reserveWrite - read == m_capacity;
-                const bool hasEnoughSpace = reserveWrite + messageSize - read <= m_capacity;
-
-                if (isFull)
+                if (is_buffer_full(reserveWrite, read))
                 {
                     // The buffer is completely full. The reader needs to read more bytes
                     return SBK_ERR_FULL;
                 }
 
-                if (!hasEnoughSpace)
+                if (!can_reserve_bytes(reserveWrite, read, size))
                 {
                     // There is space in the buffer but this message was too large
                     return SBK_ERR_TOO_LARGE;
                 }
 
-                if (m_reserveWriteIndex.compare_exchange_weak(reserveWrite, reserveWrite + messageSize, std::memory_order_relaxed))
+                if (m_reserveWriteIndex.compare_exchange_weak(reserveWrite, reserveWrite + size, std::memory_order_relaxed))
                 {
                     const std::size_t writeOffset    = reserveWrite & m_mask;
-                    const std::size_t firstChunkSize = std::min(messageSize, m_capacity - writeOffset);
-                    const bool needsWrapping         = firstChunkSize < messageSize;
+                    const std::size_t firstChunkSize = std::min(size, m_capacity - writeOffset);
+                    const bool needsWrapping         = firstChunkSize < size;
 
                     std::memcpy(m_buffer + writeOffset, message, firstChunkSize);
                     if (needsWrapping)
                     {
-                        std::memcpy(m_buffer, static_cast<const std::uint8_t*>(message) + firstChunkSize, messageSize - firstChunkSize);
+                        std::memcpy(m_buffer, static_cast<const std::uint8_t*>(message) + firstChunkSize, size - firstChunkSize);
                     }
 
                     std::size_t expected = reserveWrite;
-                    while (!m_committedWriteIndex.compare_exchange_weak(expected, reserveWrite + messageSize, std::memory_order_release, std::memory_order_relaxed))
+                    while (!m_committedWriteIndex.compare_exchange_weak(expected, reserveWrite + size, std::memory_order_release, std::memory_order_relaxed))
                     {
                         expected = reserveWrite;
                         std::this_thread::yield();
@@ -165,46 +254,132 @@ namespace sbk
         }
 
         /**
-         * Read @r readBytes of data from the buffer into @r outBuffer.
-         *
-         * @remark Must be called from the same consumer thread.
+         * @brief Tries to read @r size bytes. If the size would go past the end of the buffer, it reads only the remaining size, and sets @r outActualSize to the number of bytes it read.
          */
-        [[nodiscard]] auto read(void* outBuffer, std::size_t readBytes) noexcept -> sbk_status
+        [[nodiscard]] auto read_begin(std::uint8_t** outBuffer, std::size_t* outReadIndex, std::size_t size, std::size_t* outActualSize) noexcept -> sbk_status
         {
-            if (readBytes == 0 || outBuffer == nullptr || readBytes > m_capacity)
+            if (outBuffer == nullptr || outReadIndex == nullptr || outActualSize == nullptr || size == 0 || size > m_capacity)
             {
                 return SBK_ERR_INVALID_PARAMETER;
+            }
+
+            if (m_buffer == nullptr || m_capacity == 0)
+            {
+                return SBK_ERR_UNITIALIZED;
             }
 
             const std::size_t read           = m_readIndex.load(std::memory_order_relaxed);
             const std::size_t committedWrite = m_committedWriteIndex.load(std::memory_order_acquire);
 
-            const bool bufferEmpty  = read == committedWrite;
-            const bool canReadBytes = read + readBytes <= committedWrite;
-
-            if (bufferEmpty)
+            if (is_buffer_empty(committedWrite, read))
             {
                 // The reader is completely caught up to the writers. Producers need to write more data
                 return SBK_ERR_EMPTY;
             }
 
-            if (!canReadBytes)
+            if (!can_read_bytes(committedWrite, read, size))
             {
                 // There is data to be read, but this request was too large
                 return SBK_ERR_TOO_LARGE;
             }
 
             const std::size_t readOffset     = read & m_mask;
-            const std::size_t firstChunkSize = std::min(readBytes, m_capacity - readOffset);
-            const bool needsWrapping         = firstChunkSize < readBytes;
+            const std::size_t firstChunkSize = std::min(size, m_capacity - readOffset);
+
+            *outBuffer = m_buffer + readOffset;
+            *outReadIndex = read;
+            *outActualSize = firstChunkSize;
+
+            return SBK_SUCCESS;
+        }
+
+        /**
+         * @brief Stores the read index so producers can see how much space is in the buffer.
+         */
+        [[nodiscard]] auto read_end(std::size_t readIndex, std::size_t size) noexcept -> sbk_status
+        {
+            m_readIndex.store(readIndex + size, std::memory_order_relaxed);
+            return SBK_SUCCESS;
+        }
+
+        /**
+         * Read @r size of data from the buffer into @r outBuffer.
+         *
+         * @remark Must be called from the same consumer thread.
+         */
+        [[nodiscard]] auto read(void* outBuffer, std::size_t size) noexcept -> sbk_status
+        {
+            if (size == 0 || outBuffer == nullptr || size > m_capacity)
+            {
+                return SBK_ERR_INVALID_PARAMETER;
+            }
+
+            if (m_buffer == nullptr || m_capacity == 0)
+            {
+                return SBK_ERR_UNITIALIZED;
+            }
+
+            const std::size_t read           = m_readIndex.load(std::memory_order_relaxed);
+            const std::size_t committedWrite = m_committedWriteIndex.load(std::memory_order_acquire);
+
+            if (is_buffer_empty(committedWrite, read))
+            {
+                // The reader is completely caught up to the writers. Producers need to write more data
+                return SBK_ERR_EMPTY;
+            }
+
+            if (!can_read_bytes(committedWrite, read, size))
+            {
+                // There is data to be read, but this request was too large
+                return SBK_ERR_TOO_LARGE;
+            }
+
+            const std::size_t readOffset     = read & m_mask;
+            const std::size_t firstChunkSize = std::min(size, m_capacity - readOffset);
+            const bool needsWrapping         = firstChunkSize < size;
 
             std::memcpy(outBuffer, m_buffer + readOffset, firstChunkSize);
             if (needsWrapping)
             {
-                std::memcpy(static_cast<std::uint8_t*>(outBuffer) + firstChunkSize, m_buffer + readOffset + firstChunkSize, readBytes - firstChunkSize);
+                std::memcpy(static_cast<std::uint8_t*>(outBuffer) + firstChunkSize, m_buffer + readOffset + firstChunkSize, size - firstChunkSize);
             }
 
-            m_readIndex.store(read + readBytes, std::memory_order_relaxed);
+            m_readIndex.store(read + size, std::memory_order_relaxed);
+
+            return SBK_SUCCESS;
+        }
+
+        /**
+         * @brief Move the read index forward without reading or copying anything.
+         */
+        [[nodiscard]] auto advance_read_index(std::size_t size) noexcept -> sbk_status
+        {
+            if (size == 0 || size > m_capacity)
+            {
+                return SBK_ERR_INVALID_PARAMETER;
+            }
+
+            if (m_buffer == nullptr || m_capacity == 0)
+            {
+                return SBK_ERR_UNITIALIZED;
+            }
+
+            const std::size_t read           = m_readIndex.load(std::memory_order_relaxed);
+            const std::size_t committedWrite = m_committedWriteIndex.load(std::memory_order_acquire);
+
+            if (is_buffer_empty(committedWrite, read))
+            {
+                // The reader is completely caught up to the writers. Producers need to write more data
+                return SBK_ERR_EMPTY;
+            }
+
+            if (!can_read_bytes(committedWrite, read, size))
+            {
+                // There is data to be read, but this request was too large
+                return SBK_ERR_TOO_LARGE;
+            }
+
+            m_readIndex.store(read + size, std::memory_order_relaxed);
 
             return SBK_SUCCESS;
         }
@@ -215,6 +390,26 @@ namespace sbk
         }
 
     private:
+        [[nodiscard]] inline auto is_buffer_full(const std::size_t reserveWrite, const std::size_t read) const noexcept -> bool
+        {
+            return reserveWrite - read == m_capacity;
+        }
+
+        [[nodiscard]] inline auto is_buffer_empty(const std::size_t commitedWrite, const std::size_t read) const noexcept -> bool
+        {
+            return commitedWrite == read;
+        }
+
+        [[nodiscard]] inline auto can_reserve_bytes(const std::size_t reserveWrite, const std::size_t read, const std::size_t size) const noexcept -> bool
+        {
+            return reserveWrite + size - read <= m_capacity;
+        }
+
+        [[nodiscard]] inline auto can_read_bytes(const std::size_t committedWrite, const std::size_t read, const std::size_t size) const noexcept -> bool
+        {
+            return read + size <= committedWrite;
+        }
+
         static_assert(std::atomic<std::size_t>::is_always_lock_free);
 
         sbk::memory::memory_resource* m_memoryResource{};
