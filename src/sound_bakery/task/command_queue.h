@@ -13,14 +13,14 @@ namespace sbk
      * 
      * The class is created to address two problems:
      * 1. Speed of command queues
-     * 2. Memory consumption
+     * 2. Memory allocation and deallocation
      * 
      * To address speed, the buffer:
      * - Is lock free. Acquiring a lock could be slow
      * - Uses a fixed-size buffer so no allocations or deallocations happen during push/pop
      * 
      * To address memory, the buffer:
-     * - Allocates a fixed-pool once and never allocates memory on the heap for push or pop
+     * - Allocates a fixed-pool once and never allocates memory on the heap for write or read
      * - Does not use double or triple buffering
      * - Does not use lists
      * 
