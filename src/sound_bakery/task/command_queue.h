@@ -28,6 +28,8 @@ namespace sbk
      * @remark This is guaranteed to be thread-safe when there is only one consumer.
      * @remark The indexes grow infinitely but when indexing into the buffer, it is wrapped by a mask.
      * @remark Indexes are allowed to integer overflow.
+     * @remark To avoid straddled writes, writes can be split up. Given an 8-byte buffer, allocating 6 bytes, then 4, will write 2 bytes, then 2 bytes at the start of the buffer. 
+     * Consuming containers should consider fixed-size messages to avoid this.
      * 
      * @see https://github.com/bowtoyourlord/MPSCQueue
      */
@@ -114,9 +116,9 @@ namespace sbk
          * 
          * @remark Can be called from any producer thread.
          */
-        [[nodiscard]] auto write(void* message, std::size_t messageSize) noexcept -> sbk_status
+        [[nodiscard]] auto write(const void* message, std::size_t messageSize) noexcept -> sbk_status
         {
-            if (message == nullptr || messageSize == 0)
+            if (message == nullptr || messageSize == 0 || messageSize > m_capacity)
             {
                 return SBK_ERR_INVALID_PARAMETER;
             }
@@ -136,7 +138,15 @@ namespace sbk
 
                 if (m_reserveWriteIndex.compare_exchange_weak(reserveWrite, reserveWrite + messageSize, std::memory_order_relaxed))
                 {
-                    std::memcpy(m_buffer + (reserveWrite & m_mask), message, messageSize);
+                    const std::size_t writeOffset    = reserveWrite & m_mask;
+                    const std::size_t firstChunkSize = std::min(messageSize, m_capacity - writeOffset);
+                    const bool needsWrapping         = firstChunkSize < messageSize;
+
+                    std::memcpy(m_buffer + writeOffset, message, firstChunkSize);
+                    if (needsWrapping)
+                    {
+                        std::memcpy(m_buffer, static_cast<const std::uint8_t*>(message) + firstChunkSize, messageSize - firstChunkSize);
+                    }
 
                     std::size_t expected = reserveWrite;
                     while (!m_committedWriteIndex.compare_exchange_weak(expected, reserveWrite + messageSize, std::memory_order_release, std::memory_order_relaxed))
@@ -156,7 +166,7 @@ namespace sbk
          */
         [[nodiscard]] auto read(void* outBuffer, std::size_t readBytes) noexcept -> sbk_status
         {
-            if (readBytes == 0 || outBuffer == nullptr)
+            if (readBytes == 0 || outBuffer == nullptr || readBytes > m_capacity)
             {
                 return SBK_ERR_INVALID_PARAMETER;
             }
@@ -172,7 +182,15 @@ namespace sbk
                 return SBK_ERR_BAKERY;
             }
 
-            std::memcpy(outBuffer, m_buffer + (read & m_mask), readBytes);
+            const std::size_t readOffset     = read & m_mask;
+            const std::size_t firstChunkSize = std::min(readBytes, m_capacity - readOffset);
+            const bool needsWrapping         = firstChunkSize < readBytes;
+
+            std::memcpy(outBuffer, m_buffer + readOffset, firstChunkSize);
+            if (needsWrapping)
+            {
+                std::memcpy(static_cast<std::uint8_t*>(outBuffer) + firstChunkSize, m_buffer + readOffset + firstChunkSize, readBytes - firstChunkSize);
+            }
 
             m_readIndex.store(read + readBytes, std::memory_order_relaxed);
 
