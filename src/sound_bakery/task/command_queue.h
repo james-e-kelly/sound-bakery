@@ -131,9 +131,16 @@ namespace sbk
                 const bool isFull = reserveWrite - read == m_capacity;
                 const bool hasEnoughSpace = reserveWrite + messageSize - read <= m_capacity;
 
-                if (isFull || !hasEnoughSpace)
+                if (isFull)
                 {
-                    return SBK_ERR_BAKERY;
+                    // The buffer is completely full. The reader needs to read more bytes
+                    return SBK_ERR_FULL;
+                }
+
+                if (!hasEnoughSpace)
+                {
+                    // There is space in the buffer but this message was too large
+                    return SBK_ERR_TOO_LARGE;
                 }
 
                 if (m_reserveWriteIndex.compare_exchange_weak(reserveWrite, reserveWrite + messageSize, std::memory_order_relaxed))
@@ -177,9 +184,16 @@ namespace sbk
             const bool bufferEmpty = read == committedWrite;
             const bool canReadBytes = read + readBytes <= committedWrite;
 
-            if (bufferEmpty || !canReadBytes)
+            if (bufferEmpty)
             {
-                return SBK_ERR_BAKERY;
+                // The reader is completely caught up to the writers. Producers need to write more data
+                return SBK_ERR_EMPTY;
+            }
+
+            if (!canReadBytes)
+            {
+                // There is data to be read, but this request was too large
+                return SBK_ERR_TOO_LARGE;
             }
 
             const std::size_t readOffset     = read & m_mask;
