@@ -63,7 +63,7 @@ auto sbk::core::database_object::get_asset_name() const -> std::string
 
 auto sbk::core::database_object::get_database_path(std::string& path) const -> void
 {
-    if (const auto database = sbk::engine::system::get())
+    if (const auto database = get_system())
     {
         if (const sbk::engine::node_base* const nodeThis = try_convert_object<sbk::engine::node>())
         {

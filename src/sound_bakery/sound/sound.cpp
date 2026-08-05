@@ -44,7 +44,7 @@ auto sound::load_synchronous() -> sbk::result<void>
 
     sc_sound* loadedSound = nullptr;
 
-    const sbk::engine::system* const system = sbk::engine::system::get();
+    const sbk::engine::system* const system = get_system();
     SBK_CHECK(system != nullptr, SBK_ERR_BAKERY_UNINITIALIZED);
 
     if (const sbk::editor::project* const project = system->get_project())
@@ -107,7 +107,7 @@ auto sound::get_encoding_sound_data() const -> encoding_sound
 {
     encoding_sound encodingSound;
 
-    if (const sbk::engine::system* const system = sbk::engine::system::get())
+    if (const sbk::engine::system* const system = get_system())
     {
         if (const sbk::editor::project* const project = system->get_project())
         {

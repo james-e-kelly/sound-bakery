@@ -126,7 +126,7 @@ namespace sbk::core::serialization
             if (typename archive_class::is_loading())
             {
                 BOOST_ASSERT(objectOwner != nullptr);
-                std::weak_ptr<sbk::core::database_object> foundObject = sbk::engine::system::get()->try_find_database_object(id);
+                std::weak_ptr<sbk::core::database_object> foundObject = objectOwner->get_system()->try_find_database_object(id);
 
                 if (foundObject.expired())
                 {
@@ -151,7 +151,7 @@ namespace sbk::core::serialization
             {
                 BOOST_ASSERT(sbk::engine::system::get() != nullptr);
                 object->clear_flags(object_flags::loading);
-                (void)sbk::engine::system::get()->add_object_to_database(object);
+                (void)objectOwner->get_system()->add_object_to_database(object);
             }
         }
     };

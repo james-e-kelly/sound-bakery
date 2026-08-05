@@ -181,7 +181,7 @@ auto sbk::engine::node_instance_fsm::add_dsp_to_node_group(sc_node_group* nodeGr
     SBK_CHECK(nodeGroup != nullptr, SBK_ERR_INVALID_PARAMETER);
     SBK_CHECK(dsp != nullptr, SBK_ERR_INVALID_PARAMETER);
     SBK_CHECK(config.vtable != nullptr, SBK_ERR_INVALID_PARAMETER);
-    SBK_TRY_C(sc_system_create_dsp(sbk::engine::system::get()->get_runtime(), &config, dsp));
+    SBK_TRY_C(sc_system_create_dsp(m_owner->get_system()->get_runtime(), &config, dsp));
     SBK_TRY_C(sc_node_group_add_dsp(nodeGroup, *dsp, SC_DSP_INDEX_HEAD));
     return sbk::ok();
 }
@@ -191,7 +191,7 @@ auto sbk::engine::node_instance_fsm::init_node_group(const event_init& init) -> 
     ZoneScoped;
     sc_node_group* nodeGroup = nullptr;
 
-    SBK_TRY_C(sc_system_create_node_group(sbk::engine::system::get()->get_runtime(), &nodeGroup));
+    SBK_TRY_C(sc_system_create_node_group(m_owner->get_system()->get_runtime(), &nodeGroup));
     m_nodeGroup.nodeGroup.reset(nodeGroup);
     SBK_TRYV(add_dsp_to_node_group(m_nodeGroup.nodeGroup.get(), &m_nodeGroup.lowpass, sc_dsp_config_init(SC_DSP_TYPE_LOWPASS)));
     SBK_TRYV(add_dsp_to_node_group(m_nodeGroup.nodeGroup.get(), &m_nodeGroup.highpass, sc_dsp_config_init(SC_DSP_TYPE_HIGHPASS)));
@@ -224,7 +224,7 @@ auto sbk::engine::node_instance_fsm::init_parent() -> sbk::result<void>
     ZoneScoped;
     SBK_CHECK(m_referencingNode, SBK_ERR_NULL);
     SBK_CHECK(m_owner, SBK_ERR_NULL);
-    const sbk::engine::system* const system = sbk::engine::system::get();
+    const sbk::engine::system* const system = m_owner->get_system();
     SBK_CHECK(system != nullptr, SBK_ERR_NULL);
     const sbk::engine::runtime* const runtime = system->get_runtime();
     SBK_CHECK(runtime != nullptr, SBK_ERR_NULL);

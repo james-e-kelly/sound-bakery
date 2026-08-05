@@ -31,7 +31,7 @@ auto sbk::core::object_owner::create_runtime_object(const rttr::type& type) -> s
 
     ZoneScoped;
 
-    sbk::engine::system* const system = sbk::engine::system::get();
+    sbk::engine::system* const system = get_system();
 
     SBK_CHECK(system != nullptr, SBK_ERR_BAKERY_UNINITIALIZED);
     SBK_CHECK_MSG(type.is_valid(), SBK_ERR_INVALID_PARAMETER, "Type was invalid. Ensure calling code supplies a valid type");
@@ -73,7 +73,7 @@ auto sbk::core::object_owner::create_database_object(const rttr::type& type, boo
 {
     ZoneScoped;
 
-    sbk::engine::system* const system = sbk::engine::system::get();
+    sbk::engine::system* const system = get_system();
 
     SBK_CHECK(system != nullptr, SBK_ERR_BAKERY_UNINITIALIZED);
     SBK_CHECK_MSG(type.is_valid(), SBK_ERR_INVALID_PARAMETER, "Type was invalid. Ensure calling code supplies a valid type");

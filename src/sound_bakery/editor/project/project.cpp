@@ -65,7 +65,7 @@ namespace
 
 auto sbk::editor::project::encode_all_media() const -> void
 {
-    sbk::engine::system* const system = sbk::engine::system::get();
+    sbk::engine::system* const system = get_system();
     if (system == nullptr)
     {
         return;
@@ -113,7 +113,7 @@ auto sbk::editor::project::load_sounds() -> sbk::result<void>
         {
             const std::filesystem::path filename = p.path().filename();
 
-            if (const sbk::core::database* const database = sbk::engine::system::get())
+            if (const sbk::core::database* const database = get_system())
             {
                 if (database->try_find_database_object(sbk::core::database_name(sbk::engine::sound::type().get_name().data(), filename.stem().string())).expired())
                 {
@@ -180,7 +180,7 @@ auto sbk::editor::project::create_preview_container() -> sbk::result<void>
 
 auto sbk::editor::project::build_soundbanks() -> sbk::result<void>
 {
-    std::unordered_set<sbk::core::object*> soundbankObjects = sbk::engine::system::get()->get_objects_of_category(sbk::memory::object_category::bank);
+    std::unordered_set<sbk::core::object*> soundbankObjects = get_system()->get_objects_of_category(sbk::memory::object_category::bank);
 
     SBK_TRY(auto initSoundbank, create_database_object<sbk::engine::soundbank>());
 
@@ -220,7 +220,7 @@ auto sbk::editor::project::save_system() const -> sbk::result<void>
 
 auto sbk::editor::project::save_objects() const -> sbk::result<void>
 {
-    for (const std::weak_ptr<sbk::core::database_object>& object : sbk::engine::system::get()->get_all_database_objects())
+    for (const std::weak_ptr<sbk::core::database_object>& object : get_system()->get_all_database_objects())
     {
         if (std::shared_ptr<sbk::core::database_object> sharedObject = object.lock())
         {

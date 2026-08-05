@@ -69,7 +69,7 @@ auto sbk::memory::object_deleter::operator()(sbk::core::object* object)  const n
     {
         const sbk::memory::object_category objectCategory = sbk::util::type_helper::get_category_from_type(object->get_object_type());
 
-        if (sbk::engine::system* const system = sbk::engine::system::get())
+        if (sbk::engine::system* const system = object->get_system())
         {
             if (const sbk::core::database_object* const databaseObject = sbk::cast<sbk::core::database_object*>(object))
             {
