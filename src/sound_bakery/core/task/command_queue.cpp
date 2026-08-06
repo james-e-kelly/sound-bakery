@@ -92,12 +92,12 @@ auto sbk::dispatch_event(sbk::engine::system* system, sbk::engine::game_object* 
     return sbk::ok();
 }
 
-auto sbk::command_queue::process_commands() noexcept -> sbk::result<>
+auto sbk::command_queue::process_commands(sbk::engine::system* system) noexcept -> sbk::result<>
 {
     ZoneScoped;
+    SBK_CHECK(system != nullptr, SBK_ERR_INVALID_PARAMETER);
 
     message_queue<message_type>::message_view messageView;
-    sbk::engine::system* const system = get_system();
 
     for (;;)
     {
@@ -195,6 +195,23 @@ auto sbk::command_queue::process_command(const message_queue<message_type>::mess
             SBK_CHECK(sharedGameObject, SBK_ERR_BAKERY_OBJECT_NOT_FOUND);
 
             sharedGameObject->remove_all();
+        }
+        break;
+        case message_type::play_container:
+        {
+            const play_container_message* message = messageView.cast<play_container_message>();
+
+            auto container = system->try_find_database_object(message->containerID);
+            SBK_CHECK_MSG(!container.expired(), SBK_ERR_BAKERY_OBJECT_NOT_FOUND, "no container with ID '{}'", message->containerID);
+
+            auto gameObject = sbk::engine::get_game_object(message->gameObjectID);
+            SBK_CHECK(!gameObject.expired(), SBK_ERR_BAKERY_OBJECT_NOT_FOUND);
+
+            auto sharedContainer  = std::static_pointer_cast<sbk::engine::container>(container.lock());
+            auto sharedGameObject = std::static_pointer_cast<sbk::engine::game_object>(gameObject.lock());
+            SBK_CHECK(sharedContainer && sharedGameObject, SBK_ERR_BAKERY_OBJECT_NOT_FOUND);
+
+            SBK_TRYV(play_container(system, sharedGameObject.get(), sharedContainer.get()));
         }
         break;
     }

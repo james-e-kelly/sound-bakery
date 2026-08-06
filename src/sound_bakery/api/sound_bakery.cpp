@@ -258,8 +258,8 @@ namespace sbk::engine
         sbk::engine::system* const system = sbk::engine::system::get();
         SBK_CHECK(system != nullptr, SBK_ERR_BAKERY_UNINITIALIZED);
 
-        //::post_container(system, containerID, gameObjectID);
-        return sbk::make_error(SBK_ERR_NULL);   // turn off for now
+        SBK_TRY_C(system->get_command_queue().write_command(sbk::message_type::play_container, sbk::play_container_message{.containerID = containerID, .gameObjectID = gameObjectID}));
+        return sbk::ok();
     }
 
     auto get_game_object(sbk_id gameObjectID) -> std::weak_ptr<sbk::core::database_object>

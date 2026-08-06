@@ -345,7 +345,7 @@ auto sbk::engine::system::flush_commands() -> sbk::result<void>
 
     const sbk::core::scoped_thread_domain systemDomain(sbk::core::thread_domain::system);
 
-    SBK_TRYV(m_commandQueue.process_commands());
+    SBK_TRYV(m_commandQueue.process_commands(this));
 
     if (m_systemExecutor)
     {
