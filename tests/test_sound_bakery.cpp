@@ -1072,9 +1072,9 @@ TEST_SUITE("Message Queue")
             std::size_t iter;
         };
 
+        // Empty on purpose
         struct end_message
         {
-            int c;
         };
 
         sbk::message_queue<message_type> messageQueue;
@@ -1105,7 +1105,7 @@ TEST_SUITE("Message Queue")
 
                 do
                 {
-                    result = messageQueue.write_message(message_type::end, end_message{.c = 11});
+                    result = messageQueue.write_message(message_type::end, end_message{});
                 } while (result != SBK_SUCCESS);
             });
         std::jthread readThread([&]()
@@ -1119,7 +1119,7 @@ TEST_SUITE("Message Queue")
 
                     if (messageQueue.read_begin(&view) == SBK_SUCCESS)
                     {
-                        message_type messageType = view.m_type;
+                        message_type messageType      = view.m_identifier;
                         const bool correctMessageType = messageType == message_type::start || messageType == message_type::update || messageType == message_type::end;
                         REQUIRE(correctMessageType);
 
@@ -1127,21 +1127,21 @@ TEST_SUITE("Message Queue")
                         {
                             case message_type::start:
                             {
-                                const start_message* startMessage = reinterpret_cast<const start_message*>(view.payload);
+                                const start_message* startMessage = view.cast<start_message>();
                                 REQUIRE(startMessage->a == 7);
                                 REQUIRE(startMessage->b == 9);
                             }
                             break;
                             case message_type::update:
                             {
-                                const update_message* updateMessage = reinterpret_cast<const update_message*>(view.payload);
+                                const update_message* updateMessage = view.cast<const update_message>();
                                 REQUIRE(updateMessage->iter == updates++);
                             }
                             break;
                             case message_type::end:
                             {
-                                const end_message* endMessage = reinterpret_cast<const end_message*>(view.payload);
-                                end                     = true;
+                                const end_message* endMessage = view.cast<const end_message>();
+                                end                           = true;
                             }
                             break;
                         }

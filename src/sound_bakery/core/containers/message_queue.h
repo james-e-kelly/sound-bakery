@@ -8,13 +8,13 @@ namespace sbk
      * @brief The enum, or something else, that defines the message's type.
      */
     template<typename T>
-    concept message_type = std::is_integral_v<T> || std::is_enum_v<T>;
+    concept message_identifier = std::is_integral_v<T> || std::is_enum_v<T>;
 
     /**
      * @brief User messages must be POD types so they can be memcpy'd easily.
      */
     template<typename T>
-    concept pod = std::is_trivial_v<T>;
+    concept message_payload = std::is_trivial_v<T>;
 
     template <typename T>
     struct numeric_type {
@@ -55,36 +55,40 @@ namespace sbk
      * This skip message tells the reader (automatically, no concern for the user) to read all bytes at the end of the buffer.
      * The user's message is then written to the start of the buffer and the user is given a contiguous block of memory when reading.
      */
-    template <message_type T = std::uint32_t>
+    template <message_identifier T = std::uint8_t>
     class message_queue final
     {
-        using numeric_message_type = typename numeric_type<T>::type;
-        using message_size_type = std::uint8_t;   //< Keep it as small as possible
+        using numeric_message_identifier_t  = typename numeric_type<T>::type;   //< Gets the numeric value of T, either an integer or the underlying value of an enum
+        using payload_size_t                = std::uint8_t;                     //< Keep it as small as possible
+
+        static_assert(std::is_integral_v<numeric_message_identifier_t>);
 
         /**
          * @brief A special flag that tells the reader to just read the message size and move on because it was the end of the buffer and the message didn't fit.
+         * 
+         * The queue automatically handles this message type and will read past it. The user only ever sees their actual message types.
          */
-        static constexpr numeric_message_type s_skipFlag = std::numeric_limits<numeric_message_type>::max();
+        static constexpr numeric_message_identifier_t s_skipFlag = std::numeric_limits<numeric_message_identifier_t>::max();
 
         /**
-         * @brief Basic header of all messages. Written to the buffer.
+         * @brief Basic header of all messages. Written to the buffer. Payloads are written after the header.
          */
         struct message_header
         {
-            numeric_message_type m_type{};      //< The type of message, used by consumers to handle each message in a different way (HandlePostEvent / HandleSetRTPC etc)
-            message_size_type m_payloadSize{};  //< Message size, including the header
+            numeric_message_identifier_t m_identifier{};  //< The type of message, used by consumers to handle each message in a different way (HandlePostEvent / HandleSetRTPC etc)
+            payload_size_t m_payloadSize{};               //< Payload size. Excludes the header size
         };
 
-        template <typename T>
-        constexpr auto to_numeric(T value) noexcept
+        template <typename U>
+        constexpr auto to_numeric(U value) noexcept
         {
-            if constexpr (std::is_enum_v<T>)
+            if constexpr (std::is_enum_v<U>)
             {
-                return static_cast<std::underlying_type_t<T>>(value);
+                return static_cast<std::underlying_type_t<U>>(value);
             }
             else
             {
-                return static_cast<T>(value);
+                return static_cast<U>(value);
             }
         }
 
@@ -94,9 +98,20 @@ namespace sbk
          */
         struct message_view
         {
-            T m_type{};                         //< The type of message, used by consumers to handle each message and cast the payload to the correct type
-            message_size_type m_payloadSize{};  //< Payload/message size. Used by read_end. Should not be edited
+            T m_identifier{};                   //< The type of message, used by consumers to handle each message and cast the payload to the correct type
+            payload_size_t m_payloadSize{};     //< Payload/message size. Used by read_end. Should not be edited
             const void* payload{};              //< Pointer to the message payload. Can be null
+
+            /**
+             * @brief Cast the payload to the user's message type.
+             * @tparam U message type
+             * @return pointer to the user's message
+             */
+            template<typename U>
+            [[nodiscard]] inline auto cast() const -> const U*
+            {
+                return payload == nullptr ? nullptr : reinterpret_cast<const U*>(payload);
+            }
         };
 
         /**
@@ -120,7 +135,7 @@ namespace sbk
          * @param type type of message
          * @param message message data
          */
-        template <pod U>
+        template <message_payload U>
         [[nodiscard]] auto write_message(T type, const U& message) noexcept -> sbk_status
         {
             SBK_STATUS_CHECK_MSG(to_numeric(type) != s_skipFlag, SBK_ERR_INVALID_PARAMETER, "Users should not create messages with a flag equal to s_skipFlag. This should only be used by the message_queue to automically wrap around the end of the buffer");
@@ -130,7 +145,7 @@ namespace sbk
             std::size_t paddingSize{};
             std::size_t reserveIndex{};
 
-            message_header header{.m_type = to_numeric(type), .m_payloadSize = sizeof(U)};
+            message_header header{.m_identifier = to_numeric(type), .m_payloadSize = sizeof(U)};
             SBK_STATUS_TRY_C(m_ringBuffer.reserve_write(&messageBuffer, sizeof(message_header) + header.m_payloadSize, &reserveIndex, &paddingBuffer, &paddingSize));
 
             // If we were given padding, it means the buffer is split
@@ -138,9 +153,7 @@ namespace sbk
             if (paddingSize > 0U)
             {
                 BOOST_ASSERT(paddingSize >= sizeof(message_header));
-                BOOST_ASSERT(paddingSize <= std::numeric_limits<message_size_type>::max());
-                BOOST_ASSERT(paddingBuffer > messageBuffer);
-                message_header skipHeader{.m_type = s_skipFlag, .m_payloadSize = static_cast<message_size_type>(paddingSize) - sizeof(message_header)};
+                message_header skipHeader{.m_identifier = s_skipFlag, .m_payloadSize = static_cast<payload_size_t>(paddingSize) - sizeof(message_header)};
                 std::memcpy(paddingBuffer, &skipHeader, sizeof(message_header));
             }
 
@@ -165,8 +178,8 @@ namespace sbk
             std::uint8_t* messageBuffer{};
             std::size_t readIndex{};
             std::size_t bytesRead{};
-            numeric_message_type messageType = s_skipFlag;
-            message_size_type payloadSize{};
+            numeric_message_identifier_t messageType = s_skipFlag;
+            payload_size_t payloadSize{};
 
             do
             {
@@ -174,13 +187,13 @@ namespace sbk
 
                 SBK_STATUS_TRY_C(m_ringBuffer.read_begin(&messageBuffer, &readIndex, sizeof(message_header), &bytesRead));
                 message_header* header = reinterpret_cast<message_header*>(messageBuffer);
-                messageType            = header->m_type;
+                messageType            = header->m_identifier;
                 payloadSize            = header->m_payloadSize;
                 SBK_STATUS_TRY_C(m_ringBuffer.read_end(sizeof(message_header)));
 
                 // AUTO READ SKIP PAYLOAD
 
-                if (header->m_type == s_skipFlag)
+                if (header->m_identifier == s_skipFlag)
                 {
                     SBK_STATUS_TRY_C(m_ringBuffer.read_begin(&messageBuffer, &readIndex, payloadSize, &bytesRead));
                     SBK_STATUS_TRY_C(m_ringBuffer.read_end(payloadSize));
@@ -188,7 +201,7 @@ namespace sbk
 
             } while (messageType == s_skipFlag);
 
-            outMessageView->m_type        = static_cast<T>(messageType);
+            outMessageView->m_identifier  = static_cast<T>(messageType);
             outMessageView->m_payloadSize = payloadSize;
             outMessageView->payload       = messageBuffer + sizeof(message_header);
             return SBK_SUCCESS;
