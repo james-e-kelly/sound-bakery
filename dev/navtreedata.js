@@ -127,7 +127,7 @@ var NAVTREEINDEX =
 [
 "ChefProgrammerGuide.html",
 "editor__defines_8h_source.html",
-"structsc__dsp__parameter.html"
+"structsc__dsp__config.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

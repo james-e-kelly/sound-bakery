@@ -8,6 +8,7 @@ var hierarchy =
     [ "audio_meter_utils::audio_meter_draw_info", "structaudio__meter__utils_1_1audio__meter__draw__info.html", null ],
     [ "sbk::task< T >::awaiter", "structsbk_1_1task_1_1awaiter.html", null ],
     [ "sbk::core::serialization::boost_serializer< load_archive, save_archive, inputMode, outputMode >", "classsbk_1_1core_1_1serialization_1_1boost__serializer.html", null ],
+    [ "sbk::command_queue", "classsbk_1_1command__queue.html", null ],
     [ "sbk::reflection::CreatePointerConversion< DerivedClass, T >", "structsbk_1_1reflection_1_1CreatePointerConversion.html", null ],
     [ "sbk::reflection::CreatePointerConversion< DerivedClass >", "structsbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_01_4.html", null ],
     [ "sbk::reflection::CreatePointerConversion< DerivedClass, BaseClass, U... >", "structsbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_00_01BaseClass_00_01U_8_8_8_01_4.html", null ],
@@ -120,7 +121,6 @@ var hierarchy =
     [ "sbk::numeric_type< T >", "structsbk_1_1numeric__type_3_01T_01_4.html", null ],
     [ "sbk::memory::object_deleter", "structsbk_1_1memory_1_1object__deleter.html", null ],
     [ "sbk::core::object_owner", "classsbk_1_1core_1_1object__owner.html", [
-      [ "sbk::command_queue", "classsbk_1_1command__queue.html", null ],
       [ "sbk::core::object", "classsbk_1_1core_1_1object.html", null ],
       [ "sbk::editor::project", "classsbk_1_1editor_1_1project.html", null ],
       [ "sbk::engine::profiling::voice_tracker", "classsbk_1_1engine_1_1profiling_1_1voice__tracker.html", null ],
@@ -138,6 +138,7 @@ var hierarchy =
     ] ],
     [ "sbk::memory::owned_object_deleter< T >", "structsbk_1_1memory_1_1owned__object__deleter.html", null ],
     [ "sbk::core::parsed_database_name", "structsbk_1_1core_1_1parsed__database__name.html", null ],
+    [ "sbk::play_container_message", "structsbk_1_1play__container__message.html", null ],
     [ "playable_selection", "structplayable__selection.html", null ],
     [ "sbk::memory::polymorphic_allocator", "classsbk_1_1memory_1_1polymorphic__allocator.html", null ],
     [ "sbk::post_event_message", "structsbk_1_1post__event__message.html", null ],

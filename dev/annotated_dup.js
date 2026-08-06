@@ -126,6 +126,7 @@ var annotated_dup =
       [ "mpsc_ring_buffer", "classsbk_1_1mpsc__ring__buffer.html", "classsbk_1_1mpsc__ring__buffer" ],
       [ "numeric_type", "structsbk_1_1numeric__type.html", null ],
       [ "numeric_type< T >", "structsbk_1_1numeric__type_3_01T_01_4.html", null ],
+      [ "play_container_message", "structsbk_1_1play__container__message.html", null ],
       [ "post_event_message", "structsbk_1_1post__event__message.html", null ],
       [ "post_event_name_message", "structsbk_1_1post__event__name__message.html", null ],
       [ "promise_base", "classsbk_1_1promise__base.html", null ],
