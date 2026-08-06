@@ -154,9 +154,11 @@ namespace sbk
             // Add a skip message into end of the buffer. Write the actual message as normal
             if (paddingSize > 0U)
             {
-                BOOST_ASSERT(paddingSize >= sizeof(message_header));
-                message_header skipHeader{.m_identifier = s_skipFlag, .m_payloadSize = static_cast<payload_size_t>(paddingSize) - sizeof(message_header)};
-                std::memcpy(paddingBuffer, &skipHeader, sizeof(message_header));
+                if (paddingSize >= sizeof(message_header))  // If we can add a header, add one. Otherwise, the reader can also detect there is a tiny space before the end of the buffer and skip it
+                {
+                    message_header skipHeader{.m_identifier = s_skipFlag, .m_payloadSize = static_cast<payload_size_t>(paddingSize) - sizeof(message_header)};
+                    std::memcpy(paddingBuffer, &skipHeader, sizeof(message_header));
+                }
             }
 
             std::memcpy(messageBuffer, &header, sizeof(message_header));
@@ -189,18 +191,28 @@ namespace sbk
                 // READ HEADER
 
                 SBK_STATUS_TRY_C(m_ringBuffer.read_begin(&messageBuffer, &readIndex, sizeof(message_header), &bytesRead));
-                message_header* header = reinterpret_cast<message_header*>(messageBuffer);
-                messageType            = header->m_identifier;
-                payloadSize            = header->m_payloadSize;
-                SBK_STATUS_TRY_C(m_ringBuffer.read_end(sizeof(message_header)));
-
-                // AUTO READ SKIP PAYLOAD
-
-                if (header->m_identifier == s_skipFlag)
+                BOOST_ASSERT(bytesRead <= sizeof(message_header));
+                if (bytesRead == sizeof(message_header))
                 {
-                    SBK_STATUS_TRY_C(m_ringBuffer.read_begin(&messageBuffer, &readIndex, payloadSize, &bytesRead));
-                    SBK_STATUS_TRY_C(m_ringBuffer.read_end(payloadSize));
+                    message_header* header = reinterpret_cast<message_header*>(messageBuffer);
+                    messageType            = header->m_identifier;
+                    payloadSize            = header->m_payloadSize;
+                    SBK_STATUS_TRY_C(m_ringBuffer.read_end(sizeof(message_header)));
+
+                    // AUTO READ SKIP PAYLOAD
+
+                    if (header->m_identifier == s_skipFlag)
+                    {
+                        SBK_STATUS_TRY_C(m_ringBuffer.read_begin(&messageBuffer, &readIndex, payloadSize, &bytesRead));
+                        SBK_STATUS_TRY_C(m_ringBuffer.read_end(payloadSize));
+                    }
                 }
+                else
+                {
+                    // If the writer couldn't fit a header, just skip round
+                    SBK_STATUS_TRY_C(m_ringBuffer.read_end(bytesRead));
+                }
+
 
             } while (messageType == s_skipFlag);
 
