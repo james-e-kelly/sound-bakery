@@ -76,8 +76,7 @@ static int numNodesRendered = 0;
 
 void project_nodes_widget::render_category(sbk::memory::object_category category)
 {
-    const std::set<sbk::core::object*, sbk::core::object_ptr_comparator> categoryObjects =
-        sbk::engine::system::get()->convert_to_ordered(sbk::engine::system::get()->get_objects_of_category(category));
+    const std::set<sbk::core::object*, sbk::core::object_ptr_comparator> categoryObjects = sbk::engine::system::get()->convert_to_ordered(sbk::engine::system::get()->get_objects_of_category(category));
 
     ImDrawList* draw_list = ImGui::GetWindowDrawList();
 
@@ -107,7 +106,11 @@ void project_nodes_widget::render_category(sbk::memory::object_category category
             draw_list->AddRectFilled(ImVec2(x1, y1), ImVec2(x2, y2), col);
         }
     }
-    ImGui::SetCursorPos(pos);
+
+    if (numNodesRendered > 0)
+    {
+        ImGui::SetCursorPos(pos);
+    }
 
     for (sbk::core::object* const object : categoryObjects)
     {
