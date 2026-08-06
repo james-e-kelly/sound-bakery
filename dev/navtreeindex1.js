@@ -225,6 +225,7 @@ var NAVTREEINDEX1 =
 "structsbk_1_1memory_1_1object__deleter.html":[12,0,2,3,2],
 "structsbk_1_1memory_1_1owned__object__deleter.html":[12,0,2,3,3],
 "structsbk_1_1message__queue_1_1message__view.html":[12,0,2,13,0],
+"structsbk_1_1message__queue_1_1message__view.html#acc97e392e236e62663f493c7be82c447":[12,0,2,13,0,0],
 "structsbk_1_1numeric__type.html":[12,0,2,15],
 "structsbk_1_1numeric__type_3_01T_01_4.html":[12,0,2,16],
 "structsbk_1_1ready__result__awaiter.html":[12,0,2,18],
@@ -248,6 +249,5 @@ var NAVTREEINDEX1 =
 "structsc__dsp__parameter__float.html":[12,0,29],
 "structsc__dsp__state.html":[12,0,30],
 "structsc__dsp__vtable.html":[12,0,31],
-"structsc__encoder.html":[12,0,32],
-"structsc__encoder__config.html":[12,0,33]
+"structsc__encoder.html":[12,0,32]
 };

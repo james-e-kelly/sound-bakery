@@ -7,7 +7,7 @@ var concepts =
       [ "memory", null, [
         [ "pointer", "conceptsbk_1_1memory_1_1pointer.html", null ]
       ] ],
-      [ "message_type", "conceptsbk_1_1message__type.html", null ],
-      [ "pod", "conceptsbk_1_1pod.html", null ]
+      [ "message_identifier", "conceptsbk_1_1message__identifier.html", null ],
+      [ "message_payload", "conceptsbk_1_1message__payload.html", null ]
     ] ]
 ];

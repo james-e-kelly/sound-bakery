@@ -137,6 +137,7 @@ $(document).ready(function(){initNavTree('structsbk_1_1message__queue_1_1message
 
 <div class="header">
   <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="structsbk_1_1message__queue_1_1message__view-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">sbk::message_queue&lt; T &gt;::message_view Struct Reference</div></div>
@@ -158,22 +159,69 @@ Collaboration diagram for sbk::message_queue&lt; T &gt;::message_view:</div>
 </map>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:acc97e392e236e62663f493c7be82c447" id="r_acc97e392e236e62663f493c7be82c447"><td class="memTemplParams" colspan="2">template&lt;typename U &gt; </td></tr>
+<tr class="memitem:acc97e392e236e62663f493c7be82c447"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structsbk_1_1message__queue_1_1message__view.html#acc97e392e236e62663f493c7be82c447">cast</a> () const -&gt; const U *</td></tr>
+<tr class="memdesc:acc97e392e236e62663f493c7be82c447"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cast the payload to the user's message type.  <br /></td></tr>
+<tr class="separator:acc97e392e236e62663f493c7be82c447"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:afdffda8a1f84743734b7117e8e07ac59" id="r_afdffda8a1f84743734b7117e8e07ac59"><td class="memItemLeft" align="right" valign="top"><a id="afdffda8a1f84743734b7117e8e07ac59" name="afdffda8a1f84743734b7117e8e07ac59"></a>
-T&#160;</td><td class="memItemRight" valign="bottom"><b>m_type</b> {}</td></tr>
-<tr class="separator:afdffda8a1f84743734b7117e8e07ac59"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa6ed782b8a69aa1114e199dfea9ddd05" id="r_aa6ed782b8a69aa1114e199dfea9ddd05"><td class="memItemLeft" align="right" valign="top"><a id="aa6ed782b8a69aa1114e199dfea9ddd05" name="aa6ed782b8a69aa1114e199dfea9ddd05"></a>
-message_size_type&#160;</td><td class="memItemRight" valign="bottom"><b>m_payloadSize</b> {}</td></tr>
-<tr class="separator:aa6ed782b8a69aa1114e199dfea9ddd05"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4292b62291a1352e2c3fb8e6de39e7f" id="r_ae4292b62291a1352e2c3fb8e6de39e7f"><td class="memItemLeft" align="right" valign="top"><a id="ae4292b62291a1352e2c3fb8e6de39e7f" name="ae4292b62291a1352e2c3fb8e6de39e7f"></a>
+T&#160;</td><td class="memItemRight" valign="bottom"><b>m_identifier</b> {}</td></tr>
+<tr class="separator:ae4292b62291a1352e2c3fb8e6de39e7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76add969b3401d21b5a783efd6f60247" id="r_a76add969b3401d21b5a783efd6f60247"><td class="memItemLeft" align="right" valign="top"><a id="a76add969b3401d21b5a783efd6f60247" name="a76add969b3401d21b5a783efd6f60247"></a>
+payload_size_t&#160;</td><td class="memItemRight" valign="bottom"><b>m_payloadSize</b> {}</td></tr>
+<tr class="separator:a76add969b3401d21b5a783efd6f60247"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:add44c69b973e51120535b218c3099f7a" id="r_add44c69b973e51120535b218c3099f7a"><td class="memItemLeft" align="right" valign="top"><a id="add44c69b973e51120535b218c3099f7a" name="add44c69b973e51120535b218c3099f7a"></a>
 const void *&#160;</td><td class="memItemRight" valign="bottom"><b>payload</b> {}</td></tr>
 <tr class="separator:add44c69b973e51120535b218c3099f7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><div class="compoundTemplParams">template&lt;message_type T = std::uint32_t&gt;<br />
+<div class="textblock"><div class="compoundTemplParams">template&lt;message_identifier T = std::uint8_t&gt;<br />
 struct sbk::message_queue&lt; T &gt;::message_view</div><p>Returned data from the buffer. Not the actual raw data that was inside the buffer - just a pointer to it. </p>
-</div><hr/>The documentation for this struct was generated from the following file:<ul>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="acc97e392e236e62663f493c7be82c447" name="acc97e392e236e62663f493c7be82c447"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc97e392e236e62663f493c7be82c447">&#9670;&#160;</a></span>cast()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;message_identifier T = std::uint8_t&gt; </div>
+<div class="memtemplate">
+template&lt;typename U &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto <a class="el" href="classsbk_1_1message__queue.html">sbk::message_queue</a>&lt; T &gt;::message_view::cast </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const -&gt; const U*
+            </td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Cast the payload to the user's message type. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">U</td><td>message type </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>pointer to the user's message </dd></dl>
+
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following file:<ul>
 <li>src/sound_bakery/core/containers/<a class="el" href="message__queue_8h_source.html">message_queue.h</a></li>
 </ul>
 </div><!-- contents -->
