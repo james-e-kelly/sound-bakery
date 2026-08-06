@@ -1,5 +1,10 @@
 var NAVTREEINDEX2 =
 {
+"structsc__dsp__parameter.html":[12,0,28],
+"structsc__dsp__parameter__float.html":[12,0,29],
+"structsc__dsp__state.html":[12,0,30],
+"structsc__dsp__vtable.html":[12,0,31],
+"structsc__encoder.html":[12,0,32],
 "structsc__encoder__config.html":[12,0,33],
 "structsc__encoder__vorbis.html":[12,0,34],
 "structsc__meter.html":[12,0,35],
@@ -13,16 +18,17 @@ var NAVTREEINDEX2 =
 "structstbi__io__callbacks.html":[12,0,47],
 "switch__container_8h_source.html":[13,0,2,0,7,1,5],
 "system_8h_source.html":[13,0,2,0,18],
-"task_8h_source.html":[13,0,2,0,1,6,3],
+"system__thread_8h_source.html":[13,0,2,0,1,6,3],
+"task_8h_source.html":[13,0,2,0,1,6,4],
 "thread__domain_8h.html":[13,0,2,0,1,10],
 "thread__domain_8h.html#a0b8ea399f2137b4f06dbe394f8cdd644":[13,0,2,0,1,10,2],
 "thread__domain_8h.html#a4483ceec7f874495b7b6942b9af34e3c":[13,0,2,0,1,10,1],
 "thread__domain_8h_source.html":[13,0,2,0,1,10],
-"thread__executor_8h_source.html":[13,0,2,0,1,6,4],
+"thread__executor_8h_source.html":[13,0,2,0,1,6,5],
 "todo.html":[10],
 "type__helper_8h_source.html":[13,0,2,0,14,0],
-"unique__coroutine_8h_source.html":[13,0,2,0,1,6,5],
+"unique__coroutine_8h_source.html":[13,0,2,0,1,6,6],
 "voice_8h_source.html":[13,0,2,0,15,1],
 "voice__tracker_8h_source.html":[13,0,2,0,9,0],
-"work__item_8h_source.html":[13,0,2,0,1,6,6]
+"work__item_8h_source.html":[13,0,2,0,1,6,7]
 };

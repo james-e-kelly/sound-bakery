@@ -138,24 +138,16 @@ $(document).ready(function(){initNavTree('classsbk_1_1command__queue.html',''); 
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#friends">Friends</a> &#124;
 <a href="classsbk_1_1command__queue-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">sbk::command_queue Class Reference</div></div>
+  <div class="headertitle"><div class="title">sbk::command_queue Class Reference<span class="mlabels"><span class="mlabel">final</span></span></div></div>
 </div><!--header-->
 <div class="contents">
-
-<p>Queues tasks until it is "flushed" onto another executor.  
- <a href="classsbk_1_1command__queue.html#details">More...</a></p>
-
-<p><code>#include &lt;<a class="el" href="command__queue_8h_source.html">command_queue.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for sbk::command_queue:</div>
 <div class="dyncontent">
 <div class="center"><img src="classsbk_1_1command__queue__inherit__graph.png" border="0" usemap="#asbk_1_1command__queue_inherit__map" alt="Inheritance graph"/></div>
 <map name="asbk_1_1command__queue_inherit__map" id="asbk_1_1command__queue_inherit__map">
-<area shape="rect" title="Queues tasks until it is &quot;flushed&quot; onto another executor." alt="" coords="11,152,176,177"/>
-<area shape="rect" href="classsbk_1_1executor.html" title="Abstract executor." alt="" coords="39,79,148,104"/>
-<area shape="poly" title=" " alt="" coords="96,118,96,152,91,152,91,118"/>
+<area shape="rect" title=" " alt="" coords="11,79,176,104"/>
 <area shape="rect" href="classsbk_1_1core_1_1object__owner.html" title="Creates, owns and tracks objects. Is owned by other object owners." alt="" coords="5,5,181,31"/>
 <area shape="poly" title=" " alt="" coords="96,44,96,79,91,79,91,44"/>
 </map>
@@ -165,9 +157,7 @@ Collaboration diagram for sbk::command_queue:</div>
 <div class="dyncontent">
 <div class="center"><img src="classsbk_1_1command__queue__coll__graph.png" border="0" usemap="#asbk_1_1command__queue_coll__map" alt="Collaboration graph"/></div>
 <map name="asbk_1_1command__queue_coll__map" id="asbk_1_1command__queue_coll__map">
-<area shape="rect" title="Queues tasks until it is &quot;flushed&quot; onto another executor." alt="" coords="11,152,176,177"/>
-<area shape="rect" href="classsbk_1_1executor.html" title="Abstract executor." alt="" coords="39,79,148,104"/>
-<area shape="poly" title=" " alt="" coords="96,118,96,152,91,152,91,118"/>
+<area shape="rect" title=" " alt="" coords="11,79,176,104"/>
 <area shape="rect" href="classsbk_1_1core_1_1object__owner.html" title="Creates, owns and tracks objects. Is owned by other object owners." alt="" coords="5,5,181,31"/>
 <area shape="poly" title=" " alt="" coords="96,44,96,79,91,79,91,44"/>
 </map>
@@ -175,54 +165,16 @@ Collaboration diagram for sbk::command_queue:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ae294e984e96b5de64ac20432ebcac957" id="r_ae294e984e96b5de64ac20432ebcac957"><td class="memItemLeft" align="right" valign="top"><a id="ae294e984e96b5de64ac20432ebcac957" name="ae294e984e96b5de64ac20432ebcac957"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>command_queue</b> (std::string name)</td></tr>
-<tr class="separator:ae294e984e96b5de64ac20432ebcac957"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab93642175293463a221660e9c267ff32" id="r_ab93642175293463a221660e9c267ff32"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsbk_1_1command__queue.html#ab93642175293463a221660e9c267ff32">enqueue</a> (<a class="el" href="classsbk_1_1work__item.html">work_item</a> item) -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt;&gt; override</td></tr>
-<tr class="memdesc:ab93642175293463a221660e9c267ff32"><td class="mdescLeft">&#160;</td><td class="mdescRight">Take ownership of a work item and arrange for it to run. The one operation a concrete executor MUST provide.  <br /></td></tr>
-<tr class="separator:ab93642175293463a221660e9c267ff32"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5916f2a33b3ebcd41df4d6f752317532" id="r_a5916f2a33b3ebcd41df4d6f752317532"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsbk_1_1command__queue.html#a5916f2a33b3ebcd41df4d6f752317532">flush</a> () -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt;&gt; override</td></tr>
-<tr class="memdesc:a5916f2a33b3ebcd41df4d6f752317532"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flush all tasks to the target executor.  <br /></td></tr>
-<tr class="separator:a5916f2a33b3ebcd41df4d6f752317532"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a711a635f13a7bfa0e7650b51cf0860c9" id="r_a711a635f13a7bfa0e7650b51cf0860c9"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsbk_1_1command__queue.html#a711a635f13a7bfa0e7650b51cf0860c9">abandon</a> () -&gt; void override</td></tr>
-<tr class="memdesc:a711a635f13a7bfa0e7650b51cf0860c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Drop all staged commands and refuse further work. Does not flush.  <br /></td></tr>
-<tr class="separator:a711a635f13a7bfa0e7650b51cf0860c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_methods_classsbk_1_1executor"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classsbk_1_1executor')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classsbk_1_1executor.html">sbk::executor</a></td></tr>
-<tr class="memitem:adc38dd84cc1ba998dd793a160ca82654 inherit pub_methods_classsbk_1_1executor" id="r_adc38dd84cc1ba998dd793a160ca82654"><td class="memItemLeft" align="right" valign="top">
-&#160;</td><td class="memItemRight" valign="bottom"><b>executor</b> (std::string name)</td></tr>
-<tr class="separator:adc38dd84cc1ba998dd793a160ca82654 inherit pub_methods_classsbk_1_1executor"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afc3acf1068ead16929efd8aebd4e35eb inherit pub_methods_classsbk_1_1executor" id="r_afc3acf1068ead16929efd8aebd4e35eb"><td class="memItemLeft" align="right" valign="top">
-&#160;</td><td class="memItemRight" valign="bottom"><b>executor</b> (const <a class="el" href="classsbk_1_1executor.html">executor</a> &amp;)=delete</td></tr>
-<tr class="separator:afc3acf1068ead16929efd8aebd4e35eb inherit pub_methods_classsbk_1_1executor"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a395b79989855c2baaafa28f865bae5e1 inherit pub_methods_classsbk_1_1executor" id="r_a395b79989855c2baaafa28f865bae5e1"><td class="memItemLeft" align="right" valign="top">
-&#160;</td><td class="memItemRight" valign="bottom"><b>executor</b> (<a class="el" href="classsbk_1_1executor.html">executor</a> &amp;&amp;)=delete</td></tr>
-<tr class="separator:a395b79989855c2baaafa28f865bae5e1 inherit pub_methods_classsbk_1_1executor"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6a5209cc8b950c67f276171b007cea8f inherit pub_methods_classsbk_1_1executor" id="r_a6a5209cc8b950c67f276171b007cea8f"><td class="memItemLeft" align="right" valign="top">
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classsbk_1_1executor.html">executor</a> &amp;) -&gt; <a class="el" href="classsbk_1_1executor.html">executor</a> &amp;=delete</td></tr>
-<tr class="separator:a6a5209cc8b950c67f276171b007cea8f inherit pub_methods_classsbk_1_1executor"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afed49336128834ce45de0bbaf5c1ae42 inherit pub_methods_classsbk_1_1executor" id="r_afed49336128834ce45de0bbaf5c1ae42"><td class="memItemLeft" align="right" valign="top">
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classsbk_1_1executor.html">executor</a> &amp;&amp;) -&gt; <a class="el" href="classsbk_1_1executor.html">executor</a> &amp;=delete</td></tr>
-<tr class="separator:afed49336128834ce45de0bbaf5c1ae42 inherit pub_methods_classsbk_1_1executor"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a457a3e5c82842d3bfbec270c055fac69 inherit pub_methods_classsbk_1_1executor" id="r_a457a3e5c82842d3bfbec270c055fac69"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsbk_1_1executor.html#a457a3e5c82842d3bfbec270c055fac69">post_work</a> (std::function&lt; void()&gt; work) -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt;&gt;</td></tr>
-<tr class="memdesc:a457a3e5c82842d3bfbec270c055fac69 inherit pub_methods_classsbk_1_1executor"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enqueue a generic callable to run on this executor.  <br /></td></tr>
-<tr class="separator:a457a3e5c82842d3bfbec270c055fac69 inherit pub_methods_classsbk_1_1executor"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a848c59877ca424a37608770303b9c5bc inherit pub_methods_classsbk_1_1executor" id="r_a848c59877ca424a37608770303b9c5bc"><td class="memTemplParams" colspan="2">template&lt;class Promise &gt; </td></tr>
-<tr class="memitem:a848c59877ca424a37608770303b9c5bc inherit pub_methods_classsbk_1_1executor"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classsbk_1_1executor.html#a848c59877ca424a37608770303b9c5bc">post</a> (std::coroutine_handle&lt; Promise &gt; h) -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt;&gt;</td></tr>
-<tr class="memdesc:a848c59877ca424a37608770303b9c5bc inherit pub_methods_classsbk_1_1executor"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enqueue a coroutine to be resumed on this executor.  <br /></td></tr>
-<tr class="separator:a848c59877ca424a37608770303b9c5bc inherit pub_methods_classsbk_1_1executor"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a392dfa15407b4e8ae0cc5289edd88052 inherit pub_methods_classsbk_1_1executor" id="r_a392dfa15407b4e8ae0cc5289edd88052"><td class="memItemLeft" align="right" valign="top">virtual auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsbk_1_1executor.html#a392dfa15407b4e8ae0cc5289edd88052">drain</a> () -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt;&gt;</td></tr>
-<tr class="memdesc:a392dfa15407b4e8ae0cc5289edd88052 inherit pub_methods_classsbk_1_1executor"><td class="mdescLeft">&#160;</td><td class="mdescRight">For executors like the @r <a class="el" href="classsbk_1_1manual__executor.html" title="An @r executor with no thread of its own: work is queued, then run all at once by whoever calls @r dr...">manual_executor</a>, drain all tasks and run them now.  <br /></td></tr>
-<tr class="separator:a392dfa15407b4e8ae0cc5289edd88052 inherit pub_methods_classsbk_1_1executor"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a280f823ea3c8b52825a17047701b4dd0 inherit pub_methods_classsbk_1_1executor" id="r_a280f823ea3c8b52825a17047701b4dd0"><td class="memItemLeft" align="right" valign="top">virtual auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsbk_1_1executor.html#a280f823ea3c8b52825a17047701b4dd0">on_this_thread</a> () const noexcept -&gt; bool</td></tr>
-<tr class="memdesc:a280f823ea3c8b52825a17047701b4dd0 inherit pub_methods_classsbk_1_1executor"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether the caller is already running "on" this executor.  <br /></td></tr>
-<tr class="separator:a280f823ea3c8b52825a17047701b4dd0 inherit pub_methods_classsbk_1_1executor"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abe10069f1d51446d177c69b0949b3817 inherit pub_methods_classsbk_1_1executor" id="r_abe10069f1d51446d177c69b0949b3817"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsbk_1_1executor.html#abe10069f1d51446d177c69b0949b3817">schedule</a> () -&gt; <a class="el" href="structsbk_1_1executor_1_1schedule__awaiter.html">schedule_awaiter</a></td></tr>
-<tr class="memdesc:abe10069f1d51446d177c69b0949b3817 inherit pub_methods_classsbk_1_1executor"><td class="mdescLeft">&#160;</td><td class="mdescRight">Schedule a coroutine to run on this executor by co_awaiting the result.  <br /></td></tr>
-<tr class="separator:abe10069f1d51446d177c69b0949b3817 inherit pub_methods_classsbk_1_1executor"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a62f2ff7de0050e228d7a7f352c4298b5 inherit pub_methods_classsbk_1_1executor" id="r_a62f2ff7de0050e228d7a7f352c4298b5"><td class="memItemLeft" align="right" valign="top">
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>yield</b> () -&gt; <a class="el" href="structsbk_1_1executor_1_1schedule__awaiter.html">schedule_awaiter</a></td></tr>
-<tr class="memdesc:a62f2ff7de0050e228d7a7f352c4298b5 inherit pub_methods_classsbk_1_1executor"><td class="mdescLeft">&#160;</td><td class="mdescRight">Suspend and yield the current coroutine. The coroutine is queued to run on this executor at a later date. <br /></td></tr>
-<tr class="separator:a62f2ff7de0050e228d7a7f352c4298b5 inherit pub_methods_classsbk_1_1executor"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae326c49fe6f37910bb77862939931882" id="r_ae326c49fe6f37910bb77862939931882"><td class="memItemLeft" align="right" valign="top"><a id="ae326c49fe6f37910bb77862939931882" name="ae326c49fe6f37910bb77862939931882"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>init</b> (std::size_t size, <a class="el" href="classsbk_1_1memory_1_1memory__resource.html">sbk::memory::memory_resource</a> &amp;allocator) noexcept -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt;&gt;</td></tr>
+<tr class="separator:ae326c49fe6f37910bb77862939931882"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a405bdc09326459e95509e80d6f4f3bfc" id="r_a405bdc09326459e95509e80d6f4f3bfc"><td class="memTemplParams" colspan="2"><a id="a405bdc09326459e95509e80d6f4f3bfc" name="a405bdc09326459e95509e80d6f4f3bfc"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a405bdc09326459e95509e80d6f4f3bfc"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><b>write_command</b> (const message_type &amp;type, const T &amp;message) noexcept -&gt; sbk_status</td></tr>
+<tr class="separator:a405bdc09326459e95509e80d6f4f3bfc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3715aff79a8d11e7229fbc94b78d3403" id="r_a3715aff79a8d11e7229fbc94b78d3403"><td class="memItemLeft" align="right" valign="top"><a id="a3715aff79a8d11e7229fbc94b78d3403" name="a3715aff79a8d11e7229fbc94b78d3403"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>process_commands</b> () noexcept -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt;&gt;</td></tr>
+<tr class="separator:a3715aff79a8d11e7229fbc94b78d3403"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classsbk_1_1core_1_1object__owner"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classsbk_1_1core_1_1object__owner')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classsbk_1_1core_1_1object__owner.html">sbk::core::object_owner</a></td></tr>
 <tr class="memitem:ab98fcc538b96a167942899d9db107c67 inherit pub_methods_classsbk_1_1core_1_1object__owner" id="r_ab98fcc538b96a167942899d9db107c67"><td class="memItemLeft" align="right" valign="top">
 auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_owner</b> () const -&gt; <a class="el" href="classsbk_1_1core_1_1object__owner.html">object_owner</a> *</td></tr>
@@ -275,119 +227,16 @@ template&lt;typename T &gt; </td></tr>
 <tr class="memdesc:afc00b34d49c1378041bd7f51d0707f15 inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="mdescLeft">&#160;</td><td class="mdescRight">Templated version of create_database_object. <br /></td></tr>
 <tr class="separator:afc00b34d49c1378041bd7f51d0707f15 inherit pub_methods_classsbk_1_1core_1_1object__owner"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
-Friends</h2></td></tr>
-<tr class="memitem:ae71f62f210b059fe266f0ba7a8196992" id="r_ae71f62f210b059fe266f0ba7a8196992"><td class="memItemLeft" align="right" valign="top"><a id="ae71f62f210b059fe266f0ba7a8196992" name="ae71f62f210b059fe266f0ba7a8196992"></a>
-class&#160;</td><td class="memItemRight" valign="bottom"><b>::sbk::engine::system</b></td></tr>
-<tr class="separator:ae71f62f210b059fe266f0ba7a8196992"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
-<tr class="inherit_header pro_methods_classsbk_1_1executor"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classsbk_1_1executor')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classsbk_1_1executor.html">sbk::executor</a></td></tr>
-<tr class="memitem:ac792e667d130b4a1f8bcb16a01e8708f inherit pro_methods_classsbk_1_1executor" id="r_ac792e667d130b4a1f8bcb16a01e8708f"><td class="memItemLeft" align="right" valign="top">
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>name</b> () const noexcept -&gt; const std::string &amp;</td></tr>
-<tr class="separator:ac792e667d130b4a1f8bcb16a01e8708f inherit pro_methods_classsbk_1_1executor"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classsbk_1_1core_1_1object__owner"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classsbk_1_1core_1_1object__owner')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classsbk_1_1core_1_1object__owner.html">sbk::core::object_owner</a></td></tr>
 <tr class="memitem:ab1b37ddb016a88ea9c2931e62c8c7bce inherit pro_methods_classsbk_1_1core_1_1object__owner" id="r_ab1b37ddb016a88ea9c2931e62c8c7bce"><td class="memItemLeft" align="right" valign="top">
 auto&#160;</td><td class="memItemRight" valign="bottom"><b>set_owner</b> (<a class="el" href="classsbk_1_1core_1_1object__owner.html">object_owner</a> *newOwner) -&gt; void</td></tr>
 <tr class="separator:ab1b37ddb016a88ea9c2931e62c8c7bce inherit pro_methods_classsbk_1_1core_1_1object__owner"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Queues tasks until it is "flushed" onto another executor. </p>
-<p>For Sound Bakery, this means queuing all commands from the game thread, or any thread, then flushing it to the system thread. </p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a711a635f13a7bfa0e7650b51cf0860c9" name="a711a635f13a7bfa0e7650b51cf0860c9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a711a635f13a7bfa0e7650b51cf0860c9">&#9670;&#160;</a></span>abandon()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">auto sbk::command_queue::abandon </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> -&gt; void</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Drop all staged commands and refuse further work. Does not flush. </p>
-
-<p>Reimplemented from <a class="el" href="classsbk_1_1executor.html#acb4dba652e089775b2e835943f061b1e">sbk::executor</a>.</p>
-
-</div>
-</div>
-<a id="ab93642175293463a221660e9c267ff32" name="ab93642175293463a221660e9c267ff32"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab93642175293463a221660e9c267ff32">&#9670;&#160;</a></span>enqueue()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">auto sbk::command_queue::enqueue </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classsbk_1_1work__item.html">work_item</a>&#160;</td>
-          <td class="paramname"><em>item</em></td><td>)</td>
-          <td> -&gt;  <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt;&gt;</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Take ownership of a work item and arrange for it to run. The one operation a concrete executor MUST provide. </p>
-<dl class="section return"><dt>Returns</dt><dd>SBK_SUCCESS if successfully enqueued, otherwise a failure the caller can forward </dd></dl>
-
-<p>Implements <a class="el" href="classsbk_1_1executor.html#a5b1715cf800d8dcc2f5b6199d36f9137">sbk::executor</a>.</p>
-
-</div>
-</div>
-<a id="a5916f2a33b3ebcd41df4d6f752317532" name="a5916f2a33b3ebcd41df4d6f752317532"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5916f2a33b3ebcd41df4d6f752317532">&#9670;&#160;</a></span>flush()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">auto sbk::command_queue::flush </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt;&gt;</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Flush all tasks to the target executor. </p>
-<dl class="section return"><dt>Returns</dt><dd>SBK_SUCCESS if the command queue was empty, or successfully flushed </dd></dl>
-
-<p>Reimplemented from <a class="el" href="classsbk_1_1executor.html#a7f49a8c432193c7d74651cfe5dc7bcd1">sbk::executor</a>.</p>
-
-</div>
-</div>
-<hr/>The documentation for this class was generated from the following file:<ul>
+<hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/sound_bakery/core/task/<a class="el" href="command__queue_8h_source.html">command_queue.h</a></li>
+<li>src/sound_bakery/core/task/<b>command_queue.cpp</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

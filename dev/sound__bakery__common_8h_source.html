@@ -175,13 +175,14 @@ $(document).ready(function(){initNavTree('sound__bakery__common_8h_source.html',
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keywordtype">bool</span>                singleThreadedUpdate;   <span class="comment">//&lt; Update the database/studio thread when @r sbk::engine::system::update is called. Helpful for when consuming applications need to access Sound Bakery non-realtime data safely</span></div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordtype">bool</span>                enableProfiling;        <span class="comment">//&lt; Enable voice tracking, CPU usage, etc.</span></div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordtype">bool</span>                logToConsole;           <span class="comment">//&lt; Automatically set up the logger to print to the console. Normally left off so consuming applications can control Sound Bakery&#39;s logging</span></div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>};</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    ma_uint64           commandQueueSize;       <span class="comment">//&lt; Size in bytes of the command queue</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>};</div>
 </div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="asound__chef_8h_html"><div class="ttname"><a href="sound__chef_8h.html">sound_chef.h</a></div><div class="ttdoc">A wrapper library for miniaudio that emulates functionality of FMOD.</div></div>
 <div class="ttc" id="astructsbk__system__config_html"><div class="ttname"><a href="structsbk__system__config.html">sbk_system_config</a></div><div class="ttdef"><b>Definition</b> sound_bakery_common.h:26</div></div>
-<div class="ttc" id="astructsc__system__config_html"><div class="ttname"><a href="structsc__system__config.html">sc_system_config</a></div><div class="ttdoc">Configuration for initializing the sc_system.</div><div class="ttdef"><b>Definition</b> sound_chef_common.h:350</div></div>
+<div class="ttc" id="astructsc__system__config_html"><div class="ttname"><a href="structsc__system__config.html">sc_system_config</a></div><div class="ttdoc">Configuration for initializing the sc_system.</div><div class="ttdef"><b>Definition</b> sound_chef_common.h:351</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

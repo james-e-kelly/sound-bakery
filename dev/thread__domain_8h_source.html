@@ -158,7 +158,7 @@ $(document).ready(function(){initNavTree('thread__domain_8h_source.html',''); in
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    {</div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        unknown,  <span class="comment">//&lt; Not inside any marked scope, e.g. the app&#39;s main thread outside update().</span></div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        game,     <span class="comment">//&lt; Inside system::update() - the thread the game/app pumps Sound Bakery from.</span></div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        studio,   <span class="comment">//&lt; Inside the studio drain (system::update_async) - owns the database and objects.</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        system,   <span class="comment">//&lt; Inside the system drain (system::flush_commands) - owns the database and objects.</span></div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    };</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    [[nodiscard]] <span class="keyword">auto</span> get_current_thread_domain() -&gt; thread_domain;</div>
@@ -203,7 +203,7 @@ $(document).ready(function(){initNavTree('thread__domain_8h_source.html',''); in
 <div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span><span class="preprocessor">        }                                                                                       \</span></div>
 <div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span><span class="preprocessor">    } while (0)</span></div>
 <div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span><span class="preprocessor">#define SBK_EXPECT_STUDIO_THREAD() SBK_DETAIL_EXPECT_THREAD_DOMAIN(::sbk::core::thread_domain::studio)</span></div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span><span class="preprocessor">#define SBK_EXPECT_STUDIO_THREAD() SBK_DETAIL_EXPECT_THREAD_DOMAIN(::sbk::core::thread_domain::system)</span></div>
 <div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span><span class="preprocessor">#define SBK_EXPECT_GAME_THREAD()   SBK_DETAIL_EXPECT_THREAD_DOMAIN(::sbk::core::thread_domain::game)</span></div>
 <div class="ttc" id="aclasssbk_1_1core_1_1scoped__thread__domain_html"><div class="ttname"><a href="classsbk_1_1core_1_1scoped__thread__domain.html">sbk::core::scoped_thread_domain</a></div><div class="ttdoc">RAII marker: code inside this scope belongs to domain.</div><div class="ttdef"><b>Definition</b> thread_domain.h:62</div></div>
 <div class="ttc" id="athread__domain_8h_html_a0b8ea399f2137b4f06dbe394f8cdd644"><div class="ttname"><a href="thread__domain_8h.html#a0b8ea399f2137b4f06dbe394f8cdd644">sbk::core::set_single_threaded_mode</a></div><div class="ttdeci">auto set_single_threaded_mode(bool enabled) -&gt; void</div><div class="ttdoc">Selects single-threaded (editor) mode from configuration.</div><div class="ttdef"><b>Definition</b> thread_domain.cpp:27</div></div>

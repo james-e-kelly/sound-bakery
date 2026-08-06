@@ -154,15 +154,13 @@ Inheritance diagram for sbk::executor:</div>
 <div class="dyncontent">
 <div class="center"><img src="classsbk_1_1executor__inherit__graph.png" border="0" usemap="#asbk_1_1executor_inherit__map" alt="Inheritance graph"/></div>
 <map name="asbk_1_1executor_inherit__map" id="asbk_1_1executor_inherit__map">
-<area shape="rect" title="Abstract executor." alt="" coords="223,79,332,104"/>
-<area shape="rect" href="classsbk_1_1command__queue.html" title="Queues tasks until it is &quot;flushed&quot; onto another executor." alt="" coords="5,152,171,177"/>
-<area shape="poly" title=" " alt="" coords="235,111,120,154,118,149,233,106"/>
-<area shape="rect" href="classsbk_1_1manual__executor.html" title="An @r executor with no thread of its own: work is queued, then run all at once by whoever calls @r dr..." alt="" coords="195,152,360,177"/>
-<area shape="poly" title=" " alt="" coords="280,118,280,152,275,152,275,118"/>
-<area shape="rect" href="classsbk_1_1thread__executor.html" title="An @r executor that owns one OS thread and runs posted work as soon as it arrives." alt="" coords="385,152,543,177"/>
-<area shape="poly" title=" " alt="" coords="321,106,434,149,433,154,319,111"/>
-<area shape="rect" href="classsbk_1_1core_1_1object__owner.html" title="Creates, owns and tracks objects. Is owned by other object owners." alt="" coords="189,5,365,31"/>
-<area shape="poly" title=" " alt="" coords="280,44,280,79,275,79,275,44"/>
+<area shape="rect" title="Abstract executor." alt="" coords="127,79,236,104"/>
+<area shape="rect" href="classsbk_1_1manual__executor.html" title="An @r executor with no thread of its own: work is queued, then run all at once by whoever calls @r dr..." alt="" coords="5,152,171,177"/>
+<area shape="poly" title=" " alt="" coords="157,114,105,154,102,150,154,110"/>
+<area shape="rect" href="classsbk_1_1thread__executor.html" title="An @r executor that owns one OS thread and runs posted work as soon as it arrives." alt="" coords="195,152,354,177"/>
+<area shape="poly" title=" " alt="" coords="209,110,261,150,258,154,205,114"/>
+<area shape="rect" href="classsbk_1_1core_1_1object__owner.html" title="Creates, owns and tracks objects. Is owned by other object owners." alt="" coords="93,5,269,31"/>
+<area shape="poly" title=" " alt="" coords="184,44,184,79,179,79,179,44"/>
 </map>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <div class="dynheader">
@@ -209,8 +207,9 @@ auto&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a cla
 <tr class="memitem:a848c59877ca424a37608770303b9c5bc"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classsbk_1_1executor.html#a848c59877ca424a37608770303b9c5bc">post</a> (std::coroutine_handle&lt; Promise &gt; h) -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt;&gt;</td></tr>
 <tr class="memdesc:a848c59877ca424a37608770303b9c5bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enqueue a coroutine to be resumed on this executor.  <br /></td></tr>
 <tr class="separator:a848c59877ca424a37608770303b9c5bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7f49a8c432193c7d74651cfe5dc7bcd1" id="r_a7f49a8c432193c7d74651cfe5dc7bcd1"><td class="memItemLeft" align="right" valign="top">virtual auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsbk_1_1executor.html#a7f49a8c432193c7d74651cfe5dc7bcd1">flush</a> () -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt;&gt;</td></tr>
-<tr class="memdesc:a7f49a8c432193c7d74651cfe5dc7bcd1"><td class="mdescLeft">&#160;</td><td class="mdescRight">For executors like the @r <a class="el" href="classsbk_1_1command__queue.html" title="Queues tasks until it is &quot;flushed&quot; onto another executor.">command_queue</a>, moves all tasks to the target executor.  <br /></td></tr>
+<tr class="memitem:a7f49a8c432193c7d74651cfe5dc7bcd1" id="r_a7f49a8c432193c7d74651cfe5dc7bcd1"><td class="memItemLeft" align="right" valign="top"><a id="a7f49a8c432193c7d74651cfe5dc7bcd1" name="a7f49a8c432193c7d74651cfe5dc7bcd1"></a>
+virtual auto&#160;</td><td class="memItemRight" valign="bottom"><b>flush</b> () -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt;&gt;</td></tr>
+<tr class="memdesc:a7f49a8c432193c7d74651cfe5dc7bcd1"><td class="mdescLeft">&#160;</td><td class="mdescRight">For executors like the @r <a class="el" href="classsbk_1_1command__queue.html">command_queue</a>, moves all tasks to the target executor. <br /></td></tr>
 <tr class="separator:a7f49a8c432193c7d74651cfe5dc7bcd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a392dfa15407b4e8ae0cc5289edd88052" id="r_a392dfa15407b4e8ae0cc5289edd88052"><td class="memItemLeft" align="right" valign="top">virtual auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsbk_1_1executor.html#a392dfa15407b4e8ae0cc5289edd88052">drain</a> () -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt;&gt;</td></tr>
 <tr class="memdesc:a392dfa15407b4e8ae0cc5289edd88052"><td class="mdescLeft">&#160;</td><td class="mdescRight">For executors like the @r <a class="el" href="classsbk_1_1manual__executor.html" title="An @r executor with no thread of its own: work is queued, then run all at once by whoever calls @r dr...">manual_executor</a>, drain all tasks and run them now.  <br /></td></tr>
@@ -293,7 +292,7 @@ auto&#160;</td><td class="memItemRight" valign="bottom"><b>set_owner</b> (<a cla
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Abstract executor. </p>
 <p>Sound Bakery uses coroutines to make async programming easy to think about. It also uses coroutines so thread pools are easy to design and for us to utilise all system resources.</p>
-<p>Executors are what lets coroutines uses threads in an easy way. Most coroutines eventually end up on a @r <a class="el" href="classsbk_1_1thread__executor.html" title="An @r executor that owns one OS thread and runs posted work as soon as it arrives.">thread_executor</a>. Thread executors are simple executors that just run all tasks. Other executors, like the @r <a class="el" href="classsbk_1_1command__queue.html" title="Queues tasks until it is &quot;flushed&quot; onto another executor.">command_queue</a>, allow work to be queued up (likely from the game) and moved to a @r <a class="el" href="classsbk_1_1thread__executor.html" title="An @r executor that owns one OS thread and runs posted work as soon as it arrives.">thread_executor</a> at a defined time.</p>
+<p>Executors are what lets coroutines uses threads in an easy way. Most coroutines eventually end up on a @r <a class="el" href="classsbk_1_1thread__executor.html" title="An @r executor that owns one OS thread and runs posted work as soon as it arrives.">thread_executor</a>. Thread executors are simple executors that just run all tasks. Other executors, like the @r <a class="el" href="classsbk_1_1command__queue.html">command_queue</a>, allow work to be queued up (likely from the game) and moved to a @r <a class="el" href="classsbk_1_1thread__executor.html" title="An @r executor that owns one OS thread and runs posted work as soon as it arrives.">thread_executor</a> at a defined time.</p>
 <p>A concrete executor implements one thing: @r post_work for a generic work item. Posting a coroutine, and the <a class="el" href="classsbk_1_1executor.html#abe10069f1d51446d177c69b0949b3817" title="Schedule a coroutine to run on this executor by co_awaiting the result.">schedule()</a>/yield() thread-domain guards, are built on top of it.</p>
 <p>From this, most functions are expected to return @r sbk::async_result and set themselves up to run on their desired thread via <code>co_await executor-&gt;<a class="el" href="classsbk_1_1executor.html#abe10069f1d51446d177c69b0949b3817" title="Schedule a coroutine to run on this executor by co_awaiting the result.">schedule()</a></code>. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
@@ -322,7 +321,7 @@ auto&#160;</td><td class="memItemRight" valign="bottom"><b>set_owner</b> (<a cla
 
 <p>Stop the executor. Drop everything still queued and refuse further work. </p>
 
-<p>Reimplemented in <a class="el" href="classsbk_1_1command__queue.html#a711a635f13a7bfa0e7650b51cf0860c9">sbk::command_queue</a>, <a class="el" href="classsbk_1_1manual__executor.html#a8ffe7b675d97992c8b5c6f1e440ba007">sbk::manual_executor</a>, and <a class="el" href="classsbk_1_1thread__executor.html#afd592e7e17005fd4d20e9b6e3d8960dd">sbk::thread_executor</a>.</p>
+<p>Reimplemented in <a class="el" href="classsbk_1_1manual__executor.html#a8ffe7b675d97992c8b5c6f1e440ba007">sbk::manual_executor</a>, and <a class="el" href="classsbk_1_1thread__executor.html#afd592e7e17005fd4d20e9b6e3d8960dd">sbk::thread_executor</a>.</p>
 
 </div>
 </div>
@@ -382,36 +381,7 @@ auto&#160;</td><td class="memItemRight" valign="bottom"><b>set_owner</b> (<a cla
 <p>Take ownership of a work item and arrange for it to run. The one operation a concrete executor MUST provide. </p>
 <dl class="section return"><dt>Returns</dt><dd>SBK_SUCCESS if successfully enqueued, otherwise a failure the caller can forward </dd></dl>
 
-<p>Implemented in <a class="el" href="classsbk_1_1command__queue.html#ab93642175293463a221660e9c267ff32">sbk::command_queue</a>, <a class="el" href="classsbk_1_1manual__executor.html#a452c48fa862d0cd7474718894806f4d4">sbk::manual_executor</a>, and <a class="el" href="classsbk_1_1thread__executor.html#aecbf79866e1cdf59a02d9b92b293e9d2">sbk::thread_executor</a>.</p>
-
-</div>
-</div>
-<a id="a7f49a8c432193c7d74651cfe5dc7bcd1" name="a7f49a8c432193c7d74651cfe5dc7bcd1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7f49a8c432193c7d74651cfe5dc7bcd1">&#9670;&#160;</a></span>flush()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual auto sbk::executor::flush </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt;&gt; </td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>For executors like the @r <a class="el" href="classsbk_1_1command__queue.html" title="Queues tasks until it is &quot;flushed&quot; onto another executor.">command_queue</a>, moves all tasks to the target executor. </p>
-
-<p>Reimplemented in <a class="el" href="classsbk_1_1command__queue.html#a5916f2a33b3ebcd41df4d6f752317532">sbk::command_queue</a>.</p>
+<p>Implemented in <a class="el" href="classsbk_1_1manual__executor.html#a452c48fa862d0cd7474718894806f4d4">sbk::manual_executor</a>, and <a class="el" href="classsbk_1_1thread__executor.html#aecbf79866e1cdf59a02d9b92b293e9d2">sbk::thread_executor</a>.</p>
 
 </div>
 </div>
@@ -441,7 +411,7 @@ auto&#160;</td><td class="memItemRight" valign="bottom"><b>set_owner</b> (<a cla
 <p>Whether the caller is already running "on" this executor. </p>
 <dl class="section return"><dt>Returns</dt><dd>true if the calling code is on this executor's thread </dd>
 <dd>
-false by default &ndash; executors with no affine thread (e.g. @r <a class="el" href="classsbk_1_1command__queue.html" title="Queues tasks until it is &quot;flushed&quot; onto another executor.">command_queue</a>) never short-circuit, so scheduling always routes through @r post_work </dd></dl>
+false by default &ndash; executors with no affine thread (e.g. @r <a class="el" href="classsbk_1_1command__queue.html">command_queue</a>) never short-circuit, so scheduling always routes through @r post_work </dd></dl>
 
 <p>Reimplemented in <a class="el" href="classsbk_1_1manual__executor.html#aa3adee1b7110565a70e80b1e9c7f5611">sbk::manual_executor</a>, and <a class="el" href="classsbk_1_1thread__executor.html#abbbf8aee0126a356c9f77f40b75047b8">sbk::thread_executor</a>.</p>
 

@@ -72,6 +72,7 @@ var hierarchy =
       ] ]
     ] ],
     [ "sbk::engine::encoding_sound", "structsbk_1_1engine_1_1encoding__sound.html", null ],
+    [ "sbk::end_of_frame_message", "structsbk_1_1end__of__frame__message.html", null ],
     [ "sbk::error", "classsbk_1_1error.html", null ],
     [ "sbk::engine::event_devirtualise", "structsbk_1_1engine_1_1event__devirtualise.html", null ],
     [ "sbk::engine::event_init", "structsbk_1_1engine_1_1event__init.html", null ],
@@ -90,6 +91,7 @@ var hierarchy =
     [ "sbk::engine::flag_stopped", "structsbk_1_1engine_1_1flag__stopped.html", null ],
     [ "sbk::engine::gather_children_context", "structsbk_1_1engine_1_1gather__children__context.html", null ],
     [ "sbk::engine::global_parameter_list", "structsbk_1_1engine_1_1global__parameter__list.html", null ],
+    [ "sbk::load_soundbank_message", "structsbk_1_1load__soundbank__message.html", null ],
     [ "sbk::engine::local_parameter_list", "structsbk_1_1engine_1_1local__parameter__list.html", null ],
     [ "sbk::core::logger", null, [
       [ "sbk::engine::system", "classsbk_1_1engine_1_1system.html", null ]
@@ -103,6 +105,7 @@ var hierarchy =
       [ "sbk::memory::rpmalloc_resource", "classsbk_1_1memory_1_1rpmalloc__resource.html", null ]
     ] ],
     [ "sbk::message_queue< T >", "classsbk_1_1message__queue.html", null ],
+    [ "sbk::message_queue< message_type >", "classsbk_1_1message__queue.html", null ],
     [ "sbk::message_queue< T >::message_view", "structsbk_1_1message__queue_1_1message__view.html", null ],
     [ "method_drawer", "classmethod__drawer.html", null ],
     [ "sbk::mpsc_ring_buffer", "classsbk_1_1mpsc__ring__buffer.html", null ],
@@ -117,16 +120,17 @@ var hierarchy =
     [ "sbk::numeric_type< T >", "structsbk_1_1numeric__type_3_01T_01_4.html", null ],
     [ "sbk::memory::object_deleter", "structsbk_1_1memory_1_1object__deleter.html", null ],
     [ "sbk::core::object_owner", "classsbk_1_1core_1_1object__owner.html", [
+      [ "sbk::command_queue", "classsbk_1_1command__queue.html", null ],
       [ "sbk::core::object", "classsbk_1_1core_1_1object.html", null ],
       [ "sbk::editor::project", "classsbk_1_1editor_1_1project.html", null ],
       [ "sbk::engine::profiling::voice_tracker", "classsbk_1_1engine_1_1profiling_1_1voice__tracker.html", null ],
       [ "sbk::engine::runtime", "classsbk_1_1engine_1_1runtime.html", null ],
       [ "sbk::engine::system", "classsbk_1_1engine_1_1system.html", null ],
       [ "sbk::executor", "classsbk_1_1executor.html", [
-        [ "sbk::command_queue", "classsbk_1_1command__queue.html", null ],
         [ "sbk::manual_executor", "classsbk_1_1manual__executor.html", null ],
         [ "sbk::thread_executor", "classsbk_1_1thread__executor.html", null ]
-      ] ]
+      ] ],
+      [ "sbk::system_thread", "classsbk_1_1system__thread.html", null ]
     ] ],
     [ "sbk::core::object_ptr_comparator", "structsbk_1_1core_1_1object__ptr__comparator.html", null ],
     [ "sbk::core::object_tracker", "classsbk_1_1core_1_1object__tracker.html", [
@@ -136,6 +140,8 @@ var hierarchy =
     [ "sbk::core::parsed_database_name", "structsbk_1_1core_1_1parsed__database__name.html", null ],
     [ "playable_selection", "structplayable__selection.html", null ],
     [ "sbk::memory::polymorphic_allocator", "classsbk_1_1memory_1_1polymorphic__allocator.html", null ],
+    [ "sbk::post_event_message", "structsbk_1_1post__event__message.html", null ],
+    [ "sbk::post_event_name_message", "structsbk_1_1post__event__name__message.html", null ],
     [ "sbk::editor::project_configuration", "structsbk_1_1editor_1_1project__configuration.html", null ],
     [ "sbk::promise_base", "classsbk_1_1promise__base.html", [
       [ "sbk::detached_task::promise_type", "structsbk_1_1detached__task_1_1promise__type.html", null ],
@@ -207,6 +213,7 @@ var hierarchy =
       [ "sbk::engine::node_instance_fsm", "structsbk_1_1engine_1_1node__instance__fsm.html", null ]
     ] ],
     [ "stbi_io_callbacks", "structstbi__io__callbacks.html", null ],
+    [ "sbk::stop_all_message", "structsbk_1_1stop__all__message.html", null ],
     [ "sbk::task< T >", "classsbk_1_1task.html", null ],
     [ "sbk::util::type_comparator", "structsbk_1_1util_1_1type__comparator.html", null ],
     [ "sbk::util::type_helper", "classsbk_1_1util_1_1type__helper.html", null ],

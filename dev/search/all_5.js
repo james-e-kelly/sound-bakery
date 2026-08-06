@@ -6,7 +6,7 @@ var searchData=
   ['a_20sound_3',['Playing A Sound',['../ChefProgrammerGuide.html#autotoc_md64',1,'']]],
   ['aa_20ready_4',['2.0.0 — AA ready',['../Roadmap.html#autotoc_md52',1,'']]],
   ['aaa_5',['3.0.0+ — Console &amp; AAA',['../Roadmap.html#autotoc_md53',1,'']]],
-  ['abandon_6',['abandon',['../classsbk_1_1thread__executor.html#afd592e7e17005fd4d20e9b6e3d8960dd',1,'sbk::thread_executor::abandon()'],['../classsbk_1_1manual__executor.html#a8ffe7b675d97992c8b5c6f1e440ba007',1,'sbk::manual_executor::abandon()'],['../classsbk_1_1command__queue.html#a711a635f13a7bfa0e7650b51cf0860c9',1,'sbk::command_queue::abandon()'],['../classsbk_1_1executor.html#acb4dba652e089775b2e835943f061b1e',1,'sbk::executor::abandon()']]],
+  ['abandon_6',['abandon',['../classsbk_1_1thread__executor.html#afd592e7e17005fd4d20e9b6e3d8960dd',1,'sbk::thread_executor::abandon()'],['../classsbk_1_1manual__executor.html#a8ffe7b675d97992c8b5c6f1e440ba007',1,'sbk::manual_executor::abandon()'],['../classsbk_1_1executor.html#acb4dba652e089775b2e835943f061b1e',1,'sbk::executor::abandon()']]],
   ['acknowledgements_7',['Acknowledgements',['../index.html#autotoc_md11',1,'']]],
   ['action_8',['action',['../structsbk_1_1engine_1_1action.html',1,'sbk::engine']]],
   ['action_5fupdate_9',['action_update',['../structsbk_1_1engine_1_1node__instance__fsm_1_1action__update.html',1,'sbk::engine::node_instance_fsm']]],
