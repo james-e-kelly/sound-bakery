@@ -69,6 +69,8 @@
 
 /**
  * @brief Runs @p expr (a @c sbk::result<void>, or any result whose value is ignored); forwards its error.
+ * 
+ * "Try Void"
  */
 #define SBK_TRYV(expr)                                                                      \
     do                                                                                      \

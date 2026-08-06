@@ -1,16 +1,17 @@
 #include "system.h"
 
-#include "sound_bakery/core/thread_domain.h"
-#include "sound_bakery/editor/project/project.h"
 #include "sound_bakery/core/error/result.h"
-#include "sound_bakery/gameobject/gameobject.h"
-#include "sound_bakery/node/bus/bus.h"
-#include "sound_bakery/profiling/voice_tracker.h"
-#include "sound_bakery/runtime/runtime.h"
+#include "sound_bakery/core/task/system_thread.h"
 #include "sound_bakery/core/task/command_queue.h"
 #include "sound_bakery/core/task/manual_executor.h"
 #include "sound_bakery/core/task/task.h"
 #include "sound_bakery/core/task/thread_executor.h"
+#include "sound_bakery/core/thread_domain.h"
+#include "sound_bakery/editor/project/project.h"
+#include "sound_bakery/gameobject/gameobject.h"
+#include "sound_bakery/node/bus/bus.h"
+#include "sound_bakery/profiling/voice_tracker.h"
+#include "sound_bakery/runtime/runtime.h"
 #include "sound_bakery/util/type_helper.h"
 #include "sound_bakery/voice/node_instance.h"
 #include "sound_bakery/voice/voice.h"
@@ -148,14 +149,8 @@ system::~system()
 
     if (m_systemThread)
     {
-        m_systemThread->abandon();
+        m_systemThread->stop();
         m_systemThread.reset();
-    }
-
-    if (m_systemExecutor)
-    {
-        m_systemExecutor->abandon();
-        m_systemExecutor.reset();
     }
 
     if (m_gameExecutor)
@@ -212,7 +207,7 @@ auto system::create(sbk::core::sbk_log_callback_proc logCallback) -> sbk::result
 auto system::destroy() -> void
 {
     // Be the system thread during destruction
-    const sbk::core::scoped_thread_domain systemDomain(sbk::core::thread_domain::studio);
+    const sbk::core::scoped_thread_domain systemDomain(sbk::core::thread_domain::system);
 
     system* const sys = s_system.load(std::memory_order_acquire);
     if (sys != nullptr)
@@ -231,13 +226,22 @@ auto system::destroy() -> void
 
 auto system::init(const sbk_system_config& config) -> sbk::result<void>
 {
+    SBK_CHECK(config.commandQueueSize > 0, SBK_ERR_INVALID_PARAMETER);
+
     // Be the system thread during creation as we don't do initialization work on the system thread as it doesn't exist
-    const sbk::core::scoped_thread_domain systemDomain(sbk::core::thread_domain::studio);
+    const sbk::core::scoped_thread_domain systemDomain(sbk::core::thread_domain::system);
 
-    constexpr std::size_t staticMemorySize  = sizeof(sbk::engine::runtime) + sizeof(sbk::manual_executor) + sizeof(sbk::command_queue) + sizeof(sbk::thread_executor);
-    const std::size_t variableMemorySize    = (config.singleThreadedUpdate ? 0U : sizeof(sbk::thread_executor)) + (config.enableProfiling ? sizeof(sbk::engine::profiling::voice_tracker) : 0U);
+    const std::size_t dynamicMemorySize = 
+        sizeof(sbk::engine::runtime) + 
+        sizeof(sbk::manual_executor) +  // Game executor
+        sizeof(sbk::manual_executor) +  // System executor
+        sizeof(sbk::thread_executor) +  // Worker thread
+        (config.singleThreadedUpdate ? 0U : sizeof(sbk::system_thread))   + 
+        (config.enableProfiling ? sizeof(sbk::engine::profiling::voice_tracker) : 0U) +
+        config.commandQueueSize;
 
-    SBK_TRYV(m_systemArena.init(staticMemorySize + variableMemorySize));
+    SBK_TRYV(m_systemArena.init(dynamicMemorySize));
+    SBK_TRYV(m_commandQueue.init(config.commandQueueSize, m_systemArena));
     SBK_TRY(m_runtime, create_owned<sbk::engine::runtime>(m_systemArena));
      
     sbk_system_config configCopy                             = config;
@@ -275,21 +279,14 @@ auto system::init(const sbk_system_config& config) -> sbk::result<void>
 
     sbk::core::set_single_threaded_mode(config.singleThreadedUpdate);
 
-    SBK_TRY(m_gameExecutor, create_owned<sbk::manual_executor>(m_systemArena, "Game Thread"));
+    SBK_TRY(m_gameExecutor, create_owned<sbk::manual_executor>(m_systemArena, "Game Executor"));
+    SBK_TRY(m_systemExecutor, create_owned<sbk::manual_executor>(m_systemArena, "System Executor"));
     SBK_TRY(m_workerThread, create_owned<sbk::thread_executor>(m_systemArena, "Sound Bakery Worker Thread"));
-    SBK_TRY(auto studioCommandQueue, create_owned<sbk::command_queue>(m_systemArena, "Sound Bakery Command Queue"));
 
-    if (config.singleThreadedUpdate)
+    if (!config.singleThreadedUpdate)
     {
-        studioCommandQueue->m_target = m_gameExecutor.get();
+        SBK_TRY(m_systemThread, create_owned<sbk::system_thread>(m_systemArena));
     }
-    else
-    {
-        SBK_TRY(m_systemThread, create_owned<sbk::thread_executor>(m_systemArena, "System Thread"));
-        studioCommandQueue->m_target = m_systemThread.get();
-    }
-
-    m_systemExecutor.reset(studioCommandQueue.release());
 
     return sbk::ok();
 }
@@ -299,9 +296,16 @@ auto system::update() -> sbk::result<void>
     FrameMarkStart(profiling_strings::s_updateName);
     ZoneScoped;
 
-    SBK_TRYV(m_systemExecutor->post_work([this]()
-                                         { update_async(); }));
-    SBK_TRYV(m_systemExecutor->flush());
+    m_commandQueue.write_command(message_type::end_of_frame, end_of_frame_message());
+
+    if (m_systemThread)
+    {
+        m_systemThread->trigger_update();
+    }
+    else
+    {
+        SBK_TRYV(flush_commands());
+    }
 
     const sbk::core::scoped_thread_domain gameDomain(sbk::core::thread_domain::game);
     SBK_TRYV(m_gameExecutor->drain());
@@ -335,20 +339,36 @@ auto system::update() -> sbk::result<void>
     return sbk::ok();
 }
 
-auto sbk::engine::system::update_async() -> void
+auto sbk::engine::system::flush_commands() -> sbk::result<void>
 {
     ZoneScoped;
 
-    for (const auto& object : get_objects_of_type(sbk::engine::game_object::type()))
+    const sbk::core::scoped_thread_domain systemDomain(sbk::core::thread_domain::system);
+
+    SBK_TRYV(m_commandQueue.process_commands());
+
+    if (m_systemExecutor)
     {
-        if (object)
+        SBK_TRYV(m_systemExecutor->drain());
+    }
+
+    /// @todo game object updates shouldn't run when flushing commands. We need a better update model for runtime objects
+
+    {
+        ZoneScopedN("update_runtime_objects");
+        for (const auto& object : get_objects_of_type(sbk::engine::game_object::type()))
         {
-            if (sbk::engine::game_object* const gameObject = object->try_convert_object<sbk::engine::game_object>())
+            if (object)
             {
-                gameObject->update();
+                if (sbk::engine::game_object* const gameObject = object->try_convert_object<sbk::engine::game_object>())
+                {
+                    gameObject->update();
+                }
             }
         }
     }
+
+    return sbk::ok();
 }
 
 auto system::get_current_object_owner() -> sbk::core::object_owner* 
@@ -381,12 +401,12 @@ auto sbk::engine::system::get_game_executer() const -> sbk::executor*
     return m_gameExecutor.get();
 }
 
-auto sbk::engine::system::get_system_executer() const -> sbk::executor*
+auto sbk::engine::system::get_system_executor() const -> sbk::executor*
 {
     return m_systemExecutor.get();
 }
 
-auto sbk::engine::system::get_worker_executer() const -> sbk::executor*
+auto sbk::engine::system::get_worker_executor() const -> sbk::executor*
 {
     return m_workerThread.get();
 }

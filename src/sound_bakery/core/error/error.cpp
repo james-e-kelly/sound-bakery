@@ -44,6 +44,8 @@ namespace sbk
                 return "The buffer or container was empty and nothing could be read";
             case SBK_ERR_TOO_LARGE:
                 return "The request was too large and nothing could be written or read";
+            case SBK_ERR_AT_END:
+                return "At the end of the buffer and cannot go further";
             case SBK_ERROR_MAX:
                 break;
         }

@@ -11,11 +11,11 @@
  * @brief Marks which logical thread owns the currently executing code, and warns on violations.
  *
  * Sound Bakery's threading contract is single-owner: database objects belong
- * to the studio domain, and the game-facing API belongs to the game domain.
+ * to the system domain, and the game-facing API belongs to the game domain.
  * Domains are scope-based rather than thread-id-based on purpose: the
  * executors are concurrencpp manual executors, which run on whatever thread
  * drains them. Marking the drain scope means "am I serialized with all other
- * studio work?" stays true even if the drain ever moves to another thread.
+ * system work?" stays true even if the drain ever moves to another thread.
  */
 
 namespace sbk::core
@@ -24,7 +24,7 @@ namespace sbk::core
     {
         unknown,  //< Not inside any marked scope, e.g. the app's main thread outside update().
         game,     //< Inside system::update() - the thread the game/app pumps Sound Bakery from.
-        studio,   //< Inside the studio drain (system::update_async) - owns the database and objects.
+        system,   //< Inside the system drain (system::flush_commands) - owns the database and objects.
     };
 
     [[nodiscard]] auto get_current_thread_domain() -> thread_domain;
@@ -55,7 +55,7 @@ namespace sbk::core
      * @brief RAII marker: code inside this scope belongs to @p domain.
      *
      * Placed where an executor drains (see system::update and
-     * system::update_async). Saves and restores the previous domain, so
+     * system::flush_commands). Saves and restores the previous domain, so
      * nested scopes behave.
      */
     class SB_CLASS scoped_thread_domain final
@@ -103,5 +103,5 @@ namespace sbk::core
         }                                                                                       \
     } while (0)
 
-#define SBK_EXPECT_STUDIO_THREAD() SBK_DETAIL_EXPECT_THREAD_DOMAIN(::sbk::core::thread_domain::studio)
+#define SBK_EXPECT_STUDIO_THREAD() SBK_DETAIL_EXPECT_THREAD_DOMAIN(::sbk::core::thread_domain::system)
 #define SBK_EXPECT_GAME_THREAD()   SBK_DETAIL_EXPECT_THREAD_DOMAIN(::sbk::core::thread_domain::game)

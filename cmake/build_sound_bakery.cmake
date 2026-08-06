@@ -23,6 +23,9 @@ macro(set_sources)
 
     core/reflection/reflection.cpp
 
+    core/task/command_queue.cpp
+    core/task/system_thread.cpp
+
     editor/project/project.cpp
     editor/project/project_configuration.cpp
 
@@ -103,6 +106,7 @@ set(SOUND_BAKERY_HEADERS
     core/task/task.h
     core/task/unique_coroutine.h
     core/task/work_item.h
+    core/task/system_thread.h
 
     editor/editor_defines.h
     editor/project/project.h

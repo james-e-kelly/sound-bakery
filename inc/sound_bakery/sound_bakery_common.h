@@ -28,6 +28,7 @@ struct sbk_system_config
     bool                singleThreadedUpdate;   //< Update the database/studio thread when @r sbk::engine::system::update is called. Helpful for when consuming applications need to access Sound Bakery non-realtime data safely
     bool                enableProfiling;        //< Enable voice tracking, CPU usage, etc.
     bool                logToConsole;           //< Automatically set up the logger to print to the console. Normally left off so consuming applications can control Sound Bakery's logging
+    ma_uint64           commandQueueSize;       //< Size in bytes of the command queue
 };
 
 #endif

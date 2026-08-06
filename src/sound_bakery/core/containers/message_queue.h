@@ -138,14 +138,16 @@ namespace sbk
         template <message_payload U>
         [[nodiscard]] auto write_message(T type, const U& message) noexcept -> sbk_status
         {
+            ZoneScoped;
             SBK_STATUS_CHECK_MSG(to_numeric(type) != s_skipFlag, SBK_ERR_INVALID_PARAMETER, "Users should not create messages with a flag equal to s_skipFlag. This should only be used by the message_queue to automically wrap around the end of the buffer");
+            BOOST_ASSERT_MSG(std::numeric_limits<payload_size_t>::max() >= sizeof(U), "Message is too large for the queue. Consider increasing the payload_size_t size or decreasing the message size");
 
             std::uint8_t* messageBuffer{};
             std::uint8_t* paddingBuffer{};
             std::size_t paddingSize{};
             std::size_t reserveIndex{};
 
-            message_header header{.m_identifier = to_numeric(type), .m_payloadSize = sizeof(U)};
+            message_header header{.m_identifier = to_numeric(type), .m_payloadSize = static_cast<payload_size_t>(sizeof(U))};
             SBK_STATUS_TRY_C(m_ringBuffer.reserve_write(&messageBuffer, sizeof(message_header) + header.m_payloadSize, &reserveIndex, &paddingBuffer, &paddingSize));
 
             // If we were given padding, it means the buffer is split
@@ -173,6 +175,7 @@ namespace sbk
          */
         [[nodiscard]] auto read_begin(message_view* outMessageView) noexcept -> sbk_status
         {
+            ZoneScoped;
             SBK_STATUS_CHECK(outMessageView != nullptr, SBK_ERR_INVALID_PARAMETER);
 
             std::uint8_t* messageBuffer{};
@@ -212,6 +215,7 @@ namespace sbk
          */
         [[nodiscard]] auto read_end(const message_view& message) noexcept -> sbk_status
         {
+            ZoneScoped;
             return m_ringBuffer.read_end(static_cast<std::size_t>(message.m_payloadSize));
         }
 

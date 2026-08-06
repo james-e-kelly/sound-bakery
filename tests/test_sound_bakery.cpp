@@ -725,44 +725,6 @@ TEST_SUITE("Future API")
 
 TEST_SUITE("Thread Domain")
 {
-    TEST_CASE("Scopes mark the game and studio domains")
-    {
-        scoped_engine engine(false);
-
-        // Outside any pump, the calling thread belongs to no domain.
-        CHECK(sbk::core::get_current_thread_domain() == sbk::core::thread_domain::unknown);
-
-        // Tasks drained by update() run inside the game domain.
-        std::atomic<sbk::core::thread_domain> observedGame{sbk::core::thread_domain::unknown};
-        engine.get()->get_game_executer()->post_work( [&observedGame] { observedGame = sbk::core::get_current_thread_domain(); });
-
-        REQUIRE(engine.get()->update().has_value());
-        CHECK(observedGame.load() == sbk::core::thread_domain::game);
-
-        // Tasks posted to the studio executor drain on the studio timer
-        // inside update_async, which marks the studio domain.
-        std::atomic<sbk::core::thread_domain> observedStudio{sbk::core::thread_domain::unknown};
-        std::atomic<bool> studioTaskRan{false};
-
-        engine.get()->get_system_executer()->post_work(
-            [&observedStudio, &studioTaskRan]
-            {
-                observedStudio = sbk::core::get_current_thread_domain();
-                studioTaskRan  = true;
-            });
-
-        (void)engine.get()->update();
-
-        const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(5);
-        while (!studioTaskRan.load() && std::chrono::steady_clock::now() < deadline)
-        {
-            std::this_thread::yield();
-        }
-
-        REQUIRE(studioTaskRan.load());
-        CHECK(observedStudio.load() == sbk::core::thread_domain::studio);
-    }
-
     TEST_CASE("Nested scopes restore the previous domain")
     {
         CHECK(sbk::core::get_current_thread_domain() == sbk::core::thread_domain::unknown);
@@ -772,8 +734,8 @@ TEST_SUITE("Thread Domain")
             CHECK(sbk::core::get_current_thread_domain() == sbk::core::thread_domain::game);
 
             {
-                const sbk::core::scoped_thread_domain studioScope(sbk::core::thread_domain::studio);
-                CHECK(sbk::core::get_current_thread_domain() == sbk::core::thread_domain::studio);
+                const sbk::core::scoped_thread_domain studioScope(sbk::core::thread_domain::system);
+                CHECK(sbk::core::get_current_thread_domain() == sbk::core::thread_domain::system);
             }
 
             CHECK(sbk::core::get_current_thread_domain() == sbk::core::thread_domain::game);
@@ -815,7 +777,7 @@ TEST_SUITE("Tasks")
 {
     static auto test_detatched_task(std::reference_wrapper<std::atomic<bool>> ranStudio, std::reference_wrapper<std::atomic<sbk::core::thread_domain>> observed) -> sbk::detached_task
     {
-        co_await sbk::engine::system::get()->get_system_executer()->schedule();
+        co_await sbk::engine::system::get()->get_system_executor()->schedule();
         observed.get() = sbk::core::get_current_thread_domain();
         ranStudio.get() = true;
         co_return sbk::ok();
@@ -841,7 +803,7 @@ TEST_SUITE("Tasks")
         }
 
         REQUIRE(studioTaskRan.load());
-        CHECK(observedSystem.load() == sbk::core::thread_domain::studio);
+        CHECK(observedSystem.load() == sbk::core::thread_domain::system);
     }
 }
 

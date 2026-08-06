@@ -71,8 +71,8 @@ auto sbk::editor::project::encode_all_media() const -> void
         return;
     }
 
-    sbk::executor* workerThread = system->get_worker_executer();
-    sbk::executor* systemThread = system->get_system_executer();
+    sbk::executor* workerThread = system->get_worker_executor();
+    sbk::executor* systemThread = system->get_system_executor();
 
     for (sbk::core::object* const soundObject : system->get_objects_of_type(sbk::engine::sound::type()))
     {

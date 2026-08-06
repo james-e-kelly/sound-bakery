@@ -35,8 +35,8 @@ auto sbk::core::to_string(const thread_domain domain) -> const char*
     {
         case thread_domain::game:
             return "game";
-        case thread_domain::studio:
-            return "studio";
+        case thread_domain::system:
+            return "system";
         case thread_domain::unknown:
         default:
             return "unknown";

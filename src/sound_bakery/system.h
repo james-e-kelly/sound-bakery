@@ -1,17 +1,20 @@
 #pragma once
 
+#include "sound_bakery/pch.h"
+
 #include "sound_bakery/core/core_fwd.h"
 #include "sound_bakery/core/database/database.h"
 #include "sound_bakery/core/database/database_ptr.h"
 #include "sound_bakery/core/object/object_tracker.h"
 #include "sound_bakery/core/memory/memory.h"
 #include "sound_bakery/core/error/error.h"
+#include "sound_bakery/core/task/command_queue.h"
 #include "sound_bakery/core/task/executor.h"
-
-#include "core/logger.h"
 
 namespace sbk
 {
+    class system_thread;
+
     namespace editor
     {
         class project;
@@ -73,16 +76,38 @@ namespace sbk
             /**@}*/
 
             [[nodiscard]] auto init(const sbk_system_config& config) -> sbk::result<void>;
+            
+            /**
+             * @name Update functions.
+             */
+            /**@{*/
+
+            /**
+             * @brief Update called from the game thread.
+             * 
+             * Triggers the system thread to flush commands, if it exists.
+             * If it doesn't, we are assumed to be in single-threaded mode, and this function flushes commands.
+             */
             [[nodiscard]] auto update() -> sbk::result<void>;
+
+            /**
+             * @brief Flush all commands on the calling thread.
+             * 
+             * Normally, this is called by the system thread.
+             */
+            [[nodiscard]] auto flush_commands() -> sbk::result<void>;
+            /**@}*/
 
             [[nodiscard]] auto get_project() const -> sbk::editor::project*;
             [[nodiscard]] auto get_runtime() const -> sbk::engine::runtime*;
             [[nodiscard]] auto get_voice_tracker() const -> sbk::engine::profiling::voice_tracker*;
             [[nodiscard]] auto get_current_object_owner() -> sbk::core::object_owner*;  //< Either an editor project or the runtime
 
+            [[nodiscard]] auto get_command_queue() -> sbk::command_queue& { return m_commandQueue; }
+
             [[nodiscard]] auto get_game_executer() const -> sbk::executor*;
-            [[nodiscard]] auto get_system_executer() const -> sbk::executor*;
-            [[nodiscard]] auto get_worker_executer() const -> sbk::executor*;
+            [[nodiscard]] auto get_system_executor() const -> sbk::executor*;
+            [[nodiscard]] auto get_worker_executor() const -> sbk::executor*;
 
             [[nodiscard]] auto get_default_memory_resource() noexcept -> sbk::memory::memory_resource* { return &m_generalResource; }
 
@@ -104,7 +129,6 @@ namespace sbk
             using object_owner::create_runtime_object;
             using object_owner::create_database_object;
 
-            auto update_async() -> void;
 
             bool m_registeredReflection = false;
 
@@ -113,14 +137,17 @@ namespace sbk
             sbk::memory::rpmalloc_resource m_generalResource{sbk::memory::object_category::system};
             sbk::memory::monotonic_buffer_resource m_systemArena{sbk::memory::object_category::system};
 
+            sbk::command_queue m_commandQueue;                  //< Public API command queue
+
+            sbk::owned_ptr<sbk::system_thread> m_systemThread;  //< The thread that calls @see flush_commands when triggered by @see update
+
             sbk::owned_ptr<sbk::editor::project> m_project;
             sbk::owned_ptr<sbk::engine::runtime> m_runtime;
             sbk::owned_ptr<profiling::voice_tracker> m_voiceTracker;
 
-            sbk::owned_ptr<sbk::executor> m_gameExecutor;    //< Manual executor that runs during @r update
-            sbk::owned_ptr<sbk::executor> m_systemExecutor;  //< Command queue that either flushes to a worker thread or the game thread for single threaded mode
-            sbk::owned_ptr<sbk::executor> m_systemThread;    //< System worker thread. Can be null if in single threaded mode
-            sbk::owned_ptr<sbk::executor> m_workerThread;    //< Worker thread for loading and decoding
+            sbk::owned_ptr<sbk::executor> m_gameExecutor;       //< Manual executor that runs during @r update
+            sbk::owned_ptr<sbk::executor> m_systemExecutor;     //< Manual executor that runs off the system thread
+            sbk::owned_ptr<sbk::executor> m_workerThread;       //< Worker thread for loading and decoding
         };
     }  // namespace engine
 }  // namespace sbk

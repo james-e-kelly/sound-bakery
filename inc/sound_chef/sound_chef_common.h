@@ -145,6 +145,7 @@ typedef enum
     SBK_ERR_FULL,                   //< The buffer or container was full and cannot accept more
     SBK_ERR_EMPTY,                  //< The buffer or container was empty and nothing could be read
     SBK_ERR_TOO_LARGE,              //< The request was too large and nothing could be read
+    SBK_ERR_AT_END,                 //< At the end of the buffer and cannot go further
 
     SBK_ERROR_MAX
 } sbk_status;

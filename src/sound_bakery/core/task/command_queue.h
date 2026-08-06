@@ -2,83 +2,77 @@
 
 #include "sound_bakery/pch.h"
 
-#include "sound_bakery/core/thread_domain.h"
-#include "sound_bakery/core/error/result.h"
-#include "sound_bakery/core/task/executor.h"
+#include "sound_bakery/core/containers/message_queue.h"
+#include "sound_bakery/core/object/object_owner.h"
 
 namespace sbk
 {
-    /**
-     * @brief Queues tasks until it is "flushed" onto another executor.
-     *
-     * For Sound Bakery, this means queuing all commands from the game thread, or any thread, then flushing it to the system thread.
-     */
-    class command_queue : public executor
+    namespace engine
+    {
+        class container;
+        class event;
+        class game_object;
+        class system;
+    }
+
+    enum class message_type : std::uint8_t
+    {
+        end_of_frame,       //< End of the frame and the command queue should stop processing and wait for the next update
+        load_soundbank,
+        post_event,
+        post_event_name,
+        stop_all
+    };
+
+    auto play_container(sbk::engine::system* system, sbk::engine::game_object* gameObject, sbk::engine::container* container) -> sbk::result<>;
+    auto stop_container(sbk::engine::system* system, sbk::engine::game_object* gameObject, sbk::engine::container* container) -> sbk::result<>;
+    auto dispatch_event(sbk::engine::system* system, sbk::engine::game_object* gameObject, sbk::engine::event* event) -> sbk::result<>;
+
+    struct end_of_frame_message
+    {
+    };
+
+    struct load_soundbank_message
+    {
+        char filename[256];
+    };
+
+    struct post_event_message
+    {
+        sbk_id eventID;
+        sbk_id gameObjectID;
+    };
+
+    struct post_event_name_message
+    {
+        char eventName[256];
+        sbk_id gameObjectID;
+    };
+
+    struct stop_all_message
+    {
+        sbk_id gameObjectID;
+    };
+
+    class command_queue final : public sbk::core::object_owner
     {
     public:
-        command_queue(std::string name) : executor(name) {}
-
-        auto enqueue(work_item item) -> sbk::result<> override
+        [[nodiscard]] auto init(std::size_t size, sbk::memory::memory_resource& allocator) noexcept -> sbk::result<>
         {
-            ZoneScopedN("command_queue enqueue");
-            const std::lock_guard lock(m_mutex);
-            LockMark(m_mutex);
-            SBK_CHECK_MSG(m_stopped == false, SBK_ERR_BAKERY, "Cannot enqueue command. Command queue shut down");
-            m_staging.push_back(std::move(item));
-            return sbk::ok();
+            return m_messageQueue.init(size, allocator);
         }
 
-        /**
-         * @brief Flush all tasks to the target executor.
-         * @return SBK_SUCCESS if the command queue was empty, or successfully flushed
-         */
-        auto flush() -> sbk::result<> override
+        template<typename T>
+        auto write_command(const message_type& type, const T& message) noexcept -> sbk_status
         {
-            ZoneScopedN("command_queue flush");
-
-            eastl::vector<work_item> batch;
-            {
-                const std::lock_guard lock(m_mutex);
-                LockMark(m_mutex);
-                m_staging.swap(batch);
-            }
-
-            if (batch.empty())
-            {
-                return sbk::ok();
-            }
-
-            return m_target->enqueue(work_item{
-                [commands = std::move(batch)]() mutable
-                {
-                    const sbk::core::scoped_thread_domain studioDomain(sbk::core::thread_domain::studio);
-                    ZoneScopedN("command_queue execute all commands");
-                    for (auto& command : commands)
-                    {
-                        ZoneScopedN("command_queue execute command");
-                        command();
-                    }
-                }});
+            return m_messageQueue.write_message(type, message);
         }
 
-        /**
-         * @brief Drop all staged commands and refuse further work. Does not flush.
-         */
-        auto abandon() -> void override
-        {
-            ZoneScopedN("command_queue abandon");
-            const std::lock_guard lock(m_mutex);
-            LockMark(m_mutex);
-            m_stopped = true;
-            eastl::vector<work_item> dropped;
-            m_staging.swap(dropped);
-        }
+        auto process_commands() noexcept -> sbk::result<>;
 
     private:
-        executor* m_target{};
-        TracyLockableN(std::mutex, m_mutex, "command_queue mutex");
-        eastl::vector<work_item> m_staging;
-        bool m_stopped = false;
-        friend class ::sbk::engine::system;
+        auto process_command(const message_queue<message_type>::message_view& messageView, sbk::engine::system* system) noexcept -> sbk::result<>;
+
+        message_queue<message_type> m_messageQueue;
     };
 }  // namespace sbk
