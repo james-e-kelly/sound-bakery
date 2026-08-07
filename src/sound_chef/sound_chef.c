@@ -1119,6 +1119,33 @@ static sc_dsp_vtable s_highpassVtable = {
 
 #pragma endregion
 
+#pragma region Delay
+
+static sbk_status sc_dsp_delay_create(sc_dsp_state* state)
+{
+    state->userData = ma_malloc(sizeof(ma_delay_node), &((sc_system*)state->system)->engine.allocationCallbacks);
+    if (state->userData == NULL)
+    {
+        return SBK_ERR_OUT_OF_MEMORY;
+    }
+
+    ma_delay_node_config config = ma_delay_node_config_init(ma_engine_get_channels((ma_engine*)state->system),
+                                                        ma_engine_get_sample_rate((ma_engine*)state->system),
+                                                        4800, 0.5F);
+    return SBK_FROM_MA(ma_delay_node_init((ma_node_graph*)state->system, &config, &((sc_system*)state->system)->engine.allocationCallbacks, (ma_delay_node*)state->userData));
+}
+
+static sbk_status sc_dsp_delay_release(sc_dsp_state* state)
+{
+    ma_delay_node_uninit((ma_delay_node*)state->userData, &((sc_system*)state->system)->engine.allocationCallbacks);
+    SC_FREE(state->userData, (sc_system*)state->system);
+    return SBK_SUCCESS;
+}
+
+static sc_dsp_vtable s_delayVtable = {sc_dsp_delay_create, sc_dsp_delay_release, NULL, NULL, NULL, 0};
+
+#pragma endregion
+
 #pragma region Meter
 
 static void sc_meter_node_process_pcm_frames(ma_node* node, const float** framesIn, ma_uint32* const frameCountIn, float** framesOut, ma_uint32* frameCountOut)
@@ -1456,6 +1483,7 @@ sc_dsp_config sc_dsp_config_init(sc_dsp_type type)
             result.vtable = &s_highpassVtable;
             break;
         case SC_DSP_TYPE_DELAY:
+            result.vtable = &s_delayVtable;
             break;
         case SC_DSP_TYPE_METER:
             result.vtable = &s_meterVtable;
