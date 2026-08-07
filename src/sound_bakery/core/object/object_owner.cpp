@@ -7,6 +7,17 @@
 #include "sound_bakery/system.h"
 #include "sound_bakery/util/type_helper.h"
 
+sbk::core::object_owner::~object_owner()
+{
+    for (auto& child : m_objects)
+    {
+        if (child)
+        {
+            child->m_owner = nullptr;
+        }
+    }
+}
+
 auto sbk::core::object_owner::get_system() const noexcept -> sbk::engine::system*
 {
     ZoneScoped;

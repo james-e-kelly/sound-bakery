@@ -22,7 +22,7 @@ namespace sbk::core
     class SB_CLASS object_owner
     {
     public:
-        virtual ~object_owner() = default;
+        virtual ~object_owner();
 
         /**
          * @name Creation functions.
