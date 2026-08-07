@@ -62,15 +62,13 @@ bool property_drawer::draw_property(rttr::property property, rttr::instance inst
     {
         draw_readonly_variant(propertyValue);
     }
-    else if (const rttr::variant payloadString = property.get_metadata(sbk::editor::metadata_key::payload);
-             payloadString.is_valid())
+    else if (const rttr::variant payloadString = property.get_metadata(sbk::editor::metadata_key::payload); payloadString.is_valid())
     {
         edited = draw_payload_drop(propertyValue, payloadString);
     }
     else
     {
-        edited =
-            draw_variant(propertyValue, property.get_name(), property.get_metadata(sbk::editor::metadata_key::min_max));
+        edited = draw_variant(propertyValue, property.get_name(), property.get_metadata(sbk::editor::metadata_key::min_max));
     }
 
     if (edited)
@@ -157,11 +155,21 @@ bool property_drawer::draw_variant(rttr::variant& variant, rttr::string_view nam
         sbk_id id               = variant.extract_wrapped_value().convert<sbk_id>();
         rttr::type templateType = *type.get_template_arguments().begin();
 
-        std::string payloadString = std::string(sbk::util::type_helper::get_payload_from_type(templateType));
+        if (templateType == sbk::engine::effect_description::type())
+        {
+            sbk::core::database_ptr<sbk::core::object> objectPtr(id);
 
-        sbk::core::database_ptr<sbk::core::object> objectPtr(id);
-
-        edited = draw_payload_drop(variant, payloadString);
+            if (auto sharedEffectDescription = objectPtr.shared())
+            {
+                rttr::variant member = sharedEffectDescription.get();
+                edited               = draw_member_object(member, "Effect");
+            }
+        }
+        else
+        {
+            std::string payloadString = std::string(sbk::util::type_helper::get_payload_from_type(templateType));
+            edited = draw_payload_drop(variant, payloadString);
+        }
     }
     else if (type.is_pointer())
     {
@@ -179,8 +187,7 @@ bool property_drawer::draw_variant(rttr::variant& variant, rttr::string_view nam
     {
         if (type == sbk::engine::effect_parameter_description::type())
         {
-            sbk::engine::effect_parameter_description effectParamterDescription =
-                variant.convert<sbk::engine::effect_parameter_description>();
+            sbk::engine::effect_parameter_description effectParamterDescription = variant.convert<sbk::engine::effect_parameter_description>();
 
             switch (effectParamterDescription.m_parameter.type)
             {
