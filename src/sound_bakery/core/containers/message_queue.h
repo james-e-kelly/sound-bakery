@@ -156,7 +156,7 @@ namespace sbk
             {
                 if (paddingSize >= sizeof(message_header))  // If we can add a header, add one. Otherwise, the reader can also detect there is a tiny space before the end of the buffer and skip it
                 {
-                    message_header skipHeader{.m_identifier = s_skipFlag, .m_payloadSize = static_cast<payload_size_t>(paddingSize) - sizeof(message_header)};
+                    message_header skipHeader{.m_identifier = s_skipFlag, .m_payloadSize = static_cast<payload_size_t>(paddingSize - sizeof(message_header))};
                     std::memcpy(paddingBuffer, &skipHeader, sizeof(message_header));
                 }
             }
