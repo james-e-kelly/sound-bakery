@@ -220,6 +220,12 @@ namespace sbk::core
          */
         auto operator!() const -> bool { return !valid(); }
 
+        template<typename U>
+        auto operator==(const database_ptr<U>& other) const -> bool
+        {
+            return id() == other.id();
+        }
+
     protected:
         sbk_id m_objectID;
         mutable TPtrType m_objectPtr = TPtrType();
