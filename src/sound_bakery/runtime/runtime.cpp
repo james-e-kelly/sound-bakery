@@ -36,6 +36,11 @@ sbk::engine::runtime::runtime() : sc_system()
 
 sbk::engine::runtime::~runtime()
 {
+    m_masterBus.reset();
+    m_listenerGameObject.reset();
+
+    remove_all();
+
     const sbk_status closeResult = sc_system_close(this);
     sbk::log_error(closeResult, "sc_system_close");
     m_initSoundChef = false;
