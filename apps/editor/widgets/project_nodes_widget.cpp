@@ -141,6 +141,8 @@ void project_nodes_widget::render_single_node(rttr::type type, rttr::instance in
                 return;
             }
 
+            gluten::imgui::scoped_id uniqueObjectID(object->get_database_id());
+
             sbk::engine::node* const node = rttr::rttr_cast<sbk::engine::node*, sbk::core::database_object*>(object);
 
             const bool hasChildren = node && node_has_children(node);
@@ -179,7 +181,7 @@ void project_nodes_widget::render_single_node(rttr::type type, rttr::instance in
 
                 if (ImGui::BeginDragDropTarget())
                 {
-                    if (node != nullptr)
+                    if (node != nullptr && node->get_database_id() != SBK_INVALID_ID)
                     {
                         if (const ImGuiPayload* const currentPayload = ImGui::GetDragDropPayload())
                         {
@@ -188,8 +190,7 @@ void project_nodes_widget::render_single_node(rttr::type type, rttr::instance in
 
                             if (node->can_add_child(potentialChild))
                             {
-                                if (const ImGuiPayload* const payload =
-                                        ImGui::AcceptDragDropPayload(currentPayload->DataType))
+                                if (const ImGuiPayload* const payload = ImGui::AcceptDragDropPayload(currentPayload->DataType))
                                 {
                                     node->add_child(potentialChild);
                                 }
@@ -214,10 +215,8 @@ void project_nodes_widget::render_single_node(rttr::type type, rttr::instance in
                 previousDragDropActive = dragDropActive;
             }
 
-            const bool nodeClicked =
-                ImGui::IsItemHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Left) && !ImGui::GetDragDropPayload();
-            const bool nodeKeyboardFocused =
-                ImGui::IsItemFocused() && !nodeClicked && !ImGui::IsAnyMouseDown() && !ImGui::GetDragDropPayload();
+            const bool nodeClicked         = ImGui::IsItemHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Left) && !ImGui::GetDragDropPayload();
+            const bool nodeKeyboardFocused = ImGui::IsItemFocused() && !nodeClicked && !ImGui::IsAnyMouseDown() && !ImGui::GetDragDropPayload();
 
             if (nodeClicked || nodeKeyboardFocused)
             {
@@ -396,8 +395,7 @@ void project_nodes_widget::render_create_parent_or_child_menu(sbk::memory::objec
 {
     m_renameID = 0;
 
-    const std::set<rttr::type, sbk::util::type_comparator> categoryTypes =
-        sbk::util::type_helper::get_types_from_category(category);
+    const std::set<rttr::type, sbk::util::type_comparator> categoryTypes = sbk::util::type_helper::get_types_from_category(category);
 
     sbk::engine::node* const castedNode = sbk::util::type_helper::get_node_from_instance(node);
 

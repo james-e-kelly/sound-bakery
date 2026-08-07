@@ -117,10 +117,11 @@ auto sbk::engine::node_base::add_child(const sbk::core::database_ptr<node_base>&
     {
         if (auto childShared = child.shared())
         {
-            if (childShared->get_parent())
+            if (auto parent = childShared->get_parent())
             {
-                childShared->get_parent()->remove_child(child);
+                parent->remove_child(child);
             }
+
             childShared->set_parent_node(this);
         }
 
