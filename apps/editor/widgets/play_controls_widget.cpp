@@ -62,16 +62,15 @@ void player_widget::render_implementation()
     const gluten::imgui::scoped_font font(get_app()->get_font(gluten::fonts::regular_lucide_icons));
     const gluten::imgui::scoped_style morePadding(ImGuiStyleVar_WindowPadding, gluten::theme::paddingVec);
 
-    ImGui::Begin(fmt::format("{} - {}", s_lastPlayableSelection.get_name(), get_widget_name().data()).c_str());
-
     const selection& selection                   = get_app()->get_manager_by_class<project_manager>()->get_selection();
     const std::optional<rttr::type> selectedType = selection.selected_type();
+    s_lastPlayableSelection.set(selection.get_selected());
+
+    ImGui::Begin(fmt::format("{} - {}", s_lastPlayableSelection.get_name(), get_widget_name().data()).c_str());
 
     const bool isSelected = !!selection.get_selected();
     const bool isPlayable =
         isSelected && selectedType.has_value() && sbk::util::type_helper::is_type_playable(selectedType.value());
-
-    s_lastPlayableSelection.set(selection.get_selected());
 
     ImGui::BeginDisabled(!isSelected || !isPlayable);
 
