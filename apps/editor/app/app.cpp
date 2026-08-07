@@ -8,10 +8,15 @@
 #include "managers/project_manager.h"
 #include "widgets/root_widget.h"
 
-namespace PathHelpers
+namespace path_helpers
 {
     static const char* ResourcesFolder = "Resources";
 }
+
+namespace editor_app_cli_arguments
+{
+    static constexpr const char* s_projectFile = "project";
+}  // namespace editor_app_cli_arguments
 
 gluten::app* create_application() { return new editor_app(); }
 
@@ -33,6 +38,22 @@ void editor_app::create_and_open_project(const std::filesystem::directory_entry&
     }
 }
 
+
+auto editor_app::cli_setup(boost::program_options::options_description& options) -> void
+{
+    options.add_options()(editor_app_cli_arguments::s_projectFile, boost::program_options::value<std::string>(), "set the file path to the priject file");
+}
+
+auto editor_app::pre_init(const boost::program_options::variables_map& cliVariables) -> void
+{
+    const bool hasProjectFile = cliVariables.count(editor_app_cli_arguments::s_projectFile);
+
+    if (hasProjectFile)
+    {
+        m_projectFile = cliVariables.at(editor_app_cli_arguments::s_projectFile).as<std::string>();
+    }
+}
+
 void editor_app::post_init()
 {
     std::shared_ptr<gluten::widget_subsystem> widgetSubsystem = get_subsystem_by_class<gluten::widget_subsystem>();
@@ -44,6 +65,11 @@ void editor_app::post_init()
 
     std::shared_ptr<gluten::renderer_subsystem> renderedSubsystem = get_subsystem_by_class<gluten::renderer_subsystem>();
     renderedSubsystem->set_maximised();
+
+    if (m_projectFile.has_value())
+    {
+        open_project(m_projectFile.value());
+    }
 }
 
 auto editor_app::on_file_drop(const std::vector<std::string>& paths) -> void

@@ -65,13 +65,18 @@ namespace root_widget_utils
 
     static ImRect get_dockspace_rect()
     {
-        if (ImGuiViewport* const viewport = ImGui::GetWindowViewport())
+        // ImGui::GetCurrentViewport asserts if it's null
+        // We just want to do a null check
+        if (ImGuiContext* context = ImGui::GetCurrentContext())
         {
-            const ImVec2 windowTopLeft     = viewport->Pos;
-            const ImVec2 windowBottomRight = ImVec2(windowTopLeft.x + viewport->Size.x, windowTopLeft.y + viewport->Size.y);
+            if (ImGuiViewport* const viewport = context->CurrentViewport)
+            {
+                const ImVec2 windowTopLeft     = viewport->Pos;
+                const ImVec2 windowBottomRight = ImVec2(windowTopLeft.x + viewport->Size.x, windowTopLeft.y + viewport->Size.y);
 
-            return ImRect(windowTopLeft.x, windowTopLeft.y + root_widget_utils::titleBarHeight(), windowBottomRight.x,
-                          windowBottomRight.y);
+                return ImRect(windowTopLeft.x, windowTopLeft.y + root_widget_utils::titleBarHeight(), windowBottomRight.x,
+                              windowBottomRight.y);
+            }
         }
 
         /*if (gluten::app::get()->is_maximized())
@@ -453,7 +458,10 @@ auto gluten::root_widget::add_layout(const widget_layout& layout) -> void
 auto gluten::root_widget::set_layout(widget_layout& layout) -> void
 {
     dockspace_refresh refresh = refresh_dockspace();
-    layout.onRefreshDockspace(refresh);
+    if (layout.onRefreshDockspace)
+    {
+        layout.onRefreshDockspace(refresh);
+    }
 }
 
 auto gluten::root_widget::set_manual_layout() -> dockspace_refresh

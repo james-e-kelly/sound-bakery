@@ -7,7 +7,7 @@
 #include "widgets/root_widget.h"
 #include "widgets/soundbank_viewer.h"
 
-namespace PathHelpers
+namespace path_helpers
 {
     static const char* ResourcesFolder = "Resources";
 }
