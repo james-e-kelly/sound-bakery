@@ -188,26 +188,25 @@ void player_widget::render_implementation()
 
 void player_widget::play_selected()
 {
-    if (sbk::engine::container* container =
-            s_lastPlayableSelection.selectedObject->try_convert_object<sbk::engine::container>())
+    if (s_lastPlayableSelection.selectedObject)
     {
-        (void)sbk::engine::post_container(container->get_database_id(), 0);
-    }
-    else if (sbk::engine::sound* sound =
-                 s_lastPlayableSelection.selectedObject->try_convert_object<sbk::engine::sound>())
-    {
-        if (sbk::engine::sound_container* previewContainer =
-                sbk::engine::system::get()->get_project()->get_preview_container().lock().get())
+        if (sbk::engine::container* container = s_lastPlayableSelection.selectedObject->try_convert_object<sbk::engine::container>())
         {
-            previewContainer->set_sound(sound);
-
-            (void)sbk::engine::post_container(previewContainer->get_database_id(), 0);
+            (void)sbk::engine::post_container(container->get_database_id(), 0);
         }
-    }
-    else if (sbk::engine::event* event =
-                 s_lastPlayableSelection.selectedObject->try_convert_object<sbk::engine::event>())
-    {
-        sbk_system_post_event(event->get_database_id(), 0);
+        else if (sbk::engine::sound* sound = s_lastPlayableSelection.selectedObject->try_convert_object<sbk::engine::sound>())
+        {
+            if (sbk::engine::sound_container* previewContainer = sbk::engine::system::get()->get_project()->get_preview_container().lock().get())
+            {
+                previewContainer->set_sound(sound);
+
+                (void)sbk::engine::post_container(previewContainer->get_database_id(), 0);
+            }
+        }
+        else if (sbk::engine::event* event = s_lastPlayableSelection.selectedObject->try_convert_object<sbk::engine::event>())
+        {
+            sbk_system_post_event(event->get_database_id(), 0);
+        }
     }
 }
 
