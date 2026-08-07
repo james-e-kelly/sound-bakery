@@ -137,48 +137,7 @@ system::system(sbk::core::sbk_log_callback_proc logCallback)
 
 system::~system()
 {
-    // We abandon any queued commands, finish up any running tasks, and join threads.
-    // We cannot allow coroutines to be jumping around during shutdown.
-    // Coroutines are owned by their executors. On destruction, the coroutine frames are destroyed and memory released.
-
-    if (m_workerThread)
-    {
-        m_workerThread->abandon();
-        m_workerThread.reset();
-    }
-
-    if (m_systemThread)
-    {
-        m_systemThread->stop();
-        m_systemThread.reset();
-    }
-
-    if (m_gameExecutor)
-    {
-        m_gameExecutor->abandon();
-        m_gameExecutor.reset();
-    }
-
-#if SBK_CONFIG_DEBUG
-    BOOST_ASSERT_MSG(sbk::detail::live_detached_tasks().load(std::memory_order_relaxed) == 0, "detached task still in flight after executor teardown (hop cycle into an abandoned executor?)");
-#endif
-
-    if (m_project)
-    {
-        m_project.reset();
-    }
-
-    if (m_voiceTracker)
-    {
-        m_voiceTracker.reset();
-    }
-
-    if (m_runtime)
-    {
-        m_runtime.reset();
-    }
-
-    spdlog::shutdown();
+    BOOST_ASSERT(m_runtime.get() == nullptr);
 }
 
 auto system::get() -> sbk::engine::system* { return s_system.load(std::memory_order_acquire); }
@@ -213,6 +172,49 @@ auto system::destroy() -> void
     if (sys != nullptr)
     {
         SBK_INFO("Closing and destroying Sound Bakery");
+
+        // We abandon any queued commands, finish up any running tasks, and join threads.
+        // We cannot allow coroutines to be jumping around during shutdown.
+        // Coroutines are owned by their executors. On destruction, the coroutine frames are destroyed and memory released.
+
+        if (sys->m_workerThread)
+        {
+            sys->m_workerThread->abandon();
+            sys->m_workerThread.reset();
+        }
+
+        if (sys->m_systemThread)
+        {
+            sys->m_systemThread->stop();
+            sys->m_systemThread.reset();
+        }
+
+        if (sys->m_gameExecutor)
+        {
+            sys->m_gameExecutor->abandon();
+            sys->m_gameExecutor.reset();
+        }
+
+#if SBK_CONFIG_DEBUG
+        BOOST_ASSERT_MSG(sbk::detail::live_detached_tasks().load(std::memory_order_relaxed) == 0, "detached task still in flight after executor teardown (hop cycle into an abandoned executor?)");
+#endif
+
+        if (sys->m_project)
+        {
+            sys->m_project.reset();
+        }
+
+        if (sys->m_voiceTracker)
+        {
+            sys->m_voiceTracker.reset();
+        }
+
+        if (sys->m_runtime)
+        {
+            sys->m_runtime.reset();
+        }
+
+        spdlog::shutdown();
 
         sys->~system();
         sbk::memory::free(sys, sbk::memory::object_category::system);
