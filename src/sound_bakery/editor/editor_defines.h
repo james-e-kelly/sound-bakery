@@ -11,7 +11,8 @@ namespace sbk::editor
         payload,            //< Drag and drop
         min_max,            //< Has min and max values
         readonly,           //< Cannot be edited
-        no_resize,          //< Container cannot be resized. Elements might be writable
+        no_grow,            //< Container cannot have elements added. Helpful when a function needs to add the element and a simple add would create an invalid element
+        no_shrink,          //< Container cannot have its elements removed
         draw_when_wrapped,  //< If this type is wrapped inside a database_ptr, render it fully, instead of just being a payload target
         hidden_when_wrapped //< If we are rendered as a "subobject" (wrapped), don't render the property
     };

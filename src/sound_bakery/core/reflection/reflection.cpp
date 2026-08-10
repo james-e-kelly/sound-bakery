@@ -178,7 +178,7 @@ namespace sbk::reflection
         registration::class_<effect_description>("effect_description")
             .constructor<>(create_sbk_object<effect_description>)(policy::ctor::as_raw_ptr)
             .property("Type", &effect_description::get_dsp_type, &effect_description::set_dsp_type)(metadata(sbk::editor::metadata_key::readonly, true))
-            .property("Parameters", &effect_description::m_parameterDescriptions)(metadata(sbk::editor::metadata_key::no_resize, true))
+            .property("Parameters", &effect_description::m_parameterDescriptions)(metadata(sbk::editor::metadata_key::no_grow, true), metadata(sbk::editor::metadata_key::no_shrink, true))
             (metadata(sbk::editor::metadata_key::draw_when_wrapped, true));
 
         registration::class_<effect_parameter_description>("effect_parameter_description")
@@ -232,7 +232,7 @@ namespace sbk::reflection
             .property("Pitch", &node::m_pitch)(metadata(sbk::editor::metadata_key::min_max, std::pair<float, float>(0.0f, 2.0f)))
             .property("Lowpass", &node::m_lowpass)(metadata(sbk::editor::metadata_key::min_max, std::pair<float, float>(0.0f, 100.0f)))
             .property("Highass", &node::m_highpass)(metadata(sbk::editor::metadata_key::min_max, std::pair<float, float>(0.0f, 100.0f)))
-            .property("Effects", &node::m_effectDescriptions)(metadata(sbk::editor::metadata_key::no_resize, true)) // Not edited directly. Modified with the "Add Effect" method
+            .property("Effects", &node::m_effectDescriptions)(metadata(sbk::editor::metadata_key::no_grow, true)) // Not edited directly. Modified with the "Add Effect" method
             .method("Add Effect", &node::add_effect)(parameter_names("Type"));
 
         registration::class_<container>("container");
