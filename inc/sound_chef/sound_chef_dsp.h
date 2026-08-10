@@ -53,6 +53,15 @@ extern "C"
         SC_DSP_HIGHPASS_NUM_PARAM
     } sc_dsp_highpass;
 
+    typedef enum sc_dsp_delay
+    {
+        SC_DSP_DELAY_DELAY_SECONDS,
+        SC_DSP_DELAY_DRY,
+        SC_DSP_DELAY_WET,
+        SC_DSP_DELAY_FEEDBACK,
+        SC_DSP_DELAY_NUM_PARAM
+    } sc_dsp_delay;
+
     typedef enum sc_dsp_meter
     {
         SC_DSP_METER_PEAK,

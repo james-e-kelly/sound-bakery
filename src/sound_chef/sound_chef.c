@@ -1142,7 +1142,97 @@ static sbk_status sc_dsp_delay_release(sc_dsp_state* state)
     return SBK_SUCCESS;
 }
 
-static sc_dsp_vtable s_delayVtable = {sc_dsp_delay_create, sc_dsp_delay_release, NULL, NULL, NULL, 0};
+static sbk_status sc_dsp_delay_set_param_float(sc_dsp_state* state, int index, float value)
+{
+    SC_CHECK_ARG(state != NULL);
+    SC_CHECK_ARG(state->userData != NULL);
+    SC_CHECK_ARG(index >= 0);
+
+    sbk_status result = SBK_ERR_CHEF;
+
+    switch (index)
+    {
+        default:
+            break;
+        case SC_DSP_DELAY_DELAY_SECONDS:
+        {
+            // Cannot set the delay at runtime
+            result = SBK_ERR_INVALID_OPERATION;
+        }
+        break;
+        case SC_DSP_DELAY_DRY:
+        {
+            ma_delay_node_set_dry(state->userData, value);
+            result = MA_SUCCESS;
+        }
+        break;
+        case SC_DSP_DELAY_WET:
+        {
+            ma_delay_node_set_wet(state->userData, value);
+            result = MA_SUCCESS;
+        }
+        break;
+        case SC_DSP_DELAY_FEEDBACK:
+        {
+            ma_delay_node_set_decay(state->userData, value);
+            result = MA_SUCCESS;
+        }
+        break;
+    }
+
+    return result;
+}
+
+static sbk_status sc_dsp_delay_get_param_float(sc_dsp_state* state, int index, float* const value)
+{
+    SC_CHECK_ARG(state != NULL);
+    SC_CHECK_ARG(state->userData != NULL);
+    SC_CHECK_ARG(index >= 0);
+    SC_CHECK_ARG(value != NULL);
+
+    sbk_status result = SBK_ERR_CHEF;
+
+    switch (index)
+    {
+        default:
+            break;
+        case SC_DSP_DELAY_DELAY_SECONDS:
+        {
+            result = SBK_ERR_INVALID_OPERATION;
+        }
+        break;
+        case SC_DSP_DELAY_DRY:
+        {
+            *value = ma_delay_node_get_dry(state->userData);
+            result = MA_SUCCESS;
+        }
+        break;
+        case SC_DSP_DELAY_WET:
+        {
+            *value = ma_delay_node_get_wet(state->userData);
+            result = MA_SUCCESS;
+        }
+        break;
+        case SC_DSP_DELAY_FEEDBACK:
+        {
+            *value = ma_delay_node_get_decay(state->userData);
+            result = MA_SUCCESS;
+        }
+        break;
+    }
+
+    return result;
+}
+
+
+static sc_dsp_parameter s_delayDelay    = {SC_DSP_PARAMETER_TYPE_FLOAT, "Delay", 0.0F, 10.0F, 1.0F};
+static sc_dsp_parameter s_delayDry      = {SC_DSP_PARAMETER_TYPE_FLOAT, "Dry", 0.0F, 1.0F, 1.0F};
+static sc_dsp_parameter s_delayWet      = {SC_DSP_PARAMETER_TYPE_FLOAT, "Wet", 0.0F, 1.0F, 0.5F};
+static sc_dsp_parameter s_delayFeedback = {SC_DSP_PARAMETER_TYPE_FLOAT, "Feedback", 0.0F, 1.0F, 0.0F};
+
+static sc_dsp_parameter* s_delayParams[SC_DSP_DELAY_NUM_PARAM] = {&s_delayDelay, &s_delayDry, &s_delayWet, &s_delayFeedback};
+
+static sc_dsp_vtable s_delayVtable = {sc_dsp_delay_create, sc_dsp_delay_release, sc_dsp_delay_set_param_float, sc_dsp_delay_get_param_float, s_delayParams, SC_DSP_DELAY_NUM_PARAM};
 
 #pragma endregion
 
