@@ -178,7 +178,8 @@ namespace sbk::reflection
         registration::class_<effect_description>("effect_description")
             .constructor<>(create_sbk_object<effect_description>)(policy::ctor::as_raw_ptr)
             .property("Type", &effect_description::get_dsp_type, &effect_description::set_dsp_type)(metadata(sbk::editor::metadata_key::readonly, true))
-            .property("Parameters", &effect_description::m_parameterDescriptions)(metadata(sbk::editor::metadata_key::no_resize, true));
+            .property("Parameters", &effect_description::m_parameterDescriptions)(metadata(sbk::editor::metadata_key::no_resize, true))
+            (metadata(sbk::editor::metadata_key::draw_when_wrapped, true));
 
         registration::class_<effect_parameter_description>("effect_parameter_description")
             .constructor<>()(policy::ctor::as_object)
@@ -206,12 +207,12 @@ namespace sbk::reflection
 
         registration::class_<object>("object")
             .constructor<>(create_sbk_object<object>)(policy::ctor::as_raw_ptr)
-            .property("ObjectName", &object::get_object_name, &object::set_object_name);
+            .property("ObjectName", &object::get_object_name, &object::set_object_name)(metadata(sbk::editor::metadata_key::hidden_when_wrapped, true));
 
         registration::class_<database_object>("database_object")
             .constructor<>(create_sbk_object<database_object>)(policy::ctor::as_raw_ptr)
-            .property("ObjectID", &database_object::get_database_id, &database_object::set_database_id)(metadata(sbk::editor::metadata_key::readonly, true))
-            .property_readonly("DatabaseName", &database_object::get_database_name)(metadata(sbk::editor::metadata_key::readonly, true));
+            .property("ObjectID", &database_object::get_database_id, &database_object::set_database_id)(metadata(sbk::editor::metadata_key::readonly, true), metadata(sbk::editor::metadata_key::hidden_when_wrapped, true))
+            .property_readonly("DatabaseName", &database_object::get_database_name)(metadata(sbk::editor::metadata_key::readonly, true), metadata(sbk::editor::metadata_key::hidden_when_wrapped, true));
 
         registration::class_<sound>("sound")
             .constructor<>(create_sbk_object<sound>)(policy::ctor::as_raw_ptr)

@@ -21,9 +21,7 @@ void property_drawer::draw_object(rttr::type type, rttr::instance instance)
 
         const gluten::imgui::scoped_color innerItemsBorder(ImGuiCol_Border, gluten::theme::layer02);
 
-        if (ImGui::BeginTable(
-                "Properties", 2,
-                ImGuiTableFlags_Resizable | ImGuiTableFlags_BordersInnerH | ImGuiTableFlags_SizingStretchProp))
+        if (ImGui::BeginTable("Properties", 2, ImGuiTableFlags_Resizable | ImGuiTableFlags_BordersInnerH | ImGuiTableFlags_SizingStretchProp))
         {
             for (rttr::property property : type.get_properties())
             {
@@ -156,17 +154,18 @@ bool property_drawer::draw_variant(rttr::variant& variant, rttr::string_view nam
     }
     else if (type.is_wrapper() && type.get_wrapped_type().is_arithmetic())
     {
-        sbk_id id               = variant.extract_wrapped_value().convert<sbk_id>();
-        rttr::type templateType = *type.get_template_arguments().begin();
-
-        if (templateType == sbk::engine::effect_description::type())
+        sbk_id id                  = variant.extract_wrapped_value().convert<sbk_id>();
+        rttr::type templateType    = *type.get_template_arguments().begin();
+        const bool renderInternals = templateType.get_metadata(sbk::editor::metadata_key::draw_when_wrapped).to_bool();
+        
+        if (renderInternals)
         {
             sbk::core::database_ptr<sbk::core::object> objectPtr(id);
 
-            if (auto sharedEffectDescription = objectPtr.shared())
+            if (auto objectShared = objectPtr.shared())
             {
-                rttr::instance member(sharedEffectDescription.get());
-                draw_object(sharedEffectDescription->get_object_type(), member);
+                rttr::instance member(objectShared.get());
+                draw_sub_object(objectShared->get_object_type(), member);
             }
         }
         else
@@ -725,4 +724,31 @@ bool property_drawer::draw_payload_drop(rttr::property property,
     ImGui::EndGroup();
 
     return edited;
+}
+
+void property_drawer::draw_sub_object(rttr::type type, rttr::instance instance)
+{
+    ImGui::PushID(type.get_name().data());
+
+    gluten::imgui::indent_cursor();
+
+    const gluten::imgui::scoped_color innerItemsBorder(ImGuiCol_Border, gluten::theme::layer02);
+
+    if (ImGui::BeginTable("Properties", 2, ImGuiTableFlags_Resizable | ImGuiTableFlags_BordersInnerH | ImGuiTableFlags_SizingStretchProp))
+    {
+        for (rttr::property property : type.get_properties())
+        {
+            const bool hiddenWhenWrapped = property.get_metadata(sbk::editor::metadata_key::hidden_when_wrapped).to_bool();
+            const bool readOnly = property.get_metadata(sbk::editor::metadata_key::readonly).to_bool();
+
+            if (!hiddenWhenWrapped)
+            {
+                draw_property(property, instance);
+            }
+        }
+
+        ImGui::EndTable();
+    }
+
+    ImGui::PopID();
 }
