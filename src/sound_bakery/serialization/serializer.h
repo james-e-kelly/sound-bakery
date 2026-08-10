@@ -37,9 +37,10 @@ namespace sbk::core::serialization
 {
     enum class sound_bakery_serialization_version : int
     {
-        start             = 1,
-        soundbanks_lookup = 2,  //< Soundbanks can contain lookup info for integrations to get a list of all objects
-        new_type_names    = 3,
+        start                   = 1,
+        soundbanks_lookup       = 2,  //< Soundbanks can contain lookup info for integrations to get a list of all objects
+        new_type_names          = 3,
+        serialize_dsp_parameter = 4,
 
         /** ADD NEW VERSIONS ABOVE */
         plus_one,
@@ -652,6 +653,8 @@ BOOST_CLASS_VERSION(sbk::core::serialization::serialized_soundbank, static_cast<
 BOOST_CLASS_VERSION(sbk::core::serialization::serialized_child_class, static_cast<int>(sbk::core::serialization::sound_bakery_serialization_version::cur))
 BOOST_CLASS_VERSION(sbk::core::serialization::serialized_sequential_container, static_cast<int>(sbk::core::serialization::sound_bakery_serialization_version::cur))
 BOOST_CLASS_VERSION(sbk::core::serialization::serialized_associative_container, static_cast<int>(sbk::core::serialization::sound_bakery_serialization_version::cur))
+BOOST_CLASS_VERSION(sc_dsp_parameter, static_cast<int>(sbk::core::serialization::sound_bakery_serialization_version::cur))
+BOOST_CLASS_VERSION(sc_dsp_parameter_float, static_cast<int>(sbk::core::serialization::sound_bakery_serialization_version::cur))
 
 namespace boost
 {
@@ -742,6 +745,10 @@ namespace boost
                 {
                     serialize_variant<archive_class, double>(archive, variant);
                 }
+                else
+                {
+                    BOOST_ASSERT_MSG(false, "Unandled arithmetic type");
+                }
             }
             else if (type == rttr::type::get<std::string>())
             {
@@ -789,8 +796,60 @@ namespace boost
             }
             else if (type.is_class())
             {
-                sbk::core::serialization::serialized_child_class childClass(variant);
-                archive& boost::serialization::make_nvp("Child", childClass);
+                if (type == rttr::type::get<sc_dsp_parameter>())
+                {
+                    sc_dsp_parameter parameter = variant.convert<sc_dsp_parameter>();
+                    archive & boost::serialization::make_nvp("Parameter", parameter);
+                    variant = parameter;
+                }
+                else
+                {
+                    sbk::core::serialization::serialized_child_class childClass(variant);
+                    archive & boost::serialization::make_nvp("Child", childClass);
+                }
+            }
+            else
+            {
+                BOOST_ASSERT_MSG(false, "Unhandled variant");
+            }
+        }
+
+        template <class archive_class>
+        void serialize(archive_class& archive, sc_dsp_parameter_float& dspParameter, const unsigned int version)
+        {
+            archive & make_nvp("Min", dspParameter.min);
+            archive & make_nvp("Max", dspParameter.max);
+            archive & make_nvp("Value", dspParameter.value);
+        }
+
+        template <class archive_class>
+        void serialize(archive_class& archive, sc_dsp_parameter& dspParameter, const unsigned int version)
+        {
+            archive & make_nvp("Type", dspParameter.type);
+
+            if (typename archive_class::is_loading())
+            {
+                std::string tempName;
+                archive & make_nvp("Name", tempName);
+                
+                const std::size_t count = std::min<std::size_t>(tempName.size(), SC_STRING_NAME_LENGTH - 1);
+                std::memcpy(dspParameter.name, tempName.data(), count);
+                dspParameter.name[count] = '\0';
+            }
+            else
+            {
+                std::string tempName(dspParameter.name, ::strnlen(dspParameter.name, SC_STRING_NAME_LENGTH));
+                archive & boost::serialization::make_nvp("Name", tempName);
+            }
+
+            switch (dspParameter.type)
+            {
+                case SC_DSP_PARAMETER_TYPE_FLOAT:
+                    archive & make_nvp("Float", dspParameter.floatParameter);
+                    break;
+                default:
+                    BOOST_ASSERT_MSG(false, "Unhandled dsp parameter type");
+                    break;
             }
         }
 

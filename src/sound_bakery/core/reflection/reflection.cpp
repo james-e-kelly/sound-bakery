@@ -141,6 +141,10 @@ namespace sbk::reflection
             value("Highpass", SC_DSP_TYPE_HIGHPASS),
             value("Delay", SC_DSP_TYPE_DELAY));
 
+        registration::enumeration<sc_dsp_parameter_type>("sc_dsp_parameter_type")(
+            value("Float", SC_DSP_PARAMETER_TYPE_FLOAT)
+            );
+
         registration::enumeration<sbk::memory::object_category>("sb_object_category")(
             value("Unkown", sbk::memory::object_category::unknown),
             value("Sound", sbk::memory::object_category::sound),
@@ -168,7 +172,9 @@ namespace sbk::reflection
             value("Opus", sc_encoding_format_opus));
 
         registration::class_<sc_dsp_parameter>("sc_dsp_parameter")
-            .constructor<>();
+            .constructor<>()(policy::ctor::as_object)
+            .property("Type", &sc_dsp_parameter::type)
+            .property("Name", &sc_dsp_parameter::name);
 
         registration::class_<action>("action")
             .constructor<>()(policy::ctor::as_object)
