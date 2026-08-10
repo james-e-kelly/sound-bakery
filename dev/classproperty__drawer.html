@@ -142,6 +142,11 @@ $(document).ready(function(){initNavTree('classproperty__drawer.html',''); initR
   <div class="headertitle"><div class="title">property_drawer Class Reference<span class="mlabels"><span class="mlabel">final</span></span></div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Draws RTTR properties to ImGui.  
+ <a href="classproperty__drawer.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="property__drawer_8h_source.html">property_drawer.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
@@ -151,9 +156,9 @@ static void&#160;</td><td class="memItemRight" valign="bottom"><b>draw_object</b
 <tr class="memitem:a280a6964fdadf3f5bc7f61ebf49a7be1" id="r_a280a6964fdadf3f5bc7f61ebf49a7be1"><td class="memItemLeft" align="right" valign="top"><a id="a280a6964fdadf3f5bc7f61ebf49a7be1" name="a280a6964fdadf3f5bc7f61ebf49a7be1"></a>
 static bool&#160;</td><td class="memItemRight" valign="bottom"><b>draw_property</b> (rttr::property property, rttr::instance instance)</td></tr>
 <tr class="separator:a280a6964fdadf3f5bc7f61ebf49a7be1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a471347e4d6df9f626925c532f79610c8" id="r_a471347e4d6df9f626925c532f79610c8"><td class="memItemLeft" align="right" valign="top"><a id="a471347e4d6df9f626925c532f79610c8" name="a471347e4d6df9f626925c532f79610c8"></a>
-static bool&#160;</td><td class="memItemRight" valign="bottom"><b>draw_variant</b> (rttr::variant &amp;variant, rttr::string_view name, rttr::variant minMax=rttr::variant())</td></tr>
-<tr class="separator:a471347e4d6df9f626925c532f79610c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b9540aab3a710115893f13a2198c91b" id="r_a9b9540aab3a710115893f13a2198c91b"><td class="memItemLeft" align="right" valign="top"><a id="a9b9540aab3a710115893f13a2198c91b" name="a9b9540aab3a710115893f13a2198c91b"></a>
+static bool&#160;</td><td class="memItemRight" valign="bottom"><b>draw_variant</b> (rttr::variant &amp;variant, rttr::string_view name, rttr::property *parentProperty=nullptr)</td></tr>
+<tr class="separator:a9b9540aab3a710115893f13a2198c91b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a77e6a91dc0ec7ea6ad4297a04e842e65" id="r_a77e6a91dc0ec7ea6ad4297a04e842e65"><td class="memItemLeft" align="right" valign="top"><a id="a77e6a91dc0ec7ea6ad4297a04e842e65" name="a77e6a91dc0ec7ea6ad4297a04e842e65"></a>
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>draw_readonly_variant</b> (rttr::variant variant, bool disabled=true)</td></tr>
 <tr class="separator:a77e6a91dc0ec7ea6ad4297a04e842e65"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -169,15 +174,20 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>draw_bool</b> 
 <tr class="memitem:a46e26c4ecf4026955b8f7b34726709cb" id="r_a46e26c4ecf4026955b8f7b34726709cb"><td class="memItemLeft" align="right" valign="top"><a id="a46e26c4ecf4026955b8f7b34726709cb" name="a46e26c4ecf4026955b8f7b34726709cb"></a>
 static bool&#160;</td><td class="memItemRight" valign="bottom"><b>draw_member_object</b> (rttr::variant &amp;value, rttr::string_view name)</td></tr>
 <tr class="separator:a46e26c4ecf4026955b8f7b34726709cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae8bf9e38f28a31d77d5d302c516a5d06" id="r_ae8bf9e38f28a31d77d5d302c516a5d06"><td class="memItemLeft" align="right" valign="top"><a id="ae8bf9e38f28a31d77d5d302c516a5d06" name="ae8bf9e38f28a31d77d5d302c516a5d06"></a>
-static bool&#160;</td><td class="memItemRight" valign="bottom"><b>draw_sequential_container</b> (rttr::variant_sequential_view &amp;view, rttr::string_view name)</td></tr>
-<tr class="separator:ae8bf9e38f28a31d77d5d302c516a5d06"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a326315f8e5facee70197f2a331736161" id="r_a326315f8e5facee70197f2a331736161"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classproperty__drawer.html#a326315f8e5facee70197f2a331736161">draw_associate_container</a> (rttr::variant_associative_view &amp;view, rttr::string_view name)</td></tr>
-<tr class="separator:a326315f8e5facee70197f2a331736161"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4318066d3b1b5466863520fdafdafc0a" id="r_a4318066d3b1b5466863520fdafdafc0a"><td class="memItemLeft" align="right" valign="top"><a id="a4318066d3b1b5466863520fdafdafc0a" name="a4318066d3b1b5466863520fdafdafc0a"></a>
+static bool&#160;</td><td class="memItemRight" valign="bottom"><b>draw_sequential_container</b> (rttr::variant_sequential_view &amp;view, rttr::string_view name, bool canResize=true, bool canShrink=true)</td></tr>
+<tr class="separator:a4318066d3b1b5466863520fdafdafc0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7cfbcc0b3cf334260b53422be099635" id="r_ad7cfbcc0b3cf334260b53422be099635"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classproperty__drawer.html#ad7cfbcc0b3cf334260b53422be099635">draw_associate_container</a> (rttr::variant_associative_view &amp;view, rttr::string_view name, bool canResize=true, bool canShrink=true)</td></tr>
+<tr class="separator:ad7cfbcc0b3cf334260b53422be099635"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6ba45662ab9d06d8a9b5a0e1b39baf4" id="r_ac6ba45662ab9d06d8a9b5a0e1b39baf4"><td class="memItemLeft" align="right" valign="top"><a id="ac6ba45662ab9d06d8a9b5a0e1b39baf4" name="ac6ba45662ab9d06d8a9b5a0e1b39baf4"></a>
+static void&#160;</td><td class="memItemRight" valign="bottom"><b>draw_sub_object</b> (rttr::type type, rttr::instance instance)</td></tr>
+<tr class="separator:ac6ba45662ab9d06d8a9b5a0e1b39baf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Function Documentation</h2>
-<a id="a326315f8e5facee70197f2a331736161" name="a326315f8e5facee70197f2a331736161"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a326315f8e5facee70197f2a331736161">&#9670;&#160;</a></span>draw_associate_container()</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Draws RTTR properties to ImGui. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="ad7cfbcc0b3cf334260b53422be099635" name="ad7cfbcc0b3cf334260b53422be099635"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad7cfbcc0b3cf334260b53422be099635">&#9670;&#160;</a></span>draw_associate_container()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -195,7 +205,19 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>draw_sequentia
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">rttr::string_view&#160;</td>
-          <td class="paramname"><em>name</em>&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>canResize</em> = <code>true</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>canShrink</em> = <code>true</code>&#160;</td>
         </tr>
         <tr>
           <td></td>

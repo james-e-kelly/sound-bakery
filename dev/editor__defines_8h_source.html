@@ -154,19 +154,23 @@ $(document).ready(function(){initNavTree('editor__defines_8h_source.html',''); i
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>    <span class="keyword">enum class</span> metadata_key</div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    {</div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>        payload,</div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>        min_max,</div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>        readonly</div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    };</div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keyword">inline</span> std::string PayloadObject        = <span class="stringliteral">&quot;OBJECT&quot;</span>;</div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="keyword">inline</span> std::string PayloadContainer     = <span class="stringliteral">&quot;CONTAINER&quot;</span>;</div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keyword">inline</span> std::string PayloadSound         = <span class="stringliteral">&quot;SOUND&quot;</span>;</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keyword">inline</span> std::string PayloadBus           = <span class="stringliteral">&quot;BUS&quot;</span>;</div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keyword">inline</span> std::string PayloadNamedParam    = <span class="stringliteral">&quot;NAMED_PARAM&quot;</span>;</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keyword">inline</span> std::string PayloadIntParamValue = <span class="stringliteral">&quot;NAMED_PARAM_VALUE&quot;</span>;</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keyword">inline</span> std::string PayloadFloatParam    = <span class="stringliteral">&quot;FLOAT_PARAM&quot;</span>;</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>}  <span class="comment">// namespace sbk::editor</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>        payload,            <span class="comment">//&lt; Drag and drop</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>        min_max,            <span class="comment">//&lt; Has min and max values</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>        readonly,           <span class="comment">//&lt; Cannot be edited</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>        no_grow,            <span class="comment">//&lt; Container cannot have elements added. Helpful when a function needs to add the element and a simple add would create an invalid element</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>        no_shrink,          <span class="comment">//&lt; Container cannot have its elements removed</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>        draw_when_wrapped,  <span class="comment">//&lt; If this type is wrapped inside a database_ptr, render it fully, instead of just being a payload target</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        hidden_when_wrapped <span class="comment">//&lt; If we are rendered as a &quot;subobject&quot; (wrapped), don&#39;t render the property</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    };</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keyword">inline</span> std::string PayloadObject        = <span class="stringliteral">&quot;OBJECT&quot;</span>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keyword">inline</span> std::string PayloadContainer     = <span class="stringliteral">&quot;CONTAINER&quot;</span>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keyword">inline</span> std::string PayloadSound         = <span class="stringliteral">&quot;SOUND&quot;</span>;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keyword">inline</span> std::string PayloadBus           = <span class="stringliteral">&quot;BUS&quot;</span>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keyword">inline</span> std::string PayloadNamedParam    = <span class="stringliteral">&quot;NAMED_PARAM&quot;</span>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keyword">inline</span> std::string PayloadIntParamValue = <span class="stringliteral">&quot;NAMED_PARAM_VALUE&quot;</span>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keyword">inline</span> std::string PayloadFloatParam    = <span class="stringliteral">&quot;FLOAT_PARAM&quot;</span>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>}  <span class="comment">// namespace sbk::editor</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
