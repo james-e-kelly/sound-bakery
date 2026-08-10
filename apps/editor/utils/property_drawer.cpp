@@ -68,7 +68,7 @@ bool property_drawer::draw_property(rttr::property property, rttr::instance inst
     }
     else
     {
-        edited = draw_variant(propertyValue, property.get_name(), property.get_metadata(sbk::editor::metadata_key::min_max));
+        edited = draw_variant(propertyValue, property.get_name(), &property);
     }
 
     if (edited)
@@ -82,7 +82,7 @@ bool property_drawer::draw_property(rttr::property property, rttr::instance inst
     return edited;
 }
 
-bool property_drawer::draw_variant(rttr::variant& variant, rttr::string_view name, rttr::variant minMax)
+bool property_drawer::draw_variant(rttr::variant& variant, rttr::string_view name, rttr::property* parentProperty)
 {
     if (!variant.is_valid())
     {
@@ -97,6 +97,8 @@ bool property_drawer::draw_variant(rttr::variant& variant, rttr::string_view nam
 
     if (type.is_arithmetic())
     {
+        rttr::variant minMax = parentProperty ? parentProperty->get_metadata(sbk::editor::metadata_key::min_max) : std::pair<float, float>();
+
         if (type == rttr::type::get<float>())
         {
             float value = variant.to_float();
@@ -135,8 +137,9 @@ bool property_drawer::draw_variant(rttr::variant& variant, rttr::string_view nam
     else if (type.is_sequential_container())
     {
         rttr::variant_sequential_view view = variant.create_sequential_view();
+        const bool canResize               = parentProperty ? !parentProperty->get_metadata(sbk::editor::metadata_key::no_resize).to_bool() : true;
 
-        if (draw_sequential_container(view, name))
+        if (draw_sequential_container(view, name, canResize))
         {
             edited = true;
         }
@@ -144,8 +147,9 @@ bool property_drawer::draw_variant(rttr::variant& variant, rttr::string_view nam
     else if (type.is_associative_container())
     {
         rttr::variant_associative_view view = variant.create_associative_view();
+        const bool canResize                = parentProperty ? !parentProperty->get_metadata(sbk::editor::metadata_key::no_resize).to_bool() : true;
 
-        if (draw_associate_container(view, name))
+        if (draw_associate_container(view, name, canResize))
         {
             edited = true;
         }
@@ -161,8 +165,8 @@ bool property_drawer::draw_variant(rttr::variant& variant, rttr::string_view nam
 
             if (auto sharedEffectDescription = objectPtr.shared())
             {
-                rttr::variant member = sharedEffectDescription.get();
-                edited               = draw_member_object(member, "Effect");
+                rttr::instance member(sharedEffectDescription.get());
+                draw_object(sharedEffectDescription->get_object_type(), member);
             }
         }
         else
@@ -373,7 +377,7 @@ bool property_drawer::draw_member_object(rttr::variant& value, rttr::string_view
     return edited;
 }
 
-bool property_drawer::draw_sequential_container(rttr::variant_sequential_view& view, rttr::string_view name)
+bool property_drawer::draw_sequential_container(rttr::variant_sequential_view& view, rttr::string_view name, bool canResize)
 {
     bool edited = false;
 
@@ -388,7 +392,7 @@ bool property_drawer::draw_sequential_container(rttr::variant_sequential_view& v
 
     ImGui::SameLine();
 
-    if (ImGui::Button("+"))
+    if (canResize && ImGui::Button("+"))
     {
         const rttr::type type = view.get_value_type();
 
@@ -432,12 +436,15 @@ bool property_drawer::draw_sequential_container(rttr::variant_sequential_view& v
                 edited = true;
             }
 
-            ImGui::SameLine();
-
-            if (ImGui::Button("X"))
+            if (canResize)
             {
-                iterator = view.erase(iterator);
-                edited   = true;
+                ImGui::SameLine();
+
+                if (ImGui::Button("X"))
+                {
+                    iterator = view.erase(iterator);
+                    edited   = true;
+                }
             }
 
             ImGui::PopID();
@@ -454,19 +461,18 @@ bool property_drawer::draw_sequential_container(rttr::variant_sequential_view& v
     return edited;
 }
 
-bool property_drawer::draw_associate_container(rttr::variant_associative_view& view, rttr::string_view name)
+bool property_drawer::draw_associate_container(rttr::variant_associative_view& view, rttr::string_view name, bool canResize)
 {
     bool edited = false;
 
-    if (ImGui::Button("+"))
+    if (canResize && ImGui::Button("+"))
     {
         const rttr::type keyType   = view.get_key_type();
         const rttr::type valueType = view.get_value_type();
 
         if (view.is_key_only_type())
         {
-            std::pair<rttr::variant_associative_view::const_iterator, bool> insertedIterator =
-                view.insert(keyType.create_default());
+            std::pair<rttr::variant_associative_view::const_iterator, bool> insertedIterator = view.insert(keyType.create_default());
             edited = insertedIterator.second;
         }
         else

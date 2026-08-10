@@ -8,9 +8,10 @@ namespace sbk::editor
 
     enum class metadata_key
     {
-        payload,
-        min_max,
-        readonly
+        payload,        //< Drag and drop
+        min_max,        //< Has min and max values
+        readonly,       //< Cannot be edited
+        no_resize       //< Container cannot be resized. Elements might be writable
     };
 
     inline std::string PayloadObject        = "OBJECT";
