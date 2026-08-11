@@ -171,6 +171,29 @@ auto sbk::engine::node_instance::get_bus() const noexcept -> sc_node_group*
     return m_stateMachine.m_nodeGroup.nodeGroup.get();
 }
 
+auto sbk::engine::node_instance_fsm::node_group_is_idle(const node_group_instance& group) noexcept -> bool
+{
+    ZoneScoped;
+    if (group.nodeGroup == nullptr)
+    {
+        return true;
+    }
+    for (sc_dsp* dsp = group.nodeGroup->tail; dsp != nullptr; dsp = dsp->next)
+    {
+        if (dsp->vtable->isIdle == nullptr)
+        {
+            continue;
+        }
+        sc_bool isIdle = MA_TRUE;
+        dsp->vtable->isIdle(dsp->state, &isIdle);
+        if (!isIdle)
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
 // INIT //
 
 auto sbk::engine::node_instance_fsm::add_dsp_to_node_group(sc_node_group* nodeGroup,

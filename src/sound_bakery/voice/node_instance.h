@@ -105,34 +105,10 @@ namespace sbk::engine
 
                 if (stateMachine.m_soundInstance)
                 {
-                    if (ma_sound_at_end(&stateMachine.m_soundInstance->sound) == MA_TRUE)
+                    if (ma_sound_at_end(&stateMachine.m_soundInstance->sound) == MA_TRUE &&
+                        node_instance_fsm::node_group_is_idle(stateMachine.m_nodeGroup))
                     {
-                        bool isStopped = true; // Assume we're stopped. DSP needs to report it's not idle to stop the stop
-
-                        if (stateMachine.m_nodeGroup.nodeGroup)
-                        {
-                            sc_dsp* currentDSP = stateMachine.m_nodeGroup.nodeGroup->tail;
-
-                            while (currentDSP != nullptr)
-                            {
-                                if (currentDSP->vtable->isIdle != nullptr)
-                                {
-                                    sc_bool isIdle = true;
-                                    currentDSP->vtable->isIdle(currentDSP->state, &isIdle);
-                                    if (!isIdle)
-                                    {
-                                        isStopped = false;
-                                        break;
-                                    }
-                                }
-                                currentDSP = currentDSP->next;
-                            }
-                        }
-                        
-                        if (isStopped)
-                        {
-                            stateMachine.process_event(event_stop());
-                        }
+                        stateMachine.process_event(event_stop());
                     }
                 }
                 else if (!stateMachine.m_children.empty())
@@ -151,7 +127,8 @@ namespace sbk::engine
 
                     const bool allChildrenHaveStopped = stoppedChildren == stateMachine.m_children.size();
 
-                    if (allChildrenHaveStopped)
+                    // Keep the container playing while its own DSP tail (e.g. a delay) is still ringing out
+                    if (allChildrenHaveStopped && node_instance_fsm::node_group_is_idle(stateMachine.m_nodeGroup))
                     {
                         // Sequence nodes retrigger when the current sound stops
                         if (stateMachine.m_referencingNode->get_object_type() == rttr::type::get<sbk::engine::sequence_container>())
@@ -202,6 +179,8 @@ namespace sbk::engine
         auto init_callbacks() -> void;
 
         [[nodiscard]] auto add_dsp_to_node_group(sc_node_group* nodeGroup, sc_dsp** dsp, const sc_dsp_config& config) -> sbk::result<void>;
+
+        [[nodiscard]] static auto node_group_is_idle(const node_group_instance& group) noexcept -> bool;
 
         auto set_volume(float oldVolume, float newVolume) -> void;
         auto set_pitch(float oldPitch, float newPitch) -> void;
