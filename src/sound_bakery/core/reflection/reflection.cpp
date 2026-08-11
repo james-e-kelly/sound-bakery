@@ -141,6 +141,10 @@ namespace sbk::reflection
             value("Highpass", SC_DSP_TYPE_HIGHPASS),
             value("Delay", SC_DSP_TYPE_DELAY));
 
+        registration::enumeration<sc_dsp_parameter_type>("sc_dsp_parameter_type")(
+            value("Float", sc_dsp_parameter_type_float)
+            );
+
         registration::enumeration<sbk::memory::object_category>("sb_object_category")(
             value("Unkown", sbk::memory::object_category::unknown),
             value("Sound", sbk::memory::object_category::sound),
@@ -168,7 +172,9 @@ namespace sbk::reflection
             value("Opus", sc_encoding_format_opus));
 
         registration::class_<sc_dsp_parameter>("sc_dsp_parameter")
-            .constructor<>();
+            .constructor<>()(policy::ctor::as_object)
+            .property("Type", &sc_dsp_parameter::type)
+            .property("Name", &sc_dsp_parameter::name);
 
         registration::class_<action>("action")
             .constructor<>()(policy::ctor::as_object)
@@ -177,8 +183,9 @@ namespace sbk::reflection
 
         registration::class_<effect_description>("effect_description")
             .constructor<>(create_sbk_object<effect_description>)(policy::ctor::as_raw_ptr)
-            .property("Type", &effect_description::get_dsp_type, &effect_description::set_dsp_type)
-            .property("Parameters", &effect_description::m_parameterDescriptions);
+            .property("Type", &effect_description::get_dsp_type, &effect_description::set_dsp_type)(metadata(sbk::editor::metadata_key::readonly, true))
+            .property("Parameters", &effect_description::m_parameterDescriptions)(metadata(sbk::editor::metadata_key::no_grow, true), metadata(sbk::editor::metadata_key::no_shrink, true))
+            (metadata(sbk::editor::metadata_key::draw_when_wrapped, true));
 
         registration::class_<effect_parameter_description>("effect_parameter_description")
             .constructor<>()(policy::ctor::as_object)
@@ -206,12 +213,12 @@ namespace sbk::reflection
 
         registration::class_<object>("object")
             .constructor<>(create_sbk_object<object>)(policy::ctor::as_raw_ptr)
-            .property("ObjectName", &object::get_object_name, &object::set_object_name);
+            .property("ObjectName", &object::get_object_name, &object::set_object_name)(metadata(sbk::editor::metadata_key::hidden_when_wrapped, true));
 
         registration::class_<database_object>("database_object")
             .constructor<>(create_sbk_object<database_object>)(policy::ctor::as_raw_ptr)
-            .property("ObjectID", &database_object::get_database_id, &database_object::set_database_id)(metadata(sbk::editor::metadata_key::readonly, true))
-            .property_readonly("DatabaseName", &database_object::get_database_name)(metadata(sbk::editor::metadata_key::readonly, true));
+            .property("ObjectID", &database_object::get_database_id, &database_object::set_database_id)(metadata(sbk::editor::metadata_key::readonly, true), metadata(sbk::editor::metadata_key::hidden_when_wrapped, true))
+            .property_readonly("DatabaseName", &database_object::get_database_name)(metadata(sbk::editor::metadata_key::readonly, true), metadata(sbk::editor::metadata_key::hidden_when_wrapped, true));
 
         registration::class_<sound>("sound")
             .constructor<>(create_sbk_object<sound>)(policy::ctor::as_raw_ptr)
@@ -231,7 +238,7 @@ namespace sbk::reflection
             .property("Pitch", &node::m_pitch)(metadata(sbk::editor::metadata_key::min_max, std::pair<float, float>(0.0f, 2.0f)))
             .property("Lowpass", &node::m_lowpass)(metadata(sbk::editor::metadata_key::min_max, std::pair<float, float>(0.0f, 100.0f)))
             .property("Highass", &node::m_highpass)(metadata(sbk::editor::metadata_key::min_max, std::pair<float, float>(0.0f, 100.0f)))
-            .property("Effects", &node::m_effectDescriptions)
+            .property("Effects", &node::m_effectDescriptions)(metadata(sbk::editor::metadata_key::no_grow, true)) // Not edited directly. Modified with the "Add Effect" method
             .method("Add Effect", &node::add_effect)(parameter_names("Type"));
 
         registration::class_<container>("container");

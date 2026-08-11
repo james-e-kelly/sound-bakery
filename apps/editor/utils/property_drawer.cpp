@@ -21,9 +21,7 @@ void property_drawer::draw_object(rttr::type type, rttr::instance instance)
 
         const gluten::imgui::scoped_color innerItemsBorder(ImGuiCol_Border, gluten::theme::layer02);
 
-        if (ImGui::BeginTable(
-                "Properties", 2,
-                ImGuiTableFlags_Resizable | ImGuiTableFlags_BordersInnerH | ImGuiTableFlags_SizingStretchProp))
+        if (ImGui::BeginTable("Properties", 2, ImGuiTableFlags_Resizable | ImGuiTableFlags_BordersInnerH | ImGuiTableFlags_SizingStretchProp))
         {
             for (rttr::property property : type.get_properties())
             {
@@ -68,7 +66,7 @@ bool property_drawer::draw_property(rttr::property property, rttr::instance inst
     }
     else
     {
-        edited = draw_variant(propertyValue, property.get_name(), property.get_metadata(sbk::editor::metadata_key::min_max));
+        edited = draw_variant(propertyValue, property.get_name(), &property);
     }
 
     if (edited)
@@ -82,7 +80,7 @@ bool property_drawer::draw_property(rttr::property property, rttr::instance inst
     return edited;
 }
 
-bool property_drawer::draw_variant(rttr::variant& variant, rttr::string_view name, rttr::variant minMax)
+bool property_drawer::draw_variant(rttr::variant& variant, rttr::string_view name, rttr::property* parentProperty)
 {
     if (!variant.is_valid())
     {
@@ -97,6 +95,8 @@ bool property_drawer::draw_variant(rttr::variant& variant, rttr::string_view nam
 
     if (type.is_arithmetic())
     {
+        rttr::variant minMax = parentProperty ? parentProperty->get_metadata(sbk::editor::metadata_key::min_max) : std::pair<float, float>();
+
         if (type == rttr::type::get<float>())
         {
             float value = variant.to_float();
@@ -135,8 +135,10 @@ bool property_drawer::draw_variant(rttr::variant& variant, rttr::string_view nam
     else if (type.is_sequential_container())
     {
         rttr::variant_sequential_view view = variant.create_sequential_view();
+        const bool canResize               = parentProperty ? !parentProperty->get_metadata(sbk::editor::metadata_key::no_grow).to_bool() : true;
+        const bool canShrink               = parentProperty ? !parentProperty->get_metadata(sbk::editor::metadata_key::no_shrink).to_bool() : true;
 
-        if (draw_sequential_container(view, name))
+        if (draw_sequential_container(view, name, canResize, canShrink))
         {
             edited = true;
         }
@@ -144,25 +146,27 @@ bool property_drawer::draw_variant(rttr::variant& variant, rttr::string_view nam
     else if (type.is_associative_container())
     {
         rttr::variant_associative_view view = variant.create_associative_view();
+        const bool canResize                = parentProperty ? !parentProperty->get_metadata(sbk::editor::metadata_key::no_grow).to_bool() : true;
 
-        if (draw_associate_container(view, name))
+        if (draw_associate_container(view, name, canResize))
         {
             edited = true;
         }
     }
     else if (type.is_wrapper() && type.get_wrapped_type().is_arithmetic())
     {
-        sbk_id id               = variant.extract_wrapped_value().convert<sbk_id>();
-        rttr::type templateType = *type.get_template_arguments().begin();
-
-        if (templateType == sbk::engine::effect_description::type())
+        sbk_id id                  = variant.extract_wrapped_value().convert<sbk_id>();
+        rttr::type templateType    = *type.get_template_arguments().begin();
+        const bool renderInternals = templateType.get_metadata(sbk::editor::metadata_key::draw_when_wrapped).to_bool();
+        
+        if (renderInternals)
         {
             sbk::core::database_ptr<sbk::core::object> objectPtr(id);
 
-            if (auto sharedEffectDescription = objectPtr.shared())
+            if (auto objectShared = objectPtr.shared())
             {
-                rttr::variant member = sharedEffectDescription.get();
-                edited               = draw_member_object(member, "Effect");
+                rttr::instance member(objectShared.get());
+                draw_sub_object(objectShared->get_object_type(), member);
             }
         }
         else
@@ -191,7 +195,7 @@ bool property_drawer::draw_variant(rttr::variant& variant, rttr::string_view nam
 
             switch (effectParamterDescription.m_parameter.type)
             {
-                case SC_DSP_PARAMETER_TYPE_FLOAT:
+                case sc_dsp_parameter_type_float:
                     sbk::editor::MinMax minMax(effectParamterDescription.m_parameter.floatParameter.min,
                                                effectParamterDescription.m_parameter.floatParameter.max);
                     edited = draw_float(effectParamterDescription.m_parameter.floatParameter.value,
@@ -373,7 +377,7 @@ bool property_drawer::draw_member_object(rttr::variant& value, rttr::string_view
     return edited;
 }
 
-bool property_drawer::draw_sequential_container(rttr::variant_sequential_view& view, rttr::string_view name)
+bool property_drawer::draw_sequential_container(rttr::variant_sequential_view& view, rttr::string_view name, bool canGrow, bool canShrink)
 {
     bool edited = false;
 
@@ -388,7 +392,7 @@ bool property_drawer::draw_sequential_container(rttr::variant_sequential_view& v
 
     ImGui::SameLine();
 
-    if (ImGui::Button("+"))
+    if (canGrow && ImGui::Button("+"))
     {
         const rttr::type type = view.get_value_type();
 
@@ -409,8 +413,7 @@ bool property_drawer::draw_sequential_container(rttr::variant_sequential_view& v
 
         assert(createdDefault.is_valid());
 
-        rttr::variant_sequential_view::const_iterator insertedIterator =
-            view.insert(view.begin() + view.get_size(), createdDefault);
+        rttr::variant_sequential_view::const_iterator insertedIterator = view.insert(view.begin() + view.get_size(), createdDefault);
 
         edited = insertedIterator != view.end();
         assert(edited);
@@ -432,12 +435,13 @@ bool property_drawer::draw_sequential_container(rttr::variant_sequential_view& v
                 edited = true;
             }
 
-            ImGui::SameLine();
-
-            if (ImGui::Button("X"))
+            if (canShrink)
             {
-                iterator = view.erase(iterator);
-                edited   = true;
+                if (ImGui::Button("X"))
+                {
+                    iterator = view.erase(iterator);
+                    edited   = true;
+                }
             }
 
             ImGui::PopID();
@@ -454,19 +458,18 @@ bool property_drawer::draw_sequential_container(rttr::variant_sequential_view& v
     return edited;
 }
 
-bool property_drawer::draw_associate_container(rttr::variant_associative_view& view, rttr::string_view name)
+bool property_drawer::draw_associate_container(rttr::variant_associative_view& view, rttr::string_view name, bool canGrow, bool canShrink)
 {
     bool edited = false;
 
-    if (ImGui::Button("+"))
+    if (canGrow && ImGui::Button("+"))
     {
         const rttr::type keyType   = view.get_key_type();
         const rttr::type valueType = view.get_value_type();
 
         if (view.is_key_only_type())
         {
-            std::pair<rttr::variant_associative_view::const_iterator, bool> insertedIterator =
-                view.insert(keyType.create_default());
+            std::pair<rttr::variant_associative_view::const_iterator, bool> insertedIterator = view.insert(keyType.create_default());
             edited = insertedIterator.second;
         }
         else
@@ -719,4 +722,31 @@ bool property_drawer::draw_payload_drop(rttr::property property,
     ImGui::EndGroup();
 
     return edited;
+}
+
+void property_drawer::draw_sub_object(rttr::type type, rttr::instance instance)
+{
+    ImGui::PushID(type.get_name().data());
+
+    gluten::imgui::indent_cursor();
+
+    const gluten::imgui::scoped_color innerItemsBorder(ImGuiCol_Border, gluten::theme::layer02);
+
+    if (ImGui::BeginTable("Properties", 2, ImGuiTableFlags_Resizable | ImGuiTableFlags_BordersInnerH | ImGuiTableFlags_SizingStretchProp))
+    {
+        for (rttr::property property : type.get_properties())
+        {
+            const bool hiddenWhenWrapped = property.get_metadata(sbk::editor::metadata_key::hidden_when_wrapped).to_bool();
+            const bool readOnly = property.get_metadata(sbk::editor::metadata_key::readonly).to_bool();
+
+            if (!hiddenWhenWrapped)
+            {
+                draw_property(property, instance);
+            }
+        }
+
+        ImGui::EndTable();
+    }
+
+    ImGui::PopID();
 }

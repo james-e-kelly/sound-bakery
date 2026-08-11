@@ -125,6 +125,7 @@ typedef enum
     SBK_ERR_INVALID_PARAMETER,      //< Invalid parameter given to the function
     SBK_ERR_ALREADY_INITIALIZED,    //< The resource was already initialized
     SBK_ERR_UNITIALIZED,            //< The resource was not initialized
+    SBK_ERR_INVALID_OPERATION,      //< Operation is unsupported in this state
 
     // 101-200: Sound Chef Errors
     SBK_ERR_CHEF = 101,             //< Generic Sound Chef error
@@ -227,17 +228,19 @@ typedef enum sc_encoding_format
     sc_encoding_format_opus
 } sc_encoding_format;
 
-typedef sbk_status(SC_CALL* SC_DSP_CREATE_CALLBACK)(sc_dsp_state* dspState);
-typedef sbk_status(SC_CALL* SC_DSP_RELEASE_CALLBACK)(sc_dsp_state* dspState);
-typedef sbk_status(SC_CALL* SC_DSP_SET_PARAM_FLOAT_CALLBACK)(sc_dsp_state* dspState, int index, float value);
-typedef sbk_status(SC_CALL* SC_DSP_GET_PARAM_FLOAT_CALLBACK)(sc_dsp_state* dspState, int index, float* value);
+typedef sbk_status(SC_CALL* sc_dsp_create_proc)(sc_dsp_state* dspState);
+typedef sbk_status(SC_CALL* sc_dsp_release_proc)(sc_dsp_state* dspState);
+typedef sbk_status(SC_CALL* sc_dsp_is_idle_proc)(sc_dsp_state* dspState, sc_bool* outIsIdle);
+typedef sbk_status(SC_CALL* sc_dsp_set_param_float_proc)(sc_dsp_state* dspState, int index, float value);
+typedef sbk_status(SC_CALL* sc_dsp_get_param_float_proc)(sc_dsp_state* dspState, int index, float* value);
 
 struct sc_dsp_vtable
 {
-    SC_DSP_CREATE_CALLBACK create;
-    SC_DSP_RELEASE_CALLBACK release;
-    SC_DSP_SET_PARAM_FLOAT_CALLBACK setFloat;
-    SC_DSP_GET_PARAM_FLOAT_CALLBACK getFloat;
+    sc_dsp_create_proc create;
+    sc_dsp_release_proc release;
+    sc_dsp_is_idle_proc isIdle;             //< Optional: For delays with feedback, this is used to detect if the delay has gone silent and the voice can be ended
+    sc_dsp_set_param_float_proc setFloat;
+    sc_dsp_get_param_float_proc getFloat;
 
     sc_dsp_parameter** params;
     int numParams;
@@ -300,7 +303,7 @@ struct sc_sound
  */
 struct sc_node_group
 {
-    sc_dsp* tail;   //< Left/right most node. Sounds and child groups connect to this
+    sc_dsp* tail;   //< Left most node. Sounds and child groups connect to this
     sc_dsp* fader;  //< Controls the volume and more of the group. Exists at start
     sc_dsp* head;   //< Right/top most node. Nodes in the group route to this. The head then outputs to a get_parent
 };
