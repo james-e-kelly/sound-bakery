@@ -20,7 +20,7 @@ extern "C"
 
     typedef enum sc_dsp_parameter_type
     {
-        SC_DSP_PARAMETER_TYPE_FLOAT
+        sc_dsp_parameter_type_float
     } sc_dsp_parameter_type;
 
     typedef struct sc_dsp_parameter_float
@@ -41,33 +41,33 @@ extern "C"
         };
     };
 
-    typedef enum sc_dsp_lowpass
+    enum
     {
-        SC_DSP_LOWPASS_CUTOFF,
-        SC_DSP_LOWPASS_NUM_PARAM
-    } sc_dsp_lowpass;
+        SC_DSP_LOWPASS_PARAM_CUTOFF,
+        SC_DSP_LOWPASS_PARAM_COUNT
+    };
 
-    typedef enum sc_dsp_highpass
+    enum
     {
-        SC_DSP_HIGHPASS_CUTOFF,
-        SC_DSP_HIGHPASS_NUM_PARAM
-    } sc_dsp_highpass;
+        SC_DSP_HIGHPASS_PARAM_CUTOFF,
+        SC_DSP_HIGHPASS_PARAM_COUNT
+    };
 
-    typedef enum sc_dsp_delay
+    enum
     {
-        SC_DSP_DELAY_DELAY_SECONDS,
-        SC_DSP_DELAY_DRY,
-        SC_DSP_DELAY_WET,
-        SC_DSP_DELAY_FEEDBACK,
-        SC_DSP_DELAY_NUM_PARAM
-    } sc_dsp_delay;
+        SC_DSP_DELAY_PARAM_DELAY_SECONDS,
+        SC_DSP_DELAY_PARAM_DRY,
+        SC_DSP_DELAY_PARAM_WET,
+        SC_DSP_DELAY_PARAM_FEEDBACK,
+        SC_DSP_DELAY_PARAM_COUNT
+    };
 
-    typedef enum sc_dsp_meter
+    typedef enum sc_dsp_meter_query
     {
-        SC_DSP_METER_PEAK,
-        SC_DSP_METER_RMS,
-        SC_DSP_METER_NUM_PARAM
-    } sc_dsp_meter;
+        SC_DSP_METER_QUERY_PEAK,
+        SC_DSP_METER_QUERY_RMS,
+        SC_DSP_METER_QUERY_COUNT
+    } sc_dsp_meter_query;
 
     enum
     {

@@ -963,7 +963,11 @@ static sbk_status sc_dsp_fader_release(sc_dsp_state* state)
     return SBK_SUCCESS;
 }
 
-static sc_dsp_vtable s_faderVtable = {sc_dsp_fader_create, sc_dsp_fader_release};
+static sc_dsp_vtable s_faderVtable = 
+{
+    sc_dsp_fader_create, 
+    sc_dsp_fader_release
+};
 
 #pragma endregion
 
@@ -1004,7 +1008,7 @@ static sbk_status sc_dsp_lowpass_set_param_float(sc_dsp_state* state, int index,
     {
         default:
             break;
-        case SC_DSP_LOWPASS_CUTOFF:
+        case SC_DSP_LOWPASS_PARAM_CUTOFF:
         {
             ma_lpf_config lpfConfig =
                 ma_lpf_config_init(format, channels, sampleRate, value, SC_DSP_DEFAULT_FILTER_ORDER);
@@ -1026,21 +1030,28 @@ static sbk_status sc_dsp_lowpass_get_param_float(sc_dsp_state* const state, int 
     switch (index)
     {
         default:
-        case SC_DSP_LOWPASS_CUTOFF:
+        case SC_DSP_LOWPASS_PARAM_CUTOFF:
             break;
     }
 
     return result;
 }
 
-static sc_dsp_parameter s_lowpassCutoffParam = {SC_DSP_PARAMETER_TYPE_FLOAT, "Cutoff", SC_DSP_CUTOFF_MIN,
+static sc_dsp_parameter s_lowpassCutoffParam = {sc_dsp_parameter_type_float, "Cutoff", SC_DSP_CUTOFF_MIN,
                                                 SC_DSP_CUTOFF_MAX, SC_DSP_CUTOFF_MAX};
 
-static sc_dsp_parameter* s_lowpassParams[SC_DSP_LOWPASS_NUM_PARAM] = {&s_lowpassCutoffParam};
+static sc_dsp_parameter* s_lowpassParams[SC_DSP_LOWPASS_PARAM_COUNT] = {&s_lowpassCutoffParam};
 
-static sc_dsp_vtable s_lowpassVtable = {
-    sc_dsp_lowpass_create, sc_dsp_lowpass_release, sc_dsp_lowpass_set_param_float,
-    sc_dsp_lowpass_get_param_float, s_lowpassParams, SC_DSP_LOWPASS_NUM_PARAM};
+static sc_dsp_vtable s_lowpassVtable = 
+{
+    sc_dsp_lowpass_create, 
+    sc_dsp_lowpass_release, 
+    NULL, // Idle
+    sc_dsp_lowpass_set_param_float,
+    sc_dsp_lowpass_get_param_float, 
+    s_lowpassParams, 
+    SC_DSP_LOWPASS_PARAM_COUNT
+};
 
 #pragma endregion
 
@@ -1081,7 +1092,7 @@ static sbk_status sc_dsp_highpass_set_param_float(sc_dsp_state* state, int index
     {
         default:
             break;
-        case SC_DSP_HIGHPASS_CUTOFF:
+        case SC_DSP_HIGHPASS_PARAM_CUTOFF:
         {
             ma_hpf_config hpfConfig =
                 ma_hpf_config_init(format, channels, sampleRate, value, SC_DSP_DEFAULT_FILTER_ORDER);
@@ -1103,25 +1114,32 @@ static sbk_status sc_dsp_highpass_get_param_float(sc_dsp_state* state, int index
     switch (index)
     {
         default:
-        case SC_DSP_HIGHPASS_CUTOFF:
+        case SC_DSP_HIGHPASS_PARAM_CUTOFF:
             break;
     }
 
     return result;
 }
 
-static sc_dsp_parameter s_highpassCutoffParam = {SC_DSP_PARAMETER_TYPE_FLOAT, "Cutoff", SC_DSP_CUTOFF_MIN,
+static sc_dsp_parameter s_highpassCutoffParam = {sc_dsp_parameter_type_float, "Cutoff", SC_DSP_CUTOFF_MIN,
                                                  SC_DSP_CUTOFF_MAX, SC_DSP_CUTOFF_MIN};
 
-static sc_dsp_parameter* s_highpassParams[SC_DSP_HIGHPASS_NUM_PARAM] = {&s_highpassCutoffParam};
+static sc_dsp_parameter* s_highpassParams[SC_DSP_HIGHPASS_PARAM_COUNT] = {&s_highpassCutoffParam};
 
-static sc_dsp_vtable s_highpassVtable = {
-    sc_dsp_highpass_create, sc_dsp_highpass_release, sc_dsp_highpass_set_param_float,
-    sc_dsp_highpass_get_param_float, s_highpassParams, SC_DSP_HIGHPASS_NUM_PARAM};
+static sc_dsp_vtable s_highpassVtable = 
+{
+    sc_dsp_highpass_create, 
+    sc_dsp_highpass_release, 
+    NULL, // Idle
+    sc_dsp_highpass_set_param_float,
+    sc_dsp_highpass_get_param_float, 
+    s_highpassParams, 
+    SC_DSP_HIGHPASS_PARAM_COUNT
+};
 
 #pragma endregion
 
-extern sc_dsp_vtable s_delayVtable;
+extern sc_dsp_vtable g_dspDelayVTable;
 
 #pragma endregion
 
@@ -1207,15 +1225,19 @@ static sbk_status sc_dsp_meter_release(sc_dsp_state* state)
     return SBK_SUCCESS;
 }
 
-static sc_dsp_vtable s_meterVtable = {sc_dsp_meter_create, sc_dsp_meter_release, NULL, NULL, NULL, 0};
+static sc_dsp_vtable s_meterVtable = 
+{
+    sc_dsp_meter_create, 
+    sc_dsp_meter_release
+};
 
-sbk_status sc_dsp_get_metering_info(sc_dsp* dsp, ma_uint32 channelIndex, sc_dsp_meter meterType, float* value)
+sbk_status sc_dsp_get_metering_info(sc_dsp* dsp, ma_uint32 channelIndex, sc_dsp_meter_query meterType, float* value)
 {
     SC_CHECK_ARG(dsp != NULL);
     SC_CHECK_ARG(dsp->type == SC_DSP_TYPE_METER);
     SC_CHECK_ARG(channelIndex <= SC_DSP_METER_MAX_CHANNELS);
     SC_CHECK_ARG(meterType >= 0);
-    SC_CHECK_ARG(meterType < SC_DSP_METER_NUM_PARAM);
+    SC_CHECK_ARG(meterType < SC_DSP_METER_QUERY_COUNT);
     SC_CHECK_ARG(value != NULL);
 
     sc_meter_node* meterNode = (sc_meter_node*)dsp->state->userData;
@@ -1223,11 +1245,11 @@ sbk_status sc_dsp_get_metering_info(sc_dsp* dsp, ma_uint32 channelIndex, sc_dsp_
 
     switch (meterType)
     {
-        case SC_DSP_METER_PEAK:
+        case SC_DSP_METER_QUERY_PEAK:
             *value = ma_atomic_load_explicit_f32(&meterNode->meter.peakLevels[channelIndex].value,
                                                  ma_atomic_memory_order_relaxed);
             break;
-        case SC_DSP_METER_RMS:
+        case SC_DSP_METER_QUERY_RMS:
             *value = ma_atomic_load_explicit_f32(&meterNode->meter.rmsLevels[channelIndex].value,
                                                  ma_atomic_memory_order_relaxed);
             break;
@@ -1435,8 +1457,16 @@ static sbk_status sc_dsp_clap_get_floatParam(sc_dsp_state* dspState, int index, 
     return SBK_FROM_MA(MA_NOT_IMPLEMENTED);
 }
 
-static sc_dsp_vtable s_clapVtable = {
-    sc_dsp_clap_create, sc_dsp_clap_release, sc_dsp_clap_set_floatParam, sc_dsp_clap_get_floatParam, NULL, 0};
+static sc_dsp_vtable s_clapVtable = 
+{
+    sc_dsp_clap_create, 
+    sc_dsp_clap_release, 
+    NULL,   // Idle
+    sc_dsp_clap_set_floatParam, 
+    sc_dsp_clap_get_floatParam, 
+    NULL, 
+    0
+};
 
 #pragma endregion
 
@@ -1462,7 +1492,7 @@ sc_dsp_config sc_dsp_config_init(sc_dsp_type type)
             result.vtable = &s_highpassVtable;
             break;
         case SC_DSP_TYPE_DELAY:
-            result.vtable = &s_delayVtable;
+            result.vtable = &g_dspDelayVTable;
             break;
         case SC_DSP_TYPE_METER:
             result.vtable = &s_meterVtable;

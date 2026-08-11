@@ -181,7 +181,7 @@ static void sc_delay_node_process_pcm_frames(ma_node* node, const float** frames
     }
 }
 
-static ma_node_vtable g_sc_delay_node_vtable =
+static ma_node_vtable s_delayNodeVTable =
 {
     sc_delay_node_process_pcm_frames,
     NULL,
@@ -202,7 +202,7 @@ sbk_status sc_delay_node_init(ma_node_graph* nodeGraph, const sc_delay_node_conf
     SC_CHECK_STATUS(result);
 
     ma_node_config baseConfig  = config->nodeConfig;
-    baseConfig.vtable          = &g_sc_delay_node_vtable;
+    baseConfig.vtable          = &s_delayNodeVTable;
     baseConfig.pInputChannels  = &config->delayConfig.channels;
     baseConfig.pOutputChannels = &config->delayConfig.channels;
 
@@ -273,22 +273,22 @@ static sbk_status sc_dsp_delay_set_param_float(sc_dsp_state* state, int index, f
     {
         default:
             break;
-        case SC_DSP_DELAY_DELAY_SECONDS:
+        case SC_DSP_DELAY_PARAM_DELAY_SECONDS:
         {
             return sc_delay_set_delay_ms(delay, value);
         }
         break;
-        case SC_DSP_DELAY_DRY:
+        case SC_DSP_DELAY_PARAM_DRY:
         {
             return sc_delay_set_dry(delay, value);
         }
         break;
-        case SC_DSP_DELAY_WET:
+        case SC_DSP_DELAY_PARAM_WET:
         {
             return sc_delay_set_wet(delay, value);
         }
         break;
-        case SC_DSP_DELAY_FEEDBACK:
+        case SC_DSP_DELAY_PARAM_FEEDBACK:
         {
             return sc_delay_set_feedback(delay, value);
         }
@@ -312,22 +312,22 @@ static sbk_status sc_dsp_delay_get_param_float(sc_dsp_state* state, int index, f
     {
         default:
             break;
-        case SC_DSP_DELAY_DELAY_SECONDS:
+        case SC_DSP_DELAY_PARAM_DELAY_SECONDS:
         {
             return sc_delay_get_delay_ms(delay, value);
         }
         break;
-        case SC_DSP_DELAY_DRY:
+        case SC_DSP_DELAY_PARAM_DRY:
         {
             return sc_delay_get_dry(delay, value);
         }
         break;
-        case SC_DSP_DELAY_WET:
+        case SC_DSP_DELAY_PARAM_WET:
         {
             return sc_delay_get_wet(delay, value);
         }
         break;
-        case SC_DSP_DELAY_FEEDBACK:
+        case SC_DSP_DELAY_PARAM_FEEDBACK:
         {
             return sc_delay_get_feedback(delay, value);
         }
@@ -337,11 +337,11 @@ static sbk_status sc_dsp_delay_get_param_float(sc_dsp_state* state, int index, f
     return SBK_ERR_INVALID_OPERATION;
 }
 
-static sc_dsp_parameter s_delayDelay    = {SC_DSP_PARAMETER_TYPE_FLOAT, "Delay", 0.0F, 10000.0F, 1.0F};
-static sc_dsp_parameter s_delayDry      = {SC_DSP_PARAMETER_TYPE_FLOAT, "Dry", 0.0F, 1.0F, 1.0F};
-static sc_dsp_parameter s_delayWet      = {SC_DSP_PARAMETER_TYPE_FLOAT, "Wet", 0.0F, 1.0F, 0.5F};
-static sc_dsp_parameter s_delayFeedback = {SC_DSP_PARAMETER_TYPE_FLOAT, "Feedback", 0.0F, 1.0F, 0.0F};
+static sc_dsp_parameter s_delayDelay    = {sc_dsp_parameter_type_float, "Delay", 0.0F, 10000.0F, 1.0F};
+static sc_dsp_parameter s_delayDry      = {sc_dsp_parameter_type_float, "Dry", 0.0F, 1.0F, 1.0F};
+static sc_dsp_parameter s_delayWet      = {sc_dsp_parameter_type_float, "Wet", 0.0F, 1.0F, 0.5F};
+static sc_dsp_parameter s_delayFeedback = {sc_dsp_parameter_type_float, "Feedback", 0.0F, 1.0F, 0.0F};
 
-static sc_dsp_parameter* s_delayParams[SC_DSP_DELAY_NUM_PARAM] = {&s_delayDelay, &s_delayDry, &s_delayWet, &s_delayFeedback};
+static sc_dsp_parameter* s_delayParams[SC_DSP_DELAY_PARAM_COUNT] = {&s_delayDelay, &s_delayDry, &s_delayWet, &s_delayFeedback};
 
-sc_dsp_vtable s_delayVtable = {sc_dsp_delay_create, sc_dsp_delay_release, sc_dsp_delay_set_param_float, sc_dsp_delay_get_param_float, s_delayParams, SC_DSP_DELAY_NUM_PARAM};
+sc_dsp_vtable g_dspDelayVTable = {sc_dsp_delay_create, sc_dsp_delay_release, NULL, sc_dsp_delay_set_param_float, sc_dsp_delay_get_param_float, s_delayParams, SC_DSP_DELAY_PARAM_COUNT};

@@ -844,7 +844,7 @@ namespace boost
 
             switch (dspParameter.type)
             {
-                case SC_DSP_PARAMETER_TYPE_FLOAT:
+                case sc_dsp_parameter_type_float:
                     archive & make_nvp("Float", dspParameter.floatParameter);
                     break;
                 default:

@@ -142,7 +142,7 @@ namespace sbk::reflection
             value("Delay", SC_DSP_TYPE_DELAY));
 
         registration::enumeration<sc_dsp_parameter_type>("sc_dsp_parameter_type")(
-            value("Float", SC_DSP_PARAMETER_TYPE_FLOAT)
+            value("Float", sc_dsp_parameter_type_float)
             );
 
         registration::enumeration<sbk::memory::object_category>("sb_object_category")(

@@ -195,7 +195,7 @@ bool property_drawer::draw_variant(rttr::variant& variant, rttr::string_view nam
 
             switch (effectParamterDescription.m_parameter.type)
             {
-                case SC_DSP_PARAMETER_TYPE_FLOAT:
+                case sc_dsp_parameter_type_float:
                     sbk::editor::MinMax minMax(effectParamterDescription.m_parameter.floatParameter.min,
                                                effectParamterDescription.m_parameter.floatParameter.max);
                     edited = draw_float(effectParamterDescription.m_parameter.floatParameter.value,

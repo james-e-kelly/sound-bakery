@@ -95,7 +95,7 @@
  * sc_dsp* lowpass = NULL;
  * sc_system_create_dsp(system, &lpfConfig, &lowpass);
  *
- * sc_dsp_set_parameter_float(m_lowpass, SC_DSP_LOWPASS_CUTOFF, 500.0f);
+ * sc_dsp_set_parameter_float(m_lowpass, SC_DSP_LOWPASS_PARAM_CUTOFF, 500.0f);
  * @endcode
  *
  * Many DSP parameters are defined in @ref sound_chef_dsp.h
@@ -196,7 +196,7 @@
  * sc_system_play_sound(system, footstep_concrete, &instance1, footstep_bus, SC_FALSE);
  *
  * // Adjust the lowpass cutoff for environmental effect
- * sc_dsp_set_parameter_float(lpf, SC_DSP_LOWPASS_CUTOFF, 2000.0f);
+ * sc_dsp_set_parameter_float(lpf, SC_DSP_LOWPASS_PARAM_CUTOFF, 2000.0f);
  *
  * // Play another footstep on dirt
  * sc_sound_instance* instance2 = NULL;

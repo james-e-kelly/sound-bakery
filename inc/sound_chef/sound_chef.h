@@ -56,11 +56,7 @@ extern "C"
 
     ////////////////////////////////////////////////////////////////////////////
 
-    sbk_status SC_API sc_system_create_sound(sc_system* system,
-                                            const char* fileName,
-                                            sc_sound_mode mode,
-                                            sc_sound** sound);
-
+    sbk_status SC_API sc_system_create_sound(sc_system* system, const char* fileName, sc_sound_mode mode, sc_sound** sound);
     sbk_status SC_API sc_system_create_sound_memory(sc_system* system, const void* memoryLocation, size_t soundSize, sc_sound_mode mode, sc_sound** sound);
 
     /**
@@ -155,10 +151,7 @@ extern "C"
 
     sbk_status SC_API sc_dsp_get_parameter_float(sc_dsp* dsp, int index, float* value);
     sbk_status SC_API sc_dsp_set_parameter_float(sc_dsp* dsp, int index, float value);
-    sbk_status SC_API sc_dsp_get_metering_info(sc_dsp* dsp,
-                                              ma_uint32 channelIndex,
-                                              sc_dsp_meter meterType,
-                                              float* value);
+    sbk_status SC_API sc_dsp_get_metering_info(sc_dsp* dsp, ma_uint32 channelIndex, sc_dsp_meter_query meterType, float* value);
     sbk_status SC_API sc_dsp_release(sc_dsp* dsp);
 
     sbk_status SC_API sc_node_group_set_volume(sc_node_group* nodeGroup, float volume);

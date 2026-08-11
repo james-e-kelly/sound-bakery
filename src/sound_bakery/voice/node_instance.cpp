@@ -208,7 +208,7 @@ auto sbk::engine::node_instance_fsm::init_node_group(const event_init& init) -> 
             {
                 switch (parameter.m_parameter.type)
                 {
-                    case SC_DSP_PARAMETER_TYPE_FLOAT:
+                    case sc_dsp_parameter_type_float:
                         sc_dsp_set_parameter_float(dsp, index++, parameter.m_parameter.floatParameter.value);
                         break;
                 }
@@ -335,7 +335,7 @@ auto sbk::engine::node_instance_fsm::set_lowpass(float oldLowpass, float newLowp
     const double lowpassCutoff = (19980 - (19980.0 * percentage)) + 20.0;
     BOOST_ASSERT(lowpassCutoff >= 20.0);
 
-    sc_dsp_set_parameter_float(m_nodeGroup.lowpass, SC_DSP_LOWPASS_CUTOFF, static_cast<float>(lowpassCutoff));
+    sc_dsp_set_parameter_float(m_nodeGroup.lowpass, SC_DSP_LOWPASS_PARAM_CUTOFF, static_cast<float>(lowpassCutoff));
 }
 
 auto sbk::engine::node_instance_fsm::set_highpass(float oldHighpass, float newHighpass) -> void
@@ -346,5 +346,5 @@ auto sbk::engine::node_instance_fsm::set_highpass(float oldHighpass, float newHi
     const double highpassCutoff = (19980.0 * percentage) + 20.0;
     BOOST_ASSERT(highpassCutoff >= 20.0);
 
-    sc_dsp_set_parameter_float(m_nodeGroup.highpass, SC_DSP_HIGHPASS_CUTOFF, static_cast<float>(highpassCutoff));
+    sc_dsp_set_parameter_float(m_nodeGroup.highpass, SC_DSP_HIGHPASS_PARAM_CUTOFF, static_cast<float>(highpassCutoff));
 }
