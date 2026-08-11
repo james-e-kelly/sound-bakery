@@ -80,8 +80,7 @@ extern "C"
      * instantly
      * @return
      */
-    sbk_status SC_API sc_system_play_sound(
-        sc_system* system, sc_sound* sound, sc_sound_instance** instance, sc_node_group* parent, sc_bool paused);
+    sbk_status SC_API sc_system_play_sound(sc_system* system, sc_sound* sound, sc_sound_instance** instance, sc_node_group* parent, sc_bool paused);
 
     /**
      * @brief Creates a new Node Group
@@ -135,8 +134,7 @@ extern "C"
 
     sbk_status SC_API sc_sound_instance_get_loop_position_in_seconds(sc_sound_instance* instance, float* seconds);
     sbk_status SC_API sc_sound_instance_set_loop_position_in_seconds(sc_sound_instance* instance, float loopStartSeconds, float loopEndSeconds);
-    sbk_status SC_API sc_sound_instance_get_is_looping(
-        sc_sound_instance* instance, sc_bool* looping);
+    sbk_status SC_API sc_sound_instance_get_is_looping(sc_sound_instance* instance, sc_bool* looping);
     sbk_status SC_API sc_sound_instance_set_looping(sc_sound_instance* instance, sc_bool looping);
 
     /**
