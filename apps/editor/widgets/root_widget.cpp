@@ -73,7 +73,7 @@ auto root_widget::render_menu_implementation() -> void
 
                 if (ImGui::MenuItem(ICON_LC_WRENCH " Build Soundbanks", nullptr, nullptr))
                 {
-                    sbk::engine::system::get()->get_project()->build_soundbanks();
+                    (void)sbk::engine::system::get()->get_project()->build_soundbanks();
                 }
             }
 

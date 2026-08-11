@@ -32,7 +32,7 @@ struct playable_selection
     {
         if (selectedObject != nullptr && object != selectedObject)
         {
-            sbk_system_stop_all(0);
+            (void)sbk_system_stop_all(0);
         }
 
         selectedObject = object;
@@ -205,12 +205,12 @@ void player_widget::play_selected()
         }
         else if (sbk::engine::event* event = s_lastPlayableSelection.selectedObject->try_convert_object<sbk::engine::event>())
         {
-            sbk_system_post_event(event->get_database_id(), 0);
+            (void)sbk_system_post_event(event->get_database_id(), 0);
         }
     }
 }
 
-void player_widget::stop_selected() { sbk_system_stop_all(0); }
+void player_widget::stop_selected() { (void)sbk_system_stop_all(0); }
 
 void player_widget::toggle_play_selected()
 {

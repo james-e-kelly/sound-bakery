@@ -37,7 +37,7 @@ auto add_effect_button::render_element(const gluten::element_render_info& render
                             rttr::variant enumValue = basicDspEnumeration.name_to_value(enumValueName);
                             if (ImGui::MenuItem(enumValueName.data()))
                             {
-                                selectedNode->add_effect(enumValue.get_value<sc_dsp_type>());
+                                (void)selectedNode->add_effect(enumValue.get_value<sc_dsp_type>());
                             }
                         }
 
@@ -60,7 +60,7 @@ auto add_effect_button::render_element(const gluten::element_render_info& render
                                     {
                                         if (ImGui::MenuItem(pluginDescriptor->name))
                                         {
-                                            selectedNode->add_effect_clap(clapPlugin->pluginFactory);
+                                            (void)selectedNode->add_effect_clap(clapPlugin->pluginFactory);
                                         }
                                     }
                                 }
