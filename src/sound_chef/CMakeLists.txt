@@ -9,6 +9,13 @@ set(SOUND_CHEF_SOURCES
     sound_chef_encoder.c
     sound_chef_internal.c
 
+    dsp/sound_chef_dsp_clap.c
+    dsp/sound_chef_dsp_delay.c
+    dsp/sound_chef_dsp_fader.c
+    dsp/sound_chef_dsp_highpass.c
+    dsp/sound_chef_dsp_lowpass.c
+    dsp/sound_chef_dsp_meter.c
+
     encoders/sound_chef_encoder_vorbis.c
     encoders/vorbis_encode_test.c
 )
