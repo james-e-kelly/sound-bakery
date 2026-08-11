@@ -9,14 +9,21 @@
  *
  * Convinience macro for allocating memory _and_ doing checks on it.
  */
-#define SC_CREATE(ptr, t, system)                                      \
-    ptr = ma_malloc(sizeof(t), &(system)->engine.allocationCallbacks); \
-    SC_CHECK_MEM(ptr);                                                 \
-    memset(ptr, 0, sizeof(t))
+#define SC_CREATE(ptr, t, system)                                                   \
+    do                                                                              \
+    {                                                                               \
+        (ptr) = (t*)ma_malloc(sizeof(t), &(system)->engine.allocationCallbacks);    \
+        SC_CHECK_MEM((ptr));                                                        \
+        memset((ptr), 0, sizeof(t));                                                \
+    } while (0)
 
-#define SC_FREE(ptr, system) \
-    assert(system != NULL);  \
-    ma_free(ptr, &(system)->engine.allocationCallbacks);
+#define SC_FREE(ptr, system)                                                        \
+    do                                                                              \
+    {                                                                               \
+        assert((system) != NULL);                                                   \
+        ma_free((ptr), &(system)->engine.allocationCallbacks);                      \
+        (ptr) = NULL;                                                               \
+    } while(0)
 
 #ifdef __cplusplus
 extern "C"
