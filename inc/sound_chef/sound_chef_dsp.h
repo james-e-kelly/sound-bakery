@@ -78,9 +78,9 @@ extern "C"
 
     typedef struct sc_meter
     {
-        ma_atomic_uint32 channels;
-        ma_atomic_float peakLevels[SC_DSP_METER_MAX_CHANNELS];
-        ma_atomic_float rmsLevels[SC_DSP_METER_MAX_CHANNELS];
+        sc_atomic_uint32 channels;
+        sc_atomic_float peakLevels[SC_DSP_METER_MAX_CHANNELS];
+        sc_atomic_float rmsLevels[SC_DSP_METER_MAX_CHANNELS];
     } sc_meter;
 
     typedef struct sc_meter_node
