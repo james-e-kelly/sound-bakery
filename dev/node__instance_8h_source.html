@@ -282,125 +282,150 @@ $(document).ready(function(){initNavTree('node__instance_8h_source.html',''); in
 <div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>                {</div>
 <div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>                    <span class="keywordflow">if</span> (ma_sound_at_end(&amp;stateMachine.m_soundInstance-&gt;sound) == MA_TRUE)</div>
 <div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>                    {</div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>                        stateMachine.process_event(<a class="code hl_struct" href="structsbk_1_1engine_1_1event__stop.html">event_stop</a>());</div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>                    }</div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>                }</div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>                <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!stateMachine.m_children.empty())</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>                {</div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>                    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> stoppedChildren = 0;</div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>                    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; child : stateMachine.m_children)</div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>                    {</div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>                        (void)child-&gt;update();</div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>                        <span class="keywordflow">if</span> (!child-&gt;is_playing())</div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>                        {</div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>                            ++stoppedChildren;</div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>                        }</div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>                    }</div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span> </div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>                    <span class="keyword">const</span> <span class="keywordtype">bool</span> allChildrenHaveStopped = stoppedChildren == stateMachine.m_children.size();</div>
-<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> </div>
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>                    <span class="keywordflow">if</span> (allChildrenHaveStopped)</div>
-<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>                    {</div>
-<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>                        <span class="comment">// Sequence nodes retrigger when the current sound stops</span></div>
-<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>                        <span class="keywordflow">if</span> (stateMachine.m_referencingNode-&gt;get_object_type() == rttr::type::get&lt;sbk::engine::sequence_container&gt;())</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>                        <span class="keywordtype">bool</span> isStopped = <span class="keyword">true</span>; <span class="comment">// Assume we&#39;re stopped. DSP needs to report it&#39;s not idle to stop the stop</span></div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>                        <span class="keywordflow">if</span> (stateMachine.m_nodeGroup.nodeGroup)</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>                        {</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>                            <a class="code hl_struct" href="structsc__dsp.html">sc_dsp</a>* currentDSP = stateMachine.m_nodeGroup.nodeGroup-&gt;tail;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span> </div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>                            <span class="keywordflow">while</span> (currentDSP != <span class="keyword">nullptr</span>)</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>                            {</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>                                <span class="keywordflow">if</span> (currentDSP-&gt;vtable-&gt;isIdle != <span class="keyword">nullptr</span>)</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>                                {</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>                                    sc_bool isIdle = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>                                    currentDSP-&gt;vtable-&gt;isIdle(currentDSP-&gt;state, &amp;isIdle);</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>                                    <span class="keywordflow">if</span> (!isIdle)</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>                                    {</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>                                        isStopped = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>                                        <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>                                    }</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>                                }</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>                                currentDSP = currentDSP-&gt;next;</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>                            }</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>                        }</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>                        </div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>                        <span class="keywordflow">if</span> (isStopped)</div>
 <div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>                        {</div>
-<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>                            stateMachine.m_children.clear();</div>
-<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>                            ++stateMachine.m_numTimesPlayed;</div>
-<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>                            (void)stateMachine.init_child();</div>
-<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span> </div>
-<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>                            stateMachine.process_event(<a class="code hl_struct" href="structsbk_1_1engine_1_1event__play.html">event_play</a>());</div>
-<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>                        }</div>
-<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>                        <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>                        {</div>
-<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>                            stateMachine.process_event(<a class="code hl_struct" href="structsbk_1_1engine_1_1event__stop.html">event_stop</a>());</div>
-<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>                        }</div>
-<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>                    }</div>
-<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>                }</div>
-<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>                <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>                {</div>
-<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>                    stateMachine.process_event(<a class="code hl_struct" href="structsbk_1_1engine_1_1event__stop.html">event_stop</a>());</div>
-<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>                }</div>
-<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>            }</div>
-<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>        };</div>
-</div>
-<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span> </div>
-<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>        <span class="keyword">auto</span> guard_init(<span class="keyword">const</span> <a class="code hl_struct" href="structsbk_1_1engine_1_1event__init.html">event_init</a>&amp; init) -&gt; bool;</div>
-<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span> </div>
-<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>        <span class="keyword">typedef</span> <a class="code hl_struct" href="structsbk_1_1engine_1_1node__instance__fsm_1_1state__uninit.html">state_uninit</a> <a class="code hl_struct" href="structsbk_1_1engine_1_1node__instance__fsm_1_1state__uninit.html">initial_state</a>;  <span class="comment">// the initial state of the player SM</span></div>
-<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span> </div>
-<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>        <span class="keyword">template</span> &lt;<span class="keyword">class</span> FSM, <span class="keyword">class</span> Event&gt;</div>
-<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>        <span class="keyword">auto</span> no_transition(Event <span class="keyword">const</span>&amp; <a class="code hl_class" href="classsbk_1_1engine_1_1event.html">event</a>, FSM&amp; stateMachine, <span class="keywordtype">int</span> state) -&gt; <span class="keywordtype">void</span></div>
-<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>        {</div>
-<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>            SBK_INFO(<span class="stringliteral">&quot;No transition from state {} on event {}&quot;</span>, state, <span class="keyword">typeid</span>(<a class="code hl_class" href="classsbk_1_1engine_1_1event.html">event</a>).name());</div>
-<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>        }</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>                            stateMachine.process_event(<a class="code hl_struct" href="structsbk_1_1engine_1_1event__stop.html">event_stop</a>());</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>                        }</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>                    }</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>                }</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>                <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!stateMachine.m_children.empty())</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>                {</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>                    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> stoppedChildren = 0;</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span> </div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>                    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; child : stateMachine.m_children)</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>                    {</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>                        (void)child-&gt;update();</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span> </div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>                        <span class="keywordflow">if</span> (!child-&gt;is_playing())</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>                        {</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>                            ++stoppedChildren;</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>                        }</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>                    }</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span> </div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>                    <span class="keyword">const</span> <span class="keywordtype">bool</span> allChildrenHaveStopped = stoppedChildren == stateMachine.m_children.size();</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span> </div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>                    <span class="keywordflow">if</span> (allChildrenHaveStopped)</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>                    {</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>                        <span class="comment">// Sequence nodes retrigger when the current sound stops</span></div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>                        <span class="keywordflow">if</span> (stateMachine.m_referencingNode-&gt;get_object_type() == rttr::type::get&lt;sbk::engine::sequence_container&gt;())</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>                        {</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>                            stateMachine.m_children.clear();</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>                            ++stateMachine.m_numTimesPlayed;</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>                            (void)stateMachine.init_child();</div>
 <div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span> </div>
-<div class="foldopen" id="foldopen00163" data-start="{" data-end="};">
-<div class="line"><a id="l00163" name="l00163"></a><span class="lineno"><a class="line" href="structsbk_1_1engine_1_1node__instance__fsm_1_1transition__table.html">  163</a></span>        <span class="keyword">struct </span><a class="code hl_struct" href="structsbk_1_1engine_1_1node__instance__fsm_1_1transition__table.html">transition_table</a> : boost::mpl::vector&lt;</div>
-<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>                                      <span class="comment">// Start, Event, Next, Action, Guard</span></div>
-<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>                                      row&lt;state_uninit, event_init, state_init, &amp;node_instance_fsm::action_init, &amp;node_instance_fsm::guard_init&gt;,</div>
-<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>                                      a_row&lt;state_init, event_play, state_playing, &amp;node_instance_fsm::action_play&gt;,</div>
-<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>                                      a_row&lt;state_playing, event_stop, state_stopped, &amp;node_instance_fsm::action_stop&gt;,</div>
-<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>                                      a_row&lt;state_playing, event_virtualise, state_virtual, &amp;node_instance_fsm::action_virtualise&gt;,</div>
-<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>                                      a_row&lt;state_virtual, event_devirtualise, state_playing, &amp;node_instance_fsm::action_devirtualise&gt;,</div>
-<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>                                      boost::msm::front::Row&lt;state_playing, event_update, boost::msm::front::none, action_update, boost::msm::front::none&gt;&gt;</div>
-<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>        {</div>
-<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>        };</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>                            stateMachine.process_event(<a class="code hl_struct" href="structsbk_1_1engine_1_1event__play.html">event_play</a>());</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>                        }</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>                        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>                        {</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>                            stateMachine.process_event(<a class="code hl_struct" href="structsbk_1_1engine_1_1event__stop.html">event_stop</a>());</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>                        }</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>                    }</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>                }</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>                <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>                {</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>                    stateMachine.process_event(<a class="code hl_struct" href="structsbk_1_1engine_1_1event__stop.html">event_stop</a>());</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>                }</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>            }</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>        };</div>
 </div>
-<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span> </div>
-<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>        <span class="keyword">auto</span> init_parent() -&gt; <a class="code hl_typedef" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result&lt;void&gt;</a>;</div>
-<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>        <span class="keyword">auto</span> init_child() -&gt; <a class="code hl_typedef" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result&lt;void&gt;</a>;</div>
-<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>        [[nodiscard]] <span class="keyword">auto</span> init_node_group(<span class="keyword">const</span> <a class="code hl_struct" href="structsbk_1_1engine_1_1event__init.html">event_init</a>&amp; init) -&gt; <a class="code hl_typedef" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result&lt;void&gt;</a>;</div>
-<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>        <span class="keyword">auto</span> init_callbacks() -&gt; void;</div>
-<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span> </div>
-<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>        [[nodiscard]] <span class="keyword">auto</span> add_dsp_to_node_group(<a class="code hl_struct" href="structsc__node__group.html">sc_node_group</a>* nodeGroup, <a class="code hl_struct" href="structsc__dsp.html">sc_dsp</a>** dsp, <span class="keyword">const</span> <a class="code hl_struct" href="structsc__dsp__config.html">sc_dsp_config</a>&amp; config) -&gt; <a class="code hl_typedef" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result&lt;void&gt;</a>;</div>
-<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span> </div>
-<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>        <span class="keyword">auto</span> set_volume(<span class="keywordtype">float</span> oldVolume, <span class="keywordtype">float</span> newVolume) -&gt; void;</div>
-<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>        <span class="keyword">auto</span> set_pitch(<span class="keywordtype">float</span> oldPitch, <span class="keywordtype">float</span> newPitch) -&gt; void;</div>
-<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>        <span class="keyword">auto</span> set_lowpass(<span class="keywordtype">float</span> oldLowpass, <span class="keywordtype">float</span> newLowpass) -&gt; void;</div>
-<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>        <span class="keyword">auto</span> set_highpass(<span class="keywordtype">float</span> oldHighpass, <span class="keywordtype">float</span> newHighpass) -&gt; void;</div>
-<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span> </div>
-<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>        std::shared_ptr&lt;node&gt; m_referencingNode;</div>
-<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>        <span class="keyword">class </span><a class="code hl_class" href="classsbk_1_1engine_1_1node__instance.html">sbk::engine::node_instance</a>* m_owner = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>        <a class="code hl_class" href="classsbk_1_1engine_1_1game__object.html">sbk::engine::game_object</a>* m_gameObject    = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>        <a class="code hl_struct" href="structsbk_1_1engine_1_1node__group__instance.html">node_group_instance</a> m_nodeGroup;</div>
-<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>        std::shared_ptr&lt;node_instance&gt; m_parent;</div>
-<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>        eastl::vector&lt;std::shared_ptr&lt;node_instance&gt;&gt; m_children;</div>
-<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>        std::unique_ptr&lt;sc_sound_instance, SC_SOUND_INSTANCE_DELETER&gt; m_soundInstance;</div>
-<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> m_numTimesPlayed = 0;</div>
-<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>    };</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span> </div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>        <span class="keyword">auto</span> guard_init(<span class="keyword">const</span> <a class="code hl_struct" href="structsbk_1_1engine_1_1event__init.html">event_init</a>&amp; init) -&gt; bool;</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span> </div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>        <span class="keyword">typedef</span> <a class="code hl_struct" href="structsbk_1_1engine_1_1node__instance__fsm_1_1state__uninit.html">state_uninit</a> <a class="code hl_struct" href="structsbk_1_1engine_1_1node__instance__fsm_1_1state__uninit.html">initial_state</a>;  <span class="comment">// the initial state of the player SM</span></div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span> </div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>        <span class="keyword">template</span> &lt;<span class="keyword">class</span> FSM, <span class="keyword">class</span> Event&gt;</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>        <span class="keyword">auto</span> no_transition(Event <span class="keyword">const</span>&amp; <a class="code hl_class" href="classsbk_1_1engine_1_1event.html">event</a>, FSM&amp; stateMachine, <span class="keywordtype">int</span> state) -&gt; <span class="keywordtype">void</span></div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>        {</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>            SBK_INFO(<span class="stringliteral">&quot;No transition from state {} on event {}&quot;</span>, state, <span class="keyword">typeid</span>(<a class="code hl_class" href="classsbk_1_1engine_1_1event.html">event</a>).name());</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>        }</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span> </div>
+<div class="foldopen" id="foldopen00188" data-start="{" data-end="};">
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno"><a class="line" href="structsbk_1_1engine_1_1node__instance__fsm_1_1transition__table.html">  188</a></span>        <span class="keyword">struct </span><a class="code hl_struct" href="structsbk_1_1engine_1_1node__instance__fsm_1_1transition__table.html">transition_table</a> : boost::mpl::vector&lt;</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>                                      <span class="comment">// Start, Event, Next, Action, Guard</span></div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>                                      row&lt;state_uninit, event_init, state_init, &amp;node_instance_fsm::action_init, &amp;node_instance_fsm::guard_init&gt;,</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>                                      a_row&lt;state_init, event_play, state_playing, &amp;node_instance_fsm::action_play&gt;,</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>                                      a_row&lt;state_playing, event_stop, state_stopped, &amp;node_instance_fsm::action_stop&gt;,</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>                                      a_row&lt;state_playing, event_virtualise, state_virtual, &amp;node_instance_fsm::action_virtualise&gt;,</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>                                      a_row&lt;state_virtual, event_devirtualise, state_playing, &amp;node_instance_fsm::action_devirtualise&gt;,</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>                                      boost::msm::front::Row&lt;state_playing, event_update, boost::msm::front::none, action_update, boost::msm::front::none&gt;&gt;</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>        {</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>        };</div>
 </div>
-<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span> </div>
-<div class="foldopen" id="foldopen00200" data-start="{" data-end="};">
-<div class="line"><a id="l00200" name="l00200"></a><span class="lineno"><a class="line" href="classsbk_1_1engine_1_1node__instance.html">  200</a></span>    <span class="keyword">class </span>SB_CLASS <a class="code hl_class" href="classsbk_1_1engine_1_1node__instance.html">node_instance</a> : <span class="keyword">public</span> <a class="code hl_class" href="classsbk_1_1core_1_1object.html">sbk::core::object</a>, <span class="keyword">public</span> boost::msm::front::state_machine_def&lt;node_instance&gt;</div>
-<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>    {</div>
-<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>        REGISTER_REFLECTION(<a class="code hl_class" href="classsbk_1_1engine_1_1node__instance.html">node_instance</a>, <a class="code hl_class" href="classsbk_1_1core_1_1object.html">sbk::core::object</a>)</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span> </div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>        <span class="keyword">auto</span> init_parent() -&gt; <a class="code hl_typedef" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result&lt;void&gt;</a>;</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>        <span class="keyword">auto</span> init_child() -&gt; <a class="code hl_typedef" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result&lt;void&gt;</a>;</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>        [[nodiscard]] <span class="keyword">auto</span> init_node_group(<span class="keyword">const</span> <a class="code hl_struct" href="structsbk_1_1engine_1_1event__init.html">event_init</a>&amp; init) -&gt; <a class="code hl_typedef" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result&lt;void&gt;</a>;</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>        <span class="keyword">auto</span> init_callbacks() -&gt; void;</div>
 <div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span> </div>
-<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>    <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>        [[nodiscard]] <span class="keyword">auto</span> init(<span class="keyword">const</span> <a class="code hl_struct" href="structsbk_1_1engine_1_1event__init.html">event_init</a>&amp; init) -&gt; <a class="code hl_typedef" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result&lt;void&gt;</a>;</div>
-<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>        [[nodiscard]] <span class="keyword">auto</span> play() -&gt; <a class="code hl_typedef" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result&lt;void&gt;</a>;</div>
-<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>        [[nodiscard]] <span class="keyword">auto</span> stop(<span class="keywordtype">float</span> fadeTime = 0.0f) -&gt; <a class="code hl_typedef" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result&lt;void&gt;</a>;</div>
-<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>        [[nodiscard]] <span class="keyword">auto</span> update() -&gt; <a class="code hl_typedef" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result&lt;void&gt;</a>;</div>
-<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span> </div>
-<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>        [[nodiscard]] <span class="keyword">auto</span> is_playing() <span class="keyword">const</span> -&gt; bool;</div>
-<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>        [[nodiscard]] <span class="keyword">auto</span> is_stopped() <span class="keyword">const</span> -&gt; bool;</div>
-<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span> </div>
-<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>        [[nodiscard]] <span class="keyword">auto</span> get_referencing_node() <span class="keyword">const</span> <span class="keyword">noexcept</span> -&gt; std::shared_ptr&lt;node&gt;;</div>
-<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>        [[nodiscard]] <span class="keyword">auto</span> get_parent() <span class="keyword">const</span> <span class="keyword">noexcept</span> -&gt; <a class="code hl_class" href="classsbk_1_1engine_1_1node__instance.html">node_instance</a>*;</div>
-<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>        [[nodiscard]] <span class="keyword">auto</span> get_bus() <span class="keyword">const</span> <span class="keyword">noexcept</span> -&gt; <a class="code hl_struct" href="structsc__node__group.html">sc_node_group</a>*;</div>
-<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span> </div>
-<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>    <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>        boost::msm::back::state_machine&lt;node_instance_fsm&gt; m_stateMachine;</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>        [[nodiscard]] <span class="keyword">auto</span> add_dsp_to_node_group(<a class="code hl_struct" href="structsc__node__group.html">sc_node_group</a>* nodeGroup, <a class="code hl_struct" href="structsc__dsp.html">sc_dsp</a>** dsp, <span class="keyword">const</span> <a class="code hl_struct" href="structsc__dsp__config.html">sc_dsp_config</a>&amp; config) -&gt; <a class="code hl_typedef" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result&lt;void&gt;</a>;</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span> </div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>        <span class="keyword">auto</span> set_volume(<span class="keywordtype">float</span> oldVolume, <span class="keywordtype">float</span> newVolume) -&gt; void;</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>        <span class="keyword">auto</span> set_pitch(<span class="keywordtype">float</span> oldPitch, <span class="keywordtype">float</span> newPitch) -&gt; void;</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>        <span class="keyword">auto</span> set_lowpass(<span class="keywordtype">float</span> oldLowpass, <span class="keywordtype">float</span> newLowpass) -&gt; void;</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>        <span class="keyword">auto</span> set_highpass(<span class="keywordtype">float</span> oldHighpass, <span class="keywordtype">float</span> newHighpass) -&gt; void;</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span> </div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>        std::shared_ptr&lt;node&gt; m_referencingNode;</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>        <span class="keyword">class </span><a class="code hl_class" href="classsbk_1_1engine_1_1node__instance.html">sbk::engine::node_instance</a>* m_owner = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>        <a class="code hl_class" href="classsbk_1_1engine_1_1game__object.html">sbk::engine::game_object</a>* m_gameObject    = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>        <a class="code hl_struct" href="structsbk_1_1engine_1_1node__group__instance.html">node_group_instance</a> m_nodeGroup;</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>        std::shared_ptr&lt;node_instance&gt; m_parent;</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>        eastl::vector&lt;std::shared_ptr&lt;node_instance&gt;&gt; m_children;</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>        std::unique_ptr&lt;sc_sound_instance, SC_SOUND_INSTANCE_DELETER&gt; m_soundInstance;</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> m_numTimesPlayed = 0;</div>
 <div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>    };</div>
 </div>
-<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>}  <span class="comment">// namespace sbk::engine</span></div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span> </div>
+<div class="foldopen" id="foldopen00225" data-start="{" data-end="};">
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno"><a class="line" href="classsbk_1_1engine_1_1node__instance.html">  225</a></span>    <span class="keyword">class </span>SB_CLASS <a class="code hl_class" href="classsbk_1_1engine_1_1node__instance.html">node_instance</a> : <span class="keyword">public</span> <a class="code hl_class" href="classsbk_1_1core_1_1object.html">sbk::core::object</a>, <span class="keyword">public</span> boost::msm::front::state_machine_def&lt;node_instance&gt;</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>    {</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>        REGISTER_REFLECTION(<a class="code hl_class" href="classsbk_1_1engine_1_1node__instance.html">node_instance</a>, <a class="code hl_class" href="classsbk_1_1core_1_1object.html">sbk::core::object</a>)</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span> </div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>    <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>        [[nodiscard]] <span class="keyword">auto</span> init(<span class="keyword">const</span> <a class="code hl_struct" href="structsbk_1_1engine_1_1event__init.html">event_init</a>&amp; init) -&gt; <a class="code hl_typedef" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result&lt;void&gt;</a>;</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>        [[nodiscard]] <span class="keyword">auto</span> play() -&gt; <a class="code hl_typedef" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result&lt;void&gt;</a>;</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>        [[nodiscard]] <span class="keyword">auto</span> stop(<span class="keywordtype">float</span> fadeTime = 0.0f) -&gt; <a class="code hl_typedef" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result&lt;void&gt;</a>;</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>        [[nodiscard]] <span class="keyword">auto</span> update() -&gt; <a class="code hl_typedef" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result&lt;void&gt;</a>;</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span> </div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>        [[nodiscard]] <span class="keyword">auto</span> is_playing() <span class="keyword">const</span> -&gt; bool;</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>        [[nodiscard]] <span class="keyword">auto</span> is_stopped() <span class="keyword">const</span> -&gt; bool;</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span> </div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>        [[nodiscard]] <span class="keyword">auto</span> get_referencing_node() <span class="keyword">const</span> <span class="keyword">noexcept</span> -&gt; std::shared_ptr&lt;node&gt;;</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>        [[nodiscard]] <span class="keyword">auto</span> get_parent() <span class="keyword">const</span> <span class="keyword">noexcept</span> -&gt; <a class="code hl_class" href="classsbk_1_1engine_1_1node__instance.html">node_instance</a>*;</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>        [[nodiscard]] <span class="keyword">auto</span> get_bus() <span class="keyword">const</span> <span class="keyword">noexcept</span> -&gt; <a class="code hl_struct" href="structsc__node__group.html">sc_node_group</a>*;</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span> </div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>    <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>        boost::msm::back::state_machine&lt;node_instance_fsm&gt; m_stateMachine;</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>    };</div>
+</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>}  <span class="comment">// namespace sbk::engine</span></div>
 <div class="ttc" id="aclasssbk_1_1core_1_1database__ptr_html"><div class="ttname"><a href="classsbk_1_1core_1_1database__ptr.html">sbk::core::database_ptr</a></div><div class="ttdef"><b>Definition</b> database_ptr.h:24</div></div>
 <div class="ttc" id="aclasssbk_1_1core_1_1object_html"><div class="ttname"><a href="classsbk_1_1core_1_1object.html">sbk::core::object</a></div><div class="ttdoc">Base object that all sound Bakery objects should inherit from.</div><div class="ttdef"><b>Definition</b> object.h:36</div></div>
 <div class="ttc" id="aclasssbk_1_1engine_1_1bus_html"><div class="ttname"><a href="classsbk_1_1engine_1_1bus.html">sbk::engine::bus</a></div><div class="ttdef"><b>Definition</b> bus.h:10</div></div>
 <div class="ttc" id="aclasssbk_1_1engine_1_1event_html"><div class="ttname"><a href="classsbk_1_1engine_1_1event.html">sbk::engine::event</a></div><div class="ttdef"><b>Definition</b> event.h:25</div></div>
 <div class="ttc" id="aclasssbk_1_1engine_1_1game__object_html"><div class="ttname"><a href="classsbk_1_1engine_1_1game__object.html">sbk::engine::game_object</a></div><div class="ttdef"><b>Definition</b> gameobject.h:13</div></div>
-<div class="ttc" id="aclasssbk_1_1engine_1_1node__instance_html"><div class="ttname"><a href="classsbk_1_1engine_1_1node__instance.html">sbk::engine::node_instance</a></div><div class="ttdoc">NodeInstances represent runtime versions of Nodes, either containers or busses.</div><div class="ttdef"><b>Definition</b> node_instance.h:201</div></div>
+<div class="ttc" id="aclasssbk_1_1engine_1_1node__instance_html"><div class="ttname"><a href="classsbk_1_1engine_1_1node__instance.html">sbk::engine::node_instance</a></div><div class="ttdoc">NodeInstances represent runtime versions of Nodes, either containers or busses.</div><div class="ttdef"><b>Definition</b> node_instance.h:226</div></div>
 <div class="ttc" id="aerror_8h_html_a390f3d2c4f8f4a52fc2076794fd8e7c7"><div class="ttname"><a href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a></div><div class="ttdeci">tl::expected&lt; T, error &gt; result</div><div class="ttdoc">The result of a fallible operation: a value of type T, or an sbk::error.</div><div class="ttdef"><b>Definition</b> error.h:80</div></div>
 <div class="ttc" id="astructsbk_1_1engine_1_1event__devirtualise_html"><div class="ttname"><a href="structsbk_1_1engine_1_1event__devirtualise.html">sbk::engine::event_devirtualise</a></div><div class="ttdef"><b>Definition</b> node_instance.h:56</div></div>
 <div class="ttc" id="astructsbk_1_1engine_1_1event__init_html"><div class="ttname"><a href="structsbk_1_1engine_1_1event__init.html">sbk::engine::event_init</a></div><div class="ttdef"><b>Definition</b> node_instance.h:36</div></div>
@@ -418,11 +443,11 @@ $(document).ready(function(){initNavTree('node__instance_8h_source.html',''); in
 <div class="ttc" id="astructsbk_1_1engine_1_1node__instance__fsm_1_1state__stopped_html"><div class="ttname"><a href="structsbk_1_1engine_1_1node__instance__fsm_1_1state__stopped.html">sbk::engine::node_instance_fsm::state_stopped</a></div><div class="ttdef"><b>Definition</b> node_instance.h:89</div></div>
 <div class="ttc" id="astructsbk_1_1engine_1_1node__instance__fsm_1_1state__uninit_html"><div class="ttname"><a href="structsbk_1_1engine_1_1node__instance__fsm_1_1state__uninit.html">sbk::engine::node_instance_fsm::state_uninit</a></div><div class="ttdef"><b>Definition</b> node_instance.h:75</div></div>
 <div class="ttc" id="astructsbk_1_1engine_1_1node__instance__fsm_1_1state__virtual_html"><div class="ttname"><a href="structsbk_1_1engine_1_1node__instance__fsm_1_1state__virtual.html">sbk::engine::node_instance_fsm::state_virtual</a></div><div class="ttdef"><b>Definition</b> node_instance.h:85</div></div>
-<div class="ttc" id="astructsbk_1_1engine_1_1node__instance__fsm_1_1transition__table_html"><div class="ttname"><a href="structsbk_1_1engine_1_1node__instance__fsm_1_1transition__table.html">sbk::engine::node_instance_fsm::transition_table</a></div><div class="ttdef"><b>Definition</b> node_instance.h:171</div></div>
+<div class="ttc" id="astructsbk_1_1engine_1_1node__instance__fsm_1_1transition__table_html"><div class="ttname"><a href="structsbk_1_1engine_1_1node__instance__fsm_1_1transition__table.html">sbk::engine::node_instance_fsm::transition_table</a></div><div class="ttdef"><b>Definition</b> node_instance.h:196</div></div>
 <div class="ttc" id="astructsbk_1_1engine_1_1node__instance__fsm_html"><div class="ttname"><a href="structsbk_1_1engine_1_1node__instance__fsm.html">sbk::engine::node_instance_fsm</a></div><div class="ttdef"><b>Definition</b> node_instance.h:71</div></div>
-<div class="ttc" id="astructsc__dsp__config_html"><div class="ttname"><a href="structsc__dsp__config.html">sc_dsp_config</a></div><div class="ttdef"><b>Definition</b> sound_chef_common.h:262</div></div>
-<div class="ttc" id="astructsc__dsp_html"><div class="ttname"><a href="structsc__dsp.html">sc_dsp</a></div><div class="ttdoc">ma_node with an additional enum descriptor.</div><div class="ttdef"><b>Definition</b> sound_chef_common.h:275</div></div>
-<div class="ttc" id="astructsc__node__group_html"><div class="ttname"><a href="structsc__node__group.html">sc_node_group</a></div><div class="ttdoc">Groups nodes/DSPs together into one.</div><div class="ttdef"><b>Definition</b> sound_chef_common.h:303</div></div>
+<div class="ttc" id="astructsc__dsp__config_html"><div class="ttname"><a href="structsc__dsp__config.html">sc_dsp_config</a></div><div class="ttdef"><b>Definition</b> sound_chef_common.h:264</div></div>
+<div class="ttc" id="astructsc__dsp_html"><div class="ttname"><a href="structsc__dsp.html">sc_dsp</a></div><div class="ttdoc">ma_node with an additional enum descriptor.</div><div class="ttdef"><b>Definition</b> sound_chef_common.h:277</div></div>
+<div class="ttc" id="astructsc__node__group_html"><div class="ttname"><a href="structsc__node__group.html">sc_node_group</a></div><div class="ttdoc">Groups nodes/DSPs together into one.</div><div class="ttdef"><b>Definition</b> sound_chef_common.h:305</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

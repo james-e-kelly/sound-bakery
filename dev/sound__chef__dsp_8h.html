@@ -138,8 +138,10 @@ $(document).ready(function(){initNavTree('sound__chef__dsp_8h.html',''); initRes
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
+<a href="#define-members">Macros</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
-<a href="#enum-members">Enumerations</a>  </div>
+<a href="#enum-members">Enumerations</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">sound_chef_dsp.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -320,6 +322,20 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsc__clap__node.html">sc_clap_node</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsc__delay__config.html">sc_delay_config</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsc__delay.html">sc_delay</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsc__delay__node__config.html">sc_delay_node_config</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsc__delay__node.html">sc_delay_node</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="define-members" name="define-members"></a>
+Macros</h2></td></tr>
+<tr class="memitem:aac27ea918bb55ed66a8c6b6de3b73637" id="r_aac27ea918bb55ed66a8c6b6de3b73637"><td class="memItemLeft" align="right" valign="top"><a id="aac27ea918bb55ed66a8c6b6de3b73637" name="aac27ea918bb55ed66a8c6b6de3b73637"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>SC_DELAY_SILENCE_THRESHOLD</b>&#160;&#160;&#160;0.0001F</td></tr>
+<tr class="separator:aac27ea918bb55ed66a8c6b6de3b73637"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
@@ -329,18 +345,9 @@ typedef enum sc_dsp_parameter_type&#160;</td><td class="memItemRight" valign="bo
 <tr class="memitem:a4d79e9dcfa24708fb2ce852585a98744" id="r_a4d79e9dcfa24708fb2ce852585a98744"><td class="memItemLeft" align="right" valign="top"><a id="a4d79e9dcfa24708fb2ce852585a98744" name="a4d79e9dcfa24708fb2ce852585a98744"></a>
 typedef struct <a class="el" href="structsc__dsp__parameter__float.html">sc_dsp_parameter_float</a>&#160;</td><td class="memItemRight" valign="bottom"><b>sc_dsp_parameter_float</b></td></tr>
 <tr class="separator:a4d79e9dcfa24708fb2ce852585a98744"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acbaad1814e1fa0d5e28785091a70d74b" id="r_acbaad1814e1fa0d5e28785091a70d74b"><td class="memItemLeft" align="right" valign="top"><a id="acbaad1814e1fa0d5e28785091a70d74b" name="acbaad1814e1fa0d5e28785091a70d74b"></a>
-typedef enum sc_dsp_lowpass&#160;</td><td class="memItemRight" valign="bottom"><b>sc_dsp_lowpass</b></td></tr>
-<tr class="separator:acbaad1814e1fa0d5e28785091a70d74b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afe85d2f73df4ee52acd8c4ce75b7a280" id="r_afe85d2f73df4ee52acd8c4ce75b7a280"><td class="memItemLeft" align="right" valign="top"><a id="afe85d2f73df4ee52acd8c4ce75b7a280" name="afe85d2f73df4ee52acd8c4ce75b7a280"></a>
-typedef enum sc_dsp_highpass&#160;</td><td class="memItemRight" valign="bottom"><b>sc_dsp_highpass</b></td></tr>
-<tr class="separator:afe85d2f73df4ee52acd8c4ce75b7a280"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2b85111abbec6d2093f6fbc4c82bf12a" id="r_a2b85111abbec6d2093f6fbc4c82bf12a"><td class="memItemLeft" align="right" valign="top"><a id="a2b85111abbec6d2093f6fbc4c82bf12a" name="a2b85111abbec6d2093f6fbc4c82bf12a"></a>
-typedef enum sc_dsp_delay&#160;</td><td class="memItemRight" valign="bottom"><b>sc_dsp_delay</b></td></tr>
-<tr class="separator:a2b85111abbec6d2093f6fbc4c82bf12a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a60197ec60b84c4349fca4a4c62446999" id="r_a60197ec60b84c4349fca4a4c62446999"><td class="memItemLeft" align="right" valign="top"><a id="a60197ec60b84c4349fca4a4c62446999" name="a60197ec60b84c4349fca4a4c62446999"></a>
-typedef enum sc_dsp_meter&#160;</td><td class="memItemRight" valign="bottom"><b>sc_dsp_meter</b></td></tr>
-<tr class="separator:a60197ec60b84c4349fca4a4c62446999"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71cacffe00eb897876d66df202ba66bb" id="r_a71cacffe00eb897876d66df202ba66bb"><td class="memItemLeft" align="right" valign="top"><a id="a71cacffe00eb897876d66df202ba66bb" name="a71cacffe00eb897876d66df202ba66bb"></a>
+typedef enum sc_dsp_meter_query&#160;</td><td class="memItemRight" valign="bottom"><b>sc_dsp_meter_query</b></td></tr>
+<tr class="separator:a71cacffe00eb897876d66df202ba66bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae06960b5341c77860c5b8b0d06f46a6b" id="r_ae06960b5341c77860c5b8b0d06f46a6b"><td class="memItemLeft" align="right" valign="top"><a id="ae06960b5341c77860c5b8b0d06f46a6b" name="ae06960b5341c77860c5b8b0d06f46a6b"></a>
 typedef struct <a class="el" href="structsc__meter.html">sc_meter</a>&#160;</td><td class="memItemRight" valign="bottom"><b>sc_meter</b></td></tr>
 <tr class="separator:ae06960b5341c77860c5b8b0d06f46a6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -356,35 +363,83 @@ Enumerations</h2></td></tr>
 <tr class="memitem:a06fc87d81c62e9abb8790b6e5713c55b" id="r_a06fc87d81c62e9abb8790b6e5713c55b"><td class="memItemLeft" align="right" valign="top"><a id="a06fc87d81c62e9abb8790b6e5713c55b" name="a06fc87d81c62e9abb8790b6e5713c55b"></a>enum &#160;</td><td class="memItemRight" valign="bottom">{ <b>SC_STRING_NAME_LENGTH</b> = 16
  }</td></tr>
 <tr class="separator:a06fc87d81c62e9abb8790b6e5713c55b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a63f4fe157e7fdc2c7799c127c2b958a0" id="r_a63f4fe157e7fdc2c7799c127c2b958a0"><td class="memItemLeft" align="right" valign="top"><a id="a63f4fe157e7fdc2c7799c127c2b958a0" name="a63f4fe157e7fdc2c7799c127c2b958a0"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>sc_dsp_parameter_type</b> { <b>SC_DSP_PARAMETER_TYPE_FLOAT</b>
+<tr class="memitem:a63f4fe157e7fdc2c7799c127c2b958a0" id="r_a63f4fe157e7fdc2c7799c127c2b958a0"><td class="memItemLeft" align="right" valign="top"><a id="a63f4fe157e7fdc2c7799c127c2b958a0" name="a63f4fe157e7fdc2c7799c127c2b958a0"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>sc_dsp_parameter_type</b> { <b>sc_dsp_parameter_type_float</b>
  }</td></tr>
 <tr class="separator:a63f4fe157e7fdc2c7799c127c2b958a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa748cc6bb4e91bd2091a3cc7954db2f9" id="r_aa748cc6bb4e91bd2091a3cc7954db2f9"><td class="memItemLeft" align="right" valign="top"><a id="aa748cc6bb4e91bd2091a3cc7954db2f9" name="aa748cc6bb4e91bd2091a3cc7954db2f9"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>sc_dsp_lowpass</b> { <b>SC_DSP_LOWPASS_CUTOFF</b>
-, <b>SC_DSP_LOWPASS_NUM_PARAM</b>
- }</td></tr>
-<tr class="separator:aa748cc6bb4e91bd2091a3cc7954db2f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad468b38d698fcc041e29a272826e61b3" id="r_ad468b38d698fcc041e29a272826e61b3"><td class="memItemLeft" align="right" valign="top"><a id="ad468b38d698fcc041e29a272826e61b3" name="ad468b38d698fcc041e29a272826e61b3"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>sc_dsp_highpass</b> { <b>SC_DSP_HIGHPASS_CUTOFF</b>
-, <b>SC_DSP_HIGHPASS_NUM_PARAM</b>
- }</td></tr>
-<tr class="separator:ad468b38d698fcc041e29a272826e61b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa3dbb49d20edec8ac55ebd8220ff6cbf" id="r_aa3dbb49d20edec8ac55ebd8220ff6cbf"><td class="memItemLeft" align="right" valign="top"><a id="aa3dbb49d20edec8ac55ebd8220ff6cbf" name="aa3dbb49d20edec8ac55ebd8220ff6cbf"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>sc_dsp_delay</b> { <br />
-&#160;&#160;<b>SC_DSP_DELAY_DELAY_SECONDS</b>
-, <b>SC_DSP_DELAY_DRY</b>
-, <b>SC_DSP_DELAY_WET</b>
-, <b>SC_DSP_DELAY_FEEDBACK</b>
-, <br />
-&#160;&#160;<b>SC_DSP_DELAY_NUM_PARAM</b>
-<br />
- }</td></tr>
-<tr class="separator:aa3dbb49d20edec8ac55ebd8220ff6cbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a07cb3ad32c92cdd74454c1e8cfa0890a" id="r_a07cb3ad32c92cdd74454c1e8cfa0890a"><td class="memItemLeft" align="right" valign="top"><a id="a07cb3ad32c92cdd74454c1e8cfa0890a" name="a07cb3ad32c92cdd74454c1e8cfa0890a"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>sc_dsp_meter</b> { <b>SC_DSP_METER_PEAK</b>
-, <b>SC_DSP_METER_RMS</b>
-, <b>SC_DSP_METER_NUM_PARAM</b>
- }</td></tr>
-<tr class="separator:a07cb3ad32c92cdd74454c1e8cfa0890a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adf764cbdea00d65edcd07bb9953ad2b7" id="r_adf764cbdea00d65edcd07bb9953ad2b7"><td class="memItemLeft" align="right" valign="top"><a id="adf764cbdea00d65edcd07bb9953ad2b7" name="adf764cbdea00d65edcd07bb9953ad2b7"></a>enum &#160;</td><td class="memItemRight" valign="bottom">{ <b>SC_DSP_METER_MAX_CHANNELS</b> = SC_MAX_CHANNELS
+<tr class="memitem:adf764cbdea00d65edcd07bb9953ad2b7" id="r_adf764cbdea00d65edcd07bb9953ad2b7"><td class="memItemLeft" align="right" valign="top"><a id="adf764cbdea00d65edcd07bb9953ad2b7" name="adf764cbdea00d65edcd07bb9953ad2b7"></a>enum &#160;</td><td class="memItemRight" valign="bottom">{ <b>SC_DSP_LOWPASS_PARAM_CUTOFF</b>
+, <b>SC_DSP_LOWPASS_PARAM_COUNT</b>
  }</td></tr>
 <tr class="separator:adf764cbdea00d65edcd07bb9953ad2b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a99fb83031ce9923c84392b4e92f956b5" id="r_a99fb83031ce9923c84392b4e92f956b5"><td class="memItemLeft" align="right" valign="top"><a id="a99fb83031ce9923c84392b4e92f956b5" name="a99fb83031ce9923c84392b4e92f956b5"></a>enum &#160;</td><td class="memItemRight" valign="bottom">{ <b>SC_DSP_HIGHPASS_PARAM_CUTOFF</b>
+, <b>SC_DSP_HIGHPASS_PARAM_COUNT</b>
+ }</td></tr>
+<tr class="separator:a99fb83031ce9923c84392b4e92f956b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc6126af1d45847bc59afa0aa3216b04" id="r_abc6126af1d45847bc59afa0aa3216b04"><td class="memItemLeft" align="right" valign="top"><a id="abc6126af1d45847bc59afa0aa3216b04" name="abc6126af1d45847bc59afa0aa3216b04"></a>enum &#160;</td><td class="memItemRight" valign="bottom">{ <br />
+&#160;&#160;<b>SC_DSP_DELAY_PARAM_DELAY_SECONDS</b>
+, <b>SC_DSP_DELAY_PARAM_DRY</b>
+, <b>SC_DSP_DELAY_PARAM_WET</b>
+, <b>SC_DSP_DELAY_PARAM_FEEDBACK</b>
+, <br />
+&#160;&#160;<b>SC_DSP_DELAY_PARAM_COUNT</b>
+<br />
+ }</td></tr>
+<tr class="separator:abc6126af1d45847bc59afa0aa3216b04"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c7fa0ad30c3d5f42816dd164b0c31f1" id="r_a4c7fa0ad30c3d5f42816dd164b0c31f1"><td class="memItemLeft" align="right" valign="top"><a id="a4c7fa0ad30c3d5f42816dd164b0c31f1" name="a4c7fa0ad30c3d5f42816dd164b0c31f1"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>sc_dsp_meter_query</b> { <b>SC_DSP_METER_QUERY_PEAK</b>
+, <b>SC_DSP_METER_QUERY_RMS</b>
+, <b>SC_DSP_METER_QUERY_COUNT</b>
+ }</td></tr>
+<tr class="separator:a4c7fa0ad30c3d5f42816dd164b0c31f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc29c2ff13d900c2f185ee95427fb06c" id="r_adc29c2ff13d900c2f185ee95427fb06c"><td class="memItemLeft" align="right" valign="top"><a id="adc29c2ff13d900c2f185ee95427fb06c" name="adc29c2ff13d900c2f185ee95427fb06c"></a>enum &#160;</td><td class="memItemRight" valign="bottom">{ <b>SC_DSP_METER_MAX_CHANNELS</b> = SC_MAX_CHANNELS
+ }</td></tr>
+<tr class="separator:adc29c2ff13d900c2f185ee95427fb06c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:acb21706e0acb1228868d0cc3e6de73b5" id="r_acb21706e0acb1228868d0cc3e6de73b5"><td class="memItemLeft" align="right" valign="top"><a id="acb21706e0acb1228868d0cc3e6de73b5" name="acb21706e0acb1228868d0cc3e6de73b5"></a>
+<a class="el" href="structsc__delay__config.html">sc_delay_config</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_delay_config_init</b> (ma_uint32 channels, ma_uint32 sampleRate, ma_uint32 maxDelayInFrames)</td></tr>
+<tr class="separator:acb21706e0acb1228868d0cc3e6de73b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac34bc4dbdb0aee6422e47e9ce793d5b8" id="r_ac34bc4dbdb0aee6422e47e9ce793d5b8"><td class="memItemLeft" align="right" valign="top"><a id="ac34bc4dbdb0aee6422e47e9ce793d5b8" name="ac34bc4dbdb0aee6422e47e9ce793d5b8"></a>
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_delay_init</b> (const <a class="el" href="structsc__delay__config.html">sc_delay_config</a> *config, const ma_allocation_callbacks *allocationCallbacks, <a class="el" href="structsc__delay.html">sc_delay</a> *delay)</td></tr>
+<tr class="separator:ac34bc4dbdb0aee6422e47e9ce793d5b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1a10d87d1f747b7230fdc07ab827cd8" id="r_ab1a10d87d1f747b7230fdc07ab827cd8"><td class="memItemLeft" align="right" valign="top"><a id="ab1a10d87d1f747b7230fdc07ab827cd8" name="ab1a10d87d1f747b7230fdc07ab827cd8"></a>
+void SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_delay_uninit</b> (<a class="el" href="structsc__delay.html">sc_delay</a> *delay, const ma_allocation_callbacks *allocationCallbacks)</td></tr>
+<tr class="separator:ab1a10d87d1f747b7230fdc07ab827cd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20621c2a97e83c14c41df124f3840ce2" id="r_a20621c2a97e83c14c41df124f3840ce2"><td class="memItemLeft" align="right" valign="top"><a id="a20621c2a97e83c14c41df124f3840ce2" name="a20621c2a97e83c14c41df124f3840ce2"></a>
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_delay_process_pcm_frames</b> (<a class="el" href="structsc__delay.html">sc_delay</a> *delay, void *framesOut, const void *framesIn, ma_uint32 frameCount)</td></tr>
+<tr class="separator:a20621c2a97e83c14c41df124f3840ce2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63b44d7a22b6f775ec69436abc3eefba" id="r_a63b44d7a22b6f775ec69436abc3eefba"><td class="memItemLeft" align="right" valign="top"><a id="a63b44d7a22b6f775ec69436abc3eefba" name="a63b44d7a22b6f775ec69436abc3eefba"></a>
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_delay_set_delay_ms</b> (<a class="el" href="structsc__delay.html">sc_delay</a> *delay, float value)</td></tr>
+<tr class="separator:a63b44d7a22b6f775ec69436abc3eefba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3179a8dcf9c8f59d34ce3ab1326a1320" id="r_a3179a8dcf9c8f59d34ce3ab1326a1320"><td class="memItemLeft" align="right" valign="top"><a id="a3179a8dcf9c8f59d34ce3ab1326a1320" name="a3179a8dcf9c8f59d34ce3ab1326a1320"></a>
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_delay_get_delay_ms</b> (const <a class="el" href="structsc__delay.html">sc_delay</a> *delay, float *outValue)</td></tr>
+<tr class="separator:a3179a8dcf9c8f59d34ce3ab1326a1320"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a809cad53c258179df0ccf80a8afe993c" id="r_a809cad53c258179df0ccf80a8afe993c"><td class="memItemLeft" align="right" valign="top"><a id="a809cad53c258179df0ccf80a8afe993c" name="a809cad53c258179df0ccf80a8afe993c"></a>
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_delay_set_wet</b> (<a class="el" href="structsc__delay.html">sc_delay</a> *delay, float value)</td></tr>
+<tr class="separator:a809cad53c258179df0ccf80a8afe993c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b07a8ed9196d4f7986b862b982526d6" id="r_a2b07a8ed9196d4f7986b862b982526d6"><td class="memItemLeft" align="right" valign="top"><a id="a2b07a8ed9196d4f7986b862b982526d6" name="a2b07a8ed9196d4f7986b862b982526d6"></a>
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_delay_get_wet</b> (const <a class="el" href="structsc__delay.html">sc_delay</a> *delay, float *outValue)</td></tr>
+<tr class="separator:a2b07a8ed9196d4f7986b862b982526d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf253e54e35002b3a768bdd45aa23f35" id="r_adf253e54e35002b3a768bdd45aa23f35"><td class="memItemLeft" align="right" valign="top"><a id="adf253e54e35002b3a768bdd45aa23f35" name="adf253e54e35002b3a768bdd45aa23f35"></a>
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_delay_set_dry</b> (<a class="el" href="structsc__delay.html">sc_delay</a> *delay, float value)</td></tr>
+<tr class="separator:adf253e54e35002b3a768bdd45aa23f35"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5db06200607443f31edff566cfbc217a" id="r_a5db06200607443f31edff566cfbc217a"><td class="memItemLeft" align="right" valign="top"><a id="a5db06200607443f31edff566cfbc217a" name="a5db06200607443f31edff566cfbc217a"></a>
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_delay_get_dry</b> (const <a class="el" href="structsc__delay.html">sc_delay</a> *delay, float *outValue)</td></tr>
+<tr class="separator:a5db06200607443f31edff566cfbc217a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7454c81b126f7d74cf08597164e73fe1" id="r_a7454c81b126f7d74cf08597164e73fe1"><td class="memItemLeft" align="right" valign="top"><a id="a7454c81b126f7d74cf08597164e73fe1" name="a7454c81b126f7d74cf08597164e73fe1"></a>
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_delay_set_feedback</b> (<a class="el" href="structsc__delay.html">sc_delay</a> *delay, float value)</td></tr>
+<tr class="separator:a7454c81b126f7d74cf08597164e73fe1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f8dad598aa6f1cff8727b266d718701" id="r_a9f8dad598aa6f1cff8727b266d718701"><td class="memItemLeft" align="right" valign="top"><a id="a9f8dad598aa6f1cff8727b266d718701" name="a9f8dad598aa6f1cff8727b266d718701"></a>
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_delay_get_feedback</b> (const <a class="el" href="structsc__delay.html">sc_delay</a> *delay, float *outValue)</td></tr>
+<tr class="separator:a9f8dad598aa6f1cff8727b266d718701"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31df780c842ab8b0594be40cd86d9e2c" id="r_a31df780c842ab8b0594be40cd86d9e2c"><td class="memItemLeft" align="right" valign="top"><a id="a31df780c842ab8b0594be40cd86d9e2c" name="a31df780c842ab8b0594be40cd86d9e2c"></a>
+<a class="el" href="structsc__delay__node__config.html">sc_delay_node_config</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_delay_node_config_init</b> (ma_uint32 channels, ma_uint32 sampleRate, ma_uint32 maxDelayInFrames)</td></tr>
+<tr class="separator:a31df780c842ab8b0594be40cd86d9e2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adbf6563c9c06d598968bb9a09942cc2f" id="r_adbf6563c9c06d598968bb9a09942cc2f"><td class="memItemLeft" align="right" valign="top"><a id="adbf6563c9c06d598968bb9a09942cc2f" name="adbf6563c9c06d598968bb9a09942cc2f"></a>
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_delay_node_init</b> (ma_node_graph *pNodeGraph, const <a class="el" href="structsc__delay__node__config.html">sc_delay_node_config</a> *pConfig, const ma_allocation_callbacks *pAllocationCallbacks, <a class="el" href="structsc__delay__node.html">sc_delay_node</a> *pDelayNode)</td></tr>
+<tr class="separator:adbf6563c9c06d598968bb9a09942cc2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07ed5586cc25b95a003d587c7584d7fb" id="r_a07ed5586cc25b95a003d587c7584d7fb"><td class="memItemLeft" align="right" valign="top"><a id="a07ed5586cc25b95a003d587c7584d7fb" name="a07ed5586cc25b95a003d587c7584d7fb"></a>
+void SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_delay_node_uninit</b> (<a class="el" href="structsc__delay__node.html">sc_delay_node</a> *pDelayNode, const ma_allocation_callbacks *pAllocationCallbacks)</td></tr>
+<tr class="separator:a07ed5586cc25b95a003d587c7584d7fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>DSP object definitions. </p>

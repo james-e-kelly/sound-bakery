@@ -158,9 +158,9 @@ var NAVTREEINDEX1 =
 "splash__widget_8h_source.html":[13,0,0,0,4,11],
 "src_2sound__bakery_2pch_8h_source.html":[13,0,2,0,16],
 "stb__image_8h_source.html":[13,0,0,0,6],
-"structSC__NODE__GROUP__DELETER.html":[12,0,38],
-"structSC__SOUND__DELETER.html":[12,0,41],
-"structSC__SOUND__INSTANCE__DELETER.html":[12,0,42],
+"structSC__NODE__GROUP__DELETER.html":[12,0,42],
+"structSC__SOUND__DELETER.html":[12,0,45],
+"structSC__SOUND__INSTANCE__DELETER.html":[12,0,46],
 "structaudio__meter__utils_1_1audio__meter__draw__info.html":[12,0,0,0],
 "structplayable__selection.html":[12,0,14],
 "structrttr_1_1sequential__container__mapper_3_01eastl_1_1vector_3_01T_00_01Allocator_01_4_01_4.html":[12,0,1,0],
@@ -249,5 +249,5 @@ var NAVTREEINDEX1 =
 "structsc__bank.html":[12,0,23],
 "structsc__clap.html":[12,0,24],
 "structsc__clap__node.html":[12,0,25],
-"structsc__dsp.html":[12,0,26]
+"structsc__delay.html":[12,0,26]
 };

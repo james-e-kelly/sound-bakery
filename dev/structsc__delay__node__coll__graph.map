@@ -1,0 +1,7 @@
+<map id="sc_delay_node" name="sc_delay_node">
+<area shape="rect" id="Node000001" title=" " alt="" coords="9,181,127,207"/>
+<area shape="rect" id="Node000002" href="$structsc__delay.html" title=" " alt="" coords="29,93,107,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="71,133,71,181,65,181,65,133"/>
+<area shape="rect" id="Node000003" href="$structsc__delay__config.html" title=" " alt="" coords="5,5,131,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="71,45,71,93,65,93,65,45"/>
+</map>
