@@ -31,7 +31,7 @@ sbk_status sc_delay_init(const sc_delay_config* config, const ma_allocation_call
     delay->bufferSizeInFrames   = config->maxDelayInFrames;
     delay->writeCursor          = 0;
 
-    delay->buffer = (float*)ma_malloc((size_t)(delay->bufferSizeInFrames * ma_get_bytes_per_frame(ma_format_f32, config->channels)), allocationCallbacks);
+    delay->buffer = (float*)ma_malloc((size_t)delay->bufferSizeInFrames * ma_get_bytes_per_frame(ma_format_f32, config->channels), allocationCallbacks);
     SC_CHECK_MEM(delay->buffer);
 
     ma_silence_pcm_frames(delay->buffer, delay->bufferSizeInFrames, ma_format_f32, config->channels);
@@ -162,6 +162,7 @@ sbk_status sc_delay_get_feedback(const sc_delay* delay, float* outValue)
 sc_delay_node_config sc_delay_node_config_init(ma_uint32 channels, ma_uint32 sampleRate, ma_uint32 maxDelayInFrames)
 {
     sc_delay_node_config config;
+    SC_ZERO_OBJECT(&config);
 
     config.nodeConfig  = ma_node_config_init();
     config.delayConfig = sc_delay_config_init(channels, sampleRate, maxDelayInFrames);
@@ -174,7 +175,10 @@ static void sc_delay_node_process_pcm_frames(ma_node* node, const float** frames
     (void)frameCountIn;
 
     sc_delay_node* delayNode = (sc_delay_node*)node;
-    sc_delay_process_pcm_frames(&delayNode->delay, framesOut[0], framesIn[0], *frameCountOut);
+    if (sc_delay_process_pcm_frames(&delayNode->delay, framesOut[0], framesIn[0], *frameCountOut) != SBK_SUCCESS)
+    {
+        ma_silence_pcm_frames(framesOut, *frameCountOut, ma_format_f32, delayNode->delay.config.channels);
+    }
 }
 
 static ma_node_vtable g_sc_delay_node_vtable =
@@ -189,6 +193,7 @@ static ma_node_vtable g_sc_delay_node_vtable =
 sbk_status sc_delay_node_init(ma_node_graph* nodeGraph, const sc_delay_node_config* config, const ma_allocation_callbacks* allocationCallbacks, sc_delay_node* delayNode)
 {
     SC_CHECK_ARG(delayNode != NULL);
+    SC_CHECK_ARG(config != NULL);
     SC_ZERO_OBJECT(delayNode);
 
     sbk_status result;
@@ -244,6 +249,7 @@ static sbk_status sc_dsp_delay_create(sc_dsp_state* state)
 static sbk_status sc_dsp_delay_release(sc_dsp_state* state)
 {
     SC_CHECK_ARG(state != NULL);
+    SC_CHECK_ARG(state->system != NULL);
 
     const sc_system* const system                            = (sc_system*)state->system;
     const ma_engine* const engine                            = (const ma_engine*)system;
