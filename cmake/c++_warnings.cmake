@@ -117,15 +117,32 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     /W4          # Enable level 4 warnings.
     /external:anglebrackets # Treat headers included via <> (STL, Boost, other third-party) as external.
     /external:W0            # Silence warnings originating inside external headers.
+    /external:templates-    # Attribute template-instantiation warnings to the external header, so /external:W0 filters them.
+
+    # Conformance flags — tighten beyond /permissive-.
+    /Zc:__cplusplus  # Report the real __cplusplus value (else always 199711L).
+    /Zc:preprocessor # Conforming preprocessor (matches GCC/Clang macro expansion).
+    /Zc:inline       # Remove unreferenced COMDATs; catches inline-defined-but-not-used.
+    /Zc:throwingNew  # operator new throws instead of returning null.
+
     /w14062      # Enumerator 'identifier' in a switch of enum 'enumeration' is not handled.
     /w14242      # The types are different, possible loss of data. The compiler makes the conversion.
+    /w14244      # Conversion, possible loss of data (matches -Wconversion).
+    /w14245      # Signed/unsigned mismatch on conversion (matches -Wsign-conversion).
     /w14254      # A larger bit field was assigned to a smaller bit field, possible loss of data.
     /w14263      # Member function does not override any base class virtual member function.
     /w14265      # 'class': class has virtual functions, but destructor is not virtual.
+    /w14267      # Conversion from size_t to smaller type, possible loss of data.
     /w14287      # 'operator': unsigned/negative constant mismatch.
     /w14289      # Loop control variable is used outside the for-loop scope.
     /w14296      # 'operator': expression is always false.
+    /w14305      # Truncation e.g. double to float.
     /w14311      # 'variable' : pointer truncation from 'type' to 'type'.
+    /w14355      # 'this' used in base member initializer list.
+    /w14456      # Local declaration shadows outer local (matches -Wshadow).
+    /w14457      # Declaration hides function parameter.
+    /w14458      # Declaration hides class member.
+    /w14459      # Declaration hides global.
     /w14545      # Expression before comma evaluates to a function which is missing an argument list.
     /w14546      # Function call before comma missing argument list.
     /w14547      # Operator before comma has no effect; expected operator with side-effect.
@@ -133,11 +150,20 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     /w14555      # Expression has no effect; expected expression with side-effect.
     /w14619      # #pragma warning: there is no warning number 'number'.
     /w14640      # 'instance': construction of local static object is not thread-safe.
+    /w14774      # printf format-string not a string literal.
     /w14826      # Conversion from 'type1' to 'type2' is sign-extended.
     /w14905      # Wide string literal cast to 'LPSTR'.
     /w14906      # String literal cast to 'LPWSTR'.
     /w14928      # Illegal copy-initialization; applied more than one user-defined conversion.
-    /we4715      # 'function' : not all control paths return a value
+    /w14946      # reinterpret_cast between related classes.
+    /w15038      # Data member initialization order differs from declaration order.
+    /we4715      # 'function' : not all control paths return a value.
+    /we4834      # Discarding return value of function with [[nodiscard]].
+    # NOTE: intentionally omitted (fire everywhere, no cross-platform equivalent) —
+    #   C4623/4625/4626/5026/5027: implicit special members deleted (atomic/mutex/coroutine_handle)
+    #   C4365: sign-conversion variant that fires on every size_t/ptrdiff_t cast (use /w14245 instead)
+    #   C4582/C4583: union member ctor/dtor not implicitly called (variant/expected/SBO patterns)
+    #   C5204: C++20 non-virtual dtor (duplicates C4265, extra hits in boost::concept_check)
     )
 endif ()
 
