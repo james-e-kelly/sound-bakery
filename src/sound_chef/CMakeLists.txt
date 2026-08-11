@@ -60,6 +60,11 @@ set_target_properties(sound_chef_shared PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CM
 target_compile_options(sound_chef_shared PRIVATE ${PROJECT_LIBRARY_WARNING_FLAGS})
 target_compile_options(sound_chef_static PRIVATE ${PROJECT_LIBRARY_WARNING_FLAGS})
 
+# MSVC's <stdatomic.h> is opt-in behind /experimental:c11atomics until it exits
+# preview status. Apply only to C sources; the flag warns in C++ TUs.
+target_compile_options(sound_chef_shared PRIVATE $<$<COMPILE_LANG_AND_ID:C,MSVC>:/experimental:c11atomics>)
+target_compile_options(sound_chef_static PRIVATE $<$<COMPILE_LANG_AND_ID:C,MSVC>:/experimental:c11atomics>)
+
 add_library(SoundBakery::SoundChef_Shared ALIAS sound_chef_shared)
 add_library(SoundBakery::SoundChef_Static ALIAS sound_chef_static)
 

@@ -104,8 +104,8 @@ sbk_status sc_delay_process_pcm_frames(sc_delay* delay, void* framesOut, const v
     if (blockPeak > 0.0F)
     {
         delay->silentFrameCount = 0;
-        
-        //ma_atomic_store_explicit_32(&delay->isIdle, MA_FALSE, ma_atomic_memory_order_relaxed);
+
+        atomic_store_explicit(&delay->isIdle, MA_FALSE, memory_order_relaxed);
     }
     else
     {
@@ -113,7 +113,7 @@ sbk_status sc_delay_process_pcm_frames(sc_delay* delay, void* framesOut, const v
 
         if (delay->silentFrameCount >= delay->config.delayInFrames)
         {
-            //ma_atomic_store_explicit_32(&delay->isIdle, MA_TRUE, ma_atomic_memory_order_relaxed);
+            atomic_store_explicit(&delay->isIdle, MA_TRUE, memory_order_relaxed);
         }
     }
 
@@ -298,7 +298,7 @@ static sbk_status sc_dsp_delay_is_idle(sc_dsp_state* state, sc_bool* outIsIdle)
     SC_CHECK_ARG(state->userData != NULL);
 
     sc_delay_node* delayNode = (sc_delay_node*)state->userData;
-    //*outIsIdle               = ma_atomic_load_explicit_32(&delayNode->delay.isIdle, ma_atomic_memory_order_relaxed);
+    *outIsIdle               = (sc_bool)atomic_load_explicit(&delayNode->delay.isIdle, memory_order_relaxed);
     return SBK_SUCCESS;
 }
 

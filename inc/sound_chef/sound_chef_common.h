@@ -51,6 +51,23 @@
 #include <assert.h>
 #include <string.h>
 
+/*
+ * Atomic scalar types for use in structs shared between Sound Chef (C) and
+ * Sound Bakery (C++). In C we use the real _Atomic qualifier; in C++ we fall
+ * back to the plain scalar - layout and alignment match on every supported
+ * target for lock-free scalar types, so struct layout is stable across
+ * languages. Access from C via <stdatomic.h> (atomic_load_explicit etc.);
+ * C++ code must not read or write these fields directly.
+ */
+#ifdef __cplusplus
+    typedef ma_uint32 sc_atomic_uint32;
+    typedef float     sc_atomic_float;
+#else
+    #include <stdatomic.h>
+    typedef _Atomic ma_uint32 sc_atomic_uint32;
+    typedef _Atomic float     sc_atomic_float;
+#endif
+
 #if defined(_WIN32)
     #define SC_CALL __stdcall
 #else
