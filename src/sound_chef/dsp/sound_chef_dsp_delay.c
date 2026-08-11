@@ -68,10 +68,10 @@ sbk_status sc_delay_process_pcm_frames(sc_delay* delay, void* framesOut, const v
             const float wetSample = delay->buffer[(readPos * delay->config.channels) + channel];
             const float drySample = framesInF32[channel];
 
-            framesOutF32[channel]                                        = (drySample * delay->config.dry) + (wetSample * delay->config.wet);
+            framesOutF32[channel] = (drySample * delay->config.dry) + (wetSample * delay->config.wet);
             
             float writeSample = drySample + (wetSample * delay->config.feedback);
-            const absWriteSample = fabsf(writeSample);
+            const float absWriteSample = SC_ABS(writeSample);
 
             if (absWriteSample < SC_DELAY_SILENCE_THRESHOLD)
             {
