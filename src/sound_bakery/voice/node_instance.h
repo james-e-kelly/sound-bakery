@@ -107,7 +107,32 @@ namespace sbk::engine
                 {
                     if (ma_sound_at_end(&stateMachine.m_soundInstance->sound) == MA_TRUE)
                     {
-                        stateMachine.process_event(event_stop());
+                        bool isStopped = true; // Assume we're stopped. DSP needs to report it's not idle to stop the stop
+
+                        if (stateMachine.m_nodeGroup.nodeGroup)
+                        {
+                            sc_dsp* currentDSP = stateMachine.m_nodeGroup.nodeGroup->tail;
+
+                            while (currentDSP != nullptr)
+                            {
+                                if (currentDSP->vtable->isIdle != nullptr)
+                                {
+                                    sc_bool isIdle = true;
+                                    currentDSP->vtable->isIdle(currentDSP->state, &isIdle);
+                                    if (!isIdle)
+                                    {
+                                        isStopped = false;
+                                        break;
+                                    }
+                                }
+                                currentDSP = currentDSP->next;
+                            }
+                        }
+                        
+                        if (isStopped)
+                        {
+                            stateMachine.process_event(event_stop());
+                        }
                     }
                 }
                 else if (!stateMachine.m_children.empty())

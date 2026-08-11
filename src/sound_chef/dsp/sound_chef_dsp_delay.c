@@ -59,6 +59,8 @@ sbk_status sc_delay_process_pcm_frames(sc_delay* delay, void* framesOut, const v
     ma_uint32 writePos = delay->writeCursor;
     ma_uint32 readPos  = (writePos + delay->bufferSizeInFrames - delay->config.delayInFrames) % delay->bufferSizeInFrames;
 
+    float blockPeak = 0.0F;
+
     for (ma_uint32 frame = 0; frame < frameCount; ++frame)
     {
         for (ma_uint32 channel = 0; channel < delay->config.channels; ++channel)
@@ -67,7 +69,20 @@ sbk_status sc_delay_process_pcm_frames(sc_delay* delay, void* framesOut, const v
             const float drySample = framesInF32[channel];
 
             framesOutF32[channel]                                        = (drySample * delay->config.dry) + (wetSample * delay->config.wet);
-            delay->buffer[(writePos * delay->config.channels) + channel] = drySample + (wetSample * delay->config.feedback);
+            
+            float writeSample = drySample + (wetSample * delay->config.feedback);
+            const absWriteSample = fabsf(writeSample);
+
+            if (absWriteSample < SC_DELAY_SILENCE_THRESHOLD)
+            {
+                writeSample = 0.0F; /* also kills denormals */
+            }
+            else if (absWriteSample > blockPeak)
+            {
+                blockPeak = absWriteSample;
+            }
+
+            delay->buffer[(writePos * delay->config.channels) + channel] = writeSample;
         }
 
         if (++readPos >= delay->bufferSizeInFrames)
@@ -85,6 +100,22 @@ sbk_status sc_delay_process_pcm_frames(sc_delay* delay, void* framesOut, const v
     }
 
     delay->writeCursor = writePos;
+
+    if (blockPeak > 0.0F)
+    {
+        delay->silentFrameCount = 0;
+        
+        //ma_atomic_store_explicit_32(&delay->isIdle, MA_FALSE, ma_atomic_memory_order_relaxed);
+    }
+    else
+    {
+        delay->silentFrameCount += frameCount;
+
+        if (delay->silentFrameCount >= delay->config.delayInFrames)
+        {
+            //ma_atomic_store_explicit_32(&delay->isIdle, MA_TRUE, ma_atomic_memory_order_relaxed);
+        }
+    }
 
     return SBK_SUCCESS;
 }
@@ -260,6 +291,17 @@ static sbk_status sc_dsp_delay_release(sc_dsp_state* state)
     return SBK_SUCCESS;
 }
 
+static sbk_status sc_dsp_delay_is_idle(sc_dsp_state* state, sc_bool* outIsIdle)
+{
+    SC_CHECK_ARG(state != NULL);
+    SC_CHECK_ARG(outIsIdle != NULL);
+    SC_CHECK_ARG(state->userData != NULL);
+
+    sc_delay_node* delayNode = (sc_delay_node*)state->userData;
+    //*outIsIdle               = ma_atomic_load_explicit_32(&delayNode->delay.isIdle, ma_atomic_memory_order_relaxed);
+    return SBK_SUCCESS;
+}
+
 static sbk_status sc_dsp_delay_set_param_float(sc_dsp_state* state, int index, float value)
 {
     SC_CHECK_ARG(state != NULL);
@@ -344,4 +386,13 @@ static sc_dsp_parameter s_delayFeedback = {sc_dsp_parameter_type_float, "Feedbac
 
 static sc_dsp_parameter* s_delayParams[SC_DSP_DELAY_PARAM_COUNT] = {&s_delayDelay, &s_delayDry, &s_delayWet, &s_delayFeedback};
 
-sc_dsp_vtable g_dspDelayVTable = {sc_dsp_delay_create, sc_dsp_delay_release, NULL, sc_dsp_delay_set_param_float, sc_dsp_delay_get_param_float, s_delayParams, SC_DSP_DELAY_PARAM_COUNT};
+sc_dsp_vtable g_dspDelayVTable = 
+{
+    sc_dsp_delay_create, 
+    sc_dsp_delay_release, 
+    sc_dsp_delay_is_idle, 
+    sc_dsp_delay_set_param_float, 
+    sc_dsp_delay_get_param_float, 
+    s_delayParams, 
+    SC_DSP_DELAY_PARAM_COUNT
+};

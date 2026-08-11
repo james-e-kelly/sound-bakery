@@ -13,6 +13,8 @@ enum
     SC_STRING_NAME_LENGTH = 16
 };
 
+#define SC_DELAY_SILENCE_THRESHOLD 0.0001F
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -113,6 +115,8 @@ extern "C"
         ma_uint32 writeCursor;
         ma_uint32 bufferSizeInFrames;   //< Total buffer size. Not the delay time/size
         float* buffer;
+        ma_uint32 silentFrameCount;     //< Audio thread. Counts number of silent frames so we know when are idle
+        ma_atomic_bool32 isIdle;
     } sc_delay;
 
     sbk_status  SC_API sc_delay_init(const sc_delay_config* config, const ma_allocation_callbacks* allocationCallbacks, sc_delay* delay);

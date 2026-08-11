@@ -522,8 +522,7 @@ sbk_status sc_system_play_sound(sc_system* system, sc_sound* sound, sc_sound_ins
     }
     else if (system->masterNodeGroup != NULL)
     {
-        const ma_result attachResult =
-            ma_node_attach_output_bus(*instance, 0, system->masterNodeGroup->tail->state->userData, 0);
+        const ma_result attachResult = ma_node_attach_output_bus(*instance, 0, system->masterNodeGroup->tail->state->userData, 0);
         SC_CHECK_STATUS(SBK_FROM_MA(attachResult));
     }
 
@@ -1246,12 +1245,10 @@ sbk_status sc_dsp_get_metering_info(sc_dsp* dsp, ma_uint32 channelIndex, sc_dsp_
     switch (meterType)
     {
         case SC_DSP_METER_QUERY_PEAK:
-            *value = ma_atomic_load_explicit_f32(&meterNode->meter.peakLevels[channelIndex].value,
-                                                 ma_atomic_memory_order_relaxed);
+            *value = ma_atomic_load_explicit_f32(&meterNode->meter.peakLevels[channelIndex].value, ma_atomic_memory_order_relaxed);
             break;
         case SC_DSP_METER_QUERY_RMS:
-            *value = ma_atomic_load_explicit_f32(&meterNode->meter.rmsLevels[channelIndex].value,
-                                                 ma_atomic_memory_order_relaxed);
+            *value = ma_atomic_load_explicit_f32(&meterNode->meter.rmsLevels[channelIndex].value, ma_atomic_memory_order_relaxed);
             break;
         default:
             break;
