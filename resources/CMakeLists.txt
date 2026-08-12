@@ -1,7 +1,11 @@
 set(CMAKE_FOLDER extern)
 
-message(STATUS "Fetching CMRC for resource embedding")
-FetchContent_MakeAvailable(cmrc)
+CPMAddPackage(
+  NAME cmrc
+  GITHUB_REPOSITORY vector-of-bool/cmrc
+  GIT_TAG 2.0.1
+  EXCLUDE_FROM_ALL YES
+)
 
 set(CMAKE_FOLDER resources)
 

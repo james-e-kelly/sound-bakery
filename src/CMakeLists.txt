@@ -1,10 +1,18 @@
 set(CMAKE_FOLDER extern)
 
-message(STATUS "Fetching CppDelegates")
-FetchContent_MakeAvailable(cppdelegates)
+CPMAddPackage(
+    NAME cppdelegates
+    GITHUB_REPOSITORY KarateKidzz/CppDelegates
+    GIT_TAG 1f6e8c9352ca1c52b2c596520cba2241b9ecee31 # master @ 2026-07-17
+    DOWNLOAD_ONLY YES
+)
 
-message(STATUS "Fetching stb")
-FetchContent_MakeAvailable(stb)
+CPMAddPackage(
+    NAME stb
+    GITHUB_REPOSITORY nothings/stb
+    GIT_TAG 31c1ad37456438565541f4919958214b6e762fb4 # master @ 2026-07-17
+    DOWNLOAD_ONLY YES
+)
 
 add_library(delegates STATIC 
     ${cppdelegates_SOURCE_DIR}/Delegates.cpp

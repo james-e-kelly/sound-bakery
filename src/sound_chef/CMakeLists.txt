@@ -60,11 +60,6 @@ set_target_properties(sound_chef_shared PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CM
 target_compile_options(sound_chef_shared PRIVATE ${PROJECT_LIBRARY_WARNING_FLAGS})
 target_compile_options(sound_chef_static PRIVATE ${PROJECT_LIBRARY_WARNING_FLAGS})
 
-# MSVC's <stdatomic.h> is opt-in behind /experimental:c11atomics until it exits
-# preview status. Apply only to C sources; the flag warns in C++ TUs.
-target_compile_options(sound_chef_shared PRIVATE $<$<COMPILE_LANG_AND_ID:C,MSVC>:/experimental:c11atomics>)
-target_compile_options(sound_chef_static PRIVATE $<$<COMPILE_LANG_AND_ID:C,MSVC>:/experimental:c11atomics>)
-
 add_library(SoundBakery::SoundChef_Shared ALIAS sound_chef_shared)
 add_library(SoundBakery::SoundChef_Static ALIAS sound_chef_static)
 
@@ -82,11 +77,33 @@ target_include_directories(sound_chef_static
 
 set(CMAKE_FOLDER extern)
 
-message(STATUS "Fetching miniaudio")
-FetchContent_MakeAvailable(miniaudio)
+CPMAddPackage(
+  NAME miniaudio
+  GITHUB_REPOSITORY mackron/miniaudio
+  GIT_TAG 0.11.21
+  EXCLUDE_FROM_ALL YES
+)
 
-message(STATUS "Fetching CLAP")
-FetchContent_MakeAvailable(clap)
+CPMAddPackage(
+  NAME clap
+  GITHUB_REPOSITORY free-audio/clap
+  GIT_TAG 1.2.2
+  EXCLUDE_FROM_ALL YES
+)
+
+CPMAddPackage(
+  NAME c89atomic
+  GITHUB_REPOSITORY mackron/c89atomic
+  GIT_TAG bf5c8af9b89bf79ba1705d10c361dcb0699304a2 # master @ 2026-07-30
+  DOWNLOAD_ONLY YES
+)
+
+# c89atomic.c provides c89atomic_global_lock, only used on architectures without
+# native atomics. Compiling it in costs nothing and keeps the door open for
+# future targets that need it.
+add_library(c89atomic STATIC ${c89atomic_SOURCE_DIR}/c89atomic.c)
+target_include_directories(c89atomic PUBLIC ${c89atomic_SOURCE_DIR})
+add_library(c89atomic::c89atomic ALIAS c89atomic)
 
 add_executable(audioconverter ${miniaudio_SOURCE_DIR}/tools/audioconverter/audioconverter.c)
 target_include_directories(audioconverter PRIVATE ${miniaudio_SOURCE_DIR})
@@ -101,20 +118,37 @@ set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 # Xiph libraries need C_EXTENSIONS on Linux for using alloca
 set(CMAKE_C_EXTENSIONS ON)
 
-message(STATUS "Fetching ogg")
-FetchContent_MakeAvailable(ogg)
+CPMAddPackage(
+  NAME ogg
+  GITHUB_REPOSITORY xiph/ogg
+  GIT_TAG v1.3.5
+  EXCLUDE_FROM_ALL YES
+)
 
-message(STATUS "Fetching vorbis")
-FetchContent_MakeAvailable(vorbis)
+CPMAddPackage(
+  NAME vorbis
+  GITHUB_REPOSITORY xiph/vorbis
+  GIT_TAG v1.3.7
+  EXCLUDE_FROM_ALL YES
+)
 
-message(STATUS "Fetching opus")
-FetchContent_MakeAvailable(opus)
+CPMAddPackage(
+  NAME opus
+  GITHUB_REPOSITORY xiph/opus
+  GIT_TAG v1.5.2
+  EXCLUDE_FROM_ALL YES
+)
 
-message(STATUS "Fetching opusfile")
-set(OP_DISABLE_EXAMPLES ON CACHE BOOL "" FORCE)
-set(OP_DISABLE_DOCS ON CACHE BOOL "" FORCE)
-set(OP_DISABLE_HTTP ON CACHE BOOL "" FORCE)
-FetchContent_MakeAvailable(opusfile)
+CPMAddPackage(
+  NAME opusfile
+  GITHUB_REPOSITORY KarateKidzz/opusfile
+  GIT_TAG 8cf05127fb1ae65735c2db6f65ad89e7a32ac74f # master @ 2026-07-17
+  OPTIONS
+    "OP_DISABLE_EXAMPLES ON"
+    "OP_DISABLE_DOCS ON"
+    "OP_DISABLE_HTTP ON"
+  EXCLUDE_FROM_ALL YES
+)
 
 set(CMAKE_C_EXTENSIONS OFF)
 
@@ -129,8 +163,12 @@ PRIVATE ${opusfile_SOURCE_DIR}/include
 )
 
 if (WIN32)
-  message(STATUS "Fetching dirent")
-  FetchContent_MakeAvailable(dirent)
+  CPMAddPackage(
+    NAME dirent
+    GITHUB_REPOSITORY tronkko/dirent
+    GIT_TAG 31db6474b5231c180bd4618c8c90e43af50c86d0 # HEAD @ 2026-07-17
+    DOWNLOAD_ONLY YES
+  )
 
   target_include_directories(sound_chef_shared
     PRIVATE ${dirent_SOURCE_DIR}/include
@@ -144,6 +182,7 @@ endif()
 target_link_libraries(sound_chef_shared
     PUBLIC SoundBakery::BuildConfig
     PUBLIC clap
+    PUBLIC c89atomic::c89atomic
     PRIVATE vorbis
     PRIVATE vorbisfile
     PRIVATE vorbisenc
@@ -153,6 +192,7 @@ target_link_libraries(sound_chef_shared
 target_link_libraries(sound_chef_static
     PUBLIC SoundBakery::BuildConfig
     PUBLIC clap
+    PUBLIC c89atomic::c89atomic
     PRIVATE vorbis
     PRIVATE vorbisfile
     PRIVATE vorbisenc
@@ -198,5 +238,6 @@ sbk_install(TARGETS sound_chef_static DESTINATION lib/${SBK_INSTALL_CONFIG_SUBDI
 sbk_install(FILES ${SOUND_CHEF_HEADERS} DESTINATION inc/sound_chef)
 sbk_install(FILES ${miniaudio_SOURCE_DIR}/miniaudio.h DESTINATION inc/sound_chef)
 sbk_install(FILES ${stb_SOURCE_DIR}/stb_ds.h DESTINATION inc/sound_chef)
+sbk_install(FILES ${c89atomic_SOURCE_DIR}/c89atomic.h DESTINATION inc/sound_chef)
 sbk_install(DIRECTORY ${clap_SOURCE_DIR}/include/clap DESTINATION inc/sound_chef)
 endif()

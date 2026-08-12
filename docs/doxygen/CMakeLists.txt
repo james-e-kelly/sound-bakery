@@ -1,7 +1,9 @@
-include(FetchContent)
-
-message(STATUS "Fetching doxygen awesome")
-FetchContent_MakeAvailable(doxygenawesome)
+CPMAddPackage(
+    NAME doxygenawesome
+    GITHUB_REPOSITORY jothepro/doxygen-awesome-css
+    GIT_TAG 82d315e34ac419a81caccf470cc2fbc2ec8ee524 # main @ 2026-07-17
+    DOWNLOAD_ONLY YES
+)
 
 set(DOXYGEN_IN ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in)
 set(DOXYGEN_OUT ${CMAKE_BINARY_DIR}/docs/build/Doxyfile)

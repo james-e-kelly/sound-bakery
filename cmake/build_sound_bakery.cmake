@@ -177,37 +177,79 @@ function(build_dependencies)
     set(BUILD_PACKAGE OFF CACHE BOOL "" FORCE)
     set(CUSTOM_DOXYGEN_STYLE OFF CACHE BOOL "" FORCE)
 
-    message(STATUS "Fetching rttr...")
-    FetchContent_MakeAvailable(rttr)
+    CPMAddPackage(
+        NAME rttr
+        GITHUB_REPOSITORY KarateKidzz/rttr
+        GIT_TAG 23850d1dd23952b7c29ba9398adb1548f6816c30 # master @ 2026-07-17
+        EXCLUDE_FROM_ALL YES
+    )
 
-    message(STATUS "Fetching concurrencpp...")
-    FetchContent_MakeAvailable(concurrencpp)
+    CPMAddPackage(
+        NAME concurrencpp
+        GITHUB_REPOSITORY james-e-kelly/concurrencpp
+        GIT_TAG 53b007ba3721d99ec3aa6c39dd228638798d54e4 # master @ 2026-07-17
+        EXCLUDE_FROM_ALL YES
+    )
 
-    message(STATUS "Fetching EABase...")
+    # EABase and EASTL declare their .gitmodules using git@github.com: (SSH) URLs
+    # for test-only sub-packages we don't build. We disable submodule recursion via
+    # GIT_SUBMODULES "" - but CPM (0.40.x-0.43.x) does not forward that argument to
+    # FetchContent, so we drop these two back to FetchContent_Declare directly.
+    FetchContent_Declare(
+        eabase
+        GIT_REPOSITORY https://github.com/electronicarts/EABase.git
+        GIT_TAG        0699a15efdfd20b6cecf02153bfa5663decb653c # matches EASTL 3.27.01's pinned EABase
+        GIT_SUBMODULES ""
+        GIT_PROGRESS   TRUE
+        EXCLUDE_FROM_ALL
+    )
     FetchContent_MakeAvailable(eabase)
 
     set(EASTL_BUILD_BENCHMARK OFF CACHE BOOL "" FORCE)
     set(EASTL_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 
-    message(STATUS "Fetching EASTL...")
+    FetchContent_Declare(
+        eastl
+        GIT_REPOSITORY https://github.com/electronicarts/EASTL.git
+        GIT_TAG        3.27.01
+        GIT_SHALLOW    TRUE
+        GIT_SUBMODULES ""
+        GIT_PROGRESS   TRUE
+        EXCLUDE_FROM_ALL
+    )
     FetchContent_MakeAvailable(eastl)
 
     # Make fmt available before spdlog and point spdlog at it, so the whole build
     # links a single fmt (fmt::fmt) instead of spdlog also compiling its bundled
     # copy. spdlog's CMake uses fmt::fmt directly when the target already exists.
-    message(STATUS "Fetching fmt...")
-    FetchContent_MakeAvailable(fmt)
+    CPMAddPackage(
+        NAME fmt
+        GITHUB_REPOSITORY fmtlib/fmt
+        GIT_TAG 12.2.0
+        EXCLUDE_FROM_ALL YES
+    )
 
     set(SPDLOG_FMT_EXTERNAL ON CACHE BOOL "Use external fmt instead of spdlog's bundled copy" FORCE)
 
-    message(STATUS "Fetching spdlog...")
-    FetchContent_MakeAvailable(spdlog)
+    CPMAddPackage(
+        NAME spdlog
+        GITHUB_REPOSITORY gabime/spdlog
+        GIT_TAG v1.17.0
+        EXCLUDE_FROM_ALL YES
+    )
 
-    message(STATUS "Fetching boost")
-    FetchContent_MakeAvailable(boost)
+    CPMAddPackage(
+        NAME boost
+        URL https://github.com/boostorg/boost/releases/download/boost-1.87.0/boost-1.87.0-cmake.tar.xz
+        EXCLUDE_FROM_ALL YES
+    )
 
-    message(STATUS "Fetching boost-yaml")
-    FetchContent_MakeAvailable(boost-yaml)
+    CPMAddPackage(
+        NAME boost-yaml
+        GITHUB_REPOSITORY james-e-kelly/yaml-archive
+        GIT_TAG fdbba62f97d16a0e8c28dcf04724423293752bc5 # HEAD @ 2026-07-17
+        EXCLUDE_FROM_ALL YES
+    )
 
     # Tracy (v0.13.1) has no option to disable its install() rules (TracyClient.lib,
     # its headers and CMake package config); they are suppressed by default like
@@ -220,8 +262,12 @@ function(build_dependencies)
     OPTIONS "TRACY_ON_DEMAND ON" "TRACY_NO_VSYNC_CAPTURE ON" "TRACY_NO_FRAME_IMAGE ON" "TRACY_FIBERS ON"
     )
 
-    message(STATUS "Fetching rpmalloc")
-    FetchContent_MakeAvailable(sbk_rpmalloc_content)
+    CPMAddPackage(
+        NAME sbk_rpmalloc_content
+        GITHUB_REPOSITORY mjansson/rpmalloc
+        GIT_TAG 1.4.5
+        DOWNLOAD_ONLY YES
+    )
 
     add_library(sbk_rpmalloc STATIC ${sbk_rpmalloc_content_SOURCE_DIR}/rpmalloc/rpmalloc.c)
     target_include_directories(sbk_rpmalloc PUBLIC ${sbk_rpmalloc_content_SOURCE_DIR})

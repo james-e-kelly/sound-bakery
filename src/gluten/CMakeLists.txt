@@ -95,7 +95,6 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Header Files" FILES ${GLUT
 set(PCH_HEADER pch.h)
 set(PCH_SOURCE pch.cpp)
 
-message(STATUS "Fetching mpv")
 include(build_mpv)
 
 add_library(gluten STATIC
@@ -155,21 +154,37 @@ set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
 
-message(STATUS "Fetching bytesize")
-FetchContent_MakeAvailable(bytesizelib)
+CPMAddPackage(
+  NAME bytesizelib
+  GITHUB_REPOSITORY eudoxos/bytesize
+  GIT_TAG 196542fed6b4234be6994eeb43984e3a3ba86b95 # master @ 2026-07-17
+  DOWNLOAD_ONLY YES
+)
 add_library(bytesize INTERFACE)
 target_include_directories(bytesize INTERFACE ${bytesizelib_SOURCE_DIR})
 
 include(build_nfd)
 
-message(STATUS "Fetching audio fonts")
-FetchContent_MakeAvailable(fonts)
+CPMAddPackage(
+  NAME fonts
+  GITHUB_REPOSITORY juliettef/IconFontCppHeaders
+  GIT_TAG bbe9ecd24203c4de10d1b9e3fdeb4edf5c6cb842
+  DOWNLOAD_ONLY YES
+)
 
-message(STATUS "Fetching fmt")
-FetchContent_MakeAvailable(fmt)
+CPMAddPackage(
+  NAME fmt
+  GITHUB_REPOSITORY fmtlib/fmt
+  GIT_TAG 12.2.0
+  EXCLUDE_FROM_ALL YES
+)
 
-message(STATUS "Fetching platform folders")
-FetchContent_MakeAvailable(platform-folders)
+CPMAddPackage(
+  NAME platform-folders
+  GITHUB_REPOSITORY sago007/PlatformFolders
+  GIT_TAG f2625faed48bc891eb624187f8a0e4a1d1cd6ad6 # master @ 2026-07-17
+  EXCLUDE_FROM_ALL YES
+)
 
 include(build_imgui)
 

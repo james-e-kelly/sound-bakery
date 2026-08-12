@@ -1,9 +1,17 @@
 function(setup_review_dependencies target)
-    message(STATUS "Fetching SQLiteCpp")
-    FetchContent_MakeAvailable(sqlitecpp)
+    CPMAddPackage(
+        NAME sqlitecpp
+        GITHUB_REPOSITORY SRombauts/SQLiteCpp
+        GIT_TAG ff5f33c7ffe9347524251838e134fb4b9df5a263 # master @ 2026-07-17
+        EXCLUDE_FROM_ALL YES
+    )
 
-    message(STATUS "Fetching httplib")
-    FetchContent_MakeAvailable(httplib)
+    CPMAddPackage(
+        NAME httplib
+        GITHUB_REPOSITORY yhirose/cpp-httplib
+        GIT_TAG 0c1cc8c9866bb567ff11c1cd0d09779e8c5f8585 # master @ 2026-07-17
+        EXCLUDE_FROM_ALL YES
+    )
 
     set(OPENSSL_ROOT_DIR ${PROJECT_SOURCE_DIR}/extern/openssl/x64)
     set(OPENSSL_USE_STATIC_LIBS TRUE)
