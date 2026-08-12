@@ -50,30 +50,19 @@ set(CMAKE_FOLDER src)
 add_library(sound_chef_shared SHARED ${SOUND_CHEF_SOURCES} ${SOUND_CHEF_HEADERS} ${stb_SOURCE_DIR}/stb_ds.h)
 add_library(sound_chef_static STATIC ${SOUND_CHEF_SOURCES} ${SOUND_CHEF_HEADERS} ${stb_SOURCE_DIR}/stb_ds.h)
 
-c_17(sound_chef_shared)
-c_17(sound_chef_static)
-cxx_20(sound_chef_shared)
-cxx_20(sound_chef_static)
-
-set_target_properties(sound_chef_shared PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/$<CONFIG>)
-
-target_compile_options(sound_chef_shared PRIVATE ${PROJECT_LIBRARY_WARNING_FLAGS})
-target_compile_options(sound_chef_static PRIVATE ${PROJECT_LIBRARY_WARNING_FLAGS})
-
 add_library(SoundBakery::SoundChef_Shared ALIAS sound_chef_shared)
 add_library(SoundBakery::SoundChef_Static ALIAS sound_chef_static)
 
-target_include_directories(sound_chef_shared
-    PUBLIC ${PROJECT_SOURCE_DIR}/inc/
-    PRIVATE ${PROJECT_SOURCE_DIR}/src/
-    PUBLIC ${stb_SOURCE_DIR}
-)
-
-target_include_directories(sound_chef_static
-    PUBLIC ${PROJECT_SOURCE_DIR}/inc/
-    PRIVATE ${PROJECT_SOURCE_DIR}/src/
-    PUBLIC ${stb_SOURCE_DIR}
-)
+foreach(t IN ITEMS sound_chef_shared sound_chef_static)
+    c_17(${t})
+    cxx_20(${t})
+    target_compile_options(${t} PRIVATE ${PROJECT_LIBRARY_WARNING_FLAGS})
+    target_include_directories(${t}
+        PUBLIC ${PROJECT_SOURCE_DIR}/inc/
+        PRIVATE ${PROJECT_SOURCE_DIR}/src/
+        PUBLIC ${stb_SOURCE_DIR}
+    )
+endforeach()
 
 set(CMAKE_FOLDER extern)
 
@@ -152,16 +141,6 @@ CPMAddPackage(
 
 set(CMAKE_C_EXTENSIONS OFF)
 
-target_include_directories(sound_chef_shared
-PUBLIC ${miniaudio_SOURCE_DIR}
-PRIVATE ${opusfile_SOURCE_DIR}/include
-)
-
-target_include_directories(sound_chef_static
-PUBLIC ${miniaudio_SOURCE_DIR}
-PRIVATE ${opusfile_SOURCE_DIR}/include
-)
-
 if (WIN32)
   CPMAddPackage(
     NAME dirent
@@ -169,35 +148,26 @@ if (WIN32)
     GIT_TAG 31db6474b5231c180bd4618c8c90e43af50c86d0 # HEAD @ 2026-07-17
     DOWNLOAD_ONLY YES
   )
-
-  target_include_directories(sound_chef_shared
-    PRIVATE ${dirent_SOURCE_DIR}/include
-  )
-
-  target_include_directories(sound_chef_static
-    PRIVATE ${dirent_SOURCE_DIR}/include
-  )
 endif()
 
-target_link_libraries(sound_chef_shared
-    PUBLIC SoundBakery::BuildConfig
-    PUBLIC clap
-    PUBLIC c89atomic::c89atomic
-    PRIVATE vorbis
-    PRIVATE vorbisfile
-    PRIVATE vorbisenc
-    PRIVATE Opus::opus
-    PRIVATE OpusFile::opusfile)
-
-target_link_libraries(sound_chef_static
-    PUBLIC SoundBakery::BuildConfig
-    PUBLIC clap
-    PUBLIC c89atomic::c89atomic
-    PRIVATE vorbis
-    PRIVATE vorbisfile
-    PRIVATE vorbisenc
-    PRIVATE Opus::opus
-    PRIVATE OpusFile::opusfile)
+foreach(t IN ITEMS sound_chef_shared sound_chef_static)
+    target_include_directories(${t}
+        PUBLIC ${miniaudio_SOURCE_DIR}
+        PRIVATE ${opusfile_SOURCE_DIR}/include
+    )
+    if (WIN32)
+        target_include_directories(${t} PRIVATE ${dirent_SOURCE_DIR}/include)
+    endif()
+    target_link_libraries(${t}
+        PUBLIC SoundBakery::BuildConfig
+        PUBLIC clap
+        PUBLIC c89atomic::c89atomic
+        PRIVATE vorbis
+        PRIVATE vorbisfile
+        PRIVATE vorbisenc
+        PRIVATE Opus::opus
+        PRIVATE OpusFile::opusfile)
+endforeach()
 
 get_target_property(SOUND_CHEF_ALL_FILES sound_chef_shared SOURCES)
 foreach(source IN LISTS SOUND_CHEF_ALL_FILES)
@@ -224,8 +194,9 @@ if(SOUND_BAKERY_TIDY_SOURCE AND SOUND_BAKERY_CLANG_TIDY_EXE AND MSVC)
 endif()
 
 if (SOUND_BAKERY_INSTALL)
-sbk_install(TARGETS sound_chef_shared DESTINATION lib/${SBK_INSTALL_CONFIG_SUBDIR}/sound_chef)
-sbk_install(TARGETS sound_chef_static DESTINATION lib/${SBK_INSTALL_CONFIG_SUBDIR}/sound_chef)
+foreach(t IN ITEMS sound_chef_shared sound_chef_static)
+    sbk_install(TARGETS ${t} DESTINATION lib/${SBK_INSTALL_CONFIG_SUBDIR}/sound_chef)
+endforeach()
 
 sbk_install(FILES ${SOUND_CHEF_HEADERS} DESTINATION inc/sound_chef)
 sbk_install(FILES ${miniaudio_SOURCE_DIR}/miniaudio.h DESTINATION inc/sound_chef)
