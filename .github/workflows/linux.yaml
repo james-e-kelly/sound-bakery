@@ -73,7 +73,7 @@ jobs:
         # cache is rebuilt from scratch rather than partially restored, so stale
         # artifacts can't leak in. Bump the "v1" token if a runner toolchain
         # update ever leaves incompatible cached objects behind.
-        key: deps-v1-${{ runner.os }}-${{ matrix.c_compiler }}-${{ hashFiles('cmake/external_dependencies.cmake', 'cmake/build_sound_bakery.cmake', 'cmake/build_mpv.cmake', 'src/gluten/CMakeLists.txt') }}
+        key: deps-v1-${{ runner.os }}-${{ matrix.c_compiler }}-${{ hashFiles('cmake/build_sound_bakery.cmake', 'cmake/build_nfd.cmake', 'cmake/build_imgui.cmake', 'cmake/build_mpv.cmake', 'cmake/build_review.cmake', 'src/CMakeLists.txt', 'src/gluten/CMakeLists.txt', 'src/sound_chef/CMakeLists.txt', 'src/core/CMakeLists.txt', 'resources/CMakeLists.txt', 'tests/CMakeLists.txt', 'docs/doxygen/CMakeLists.txt') }}
 
     - name: Build, test and install configurations
       shell: bash

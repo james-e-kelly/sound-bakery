@@ -54,7 +54,7 @@ jobs:
             build/cpm/cache
           # Distinct per-sanitizer key: instrumented objects must not be shared
           # with the normal (uninstrumented) build cache.
-          key: deps-v1-${{ matrix.key }}-${{ runner.os }}-${{ hashFiles('cmake/external_dependencies.cmake', 'cmake/build_sound_bakery.cmake', 'cmake/build_mpv.cmake', 'src/gluten/CMakeLists.txt') }}
+          key: deps-v1-${{ matrix.key }}-${{ runner.os }}-${{ hashFiles('cmake/build_sound_bakery.cmake', 'cmake/build_nfd.cmake', 'cmake/build_imgui.cmake', 'cmake/build_mpv.cmake', 'cmake/build_review.cmake', 'src/CMakeLists.txt', 'src/gluten/CMakeLists.txt', 'src/sound_chef/CMakeLists.txt', 'src/core/CMakeLists.txt', 'resources/CMakeLists.txt', 'tests/CMakeLists.txt', 'docs/doxygen/CMakeLists.txt') }}
 
       - name: Configure
         run: >

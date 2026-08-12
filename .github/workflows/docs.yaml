@@ -54,7 +54,7 @@ jobs:
           fi
 
       - name: Fetch doxygen-awesome-css
-        # Same commit the CMake build pins in cmake/external_dependencies.cmake.
+        # Same commit the CMake build pins in docs/doxygen/CMakeLists.txt.
         run: |
           git clone https://github.com/jothepro/doxygen-awesome-css.git awesome
           git -C awesome checkout 82d315e34ac419a81caccf470cc2fbc2ec8ee524
