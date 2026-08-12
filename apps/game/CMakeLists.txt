@@ -26,8 +26,6 @@ add_executable(game
   ${GAME_HEADERS}
 )
 
-set_target_properties(game PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/$<CONFIG>)
-
 cxx_20(game)
 
 target_include_directories(game
@@ -56,24 +54,10 @@ target_link_libraries(game
 
 target_compile_options(game PRIVATE ${PROJECT_WARNING_FLAGS})
 
-if(MSVC)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
-endif()
-
 set(CMAKE_FOLDER apps)
 
-if (SOUND_BAKERY_FORMAT_SOURCE AND SOUND_BAKERY_CLANG_FORMAT_EXE)
-  foreach(source IN LISTS GAME_SOURCES GAME_HEADERS PCH_HEADER PCH_SOURCE)
-    list(APPEND SOUND_BAKERY_GAME_FORMAT_FILES "${CMAKE_CURRENT_SOURCE_DIR}/${source}")
-  endforeach()
-
-  add_custom_target(format_game
-  COMMAND clang-format --style=file -i ${SOUND_BAKERY_GAME_FORMAT_FILES}
-  COMMAND_EXPAND_LISTS
-  COMMENT "Running clang-format"
-  VERBATIM
-  )
-endif()
+sbk_add_format_target(NAME game
+    SOURCES ${GAME_SOURCES} ${GAME_HEADERS} ${PCH_HEADER} ${PCH_SOURCE})
 
 if (SOUND_BAKERY_INSTALL)
 sbk_install(TARGETS game DESTINATION apps/${SBK_INSTALL_CONFIG_SUBDIR})

@@ -206,15 +206,7 @@ endforeach()
 
 set(CMAKE_FOLDER src)
 
-if (SOUND_BAKERY_FORMAT_SOURCE AND SOUND_BAKERY_CLANG_FORMAT_EXE)
-  message(STATUS "Adding Sound Chef clang-format target")
-  add_custom_target(format_sound_chef
-    COMMAND clang-format --style=file -i ${SOUND_CHEF_FORMAT_FILES}
-    COMMAND_EXPAND_LISTS
-    COMMENT "Running clang-format"
-    VERBATIM
-  )
-endif()
+sbk_add_format_target(NAME sound_chef SOURCES ${SOUND_CHEF_FORMAT_FILES})
 
 # Sad things to make clang-tidy work in VS
 # CMakeSettings.json is possible but seemed a pain in its own right

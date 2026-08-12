@@ -292,14 +292,7 @@ endmacro()
 function(setup_linter_targets)
     set(CMAKE_FOLDER src)
 
-    if (SOUND_BAKERY_FORMAT_SOURCE AND SOUND_BAKERY_CLANG_FORMAT_EXE)
-        add_custom_target(format_sound_bakery
-        COMMAND clang-format --style=file -i ${SOUND_BAKERY_FORMAT_FILES}
-        COMMAND_EXPAND_LISTS
-        COMMENT "Running clang-format"
-        VERBATIM
-        )
-    endif()
+    sbk_add_format_target(NAME sound_bakery SOURCES ${SOUND_BAKERY_FORMAT_FILES})
 
     if (SOUND_BAKERY_TIDY_SOURCE AND SOUND_BAKERY_CLANG_TIDY_EXE)
         add_custom_target(tidy_sound_bakery
