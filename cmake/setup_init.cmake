@@ -20,7 +20,6 @@ set(CMAKE_POLICY_VERSION_MINIMUM 3.5 CACHE STRING "Minimum CMake policy version 
 
 include(FetchContent)
 include(fetch_cpm)
-include(git_utils)
 include(c_standards)
 include(c++_standards)
 include(c++_warnings)
