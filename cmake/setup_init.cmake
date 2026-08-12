@@ -18,6 +18,8 @@ set(CPM_SOURCE_CACHE "${CMAKE_BINARY_DIR}/cpm/cache" CACHE PATH "" FORCE)
 # still declare older minimums, so allow them to configure under CMake 4.x.
 set(CMAKE_POLICY_VERSION_MINIMUM 3.5 CACHE STRING "Minimum CMake policy version for old dependencies")
 
+add_compile_options($<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/bigobj>)
+
 include(FetchContent)
 include(fetch_cpm)
 include(c_standards)
