@@ -1,3 +1,5 @@
+include_guard(GLOBAL)
+
 macro(set_sources)
     set(SOUND_BAKERY_SOURCES 
     system.cpp

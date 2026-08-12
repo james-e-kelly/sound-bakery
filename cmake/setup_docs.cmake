@@ -1,3 +1,5 @@
+include_guard(GLOBAL)
+
 if(SOUND_BAKERY_DOCS)
     find_package(Doxygen)
     if(Doxygen_FOUND)

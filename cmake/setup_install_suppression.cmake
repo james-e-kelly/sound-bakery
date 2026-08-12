@@ -19,6 +19,8 @@
 # dependency. Overriding install() a second time would rebind _install to the
 # wrapper and silently drop all installs, so this file is the single definition.
 
+include_guard(GLOBAL)
+
 # Default off (transparent: install() forwards to the real command). The
 # authoritative value is set from SOUND_BAKERY_INSTALL in the top-level CMakeLists
 # once that option exists - it can't be read here, because setup_init (which

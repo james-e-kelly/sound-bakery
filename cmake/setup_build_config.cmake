@@ -1,3 +1,5 @@
+include_guard(GLOBAL)
+
 # Wwise/FMOD-style build configurations for Sound Chef and Sound Bakery.
 #
 # Three configurations, mapped onto CMake's per-config generator expressions so

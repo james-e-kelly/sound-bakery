@@ -1,3 +1,5 @@
+include_guard(GLOBAL)
+
 CPMAddPackage(
     NAME imgui
     GITHUB_REPOSITORY ocornut/imgui

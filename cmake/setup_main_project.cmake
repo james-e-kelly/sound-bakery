@@ -1,3 +1,5 @@
+include_guard(GLOBAL)
+
 include(setup_cpack)
 include(setup_docs)
 

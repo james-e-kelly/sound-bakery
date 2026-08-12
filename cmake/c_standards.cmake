@@ -13,6 +13,8 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+include_guard(GLOBAL)
+
 # Set the compiler standard to C89/90
 macro(c_90 TARGET_NAME)
   set_target_properties(${TARGET_NAME} PROPERTIES
