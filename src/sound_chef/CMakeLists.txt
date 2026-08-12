@@ -5,10 +5,10 @@ configure_file (${CMAKE_CURRENT_SOURCE_DIR}/sound_chef_version.h.in ${PROJECT_SO
 set(SOUND_CHEF_SOURCES 
     sound_chef.c
     sound_chef_bank.c
-    sound_chef_dsp.c
     sound_chef_encoder.c
     sound_chef_internal.c
 
+    dsp/sound_chef_dsp.c
     dsp/sound_chef_dsp_clap.c
     dsp/sound_chef_dsp_delay.c
     dsp/sound_chef_dsp_fader.c
