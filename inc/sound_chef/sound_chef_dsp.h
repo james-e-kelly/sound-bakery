@@ -116,7 +116,7 @@ extern "C"
         ma_uint32 bufferSizeInFrames;   //< Total buffer size. Not the delay time/size
         float* buffer;
         ma_uint32 silentFrameCount;     //< Audio thread. Counts number of silent frames so we know when are idle
-        sc_atomic_uint32 isIdle;
+        sc_atomic_bool isIdle;
     } sc_delay;
 
     sbk_status  SC_API sc_delay_init(const sc_delay_config* config, const ma_allocation_callbacks* allocationCallbacks, sc_delay* delay);

@@ -47,26 +47,10 @@
 #include "miniaudio.h"
 #include "stb_ds.h"
 #include "clap/clap.h"
+#include "c89atomic.h"
 
 #include <assert.h>
 #include <string.h>
-
-/*
- * Atomic scalar types for use in structs shared between Sound Chef (C) and
- * Sound Bakery (C++). In C we use the real _Atomic qualifier; in C++ we fall
- * back to the plain scalar - layout and alignment match on every supported
- * target for lock-free scalar types, so struct layout is stable across
- * languages. Access from C via <stdatomic.h> (atomic_load_explicit etc.);
- * C++ code must not read or write these fields directly.
- */
-#ifdef __cplusplus
-    typedef ma_uint32 sc_atomic_uint32;
-    typedef float     sc_atomic_float;
-#else
-    #include <stdatomic.h>
-    typedef _Atomic ma_uint32 sc_atomic_uint32;
-    typedef _Atomic float     sc_atomic_float;
-#endif
 
 #if defined(_WIN32)
     #define SC_CALL __stdcall
@@ -128,7 +112,22 @@ extern "C"
         
 #include "sound_chef/sound_chef_version.h"
 
-typedef ma_bool32 sc_bool;
+typedef c89atomic_int8      sc_atomic_int8;
+typedef c89atomic_uint8     sc_atomic_uint8;
+typedef c89atomic_int16     sc_atomic_int16;
+typedef c89atomic_uint16    sc_atomic_uint16;
+typedef c89atomic_int32     sc_atomic_int32;
+typedef c89atomic_uint32    sc_atomic_uint32;
+typedef c89atomic_int64     sc_atomic_int64;
+typedef c89atomic_uint64    sc_atomic_uint64;
+typedef c89atomic_bool      sc_atomic_bool;
+typedef float               sc_atomic_float;
+
+typedef ma_bool32           sc_bool;
+typedef ma_uint32           sc_uint32;
+typedef ma_int64            sc_int64;
+typedef ma_uint64           sc_uint64;
+
 #define SBK_FALSE 0
 #define SBK_TRUE 1
 

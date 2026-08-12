@@ -42,7 +42,7 @@ static void sc_meter_node_process_pcm_frames(ma_node* node, const float** frames
         const float channelSum = channelSums[channelIndex];
         const float rms        = sqrtf(channelSum / (float)inputFrames);
 
-        atomic_store_explicit(&meter->rmsLevels[channelIndex], rms, memory_order_relaxed);
+        c89atomic_store_explicit_f32(&meter->rmsLevels[channelIndex], rms, c89atomic_memory_order_relaxed);
     }
 }
 
@@ -105,10 +105,10 @@ sbk_status sc_dsp_get_metering_info(sc_dsp* dsp, ma_uint32 channelIndex, sc_dsp_
     switch (meterType)
     {
         case SC_DSP_METER_QUERY_PEAK:
-            *value = atomic_load_explicit(&meterNode->meter.peakLevels[channelIndex], memory_order_relaxed);
+            *value = c89atomic_load_explicit_f32(&meterNode->meter.peakLevels[channelIndex], c89atomic_memory_order_relaxed);
             break;
         case SC_DSP_METER_QUERY_RMS:
-            *value = atomic_load_explicit(&meterNode->meter.rmsLevels[channelIndex], memory_order_relaxed);
+            *value = c89atomic_load_explicit_f32(&meterNode->meter.rmsLevels[channelIndex], c89atomic_memory_order_relaxed);
             break;
         default:
             break;
