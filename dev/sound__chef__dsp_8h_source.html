@@ -269,7 +269,7 @@ $(document).ready(function(){initNavTree('sound__chef__dsp_8h_source.html',''); 
 <div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        ma_uint32 bufferSizeInFrames;   <span class="comment">//&lt; Total buffer size. Not the delay time/size</span></div>
 <div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>        <span class="keywordtype">float</span>* buffer;</div>
 <div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        ma_uint32 silentFrameCount;     <span class="comment">//&lt; Audio thread. Counts number of silent frames so we know when are idle</span></div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>        sc_atomic_uint32 isIdle;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>        sc_atomic_bool isIdle;</div>
 <div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    } <a class="code hl_struct" href="structsc__delay.html">sc_delay</a>;</div>
 </div>
 <div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span> </div>

@@ -1,21 +1,21 @@
 <map id="inc/sound_chef/sound_chef.h" name="inc/sound_chef/sound_chef.h">
-<area shape="rect" id="Node000001" title="A wrapper library for miniaudio that emulates functionality of FMOD." alt="" coords="391,5,553,45"/>
-<area shape="rect" id="Node000002" href="$sound__chef__common_8h_source.html" title=" " alt="" coords="297,93,469,119"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="452,48,408,86,404,82,449,44"/>
-<area shape="rect" id="Node000010" href="$sound__chef__dsp_8h.html" title="DSP object definitions." alt="" coords="493,93,632,119"/>
-<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="496,44,541,82,537,86,492,48"/>
+<area shape="rect" id="Node000001" title="A wrapper library for miniaudio that emulates functionality of FMOD." alt="" coords="404,5,567,45"/>
+<area shape="rect" id="Node000002" href="$sound__chef__common_8h_source.html" title=" " alt="" coords="310,93,482,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="465,48,421,86,418,82,462,44"/>
+<area shape="rect" id="Node000010" href="$sound__chef__dsp_8h.html" title="DSP object definitions." alt="" coords="507,93,645,119"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="509,44,554,82,550,86,506,48"/>
 <area shape="rect" id="Node000003" title=" " alt="" coords="5,174,104,199"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="326,121,117,169,105,173,103,167,115,164,325,116"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="336,121,233,142,117,169,104,173,102,168,115,164,232,137,334,116"/>
 <area shape="rect" id="Node000004" title=" " alt="" coords="129,174,205,199"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="351,121,217,169,210,172,208,167,215,164,349,116"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="361,121,217,169,210,172,208,167,215,164,359,116"/>
 <area shape="rect" id="Node000005" title=" " alt="" coords="229,174,321,199"/>
-<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="368,121,303,168,300,164,365,117"/>
-<area shape="rect" id="Node000006" title=" " alt="" coords="345,174,420,199"/>
-<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="385,119,385,160,380,160,380,119"/>
-<area shape="rect" id="Node000007" title=" " alt="" coords="445,174,515,199"/>
-<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="399,117,457,163,453,167,395,121"/>
-<area shape="rect" id="Node000008" title=" " alt="" coords="540,174,639,199"/>
-<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="414,116,547,167,546,172,412,121"/>
-<area shape="rect" id="Node000009" href="$sound__chef__version_8h_source.html" title=" " alt="" coords="663,167,838,207"/>
-<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="437,116,651,161,650,167,436,121"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="380,121,305,169,302,164,377,117"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="345,174,447,199"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="399,119,399,160,393,160,393,119"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="472,174,547,199"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="414,117,483,164,480,168,411,121"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="571,174,642,199"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="429,116,560,164,566,167,564,172,558,169,427,121"/>
+<area shape="rect" id="Node000009" href="$sound__chef__version_8h_source.html" title=" " alt="" coords="666,167,841,207"/>
+<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="449,116,655,161,654,166,447,121"/>
 </map>

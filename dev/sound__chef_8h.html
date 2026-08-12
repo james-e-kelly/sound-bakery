@@ -151,25 +151,25 @@ Include dependency graph for sound_chef.h:</div>
 <div class="dyncontent">
 <div class="center"><img src="sound__chef_8h__incl.png" border="0" usemap="#ainc_2sound__chef_2sound__chef_8h" alt=""/></div>
 <map name="ainc_2sound__chef_2sound__chef_8h" id="ainc_2sound__chef_2sound__chef_8h">
-<area shape="rect" title="A wrapper library for miniaudio that emulates functionality of FMOD." alt="" coords="391,5,553,45"/>
-<area shape="rect" href="sound__chef__common_8h_source.html" title=" " alt="" coords="297,93,469,119"/>
-<area shape="poly" title=" " alt="" coords="452,48,408,86,404,82,449,44"/>
-<area shape="rect" href="sound__chef__dsp_8h.html" title="DSP object definitions." alt="" coords="493,93,632,119"/>
-<area shape="poly" title=" " alt="" coords="496,44,541,82,537,86,492,48"/>
+<area shape="rect" title="A wrapper library for miniaudio that emulates functionality of FMOD." alt="" coords="404,5,567,45"/>
+<area shape="rect" href="sound__chef__common_8h_source.html" title=" " alt="" coords="310,93,482,119"/>
+<area shape="poly" title=" " alt="" coords="465,48,421,86,418,82,462,44"/>
+<area shape="rect" href="sound__chef__dsp_8h.html" title="DSP object definitions." alt="" coords="507,93,645,119"/>
+<area shape="poly" title=" " alt="" coords="509,44,554,82,550,86,506,48"/>
 <area shape="rect" title=" " alt="" coords="5,174,104,199"/>
-<area shape="poly" title=" " alt="" coords="326,121,117,169,105,173,103,167,115,164,325,116"/>
+<area shape="poly" title=" " alt="" coords="336,121,233,142,117,169,104,173,102,168,115,164,232,137,334,116"/>
 <area shape="rect" title=" " alt="" coords="129,174,205,199"/>
-<area shape="poly" title=" " alt="" coords="351,121,217,169,210,172,208,167,215,164,349,116"/>
+<area shape="poly" title=" " alt="" coords="361,121,217,169,210,172,208,167,215,164,359,116"/>
 <area shape="rect" title=" " alt="" coords="229,174,321,199"/>
-<area shape="poly" title=" " alt="" coords="368,121,303,168,300,164,365,117"/>
-<area shape="rect" title=" " alt="" coords="345,174,420,199"/>
-<area shape="poly" title=" " alt="" coords="385,119,385,160,380,160,380,119"/>
-<area shape="rect" title=" " alt="" coords="445,174,515,199"/>
-<area shape="poly" title=" " alt="" coords="399,117,457,163,453,167,395,121"/>
-<area shape="rect" title=" " alt="" coords="540,174,639,199"/>
-<area shape="poly" title=" " alt="" coords="414,116,547,167,546,172,412,121"/>
-<area shape="rect" href="sound__chef__version_8h_source.html" title=" " alt="" coords="663,167,838,207"/>
-<area shape="poly" title=" " alt="" coords="437,116,651,161,650,167,436,121"/>
+<area shape="poly" title=" " alt="" coords="380,121,305,169,302,164,377,117"/>
+<area shape="rect" title=" " alt="" coords="345,174,447,199"/>
+<area shape="poly" title=" " alt="" coords="399,119,399,160,393,160,393,119"/>
+<area shape="rect" title=" " alt="" coords="472,174,547,199"/>
+<area shape="poly" title=" " alt="" coords="414,117,483,164,480,168,411,121"/>
+<area shape="rect" title=" " alt="" coords="571,174,642,199"/>
+<area shape="poly" title=" " alt="" coords="429,116,560,164,566,167,564,172,558,169,427,121"/>
+<area shape="rect" href="sound__chef__version_8h_source.html" title=" " alt="" coords="666,167,841,207"/>
+<area shape="poly" title=" " alt="" coords="449,116,655,161,654,166,447,121"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
@@ -646,10 +646,10 @@ Do not access the pointer after the system is closed. </dd></dl>
 <p>Example: </p><div class="fragment"><div class="line"><a class="code hl_struct" href="structsc__dsp.html">sc_dsp</a>* dsp = NULL;</div>
 <div class="line"><a class="code hl_struct" href="structsc__dsp__config.html">sc_dsp_config</a> lpfConfig = <a class="code hl_function" href="sound__chef_8h.html#a4350f51bd90e858eb479e97f77d7a936">sc_dsp_config_init</a>(SC_DSP_TYPE_LOWPASS);</div>
 <div class="line"><a class="code hl_function" href="sound__chef_8h.html#a87f966d3d8efeae9a0c748c8e92e9350">sc_system_create_dsp</a>(system, &amp;lpfConfig, &amp;dsp);</div>
-<div class="ttc" id="asound__chef_8h_html_a4350f51bd90e858eb479e97f77d7a936"><div class="ttname"><a href="sound__chef_8h.html#a4350f51bd90e858eb479e97f77d7a936">sc_dsp_config_init</a></div><div class="ttdeci">sc_dsp_config SC_API sc_dsp_config_init(sc_dsp_type type)</div><div class="ttdoc">Returns a valid sc_dsp_config object for the DSP type.</div><div class="ttdef"><b>Definition</b> sound_chef.c:944</div></div>
+<div class="ttc" id="asound__chef_8h_html_a4350f51bd90e858eb479e97f77d7a936"><div class="ttname"><a href="sound__chef_8h.html#a4350f51bd90e858eb479e97f77d7a936">sc_dsp_config_init</a></div><div class="ttdeci">sc_dsp_config SC_API sc_dsp_config_init(sc_dsp_type type)</div><div class="ttdoc">Returns a valid sc_dsp_config object for the DSP type.</div><div class="ttdef"><b>Definition</b> sound_chef.c:901</div></div>
 <div class="ttc" id="asound__chef_8h_html_a87f966d3d8efeae9a0c748c8e92e9350"><div class="ttname"><a href="sound__chef_8h.html#a87f966d3d8efeae9a0c748c8e92e9350">sc_system_create_dsp</a></div><div class="ttdeci">sbk_status SC_API sc_system_create_dsp(sc_system *system, const sc_dsp_config *config, sc_dsp **dsp)</div><div class="ttdoc">Creates a new DSP based on the config.</div><div class="ttdef"><b>Definition</b> sound_chef.c:566</div></div>
-<div class="ttc" id="astructsc__dsp__config_html"><div class="ttname"><a href="structsc__dsp__config.html">sc_dsp_config</a></div><div class="ttdef"><b>Definition</b> sound_chef_common.h:281</div></div>
-<div class="ttc" id="astructsc__dsp_html"><div class="ttname"><a href="structsc__dsp.html">sc_dsp</a></div><div class="ttdoc">ma_node with an additional enum descriptor.</div><div class="ttdef"><b>Definition</b> sound_chef_common.h:294</div></div>
+<div class="ttc" id="astructsc__dsp__config_html"><div class="ttname"><a href="structsc__dsp__config.html">sc_dsp_config</a></div><div class="ttdef"><b>Definition</b> sound_chef_common.h:280</div></div>
+<div class="ttc" id="astructsc__dsp_html"><div class="ttname"><a href="structsc__dsp.html">sc_dsp</a></div><div class="ttdoc">ma_node with an additional enum descriptor.</div><div class="ttdef"><b>Definition</b> sound_chef_common.h:293</div></div>
 </div><!-- fragment --><dl class="section see"><dt>See also</dt><dd><a class="el" href="sound__chef_8h.html#a4350f51bd90e858eb479e97f77d7a936" title="Returns a valid sc_dsp_config object for the DSP type.">sc_dsp_config_init</a> </dd></dl>
 
 </div>
