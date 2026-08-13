@@ -45,7 +45,6 @@
 #define MA_COINIT_VALUE 0x2 //< COINIT_APARTMENTTHREADED
 
 #include "miniaudio.h"
-#include "stb_ds.h"
 #include "clap/clap.h"
 #include "c89atomic.h"
 
@@ -355,7 +354,8 @@ struct sc_system
     ma_log log;
 
     clap_host_t clapHost;
-    sc_clap* clapPlugins; //< Dynamic array of opened CLAP plugins
+    sc_clap* clapPlugins;      //< CLAP plugins loaded from systemConfig->pluginPath, or NULL if none
+    ma_uint32 clapPluginCount; //< Number of entries in clapPlugins
     float clapPluginScratch[SC_MAX_CHANNELS][SC_MAX_FRAME_COUNT];  //< CLAP plugins process deinterleaved audio. miniaudio processes interleaved. We need a space for CLAP plugins to output to, then can interleave it
     float* clapPluginChannels[SC_MAX_CHANNELS];                    //< CLAP processing expects pointers for each channel
 

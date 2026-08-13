@@ -186,17 +186,17 @@ sbk_status sc_clap_unload(sc_clap* clapPlugin)
 sbk_status sc_system_release_clap_plugins(sc_system* system)
 {
     SC_CHECK_ARG(system != NULL);
-    SC_CHECK_ARG(system->clapPlugins != NULL);
 
-    for (int index = 0; index < arrlen(system->clapPlugins); ++index)
+    for (ma_uint32 index = 0; index < system->clapPluginCount; ++index)
     {
         const sbk_status unloadResult = sc_clap_unload(&system->clapPlugins[index]);
         assert(unloadResult == SBK_SUCCESS);
         (void)unloadResult;
     }
 
-    arrfree(system->clapPlugins);
-    system->clapPlugins = NULL;
+    ma_free(system->clapPlugins, &system->engine.allocationCallbacks);
+    system->clapPlugins     = NULL;
+    system->clapPluginCount = 0;
 
     return SBK_SUCCESS;
 }

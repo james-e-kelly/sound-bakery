@@ -1,5 +1,4 @@
 #define MINIAUDIO_IMPLEMENTATION
-#define STB_DS_IMPLEMENTATION
 
 // Disable built-in decoding in favour of the ones from the example
 #define MA_NO_VORBIS
@@ -343,42 +342,56 @@ sbk_status sc_system_init(sc_system* system, const sc_system_config* systemConfi
                 system->clapPluginChannels[channel] = system->clapPluginScratch[channel];
             }
 
-            if (systemConfig != NULL)
+            if (systemConfig != NULL && systemConfig->pluginPath != NULL)
             {
-                if (systemConfig->pluginPath != NULL)
+                DIR* const pluginDirectory = opendir(systemConfig->pluginPath);
+
+                if (pluginDirectory != NULL)
                 {
-                    DIR* const pluginDirectory = opendir(systemConfig->pluginPath);
-
-                    if (pluginDirectory != NULL)
+                    /* First pass: count .clap files so we can allocate exactly once. */
+                    ma_uint32 clapCandidateCount = 0;
+                    for (struct dirent* entry = readdir(pluginDirectory); entry != NULL;
+                         entry                = readdir(pluginDirectory))
                     {
-                        struct dirent* directoryEntry = readdir(pluginDirectory);
-
-                        while (directoryEntry != NULL)
+                        if (strlen(entry->d_name) > 5 && strcmp(sc_filename_get_ext(entry->d_name), "clap") == 0)
                         {
-                            if (strlen(directoryEntry->d_name) > 5)
-                            {
-                                const char* const fileExt = sc_filename_get_ext(directoryEntry->d_name);
+                            ++clapCandidateCount;
+                        }
+                    }
 
-                                const sc_bool fileIsClap = strcmp(fileExt, "clap") == 0;
-                                if (fileIsClap)
+                    if (clapCandidateCount > 0)
+                    {
+                        system->clapPlugins = (sc_clap*)ma_malloc(sizeof(sc_clap) * clapCandidateCount,
+                                                                  &system->engine.allocationCallbacks);
+
+                        if (system->clapPlugins != NULL)
+                        {
+                            /* Second pass: load each plugin into its slot. Failed loads are skipped
+                             * so clapPluginCount may end up smaller than clapCandidateCount. */
+                            rewinddir(pluginDirectory);
+
+                            for (struct dirent* entry = readdir(pluginDirectory);
+                                 entry != NULL && system->clapPluginCount < clapCandidateCount;
+                                 entry = readdir(pluginDirectory))
+                            {
+                                if (strlen(entry->d_name) > 5 &&
+                                    strcmp(sc_filename_get_ext(entry->d_name), "clap") == 0)
                                 {
                                     char filePath[1024];
                                     snprintf(filePath, sizeof(filePath), "%s/%s", systemConfig->pluginPath,
-                                             directoryEntry->d_name);
+                                             entry->d_name);
 
-                                    sc_clap clapPlugin;
-                                    if (sc_clap_load(filePath, &clapPlugin) == SBK_SUCCESS)
+                                    if (sc_clap_load(filePath, &system->clapPlugins[system->clapPluginCount]) ==
+                                        SBK_SUCCESS)
                                     {
-                                        arrput(system->clapPlugins, clapPlugin);
+                                        ++system->clapPluginCount;
                                     }
                                 }
                             }
-
-                            directoryEntry = readdir(pluginDirectory);
                         }
-
-                        closedir(pluginDirectory);
                     }
+
+                    closedir(pluginDirectory);
                 }
             }
         }
@@ -947,7 +960,7 @@ sbk_status sc_system_clap_get_count(sc_system* system, ma_uint32* count)
     SC_CHECK_ARG(system != NULL);
     SC_CHECK_ARG(count != NULL);
 
-    *count = (ma_uint32)arrlen(system->clapPlugins);
+    *count = system->clapPluginCount;
 
     return SBK_SUCCESS;
 }
