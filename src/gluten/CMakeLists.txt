@@ -1,5 +1,77 @@
 message(STATUS "Adding gluten")
 
+# -----------------------------------------------------------------------------
+# Dependencies
+# -----------------------------------------------------------------------------
+
+set(CMAKE_FOLDER extern)
+
+CPMAddPackage(
+    NAME stb
+    GITHUB_REPOSITORY nothings/stb
+    GIT_TAG 31c1ad37456438565541f4919958214b6e762fb4 # master @ 2026-07-17
+    DOWNLOAD_ONLY YES
+)
+
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
+
+CPMAddPackage(
+  NAME bytesizelib
+  GITHUB_REPOSITORY eudoxos/bytesize
+  GIT_TAG 196542fed6b4234be6994eeb43984e3a3ba86b95 # master @ 2026-07-17
+  DOWNLOAD_ONLY YES
+)
+add_library(bytesize INTERFACE)
+target_include_directories(bytesize INTERFACE ${bytesizelib_SOURCE_DIR})
+
+include(build_nfd)
+
+CPMAddPackage(
+  NAME fonts
+  GITHUB_REPOSITORY juliettef/IconFontCppHeaders
+  GIT_TAG bbe9ecd24203c4de10d1b9e3fdeb4edf5c6cb842
+  DOWNLOAD_ONLY YES
+)
+
+CPMAddPackage(
+  NAME fmt
+  GITHUB_REPOSITORY fmtlib/fmt
+  GIT_TAG 12.2.0
+  EXCLUDE_FROM_ALL YES
+)
+
+CPMAddPackage(
+  NAME platform-folders
+  GITHUB_REPOSITORY sago007/PlatformFolders
+  GIT_TAG f2625faed48bc891eb624187f8a0e4a1d1cd6ad6 # master @ 2026-07-17
+  EXCLUDE_FROM_ALL YES
+)
+
+include(build_imgui)
+
+# libsodium and libebur128 each install() their own headers/libs/config;
+# suppressed by default like every dependency (see setup_install_suppression.cmake).
+CPMAddPackage(NAME sodium-cmake
+  GITHUB_REPOSITORY robinlinden/libsodium-cmake
+  GIT_TAG 9b2848dfc1b917a9410f0de9d81059b26cbfaa8d # master @ 2026-07-17
+  OPTIONS "SODIUM_DISABLE_TESTS ON"
+)
+
+CPMAddPackage(NAME libebur128
+  GITHUB_REPOSITORY jiixyj/libebur128
+  GIT_TAG 67b33abe1558160ed76ada1322329b0e9e058b02 # master @ 2026-07-17
+  OPTIONS "ENABLE_TESTS OFF" "BUILD_SHARED_LIBS OFF"
+)
+
+# -----------------------------------------------------------------------------
+# Library
+# -----------------------------------------------------------------------------
+
+set(CMAKE_FOLDER src)
+
 set(BUILD_FOLDER ${CMAKE_BINARY_DIR})
 
 set(FONT_FILES
@@ -147,66 +219,6 @@ set_source_files_properties(
   PROPERTIES MACOSX_PACKAGE_LOCATION Resources/images
 )
 
-set(CMAKE_FOLDER extern)
-
-set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
-set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
-
-CPMAddPackage(
-  NAME bytesizelib
-  GITHUB_REPOSITORY eudoxos/bytesize
-  GIT_TAG 196542fed6b4234be6994eeb43984e3a3ba86b95 # master @ 2026-07-17
-  DOWNLOAD_ONLY YES
-)
-add_library(bytesize INTERFACE)
-target_include_directories(bytesize INTERFACE ${bytesizelib_SOURCE_DIR})
-
-include(build_nfd)
-
-CPMAddPackage(
-  NAME fonts
-  GITHUB_REPOSITORY juliettef/IconFontCppHeaders
-  GIT_TAG bbe9ecd24203c4de10d1b9e3fdeb4edf5c6cb842
-  DOWNLOAD_ONLY YES
-)
-
-CPMAddPackage(
-  NAME fmt
-  GITHUB_REPOSITORY fmtlib/fmt
-  GIT_TAG 12.2.0
-  EXCLUDE_FROM_ALL YES
-)
-
-CPMAddPackage(
-  NAME platform-folders
-  GITHUB_REPOSITORY sago007/PlatformFolders
-  GIT_TAG f2625faed48bc891eb624187f8a0e4a1d1cd6ad6 # master @ 2026-07-17
-  EXCLUDE_FROM_ALL YES
-)
-
-include(build_imgui)
-
-# libsodium and libebur128 each install() their own headers/libs/config;
-# suppressed by default like every dependency (see setup_install_suppression.cmake).
-CPMAddPackage(NAME sodium-cmake
-  GITHUB_REPOSITORY robinlinden/libsodium-cmake
-  GIT_TAG 9b2848dfc1b917a9410f0de9d81059b26cbfaa8d # master @ 2026-07-17
-  OPTIONS "SODIUM_DISABLE_TESTS ON"
-)
-
-CPMAddPackage(NAME libebur128
-  GITHUB_REPOSITORY jiixyj/libebur128
-  GIT_TAG 67b33abe1558160ed76ada1322329b0e9e058b02 # master @ 2026-07-17
-  OPTIONS "ENABLE_TESTS OFF" "BUILD_SHARED_LIBS OFF"
-)
-
-target_include_directories(gluten PUBLIC
-  ${fonts_SOURCE_DIR}
-  ${libebur128_SOURCE_DIR}
-)
-
 target_link_libraries(gluten
     PUBLIC
     SoundBakery::SoundBakery_Static
@@ -230,9 +242,12 @@ target_link_libraries(gluten
     ebur128
 )
 
-target_compile_options(gluten PRIVATE ${PROJECT_WARNING_FLAGS})
+target_include_directories(gluten PUBLIC
+  ${fonts_SOURCE_DIR}
+  ${libebur128_SOURCE_DIR}
+)
 
-set(CMAKE_FOLDER src)
+target_compile_options(gluten PRIVATE ${PROJECT_WARNING_FLAGS})
 
 sbk_add_format_target(NAME gluten
     SOURCES ${GLUTEN_SOURCES} ${GLUTEN_HEADERS} ${PCH_HEADER} ${PCH_SOURCE})
