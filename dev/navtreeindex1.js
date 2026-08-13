@@ -125,7 +125,6 @@ var NAVTREEINDEX1 =
 "sound__bakery_8h_source.html":[13,0,1,0,0],
 "sound__bakery__common_8h_source.html":[13,0,1,0,1],
 "sound__bakery__internal_8h_source.html":[13,0,2,0,17],
-"sound__bakery__version_8h_source.html":[13,0,1,0,2],
 "sound__chef_8h.html":[13,0,1,1,0],
 "sound__chef_8h.html#a08cb3eec724853dc1082c757791c6a66":[13,0,1,1,0,3],
 "sound__chef_8h.html#a0ac094b92c512c862ad06edb170bc98b":[13,0,1,1,0,11],
@@ -152,7 +151,6 @@ var NAVTREEINDEX1 =
 "sound__chef__encoder__vorbis_8h_source.html":[13,0,2,1,0,0],
 "sound__chef__guide_8h_source.html":[13,0,2,1,3],
 "sound__chef__internal_8h_source.html":[13,0,2,1,4],
-"sound__chef__version_8h_source.html":[13,0,1,1,3],
 "sound__container_8h_source.html":[13,0,2,0,7,1,4],
 "soundbank_8h_source.html":[13,0,2,0,13,0],
 "splash__widget_8h_source.html":[13,0,0,0,4,11],
@@ -249,5 +247,7 @@ var NAVTREEINDEX1 =
 "structsc__bank.html":[12,0,23],
 "structsc__clap.html":[12,0,24],
 "structsc__clap__node.html":[12,0,25],
-"structsc__delay.html":[12,0,26]
+"structsc__delay.html":[12,0,26],
+"structsc__delay__config.html":[12,0,27],
+"structsc__delay__node.html":[12,0,28]
 };
