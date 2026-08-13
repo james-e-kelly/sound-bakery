@@ -16,3 +16,9 @@ generated_docs/
 doxygen/
 !docs/doxygen
 .vs/
+
+# Generated version headers - written to the build tree by configure_file(),
+# but historically shipped in the source tree. Ignore them so a stale copy
+# from an older checkout doesn't get re-committed.
+inc/sound_bakery/sound_bakery_version.h
+inc/sound_chef/sound_chef_version.h
