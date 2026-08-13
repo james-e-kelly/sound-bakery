@@ -234,17 +234,5 @@ target_compile_options(gluten PRIVATE ${PROJECT_WARNING_FLAGS})
 
 set(CMAKE_FOLDER src)
 
-if (SOUND_BAKERY_FORMAT_SOURCE AND SOUND_BAKERY_CLANG_FORMAT_EXE)
-  get_target_property(SOUND_BAKERY_GLUTEN_ALL_FILES gluten SOURCES)
-
-  foreach(source IN LISTS GLUTEN_SOURCES GLUTEN_HEADERS PCH_HEADER PCH_SOURCE)
-    list(APPEND SOUND_BAKERY_GLUTEN_FORMAT_FILES "${CMAKE_CURRENT_SOURCE_DIR}/${source}")
-  endforeach()
-
-  add_custom_target(format_gluten
-  COMMAND clang-format --style=file -i ${SOUND_BAKERY_GLUTEN_FORMAT_FILES}
-  COMMAND_EXPAND_LISTS
-  COMMENT "Running clang-format"
-  VERBATIM
-  )
-endif()
+sbk_add_format_target(NAME gluten
+    SOURCES ${GLUTEN_SOURCES} ${GLUTEN_HEADERS} ${PCH_HEADER} ${PCH_SOURCE})

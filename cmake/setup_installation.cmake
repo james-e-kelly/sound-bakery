@@ -1,3 +1,5 @@
+include_guard(GLOBAL)
+
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set(CMAKE_INSTALL_PREFIX "${PROJECT_SOURCE_DIR}/dist" CACHE PATH "Sound Bakery Install Prefix" FORCE)
 endif()

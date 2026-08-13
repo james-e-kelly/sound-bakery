@@ -1,3 +1,5 @@
+include_guard(GLOBAL)
+
 function(setup_review_dependencies target)
     CPMAddPackage(
         NAME sqlitecpp

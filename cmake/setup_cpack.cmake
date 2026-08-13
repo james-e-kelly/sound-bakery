@@ -1,2 +1,4 @@
+include_guard(GLOBAL)
+
 set (CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE")
 include(CPack)

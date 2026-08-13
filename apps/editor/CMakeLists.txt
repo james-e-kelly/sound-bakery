@@ -57,8 +57,6 @@ add_executable(editor
   ${EDITOR_HEADERS}
 )
 
-set_target_properties(editor PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/$<CONFIG>)
-
 cxx_20(editor)
 
 target_include_directories(editor
@@ -97,24 +95,10 @@ target_link_libraries(editor
 
 target_compile_options(editor PRIVATE ${PROJECT_WARNING_FLAGS})
 
-if(MSVC)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
-endif()
-
 set(CMAKE_FOLDER apps)
 
-if (SOUND_BAKERY_FORMAT_SOURCE AND SOUND_BAKERY_CLANG_FORMAT_EXE)
-  foreach(source IN LISTS EDITOR_SOURCES EDITOR_HEADERS PCH_HEADER PCH_SOURCE)
-    list(APPEND SOUND_BAKERY_EDITOR_FORMAT_FILES "${CMAKE_CURRENT_SOURCE_DIR}/${source}")
-  endforeach()
-
-  add_custom_target(format_editor
-  COMMAND clang-format --style=file -i ${SOUND_BAKERY_EDITOR_FORMAT_FILES}
-  COMMAND_EXPAND_LISTS
-  COMMENT "Running clang-format"
-  VERBATIM
-  )
-endif()
+sbk_add_format_target(NAME editor
+    SOURCES ${EDITOR_SOURCES} ${EDITOR_HEADERS} ${PCH_HEADER} ${PCH_SOURCE})
 
 if (SOUND_BAKERY_INSTALL)
 sbk_install(TARGETS editor DESTINATION apps/${SBK_INSTALL_CONFIG_SUBDIR})

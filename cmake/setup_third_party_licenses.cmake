@@ -1,3 +1,5 @@
+include_guard(GLOBAL)
+
 # Assembles a single THIRD_PARTY_LICENSES file from the licence files of every
 # dependency this build actually pulled, so the notices ship with every install /
 # release artifact (CI uploads the `dist` install tree).

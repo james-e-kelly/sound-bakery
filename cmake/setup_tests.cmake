@@ -1,3 +1,5 @@
+include_guard(GLOBAL)
+
 if(SOUND_BAKERY_TESTS AND SOUND_BAKERY_MAIN_PROJECT)
     enable_testing()  
     add_subdirectory(tests)

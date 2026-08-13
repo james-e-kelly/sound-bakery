@@ -1,3 +1,5 @@
+include_guard(GLOBAL)
+
 CPMAddPackage(
     NAME imgui
     GITHUB_REPOSITORY ocornut/imgui
@@ -67,8 +69,8 @@ target_include_directories(imgui
     ${imspinner_SOURCE_DIR}
 )
 
-find_package(OpenGL REQUIRED)
 set(OpenGL_GL_PREFERENCE "GLVND")
+find_package(OpenGL REQUIRED)
 
 target_link_libraries(imgui PUBLIC
   glfw

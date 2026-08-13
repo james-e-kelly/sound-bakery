@@ -9,9 +9,32 @@ configure_file(
     @ONLY
 )
 
-# -----------------------------------------------------------------------------
-# External dependencies
-# -----------------------------------------------------------------------------
+set(SOUND_CHEF_HEADERS ${SOUND_CHEF_LOCAL_HEADERS} ${SOUND_CHEF_PUBLIC_HEADERS})
+
+# Local and public headers live under different roots (src/sound_chef vs inc/sound_chef), so
+# source_group(TREE ...) - which requires a single common root - needs to be called once per root.
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Header Files" FILES ${SOUND_CHEF_LOCAL_HEADERS})
+source_group(TREE ${PROJECT_SOURCE_DIR}/inc/sound_chef PREFIX "Header Files" FILES ${SOUND_CHEF_PUBLIC_HEADERS})
+
+set(CMAKE_FOLDER src)
+
+add_library(sound_chef_shared SHARED ${SOUND_CHEF_SOURCES} ${SOUND_CHEF_HEADERS} ${stb_SOURCE_DIR}/stb_ds.h)
+add_library(sound_chef_static STATIC ${SOUND_CHEF_SOURCES} ${SOUND_CHEF_HEADERS} ${stb_SOURCE_DIR}/stb_ds.h)
+
+add_library(SoundBakery::SoundChef_Shared ALIAS sound_chef_shared)
+add_library(SoundBakery::SoundChef_Static ALIAS sound_chef_static)
+
+foreach(t IN ITEMS sound_chef_shared sound_chef_static)
+    c_17(${t})
+    cxx_20(${t})
+    target_compile_options(${t} PRIVATE ${PROJECT_LIBRARY_WARNING_FLAGS})
+    target_include_directories(${t}
+        PUBLIC ${PROJECT_SOURCE_DIR}/inc/
+        PRIVATE ${PROJECT_SOURCE_DIR}/src/
+        PUBLIC ${stb_SOURCE_DIR}
+    )
+endforeach()
+
 set(CMAKE_FOLDER extern)
 
 CPMAddPackage(
@@ -90,30 +113,32 @@ CPMAddPackage(
 set(CMAKE_C_EXTENSIONS OFF)
 
 if (WIN32)
-    CPMAddPackage(
-        NAME dirent
-        GITHUB_REPOSITORY tronkko/dirent
-        GIT_TAG 31db6474b5231c180bd4618c8c90e43af50c86d0 # HEAD @ 2026-07-17
-        DOWNLOAD_ONLY YES
-    )
+  CPMAddPackage(
+    NAME dirent
+    GITHUB_REPOSITORY tronkko/dirent
+    GIT_TAG 31db6474b5231c180bd4618c8c90e43af50c86d0 # HEAD @ 2026-07-17
+    DOWNLOAD_ONLY YES
+  )
 endif()
 
-# -----------------------------------------------------------------------------
-# Source lists
-# -----------------------------------------------------------------------------
-set(SOUND_CHEF_SOURCES
-    sound_chef.c
-    sound_chef_bank.c
-    sound_chef_encoder.c
-    sound_chef_internal.c
-
-    dsp/sound_chef_dsp.c
-    dsp/sound_chef_dsp_clap.c
-    dsp/sound_chef_dsp_delay.c
-    dsp/sound_chef_dsp_fader.c
-    dsp/sound_chef_dsp_highpass.c
-    dsp/sound_chef_dsp_lowpass.c
-    dsp/sound_chef_dsp_meter.c
+foreach(t IN ITEMS sound_chef_shared sound_chef_static)
+    target_include_directories(${t}
+        PUBLIC ${miniaudio_SOURCE_DIR}
+        PRIVATE ${opusfile_SOURCE_DIR}/include
+    )
+    if (WIN32)
+        target_include_directories(${t} PRIVATE ${dirent_SOURCE_DIR}/include)
+    endif()
+    target_link_libraries(${t}
+        PUBLIC SoundBakery::BuildConfig
+        PUBLIC clap
+        PUBLIC c89atomic::c89atomic
+        PRIVATE vorbis
+        PRIVATE vorbisfile
+        PRIVATE vorbisenc
+        PRIVATE Opus::opus
+        PRIVATE OpusFile::opusfile)
+endforeach()
 
     encoders/sound_chef_encoder_vorbis.c
     encoders/vorbis_encode_test.c
@@ -211,15 +236,9 @@ foreach(source IN LISTS SOUND_CHEF_ALL_FILES)
     list(APPEND SOUND_CHEF_FORMAT_FILES "${CMAKE_CURRENT_SOURCE_DIR}/${source}")
 endforeach()
 
-if (SOUND_BAKERY_FORMAT_SOURCE AND SOUND_BAKERY_CLANG_FORMAT_EXE)
-    message(STATUS "Adding Sound Chef clang-format target")
-    add_custom_target(format_sound_chef
-        COMMAND clang-format --style=file -i ${SOUND_CHEF_FORMAT_FILES}
-        COMMAND_EXPAND_LISTS
-        COMMENT "Running clang-format"
-        VERBATIM
-    )
-endif()
+set(CMAKE_FOLDER src)
+
+sbk_add_format_target(NAME sound_chef SOURCES ${SOUND_CHEF_FORMAT_FILES})
 
 # Sad things to make clang-tidy work in VS
 # CMakeSettings.json is possible but seemed a pain in its own right
@@ -230,4 +249,16 @@ if(SOUND_BAKERY_TIDY_SOURCE AND SOUND_BAKERY_CLANG_TIDY_EXE AND MSVC)
         VS_GLOBAL_EnableMicrosoftCodeAnalysis false
         VS_GLOBAL_EnableClangTidyCodeAnalysis true
     )
+endif()
+
+if (SOUND_BAKERY_INSTALL)
+foreach(t IN ITEMS sound_chef_shared sound_chef_static)
+    sbk_install(TARGETS ${t} DESTINATION lib/${SBK_INSTALL_CONFIG_SUBDIR}/sound_chef)
+endforeach()
+
+sbk_install(FILES ${SOUND_CHEF_HEADERS} DESTINATION inc/sound_chef)
+sbk_install(FILES ${miniaudio_SOURCE_DIR}/miniaudio.h DESTINATION inc/sound_chef)
+sbk_install(FILES ${stb_SOURCE_DIR}/stb_ds.h DESTINATION inc/sound_chef)
+sbk_install(FILES ${c89atomic_SOURCE_DIR}/c89atomic.h DESTINATION inc/sound_chef)
+sbk_install(DIRECTORY ${clap_SOURCE_DIR}/include/clap DESTINATION inc/sound_chef)
 endif()

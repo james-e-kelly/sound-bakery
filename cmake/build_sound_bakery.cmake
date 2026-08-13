@@ -1,3 +1,5 @@
+include_guard(GLOBAL)
+
 macro(set_sources)
     set(SOUND_BAKERY_SOURCES 
     system.cpp
@@ -290,14 +292,7 @@ endmacro()
 function(setup_linter_targets)
     set(CMAKE_FOLDER src)
 
-    if (SOUND_BAKERY_FORMAT_SOURCE AND SOUND_BAKERY_CLANG_FORMAT_EXE)
-        add_custom_target(format_sound_bakery
-        COMMAND clang-format --style=file -i ${SOUND_BAKERY_FORMAT_FILES}
-        COMMAND_EXPAND_LISTS
-        COMMENT "Running clang-format"
-        VERBATIM
-        )
-    endif()
+    sbk_add_format_target(NAME sound_bakery SOURCES ${SOUND_BAKERY_FORMAT_FILES})
 
     if (SOUND_BAKERY_TIDY_SOURCE AND SOUND_BAKERY_CLANG_TIDY_EXE)
         add_custom_target(tidy_sound_bakery
@@ -314,25 +309,12 @@ function(fix_msvc_linters)
     # CMakeSettings.json is possible but seemed a pain in its own right
     # https://discourse.cmake.org/t/cmake-cxx-clang-tidy-in-msvc/890/9
     if(SOUND_BAKERY_TIDY_SOURCE AND SOUND_BAKERY_CLANG_TIDY_EXE AND MSVC)
-        set_target_properties(sound_bakery_shared PROPERTIES
-        VS_GLOBAL_RunCodeAnalysis false
-        # Use visual studio core guidelines
-        VS_GLOBAL_EnableMicrosoftCodeAnalysis false
-        # Use clangtidy
-        VS_GLOBAL_EnableClangTidyCodeAnalysis true
-        )
-        set_target_properties(sound_bakery_static PROPERTIES
-        VS_GLOBAL_RunCodeAnalysis false
-        # Use visual studio core guidelines
-        VS_GLOBAL_EnableMicrosoftCodeAnalysis false
-        # Use clangtidy
-        VS_GLOBAL_EnableClangTidyCodeAnalysis true
-        )
+        foreach(t IN ITEMS sound_bakery_shared sound_bakery_static)
+            set_target_properties(${t} PROPERTIES
+                VS_GLOBAL_RunCodeAnalysis false
+                VS_GLOBAL_EnableMicrosoftCodeAnalysis false
+                VS_GLOBAL_EnableClangTidyCodeAnalysis true
+            )
+        endforeach()
     endif()
 endfunction()
-
-macro(set_big_objects)
-    if(MSVC)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
-    endif()
-endmacro()

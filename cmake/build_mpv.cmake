@@ -1,3 +1,5 @@
+include_guard(GLOBAL)
+
 include(CMakeDependentOption)
 include(ExternalProject)
 
