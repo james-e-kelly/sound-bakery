@@ -512,7 +512,7 @@ auto workspace_manager::create_user_and_login(new_user_data newUser) -> concurre
         newUser.m_requestedPrivileges = user_privileges::admin;
     }
 
-    co_await create_user(newUser, {});
+    (void)co_await create_user(newUser, {});
 
     login_request_data loginRequest;
     loginRequest.m_email       = newUser.m_email;

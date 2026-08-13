@@ -406,7 +406,7 @@ auto review_database::create_review(database_id projectId, const new_transit_rev
     result.m_reviewPhase       = newReview.m_reviewPhase;
     result.m_reviewQuality     = newReview.m_reviewQuality;
 
-    co_await set_review_users(result.m_reviewId, newReview.m_reviewerIds, userToken);
+    (void)co_await set_review_users(result.m_reviewId, newReview.m_reviewerIds, userToken);
 
     SQLite::Statement addActivity(m_database, "INSERT INTO activity (review_id, activity_type, activity_text) VALUES (?, ?, ?)");
     addActivity.bind(1, result.m_reviewId);

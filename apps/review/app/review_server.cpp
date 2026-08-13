@@ -554,7 +554,7 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
                 {
                     const review_status status = (review_status)std::stoi(request.get_param_value(review_app_parameters::reviewStatus));
                     
-                    database->set_review_status(reviewId, status, userToken).get();
+                    (void)database->set_review_status(reviewId, status, userToken).get();
                 }
             }
             else if (request.form.has_field(review_app_parameters::data))
@@ -565,7 +565,7 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
             } }, m_database);
 
     add_database_put_endpoint(m_server, review_app_endpoints::reviewVotes, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request, httplib::Response& response)
-                              {
+        {
             gluten::app::get()->get_logger()->info("[SERVER] put/reviewVotes");
 
             database_id reviewId = 0;
@@ -587,7 +587,8 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
                 vote = (review_vote)std::stoi(request.get_param_value(review_app_parameters::reviewVote));
             }
 
-            database->set_review_vote(reviewId, userId, vote, userToken).get(); }, m_database);
+            (void)database->set_review_vote(reviewId, userId, vote, userToken).get(); 
+        }, m_database);
 
     add_database_put_endpoint(m_server, review_app_endpoints::reviewUsers, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request, httplib::Response& response)
                               {
@@ -598,7 +599,7 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
                 const database_id reviewId = review_app_serialization::deserialize_from_xml<database_id>(request.form.get_field(review_app_parameters::reviewId));
                 const std::vector<database_id> reviewUsers = review_app_serialization::deserialize_from_xml<std::vector<database_id>>(request.form.get_field(review_app_parameters::users));
 
-                database->set_review_users(reviewId, reviewUsers, userToken);
+                (void)database->set_review_users(reviewId, reviewUsers, userToken);
             } }, m_database);
 
     add_database_put_endpoint(m_server, review_app_endpoints::projects, [](std::shared_ptr<review_database> database, std::string userToken, const httplib::Request& request, httplib::Response& response)
@@ -610,7 +611,7 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
                 const database_id projectId = review_app_serialization::deserialize_from_xml<database_id>(request.form.get_field(review_app_parameters::projectId));
                 const std::vector<database_id> projectUsers = review_app_serialization::deserialize_from_xml<std::vector<database_id>>(request.form.get_field(review_app_parameters::users));
 
-                database->set_project_users(projectId, projectUsers, userToken);
+                (void)database->set_project_users(projectId, projectUsers, userToken);
             } }, m_database);
 
     // DELETE
@@ -628,7 +629,7 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
 
             if (projectId > 0)
             {
-                database->delete_project(projectId, userToken).get();
+                (void)database->delete_project(projectId, userToken).get();
             }
             else
             {
@@ -648,7 +649,7 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
 
             if (reviewId > 0)
             {
-                database->delete_review(reviewId, userToken).get();
+                (void)database->delete_review(reviewId, userToken).get();
             }
             else
             {
@@ -668,7 +669,7 @@ review_server::review_server(gluten::app* app, const std::filesystem::path& work
 
             if (commentId > 0)
             {
-                database->delete_comment(commentId, userToken).get();
+                (void)database->delete_comment(commentId, userToken).get();
             }
             else
             {
