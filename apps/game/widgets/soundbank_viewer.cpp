@@ -29,7 +29,7 @@ void soundbank_viewer_widget::render_implementation()
             {
                 if (ImGui::Button(event->get_database_name()))
                 {
-                    sbk_system_post_event(event->get_database_id(), 0);
+                    (void)sbk_system_post_event(event->get_database_id(), 0);
                 }
             }
         }
@@ -64,5 +64,5 @@ void soundbank_viewer_widget::end_implementation()
 void soundbank_viewer_widget::set_soundbank_to_view(const std::filesystem::path& soundbankFilePath)
 {
     sbk_id id;
-    sbk_system_load_soundbank(soundbankFilePath.string().c_str(), &id);
+    (void)sbk_system_load_soundbank(soundbankFilePath.string().c_str(), &id);
 }
