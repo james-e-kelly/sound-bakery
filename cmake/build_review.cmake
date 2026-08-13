@@ -1,6 +1,8 @@
 include_guard(GLOBAL)
 
 function(setup_review_dependencies target)
+    set(CMAKE_FOLDER extern)
+
     CPMAddPackage(
         NAME sqlitecpp
         GITHUB_REPOSITORY SRombauts/SQLiteCpp
