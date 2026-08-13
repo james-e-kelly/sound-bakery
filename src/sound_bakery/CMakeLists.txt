@@ -54,14 +54,15 @@ target_link_libraries(sound_bakery_shared PUBLIC
 )
 
 if (SOUND_BAKERY_INSTALL)
-foreach(t IN ITEMS sound_bakery_shared sound_bakery_static)
-    sbk_install(TARGETS ${t} DESTINATION lib/${SBK_INSTALL_CONFIG_SUBDIR}/sound_bakery)
-endforeach()
-sbk_install(FILES
-  ${PROJECT_SOURCE_DIR}/inc/sound_bakery/sound_bakery_common.h
-  ${PROJECT_SOURCE_DIR}/inc/sound_bakery/sound_bakery_version.h
-  ${PROJECT_SOURCE_DIR}/inc/sound_bakery/sound_bakery.h
-  DESTINATION inc/sound_bakery)
+  foreach(t IN ITEMS sound_bakery_shared sound_bakery_static)
+      sbk_install(TARGETS ${t} DESTINATION lib/${SBK_INSTALL_CONFIG_SUBDIR}/sound_bakery)
+  endforeach()
+  
+  sbk_install(FILES
+    ${PROJECT_SOURCE_DIR}/inc/sound_bakery/sound_bakery_common.h
+    ${PROJECT_SOURCE_DIR}/inc/sound_bakery/sound_bakery_version.h
+    ${PROJECT_SOURCE_DIR}/inc/sound_bakery/sound_bakery.h
+    DESTINATION inc/sound_bakery)
 endif()
 
 add_library(SoundBakery::SoundBakery_Shared ALIAS sound_bakery_shared)
