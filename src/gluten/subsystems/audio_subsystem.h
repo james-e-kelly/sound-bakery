@@ -155,7 +155,6 @@ namespace gluten
         auto generate_downsampled_resolution_global_frames(std::shared_ptr<const std::vector<float>> audioData, std::size_t resolution, ma_uint32 channels, std::size_t targetSamples) -> concurrencpp::result<std::vector<frame_data>>;
         auto generate_sample_resolution_waveform(std::shared_ptr<const std::vector<float>> audioData, ma_uint32 channels) -> concurrencpp::result<waveform>;
 
-        std::unique_ptr<sbk::engine::system> m_soundBakery;
         std::unordered_map<std::filesystem::path, std::unique_ptr<sc_sound, sc_sound_deleter>> m_filesToSoundsMap;
         std::unordered_map<std::filesystem::path, std::unique_ptr<sc_sound_instance, sc_sound_deleter>> m_filesToSoundInstancesMap;
         std::unordered_map<std::filesystem::path, loop_data> m_filesToLoopDataMap;
