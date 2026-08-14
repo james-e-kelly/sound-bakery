@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Sound Bakery: apps/editor/widgets/audio_meter_widget.h Source File</title>
+<title>Sound Bakery: sc_voice_real Struct Reference</title>
 <!--BEGIN PROJECT_ICON-->
 <link rel="icon" href="$projecticon" type="image/x-icon" />
 <!--END PROJECT_ICON-->
@@ -97,11 +97,6 @@ $(function() {
 /* @license-end */
 </script>
 <div id="main-nav"></div>
-<script type="text/javascript">
-/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function() { init_codefold(0); });
-/* @license-end */
-</script>
 </div><!-- top -->
 <div id="side-nav" class="ui-resizable side-nav-resizable">
   <div id="nav-tree">
@@ -115,7 +110,7 @@ $(document).ready(function() { init_codefold(0); });
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('audio__meter__widget_8h_source.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('structsc__voice__real.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -141,39 +136,77 @@ $(document).ready(function(){initNavTree('audio__meter__widget_8h_source.html','
 </div>
 
 <div class="header">
-  <div class="headertitle"><div class="title">audio_meter_widget.h</div></div>
+  <div class="summary">
+<a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="structsc__voice__real-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">sc_voice_real Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
-<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
-<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;sound_bakery/system.h&quot;</span></div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;gluten/widgets/widget.h&quot;</span></div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">class </span><a class="code hl_struct" href="structsc__dsp.html">sc_dsp</a>;</div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
-<div class="foldopen" id="foldopen00009" data-start="{" data-end="};">
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno"><a class="line" href="classaudio__meter__widget.html">    9</a></span><span class="keyword">class </span><a class="code hl_class" href="classaudio__meter__widget.html">audio_meter_widget</a> : <span class="keyword">public</span> gluten::widget</div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>{</div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    WIDGET_CONSTRUCT(<a class="code hl_class" href="classaudio__meter__widget.html">audio_meter_widget</a>, <span class="stringliteral">&quot;Audio Meter Widget&quot;</span>)</div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="keywordtype">void</span> start_implementation() <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <span class="keywordtype">void</span> render_implementation() <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <a class="code hl_struct" href="structsc__dsp.html">sc_dsp</a>* m_meterDsp = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    std::array&lt;float, SC_DSP_METER_MAX_CHANNELS&gt; m_rmsVolumes;</div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>};</div>
-</div>
-<div class="ttc" id="aclassaudio__meter__widget_html"><div class="ttname"><a href="classaudio__meter__widget.html">audio_meter_widget</a></div><div class="ttdef"><b>Definition</b> audio_meter_widget.h:10</div></div>
-<div class="ttc" id="astructsc__dsp_html"><div class="ttname"><a href="structsc__dsp.html">sc_dsp</a></div><div class="ttdoc">ma_node with an additional enum descriptor.</div><div class="ttdef"><b>Definition</b> sound_chef_common.h:325</div></div>
-</div><!-- fragment --></div><!-- contents -->
+
+<p>A real voice that is connected to the DSP graph.  
+ <a href="structsc__voice__real.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="sound__chef__common_8h_source.html">sound_chef_common.h</a>&gt;</code></p>
+<div class="dynheader">
+Collaboration diagram for sc_voice_real:</div>
+<div class="dyncontent">
+<div class="center"><img src="structsc__voice__real__coll__graph.png" border="0" usemap="#asc__voice__real_coll__map" alt="Collaboration graph"/></div>
+<map name="asc__voice__real_coll__map" id="asc__voice__real_coll__map">
+<area shape="rect" title="A real voice that is connected to the DSP graph." alt="" coords="5,5,116,31"/>
+<area shape="rect" href="structsc__system.html" title="Object that manages the node graph, sounds, output etc." alt="" coords="250,93,341,119"/>
+<area shape="poly" title=" " alt="" coords="101,33,187,67,259,91,257,96,185,72,99,38"/>
+<area shape="rect" href="structsc__voice.html" title="A voice is a window into a single sound that may or may not be audible and rendering." alt="" coords="128,391,207,416"/>
+<area shape="poly" title=" " alt="" coords="114,395,83,384,55,368,33,346,27,332,25,317,25,105,27,83,34,62,51,30,55,32,39,64,33,84,30,105,30,316,32,331,38,343,58,364,86,379,116,390"/>
+<area shape="poly" title=" " alt="" coords="172,376,194,311,225,234,258,167,286,118,291,120,263,170,230,236,199,313,177,378"/>
+<area shape="poly" title=" " alt="" coords="238,123,214,132,193,145,168,165,152,184,140,206,130,235,126,257,125,279,134,323,148,362,163,389,158,392,144,364,129,325,120,280,120,256,125,234,136,203,148,181,165,161,190,140,212,127,236,118"/>
+<area shape="rect" href="structsc__dsp.html" title="ma_node with an additional enum descriptor." alt="" coords="443,183,510,209"/>
+<area shape="poly" title=" " alt="" coords="333,122,454,181,452,186,330,127"/>
+<area shape="rect" href="structsc__dsp__description.html" title="Structure to create, destroy, and update DSP units of a specific handle." alt="" coords="591,303,736,328"/>
+<area shape="poly" title=" " alt="" coords="355,107,407,113,466,126,526,147,581,179,611,209,634,243,662,301,657,304,630,246,607,212,578,183,524,152,465,131,406,118,354,112"/>
+<area shape="rect" href="structsc__clap.html" title="Holds a DLL handle and plugin entry for a CLAP plugin." alt="" coords="260,5,331,31"/>
+<area shape="poly" title=" " alt="" coords="298,45,298,93,293,93,293,45"/>
+<area shape="rect" href="structsc__node__group.html" title="Groups nodes/DSPs together into one." alt="" coords="271,303,389,328"/>
+<area shape="poly" title=" " alt="" coords="297,337,191,393,188,388,295,332"/>
+<area shape="poly" title=" " alt="" coords="321,290,305,211,294,119,299,119,310,210,326,289"/>
+<area shape="poly" title=" " alt="" coords="367,294,391,277,406,255,421,233,455,207,458,211,425,236,410,259,395,281,370,298"/>
+<area shape="poly" title=" " alt="" coords="431,212,383,226,356,237,345,252,338,270,333,303,328,302,333,268,340,249,352,233,381,221,429,207"/>
+<area shape="poly" title=" " alt="" coords="525,186,533,189,537,196,528,205,511,207,510,202,526,200,531,196,530,193,523,191"/>
+<area shape="poly" title=" " alt="" coords="497,218,510,233,523,257,529,267,540,277,564,290,591,300,590,305,562,295,536,281,525,270,518,260,505,236,493,221"/>
+<area shape="poly" title=" " alt="" coords="668,289,675,238,674,210,668,182,655,160,633,145,578,130,499,119,341,111,341,106,499,114,579,124,635,140,659,156,672,180,680,209,681,238,673,290"/>
+<area shape="rect" href="structsc__dsp__parameter.html" title=" " alt="" coords="849,183,990,209"/>
+<area shape="poly" title=" " alt="" coords="883,217,690,305,687,300,881,212"/>
+<area shape="rect" href="structsc__dsp__parameter__float.html" title=" " alt="" coords="831,93,1008,119"/>
+<area shape="poly" title=" " alt="" coords="922,132,922,183,917,183,917,132"/>
+</map>
+<center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:a08ee22feafa8849f60a8d26bae6a1ba4" id="r_a08ee22feafa8849f60a8d26bae6a1ba4"><td class="memItemLeft" align="right" valign="top"><a id="a08ee22feafa8849f60a8d26bae6a1ba4" name="a08ee22feafa8849f60a8d26bae6a1ba4"></a>
+ma_node_base&#160;</td><td class="memItemRight" valign="bottom"><b>baseNode</b></td></tr>
+<tr class="separator:a08ee22feafa8849f60a8d26bae6a1ba4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ab60bb72cee9a3060897c35d3ae4773" id="r_a8ab60bb72cee9a3060897c35d3ae4773"><td class="memItemLeft" align="right" valign="top"><a id="a8ab60bb72cee9a3060897c35d3ae4773" name="a8ab60bb72cee9a3060897c35d3ae4773"></a>
+<a class="el" href="structsc__voice.html">sc_voice</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>voiceRef</b></td></tr>
+<tr class="separator:a8ab60bb72cee9a3060897c35d3ae4773"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a590a40ba2048d3a5bece3e9f6cb254f2" id="r_a590a40ba2048d3a5bece3e9f6cb254f2"><td class="memItemLeft" align="right" valign="top"><a id="a590a40ba2048d3a5bece3e9f6cb254f2" name="a590a40ba2048d3a5bece3e9f6cb254f2"></a>
+sc_sound_mode&#160;</td><td class="memItemRight" valign="bottom"><b>mode</b></td></tr>
+<tr class="separator:a590a40ba2048d3a5bece3e9f6cb254f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ba900ba2b32235bcf1f517f97abd699" id="r_a5ba900ba2b32235bcf1f517f97abd699"><td class="memItemLeft" align="right" valign="top"><a id="a5ba900ba2b32235bcf1f517f97abd699" name="a5ba900ba2b32235bcf1f517f97abd699"></a>
+ma_decoder *&#160;</td><td class="memItemRight" valign="bottom"><b>memoryDecoder</b></td></tr>
+<tr class="separator:a5ba900ba2b32235bcf1f517f97abd699"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>A real voice that is connected to the DSP graph. </p>
+<p>Real voices are limited by the sc_system_config::maxRealVoices value passed during system initialization. </p>
+</div><hr/>The documentation for this struct was generated from the following file:<ul>
+<li>inc/sound_chef/<a class="el" href="sound__chef__common_8h_source.html">sound_chef_common.h</a></li>
+</ul>
+</div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_9654b8d08f4bba4e84b362c5fd320bee.html">apps</a></li><li class="navelem"><a class="el" href="dir_685fb6365fee556283716a8497e00fe3.html">editor</a></li><li class="navelem"><a class="el" href="dir_cbf2f15c81715a85d6aa3931cd9aea09.html">widgets</a></li><li class="navelem"><b>audio_meter_widget.h</b></li>
+    <li class="navelem"><a class="el" href="structsc__voice__real.html">sc_voice_real</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
   </ul>
 </div>

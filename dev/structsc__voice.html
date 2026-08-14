@@ -142,14 +142,69 @@ $(document).ready(function(){initNavTree('structsc__voice.html',''); initResizab
   <div class="headertitle"><div class="title">sc_voice Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>A voice is a window into a single sound that may or may not be audible and rendering.  
+ <a href="structsc__voice.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="sound__chef__common_8h_source.html">sound_chef_common.h</a>&gt;</code></p>
+<div class="dynheader">
+Collaboration diagram for sc_voice:</div>
+<div class="dyncontent">
+<div class="center"><img src="structsc__voice__coll__graph.png" border="0" usemap="#asc__voice_coll__map" alt="Collaboration graph"/></div>
+<map name="asc__voice_coll__map" id="asc__voice_coll__map">
+<area shape="rect" title="A voice is a window into a single sound that may or may not be audible and rendering." alt="" coords="122,5,201,31"/>
+<area shape="rect" href="structsc__system.html" title="Object that manages the node graph, sounds, output etc." alt="" coords="243,181,333,207"/>
+<area shape="poly" title=" " alt="" coords="215,23,252,32,292,45,332,65,366,91,380,107,389,123,391,140,383,159,361,178,334,189,332,184,359,174,379,156,386,140,384,125,376,110,362,95,329,69,290,50,251,37,214,29"/>
+<area shape="rect" href="structsc__voice__real.html" title="A real voice that is connected to the DSP graph." alt="" coords="43,93,154,119"/>
+<area shape="poly" title=" " alt="" coords="138,42,125,56,105,94,100,92,120,53,134,38"/>
+<area shape="poly" title=" " alt="" coords="263,174,238,149,214,120,197,89,182,56,167,32,171,30,186,53,201,86,218,117,242,146,266,170"/>
+<area shape="rect" href="structsc__dsp.html" title="ma_node with an additional enum descriptor." alt="" coords="215,271,281,297"/>
+<area shape="poly" title=" " alt="" coords="280,220,256,272,251,270,275,218"/>
+<area shape="rect" href="structsc__dsp__description.html" title="Structure to create, destroy, and update DSP units of a specific handle." alt="" coords="394,391,539,416"/>
+<area shape="poly" title=" " alt="" coords="348,195,389,201,433,214,474,236,492,250,508,268,515,284,518,301,511,336,495,368,478,392,474,389,490,365,506,334,512,301,510,285,503,271,489,254,471,240,431,219,388,207,347,200"/>
+<area shape="rect" href="structsc__clap.html" title="Holds a DLL handle and plugin entry for a CLAP plugin." alt="" coords="281,93,351,119"/>
+<area shape="poly" title=" " alt="" coords="309,132,305,143,294,182,289,180,300,142,304,131"/>
+<area shape="rect" href="structsc__node__group.html" title="Groups nodes/DSPs together into one." alt="" coords="31,391,150,416"/>
+<area shape="poly" title=" " alt="" coords="62,384,42,366,23,342,8,315,3,286,3,104,6,85,15,69,28,56,45,45,83,30,121,21,123,26,85,35,48,49,32,60,19,72,11,87,8,105,8,285,13,314,27,339,46,362,66,380"/>
+<area shape="poly" title=" " alt="" coords="77,379,69,354,64,325,65,295,76,268,92,249,111,234,155,213,200,200,242,194,243,200,202,205,157,218,114,239,96,253,81,271,70,296,69,325,74,353,82,377"/>
+<area shape="poly" title=" " alt="" coords="129,382,154,365,170,343,186,321,223,295,226,299,190,325,174,346,158,369,132,386"/>
+<area shape="poly" title=" " alt="" coords="202,300,119,325,108,340,100,358,94,391,89,390,95,356,103,337,116,320,200,295"/>
+<area shape="poly" title=" " alt="" coords="296,274,304,277,308,284,299,293,282,295,281,290,297,288,303,284,301,281,294,279"/>
+<area shape="poly" title=" " alt="" coords="265,307,289,341,311,365,351,383,394,394,393,399,349,388,308,369,285,344,261,310"/>
+<area shape="poly" title=" " alt="" coords="449,381,397,313,327,233,301,209,305,205,331,229,401,309,453,378"/>
+<area shape="rect" href="structsc__dsp__parameter.html" title=" " alt="" coords="620,271,761,297"/>
+<area shape="poly" title=" " alt="" coords="666,307,621,338,566,369,506,393,504,388,564,364,618,333,663,303"/>
+<area shape="rect" href="structsc__dsp__parameter__float.html" title=" " alt="" coords="602,181,779,207"/>
+<area shape="poly" title=" " alt="" coords="693,220,693,271,688,271,688,220"/>
+<area shape="poly" title=" " alt="" coords="83,131,79,144,82,156,92,163,107,170,149,180,243,189,242,194,148,185,105,175,89,168,78,159,73,144,78,129"/>
+</map>
+<center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:adab5b20ab74447b35aef4dc90ec3964d" id="r_adab5b20ab74447b35aef4dc90ec3964d"><td class="memItemLeft" align="right" valign="top"><a id="adab5b20ab74447b35aef4dc90ec3964d" name="adab5b20ab74447b35aef4dc90ec3964d"></a>
-sc_uint32&#160;</td><td class="memItemRight" valign="bottom"><b>temp</b></td></tr>
-<tr class="separator:adab5b20ab74447b35aef4dc90ec3964d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85e119eb0421177e754dee2e3362f178" id="r_a85e119eb0421177e754dee2e3362f178"><td class="memItemLeft" align="right" valign="top"><a id="a85e119eb0421177e754dee2e3362f178" name="a85e119eb0421177e754dee2e3362f178"></a>
+<a class="el" href="structsc__system.html">sc_system</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>system</b></td></tr>
+<tr class="separator:a85e119eb0421177e754dee2e3362f178"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a063e46becbb0764536ba56c4cbc108a9" id="r_a063e46becbb0764536ba56c4cbc108a9"><td class="memItemLeft" align="right" valign="top"><a id="a063e46becbb0764536ba56c4cbc108a9" name="a063e46becbb0764536ba56c4cbc108a9"></a>
+sc_atomic_float&#160;</td><td class="memItemRight" valign="bottom"><b>gain</b></td></tr>
+<tr class="separator:a063e46becbb0764536ba56c4cbc108a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff97bfda91a6186fd61cb07a1dd8122c" id="r_aff97bfda91a6186fd61cb07a1dd8122c"><td class="memItemLeft" align="right" valign="top"><a id="aff97bfda91a6186fd61cb07a1dd8122c" name="aff97bfda91a6186fd61cb07a1dd8122c"></a>
+sc_atomic_float&#160;</td><td class="memItemRight" valign="bottom"><b>pitch</b></td></tr>
+<tr class="separator:aff97bfda91a6186fd61cb07a1dd8122c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05264d0a6d80c8cb383e079a9331a2d2" id="r_a05264d0a6d80c8cb383e079a9331a2d2"><td class="memItemLeft" align="right" valign="top"><a id="a05264d0a6d80c8cb383e079a9331a2d2" name="a05264d0a6d80c8cb383e079a9331a2d2"></a>
+sc_uint8&#160;</td><td class="memItemRight" valign="bottom"><b>priority</b></td></tr>
+<tr class="separator:a05264d0a6d80c8cb383e079a9331a2d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a503559ff45527da1fa3e03936126fffd" id="r_a503559ff45527da1fa3e03936126fffd"><td class="memItemLeft" align="right" valign="top"><a id="a503559ff45527da1fa3e03936126fffd" name="a503559ff45527da1fa3e03936126fffd"></a>
+<a class="el" href="structsc__node__group.html">sc_node_group</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>group</b></td></tr>
+<tr class="separator:a503559ff45527da1fa3e03936126fffd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4cc37fa74f250e5142e35f0e383c477d" id="r_a4cc37fa74f250e5142e35f0e383c477d"><td class="memItemLeft" align="right" valign="top"><a id="a4cc37fa74f250e5142e35f0e383c477d" name="a4cc37fa74f250e5142e35f0e383c477d"></a>
+sc_voice_handle&#160;</td><td class="memItemRight" valign="bottom"><b>realVoiceHandle</b></td></tr>
+<tr class="separator:a4cc37fa74f250e5142e35f0e383c477d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<hr/>The documentation for this struct was generated from the following file:<ul>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>A voice is a window into a single sound that may or may not be audible and rendering. </p>
+<p>Voices are limited by the sc_system_config::maxVoices value passed during system initialization. </p>
+</div><hr/>The documentation for this struct was generated from the following file:<ul>
 <li>inc/sound_chef/<a class="el" href="sound__chef__common_8h_source.html">sound_chef_common.h</a></li>
 </ul>
 </div><!-- contents -->

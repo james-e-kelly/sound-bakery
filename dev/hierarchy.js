@@ -186,6 +186,7 @@ var hierarchy =
     ] ],
     [ "sc_system_config", "structsc__system__config.html", null ],
     [ "sc_voice", "structsc__voice.html", null ],
+    [ "sc_voice_real", "structsc__voice__real.html", null ],
     [ "sbk::executor::schedule_awaiter", "structsbk_1_1executor_1_1schedule__awaiter.html", null ],
     [ "sbk::core::scoped_thread_domain", "classsbk_1_1core_1_1scoped__thread__domain.html", null ],
     [ "selection", "structselection.html", null ],
