@@ -8,6 +8,7 @@
 namespace sbk::engine
 {
     class system;
+    class runtime;
 }
 
 namespace sbk::core
@@ -80,6 +81,7 @@ namespace sbk::core
 
         [[nodiscard]] auto get_owner() const -> object_owner* { return m_owner; }
         [[nodiscard]] auto get_system() const noexcept -> sbk::engine::system*;
+        [[nodiscard]] auto get_runtime() const noexcept -> sbk::engine::runtime*;
 
         /**
          * @brief Track an already existing object.

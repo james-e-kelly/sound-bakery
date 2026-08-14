@@ -16,7 +16,7 @@ auto sbk::engine::effect_description::set_dsp_type(sc_dsp_type type) -> void
     const sc_uint32 handle = static_cast<sc_uint32>(type);
 
     const sc_dsp_description* description{};
-    if (sc_system_get_dsp_desc(get_system()->get_runtime(), handle, &description) == SBK_SUCCESS)
+    if (sc_system_get_dsp_desc(get_runtime(), handle, &description) == SBK_SUCCESS)
     {
         m_effectHandle = handle;
 
@@ -34,7 +34,7 @@ auto sbk::engine::effect_description::set_dsp_clap(const clap_plugin_factory* pl
     const sc_uint32 handle = static_cast<sc_uint32>(SC_DSP_TYPE_CLAP);
 
     const sc_dsp_description* description{};
-    if (sc_system_get_dsp_desc(get_system()->get_runtime(), handle, &description) == SBK_SUCCESS)
+    if (sc_system_get_dsp_desc(get_runtime(), handle, &description) == SBK_SUCCESS)
     {
         m_effectHandle = handle;
 

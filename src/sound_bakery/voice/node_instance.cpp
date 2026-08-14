@@ -75,7 +75,7 @@ auto sbk::engine::node_instance_fsm::action_play(const event_play& play) -> void
         if (sound)
         {
             sc_sound_instance* soundInstance = nullptr;
-            if (const sbk_status playSoundResult = sc_system_play_sound(m_referencingNode->get_system()->get_runtime(), sound, &soundInstance, m_nodeGroup.nodeGroup.get(), MA_FALSE); playSoundResult != SBK_SUCCESS)
+            if (const sbk_status playSoundResult = sc_system_play_sound(m_referencingNode->get_runtime(), sound, &soundInstance, m_nodeGroup.nodeGroup.get(), MA_FALSE); playSoundResult != SBK_SUCCESS)
             {
                 sbk::log_error(playSoundResult, "sc_system_play_sound");
             }
@@ -205,7 +205,7 @@ auto sbk::engine::node_instance_fsm::add_dsp_to_node_group(sc_node_group* nodeGr
     SBK_CHECK(nodeGroup != nullptr, SBK_ERR_INVALID_PARAMETER);
     SBK_CHECK(dsp != nullptr, SBK_ERR_INVALID_PARAMETER);
     SBK_CHECK(handle > 0, SBK_ERR_INVALID_PARAMETER);
-    SBK_TRY_C(sc_system_create_dsp_by_handle(m_owner->get_system()->get_runtime(), handle, dsp));
+    SBK_TRY_C(sc_system_create_dsp_by_handle(m_owner->get_runtime(), handle, dsp));
     SBK_TRY_C(sc_node_group_add_dsp(nodeGroup, *dsp, SC_DSP_INDEX_HEAD));
     return sbk::ok();
 }
@@ -215,7 +215,7 @@ auto sbk::engine::node_instance_fsm::init_node_group(const event_init& init) -> 
     ZoneScoped;
     sc_node_group* nodeGroup = nullptr;
 
-    SBK_TRY_C(sc_system_create_node_group(m_owner->get_system()->get_runtime(), &nodeGroup));
+    SBK_TRY_C(sc_system_create_node_group(m_owner->get_runtime(), &nodeGroup));
     m_nodeGroup.nodeGroup.reset(nodeGroup);
     SBK_TRYV(add_dsp_to_node_group(m_nodeGroup.nodeGroup.get(), &m_nodeGroup.lowpass, static_cast<sc_uint32>(SC_DSP_TYPE_LOWPASS)));
     SBK_TRYV(add_dsp_to_node_group(m_nodeGroup.nodeGroup.get(), &m_nodeGroup.highpass, static_cast<sc_uint32>(SC_DSP_TYPE_HIGHPASS)));
