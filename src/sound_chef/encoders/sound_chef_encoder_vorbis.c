@@ -61,8 +61,7 @@ static ma_result sc_encoder_vorbis_write_header(ma_encoder* encoder)
     ogg_packet headerComment;
     ogg_packet headerCode;
 
-    int headerResult =
-        vorbis_analysis_headerout(&vorbisEncoder->dsp, &vorbisEncoder->comment, &header, &headerComment, &headerCode);
+    int headerResult = vorbis_analysis_headerout(&vorbisEncoder->dsp, &vorbisEncoder->comment, &header, &headerComment, &headerCode);
     SC_CHECK(headerResult == 0, MA_ERROR);
 
     ogg_stream_packetin(&vorbisEncoder->oggStream, &header);
@@ -78,8 +77,7 @@ ma_result sc_encoder_vorbis_on_init(ma_encoder* encoder)
 {
     SC_CHECK(encoder != NULL, MA_INVALID_ARGS);
 
-    sc_encoder_vorbis* vorbisEncoder =
-        (sc_encoder_vorbis*)ma_malloc(sizeof(sc_encoder_vorbis), &encoder->config.allocationCallbacks);
+    sc_encoder_vorbis* vorbisEncoder = (sc_encoder_vorbis*)ma_malloc(sizeof(sc_encoder_vorbis), &encoder->config.allocationCallbacks);
     SC_CHECK(vorbisEncoder != NULL, MA_OUT_OF_MEMORY);
     SC_ZERO_OBJECT(vorbisEncoder);
 
@@ -88,8 +86,7 @@ ma_result sc_encoder_vorbis_on_init(ma_encoder* encoder)
     int vorbisInitResultCode = -1;
 
     vorbis_info_init(&vorbisEncoder->info);
-    vorbisInitResultCode = vorbis_encode_init_vbr(&vorbisEncoder->info, encoder->config.channels,
-                                                  encoder->config.sampleRate, SC_ENCODER_VORBIS_DEFAULT_QUALITY);
+    vorbisInitResultCode = vorbis_encode_init_vbr(&vorbisEncoder->info, encoder->config.channels, encoder->config.sampleRate, SC_ENCODER_VORBIS_DEFAULT_QUALITY);
     SC_CHECK(vorbisInitResultCode == 0, MA_ERROR);
 
     vorbis_comment_init(&vorbisEncoder->comment);

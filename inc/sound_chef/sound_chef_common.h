@@ -42,15 +42,6 @@
     #endif
 #endif
 
-#define MA_COINIT_VALUE 0x2 //< COINIT_APARTMENTTHREADED
-
-#include "miniaudio.h"
-#include "clap/clap.h"
-#include "c89atomic.h"
-
-#include <assert.h>
-#include <string.h>
-
 #if defined(_WIN32)
     #define SC_CALL __stdcall
 #else
@@ -86,10 +77,6 @@
     #define SBK_NODISCARD
 #endif
 
-#define SC_CHECK_AND_GOTO(condition, dest) \
-    if ((condition) == MA_FALSE)           \
-    goto dest
-
 #define SC_ZERO_OBJECT(p) memset((p), 0, sizeof(*(p)))
 
 #define SC_COUNTOF(x)            (sizeof(x) / sizeof(x[0]))
@@ -105,6 +92,27 @@
 #define SC_MAX_FRAME_COUNT      2048    //< Safe default for allocating staging areas in memory
 
 #define SC_MAX_USER_DSP_TYPES   16      //< sc_dsp_descriptions are kept in a static array. Increase this if we need to support more DSP types
+
+#ifndef SC_ASSERT
+    #define SC_ASSERT(condition) assert(condition)
+#endif
+
+#define MA_COINIT_VALUE 0x2  //< COINIT_APARTMENTTHREADED
+
+// Disable built-in decoding in favour of the ones from the example
+#define MA_NO_VORBIS
+#define MA_NO_OPUS
+
+// Override miniaudio macros so they are usable outside of MINIAUDIO_IMPLEMENTATION sections
+#define MA_ZERO_OBJECT(p)       SC_ZERO_OBJECT((p))
+#define MA_ZERO_MEMORY(p, sz)   memset((p), 0, (sz))
+
+#include "miniaudio.h"
+#include "clap/clap.h"
+#include "c89atomic.h"
+
+#include <assert.h>
+#include <string.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -189,6 +197,9 @@ typedef enum
 #define SC_CHECK_MEM(ptr) \
     if ((ptr) == NULL)    \
     return SBK_ERR_OUT_OF_MEMORY
+#define SC_CHECK_AND_GOTO(condition, dest) \
+    if ((condition) == MA_FALSE)           \
+    goto dest
 
 typedef struct sc_system sc_system;
 typedef struct sc_system_config sc_system_config;
