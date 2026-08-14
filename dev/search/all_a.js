@@ -13,5 +13,5 @@ var searchData=
   ['for_20scale_20and_20teams_10',['Built for Scale and Teams',['../Design.html#autotoc_md42',1,'']]],
   ['from_20source_11',['Build from Source',['../index.html#autotoc_md6',1,'']]],
   ['full_20list_12',['Full list',['..//home/runner/work/sound-bakery/sound-bakery/src/sound_bakery/core/error/README.md#autotoc_md56',1,'']]],
-  ['functions_13',['functions',['../group__SystemClap.html',1,'System CLAP Functions'],['../group__SystemDSP.html',1,'System DSP Creation Functions'],['../group__System.html',1,'System Functions'],['../group__SystemNodeGroup.html',1,'System Node Group Functions'],['../group__SystemSound.html',1,'System Sound Functions']]]
+  ['functions_13',['functions',['../group__DSP.html',1,'DSP Functions'],['../group__NodeGroup.html',1,'Node Group Functions'],['../group__Sound.html',1,'Sound Functions'],['../group__SoundInstance.html',1,'Sound Instance Functions'],['../group__SystemClap.html',1,'System CLAP Functions'],['../group__SystemDSP.html',1,'System DSP Creation Functions'],['../group__System.html',1,'System Functions'],['../group__SystemNodeGroup.html',1,'System Node Group Functions'],['../group__SystemSound.html',1,'System Sound Functions']]]
 ];

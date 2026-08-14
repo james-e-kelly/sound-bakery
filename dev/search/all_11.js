@@ -6,7 +6,7 @@ var searchData=
   ['new_20error_20code_3',['Adding a new error code',['..//home/runner/work/sound-bakery/sound-bakery/src/sound_bakery/core/error/README.md#autotoc_md59',1,'']]],
   ['new_5fproject_5fwidget_4',['new_project_widget',['../classnew__project__widget.html',1,'']]],
   ['node_5',['node',['../classsbk_1_1engine_1_1node.html',1,'sbk::engine']]],
-  ['node_20group_20functions_6',['System Node Group Functions',['../group__SystemNodeGroup.html',1,'']]],
+  ['node_20group_20functions_6',['node group functions',['../group__NodeGroup.html',1,'Node Group Functions'],['../group__SystemNodeGroup.html',1,'System Node Group Functions']]],
   ['node_20groups_7',['Node Groups',['../ChefProgrammerGuide.html#autotoc_md66',1,'']]],
   ['node_5fbase_8',['node_base',['../classsbk_1_1engine_1_1node__base.html',1,'sbk::engine']]],
   ['node_5fgroup_5finstance_9',['node_group_instance',['../structsbk_1_1engine_1_1node__group__instance.html',1,'sbk::engine']]],

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['node_20group_20functions_0',['System Node Group Functions',['../group__SystemNodeGroup.html',1,'']]]
+  ['instance_20functions_0',['Sound Instance Functions',['../group__SoundInstance.html',1,'']]]
 ];

@@ -18,9 +18,10 @@ var searchData=
   ['do_20i_20use_15',['Which macro do I use?',['../result_8h.html#autotoc_md60',1,'']]],
   ['documentation_16',['documentation',['../md_CONTRIBUTING.html#autotoc_md34',1,'Documentation'],['../index.html#autotoc_md8',1,'Documentation']]],
   ['doxygen_17',['Using Doxygen',['../md_CONTRIBUTING.html#autotoc_md35',1,'']]],
-  ['drain_18',['drain',['../classsbk_1_1executor.html#a392dfa15407b4e8ae0cc5289edd88052',1,'sbk::executor::drain()'],['../classsbk_1_1manual__executor.html#aea69d6ea07a4342e1ed6a716e308f1b1',1,'sbk::manual_executor::drain()']]],
+  ['drain_18',['drain',['../classsbk_1_1manual__executor.html#aea69d6ea07a4342e1ed6a716e308f1b1',1,'sbk::manual_executor::drain()'],['../classsbk_1_1executor.html#a392dfa15407b4e8ae0cc5289edd88052',1,'sbk::executor::drain()']]],
   ['draw_5fassociate_5fcontainer_19',['draw_associate_container',['../classproperty__drawer.html#ad7cfbcc0b3cf334260b53422be099635',1,'property_drawer']]],
   ['dsp_20',['DSP',['../ChefProgrammerGuide.html#autotoc_md65',1,'']]],
   ['dsp_20creation_20functions_21',['System DSP Creation Functions',['../group__SystemDSP.html',1,'']]],
-  ['dsp_20effects_22',['Available DSP Effects',['../ChefProgrammerGuide.html#autotoc_md71',1,'']]]
+  ['dsp_20effects_22',['Available DSP Effects',['../ChefProgrammerGuide.html#autotoc_md71',1,'']]],
+  ['dsp_20functions_23',['DSP Functions',['../group__DSP.html',1,'']]]
 ];

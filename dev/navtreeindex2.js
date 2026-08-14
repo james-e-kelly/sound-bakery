@@ -1,5 +1,9 @@
 var NAVTREEINDEX2 =
 {
+"structsc__dsp__description.html":[13,0,31],
+"structsc__dsp__parameter.html":[13,0,32],
+"structsc__dsp__parameter__float.html":[13,0,33],
+"structsc__encoder.html":[13,0,34],
 "structsc__encoder__config.html":[13,0,35],
 "structsc__encoder__vorbis.html":[13,0,36],
 "structsc__meter.html":[13,0,37],

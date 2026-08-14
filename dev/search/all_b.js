@@ -15,7 +15,7 @@ var searchData=
   ['getting_20started_12',['Getting Started',['../index.html#autotoc_md4',1,'']]],
   ['global_5fparameter_5flist_13',['global_parameter_list',['../structsbk_1_1engine_1_1global__parameter__list.html',1,'sbk::engine']]],
   ['goal_14',['Goal',['../index.html#autotoc_md2',1,'']]],
-  ['group_20functions_15',['System Node Group Functions',['../group__SystemNodeGroup.html',1,'']]],
+  ['group_20functions_15',['group functions',['../group__NodeGroup.html',1,'Node Group Functions'],['../group__SystemNodeGroup.html',1,'System Node Group Functions']]],
   ['groups_16',['Node Groups',['../ChefProgrammerGuide.html#autotoc_md66',1,'']]],
   ['guide_17',['guide',['../ProgrammerGuide.html',1,'Programmer&apos;s Guide'],['../ChefProgrammerGuide.html',1,'Sound Chef Programmer&apos;s Guide'],['../UserGuide.html',1,'User Guide']]],
   ['guides_18',['Guides',['../Guides.html',1,'UserManual']]]
