@@ -206,6 +206,14 @@ typedef struct sc_dsp_description sc_dsp_description;
 
 typedef struct sc_clap sc_clap;
 
+/**
+ * @brief The different ways to create a sound.
+ * 
+ * These types are basically the same as @see ma_sound_flags.
+ * 
+ * @see sc_system_create_sound
+ * @see sc_system_create_sound_memory
+ */
 typedef enum sc_sound_mode
 {
     SC_SOUND_MODE_DEFAULT   = 0x00000000,   //< Creates a sound in memory and decompresses during runtime
@@ -214,9 +222,16 @@ typedef enum sc_sound_mode
     SC_SOUND_MODE_STREAM    = 0x00000004,   //< Streams parts of the sound from disk during runtime
 } sc_sound_mode;
 
+/**
+ * @brief Built-in DSP types.
+ * 
+ * It is expected that user DSP types would have numbers higher than SC_DSP_TYPE_COUNT
+ * example: MY_DSP_TYPE = SC_DSP_TYPE_COUNT + 1
+ * The system can then store user DSP descriptions and find them by "handle"
+ */
 typedef enum sc_dsp_type
 {
-    SC_DSP_TYPE_UNKNOWN,        //< User created
+    SC_DSP_TYPE_UNKNOWN,
     SC_DSP_TYPE_FADER,
     SC_DSP_TYPE_LOWPASS,
     SC_DSP_TYPE_HIGHPASS,
@@ -224,18 +239,24 @@ typedef enum sc_dsp_type
     SC_DSP_TYPE_METER,
     SC_DSP_TYPE_CLAP,           //< Wraps a CLAP plugin
     SC_DSP_TYPE_COUNT           //< Count of types. SC_DSP_TYPE_COUNT - 1 == number of built in types
-
-    // It is expected that user DSP types would have numbers higher than SC_DSP_TYPE_COUNT
-    // example: MY_DSP_TYPE = SC_DSP_TYPE_COUNT + 1
-    // The system can then store user DSP descriptions and find them by "handle"
 } sc_dsp_type;
 
+/**
+ * @brief Predefined positions to insert DSP units into a @ref sc_node_group.
+ * 
+ * Values are negative so positive index values always refer to a specific position in the node group.
+ */
 typedef enum sc_dsp_index
 {
     SC_DSP_INDEX_TAIL = -2,  //< Left/back of the chain and becomes the new input
     SC_DSP_INDEX_HEAD = -1   //< Right/top of the chain and becomes the new output
 } sc_dsp_index;
 
+/**
+ * @brief Encoding formats that Sound Chef supports.
+ * 
+ * Extends @ref ma_encoding_format.
+ */
 typedef enum sc_encoding_format
 {
     sc_encoding_format_unknown = 0,
@@ -274,20 +295,20 @@ struct sc_dsp_description
  */
 struct sc_dsp
 {
-    sc_uint32 handle; //< Either a sc_dsp_type or a user handle
-    ma_node* node;
-    sc_system* system;
-    sc_node_group* groupOwner;
-    sc_dsp* next;  //< when in a node group, the get_parent/next dsp. Can be null if the head node
-    sc_dsp* prev;  //< when in a node group, the child/previous dsp. Can be null if the tail node
+    sc_uint32       handle;         //< Either a sc_dsp_type or a user handle
+    ma_node*        node;           //< The dynamically allocated node that can process audio
+    sc_system*      system;         //< Owning system
+    sc_node_group*  groupOwner;     //< Owning node group. Can be null
+    sc_dsp*         next;           //< when in a node group, the get_parent/next dsp. Can be null if the head node
+    sc_dsp*         prev;           //< when in a node group, the child/previous dsp. Can be null if the tail node
 };
 
 struct sc_sound
 {
-    ma_sound sound;
-    sc_sound_mode mode;
-    ma_decoder* memoryDecoder;
-    sc_system* owningSystem;
+    ma_sound        sound;
+    sc_sound_mode   mode;
+    ma_decoder*     memoryDecoder;
+    sc_system*      owningSystem;
 };
 
 /**
@@ -312,15 +333,15 @@ struct sc_node_group
  */
 struct sc_clap
 {
-    ma_handle dynamicLibraryHandle;         //< Handle to the .clap file
-    clap_plugin_entry_t* clapEntry;         //< Entry point of the plugin
-    const clap_plugin_factory_t* pluginFactory;    //< Plugin factory to poll and create plugins from
+    ma_handle                       dynamicLibraryHandle;   //< Handle to the .clap file
+    clap_plugin_entry_t*            clapEntry;              //< Entry point of the plugin
+    const clap_plugin_factory_t*    pluginFactory;          //< Plugin factory to poll and create plugins from
 };
 
 /**
  * @brief Object that manages the node graph, sounds, output etc.
  *
- * The sc_system is a wrapper for the ma_engine handle from miniaudio.
+ * The sc_system is a wrapper for the @see ma_engine from miniaudio.
  * This means that sc_system has a node graph, resource manager, can output
  * to the user's audio device and everything expected from miniaudio's
  * high-level API.
@@ -333,19 +354,19 @@ struct sc_clap
  */
 struct sc_system
 {
-    ma_engine engine;                                               //< Must stay first for miniaudio node API
-    ma_resource_manager resourceManager;                            //< We need a custom resource manager for custom decoders
-    ma_log log;
+    ma_engine                   engine;                                                 //< Must stay first for miniaudio node API
+    ma_resource_manager         resourceManager;                                        //< We need a custom resource manager for custom decoders
+    ma_log                      log;
 
-    clap_host_t clapHost;
-    sc_clap* clapPlugins;                                           //< CLAP plugins loaded from systemConfig->pluginPath, or NULL if none
-    ma_uint32 clapPluginCount;                                      //< Number of entries in clapPlugins
-    float clapPluginScratch[SC_MAX_CHANNELS][SC_MAX_FRAME_COUNT];   //< CLAP plugins process deinterleaved audio. miniaudio processes interleaved. We need a space for CLAP plugins to output to, then can interleave it
-    float* clapPluginChannels[SC_MAX_CHANNELS];                     //< CLAP processing expects pointers for each channel
+    clap_host_t                 clapHost;
+    sc_clap*                    clapPlugins;                                            //< CLAP plugins loaded from systemConfig->pluginPath, or NULL if none
+    ma_uint32                   clapPluginCount;                                        //< Number of entries in clapPlugins
+    float                       clapPluginScratch[SC_MAX_CHANNELS][SC_MAX_FRAME_COUNT]; //< CLAP plugins process deinterleaved audio. miniaudio processes interleaved. We need a space for CLAP plugins to output to, then can interleave it
+    float*                      clapPluginChannels[SC_MAX_CHANNELS];                    //< CLAP processing expects pointers for each channel
 
-    sc_node_group* masterNodeGroup;
+    sc_node_group*              masterNodeGroup;
 
-    const sc_dsp_description* userDspRegistry[SC_MAX_USER_DSP_TYPES];      //< DSP descriptions to create each DSP handle
+    const sc_dsp_description*   userDspRegistry[SC_MAX_USER_DSP_TYPES];                 //< DSP descriptions to create each DSP handle
 };
 
 /**
@@ -354,9 +375,9 @@ struct sc_system
  */
 struct sc_system_config
 {
-    const char* pluginPath; //< Folder path containing CLAP plugins to load
-    ma_allocation_callbacks allocationCallbacks;
-    ma_device_data_proc dataCallback; //< Device render callback. Overriden in Sound Bakery for profiling
+    const char* pluginPath;                         //< Folder path containing CLAP plugins to load
+    ma_allocation_callbacks allocationCallbacks;    //< External allocation callbacks to override all memory allocation in Sound Chef
+    ma_device_data_proc dataCallback;               //< Device render callback. Overriden in Sound Bakery for profiling
 };
 
 #ifdef __cplusplus
