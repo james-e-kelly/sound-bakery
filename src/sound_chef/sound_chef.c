@@ -109,6 +109,12 @@ sbk_status sc_system_init(sc_system* system, const sc_system_config* systemConfi
     resourceManagerConfig.allocationCallbacks            = systemConfig->allocationCallbacks;
 
     SC_CHECK_STATUS(SBK_FROM_MA(ma_resource_manager_init(&resourceManagerConfig, &system->resourceManager)));
+
+    const ma_slot_allocator_config voiceAllocatorConfig = ma_slot_allocator_config_init(systemConfig->maxVoices);
+    SC_CHECK_STATUS(SBK_FROM_MA(ma_slot_allocator_init(&voiceAllocatorConfig, &systemConfig->allocationCallbacks, &system->voiceSlotAllocator)));
+
+    system->voiceBuffer = ma_malloc(sizeof(sc_voice) * systemConfig->maxVoices, &systemConfig->allocationCallbacks);
+    SC_CHECK_MEM(system->voiceBuffer);
     
     ma_log_post(&system->log, MA_LOG_LEVEL_DEBUG, "Initializing engine");
 
@@ -214,6 +220,10 @@ sbk_status sc_system_close(sc_system* system)
         ma_engine_uninit((ma_engine*)system);
 
         sc_system_release_clap_plugins(system);
+
+        ma_slot_allocator_uninit(&system->voiceSlotAllocator, &system->engine.allocationCallbacks);
+
+        SC_FREE(system->voiceBuffer, system);
 
         ma_log_post(&system->log, MA_LOG_LEVEL_INFO, "Closed Sound Chef");
     }

@@ -131,6 +131,25 @@ typedef ma_int32            sc_int32;
 typedef ma_int64            sc_int64;
 typedef ma_uint64           sc_uint64;
 
+typedef sc_uint64           sc_voice_handle;        //< Voice handle. Contains both a reference count and an index
+typedef sc_uint32           sc_voice_refcount;      //< References to this slot. Used to check if a handle is old/stale
+typedef sc_uint32           sc_voice_slot;          //< Slot/index into the voice array
+
+static MA_INLINE sc_voice_refcount sc_voice_handle_extract_refcount(sc_voice_handle handle)
+{
+    return (sc_uint32)(handle >> 32);
+}
+
+static MA_INLINE sc_voice_slot sc_voice_handle_extract_slot(sc_voice_handle handle)
+{
+    return (sc_voice_slot)(handle & 0xFFFFFFFFu);
+}
+
+static MA_INLINE sc_voice_handle sc_voice_handle_make(sc_voice_refcount rc, sc_voice_slot slot)
+{
+    return ((sc_voice_handle)rc << 32) | (sc_voice_handle)slot;
+}
+
 #define SBK_FALSE 0
 #define SBK_TRUE 1
 
@@ -209,6 +228,8 @@ typedef struct sc_dsp_parameter sc_dsp_parameter;
 typedef struct sc_dsp_description sc_dsp_description;
 
 typedef struct sc_clap sc_clap;
+
+typedef struct sc_voice sc_voice;
 
 /**
  * @brief The different ways to create a sound.
@@ -342,6 +363,11 @@ struct sc_clap
     const clap_plugin_factory_t*    pluginFactory;          //< Plugin factory to poll and create plugins from
 };
 
+struct sc_voice
+{
+    sc_uint32 temp;
+};
+
 /**
  * @brief Object that manages the node graph, sounds, output etc.
  *
@@ -371,6 +397,9 @@ struct sc_system
     sc_node_group*              masterNodeGroup;
 
     const sc_dsp_description*   userDspRegistry[SC_MAX_USER_DSP_TYPES];                 //< DSP descriptions to create each DSP handle
+
+    ma_slot_allocator           voiceSlotAllocator;                                     //< Allocates voice handles
+    sc_voice*                   voiceBuffer;                                            //< Allocates voices. Indexed through the @r voiceSlotAllocator
 };
 
 /**
