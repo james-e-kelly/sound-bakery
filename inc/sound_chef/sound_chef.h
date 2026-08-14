@@ -40,7 +40,8 @@ extern "C"
     sbk_status SC_API sc_system_close(sc_system* system);
 
     /**
-     * @defgroup SystemSound System Sound Functions 
+     * @defgroup SystemSound System Sound Functions
+     * @ingroup System
      * @{
      */
 
@@ -68,6 +69,7 @@ extern "C"
 
     /**
      * @defgroup SystemNodeGroup System Node Group Functions
+     * @ingroup System
      * @{
      */
 
@@ -77,7 +79,8 @@ extern "C"
 
     /**
      * @defgroup SystemDSP System DSP Creation Functions
-     * 
+     * @ingroup System
+     *
      * DSP units are created with @see sc_dsp_description objects.
      * The sc_system stores/knows about two description arrays.
      * One is internal and lets users create units using the @see sc_dsp_type.
@@ -99,7 +102,8 @@ extern "C"
 
     /**
      * @defgroup SystemClap System CLAP Functions
-     * 
+     * @ingroup System
+     *
      * The system loads CLAP plugins from a directory and stores pointers to the plugin structures.
      * These functions let users query the number of plugins and get pointers to the plugin structures.
      * 
@@ -113,8 +117,20 @@ extern "C"
     /**@}*/
     /**@}*/
 
+    /**
+     * @defgroup Sound Sound Functions
+     * @{
+     */
+
     sbk_status SC_API sc_sound_get_length(sc_sound* sound, float* lengthInSeconds);
     sbk_status SC_API sc_sound_release(sc_sound* sound);
+
+    /**@}*/
+
+    /**
+     * @defgroup SoundInstance Sound Instance Functions
+     * @{
+     */
 
     sbk_status SC_API sc_sound_instance_is_playing(sc_sound_instance* instance, sc_bool* isPlaying);
     sbk_status SC_API sc_sound_instance_start(sc_sound_instance* instance);
@@ -127,16 +143,32 @@ extern "C"
     sbk_status SC_API sc_sound_instance_set_looping(sc_sound_instance* instance, sc_bool looping);
     sbk_status SC_API sc_sound_instance_release(sc_sound_instance* instance);
 
+    /**@}*/
+
+    /**
+     * @defgroup DSP DSP Functions
+     * @{
+     */
+
     sbk_status SC_API sc_dsp_get_parameter_float(sc_dsp* dsp, int index, float* value);
     sbk_status SC_API sc_dsp_set_parameter_float(sc_dsp* dsp, int index, float value);
     sbk_status SC_API sc_dsp_get_metering_info(sc_dsp* dsp, ma_uint32 channelIndex, sc_dsp_meter_query meterType, float* value);
     sbk_status SC_API sc_dsp_release(sc_dsp* dsp);
+
+    /**@}*/
+
+    /**
+     * @defgroup NodeGroup Node Group Functions
+     * @{
+     */
 
     sbk_status SC_API sc_node_group_set_parent(sc_node_group* nodeGroup, sc_node_group* parent);
     sbk_status SC_API sc_node_group_set_parent_endpoint(sc_node_group* nodeGroup);
     sbk_status SC_API sc_node_group_get_dsp(sc_node_group* nodeGroup, sc_dsp_type type, sc_dsp** dsp);
     sbk_status SC_API sc_node_group_add_dsp(sc_node_group* nodeGroup, sc_dsp* dsp, sc_dsp_index index);
     sbk_status SC_API sc_node_group_release(sc_node_group* nodeGroup);
+
+    /**@}*/
 
 #ifdef __cplusplus
 }
