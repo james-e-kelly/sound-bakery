@@ -50,9 +50,9 @@ static sbk_status sc_dsp_lowpass_set_param_float(sc_dsp* dsp, int index, float v
     return result;
 }
 
-static sbk_status sc_dsp_lowpass_get_param_float(sc_dsp_state* const state, int index, float* const value)
+static sbk_status sc_dsp_lowpass_get_param_float(sc_dsp* dsp, int index, float* value)
 {
-    (void)state;
+    (void)dsp;
     (void)value;
 
     sbk_status result = SBK_ERR_CHEF;

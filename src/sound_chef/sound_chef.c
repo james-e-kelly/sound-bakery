@@ -398,7 +398,7 @@ static const sc_dsp_description* const g_builtinDspDescriptions[] =
         &g_dspClapVTable,
 };
 
-sbk_status sc_system_get_dsp_desc(const sc_system* system, sc_uint32 handle, const sc_dsp_description** outDescription)
+sbk_status sc_system_get_dsp_desc(sc_system* system, sc_uint32 handle, const sc_dsp_description** outDescription)
 {
     SC_CHECK_ARG(system != NULL);
     SC_CHECK_ARG(outDescription != NULL);

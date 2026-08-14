@@ -210,7 +210,6 @@ typedef struct sc_sound sc_sound_instance;
 typedef struct sc_node_group sc_node_group;
 
 typedef struct sc_dsp sc_dsp;
-typedef struct sc_dsp_state sc_dsp_state;
 typedef struct sc_dsp_config sc_dsp_config;
 typedef struct sc_dsp_parameter sc_dsp_parameter;
 typedef struct sc_dsp_description sc_dsp_description;
