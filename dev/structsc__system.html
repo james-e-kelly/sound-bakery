@@ -167,8 +167,8 @@ Collaboration diagram for sc_system:</div>
 <area shape="poly" title=" " alt="" coords="453,128,489,181,485,184,449,131"/>
 <area shape="rect" href="structsc__dsp__description.html" title="Structure to create, destroy, and update DSP units of a specific handle." alt="" coords="220,303,365,328"/>
 <area shape="poly" title=" " alt="" coords="422,132,303,304,298,301,417,129"/>
-<area shape="rect" href="structsc__clap.html" title="Holds a DLL handle and plugin entry for a CLAP plugin." alt="" coords="400,5,471,31"/>
-<area shape="poly" title=" " alt="" coords="438,45,438,93,433,93,433,45"/>
+<area shape="rect" href="structsc__clap.html" title="Holds a DLL handle and plugin entry for a CLAP plugin." alt="" coords="345,5,416,31"/>
+<area shape="poly" title=" " alt="" coords="379,44,384,68,395,81,409,91,406,95,391,85,380,70,374,45"/>
 <area shape="rect" href="structsc__node__group.html" title="Groups nodes/DSPs together into one." alt="" coords="512,303,631,328"/>
 <area shape="poly" title=" " alt="" coords="631,294,649,277,655,257,649,236,636,212,618,191,575,158,526,135,480,120,482,115,528,130,577,153,622,187,640,209,654,234,661,257,654,280,634,298"/>
 <area shape="poly" title=" " alt="" coords="563,290,554,263,540,236,512,211,516,207,544,233,559,261,568,288"/>
@@ -180,6 +180,8 @@ Collaboration diagram for sc_system:</div>
 <area shape="poly" title=" " alt="" coords="106,220,121,250,145,277,181,295,220,306,219,311,179,300,142,281,117,253,101,223"/>
 <area shape="rect" href="structsc__dsp__parameter__float.html" title=" " alt="" coords="5,93,183,119"/>
 <area shape="poly" title=" " alt="" coords="97,132,98,183,92,183,92,132"/>
+<area shape="rect" href="structsc__voice.html" title=" " alt="" coords="451,5,529,31"/>
+<area shape="poly" title=" " alt="" coords="479,44,463,71,446,95,442,92,458,68,474,42"/>
 </map>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
@@ -215,6 +217,12 @@ float *&#160;</td><td class="memItemRight" valign="bottom"><b>clapPluginChannels
 <tr class="memitem:a7fecb25ec015e904f13d46118799330c" id="r_a7fecb25ec015e904f13d46118799330c"><td class="memItemLeft" align="right" valign="top"><a id="a7fecb25ec015e904f13d46118799330c" name="a7fecb25ec015e904f13d46118799330c"></a>
 const <a class="el" href="structsc__dsp__description.html">sc_dsp_description</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>userDspRegistry</b> [SC_MAX_USER_DSP_TYPES]</td></tr>
 <tr class="separator:a7fecb25ec015e904f13d46118799330c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7df7acaa30322d3ff3033496c4bdf0a" id="r_ae7df7acaa30322d3ff3033496c4bdf0a"><td class="memItemLeft" align="right" valign="top"><a id="ae7df7acaa30322d3ff3033496c4bdf0a" name="ae7df7acaa30322d3ff3033496c4bdf0a"></a>
+ma_slot_allocator&#160;</td><td class="memItemRight" valign="bottom"><b>voiceSlotAllocator</b></td></tr>
+<tr class="separator:ae7df7acaa30322d3ff3033496c4bdf0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1eed1569c76824bfe3ec89d1868b163a" id="r_a1eed1569c76824bfe3ec89d1868b163a"><td class="memItemLeft" align="right" valign="top"><a id="a1eed1569c76824bfe3ec89d1868b163a" name="a1eed1569c76824bfe3ec89d1868b163a"></a>
+<a class="el" href="structsc__voice.html">sc_voice</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>voiceBuffer</b></td></tr>
+<tr class="separator:a1eed1569c76824bfe3ec89d1868b163a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Object that manages the node graph, sounds, output etc. </p>

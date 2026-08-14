@@ -6,8 +6,8 @@
 <area shape="poly" id="edge5_Node000005_Node000002" title=" " alt="" coords="498,132,498,183,493,183,493,132"/>
 <area shape="rect" id="Node000006" href="$structsc__dsp__description.html" title="Structure to create, destroy, and update DSP units of a specific handle." alt="" coords="216,303,361,328"/>
 <area shape="poly" id="edge9_Node000006_Node000002" title=" " alt="" coords="469,129,403,183,342,250,299,304,295,301,338,246,399,179,466,125"/>
-<area shape="rect" id="Node000003" href="$structsc__clap.html" title="Holds a DLL handle and plugin entry for a CLAP plugin." alt="" coords="460,5,531,31"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="498,45,498,93,493,93,493,45"/>
+<area shape="rect" id="Node000003" href="$structsc__clap.html" title="Holds a DLL handle and plugin entry for a CLAP plugin." alt="" coords="405,5,476,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="439,44,444,68,455,81,469,91,466,95,451,85,440,70,434,45"/>
 <area shape="rect" id="Node000004" href="$structsc__node__group.html" title="Groups nodes/DSPs together into one." alt="" coords="551,303,669,328"/>
 <area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="636,292,646,278,652,257,646,236,622,196,588,164,552,139,520,121,522,116,555,134,592,160,626,193,651,234,657,257,651,280,641,295"/>
 <area shape="poly" id="edge6_Node000005_Node000004" title=" " alt="" coords="536,310,510,299,489,280,481,262,480,242,488,209,493,210,486,243,487,261,493,277,513,294,538,305"/>
@@ -19,8 +19,10 @@
 <area shape="poly" id="edge11_Node000006_Node000007" title=" " alt="" coords="106,220,121,250,145,277,179,295,216,305,215,310,177,300,142,281,117,253,101,223"/>
 <area shape="rect" id="Node000008" href="$structsc__dsp__parameter__float.html" title=" " alt="" coords="5,93,183,119"/>
 <area shape="poly" id="edge12_Node000007_Node000008" title=" " alt="" coords="97,132,98,183,92,183,92,132"/>
-<area shape="rect" id="Node000009" href="$classsbk_1_1core_1_1object__owner.html" title="Creates, owns and tracks objects. Is owned by other object owners." alt="" coords="954,93,1130,119"/>
-<area shape="poly" id="edge13_Node000001_Node000009" title=" " alt="" coords="1013,128,916,186,913,181,1010,123"/>
-<area shape="rect" id="Node000010" title=" " alt="" coords="781,93,930,119"/>
-<area shape="poly" id="edge14_Node000001_Node000010" title=" " alt="" coords="869,130,892,182,888,184,864,132"/>
+<area shape="rect" id="Node000009" href="$structsc__voice.html" title=" " alt="" coords="511,5,589,31"/>
+<area shape="poly" id="edge13_Node000002_Node000009" title=" " alt="" coords="539,44,523,71,506,95,502,92,518,68,534,42"/>
+<area shape="rect" id="Node000010" href="$classsbk_1_1core_1_1object__owner.html" title="Creates, owns and tracks objects. Is owned by other object owners." alt="" coords="954,93,1130,119"/>
+<area shape="poly" id="edge14_Node000001_Node000010" title=" " alt="" coords="1013,128,916,186,913,181,1010,123"/>
+<area shape="rect" id="Node000011" title=" " alt="" coords="781,93,930,119"/>
+<area shape="poly" id="edge15_Node000001_Node000011" title=" " alt="" coords="869,130,892,182,888,184,864,132"/>
 </map>

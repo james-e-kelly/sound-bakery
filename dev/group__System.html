@@ -183,8 +183,7 @@ sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_syste
 <tr class="memitem:ga677251f8944e2c968b8427f93fba9fed" id="r_ga677251f8944e2c968b8427f93fba9fed"><td class="memItemLeft" align="right" valign="top"><a id="ga677251f8944e2c968b8427f93fba9fed" name="ga677251f8944e2c968b8427f93fba9fed"></a>
 <a class="el" href="structsc__system__config.html">sc_system_config</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_system_config_init</b> (const char *pluginPath)</td></tr>
 <tr class="separator:ga677251f8944e2c968b8427f93fba9fed"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga73c06a9406456d77d8dd5a99dbfd6792" id="r_ga73c06a9406456d77d8dd5a99dbfd6792"><td class="memItemLeft" align="right" valign="top"><a id="ga73c06a9406456d77d8dd5a99dbfd6792" name="ga73c06a9406456d77d8dd5a99dbfd6792"></a>
-sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_system_init</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, const <a class="el" href="structsc__system__config.html">sc_system_config</a> *systemConfig)</td></tr>
+<tr class="memitem:ga73c06a9406456d77d8dd5a99dbfd6792" id="r_ga73c06a9406456d77d8dd5a99dbfd6792"><td class="memItemLeft" align="right" valign="top">sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__System.html#ga73c06a9406456d77d8dd5a99dbfd6792">sc_system_init</a> (<a class="el" href="structsc__system.html">sc_system</a> *system, const <a class="el" href="structsc__system__config.html">sc_system_config</a> *systemConfig)</td></tr>
 <tr class="separator:ga73c06a9406456d77d8dd5a99dbfd6792"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga4d98ff65c6166df31444916b20e0bbc3" id="r_ga4d98ff65c6166df31444916b20e0bbc3"><td class="memItemLeft" align="right" valign="top"><a id="ga4d98ff65c6166df31444916b20e0bbc3" name="ga4d98ff65c6166df31444916b20e0bbc3"></a>
 sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_system_close</b> (<a class="el" href="structsc__system.html">sc_system</a> *system)</td></tr>
@@ -193,6 +192,35 @@ sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_syste
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>System objects must be created and then initialized. When finished, system objects must be closed and then released. </p>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="ga73c06a9406456d77d8dd5a99dbfd6792" name="ga73c06a9406456d77d8dd5a99dbfd6792"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga73c06a9406456d77d8dd5a99dbfd6792">&#9670;&#160;</a></span>sc_system_init()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">sbk_status SC_API sc_system_init </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structsc__system.html">sc_system</a> *&#160;</td>
+          <td class="paramname"><em>system</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structsc__system__config.html">sc_system_config</a> *&#160;</td>
+          <td class="paramname"><em>systemConfig</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000009">Todo:</a></b></dt><dd>Make this dynamic. It's currently set to so there are no surprises </dd></dl>
+
+</div>
+</div>
 <a id="ga0ac094b92c512c862ad06edb170bc98b" name="ga0ac094b92c512c862ad06edb170bc98b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga0ac094b92c512c862ad06edb170bc98b">&#9670;&#160;</a></span>sc_system_log_init()</h2>
 
@@ -220,7 +248,7 @@ sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_syste
 </div><div class="memdoc">
 
 <p>Sets up logging. </p>
-<dl class="section remark"><dt>Remarks</dt><dd>Must be called before sc_system_init. </dd></dl>
+<dl class="section remark"><dt>Remarks</dt><dd>Must be called before <a class="el" href="group__System.html#ga73c06a9406456d77d8dd5a99dbfd6792">sc_system_init</a>. </dd></dl>
 
 </div>
 </div>

@@ -1,5 +1,6 @@
 var NAVTREEINDEX2 =
 {
+"structsc__delay__config.html":[13,0,27],
 "structsc__delay__node.html":[13,0,28],
 "structsc__delay__node__config.html":[13,0,29],
 "structsc__dsp.html":[13,0,30],
@@ -16,8 +17,9 @@ var NAVTREEINDEX2 =
 "structsc__sound.html":[13,0,42],
 "structsc__system.html":[13,0,45],
 "structsc__system__config.html":[13,0,46],
-"structselection.html":[13,0,47],
-"structstbi__io__callbacks.html":[13,0,49],
+"structsc__voice.html":[13,0,47],
+"structselection.html":[13,0,48],
+"structstbi__io__callbacks.html":[13,0,50],
 "switch__container_8h_source.html":[14,0,2,0,7,1,5],
 "system_8h_source.html":[14,0,2,0,18],
 "system__thread_8h_source.html":[14,0,2,0,1,6,3],

@@ -28,7 +28,8 @@ var NAVTREEINDEX1 =
 "group__Sound.html":[11,1],
 "group__SoundInstance.html":[11,2],
 "group__System.html":[11,0],
-"group__System.html#ga0ac094b92c512c862ad06edb170bc98b":[11,0,4],
+"group__System.html#ga0ac094b92c512c862ad06edb170bc98b":[11,0,5],
+"group__System.html#ga73c06a9406456d77d8dd5a99dbfd6792":[11,0,4],
 "group__SystemClap.html":[11,0,3],
 "group__SystemDSP.html":[11,0,2],
 "group__SystemDSP.html#ga79afa65bf848aa655bb118fd0e4df9e7":[11,0,2,0],
@@ -248,6 +249,5 @@ var NAVTREEINDEX1 =
 "structsc__bank.html":[13,0,23],
 "structsc__clap.html":[13,0,24],
 "structsc__clap__node.html":[13,0,25],
-"structsc__delay.html":[13,0,26],
-"structsc__delay__config.html":[13,0,27]
+"structsc__delay.html":[13,0,26]
 };
