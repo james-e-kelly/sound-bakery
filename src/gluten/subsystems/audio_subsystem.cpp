@@ -49,6 +49,13 @@ int gluten::audio_subsystem::init()
     return 0;
 }
 
+void gluten::audio_subsystem::exit()
+{
+    m_filesToSoundInstancesMap.clear();
+    m_filesToSoundsMap.clear();
+    (void)sbk_system_destroy();
+}
+
 auto gluten::audio_subsystem::play_sound(const std::filesystem::path& filePath) -> void
 {
     loop_data* loopData = get_sound_loop_info(filePath);
