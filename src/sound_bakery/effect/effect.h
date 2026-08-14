@@ -24,43 +24,20 @@ namespace sbk::engine
         REGISTER_REFLECTION(effect_description, database_object)
 
     public:
-        effect_description() : sbk::core::database_object(), m_config() { set_dsp_type(SC_DSP_TYPE_LOWPASS); }
+        effect_description() : sbk::core::database_object() {}
 
-        auto set_dsp_type(sc_dsp_type type) -> void
-        {
-            m_parameterDescriptions.clear();
-
-            m_config = sc_dsp_config_init(type);
-            BOOST_ASSERT(m_config.vtable != nullptr);
-
-            for (int i = 0; i < m_config.vtable->numParams; ++i)
-            {
-                m_parameterDescriptions.emplace_back(m_config.vtable->params[i]);
-            }
-        }
-
-        auto set_dsp_clap(const clap_plugin_factory* pluginFactory) -> void
-        {
-            m_parameterDescriptions.clear();
-
-            m_config = sc_dsp_config_init_clap(pluginFactory);
-            BOOST_ASSERT(m_config.vtable != nullptr);
-
-            for (int i = 0; i < m_config.vtable->numParams; ++i)
-            {
-                m_parameterDescriptions.emplace_back(m_config.vtable->params[i]);
-            }
-        }
+        auto set_dsp_type(sc_dsp_type type) -> void;
+        auto set_dsp_clap(const clap_plugin_factory* pluginFactory) -> void;
 
         [[nodiscard]] auto get_parameters() const -> eastl::vector<effect_parameter_description>
         {
             return m_parameterDescriptions;
         }
-        [[nodiscard]] auto get_config() const -> const sc_dsp_config* { return &m_config; }
-        [[nodiscard]] auto get_dsp_type() const -> sc_dsp_type { return m_config.type; }
+        [[nodiscard]] auto get_dsp_type() const -> sc_dsp_type { return static_cast<sc_dsp_type>(m_effectHandle); }
+        [[nodiscard]] auto get_dsp_handle() const -> sc_uint32 { return m_effectHandle; }
 
     private:
-        sc_dsp_config m_config;
+        sc_uint32 m_effectHandle{}; //< Handle is basically an index into an array of dsp descriptions
         eastl::vector<effect_parameter_description> m_parameterDescriptions;
     };
 }  // namespace sbk::engine

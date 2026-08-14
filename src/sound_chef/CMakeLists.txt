@@ -107,6 +107,8 @@ set(SOUND_CHEF_SOURCES
     sound_chef_bank.c
     sound_chef_encoder.c
     sound_chef_internal.c
+    sound_chef_sound.c
+    sound_chef_node_group.c
 
     dsp/sound_chef_dsp.c
     dsp/sound_chef_dsp_clap.c
@@ -118,6 +120,9 @@ set(SOUND_CHEF_SOURCES
 
     encoders/sound_chef_encoder_vorbis.c
     encoders/vorbis_encode_test.c
+
+    decoders/sound_chef_decoder_opus.c
+    decoders/sound_chef_decoder_vorbis.c
 )
 
 set(SOUND_CHEF_PRIVATE_HEADERS

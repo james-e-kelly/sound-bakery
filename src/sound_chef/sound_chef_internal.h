@@ -12,6 +12,7 @@
 #define SC_CREATE(ptr, t, system)                                                   \
     do                                                                              \
     {                                                                               \
+        SC_CHECK_ARG((system) != NULL);                                             \
         (ptr) = (t*)ma_malloc(sizeof(t), &(system)->engine.allocationCallbacks);    \
         SC_CHECK_MEM((ptr));                                                        \
         memset((ptr), 0, sizeof(t));                                                \

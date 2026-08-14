@@ -116,7 +116,7 @@ void audio_meter_widget::render_implementation()
 
             if (m_meterDsp)
             {
-                channels = ma_node_get_output_channels(m_meterDsp->state->userData, 0);
+                channels = ma_node_get_output_channels(m_meterDsp->node, 0);
 
                 for (std::size_t index = 0; index < channels; ++index)
                 {

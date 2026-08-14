@@ -260,55 +260,59 @@ void sc_delay_node_uninit(sc_delay_node* delayNode, const ma_allocation_callback
 
 // DSP CALLBACKS
 
-static sbk_status sc_dsp_delay_create(sc_dsp_state* state)
+static sbk_status sc_dsp_delay_create(sc_system* system, sc_dsp* dsp, void* userData)
 {
-    SC_CHECK_ARG(state != NULL);
+    SC_CHECK_ARG(system != NULL);
+    SC_CHECK_ARG(dsp != NULL);
+    (void)userData;
 
-    ma_node_graph* const nodeGraph                           = (ma_node_graph*)state->system;
-    const sc_system* const system                            = (sc_system*)state->system;
+    ma_node_graph* const nodeGraph                           = (ma_node_graph*)system;
     const ma_engine* const engine                            = (const ma_engine*)system;
     const ma_allocation_callbacks* const allocationCallbacks = &engine->allocationCallbacks;
 
-    SC_CREATE(state->userData, sc_delay_node, system);
+    ma_uint32 sampleRate = ma_engine_get_sample_rate(engine);
+    ma_uint32 channels   = ma_engine_get_channels(engine);
+    SC_CHECK(sampleRate > 0, SBK_ERR_CHEF_UNITIALIZED);
+    SC_CHECK(channels > 0, SBK_ERR_CHEF_UNITIALIZED);
 
-    const ma_uint32 tenSecondDelay = ma_engine_get_sample_rate(engine) * 10U;
+    SC_CREATE(dsp->node, sc_delay_node, system);
 
-    sc_delay_node_config config = sc_delay_node_config_init(ma_engine_get_channels(engine), ma_engine_get_sample_rate(engine), tenSecondDelay);
-    return sc_delay_node_init(nodeGraph, &config, allocationCallbacks, (sc_delay_node*)state->userData);
+    const ma_uint32 tenSecondDelay = sampleRate * 10U;
+
+    const sc_delay_node_config config = sc_delay_node_config_init(channels, sampleRate, tenSecondDelay);
+    return sc_delay_node_init(nodeGraph, &config, allocationCallbacks, (sc_delay_node*)dsp->node);
 }
 
-static sbk_status sc_dsp_delay_release(sc_dsp_state* state)
+static sbk_status sc_dsp_delay_release(sc_system* system, sc_dsp* dsp)
 {
-    SC_CHECK_ARG(state != NULL);
-    SC_CHECK_ARG(state->system != NULL);
+    SC_CHECK_ARG(system != NULL);
+    SC_CHECK_ARG(dsp != NULL);
 
-    const sc_system* const system                            = (sc_system*)state->system;
     const ma_engine* const engine                            = (const ma_engine*)system;
     const ma_allocation_callbacks* const allocationCallbacks = &engine->allocationCallbacks;
 
-    sc_delay_node_uninit((sc_delay_node*)state->userData, allocationCallbacks);
-    SC_FREE(state->userData, system);
+    sc_delay_node_uninit((sc_delay_node*)dsp->node, allocationCallbacks);
+    SC_FREE(dsp->node, system);
     return SBK_SUCCESS;
 }
 
-static sbk_status sc_dsp_delay_is_idle(sc_dsp_state* state, sc_bool* outIsIdle)
+static sbk_status sc_dsp_delay_is_idle(sc_dsp* dsp, sc_bool* outIsIdle)
 {
-    SC_CHECK_ARG(state != NULL);
+    SC_CHECK_ARG(dsp != NULL);
+    SC_CHECK_ARG(dsp->node != NULL);
     SC_CHECK_ARG(outIsIdle != NULL);
-    SC_CHECK_ARG(state->userData != NULL);
 
-    sc_delay_node* delayNode = (sc_delay_node*)state->userData;
+    sc_delay_node* delayNode = (sc_delay_node*)dsp->node;
     *outIsIdle               = (sc_bool)c89atomic_load_explicit_32(&delayNode->delay.isIdle, c89atomic_memory_order_relaxed);
     return SBK_SUCCESS;
 }
 
-static sbk_status sc_dsp_delay_set_param_float(sc_dsp_state* state, int index, float value)
+static sbk_status sc_dsp_delay_set_param_float(sc_dsp* dsp, sc_uint32 index, float value)
 {
-    SC_CHECK_ARG(state != NULL);
-    SC_CHECK_ARG(state->userData != NULL);
-    SC_CHECK_ARG(index >= 0);
+    SC_CHECK_ARG(dsp != NULL);
+    SC_CHECK_ARG(dsp->node != NULL);
 
-    sc_delay_node* const delayNode = (sc_delay_node*)state->userData;
+    sc_delay_node* const delayNode = (sc_delay_node*)dsp->node;
     sc_delay* const delay          = &delayNode->delay;
 
     switch (index)
@@ -340,14 +344,13 @@ static sbk_status sc_dsp_delay_set_param_float(sc_dsp_state* state, int index, f
     return SBK_ERR_INVALID_OPERATION;
 }
 
-static sbk_status sc_dsp_delay_get_param_float(sc_dsp_state* state, int index, float* const value)
+static sbk_status sc_dsp_delay_get_param_float(sc_dsp* dsp, sc_uint32 index, float* const value)
 {
-    SC_CHECK_ARG(state != NULL);
-    SC_CHECK_ARG(state->userData != NULL);
-    SC_CHECK_ARG(index >= 0);
+    SC_CHECK_ARG(dsp != NULL);
+    SC_CHECK_ARG(dsp->node != NULL);
     SC_CHECK_ARG(value != NULL);
 
-    sc_delay_node* const delayNode = (sc_delay_node*)state->userData;
+    sc_delay_node* const delayNode = (sc_delay_node*)dsp->node;
     sc_delay* const delay          = &delayNode->delay;
 
     switch (index)
@@ -386,7 +389,7 @@ static sc_dsp_parameter s_delayFeedback = {sc_dsp_parameter_type_float, "Feedbac
 
 static sc_dsp_parameter* s_delayParams[SC_DSP_DELAY_PARAM_COUNT] = {&s_delayDelay, &s_delayDry, &s_delayWet, &s_delayFeedback};
 
-sc_dsp_vtable g_dspDelayVTable = 
+sc_dsp_description g_dspDelayVTable = 
 {
     sc_dsp_delay_create, 
     sc_dsp_delay_release, 

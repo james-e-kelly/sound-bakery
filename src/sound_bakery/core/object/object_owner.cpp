@@ -5,6 +5,7 @@
 #include "sound_bakery/core/thread_domain.h"
 #include "sound_bakery/serialization/serializer.h"
 #include "sound_bakery/system.h"
+#include "sound_bakery/runtime/runtime.h"
 #include "sound_bakery/util/type_helper.h"
 
 sbk::core::object_owner::~object_owner()
@@ -29,6 +30,15 @@ auto sbk::core::object_owner::get_system() const noexcept -> sbk::engine::system
         }
     }
     return nullptr;
+}
+
+auto sbk::core::object_owner::get_runtime() const noexcept -> sbk::engine::runtime*
+{
+    if (sbk::engine::system* const system = get_system())
+    {
+        return system->get_runtime();
+    }
+    return {};
 }
 
 auto sbk::core::object_owner::set_owner(object_owner* newOwner) -> void

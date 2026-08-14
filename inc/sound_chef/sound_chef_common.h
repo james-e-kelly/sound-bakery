@@ -42,15 +42,6 @@
     #endif
 #endif
 
-#define MA_COINIT_VALUE 0x2 //< COINIT_APARTMENTTHREADED
-
-#include "miniaudio.h"
-#include "clap/clap.h"
-#include "c89atomic.h"
-
-#include <assert.h>
-#include <string.h>
-
 #if defined(_WIN32)
     #define SC_CALL __stdcall
 #else
@@ -79,17 +70,6 @@
     #define SC_CLASS
 #endif
 
-/* Warns (in C++) if a returned result code is discarded; expands to nothing in C. */
-#if defined(__cplusplus)
-    #define SBK_NODISCARD [[nodiscard]]
-#else
-    #define SBK_NODISCARD
-#endif
-
-#define SC_CHECK_AND_GOTO(condition, dest) \
-    if ((condition) == MA_FALSE)           \
-    goto dest
-
 #define SC_ZERO_OBJECT(p) memset((p), 0, sizeof(*(p)))
 
 #define SC_COUNTOF(x)            (sizeof(x) / sizeof(x[0]))
@@ -103,6 +83,29 @@
 
 #define SC_MAX_CHANNELS         36      //< Support a max of 5th order ambisonics
 #define SC_MAX_FRAME_COUNT      2048    //< Safe default for allocating staging areas in memory
+
+#define SC_MAX_USER_DSP_TYPES   16      //< sc_dsp_descriptions are kept in a static array. Increase this if we need to support more DSP types
+
+#ifndef SC_ASSERT
+    #define SC_ASSERT(condition) assert(condition)
+#endif
+
+#define MA_COINIT_VALUE 0x2  //< COINIT_APARTMENTTHREADED
+
+// Disable built-in decoding in favour of the ones from the example
+#define MA_NO_VORBIS
+#define MA_NO_OPUS
+
+// Override miniaudio macros so they are usable outside of MINIAUDIO_IMPLEMENTATION sections
+#define MA_ZERO_OBJECT(p)       SC_ZERO_OBJECT((p))
+#define MA_ZERO_MEMORY(p, sz)   memset((p), 0, (sz))
+
+#include "miniaudio.h"
+#include "clap/clap.h"
+#include "c89atomic.h"
+
+#include <assert.h>
+#include <string.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -124,8 +127,28 @@ typedef float               sc_atomic_float;
 
 typedef ma_bool32           sc_bool;
 typedef ma_uint32           sc_uint32;
+typedef ma_int32            sc_int32;
 typedef ma_int64            sc_int64;
 typedef ma_uint64           sc_uint64;
+
+typedef sc_uint64           sc_voice_handle;        //< Voice handle. Contains both a reference count and an index
+typedef sc_uint32           sc_voice_refcount;      //< References to this slot. Used to check if a handle is old/stale
+typedef sc_uint32           sc_voice_slot;          //< Slot/index into the voice array
+
+static MA_INLINE sc_voice_refcount sc_voice_handle_extract_refcount(sc_voice_handle handle)
+{
+    return (sc_uint32)(handle >> 32);
+}
+
+static MA_INLINE sc_voice_slot sc_voice_handle_extract_slot(sc_voice_handle handle)
+{
+    return (sc_voice_slot)(handle & 0xFFFFFFFFu);
+}
+
+static MA_INLINE sc_voice_handle sc_voice_handle_make(sc_voice_refcount rc, sc_voice_slot slot)
+{
+    return ((sc_voice_handle)rc << 32) | (sc_voice_handle)slot;
+}
 
 #define SBK_FALSE 0
 #define SBK_TRUE 1
@@ -162,6 +185,7 @@ typedef enum
     SBK_ERR_EMPTY,                  //< The buffer or container was empty and nothing could be read
     SBK_ERR_TOO_LARGE,              //< The request was too large and nothing could be read
     SBK_ERR_AT_END,                 //< At the end of the buffer and cannot go further
+    SBK_ERR_NOT_FOUND,              //< The resource was not found
 
     SBK_ERROR_MAX
 } sbk_status;
@@ -186,12 +210,9 @@ typedef enum
 #define SC_CHECK_MEM(ptr) \
     if ((ptr) == NULL)    \
     return SBK_ERR_OUT_OF_MEMORY
-#define SC_CHECK_MEM_FREE(ptr, freePtr) \
-    if ((ptr) == NULL)                  \
-    {                                   \
-        ma_free((freePtr), NULL);       \
-        return SBK_ERR_OUT_OF_MEMORY;       \
-    }
+#define SC_CHECK_AND_GOTO(condition, dest) \
+    if ((condition) == MA_FALSE)           \
+    goto dest
 
 typedef struct sc_system sc_system;
 typedef struct sc_system_config sc_system_config;
@@ -202,13 +223,22 @@ typedef struct sc_sound sc_sound_instance;
 typedef struct sc_node_group sc_node_group;
 
 typedef struct sc_dsp sc_dsp;
-typedef struct sc_dsp_state sc_dsp_state;
 typedef struct sc_dsp_config sc_dsp_config;
 typedef struct sc_dsp_parameter sc_dsp_parameter;
-typedef struct sc_dsp_vtable sc_dsp_vtable;
+typedef struct sc_dsp_description sc_dsp_description;
 
 typedef struct sc_clap sc_clap;
 
+typedef struct sc_voice sc_voice;
+
+/**
+ * @brief The different ways to create a sound.
+ * 
+ * These types are basically the same as @ref ma_sound_flags.
+ * 
+ * @see sc_system_create_sound
+ * @see sc_system_create_sound_memory
+ */
 typedef enum sc_sound_mode
 {
     SC_SOUND_MODE_DEFAULT   = 0x00000000,   //< Creates a sound in memory and decompresses during runtime
@@ -217,23 +247,41 @@ typedef enum sc_sound_mode
     SC_SOUND_MODE_STREAM    = 0x00000004,   //< Streams parts of the sound from disk during runtime
 } sc_sound_mode;
 
+/**
+ * @brief Built-in DSP types.
+ * 
+ * It is expected that user DSP types would have numbers higher than SC_DSP_TYPE_COUNT
+ * example: MY_DSP_TYPE = SC_DSP_TYPE_COUNT + 1
+ * The system can then store user DSP descriptions and find them by "handle"
+ */
 typedef enum sc_dsp_type
 {
-    SC_DSP_TYPE_UNKOWN,     //< User created
+    SC_DSP_TYPE_UNKNOWN,
     SC_DSP_TYPE_FADER,
     SC_DSP_TYPE_LOWPASS,
     SC_DSP_TYPE_HIGHPASS,
     SC_DSP_TYPE_DELAY,
     SC_DSP_TYPE_METER,
-    SC_DSP_TYPE_CLAP        //< Wraps a CLAP plugin
+    SC_DSP_TYPE_CLAP,           //< Wraps a CLAP plugin
+    SC_DSP_TYPE_COUNT           //< Count of types. SC_DSP_TYPE_COUNT - 1 == number of built in types
 } sc_dsp_type;
 
+/**
+ * @brief Predefined positions to insert DSP units into a @ref sc_node_group.
+ * 
+ * Values are negative so positive index values always refer to a specific position in the node group.
+ */
 typedef enum sc_dsp_index
 {
     SC_DSP_INDEX_TAIL = -2,  //< Left/back of the chain and becomes the new input
     SC_DSP_INDEX_HEAD = -1   //< Right/top of the chain and becomes the new output
 } sc_dsp_index;
 
+/**
+ * @brief Encoding formats that Sound Chef supports.
+ * 
+ * Extends @ref ma_encoding_format.
+ */
 typedef enum sc_encoding_format
 {
     sc_encoding_format_unknown = 0,
@@ -243,43 +291,25 @@ typedef enum sc_encoding_format
     sc_encoding_format_opus
 } sc_encoding_format;
 
-typedef sbk_status(SC_CALL* sc_dsp_create_proc)(sc_dsp_state* dspState);
-typedef sbk_status(SC_CALL* sc_dsp_release_proc)(sc_dsp_state* dspState);
-typedef sbk_status(SC_CALL* sc_dsp_is_idle_proc)(sc_dsp_state* dspState, sc_bool* outIsIdle);
-typedef sbk_status(SC_CALL* sc_dsp_set_param_float_proc)(sc_dsp_state* dspState, int index, float value);
-typedef sbk_status(SC_CALL* sc_dsp_get_param_float_proc)(sc_dsp_state* dspState, int index, float* value);
+typedef sbk_status(SC_CALL* sc_dsp_create_proc)(sc_system* system, sc_dsp* dsp, void* userData);
+typedef sbk_status(SC_CALL* sc_dsp_release_proc)(sc_system* system, sc_dsp* dsp);
+typedef sbk_status(SC_CALL* sc_dsp_is_idle_proc)(sc_dsp* dsp, sc_bool* outIsIdle);
+typedef sbk_status(SC_CALL* sc_dsp_set_param_float_proc)(sc_dsp* dsp, sc_uint32 index, float value);
+typedef sbk_status(SC_CALL* sc_dsp_get_param_float_proc)(sc_dsp* dsp, sc_uint32 index, float* value);
 
-struct sc_dsp_vtable
+/**
+ * @brief Structure to create, destroy, and update DSP units of a specific handle.
+ */
+struct sc_dsp_description
 {
-    sc_dsp_create_proc create;
-    sc_dsp_release_proc release;
-    sc_dsp_is_idle_proc isIdle;             //< Optional: For delays with feedback, this is used to detect if the delay has gone silent and the voice can be ended
+    sc_dsp_create_proc          create;             //< Allocates and initializes the ma_node that will handle the DSP processing
+    sc_dsp_release_proc         release;
+    sc_dsp_is_idle_proc         isIdle;             //< Optional: For delays with feedback, this is used to detect if the delay has gone silent and the voice can be ended
     sc_dsp_set_param_float_proc setFloat;
     sc_dsp_get_param_float_proc getFloat;
 
-    sc_dsp_parameter** params;
-    int numParams;
-};
-
-/**
- * @brief Holds instance data for a single sc_dsp.
- *
- * Each DSP callback is passed a sc_dsp_state object. This state object can be
- * used to access the system, the user created object (likely a miniaudio node)
- * and the sc_dsp object.
- */
-struct sc_dsp_state
-{
-    void* instance;  //< points to the current sc_dsp object
-    void* userData;  //< points to the user created object, likely some type of ma_node
-    void* system;    //< points to the owning sc_system object
-};
-
-struct sc_dsp_config
-{
-    sc_dsp_type type;
-    sc_dsp_vtable* vtable;
-    const clap_plugin_factory_t* clapFactory;
+    const sc_dsp_parameter**    params;
+    sc_uint32                   numParams;
 };
 
 /**
@@ -290,20 +320,20 @@ struct sc_dsp_config
  */
 struct sc_dsp
 {
-    sc_dsp_state* state;    //< holds the instance data for the dsp
-    sc_dsp_vtable* vtable;  //< holds the functions for interacting with the underlying node type. Must be not null
-    sc_dsp_type type;
-    const clap_plugin_factory_t* clapFactory; //< If this is a CLAP plugin, the factory to the plugin
-    sc_dsp* next;  //< when in a node group, the get_parent/next dsp. Can be null if the head node
-    sc_dsp* prev;  //< when in a node group, the child/previous dsp. Can be null if the tail node
+    sc_uint32       handle;         //< Either a sc_dsp_type or a user handle
+    ma_node*        node;           //< The dynamically allocated node that can process audio
+    sc_system*      system;         //< Owning system
+    sc_node_group*  groupOwner;     //< Owning node group. Can be null
+    sc_dsp*         next;           //< when in a node group, the parent/next dsp. Can be null if the head node
+    sc_dsp*         prev;           //< when in a node group, the child/previous dsp. Can be null if the tail node
 };
 
 struct sc_sound
 {
-    ma_sound sound;
-    sc_sound_mode mode;
-    ma_decoder* memoryDecoder;
-    sc_system* owningSystem;
+    ma_sound        sound;
+    sc_sound_mode   mode;
+    ma_decoder*     memoryDecoder;
+    sc_system*      owningSystem;
 };
 
 /**
@@ -320,7 +350,7 @@ struct sc_node_group
 {
     sc_dsp* tail;   //< Left most node. Sounds and child groups connect to this
     sc_dsp* fader;  //< Controls the volume and more of the group. Exists at start
-    sc_dsp* head;   //< Right/top most node. Nodes in the group route to this. The head then outputs to a get_parent
+    sc_dsp* head;   //< Right/top most node. Nodes in the group route to this. The head then outputs to a parent
 };
 
 /**
@@ -328,15 +358,20 @@ struct sc_node_group
  */
 struct sc_clap
 {
-    ma_handle dynamicLibraryHandle;         //< Handle to the .clap file
-    clap_plugin_entry_t* clapEntry;         //< Entry point of the plugin
-    const clap_plugin_factory_t* pluginFactory;    //< Plugin factory to poll and create plugins from
+    ma_handle                       dynamicLibraryHandle;   //< Handle to the .clap file
+    clap_plugin_entry_t*            clapEntry;              //< Entry point of the plugin
+    const clap_plugin_factory_t*    pluginFactory;          //< Plugin factory to poll and create plugins from
+};
+
+struct sc_voice
+{
+    sc_uint32 temp;
 };
 
 /**
  * @brief Object that manages the node graph, sounds, output etc.
  *
- * The sc_system is a wrapper for the ma_engine type from miniaudio.
+ * The sc_system is a wrapper for the @ref ma_engine from miniaudio.
  * This means that sc_system has a node graph, resource manager, can output
  * to the user's audio device and everything expected from miniaudio's
  * high-level API.
@@ -349,17 +384,22 @@ struct sc_clap
  */
 struct sc_system
 {
-    ma_engine engine;                     //< Must stay first for miniaudio node API
-    ma_resource_manager resourceManager;  //< We need a custom resource manager for custom decoders
-    ma_log log;
+    ma_engine                   engine;                                                 //< Must stay first for miniaudio node API
+    ma_resource_manager         resourceManager;                                        //< We need a custom resource manager for custom decoders
+    ma_log                      log;
 
-    clap_host_t clapHost;
-    sc_clap* clapPlugins;      //< CLAP plugins loaded from systemConfig->pluginPath, or NULL if none
-    ma_uint32 clapPluginCount; //< Number of entries in clapPlugins
-    float clapPluginScratch[SC_MAX_CHANNELS][SC_MAX_FRAME_COUNT];  //< CLAP plugins process deinterleaved audio. miniaudio processes interleaved. We need a space for CLAP plugins to output to, then can interleave it
-    float* clapPluginChannels[SC_MAX_CHANNELS];                    //< CLAP processing expects pointers for each channel
+    clap_host_t                 clapHost;
+    sc_clap*                    clapPlugins;                                            //< CLAP plugins loaded from systemConfig->pluginPath, or NULL if none
+    ma_uint32                   clapPluginCount;                                        //< Number of entries in clapPlugins
+    float                       clapPluginScratch[SC_MAX_CHANNELS][SC_MAX_FRAME_COUNT]; //< CLAP plugins process deinterleaved audio. miniaudio processes interleaved. We need a space for CLAP plugins to output to, then can interleave it
+    float*                      clapPluginChannels[SC_MAX_CHANNELS];                    //< CLAP processing expects pointers for each channel
 
-    sc_node_group* masterNodeGroup;
+    sc_node_group*              masterNodeGroup;
+
+    const sc_dsp_description*   userDspRegistry[SC_MAX_USER_DSP_TYPES];                 //< DSP descriptions to create each DSP handle
+
+    ma_slot_allocator           voiceSlotAllocator;                                     //< Allocates voice handles
+    sc_voice*                   voiceBuffer;                                            //< Allocates voices. Indexed through the @r voiceSlotAllocator
 };
 
 /**
@@ -368,9 +408,11 @@ struct sc_system
  */
 struct sc_system_config
 {
-    const char* pluginPath; //< Folder path containing CLAP plugins to load
-    ma_allocation_callbacks allocationCallbacks;
-    ma_device_data_proc dataCallback; //< Device render callback. Overriden in Sound Bakery for profiling
+    const char*                 pluginPath;             //< Folder path containing CLAP plugins to load
+    ma_allocation_callbacks     allocationCallbacks;    //< External allocation callbacks to override all memory allocation in Sound Chef
+    ma_device_data_proc         dataCallback;           //< Device render callback. Overriden in Sound Bakery for profiling
+    sc_uint32                   maxVoices;              //< Max number of voices (both virtual and real)
+    sc_uint32                   maxRealVoices;          //< Max number of real voices to mix at once. Voices over this limit get virtualized
 };
 
 #ifdef __cplusplus

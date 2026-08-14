@@ -99,8 +99,14 @@ static void sc_clap_node_process_pcm_frames(ma_node* node, const float** framesI
     }
 }
 
-static ma_node_vtable sc_clap_node_vtable = {sc_clap_node_process_pcm_frames, NULL, SC_CLAP_INPUT_BUS,
-                                             SC_CLAP_OUTPUT_BUS, 0};
+static ma_node_vtable sc_clap_node_vtable = 
+{
+    sc_clap_node_process_pcm_frames, 
+    NULL, 
+    SC_CLAP_INPUT_BUS,
+    SC_CLAP_OUTPUT_BUS, 
+    0
+};
 
 static sbk_status sc_clap_node_init(ma_node_graph* nodeGraph,
                                     const ma_allocation_callbacks* allocCallbacks,
@@ -119,20 +125,22 @@ static sbk_status sc_clap_node_init(ma_node_graph* nodeGraph,
 
     return SBK_FROM_MA(ma_node_init(nodeGraph, &baseNodeConfig, allocCallbacks, node));
 }
+
 static void sc_clap_node_uninit(sc_clap_node* node, const ma_allocation_callbacks* allocationCallbacks)
 {
     ma_node_uninit(node, allocationCallbacks);
 }
 
-static sbk_status sc_dsp_clap_create(sc_dsp_state* state)
+static sbk_status sc_dsp_clap_create(sc_system* system, sc_dsp* dsp, void* userData)
 {
-    SC_CREATE(state->userData, sc_clap_node, (sc_system*)state->system);
+    SC_CHECK_ARG(system != NULL);
+    SC_CHECK_ARG(dsp != NULL);
+    SC_CHECK_ARG(userData != NULL);
 
-    sc_system* const system                        = state->system;
-    sc_clap_node* const clapNode                   = (sc_clap_node*)state->userData;
-    sc_dsp* const dsp                              = (sc_dsp*)state->instance;
-    const clap_plugin_factory_t* const clapFactory = dsp->clapFactory;
-    SC_CHECK_ARG(clapFactory != NULL);
+    SC_CREATE(dsp->node, sc_clap_node, system);
+
+    sc_clap_node* const clapNode                   = (sc_clap_node*)dsp->node;
+    const clap_plugin_factory_t* const clapFactory = (const clap_plugin_factory_t*)userData;
 
     const clap_plugin_descriptor_t* const clapDescriptor = clapFactory->get_plugin_descriptor(clapFactory, 0);
     SC_CHECK(clapDescriptor != NULL, SBK_FROM_MA(MA_ERROR));
@@ -154,17 +162,16 @@ static sbk_status sc_dsp_clap_create(sc_dsp_state* state)
 
     clapNode->clapPlugin = clapPlugin;
 
-    return sc_clap_node_init((ma_node_graph*)system, NULL, clapNode);
+    return sc_clap_node_init((ma_node_graph*)system, &system->engine.allocationCallbacks, clapNode);
 }
 
-static sbk_status sc_dsp_clap_release(sc_dsp_state* state)
+static sbk_status sc_dsp_clap_release(sc_system* system, sc_dsp* dsp)
 {
-    SC_CHECK_ARG(state != NULL);
-    SC_CHECK_ARG(state->instance != NULL);
-    SC_CHECK_ARG(state->system != NULL);
-    SC_CHECK_ARG(state->userData != NULL);
+    SC_CHECK_ARG(system != NULL);
+    SC_CHECK_ARG(dsp != NULL);
+    SC_CHECK_ARG(dsp->node != NULL);
 
-    sc_clap_node* const clapNode          = (sc_clap_node*)state->userData;
+    sc_clap_node* const clapNode          = (sc_clap_node*)dsp->node;
     const clap_plugin_t* const clapPlugin = clapNode->clapPlugin;
 
     clapPlugin->stop_processing(clapPlugin);
@@ -172,35 +179,35 @@ static sbk_status sc_dsp_clap_release(sc_dsp_state* state)
     clapPlugin->destroy(clapPlugin);
     clapNode->clapPlugin = NULL;
 
-    sc_clap_node_uninit(clapNode, &((sc_system*)state->system)->engine.allocationCallbacks);
-    SC_FREE(state->userData, (sc_system*)state->system);
+    sc_clap_node_uninit(clapNode, &system->engine.allocationCallbacks);
+    SC_FREE(dsp->node, system);
 
     return SBK_SUCCESS;
 }
 
-static sbk_status sc_dsp_clap_set_floatParam(sc_dsp_state* dspState, int index, float value)
+static sbk_status sc_dsp_clap_set_param_float(sc_dsp* dsp, sc_uint32 index, float value)
 {
-    (void)dspState;
+    (void)dsp;
     (void)index;
     (void)value;
     return SBK_FROM_MA(MA_NOT_IMPLEMENTED);
 }
 
-static sbk_status sc_dsp_clap_get_floatParam(sc_dsp_state* dspState, int index, float* value)
+static sbk_status sc_dsp_clap_get_param_float(sc_dsp* dsp, sc_uint32 index, float* value)
 {
-    (void)dspState;
+    (void)dsp;
     (void)index;
     (void)value;
     return SBK_FROM_MA(MA_NOT_IMPLEMENTED);
 }
 
-sc_dsp_vtable g_dspClapVTable =
+sc_dsp_description g_dspClapVTable =
 {
     sc_dsp_clap_create,
     sc_dsp_clap_release,
     NULL,   // Idle
-    sc_dsp_clap_set_floatParam,
-    sc_dsp_clap_get_floatParam,
+    sc_dsp_clap_set_param_float,
+    sc_dsp_clap_get_param_float,
     NULL,
     0
 };

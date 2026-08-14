@@ -178,7 +178,7 @@ namespace sbk::engine
         [[nodiscard]] auto init_node_group(const event_init& init) -> sbk::result<void>;
         auto init_callbacks() -> void;
 
-        [[nodiscard]] auto add_dsp_to_node_group(sc_node_group* nodeGroup, sc_dsp** dsp, const sc_dsp_config& config) -> sbk::result<void>;
+        [[nodiscard]] auto add_dsp_to_node_group(sc_node_group* nodeGroup, sc_dsp** dsp, sc_uint32 handle) -> sbk::result<void>;
 
         [[nodiscard]] static auto node_group_is_idle(const node_group_instance& group) noexcept -> bool;
 
