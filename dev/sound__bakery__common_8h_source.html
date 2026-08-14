@@ -160,29 +160,36 @@ $(document).ready(function(){initNavTree('sound__bakery__common_8h_source.html',
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#define SB_API SC_API</span></div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#define SB_CLASS SC_CLASS</span></div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code hl_struct" href="structsbk__system__config.html">sbk_system_config</a> <a class="code hl_struct" href="structsbk__system__config.html">sbk_system_config</a>;</div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">typedef</span> uint64_t sbk_id;</div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#define SBK_INVALID_ID 0</span></div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">static_assert</span>(<span class="keyword">sizeof</span>(<span class="keywordtype">void</span>*) == <span class="keyword">sizeof</span>(sbk_id));</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">static_assert</span>(<span class="keyword">sizeof</span>(sbk_id) == <span class="keyword">sizeof</span>(uintptr_t));</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
-<div class="foldopen" id="foldopen00025" data-start="{" data-end="};">
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structsbk__system__config.html">   25</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structsbk__system__config.html">sbk_system_config</a></div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>{</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <a class="code hl_struct" href="structsc__system__config.html">sc_system_config</a>    soundChefConfig;</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keywordtype">bool</span>                singleThreadedUpdate;   <span class="comment">//&lt; Update the database/studio thread when @r sbk::engine::system::update is called. Helpful for when consuming applications need to access Sound Bakery non-realtime data safely</span></div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordtype">bool</span>                enableProfiling;        <span class="comment">//&lt; Enable voice tracking, CPU usage, etc.</span></div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordtype">bool</span>                logToConsole;           <span class="comment">//&lt; Automatically set up the logger to print to the console. Normally left off so consuming applications can control Sound Bakery&#39;s logging</span></div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    ma_uint64           commandQueueSize;       <span class="comment">//&lt; Size in bytes of the command queue</span></div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>};</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="comment">/* Warns (in C++) if a returned result code is discarded; expands to nothing in C. */</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#if defined(__cplusplus)</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">    #define SBK_NODISCARD [[nodiscard]]</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#else</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">    #define SBK_NODISCARD</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code hl_struct" href="structsbk__system__config.html">sbk_system_config</a> <a class="code hl_struct" href="structsbk__system__config.html">sbk_system_config</a>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">typedef</span> uint64_t sbk_id;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="preprocessor">#define SBK_INVALID_ID 0</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="keyword">static_assert</span>(<span class="keyword">sizeof</span>(<span class="keywordtype">void</span>*) == <span class="keyword">sizeof</span>(sbk_id));</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="keyword">static_assert</span>(<span class="keyword">sizeof</span>(sbk_id) == <span class="keyword">sizeof</span>(uintptr_t));</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="foldopen" id="foldopen00032" data-start="{" data-end="};">
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structsbk__system__config.html">   32</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structsbk__system__config.html">sbk_system_config</a></div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>{</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <a class="code hl_struct" href="structsc__system__config.html">sc_system_config</a>    soundChefConfig;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordtype">bool</span>                singleThreadedUpdate;   <span class="comment">//&lt; Update the database/studio thread when @r sbk::engine::system::update is called. Helpful for when consuming applications need to access Sound Bakery non-realtime data safely</span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordtype">bool</span>                enableProfiling;        <span class="comment">//&lt; Enable voice tracking, CPU usage, etc.</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordtype">bool</span>                logToConsole;           <span class="comment">//&lt; Automatically set up the logger to print to the console. Normally left off so consuming applications can control Sound Bakery&#39;s logging</span></div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    ma_uint64           commandQueueSize;       <span class="comment">//&lt; Size in bytes of the command queue</span></div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>};</div>
 </div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="asound__chef_8h_html"><div class="ttname"><a href="sound__chef_8h.html">sound_chef.h</a></div><div class="ttdoc">A wrapper library for miniaudio that emulates functionality of FMOD.</div></div>
-<div class="ttc" id="astructsbk__system__config_html"><div class="ttname"><a href="structsbk__system__config.html">sbk_system_config</a></div><div class="ttdef"><b>Definition</b> sound_bakery_common.h:26</div></div>
-<div class="ttc" id="astructsc__system__config_html"><div class="ttname"><a href="structsc__system__config.html">sc_system_config</a></div><div class="ttdoc">Configuration for initializing the sc_system.</div><div class="ttdef"><b>Definition</b> sound_chef_common.h:387</div></div>
+<div class="ttc" id="astructsbk__system__config_html"><div class="ttname"><a href="structsbk__system__config.html">sbk_system_config</a></div><div class="ttdef"><b>Definition</b> sound_bakery_common.h:33</div></div>
+<div class="ttc" id="astructsc__system__config_html"><div class="ttname"><a href="structsc__system__config.html">sc_system_config</a></div><div class="ttdoc">Configuration for initializing the sc_system.</div><div class="ttdef"><b>Definition</b> sound_chef_common.h:381</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

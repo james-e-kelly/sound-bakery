@@ -23,12 +23,15 @@ var NAVTREEINDEX1 =
 "globals_func.html":[14,1,1],
 "group__DSP.html":[11,3],
 "group__NodeGroup.html":[11,4],
+"group__NodeGroup.html#ga5cf0ed5390fe06bc7ed20908a5d906b9":[11,4,0],
+"group__NodeGroup.html#ga7c2da366727186ed30ed20718a2d3846":[11,4,1],
 "group__Sound.html":[11,1],
 "group__SoundInstance.html":[11,2],
 "group__System.html":[11,0],
 "group__System.html#ga0ac094b92c512c862ad06edb170bc98b":[11,0,4],
 "group__SystemClap.html":[11,0,3],
 "group__SystemDSP.html":[11,0,2],
+"group__SystemDSP.html#ga79afa65bf848aa655bb118fd0e4df9e7":[11,0,2,0],
 "group__SystemNodeGroup.html":[11,0,1],
 "group__SystemSound.html":[11,0,0],
 "group__SystemSound.html#ga0f39000fef87f54d58934784869334ca":[11,0,0,0],
@@ -246,8 +249,5 @@ var NAVTREEINDEX1 =
 "structsc__clap.html":[13,0,24],
 "structsc__clap__node.html":[13,0,25],
 "structsc__delay.html":[13,0,26],
-"structsc__delay__config.html":[13,0,27],
-"structsc__delay__node.html":[13,0,28],
-"structsc__delay__node__config.html":[13,0,29],
-"structsc__dsp.html":[13,0,30]
+"structsc__delay__config.html":[13,0,27]
 };

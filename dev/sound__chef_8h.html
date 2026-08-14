@@ -380,15 +380,15 @@ sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_syste
 <tr class="memitem:ga827e2bf72ea394b48f4a43a3eb751ae7" id="r_ga827e2bf72ea394b48f4a43a3eb751ae7"><td class="memItemLeft" align="right" valign="top">
 sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_system_create_dsp_clap</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, const clap_plugin_factory_t *pluginFactory, <a class="el" href="structsc__dsp.html">sc_dsp</a> **dsp)</td></tr>
 <tr class="separator:ga827e2bf72ea394b48f4a43a3eb751ae7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga85a1ec394f662d27c27e405ba7454c13" id="r_ga85a1ec394f662d27c27e405ba7454c13"><td class="memItemLeft" align="right" valign="top">
-sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_system_get_dsp_desc</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, sc_uint32 handle, const <a class="el" href="structsc__dsp__description.html">sc_dsp_description</a> **outDescription)</td></tr>
-<tr class="separator:ga85a1ec394f662d27c27e405ba7454c13"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga6feb050f6b779e9a1bd353350eacad93" id="r_ga6feb050f6b779e9a1bd353350eacad93"><td class="memItemLeft" align="right" valign="top">
-sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_system_clap_get_count</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, ma_uint32 *count)</td></tr>
-<tr class="separator:ga6feb050f6b779e9a1bd353350eacad93"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga5261222d931a977edc0e9201ac0a0a22" id="r_ga5261222d931a977edc0e9201ac0a0a22"><td class="memItemLeft" align="right" valign="top">
-sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_system_clap_get_at</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, ma_uint32 index, <a class="el" href="structsc__clap.html">sc_clap</a> **plugin)</td></tr>
-<tr class="separator:ga5261222d931a977edc0e9201ac0a0a22"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga79afa65bf848aa655bb118fd0e4df9e7" id="r_ga79afa65bf848aa655bb118fd0e4df9e7"><td class="memItemLeft" align="right" valign="top">sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__SystemDSP.html#ga79afa65bf848aa655bb118fd0e4df9e7">sc_system_get_dsp_desc</a> (const <a class="el" href="structsc__system.html">sc_system</a> *system, sc_uint32 handle, const <a class="el" href="structsc__dsp__description.html">sc_dsp_description</a> **outDescription)</td></tr>
+<tr class="memdesc:ga79afa65bf848aa655bb118fd0e4df9e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a pointer to the description for the given handle.  <br /></td></tr>
+<tr class="separator:ga79afa65bf848aa655bb118fd0e4df9e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga658bdaf3dad10e68c78f0fe4d835f7a4" id="r_ga658bdaf3dad10e68c78f0fe4d835f7a4"><td class="memItemLeft" align="right" valign="top">
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_system_clap_get_count</b> (const <a class="el" href="structsc__system.html">sc_system</a> *system, ma_uint32 *count)</td></tr>
+<tr class="separator:ga658bdaf3dad10e68c78f0fe4d835f7a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga219c03d8fb3dd2b91e2c223fc1f2a48b" id="r_ga219c03d8fb3dd2b91e2c223fc1f2a48b"><td class="memItemLeft" align="right" valign="top">
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_system_clap_get_at</b> (const <a class="el" href="structsc__system.html">sc_system</a> *system, ma_uint32 index, <a class="el" href="structsc__clap.html">sc_clap</a> **plugin)</td></tr>
+<tr class="separator:ga219c03d8fb3dd2b91e2c223fc1f2a48b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga9d607d28dd65aaeec4f7a6135ab7f5c5" id="r_ga9d607d28dd65aaeec4f7a6135ab7f5c5"><td class="memItemLeft" align="right" valign="top">
 sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_sound_get_length</b> (<a class="el" href="structsc__sound.html">sc_sound</a> *sound, float *lengthInSeconds)</td></tr>
 <tr class="separator:ga9d607d28dd65aaeec4f7a6135ab7f5c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -416,21 +416,21 @@ sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_sound
 <tr class="memitem:ga67093457539bf9d7cf5a1e6862744729" id="r_ga67093457539bf9d7cf5a1e6862744729"><td class="memItemLeft" align="right" valign="top">
 sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_sound_instance_set_loop_position_in_seconds</b> (<a class="el" href="structsc__sound.html">sc_sound_instance</a> *instance, float loopStartSeconds, float loopEndSeconds)</td></tr>
 <tr class="separator:ga67093457539bf9d7cf5a1e6862744729"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga98b9eabb67f3952cfe4c4e8e5b9a61f9" id="r_ga98b9eabb67f3952cfe4c4e8e5b9a61f9"><td class="memItemLeft" align="right" valign="top">
-sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_sound_instance_get_is_looping</b> (<a class="el" href="structsc__sound.html">sc_sound_instance</a> *instance, sc_bool *looping)</td></tr>
-<tr class="separator:ga98b9eabb67f3952cfe4c4e8e5b9a61f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8d3a60a5f38692664b44fcf039872b6e" id="r_ga8d3a60a5f38692664b44fcf039872b6e"><td class="memItemLeft" align="right" valign="top">
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_sound_instance_is_looping</b> (<a class="el" href="structsc__sound.html">sc_sound_instance</a> *instance, sc_bool *looping)</td></tr>
+<tr class="separator:ga8d3a60a5f38692664b44fcf039872b6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga145ec92c95d68218163f82870ae7f6f5" id="r_ga145ec92c95d68218163f82870ae7f6f5"><td class="memItemLeft" align="right" valign="top">
 sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_sound_instance_set_looping</b> (<a class="el" href="structsc__sound.html">sc_sound_instance</a> *instance, sc_bool looping)</td></tr>
 <tr class="separator:ga145ec92c95d68218163f82870ae7f6f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga08cb3eec724853dc1082c757791c6a66" id="r_ga08cb3eec724853dc1082c757791c6a66"><td class="memItemLeft" align="right" valign="top">
 sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_sound_instance_release</b> (<a class="el" href="structsc__sound.html">sc_sound_instance</a> *instance)</td></tr>
 <tr class="separator:ga08cb3eec724853dc1082c757791c6a66"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gae0c427a949f394d9c58698067b5b655c" id="r_gae0c427a949f394d9c58698067b5b655c"><td class="memItemLeft" align="right" valign="top">
-sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_dsp_get_parameter_float</b> (<a class="el" href="structsc__dsp.html">sc_dsp</a> *dsp, int index, float *value)</td></tr>
-<tr class="separator:gae0c427a949f394d9c58698067b5b655c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga4b997563b1366b635017c9352473e612" id="r_ga4b997563b1366b635017c9352473e612"><td class="memItemLeft" align="right" valign="top">
-sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_dsp_set_parameter_float</b> (<a class="el" href="structsc__dsp.html">sc_dsp</a> *dsp, int index, float value)</td></tr>
-<tr class="separator:ga4b997563b1366b635017c9352473e612"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga57f8135671aae40dc7c617fb88fbd3dd" id="r_ga57f8135671aae40dc7c617fb88fbd3dd"><td class="memItemLeft" align="right" valign="top">
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_dsp_get_parameter_float</b> (<a class="el" href="structsc__dsp.html">sc_dsp</a> *dsp, sc_uint32 index, float *value)</td></tr>
+<tr class="separator:ga57f8135671aae40dc7c617fb88fbd3dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga724cdb2a61be27a6da39c29816f87a4b" id="r_ga724cdb2a61be27a6da39c29816f87a4b"><td class="memItemLeft" align="right" valign="top">
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_dsp_set_parameter_float</b> (<a class="el" href="structsc__dsp.html">sc_dsp</a> *dsp, sc_uint32 index, float value)</td></tr>
+<tr class="separator:ga724cdb2a61be27a6da39c29816f87a4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga4b0ffab5caca22360e2f7bd333eb2af3" id="r_ga4b0ffab5caca22360e2f7bd333eb2af3"><td class="memItemLeft" align="right" valign="top">
 sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_dsp_get_metering_info</b> (<a class="el" href="structsc__dsp.html">sc_dsp</a> *dsp, ma_uint32 channelIndex, sc_dsp_meter_query meterType, float *value)</td></tr>
 <tr class="separator:ga4b0ffab5caca22360e2f7bd333eb2af3"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -440,11 +440,11 @@ sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_dsp_r
 <tr class="memitem:gadb39e57c0f5478b13bf83aa2a9f9294c" id="r_gadb39e57c0f5478b13bf83aa2a9f9294c"><td class="memItemLeft" align="right" valign="top">
 sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_node_group_set_parent</b> (<a class="el" href="structsc__node__group.html">sc_node_group</a> *nodeGroup, <a class="el" href="structsc__node__group.html">sc_node_group</a> *parent)</td></tr>
 <tr class="separator:gadb39e57c0f5478b13bf83aa2a9f9294c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga7c2da366727186ed30ed20718a2d3846" id="r_ga7c2da366727186ed30ed20718a2d3846"><td class="memItemLeft" align="right" valign="top">
-sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_node_group_set_parent_endpoint</b> (<a class="el" href="structsc__node__group.html">sc_node_group</a> *nodeGroup)</td></tr>
+<tr class="memitem:ga7c2da366727186ed30ed20718a2d3846" id="r_ga7c2da366727186ed30ed20718a2d3846"><td class="memItemLeft" align="right" valign="top">sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__NodeGroup.html#ga7c2da366727186ed30ed20718a2d3846">sc_node_group_set_parent_endpoint</a> (<a class="el" href="structsc__node__group.html">sc_node_group</a> *nodeGroup)</td></tr>
+<tr class="memdesc:ga7c2da366727186ed30ed20718a2d3846"><td class="mdescLeft">&#160;</td><td class="mdescRight">Routes the group's output directly to the graph endpoint (the audio device).  <br /></td></tr>
 <tr class="separator:ga7c2da366727186ed30ed20718a2d3846"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga5cf0ed5390fe06bc7ed20908a5d906b9" id="r_ga5cf0ed5390fe06bc7ed20908a5d906b9"><td class="memItemLeft" align="right" valign="top">
-sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_node_group_get_dsp</b> (<a class="el" href="structsc__node__group.html">sc_node_group</a> *nodeGroup, sc_dsp_type type, <a class="el" href="structsc__dsp.html">sc_dsp</a> **dsp)</td></tr>
+<tr class="memitem:ga5cf0ed5390fe06bc7ed20908a5d906b9" id="r_ga5cf0ed5390fe06bc7ed20908a5d906b9"><td class="memItemLeft" align="right" valign="top">sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__NodeGroup.html#ga5cf0ed5390fe06bc7ed20908a5d906b9">sc_node_group_get_dsp</a> (<a class="el" href="structsc__node__group.html">sc_node_group</a> *nodeGroup, sc_dsp_type type, <a class="el" href="structsc__dsp.html">sc_dsp</a> **dsp)</td></tr>
+<tr class="memdesc:ga5cf0ed5390fe06bc7ed20908a5d906b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds the first DSP in the group whose handle matches <code>type</code>.  <br /></td></tr>
 <tr class="separator:ga5cf0ed5390fe06bc7ed20908a5d906b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga71821ab9e2189cd16a074b6320afbed6" id="r_ga71821ab9e2189cd16a074b6320afbed6"><td class="memItemLeft" align="right" valign="top">
 sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_node_group_add_dsp</b> (<a class="el" href="structsc__node__group.html">sc_node_group</a> *nodeGroup, <a class="el" href="structsc__dsp.html">sc_dsp</a> *dsp, sc_dsp_index index)</td></tr>

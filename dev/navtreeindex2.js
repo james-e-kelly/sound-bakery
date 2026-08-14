@@ -1,5 +1,8 @@
 var NAVTREEINDEX2 =
 {
+"structsc__delay__node.html":[13,0,28],
+"structsc__delay__node__config.html":[13,0,29],
+"structsc__dsp.html":[13,0,30],
 "structsc__dsp__description.html":[13,0,31],
 "structsc__dsp__parameter.html":[13,0,32],
 "structsc__dsp__parameter__float.html":[13,0,33],

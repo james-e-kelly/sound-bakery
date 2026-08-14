@@ -147,11 +147,11 @@ Functions</h2></td></tr>
 <tr class="memitem:gadb39e57c0f5478b13bf83aa2a9f9294c" id="r_gadb39e57c0f5478b13bf83aa2a9f9294c"><td class="memItemLeft" align="right" valign="top"><a id="gadb39e57c0f5478b13bf83aa2a9f9294c" name="gadb39e57c0f5478b13bf83aa2a9f9294c"></a>
 sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_node_group_set_parent</b> (<a class="el" href="structsc__node__group.html">sc_node_group</a> *nodeGroup, <a class="el" href="structsc__node__group.html">sc_node_group</a> *parent)</td></tr>
 <tr class="separator:gadb39e57c0f5478b13bf83aa2a9f9294c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga7c2da366727186ed30ed20718a2d3846" id="r_ga7c2da366727186ed30ed20718a2d3846"><td class="memItemLeft" align="right" valign="top"><a id="ga7c2da366727186ed30ed20718a2d3846" name="ga7c2da366727186ed30ed20718a2d3846"></a>
-sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_node_group_set_parent_endpoint</b> (<a class="el" href="structsc__node__group.html">sc_node_group</a> *nodeGroup)</td></tr>
+<tr class="memitem:ga7c2da366727186ed30ed20718a2d3846" id="r_ga7c2da366727186ed30ed20718a2d3846"><td class="memItemLeft" align="right" valign="top">sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__NodeGroup.html#ga7c2da366727186ed30ed20718a2d3846">sc_node_group_set_parent_endpoint</a> (<a class="el" href="structsc__node__group.html">sc_node_group</a> *nodeGroup)</td></tr>
+<tr class="memdesc:ga7c2da366727186ed30ed20718a2d3846"><td class="mdescLeft">&#160;</td><td class="mdescRight">Routes the group's output directly to the graph endpoint (the audio device).  <br /></td></tr>
 <tr class="separator:ga7c2da366727186ed30ed20718a2d3846"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga5cf0ed5390fe06bc7ed20908a5d906b9" id="r_ga5cf0ed5390fe06bc7ed20908a5d906b9"><td class="memItemLeft" align="right" valign="top"><a id="ga5cf0ed5390fe06bc7ed20908a5d906b9" name="ga5cf0ed5390fe06bc7ed20908a5d906b9"></a>
-sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_node_group_get_dsp</b> (<a class="el" href="structsc__node__group.html">sc_node_group</a> *nodeGroup, sc_dsp_type type, <a class="el" href="structsc__dsp.html">sc_dsp</a> **dsp)</td></tr>
+<tr class="memitem:ga5cf0ed5390fe06bc7ed20908a5d906b9" id="r_ga5cf0ed5390fe06bc7ed20908a5d906b9"><td class="memItemLeft" align="right" valign="top">sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__NodeGroup.html#ga5cf0ed5390fe06bc7ed20908a5d906b9">sc_node_group_get_dsp</a> (<a class="el" href="structsc__node__group.html">sc_node_group</a> *nodeGroup, sc_dsp_type type, <a class="el" href="structsc__dsp.html">sc_dsp</a> **dsp)</td></tr>
+<tr class="memdesc:ga5cf0ed5390fe06bc7ed20908a5d906b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds the first DSP in the group whose handle matches <code>type</code>.  <br /></td></tr>
 <tr class="separator:ga5cf0ed5390fe06bc7ed20908a5d906b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga71821ab9e2189cd16a074b6320afbed6" id="r_ga71821ab9e2189cd16a074b6320afbed6"><td class="memItemLeft" align="right" valign="top"><a id="ga71821ab9e2189cd16a074b6320afbed6" name="ga71821ab9e2189cd16a074b6320afbed6"></a>
 sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_node_group_add_dsp</b> (<a class="el" href="structsc__node__group.html">sc_node_group</a> *nodeGroup, <a class="el" href="structsc__dsp.html">sc_dsp</a> *dsp, sc_dsp_index index)</td></tr>
@@ -161,6 +161,67 @@ sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_node_
 <tr class="separator:ga3d4bc0d97266559f0b69f35cd6fe0c59"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="ga5cf0ed5390fe06bc7ed20908a5d906b9" name="ga5cf0ed5390fe06bc7ed20908a5d906b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga5cf0ed5390fe06bc7ed20908a5d906b9">&#9670;&#160;</a></span>sc_node_group_get_dsp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">sbk_status SC_API sc_node_group_get_dsp </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structsc__node__group.html">sc_node_group</a> *&#160;</td>
+          <td class="paramname"><em>nodeGroup</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">sc_dsp_type&#160;</td>
+          <td class="paramname"><em>type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structsc__dsp.html">sc_dsp</a> **&#160;</td>
+          <td class="paramname"><em>dsp</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Finds the first DSP in the group whose handle matches <code>type</code>. </p>
+<dl class="section return"><dt>Returns</dt><dd>SBK_SUCCESS if the DSP was found and <code>dsp</code> is valid. </dd>
+<dd>
+SBK_ERR_NOT_FOUND if the DSP was not found. </dd></dl>
+
+</div>
+</div>
+<a id="ga7c2da366727186ed30ed20718a2d3846" name="ga7c2da366727186ed30ed20718a2d3846"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga7c2da366727186ed30ed20718a2d3846">&#9670;&#160;</a></span>sc_node_group_set_parent_endpoint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">sbk_status SC_API sc_node_group_set_parent_endpoint </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structsc__node__group.html">sc_node_group</a> *&#160;</td>
+          <td class="paramname"><em>nodeGroup</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Routes the group's output directly to the graph endpoint (the audio device). </p>
+<p>Use this for top-level groups that should feed straight to the output rather than through another group. </p>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
