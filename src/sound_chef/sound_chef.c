@@ -69,6 +69,8 @@ sc_system_config sc_system_config_init_default()
 {
     sc_system_config config;
     SC_ZERO_OBJECT(&config);
+    config.maxRealVoices = 64;
+    config.maxVoices     = 1024;
     return config;
 }
 
@@ -82,130 +84,125 @@ sc_system_config sc_system_config_init(const char* pluginPath)
 extern ma_decoding_backend_vtable g_ma_decoding_backend_vtable_libvorbis;
 extern ma_decoding_backend_vtable g_ma_decoding_backend_vtable_libopus;
 
+ma_decoding_backend_vtable* s_customBackendVTables[] = 
+{
+    &g_ma_decoding_backend_vtable_libvorbis,
+    &g_ma_decoding_backend_vtable_libopus
+};
+
 sbk_status sc_system_init(sc_system* system, const sc_system_config* systemConfig)
 {
-    ma_result maResult = MA_ERROR;
-    sbk_status result  = SBK_ERR_CHEF;
+    SC_CHECK_ARG(system != NULL);
+    SC_CHECK_ARG(systemConfig != NULL);
+    SC_CHECK_ARG(systemConfig->maxVoices > 0);
+    SC_CHECK_ARG(systemConfig->maxVoices >= systemConfig->maxRealVoices);
 
-    if (system)
+    ma_engine* engine = (ma_engine*)system;
+
+    ma_log_post(&system->log, MA_LOG_LEVEL_DEBUG, "Initializing resource manager");
+
+    ma_resource_manager_config resourceManagerConfig     = ma_resource_manager_config_init();
+    resourceManagerConfig.ppCustomDecodingBackendVTables = s_customBackendVTables;
+    resourceManagerConfig.customDecodingBackendCount     = SC_COUNTOF(s_customBackendVTables);
+    resourceManagerConfig.pCustomDecodingBackendUserData = NULL;
+    resourceManagerConfig.pLog                           = &system->log;
+    resourceManagerConfig.allocationCallbacks            = systemConfig->allocationCallbacks;
+
+    SC_CHECK_STATUS(SBK_FROM_MA(ma_resource_manager_init(&resourceManagerConfig, &system->resourceManager)));
+    
+    ma_log_post(&system->log, MA_LOG_LEVEL_DEBUG, "Initializing engine");
+
+    ma_engine_config engineConfig    = ma_engine_config_init();
+    engineConfig.pResourceManager    = &system->resourceManager;
+    engineConfig.listenerCount       = 1;
+    engineConfig.channels            = 2;   /// @todo Make this dynamic. It's currently set to so there are no surprises
+    engineConfig.sampleRate          = ma_standard_sample_rate_48000;
+    engineConfig.pLog                = &system->log;
+    engineConfig.allocationCallbacks = systemConfig->allocationCallbacks;
+    engineConfig.dataCallback        = systemConfig->dataCallback;
+
+    SC_CHECK_STATUS(SBK_FROM_MA(ma_engine_init(&engineConfig, engine)));
+    
+    ma_log_post(&system->log, MA_LOG_LEVEL_DEBUG, "Creating master node group");
+
+    SC_CHECK_STATUS(sc_system_create_node_group(system, &system->masterNodeGroup));
+    SC_CHECK_STATUS(sc_node_group_set_parent_endpoint(system->masterNodeGroup));
+
+    ma_log_post(&system->log, MA_LOG_LEVEL_DEBUG, "Adding meter");
+
+    sc_dsp* meterDSP = NULL;
+    SC_CHECK_STATUS(sc_system_create_dsp_by_type(system, SC_DSP_TYPE_METER, &meterDSP));
+    SC_CHECK_STATUS(sc_node_group_add_dsp(system->masterNodeGroup, meterDSP, SC_DSP_INDEX_HEAD));
+
+    ma_log_post(&system->log, MA_LOG_LEVEL_DEBUG, "Initialized Master Node Group");
+
+    if (systemConfig->pluginPath != NULL)
     {
-        ma_engine* engine = (ma_engine*)system;
+        ma_log_post(&system->log, MA_LOG_LEVEL_DEBUG, "Initializing CLAP");
 
-        ma_decoding_backend_vtable* customBackendVTables[] = {&g_ma_decoding_backend_vtable_libvorbis,
-                                                              &g_ma_decoding_backend_vtable_libopus};
+        system->clapHost.clap_version     = CLAP_VERSION;
+        system->clapHost.host_data        = system;
+        system->clapHost.name             = SC_PRODUCT_NAME;
+        system->clapHost.version          = SC_VERSION_STRING;
+        system->clapHost.url              = "https://github.com/james-e-kelly/sound-bakery";
+        system->clapHost.request_callback = sc_system_clap_request_callback;
+        system->clapHost.request_process  = sc_system_clap_request_process;
+        system->clapHost.request_restart  = sc_system_clap_request_restart;
 
-        ma_resource_manager_config resourceManagerConfig     = ma_resource_manager_config_init();
-        resourceManagerConfig.ppCustomDecodingBackendVTables = customBackendVTables;
-        resourceManagerConfig.customDecodingBackendCount =
-            sizeof(customBackendVTables) / sizeof(customBackendVTables[0]);
-        resourceManagerConfig.pCustomDecodingBackendUserData =
-            NULL; /* <-- This will be passed in to the pUserData parameter of each function in the decoding backend
-                     vtables. */
-        resourceManagerConfig.pLog = &system->log;
-
-        maResult = ma_resource_manager_init(&resourceManagerConfig, &system->resourceManager);
-        SC_CHECK_STATUS(SBK_FROM_MA(maResult));
-
-        ma_engine_config engineConfig    = ma_engine_config_init();
-        engineConfig.pResourceManager    = &system->resourceManager;
-        engineConfig.listenerCount       = 1;
-        engineConfig.channels            = 2;
-        engineConfig.sampleRate          = ma_standard_sample_rate_48000;
-        engineConfig.pLog                = &system->log;
-        engineConfig.allocationCallbacks = systemConfig->allocationCallbacks;
-        engineConfig.dataCallback        = systemConfig->dataCallback;
-
-        maResult = ma_engine_init(&engineConfig, engine);
-
-        if (maResult == MA_SUCCESS)
+        for (ma_uint32 channel = 0; channel < SC_MAX_CHANNELS; ++channel)
         {
-            ma_log_post(&system->log, MA_LOG_LEVEL_INFO, "Initialized Sound Chef");
+            system->clapPluginChannels[channel] = system->clapPluginScratch[channel];
+        }
 
-            result = sc_system_create_node_group(system, &system->masterNodeGroup);
-            result = sc_node_group_set_parent_endpoint(system->masterNodeGroup);
+        DIR* const pluginDirectory = opendir(systemConfig->pluginPath);
 
-            sc_dsp* meterDSP                = NULL;
-            result                          = sc_system_create_dsp_by_type(system, SC_DSP_TYPE_METER, &meterDSP);
-            result                          = sc_node_group_add_dsp(system->masterNodeGroup, meterDSP, SC_DSP_INDEX_HEAD);
-
-            if (result == SBK_SUCCESS)
+        if (pluginDirectory != NULL)
+        {
+            /* First pass: count .clap files so we can allocate exactly once. */
+            ma_uint32 clapCandidateCount = 0;
+            for (struct dirent* entry = readdir(pluginDirectory); entry != NULL; entry = readdir(pluginDirectory))
             {
-                ma_log_post(&system->log, MA_LOG_LEVEL_INFO, "Initialized Master Node Group");
-            }
-
-            system->clapHost.clap_version     = CLAP_VERSION;
-            system->clapHost.host_data        = system;
-            system->clapHost.name             = SC_PRODUCT_NAME;
-            system->clapHost.version          = SC_VERSION_STRING;
-            system->clapHost.url              = "https://github.com/james-e-kelly/sound-bakery";
-            system->clapHost.request_callback = sc_system_clap_request_callback;
-            system->clapHost.request_process  = sc_system_clap_request_process;
-            system->clapHost.request_restart  = sc_system_clap_request_restart;
-
-            for (ma_uint32 channel = 0; channel < SC_MAX_CHANNELS; ++channel)
-            {
-                system->clapPluginChannels[channel] = system->clapPluginScratch[channel];
-            }
-
-            if (systemConfig != NULL && systemConfig->pluginPath != NULL)
-            {
-                DIR* const pluginDirectory = opendir(systemConfig->pluginPath);
-
-                if (pluginDirectory != NULL)
+                if (strlen(entry->d_name) > 5 && strcmp(sc_filename_get_ext(entry->d_name), "clap") == 0)
                 {
-                    /* First pass: count .clap files so we can allocate exactly once. */
-                    ma_uint32 clapCandidateCount = 0;
-                    for (struct dirent* entry = readdir(pluginDirectory); entry != NULL;
-                         entry                = readdir(pluginDirectory))
+                    ++clapCandidateCount;
+                }
+            }
+
+            if (clapCandidateCount > 0)
+            {
+                system->clapPlugins = (sc_clap*)ma_malloc(sizeof(sc_clap) * clapCandidateCount, &system->engine.allocationCallbacks);
+
+                if (system->clapPlugins != NULL)
+                {
+                    /* Second pass: load each plugin into its slot. Failed loads are skipped
+                        * so clapPluginCount may end up smaller than clapCandidateCount. */
+                    rewinddir(pluginDirectory);
+
+                    for (struct dirent* entry = readdir(pluginDirectory); entry != NULL && system->clapPluginCount < clapCandidateCount; entry = readdir(pluginDirectory))
                     {
                         if (strlen(entry->d_name) > 5 && strcmp(sc_filename_get_ext(entry->d_name), "clap") == 0)
                         {
-                            ++clapCandidateCount;
-                        }
-                    }
+                            char filePath[1024];
+                            snprintf(filePath, sizeof(filePath), "%s/%s", systemConfig->pluginPath, entry->d_name);
 
-                    if (clapCandidateCount > 0)
-                    {
-                        system->clapPlugins = (sc_clap*)ma_malloc(sizeof(sc_clap) * clapCandidateCount,
-                                                                  &system->engine.allocationCallbacks);
-
-                        if (system->clapPlugins != NULL)
-                        {
-                            /* Second pass: load each plugin into its slot. Failed loads are skipped
-                             * so clapPluginCount may end up smaller than clapCandidateCount. */
-                            rewinddir(pluginDirectory);
-
-                            for (struct dirent* entry = readdir(pluginDirectory);
-                                 entry != NULL && system->clapPluginCount < clapCandidateCount;
-                                 entry = readdir(pluginDirectory))
+                            if (sc_clap_load(filePath, &system->clapPlugins[system->clapPluginCount]) == SBK_SUCCESS)
                             {
-                                if (strlen(entry->d_name) > 5 &&
-                                    strcmp(sc_filename_get_ext(entry->d_name), "clap") == 0)
-                                {
-                                    char filePath[1024];
-                                    snprintf(filePath, sizeof(filePath), "%s/%s", systemConfig->pluginPath,
-                                             entry->d_name);
-
-                                    if (sc_clap_load(filePath, &system->clapPlugins[system->clapPluginCount]) ==
-                                        SBK_SUCCESS)
-                                    {
-                                        ++system->clapPluginCount;
-                                    }
-                                }
+                                ++system->clapPluginCount;
                             }
                         }
                     }
-
-                    closedir(pluginDirectory);
                 }
             }
+
+            closedir(pluginDirectory);
         }
+
+        ma_log_post(&system->log, MA_LOG_LEVEL_DEBUG, "Initialized CLAP");
     }
 
-    SC_ASSERT(result == SBK_SUCCESS);
-    SC_ASSERT(maResult == MA_SUCCESS);
+    ma_log_post(&system->log, MA_LOG_LEVEL_INFO, "Initialized Sound Chef");
 
-    return result;
+    return SBK_SUCCESS;
 }
 
 sbk_status sc_system_close(sc_system* system)

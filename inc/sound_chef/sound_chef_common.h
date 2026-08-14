@@ -379,9 +379,11 @@ struct sc_system
  */
 struct sc_system_config
 {
-    const char* pluginPath;                         //< Folder path containing CLAP plugins to load
-    ma_allocation_callbacks allocationCallbacks;    //< External allocation callbacks to override all memory allocation in Sound Chef
-    ma_device_data_proc dataCallback;               //< Device render callback. Overriden in Sound Bakery for profiling
+    const char*                 pluginPath;             //< Folder path containing CLAP plugins to load
+    ma_allocation_callbacks     allocationCallbacks;    //< External allocation callbacks to override all memory allocation in Sound Chef
+    ma_device_data_proc         dataCallback;           //< Device render callback. Overriden in Sound Bakery for profiling
+    sc_uint32                   maxVoices;              //< Max number of voices (both virtual and real)
+    sc_uint32                   maxRealVoices;          //< Max number of real voices to mix at once. Voices over this limit get virtualized
 };
 
 #ifdef __cplusplus
