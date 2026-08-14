@@ -7,8 +7,9 @@ var indexSectionsWithContent =
   4: "nps",
   5: "lpr",
   6: "s",
-  7: "bcdgilmprstu",
-  8: "s"
+  7: "cdfgns",
+  8: "bcdgilmprstu",
+  9: "s"
 };
 
 var indexSectionNames =
@@ -20,8 +21,9 @@ var indexSectionNames =
   4: "variables",
   5: "typedefs",
   6: "defines",
-  7: "pages",
-  8: "concepts"
+  7: "groups",
+  8: "pages",
+  9: "concepts"
 };
 
 var indexSectionLabels =
@@ -33,7 +35,8 @@ var indexSectionLabels =
   4: "Variables",
   5: "Typedefs",
   6: "Macros",
-  7: "Pages",
-  8: "Concepts"
+  7: "Modules",
+  8: "Pages",
+  9: "Concepts"
 };
 

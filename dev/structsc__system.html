@@ -162,23 +162,24 @@ Collaboration diagram for sc_system:</div>
 <div class="dyncontent">
 <div class="center"><img src="structsc__system__coll__graph.png" border="0" usemap="#asc__system_coll__map" alt="Collaboration graph"/></div>
 <map name="asc__system_coll__map" id="asc__system_coll__map">
-<area shape="rect" title="Object that manages the node graph, sounds, output etc." alt="" coords="51,537,142,563"/>
-<area shape="rect" href="structsc__clap.html" title="Holds a DLL handle and plugin entry for a CLAP plugin." alt="" coords="5,449,76,475"/>
-<area shape="poly" title=" " alt="" coords="42,488,48,512,59,525,73,535,70,539,56,529,44,515,37,489"/>
-<area shape="rect" href="structsc__node__group.html" title="Groups nodes/DSPs together into one." alt="" coords="100,449,219,475"/>
-<area shape="poly" title=" " alt="" coords="146,488,127,515,108,539,104,535,123,512,142,485"/>
-<area shape="rect" href="structsc__dsp.html" title="ma_node with an additional enum descriptor." alt="" coords="126,330,193,355"/>
-<area shape="poly" title=" " alt="" coords="162,369,162,449,157,449,157,369"/>
-<area shape="poly" title=" " alt="" coords="208,333,216,336,219,343,211,352,193,354,193,348,209,347,214,342,212,340,206,338"/>
-<area shape="rect" href="structsc__dsp__state.html" title="Holds instance data for a single sc_dsp." alt="" coords="85,93,191,119"/>
-<area shape="poly" title=" " alt="" coords="142,132,153,265,160,329,155,330,147,266,137,133"/>
-<area shape="rect" href="structsc__dsp__vtable.html" title=" " alt="" coords="199,240,314,265"/>
-<area shape="poly" title=" " alt="" coords="153,129,180,177,205,214,236,238,233,242,201,218,175,180,148,132"/>
-<area shape="poly" title=" " alt="" coords="235,277,174,332,171,328,232,273"/>
-<area shape="rect" href="structsc__dsp__parameter.html" title=" " alt="" coords="215,93,357,119"/>
-<area shape="poly" title=" " alt="" coords="284,133,262,240,256,239,278,132"/>
-<area shape="rect" href="structsc__dsp__parameter__float.html" title=" " alt="" coords="197,5,375,31"/>
-<area shape="poly" title=" " alt="" coords="289,45,289,93,283,93,283,45"/>
+<area shape="rect" title="Object that manages the node graph, sounds, output etc." alt="" coords="390,93,481,119"/>
+<area shape="rect" href="structsc__dsp.html" title="ma_node with an additional enum descriptor." alt="" coords="462,183,529,209"/>
+<area shape="poly" title=" " alt="" coords="453,128,489,181,485,184,449,131"/>
+<area shape="rect" href="structsc__dsp__description.html" title="Structure to create, destroy, and update DSP units of a specific handle." alt="" coords="220,303,365,328"/>
+<area shape="poly" title=" " alt="" coords="422,132,303,304,298,301,417,129"/>
+<area shape="rect" href="structsc__clap.html" title="Holds a DLL handle and plugin entry for a CLAP plugin." alt="" coords="400,5,471,31"/>
+<area shape="poly" title=" " alt="" coords="438,45,438,93,433,93,433,45"/>
+<area shape="rect" href="structsc__node__group.html" title="Groups nodes/DSPs together into one." alt="" coords="512,303,631,328"/>
+<area shape="poly" title=" " alt="" coords="631,294,649,277,655,257,649,236,636,212,618,191,575,158,526,135,480,120,482,115,528,130,577,153,622,187,640,209,654,234,661,257,654,280,634,298"/>
+<area shape="poly" title=" " alt="" coords="563,290,554,263,540,236,512,211,516,207,544,233,559,261,568,288"/>
+<area shape="poly" title=" " alt="" coords="495,222,496,250,506,277,519,291,535,300,533,305,515,295,501,280,490,251,489,223"/>
+<area shape="poly" title=" " alt="" coords="544,186,552,189,555,196,547,205,529,207,529,202,545,200,550,196,548,193,542,191"/>
+<area shape="poly" title=" " alt="" coords="460,217,429,237,408,259,385,281,333,305,331,300,382,276,404,255,426,233,457,213"/>
+<area shape="poly" title=" " alt="" coords="269,295,248,271,231,241,223,210,225,195,232,180,247,162,265,147,306,126,350,113,390,107,390,112,351,119,308,131,268,152,251,166,236,183,230,196,228,210,236,239,253,267,273,291"/>
+<area shape="rect" href="structsc__dsp__parameter.html" title=" " alt="" coords="25,183,166,209"/>
+<area shape="poly" title=" " alt="" coords="106,220,121,250,145,277,181,295,220,306,219,311,179,300,142,281,117,253,101,223"/>
+<area shape="rect" href="structsc__dsp__parameter__float.html" title=" " alt="" coords="5,93,183,119"/>
+<area shape="poly" title=" " alt="" coords="97,132,98,183,92,183,92,132"/>
 </map>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
@@ -211,10 +212,13 @@ float *&#160;</td><td class="memItemRight" valign="bottom"><b>clapPluginChannels
 <tr class="memitem:a0209febd09ec8761e38cc61670165085" id="r_a0209febd09ec8761e38cc61670165085"><td class="memItemLeft" align="right" valign="top"><a id="a0209febd09ec8761e38cc61670165085" name="a0209febd09ec8761e38cc61670165085"></a>
 <a class="el" href="structsc__node__group.html">sc_node_group</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>masterNodeGroup</b></td></tr>
 <tr class="separator:a0209febd09ec8761e38cc61670165085"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7fecb25ec015e904f13d46118799330c" id="r_a7fecb25ec015e904f13d46118799330c"><td class="memItemLeft" align="right" valign="top"><a id="a7fecb25ec015e904f13d46118799330c" name="a7fecb25ec015e904f13d46118799330c"></a>
+const <a class="el" href="structsc__dsp__description.html">sc_dsp_description</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>userDspRegistry</b> [SC_MAX_USER_DSP_TYPES]</td></tr>
+<tr class="separator:a7fecb25ec015e904f13d46118799330c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Object that manages the node graph, sounds, output etc. </p>
-<p>The <a class="el" href="structsc__system.html" title="Object that manages the node graph, sounds, output etc.">sc_system</a> is a wrapper for the ma_engine type from miniaudio. This means that <a class="el" href="structsc__system.html" title="Object that manages the node graph, sounds, output etc.">sc_system</a> has a node graph, resource manager, can output to the user's audio device and everything expected from miniaudio's high-level API.</p>
+<p>The <a class="el" href="structsc__system.html" title="Object that manages the node graph, sounds, output etc.">sc_system</a> is a wrapper for the </p><dl class="section see"><dt>See also</dt><dd>ma_engine from miniaudio. This means that <a class="el" href="structsc__system.html" title="Object that manages the node graph, sounds, output etc.">sc_system</a> has a node graph, resource manager, can output to the user's audio device and everything expected from miniaudio's high-level API.</dd></dl>
 <p><a class="el" href="structsc__system.html" title="Object that manages the node graph, sounds, output etc.">sc_system</a> also holds and manages custom Sound Chef types like Node Groups.</p>
 <p>Sound Chef allows for multiple system objects but it is likely unneeded as future versions will support multiple outputs. </p>
 </div><hr/>The documentation for this struct was generated from the following file:<ul>

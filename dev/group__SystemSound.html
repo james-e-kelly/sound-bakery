@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Sound Bakery: Member List</title>
+<title>Sound Bakery: System Sound Functions</title>
 <!--BEGIN PROJECT_ICON-->
 <link rel="icon" href="$projecticon" type="image/x-icon" />
 <!--END PROJECT_ICON-->
@@ -110,7 +110,7 @@ $(function() {
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('structsc__dsp__state.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('group__SystemSound.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -136,16 +136,96 @@ $(document).ready(function(){initNavTree('structsc__dsp__state.html',''); initRe
 </div>
 
 <div class="header">
-  <div class="headertitle"><div class="title">sc_dsp_state Member List</div></div>
+  <div class="summary">
+<a href="#func-members">Functions</a>  </div>
+  <div class="headertitle"><div class="title">System Sound Functions<div class="ingroups"><a class="el" href="group__System.html">System Functions</a></div></div></div>
 </div><!--header-->
 <div class="contents">
+<div class="dynheader">
+Collaboration diagram for System Sound Functions:</div>
+<div class="dyncontent">
+<div class="center"><img src="group__SystemSound.png" border="0" usemap="#agroup____SystemSound" alt=""/></div>
+<map name="agroup____SystemSound" id="agroup____SystemSound">
+<area shape="rect" href="group__System.html" title=" " alt="" coords="5,5,143,31"/>
+<area shape="rect" title=" " alt="" coords="191,5,372,31"/>
+</map>
+</div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:gaf8a2fdb4a15db2b726bf7eedf4eccb8c" id="r_gaf8a2fdb4a15db2b726bf7eedf4eccb8c"><td class="memItemLeft" align="right" valign="top"><a id="gaf8a2fdb4a15db2b726bf7eedf4eccb8c" name="gaf8a2fdb4a15db2b726bf7eedf4eccb8c"></a>
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_system_create_sound</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, const char *fileName, sc_sound_mode mode, <a class="el" href="structsc__sound.html">sc_sound</a> **sound)</td></tr>
+<tr class="separator:gaf8a2fdb4a15db2b726bf7eedf4eccb8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga2046e190ebaf9a3f31210afac0a55e04" id="r_ga2046e190ebaf9a3f31210afac0a55e04"><td class="memItemLeft" align="right" valign="top"><a id="ga2046e190ebaf9a3f31210afac0a55e04" name="ga2046e190ebaf9a3f31210afac0a55e04"></a>
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_system_create_sound_memory</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, const void *memoryLocation, size_t soundSize, sc_sound_mode mode, <a class="el" href="structsc__sound.html">sc_sound</a> **sound)</td></tr>
+<tr class="separator:ga2046e190ebaf9a3f31210afac0a55e04"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga0f39000fef87f54d58934784869334ca" id="r_ga0f39000fef87f54d58934784869334ca"><td class="memItemLeft" align="right" valign="top">sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__SystemSound.html#ga0f39000fef87f54d58934784869334ca">sc_system_play_sound</a> (<a class="el" href="structsc__system.html">sc_system</a> *system, <a class="el" href="structsc__sound.html">sc_sound</a> *sound, <a class="el" href="structsc__sound.html">sc_sound_instance</a> **instance, <a class="el" href="structsc__node__group.html">sc_node_group</a> *parent, sc_bool paused)</td></tr>
+<tr class="memdesc:ga0f39000fef87f54d58934784869334ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plays a sound and returns the playing instance.  <br /></td></tr>
+<tr class="separator:ga0f39000fef87f54d58934784869334ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="ga0f39000fef87f54d58934784869334ca" name="ga0f39000fef87f54d58934784869334ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga0f39000fef87f54d58934784869334ca">&#9670;&#160;</a></span>sc_system_play_sound()</h2>
 
-<p>This is the complete list of members for <a class="el" href="structsc__dsp__state.html">sc_dsp_state</a>, including all inherited members.</p>
-<table class="directory">
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>instance</b> (defined in <a class="el" href="structsc__dsp__state.html">sc_dsp_state</a>)</td><td class="entry"><a class="el" href="structsc__dsp__state.html">sc_dsp_state</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="odd"><td class="entry"><b>system</b> (defined in <a class="el" href="structsc__dsp__state.html">sc_dsp_state</a>)</td><td class="entry"><a class="el" href="structsc__dsp__state.html">sc_dsp_state</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>userData</b> (defined in <a class="el" href="structsc__dsp__state.html">sc_dsp_state</a>)</td><td class="entry"><a class="el" href="structsc__dsp__state.html">sc_dsp_state</a></td><td class="entry"></td></tr>
-</table></div><!-- contents -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">sbk_status SC_API sc_system_play_sound </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structsc__system.html">sc_system</a> *&#160;</td>
+          <td class="paramname"><em>system</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structsc__sound.html">sc_sound</a> *&#160;</td>
+          <td class="paramname"><em>sound</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structsc__sound.html">sc_sound_instance</a> **&#160;</td>
+          <td class="paramname"><em>instance</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structsc__node__group.html">sc_node_group</a> *&#160;</td>
+          <td class="paramname"><em>parent</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">sc_bool&#160;</td>
+          <td class="paramname"><em>paused</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Plays a sound and returns the playing instance. </p>
+<p>Internally, the function copies the passed in sound to the instance. This doesn't copy the internal audio data but rather the runtime parameters like play position etc. This gives us a new ma_sound we can attach into the node graph.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">system</td><td>system object </td></tr>
+    <tr><td class="paramname">sound</td><td>to copy to the instance </td></tr>
+    <tr><td class="paramname">instance</td><td>of the new sound for playing </td></tr>
+    <tr><td class="paramname">get_parent</td><td>optional parameter. Outputs to the master node group by default </td></tr>
+    <tr><td class="paramname">paused</td><td>whether this sound is paused upon creation or played instantly </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd></dd></dl>
+
+</div>
+</div>
+</div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->

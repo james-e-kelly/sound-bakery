@@ -1,15 +1,20 @@
 <map id="sc_node_group" name="sc_node_group">
-<area shape="rect" id="Node000001" title="Groups nodes/DSPs together into one." alt="" coords="21,449,139,475"/>
-<area shape="rect" id="Node000002" href="$structsc__dsp.html" title="ma_node with an additional enum descriptor." alt="" coords="47,330,113,355"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="83,369,83,449,77,449,77,369"/>
-<area shape="poly" id="edge7_Node000002_Node000002" title=" " alt="" coords="128,333,136,336,140,343,131,352,114,354,113,348,129,347,135,342,133,340,126,338"/>
-<area shape="rect" id="Node000003" href="$structsc__dsp__state.html" title="Holds instance data for a single sc_dsp." alt="" coords="5,93,112,119"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="63,132,73,265,81,329,76,330,68,266,58,133"/>
-<area shape="rect" id="Node000004" href="$structsc__dsp__vtable.html" title=" " alt="" coords="120,240,235,265"/>
-<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="74,129,101,177,126,214,157,238,154,242,122,218,96,180,69,132"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="156,277,95,332,91,328,153,273"/>
-<area shape="rect" id="Node000005" href="$structsc__dsp__parameter.html" title=" " alt="" coords="136,93,277,119"/>
-<area shape="poly" id="edge5_Node000004_Node000005" title=" " alt="" coords="204,133,182,240,177,239,199,132"/>
-<area shape="rect" id="Node000006" href="$structsc__dsp__parameter__float.html" title=" " alt="" coords="118,5,295,31"/>
-<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="209,45,209,93,204,93,204,45"/>
+<area shape="rect" id="Node000001" title="Groups nodes/DSPs together into one." alt="" coords="5,5,124,31"/>
+<area shape="rect" id="Node000002" href="$structsc__dsp.html" title="ma_node with an additional enum descriptor." alt="" coords="131,125,198,150"/>
+<area shape="poly" id="edge10_Node000002_Node000001" title=" " alt="" coords="59,44,55,72,57,85,63,97,77,111,94,121,132,131,130,136,92,126,73,115,58,100,52,87,50,72,53,44"/>
+<area shape="rect" id="Node000003" href="$structsc__system.html" title="Object that manages the node graph, sounds, output etc." alt="" coords="163,347,254,372"/>
+<area shape="poly" id="edge4_Node000003_Node000001" title=" " alt="" coords="54,44,50,56,35,102,25,139,25,176,39,219,52,241,69,262,108,298,149,325,184,344,181,349,146,330,104,302,65,266,48,244,34,221,19,177,20,139,30,100,45,54,49,42"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="163,111,160,83,148,56,133,43,114,33,116,28,136,38,152,53,165,81,169,111"/>
+<area shape="poly" id="edge11_Node000002_Node000002" title=" " alt="" coords="213,125,221,130,225,138,216,148,199,151,198,146,214,144,219,137,217,133,211,130"/>
+<area shape="rect" id="Node000005" href="$structsc__dsp__description.html" title="Structure to create, destroy, and update DSP units of a specific handle." alt="" coords="243,244,388,269"/>
+<area shape="poly" id="edge7_Node000005_Node000002" title=" " alt="" coords="189,157,264,218,298,242,295,246,260,222,186,161"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="196,335,174,270,165,202,162,150,167,150,170,202,179,269,201,333"/>
+<area shape="poly" id="edge6_Node000005_Node000003" title=" " alt="" coords="267,351,296,341,320,321,325,309,325,296,318,270,324,269,331,295,330,310,324,324,299,345,268,356"/>
+<area shape="rect" id="Node000004" href="$structsc__clap.html" title="Holds a DLL handle and plugin entry for a CLAP plugin." alt="" coords="412,244,483,269"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="433,282,411,305,383,325,351,339,317,349,255,358,254,353,316,343,349,334,381,320,407,301,429,278"/>
+<area shape="poly" id="edge5_Node000003_Node000005" title=" " alt="" coords="232,277,212,295,207,307,205,320,208,346,203,347,199,320,201,305,208,292,229,273"/>
+<area shape="rect" id="Node000006" href="$structsc__dsp__parameter.html" title=" " alt="" coords="279,125,421,150"/>
+<area shape="poly" id="edge8_Node000005_Node000006" title=" " alt="" coords="345,164,321,245,316,243,340,162"/>
+<area shape="rect" id="Node000007" href="$structsc__dsp__parameter__float.html" title=" " alt="" coords="261,5,439,31"/>
+<area shape="poly" id="edge9_Node000006_Node000007" title=" " alt="" coords="353,45,353,124,347,124,347,45"/>
 </map>

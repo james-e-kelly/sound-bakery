@@ -100,6 +100,7 @@ var NAVTREE =
       ] ]
     ] ],
     [ "Todo List", "todo.html", null ],
+    [ "Topics", "topics.html", "topics" ],
     [ "Concepts", "concepts.html", "concepts" ],
     [ "Classes", "annotated.html", [
       [ "Class List", "annotated.html", "annotated_dup" ],
@@ -126,8 +127,8 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "ChefProgrammerGuide.html",
-"editor__defines_8h_source.html",
-"structsc__delay__node__config.html"
+"eastl__serialization_8h_source.html",
+"structsc__encoder__config.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
