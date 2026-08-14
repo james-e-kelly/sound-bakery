@@ -351,149 +351,148 @@ $(document).ready(function(){initNavTree('sound__chef__common_8h_source.html',''
 <div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span><span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code hl_struct" href="structsc__node__group.html">sc_node_group</a> <a class="code hl_struct" href="structsc__node__group.html">sc_node_group</a>;</div>
 <div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span> </div>
 <div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span><span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code hl_struct" href="structsc__dsp.html">sc_dsp</a> <a class="code hl_struct" href="structsc__dsp.html">sc_dsp</a>;</div>
-<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span><span class="keyword">typedef</span> <span class="keyword">struct </span>sc_dsp_state sc_dsp_state;</div>
-<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span><span class="keyword">typedef</span> <span class="keyword">struct </span>sc_dsp_config sc_dsp_config;</div>
-<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span><span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code hl_struct" href="structsc__dsp__parameter.html">sc_dsp_parameter</a> <a class="code hl_struct" href="structsc__dsp__parameter.html">sc_dsp_parameter</a>;</div>
-<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span><span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code hl_struct" href="structsc__dsp__description.html">sc_dsp_description</a> <a class="code hl_struct" href="structsc__dsp__description.html">sc_dsp_description</a>;</div>
-<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span> </div>
-<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span><span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code hl_struct" href="structsc__clap.html">sc_clap</a> <a class="code hl_struct" href="structsc__clap.html">sc_clap</a>;</div>
-<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span> </div>
-<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span><span class="keyword">typedef</span> <span class="keyword">enum</span> sc_sound_mode</div>
-<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>{</div>
-<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>    SC_SOUND_MODE_DEFAULT   = 0x00000000,   <span class="comment">//&lt; Creates a sound in memory and decompresses during runtime</span></div>
-<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>    SC_SOUND_MODE_DECODE    = 0x00000001,   <span class="comment">//&lt; Decodes the sound upon loading, instead of runtime</span></div>
-<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>    SC_SOUND_MODE_ASYNC     = 0x00000002,   <span class="comment">//&lt; Loads the sound in a background thread</span></div>
-<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>    SC_SOUND_MODE_STREAM    = 0x00000004,   <span class="comment">//&lt; Streams parts of the sound from disk during runtime</span></div>
-<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>} sc_sound_mode;</div>
-<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span> </div>
-<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span><span class="keyword">typedef</span> <span class="keyword">enum</span> sc_dsp_type</div>
-<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>{</div>
-<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>    SC_DSP_TYPE_UNKNOWN,</div>
-<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>    SC_DSP_TYPE_FADER,</div>
-<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>    SC_DSP_TYPE_LOWPASS,</div>
-<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>    SC_DSP_TYPE_HIGHPASS,</div>
-<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>    SC_DSP_TYPE_DELAY,</div>
-<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>    SC_DSP_TYPE_METER,</div>
-<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>    SC_DSP_TYPE_CLAP,           <span class="comment">//&lt; Wraps a CLAP plugin</span></div>
-<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>    SC_DSP_TYPE_COUNT           <span class="comment">//&lt; Count of types. SC_DSP_TYPE_COUNT - 1 == number of built in types</span></div>
-<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>} sc_dsp_type;</div>
-<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span> </div>
-<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span><span class="keyword">typedef</span> <span class="keyword">enum</span> sc_dsp_index</div>
-<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>{</div>
-<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>    SC_DSP_INDEX_TAIL = -2,  <span class="comment">//&lt; Left/back of the chain and becomes the new input</span></div>
-<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>    SC_DSP_INDEX_HEAD = -1   <span class="comment">//&lt; Right/top of the chain and becomes the new output</span></div>
-<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>} sc_dsp_index;</div>
-<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span> </div>
-<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span><span class="keyword">typedef</span> <span class="keyword">enum</span> sc_encoding_format</div>
-<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>{</div>
-<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>    sc_encoding_format_unknown = 0,</div>
-<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>    sc_encoding_format_wav,</div>
-<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>    sc_encoding_format_adpcm = 10,</div>
-<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>    sc_encoding_format_vorbis,</div>
-<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>    sc_encoding_format_opus</div>
-<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>} sc_encoding_format;</div>
-<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span> </div>
-<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span><span class="keyword">typedef</span> sbk_status(SC_CALL* sc_dsp_create_proc)(<a class="code hl_struct" href="structsc__system.html">sc_system</a>* system, <a class="code hl_struct" href="structsc__dsp.html">sc_dsp</a>* dsp, <span class="keywordtype">void</span>* userData);</div>
-<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span><span class="keyword">typedef</span> sbk_status(SC_CALL* sc_dsp_release_proc)(<a class="code hl_struct" href="structsc__system.html">sc_system</a>* system, <a class="code hl_struct" href="structsc__dsp.html">sc_dsp</a>* dsp);</div>
-<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span><span class="keyword">typedef</span> sbk_status(SC_CALL* sc_dsp_is_idle_proc)(<a class="code hl_struct" href="structsc__dsp.html">sc_dsp</a>* dsp, sc_bool* outIsIdle);</div>
-<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span><span class="keyword">typedef</span> sbk_status(SC_CALL* sc_dsp_set_param_float_proc)(<a class="code hl_struct" href="structsc__dsp.html">sc_dsp</a>* dsp, <span class="keywordtype">int</span> index, <span class="keywordtype">float</span> value);</div>
-<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span><span class="keyword">typedef</span> sbk_status(SC_CALL* sc_dsp_get_param_float_proc)(<a class="code hl_struct" href="structsc__dsp.html">sc_dsp</a>* dsp, <span class="keywordtype">int</span> index, <span class="keywordtype">float</span>* value);</div>
-<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span> </div>
-<div class="foldopen" id="foldopen00289" data-start="{" data-end="};">
-<div class="line"><a id="l00289" name="l00289"></a><span class="lineno"><a class="line" href="structsc__dsp__description.html">  289</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structsc__dsp__description.html">sc_dsp_description</a></div>
-<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>{</div>
-<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>    sc_dsp_create_proc          create;             <span class="comment">//&lt; Allocates and initializes the ma_node that will handle the DSP processing</span></div>
-<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>    sc_dsp_release_proc         release;</div>
-<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>    sc_dsp_is_idle_proc         isIdle;             <span class="comment">//&lt; Optional: For delays with feedback, this is used to detect if the delay has gone silent and the voice can be ended</span></div>
-<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>    sc_dsp_set_param_float_proc setFloat;</div>
-<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>    sc_dsp_get_param_float_proc getFloat;</div>
-<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span> </div>
-<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structsc__dsp__parameter.html">sc_dsp_parameter</a>**    params;</div>
-<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>    sc_uint32                   numParams;</div>
-<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>};</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span><span class="keyword">typedef</span> <span class="keyword">struct </span>sc_dsp_config sc_dsp_config;</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span><span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code hl_struct" href="structsc__dsp__parameter.html">sc_dsp_parameter</a> <a class="code hl_struct" href="structsc__dsp__parameter.html">sc_dsp_parameter</a>;</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span><span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code hl_struct" href="structsc__dsp__description.html">sc_dsp_description</a> <a class="code hl_struct" href="structsc__dsp__description.html">sc_dsp_description</a>;</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span> </div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span><span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code hl_struct" href="structsc__clap.html">sc_clap</a> <a class="code hl_struct" href="structsc__clap.html">sc_clap</a>;</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span> </div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span><span class="keyword">typedef</span> <span class="keyword">enum</span> sc_sound_mode</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>{</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>    SC_SOUND_MODE_DEFAULT   = 0x00000000,   <span class="comment">//&lt; Creates a sound in memory and decompresses during runtime</span></div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>    SC_SOUND_MODE_DECODE    = 0x00000001,   <span class="comment">//&lt; Decodes the sound upon loading, instead of runtime</span></div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>    SC_SOUND_MODE_ASYNC     = 0x00000002,   <span class="comment">//&lt; Loads the sound in a background thread</span></div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>    SC_SOUND_MODE_STREAM    = 0x00000004,   <span class="comment">//&lt; Streams parts of the sound from disk during runtime</span></div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>} sc_sound_mode;</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span> </div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span><span class="keyword">typedef</span> <span class="keyword">enum</span> sc_dsp_type</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>{</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>    SC_DSP_TYPE_UNKNOWN,</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>    SC_DSP_TYPE_FADER,</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>    SC_DSP_TYPE_LOWPASS,</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>    SC_DSP_TYPE_HIGHPASS,</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>    SC_DSP_TYPE_DELAY,</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>    SC_DSP_TYPE_METER,</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>    SC_DSP_TYPE_CLAP,           <span class="comment">//&lt; Wraps a CLAP plugin</span></div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>    SC_DSP_TYPE_COUNT           <span class="comment">//&lt; Count of types. SC_DSP_TYPE_COUNT - 1 == number of built in types</span></div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>} sc_dsp_type;</div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span> </div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span><span class="keyword">typedef</span> <span class="keyword">enum</span> sc_dsp_index</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>{</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>    SC_DSP_INDEX_TAIL = -2,  <span class="comment">//&lt; Left/back of the chain and becomes the new input</span></div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>    SC_DSP_INDEX_HEAD = -1   <span class="comment">//&lt; Right/top of the chain and becomes the new output</span></div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>} sc_dsp_index;</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span> </div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span><span class="keyword">typedef</span> <span class="keyword">enum</span> sc_encoding_format</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>{</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>    sc_encoding_format_unknown = 0,</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>    sc_encoding_format_wav,</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>    sc_encoding_format_adpcm = 10,</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>    sc_encoding_format_vorbis,</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>    sc_encoding_format_opus</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>} sc_encoding_format;</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span> </div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span><span class="keyword">typedef</span> sbk_status(SC_CALL* sc_dsp_create_proc)(<a class="code hl_struct" href="structsc__system.html">sc_system</a>* system, <a class="code hl_struct" href="structsc__dsp.html">sc_dsp</a>* dsp, <span class="keywordtype">void</span>* userData);</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span><span class="keyword">typedef</span> sbk_status(SC_CALL* sc_dsp_release_proc)(<a class="code hl_struct" href="structsc__system.html">sc_system</a>* system, <a class="code hl_struct" href="structsc__dsp.html">sc_dsp</a>* dsp);</div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span><span class="keyword">typedef</span> sbk_status(SC_CALL* sc_dsp_is_idle_proc)(<a class="code hl_struct" href="structsc__dsp.html">sc_dsp</a>* dsp, sc_bool* outIsIdle);</div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span><span class="keyword">typedef</span> sbk_status(SC_CALL* sc_dsp_set_param_float_proc)(<a class="code hl_struct" href="structsc__dsp.html">sc_dsp</a>* dsp, <span class="keywordtype">int</span> index, <span class="keywordtype">float</span> value);</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span><span class="keyword">typedef</span> sbk_status(SC_CALL* sc_dsp_get_param_float_proc)(<a class="code hl_struct" href="structsc__dsp.html">sc_dsp</a>* dsp, <span class="keywordtype">int</span> index, <span class="keywordtype">float</span>* value);</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span> </div>
+<div class="foldopen" id="foldopen00288" data-start="{" data-end="};">
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno"><a class="line" href="structsc__dsp__description.html">  288</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structsc__dsp__description.html">sc_dsp_description</a></div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>{</div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>    sc_dsp_create_proc          create;             <span class="comment">//&lt; Allocates and initializes the ma_node that will handle the DSP processing</span></div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>    sc_dsp_release_proc         release;</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>    sc_dsp_is_idle_proc         isIdle;             <span class="comment">//&lt; Optional: For delays with feedback, this is used to detect if the delay has gone silent and the voice can be ended</span></div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>    sc_dsp_set_param_float_proc setFloat;</div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>    sc_dsp_get_param_float_proc getFloat;</div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span> </div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structsc__dsp__parameter.html">sc_dsp_parameter</a>**    params;</div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>    sc_uint32                   numParams;</div>
+<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>};</div>
 </div>
-<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span> </div>
-<div class="foldopen" id="foldopen00307" data-start="{" data-end="};">
-<div class="line"><a id="l00307" name="l00307"></a><span class="lineno"><a class="line" href="structsc__dsp.html">  307</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structsc__dsp.html">sc_dsp</a></div>
-<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>{</div>
-<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>    sc_uint32       handle;         <span class="comment">//&lt; Either a sc_dsp_type or a user handle</span></div>
-<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>    ma_node*        node;           <span class="comment">//&lt; The dynamically allocated node that can process audio</span></div>
-<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>    <a class="code hl_struct" href="structsc__system.html">sc_system</a>*      system;         <span class="comment">//&lt; Owning system</span></div>
-<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>    <a class="code hl_struct" href="structsc__node__group.html">sc_node_group</a>*  groupOwner;     <span class="comment">//&lt; Owning node group. Can be null</span></div>
-<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>    <a class="code hl_struct" href="structsc__dsp.html">sc_dsp</a>*         next;           <span class="comment">//&lt; when in a node group, the get_parent/next dsp. Can be null if the head node</span></div>
-<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>    <a class="code hl_struct" href="structsc__dsp.html">sc_dsp</a>*         prev;           <span class="comment">//&lt; when in a node group, the child/previous dsp. Can be null if the tail node</span></div>
-<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>};</div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span> </div>
+<div class="foldopen" id="foldopen00306" data-start="{" data-end="};">
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno"><a class="line" href="structsc__dsp.html">  306</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structsc__dsp.html">sc_dsp</a></div>
+<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>{</div>
+<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>    sc_uint32       handle;         <span class="comment">//&lt; Either a sc_dsp_type or a user handle</span></div>
+<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>    ma_node*        node;           <span class="comment">//&lt; The dynamically allocated node that can process audio</span></div>
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>    <a class="code hl_struct" href="structsc__system.html">sc_system</a>*      system;         <span class="comment">//&lt; Owning system</span></div>
+<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>    <a class="code hl_struct" href="structsc__node__group.html">sc_node_group</a>*  groupOwner;     <span class="comment">//&lt; Owning node group. Can be null</span></div>
+<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>    <a class="code hl_struct" href="structsc__dsp.html">sc_dsp</a>*         next;           <span class="comment">//&lt; when in a node group, the get_parent/next dsp. Can be null if the head node</span></div>
+<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>    <a class="code hl_struct" href="structsc__dsp.html">sc_dsp</a>*         prev;           <span class="comment">//&lt; when in a node group, the child/previous dsp. Can be null if the tail node</span></div>
+<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>};</div>
 </div>
-<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span> </div>
-<div class="foldopen" id="foldopen00317" data-start="{" data-end="};">
-<div class="line"><a id="l00317" name="l00317"></a><span class="lineno"><a class="line" href="structsc__sound.html">  317</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structsc__sound.html">sc_sound</a></div>
-<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>{</div>
-<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>    ma_sound        sound;</div>
-<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>    sc_sound_mode   mode;</div>
-<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>    ma_decoder*     memoryDecoder;</div>
-<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>    <a class="code hl_struct" href="structsc__system.html">sc_system</a>*      owningSystem;</div>
-<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>};</div>
+<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span> </div>
+<div class="foldopen" id="foldopen00316" data-start="{" data-end="};">
+<div class="line"><a id="l00316" name="l00316"></a><span class="lineno"><a class="line" href="structsc__sound.html">  316</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structsc__sound.html">sc_sound</a></div>
+<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>{</div>
+<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>    ma_sound        sound;</div>
+<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>    sc_sound_mode   mode;</div>
+<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>    ma_decoder*     memoryDecoder;</div>
+<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>    <a class="code hl_struct" href="structsc__system.html">sc_system</a>*      owningSystem;</div>
+<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>};</div>
 </div>
-<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span> </div>
-<div class="foldopen" id="foldopen00335" data-start="{" data-end="};">
-<div class="line"><a id="l00335" name="l00335"></a><span class="lineno"><a class="line" href="structsc__node__group.html">  335</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structsc__node__group.html">sc_node_group</a></div>
-<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>{</div>
-<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span>    <a class="code hl_struct" href="structsc__dsp.html">sc_dsp</a>* tail;   <span class="comment">//&lt; Left most node. Sounds and child groups connect to this</span></div>
-<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>    <a class="code hl_struct" href="structsc__dsp.html">sc_dsp</a>* fader;  <span class="comment">//&lt; Controls the volume and more of the group. Exists at start</span></div>
-<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>    <a class="code hl_struct" href="structsc__dsp.html">sc_dsp</a>* head;   <span class="comment">//&lt; Right/top most node. Nodes in the group route to this. The head then outputs to a get_parent</span></div>
-<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span>};</div>
+<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span> </div>
+<div class="foldopen" id="foldopen00334" data-start="{" data-end="};">
+<div class="line"><a id="l00334" name="l00334"></a><span class="lineno"><a class="line" href="structsc__node__group.html">  334</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structsc__node__group.html">sc_node_group</a></div>
+<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>{</div>
+<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>    <a class="code hl_struct" href="structsc__dsp.html">sc_dsp</a>* tail;   <span class="comment">//&lt; Left most node. Sounds and child groups connect to this</span></div>
+<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span>    <a class="code hl_struct" href="structsc__dsp.html">sc_dsp</a>* fader;  <span class="comment">//&lt; Controls the volume and more of the group. Exists at start</span></div>
+<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>    <a class="code hl_struct" href="structsc__dsp.html">sc_dsp</a>* head;   <span class="comment">//&lt; Right/top most node. Nodes in the group route to this. The head then outputs to a get_parent</span></div>
+<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>};</div>
 </div>
-<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span> </div>
-<div class="foldopen" id="foldopen00345" data-start="{" data-end="};">
-<div class="line"><a id="l00345" name="l00345"></a><span class="lineno"><a class="line" href="structsc__clap.html">  345</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structsc__clap.html">sc_clap</a></div>
-<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span>{</div>
-<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span>    ma_handle                       dynamicLibraryHandle;   <span class="comment">//&lt; Handle to the .clap file</span></div>
-<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span>    clap_plugin_entry_t*            clapEntry;              <span class="comment">//&lt; Entry point of the plugin</span></div>
-<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span>    <span class="keyword">const</span> clap_plugin_factory_t*    pluginFactory;          <span class="comment">//&lt; Plugin factory to poll and create plugins from</span></div>
-<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span>};</div>
+<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span> </div>
+<div class="foldopen" id="foldopen00344" data-start="{" data-end="};">
+<div class="line"><a id="l00344" name="l00344"></a><span class="lineno"><a class="line" href="structsc__clap.html">  344</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structsc__clap.html">sc_clap</a></div>
+<div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span>{</div>
+<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span>    ma_handle                       dynamicLibraryHandle;   <span class="comment">//&lt; Handle to the .clap file</span></div>
+<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span>    clap_plugin_entry_t*            clapEntry;              <span class="comment">//&lt; Entry point of the plugin</span></div>
+<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span>    <span class="keyword">const</span> clap_plugin_factory_t*    pluginFactory;          <span class="comment">//&lt; Plugin factory to poll and create plugins from</span></div>
+<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span>};</div>
 </div>
-<div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span> </div>
-<div class="foldopen" id="foldopen00366" data-start="{" data-end="};">
-<div class="line"><a id="l00366" name="l00366"></a><span class="lineno"><a class="line" href="structsc__system.html">  366</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structsc__system.html">sc_system</a></div>
-<div class="line"><a id="l00367" name="l00367"></a><span class="lineno">  367</span>{</div>
-<div class="line"><a id="l00368" name="l00368"></a><span class="lineno">  368</span>    ma_engine                   engine;                                                 <span class="comment">//&lt; Must stay first for miniaudio node API</span></div>
-<div class="line"><a id="l00369" name="l00369"></a><span class="lineno">  369</span>    ma_resource_manager         resourceManager;                                        <span class="comment">//&lt; We need a custom resource manager for custom decoders</span></div>
-<div class="line"><a id="l00370" name="l00370"></a><span class="lineno">  370</span>    ma_log                      log;</div>
-<div class="line"><a id="l00371" name="l00371"></a><span class="lineno">  371</span> </div>
-<div class="line"><a id="l00372" name="l00372"></a><span class="lineno">  372</span>    clap_host_t                 clapHost;</div>
-<div class="line"><a id="l00373" name="l00373"></a><span class="lineno">  373</span>    <a class="code hl_struct" href="structsc__clap.html">sc_clap</a>*                    clapPlugins;                                            <span class="comment">//&lt; CLAP plugins loaded from systemConfig-&gt;pluginPath, or NULL if none</span></div>
-<div class="line"><a id="l00374" name="l00374"></a><span class="lineno">  374</span>    ma_uint32                   clapPluginCount;                                        <span class="comment">//&lt; Number of entries in clapPlugins</span></div>
-<div class="line"><a id="l00375" name="l00375"></a><span class="lineno">  375</span>    <span class="keywordtype">float</span>                       clapPluginScratch[SC_MAX_CHANNELS][SC_MAX_FRAME_COUNT]; <span class="comment">//&lt; CLAP plugins process deinterleaved audio. miniaudio processes interleaved. We need a space for CLAP plugins to output to, then can interleave it</span></div>
-<div class="line"><a id="l00376" name="l00376"></a><span class="lineno">  376</span>    <span class="keywordtype">float</span>*                      clapPluginChannels[SC_MAX_CHANNELS];                    <span class="comment">//&lt; CLAP processing expects pointers for each channel</span></div>
-<div class="line"><a id="l00377" name="l00377"></a><span class="lineno">  377</span> </div>
-<div class="line"><a id="l00378" name="l00378"></a><span class="lineno">  378</span>    <a class="code hl_struct" href="structsc__node__group.html">sc_node_group</a>*              masterNodeGroup;</div>
-<div class="line"><a id="l00379" name="l00379"></a><span class="lineno">  379</span> </div>
-<div class="line"><a id="l00380" name="l00380"></a><span class="lineno">  380</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structsc__dsp__description.html">sc_dsp_description</a>*   userDspRegistry[SC_MAX_USER_DSP_TYPES];                 <span class="comment">//&lt; DSP descriptions to create each DSP handle</span></div>
-<div class="line"><a id="l00381" name="l00381"></a><span class="lineno">  381</span>};</div>
+<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span> </div>
+<div class="foldopen" id="foldopen00365" data-start="{" data-end="};">
+<div class="line"><a id="l00365" name="l00365"></a><span class="lineno"><a class="line" href="structsc__system.html">  365</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structsc__system.html">sc_system</a></div>
+<div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span>{</div>
+<div class="line"><a id="l00367" name="l00367"></a><span class="lineno">  367</span>    ma_engine                   engine;                                                 <span class="comment">//&lt; Must stay first for miniaudio node API</span></div>
+<div class="line"><a id="l00368" name="l00368"></a><span class="lineno">  368</span>    ma_resource_manager         resourceManager;                                        <span class="comment">//&lt; We need a custom resource manager for custom decoders</span></div>
+<div class="line"><a id="l00369" name="l00369"></a><span class="lineno">  369</span>    ma_log                      log;</div>
+<div class="line"><a id="l00370" name="l00370"></a><span class="lineno">  370</span> </div>
+<div class="line"><a id="l00371" name="l00371"></a><span class="lineno">  371</span>    clap_host_t                 clapHost;</div>
+<div class="line"><a id="l00372" name="l00372"></a><span class="lineno">  372</span>    <a class="code hl_struct" href="structsc__clap.html">sc_clap</a>*                    clapPlugins;                                            <span class="comment">//&lt; CLAP plugins loaded from systemConfig-&gt;pluginPath, or NULL if none</span></div>
+<div class="line"><a id="l00373" name="l00373"></a><span class="lineno">  373</span>    ma_uint32                   clapPluginCount;                                        <span class="comment">//&lt; Number of entries in clapPlugins</span></div>
+<div class="line"><a id="l00374" name="l00374"></a><span class="lineno">  374</span>    <span class="keywordtype">float</span>                       clapPluginScratch[SC_MAX_CHANNELS][SC_MAX_FRAME_COUNT]; <span class="comment">//&lt; CLAP plugins process deinterleaved audio. miniaudio processes interleaved. We need a space for CLAP plugins to output to, then can interleave it</span></div>
+<div class="line"><a id="l00375" name="l00375"></a><span class="lineno">  375</span>    <span class="keywordtype">float</span>*                      clapPluginChannels[SC_MAX_CHANNELS];                    <span class="comment">//&lt; CLAP processing expects pointers for each channel</span></div>
+<div class="line"><a id="l00376" name="l00376"></a><span class="lineno">  376</span> </div>
+<div class="line"><a id="l00377" name="l00377"></a><span class="lineno">  377</span>    <a class="code hl_struct" href="structsc__node__group.html">sc_node_group</a>*              masterNodeGroup;</div>
+<div class="line"><a id="l00378" name="l00378"></a><span class="lineno">  378</span> </div>
+<div class="line"><a id="l00379" name="l00379"></a><span class="lineno">  379</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structsc__dsp__description.html">sc_dsp_description</a>*   userDspRegistry[SC_MAX_USER_DSP_TYPES];                 <span class="comment">//&lt; DSP descriptions to create each DSP handle</span></div>
+<div class="line"><a id="l00380" name="l00380"></a><span class="lineno">  380</span>};</div>
 </div>
-<div class="line"><a id="l00382" name="l00382"></a><span class="lineno">  382</span> </div>
-<div class="foldopen" id="foldopen00387" data-start="{" data-end="};">
-<div class="line"><a id="l00387" name="l00387"></a><span class="lineno"><a class="line" href="structsc__system__config.html">  387</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structsc__system__config.html">sc_system_config</a></div>
-<div class="line"><a id="l00388" name="l00388"></a><span class="lineno">  388</span>{</div>
-<div class="line"><a id="l00389" name="l00389"></a><span class="lineno">  389</span>    <span class="keyword">const</span> <span class="keywordtype">char</span>* pluginPath;                         <span class="comment">//&lt; Folder path containing CLAP plugins to load</span></div>
-<div class="line"><a id="l00390" name="l00390"></a><span class="lineno">  390</span>    ma_allocation_callbacks allocationCallbacks;    <span class="comment">//&lt; External allocation callbacks to override all memory allocation in Sound Chef</span></div>
-<div class="line"><a id="l00391" name="l00391"></a><span class="lineno">  391</span>    ma_device_data_proc dataCallback;               <span class="comment">//&lt; Device render callback. Overriden in Sound Bakery for profiling</span></div>
-<div class="line"><a id="l00392" name="l00392"></a><span class="lineno">  392</span>};</div>
+<div class="line"><a id="l00381" name="l00381"></a><span class="lineno">  381</span> </div>
+<div class="foldopen" id="foldopen00386" data-start="{" data-end="};">
+<div class="line"><a id="l00386" name="l00386"></a><span class="lineno"><a class="line" href="structsc__system__config.html">  386</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structsc__system__config.html">sc_system_config</a></div>
+<div class="line"><a id="l00387" name="l00387"></a><span class="lineno">  387</span>{</div>
+<div class="line"><a id="l00388" name="l00388"></a><span class="lineno">  388</span>    <span class="keyword">const</span> <span class="keywordtype">char</span>* pluginPath;                         <span class="comment">//&lt; Folder path containing CLAP plugins to load</span></div>
+<div class="line"><a id="l00389" name="l00389"></a><span class="lineno">  389</span>    ma_allocation_callbacks allocationCallbacks;    <span class="comment">//&lt; External allocation callbacks to override all memory allocation in Sound Chef</span></div>
+<div class="line"><a id="l00390" name="l00390"></a><span class="lineno">  390</span>    ma_device_data_proc dataCallback;               <span class="comment">//&lt; Device render callback. Overriden in Sound Bakery for profiling</span></div>
+<div class="line"><a id="l00391" name="l00391"></a><span class="lineno">  391</span>};</div>
 </div>
-<div class="line"><a id="l00393" name="l00393"></a><span class="lineno">  393</span> </div>
-<div class="line"><a id="l00394" name="l00394"></a><span class="lineno">  394</span><span class="preprocessor">#ifdef __cplusplus</span></div>
-<div class="line"><a id="l00395" name="l00395"></a><span class="lineno">  395</span>}</div>
-<div class="line"><a id="l00396" name="l00396"></a><span class="lineno">  396</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00397" name="l00397"></a><span class="lineno">  397</span> </div>
-<div class="line"><a id="l00398" name="l00398"></a><span class="lineno">  398</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="astructsc__clap_html"><div class="ttname"><a href="structsc__clap.html">sc_clap</a></div><div class="ttdoc">Holds a DLL handle and plugin entry for a CLAP plugin.</div><div class="ttdef"><b>Definition</b> sound_chef_common.h:346</div></div>
-<div class="ttc" id="astructsc__dsp__description_html"><div class="ttname"><a href="structsc__dsp__description.html">sc_dsp_description</a></div><div class="ttdoc">Structure to create, destroy, and update DSP units of a specific handle.</div><div class="ttdef"><b>Definition</b> sound_chef_common.h:290</div></div>
+<div class="line"><a id="l00392" name="l00392"></a><span class="lineno">  392</span> </div>
+<div class="line"><a id="l00393" name="l00393"></a><span class="lineno">  393</span><span class="preprocessor">#ifdef __cplusplus</span></div>
+<div class="line"><a id="l00394" name="l00394"></a><span class="lineno">  394</span>}</div>
+<div class="line"><a id="l00395" name="l00395"></a><span class="lineno">  395</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00396" name="l00396"></a><span class="lineno">  396</span> </div>
+<div class="line"><a id="l00397" name="l00397"></a><span class="lineno">  397</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="astructsc__clap_html"><div class="ttname"><a href="structsc__clap.html">sc_clap</a></div><div class="ttdoc">Holds a DLL handle and plugin entry for a CLAP plugin.</div><div class="ttdef"><b>Definition</b> sound_chef_common.h:345</div></div>
+<div class="ttc" id="astructsc__dsp__description_html"><div class="ttname"><a href="structsc__dsp__description.html">sc_dsp_description</a></div><div class="ttdoc">Structure to create, destroy, and update DSP units of a specific handle.</div><div class="ttdef"><b>Definition</b> sound_chef_common.h:289</div></div>
 <div class="ttc" id="astructsc__dsp__parameter_html"><div class="ttname"><a href="structsc__dsp__parameter.html">sc_dsp_parameter</a></div><div class="ttdef"><b>Definition</b> sound_chef_dsp.h:36</div></div>
-<div class="ttc" id="astructsc__dsp_html"><div class="ttname"><a href="structsc__dsp.html">sc_dsp</a></div><div class="ttdoc">ma_node with an additional enum descriptor.</div><div class="ttdef"><b>Definition</b> sound_chef_common.h:308</div></div>
-<div class="ttc" id="astructsc__node__group_html"><div class="ttname"><a href="structsc__node__group.html">sc_node_group</a></div><div class="ttdoc">Groups nodes/DSPs together into one.</div><div class="ttdef"><b>Definition</b> sound_chef_common.h:336</div></div>
-<div class="ttc" id="astructsc__sound_html"><div class="ttname"><a href="structsc__sound.html">sc_sound</a></div><div class="ttdef"><b>Definition</b> sound_chef_common.h:318</div></div>
-<div class="ttc" id="astructsc__system__config_html"><div class="ttname"><a href="structsc__system__config.html">sc_system_config</a></div><div class="ttdoc">Configuration for initializing the sc_system.</div><div class="ttdef"><b>Definition</b> sound_chef_common.h:388</div></div>
-<div class="ttc" id="astructsc__system_html"><div class="ttname"><a href="structsc__system.html">sc_system</a></div><div class="ttdoc">Object that manages the node graph, sounds, output etc.</div><div class="ttdef"><b>Definition</b> sound_chef_common.h:367</div></div>
+<div class="ttc" id="astructsc__dsp_html"><div class="ttname"><a href="structsc__dsp.html">sc_dsp</a></div><div class="ttdoc">ma_node with an additional enum descriptor.</div><div class="ttdef"><b>Definition</b> sound_chef_common.h:307</div></div>
+<div class="ttc" id="astructsc__node__group_html"><div class="ttname"><a href="structsc__node__group.html">sc_node_group</a></div><div class="ttdoc">Groups nodes/DSPs together into one.</div><div class="ttdef"><b>Definition</b> sound_chef_common.h:335</div></div>
+<div class="ttc" id="astructsc__sound_html"><div class="ttname"><a href="structsc__sound.html">sc_sound</a></div><div class="ttdef"><b>Definition</b> sound_chef_common.h:317</div></div>
+<div class="ttc" id="astructsc__system__config_html"><div class="ttname"><a href="structsc__system__config.html">sc_system_config</a></div><div class="ttdoc">Configuration for initializing the sc_system.</div><div class="ttdef"><b>Definition</b> sound_chef_common.h:387</div></div>
+<div class="ttc" id="astructsc__system_html"><div class="ttname"><a href="structsc__system.html">sc_system</a></div><div class="ttdoc">Object that manages the node graph, sounds, output etc.</div><div class="ttdef"><b>Definition</b> sound_chef_common.h:366</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
