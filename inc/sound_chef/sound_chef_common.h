@@ -104,6 +104,8 @@
 #define SC_MAX_CHANNELS         36      //< Support a max of 5th order ambisonics
 #define SC_MAX_FRAME_COUNT      2048    //< Safe default for allocating staging areas in memory
 
+#define SC_MAX_USER_DSP_TYPES   16      //< sc_dsp_descriptions are kept in a static array. Increase this if we need to support more DSP types
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -124,6 +126,7 @@ typedef float               sc_atomic_float;
 
 typedef ma_bool32           sc_bool;
 typedef ma_uint32           sc_uint32;
+typedef ma_int32            sc_int32;
 typedef ma_int64            sc_int64;
 typedef ma_uint64           sc_uint64;
 
@@ -186,12 +189,6 @@ typedef enum
 #define SC_CHECK_MEM(ptr) \
     if ((ptr) == NULL)    \
     return SBK_ERR_OUT_OF_MEMORY
-#define SC_CHECK_MEM_FREE(ptr, freePtr) \
-    if ((ptr) == NULL)                  \
-    {                                   \
-        ma_free((freePtr), NULL);       \
-        return SBK_ERR_OUT_OF_MEMORY;       \
-    }
 
 typedef struct sc_system sc_system;
 typedef struct sc_system_config sc_system_config;
@@ -205,7 +202,7 @@ typedef struct sc_dsp sc_dsp;
 typedef struct sc_dsp_state sc_dsp_state;
 typedef struct sc_dsp_config sc_dsp_config;
 typedef struct sc_dsp_parameter sc_dsp_parameter;
-typedef struct sc_dsp_vtable sc_dsp_vtable;
+typedef struct sc_dsp_description sc_dsp_description;
 
 typedef struct sc_clap sc_clap;
 
@@ -219,13 +216,18 @@ typedef enum sc_sound_mode
 
 typedef enum sc_dsp_type
 {
-    SC_DSP_TYPE_UNKOWN,     //< User created
+    SC_DSP_TYPE_UNKNOWN,        //< User created
     SC_DSP_TYPE_FADER,
     SC_DSP_TYPE_LOWPASS,
     SC_DSP_TYPE_HIGHPASS,
     SC_DSP_TYPE_DELAY,
     SC_DSP_TYPE_METER,
-    SC_DSP_TYPE_CLAP        //< Wraps a CLAP plugin
+    SC_DSP_TYPE_CLAP,           //< Wraps a CLAP plugin
+    SC_DSP_TYPE_COUNT           //< Count of types. SC_DSP_TYPE_COUNT - 1 == number of built in types
+
+    // It is expected that user DSP types would have numbers higher than SC_DSP_TYPE_COUNT
+    // example: MY_DSP_TYPE = SC_DSP_TYPE_COUNT + 1
+    // The system can then store user DSP descriptions and find them by "handle"
 } sc_dsp_type;
 
 typedef enum sc_dsp_index
@@ -243,43 +245,25 @@ typedef enum sc_encoding_format
     sc_encoding_format_opus
 } sc_encoding_format;
 
-typedef sbk_status(SC_CALL* sc_dsp_create_proc)(sc_dsp_state* dspState);
-typedef sbk_status(SC_CALL* sc_dsp_release_proc)(sc_dsp_state* dspState);
-typedef sbk_status(SC_CALL* sc_dsp_is_idle_proc)(sc_dsp_state* dspState, sc_bool* outIsIdle);
-typedef sbk_status(SC_CALL* sc_dsp_set_param_float_proc)(sc_dsp_state* dspState, int index, float value);
-typedef sbk_status(SC_CALL* sc_dsp_get_param_float_proc)(sc_dsp_state* dspState, int index, float* value);
+typedef sbk_status(SC_CALL* sc_dsp_create_proc)(sc_system* system, sc_dsp* dsp, void* userData);
+typedef sbk_status(SC_CALL* sc_dsp_release_proc)(sc_system* system, sc_dsp* dsp);
+typedef sbk_status(SC_CALL* sc_dsp_is_idle_proc)(sc_dsp* dsp, sc_bool* outIsIdle);
+typedef sbk_status(SC_CALL* sc_dsp_set_param_float_proc)(sc_dsp* dsp, int index, float value);
+typedef sbk_status(SC_CALL* sc_dsp_get_param_float_proc)(sc_dsp* dsp, int index, float* value);
 
-struct sc_dsp_vtable
+/**
+ * @brief Structure to create, destroy, and update DSP units of a specific handle.
+ */
+struct sc_dsp_description
 {
-    sc_dsp_create_proc create;
-    sc_dsp_release_proc release;
-    sc_dsp_is_idle_proc isIdle;             //< Optional: For delays with feedback, this is used to detect if the delay has gone silent and the voice can be ended
+    sc_dsp_create_proc          create;             //< Allocates and initializes the ma_node that will handle the DSP processing
+    sc_dsp_release_proc         release;
+    sc_dsp_is_idle_proc         isIdle;             //< Optional: For delays with feedback, this is used to detect if the delay has gone silent and the voice can be ended
     sc_dsp_set_param_float_proc setFloat;
     sc_dsp_get_param_float_proc getFloat;
 
-    sc_dsp_parameter** params;
-    int numParams;
-};
-
-/**
- * @brief Holds instance data for a single sc_dsp.
- *
- * Each DSP callback is passed a sc_dsp_state object. This state object can be
- * used to access the system, the user created object (likely a miniaudio node)
- * and the sc_dsp object.
- */
-struct sc_dsp_state
-{
-    void* instance;  //< points to the current sc_dsp object
-    void* userData;  //< points to the user created object, likely some type of ma_node
-    void* system;    //< points to the owning sc_system object
-};
-
-struct sc_dsp_config
-{
-    sc_dsp_type type;
-    sc_dsp_vtable* vtable;
-    const clap_plugin_factory_t* clapFactory;
+    const sc_dsp_parameter**    params;
+    sc_uint32                   numParams;
 };
 
 /**
@@ -290,10 +274,10 @@ struct sc_dsp_config
  */
 struct sc_dsp
 {
-    sc_dsp_state* state;    //< holds the instance data for the dsp
-    sc_dsp_vtable* vtable;  //< holds the functions for interacting with the underlying node type. Must be not null
-    sc_dsp_type type;
-    const clap_plugin_factory_t* clapFactory; //< If this is a CLAP plugin, the factory to the plugin
+    sc_uint32 handle; //< Either a sc_dsp_type or a user handle
+    ma_node* node;
+    sc_system* system;
+    sc_node_group* groupOwner;
     sc_dsp* next;  //< when in a node group, the get_parent/next dsp. Can be null if the head node
     sc_dsp* prev;  //< when in a node group, the child/previous dsp. Can be null if the tail node
 };
@@ -336,7 +320,7 @@ struct sc_clap
 /**
  * @brief Object that manages the node graph, sounds, output etc.
  *
- * The sc_system is a wrapper for the ma_engine type from miniaudio.
+ * The sc_system is a wrapper for the ma_engine handle from miniaudio.
  * This means that sc_system has a node graph, resource manager, can output
  * to the user's audio device and everything expected from miniaudio's
  * high-level API.
@@ -349,17 +333,19 @@ struct sc_clap
  */
 struct sc_system
 {
-    ma_engine engine;                     //< Must stay first for miniaudio node API
-    ma_resource_manager resourceManager;  //< We need a custom resource manager for custom decoders
+    ma_engine engine;                                               //< Must stay first for miniaudio node API
+    ma_resource_manager resourceManager;                            //< We need a custom resource manager for custom decoders
     ma_log log;
 
     clap_host_t clapHost;
-    sc_clap* clapPlugins;      //< CLAP plugins loaded from systemConfig->pluginPath, or NULL if none
-    ma_uint32 clapPluginCount; //< Number of entries in clapPlugins
-    float clapPluginScratch[SC_MAX_CHANNELS][SC_MAX_FRAME_COUNT];  //< CLAP plugins process deinterleaved audio. miniaudio processes interleaved. We need a space for CLAP plugins to output to, then can interleave it
-    float* clapPluginChannels[SC_MAX_CHANNELS];                    //< CLAP processing expects pointers for each channel
+    sc_clap* clapPlugins;                                           //< CLAP plugins loaded from systemConfig->pluginPath, or NULL if none
+    ma_uint32 clapPluginCount;                                      //< Number of entries in clapPlugins
+    float clapPluginScratch[SC_MAX_CHANNELS][SC_MAX_FRAME_COUNT];   //< CLAP plugins process deinterleaved audio. miniaudio processes interleaved. We need a space for CLAP plugins to output to, then can interleave it
+    float* clapPluginChannels[SC_MAX_CHANNELS];                     //< CLAP processing expects pointers for each channel
 
     sc_node_group* masterNodeGroup;
+
+    const sc_dsp_description* userDspRegistry[SC_MAX_USER_DSP_TYPES];      //< DSP descriptions to create each DSP handle
 };
 
 /**

@@ -1,40 +1,44 @@
-#include "sound_chef/sound_chef.h"
+#include "sound_chef/sound_chef_internal.h"
+
+sbk_status sc_dsp_release(sc_dsp* dsp)
+{
+    SC_CHECK_ARG(dsp != NULL);
+    SC_CHECK_ARG(dsp->node != NULL);
+    SC_CHECK_ARG(dsp->system != NULL);
+
+    const sc_dsp_description* description = NULL;
+    SC_CHECK_STATUS(sc_system_get_dsp_desc(dsp->system, dsp->handle, &description));
+
+    (void)description->release(dsp->system, dsp);
+
+    SC_FREE(dsp, dsp->system);
+
+    return SBK_SUCCESS;
+}
 
 sbk_status sc_dsp_get_parameter_float(sc_dsp* dsp, int index, float* value)
 {
     SC_CHECK_ARG(dsp != NULL);
-    SC_CHECK_ARG(dsp->vtable != NULL);
-    SC_CHECK_ARG(dsp->vtable->getFloat != NULL);
-    SC_CHECK_ARG(dsp->state != NULL);
     SC_CHECK_ARG(value != NULL);
     SC_CHECK_ARG(index >= 0);
 
-    return dsp->vtable->getFloat(dsp->state, index, value);
+    const sc_system* const system = (const sc_system*)((ma_node_base*)dsp->node)->pNodeGraph;
+
+    const sc_dsp_description* description = NULL;
+    SC_CHECK_STATUS(sc_system_get_dsp_desc(system, dsp->handle, &description));
+
+    return description->getFloat(dsp, index, value);
 }
 
 sbk_status sc_dsp_set_parameter_float(sc_dsp* dsp, int index, float value)
 {
     SC_CHECK_ARG(dsp != NULL);
-    SC_CHECK_ARG(dsp->vtable != NULL);
-    SC_CHECK_ARG(dsp->vtable->setFloat != NULL);
-    SC_CHECK_ARG(dsp->state != NULL);
     SC_CHECK_ARG(index >= 0);
 
-    return dsp->vtable->setFloat(dsp->state, index, value);
-}
+    const sc_system* const system = (const sc_system*)((ma_node_base*)dsp->node)->pNodeGraph;
 
-sbk_status sc_dsp_release(sc_dsp* dsp)
-{
-    SC_CHECK_ARG(dsp != NULL);
-    SC_CHECK_ARG(dsp->vtable != NULL);
-    SC_CHECK_ARG(dsp->vtable->release != NULL);
-    SC_CHECK_ARG(dsp->state != NULL);
+    const sc_dsp_description* description = NULL;
+    SC_CHECK_STATUS(sc_system_get_dsp_desc(system, dsp->handle, &description));
 
-    const ma_allocation_callbacks* allocCallbacks = &((sc_system*)dsp->state->system)->engine.allocationCallbacks;
-
-    sbk_status result = dsp->vtable->release(dsp->state);
-    ma_free(dsp->state, allocCallbacks);
-    ma_free(dsp, allocCallbacks);
-
-    return result;
+    return description->setFloat(dsp, index, value);
 }

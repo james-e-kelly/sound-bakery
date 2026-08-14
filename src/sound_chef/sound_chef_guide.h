@@ -81,7 +81,7 @@
  * cumbersome if unique code was requried each time and for each effect.
  *
  * By abstracting effects into @ref sc_dsp objects, a user can quickly call functions like @ref sc_dsp_config_init and
- * @ref sc_system_create_dsp to create many different effects with ease. Sound Chef handles initializing the underlying
+ * @ref sc_system_create_dsp_by_desc to create many different effects with ease. Sound Chef handles initializing the underlying
  * `ma_*_node` objects.
  *
  * @note
@@ -93,7 +93,7 @@
  * @code
  * const sc_dsp_config lpfConfig = sc_dsp_config_init(SC_DSP_TYPE_LOWPASS);
  * sc_dsp* lowpass = NULL;
- * sc_system_create_dsp(system, &lpfConfig, &lowpass);
+ * sc_system_create_dsp_by_desc(system, &lpfConfig, &lowpass);
  *
  * sc_dsp_set_parameter_float(m_lowpass, SC_DSP_LOWPASS_PARAM_CUTOFF, 500.0f);
  * @endcode
@@ -140,7 +140,7 @@
  *
  * const sc_dsp_config lpfConfig = sc_dsp_config_init(SC_DSP_TYPE_LOWPASS);
  * sc_dsp* lowpass = NULL;
- * sc_system_create_dsp(system, &lpfConfig, &lowpass);
+ * sc_system_create_dsp_by_desc(system, &lpfConfig, &lowpass);
  * sc_node_group_add_dsp(nodeGroup, lowpass, SC_DSP_INDEX_HEAD);
  *
  * sc_sound_instance* instance = NULL;
@@ -182,13 +182,13 @@
  * // Add lowpass to footstep bus (for underwater footsteps, for example)
  * const sc_dsp_config lpf_config = sc_dsp_config_init(SC_DSP_TYPE_LOWPASS);
  * sc_dsp* lpf = NULL;
- * sc_system_create_dsp(system, &lpf_config, &lpf);
+ * sc_system_create_dsp_by_desc(system, &lpf_config, &lpf);
  * sc_node_group_add_dsp(footstep_bus, lpf, SC_DSP_INDEX_HEAD);
  *
  * // Add compression to control dynamic range
  * const sc_dsp_config compressor_config = sc_dsp_config_init(SC_DSP_TYPE_COMPRESSOR);
  * sc_dsp* compressor = NULL;
- * sc_system_create_dsp(system, &compressor_config, &compressor);
+ * sc_system_create_dsp_by_desc(system, &compressor_config, &compressor);
  * sc_node_group_add_dsp(footstep_bus, compressor, SC_DSP_INDEX_HEAD);
  *
  * // Play a footstep on concrete

@@ -318,9 +318,8 @@ sbk_status sc_system_init(sc_system* system, const sc_system_config* systemConfi
             result = sc_system_create_node_group(system, &system->masterNodeGroup);
             result = sc_node_group_set_parent_endpoint(system->masterNodeGroup);
 
-            const sc_dsp_config meterConfig = sc_dsp_config_init(SC_DSP_TYPE_METER);
             sc_dsp* meterDSP                = NULL;
-            result                          = sc_system_create_dsp(system, &meterConfig, &meterDSP);
+            result                          = sc_system_create_dsp_by_type(system, SC_DSP_TYPE_METER, &meterDSP);
             result                          = sc_node_group_add_dsp(system->masterNodeGroup, meterDSP, SC_DSP_INDEX_HEAD);
 
             if (result == SBK_SUCCESS)
@@ -530,12 +529,12 @@ sbk_status sc_system_play_sound(sc_system* system, sc_sound* sound, sc_sound_ins
 
     if (parent != NULL)
     {
-        const ma_result attachResult = ma_node_attach_output_bus(*instance, 0, parent->tail->state->userData, 0);
+        const ma_result attachResult = ma_node_attach_output_bus(*instance, 0, parent->tail->node, 0);
         SC_CHECK_STATUS(SBK_FROM_MA(attachResult));
     }
     else if (system->masterNodeGroup != NULL)
     {
-        const ma_result attachResult = ma_node_attach_output_bus(*instance, 0, system->masterNodeGroup->tail->state->userData, 0);
+        const ma_result attachResult = ma_node_attach_output_bus(*instance, 0, system->masterNodeGroup->tail->node, 0);
         SC_CHECK_STATUS(SBK_FROM_MA(attachResult));
     }
 
@@ -560,8 +559,7 @@ sbk_status sc_system_create_node_group(sc_system* system, sc_node_group** nodeGr
     SC_CREATE(*nodeGroup, sc_node_group, system);
 
     // Always create a fader/sound_group by default
-    sc_dsp_config faderConfig = sc_dsp_config_init(SC_DSP_TYPE_FADER);
-    result                    = sc_system_create_dsp(system, &faderConfig, &(*nodeGroup)->fader);
+    result = sc_system_create_dsp_by_type(system, SC_DSP_TYPE_FADER, &(*nodeGroup)->fader);
 
     (*nodeGroup)->head = (*nodeGroup)->fader;
     (*nodeGroup)->tail = (*nodeGroup)->fader;
@@ -576,43 +574,98 @@ sbk_status sc_system_create_node_group(sc_system* system, sc_node_group** nodeGr
     return result;
 }
 
-sbk_status sc_system_create_dsp(sc_system* system, const sc_dsp_config* config, sc_dsp** dsp)
+extern sc_dsp_description g_dspFaderVTable;
+extern sc_dsp_description g_dspLowpassVTable;
+extern sc_dsp_description g_dspHighpassVTable;
+extern sc_dsp_description g_dspDelayVTable;
+extern sc_dsp_description g_dspMeterVTable;
+extern sc_dsp_description g_dspClapVTable;
+
+static const sc_dsp_description* const g_builtinDspDescriptions[] =
+    {
+        NULL,
+        &g_dspFaderVTable,
+        &g_dspLowpassVTable,
+        &g_dspHighpassVTable,
+        &g_dspDelayVTable,
+        &g_dspMeterVTable,
+        &g_dspClapVTable,
+};
+
+sbk_status sc_system_get_dsp_desc(const sc_system* system, sc_uint32 handle, const sc_dsp_description** outDescription)
 {
     SC_CHECK_ARG(system != NULL);
-    SC_CHECK_ARG(config != NULL);
-    SC_CHECK_ARG(config->vtable != NULL);
-    SC_CHECK_ARG(config->vtable->create != NULL);
-    SC_CHECK_ARG(config->vtable->release != NULL);
+    SC_CHECK_ARG(outDescription != NULL);
+    SC_CHECK_ARG(handle > 0);
+
+    if (handle < (sc_int32)SC_DSP_TYPE_COUNT)
+    {
+        *outDescription = g_builtinDspDescriptions[handle];
+    }
+    else
+    {
+        const sc_uint32 userTypeIndex = handle - (sc_uint32)SC_DSP_TYPE_COUNT - 1;
+        SC_CHECK_ARG(userTypeIndex < SC_MAX_USER_DSP_TYPES);
+        *outDescription = system->userDspRegistry[userTypeIndex];
+    }
+
+    return SBK_SUCCESS;
+}
+
+sbk_status sc_system_create_dsp(sc_system* system, const sc_dsp_description* description, sc_uint32 type, sc_dsp** dsp, void* userData)
+{
+    SC_CHECK_ARG(system != NULL);
+    SC_CHECK_ARG(description != NULL);
+    SC_CHECK_ARG(description->create != NULL);
+    SC_CHECK_ARG(description->release != NULL);
     SC_CHECK_ARG(dsp != NULL);
 
     sbk_status result = SBK_ERR_CHEF;
 
-    *dsp = (sc_dsp*)ma_malloc(sizeof(sc_dsp), &system->engine.allocationCallbacks);
-    SC_CHECK_MEM(*dsp);
-    MA_ZERO_OBJECT(*dsp);
+    SC_CREATE(*dsp, sc_dsp, system);
 
-    (*dsp)->state = ma_malloc(sizeof(sc_dsp_state), &system->engine.allocationCallbacks);
-    SC_CHECK_MEM_FREE((*dsp)->state, *dsp);
-    MA_ZERO_OBJECT((*dsp)->state);
+    (*dsp)->handle   = type;
+    (*dsp)->system = system;
 
-    (*dsp)->state->instance = *dsp;
-    (*dsp)->state->system   = system;
+    result = description->create(system, *dsp, userData);
 
-    (*dsp)->type        = config->type;
-    (*dsp)->vtable      = config->vtable;
-    (*dsp)->clapFactory = config->clapFactory;
-
-    result = (*dsp)->vtable->create((*dsp)->state);
+    if ((*dsp)->node == NULL && result == SBK_SUCCESS)
+    {
+        result = SBK_ERR_NULL;
+    }
 
     if (result != SBK_SUCCESS)
     {
-        sc_dsp_release(*dsp);
-        *dsp = NULL;
+        SC_FREE(*dsp, system);
     }
 
-    DEBUG_ASSERT(result == SBK_SUCCESS);
-
     return result;
+}
+
+sbk_status sc_system_create_dsp_by_desc(sc_system* system, const sc_dsp_description* description, sc_dsp** dsp)
+{
+    return sc_system_create_dsp(system, description, (sc_uint32)SC_DSP_TYPE_UNKNOWN, dsp, NULL);
+}
+
+sbk_status sc_system_create_dsp_by_type(sc_system* system, sc_dsp_type type, sc_dsp** dsp)
+{
+    const sc_dsp_description* description = NULL;
+    SC_CHECK_STATUS(sc_system_get_dsp_desc(system, (sc_uint32)type, &description));
+    return sc_system_create_dsp(system, description, (sc_uint32)type, dsp, NULL);
+}
+
+sbk_status sc_system_create_dsp_by_handle(sc_system* system, sc_uint32 handle, sc_dsp** dsp)
+{
+    const sc_dsp_description* description = NULL;
+    SC_CHECK_STATUS(sc_system_get_dsp_desc(system, handle, &description));
+    return sc_system_create_dsp(system, description, handle, dsp, NULL);
+}
+
+sbk_status sc_system_create_dsp_clap(sc_system* system, const clap_plugin_factory_t* pluginFactory, sc_dsp** dsp)
+{
+    const sc_dsp_description* description = NULL;
+    SC_CHECK_STATUS(sc_system_get_dsp_desc(system, (sc_uint32)SC_DSP_TYPE_CLAP, &description));
+    return sc_system_create_dsp(system, description, (sc_uint32)SC_DSP_TYPE_CLAP, dsp, pluginFactory);
 }
 
 #pragma endregion
@@ -794,7 +847,7 @@ sbk_status sc_node_group_add_dsp(sc_node_group* nodeGroup, sc_dsp* dsp, sc_dsp_i
             sc_dsp* currentHead = nodeGroup->head;
             DEBUG_ASSERT(currentHead->next == NULL);  // head nodes can't have
                                                       // something after them
-            ma_node_base* currentParent = ((ma_node_base*)currentHead->state->userData)->pOutputBuses[0].pInputNode;
+            ma_node_base* currentParent = ((ma_node_base*)currentHead->node)->pOutputBuses[0].pInputNode;
             DEBUG_ASSERT(currentParent != NULL);  // must be attached to
                                                   // something, even if it's the
                                                   // endpoint
@@ -802,12 +855,12 @@ sbk_status sc_node_group_add_dsp(sc_node_group* nodeGroup, sc_dsp* dsp, sc_dsp_i
             if (currentParent)
             {
                 // Attach the dsp to the get_parent output
-                result = SBK_FROM_MA(ma_node_attach_output_bus(dsp->state->userData, 0, currentParent, 0));
+                result = SBK_FROM_MA(ma_node_attach_output_bus(dsp->node, 0, currentParent, 0));
                 SC_CHECK_STATUS(result);
 
                 // Make the current head attach to the DSP (which is now the
                 // head)
-                result = SBK_FROM_MA(ma_node_attach_output_bus(currentHead->state->userData, 0, dsp->state->userData, 0));
+                result = SBK_FROM_MA(ma_node_attach_output_bus(currentHead->node, 0, dsp->node, 0));
                 SC_CHECK_STATUS(result);
 
                 nodeGroup->head->next = dsp;
@@ -823,7 +876,7 @@ sbk_status sc_node_group_add_dsp(sc_node_group* nodeGroup, sc_dsp* dsp, sc_dsp_i
         {
             sc_dsp* currentTail = nodeGroup->tail;
 
-            result = SBK_FROM_MA(ma_node_attach_output_bus(dsp->state->userData, 0, currentTail->state->userData, 0));
+            result = SBK_FROM_MA(ma_node_attach_output_bus(dsp->node, 0, currentTail->node, 0));
             SC_CHECK_STATUS(result);
 
             break;
@@ -842,20 +895,20 @@ sbk_status sc_node_group_set_parent(sc_node_group* nodeGroup, sc_node_group* par
     SC_CHECK_ARG(nodeGroup != NULL);
     SC_CHECK_ARG(parent != NULL);
 
-    return SBK_FROM_MA(ma_node_attach_output_bus(nodeGroup->head->state->userData, 0, parent->tail->state->userData, 0));
+    return SBK_FROM_MA(ma_node_attach_output_bus(nodeGroup->head->node, 0, parent->tail->node, 0));
 }
 
 sbk_status sc_node_group_set_parent_endpoint(sc_node_group* nodeGroup)
 {
     SC_CHECK_ARG(nodeGroup != NULL);
 
-    sc_system* const system = (sc_system*)nodeGroup->fader->state->system;
+    sc_system* const system = (sc_system*)nodeGroup->fader->system;
     SC_CHECK(system != NULL, SBK_ERR_NULL);
 
     ma_node* const endPoint = ma_node_graph_get_endpoint((ma_node_graph*)system);
     SC_CHECK(endPoint != NULL, SBK_FROM_MA(MA_BAD_ADDRESS));
 
-    return SBK_FROM_MA(ma_node_attach_output_bus(nodeGroup->head->state->userData, 0, endPoint, 0));
+    return SBK_FROM_MA(ma_node_attach_output_bus(nodeGroup->head->node, 0, endPoint, 0));
 }
 
 sbk_status sc_node_group_get_dsp(sc_node_group* nodeGroup, sc_dsp_type type, sc_dsp** dsp)
@@ -870,7 +923,7 @@ sbk_status sc_node_group_get_dsp(sc_node_group* nodeGroup, sc_dsp_type type, sc_
 
     do
     {
-        if (currentDsp->type == type)
+        if (currentDsp->handle == type)
         {
             *dsp = currentDsp;
             break;
@@ -885,7 +938,7 @@ sbk_status sc_node_group_release(sc_node_group* nodeGroup)
 {
     SC_CHECK_ARG(nodeGroup != NULL);
 
-    const sc_system* system = (sc_system*)nodeGroup->fader->state->system;
+    const sc_system* system = (sc_system*)nodeGroup->fader->system;
 
     sc_dsp* iDSP = nodeGroup->tail;
 
@@ -898,59 +951,6 @@ sbk_status sc_node_group_release(sc_node_group* nodeGroup)
     SC_FREE(nodeGroup, system);
 
     return SBK_SUCCESS;
-}
-
-#pragma endregion
-
-#pragma region DSP Low Level
-
-extern sc_dsp_vtable g_dspFaderVTable;
-extern sc_dsp_vtable g_dspLowpassVTable;
-extern sc_dsp_vtable g_dspHighpassVTable;
-extern sc_dsp_vtable g_dspDelayVTable;
-extern sc_dsp_vtable g_dspMeterVTable;
-extern sc_dsp_vtable g_dspClapVTable;
-
-sc_dsp_config sc_dsp_config_init(sc_dsp_type type)
-{
-    sc_dsp_config result;
-    MA_ZERO_OBJECT(&result);
-
-    result.type = type;
-
-    switch (type)
-    {
-        default:
-        case SC_DSP_TYPE_UNKOWN:
-            break;
-        case SC_DSP_TYPE_FADER:
-            result.vtable = &g_dspFaderVTable;
-            break;
-        case SC_DSP_TYPE_LOWPASS:
-            result.vtable = &g_dspLowpassVTable;
-            break;
-        case SC_DSP_TYPE_HIGHPASS:
-            result.vtable = &g_dspHighpassVTable;
-            break;
-        case SC_DSP_TYPE_DELAY:
-            result.vtable = &g_dspDelayVTable;
-            break;
-        case SC_DSP_TYPE_METER:
-            result.vtable = &g_dspMeterVTable;
-            break;
-        case SC_DSP_TYPE_CLAP:
-            result.vtable = &g_dspClapVTable;
-            break;
-    }
-
-    return result;
-}
-
-sc_dsp_config sc_dsp_config_init_clap(const clap_plugin_factory_t* pluginFactory)
-{
-    sc_dsp_config config = sc_dsp_config_init(SC_DSP_TYPE_CLAP);
-    config.clapFactory   = pluginFactory;
-    return config;
 }
 
 #pragma endregion

@@ -3,7 +3,6 @@
 #include "sound_chef/sound_chef_dsp.h"
 
 #include <math.h>
-#include <string.h>
 
 static void sc_meter_node_process_pcm_frames(ma_node* node, const float** framesIn, ma_uint32* const frameCountIn, float** framesOut, ma_uint32* frameCountOut)
 {
@@ -66,25 +65,21 @@ static void sc_meter_node_uninit(sc_meter_node* node, const ma_allocation_callba
     ma_node_uninit(node, allocationCallbacks);
 }
 
-static sbk_status sc_dsp_meter_create(sc_dsp_state* state)
+static sbk_status sc_dsp_meter_create(sc_system* system, sc_dsp* dsp, void* userData)
 {
-    state->userData = ma_malloc(sizeof(sc_meter_node), &((sc_system*)state->system)->engine.allocationCallbacks);
-    if (state->userData == NULL)
-    {
-        return SBK_ERR_OUT_OF_MEMORY;
-    }
+    SC_CREATE(dsp->node, sc_meter_node, system);
 
-    return sc_meter_node_init((ma_node_graph*)state->system, NULL, (sc_meter_node*)state->userData);
+    return sc_meter_node_init((ma_node_graph*)system, &system->engine.allocationCallbacks, (sc_meter_node*)dsp->node);
 }
 
-static sbk_status sc_dsp_meter_release(sc_dsp_state* state)
+static sbk_status sc_dsp_meter_release(sc_system* system, sc_dsp* dsp)
 {
-    sc_meter_node_uninit((sc_meter_node*)state->userData, NULL);
-    SC_FREE(state->userData, (sc_system*)state->system);
+    sc_meter_node_uninit((sc_meter_node*)dsp->node, &system->engine.allocationCallbacks);
+    SC_FREE(dsp->node, system);
     return SBK_SUCCESS;
 }
 
-sc_dsp_vtable g_dspMeterVTable =
+sc_dsp_description g_dspMeterVTable =
 {
     sc_dsp_meter_create,
     sc_dsp_meter_release
@@ -93,13 +88,13 @@ sc_dsp_vtable g_dspMeterVTable =
 sbk_status sc_dsp_get_metering_info(sc_dsp* dsp, ma_uint32 channelIndex, sc_dsp_meter_query meterType, float* value)
 {
     SC_CHECK_ARG(dsp != NULL);
-    SC_CHECK_ARG(dsp->type == SC_DSP_TYPE_METER);
+    SC_CHECK_ARG(dsp->handle == SC_DSP_TYPE_METER);
     SC_CHECK_ARG(channelIndex <= SC_DSP_METER_MAX_CHANNELS);
     SC_CHECK_ARG(meterType >= 0);
     SC_CHECK_ARG(meterType < SC_DSP_METER_QUERY_COUNT);
     SC_CHECK_ARG(value != NULL);
 
-    sc_meter_node* meterNode = (sc_meter_node*)dsp->state->userData;
+    sc_meter_node* meterNode = (sc_meter_node*)dsp->node;
     SC_CHECK(meterNode != NULL, SBK_FROM_MA(MA_INVALID_DATA));
 
     switch (meterType)

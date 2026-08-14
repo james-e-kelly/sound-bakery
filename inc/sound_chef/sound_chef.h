@@ -86,23 +86,11 @@ extern "C"
      */
     sbk_status SC_API sc_system_create_node_group(sc_system* system, sc_node_group** nodeGroup);
 
-    /**
-     * @brief Creates a new DSP based on the config.
-     *
-     * @warning The config parameter must have its vtable pointer set.
-     * Using sc_dsp_config_init will ensure the vtable is correct for built in
-     * types. However, users must fill it themselves for custom DSP types.
-     *
-     * Example:
-     * @code
-     * sc_dsp* dsp = NULL;
-     * sc_dsp_config lpfConfig = sc_dsp_config_init(SC_DSP_TYPE_LOWPASS);
-     * sc_system_create_dsp(system, &lpfConfig, &dsp);
-     * @endcode
-     *
-     * @see sc_dsp_config_init
-     */
-    sbk_status SC_API sc_system_create_dsp(sc_system* system, const sc_dsp_config* config, sc_dsp** dsp);
+    sbk_status SC_API sc_system_create_dsp_by_desc(sc_system* system, const sc_dsp_description* description, sc_dsp** dsp);
+    sbk_status SC_API sc_system_create_dsp_by_type(sc_system* system, sc_dsp_type type, sc_dsp** dsp);
+    sbk_status SC_API sc_system_create_dsp_by_handle(sc_system* system, sc_uint32 handle, sc_dsp** dsp);
+    sbk_status SC_API sc_system_create_dsp_clap(sc_system* system, const clap_plugin_factory_t* pluginFactory, sc_dsp** dsp);
+    sbk_status SC_API sc_system_get_dsp_desc(sc_system* system, sc_uint32 handle, const sc_dsp_description** outDescription);
 
     sbk_status SC_API sc_sound_get_length(sc_sound* sound, float* lengthInSeconds);
 
@@ -139,15 +127,6 @@ extern "C"
      * The raw sc_sound needs to be released as well, once used, to release all resources.
      */
     sbk_status SC_API sc_sound_instance_release(sc_sound_instance* instance);
-
-    /**
-     * @brief Returns a valid sc_dsp_config object for the DSP type.
-     *
-     * @warning Will not return a valid config if the type ==
-     * SC_DSP_TYPE_UNKOWN.
-     */
-    sc_dsp_config SC_API sc_dsp_config_init(sc_dsp_type type);
-    sc_dsp_config SC_API sc_dsp_config_init_clap(const clap_plugin_factory_t* pluginFactory);
 
     sbk_status SC_API sc_dsp_get_parameter_float(sc_dsp* dsp, int index, float* value);
     sbk_status SC_API sc_dsp_set_parameter_float(sc_dsp* dsp, int index, float value);
