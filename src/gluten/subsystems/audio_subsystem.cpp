@@ -218,7 +218,7 @@ auto gluten::audio_subsystem::get_sound_is_looping(const std::filesystem::path& 
 
     if (sc_sound_instance* const soundInstance = get_sound_instance(filePath))
     {
-        sc_sound_instance_get_is_looping(soundInstance, &looping);
+        sc_sound_instance_is_looping(soundInstance, &looping);
     }
 
     return looping;

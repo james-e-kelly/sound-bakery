@@ -25,7 +25,7 @@ static sbk_status sc_dsp_lowpass_release(sc_system* system, sc_dsp* dsp)
     return SBK_SUCCESS;
 }
 
-static sbk_status sc_dsp_lowpass_set_param_float(sc_dsp* dsp, int index, float value)
+static sbk_status sc_dsp_lowpass_set_param_float(sc_dsp* dsp, sc_uint32 index, float value)
 {
     (void)value;
 
@@ -50,7 +50,7 @@ static sbk_status sc_dsp_lowpass_set_param_float(sc_dsp* dsp, int index, float v
     return result;
 }
 
-static sbk_status sc_dsp_lowpass_get_param_float(sc_dsp* dsp, int index, float* value)
+static sbk_status sc_dsp_lowpass_get_param_float(sc_dsp* dsp, sc_uint32 index, float* value)
 {
     (void)dsp;
     (void)value;

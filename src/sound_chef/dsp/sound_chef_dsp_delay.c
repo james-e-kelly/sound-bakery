@@ -307,11 +307,10 @@ static sbk_status sc_dsp_delay_is_idle(sc_dsp* dsp, sc_bool* outIsIdle)
     return SBK_SUCCESS;
 }
 
-static sbk_status sc_dsp_delay_set_param_float(sc_dsp* dsp, int index, float value)
+static sbk_status sc_dsp_delay_set_param_float(sc_dsp* dsp, sc_uint32 index, float value)
 {
     SC_CHECK_ARG(dsp != NULL);
     SC_CHECK_ARG(dsp->node != NULL);
-    SC_CHECK_ARG(index >= 0);
 
     sc_delay_node* const delayNode = (sc_delay_node*)dsp->node;
     sc_delay* const delay          = &delayNode->delay;
@@ -345,11 +344,10 @@ static sbk_status sc_dsp_delay_set_param_float(sc_dsp* dsp, int index, float val
     return SBK_ERR_INVALID_OPERATION;
 }
 
-static sbk_status sc_dsp_delay_get_param_float(sc_dsp* dsp, int index, float* const value)
+static sbk_status sc_dsp_delay_get_param_float(sc_dsp* dsp, sc_uint32 index, float* const value)
 {
     SC_CHECK_ARG(dsp != NULL);
     SC_CHECK_ARG(dsp->node != NULL);
-    SC_CHECK_ARG(index >= 0);
     SC_CHECK_ARG(value != NULL);
 
     sc_delay_node* const delayNode = (sc_delay_node*)dsp->node;

@@ -185,7 +185,7 @@ static sbk_status sc_dsp_clap_release(sc_system* system, sc_dsp* dsp)
     return SBK_SUCCESS;
 }
 
-static sbk_status sc_dsp_clap_set_param_float(sc_dsp* dsp, int index, float value)
+static sbk_status sc_dsp_clap_set_param_float(sc_dsp* dsp, sc_uint32 index, float value)
 {
     (void)dsp;
     (void)index;
@@ -193,7 +193,7 @@ static sbk_status sc_dsp_clap_set_param_float(sc_dsp* dsp, int index, float valu
     return SBK_FROM_MA(MA_NOT_IMPLEMENTED);
 }
 
-static sbk_status sc_dsp_clap_get_param_float(sc_dsp* dsp, int index, float* value)
+static sbk_status sc_dsp_clap_get_param_float(sc_dsp* dsp, sc_uint32 index, float* value)
 {
     (void)dsp;
     (void)index;

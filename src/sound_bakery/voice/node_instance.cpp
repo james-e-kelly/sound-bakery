@@ -227,7 +227,7 @@ auto sbk::engine::node_instance_fsm::init_node_group(const event_init& init) -> 
             sc_dsp* dsp = nullptr;
             (void)add_dsp_to_node_group(m_nodeGroup.nodeGroup.get(), &dsp, descShared->get_dsp_handle());
 
-            int index = 0;
+            sc_uint32 index = 0;
             for (const sbk::engine::effect_parameter_description& parameter : descShared->get_parameters())
             {
                 switch (parameter.m_parameter.type)

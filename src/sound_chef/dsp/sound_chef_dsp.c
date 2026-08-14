@@ -16,11 +16,10 @@ sbk_status sc_dsp_release(sc_dsp* dsp)
     return SBK_SUCCESS;
 }
 
-sbk_status sc_dsp_get_parameter_float(sc_dsp* dsp, int index, float* value)
+sbk_status sc_dsp_get_parameter_float(sc_dsp* dsp, sc_uint32 index, float* value)
 {
     SC_CHECK_ARG(dsp != NULL);
     SC_CHECK_ARG(value != NULL);
-    SC_CHECK_ARG(index >= 0);
 
     const sc_system* const system = (const sc_system*)((ma_node_base*)dsp->node)->pNodeGraph;
 
@@ -30,10 +29,9 @@ sbk_status sc_dsp_get_parameter_float(sc_dsp* dsp, int index, float* value)
     return description->getFloat(dsp, index, value);
 }
 
-sbk_status sc_dsp_set_parameter_float(sc_dsp* dsp, int index, float value)
+sbk_status sc_dsp_set_parameter_float(sc_dsp* dsp, sc_uint32 index, float value)
 {
     SC_CHECK_ARG(dsp != NULL);
-    SC_CHECK_ARG(index >= 0);
 
     const sc_system* const system = (const sc_system*)((ma_node_base*)dsp->node)->pNodeGraph;
 

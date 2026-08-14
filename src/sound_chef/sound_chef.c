@@ -398,7 +398,7 @@ static const sc_dsp_description* const g_builtinDspDescriptions[] =
         &g_dspClapVTable,
 };
 
-sbk_status sc_system_get_dsp_desc(sc_system* system, sc_uint32 handle, const sc_dsp_description** outDescription)
+sbk_status sc_system_get_dsp_desc(const sc_system* system, sc_uint32 handle, const sc_dsp_description** outDescription)
 {
     SC_CHECK_ARG(system != NULL);
     SC_CHECK_ARG(outDescription != NULL);
@@ -474,7 +474,7 @@ sbk_status sc_system_create_dsp_clap(sc_system* system, const clap_plugin_factor
     return sc_system_create_dsp(system, description, (sc_uint32)SC_DSP_TYPE_CLAP, dsp, pluginFactory);
 }
 
-sbk_status sc_system_clap_get_count(sc_system* system, ma_uint32* count)
+sbk_status sc_system_clap_get_count(const sc_system* system, ma_uint32* count)
 {
     SC_CHECK_ARG(system != NULL);
     SC_CHECK_ARG(count != NULL);
@@ -484,7 +484,7 @@ sbk_status sc_system_clap_get_count(sc_system* system, ma_uint32* count)
     return SBK_SUCCESS;
 }
 
-sbk_status sc_system_clap_get_at(sc_system* system, ma_uint32 index, sc_clap** plugin)
+sbk_status sc_system_clap_get_at(const sc_system* system, ma_uint32 index, sc_clap** plugin)
 {
     SC_CHECK_ARG(system != NULL);
     SC_CHECK_ARG(plugin != NULL);

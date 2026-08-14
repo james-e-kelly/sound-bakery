@@ -173,6 +173,7 @@ typedef enum
     SBK_ERR_EMPTY,                  //< The buffer or container was empty and nothing could be read
     SBK_ERR_TOO_LARGE,              //< The request was too large and nothing could be read
     SBK_ERR_AT_END,                 //< At the end of the buffer and cannot go further
+    SBK_ERR_NOT_FOUND,              //< The resource was not found
 
     SBK_ERROR_MAX
 } sbk_status;
@@ -219,7 +220,7 @@ typedef struct sc_clap sc_clap;
 /**
  * @brief The different ways to create a sound.
  * 
- * These types are basically the same as @see ma_sound_flags.
+ * These types are basically the same as @ref ma_sound_flags.
  * 
  * @see sc_system_create_sound
  * @see sc_system_create_sound_memory
@@ -279,8 +280,8 @@ typedef enum sc_encoding_format
 typedef sbk_status(SC_CALL* sc_dsp_create_proc)(sc_system* system, sc_dsp* dsp, void* userData);
 typedef sbk_status(SC_CALL* sc_dsp_release_proc)(sc_system* system, sc_dsp* dsp);
 typedef sbk_status(SC_CALL* sc_dsp_is_idle_proc)(sc_dsp* dsp, sc_bool* outIsIdle);
-typedef sbk_status(SC_CALL* sc_dsp_set_param_float_proc)(sc_dsp* dsp, int index, float value);
-typedef sbk_status(SC_CALL* sc_dsp_get_param_float_proc)(sc_dsp* dsp, int index, float* value);
+typedef sbk_status(SC_CALL* sc_dsp_set_param_float_proc)(sc_dsp* dsp, sc_uint32 index, float value);
+typedef sbk_status(SC_CALL* sc_dsp_get_param_float_proc)(sc_dsp* dsp, sc_uint32 index, float* value);
 
 /**
  * @brief Structure to create, destroy, and update DSP units of a specific handle.
@@ -309,7 +310,7 @@ struct sc_dsp
     ma_node*        node;           //< The dynamically allocated node that can process audio
     sc_system*      system;         //< Owning system
     sc_node_group*  groupOwner;     //< Owning node group. Can be null
-    sc_dsp*         next;           //< when in a node group, the get_parent/next dsp. Can be null if the head node
+    sc_dsp*         next;           //< when in a node group, the parent/next dsp. Can be null if the head node
     sc_dsp*         prev;           //< when in a node group, the child/previous dsp. Can be null if the tail node
 };
 
@@ -335,7 +336,7 @@ struct sc_node_group
 {
     sc_dsp* tail;   //< Left most node. Sounds and child groups connect to this
     sc_dsp* fader;  //< Controls the volume and more of the group. Exists at start
-    sc_dsp* head;   //< Right/top most node. Nodes in the group route to this. The head then outputs to a get_parent
+    sc_dsp* head;   //< Right/top most node. Nodes in the group route to this. The head then outputs to a parent
 };
 
 /**
@@ -351,7 +352,7 @@ struct sc_clap
 /**
  * @brief Object that manages the node graph, sounds, output etc.
  *
- * The sc_system is a wrapper for the @see ma_engine from miniaudio.
+ * The sc_system is a wrapper for the @ref ma_engine from miniaudio.
  * This means that sc_system has a node graph, resource manager, can output
  * to the user's audio device and everything expected from miniaudio's
  * high-level API.

@@ -125,7 +125,7 @@ sbk_status sc_sound_instance_set_loop_position_in_seconds(sc_sound_instance* ins
     return SBK_SUCCESS;
 }
 
-sbk_status sc_sound_instance_get_is_looping(sc_sound_instance* instance, sc_bool* looping)
+sbk_status sc_sound_instance_is_looping(sc_sound_instance* instance, sc_bool* looping)
 {
     SC_CHECK_ARG(instance != NULL);
     SC_CHECK_ARG(looping != NULL);

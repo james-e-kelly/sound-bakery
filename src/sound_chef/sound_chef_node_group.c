@@ -98,12 +98,12 @@ sbk_status sc_node_group_get_dsp(sc_node_group* nodeGroup, sc_dsp_type type, sc_
         if (currentDsp->handle == type)
         {
             *dsp = currentDsp;
-            break;
+            return SBK_SUCCESS;
         }
         currentDsp = currentDsp->next;
     } while (currentDsp != NULL);
 
-    return SBK_SUCCESS;
+    return SBK_ERR_NOT_FOUND;
 }
 
 sbk_status sc_node_group_release(sc_node_group* nodeGroup)

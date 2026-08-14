@@ -26,7 +26,7 @@ static sbk_status sc_dsp_highpass_release(sc_system* system, sc_dsp* dsp)
     return SBK_SUCCESS;
 }
 
-static sbk_status sc_dsp_highpass_set_param_float(sc_dsp* dsp, int index, float value)
+static sbk_status sc_dsp_highpass_set_param_float(sc_dsp* dsp, sc_uint32 index, float value)
 {
     sbk_status result = SBK_ERR_CHEF;
 
@@ -49,7 +49,7 @@ static sbk_status sc_dsp_highpass_set_param_float(sc_dsp* dsp, int index, float 
     return result;
 }
 
-static sbk_status sc_dsp_highpass_get_param_float(sc_dsp* dsp, int index, float* const value)
+static sbk_status sc_dsp_highpass_get_param_float(sc_dsp* dsp, sc_uint32 index, float* const value)
 {
     (void)dsp;
     (void)value;
