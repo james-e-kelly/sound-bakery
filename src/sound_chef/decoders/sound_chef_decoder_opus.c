@@ -1,6 +1,12 @@
 
 // clang-format off
 #include "sound_chef/sound_chef_internal.h"
+
+#if defined(MA_DLL)
+    #undef MA_API
+    #define MA_API MA_DLL_EXPORT
+#endif
+
 #define MINIAUDIO_IMPLEMENTATION
 #include "extras/miniaudio_libopus.h"
 // clang-format on
