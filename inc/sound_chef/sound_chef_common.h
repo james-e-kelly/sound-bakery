@@ -125,6 +125,8 @@ typedef c89atomic_uint64    sc_atomic_uint64;
 typedef c89atomic_bool      sc_atomic_bool;
 typedef float               sc_atomic_float;
 
+typedef ma_uint8            sc_uint8;
+typedef ma_uint16           sc_uint16;
 typedef ma_bool32           sc_bool;
 typedef ma_uint32           sc_uint32;
 typedef ma_int32            sc_int32;
@@ -214,22 +216,23 @@ typedef enum
     if ((condition) == MA_FALSE)           \
     goto dest
 
-typedef struct sc_system sc_system;
-typedef struct sc_system_config sc_system_config;
+typedef struct sc_system            sc_system;
+typedef struct sc_system_config     sc_system_config;
 
-typedef struct sc_sound sc_sound;
-typedef struct sc_sound sc_sound_instance;
+typedef struct sc_sound             sc_sound;
+typedef struct sc_sound             sc_sound_instance;
 
-typedef struct sc_node_group sc_node_group;
+typedef struct sc_node_group        sc_node_group;
 
 typedef struct sc_dsp sc_dsp;
-typedef struct sc_dsp_config sc_dsp_config;
-typedef struct sc_dsp_parameter sc_dsp_parameter;
-typedef struct sc_dsp_description sc_dsp_description;
+typedef struct sc_dsp_config        sc_dsp_config;
+typedef struct sc_dsp_parameter     sc_dsp_parameter;
+typedef struct sc_dsp_description   sc_dsp_description;
 
-typedef struct sc_clap sc_clap;
+typedef struct sc_clap              sc_clap;
 
-typedef struct sc_voice sc_voice;
+typedef struct sc_voice             sc_voice;
+typedef struct sc_voice_real        sc_voice_real;
 
 /**
  * @brief The different ways to create a sound.
@@ -320,7 +323,7 @@ struct sc_dsp_description
  */
 struct sc_dsp
 {
-    sc_uint32       handle;         //< Either a sc_dsp_type or a user handle
+    sc_uint32       handle;         //< Either a sc_dsp_type or a user type
     ma_node*        node;           //< The dynamically allocated node that can process audio
     sc_system*      system;         //< Owning system
     sc_node_group*  groupOwner;     //< Owning node group. Can be null
@@ -363,9 +366,32 @@ struct sc_clap
     const clap_plugin_factory_t*    pluginFactory;          //< Plugin factory to poll and create plugins from
 };
 
+/**
+ * @brief A voice is a window into a single sound that may or may not be audible and rendering.
+ * 
+ * Voices are limited by the @ref sc_system_config::maxVoices value passed during system initialization.
+ */
 struct sc_voice
 {
-    sc_uint32 temp;
+    sc_system*                      system;
+    sc_atomic_float                 gain;
+    sc_atomic_float                 pitch;
+    sc_uint8                        priority;               //< priority where the greater the number, the great the priority. Generally 0-100
+    sc_node_group*                  group;
+    sc_voice_handle                 realVoiceHandle;        //< Non-owning reference to a real voice
+};
+
+/**
+ * @brief A real voice that is connected to the DSP graph.
+ * 
+ * Real voices are limited by the @ref sc_system_config::maxRealVoices value passed during system initialization.
+ */
+struct sc_voice_real
+{
+    ma_node_base                    baseNode;
+    sc_voice*                       voiceRef;       //< The voice we are playing for
+    sc_sound_mode                   mode;
+    ma_decoder*                     memoryDecoder;  //< @todo Work out if this should go in a resource manager
 };
 
 /**
@@ -399,7 +425,10 @@ struct sc_system
     const sc_dsp_description*   userDspRegistry[SC_MAX_USER_DSP_TYPES];                 //< DSP descriptions to create each DSP handle
 
     ma_slot_allocator           voiceSlotAllocator;                                     //< Allocates voice handles
-    sc_voice*                   voiceBuffer;                                            //< Allocates voices. Indexed through the @r voiceSlotAllocator
+    sc_voice*                   voiceBuffer;                                            //< Allocated voices. Indexed through the @r voiceSlotAllocator
+
+    ma_slot_allocator           realVoiceSlotAllocator;                                 //< Allocates handles for real voices
+    sc_voice_real*              realVoiceBuffer;                                        //< Allocated real voices. Indexed through @r realVoiceSlotAllocator
 };
 
 /**
