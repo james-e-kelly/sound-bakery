@@ -70,13 +70,6 @@
     #define SC_CLASS
 #endif
 
-/* Warns (in C++) if a returned result code is discarded; expands to nothing in C. */
-#if defined(__cplusplus)
-    #define SBK_NODISCARD [[nodiscard]]
-#else
-    #define SBK_NODISCARD
-#endif
-
 #define SC_ZERO_OBJECT(p) memset((p), 0, sizeof(*(p)))
 
 #define SC_COUNTOF(x)            (sizeof(x) / sizeof(x[0]))

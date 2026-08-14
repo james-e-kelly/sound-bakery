@@ -14,6 +14,13 @@
 #define SB_API SC_API
 #define SB_CLASS SC_CLASS
 
+/* Warns (in C++) if a returned result code is discarded; expands to nothing in C. */
+#if defined(__cplusplus)
+    #define SBK_NODISCARD [[nodiscard]]
+#else
+    #define SBK_NODISCARD
+#endif
+
 typedef struct sbk_system_config sbk_system_config;
 
 typedef uint64_t sbk_id;
