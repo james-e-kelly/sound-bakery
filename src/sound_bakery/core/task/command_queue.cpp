@@ -123,7 +123,7 @@ auto sbk::command_queue::process_commands(sbk::engine::system* system) noexcept 
         if (messageView.m_identifier == message_type::end_of_frame)
         {
             SBK_TRY_C(m_messageQueue.read_end(messageView));
-            return sbk::ok();
+            break;
         }
 
         (void)process_command(messageView, system);

@@ -49,7 +49,7 @@ namespace sbk::engine
          * @param max value of the parameter.
          */
         parameter(parameter_type min, parameter_type max)
-            : sbk::core::database_object(), m_property(min, min, max), m_defaultValue(min)
+            : sbk::core::database_object(), m_defaultValue(min), m_property(min, min, max)
         {
         }
 
@@ -148,7 +148,7 @@ namespace sbk::engine
          * See https://stackoverflow.com/questions/40492414/why-does-stdnumeric-limitslong-longmax-fail
          */
         named_parameter()
-            : m_values(), parameter((std::numeric_limits<sbk_id>::min)(), (std::numeric_limits<sbk_id>::max)())
+            : parameter((std::numeric_limits<sbk_id>::min)(), (std::numeric_limits<sbk_id>::max)())
         {
         }
 

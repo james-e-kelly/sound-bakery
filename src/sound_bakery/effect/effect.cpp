@@ -20,7 +20,7 @@ auto sbk::engine::effect_description::set_dsp_type(sc_dsp_type type) -> void
     {
         m_effectHandle = handle;
 
-        for (int i = 0; i < description->numParams; ++i)
+        for (sc_uint32 i = 0; i < description->numParams; ++i)
         {
             m_parameterDescriptions.emplace_back(description->params[i]);
         }

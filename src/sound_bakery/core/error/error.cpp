@@ -46,6 +46,12 @@ namespace sbk
                 return "The request was too large and nothing could be written or read";
             case SBK_ERR_AT_END:
                 return "At the end of the buffer and cannot go further";
+            case SBK_ERR_UNITIALIZED:
+                return "The resource was not initialized";
+            case SBK_ERR_INVALID_OPERATION:
+                return "The operation is unsupported in this state";
+            case SBK_ERR_NOT_FOUND:
+                return "The resource was not found";
             case SBK_ERROR_MAX:
                 break;
         }

@@ -209,10 +209,10 @@ namespace sbk::core::serialization
         serialized_object_vector() = delete;
         serialized_object_vector(sbk::core::object_owner* objectOwner) : objectOwner(objectOwner) {}
         serialized_object_vector(const eastl::vector<std::shared_ptr<object_class>>& objects)
-            : objects(objects), count(objects.size()), objectOwner(nullptr) {}
+            : count(objects.size()), objects(objects) {}
 
-        sbk::core::object_owner* objectOwner = nullptr;
-        std::size_t count                    = 0;
+        sbk::core::object_owner* objectOwner{};
+        std::size_t count{};
         eastl::vector<std::shared_ptr<object_class>> objects;
 
         template <class archive_class>
@@ -282,7 +282,7 @@ namespace sbk::core::serialization
         serialized_object_vector() = delete;
         serialized_object_vector(sbk::core::object_owner* objectOwner) : objectOwner(objectOwner) {}
         serialized_object_vector(const eastl::vector<std::shared_ptr<sbk::engine::sound>>& objects)
-            : objects(objects), count(objects.size()), objectOwner(nullptr)
+            : objectOwner(nullptr), count(objects.size()), objects(objects)
         {
         }
 
@@ -504,9 +504,9 @@ namespace sbk::core::serialization
         serialized_associative_container(rttr::variant& variant)
             : originalVariant(variant),
               view(variant.create_associative_view()),
-              keyType(view.get_key_type()),
               valueType(view.is_key_only_type() ? view.get_key_type()
-                                                : view.get_value_type())
+                                                : view.get_value_type()),
+              keyType(view.get_key_type())
         {
         }
 
