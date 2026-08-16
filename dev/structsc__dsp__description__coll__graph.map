@@ -3,7 +3,7 @@
 <area shape="rect" id="Node000002" href="$structsc__system.html" title="Object that manages the node graph, sounds, output etc." alt="" coords="267,293,358,319"/>
 <area shape="poly" id="edge8_Node000002_Node000001" title=" " alt="" coords="265,213,282,229,302,262,312,292,307,294,297,264,278,232,261,216"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="260,289,243,278,229,261,223,247,221,232,224,207,229,207,227,232,228,246,233,259,246,274,263,285"/>
-<area shape="rect" id="Node000005" href="$structsc__dsp.html" title="ma_node with an additional enum descriptor." alt="" coords="151,393,218,418"/>
+<area shape="rect" id="Node000005" href="$structsc__dsp.html" title="DSP units that can fit into node groups. Extensions of ma_node types with extra information." alt="" coords="151,393,218,418"/>
 <area shape="poly" id="edge5_Node000005_Node000002" title=" " alt="" coords="281,328,242,354,197,395,194,391,239,350,278,323"/>
 <area shape="rect" id="Node000006" href="$structsc__voice.html" title="A voice is a window into a single sound that may or may not be audible and rendering." alt="" coords="298,600,377,625"/>
 <area shape="poly" id="edge10_Node000006_Node000002" title=" " alt="" coords="312,332,308,402,311,488,323,551,337,599,331,601,318,552,306,488,303,402,307,332"/>

@@ -153,12 +153,15 @@ Collaboration diagram for System Sound Functions:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:gaf8a2fdb4a15db2b726bf7eedf4eccb8c" id="r_gaf8a2fdb4a15db2b726bf7eedf4eccb8c"><td class="memItemLeft" align="right" valign="top"><a id="gaf8a2fdb4a15db2b726bf7eedf4eccb8c" name="gaf8a2fdb4a15db2b726bf7eedf4eccb8c"></a>
-sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_system_create_sound</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, const char *fileName, sc_sound_mode mode, <a class="el" href="structsc__sound.html">sc_sound</a> **sound)</td></tr>
-<tr class="separator:gaf8a2fdb4a15db2b726bf7eedf4eccb8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga2046e190ebaf9a3f31210afac0a55e04" id="r_ga2046e190ebaf9a3f31210afac0a55e04"><td class="memItemLeft" align="right" valign="top"><a id="ga2046e190ebaf9a3f31210afac0a55e04" name="ga2046e190ebaf9a3f31210afac0a55e04"></a>
-sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_system_create_sound_memory</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, const void *memoryLocation, size_t soundSize, sc_sound_mode mode, <a class="el" href="structsc__sound.html">sc_sound</a> **sound)</td></tr>
-<tr class="separator:ga2046e190ebaf9a3f31210afac0a55e04"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf51002e92f5211e2212d9c76f72b5afd" id="r_gaf51002e92f5211e2212d9c76f72b5afd"><td class="memItemLeft" align="right" valign="top"><a id="gaf51002e92f5211e2212d9c76f72b5afd" name="gaf51002e92f5211e2212d9c76f72b5afd"></a>
+<a class="el" href="structsc__sound__config.html">sc_sound_config</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_sound_config_init_file</b> (const char *filePath, sc_sound_mode mode)</td></tr>
+<tr class="separator:gaf51002e92f5211e2212d9c76f72b5afd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa7baa8968fad938e737814bcf55e5994" id="r_gaa7baa8968fad938e737814bcf55e5994"><td class="memItemLeft" align="right" valign="top"><a id="gaa7baa8968fad938e737814bcf55e5994" name="gaa7baa8968fad938e737814bcf55e5994"></a>
+<a class="el" href="structsc__sound__config.html">sc_sound_config</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_sound_config_init_memory</b> (const void *memory, size_t memorySize, sc_sound_mode mode)</td></tr>
+<tr class="separator:gaa7baa8968fad938e737814bcf55e5994"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa283cee1e69325ec4c07e37894fa83e6" id="r_gaa283cee1e69325ec4c07e37894fa83e6"><td class="memItemLeft" align="right" valign="top"><a id="gaa283cee1e69325ec4c07e37894fa83e6" name="gaa283cee1e69325ec4c07e37894fa83e6"></a>
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_system_create_sound</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, const <a class="el" href="structsc__sound__config.html">sc_sound_config</a> *config, <a class="el" href="structsc__sound.html">sc_sound</a> **sound)</td></tr>
+<tr class="separator:gaa283cee1e69325ec4c07e37894fa83e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga0f39000fef87f54d58934784869334ca" id="r_ga0f39000fef87f54d58934784869334ca"><td class="memItemLeft" align="right" valign="top">sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__SystemSound.html#ga0f39000fef87f54d58934784869334ca">sc_system_play_sound</a> (<a class="el" href="structsc__system.html">sc_system</a> *system, <a class="el" href="structsc__sound.html">sc_sound</a> *sound, <a class="el" href="structsc__sound.html">sc_sound_instance</a> **instance, <a class="el" href="structsc__node__group.html">sc_node_group</a> *parent, sc_bool paused)</td></tr>
 <tr class="memdesc:ga0f39000fef87f54d58934784869334ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plays a sound and returns the playing instance.  <br /></td></tr>
 <tr class="separator:ga0f39000fef87f54d58934784869334ca"><td class="memSeparator" colspan="2">&#160;</td></tr>

@@ -1,5 +1,5 @@
 <map id="sc_dsp" name="sc_dsp">
-<area shape="rect" id="Node000001" title="ma_node with an additional enum descriptor." alt="" coords="374,7,440,33"/>
+<area shape="rect" id="Node000001" title="DSP units that can fit into node groups. Extensions of ma_node types with extra information." alt="" coords="374,7,440,33"/>
 <area shape="poly" id="edge16_Node000001_Node000001" title=" " alt="" coords="456,8,464,12,467,20,459,31,441,34,440,28,456,26,462,20,460,16,453,13"/>
 <area shape="rect" id="Node000004" href="$structsc__node__group.html" title="Groups nodes/DSPs together into one." alt="" coords="241,127,360,152"/>
 <area shape="poly" id="edge4_Node000004_Node000001" title=" " alt="" coords="361,26,321,36,303,46,289,60,283,76,284,93,296,126,291,127,279,94,278,75,285,57,300,42,319,31,359,20"/>

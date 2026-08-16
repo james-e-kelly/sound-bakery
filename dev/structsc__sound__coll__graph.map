@@ -1,8 +1,8 @@
 <map id="sc_sound" name="sc_sound">
-<area shape="rect" id="Node000001" title=" " alt="" coords="764,183,847,209"/>
+<area shape="rect" id="Node000001" title="Basic piece of playing audio." alt="" coords="764,183,847,209"/>
 <area shape="rect" id="Node000002" href="$structsc__system.html" title="Object that manages the node graph, sounds, output etc." alt="" coords="375,93,465,119"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="480,111,560,123,647,140,717,160,776,181,774,186,715,165,646,145,559,128,479,117"/>
-<area shape="rect" id="Node000005" href="$structsc__dsp.html" title="ma_node with an additional enum descriptor." alt="" coords="205,183,272,209"/>
+<area shape="rect" id="Node000005" href="$structsc__dsp.html" title="DSP units that can fit into node groups. Extensions of ma_node types with extra information." alt="" coords="205,183,272,209"/>
 <area shape="poly" id="edge5_Node000005_Node000002" title=" " alt="" coords="362,122,330,131,300,145,272,165,251,185,247,181,269,160,297,140,329,126,360,116"/>
 <area shape="rect" id="Node000006" href="$structsc__dsp__description.html" title="Structure to create, destroy, and update DSP units of a specific handle." alt="" coords="598,303,743,328"/>
 <area shape="poly" id="edge9_Node000006_Node000002" title=" " alt="" coords="462,123,490,141,507,158,517,174,527,191,542,209,602,262,655,300,652,305,599,266,538,213,523,194,513,177,503,161,486,145,460,127"/>

@@ -602,9 +602,9 @@ SBK_ERR_OUT_OF_MEMORY if the system could not be created </dd></dl>
   <table class="params">
     <tr><td class="paramname">index</td><td>the index of the object to get information about. Should not exceed the count retrieved from @r sbk_system_get_object_count </td></tr>
     <tr><td class="paramname">id</td><td>the ID of the object at the index </td></tr>
-    <tr><td class="paramname">name</td><td>the name of the object at the index. Will be in the form of "type:path/name" </td></tr>
-    <tr><td class="paramname">nameSize</td><td>size of the buffer allocated for @r name. Should be allocated by the user </td></tr>
-    <tr><td class="paramname">actualNameSize</td><td>the actual size of the name from the database </td></tr>
+    <tr><td class="paramname">name</td><td>buffer that receives the object name (form "type:path/name"). Always null-terminated on success; content is truncated to fit @r nameSize when the name is longer. Callers can detect truncation by comparing @r actualNameSize against @r nameSize </td></tr>
+    <tr><td class="paramname">nameSize</td><td>size of the buffer allocated for @r name. Must be greater than zero </td></tr>
+    <tr><td class="paramname">actualNameSize</td><td>the full length of the name in the database, excluding the null terminator. May be greater than or equal to @r nameSize </td></tr>
   </table>
   </dd>
 </dl>
@@ -672,12 +672,18 @@ SBK_ERR_BAKERY_OBJECT_NOT_FOUND if the object was not found </dd></dl>
 <dl class="todo"><dt><b><a class="el" href="todo.html#_todo000001">Todo:</a></b></dt><dd>Make soundbank loading happen on the system thread </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">soundbankFilePath</td><td>path to the soundbank file on disk </td></tr>
+    <tr><td class="paramname">soundbankFilePath</td><td>path to the soundbank file on disk. Must be non-null and shorter than 256 characters </td></tr>
     <tr><td class="paramname">outSoundbankID</td><td>the ID of the soundbank that was loaded. This is not a handle. It is the ID of the object, as it was at build time </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>SBK_SUCCESS if the load and deserialization was succesful </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>SBK_SUCCESS if the load and deserialization was succesful </dd>
+<dd>
+SBK_ERR_INVALID_PARAMETER if @r soundbankFilePath is null </dd>
+<dd>
+SBK_ERR_TOO_LARGE if @r soundbankFilePath is 256 characters or longer </dd>
+<dd>
+SBK_ERR_BAKERY_UNINITIALIZED if the system object does not exist or is not initialized </dd></dl>
 
 </div>
 </div>
@@ -750,12 +756,18 @@ SBK_ERR_BAKERY_OBJECT_NOT_FOUND if the object was not found </dd></dl>
 <p>Call @r sbk_system_update to submit the command to the system thread for processing.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">eventName</td><td>name of the event. Used to look up its database ID </td></tr>
+    <tr><td class="paramname">eventName</td><td>name of the event. Used to look up its database ID. Must be non-null and shorter than 256 characters </td></tr>
     <tr><td class="paramname">gameObjectID</td><td>game object to post the event on. If gameObjectID == 0, it is posted on the global object </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>SBK_SUCCESS if the message was enqueued correctly </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>SBK_SUCCESS if the message was enqueued correctly </dd>
+<dd>
+SBK_ERR_INVALID_PARAMETER if @r eventName is null </dd>
+<dd>
+SBK_ERR_TOO_LARGE if @r eventName is 256 characters or longer </dd>
+<dd>
+SBK_ERR_BAKERY_UNINITIALIZED if the system object does not exist or is not initialized </dd></dl>
 
 </div>
 </div>

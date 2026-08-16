@@ -355,30 +355,36 @@ sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_syste
 <tr class="memitem:ga4d98ff65c6166df31444916b20e0bbc3" id="r_ga4d98ff65c6166df31444916b20e0bbc3"><td class="memItemLeft" align="right" valign="top">
 sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_system_close</b> (<a class="el" href="structsc__system.html">sc_system</a> *system)</td></tr>
 <tr class="separator:ga4d98ff65c6166df31444916b20e0bbc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaf8a2fdb4a15db2b726bf7eedf4eccb8c" id="r_gaf8a2fdb4a15db2b726bf7eedf4eccb8c"><td class="memItemLeft" align="right" valign="top">
-sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_system_create_sound</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, const char *fileName, sc_sound_mode mode, <a class="el" href="structsc__sound.html">sc_sound</a> **sound)</td></tr>
-<tr class="separator:gaf8a2fdb4a15db2b726bf7eedf4eccb8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga2046e190ebaf9a3f31210afac0a55e04" id="r_ga2046e190ebaf9a3f31210afac0a55e04"><td class="memItemLeft" align="right" valign="top">
-sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_system_create_sound_memory</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, const void *memoryLocation, size_t soundSize, sc_sound_mode mode, <a class="el" href="structsc__sound.html">sc_sound</a> **sound)</td></tr>
-<tr class="separator:ga2046e190ebaf9a3f31210afac0a55e04"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf51002e92f5211e2212d9c76f72b5afd" id="r_gaf51002e92f5211e2212d9c76f72b5afd"><td class="memItemLeft" align="right" valign="top">
+<a class="el" href="structsc__sound__config.html">sc_sound_config</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_sound_config_init_file</b> (const char *filePath, sc_sound_mode mode)</td></tr>
+<tr class="separator:gaf51002e92f5211e2212d9c76f72b5afd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa7baa8968fad938e737814bcf55e5994" id="r_gaa7baa8968fad938e737814bcf55e5994"><td class="memItemLeft" align="right" valign="top">
+<a class="el" href="structsc__sound__config.html">sc_sound_config</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_sound_config_init_memory</b> (const void *memory, size_t memorySize, sc_sound_mode mode)</td></tr>
+<tr class="separator:gaa7baa8968fad938e737814bcf55e5994"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa283cee1e69325ec4c07e37894fa83e6" id="r_gaa283cee1e69325ec4c07e37894fa83e6"><td class="memItemLeft" align="right" valign="top">
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_system_create_sound</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, const <a class="el" href="structsc__sound__config.html">sc_sound_config</a> *config, <a class="el" href="structsc__sound.html">sc_sound</a> **sound)</td></tr>
+<tr class="separator:gaa283cee1e69325ec4c07e37894fa83e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga0f39000fef87f54d58934784869334ca" id="r_ga0f39000fef87f54d58934784869334ca"><td class="memItemLeft" align="right" valign="top">sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__SystemSound.html#ga0f39000fef87f54d58934784869334ca">sc_system_play_sound</a> (<a class="el" href="structsc__system.html">sc_system</a> *system, <a class="el" href="structsc__sound.html">sc_sound</a> *sound, <a class="el" href="structsc__sound.html">sc_sound_instance</a> **instance, <a class="el" href="structsc__node__group.html">sc_node_group</a> *parent, sc_bool paused)</td></tr>
 <tr class="memdesc:ga0f39000fef87f54d58934784869334ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plays a sound and returns the playing instance.  <br /></td></tr>
 <tr class="separator:ga0f39000fef87f54d58934784869334ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga38ea557547fe5842ae56f2eec96e632f" id="r_ga38ea557547fe5842ae56f2eec96e632f"><td class="memItemLeft" align="right" valign="top">
 sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_system_create_node_group</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, <a class="el" href="structsc__node__group.html">sc_node_group</a> **nodeGroup)</td></tr>
 <tr class="separator:ga38ea557547fe5842ae56f2eec96e632f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gade6094695d305fed47fb009657412078" id="r_gade6094695d305fed47fb009657412078"><td class="memItemLeft" align="right" valign="top">
-sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_system_create_dsp_by_desc</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, const <a class="el" href="structsc__dsp__description.html">sc_dsp_description</a> *description, <a class="el" href="structsc__dsp.html">sc_dsp</a> **dsp)</td></tr>
-<tr class="separator:gade6094695d305fed47fb009657412078"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga21e5519a12b1a56e662edab5f8e08c30" id="r_ga21e5519a12b1a56e662edab5f8e08c30"><td class="memItemLeft" align="right" valign="top">
-sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_system_create_dsp_by_type</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, sc_dsp_type type, <a class="el" href="structsc__dsp.html">sc_dsp</a> **dsp)</td></tr>
-<tr class="separator:ga21e5519a12b1a56e662edab5f8e08c30"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga27e5f096594f2f5522d28218ddc7fbd0" id="r_ga27e5f096594f2f5522d28218ddc7fbd0"><td class="memItemLeft" align="right" valign="top">
-sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_system_create_dsp_by_handle</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, sc_uint32 handle, <a class="el" href="structsc__dsp.html">sc_dsp</a> **dsp)</td></tr>
-<tr class="separator:ga27e5f096594f2f5522d28218ddc7fbd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga827e2bf72ea394b48f4a43a3eb751ae7" id="r_ga827e2bf72ea394b48f4a43a3eb751ae7"><td class="memItemLeft" align="right" valign="top">
-sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_system_create_dsp_clap</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, const clap_plugin_factory_t *pluginFactory, <a class="el" href="structsc__dsp.html">sc_dsp</a> **dsp)</td></tr>
-<tr class="separator:ga827e2bf72ea394b48f4a43a3eb751ae7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga05b3e20f91ff200ed0ae688984958379" id="r_ga05b3e20f91ff200ed0ae688984958379"><td class="memItemLeft" align="right" valign="top">
+<a class="el" href="structsc__dsp__config.html">sc_dsp_config</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_dsp_config_init</b> (const <a class="el" href="structsc__dsp__description.html">sc_dsp_description</a> *description)</td></tr>
+<tr class="separator:ga05b3e20f91ff200ed0ae688984958379"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad4ac50d40e21c51483d1ee83a80d1af3" id="r_gad4ac50d40e21c51483d1ee83a80d1af3"><td class="memItemLeft" align="right" valign="top">
+<a class="el" href="structsc__dsp__config.html">sc_dsp_config</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_dsp_config_init_type</b> (const <a class="el" href="structsc__system.html">sc_system</a> *system, sc_dsp_type type)</td></tr>
+<tr class="separator:gad4ac50d40e21c51483d1ee83a80d1af3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaeb784dfdbc624e92e66b25eeafc20c74" id="r_gaeb784dfdbc624e92e66b25eeafc20c74"><td class="memItemLeft" align="right" valign="top">
+<a class="el" href="structsc__dsp__config.html">sc_dsp_config</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_dsp_config_init_handle</b> (const <a class="el" href="structsc__system.html">sc_system</a> *system, sc_uint32 handle)</td></tr>
+<tr class="separator:gaeb784dfdbc624e92e66b25eeafc20c74"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gabfdf46ce17970c2461b2cf8c51348854" id="r_gabfdf46ce17970c2461b2cf8c51348854"><td class="memItemLeft" align="right" valign="top">
+<a class="el" href="structsc__dsp__config.html">sc_dsp_config</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_dsp_config_init_clap</b> (const <a class="el" href="structsc__system.html">sc_system</a> *system, const clap_plugin_factory_t *pluginFactory)</td></tr>
+<tr class="separator:gabfdf46ce17970c2461b2cf8c51348854"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga87f966d3d8efeae9a0c748c8e92e9350" id="r_ga87f966d3d8efeae9a0c748c8e92e9350"><td class="memItemLeft" align="right" valign="top">
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_system_create_dsp</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, const <a class="el" href="structsc__dsp__config.html">sc_dsp_config</a> *config, <a class="el" href="structsc__dsp.html">sc_dsp</a> **dsp)</td></tr>
+<tr class="separator:ga87f966d3d8efeae9a0c748c8e92e9350"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga79afa65bf848aa655bb118fd0e4df9e7" id="r_ga79afa65bf848aa655bb118fd0e4df9e7"><td class="memItemLeft" align="right" valign="top">sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__SystemDSP.html#ga79afa65bf848aa655bb118fd0e4df9e7">sc_system_get_dsp_desc</a> (const <a class="el" href="structsc__system.html">sc_system</a> *system, sc_uint32 handle, const <a class="el" href="structsc__dsp__description.html">sc_dsp_description</a> **outDescription)</td></tr>
 <tr class="memdesc:ga79afa65bf848aa655bb118fd0e4df9e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a pointer to the description for the given handle.  <br /></td></tr>
 <tr class="separator:ga79afa65bf848aa655bb118fd0e4df9e7"><td class="memSeparator" colspan="2">&#160;</td></tr>

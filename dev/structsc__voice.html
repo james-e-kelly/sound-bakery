@@ -158,7 +158,7 @@ Collaboration diagram for sc_voice:</div>
 <area shape="rect" href="structsc__voice__real.html" title="A real voice that is connected to the DSP graph." alt="" coords="43,93,154,119"/>
 <area shape="poly" title=" " alt="" coords="138,42,125,56,105,94,100,92,120,53,134,38"/>
 <area shape="poly" title=" " alt="" coords="263,174,238,149,214,120,197,89,182,56,167,32,171,30,186,53,201,86,218,117,242,146,266,170"/>
-<area shape="rect" href="structsc__dsp.html" title="ma_node with an additional enum descriptor." alt="" coords="215,271,281,297"/>
+<area shape="rect" href="structsc__dsp.html" title="DSP units that can fit into node groups. Extensions of ma_node types with extra information." alt="" coords="215,271,281,297"/>
 <area shape="poly" title=" " alt="" coords="280,220,256,272,251,270,275,218"/>
 <area shape="rect" href="structsc__dsp__description.html" title="Structure to create, destroy, and update DSP units of a specific handle." alt="" coords="394,391,539,416"/>
 <area shape="poly" title=" " alt="" coords="348,195,389,201,433,214,474,236,492,250,508,268,515,284,518,301,511,336,495,368,478,392,474,389,490,365,506,334,512,301,510,285,503,271,489,254,471,240,431,219,388,207,347,200"/>
@@ -185,6 +185,15 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:a85e119eb0421177e754dee2e3362f178" id="r_a85e119eb0421177e754dee2e3362f178"><td class="memItemLeft" align="right" valign="top"><a id="a85e119eb0421177e754dee2e3362f178" name="a85e119eb0421177e754dee2e3362f178"></a>
 <a class="el" href="structsc__system.html">sc_system</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>system</b></td></tr>
 <tr class="separator:a85e119eb0421177e754dee2e3362f178"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28da83ca6a289f6e76a53afbdf63fdc8" id="r_a28da83ca6a289f6e76a53afbdf63fdc8"><td class="memItemLeft" align="right" valign="top"><a id="a28da83ca6a289f6e76a53afbdf63fdc8" name="a28da83ca6a289f6e76a53afbdf63fdc8"></a>
+sc_uint64&#160;</td><td class="memItemRight" valign="bottom"><b>playCursor</b></td></tr>
+<tr class="separator:a28da83ca6a289f6e76a53afbdf63fdc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:addedd8743ed2d400d1bafcea760c5147" id="r_addedd8743ed2d400d1bafcea760c5147"><td class="memItemLeft" align="right" valign="top"><a id="addedd8743ed2d400d1bafcea760c5147" name="addedd8743ed2d400d1bafcea760c5147"></a>
+sc_atomic_uint8&#160;</td><td class="memItemRight" valign="bottom"><b>currentState</b></td></tr>
+<tr class="separator:addedd8743ed2d400d1bafcea760c5147"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac72b117edfea701b804fa5fbfb1e4173" id="r_ac72b117edfea701b804fa5fbfb1e4173"><td class="memItemLeft" align="right" valign="top"><a id="ac72b117edfea701b804fa5fbfb1e4173" name="ac72b117edfea701b804fa5fbfb1e4173"></a>
+sc_atomic_uint8&#160;</td><td class="memItemRight" valign="bottom"><b>desiredState</b></td></tr>
+<tr class="separator:ac72b117edfea701b804fa5fbfb1e4173"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a063e46becbb0764536ba56c4cbc108a9" id="r_a063e46becbb0764536ba56c4cbc108a9"><td class="memItemLeft" align="right" valign="top"><a id="a063e46becbb0764536ba56c4cbc108a9" name="a063e46becbb0764536ba56c4cbc108a9"></a>
 sc_atomic_float&#160;</td><td class="memItemRight" valign="bottom"><b>gain</b></td></tr>
 <tr class="separator:a063e46becbb0764536ba56c4cbc108a9"><td class="memSeparator" colspan="2">&#160;</td></tr>

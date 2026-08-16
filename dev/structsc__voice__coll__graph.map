@@ -5,7 +5,7 @@
 <area shape="rect" id="Node000009" href="$structsc__voice__real.html" title="A real voice that is connected to the DSP graph." alt="" coords="43,93,154,119"/>
 <area shape="poly" id="edge15_Node000009_Node000001" title=" " alt="" coords="138,42,125,56,105,94,100,92,120,53,134,38"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="263,174,238,149,214,120,197,89,182,56,167,32,171,30,186,53,201,86,218,117,242,146,266,170"/>
-<area shape="rect" id="Node000005" href="$structsc__dsp.html" title="ma_node with an additional enum descriptor." alt="" coords="215,271,281,297"/>
+<area shape="rect" id="Node000005" href="$structsc__dsp.html" title="DSP units that can fit into node groups. Extensions of ma_node types with extra information." alt="" coords="215,271,281,297"/>
 <area shape="poly" id="edge5_Node000005_Node000002" title=" " alt="" coords="280,220,256,272,251,270,275,218"/>
 <area shape="rect" id="Node000006" href="$structsc__dsp__description.html" title="Structure to create, destroy, and update DSP units of a specific handle." alt="" coords="394,391,539,416"/>
 <area shape="poly" id="edge9_Node000006_Node000002" title=" " alt="" coords="348,195,389,201,433,214,474,236,492,250,508,268,515,284,518,301,511,336,495,368,478,392,474,389,490,365,506,334,512,301,510,285,503,271,489,254,471,240,431,219,388,207,347,200"/>

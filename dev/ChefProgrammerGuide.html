@@ -148,7 +148,7 @@ Creating The System Object</h2>
 <div class="line">sc_system_create(&amp;system);</div>
 <div class="line"><a class="code hl_function" href="group__System.html#ga73c06a9406456d77d8dd5a99dbfd6792">sc_system_init</a>(system);</div>
 <div class="ttc" id="agroup__System_html_ga73c06a9406456d77d8dd5a99dbfd6792"><div class="ttname"><a href="group__System.html#ga73c06a9406456d77d8dd5a99dbfd6792">sc_system_init</a></div><div class="ttdeci">sbk_status SC_API sc_system_init(sc_system *system, const sc_system_config *systemConfig)</div><div class="ttdef"><b>Definition</b> sound_chef.c:93</div></div>
-<div class="ttc" id="astructsc__system_html"><div class="ttname"><a href="structsc__system.html">sc_system</a></div><div class="ttdoc">Object that manages the node graph, sounds, output etc.</div><div class="ttdef"><b>Definition</b> sound_chef_common.h:412</div></div>
+<div class="ttc" id="astructsc__system_html"><div class="ttname"><a href="structsc__system.html">sc_system</a></div><div class="ttdoc">Object that manages the node graph, sounds, output etc.</div><div class="ttdef"><b>Definition</b> sound_chef_common.h:498</div></div>
 </div><!-- fragment --><p>The system manages the node graph, sounds, resources, and outputting audio to the audio device.</p>
 <h2><a class="anchor" id="autotoc_md64"></a>
 Playing A Sound</h2>
@@ -158,27 +158,30 @@ Playing A Sound</h2>
 <div class="line"><a class="code hl_function" href="group__System.html#ga73c06a9406456d77d8dd5a99dbfd6792">sc_system_init</a>(system);</div>
 <div class="line"> </div>
 <div class="line"><a class="code hl_struct" href="structsc__sound.html">sc_sound</a>* sound = NULL;</div>
-<div class="line">sc_system_create_sound(system, <span class="stringliteral">&quot;some_sound.wav&quot;</span>, SC_SOUND_MODE_DEFAULT, &amp;sound);</div>
+<div class="line"><span class="keyword">const</span> <a class="code hl_struct" href="structsc__sound__config.html">sc_sound_config</a> soundConfig = sc_sound_config_init_file(<span class="stringliteral">&quot;some_sound.wav&quot;</span>, SC_SOUND_MODE_DEFAULT);</div>
+<div class="line">sc_system_create_sound(system, &amp;soundConfig, &amp;sound);</div>
 <div class="line"> </div>
 <div class="line"><a class="code hl_struct" href="structsc__sound.html">sc_sound_instance</a>* instance = NULL;</div>
 <div class="line"><a class="code hl_function" href="group__SystemSound.html#ga0f39000fef87f54d58934784869334ca">sc_system_play_sound</a>(system, sound, &amp;instance, NULL, SC_FALSE);</div>
-<div class="ttc" id="agroup__SystemSound_html_ga0f39000fef87f54d58934784869334ca"><div class="ttname"><a href="group__SystemSound.html#ga0f39000fef87f54d58934784869334ca">sc_system_play_sound</a></div><div class="ttdeci">sbk_status SC_API sc_system_play_sound(sc_system *system, sc_sound *sound, sc_sound_instance **instance, sc_node_group *parent, sc_bool paused)</div><div class="ttdoc">Plays a sound and returns the playing instance.</div><div class="ttdef"><b>Definition</b> sound_chef.c:304</div></div>
-<div class="ttc" id="astructsc__sound_html"><div class="ttname"><a href="structsc__sound.html">sc_sound</a></div><div class="ttdef"><b>Definition</b> sound_chef_common.h:335</div></div>
+<div class="ttc" id="agroup__SystemSound_html_ga0f39000fef87f54d58934784869334ca"><div class="ttname"><a href="group__SystemSound.html#ga0f39000fef87f54d58934784869334ca">sc_system_play_sound</a></div><div class="ttdeci">sbk_status SC_API sc_system_play_sound(sc_system *system, sc_sound *sound, sc_sound_instance **instance, sc_node_group *parent, sc_bool paused)</div><div class="ttdoc">Plays a sound and returns the playing instance.</div><div class="ttdef"><b>Definition</b> sound_chef.c:318</div></div>
+<div class="ttc" id="astructsc__sound__config_html"><div class="ttname"><a href="structsc__sound__config.html">sc_sound_config</a></div><div class="ttdoc">Configuration for creating a sc_sound.</div><div class="ttdef"><b>Definition</b> sound_chef_common.h:435</div></div>
+<div class="ttc" id="astructsc__sound_html"><div class="ttname"><a href="structsc__sound.html">sc_sound</a></div><div class="ttdoc">Basic piece of playing audio.</div><div class="ttdef"><b>Definition</b> sound_chef_common.h:415</div></div>
 </div><!-- fragment --><p>Sound Chef seperates a loaded sound and a playing sound with the <a class="el" href="structsc__sound.html">sc_sound</a> and sc_sound_instance objects. Internally, they are the same object and are simple extensions of the <code>ma_sound</code> object.</p>
 <p>This is done to ensure each call to <a class="el" href="group__SystemSound.html#ga0f39000fef87f54d58934784869334ca">sc_system_play_sound</a> creates a brand new sound with its play position set to 0. If multiple calls to <a class="el" href="group__SystemSound.html#ga0f39000fef87f54d58934784869334ca">sc_system_play_sound</a> were made to the <a class="el" href="structsc__sound.html">sc_sound</a> object, only one sound would be heard and not many.</p>
 <p>Memory bloat isn't an issue here as miniaudio doesn't copy the loaded sound buffer but the pointers to that resource. Miniaudio also handles reference counting and will release the resource when all sounds have finished playing and the original <a class="el" href="structsc__sound.html">sc_sound</a> is released.</p>
 <h2><a class="anchor" id="autotoc_md65"></a>
 DSP</h2>
 <p>For programs where the outcome is not predetermined, there is a need to abstract away strongly defined types. Sound Bakery is a clear example as a user can insert many different types of effects into the signal chain; this would be cumbersome if unique code was requried each time and for each effect.</p>
-<p>By abstracting effects into <a class="el" href="structsc__dsp.html">sc_dsp</a> objects, a user can quickly call functions like sc_dsp_config_init and sc_system_create_dsp_by_desc to create many different effects with ease. Sound Chef handles initializing the underlying <code>ma_*_node</code> objects.</p>
+<p>By abstracting effects into <a class="el" href="structsc__dsp.html">sc_dsp</a> objects, a user can quickly call functions like sc_dsp_config_init and sc_system_create_dsp to create many different effects with ease. Sound Chef handles initializing the underlying <code>ma_*_node</code> objects.</p>
 <dl class="section note"><dt>Note</dt><dd>Sound Chef uses many of the miniaudio effects like <code>ma_lpf_node</code>, <code>ma_hpf_node</code> etc. Refer to miniaudio's documentation on how these work.</dd></dl>
 <p>With a DSP created, the user can call sc_dsp_set_parameter_float to change properties of the effect on the fly.</p>
-<div class="fragment"><div class="line"><span class="keyword">const</span> sc_dsp_config lpfConfig = sc_dsp_config_init(SC_DSP_TYPE_LOWPASS);</div>
+<div class="fragment"><div class="line"><span class="keyword">const</span> <a class="code hl_struct" href="structsc__dsp__config.html">sc_dsp_config</a> lpfConfig = sc_dsp_config_init_by_type(system, SC_DSP_TYPE_LOWPASS);</div>
 <div class="line"><a class="code hl_struct" href="structsc__dsp.html">sc_dsp</a>* lowpass = NULL;</div>
-<div class="line">sc_system_create_dsp_by_desc(system, &amp;lpfConfig, &amp;lowpass);</div>
+<div class="line">sc_system_create_dsp(system, &amp;lpfConfig, &amp;lowpass);</div>
 <div class="line"> </div>
 <div class="line">sc_dsp_set_parameter_float(m_lowpass, SC_DSP_LOWPASS_PARAM_CUTOFF, 500.0f);</div>
-<div class="ttc" id="astructsc__dsp_html"><div class="ttname"><a href="structsc__dsp.html">sc_dsp</a></div><div class="ttdoc">ma_node with an additional enum descriptor.</div><div class="ttdef"><b>Definition</b> sound_chef_common.h:325</div></div>
+<div class="ttc" id="astructsc__dsp__config_html"><div class="ttname"><a href="structsc__dsp__config.html">sc_dsp_config</a></div><div class="ttdef"><b>Definition</b> sound_chef_common.h:403</div></div>
+<div class="ttc" id="astructsc__dsp_html"><div class="ttname"><a href="structsc__dsp.html">sc_dsp</a></div><div class="ttdoc">DSP units that can fit into node groups. Extensions of ma_node types with extra information.</div><div class="ttdef"><b>Definition</b> sound_chef_common.h:349</div></div>
 </div><!-- fragment --><p>Many DSP parameters are defined in <a class="el" href="sound__chef__dsp_8h.html">sound_chef_dsp.h</a></p>
 <h2><a class="anchor" id="autotoc_md66"></a>
 Node Groups</h2>
@@ -190,28 +193,30 @@ Node Groups</h2>
 <div class="line"><a class="code hl_function" href="group__System.html#ga73c06a9406456d77d8dd5a99dbfd6792">sc_system_init</a>(system);</div>
 <div class="line"> </div>
 <div class="line"><a class="code hl_struct" href="structsc__sound.html">sc_sound</a>* sound = NULL;</div>
-<div class="line">sc_system_create_sound(system, <span class="stringliteral">&quot;some_sound.wav&quot;</span>, SC_SOUND_MODE_DEFAULT, &amp;sound);</div>
+<div class="line"><span class="keyword">const</span> <a class="code hl_struct" href="structsc__sound__config.html">sc_sound_config</a> soundConfig = sc_sound_config_init_file(<span class="stringliteral">&quot;some_sound.wav&quot;</span>, SC_SOUND_MODE_DEFAULT);</div>
+<div class="line">sc_system_create_sound(system, &amp;soundConfig, &amp;sound);</div>
 <div class="line"> </div>
 <div class="line"><a class="code hl_struct" href="structsc__node__group.html">sc_node_group</a>* nodeGroup = NULL;</div>
 <div class="line">sc_system_create_node_group(system, &amp;nodeGroup);</div>
 <div class="line"> </div>
 <div class="line"><a class="code hl_struct" href="structsc__sound.html">sc_sound_instance</a>* instance = NULL;</div>
 <div class="line"><a class="code hl_function" href="group__SystemSound.html#ga0f39000fef87f54d58934784869334ca">sc_system_play_sound</a>(system, sound, &amp;instance, nodeGroup, SC_FALSE);</div>
-<div class="ttc" id="astructsc__node__group_html"><div class="ttname"><a href="structsc__node__group.html">sc_node_group</a></div><div class="ttdoc">Groups nodes/DSPs together into one.</div><div class="ttdef"><b>Definition</b> sound_chef_common.h:353</div></div>
+<div class="ttc" id="astructsc__node__group_html"><div class="ttname"><a href="structsc__node__group.html">sc_node_group</a></div><div class="ttdoc">Groups nodes/DSPs together into one.</div><div class="ttdef"><b>Definition</b> sound_chef_common.h:337</div></div>
 </div><!-- fragment --><p>DSP units can be inserted with ease.</p>
 <div class="fragment"><div class="line"><a class="code hl_struct" href="structsc__system.html">sc_system</a>* system = NULL;</div>
 <div class="line">sc_system_create(&amp;system);</div>
 <div class="line"><a class="code hl_function" href="group__System.html#ga73c06a9406456d77d8dd5a99dbfd6792">sc_system_init</a>(system);</div>
 <div class="line"> </div>
 <div class="line"><a class="code hl_struct" href="structsc__sound.html">sc_sound</a>* sound = NULL;</div>
-<div class="line">sc_system_create_sound(system, <span class="stringliteral">&quot;some_sound.wav&quot;</span>, SC_SOUND_MODE_DEFAULT, &amp;sound);</div>
+<div class="line"><span class="keyword">const</span> <a class="code hl_struct" href="structsc__sound__config.html">sc_sound_config</a> soundConfig = sc_sound_config_init_file(<span class="stringliteral">&quot;some_sound.wav&quot;</span>, SC_SOUND_MODE_DEFAULT);</div>
+<div class="line">sc_system_create_sound(system, &amp;soundConfig, &amp;sound);</div>
 <div class="line"> </div>
 <div class="line"><a class="code hl_struct" href="structsc__node__group.html">sc_node_group</a>* nodeGroup = NULL;</div>
 <div class="line">sc_system_create_node_group(system, &amp;nodeGroup);</div>
 <div class="line"> </div>
-<div class="line"><span class="keyword">const</span> sc_dsp_config lpfConfig = sc_dsp_config_init(SC_DSP_TYPE_LOWPASS);</div>
+<div class="line"><span class="keyword">const</span> <a class="code hl_struct" href="structsc__dsp__config.html">sc_dsp_config</a> lpfConfig = sc_dsp_config_init_type(system, SC_DSP_TYPE_LOWPASS);</div>
 <div class="line"><a class="code hl_struct" href="structsc__dsp.html">sc_dsp</a>* lowpass = NULL;</div>
-<div class="line">sc_system_create_dsp_by_desc(system, &amp;lpfConfig, &amp;lowpass);</div>
+<div class="line">sc_system_create_dsp(system, &amp;lpfConfig, &amp;lowpass);</div>
 <div class="line">sc_node_group_add_dsp(nodeGroup, lowpass, SC_DSP_INDEX_HEAD);</div>
 <div class="line"> </div>
 <div class="line"><a class="code hl_struct" href="structsc__sound.html">sc_sound_instance</a>* instance = NULL;</div>
@@ -233,23 +238,25 @@ Complete Example: Interactive Footstep System</h2>
 <div class="line"><span class="comment">// Load sounds</span></div>
 <div class="line"><a class="code hl_struct" href="structsc__sound.html">sc_sound</a>* footstep_concrete = NULL;</div>
 <div class="line"><a class="code hl_struct" href="structsc__sound.html">sc_sound</a>* footstep_dirt = NULL;</div>
-<div class="line">sc_system_create_sound(system, <span class="stringliteral">&quot;footstep_concrete.wav&quot;</span>, SC_SOUND_MODE_DEFAULT, &amp;footstep_concrete);</div>
-<div class="line">sc_system_create_sound(system, <span class="stringliteral">&quot;footstep_dirt.wav&quot;</span>, SC_SOUND_MODE_DEFAULT, &amp;footstep_dirt);</div>
+<div class="line"><span class="keyword">const</span> <a class="code hl_struct" href="structsc__sound__config.html">sc_sound_config</a> concreteConfig = sc_sound_config_init_file(<span class="stringliteral">&quot;footstep_concrete.wav&quot;</span>, SC_SOUND_MODE_DEFAULT);</div>
+<div class="line"><span class="keyword">const</span> <a class="code hl_struct" href="structsc__sound__config.html">sc_sound_config</a> dirtConfig     = sc_sound_config_init_file(<span class="stringliteral">&quot;footstep_dirt.wav&quot;</span>, SC_SOUND_MODE_DEFAULT);</div>
+<div class="line">sc_system_create_sound(system, &amp;concreteConfig, &amp;footstep_concrete);</div>
+<div class="line">sc_system_create_sound(system, &amp;dirtConfig, &amp;footstep_dirt);</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Create footstep bus with lowpass for simulation</span></div>
 <div class="line"><a class="code hl_struct" href="structsc__node__group.html">sc_node_group</a>* footstep_bus = NULL;</div>
 <div class="line">sc_system_create_node_group(system, &amp;footstep_bus);</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Add lowpass to footstep bus (for underwater footsteps, for example)</span></div>
-<div class="line"><span class="keyword">const</span> sc_dsp_config lpf_config = sc_dsp_config_init(SC_DSP_TYPE_LOWPASS);</div>
+<div class="line"><span class="keyword">const</span> <a class="code hl_struct" href="structsc__dsp__config.html">sc_dsp_config</a> lpf_config = sc_dsp_config_init_type(system, SC_DSP_TYPE_LOWPASS);</div>
 <div class="line"><a class="code hl_struct" href="structsc__dsp.html">sc_dsp</a>* lpf = NULL;</div>
-<div class="line">sc_system_create_dsp_by_desc(system, &amp;lpf_config, &amp;lpf);</div>
+<div class="line">sc_system_create_dsp(system, &amp;lpf_config, &amp;lpf);</div>
 <div class="line">sc_node_group_add_dsp(footstep_bus, lpf, SC_DSP_INDEX_HEAD);</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Add compression to control dynamic range</span></div>
-<div class="line"><span class="keyword">const</span> sc_dsp_config compressor_config = sc_dsp_config_init(SC_DSP_TYPE_COMPRESSOR);</div>
+<div class="line"><span class="keyword">const</span> <a class="code hl_struct" href="structsc__dsp__config.html">sc_dsp_config</a> compressor_config = sc_dsp_config_init_type(system, SC_DSP_TYPE_COMPRESSOR);</div>
 <div class="line"><a class="code hl_struct" href="structsc__dsp.html">sc_dsp</a>* compressor = NULL;</div>
-<div class="line">sc_system_create_dsp_by_desc(system, &amp;compressor_config, &amp;compressor);</div>
+<div class="line">sc_system_create_dsp(system, &amp;compressor_config, &amp;compressor);</div>
 <div class="line">sc_node_group_add_dsp(footstep_bus, compressor, SC_DSP_INDEX_HEAD);</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Play a footstep on concrete</span></div>
