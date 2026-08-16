@@ -90,9 +90,12 @@ extern "C"
 	 * @brief Load a soundbank and all its objects into memory.
 	 * 
 	 * @todo Make soundbank loading happen on the system thread
-	 * @param soundbankFilePath path to the soundbank file on disk
+	 * @param soundbankFilePath path to the soundbank file on disk. Must be non-null and shorter than 256 characters
 	 * @param outSoundbankID the ID of the soundbank that was loaded. This is not a handle. It is the ID of the object, as it was at build time
 	 * @return SBK_SUCCESS if the load and deserialization was succesful
+	 * @return SBK_ERR_INVALID_PARAMETER if @r soundbankFilePath is null
+	 * @return SBK_ERR_TOO_LARGE if @r soundbankFilePath is 256 characters or longer
+	 * @return SBK_ERR_BAKERY_UNINITIALIZED if the system object does not exist or is not initialized
 	 */
 	SBK_NODISCARD sbk_status SB_API sbk_system_load_soundbank(const char* soundbankFilePath, sbk_id* outSoundbankID);
 
@@ -112,9 +115,12 @@ extern "C"
 	 * 
 	 * Call @r sbk_system_update to submit the command to the system thread for processing.
 	 * 
-	 * @param eventName name of the event. Used to look up its database ID
+	 * @param eventName name of the event. Used to look up its database ID. Must be non-null and shorter than 256 characters
 	 * @param gameObjectID game object to post the event on. If gameObjectID == 0, it is posted on the global object
 	 * @return SBK_SUCCESS if the message was enqueued correctly
+	 * @return SBK_ERR_INVALID_PARAMETER if @r eventName is null
+	 * @return SBK_ERR_TOO_LARGE if @r eventName is 256 characters or longer
+	 * @return SBK_ERR_BAKERY_UNINITIALIZED if the system object does not exist or is not initialized
 	 */
 	SBK_NODISCARD sbk_status SB_API sbk_system_post_event_name(const char* eventName, sbk_id gameObjectID);
 
@@ -146,9 +152,9 @@ extern "C"
 	 * 
      * @param index the index of the object to get information about. Should not exceed the count retrieved from @r sbk_system_get_object_count
      * @param id the ID of the object at the index
-     * @param name the name of the object at the index. Will be in the form of "type:path/name"
-     * @param nameSize size of the buffer allocated for @r name. Should be allocated by the user
-     * @param actualNameSize the actual size of the name from the database
+     * @param name buffer that receives the object name (form "type:path/name"). Always null-terminated on success; content is truncated to fit @r nameSize when the name is longer. Callers can detect truncation by comparing @r actualNameSize against @r nameSize
+     * @param nameSize size of the buffer allocated for @r name. Must be greater than zero
+     * @param actualNameSize the full length of the name in the database, excluding the null terminator. May be greater than or equal to @r nameSize
      * @return SBK_SUCCESS if the object was found and id and name set
 	 * @return SBK_ERR_BAKERY_OBJECT_NOT_FOUND if the object was not found
      */

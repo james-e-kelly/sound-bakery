@@ -114,13 +114,17 @@ sbk_status sbk_system_destroy()
 sbk_status sbk_system_load_soundbank(const char* soundbankFilePath, sbk_id* outSoundbankID)
 {
     (void)outSoundbankID;
-    
+
     ZoneScoped;
+
+    SBK_STATUS_CHECK(soundbankFilePath != NULL, SBK_ERR_INVALID_PARAMETER);
 
     if (sbk::engine::system* const system = sbk::engine::system::get())
     {
         sbk::load_soundbank_message message;
-        std::strcpy(message.filename, soundbankFilePath);
+        const std::size_t length = std::strlen(soundbankFilePath);
+        SBK_STATUS_CHECK(length < sizeof(message.filename), SBK_ERR_TOO_LARGE);
+        std::memcpy(message.filename, soundbankFilePath, length + 1);
         return system->get_command_queue().write_command(sbk::message_type::load_soundbank, message);
     }
 
@@ -143,10 +147,14 @@ sbk_status sbk_system_post_event_name(const char* eventName, sbk_id gameObjectID
 {
     ZoneScoped;
 
+    SBK_STATUS_CHECK(eventName != NULL, SBK_ERR_INVALID_PARAMETER);
+
     if (sbk::engine::system* const system = sbk::engine::system::get())
     {
         sbk::post_event_name_message message{.gameObjectID = gameObjectID};
-        std::strcpy(message.eventName, eventName);
+        const std::size_t length = std::strlen(eventName);
+        SBK_STATUS_CHECK(length < sizeof(message.eventName), SBK_ERR_TOO_LARGE);
+        std::memcpy(message.eventName, eventName, length + 1);
         return system->get_command_queue().write_command(sbk::message_type::post_event_name, message);
     }
 
@@ -184,6 +192,7 @@ sbk_status sbk_system_get_object_info(uint64_t index, sbk_id* id, char* name, ui
 {
     ZoneScoped;
 
+    SBK_STATUS_CHECK(id != NULL, SBK_ERR_INVALID_PARAMETER);
     SBK_STATUS_CHECK(name != NULL, SBK_ERR_INVALID_PARAMETER);
     SBK_STATUS_CHECK(nameSize > 0, SBK_ERR_INVALID_PARAMETER);
     SBK_STATUS_CHECK(actualNameSize != NULL, SBK_ERR_INVALID_PARAMETER);
@@ -192,12 +201,16 @@ sbk_status sbk_system_get_object_info(uint64_t index, sbk_id* id, char* name, ui
     {
         const std::shared_ptr<sbk::core::database_object> object = system->get_database_object_at(index).lock();
         SBK_STATUS_CHECK(object, SBK_ERR_BAKERY_OBJECT_NOT_FOUND);
-        
+
         const sbk_id objectID        = object->get_database_id();
         const std::string objectName = object->get_database_name();
 
-        *id = objectID;
-        *actualNameSize = objectName.copy(name, nameSize);
+        *id             = objectID;
+        *actualNameSize = objectName.size();
+
+        const std::size_t copyCount = std::min<std::size_t>(objectName.size(), nameSize - 1);
+        std::memcpy(name, objectName.data(), copyCount);
+        name[copyCount] = '\0';
 
         return SBK_SUCCESS;
     }
