@@ -341,10 +341,9 @@ typedef struct sc_node_group
 } sc_node_group;
 
 /**
- * @brief ma_node with an additional enum descriptor.
- *
- * Helper struct to make adding/create DSPs as simple as calling a single
- * function. Raw miniaudio requires you to know the effect you're inserting.
+ * @brief DSP units that can fit into node groups. Extensions of ma_node types with extra information.
+ * 
+ * DSP units are created with @ref sc_dsp_description objects and allow for simpler creation of DSP units than ma_node types.
  */
 struct sc_dsp
 {
@@ -407,6 +406,11 @@ typedef struct sc_dsp_config
     const clap_plugin_factory_t*    clapFactory;    //< Optional: passed to CLAP DSP types so a specific CLAP plugin can be created
 } sc_dsp_config;
 
+/**
+ * @brief Basic piece of playing audio.
+ * 
+ * sc_sound is currently being deprecated in favour of @ref sc_voice.
+ */
 typedef struct sc_sound
 {
     ma_sound        sound;
@@ -415,7 +419,7 @@ typedef struct sc_sound
     sc_system*      owningSystem;
 } sc_sound;
 
-typedef struct sc_sound sc_sound_instance;
+typedef struct sc_sound sc_sound_instance;  //< Sound instances are just sounds. The resource is not copied but reference counted
 
 /**
  * @brief Configuration for creating a @ref sc_sound.
