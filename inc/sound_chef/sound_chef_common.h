@@ -255,6 +255,42 @@ typedef enum sc_sound_mode
 } sc_sound_mode;
 
 /**
+ * @brief Playback state of an @ref sc_voice.
+ *
+ * A voice moves through these states over its lifetime. Pause freezes the
+ * play cursor but does not itself decide audibility; on resume the voice
+ * runs the same virtualization check as @ref SC_VOICE_STATE_STARTING and
+ * lands in either @ref SC_VOICE_STATE_PLAYING or @ref SC_VOICE_STATE_VIRTUAL
+ * depending on the real-voice budget.
+ *
+ * Failures (async load errors, decoder errors, etc.) do not have their own
+ * state; the voice transitions to @ref SC_VOICE_STATE_STOPPING and the slot
+ * is returned to the pool. Subsequent use of a stale handle returns
+ * @ref SBK_ERR_NOT_FOUND; check the logs or profiler for the
+ * underlying cause.
+ *
+ * Transitions (rows = from, columns = to; dash = not allowed):
+ *
+ * | from \ to | STOPPED | STARTING | VIRTUAL | PLAYING | PAUSED | STOPPING |
+ * | --------- | :-----: | :------: | :-----: | :-----: | :----: | :------: |
+ * | STOPPED   |    -    |   play   |    -    |    -    |    -   |     -    |
+ * | STARTING  |    -    |     -    |  limit  |  ready  |    -   |   stop   |
+ * | VIRTUAL   |    -    |     -    |    -    |  devirt |  pause |   stop   |
+ * | PLAYING   |    -    |     -    |   virt  |    -    |  pause | stop/eof |
+ * | PAUSED    |    -    |     -    |  resume |  resume |    -   |   stop   |
+ * | STOPPING  |   tail  |     -    |    -    |    -    |    -   |     -    |
+ */
+typedef enum sc_voice_state
+{
+    SC_VOICE_STATE_STOPPED,     //< Idle. The slot is free or has just been returned to the pool.
+    SC_VOICE_STATE_STARTING,    //< Play requested; waiting on async load or first render before becoming @ref SC_VOICE_STATE_PLAYING or @ref SC_VOICE_STATE_VIRTUAL.
+    SC_VOICE_STATE_VIRTUAL,     //< Cursor advancing but not rendered; culled by the real-voice budget.
+    SC_VOICE_STATE_PLAYING,     //< Cursor advancing and mixed into the output.
+    SC_VOICE_STATE_PAUSED,      //< Cursor frozen. On resume, virtualization decides @ref SC_VOICE_STATE_PLAYING vs @ref SC_VOICE_STATE_VIRTUAL.
+    SC_VOICE_STATE_STOPPING     //< Tail/fade-out in progress; transitions to @ref SC_VOICE_STATE_STOPPED when done.
+} sc_voice_state;
+
+/**
  * @brief Built-in DSP types.
  * 
  * It is expected that user DSP types would have numbers higher than SC_DSP_TYPE_COUNT
@@ -403,6 +439,9 @@ struct sc_clap
 struct sc_voice
 {
     sc_system*                      system;
+    sc_uint64                       playCursor;             //< Audio thread
+    sc_atomic_uint8                 currentState;
+    sc_atomic_uint8                 desiredState;
     sc_atomic_float                 gain;
     sc_atomic_float                 pitch;
     sc_uint8                        priority;               //< priority where the greater the number, the great the priority. Generally 0-100
