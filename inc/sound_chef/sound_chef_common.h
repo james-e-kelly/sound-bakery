@@ -315,6 +315,13 @@ struct sc_dsp_description
     sc_uint32                   numParams;
 };
 
+struct sc_dsp_config
+{
+    sc_uint32                       handle;         //< Type/handle/index
+    const sc_dsp_description*       dspDescription; //< Required: holds a vtable for DSP creation and deletion
+    const clap_plugin_factory_t*    clapFactory;    //< Optional: passed to CLAP DSP types so a specific CLAP plugin can be created
+};
+
 /**
  * @brief ma_node with an additional enum descriptor.
  *

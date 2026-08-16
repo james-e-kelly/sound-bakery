@@ -205,7 +205,8 @@ auto sbk::engine::node_instance_fsm::add_dsp_to_node_group(sc_node_group* nodeGr
     SBK_CHECK(nodeGroup != nullptr, SBK_ERR_INVALID_PARAMETER);
     SBK_CHECK(dsp != nullptr, SBK_ERR_INVALID_PARAMETER);
     SBK_CHECK(handle > 0, SBK_ERR_INVALID_PARAMETER);
-    SBK_TRY_C(sc_system_create_dsp_by_handle(m_owner->get_runtime(), handle, dsp));
+    const sc_dsp_config dspConfig = sc_dsp_config_init_handle(m_owner->get_runtime(), handle);
+    SBK_TRY_C(sc_system_create_dsp(m_owner->get_runtime(), &dspConfig, dsp));
     SBK_TRY_C(sc_node_group_add_dsp(nodeGroup, *dsp, SC_DSP_INDEX_HEAD));
     return sbk::ok();
 }

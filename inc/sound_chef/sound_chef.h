@@ -91,10 +91,12 @@ extern "C"
      * @{
      */
 
-    sbk_status SC_API sc_system_create_dsp_by_desc(sc_system* system, const sc_dsp_description* description, sc_dsp** dsp);
-    sbk_status SC_API sc_system_create_dsp_by_type(sc_system* system, sc_dsp_type type, sc_dsp** dsp);
-    sbk_status SC_API sc_system_create_dsp_by_handle(sc_system* system, sc_uint32 handle, sc_dsp** dsp);
-    sbk_status SC_API sc_system_create_dsp_clap(sc_system* system, const clap_plugin_factory_t* pluginFactory, sc_dsp** dsp);
+    sc_dsp_config SC_API sc_dsp_config_init(const sc_dsp_description* description);
+    sc_dsp_config SC_API sc_dsp_config_init_type(const sc_system* system, sc_dsp_type type);
+    sc_dsp_config SC_API sc_dsp_config_init_handle(const sc_system* system, sc_uint32 handle);
+    sc_dsp_config SC_API sc_dsp_config_init_clap(const sc_system* system, const clap_plugin_factory_t* pluginFactory);
+    
+    sbk_status SC_API sc_system_create_dsp(sc_system* system, const sc_dsp_config* config, sc_dsp** dsp);
 
     /**
      * @brief Returns a pointer to the description for the given handle.

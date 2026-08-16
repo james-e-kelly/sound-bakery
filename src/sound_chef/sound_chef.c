@@ -136,8 +136,9 @@ sbk_status sc_system_init(sc_system* system, const sc_system_config* systemConfi
 
     ma_log_post(&system->log, MA_LOG_LEVEL_DEBUG, "Adding meter");
 
+    const sc_dsp_config meterDspConfig = sc_dsp_config_init_type(system, SC_DSP_TYPE_METER);
     sc_dsp* meterDSP = NULL;
-    SC_CHECK_STATUS(sc_system_create_dsp_by_type(system, SC_DSP_TYPE_METER, &meterDSP));
+    SC_CHECK_STATUS(sc_system_create_dsp(system, &meterDspConfig, &meterDSP));
     SC_CHECK_STATUS(sc_node_group_add_dsp(system->masterNodeGroup, meterDSP, SC_DSP_INDEX_HEAD));
 
     ma_log_post(&system->log, MA_LOG_LEVEL_DEBUG, "Initialized Master Node Group");
@@ -372,7 +373,8 @@ sbk_status sc_system_create_node_group(sc_system* system, sc_node_group** nodeGr
     SC_CREATE(*nodeGroup, sc_node_group, system);
 
     // Always create a fader/sound_group by default
-    result = sc_system_create_dsp_by_type(system, SC_DSP_TYPE_FADER, &(*nodeGroup)->fader);
+    const sc_dsp_config faderConfig = sc_dsp_config_init_type(system, SC_DSP_TYPE_FADER);
+    result = sc_system_create_dsp(system, &faderConfig, &(*nodeGroup)->fader);
 
     (*nodeGroup)->head = (*nodeGroup)->fader;
     (*nodeGroup)->tail = (*nodeGroup)->fader;
@@ -425,60 +427,64 @@ sbk_status sc_system_get_dsp_desc(const sc_system* system, sc_uint32 handle, con
     return SBK_SUCCESS;
 }
 
-sbk_status sc_system_create_dsp(sc_system* system, const sc_dsp_description* description, sc_uint32 type, sc_dsp** dsp, void* userData)
+sbk_status sc_system_create_dsp(sc_system* system, const sc_dsp_config* config, sc_dsp** dsp)
 {
     SC_CHECK_ARG(system != NULL);
-    SC_CHECK_ARG(description != NULL);
-    SC_CHECK_ARG(description->create != NULL);
-    SC_CHECK_ARG(description->release != NULL);
+    SC_CHECK_ARG(config != NULL);
+    SC_CHECK_ARG(config->dspDescription != NULL);
+    SC_CHECK_ARG(config->dspDescription->create != NULL);
+    SC_CHECK_ARG(config->dspDescription->release != NULL);
     SC_CHECK_ARG(dsp != NULL);
-
-    sbk_status result = SBK_ERR_CHEF;
 
     SC_CREATE(*dsp, sc_dsp, system);
 
-    (*dsp)->handle   = type;
+    (*dsp)->handle = config->handle;
     (*dsp)->system = system;
 
-    result = description->create(system, *dsp, userData);
+    const sbk_status createResult = config->dspDescription->create(system, *dsp, config->clapFactory);
 
-    if ((*dsp)->node == NULL && result == SBK_SUCCESS)
-    {
-        result = SBK_ERR_NULL;
-    }
-
-    if (result != SBK_SUCCESS)
+    if (createResult != SBK_SUCCESS)
     {
         SC_FREE(*dsp, system);
     }
+    else if ((*dsp)->node == NULL)
+    {
+        SC_FREE(*dsp, system);
+        return SBK_ERR_NULL;
+    }
 
-    return result;
+    return createResult;
 }
 
-sbk_status sc_system_create_dsp_by_desc(sc_system* system, const sc_dsp_description* description, sc_dsp** dsp)
+sc_dsp_config sc_dsp_config_init(const sc_dsp_description* description)
 {
-    return sc_system_create_dsp(system, description, (sc_uint32)SC_DSP_TYPE_UNKNOWN, dsp, NULL);
+    sc_dsp_config config;
+    SC_ZERO_OBJECT(&config);
+    config.dspDescription = description;
+    return config;
 }
 
-sbk_status sc_system_create_dsp_by_type(sc_system* system, sc_dsp_type type, sc_dsp** dsp)
+sc_dsp_config sc_dsp_config_init_type(const sc_system* system, sc_dsp_type type)
 {
-    const sc_dsp_description* description = NULL;
-    SC_CHECK_STATUS(sc_system_get_dsp_desc(system, (sc_uint32)type, &description));
-    return sc_system_create_dsp(system, description, (sc_uint32)type, dsp, NULL);
+    sc_dsp_config config;
+    SC_ZERO_OBJECT(&config);
+    (void)sc_system_get_dsp_desc(system, (sc_uint32)type, &config.dspDescription);
+    return config;
 }
 
-sbk_status sc_system_create_dsp_by_handle(sc_system* system, sc_uint32 handle, sc_dsp** dsp)
+sc_dsp_config sc_dsp_config_init_handle(const sc_system* system, sc_uint32 handle)
 {
-    const sc_dsp_description* description = NULL;
-    SC_CHECK_STATUS(sc_system_get_dsp_desc(system, handle, &description));
-    return sc_system_create_dsp(system, description, handle, dsp, NULL);
+    sc_dsp_config config;
+    SC_ZERO_OBJECT(&config);
+    (void)sc_system_get_dsp_desc(system, handle, &config.dspDescription);
+    return config;
 }
 
-sbk_status sc_system_create_dsp_clap(sc_system* system, const clap_plugin_factory_t* pluginFactory, sc_dsp** dsp)
+sc_dsp_config sc_dsp_config_init_clap(const sc_system* system, const clap_plugin_factory_t* pluginFactory)
 {
-    const sc_dsp_description* description = NULL;
-    SC_CHECK_STATUS(sc_system_get_dsp_desc(system, (sc_uint32)SC_DSP_TYPE_CLAP, &description));
-    return sc_system_create_dsp(system, description, (sc_uint32)SC_DSP_TYPE_CLAP, dsp, pluginFactory);
+    sc_dsp_config config = sc_dsp_config_init_type(system, SC_DSP_TYPE_CLAP);
+    config.clapFactory   = pluginFactory;
+    return config;
 }
 
 sbk_status sc_system_clap_get_count(const sc_system* system, ma_uint32* count)
