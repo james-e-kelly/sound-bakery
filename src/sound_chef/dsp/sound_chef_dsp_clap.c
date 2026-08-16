@@ -131,7 +131,7 @@ static void sc_clap_node_uninit(sc_clap_node* node, const ma_allocation_callback
     ma_node_uninit(node, allocationCallbacks);
 }
 
-static sbk_status sc_dsp_clap_create(sc_system* system, sc_dsp* dsp, void* userData)
+static sbk_status sc_dsp_clap_create(sc_system* system, sc_dsp* dsp, const void* userData)
 {
     SC_CHECK_ARG(system != NULL);
     SC_CHECK_ARG(dsp != NULL);

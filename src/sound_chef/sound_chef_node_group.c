@@ -95,7 +95,7 @@ sbk_status sc_node_group_get_dsp(sc_node_group* nodeGroup, sc_dsp_type type, sc_
 
     do
     {
-        if (currentDsp->handle == type)
+        if (currentDsp->handle == (sc_uint32)type)
         {
             *dsp = currentDsp;
             return SBK_SUCCESS;

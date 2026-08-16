@@ -97,6 +97,8 @@
 #define MA_NO_OPUS
 
 // Override miniaudio macros so they are usable outside of MINIAUDIO_IMPLEMENTATION sections
+#undef MA_ZERO_OBJECT
+#undef MA_ZERO_MEMORY
 #define MA_ZERO_OBJECT(p)       SC_ZERO_OBJECT((p))
 #define MA_ZERO_MEMORY(p, sz)   memset((p), 0, (sz))
 
@@ -294,7 +296,7 @@ typedef enum sc_encoding_format
     sc_encoding_format_opus
 } sc_encoding_format;
 
-typedef sbk_status(SC_CALL* sc_dsp_create_proc)(sc_system* system, sc_dsp* dsp, void* userData);
+typedef sbk_status(SC_CALL* sc_dsp_create_proc)(sc_system* system, sc_dsp* dsp, const void* userData);
 typedef sbk_status(SC_CALL* sc_dsp_release_proc)(sc_system* system, sc_dsp* dsp);
 typedef sbk_status(SC_CALL* sc_dsp_is_idle_proc)(sc_dsp* dsp, sc_bool* outIsIdle);
 typedef sbk_status(SC_CALL* sc_dsp_set_param_float_proc)(sc_dsp* dsp, sc_uint32 index, float value);

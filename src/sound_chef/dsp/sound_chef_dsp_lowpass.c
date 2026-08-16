@@ -8,8 +8,9 @@ enum
     SC_DSP_DEFAULT_FILTER_ORDER = 2,
 };
 
-static sbk_status sc_dsp_lowpass_create(sc_system* system, sc_dsp* dsp, void* userData)
+static sbk_status sc_dsp_lowpass_create(sc_system* system, sc_dsp* dsp, const void* userData)
 {
+    (void)userData;
     SC_CREATE(dsp->node, ma_lpf_node, system);
 
     ma_lpf_node_config config = ma_lpf_node_config_init(ma_engine_get_channels((ma_engine*)system),

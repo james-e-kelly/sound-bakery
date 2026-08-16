@@ -65,8 +65,9 @@ static void sc_meter_node_uninit(sc_meter_node* node, const ma_allocation_callba
     ma_node_uninit(node, allocationCallbacks);
 }
 
-static sbk_status sc_dsp_meter_create(sc_system* system, sc_dsp* dsp, void* userData)
+static sbk_status sc_dsp_meter_create(sc_system* system, sc_dsp* dsp, const void* userData)
 {
+    (void)userData;
     SC_CREATE(dsp->node, sc_meter_node, system);
 
     return sc_meter_node_init((ma_node_graph*)system, &system->engine.allocationCallbacks, (sc_meter_node*)dsp->node);

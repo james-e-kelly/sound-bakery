@@ -36,7 +36,7 @@ sbk_status sc_delay_init(const sc_delay_config* config, const ma_allocation_call
 
     ma_silence_pcm_frames(delay->buffer, delay->bufferSizeInFrames, ma_format_f32, config->channels);
 
-    return MA_SUCCESS;
+    return SBK_SUCCESS;
 }
 
 void sc_delay_uninit(sc_delay* delay, const ma_allocation_callbacks* allocationCallbacks)
@@ -260,7 +260,7 @@ void sc_delay_node_uninit(sc_delay_node* delayNode, const ma_allocation_callback
 
 // DSP CALLBACKS
 
-static sbk_status sc_dsp_delay_create(sc_system* system, sc_dsp* dsp, void* userData)
+static sbk_status sc_dsp_delay_create(sc_system* system, sc_dsp* dsp, const void* userData)
 {
     SC_CHECK_ARG(system != NULL);
     SC_CHECK_ARG(dsp != NULL);

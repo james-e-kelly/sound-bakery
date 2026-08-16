@@ -8,7 +8,7 @@ enum
     SC_DSP_DEFAULT_FILTER_ORDER = 2,
 };
 
-static sbk_status sc_dsp_highpass_create(sc_system* system, sc_dsp* dsp, void* userData)
+static sbk_status sc_dsp_highpass_create(sc_system* system, sc_dsp* dsp, const void* userData)
 {
     (void)userData;
     SC_CREATE(dsp->node, ma_hpf_node, system);
