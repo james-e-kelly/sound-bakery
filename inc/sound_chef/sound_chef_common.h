@@ -223,6 +223,7 @@ typedef struct sc_system_config     sc_system_config;
 
 typedef struct sc_sound             sc_sound;
 typedef struct sc_sound             sc_sound_instance;
+typedef struct sc_sound_config      sc_sound_config;
 
 typedef struct sc_node_group        sc_node_group;
 
