@@ -219,23 +219,12 @@ typedef enum
     goto dest
 
 typedef struct sc_system            sc_system;
-typedef struct sc_system_config     sc_system_config;
+typedef struct sc_dsp               sc_dsp;
 
-typedef struct sc_sound             sc_sound;
-typedef struct sc_sound             sc_sound_instance;
-typedef struct sc_sound_config      sc_sound_config;
-
-typedef struct sc_node_group        sc_node_group;
-
-typedef struct sc_dsp sc_dsp;
-typedef struct sc_dsp_config        sc_dsp_config;
-typedef struct sc_dsp_parameter     sc_dsp_parameter;
-typedef struct sc_dsp_description   sc_dsp_description;
-
-typedef struct sc_clap              sc_clap;
-
-typedef struct sc_voice             sc_voice;
-typedef struct sc_voice_real        sc_voice_real;
+enum
+{
+    SC_STRING_NAME_LENGTH = 16
+};
 
 /**
  * @brief The different ways to create a sound.
@@ -334,33 +323,22 @@ typedef enum sc_encoding_format
     sc_encoding_format_opus
 } sc_encoding_format;
 
-typedef sbk_status(SC_CALL* sc_dsp_create_proc)(sc_system* system, sc_dsp* dsp, const void* userData);
-typedef sbk_status(SC_CALL* sc_dsp_release_proc)(sc_system* system, sc_dsp* dsp);
-typedef sbk_status(SC_CALL* sc_dsp_is_idle_proc)(sc_dsp* dsp, sc_bool* outIsIdle);
-typedef sbk_status(SC_CALL* sc_dsp_set_param_float_proc)(sc_dsp* dsp, sc_uint32 index, float value);
-typedef sbk_status(SC_CALL* sc_dsp_get_param_float_proc)(sc_dsp* dsp, sc_uint32 index, float* value);
-
 /**
- * @brief Structure to create, destroy, and update DSP units of a specific handle.
+ * @brief Groups nodes/DSPs together into one.
+ *
+ * Nodes in the group go from left to right, tail to head. Imagine a snake
+ * and everything is moving towards the endpoint/device. Any input to the
+ * group goes to the tail and all outputs leave from the head.
+ *
+ * Nodes can be inserted in any position. The specified index becomes the
+ * index for the inserted node. Index 0 is the tail.
  */
-struct sc_dsp_description
+typedef struct sc_node_group
 {
-    sc_dsp_create_proc          create;             //< Allocates and initializes the ma_node that will handle the DSP processing
-    sc_dsp_release_proc         release;
-    sc_dsp_is_idle_proc         isIdle;             //< Optional: For delays with feedback, this is used to detect if the delay has gone silent and the voice can be ended
-    sc_dsp_set_param_float_proc setFloat;
-    sc_dsp_get_param_float_proc getFloat;
-
-    const sc_dsp_parameter**    params;
-    sc_uint32                   numParams;
-};
-
-struct sc_dsp_config
-{
-    sc_uint32                       handle;         //< Type/handle/index
-    const sc_dsp_description*       dspDescription; //< Required: holds a vtable for DSP creation and deletion
-    const clap_plugin_factory_t*    clapFactory;    //< Optional: passed to CLAP DSP types so a specific CLAP plugin can be created
-};
+    sc_dsp* tail;   //< Left most node. Sounds and child groups connect to this
+    sc_dsp* fader;  //< Controls the volume and more of the group. Exists at start
+    sc_dsp* head;   //< Right/top most node. Nodes in the group route to this. The head then outputs to a parent
+} sc_node_group;
 
 /**
  * @brief ma_node with an additional enum descriptor.
@@ -378,13 +356,66 @@ struct sc_dsp
     sc_dsp*         prev;           //< when in a node group, the child/previous dsp. Can be null if the tail node
 };
 
-struct sc_sound
+typedef enum sc_dsp_parameter_type
+{
+    sc_dsp_parameter_type_float
+} sc_dsp_parameter_type;
+
+typedef struct sc_dsp_parameter_float
+{
+    float min;
+    float max;
+    float value;
+} sc_dsp_parameter_float;
+
+typedef struct sc_dsp_parameter
+{
+    sc_dsp_parameter_type type;
+    char name[SC_STRING_NAME_LENGTH];
+
+    union
+    {
+        sc_dsp_parameter_float floatParameter;
+    };
+} sc_dsp_parameter;
+
+typedef sbk_status(SC_CALL* sc_dsp_create_proc)(sc_system* system, sc_dsp* dsp, const void* userData);
+typedef sbk_status(SC_CALL* sc_dsp_release_proc)(sc_system* system, sc_dsp* dsp);
+typedef sbk_status(SC_CALL* sc_dsp_is_idle_proc)(sc_dsp* dsp, sc_bool* outIsIdle);
+typedef sbk_status(SC_CALL* sc_dsp_set_param_float_proc)(sc_dsp* dsp, sc_uint32 index, float value);
+typedef sbk_status(SC_CALL* sc_dsp_get_param_float_proc)(sc_dsp* dsp, sc_uint32 index, float* value);
+
+/**
+ * @brief Structure to create, destroy, and update DSP units of a specific handle.
+ */
+typedef struct sc_dsp_description
+{
+    sc_dsp_create_proc          create;             //< Allocates and initializes the ma_node that will handle the DSP processing
+    sc_dsp_release_proc         release;
+    sc_dsp_is_idle_proc         isIdle;             //< Optional: For delays with feedback, this is used to detect if the delay has gone silent and the voice can be ended
+    sc_dsp_set_param_float_proc setFloat;
+    sc_dsp_get_param_float_proc getFloat;
+
+    const sc_dsp_parameter**    params;
+    sc_uint32                   numParams;
+} sc_dsp_description;
+
+typedef struct sc_dsp_config
+{
+    sc_uint32                       handle;         //< Type/handle/index
+    const sc_dsp_description*       dspDescription; //< Required: holds a vtable for DSP creation and deletion
+    const clap_plugin_factory_t*    clapFactory;    //< Optional: passed to CLAP DSP types so a specific CLAP plugin can be created
+} sc_dsp_config;
+
+typedef struct sc_sound
 {
     ma_sound        sound;
     sc_sound_mode   mode;
     ma_decoder*     memoryDecoder;
     sc_system*      owningSystem;
-};
+} sc_sound;
+
+typedef struct sc_sound sc_sound_instance;
 
 /**
  * @brief Configuration for creating a @ref sc_sound.
@@ -396,47 +427,30 @@ struct sc_sound
  * @see sc_sound_config_init_memory
  * @see sc_system_create_sound
  */
-struct sc_sound_config
+typedef struct sc_sound_config
 {
     const char*     filePath;       //< File path to load the sound from. Mutually exclusive with @ref memory
     const void*     memory;         //< In-memory sound data. Mutually exclusive with @ref filePath
     size_t          memorySize;     //< Size in bytes of the @ref memory buffer
     sc_sound_mode   mode;           //< Sound loading/playback mode
-};
-
-/**
- * @brief Groups nodes/DSPs together into one.
- *
- * Nodes in the group go from left to right, tail to head. Imagine a snake
- * and everything is moving towards the endpoint/device. Any input to the
- * group goes to the tail and all outputs leave from the head.
- *
- * Nodes can be inserted in any position. The specified index becomes the
- * index for the inserted node. Index 0 is the tail.
- */
-struct sc_node_group
-{
-    sc_dsp* tail;   //< Left most node. Sounds and child groups connect to this
-    sc_dsp* fader;  //< Controls the volume and more of the group. Exists at start
-    sc_dsp* head;   //< Right/top most node. Nodes in the group route to this. The head then outputs to a parent
-};
+} sc_sound_config;
 
 /**
  * @brief Holds a DLL handle and plugin entry for a CLAP plugin.
  */
-struct sc_clap
+typedef struct sc_clap
 {
     ma_handle                       dynamicLibraryHandle;   //< Handle to the .clap file
     clap_plugin_entry_t*            clapEntry;              //< Entry point of the plugin
     const clap_plugin_factory_t*    pluginFactory;          //< Plugin factory to poll and create plugins from
-};
+} sc_clap;
 
 /**
  * @brief A voice is a window into a single sound that may or may not be audible and rendering.
  * 
  * Voices are limited by the @ref sc_system_config::maxVoices value passed during system initialization.
  */
-struct sc_voice
+typedef struct sc_voice
 {
     sc_system*                      system;
     sc_uint64                       playCursor;             //< Audio thread
@@ -447,20 +461,20 @@ struct sc_voice
     sc_uint8                        priority;               //< priority where the greater the number, the great the priority. Generally 0-100
     sc_node_group*                  group;
     sc_voice_handle                 realVoiceHandle;        //< Non-owning reference to a real voice
-};
+} sc_voice;
 
 /**
  * @brief A real voice that is connected to the DSP graph.
  * 
  * Real voices are limited by the @ref sc_system_config::maxRealVoices value passed during system initialization.
  */
-struct sc_voice_real
+typedef struct sc_voice_real
 {
     ma_node_base                    baseNode;
     sc_voice*                       voiceRef;       //< The voice we are playing for
     sc_sound_mode                   mode;
     ma_decoder*                     memoryDecoder;  //< @todo Work out if this should go in a resource manager
-};
+} sc_voice_real;
 
 /**
  * @brief Object that manages the node graph, sounds, output etc.
@@ -503,14 +517,14 @@ struct sc_system
  * @brief Configuration for initializing the sc_system.
  * @see sc_system_init
  */
-struct sc_system_config
+typedef struct sc_system_config
 {
     const char*                 pluginPath;             //< Folder path containing CLAP plugins to load
     ma_allocation_callbacks     allocationCallbacks;    //< External allocation callbacks to override all memory allocation in Sound Chef
     ma_device_data_proc         dataCallback;           //< Device render callback. Overriden in Sound Bakery for profiling
     sc_uint32                   maxVoices;              //< Max number of voices (both virtual and real)
     sc_uint32                   maxRealVoices;          //< Max number of real voices to mix at once. Voices over this limit get virtualized
-};
+} sc_system_config;
 
 #ifdef __cplusplus
 }

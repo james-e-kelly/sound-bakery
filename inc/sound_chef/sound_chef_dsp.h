@@ -8,41 +8,13 @@
 #ifndef SOUND_CHEF_DSP
 #define SOUND_CHEF_DSP
 
-enum
-{
-    SC_STRING_NAME_LENGTH = 16
-};
-
 #define SC_DELAY_SILENCE_THRESHOLD 0.0001F
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
-
-    typedef enum sc_dsp_parameter_type
-    {
-        sc_dsp_parameter_type_float
-    } sc_dsp_parameter_type;
-
-    typedef struct sc_dsp_parameter_float
-    {
-        float min;
-        float max;
-        float value;
-    } sc_dsp_parameter_float;
-
-    struct sc_dsp_parameter
-    {
-        sc_dsp_parameter_type type;
-        char name[SC_STRING_NAME_LENGTH];
-
-        union
-        {
-            sc_dsp_parameter_float floatParameter;
-        };
-    };
-
+  
     enum
     {
         SC_DSP_LOWPASS_PARAM_CUTOFF,
