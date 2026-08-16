@@ -241,8 +241,9 @@ typedef struct sc_voice_real        sc_voice_real;
  * 
  * These types are basically the same as @ref ma_sound_flags.
  * 
+ * @see sc_sound_config_init_file
+ * @see sc_sound_config_init_memory
  * @see sc_system_create_sound
- * @see sc_system_create_sound_memory
  */
 typedef enum sc_sound_mode
 {
@@ -346,6 +347,24 @@ struct sc_sound
     sc_sound_mode   mode;
     ma_decoder*     memoryDecoder;
     sc_system*      owningSystem;
+};
+
+/**
+ * @brief Configuration for creating a @ref sc_sound.
+ *
+ * Exactly one of @ref filePath or @ref memory must be set. When @ref memory is set,
+ * @ref memorySize must be the size of that buffer in bytes.
+ *
+ * @see sc_sound_config_init_file
+ * @see sc_sound_config_init_memory
+ * @see sc_system_create_sound
+ */
+struct sc_sound_config
+{
+    const char*     filePath;       //< File path to load the sound from. Mutually exclusive with @ref memory
+    const void*     memory;         //< In-memory sound data. Mutually exclusive with @ref filePath
+    size_t          memorySize;     //< Size in bytes of the @ref memory buffer
+    sc_sound_mode   mode;           //< Sound loading/playback mode
 };
 
 /**

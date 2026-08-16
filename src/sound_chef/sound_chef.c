@@ -256,39 +256,52 @@ static ma_uint32 get_flags_from_mode(sc_sound_mode mode)
     return flags;
 }
 
-sbk_status sc_system_create_sound(sc_system* system, const char* fileName, sc_sound_mode mode, sc_sound** sound)
+sc_sound_config sc_sound_config_init_file(const char* filePath, sc_sound_mode mode)
 {
-    SC_CHECK_ARG(system != NULL);
-    SC_CHECK_ARG(fileName != NULL);
-    SC_CHECK_ARG(sound != NULL);
-
-    SC_CREATE(*sound, sc_sound, system);
-
-    (*sound)->mode         = mode;
-    (*sound)->owningSystem = system;
-
-    return (sbk_status)ma_sound_init_from_file((ma_engine*)system, fileName, get_flags_from_mode(mode), NULL, NULL,
-                                               &(*sound)->sound);
+    sc_sound_config config;
+    SC_ZERO_OBJECT(&config);
+    config.filePath = filePath;
+    config.mode     = mode;
+    return config;
 }
 
-sbk_status sc_system_create_sound_memory(sc_system* system, const void* data, size_t dataSize, sc_sound_mode mode, sc_sound** sound)
+sc_sound_config sc_sound_config_init_memory(const void* memory, size_t memorySize, sc_sound_mode mode)
+{
+    sc_sound_config config;
+    SC_ZERO_OBJECT(&config);
+    config.memory     = memory;
+    config.memorySize = memorySize;
+    config.mode       = mode;
+    return config;
+}
+
+sbk_status sc_system_create_sound(sc_system* system, const sc_sound_config* config, sc_sound** sound)
 {
     SC_CHECK_ARG(system != NULL);
-    SC_CHECK_ARG(data != NULL);
-    SC_CHECK_ARG(dataSize > 0);
+    SC_CHECK_ARG(config != NULL);
     SC_CHECK_ARG(sound != NULL);
+    SC_CHECK_ARG((config->filePath != NULL) != (config->memory != NULL));
+    SC_CHECK_ARG(config->memory == NULL || config->memorySize > 0);
 
     SC_CREATE(*sound, sc_sound, system);
-    SC_CREATE((*sound)->memoryDecoder, ma_decoder, system);
 
-    (*sound)->mode         = mode;
+    (*sound)->mode         = config->mode;
     (*sound)->owningSystem = system;
+
+    if (config->filePath != NULL)
+    {
+        return (sbk_status)ma_sound_init_from_file((ma_engine*)system, config->filePath, get_flags_from_mode(config->mode),
+                                                   NULL, NULL, &(*sound)->sound);
+    }
+
+    SC_CREATE((*sound)->memoryDecoder, ma_decoder, system);
 
     ma_decoder_config decoderConfig      = ma_decoder_config_init_default();
     decoderConfig.customBackendCount     = system->resourceManager.config.customDecodingBackendCount;
     decoderConfig.ppCustomBackendVTables = system->resourceManager.config.ppCustomDecodingBackendVTables;
 
-    const ma_result decoderInitResult = ma_decoder_init_memory(data, dataSize, &decoderConfig, (*sound)->memoryDecoder);
+    const ma_result decoderInitResult = ma_decoder_init_memory(config->memory, config->memorySize, &decoderConfig,
+                                                               (*sound)->memoryDecoder);
 
     if (decoderInitResult != MA_SUCCESS)
     {
@@ -298,8 +311,8 @@ sbk_status sc_system_create_sound_memory(sc_system* system, const void* data, si
         return SBK_FROM_MA(decoderInitResult);
     }
 
-    return (sbk_status)ma_sound_init_from_data_source((ma_engine*)system, (*sound)->memoryDecoder, get_flags_from_mode(mode), NULL,
-                                                      &(*sound)->sound);
+    return (sbk_status)ma_sound_init_from_data_source((ma_engine*)system, (*sound)->memoryDecoder,
+                                                      get_flags_from_mode(config->mode), NULL, &(*sound)->sound);
 }
 
 sbk_status sc_system_play_sound(sc_system* system, sc_sound* sound, sc_sound_instance** instance, sc_node_group* parent, sc_bool paused)

@@ -45,8 +45,10 @@ extern "C"
      * @{
      */
 
-    sbk_status SC_API sc_system_create_sound(sc_system* system, const char* fileName, sc_sound_mode mode, sc_sound** sound);
-    sbk_status SC_API sc_system_create_sound_memory(sc_system* system, const void* memoryLocation, size_t soundSize, sc_sound_mode mode, sc_sound** sound);
+    sc_sound_config SC_API sc_sound_config_init_file(const char* filePath, sc_sound_mode mode);
+    sc_sound_config SC_API sc_sound_config_init_memory(const void* memory, size_t memorySize, sc_sound_mode mode);
+
+    sbk_status SC_API sc_system_create_sound(sc_system* system, const sc_sound_config* config, sc_sound** sound);
 
     /**
      * @brief Plays a sound and returns the playing instance.

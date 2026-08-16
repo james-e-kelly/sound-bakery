@@ -57,7 +57,8 @@
  * sc_system_init(system);
  *
  * sc_sound* sound = NULL;
- * sc_system_create_sound(system, "some_sound.wav", SC_SOUND_MODE_DEFAULT, &sound);
+ * const sc_sound_config soundConfig = sc_sound_config_init_file("some_sound.wav", SC_SOUND_MODE_DEFAULT);
+ * sc_system_create_sound(system, &soundConfig, &sound);
  *
  * sc_sound_instance* instance = NULL;
  * sc_system_play_sound(system, sound, &instance, NULL, SC_FALSE);
@@ -116,7 +117,8 @@
  * sc_system_init(system);
  *
  * sc_sound* sound = NULL;
- * sc_system_create_sound(system, "some_sound.wav", SC_SOUND_MODE_DEFAULT, &sound);
+ * const sc_sound_config soundConfig = sc_sound_config_init_file("some_sound.wav", SC_SOUND_MODE_DEFAULT);
+ * sc_system_create_sound(system, &soundConfig, &sound);
  *
  * sc_node_group* nodeGroup = NULL;
  * sc_system_create_node_group(system, &nodeGroup);
@@ -133,14 +135,15 @@
  * sc_system_init(system);
  *
  * sc_sound* sound = NULL;
- * sc_system_create_sound(system, "some_sound.wav", SC_SOUND_MODE_DEFAULT, &sound);
+ * const sc_sound_config soundConfig = sc_sound_config_init_file("some_sound.wav", SC_SOUND_MODE_DEFAULT);
+ * sc_system_create_sound(system, &soundConfig, &sound);
  *
  * sc_node_group* nodeGroup = NULL;
  * sc_system_create_node_group(system, &nodeGroup);
  *
- * const sc_dsp_config lpfConfig = sc_dsp_config_init_by_type(system, SC_DSP_TYPE_LOWPASS);
+ * const sc_dsp_config lpfConfig = sc_dsp_config_init_type(system, SC_DSP_TYPE_LOWPASS);
  * sc_dsp* lowpass = NULL;
- * sc_system_create_dsp_by_desc(system, &lpfConfig, &lowpass);
+ * sc_system_create_dsp(system, &lpfConfig, &lowpass);
  * sc_node_group_add_dsp(nodeGroup, lowpass, SC_DSP_INDEX_HEAD);
  *
  * sc_sound_instance* instance = NULL;
@@ -172,21 +175,23 @@
  * // Load sounds
  * sc_sound* footstep_concrete = NULL;
  * sc_sound* footstep_dirt = NULL;
- * sc_system_create_sound(system, "footstep_concrete.wav", SC_SOUND_MODE_DEFAULT, &footstep_concrete);
- * sc_system_create_sound(system, "footstep_dirt.wav", SC_SOUND_MODE_DEFAULT, &footstep_dirt);
+ * const sc_sound_config concreteConfig = sc_sound_config_init_file("footstep_concrete.wav", SC_SOUND_MODE_DEFAULT);
+ * const sc_sound_config dirtConfig     = sc_sound_config_init_file("footstep_dirt.wav", SC_SOUND_MODE_DEFAULT);
+ * sc_system_create_sound(system, &concreteConfig, &footstep_concrete);
+ * sc_system_create_sound(system, &dirtConfig, &footstep_dirt);
  *
  * // Create footstep bus with lowpass for simulation
  * sc_node_group* footstep_bus = NULL;
  * sc_system_create_node_group(system, &footstep_bus);
  *
  * // Add lowpass to footstep bus (for underwater footsteps, for example)
- * const sc_dsp_config lpf_config = sc_dsp_config_init_by_type(system, SC_DSP_TYPE_LOWPASS);
+ * const sc_dsp_config lpf_config = sc_dsp_config_init_type(system, SC_DSP_TYPE_LOWPASS);
  * sc_dsp* lpf = NULL;
  * sc_system_create_dsp(system, &lpf_config, &lpf);
  * sc_node_group_add_dsp(footstep_bus, lpf, SC_DSP_INDEX_HEAD);
  *
  * // Add compression to control dynamic range
- * const sc_dsp_config compressor_config = sc_dsp_config_init_by_type(system, SC_DSP_TYPE_COMPRESSOR);
+ * const sc_dsp_config compressor_config = sc_dsp_config_init_type(system, SC_DSP_TYPE_COMPRESSOR);
  * sc_dsp* compressor = NULL;
  * sc_system_create_dsp(system, &compressor_config, &compressor);
  * sc_node_group_add_dsp(footstep_bus, compressor, SC_DSP_INDEX_HEAD);

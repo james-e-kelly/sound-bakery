@@ -25,7 +25,8 @@ namespace
     auto create_sound_from_file(const std::filesystem::path& file) -> sbk::result<sc_sound*>
     {
         sc_sound* loadedSound = nullptr;
-        SBK_TRY_C(sc_system_create_sound(sbk::engine::system::get()->get_runtime(), file.string().c_str(), SC_SOUND_MODE_DEFAULT, &loadedSound));
+        const sc_sound_config config = sc_sound_config_init_file(file.string().c_str(), SC_SOUND_MODE_DEFAULT);
+        SBK_TRY_C(sc_system_create_sound(sbk::engine::system::get()->get_runtime(), &config, &loadedSound));
         return loadedSound;
     }
 
@@ -33,7 +34,8 @@ namespace
     {
         SBK_CHECK(rawSound, SBK_ERR_NULL);
         sc_sound* loadedSound = nullptr;
-        SBK_TRY_C(sc_system_create_sound_memory(sbk::engine::system::get()->get_runtime(), rawSound.get(), size, SC_SOUND_MODE_DEFAULT, &loadedSound));
+        const sc_sound_config config = sc_sound_config_init_memory(rawSound.get(), size, SC_SOUND_MODE_DEFAULT);
+        SBK_TRY_C(sc_system_create_sound(sbk::engine::system::get()->get_runtime(), &config, &loadedSound));
         return loadedSound;
     }
 }  // namespace

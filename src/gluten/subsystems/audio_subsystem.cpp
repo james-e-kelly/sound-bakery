@@ -258,9 +258,13 @@ auto gluten::audio_subsystem::get_or_load_audio_handle(const std::filesystem::pa
         {
             sound = m_filesToSoundsMap.at(filePath).get();
         }
-        else if (sc_system_create_sound(sbk::engine::system::get()->get_runtime(), filePath.string().c_str(), SC_SOUND_MODE_DECODE, &sound) == SBK_SUCCESS)
+        else
         {
-            m_filesToSoundsMap[filePath].reset(sound);
+            const sc_sound_config config = sc_sound_config_init_file(filePath.string().c_str(), SC_SOUND_MODE_DECODE);
+            if (sc_system_create_sound(sbk::engine::system::get()->get_runtime(), &config, &sound) == SBK_SUCCESS)
+            {
+                m_filesToSoundsMap[filePath].reset(sound);
+            }
         }
     }
     return sound;

@@ -70,7 +70,8 @@ int main() {
     sc_system_init(system);
 
     sc_sound* sound = nullptr;
-    sc_system_create_sound(system, "some_sound.wav", SC_SOUND_MODE_DEFAULT, &sound);
+    const sc_sound_config soundConfig = sc_sound_config_init_file("some_sound.wav", SC_SOUND_MODE_DEFAULT);
+    sc_system_create_sound(system, &soundConfig, &sound);
 
     sc_sound_instance* instance = nullptr;
     sc_system_play_sound(system, sound, &instance, nullptr, SC_FALSE);
