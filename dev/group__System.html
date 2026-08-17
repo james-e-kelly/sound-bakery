@@ -188,6 +188,13 @@ sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_syste
 <tr class="memitem:ga4d98ff65c6166df31444916b20e0bbc3" id="r_ga4d98ff65c6166df31444916b20e0bbc3"><td class="memItemLeft" align="right" valign="top"><a id="ga4d98ff65c6166df31444916b20e0bbc3" name="ga4d98ff65c6166df31444916b20e0bbc3"></a>
 sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_system_close</b> (<a class="el" href="structsc__system.html">sc_system</a> *system)</td></tr>
 <tr class="separator:ga4d98ff65c6166df31444916b20e0bbc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga7f465418c94293f4a8add8092c3c1d93" id="r_ga7f465418c94293f4a8add8092c3c1d93"><td class="memItemLeft" align="right" valign="top">sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__System.html#ga7f465418c94293f4a8add8092c3c1d93">sc_system_update</a> (<a class="el" href="structsc__system.html">sc_system</a> *system)</td></tr>
+<tr class="memdesc:ga7f465418c94293f4a8add8092c3c1d93"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates the Sound Chef <a class="el" href="structsc__system.html">sc_system</a> on the calling thread.  <br /></td></tr>
+<tr class="separator:ga7f465418c94293f4a8add8092c3c1d93"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga3bb5b8645460b846d522258e6c72e12c" id="r_ga3bb5b8645460b846d522258e6c72e12c"><td class="memItemLeft" align="right" valign="top"><a id="ga3bb5b8645460b846d522258e6c72e12c" name="ga3bb5b8645460b846d522258e6c72e12c"></a>
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_system_read_pcm_frames</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, void *framesOut, ma_uint64 frameCount, ma_uint64 *framesRead)</td></tr>
+<tr class="memdesc:ga3bb5b8645460b846d522258e6c72e12c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads/pulls PCM data from the node graph and outputs them to <code>framesOut</code>. <br /></td></tr>
+<tr class="separator:ga3bb5b8645460b846d522258e6c72e12c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>System objects must be created and then initialized. When finished, system objects must be closed and then released. </p>
@@ -217,7 +224,7 @@ sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_syste
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000009">Todo:</a></b></dt><dd>Make this dynamic. It's currently set to so there are no surprises </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000009">Todo:</a></b></dt><dd>Make this dynamic. It's currently set to two so there are no surprises </dd></dl>
 
 </div>
 </div>
@@ -249,6 +256,27 @@ sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_syste
 
 <p>Sets up logging. </p>
 <dl class="section remark"><dt>Remarks</dt><dd>Must be called before <a class="el" href="group__System.html#ga73c06a9406456d77d8dd5a99dbfd6792">sc_system_init</a>. </dd></dl>
+
+</div>
+</div>
+<a id="ga7f465418c94293f4a8add8092c3c1d93" name="ga7f465418c94293f4a8add8092c3c1d93"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga7f465418c94293f4a8add8092c3c1d93">&#9670;&#160;</a></span>sc_system_update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">sbk_status SC_API sc_system_update </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structsc__system.html">sc_system</a> *&#160;</td>
+          <td class="paramname"><em>system</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Updates the Sound Chef <a class="el" href="structsc__system.html">sc_system</a> on the calling thread. </p>
+<dl class="section remark"><dt>Remarks</dt><dd>When using Sound Bakery, the system thread will call this function, thereby moving audio updates off the game thread (if in async mode). </dd></dl>
 
 </div>
 </div>

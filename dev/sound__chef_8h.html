@@ -355,6 +355,13 @@ sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_syste
 <tr class="memitem:ga4d98ff65c6166df31444916b20e0bbc3" id="r_ga4d98ff65c6166df31444916b20e0bbc3"><td class="memItemLeft" align="right" valign="top">
 sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_system_close</b> (<a class="el" href="structsc__system.html">sc_system</a> *system)</td></tr>
 <tr class="separator:ga4d98ff65c6166df31444916b20e0bbc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga7f465418c94293f4a8add8092c3c1d93" id="r_ga7f465418c94293f4a8add8092c3c1d93"><td class="memItemLeft" align="right" valign="top">sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__System.html#ga7f465418c94293f4a8add8092c3c1d93">sc_system_update</a> (<a class="el" href="structsc__system.html">sc_system</a> *system)</td></tr>
+<tr class="memdesc:ga7f465418c94293f4a8add8092c3c1d93"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates the Sound Chef <a class="el" href="structsc__system.html">sc_system</a> on the calling thread.  <br /></td></tr>
+<tr class="separator:ga7f465418c94293f4a8add8092c3c1d93"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga3bb5b8645460b846d522258e6c72e12c" id="r_ga3bb5b8645460b846d522258e6c72e12c"><td class="memItemLeft" align="right" valign="top">
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_system_read_pcm_frames</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, void *framesOut, ma_uint64 frameCount, ma_uint64 *framesRead)</td></tr>
+<tr class="memdesc:ga3bb5b8645460b846d522258e6c72e12c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads/pulls PCM data from the node graph and outputs them to <code>framesOut</code>. <br /></td></tr>
+<tr class="separator:ga3bb5b8645460b846d522258e6c72e12c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaf51002e92f5211e2212d9c76f72b5afd" id="r_gaf51002e92f5211e2212d9c76f72b5afd"><td class="memItemLeft" align="right" valign="top">
 <a class="el" href="structsc__sound__config.html">sc_sound_config</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_sound_config_init_file</b> (const char *filePath, sc_sound_mode mode)</td></tr>
 <tr class="separator:gaf51002e92f5211e2212d9c76f72b5afd"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -367,6 +374,9 @@ sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_syste
 <tr class="memitem:ga0f39000fef87f54d58934784869334ca" id="r_ga0f39000fef87f54d58934784869334ca"><td class="memItemLeft" align="right" valign="top">sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__SystemSound.html#ga0f39000fef87f54d58934784869334ca">sc_system_play_sound</a> (<a class="el" href="structsc__system.html">sc_system</a> *system, <a class="el" href="structsc__sound.html">sc_sound</a> *sound, <a class="el" href="structsc__sound.html">sc_sound_instance</a> **instance, <a class="el" href="structsc__node__group.html">sc_node_group</a> *parent, sc_bool paused)</td></tr>
 <tr class="memdesc:ga0f39000fef87f54d58934784869334ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plays a sound and returns the playing instance.  <br /></td></tr>
 <tr class="separator:ga0f39000fef87f54d58934784869334ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaeff88fd4f65731889df688af1b109007" id="r_gaeff88fd4f65731889df688af1b109007"><td class="memItemLeft" align="right" valign="top">
+sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_system_play_sound_voice</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, <a class="el" href="structsc__sound.html">sc_sound</a> *sound, sc_voice_handle *outVoiceHandle, <a class="el" href="structsc__node__group.html">sc_node_group</a> *parent, sc_bool paused)</td></tr>
+<tr class="separator:gaeff88fd4f65731889df688af1b109007"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga38ea557547fe5842ae56f2eec96e632f" id="r_ga38ea557547fe5842ae56f2eec96e632f"><td class="memItemLeft" align="right" valign="top">
 sbk_status SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_system_create_node_group</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, <a class="el" href="structsc__node__group.html">sc_node_group</a> **nodeGroup)</td></tr>
 <tr class="separator:ga38ea557547fe5842ae56f2eec96e632f"><td class="memSeparator" colspan="2">&#160;</td></tr>
