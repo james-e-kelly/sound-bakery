@@ -315,6 +315,16 @@ typedef enum sc_voice_state
     SC_VOICE_STATE_STOPPING     //< Tail/fade-out in progress; transitions to @ref SC_VOICE_STATE_STOPPED when done.
 } sc_voice_state;
 
+// State is packed into the low bits of a 32-bit atomic word; upper bits are
+// reserved for future flags (virtualised, fading, etc.) so a caller reads the
+// whole voice state in one atomic load.
+#define SC_VOICE_STATE_MASK 0x000000FFu
+
+static MA_INLINE sc_voice_state sc_voice_extract_state(sc_uint32 word)
+{
+    return (sc_voice_state)(word & SC_VOICE_STATE_MASK);
+}
+
 /**
  * @brief Built-in DSP types.
  * 
@@ -497,8 +507,9 @@ typedef struct sc_voice
     sc_system*                      system;
     sc_sound*                       sound;                  //< Source to read from
     sc_uint64                       playCursor;             //< Audio thread
-    MA_ATOMIC(4, sc_atomic_uint8)   currentState;
-    MA_ATOMIC(4, sc_atomic_uint8)   desiredState;
+    MA_ATOMIC(8, sc_atomic_uint64)  handle;                 //< Handle for this slot's current occupant. Stale-handle callers compare against this and get SBK_ERR_NOT_FOUND on mismatch.
+    MA_ATOMIC(4, sc_atomic_uint32)  currentStateAndFlags;
+    MA_ATOMIC(4, sc_atomic_uint32)  desiredStateAndFlags;
     sc_atomic_float                 gain;
     sc_atomic_float                 pitch;
     sc_uint8                        priority;               //< priority where the greater the number, the great the priority. Generally 0-100
