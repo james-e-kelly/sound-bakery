@@ -1,5 +1,5 @@
 <map id="sbk::message_queue&lt; T &gt;::message_view" name="sbk::message_queue&lt; T &gt;::message_view">
-<area shape="rect" id="Node000001" title="Returned data from the buffer. Not the actual raw data that was inside the buffer &#45; just a pointer to..." alt="" coords="5,93,171,133"/>
+<area shape="rect" id="Node000001" title="Returned data from the buffer. Not the actual raw data — just a pointer into it." alt="" coords="5,93,171,133"/>
 <area shape="rect" id="Node000002" title=" " alt="" coords="69,5,107,31"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="91,44,91,93,85,93,85,44"/>
 </map>

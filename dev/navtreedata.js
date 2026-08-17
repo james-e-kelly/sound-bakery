@@ -127,8 +127,8 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "ChefProgrammerGuide.html",
-"eastl__serialization_8h_source.html",
-"structsc__clap__node.html"
+"event_8h_source.html",
+"structsc__dsp__parameter.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

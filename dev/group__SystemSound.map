@@ -1,4 +1,8 @@
 <map id="System Sound Functions" name="System Sound Functions">
-<area shape="rect" id="Node000002" href="$group__System.html" title=" " alt="" coords="5,5,143,31"/>
-<area shape="rect" id="Node000001" title=" " alt="" coords="191,5,372,31"/>
+<area shape="rect" id="Node000002" href="$group__System.html" title=" " alt="" coords="5,92,143,117"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="191,92,372,117"/>
+<area shape="rect" id="Node000006" href="$group__SystemClap.html" title=" " alt="" coords="442,5,617,31"/>
+<area shape="rect" id="Node000005" href="$group__SystemDSP.html" title=" " alt="" coords="449,55,609,95"/>
+<area shape="rect" id="Node000004" href="$group__SystemNodeGroup.html" title=" " alt="" coords="420,120,639,145"/>
+<area shape="rect" id="Node000003" href="$group__Voice.html" title=" " alt="" coords="475,169,583,195"/>
 </map>
