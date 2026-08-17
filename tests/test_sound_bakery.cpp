@@ -4,7 +4,7 @@
 #include "sound_bakery/system.h"
 
 #include "sound_bakery/core/containers/message_queue.h"
-#include "sound_bakery/core/containers/ring_buffer.h"
+#include "sound_chef/sound_chef_ring_buffer.h"
 #include "sound_bakery/core/property.h"
 #include "sound_bakery/core/memory/memory.h"
 #include "sound_bakery/core/task/command_queue.h"
@@ -807,56 +807,65 @@ TEST_SUITE("Tasks")
     }
 }
 
+namespace
+{
+    // Tests call sc_ring_buffer_init themselves so they can assert on the return.
+    struct scoped_ring_buffer
+    {
+        sc_ring_buffer rb{};
+
+        scoped_ring_buffer() noexcept = default;
+        ~scoped_ring_buffer() noexcept { sc_ring_buffer_uninit(&rb); }
+
+        scoped_ring_buffer(const scoped_ring_buffer&)                    = delete;
+        auto operator=(const scoped_ring_buffer&) -> scoped_ring_buffer& = delete;
+        scoped_ring_buffer(scoped_ring_buffer&&)                         = delete;
+        auto operator=(scoped_ring_buffer&&) -> scoped_ring_buffer&      = delete;
+
+        sc_ring_buffer* get() noexcept { return &rb; }
+    };
+}
+
 TEST_SUITE("Ring Buffer")
 {
     TEST_CASE("Init")
     {
         scoped_memory memory;
 
-        sbk::mpsc_ring_buffer ringBuffer;
-        sbk::memory::rpmalloc_resource rpmalloc(sbk::memory::object_category::system);
-
-        REQUIRE(ringBuffer.init(512, rpmalloc).has_value());
+        scoped_ring_buffer ringBuffer;
+        REQUIRE(sc_ring_buffer_init(ringBuffer.get(), 512, nullptr) == SBK_SUCCESS);
     }
 
     TEST_CASE("Cannot double init")
     {
         scoped_memory memory;
 
-        sbk::mpsc_ring_buffer ringBuffer;
-        sbk::memory::rpmalloc_resource rpmalloc(sbk::memory::object_category::system);
-
-        REQUIRE(ringBuffer.init(512, rpmalloc).has_value());
-        REQUIRE(ringBuffer.init(256, rpmalloc).has_value() == false);
+        scoped_ring_buffer ringBuffer;
+        REQUIRE(sc_ring_buffer_init(ringBuffer.get(), 512, nullptr) == SBK_SUCCESS);
+        REQUIRE(sc_ring_buffer_init(ringBuffer.get(), 256, nullptr) != SBK_SUCCESS);
     }
 
     TEST_CASE("Round up to power of two")
     {
         scoped_memory memory;
 
-        sbk::mpsc_ring_buffer ringBuffer;
-        sbk::memory::rpmalloc_resource rpmalloc(sbk::memory::object_category::system);
-
-        REQUIRE(ringBuffer.init(500, rpmalloc).has_value());
-        CHECK(ringBuffer.get_capacity() == 512);    // Should round up to nearest power of two
+        scoped_ring_buffer ringBuffer;
+        REQUIRE(sc_ring_buffer_init(ringBuffer.get(), 500, nullptr) == SBK_SUCCESS);
+        CHECK(sc_ring_buffer_get_capacity(ringBuffer.get()) == 512);
     }
 
     TEST_CASE("Writing bytes allows reading of that many bytes")
     {
         scoped_memory memory;
 
-        sbk::mpsc_ring_buffer ringBuffer;
-        sbk::memory::rpmalloc_resource rpmalloc(sbk::memory::object_category::system);
-
-        REQUIRE(ringBuffer.init(4, rpmalloc).has_value());
+        scoped_ring_buffer ringBuffer;
+        REQUIRE(sc_ring_buffer_init(ringBuffer.get(), 4, nullptr) == SBK_SUCCESS);
 
         std::int32_t writeValue = 7;
-
-        REQUIRE(ringBuffer.write(&writeValue, sizeof(std::int32_t)) == SBK_SUCCESS);
+        REQUIRE(sc_ring_buffer_write(ringBuffer.get(), &writeValue, sizeof(std::int32_t)) == SBK_SUCCESS);
 
         std::int32_t readValue = 0;
-
-        REQUIRE(ringBuffer.read(&readValue, sizeof(std::int32_t)) == SBK_SUCCESS);
+        REQUIRE(sc_ring_buffer_read(ringBuffer.get(), &readValue, sizeof(std::int32_t)) == SBK_SUCCESS);
         REQUIRE(writeValue == readValue);
     }
 
@@ -864,20 +873,17 @@ TEST_SUITE("Ring Buffer")
     {
         scoped_memory memory;
 
-        sbk::mpsc_ring_buffer ringBuffer;
-        sbk::memory::rpmalloc_resource rpmalloc(sbk::memory::object_category::system);
+        scoped_ring_buffer ringBuffer;
+        REQUIRE(sc_ring_buffer_init(ringBuffer.get(), 4, nullptr) == SBK_SUCCESS);
 
-        REQUIRE(ringBuffer.init(4, rpmalloc).has_value());
-
-        std::int32_t firstWriteValue = 7;
+        std::int32_t firstWriteValue  = 7;
         std::int32_t secondWriteValue = 14;
 
-        REQUIRE(ringBuffer.write(&firstWriteValue, sizeof(std::int32_t)) == SBK_SUCCESS);
-        REQUIRE(ringBuffer.write(&secondWriteValue, sizeof(std::int32_t)) != SBK_SUCCESS);
+        REQUIRE(sc_ring_buffer_write(ringBuffer.get(), &firstWriteValue, sizeof(std::int32_t)) == SBK_SUCCESS);
+        REQUIRE(sc_ring_buffer_write(ringBuffer.get(), &secondWriteValue, sizeof(std::int32_t)) != SBK_SUCCESS);
 
         std::int32_t readValue = 0;
-
-        REQUIRE(ringBuffer.read(&readValue, sizeof(std::int32_t)) == SBK_SUCCESS);
+        REQUIRE(sc_ring_buffer_read(ringBuffer.get(), &readValue, sizeof(std::int32_t)) == SBK_SUCCESS);
         REQUIRE(firstWriteValue == readValue);
     }
 
@@ -885,49 +891,44 @@ TEST_SUITE("Ring Buffer")
     {
         scoped_memory memory;
 
-        sbk::mpsc_ring_buffer ringBuffer;
-        sbk::memory::rpmalloc_resource rpmalloc(sbk::memory::object_category::system);
+        scoped_ring_buffer ringBuffer;
+        REQUIRE(sc_ring_buffer_init(ringBuffer.get(), 4, nullptr) == SBK_SUCCESS);
 
-        REQUIRE(ringBuffer.init(4, rpmalloc).has_value());
-
-        std::int32_t firstWriteValue  = 7;
-
-        REQUIRE(ringBuffer.write(&firstWriteValue, sizeof(std::int32_t)) == SBK_SUCCESS);
+        std::int32_t firstWriteValue = 7;
+        REQUIRE(sc_ring_buffer_write(ringBuffer.get(), &firstWriteValue, sizeof(std::int32_t)) == SBK_SUCCESS);
 
         std::int32_t readValue = 0;
-
-        REQUIRE(ringBuffer.read(&readValue, sizeof(std::int32_t)) == SBK_SUCCESS);
+        REQUIRE(sc_ring_buffer_read(ringBuffer.get(), &readValue, sizeof(std::int32_t)) == SBK_SUCCESS);
         REQUIRE(firstWriteValue == readValue);
 
-        REQUIRE(ringBuffer.read(&readValue, sizeof(std::int32_t)) != SBK_SUCCESS);
+        REQUIRE(sc_ring_buffer_read(ringBuffer.get(), &readValue, sizeof(std::int32_t)) != SBK_SUCCESS);
     }
 
-    TEST_CASE("Sequential read and writes are corrext")
+    TEST_CASE("Sequential read and writes are correct")
     {
         scoped_memory memory;
 
-        sbk::mpsc_ring_buffer ringBuffer;
-        sbk::memory::rpmalloc_resource rpmalloc(sbk::memory::object_category::system);
+        scoped_ring_buffer ringBuffer;
 
         constexpr std::size_t numOfIntsToWrite = 1024 * 1024;
 
-        REQUIRE(ringBuffer.init(numOfIntsToWrite * sizeof(std::size_t), rpmalloc).has_value());
+        REQUIRE(sc_ring_buffer_init(ringBuffer.get(), numOfIntsToWrite * sizeof(std::size_t), nullptr) == SBK_SUCCESS);
 
-        std::jthread writeThread([&]() 
+        std::jthread writeThread([&]()
             {
                 for (std::size_t index = 0U; index < numOfIntsToWrite; ++index)
                 {
-                    REQUIRE(ringBuffer.write(&index, sizeof(std::size_t)) == SBK_SUCCESS);
+                    REQUIRE(sc_ring_buffer_write(ringBuffer.get(), &index, sizeof(std::size_t)) == SBK_SUCCESS);
                 }
             });
-        std::jthread readThread([&]() 
+        std::jthread readThread([&]()
             {
                 std::size_t iterations = 0;
-                std::size_t readValue = 0;
+                std::size_t readValue  = 0;
 
                 while (iterations < numOfIntsToWrite)
                 {
-                    if (ringBuffer.read(&readValue, sizeof(std::size_t)) == SBK_SUCCESS)
+                    if (sc_ring_buffer_read(ringBuffer.get(), &readValue, sizeof(std::size_t)) == SBK_SUCCESS)
                     {
                         REQUIRE(readValue == iterations++);
                     }
@@ -944,42 +945,39 @@ TEST_SUITE("Ring Buffer")
         {
             scoped_memory memory;
 
-            sbk::mpsc_ring_buffer ringBuffer;
-            sbk::memory::rpmalloc_resource rpmalloc(sbk::memory::object_category::system);
-
-            REQUIRE(ringBuffer.init(512 * sizeof(std::size_t), rpmalloc).has_value());
+            scoped_ring_buffer ringBuffer;
+            REQUIRE(sc_ring_buffer_init(ringBuffer.get(), 512 * sizeof(std::size_t), nullptr) == SBK_SUCCESS);
 
             std::unordered_set<std::size_t> uniqueThreadValues = {1, 7, 777, 999, 1024, 50202502};
-            std::vector<std::jthread> writerThreads;
+            std::vector<std::jthread>       writerThreads;
 
             constexpr std::size_t writesPerThread = 1024;
 
             for (std::size_t writerValue : uniqueThreadValues)
             {
                 std::jthread writerThread([&, threadValue = writerValue]()
-                                          {
+                {
                     std::size_t valueToWrite = threadValue;
                     for (std::size_t index = 0; index < writesPerThread; )
                     {
-                        if (ringBuffer.write(&valueToWrite, sizeof(std::size_t)) == SBK_SUCCESS)
+                        if (sc_ring_buffer_write(ringBuffer.get(), &valueToWrite, sizeof(std::size_t)) == SBK_SUCCESS)
                         {
-                            ++index; // Only move on once we've full written everything
+                            ++index;
                         }
-                    } });
+                    }
+                });
                 writerThreads.push_back(std::move(writerThread));
             }
 
             std::jthread readThread([&]()
-                                    { 
+            {
                 std::unordered_map<std::size_t, std::size_t> threadValueToTimesRead;
-
                 std::size_t readValue{};
-
                 std::size_t numberOfReads{};
 
                 while (numberOfReads < writesPerThread * uniqueThreadValues.size())
                 {
-                    if (ringBuffer.read(&readValue, sizeof(std::size_t)) == SBK_SUCCESS)
+                    if (sc_ring_buffer_read(ringBuffer.get(), &readValue, sizeof(std::size_t)) == SBK_SUCCESS)
                     {
                         ++threadValueToTimesRead[readValue];
                         ++numberOfReads;
@@ -989,7 +987,8 @@ TEST_SUITE("Ring Buffer")
                 for (std::size_t uniqueValue : uniqueThreadValues)
                 {
                     CHECK(threadValueToTimesRead[uniqueValue] == writesPerThread);
-                } });
+                }
+            });
 
             for (auto& thread : writerThreads)
             {
@@ -1007,9 +1006,7 @@ TEST_SUITE("Message Queue")
         scoped_memory memory;
 
         sbk::message_queue messageQueue;
-        sbk::memory::rpmalloc_resource rpmalloc(sbk::memory::object_category::system);
-
-        REQUIRE(messageQueue.init(512, rpmalloc).has_value());
+        REQUIRE(messageQueue.init(512, nullptr).has_value());
     }
 
     TEST_CASE("Read and write messages")
@@ -1040,9 +1037,7 @@ TEST_SUITE("Message Queue")
         };
 
         sbk::message_queue<message_type> messageQueue;
-        sbk::memory::rpmalloc_resource rpmalloc(sbk::memory::object_category::system);
-
-        REQUIRE(messageQueue.init(messageQueue.get_header_size() + sizeof(update_message), rpmalloc).has_value());
+        REQUIRE(messageQueue.init(messageQueue.get_header_size() + sizeof(update_message), nullptr).has_value());
 
         constexpr std::size_t updateLoops = 512;
 

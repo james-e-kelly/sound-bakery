@@ -65,9 +65,9 @@ namespace sbk
     class command_queue final
     {
     public:
-        [[nodiscard]] auto init(std::size_t size, sbk::memory::memory_resource& allocator) noexcept -> sbk::result<>
+        [[nodiscard]] auto init(std::size_t size, const ma_allocation_callbacks* allocationCallbacks) noexcept -> sbk::result<>
         {
-            return m_messageQueue.init(size, allocator);
+            return m_messageQueue.init(size, allocationCallbacks);
         }
 
         template<typename T>

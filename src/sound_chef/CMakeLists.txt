@@ -107,6 +107,7 @@ set(SOUND_CHEF_SOURCES
     sound_chef_bank.c
     sound_chef_encoder.c
     sound_chef_internal.c
+    sound_chef_ring_buffer.c
     sound_chef_sound.c
     sound_chef_node_group.c
 
@@ -138,6 +139,7 @@ set(SOUND_CHEF_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/inc/sound_chef/sound_chef.h
     ${PROJECT_SOURCE_DIR}/inc/sound_chef/sound_chef_common.h
     ${PROJECT_SOURCE_DIR}/inc/sound_chef/sound_chef_dsp.h
+    ${PROJECT_SOURCE_DIR}/inc/sound_chef/sound_chef_ring_buffer.h
 )
 
 # -----------------------------------------------------------------------------
