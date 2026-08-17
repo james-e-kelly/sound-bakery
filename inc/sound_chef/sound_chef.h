@@ -40,6 +40,18 @@ extern "C"
     sbk_status SC_API sc_system_close(sc_system* system);
 
     /**
+     * @brief Updates the Sound Chef @ref sc_system on the calling thread.
+     * 
+     * @remark When using Sound Bakery, the system thread will call this function, thereby moving audio updates off the game thread (if in async mode).
+     */
+    sbk_status SC_API sc_system_update(sc_system* system);
+
+    /**
+     * @brief Reads/pulls PCM data from the node graph and outputs them to @p framesOut.
+     */
+    sbk_status SC_API sc_system_read_pcm_frames(sc_system* system, void* framesOut, ma_uint64 frameCount, ma_uint64* framesRead);
+
+    /**
      * @defgroup SystemSound System Sound Functions
      * @ingroup System
      * @{
@@ -65,6 +77,8 @@ extern "C"
      * @param paused whether this sound is paused upon creation or played instantly
      */
     sbk_status SC_API sc_system_play_sound(sc_system* system, sc_sound* sound, sc_sound_instance** instance, sc_node_group* parent, sc_bool paused);
+
+    sbk_status SC_API sc_system_play_sound_voice(sc_system* system, sc_sound* sound, sc_voice_handle* outVoiceHandle, sc_node_group* parent, sc_bool paused);
 
     /**@}*/
 

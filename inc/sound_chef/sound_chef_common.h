@@ -439,6 +439,8 @@ typedef struct sc_sound_config
     sc_sound_mode   mode;           //< Sound loading/playback mode
 } sc_sound_config;
 
+typedef sc_sound_config sc_voice_config;    // Make the voice config just a sound config until it becomes its own thing
+
 /**
  * @brief Holds a DLL handle and plugin entry for a CLAP plugin.
  */
@@ -457,9 +459,10 @@ typedef struct sc_clap
 typedef struct sc_voice
 {
     sc_system*                      system;
+    sc_sound*                       sound;                  //< Source to read from
     sc_uint64                       playCursor;             //< Audio thread
-    sc_atomic_uint8                 currentState;
-    sc_atomic_uint8                 desiredState;
+    MA_ATOMIC(4, sc_atomic_uint8)   currentState;
+    MA_ATOMIC(4, sc_atomic_uint8)   desiredState;
     sc_atomic_float                 gain;
     sc_atomic_float                 pitch;
     sc_uint8                        priority;               //< priority where the greater the number, the great the priority. Generally 0-100

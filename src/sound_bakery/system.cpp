@@ -86,7 +86,7 @@ namespace
 
         ZoneScopedN("Audio Render");
 #endif
-        (void)ma_engine_read_pcm_frames(static_cast<ma_engine*>(device->pUserData), output, frameCount, nullptr);
+        (void)sc_system_read_pcm_frames(static_cast<sc_system*>(device->pUserData), output, frameCount, nullptr);
     }
 
     /**
@@ -369,6 +369,9 @@ auto sbk::engine::system::flush_commands() -> sbk::result<void>
             }
         }
     }
+
+    // Should be placed somewhere else but flush commands is currently the main place everything is updated, regardless of threading mode
+    SBK_TRY_C(sc_system_update(m_runtime.get()));
 
     return sbk::ok();
 }

@@ -13,6 +13,13 @@ static void sc_system_clap_request_callback(const clap_host_t* host) { (void)hos
 static void sc_system_clap_request_process(const clap_host_t* host) { (void)host; }
 static void sc_system_clap_request_restart(const clap_host_t* host) { (void)host; }
 
+void sc_system_audio_callback(ma_device* device, void* output, const void* input, ma_uint32 frameCount)
+{
+    (void)input;
+
+    (void)ma_engine_read_pcm_frames((ma_engine*)(device->pUserData), output, frameCount, NULL);
+}
+
 sbk_status sc_system_create(sc_system** outSystem)
 {
     sbk_status result = SBK_ERR_CHEF;
@@ -113,15 +120,21 @@ sbk_status sc_system_init(sc_system* system, const sc_system_config* systemConfi
     const ma_slot_allocator_config voiceAllocatorConfig = ma_slot_allocator_config_init(systemConfig->maxVoices);
     SC_CHECK_STATUS(SBK_FROM_MA(ma_slot_allocator_init(&voiceAllocatorConfig, &systemConfig->allocationCallbacks, &system->voiceSlotAllocator)));
 
-    system->voiceBuffer = ma_malloc(sizeof(sc_voice) * systemConfig->maxVoices, &systemConfig->allocationCallbacks);
+    const ma_slot_allocator_config realVoiceAllocatorConfig = ma_slot_allocator_config_init(systemConfig->maxRealVoices);
+    SC_CHECK_STATUS(SBK_FROM_MA(ma_slot_allocator_init(&realVoiceAllocatorConfig, &systemConfig->allocationCallbacks, &system->realVoiceSlotAllocator)));
+
+    system->voiceBuffer = ma_calloc(sizeof(sc_voice) * systemConfig->maxVoices, &systemConfig->allocationCallbacks);
     SC_CHECK_MEM(system->voiceBuffer);
+
+    system->realVoiceBuffer = ma_calloc(sizeof(sc_voice_real) * systemConfig->maxRealVoices, &systemConfig->allocationCallbacks);
+    SC_CHECK_MEM(system->realVoiceBuffer);
     
     ma_log_post(&system->log, MA_LOG_LEVEL_DEBUG, "Initializing engine");
 
     ma_engine_config engineConfig    = ma_engine_config_init();
     engineConfig.pResourceManager    = &system->resourceManager;
     engineConfig.listenerCount       = 1;
-    engineConfig.channels            = 2;   /// @todo Make this dynamic. It's currently set to so there are no surprises
+    engineConfig.channels            = 2;   /// @todo Make this dynamic. It's currently set to two so there are no surprises
     engineConfig.sampleRate          = ma_standard_sample_rate_48000;
     engineConfig.pLog                = &system->log;
     engineConfig.allocationCallbacks = systemConfig->allocationCallbacks;
@@ -212,10 +225,145 @@ sbk_status sc_system_init(sc_system* system, const sc_system_config* systemConfi
     return SBK_SUCCESS;
 }
 
+sbk_status sc_system_update(sc_system* system)
+{
+    SC_CHECK_ARG(system != NULL);
+
+    for (sc_uint32 voiceIndex = 0; voiceIndex < system->voiceSlotAllocator.capacity; ++voiceIndex)
+    {
+        const sc_voice_state desiredVoiceState = c89atomic_load_8(&system->voiceBuffer[voiceIndex].desiredState);
+        const sc_voice_state currentVoiceState = c89atomic_load_8(&system->voiceBuffer[voiceIndex].currentState);
+
+        switch (desiredVoiceState)
+        {
+            case SC_VOICE_STATE_PLAYING:
+                switch (currentVoiceState)
+                {
+                    case SC_VOICE_STATE_STOPPED:
+                        // STOPPED => PLAYING
+                        SC_ASSERT(false && "Should not be trying to play a stopped sound. Voices are provided play information and then moved to STARTING");
+                        break;
+                    case SC_VOICE_STATE_STARTING:
+                        // STARTING => PLAYING
+                        // Check audibility and play
+                        break;
+                    case SC_VOICE_STATE_VIRTUAL:
+                        // VIRTUAL => PLAYING
+                        // Check audibility and priority
+                        break;
+                    case SC_VOICE_STATE_PLAYING:
+                        // PLAYING => PLAYING
+                        // Nothing to do
+                        break;
+                    case SC_VOICE_STATE_PAUSED:
+                        // PAUSED => PLAYING
+                        break;
+                    case SC_VOICE_STATE_STOPPING:
+                        // STOPPING => PLAYING
+                        SC_ASSERT(false && "Should not be trying to play a sound that is stopping. Sounds need to finish stopping before starting again");
+                        break;
+                }
+                break;
+            case SC_VOICE_STATE_VIRTUAL:
+                switch (currentVoiceState)
+                {
+                    case SC_VOICE_STATE_STOPPED:
+                        // STOPPED => VIRTUAL
+                        SC_ASSERT(false);
+                        break;
+                    case SC_VOICE_STATE_STARTING:
+                        // STARTING => VIRTUAL
+                        // Go straight to virtual
+                        break;
+                    case SC_VOICE_STATE_VIRTUAL:
+                        // VIRTUAL => VIRTUAL
+                        // Nothing to do
+                        break;
+                    case SC_VOICE_STATE_PLAYING:
+                        // PLAYING => VIRTUAL
+                        // Go virtual
+                        break;
+                    case SC_VOICE_STATE_PAUSED:
+                        // PAUSED => VIRTUAL
+                        // Go virtual and continue to not advance play cursor
+                        break;
+                    case SC_VOICE_STATE_STOPPING:
+                        // STOPPING => VIRTUAL
+                        SC_ASSERT(false);
+                        break;
+                }
+                break;
+            case SC_VOICE_STATE_STOPPED:
+                switch (currentVoiceState)
+                {
+                    case SC_VOICE_STATE_STOPPED:
+                        // STOPPED => STOPPED
+                        // Nothing to do
+                        break;
+                    case SC_VOICE_STATE_STARTING:
+                        // STARTING => STOPPED
+                        // Cancel and stop
+                        break;
+                    case SC_VOICE_STATE_VIRTUAL:
+                        // VIRTUAL => STOPPED
+                        // Move to stopping
+                        break;
+                    case SC_VOICE_STATE_PLAYING:
+                        // PLAYING => STOPPED
+                        // Move to stopping
+                        break;
+                    case SC_VOICE_STATE_PAUSED:
+                        // PAUSED => STOPPED
+                        // Move to STOPPING
+                        break;
+                    case SC_VOICE_STATE_STOPPING:
+                        // STOPPING => STOPPED
+                        // Release voice and real voice
+                        break;
+                }
+                break;
+            case SC_VOICE_STATE_PAUSED:
+                switch (currentVoiceState)
+                {
+                    case SC_VOICE_STATE_STOPPED:
+                        // STOPPED => PAUSED
+                        break;
+                    case SC_VOICE_STATE_STARTING:
+                        // STARTING => PAUSED
+                        // Load everything but pause
+                        break;
+                    case SC_VOICE_STATE_VIRTUAL:
+                        // VIRTUAL => PAUSED
+                        // Pause
+                        break;
+                    case SC_VOICE_STATE_PLAYING:
+                        // PLAYING => PAUSED
+                        // Pause
+                        break;
+                    case SC_VOICE_STATE_PAUSED:
+                        // PAUSED => PAUSED
+                        // Nothing to do
+                        break;
+                    case SC_VOICE_STATE_STOPPING:
+                        // STOPPING => PAUSED
+                        // Ignore
+                        break;
+                }
+                break;
+            case SC_VOICE_STATE_STOPPING:
+                SC_ASSERT(false && "Voices shouldn't desire to move into stopping. They should ask to move into STOPPED");
+                break;
+            case SC_VOICE_STATE_STARTING:
+                SC_ASSERT(false && "Voices shouldn't desire to move into starting. They should ask to move into PLAYING");
+                break;
+        }
+    }
+
+    return SBK_SUCCESS;
+}
+
 sbk_status sc_system_close(sc_system* system)
 {
-    sbk_status result = SBK_SUCCESS;
-
     if (system)
     {
         ma_engine_uninit((ma_engine*)system);
@@ -223,15 +371,23 @@ sbk_status sc_system_close(sc_system* system)
         sc_system_release_clap_plugins(system);
 
         ma_slot_allocator_uninit(&system->voiceSlotAllocator, &system->engine.allocationCallbacks);
+        ma_slot_allocator_uninit(&system->realVoiceSlotAllocator, &system->engine.allocationCallbacks);
 
         SC_FREE(system->voiceBuffer, system);
+        SC_FREE(system->realVoiceBuffer, system);
 
         ma_log_post(&system->log, MA_LOG_LEVEL_INFO, "Closed Sound Chef");
     }
+    return SBK_SUCCESS;
+}
 
-    SC_ASSERT(result == SBK_SUCCESS);
+sbk_status sc_system_read_pcm_frames(sc_system* system, void* framesOut, ma_uint64 frameCount, ma_uint64* framesRead)
+{
+    SC_CHECK_ARG(system != NULL);
+    SC_CHECK_ARG(framesOut != NULL);
+    SC_CHECK_ARG(frameCount != NULL);
 
-    return result;
+    return SBK_FROM_MA(ma_engine_read_pcm_frames((ma_engine*)system, framesOut, frameCount, framesRead));
 }
 
 static ma_uint32 get_flags_from_mode(sc_sound_mode mode)
@@ -290,8 +446,7 @@ sbk_status sc_system_create_sound(sc_system* system, const sc_sound_config* conf
 
     if (config->filePath != NULL)
     {
-        return (sbk_status)ma_sound_init_from_file((ma_engine*)system, config->filePath, get_flags_from_mode(config->mode),
-                                                   NULL, NULL, &(*sound)->sound);
+        return (sbk_status)ma_sound_init_from_file((ma_engine*)system, config->filePath, get_flags_from_mode(config->mode), NULL, NULL, &(*sound)->sound);
     }
 
     SC_CREATE((*sound)->memoryDecoder, ma_decoder, system);
@@ -300,8 +455,7 @@ sbk_status sc_system_create_sound(sc_system* system, const sc_sound_config* conf
     decoderConfig.customBackendCount     = system->resourceManager.config.customDecodingBackendCount;
     decoderConfig.ppCustomBackendVTables = system->resourceManager.config.ppCustomDecodingBackendVTables;
 
-    const ma_result decoderInitResult = ma_decoder_init_memory(config->memory, config->memorySize, &decoderConfig,
-                                                               (*sound)->memoryDecoder);
+    const ma_result decoderInitResult = ma_decoder_init_memory(config->memory, config->memorySize, &decoderConfig, (*sound)->memoryDecoder);
 
     if (decoderInitResult != MA_SUCCESS)
     {
@@ -311,8 +465,7 @@ sbk_status sc_system_create_sound(sc_system* system, const sc_sound_config* conf
         return SBK_FROM_MA(decoderInitResult);
     }
 
-    return (sbk_status)ma_sound_init_from_data_source((ma_engine*)system, (*sound)->memoryDecoder,
-                                                      get_flags_from_mode(config->mode), NULL, &(*sound)->sound);
+    return (sbk_status)ma_sound_init_from_data_source((ma_engine*)system, (*sound)->memoryDecoder, get_flags_from_mode(config->mode), NULL, &(*sound)->sound);
 }
 
 sbk_status sc_system_play_sound(sc_system* system, sc_sound* sound, sc_sound_instance** instance, sc_node_group* parent, sc_bool paused)
@@ -342,15 +495,13 @@ sbk_status sc_system_play_sound(sc_system* system, sc_sound* sound, sc_sound_ins
                                                                        &decoderConfig, (*instance)->memoryDecoder);
             SC_CHECK_STATUS(SBK_FROM_MA(decoderInitResult));
 
-            const ma_result initResult = ma_sound_init_from_data_source((ma_engine*)system, (*instance)->memoryDecoder,
-                                                                        sound->mode, NULL, &(*instance)->sound);
+            const ma_result initResult = ma_sound_init_from_data_source((ma_engine*)system, (*instance)->memoryDecoder, sound->mode, NULL, &(*instance)->sound);
             SC_CHECK_STATUS(SBK_FROM_MA(initResult));
         }
     }
     else
     {
-        const ma_result copyResult =
-            ma_sound_init_copy((ma_engine*)system, &sound->sound, sound->mode, NULL, &(*instance)->sound);
+        const ma_result copyResult = ma_sound_init_copy((ma_engine*)system, &sound->sound, sound->mode, NULL, &(*instance)->sound);
         SC_CHECK_STATUS(SBK_FROM_MA(copyResult));
     }
 
@@ -370,6 +521,35 @@ sbk_status sc_system_play_sound(sc_system* system, sc_sound* sound, sc_sound_ins
         const ma_result startResult = ma_sound_start(&(*instance)->sound);
         SC_CHECK_STATUS(SBK_FROM_MA(startResult));
     }
+
+    return SBK_SUCCESS;
+}
+
+sbk_status sc_system_play_sound_voice(sc_system* system, sc_sound* sound, sc_voice_handle* outVoiceHandle, sc_node_group* parent, sc_bool paused)
+{
+    SC_CHECK_ARG(system != NULL);
+    SC_CHECK_ARG(sound != NULL);
+    SC_CHECK_ARG(outVoiceHandle != NULL);
+
+    // Get a new virtual slot
+    // If we can't find a slot, it's an instant exit because we cannot handle more sounds
+    // We don't check for virtual because we're literally over capacity
+
+    ma_uint64 slot = 0;
+    SC_CHECK_STATUS(SBK_FROM_MA(ma_slot_allocator_alloc(&system->voiceSlotAllocator, &slot)));
+    ma_uint32 index = sc_voice_handle_extract_slot(slot);
+
+    sc_voice* const voice = &system->voiceBuffer[index];
+    voice->sound          = sound;
+    voice->group          = parent;
+
+    const sc_voice_state currentState = c89atomic_load_8(&voice->currentState);
+    SC_ASSERT(currentState == SC_VOICE_STATE_STOPPED);
+
+    c89atomic_store_8(&voice->currentState, SC_VOICE_STATE_STARTING);
+    c89atomic_store_8(&voice->desiredState, (sc_uint8)(paused ? SC_VOICE_STATE_PAUSED : SC_VOICE_STATE_PLAYING));
+
+    *outVoiceHandle = slot;
 
     return SBK_SUCCESS;
 }
