@@ -251,9 +251,8 @@ auto system::init(const sbk_system_config& config) -> sbk::result<void>
     configCopy.soundChefConfig.allocationCallbacks.onFree    = ma_free;
 
     // The command queue's ring buffer lives for the system's lifetime;
-    // hand it the sbk::memory-backed callbacks so the allocation is
-    // properly categorised by rpmalloc.
-    SBK_TRYV(m_commandQueue.init(config.commandQueueSize, &configCopy.soundChefConfig.allocationCallbacks));
+    // allocate it out of the system arena so it shares the system's fate.
+    SBK_TRYV(m_commandQueue.init(config.commandQueueSize, m_systemArena));
     SBK_TRY(m_runtime, create_owned<sbk::engine::runtime>(m_systemArena));
 
     // Override the engine device's data callback so the mix runs (and is profiled) inside Sound

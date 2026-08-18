@@ -2,8 +2,8 @@
 
 #include "sound_bakery/pch.h"
 
+#include "sound_bakery/core/containers/ring_buffer.h"
 #include "sound_bakery/core/error/result.h"
-#include "sound_chef/sound_chef_ring_buffer.h"
 
 namespace sbk
 {
@@ -33,9 +33,9 @@ namespace sbk
     /**
      * @brief Lock-free, multi-producer, single-consumer queue of arbitrary sized messages.
      *
-     * Wraps @ref sc_ring_buffer (Sound Chef, C) and adds a small header before
-     * each payload so the consumer can identify messages by type and skip
-     * end-of-buffer padding automatically.
+     * Wraps @ref mpsc_ring_buffer and adds a small header before each payload
+     * so the consumer can identify messages by type and skip end-of-buffer
+     * padding automatically.
      *
      * The header carries the message type (any integral or enum type) and the
      * payload size in bytes.
@@ -99,7 +99,7 @@ namespace sbk
 
     public:
         message_queue() noexcept = default;
-        ~message_queue() noexcept { sc_ring_buffer_uninit(&m_ringBuffer); }
+        ~message_queue() noexcept = default;
 
         message_queue(const message_queue&)                    = delete;
         auto operator=(const message_queue&) -> message_queue& = delete;
@@ -128,15 +128,14 @@ namespace sbk
         /**
          * @brief Initialise the message queue.
          *
-         * @param size                  Requested buffer size in bytes. Rounded up to the next power of two.
-         * @param allocationCallbacks   Allocation callbacks passed to the underlying ring buffer. May be NULL for miniaudio defaults.
+         * @param size      Requested buffer size in bytes. Rounded up to the next power of two.
+         * @param allocator Memory resource passed to the underlying ring buffer.
          * @return  SBK_ERR_INVALID_PARAMETER if @r size cannot fit a header plus at least a small payload.
          */
-        [[nodiscard]] auto init(std::size_t size, const ma_allocation_callbacks* allocationCallbacks) noexcept -> sbk::result<>
+        [[nodiscard]] auto init(std::size_t size, sbk::memory::memory_resource& allocator) noexcept -> sbk::result<>
         {
             SBK_CHECK_MSG(size >= get_header_size(), SBK_ERR_INVALID_PARAMETER, "The message queue needs to be big enough to hold a header and, at least, a small payload");
-            SBK_TRY_C(sc_ring_buffer_init(&m_ringBuffer, size, allocationCallbacks));
-            return sbk::ok();
+            return m_ringBuffer.init(size, allocator);
         }
 
         /**
@@ -161,32 +160,21 @@ namespace sbk
             std::size_t   paddingSize{};
             std::size_t   reserveIndex{};
 
-            const message_header header{
-                .m_identifier  = to_numeric(type),
-                .m_payloadSize = static_cast<payload_size_t>(sizeof(U))
-            };
-            SBK_STATUS_TRY_C(sc_ring_buffer_reserve_write(&m_ringBuffer,
-                                                          sizeof(message_header) + header.m_payloadSize,
-                                                          &messageBuffer,
-                                                          &reserveIndex,
-                                                          &paddingBuffer,
-                                                          &paddingSize));
+            const message_header header{.m_identifier = to_numeric(type), .m_payloadSize = static_cast<payload_size_t>(sizeof(U))};
+            SBK_STATUS_TRY_C(m_ringBuffer.reserve_write(&messageBuffer, sizeof(message_header) + header.m_payloadSize, &reserveIndex, &paddingBuffer, &paddingSize));
 
             // Write a skip header over end-of-buffer padding so the reader can jump it.
             // Padding smaller than a header is handled by the reader from size alone.
             if (paddingSize >= sizeof(message_header))
             {
-                const message_header skipHeader{
-                    .m_identifier  = s_skipFlag,
-                    .m_payloadSize = static_cast<payload_size_t>(paddingSize - sizeof(message_header))
-                };
+                const message_header skipHeader{.m_identifier = s_skipFlag, .m_payloadSize = static_cast<payload_size_t>(paddingSize - sizeof(message_header))};
                 std::memcpy(paddingBuffer, &skipHeader, sizeof(message_header));
             }
 
             std::memcpy(messageBuffer, &header, sizeof(message_header));
             std::memcpy(messageBuffer + sizeof(message_header), &message, header.m_payloadSize);
 
-            SBK_STATUS_TRY_C(sc_ring_buffer_commit_write(&m_ringBuffer, reserveIndex, sizeof(message_header) + header.m_payloadSize + paddingSize));
+            SBK_STATUS_TRY_C(m_ringBuffer.commit_write(reserveIndex, sizeof(message_header) + header.m_payloadSize + paddingSize));
             return SBK_SUCCESS;
         }
 
@@ -208,7 +196,7 @@ namespace sbk
 
             do
             {
-                SBK_STATUS_TRY_C(sc_ring_buffer_read_begin(&m_ringBuffer, sizeof(message_header), &messageBuffer, &readIndex, &bytesRead));
+                SBK_STATUS_TRY_C(m_ringBuffer.read_begin(&messageBuffer, &readIndex, sizeof(message_header), &bytesRead));
                 BOOST_ASSERT(bytesRead <= sizeof(message_header));
 
                 if (bytesRead == sizeof(message_header))
@@ -216,17 +204,17 @@ namespace sbk
                     message_header* header = reinterpret_cast<message_header*>(messageBuffer);
                     messageType            = header->m_identifier;
                     payloadSize            = header->m_payloadSize;
-                    SBK_STATUS_TRY_C(sc_ring_buffer_read_end(&m_ringBuffer, sizeof(message_header)));
+                    SBK_STATUS_TRY_C(m_ringBuffer.read_end(sizeof(message_header)));
 
                     if (header->m_identifier == s_skipFlag)
                     {
-                        SBK_STATUS_TRY_C(sc_ring_buffer_read_begin(&m_ringBuffer, payloadSize, &messageBuffer, &readIndex, &bytesRead));
-                        SBK_STATUS_TRY_C(sc_ring_buffer_read_end(&m_ringBuffer, payloadSize));
+                        SBK_STATUS_TRY_C(m_ringBuffer.read_begin(&messageBuffer, &readIndex, payloadSize, &bytesRead));
+                        SBK_STATUS_TRY_C(m_ringBuffer.read_end(payloadSize));
                     }
                 }
                 else
                 {
-                    SBK_STATUS_TRY_C(sc_ring_buffer_read_end(&m_ringBuffer, bytesRead));
+                    SBK_STATUS_TRY_C(m_ringBuffer.read_end(bytesRead));
                 }
             } while (messageType == s_skipFlag);
 
@@ -242,7 +230,7 @@ namespace sbk
         [[nodiscard]] auto read_end(const message_view& message) noexcept -> sbk_status
         {
             ZoneScoped;
-            return sc_ring_buffer_read_end(&m_ringBuffer, static_cast<std::size_t>(message.m_payloadSize));
+            return m_ringBuffer.read_end(static_cast<std::size_t>(message.m_payloadSize));
         }
 
         [[nodiscard]] constexpr auto get_header_size() const noexcept -> std::size_t
@@ -250,9 +238,7 @@ namespace sbk
             return sizeof(message_header);
         }
 
-        [[nodiscard]] auto raw_ring_buffer() noexcept -> sc_ring_buffer* { return &m_ringBuffer; }
-
     private:
-        sc_ring_buffer m_ringBuffer{};
+        mpsc_ring_buffer m_ringBuffer;
     };
 }

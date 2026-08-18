@@ -217,6 +217,7 @@ set(SOUND_BAKERY_PRIVATE_HEADERS
     core/error/result.h
 
     core/containers/message_queue.h
+    core/containers/ring_buffer.h
 
     core/database/database.h
     core/database/database_object.h
