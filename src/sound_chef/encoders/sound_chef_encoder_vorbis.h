@@ -1,7 +1,7 @@
 #ifndef SOUND_CHEF_ENCODER_VORBIS
 #define SOUND_CHEF_ENCODER_VORBIS
 
-#include "sound_chef/sound_chef_common.h"
+#include "sound_chef/sound_chef.h"
 
 ma_result SC_API sc_encoder_vorbis_on_init(ma_encoder* encoder);
 void SC_API sc_encoder_vorbis_on_uninit(ma_encoder* encoder);

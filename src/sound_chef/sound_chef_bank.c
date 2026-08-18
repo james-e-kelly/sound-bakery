@@ -1,4 +1,4 @@
-#include "sound_chef_bank.h"
+#include "sound_chef/sound_chef.h"
 
 enum
 {

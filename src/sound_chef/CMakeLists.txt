@@ -127,8 +127,6 @@ set(SOUND_CHEF_SOURCES
 )
 
 set(SOUND_CHEF_PRIVATE_HEADERS
-    sound_chef_bank.h
-    sound_chef_encoder.h
     sound_chef_guide.h
     sound_chef_internal.h
 
@@ -137,8 +135,6 @@ set(SOUND_CHEF_PRIVATE_HEADERS
 
 set(SOUND_CHEF_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/inc/sound_chef/sound_chef.h
-    ${PROJECT_SOURCE_DIR}/inc/sound_chef/sound_chef_common.h
-    ${PROJECT_SOURCE_DIR}/inc/sound_chef/sound_chef_dsp.h
     ${PROJECT_SOURCE_DIR}/inc/sound_chef/sound_chef_ring_buffer.h
 )
 

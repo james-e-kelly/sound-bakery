@@ -1,5 +1,4 @@
 #include "sound_chef/sound_chef_internal.h"
-#include "sound_chef/sound_chef_dsp.h"
 
 static sbk_status sc_dsp_fader_create(sc_system* system, sc_dsp* dsp, const void* userData)
 {

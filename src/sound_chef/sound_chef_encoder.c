@@ -1,4 +1,4 @@
-#include "sound_chef_encoder.h"
+#include "sound_chef/sound_chef.h"
 
 #include "sound_chef/encoders/sound_chef_encoder_vorbis.h"
 

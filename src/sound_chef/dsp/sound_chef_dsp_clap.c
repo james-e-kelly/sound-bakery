@@ -1,5 +1,4 @@
-#include "sound_chef/sound_chef_internal.h"
-#include "sound_chef/sound_chef_dsp.h"
+#include "sound_chef/sound_chef.h"
 
 #define SC_CLAP_INPUT_BUS  1
 #define SC_CLAP_OUTPUT_BUS 1

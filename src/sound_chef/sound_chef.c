@@ -4,8 +4,6 @@
 #include "sound_chef/sound_chef_internal.h" //< Must be included first. Includes all miniaudio structs for libopus and libvorbis
 // clang-format on
 
-#include "sound_chef_encoder.h"
-
 #include <dirent.h>
 #include <stdio.h>
 

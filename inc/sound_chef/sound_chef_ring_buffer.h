@@ -1,7 +1,7 @@
 #ifndef SOUND_CHEF_RING_BUFFER
 #define SOUND_CHEF_RING_BUFFER
 
-#include "sound_chef/sound_chef_common.h"
+#include "sound_chef/sound_chef.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -37,9 +37,7 @@ extern "C"
  *
  * @see https://github.com/bowtoyourlord/MPSCQueue
  */
-typedef struct sc_ring_buffer sc_ring_buffer;
-
-struct sc_ring_buffer
+typedef struct sc_ring_buffer
 {
     ma_allocation_callbacks     allocationCallbacks;    //< Kept for uninit; zeroed if init got NULL
     sc_uint8*                   buffer;
@@ -51,7 +49,7 @@ struct sc_ring_buffer
     SC_ALIGN_TO(SC_CACHE_LINE_SIZE) sc_atomic_uint64 reserveWriteIndex;
     SC_ALIGN_TO(SC_CACHE_LINE_SIZE) sc_atomic_uint64 committedWriteIndex;    //< Consumer reads only up to this
     SC_ALIGN_TO(SC_CACHE_LINE_SIZE) sc_atomic_uint64 readIndex;
-};
+} sc_ring_buffer;
 
 /**
  * @brief Initialise a ring buffer.

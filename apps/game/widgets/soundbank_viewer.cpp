@@ -4,7 +4,6 @@
 #include "sound_bakery/gameobject/gameobject.h"
 
 #include "imgui.h"
-#include "sound_chef/sound_chef_bank.h"
 
 void soundbank_viewer_widget::start_implementation()
 {

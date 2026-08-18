@@ -1,7 +1,5 @@
 #include "sound_chef/sound_chef_ring_buffer.h"
 
-#include <string.h>
-
 // Occupancy is (write - read) as unsigned; wrap is well-defined as long as
 // true occupancy never exceeds capacity, which sc_rb_can_reserve enforces.
 

@@ -3,7 +3,6 @@
 #include "sound_bakery/system.h"
 
 #include "gluten/widgets/root_widget.h"
-#include "sound_chef/sound_chef_bank.h"
 
 class soundbank_viewer_widget : public gluten::widget
 {

@@ -17,7 +17,6 @@
 
 #include "rttr/detail/misc/register_wrapper_mapper_conversion.h"
 #include "rttr/detail/type/base_classes.h"
-#include "sound_chef/sound_chef_encoder.h"
 
 #include <rttr/registration>
 

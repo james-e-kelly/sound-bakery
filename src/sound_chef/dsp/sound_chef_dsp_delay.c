@@ -1,5 +1,4 @@
 #include "sound_chef/sound_chef_internal.h"
-#include "sound_chef/sound_chef_dsp.h"
 
 sc_delay_config sc_delay_config_init(ma_uint32 channels, ma_uint32 sampleRate, ma_uint32 maxDelayInFrames)
 {

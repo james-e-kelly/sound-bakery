@@ -9,9 +9,6 @@
 #include "sound_bakery/system.h"
 #include "sound_bakery/core/task/task.h"
 
-#include "sound_chef/sound_chef_bank.h"
-#include "sound_chef/sound_chef_encoder.h"
-
 auto sbk::editor::project::open_project(const std::filesystem::path& projectFile) -> sbk::result<void>
 {
     SBK_CHECK(!projectFile.empty(), SBK_ERR_INVALID_PARAMETER);
