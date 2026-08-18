@@ -142,6 +142,7 @@ $(document).ready(function(){initNavTree('functions_func.html',''); initResizabl
 <li>abandon()&#160;:&#160;<a class="el" href="classsbk_1_1executor.html#acb4dba652e089775b2e835943f061b1e">sbk::executor</a>, <a class="el" href="classsbk_1_1manual__executor.html#a8ffe7b675d97992c8b5c6f1e440ba007">sbk::manual_executor</a>, <a class="el" href="classsbk_1_1thread__executor.html#afd592e7e17005fd4d20e9b6e3d8960dd">sbk::thread_executor</a></li>
 <li>add_new_value()&#160;:&#160;<a class="el" href="classsbk_1_1engine_1_1named__parameter.html#a86076da69624885518385aa57649ae14">sbk::engine::named_parameter</a></li>
 <li>add_reference_to_object()&#160;:&#160;<a class="el" href="classsbk_1_1core_1_1object__owner.html#a89b480460c28d19375fd233b0cb8d1bb">sbk::core::object_owner</a></li>
+<li>advance_read_index()&#160;:&#160;<a class="el" href="classsbk_1_1mpsc__ring__buffer.html#a0dd3523bbfc816722a99d0d703921f50">sbk::mpsc_ring_buffer</a></li>
 <li>assign_name_to_id()&#160;:&#160;<a class="el" href="classsbk_1_1core_1_1database.html#a6a6287ddc348bf0f492e2d703465d603">sbk::core::database</a></li>
 <li>await_ready()&#160;:&#160;<a class="el" href="structsbk_1_1executor_1_1schedule__awaiter.html#a0d5eb7e0b26689a4c8ff3dc2c6cb4995">sbk::executor::schedule_awaiter</a></li>
 <li>await_suspend()&#160;:&#160;<a class="el" href="structsbk_1_1executor_1_1schedule__awaiter.html#a0f19cabed866e991c7d60c39d5fd2efa">sbk::executor::schedule_awaiter</a></li>
@@ -151,6 +152,7 @@ $(document).ready(function(){initNavTree('functions_func.html',''); initResizabl
 <h3><a id="index_c" name="index_c"></a>- c -</h3><ul>
 <li>cast()&#160;:&#160;<a class="el" href="structsbk_1_1message__queue_1_1message__view.html#acc97e392e236e62663f493c7be82c447">sbk::message_queue&lt; T &gt;::message_view</a></li>
 <li>child_ptr()&#160;:&#160;<a class="el" href="classsbk_1_1core_1_1child__ptr.html#a9e6c40788ad6e153fe530571bcdcba45">sbk::core::child_ptr&lt; TObject &gt;</a></li>
+<li>commit_write()&#160;:&#160;<a class="el" href="classsbk_1_1mpsc__ring__buffer.html#a46d4215ce066bc7e4c20b430579fe8e7">sbk::mpsc_ring_buffer</a></li>
 <li>create_database_object()&#160;:&#160;<a class="el" href="classsbk_1_1core_1_1object__owner.html#a67ca2889c938c105f32f76438bb0bf79">sbk::core::object_owner</a></li>
 <li>create_local_parameter_from_this()&#160;:&#160;<a class="el" href="classsbk_1_1engine_1_1parameter.html#a2d4ee9301f0e548e3ebdc7907e4831ec">sbk::engine::parameter&lt; parameter_type &gt;</a></li>
 <li>create_owned()&#160;:&#160;<a class="el" href="classsbk_1_1core_1_1object__owner.html#a3b7a37d283cb6182c546e349c04d1e5a">sbk::core::object_owner</a></li>
@@ -197,7 +199,7 @@ $(document).ready(function(){initNavTree('functions_func.html',''); initResizabl
 
 <h3><a id="index_i" name="index_i"></a>- i -</h3><ul>
 <li>id()&#160;:&#160;<a class="el" href="classsbk_1_1core_1_1database__ptr.html#acaefb2ef93fe20fe7d2dd03696918213">sbk::core::database_ptr&lt; TObject &gt;</a></li>
-<li>init()&#160;:&#160;<a class="el" href="classsbk_1_1memory_1_1monotonic__buffer__resource.html#a204059ab7297e69fc21a9d6fa96ae805">sbk::memory::monotonic_buffer_resource</a>, <a class="el" href="classsbk_1_1message__queue.html#a962d9e9c7cb47b70902d4a3eaaaf7143">sbk::message_queue&lt; T &gt;</a></li>
+<li>init()&#160;:&#160;<a class="el" href="classsbk_1_1memory_1_1monotonic__buffer__resource.html#a204059ab7297e69fc21a9d6fa96ae805">sbk::memory::monotonic_buffer_resource</a>, <a class="el" href="classsbk_1_1message__queue.html#a6a0c34025509473594c30dd045ff9f77">sbk::message_queue&lt; T &gt;</a>, <a class="el" href="classsbk_1_1mpsc__ring__buffer.html#a0e06c722025f3a7c20568ccb575851f2">sbk::mpsc_ring_buffer</a></li>
 </ul>
 
 
@@ -231,10 +233,12 @@ $(document).ready(function(){initNavTree('functions_func.html',''); initResizabl
 
 
 <h3><a id="index_r" name="index_r"></a>- r -</h3><ul>
-<li>read_begin()&#160;:&#160;<a class="el" href="classsbk_1_1message__queue.html#a244bea66580be5561144cbf6d93c5b66">sbk::message_queue&lt; T &gt;</a></li>
-<li>read_end()&#160;:&#160;<a class="el" href="classsbk_1_1message__queue.html#a30e19c78ca020826d0af5335aad50c96">sbk::message_queue&lt; T &gt;</a></li>
+<li>read()&#160;:&#160;<a class="el" href="classsbk_1_1mpsc__ring__buffer.html#a7f2b90800a3dc3332f78cea1b07e12b6">sbk::mpsc_ring_buffer</a></li>
+<li>read_begin()&#160;:&#160;<a class="el" href="classsbk_1_1message__queue.html#a244bea66580be5561144cbf6d93c5b66">sbk::message_queue&lt; T &gt;</a>, <a class="el" href="classsbk_1_1mpsc__ring__buffer.html#afddd7043e628613d5fe6b1c12d539992">sbk::mpsc_ring_buffer</a></li>
+<li>read_end()&#160;:&#160;<a class="el" href="classsbk_1_1message__queue.html#a30e19c78ca020826d0af5335aad50c96">sbk::message_queue&lt; T &gt;</a>, <a class="el" href="classsbk_1_1mpsc__ring__buffer.html#a4c61904e3c8561abbde7c2254bec0a1b">sbk::mpsc_ring_buffer</a></li>
 <li>remove_all()&#160;:&#160;<a class="el" href="classsbk_1_1core_1_1object__owner.html#af74e8ef7867fe3352541dcc30e83c00c">sbk::core::object_owner</a></li>
 <li>remove_object()&#160;:&#160;<a class="el" href="classsbk_1_1core_1_1object__owner.html#a9ba5ec1f202674f8c5f0584b520e5b02">sbk::core::object_owner</a></li>
+<li>reserve_write()&#160;:&#160;<a class="el" href="classsbk_1_1mpsc__ring__buffer.html#a3e4f570211055c16244b309098f44f20">sbk::mpsc_ring_buffer</a></li>
 <li>reset()&#160;:&#160;<a class="el" href="classsbk_1_1core_1_1database__ptr.html#a4b9b1c7493d42bfbae31626136cfc263">sbk::core::database_ptr&lt; TObject &gt;</a></li>
 <li>resume_borrowed()&#160;:&#160;<a class="el" href="classsbk_1_1work__item.html#aa0ed77cfbaf75691e335b693fdfef197">sbk::work_item</a></li>
 <li>resume_owning()&#160;:&#160;<a class="el" href="classsbk_1_1work__item.html#a5cfe430340ec4abc78a54429322b62b0">sbk::work_item</a></li>
@@ -269,6 +273,7 @@ $(document).ready(function(){initNavTree('functions_func.html',''); initResizabl
 
 
 <h3><a id="index_w" name="index_w"></a>- w -</h3><ul>
+<li>write()&#160;:&#160;<a class="el" href="classsbk_1_1mpsc__ring__buffer.html#ac726b5cf4b16071017f88f0d6f9839fa">sbk::mpsc_ring_buffer</a></li>
 <li>write_message()&#160;:&#160;<a class="el" href="classsbk_1_1message__queue.html#ae0c13235bc3393e139d2270cffb91c7c">sbk::message_queue&lt; T &gt;</a></li>
 </ul>
 

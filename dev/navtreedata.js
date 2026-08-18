@@ -100,7 +100,6 @@ var NAVTREE =
       ] ]
     ] ],
     [ "Todo List", "todo.html", null ],
-    [ "Topics", "topics.html", "topics" ],
     [ "Concepts", "concepts.html", "concepts" ],
     [ "Classes", "annotated.html", [
       [ "Class List", "annotated.html", "annotated_dup" ],
@@ -118,6 +117,8 @@ var NAVTREE =
       [ "File Members", "globals.html", [
         [ "All", "globals.html", null ],
         [ "Functions", "globals_func.html", null ],
+        [ "Typedefs", "globals_type.html", null ],
+        [ "Enumerations", "globals_enum.html", null ],
         [ "Macros", "globals_defs.html", null ]
       ] ]
     ] ]
@@ -127,8 +128,8 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "ChefProgrammerGuide.html",
-"event_8h_source.html",
-"structsc__dsp__parameter.html"
+"eastl__serialization_8h_source.html",
+"structsbk_1_1core_1_1serialization_1_1serialized__type.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

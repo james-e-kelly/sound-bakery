@@ -1,7 +1,4 @@
 <map id="src/sound_bakery/core/reflection" name="src/sound_bakery/core/reflection">
 <area shape="rect" id="node1" href="dir_ce643d29e0e170beda7ae2e89f558750.html" title="reflection" alt="" coords="27,52,109,77"/>
-<area shape="rect" id="node2" href="dir_4169c6e6d6be5c2a0032fd6c555cf08f.html" title="sound_chef" alt="" coords="20,125,116,151"/>
-<area shape="poly" id="edge1" href="dir_000028_000035.html" alt="" coords="71,78,71,112,65,112,65,78"/>
-<area shape="rect" id="edge1-headlabel" href="dir_000028_000035.html" title="1" alt="" coords="72,100,81,114"/>
 <area shape="rect" id="clust1" href="dir_4cb4e3f0564668719cd18800a3e0e239.html" title="core" alt="" coords="16,16,120,88"/>
 </map>

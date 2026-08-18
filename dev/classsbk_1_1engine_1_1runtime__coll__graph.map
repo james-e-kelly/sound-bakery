@@ -2,7 +2,7 @@
 <area shape="rect" id="Node000001" title="Audio runtime, powered by Sound Chef." alt="" coords="202,183,358,209"/>
 <area shape="rect" id="Node000002" href="$structsc__system.html" title="Object that manages the node graph, sounds, output etc." alt="" coords="852,93,943,119"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="838,111,669,120,566,130,463,145,382,165,313,186,312,181,380,159,462,140,565,125,668,115,838,106"/>
-<area shape="rect" id="Node000005" href="$structsc__dsp.html" title="DSP units that can fit into node groups. Extensions of ma_node types with extra information." alt="" coords="936,183,1003,209"/>
+<area shape="rect" id="Node000005" href="$structsc__dsp.html" title="DSP units that connect and form chains within sc_node_group. Extensions of ma_node types with extra i..." alt="" coords="936,183,1003,209"/>
 <area shape="poly" id="edge5_Node000005_Node000002" title=" " alt="" coords="957,112,982,123,1002,141,1006,153,1002,165,986,185,982,181,998,163,1001,153,998,144,979,127,955,117"/>
 <area shape="rect" id="Node000006" href="$structsc__dsp__description.html" title="Structure to create, destroy, and update DSP units of a specific handle." alt="" coords="651,303,797,328"/>
 <area shape="poly" id="edge9_Node000006_Node000002" title=" " alt="" coords="839,111,796,117,752,129,711,151,694,165,680,183,673,198,672,214,680,247,698,278,716,301,711,304,693,281,675,249,666,214,668,196,675,180,690,161,708,146,750,124,795,112,838,106"/>

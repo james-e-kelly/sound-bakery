@@ -109,6 +109,7 @@ var hierarchy =
     [ "sbk::message_queue< message_type >", "classsbk_1_1message__queue.html", null ],
     [ "sbk::message_queue< T >::message_view", "structsbk_1_1message__queue_1_1message__view.html", null ],
     [ "method_drawer", "classmethod__drawer.html", null ],
+    [ "sbk::mpsc_ring_buffer", "classsbk_1_1mpsc__ring__buffer.html", null ],
     [ "sbk::core::name", "classsbk_1_1core_1_1name.html", null ],
     [ "sbk::engine::node_group_instance", "structsbk_1_1engine_1_1node__group__instance.html", null ],
     [ "boost::noncopyable", null, [
@@ -157,7 +158,7 @@ var hierarchy =
       [ "root_widget", "classroot__widget.html", null ]
     ] ],
     [ "sbk_system_config", "structsbk__system__config.html", null ],
-    [ "sc_audioChunk", "structsc__audioChunk.html", null ],
+    [ "sc_audio_chunk", "structsc__audio__chunk.html", null ],
     [ "sc_bank", "structsc__bank.html", null ],
     [ "sc_clap", "structsc__clap.html", null ],
     [ "sc_clap_node", "structsc__clap__node.html", null ],
@@ -177,8 +178,7 @@ var hierarchy =
     [ "sc_meter_node", "structsc__meter__node.html", null ],
     [ "sc_node_group", "structsc__node__group.html", null ],
     [ "SC_NODE_GROUP_DELETER", "structSC__NODE__GROUP__DELETER.html", null ],
-    [ "sc_riffChunk", "structsc__riffChunk.html", null ],
-    [ "sc_ring_buffer", "structsc__ring__buffer.html", null ],
+    [ "sc_riff_chunk", "structsc__riff__chunk.html", null ],
     [ "sc_sound", "structsc__sound.html", null ],
     [ "sc_sound_config", "structsc__sound__config.html", null ],
     [ "SC_SOUND_DELETER", "structSC__SOUND__DELETER.html", null ],

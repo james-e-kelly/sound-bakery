@@ -5,9 +5,9 @@ var indexSectionsWithContent =
   2: "erst",
   3: "acdefghilnoprstuvwy",
   4: "nps",
-  5: "lpr",
+  5: "lprs",
   6: "s",
-  7: "cdfginsv",
+  7: "s",
   8: "bcdgilmprstu",
   9: "s"
 };
@@ -20,8 +20,8 @@ var indexSectionNames =
   3: "functions",
   4: "variables",
   5: "typedefs",
-  6: "defines",
-  7: "groups",
+  6: "enums",
+  7: "defines",
   8: "pages",
   9: "concepts"
 };
@@ -34,8 +34,8 @@ var indexSectionLabels =
   3: "Functions",
   4: "Variables",
   5: "Typedefs",
-  6: "Macros",
-  7: "Modules",
+  6: "Enumerations",
+  7: "Macros",
   8: "Pages",
   9: "Concepts"
 };

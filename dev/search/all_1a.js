@@ -8,5 +8,6 @@ var searchData=
   ['worlds_5',['Bridging the two worlds',['..//home/runner/work/sound-bakery/sound-bakery/src/sound_bakery/core/error/README.md#autotoc_md58',1,'']]],
   ['wrapper_5fmapper_3c_20sbk_3a_3acore_3a_3achild_5fptr_3c_20t_20_3e_20_3e_6',['wrapper_mapper&lt; sbk::core::child_ptr&lt; T &gt; &gt;',['../structrttr_1_1wrapper__mapper_3_01sbk_1_1core_1_1child__ptr_3_01T_01_4_01_4.html',1,'rttr']]],
   ['wrapper_5fmapper_3c_20sbk_3a_3acore_3a_3adatabase_5fptr_3c_20t_20_3e_20_3e_7',['wrapper_mapper&lt; sbk::core::database_ptr&lt; T &gt; &gt;',['../structrttr_1_1wrapper__mapper_3_01sbk_1_1core_1_1database__ptr_3_01T_01_4_01_4.html',1,'rttr']]],
-  ['write_5fmessage_8',['write_message',['../classsbk_1_1message__queue.html#ae0c13235bc3393e139d2270cffb91c7c',1,'sbk::message_queue']]]
+  ['write_8',['write',['../classsbk_1_1mpsc__ring__buffer.html#ac726b5cf4b16071017f88f0d6f9839fa',1,'sbk::mpsc_ring_buffer']]],
+  ['write_5fmessage_9',['write_message',['../classsbk_1_1message__queue.html#ae0c13235bc3393e139d2270cffb91c7c',1,'sbk::message_queue']]]
 ];

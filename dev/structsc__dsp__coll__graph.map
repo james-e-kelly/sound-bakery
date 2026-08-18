@@ -1,5 +1,5 @@
 <map id="sc_dsp" name="sc_dsp">
-<area shape="rect" id="Node000001" title="DSP units that can fit into node groups. Extensions of ma_node types with extra information." alt="" coords="468,7,535,33"/>
+<area shape="rect" id="Node000001" title="DSP units that connect and form chains within sc_node_group. Extensions of ma_node types with extra i..." alt="" coords="468,7,535,33"/>
 <area shape="poly" id="edge18_Node000001_Node000001" title=" " alt="" coords="550,8,558,12,561,20,553,31,535,34,535,28,550,26,556,20,554,16,547,13"/>
 <area shape="rect" id="Node000004" href="$structsc__node__group.html" title="Groups nodes/DSPs together into one." alt="" coords="311,127,430,152"/>
 <area shape="poly" id="edge4_Node000004_Node000001" title=" " alt="" coords="487,45,476,60,462,84,444,105,404,129,401,124,441,101,457,81,471,57,482,42"/>

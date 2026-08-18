@@ -1,11 +1,11 @@
 <map id="sc_dsp_config" name="sc_dsp_config">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,293,117,319"/>
+<area shape="rect" id="Node000001" title="Runtime configuration for creating a DSP unit." alt="" coords="5,293,117,319"/>
 <area shape="rect" id="Node000002" href="$structsc__dsp__description.html" title="Structure to create, destroy, and update DSP units of a specific handle." alt="" coords="133,181,278,207"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="120,210,86,220,65,232,58,247,56,263,60,293,55,294,51,263,53,245,61,229,83,215,119,205"/>
 <area shape="rect" id="Node000003" href="$structsc__system.html" title="Object that manages the node graph, sounds, output etc." alt="" coords="391,293,481,319"/>
 <area shape="poly" id="edge9_Node000003_Node000002" title=" " alt="" coords="208,219,213,240,224,258,252,273,295,284,391,298,390,303,294,289,250,277,221,262,208,242,203,221"/>
 <area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="412,285,379,258,339,233,304,219,269,209,270,204,306,214,341,228,382,254,416,281"/>
-<area shape="rect" id="Node000006" href="$structsc__dsp.html" title="DSP units that can fit into node groups. Extensions of ma_node types with extra information." alt="" coords="264,393,331,418"/>
+<area shape="rect" id="Node000006" href="$structsc__dsp.html" title="DSP units that connect and form chains within sc_node_group. Extensions of ma_node types with extra i..." alt="" coords="264,393,331,418"/>
 <area shape="poly" id="edge6_Node000006_Node000003" title=" " alt="" coords="406,328,366,354,313,395,310,390,362,350,403,324"/>
 <area shape="rect" id="Node000007" href="$structsc__voice.html" title="A voice is a window into a single sound that may or may not be audible and rendering." alt="" coords="541,600,619,625"/>
 <area shape="poly" id="edge11_Node000007_Node000003" title=" " alt="" coords="480,322,524,349,544,367,561,389,574,432,580,493,583,599,577,600,575,493,568,433,556,392,540,371,520,353,477,327"/>

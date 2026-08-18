@@ -21,7 +21,7 @@
 <area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="661,91,806,93,806,98,661,96"/>
 <area shape="rect" id="Node000011" href="$structsbk_1_1engine_1_1node__group__instance.html" title="Owns a node group and applies DSP effects to it." alt="" coords="810,197,991,237"/>
 <area shape="poly" id="edge11_Node000001_Node000011" title=" " alt="" coords="1005,203,1064,194,1125,179,1186,157,1237,134,1240,139,1188,162,1126,185,1066,199,1005,209"/>
-<area shape="rect" id="Node000012" href="$structsc__dsp.html" title="DSP units that can fit into node groups. Extensions of ma_node types with extra information." alt="" coords="539,313,606,339"/>
+<area shape="rect" id="Node000012" href="$structsc__dsp.html" title="DSP units that connect and form chains within sc_node_group. Extensions of ma_node types with extra i..." alt="" coords="539,313,606,339"/>
 <area shape="poly" id="edge12_Node000011_Node000012" title=" " alt="" coords="602,303,645,277,695,253,752,236,809,224,811,230,754,241,697,258,647,281,604,308"/>
 <area shape="poly" id="edge30_Node000012_Node000012" title=" " alt="" coords="548,298,556,290,573,287,587,289,596,295,598,305,594,314,589,312,593,304,592,298,585,294,573,292,558,295,552,302"/>
 <area shape="rect" id="Node000015" href="$structsc__node__group.html" title="Groups nodes/DSPs together into one." alt="" coords="841,423,960,448"/>

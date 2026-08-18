@@ -142,18 +142,23 @@ $(document).ready(function(){initNavTree('structsc__dsp__config.html',''); initR
   <div class="headertitle"><div class="title">sc_dsp_config Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Runtime configuration for creating a DSP unit.  
+ <a href="structsc__dsp__config.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="sound__chef_8h_source.html">sound_chef.h</a>&gt;</code></p>
 <div class="dynheader">
 Collaboration diagram for sc_dsp_config:</div>
 <div class="dyncontent">
 <div class="center"><img src="structsc__dsp__config__coll__graph.png" border="0" usemap="#asc__dsp__config_coll__map" alt="Collaboration graph"/></div>
 <map name="asc__dsp__config_coll__map" id="asc__dsp__config_coll__map">
-<area shape="rect" title=" " alt="" coords="5,293,117,319"/>
+<area shape="rect" title="Runtime configuration for creating a DSP unit." alt="" coords="5,293,117,319"/>
 <area shape="rect" href="structsc__dsp__description.html" title="Structure to create, destroy, and update DSP units of a specific handle." alt="" coords="133,181,278,207"/>
 <area shape="poly" title=" " alt="" coords="120,210,86,220,65,232,58,247,56,263,60,293,55,294,51,263,53,245,61,229,83,215,119,205"/>
 <area shape="rect" href="structsc__system.html" title="Object that manages the node graph, sounds, output etc." alt="" coords="391,293,481,319"/>
 <area shape="poly" title=" " alt="" coords="208,219,213,240,224,258,252,273,295,284,391,298,390,303,294,289,250,277,221,262,208,242,203,221"/>
 <area shape="poly" title=" " alt="" coords="412,285,379,258,339,233,304,219,269,209,270,204,306,214,341,228,382,254,416,281"/>
-<area shape="rect" href="structsc__dsp.html" title="DSP units that can fit into node groups. Extensions of ma_node types with extra information." alt="" coords="264,393,331,418"/>
+<area shape="rect" href="structsc__dsp.html" title="DSP units that connect and form chains within sc_node_group. Extensions of ma_node types with extra i..." alt="" coords="264,393,331,418"/>
 <area shape="poly" title=" " alt="" coords="406,328,366,354,313,395,310,390,362,350,403,324"/>
 <area shape="rect" href="structsc__voice.html" title="A voice is a window into a single sound that may or may not be audible and rendering." alt="" coords="541,600,619,625"/>
 <area shape="poly" title=" " alt="" coords="480,322,524,349,544,367,561,389,574,432,580,493,583,599,577,600,575,493,568,433,556,392,540,371,520,353,477,327"/>
@@ -192,8 +197,12 @@ const <a class="el" href="structsc__dsp__description.html">sc_dsp_description</a
 const clap_plugin_factory_t *&#160;</td><td class="memItemRight" valign="bottom"><b>clapFactory</b></td></tr>
 <tr class="separator:a849bf0b0115b08cc1a05721d9a09f8b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<hr/>The documentation for this struct was generated from the following file:<ul>
-<li>inc/sound_chef/<a class="el" href="sound__chef__common_8h_source.html">sound_chef_common.h</a></li>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Runtime configuration for creating a DSP unit. </p>
+<p>DSP units are created with <a class="el" href="structsc__dsp__description.html">sc_dsp_description</a> objects. The <a class="el" href="structsc__system.html" title="Object that manages the node graph, sounds, output etc.">sc_system</a> stores/knows about two description arrays. One is internal and lets users create units using the <a class="el" href="sound__chef_8h.html#a2da1af46a36d1f165ee265d39af0edeb">sc_dsp_type</a>. The other is external and lets users create units with a custom type.</p>
+<p>The support creating internal and external units, all descriptions are looked up by a handle. If the handle is between 0 and sc_dsp_type_count, the handle is used to index the internal description array. If the handle is greater than sc_dsp_type_count, sc_dsp_type_count is subtracted from the handle and used as the index into the external description array. </p>
+</div><hr/>The documentation for this struct was generated from the following file:<ul>
+<li>inc/sound_chef/<a class="el" href="sound__chef_8h_source.html">sound_chef.h</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

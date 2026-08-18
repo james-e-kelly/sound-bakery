@@ -146,7 +146,7 @@ $(document).ready(function(){initNavTree('structsc__system.html',''); initResiza
 <p>Object that manages the node graph, sounds, output etc.  
  <a href="structsc__system.html#details">More...</a></p>
 
-<p><code>#include &lt;<a class="el" href="sound__chef__common_8h_source.html">sound_chef_common.h</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="sound__chef_8h_source.html">sound_chef.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for sc_system:</div>
 <div class="dyncontent">
@@ -163,7 +163,7 @@ Collaboration diagram for sc_system:</div>
 <div class="center"><img src="structsc__system__coll__graph.png" border="0" usemap="#asc__system_coll__map" alt="Collaboration graph"/></div>
 <map name="asc__system_coll__map" id="asc__system_coll__map">
 <area shape="rect" title="Object that manages the node graph, sounds, output etc." alt="" coords="411,93,502,119"/>
-<area shape="rect" href="structsc__dsp.html" title="DSP units that can fit into node groups. Extensions of ma_node types with extra information." alt="" coords="355,183,422,209"/>
+<area shape="rect" href="structsc__dsp.html" title="DSP units that connect and form chains within sc_node_group. Extensions of ma_node types with extra i..." alt="" coords="355,183,422,209"/>
 <area shape="poly" title=" " alt="" coords="441,131,400,185,395,181,437,128"/>
 <area shape="rect" href="structsc__dsp__description.html" title="Structure to create, destroy, and update DSP units of a specific handle." alt="" coords="597,303,742,328"/>
 <area shape="poly" title=" " alt="" coords="516,113,631,139,682,157,702,168,715,180,723,196,725,213,717,248,700,280,682,304,678,301,695,277,712,246,720,213,718,197,710,183,698,172,680,162,630,144,515,119"/>
@@ -214,16 +214,16 @@ clap_host_t&#160;</td><td class="memItemRight" valign="bottom"><b>clapHost</b></
 ma_uint32&#160;</td><td class="memItemRight" valign="bottom"><b>clapPluginCount</b></td></tr>
 <tr class="separator:acc098634d29688a752e919b13931f794"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a54e62f107f708976fb8fb76bbe51c551" id="r_a54e62f107f708976fb8fb76bbe51c551"><td class="memItemLeft" align="right" valign="top"><a id="a54e62f107f708976fb8fb76bbe51c551" name="a54e62f107f708976fb8fb76bbe51c551"></a>
-float&#160;</td><td class="memItemRight" valign="bottom"><b>clapPluginScratch</b> [SC_MAX_CHANNELS][SC_MAX_FRAME_COUNT]</td></tr>
+float&#160;</td><td class="memItemRight" valign="bottom"><b>clapPluginScratch</b> [<a class="el" href="sound__chef_8h.html#af2f4d1da27d5b49226062a783918c7a6">SC_MAX_CHANNELS</a>][<a class="el" href="sound__chef_8h.html#ad6039c89d7ed5b3e53d09141430c45b9">SC_MAX_FRAME_COUNT</a>]</td></tr>
 <tr class="separator:a54e62f107f708976fb8fb76bbe51c551"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a606bc9755594ff6292cd4f196562fb1b" id="r_a606bc9755594ff6292cd4f196562fb1b"><td class="memItemLeft" align="right" valign="top"><a id="a606bc9755594ff6292cd4f196562fb1b" name="a606bc9755594ff6292cd4f196562fb1b"></a>
-float *&#160;</td><td class="memItemRight" valign="bottom"><b>clapPluginChannels</b> [SC_MAX_CHANNELS]</td></tr>
+float *&#160;</td><td class="memItemRight" valign="bottom"><b>clapPluginChannels</b> [<a class="el" href="sound__chef_8h.html#af2f4d1da27d5b49226062a783918c7a6">SC_MAX_CHANNELS</a>]</td></tr>
 <tr class="separator:a606bc9755594ff6292cd4f196562fb1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0209febd09ec8761e38cc61670165085" id="r_a0209febd09ec8761e38cc61670165085"><td class="memItemLeft" align="right" valign="top"><a id="a0209febd09ec8761e38cc61670165085" name="a0209febd09ec8761e38cc61670165085"></a>
 <a class="el" href="structsc__node__group.html">sc_node_group</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>masterNodeGroup</b></td></tr>
 <tr class="separator:a0209febd09ec8761e38cc61670165085"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7fecb25ec015e904f13d46118799330c" id="r_a7fecb25ec015e904f13d46118799330c"><td class="memItemLeft" align="right" valign="top"><a id="a7fecb25ec015e904f13d46118799330c" name="a7fecb25ec015e904f13d46118799330c"></a>
-const <a class="el" href="structsc__dsp__description.html">sc_dsp_description</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>userDspRegistry</b> [SC_MAX_USER_DSP_TYPES]</td></tr>
+const <a class="el" href="structsc__dsp__description.html">sc_dsp_description</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>userDspRegistry</b> [<a class="el" href="sound__chef_8h.html#a6031d13581897d23e1ee2b9fa9b316e3">SC_MAX_USER_DSP_TYPES</a>]</td></tr>
 <tr class="separator:a7fecb25ec015e904f13d46118799330c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae7df7acaa30322d3ff3033496c4bdf0a" id="r_ae7df7acaa30322d3ff3033496c4bdf0a"><td class="memItemLeft" align="right" valign="top"><a id="ae7df7acaa30322d3ff3033496c4bdf0a" name="ae7df7acaa30322d3ff3033496c4bdf0a"></a>
 ma_slot_allocator&#160;</td><td class="memItemRight" valign="bottom"><b>voiceSlotAllocator</b></td></tr>
@@ -242,9 +242,17 @@ ma_slot_allocator&#160;</td><td class="memItemRight" valign="bottom"><b>realVoic
 <div class="textblock"><p>Object that manages the node graph, sounds, output etc. </p>
 <p>The <a class="el" href="structsc__system.html" title="Object that manages the node graph, sounds, output etc.">sc_system</a> is a wrapper for the ma_engine from miniaudio. This means that <a class="el" href="structsc__system.html" title="Object that manages the node graph, sounds, output etc.">sc_system</a> has a node graph, resource manager, can output to the user's audio device and everything expected from miniaudio's high-level API.</p>
 <p><a class="el" href="structsc__system.html" title="Object that manages the node graph, sounds, output etc.">sc_system</a> also holds and manages custom Sound Chef types like Node Groups.</p>
-<p>Sound Chef allows for multiple system objects but it is likely unneeded as future versions will support multiple outputs. </p>
+<p>Sound Chef allows for multiple system objects but it is likely unneeded as future versions will support multiple outputs.</p>
+<dl class="section remark"><dt>Remarks</dt><dd>When finished, system objects but must closed and then released. </dd></dl>
+<dl class="section see"><dt>See also</dt><dd>sc_system_create </dd>
+<dd>
+sc_system_release </dd>
+<dd>
+<a class="el" href="sound__chef_8h.html#a73c06a9406456d77d8dd5a99dbfd6792">sc_system_init</a> </dd>
+<dd>
+sc_system_close </dd></dl>
 </div><hr/>The documentation for this struct was generated from the following file:<ul>
-<li>inc/sound_chef/<a class="el" href="sound__chef__common_8h_source.html">sound_chef_common.h</a></li>
+<li>inc/sound_chef/<a class="el" href="sound__chef_8h_source.html">sound_chef.h</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

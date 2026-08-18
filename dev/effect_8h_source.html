@@ -172,14 +172,14 @@ $(document).ready(function(){initNavTree('effect_8h_source.html',''); initResiza
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keyword">public</span>:</div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        <a class="code hl_class" href="classsbk_1_1engine_1_1effect__description.html">effect_description</a>() : <a class="code hl_class" href="classsbk_1_1core_1_1database__object.html">sbk::core::database_object</a>() {}</div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <span class="keyword">auto</span> set_dsp_type(sc_dsp_type type) -&gt; void;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <span class="keyword">auto</span> set_dsp_type(<a class="code hl_enumeration" href="sound__chef_8h.html#a2da1af46a36d1f165ee265d39af0edeb">sc_dsp_type</a> type) -&gt; void;</div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        <span class="keyword">auto</span> set_dsp_clap(<span class="keyword">const</span> clap_plugin_factory* pluginFactory) -&gt; void;</div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        [[nodiscard]] <span class="keyword">auto</span> get_parameters() <span class="keyword">const</span> -&gt; eastl::vector&lt;effect_parameter_description&gt;</div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        {</div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>            <span class="keywordflow">return</span> m_parameterDescriptions;</div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        }</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        [[nodiscard]] <span class="keyword">auto</span> get_dsp_type() <span class="keyword">const</span> -&gt; sc_dsp_type { <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>sc_dsp_type<span class="keyword">&gt;</span>(m_effectHandle); }</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        [[nodiscard]] <span class="keyword">auto</span> get_dsp_type() <span class="keyword">const</span> -&gt; <a class="code hl_enumeration" href="sound__chef_8h.html#a2da1af46a36d1f165ee265d39af0edeb">sc_dsp_type</a> { <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><a class="code hl_enumeration" href="sound__chef_8h.html#a2da1af46a36d1f165ee265d39af0edeb">sc_dsp_type</a><span class="keyword">&gt;</span>(m_effectHandle); }</div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        [[nodiscard]] <span class="keyword">auto</span> get_dsp_handle() <span class="keyword">const</span> -&gt; sc_uint32 { <span class="keywordflow">return</span> m_effectHandle; }</div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keyword">private</span>:</div>
@@ -192,7 +192,8 @@ $(document).ready(function(){initNavTree('effect_8h_source.html',''); initResiza
 <div class="ttc" id="aclasssbk_1_1engine_1_1effect__description_html"><div class="ttname"><a href="classsbk_1_1engine_1_1effect__description.html">sbk::engine::effect_description</a></div><div class="ttdoc">Wraps a sc_dsp_config.</div><div class="ttdef"><b>Definition</b> effect.h:23</div></div>
 <div class="ttc" id="aclasssbk_1_1engine_1_1effect__parameter__description_html"><div class="ttname"><a href="classsbk_1_1engine_1_1effect__parameter__description.html">sbk::engine::effect_parameter_description</a></div><div class="ttdef"><b>Definition</b> effect.h:8</div></div>
 <div class="ttc" id="aclasssbk_1_1engine_1_1parameter_html"><div class="ttname"><a href="classsbk_1_1engine_1_1parameter.html">sbk::engine::parameter</a></div><div class="ttdoc">Defines a database object with a changeable property.</div><div class="ttdef"><b>Definition</b> parameter.h:20</div></div>
-<div class="ttc" id="astructsc__dsp__parameter_html"><div class="ttname"><a href="structsc__dsp__parameter.html">sc_dsp_parameter</a></div><div class="ttdef"><b>Definition</b> sound_chef_common.h:417</div></div>
+<div class="ttc" id="asound__chef_8h_html_a2da1af46a36d1f165ee265d39af0edeb"><div class="ttname"><a href="sound__chef_8h.html#a2da1af46a36d1f165ee265d39af0edeb">sc_dsp_type</a></div><div class="ttdeci">sc_dsp_type</div><div class="ttdoc">Built-in DSP types.</div><div class="ttdef"><b>Definition</b> sound_chef.h:403</div></div>
+<div class="ttc" id="astructsc__dsp__parameter_html"><div class="ttname"><a href="structsc__dsp__parameter.html">sc_dsp_parameter</a></div><div class="ttdef"><b>Definition</b> sound_chef.h:453</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

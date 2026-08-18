@@ -169,7 +169,7 @@ Collaboration diagram for sbk::engine::runtime:</div>
 <area shape="rect" title="Audio runtime, powered by Sound Chef." alt="" coords="202,183,358,209"/>
 <area shape="rect" href="structsc__system.html" title="Object that manages the node graph, sounds, output etc." alt="" coords="852,93,943,119"/>
 <area shape="poly" title=" " alt="" coords="838,111,669,120,566,130,463,145,382,165,313,186,312,181,380,159,462,140,565,125,668,115,838,106"/>
-<area shape="rect" href="structsc__dsp.html" title="DSP units that can fit into node groups. Extensions of ma_node types with extra information." alt="" coords="936,183,1003,209"/>
+<area shape="rect" href="structsc__dsp.html" title="DSP units that connect and form chains within sc_node_group. Extensions of ma_node types with extra i..." alt="" coords="936,183,1003,209"/>
 <area shape="poly" title=" " alt="" coords="957,112,982,123,1002,141,1006,153,1002,165,986,185,982,181,998,163,1001,153,998,144,979,127,955,117"/>
 <area shape="rect" href="structsc__dsp__description.html" title="Structure to create, destroy, and update DSP units of a specific handle." alt="" coords="651,303,797,328"/>
 <area shape="poly" title=" " alt="" coords="839,111,796,117,752,129,711,151,694,165,680,183,673,198,672,214,680,247,698,278,716,301,711,304,693,281,675,249,666,214,668,196,675,180,690,161,708,146,750,124,795,112,838,106"/>
@@ -291,16 +291,16 @@ clap_host_t&#160;</td><td class="memItemRight" valign="bottom"><b>clapHost</b></
 ma_uint32&#160;</td><td class="memItemRight" valign="bottom"><b>clapPluginCount</b></td></tr>
 <tr class="separator:acc098634d29688a752e919b13931f794 inherit pub_attribs_structsc__system"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a54e62f107f708976fb8fb76bbe51c551 inherit pub_attribs_structsc__system" id="r_a54e62f107f708976fb8fb76bbe51c551"><td class="memItemLeft" align="right" valign="top">
-float&#160;</td><td class="memItemRight" valign="bottom"><b>clapPluginScratch</b> [SC_MAX_CHANNELS][SC_MAX_FRAME_COUNT]</td></tr>
+float&#160;</td><td class="memItemRight" valign="bottom"><b>clapPluginScratch</b> [<a class="el" href="sound__chef_8h.html#af2f4d1da27d5b49226062a783918c7a6">SC_MAX_CHANNELS</a>][<a class="el" href="sound__chef_8h.html#ad6039c89d7ed5b3e53d09141430c45b9">SC_MAX_FRAME_COUNT</a>]</td></tr>
 <tr class="separator:a54e62f107f708976fb8fb76bbe51c551 inherit pub_attribs_structsc__system"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a606bc9755594ff6292cd4f196562fb1b inherit pub_attribs_structsc__system" id="r_a606bc9755594ff6292cd4f196562fb1b"><td class="memItemLeft" align="right" valign="top">
-float *&#160;</td><td class="memItemRight" valign="bottom"><b>clapPluginChannels</b> [SC_MAX_CHANNELS]</td></tr>
+float *&#160;</td><td class="memItemRight" valign="bottom"><b>clapPluginChannels</b> [<a class="el" href="sound__chef_8h.html#af2f4d1da27d5b49226062a783918c7a6">SC_MAX_CHANNELS</a>]</td></tr>
 <tr class="separator:a606bc9755594ff6292cd4f196562fb1b inherit pub_attribs_structsc__system"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0209febd09ec8761e38cc61670165085 inherit pub_attribs_structsc__system" id="r_a0209febd09ec8761e38cc61670165085"><td class="memItemLeft" align="right" valign="top">
 <a class="el" href="structsc__node__group.html">sc_node_group</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>masterNodeGroup</b></td></tr>
 <tr class="separator:a0209febd09ec8761e38cc61670165085 inherit pub_attribs_structsc__system"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7fecb25ec015e904f13d46118799330c inherit pub_attribs_structsc__system" id="r_a7fecb25ec015e904f13d46118799330c"><td class="memItemLeft" align="right" valign="top">
-const <a class="el" href="structsc__dsp__description.html">sc_dsp_description</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>userDspRegistry</b> [SC_MAX_USER_DSP_TYPES]</td></tr>
+const <a class="el" href="structsc__dsp__description.html">sc_dsp_description</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>userDspRegistry</b> [<a class="el" href="sound__chef_8h.html#a6031d13581897d23e1ee2b9fa9b316e3">SC_MAX_USER_DSP_TYPES</a>]</td></tr>
 <tr class="separator:a7fecb25ec015e904f13d46118799330c inherit pub_attribs_structsc__system"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae7df7acaa30322d3ff3033496c4bdf0a inherit pub_attribs_structsc__system" id="r_ae7df7acaa30322d3ff3033496c4bdf0a"><td class="memItemLeft" align="right" valign="top">
 ma_slot_allocator&#160;</td><td class="memItemRight" valign="bottom"><b>voiceSlotAllocator</b></td></tr>

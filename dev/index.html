@@ -183,23 +183,23 @@ Usage Example</h2>
 <div class="line"><span class="keywordtype">int</span> main() {</div>
 <div class="line">    <a class="code hl_struct" href="structsc__system.html">sc_system</a>* system = <span class="keyword">nullptr</span>;</div>
 <div class="line">    sc_system_create(&amp;system);</div>
-<div class="line">    <a class="code hl_function" href="group__System.html#ga73c06a9406456d77d8dd5a99dbfd6792">sc_system_init</a>(system);</div>
+<div class="line">    <a class="code hl_function" href="sound__chef_8h.html#a73c06a9406456d77d8dd5a99dbfd6792">sc_system_init</a>(system);</div>
 <div class="line"> </div>
 <div class="line">    <a class="code hl_struct" href="structsc__sound.html">sc_sound</a>* sound = <span class="keyword">nullptr</span>;</div>
 <div class="line">    <span class="keyword">const</span> <a class="code hl_struct" href="structsc__sound__config.html">sc_sound_config</a> soundConfig = sc_sound_config_init_file(<span class="stringliteral">&quot;some_sound.wav&quot;</span>, SC_SOUND_MODE_DEFAULT);</div>
 <div class="line">    sc_system_create_sound(system, &amp;soundConfig, &amp;sound);</div>
 <div class="line"> </div>
 <div class="line">    <a class="code hl_struct" href="structsc__sound.html">sc_sound_instance</a>* instance = <span class="keyword">nullptr</span>;</div>
-<div class="line">    <a class="code hl_function" href="group__SystemSound.html#ga0f39000fef87f54d58934784869334ca">sc_system_play_sound</a>(system, sound, &amp;instance, <span class="keyword">nullptr</span>, SC_FALSE);</div>
+<div class="line">    <a class="code hl_function" href="sound__chef_8h.html#a0f39000fef87f54d58934784869334ca">sc_system_play_sound</a>(system, sound, &amp;instance, <span class="keyword">nullptr</span>, SC_FALSE);</div>
 <div class="line"> </div>
 <div class="line">    <span class="keywordflow">return</span> 0;</div>
 <div class="line">}</div>
-<div class="ttc" id="agroup__SystemSound_html_ga0f39000fef87f54d58934784869334ca"><div class="ttname"><a href="group__SystemSound.html#ga0f39000fef87f54d58934784869334ca">sc_system_play_sound</a></div><div class="ttdeci">sbk_status SC_API sc_system_play_sound(sc_system *system, sc_sound *sound, sc_sound_instance **instance, sc_node_group *parent, sc_bool paused)</div><div class="ttdoc">Plays a sound and returns the playing instance.</div><div class="ttdef"><b>Definition</b> sound_chef.c:471</div></div>
-<div class="ttc" id="agroup__System_html_ga73c06a9406456d77d8dd5a99dbfd6792"><div class="ttname"><a href="group__System.html#ga73c06a9406456d77d8dd5a99dbfd6792">sc_system_init</a></div><div class="ttdeci">sbk_status SC_API sc_system_init(sc_system *system, const sc_system_config *systemConfig)</div><div class="ttdef"><b>Definition</b> sound_chef.c:100</div></div>
 <div class="ttc" id="asound__chef_8h_html"><div class="ttname"><a href="sound__chef_8h.html">sound_chef.h</a></div><div class="ttdoc">A wrapper library for miniaudio that emulates functionality of FMOD.</div></div>
-<div class="ttc" id="astructsc__sound__config_html"><div class="ttname"><a href="structsc__sound__config.html">sc_sound_config</a></div><div class="ttdoc">Configuration for creating a sc_sound.</div><div class="ttdef"><b>Definition</b> sound_chef_common.h:481</div></div>
-<div class="ttc" id="astructsc__sound_html"><div class="ttname"><a href="structsc__sound.html">sc_sound</a></div><div class="ttdoc">Basic piece of playing audio.</div><div class="ttdef"><b>Definition</b> sound_chef_common.h:461</div></div>
-<div class="ttc" id="astructsc__system_html"><div class="ttname"><a href="structsc__system.html">sc_system</a></div><div class="ttdoc">Object that manages the node graph, sounds, output etc.</div><div class="ttdef"><b>Definition</b> sound_chef_common.h:548</div></div>
+<div class="ttc" id="asound__chef_8h_html_a0f39000fef87f54d58934784869334ca"><div class="ttname"><a href="sound__chef_8h.html#a0f39000fef87f54d58934784869334ca">sc_system_play_sound</a></div><div class="ttdeci">sbk_status SC_API sc_system_play_sound(sc_system *system, sc_sound *sound, sc_sound_instance **instance, sc_node_group *parent, sc_bool paused)</div><div class="ttdoc">Plays a sound and returns the playing instance.</div><div class="ttdef"><b>Definition</b> sound_chef.c:418</div></div>
+<div class="ttc" id="asound__chef_8h_html_a73c06a9406456d77d8dd5a99dbfd6792"><div class="ttname"><a href="sound__chef_8h.html#a73c06a9406456d77d8dd5a99dbfd6792">sc_system_init</a></div><div class="ttdeci">sbk_status SC_API sc_system_init(sc_system *system, const sc_system_config *systemConfig)</div><div class="ttdef"><b>Definition</b> sound_chef.c:98</div></div>
+<div class="ttc" id="astructsc__sound__config_html"><div class="ttname"><a href="structsc__sound__config.html">sc_sound_config</a></div><div class="ttdoc">Configuration for creating a sc_sound.</div><div class="ttdef"><b>Definition</b> sound_chef.h:733</div></div>
+<div class="ttc" id="astructsc__sound_html"><div class="ttname"><a href="structsc__sound.html">sc_sound</a></div><div class="ttdoc">Basic piece of playing audio.</div><div class="ttdef"><b>Definition</b> sound_chef.h:713</div></div>
+<div class="ttc" id="astructsc__system_html"><div class="ttname"><a href="structsc__system.html">sc_system</a></div><div class="ttdoc">Object that manages the node graph, sounds, output etc.</div><div class="ttdef"><b>Definition</b> sound_chef.h:1018</div></div>
 </div><!-- fragment --><h2><a class="anchor" id="autotoc_md8"></a>
 Documentation</h2>
 <p>Full documentation is available at <b><a href="https://james-e-kelly.github.io/sound-bakery/dev/">james-e-kelly.github.io/sound-bakery/dev/</a></b>.</p>

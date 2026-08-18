@@ -1,5 +1,3 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="Node000000" href="$structsbk_1_1reflection_1_1CreatePointerConversion.html" title=" " alt="" coords="5,5,216,60"/>
-<area shape="rect" id="Node000001" href="$structsbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_00_01rttr_1_1type__list_3_01BaseClassList_8_8_8_01_4_01_4.html" title="Specialisation for wrapping the rttr::type_list type and extracting its template arguments." alt="" coords="264,5,521,60"/>
-<area shape="poly" id="edge77_Node000000_Node000001" title=" " alt="" coords="230,30,264,30,264,35,230,35"/>
+<area shape="rect" id="Node000000" href="$structsbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_00_01BaseClass_00_01U_8_8_8_01_4.html" title="Registers conversions between the derived type and base class, then does the same for the base class&#39;..." alt="" coords="5,5,216,60"/>
 </map>

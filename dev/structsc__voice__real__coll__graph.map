@@ -6,7 +6,7 @@
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="134,402,91,394,49,380,30,369,16,355,6,337,3,317,3,104,9,79,24,58,44,41,64,29,67,33,47,45,28,62,14,82,8,105,8,316,11,336,20,351,34,364,51,375,93,389,135,397"/>
 <area shape="poly" id="edge14_Node000003_Node000002" title=" " alt="" coords="180,377,174,311,176,272,186,234,206,196,234,162,289,117,292,121,238,166,211,199,190,236,181,273,179,311,185,377"/>
 <area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="250,116,209,126,171,145,146,164,130,183,118,205,108,235,104,258,107,281,114,303,125,324,152,362,177,389,173,392,148,365,120,327,109,305,102,282,99,258,103,234,113,203,125,180,142,160,168,140,207,121,248,110"/>
-<area shape="rect" id="Node000006" href="$structsc__dsp.html" title="DSP units that can fit into node groups. Extensions of ma_node types with extra information." alt="" coords="400,183,467,209"/>
+<area shape="rect" id="Node000006" href="$structsc__dsp.html" title="DSP units that connect and form chains within sc_node_group. Extensions of ma_node types with extra i..." alt="" coords="400,183,467,209"/>
 <area shape="poly" id="edge6_Node000006_Node000003" title=" " alt="" coords="337,124,418,181,415,185,334,129"/>
 <area shape="rect" id="Node000007" href="$structsc__dsp__description.html" title="Structure to create, destroy, and update DSP units of a specific handle." alt="" coords="658,303,803,328"/>
 <area shape="poly" id="edge10_Node000007_Node000003" title=" " alt="" coords="367,106,507,114,573,124,619,140,647,169,678,215,727,301,722,304,674,218,643,173,616,145,571,130,506,120,367,111"/>
