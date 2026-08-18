@@ -1,30 +1,22 @@
 <map id="sc_dsp" name="sc_dsp">
-<area shape="rect" id="Node000001" title="DSP units that connect and form chains within sc_node_group. Extensions of ma_node types with extra i..." alt="" coords="468,7,535,33"/>
-<area shape="poly" id="edge18_Node000001_Node000001" title=" " alt="" coords="550,8,558,12,561,20,553,31,535,34,535,28,550,26,556,20,554,16,547,13"/>
-<area shape="rect" id="Node000004" href="$structsc__node__group.html" title="Groups nodes/DSPs together into one." alt="" coords="311,127,430,152"/>
-<area shape="poly" id="edge4_Node000004_Node000001" title=" " alt="" coords="487,45,476,60,462,84,444,105,404,129,401,124,441,101,457,81,471,57,482,42"/>
-<area shape="rect" id="Node000005" href="$structsc__dsp__description.html" title="Structure to create, destroy, and update DSP units of a specific handle." alt="" coords="479,523,625,548"/>
-<area shape="poly" id="edge7_Node000005_Node000001" title=" " alt="" coords="542,37,569,54,596,77,616,105,622,121,624,138,624,434,621,469,605,500,592,514,576,525,573,520,588,510,601,497,616,468,619,434,619,138,617,122,611,107,592,80,566,58,539,41"/>
-<area shape="rect" id="Node000002" href="$structsc__system.html" title="Object that manages the node graph, sounds, output etc." alt="" coords="339,420,429,445"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="442,423,477,413,508,394,524,373,528,346,528,138,525,108,519,79,504,34,509,32,524,77,531,107,533,138,533,346,529,375,511,398,479,418,444,428"/>
-<area shape="poly" id="edge6_Node000005_Node000002" title=" " alt="" coords="383,459,384,479,393,497,406,506,426,513,480,524,479,529,425,518,403,510,389,500,379,481,377,459"/>
-<area shape="rect" id="Node000008" href="$structsc__voice.html" title="A voice is a window into a single sound that may or may not be audible and rendering." alt="" coords="93,215,171,240"/>
-<area shape="poly" id="edge11_Node000008_Node000002" title=" " alt="" coords="325,429,254,421,178,407,112,387,87,374,71,359,64,342,63,325,75,291,96,261,117,238,121,242,100,265,80,294,69,326,69,341,76,356,90,370,114,382,179,402,255,416,325,424"/>
-<area shape="rect" id="Node000009" href="$structsc__sound.html" title="Basic piece of playing audio." alt="" coords="5,523,88,548"/>
-<area shape="poly" id="edge13_Node000009_Node000002" title=" " alt="" coords="333,452,86,525,84,520,332,447"/>
-<area shape="rect" id="Node000003" href="$structsc__clap.html" title="Holds a DLL handle and plugin entry for a CLAP plugin." alt="" coords="422,332,493,357"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="441,370,396,421,392,418,437,366"/>
-<area shape="poly" id="edge17_Node000001_Node000004" title=" " alt="" coords="354,116,344,87,345,71,351,57,370,44,400,34,467,22,468,28,402,40,373,49,355,60,350,72,350,86,359,114"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="374,165,386,420,381,420,369,166"/>
-<area shape="poly" id="edge14_Node000008_Node000004" title=" " alt="" coords="327,159,165,217,163,212,325,154"/>
-<area shape="poly" id="edge5_Node000002_Node000005" title=" " alt="" coords="518,518,489,501,444,472,403,448,406,443,447,467,492,496,521,513"/>
-<area shape="rect" id="Node000006" href="$structsc__dsp__parameter.html" title=" " alt="" coords="668,420,809,445"/>
-<area shape="poly" id="edge8_Node000005_Node000006" title=" " alt="" coords="714,456,641,501,586,525,584,520,639,496,711,451"/>
-<area shape="rect" id="Node000007" href="$structsc__dsp__parameter__float.html" title=" " alt="" coords="659,332,837,357"/>
-<area shape="poly" id="edge9_Node000006_Node000007" title=" " alt="" coords="748,372,743,420,737,419,743,371"/>
-<area shape="poly" id="edge10_Node000002_Node000008" title=" " alt="" coords="130,253,128,305,134,332,146,356,165,375,187,391,238,413,291,425,339,429,338,434,291,430,237,418,185,396,162,379,142,359,128,333,123,305,124,253"/>
-<area shape="rect" id="Node000010" href="$structsc__voice__real.html" title="A real voice that is connected to the DSP graph." alt="" coords="235,332,346,357"/>
-<area shape="poly" id="edge16_Node000010_Node000008" title=" " alt="" coords="161,246,276,330,273,334,157,250"/>
-<area shape="poly" id="edge12_Node000008_Node000009" title=" " alt="" coords="38,509,31,460,28,396,36,327,47,294,63,262,77,248,94,238,97,242,80,252,68,266,52,296,42,328,33,396,36,460,44,509"/>
-<area shape="poly" id="edge15_Node000002_Node000010" title=" " alt="" coords="269,369,261,382,264,395,279,409,297,419,339,428,338,434,296,424,276,413,259,397,256,381,264,366"/>
+<area shape="rect" id="Node000001" title="DSP units that connect and form chains within sc_node_group. Extensions of ma_node types with extra i..." alt="" coords="471,7,537,33"/>
+<area shape="poly" id="edge12_Node000001_Node000001" title=" " alt="" coords="553,8,561,12,564,20,556,31,538,34,537,28,553,26,559,20,557,16,550,13"/>
+<area shape="rect" id="Node000004" href="$structsc__node__group.html" title="Groups nodes/DSPs together into one." alt="" coords="465,127,583,152"/>
+<area shape="poly" id="edge4_Node000004_Node000001" title=" " alt="" coords="483,44,473,60,467,81,473,101,484,114,498,124,495,129,480,118,468,104,462,81,468,58,478,41"/>
+<area shape="rect" id="Node000005" href="$structsc__dsp__description.html" title="Structure to create, destroy, and update DSP units of a specific handle." alt="" coords="141,347,286,372"/>
+<area shape="poly" id="edge7_Node000005_Node000001" title=" " alt="" coords="457,27,350,37,219,56,155,69,98,86,53,105,23,128,14,144,9,160,9,176,12,191,30,223,58,254,92,283,129,308,192,344,189,349,126,312,89,287,54,258,25,226,7,193,3,176,4,159,9,142,19,125,50,101,96,81,153,64,218,51,350,32,457,22"/>
+<area shape="rect" id="Node000002" href="$structsc__system.html" title="Object that manages the node graph, sounds, output etc." alt="" coords="331,244,421,269"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="435,253,493,252,554,246,606,236,625,228,638,218,652,198,660,179,662,159,658,140,639,100,606,61,591,48,574,39,537,28,538,23,576,34,594,44,610,57,643,97,663,138,667,159,665,180,657,201,642,222,628,232,608,241,554,252,493,257,435,259"/>
+<area shape="poly" id="edge6_Node000005_Node000002" title=" " alt="" coords="318,273,293,283,270,295,248,318,224,348,220,345,244,315,266,291,291,278,316,268"/>
+<area shape="rect" id="Node000003" href="$structsc__clap.html" title="Holds a DLL handle and plugin entry for a CLAP plugin." alt="" coords="235,127,306,152"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="275,165,282,193,297,218,313,232,333,242,330,246,310,236,293,222,277,195,270,166"/>
+<area shape="poly" id="edge11_Node000001_Node000004" title=" " alt="" coords="517,114,503,33,509,32,522,113"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="520,166,508,195,487,222,456,241,422,252,421,247,454,236,484,218,503,193,515,164"/>
+<area shape="poly" id="edge5_Node000002_Node000005" title=" " alt="" coords="281,340,321,320,348,295,367,268,371,271,352,298,324,325,283,345"/>
+<area shape="rect" id="Node000006" href="$structsc__dsp__parameter.html" title=" " alt="" coords="99,244,240,269"/>
+<area shape="poly" id="edge8_Node000005_Node000006" title=" " alt="" coords="176,282,188,321,204,345,200,348,183,324,170,284"/>
+<area shape="rect" id="Node000007" href="$structsc__dsp__parameter__float.html" title=" " alt="" coords="34,127,211,152"/>
+<area shape="poly" id="edge9_Node000006_Node000007" title=" " alt="" coords="128,166,133,192,142,219,160,242,155,245,138,221,128,193,123,167"/>
+<area shape="rect" id="Node000008" href="$structsc__voice__real.html" title="A real voice that is connected to the DSP graph." alt="" coords="330,127,441,152"/>
+<area shape="poly" id="edge10_Node000002_Node000008" title=" " alt="" coords="385,166,384,176,379,244,374,243,379,176,380,165"/>
 </map>

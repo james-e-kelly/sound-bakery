@@ -20,5 +20,9 @@ var searchData=
   ['sc_5fmax_5fchannels_17',['SC_MAX_CHANNELS',['../sound__chef_8h.html#af2f4d1da27d5b49226062a783918c7a6',1,'sound_chef.h']]],
   ['sc_5fmax_5fframe_5fcount_18',['SC_MAX_FRAME_COUNT',['../sound__chef_8h.html#ad6039c89d7ed5b3e53d09141430c45b9',1,'sound_chef.h']]],
   ['sc_5fmax_5fuser_5fdsp_5ftypes_19',['SC_MAX_USER_DSP_TYPES',['../sound__chef_8h.html#a6031d13581897d23e1ee2b9fa9b316e3',1,'sound_chef.h']]],
-  ['sc_5fzero_5fobject_20',['SC_ZERO_OBJECT',['../sound__chef_8h.html#a3bfdad2c01824a407a203d37aa53c18c',1,'sound_chef.h']]]
+  ['sc_5fvoice_5fhandle_5fextract_5findex_20',['SC_VOICE_HANDLE_EXTRACT_INDEX',['../sound__chef_8h.html#a97b749d4db098fe7eb6777866d40cd75',1,'sound_chef.h']]],
+  ['sc_5fvoice_5fhandle_5fextract_5frefcount_21',['SC_VOICE_HANDLE_EXTRACT_REFCOUNT',['../sound__chef_8h.html#ae01d49f06d5271d1868490a527024b93',1,'sound_chef.h']]],
+  ['sc_5fvoice_5fhas_5fflag_22',['SC_VOICE_HAS_FLAG',['../sound__chef_8h.html#a7413def9e00e77916e980bcd6ee1a3d8',1,'sound_chef.h']]],
+  ['sc_5fvoice_5fmake_5fhandle_23',['SC_VOICE_MAKE_HANDLE',['../sound__chef_8h.html#a963d23099129cb956f749d4320ffbf5d',1,'sound_chef.h']]],
+  ['sc_5fzero_5fobject_24',['SC_ZERO_OBJECT',['../sound__chef_8h.html#a3bfdad2c01824a407a203d37aa53c18c',1,'sound_chef.h']]]
 ];

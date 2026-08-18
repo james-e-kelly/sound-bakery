@@ -186,7 +186,6 @@ var annotated_dup =
     [ "SC_SOUND_INSTANCE_DELETER", "structSC__SOUND__INSTANCE__DELETER.html", null ],
     [ "sc_system", "structsc__system.html", null ],
     [ "sc_system_config", "structsc__system__config.html", null ],
-    [ "sc_voice", "structsc__voice.html", null ],
     [ "sc_voice_real", "structsc__voice__real.html", null ],
     [ "selection", "structselection.html", null ],
     [ "splash_widget", "classsplash__widget.html", null ],
