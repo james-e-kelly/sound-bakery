@@ -18,7 +18,9 @@ var sound__chef_8h =
     [ "sc_node_group", "structsc__node__group.html", null ],
     [ "sc_sound", "structsc__sound.html", null ],
     [ "sc_sound_config", "structsc__sound__config.html", null ],
+    [ "sc_voice", "structsc__voice.html", null ],
     [ "sc_voice_real", "structsc__voice__real.html", null ],
+    [ "sc_virtual_voice_candidate", "structsc__virtual__voice__candidate.html", null ],
     [ "sc_audio_chunk", "structsc__audio__chunk.html", null ],
     [ "sc_riff_chunk", "structsc__riff__chunk.html", null ],
     [ "sc_bank", "structsc__bank.html", null ],
@@ -47,9 +49,12 @@ var sound__chef_8h =
     [ "sc_sound_config", "sound__chef_8h.html#af73c369bef747e7910c37a77440d8c19", null ],
     [ "sc_sound_mode", "sound__chef_8h.html#a8679515759a55876ae1c87b223a8a387", null ],
     [ "sc_system_config", "sound__chef_8h.html#aca8b1e373917df535789bc297a7a8746", null ],
+    [ "sc_virtual_voice_candidate", "sound__chef_8h.html#aaf3aa8d616c88de3668a8118b686e34d", null ],
+    [ "sc_voice", "sound__chef_8h.html#a9820f9b564b05bf25969fb28afdb7ea5", null ],
     [ "sc_voice_desired_state", "sound__chef_8h.html#abf05ea819d40df3ce8c114647b6d790a", null ],
     [ "sc_voice_real", "sound__chef_8h.html#ac23ad78b45d233f894dfd8ab7dcf0039", null ],
     [ "sc_voice_state", "sound__chef_8h.html#a73b95cc7d5c8a19b471973f131a38cc0", null ],
+    [ "sc_voice_tiebreak_policy", "sound__chef_8h.html#aeaf745066956a87eb2e3181b75c221c4", null ],
     [ "sbk_status", "sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04", [
       [ "SBK_SUCCESS", "sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04ae5260a20e6b3f8cc7362eabc51eea9a5", null ],
       [ "SBK_ERR_USER", "sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04aadcced782b63a6eb64a137e6a147ab59", null ],
@@ -117,11 +122,15 @@ var sound__chef_8h =
       [ "sc_voice_state_playing", "sound__chef_8h.html#a7b2f0b2c11e21911f7cb97cdda42a0d8a2709f5037a669b08067868c21a921bd1", null ],
       [ "sc_voice_state_stopping", "sound__chef_8h.html#a7b2f0b2c11e21911f7cb97cdda42a0d8ae41f8cc7f7eba6de6c1307736cde243e", null ]
     ] ],
-    [ "SC_ALIGN_STRUCT", "sound__chef_8h.html#aa3f2c516e8350f9aed1a6a5885d9f0aa", null ],
+    [ "sc_voice_tiebreak_policy", "sound__chef_8h.html#a8ed505942f8ce68a0410cb28988a9e79", [
+      [ "sc_voice_tiebreak_kill_oldest", "sound__chef_8h.html#a8ed505942f8ce68a0410cb28988a9e79aaf493a8bb12f0cd0e11e8c4337444563", null ],
+      [ "sc_voice_tiebreak_kill_newest", "sound__chef_8h.html#a8ed505942f8ce68a0410cb28988a9e79a07ac18c286bcaeb769a99dd19b093b15", null ]
+    ] ],
     [ "sc_node_group_add_dsp", "sound__chef_8h.html#a71821ab9e2189cd16a074b6320afbed6", null ],
     [ "sc_node_group_get_dsp", "sound__chef_8h.html#a5cf0ed5390fe06bc7ed20908a5d906b9", null ],
     [ "sc_node_group_release", "sound__chef_8h.html#a3d4bc0d97266559f0b69f35cd6fe0c59", null ],
     [ "sc_node_group_set_parent_endpoint", "sound__chef_8h.html#a7c2da366727186ed30ed20718a2d3846", null ],
+    [ "sc_system_calculate_virtual_voices", "sound__chef_8h.html#af744f4b63edcd719e4b986fcaf9e2b79", null ],
     [ "sc_system_clap_get_at", "sound__chef_8h.html#a219c03d8fb3dd2b91e2c223fc1f2a48b", null ],
     [ "sc_system_get_dsp_desc", "sound__chef_8h.html#a79afa65bf848aa655bb118fd0e4df9e7", null ],
     [ "sc_system_init", "sound__chef_8h.html#a73c06a9406456d77d8dd5a99dbfd6792", null ],
@@ -130,5 +139,6 @@ var sound__chef_8h =
     [ "sc_system_read_pcm_frames", "sound__chef_8h.html#a3bb5b8645460b846d522258e6c72e12c", null ],
     [ "sc_system_update", "sound__chef_8h.html#a7f465418c94293f4a8add8092c3c1d93", null ],
     [ "sc_voice_get_paused", "sound__chef_8h.html#a702cd4d3e87950c74b474128861e3284", null ],
-    [ "sc_voice_get_virtual", "sound__chef_8h.html#a991545b7110ba077b426fabcd1986de6", null ]
+    [ "sc_voice_get_virtual", "sound__chef_8h.html#a991545b7110ba077b426fabcd1986de6", null ],
+    [ "sc_voice_set_virtual", "sound__chef_8h.html#a4b25ec5b791240c154370113f785df30", null ]
 ];
