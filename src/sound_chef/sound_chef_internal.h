@@ -3,28 +3,6 @@
 
 #include "sound_chef/sound_chef.h"
 
-/**
- * @def Mallocs an object, sets its memory to 0 and checks for errors and potentially
- * returns.
- *
- * Convinience macro for allocating memory _and_ doing checks on it.
- */
-#define SC_CREATE(ptr, t, system)                                                   \
-    do                                                                              \
-    {                                                                               \
-        SC_CHECK_ARG((system) != NULL);                                             \
-        (ptr) = (t*)ma_calloc(sizeof(t), &(system)->engine.allocationCallbacks);    \
-        SC_CHECK_MEM((ptr));                                                        \
-    } while (0)
-
-#define SC_FREE(ptr, system)                                                        \
-    do                                                                              \
-    {                                                                               \
-        assert((system) != NULL);                                                   \
-        ma_free((ptr), &(system)->engine.allocationCallbacks);                      \
-        (ptr) = NULL;                                                               \
-    } while(0)
-
 #ifdef __cplusplus
 extern "C"
 {

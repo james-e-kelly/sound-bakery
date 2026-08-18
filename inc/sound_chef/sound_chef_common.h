@@ -1,27 +1,18 @@
 #ifndef SOUND_CHEF_COMMON
 #define SOUND_CHEF_COMMON
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+#include "sound_chef/sound_chef_version.h"
+
 #ifdef sound_chef_shared_EXPORTS
     #define SC_DLL
     #define MA_DLL
 #endif
 
-/*
- * Build configuration guards, shared by Sound Chef (C) and Sound Bakery (C++).
- *
- * Normally defined by CMake via the SoundBakery::BuildConfig target
- * (cmake/setup_build_config.cmake), which maps them Wwise/FMOD-style:
- *
- *   SBK_CONFIG_DEBUG    - full checks, everything on           (CMake Debug)
- *   SBK_CONFIG_PROFILE  - optimized but instrumented           (CMake RelWithDebInfo)
- *   SBK_CONFIG_RELEASE  - optimized, tooling compiled out      (CMake Release/MinSizeRel)
- *   SBK_CONFIG_ENABLE_LOGGING  - logging compiled in                  (default: not Release)
- *   SBK_CONFIG_ENABLE_PROFILING- profiling/remote connections compiled in (default: not Release)
- *
- * Always defined to 0 or 1 - test with `#if`, never `#ifdef`. The fallbacks
- * below only apply when building against the headers without the CMake
- * target, and derive a sensible mapping from NDEBUG.
- */
 #ifndef SBK_HAS_BUILD_CONFIG
     #if defined(NDEBUG)
         #define SBK_CONFIG_DEBUG   0
@@ -70,8 +61,6 @@
     #define SC_CLASS
 #endif
 
-#define SC_ZERO_OBJECT(p) memset((p), 0, sizeof(*(p)))
-
 // C uses _Alignas (C11+); C++ uses alignas as a keyword.
 #ifdef __cplusplus
     #define SC_ALIGN_TO(x) alignas(x)
@@ -96,19 +85,56 @@
 #define SC_MAX(x, y)             (((x) > (y)) ? (x) : (y))
 #define SC_MIN(x, y)             (((x) < (y)) ? (x) : (y))
 #define SC_ABS(x)                (((x) > 0) ? (x) : -(x))
-#define SC_CLAMP(x, lo, hi)      (ma_max(lo, ma_min(x, hi)))
+#define SC_CLAMP(x, lo, hi)      (SC_MAX(lo, SC_MIN(x, hi)))
 #define SC_OFFSET_PTR(p, offset) (((ma_uint8*)(p)) + (offset))
 #define SC_ALIGN(x, a)           (((x) + ((a)-1)) & ~((a)-1))
-#define SC_ALIGN_64(x)           ma_align(x, 8)
+#define SC_ALIGN_64(x)           SC_ALIGN(x, 8)
 
 #define SC_MAX_CHANNELS         36      //< Support a max of 5th order ambisonics
 #define SC_MAX_FRAME_COUNT      2048    //< Safe default for allocating staging areas in memory
 
 #define SC_MAX_USER_DSP_TYPES   16      //< sc_dsp_descriptions are kept in a static array. Increase this if we need to support more DSP types
 
+#include <assert.h>
+
 #ifndef SC_ASSERT
     #define SC_ASSERT(condition) assert(condition)
 #endif
+
+#include <string.h>
+
+/**
+ * @def Zeroes the memory at @p ptr.
+ */
+#define SC_ZERO_OBJECT(ptr) memset((ptr), 0, sizeof(*(ptr)))
+
+/**
+ * @def Creates an object of type @p type, zeroes the memory, and returns on errors.
+ * 
+ * Example:
+ * @code
+ *  sc_dsp* dsp = NULL;
+ *  SC_CREATE(dsp, sc_dsp, system); 
+ * @endcode
+ */
+#define SC_CREATE(ptr, type, system)                                                    \
+    do                                                                                  \
+    {                                                                                   \
+        SC_CHECK_ARG((system) != NULL);                                                 \
+        (ptr) = (type*)ma_calloc(sizeof(type), &(system)->engine.allocationCallbacks);  \
+        SC_CHECK_MEM((ptr));                                                            \
+    } while (0)
+
+/**
+ * @def Frees the memory at @p ptr. 
+ */
+#define SC_FREE(ptr, system)                                   \
+    do                                                         \
+    {                                                          \
+        assert((system) != NULL);                              \
+        ma_free((ptr), &(system)->engine.allocationCallbacks); \
+        (ptr) = NULL;                                          \
+    } while (0)
 
 #define MA_COINIT_VALUE 0x2  //< COINIT_APARTMENTTHREADED
 
@@ -123,30 +149,7 @@
 #define MA_ZERO_MEMORY(p, sz)   memset((p), 0, (sz))
 
 #include "miniaudio.h"
-#include "clap/clap.h"
-#include "c89atomic.h"
-
-#include <assert.h>
-#include <string.h>
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
         
-#include "sound_chef/sound_chef_version.h"
-
-typedef c89atomic_int8      sc_atomic_int8;
-typedef c89atomic_uint8     sc_atomic_uint8;
-typedef c89atomic_int16     sc_atomic_int16;
-typedef c89atomic_uint16    sc_atomic_uint16;
-typedef c89atomic_int32     sc_atomic_int32;
-typedef c89atomic_uint32    sc_atomic_uint32;
-typedef c89atomic_int64     sc_atomic_int64;
-typedef c89atomic_uint64    sc_atomic_uint64;
-typedef c89atomic_bool      sc_atomic_bool;
-typedef float               sc_atomic_float;
-
 typedef ma_uint8            sc_uint8;
 typedef ma_uint16           sc_uint16;
 typedef ma_bool32           sc_bool;
@@ -155,44 +158,33 @@ typedef ma_int32            sc_int32;
 typedef ma_int64            sc_int64;
 typedef ma_uint64           sc_uint64;
 
-static MA_INLINE sc_bool sc_is_pow2(size_t x)
-{
-    return x != 0 && (x & (x - 1)) == 0;
-}
-
-// Returns 1 for x <= 1.
-static MA_INLINE size_t sc_next_pow2(size_t x)
-{
-    size_t v = 1;
-    while (v < x)
-    {
-        v <<= 1;
-    }
-    return v;
-}
-
 typedef sc_uint64           sc_voice_handle;        //< Voice handle. Contains both a reference count and an index
 typedef sc_uint32           sc_voice_refcount;      //< References to this slot. Used to check if a handle is old/stale
 typedef sc_uint32           sc_voice_slot;          //< Slot/index into the voice array
 
-static MA_INLINE sc_voice_refcount sc_voice_handle_extract_refcount(sc_voice_handle handle)
-{
-    return (sc_uint32)(handle >> 32);
-}
-
-static MA_INLINE sc_voice_slot sc_voice_handle_extract_slot(sc_voice_handle handle)
-{
-    return (sc_voice_slot)(handle & 0xFFFFFFFFu);
-}
-
-static MA_INLINE sc_voice_handle sc_voice_handle_make(sc_voice_refcount rc, sc_voice_slot slot)
-{
-    return ((sc_voice_handle)rc << 32) | (sc_voice_handle)slot;
-}
+typedef struct sc_system    sc_system;
+typedef struct sc_dsp       sc_dsp;
 
 #define SBK_FALSE 0
 #define SBK_TRUE 1
 
+/**************************************************************************************************************************************************************
+
+Statuses And Error Handling
+
+**************************************************************************************************************************************************************/
+
+/**
+ * @brief Status codes.
+ * 
+ * Extends the miniaudio @ref ma_result enum.
+ * 
+ * miniaudio defines success == 0 and errors less than 0.
+ * Sound Chef/Bakery defines success == 0 and errors greater than 0.
+ * 
+ * Statuses are influenced by http status codes where codes are grouped.
+ * Users don't need to know every code, but know that anything between 101-200 is an error from Sound Chef.
+ */
 typedef enum
 {
     // < 0: miniaudio Errors
@@ -230,13 +222,8 @@ typedef enum
     SBK_ERROR_MAX
 } sbk_status;
 
-/**
- * sbk_status shares its numeric space with ma_result (miniaudio codes are <= 0,
- * Sound Bakery codes are > 0), so converting between the two enums is safe.
- * These macros make the conversion explicit at the boundary.
- */
-#define SBK_FROM_MA(maResult) ((sbk_status)(maResult))
-#define MA_FROM_SBK(sbkStatus) ((ma_result)(sbkStatus))
+#define SBK_FROM_MA(maResult)   ((sbk_status)(maResult))
+#define MA_FROM_SBK(sbkStatus)  ((ma_result)(sbkStatus))
 
 #define SC_CHECK(condition, result) \
     if ((condition) == MA_FALSE)    \
@@ -254,106 +241,53 @@ typedef enum
     if ((condition) == MA_FALSE)           \
     goto dest
 
-typedef struct sc_system            sc_system;
-typedef struct sc_dsp               sc_dsp;
+/**************************************************************************************************************************************************************
+
+Atomics
+
+**************************************************************************************************************************************************************/
+
+#include "c89atomic.h"
+
+typedef c89atomic_int8      sc_atomic_int8;
+typedef c89atomic_uint8     sc_atomic_uint8;
+typedef c89atomic_int16     sc_atomic_int16;
+typedef c89atomic_uint16    sc_atomic_uint16;
+typedef c89atomic_int32     sc_atomic_int32;
+typedef c89atomic_uint32    sc_atomic_uint32;
+typedef c89atomic_int64     sc_atomic_int64;
+typedef c89atomic_uint64    sc_atomic_uint64;
+typedef c89atomic_bool      sc_atomic_bool;
+typedef float               sc_atomic_float;
+
+static MA_INLINE sc_bool sc_is_pow2(size_t x)
+{
+    return x != 0 && (x & (x - 1)) == 0;
+}
+
+/**
+ * @remark Returns 1 for x <= 1.
+ */
+static MA_INLINE size_t sc_next_pow2(size_t x)
+{
+    size_t v = 1;
+    while (v < x)
+    {
+        v <<= 1;
+    }
+    return v;
+}
 
 enum
 {
     SC_STRING_NAME_LENGTH = 16
 };
 
-/**
- * @brief The different ways to create a sound.
- * 
- * These types are basically the same as @ref ma_sound_flags.
- * 
- * @see sc_sound_config_init_file
- * @see sc_sound_config_init_memory
- * @see sc_system_create_sound
- */
-typedef enum sc_sound_mode
-{
-    SC_SOUND_MODE_DEFAULT   = 0x00000000,   //< Creates a sound in memory and decompresses during runtime
-    SC_SOUND_MODE_DECODE    = 0x00000001,   //< Decodes the sound upon loading, instead of runtime
-    SC_SOUND_MODE_ASYNC     = 0x00000002,   //< Loads the sound in a background thread
-    SC_SOUND_MODE_STREAM    = 0x00000004,   //< Streams parts of the sound from disk during runtime
-} sc_sound_mode;
+/**************************************************************************************************************************************************************
 
-/**
- * @brief Playback state of an @ref sc_voice.
- *
- * A voice moves through these states over its lifetime. Pause freezes the
- * play cursor but does not itself decide audibility; on resume the voice
- * runs the same virtualization check as @ref SC_VOICE_STATE_STARTING and
- * lands in either @ref SC_VOICE_STATE_PLAYING or @ref SC_VOICE_STATE_VIRTUAL
- * depending on the real-voice budget.
- *
- * Failures (async load errors, decoder errors, etc.) do not have their own
- * state; the voice transitions to @ref SC_VOICE_STATE_STOPPING and the slot
- * is returned to the pool. Subsequent use of a stale handle returns
- * @ref SBK_ERR_NOT_FOUND; check the logs or profiler for the
- * underlying cause.
- *
- * Transitions (rows = from, columns = to; dash = not allowed):
- *
- * | from \ to | STOPPED | STARTING | VIRTUAL | PLAYING | PAUSED | STOPPING |
- * | --------- | :-----: | :------: | :-----: | :-----: | :----: | :------: |
- * | STOPPED   |    -    |   play   |    -    |    -    |    -   |     -    |
- * | STARTING  |    -    |     -    |  limit  |  ready  |    -   |   stop   |
- * | VIRTUAL   |    -    |     -    |    -    |  devirt |  pause |   stop   |
- * | PLAYING   |    -    |     -    |   virt  |    -    |  pause | stop/eof |
- * | PAUSED    |    -    |     -    |  resume |  resume |    -   |   stop   |
- * | STOPPING  |   tail  |     -    |    -    |    -    |    -   |     -    |
- */
-typedef enum sc_voice_state
-{
-    SC_VOICE_STATE_STOPPED,     //< Idle. The slot is free or has just been returned to the pool.
-    SC_VOICE_STATE_STARTING,    //< Play requested; waiting on async load or first render before becoming @ref SC_VOICE_STATE_PLAYING or @ref SC_VOICE_STATE_VIRTUAL.
-    SC_VOICE_STATE_VIRTUAL,     //< Cursor advancing but not rendered; culled by the real-voice budget.
-    SC_VOICE_STATE_PLAYING,     //< Cursor advancing and mixed into the output.
-    SC_VOICE_STATE_PAUSED,      //< Cursor frozen. On resume, virtualization decides @ref SC_VOICE_STATE_PLAYING vs @ref SC_VOICE_STATE_VIRTUAL.
-    SC_VOICE_STATE_STOPPING     //< Tail/fade-out in progress; transitions to @ref SC_VOICE_STATE_STOPPED when done.
-} sc_voice_state;
+Encoding
 
-// State is packed into the low bits of a 32-bit atomic word; upper bits are
-// reserved for future flags (virtualised, fading, etc.) so a caller reads the
-// whole voice state in one atomic load.
-#define SC_VOICE_STATE_MASK 0x000000FFu
-
-static MA_INLINE sc_voice_state sc_voice_extract_state(sc_uint32 word)
-{
-    return (sc_voice_state)(word & SC_VOICE_STATE_MASK);
-}
-
-/**
- * @brief Built-in DSP types.
- * 
- * It is expected that user DSP types would have numbers higher than SC_DSP_TYPE_COUNT
- * example: MY_DSP_TYPE = SC_DSP_TYPE_COUNT + 1
- * The system can then store user DSP descriptions and find them by "handle"
- */
-typedef enum sc_dsp_type
-{
-    SC_DSP_TYPE_UNKNOWN,
-    SC_DSP_TYPE_FADER,
-    SC_DSP_TYPE_LOWPASS,
-    SC_DSP_TYPE_HIGHPASS,
-    SC_DSP_TYPE_DELAY,
-    SC_DSP_TYPE_METER,
-    SC_DSP_TYPE_CLAP,           //< Wraps a CLAP plugin
-    SC_DSP_TYPE_COUNT           //< Count of types. SC_DSP_TYPE_COUNT - 1 == number of built in types
-} sc_dsp_type;
-
-/**
- * @brief Predefined positions to insert DSP units into a @ref sc_node_group.
- * 
- * Values are negative so positive index values always refer to a specific position in the node group.
- */
-typedef enum sc_dsp_index
-{
-    SC_DSP_INDEX_TAIL = -2,  //< Left/back of the chain and becomes the new input
-    SC_DSP_INDEX_HEAD = -1   //< Right/top of the chain and becomes the new output
-} sc_dsp_index;
+**************************************************************************************************************************************************************/
 
 /**
  * @brief Encoding formats that Sound Chef supports.
@@ -368,6 +302,12 @@ typedef enum sc_encoding_format
     sc_encoding_format_vorbis,
     sc_encoding_format_opus
 } sc_encoding_format;
+
+/**************************************************************************************************************************************************************
+
+Node Group
+
+**************************************************************************************************************************************************************/
 
 /**
  * @brief Groups nodes/DSPs together into one.
@@ -385,6 +325,42 @@ typedef struct sc_node_group
     sc_dsp* fader;  //< Controls the volume and more of the group. Exists at start
     sc_dsp* head;   //< Right/top most node. Nodes in the group route to this. The head then outputs to a parent
 } sc_node_group;
+
+/**************************************************************************************************************************************************************
+
+DSP
+
+**************************************************************************************************************************************************************/
+
+/**
+ * @brief Built-in DSP types.
+ *
+ * It is expected that user DSP types would have numbers higher than SC_DSP_TYPE_COUNT
+ * example: MY_DSP_TYPE = SC_DSP_TYPE_COUNT + 1
+ * The system can then store user DSP descriptions and find them by "handle"
+ */
+typedef enum sc_dsp_type
+{
+    SC_DSP_TYPE_UNKNOWN,
+    SC_DSP_TYPE_FADER,
+    SC_DSP_TYPE_LOWPASS,
+    SC_DSP_TYPE_HIGHPASS,
+    SC_DSP_TYPE_DELAY,
+    SC_DSP_TYPE_METER,
+    SC_DSP_TYPE_CLAP,  //< Wraps a CLAP plugin
+    SC_DSP_TYPE_COUNT  //< Count of types. SC_DSP_TYPE_COUNT - 1 == number of built in types
+} sc_dsp_type;
+
+/**
+ * @brief Predefined positions to insert DSP units into a @ref sc_node_group.
+ *
+ * Values are negative so positive index values always refer to a specific position in the node group.
+ */
+typedef enum sc_dsp_index
+{
+    SC_DSP_INDEX_TAIL = -2,  //< Left/back of the chain and becomes the new input
+    SC_DSP_INDEX_HEAD = -1   //< Right/top of the chain and becomes the new output
+} sc_dsp_index;
 
 /**
  * @brief DSP units that can fit into node groups. Extensions of ma_node types with extra information.
@@ -447,10 +423,33 @@ typedef struct sc_dsp_description
 
 typedef struct sc_dsp_config
 {
-    sc_uint32                       handle;         //< Type/handle/index
-    const sc_dsp_description*       dspDescription; //< Required: holds a vtable for DSP creation and deletion
-    const clap_plugin_factory_t*    clapFactory;    //< Optional: passed to CLAP DSP types so a specific CLAP plugin can be created
+    sc_uint32                           handle;         //< Type/handle/index
+    const sc_dsp_description*           dspDescription; //< Required: holds a vtable for DSP creation and deletion
+    const struct clap_plugin_factory*   clapFactory;    //< Optional: passed to CLAP DSP types so a specific CLAP plugin can be created
 } sc_dsp_config;
+
+/**************************************************************************************************************************************************************
+
+Sound
+
+**************************************************************************************************************************************************************/
+
+/**
+ * @brief The different ways to create a sound.
+ *
+ * These types are basically the same as @ref ma_sound_flags.
+ *
+ * @see sc_sound_config_init_file
+ * @see sc_sound_config_init_memory
+ * @see sc_system_create_sound
+ */
+typedef enum sc_sound_mode
+{
+    SC_SOUND_MODE_DEFAULT = 0x00000000,  //< Creates a sound in memory and decompresses during runtime
+    SC_SOUND_MODE_DECODE  = 0x00000001,  //< Decodes the sound upon loading, instead of runtime
+    SC_SOUND_MODE_ASYNC   = 0x00000002,  //< Loads the sound in a background thread
+    SC_SOUND_MODE_STREAM  = 0x00000004,  //< Streams parts of the sound from disk during runtime
+} sc_sound_mode;
 
 /**
  * @brief Basic piece of playing audio.
@@ -487,6 +486,14 @@ typedef struct sc_sound_config
 
 typedef sc_sound_config sc_voice_config;    // Make the voice config just a sound config until it becomes its own thing
 
+/**************************************************************************************************************************************************************
+
+CLAP
+
+**************************************************************************************************************************************************************/
+
+#include "clap/clap.h"
+
 /**
  * @brief Holds a DLL handle and plugin entry for a CLAP plugin.
  */
@@ -496,6 +503,70 @@ typedef struct sc_clap
     clap_plugin_entry_t*            clapEntry;              //< Entry point of the plugin
     const clap_plugin_factory_t*    pluginFactory;          //< Plugin factory to poll and create plugins from
 } sc_clap;
+
+/**************************************************************************************************************************************************************
+
+Voice
+
+**************************************************************************************************************************************************************/
+
+/**
+ * @brief Playback lifecycle position of an @ref sc_voice.
+ *
+ * The state describes where the voice is in its lifecycle; audibility and
+ * cursor progression are expressed as orthogonal flags:
+ *   - @ref SC_VOICE_FLAG_PAUSED  - user paused; the audio callback freezes the play cursor.
+ *   - @ref SC_VOICE_FLAG_VIRTUAL - system culled to stay under the real-voice budget; no mix.
+ *
+ * Callers only ever request @ref SC_VOICE_STATE_STOPPED or
+ * @ref SC_VOICE_STATE_PLAYING on the desired word. @ref SC_VOICE_STATE_STARTING
+ * and @ref SC_VOICE_STATE_STOPPING are pump-owned transients.
+ *
+ * Failures (async load errors, decoder errors, etc.) do not have their own
+ * state; the voice transitions to @ref SC_VOICE_STATE_STOPPING and the slot
+ * is returned to the pool. Subsequent use of a stale handle returns
+ * @ref SBK_ERR_NOT_FOUND; check the logs or profiler for the
+ * underlying cause.
+ *
+ * Transitions the pump drives (rows = current, columns = desired; dash = not allowed):
+ *
+ * | current \ desired | STOPPED  | PLAYING |
+ * | ----------------- | :------: | :-----: |
+ * | STOPPED           |    -     |    -    |  play requests enter via sc_system_play_sound_voice (→ STARTING)
+ * | STARTING          |  cancel  |  ready  |
+ * | PLAYING           |   tail   |    -    |  paused/virtual are flag flips; no state change
+ * | STOPPING          |  drain   |  wins   |  tail runs to completion even if a new play arrives
+ */
+typedef enum sc_voice_state
+{
+    SC_VOICE_STATE_STOPPED,   //< Idle. The slot is free or has just been returned to the pool.
+    SC_VOICE_STATE_STARTING,  //< Play requested; waiting on async load or first render before becoming @ref SC_VOICE_STATE_PLAYING.
+    SC_VOICE_STATE_PLAYING,   //< Live. Audibility is governed by @ref SC_VOICE_FLAG_VIRTUAL, cursor by @ref SC_VOICE_FLAG_PAUSED.
+    SC_VOICE_STATE_STOPPING   //< Tail/fade-out in progress; transitions to @ref SC_VOICE_STATE_STOPPED when done.
+} sc_voice_state;
+
+// State + flags are packed into one 32-bit atomic word so callers see the
+// whole voice status in one load. Layout:
+//   bits  0..7  : sc_voice_state (exclusive lifecycle position)
+//   bits  8..31 : sc_voice_flags (orthogonal modifiers, OR-able)
+//
+// Any write that changes only the state must preserve the flag bits (and vice
+// versa) - use sc_voice_word_with_state / sc_voice_word_with_flags to build
+// the replacement word, and CAS to install it.
+#define SC_VOICE_STATE_MASK 0x000000FFu
+#define SC_VOICE_FLAGS_MASK 0xFFFFFF00u
+
+// Reserve the low 8 bits for the state. Flag values must start at bit 8.
+// PAUSED lives on the desired word (user request). VIRTUAL lives on the current
+// word (system decision based on the real-voice budget). Everything else is
+// evaluated per-flag when the pump reads its word.
+typedef enum sc_voice_flags
+{
+    SC_VOICE_FLAG_NONE    = 0,
+    SC_VOICE_FLAG_PAUSED  = 1u << 8,  //< Freeze the play cursor. Set by the user via sc_voice_pause.
+    SC_VOICE_FLAG_VIRTUAL = 1u << 9,  //< Not connected to a real voice; audio callback skips the mix.
+    SC_VOICE_FLAG_FADING  = 1u << 10  //< A volume ramp is in progress (start/stop fade, ducking, etc.).
+} sc_voice_flags;
 
 /**
  * @brief A voice is a window into a single sound that may or may not be audible and rendering.
@@ -529,6 +600,70 @@ typedef struct sc_voice_real
     sc_sound_mode                   mode;
     ma_decoder*                     memoryDecoder;  //< @todo Work out if this should go in a resource manager
 } sc_voice_real;
+
+static MA_INLINE sc_uint32 sc_voice_word_make(sc_voice_state state, sc_uint32 flags)
+{
+    return ((sc_uint32)state & SC_VOICE_STATE_MASK) | (flags & SC_VOICE_FLAGS_MASK);
+}
+
+static MA_INLINE sc_voice_state sc_voice_word_state(sc_uint32 word)
+{
+    return (sc_voice_state)(word & SC_VOICE_STATE_MASK);
+}
+
+static MA_INLINE sc_uint32 sc_voice_word_flags(sc_uint32 word)
+{
+    return word & SC_VOICE_FLAGS_MASK;
+}
+
+static MA_INLINE sc_uint32 sc_voice_word_with_state(sc_uint32 word, sc_voice_state state)
+{
+    return (word & SC_VOICE_FLAGS_MASK) | ((sc_uint32)state & SC_VOICE_STATE_MASK);
+}
+
+static MA_INLINE sc_uint32 sc_voice_word_with_flags(sc_uint32 word, sc_uint32 flags)
+{
+    return (word & SC_VOICE_STATE_MASK) | (flags & SC_VOICE_FLAGS_MASK);
+}
+
+static MA_INLINE sc_bool sc_voice_word_has_flag(sc_uint32 word, sc_voice_flags flag)
+{
+    return (word & (sc_uint32)flag) != 0 ? SBK_TRUE : SBK_FALSE;
+}
+
+static MA_INLINE sc_voice_refcount sc_voice_handle_extract_refcount(sc_voice_handle handle)
+{
+    return (sc_uint32)(handle >> 32);
+}
+
+static MA_INLINE sc_voice_slot sc_voice_handle_extract_slot(sc_voice_handle handle)
+{
+    return (sc_voice_slot)(handle & 0xFFFFFFFFu);
+}
+
+static MA_INLINE sc_voice_handle sc_voice_handle_make(sc_voice_refcount rc, sc_voice_slot slot)
+{
+    return ((sc_voice_handle)rc << 32) | (sc_voice_handle)slot;
+}
+
+/**************************************************************************************************************************************************************
+
+System
+
+**************************************************************************************************************************************************************/
+
+/**
+ * @brief Configuration for initializing the sc_system.
+ * @see sc_system_init
+ */
+typedef struct sc_system_config
+{
+    const char*                 pluginPath;             //< Folder path containing CLAP plugins to load
+    ma_allocation_callbacks     allocationCallbacks;    //< External allocation callbacks to override all memory allocation in Sound Chef
+    ma_device_data_proc         dataCallback;           //< Device render callback. Overriden in Sound Bakery for profiling
+    sc_uint32                   maxVoices;              //< Max number of voices (both virtual and real)
+    sc_uint32                   maxRealVoices;          //< Max number of real voices to mix at once. Voices over this limit get virtualized
+} sc_system_config;
 
 /**
  * @brief Object that manages the node graph, sounds, output etc.
@@ -566,19 +701,6 @@ struct sc_system
     ma_slot_allocator           realVoiceSlotAllocator;                                 //< Allocates handles for real voices
     sc_voice_real*              realVoiceBuffer;                                        //< Allocated real voices. Indexed through @r realVoiceSlotAllocator
 };
-
-/**
- * @brief Configuration for initializing the sc_system.
- * @see sc_system_init
- */
-typedef struct sc_system_config
-{
-    const char*                 pluginPath;             //< Folder path containing CLAP plugins to load
-    ma_allocation_callbacks     allocationCallbacks;    //< External allocation callbacks to override all memory allocation in Sound Chef
-    ma_device_data_proc         dataCallback;           //< Device render callback. Overriden in Sound Bakery for profiling
-    sc_uint32                   maxVoices;              //< Max number of voices (both virtual and real)
-    sc_uint32                   maxRealVoices;          //< Max number of real voices to mix at once. Voices over this limit get virtualized
-} sc_system_config;
 
 #ifdef __cplusplus
 }

@@ -91,6 +91,23 @@ extern "C"
     sbk_status SC_API sc_voice_stop(sc_system* system, sc_voice_handle handle);
     sbk_status SC_API sc_system_stop_all_voices(sc_system* system);
 
+    /**
+     * @brief Returns whether the voice is currently paused (@ref SC_VOICE_FLAG_PAUSED).
+     *
+     * Reads the desired-side flag, so it reflects the caller's last pause/resume
+     * request without waiting for the audio pump.
+     * Returns @ref SBK_ERR_NOT_FOUND if @p handle is stale.
+     */
+    sbk_status SC_API sc_voice_get_paused(sc_system* system, sc_voice_handle handle, sc_bool* outPaused);
+
+    /**
+     * @brief Returns whether the voice is currently virtualised (@ref SC_VOICE_FLAG_VIRTUAL).
+     *
+     * Reads the current-side flag: SBK_TRUE means the pump has no real voice
+     * mixing this @ref sc_voice right now (culled by the real-voice budget).
+     */
+    sbk_status SC_API sc_voice_get_virtual(sc_system* system, sc_voice_handle handle, sc_bool* outVirtual);
+
     /**@}*/
 
     /**

@@ -231,130 +231,61 @@ sbk_status sc_system_update(sc_system* system)
 
     for (sc_uint32 voiceIndex = 0; voiceIndex < system->voiceSlotAllocator.capacity; ++voiceIndex)
     {
-        const sc_voice_state desiredVoiceState = sc_voice_extract_state(c89atomic_load_32(&system->voiceBuffer[voiceIndex].desiredStateAndFlags));
-        const sc_voice_state currentVoiceState = sc_voice_extract_state(c89atomic_load_32(&system->voiceBuffer[voiceIndex].currentStateAndFlags));
+        const sc_uint32 desiredWord = c89atomic_load_32(&system->voiceBuffer[voiceIndex].desiredStateAndFlags);
+        const sc_uint32 currentWord = c89atomic_load_32(&system->voiceBuffer[voiceIndex].currentStateAndFlags);
 
-        switch (desiredVoiceState)
+        const sc_voice_state desiredState = sc_voice_word_state(desiredWord);
+        const sc_voice_state currentState = sc_voice_word_state(currentWord);
+
+        // Users only request STOPPED or PLAYING. SC_VOICE_FLAG_PAUSED on the
+        // desired word is honoured by the audio callback (it freezes the play
+        // cursor); no state transition is needed for pause/resume.
+        // SC_VOICE_FLAG_VIRTUAL on the current word is set/cleared inline below
+        // when the real-voice budget check runs.
+
+        switch (desiredState)
         {
             case SC_VOICE_STATE_PLAYING:
-                switch (currentVoiceState)
+                switch (currentState)
                 {
                     case SC_VOICE_STATE_STOPPED:
-                        // STOPPED => PLAYING
-                        SC_ASSERT(false && "Should not be trying to play a stopped sound. Voices are provided play information and then moved to STARTING");
+                        SC_ASSERT(false && "Play request on STOPPED slot - use sc_system_play_sound_voice, which sets STARTING");
                         break;
                     case SC_VOICE_STATE_STARTING:
-                        // STARTING => PLAYING
-                        // Check audibility and play
-                        break;
-                    case SC_VOICE_STATE_VIRTUAL:
-                        // VIRTUAL => PLAYING
-                        // Check audibility and priority
+                        // Load complete? Run virtualization; promote to PLAYING,
+                        // set SC_VOICE_FLAG_VIRTUAL if over the real-voice budget.
                         break;
                     case SC_VOICE_STATE_PLAYING:
-                        // PLAYING => PLAYING
-                        // Nothing to do
-                        break;
-                    case SC_VOICE_STATE_PAUSED:
-                        // PAUSED => PLAYING
+                        // Steady state - re-evaluate SC_VOICE_FLAG_VIRTUAL against
+                        // priority + real-voice budget and flip the flag as needed.
                         break;
                     case SC_VOICE_STATE_STOPPING:
-                        // STOPPING => PLAYING
-                        SC_ASSERT(false && "Should not be trying to play a sound that is stopping. Sounds need to finish stopping before starting again");
-                        break;
-                }
-                break;
-            case SC_VOICE_STATE_VIRTUAL:
-                switch (currentVoiceState)
-                {
-                    case SC_VOICE_STATE_STOPPED:
-                        // STOPPED => VIRTUAL
-                        SC_ASSERT(false);
-                        break;
-                    case SC_VOICE_STATE_STARTING:
-                        // STARTING => VIRTUAL
-                        // Go straight to virtual
-                        break;
-                    case SC_VOICE_STATE_VIRTUAL:
-                        // VIRTUAL => VIRTUAL
-                        // Nothing to do
-                        break;
-                    case SC_VOICE_STATE_PLAYING:
-                        // PLAYING => VIRTUAL
-                        // Go virtual
-                        break;
-                    case SC_VOICE_STATE_PAUSED:
-                        // PAUSED => VIRTUAL
-                        // Go virtual and continue to not advance play cursor
-                        break;
-                    case SC_VOICE_STATE_STOPPING:
-                        // STOPPING => VIRTUAL
-                        SC_ASSERT(false);
+                        // Tail already running - it wins over a new play request.
                         break;
                 }
                 break;
             case SC_VOICE_STATE_STOPPED:
-                switch (currentVoiceState)
+                switch (currentState)
                 {
                     case SC_VOICE_STATE_STOPPED:
-                        // STOPPED => STOPPED
-                        // Nothing to do
+                        // Nothing to do.
                         break;
                     case SC_VOICE_STATE_STARTING:
-                        // STARTING => STOPPED
-                        // Cancel and stop
-                        break;
-                    case SC_VOICE_STATE_VIRTUAL:
-                        // VIRTUAL => STOPPED
-                        // Move to stopping
+                        // Cancel before any audio plays: skip STOPPING, release slot to STOPPED.
                         break;
                     case SC_VOICE_STATE_PLAYING:
-                        // PLAYING => STOPPED
-                        // Move to stopping
-                        break;
-                    case SC_VOICE_STATE_PAUSED:
-                        // PAUSED => STOPPED
-                        // Move to STOPPING
+                        // Begin tail: set current state to STOPPING (fade + drain).
                         break;
                     case SC_VOICE_STATE_STOPPING:
-                        // STOPPING => STOPPED
-                        // Release voice and real voice
+                        // Tail in progress: check if drained, then release slot to STOPPED.
                         break;
                 }
-                break;
-            case SC_VOICE_STATE_PAUSED:
-                switch (currentVoiceState)
-                {
-                    case SC_VOICE_STATE_STOPPED:
-                        // STOPPED => PAUSED
-                        break;
-                    case SC_VOICE_STATE_STARTING:
-                        // STARTING => PAUSED
-                        // Load everything but pause
-                        break;
-                    case SC_VOICE_STATE_VIRTUAL:
-                        // VIRTUAL => PAUSED
-                        // Pause
-                        break;
-                    case SC_VOICE_STATE_PLAYING:
-                        // PLAYING => PAUSED
-                        // Pause
-                        break;
-                    case SC_VOICE_STATE_PAUSED:
-                        // PAUSED => PAUSED
-                        // Nothing to do
-                        break;
-                    case SC_VOICE_STATE_STOPPING:
-                        // STOPPING => PAUSED
-                        // Ignore
-                        break;
-                }
-                break;
-            case SC_VOICE_STATE_STOPPING:
-                SC_ASSERT(false && "Voices shouldn't desire to move into stopping. They should ask to move into STOPPED");
                 break;
             case SC_VOICE_STATE_STARTING:
-                SC_ASSERT(false && "Voices shouldn't desire to move into starting. They should ask to move into PLAYING");
+                SC_ASSERT(false && "STARTING is pump-owned; callers request PLAYING");
+                break;
+            case SC_VOICE_STATE_STOPPING:
+                SC_ASSERT(false && "STOPPING is pump-owned; callers request STOPPED");
                 break;
         }
     }
@@ -540,24 +471,33 @@ sbk_status sc_system_play_sound_voice(sc_system* system, sc_sound* sound, sc_voi
     ma_uint32 index = sc_voice_handle_extract_slot(slot);
 
     sc_voice* const voice = &system->voiceBuffer[index];
-    voice->sound          = sound;
-    voice->group          = parent;
 
-    const sc_voice_state currentState = sc_voice_extract_state(c89atomic_load_32(&voice->currentStateAndFlags));
+    // Slot must be idle before we take it over.
+    const sc_voice_state currentState = sc_voice_word_state(c89atomic_load_32(&voice->currentStateAndFlags));
     SC_ASSERT(currentState == SC_VOICE_STATE_STOPPED);
 
-    c89atomic_store_32(&voice->currentStateAndFlags, (sc_uint32)SC_VOICE_STATE_STARTING);
-    c89atomic_store_32(&voice->desiredStateAndFlags, (sc_uint32)(paused ? SC_VOICE_STATE_PAUSED : SC_VOICE_STATE_PLAYING));
+    voice->sound = sound;
+    voice->group = parent;
+
+    // Publish the handle before the state so any concurrent stale-handle
+    // check that observes STARTING is guaranteed to see the new occupant.
     c89atomic_store_64(&voice->handle, (sc_uint64)slot);
+    c89atomic_store_32(&voice->currentStateAndFlags, sc_voice_word_make(SC_VOICE_STATE_STARTING, SC_VOICE_FLAG_NONE));
+    c89atomic_store_32(&voice->desiredStateAndFlags, sc_voice_word_make(SC_VOICE_STATE_PLAYING, paused ? SC_VOICE_FLAG_PAUSED : SC_VOICE_FLAG_NONE));
 
     *outVoiceHandle = slot;
 
     return SBK_SUCCESS;
 }
 
-static sbk_status sc_voice_write_desired_state(sc_system* system, sc_voice_handle handle, sc_voice_state desired)
+// Resolve a public handle to the voice slot, rejecting stale handles.
+// The stale check compares against voice->handle, which is published atomically
+// on slot acquisition and cleared on release.
+static sbk_status sc_voice_resolve(sc_system* system, sc_voice_handle handle, sc_voice** outVoice)
 {
     SC_CHECK_ARG(system != NULL);
+    SC_CHECK_ARG(outVoice != NULL);
+
     const sc_voice_slot slot = sc_voice_handle_extract_slot(handle);
     SC_CHECK_ARG(slot < system->voiceSlotAllocator.capacity);
 
@@ -565,18 +505,59 @@ static sbk_status sc_voice_write_desired_state(sc_system* system, sc_voice_handl
     const sc_voice_handle current = (sc_voice_handle)c89atomic_load_64(&voice->handle);
     SC_CHECK(current == handle, SBK_ERR_NOT_FOUND);
 
-    c89atomic_store_32(&voice->desiredStateAndFlags, (sc_uint32)desired);
+    *outVoice = voice;
+    return SBK_SUCCESS;
+}
+
+// CAS loop that rewrites the state bits while preserving the flag bits.
+// Retries until no concurrent flag write races us; typical contention is
+// bounded to a handful of iterations (audio thread vs one game-thread call).
+static void sc_voice_word_set_state(volatile sc_atomic_uint32* word, sc_voice_state state)
+{
+    for (;;)
+    {
+        const sc_uint32 old = c89atomic_load_32(word);
+        const sc_uint32 desired = sc_voice_word_with_state(old, state);
+        if (old == desired) return;
+        if (c89atomic_compare_and_swap_32(word, old, desired) == old) return;
+    }
+}
+
+// Set (add == SBK_TRUE) or clear (add == SBK_FALSE) one flag bit while
+// preserving both the state and the other flags.
+static void sc_voice_word_write_flag(volatile sc_atomic_uint32* word, sc_voice_flags flag, sc_bool add)
+{
+    for (;;)
+    {
+        const sc_uint32 old = c89atomic_load_32(word);
+        const sc_uint32 desired = add ? (old | (sc_uint32)flag) : (old & ~(sc_uint32)flag);
+        if (old == desired) return;
+        if (c89atomic_compare_and_swap_32(word, old, desired) == old) return;
+    }
+}
+
+static sbk_status sc_voice_write_desired_state(sc_system* system, sc_voice_handle handle, sc_voice_state desired)
+{
+    sc_voice* voice = NULL;
+    SC_CHECK_STATUS(sc_voice_resolve(system, handle, &voice));
+    sc_voice_word_set_state(&voice->desiredStateAndFlags, desired);
     return SBK_SUCCESS;
 }
 
 sbk_status sc_voice_pause(sc_system* system, sc_voice_handle handle)
 {
-    return sc_voice_write_desired_state(system, handle, SC_VOICE_STATE_PAUSED);
+    sc_voice* voice = NULL;
+    SC_CHECK_STATUS(sc_voice_resolve(system, handle, &voice));
+    sc_voice_word_write_flag(&voice->desiredStateAndFlags, SC_VOICE_FLAG_PAUSED, SBK_TRUE);
+    return SBK_SUCCESS;
 }
 
 sbk_status sc_voice_resume(sc_system* system, sc_voice_handle handle)
 {
-    return sc_voice_write_desired_state(system, handle, SC_VOICE_STATE_PLAYING);
+    sc_voice* voice = NULL;
+    SC_CHECK_STATUS(sc_voice_resolve(system, handle, &voice));
+    sc_voice_word_write_flag(&voice->desiredStateAndFlags, SC_VOICE_FLAG_PAUSED, SBK_FALSE);
+    return SBK_SUCCESS;
 }
 
 sbk_status sc_voice_stop(sc_system* system, sc_voice_handle handle)
@@ -589,8 +570,30 @@ sbk_status sc_system_stop_all_voices(sc_system* system)
     SC_CHECK_ARG(system != NULL);
     for (sc_uint32 slot = 0; slot < system->voiceSlotAllocator.capacity; ++slot)
     {
-        c89atomic_store_32(&system->voiceBuffer[slot].desiredStateAndFlags, (sc_uint32)SC_VOICE_STATE_STOPPED);
+        sc_voice_word_set_state(&system->voiceBuffer[slot].desiredStateAndFlags, SC_VOICE_STATE_STOPPED);
     }
+    return SBK_SUCCESS;
+}
+
+sbk_status sc_voice_get_paused(sc_system* system, sc_voice_handle handle, sc_bool* outPaused)
+{
+    SC_CHECK_ARG(outPaused != NULL);
+    sc_voice* voice = NULL;
+    SC_CHECK_STATUS(sc_voice_resolve(system, handle, &voice));
+    // Pause is a user-controlled flag on the desired word - reading it here
+    // reflects what the caller last requested, without waiting for the pump.
+    *outPaused = sc_voice_word_has_flag(c89atomic_load_32(&voice->desiredStateAndFlags), SC_VOICE_FLAG_PAUSED);
+    return SBK_SUCCESS;
+}
+
+sbk_status sc_voice_get_virtual(sc_system* system, sc_voice_handle handle, sc_bool* outVirtual)
+{
+    SC_CHECK_ARG(outVirtual != NULL);
+    sc_voice* voice = NULL;
+    SC_CHECK_STATUS(sc_voice_resolve(system, handle, &voice));
+    // Virtual is a system-owned flag on the current word - it reflects whether
+    // the pump has a real voice mixing right now.
+    *outVirtual = sc_voice_word_has_flag(c89atomic_load_32(&voice->currentStateAndFlags), SC_VOICE_FLAG_VIRTUAL);
     return SBK_SUCCESS;
 }
 
