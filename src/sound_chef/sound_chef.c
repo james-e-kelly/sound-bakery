@@ -231,8 +231,8 @@ sbk_status sc_system_update(sc_system* system)
 
     for (sc_uint32 voiceIndex = 0; voiceIndex < system->voiceSlotAllocator.capacity; ++voiceIndex)
     {
-        const sc_voice_state desiredVoiceState = c89atomic_load_8(&system->voiceBuffer[voiceIndex].desiredState);
-        const sc_voice_state currentVoiceState = c89atomic_load_8(&system->voiceBuffer[voiceIndex].currentState);
+        const sc_voice_state desiredVoiceState = sc_voice_extract_state(c89atomic_load_32(&system->voiceBuffer[voiceIndex].desiredStateAndFlags));
+        const sc_voice_state currentVoiceState = sc_voice_extract_state(c89atomic_load_32(&system->voiceBuffer[voiceIndex].currentStateAndFlags));
 
         switch (desiredVoiceState)
         {
@@ -543,14 +543,54 @@ sbk_status sc_system_play_sound_voice(sc_system* system, sc_sound* sound, sc_voi
     voice->sound          = sound;
     voice->group          = parent;
 
-    const sc_voice_state currentState = c89atomic_load_8(&voice->currentState);
+    const sc_voice_state currentState = sc_voice_extract_state(c89atomic_load_32(&voice->currentStateAndFlags));
     SC_ASSERT(currentState == SC_VOICE_STATE_STOPPED);
 
-    c89atomic_store_8(&voice->currentState, SC_VOICE_STATE_STARTING);
-    c89atomic_store_8(&voice->desiredState, (sc_uint8)(paused ? SC_VOICE_STATE_PAUSED : SC_VOICE_STATE_PLAYING));
+    c89atomic_store_32(&voice->currentStateAndFlags, (sc_uint32)SC_VOICE_STATE_STARTING);
+    c89atomic_store_32(&voice->desiredStateAndFlags, (sc_uint32)(paused ? SC_VOICE_STATE_PAUSED : SC_VOICE_STATE_PLAYING));
+    c89atomic_store_64(&voice->handle, (sc_uint64)slot);
 
     *outVoiceHandle = slot;
 
+    return SBK_SUCCESS;
+}
+
+static sbk_status sc_voice_write_desired_state(sc_system* system, sc_voice_handle handle, sc_voice_state desired)
+{
+    SC_CHECK_ARG(system != NULL);
+    const sc_voice_slot slot = sc_voice_handle_extract_slot(handle);
+    SC_CHECK_ARG(slot < system->voiceSlotAllocator.capacity);
+
+    sc_voice* const voice = &system->voiceBuffer[slot];
+    const sc_voice_handle current = (sc_voice_handle)c89atomic_load_64(&voice->handle);
+    SC_CHECK(current == handle, SBK_ERR_NOT_FOUND);
+
+    c89atomic_store_32(&voice->desiredStateAndFlags, (sc_uint32)desired);
+    return SBK_SUCCESS;
+}
+
+sbk_status sc_voice_pause(sc_system* system, sc_voice_handle handle)
+{
+    return sc_voice_write_desired_state(system, handle, SC_VOICE_STATE_PAUSED);
+}
+
+sbk_status sc_voice_resume(sc_system* system, sc_voice_handle handle)
+{
+    return sc_voice_write_desired_state(system, handle, SC_VOICE_STATE_PLAYING);
+}
+
+sbk_status sc_voice_stop(sc_system* system, sc_voice_handle handle)
+{
+    return sc_voice_write_desired_state(system, handle, SC_VOICE_STATE_STOPPED);
+}
+
+sbk_status sc_system_stop_all_voices(sc_system* system)
+{
+    SC_CHECK_ARG(system != NULL);
+    for (sc_uint32 slot = 0; slot < system->voiceSlotAllocator.capacity; ++slot)
+    {
+        c89atomic_store_32(&system->voiceBuffer[slot].desiredStateAndFlags, (sc_uint32)SC_VOICE_STATE_STOPPED);
+    }
     return SBK_SUCCESS;
 }
 

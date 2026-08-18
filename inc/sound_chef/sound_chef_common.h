@@ -72,6 +72,26 @@
 
 #define SC_ZERO_OBJECT(p) memset((p), 0, sizeof(*(p)))
 
+// C uses _Alignas (C11+); C++ uses alignas as a keyword.
+#ifdef __cplusplus
+    #define SC_ALIGN_TO(x) alignas(x)
+#else
+    #define SC_ALIGN_TO(x) _Alignas(x)
+#endif
+
+// CPU pause hint for short spin loops. Not a scheduler yield — reach for
+// sched_yield / SwitchToThread if the wait might be longer than a few cycles.
+#if defined(_MSC_VER)
+    #include <intrin.h>
+    #define SC_PAUSE() _mm_pause()
+#elif defined(__i386__) || defined(__x86_64__)
+    #define SC_PAUSE() __asm__ __volatile__("pause")
+#elif defined(__aarch64__) || defined(__arm__)
+    #define SC_PAUSE() __asm__ __volatile__("yield")
+#else
+    #define SC_PAUSE() ((void)0)
+#endif
+
 #define SC_COUNTOF(x)            (sizeof(x) / sizeof(x[0]))
 #define SC_MAX(x, y)             (((x) > (y)) ? (x) : (y))
 #define SC_MIN(x, y)             (((x) < (y)) ? (x) : (y))
@@ -134,6 +154,22 @@ typedef ma_uint32           sc_uint32;
 typedef ma_int32            sc_int32;
 typedef ma_int64            sc_int64;
 typedef ma_uint64           sc_uint64;
+
+static MA_INLINE sc_bool sc_is_pow2(size_t x)
+{
+    return x != 0 && (x & (x - 1)) == 0;
+}
+
+// Returns 1 for x <= 1.
+static MA_INLINE size_t sc_next_pow2(size_t x)
+{
+    size_t v = 1;
+    while (v < x)
+    {
+        v <<= 1;
+    }
+    return v;
+}
 
 typedef sc_uint64           sc_voice_handle;        //< Voice handle. Contains both a reference count and an index
 typedef sc_uint32           sc_voice_refcount;      //< References to this slot. Used to check if a handle is old/stale
@@ -278,6 +314,16 @@ typedef enum sc_voice_state
     SC_VOICE_STATE_PAUSED,      //< Cursor frozen. On resume, virtualization decides @ref SC_VOICE_STATE_PLAYING vs @ref SC_VOICE_STATE_VIRTUAL.
     SC_VOICE_STATE_STOPPING     //< Tail/fade-out in progress; transitions to @ref SC_VOICE_STATE_STOPPED when done.
 } sc_voice_state;
+
+// State is packed into the low bits of a 32-bit atomic word; upper bits are
+// reserved for future flags (virtualised, fading, etc.) so a caller reads the
+// whole voice state in one atomic load.
+#define SC_VOICE_STATE_MASK 0x000000FFu
+
+static MA_INLINE sc_voice_state sc_voice_extract_state(sc_uint32 word)
+{
+    return (sc_voice_state)(word & SC_VOICE_STATE_MASK);
+}
 
 /**
  * @brief Built-in DSP types.
@@ -461,8 +507,9 @@ typedef struct sc_voice
     sc_system*                      system;
     sc_sound*                       sound;                  //< Source to read from
     sc_uint64                       playCursor;             //< Audio thread
-    MA_ATOMIC(4, sc_atomic_uint8)   currentState;
-    MA_ATOMIC(4, sc_atomic_uint8)   desiredState;
+    MA_ATOMIC(8, sc_atomic_uint64)  handle;                 //< Handle for this slot's current occupant. Stale-handle callers compare against this and get SBK_ERR_NOT_FOUND on mismatch.
+    MA_ATOMIC(4, sc_atomic_uint32)  currentStateAndFlags;
+    MA_ATOMIC(4, sc_atomic_uint32)  desiredStateAndFlags;
     sc_atomic_float                 gain;
     sc_atomic_float                 pitch;
     sc_uint8                        priority;               //< priority where the greater the number, the great the priority. Generally 0-100

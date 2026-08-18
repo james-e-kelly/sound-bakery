@@ -80,6 +80,17 @@ extern "C"
 
     sbk_status SC_API sc_system_play_sound_voice(sc_system* system, sc_sound* sound, sc_voice_handle* outVoiceHandle, sc_node_group* parent, sc_bool paused);
 
+    /**
+     * @defgroup Voice Voice Control
+     * @ingroup System
+     * @{
+     */
+
+    sbk_status SC_API sc_voice_pause(sc_system* system, sc_voice_handle handle);
+    sbk_status SC_API sc_voice_resume(sc_system* system, sc_voice_handle handle);
+    sbk_status SC_API sc_voice_stop(sc_system* system, sc_voice_handle handle);
+    sbk_status SC_API sc_system_stop_all_voices(sc_system* system);
+
     /**@}*/
 
     /**
