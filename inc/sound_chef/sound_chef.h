@@ -74,6 +74,15 @@ extern "C"
     #define SC_ALIGN_TO(x) _Alignas(x)
 #endif
 
+// Struct-level alignment. Goes between `struct` and the tag. Prefer this over
+// SC_ALIGN_TO on a leading field when that field already carries an alignment
+// (e.g. MA_ATOMIC), since stacking _Alignas on one declaration warns on MSVC.
+#if defined(_MSC_VER)
+    #define SC_ALIGN_STRUCT(x) __declspec(align(x))
+#else
+    #define SC_ALIGN_STRUCT(x) __attribute__((aligned(x)))
+#endif
+
 // CPU pause hint for short spin loops. Not a scheduler yield
 #if defined(_MSC_VER)
     #include <intrin.h>
@@ -762,21 +771,50 @@ Voice
 
 **************************************************************************************************************************************************************/
 
-typedef sc_uint64 sc_voice_handle;    //< Voice handle. Contains both a reference count and an index
-typedef sc_uint32 sc_voice_refcount;  //< References to this slot. Used to check if a handle is old/stale
-typedef sc_uint32 sc_voice_slot;      //< Slot/index into the voice array
+typedef sc_uint64 sc_voice_handle;      //< Voice handle. Contains both a reference count and an index into the voice arry
+typedef sc_uint32 sc_voice_refcount;    //< References to this slot. Used to check if a handle is old/stale
+typedef sc_uint32 sc_voice_index;       //< Index into the voice array
 
 /**
- * @brief Playback lifecycle position of an @ref sc_voice.
+ * @brief Gets the refcount from the upper 32 bits of the handle. 
+ */
+#define SC_VOICE_HANDLE_EXTRACT_REFCOUNT(handle)    (sc_voice_refcount)((handle) >> 32)
+
+/**
+ * @brief Gets the index from the lower 32 bits of the handle.
+ */
+#define SC_VOICE_HANDLE_EXTRACT_INDEX(handle)        (sc_voice_index)((handle) & 0xFFFFFFFFu)
+
+/**
+ * @brief Makes a voice handle, packing the refcount into the upper 32 bits and the index into the lower 32 bits.
+ */
+#define SC_VOICE_MAKE_HANDLE(refcount, slot)        ((sc_voice_handle)(refcount) << 32) | (sc_voice_handle)(slot)
+
+/**
+ * @brief What the caller wants the voice to do.
+ *
+ * Stored in @ref sc_voice::desiredState. Only two values so callers cannot
+ * request an update-owned transient by mistake; the update loop maps this
+ * onto @ref sc_voice_state as it drives the transitions.
+ */
+typedef enum sc_voice_desired_state
+{
+    sc_voice_desired_stopped,   //< Caller wants the voice idle. Either not yet started, or stop/drain now.
+    sc_voice_desired_playing    //< Caller wants the voice live. Set by sc_system_play_sound_voice.
+} sc_voice_desired_state;
+
+/**
+ * @brief Playback lifecycle position of an @ref sc_voice as tracked by the update loop.
  *
  * The state describes where the voice is in its lifecycle; audibility and
  * cursor progression are expressed as orthogonal flags:
  *   - @ref SC_VOICE_FLAG_PAUSED  - user paused; the audio callback freezes the play cursor.
  *   - @ref SC_VOICE_FLAG_VIRTUAL - system culled to stay under the real-voice budget; no mix.
  *
- * Callers only ever request @ref sc_voice_state_stopped or
- * @ref sc_voice_state_playing on the desired word. @ref sc_voice_state_starting
- * and @ref sc_voice_state_stopping are pump-owned transients.
+ * Written only by the update loop (@ref sc_voice::currentState). Callers
+ * express intent via @ref sc_voice_desired_state, which cannot name the
+ * update-owned transients @ref sc_voice_state_starting or
+ * @ref sc_voice_state_stopping.
  *
  * Failures (async load errors, decoder errors, etc.) do not have their own
  * state; the voice transitions to @ref sc_voice_state_stopping and the slot
@@ -784,7 +822,7 @@ typedef sc_uint32 sc_voice_slot;      //< Slot/index into the voice array
  * @ref SBK_ERR_NOT_FOUND; check the logs or profiler for the
  * underlying cause.
  *
- * Transitions the pump drives (rows = current, columns = desired; dash = not allowed):
+ * Transitions the update loop drives (rows = current, columns = desired; dash = not allowed):
  *
  * | current \ desired | STOPPED  | PLAYING |
  * | ----------------- | :------: | :-----: |
@@ -801,48 +839,56 @@ typedef enum sc_voice_state
     sc_voice_state_stopping   //< Tail/fade-out in progress; transitions to @ref sc_voice_state_stopped when done.
 } sc_voice_state;
 
-// State + flags are packed into one 32-bit atomic word so callers see the
-// whole voice status in one load. Layout:
-//   bits  0..7  : sc_voice_state (exclusive lifecycle position)
-//   bits  8..31 : sc_voice_flags (orthogonal modifiers, OR-able)
-//
-// Any write that changes only the state must preserve the flag bits (and vice
-// versa) - use sc_voice_word_with_state / sc_voice_word_with_flags to build
-// the replacement word, and CAS to install it.
-#define SC_VOICE_STATE_MASK 0x000000FFu
-#define SC_VOICE_FLAGS_MASK 0xFFFFFF00u
-
-// Reserve the low 8 bits for the state. Flag values must start at bit 8.
-// PAUSED lives on the desired word (user request). VIRTUAL lives on the current
-// word (system decision based on the real-voice budget). Everything else is
-// evaluated per-flag when the pump reads its word.
+// Orthogonal modifiers on top of sc_voice_state. Stored in their own atomic
+// word (see sc_voice::flags) since none of them need a desired/current split:
+// PAUSED is caller-writes/caller-reads, VIRTUAL and FADING are update-owned
+// and observed by callers.
 typedef enum sc_voice_flags
 {
     SC_VOICE_FLAG_NONE    = 0,
-    SC_VOICE_FLAG_PAUSED  = 1u << 8,  //< Freeze the play cursor. Set by the user via sc_voice_pause.
-    SC_VOICE_FLAG_VIRTUAL = 1u << 9,  //< Not connected to a real voice; audio callback skips the mix.
-    SC_VOICE_FLAG_FADING  = 1u << 10  //< A volume ramp is in progress (start/stop fade, ducking, etc.).
+    SC_VOICE_FLAG_PAUSED  = 1u << 0,  //< Freeze the play cursor. Set by the user via sc_voice_pause.
+    SC_VOICE_FLAG_VIRTUAL = 1u << 1,  //< Not connected to a real voice; audio callback skips the mix.
+    SC_VOICE_FLAG_FADING  = 1u << 2   //< A volume ramp is in progress (start/stop fade, ducking, etc.).
 } sc_voice_flags;
 
 /**
+ * @brief Test whether a flags word carries a given flag.
+ */
+#define SC_VOICE_HAS_FLAG(flags, flag) (((flags) & (sc_uint32)(flag)) != 0)
+
+/**
  * @brief A voice is a window into a single sound that may or may not be audible and rendering.
- * 
+ *
+ * Sized to fit one 64-byte cache line so an array of voices maps cleanly to
+ * cache-line boundaries. A @ref _Static_assert in sound_chef.c pins this.
+ *
  * Voices are limited by the @ref sc_system_config::maxVoices value passed during system initialization.
  */
-typedef struct sc_voice
+#if defined(_MSC_VER)
+    #pragma warning(push)
+    #pragma warning(disable: 4324) // structure was padded due to alignment specifier - intentional, see SC_ALIGN_STRUCT below
+#endif
+typedef struct SC_ALIGN_STRUCT(64) sc_voice
 {
-    sc_system*                      system;
-    sc_sound*                       sound;                  //< Source to read from
-    sc_uint64                       playCursor;             //< Audio thread
     MA_ATOMIC(8, sc_atomic_uint64)  handle;                 //< Handle for this slot's current occupant. Stale-handle callers compare against this and get SBK_ERR_NOT_FOUND on mismatch.
-    MA_ATOMIC(4, sc_atomic_uint32)  currentStateAndFlags;
-    MA_ATOMIC(4, sc_atomic_uint32)  desiredStateAndFlags;
+    sc_voice_handle                 realVoiceHandle;        //< Non-owning reference to a real voice
+
+    sc_sound*                       sound;                  //< Source to read from
+    sc_node_group*                  group;                  //< Parent group to connect to when playing for real
+    sc_uint64                       playCursor;             //< Audio thread
+
+    MA_ATOMIC(4, sc_atomic_uint32)  currentState;           //< sc_voice_state observed by the update loop. Update writes; anyone reads.
+    MA_ATOMIC(4, sc_atomic_uint32)  desiredState;           //< sc_voice_desired_state requested by callers. Callers write; update reads.
+    MA_ATOMIC(4, sc_atomic_uint32)  flags;                  //< sc_voice_flags. PAUSED written by callers; VIRTUAL/FADING written by the update loop. CAS on bit updates.
+
     sc_atomic_float                 gain;
     sc_atomic_float                 pitch;
-    sc_uint8                        priority;               //< priority where the greater the number, the great the priority. Generally 0-100
-    sc_node_group*                  group;
-    sc_voice_handle                 realVoiceHandle;        //< Non-owning reference to a real voice
+
+    sc_uint8                        priority;               //< priority where the greater the number, the great the priority
 } sc_voice;
+#if defined(_MSC_VER)
+    #pragma warning(pop)
+#endif
 
 /**
  * @brief A real voice that is connected to the DSP graph.
@@ -857,51 +903,6 @@ typedef struct sc_voice_real
     ma_decoder*                     memoryDecoder;  //< @todo Work out if this should go in a resource manager
 } sc_voice_real;
 
-static MA_INLINE sc_uint32 sc_voice_word_make(sc_voice_state state, sc_uint32 flags)
-{
-    return ((sc_uint32)state & SC_VOICE_STATE_MASK) | (flags & SC_VOICE_FLAGS_MASK);
-}
-
-static MA_INLINE sc_voice_state sc_voice_word_state(sc_uint32 word)
-{
-    return (sc_voice_state)(word & SC_VOICE_STATE_MASK);
-}
-
-static MA_INLINE sc_uint32 sc_voice_word_flags(sc_uint32 word)
-{
-    return word & SC_VOICE_FLAGS_MASK;
-}
-
-static MA_INLINE sc_uint32 sc_voice_word_with_state(sc_uint32 word, sc_voice_state state)
-{
-    return (word & SC_VOICE_FLAGS_MASK) | ((sc_uint32)state & SC_VOICE_STATE_MASK);
-}
-
-static MA_INLINE sc_uint32 sc_voice_word_with_flags(sc_uint32 word, sc_uint32 flags)
-{
-    return (word & SC_VOICE_STATE_MASK) | (flags & SC_VOICE_FLAGS_MASK);
-}
-
-static MA_INLINE sc_bool sc_voice_word_has_flag(sc_uint32 word, sc_voice_flags flag)
-{
-    return (word & (sc_uint32)flag) != 0;
-}
-
-static MA_INLINE sc_voice_refcount sc_voice_handle_extract_refcount(sc_voice_handle handle)
-{
-    return (sc_uint32)(handle >> 32);
-}
-
-static MA_INLINE sc_voice_slot sc_voice_handle_extract_slot(sc_voice_handle handle)
-{
-    return (sc_voice_slot)(handle & 0xFFFFFFFFu);
-}
-
-static MA_INLINE sc_voice_handle sc_voice_handle_make(sc_voice_refcount rc, sc_voice_slot slot)
-{
-    return ((sc_voice_handle)rc << 32) | (sc_voice_handle)slot;
-}
-
 sbk_status SC_API sc_voice_pause(sc_system* system, sc_voice_handle handle);
 sbk_status SC_API sc_voice_resume(sc_system* system, sc_voice_handle handle);
 sbk_status SC_API sc_voice_stop(sc_system* system, sc_voice_handle handle);
@@ -909,17 +910,16 @@ sbk_status SC_API sc_voice_stop(sc_system* system, sc_voice_handle handle);
 /**
  * @brief Returns whether the voice is currently paused (@ref SC_VOICE_FLAG_PAUSED).
  *
- * Reads the desired-side flag, so it reflects the caller's last pause/resume
- * request without waiting for the audio pump.
- * Returns @ref SBK_ERR_NOT_FOUND if @p handle is stale.
+ * Reflects the caller's last pause/resume request without waiting for the
+ * update loop. Returns @ref SBK_ERR_NOT_FOUND if @p handle is stale.
  */
 sbk_status SC_API sc_voice_get_paused(sc_system* system, sc_voice_handle handle, sc_bool* outPaused);
 
 /**
  * @brief Returns whether the voice is currently virtualised (@ref SC_VOICE_FLAG_VIRTUAL).
  *
- * Reads the current-side flag: SC_TRUE means the pump has no real voice
- * mixing this @ref sc_voice right now (culled by the real-voice budget).
+ * SC_TRUE means the update loop has no real voice mixing this @ref sc_voice
+ * right now (culled by the real-voice budget).
  */
 sbk_status SC_API sc_voice_get_virtual(sc_system* system, sc_voice_handle handle, sc_bool* outVirtual);
 

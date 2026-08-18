@@ -1,8 +1,6 @@
 #define MINIAUDIO_IMPLEMENTATION
 
-// clang-format off
-#include "sound_chef/sound_chef.h" //< Must be included first. Includes all miniaudio structs for libopus and libvorbis
-// clang-format on
+#include "sound_chef/sound_chef.h"
 
 #include <dirent.h>
 #include <stdio.h>
@@ -14,6 +12,20 @@ static void sc_system_clap_request_restart(const clap_host_t* host) { (void)host
 void sc_system_audio_callback(ma_device* device, void* output, const void* input, ma_uint32 frameCount)
 {
     (void)input;
+
+    sc_system* const system = (sc_system*)device->pUserData;
+
+    for (sc_uint32 voiceIndex = 0; voiceIndex < system->voiceSlotAllocator.capacity; ++voiceIndex)
+    {
+        const sc_uint32 flags = c89atomic_load_32(&system->voiceBuffer[voiceIndex].flags);
+
+        const sc_bool isPaused = SC_VOICE_HAS_FLAG(flags, SC_VOICE_FLAG_PAUSED);
+
+        if (!isPaused)
+        {
+            system->voiceBuffer[voiceIndex].playCursor += frameCount;
+        }
+    }
 
     (void)ma_engine_read_pcm_frames((ma_engine*)(device->pUserData), output, frameCount, NULL);
 }
@@ -229,21 +241,13 @@ sbk_status sc_system_update(sc_system* system)
 
     for (sc_uint32 voiceIndex = 0; voiceIndex < system->voiceSlotAllocator.capacity; ++voiceIndex)
     {
-        const sc_uint32 desiredWord = c89atomic_load_32(&system->voiceBuffer[voiceIndex].desiredStateAndFlags);
-        const sc_uint32 currentWord = c89atomic_load_32(&system->voiceBuffer[voiceIndex].currentStateAndFlags);
-
-        const sc_voice_state desiredState = sc_voice_word_state(desiredWord);
-        const sc_voice_state currentState = sc_voice_word_state(currentWord);
-
-        // Users only request STOPPED or PLAYING. SC_VOICE_FLAG_PAUSED on the
-        // desired word is honoured by the audio callback (it freezes the play
-        // cursor); no state transition is needed for pause/resume.
-        // SC_VOICE_FLAG_VIRTUAL on the current word is set/cleared inline below
-        // when the real-voice budget check runs.
+        sc_voice* const voice                     = &system->voiceBuffer[voiceIndex];
+        const sc_voice_desired_state desiredState = (sc_voice_desired_state)c89atomic_load_32(&voice->desiredState);
+        const sc_voice_state currentState         = (sc_voice_state)c89atomic_load_32(&voice->currentState);
 
         switch (desiredState)
         {
-            case sc_voice_state_playing:
+            case sc_voice_desired_playing:
                 switch (currentState)
                 {
                     case sc_voice_state_stopped:
@@ -252,6 +256,7 @@ sbk_status sc_system_update(sc_system* system)
                     case sc_voice_state_starting:
                         // Load complete? Run virtualization; promote to PLAYING,
                         // set SC_VOICE_FLAG_VIRTUAL if over the real-voice budget.
+                        
                         break;
                     case sc_voice_state_playing:
                         // Steady state - re-evaluate SC_VOICE_FLAG_VIRTUAL against
@@ -262,7 +267,7 @@ sbk_status sc_system_update(sc_system* system)
                         break;
                 }
                 break;
-            case sc_voice_state_stopped:
+            case sc_voice_desired_stopped:
                 switch (currentState)
                 {
                     case sc_voice_state_stopped:
@@ -278,12 +283,6 @@ sbk_status sc_system_update(sc_system* system)
                         // Tail in progress: check if drained, then release slot to STOPPED.
                         break;
                 }
-                break;
-            case sc_voice_state_starting:
-                SC_ASSERT(false && "STARTING is pump-owned; callers request PLAYING");
-                break;
-            case sc_voice_state_stopping:
-                SC_ASSERT(false && "STOPPING is pump-owned; callers request STOPPED");
                 break;
         }
     }
@@ -484,12 +483,12 @@ sbk_status sc_system_play_sound_voice(sc_system* system, sc_sound* sound, sc_voi
 
     ma_uint64 slot = 0;
     SC_CHECK_STATUS(SC_STATUS_FROM_MA_RESULT(ma_slot_allocator_alloc(&system->voiceSlotAllocator, &slot)));
-    ma_uint32 index = sc_voice_handle_extract_slot(slot);
+    const ma_uint32 index = SC_VOICE_HANDLE_EXTRACT_INDEX(slot);
 
     sc_voice* const voice = &system->voiceBuffer[index];
 
     // Slot must be idle before we take it over.
-    const sc_voice_state currentState = sc_voice_word_state(c89atomic_load_32(&voice->currentStateAndFlags));
+    const sc_voice_state currentState = (sc_voice_state)c89atomic_load_32(&voice->currentState);
     SC_ASSERT(currentState == sc_voice_state_stopped);
 
     voice->sound = sound;
@@ -498,118 +497,12 @@ sbk_status sc_system_play_sound_voice(sc_system* system, sc_sound* sound, sc_voi
     // Publish the handle before the state so any concurrent stale-handle
     // check that observes STARTING is guaranteed to see the new occupant.
     c89atomic_store_64(&voice->handle, (sc_uint64)slot);
-    c89atomic_store_32(&voice->currentStateAndFlags, sc_voice_word_make(sc_voice_state_starting, SC_VOICE_FLAG_NONE));
-    c89atomic_store_32(&voice->desiredStateAndFlags, sc_voice_word_make(sc_voice_state_playing, paused ? SC_VOICE_FLAG_PAUSED : SC_VOICE_FLAG_NONE));
+    c89atomic_store_32(&voice->flags, paused ? (sc_uint32)SC_VOICE_FLAG_PAUSED : (sc_uint32)SC_VOICE_FLAG_NONE);
+    c89atomic_store_32(&voice->currentState, (sc_uint32)sc_voice_state_starting);
+    c89atomic_store_32(&voice->desiredState, (sc_uint32)sc_voice_desired_playing);
 
     *outVoiceHandle = slot;
 
-    return SBK_SUCCESS;
-}
-
-// Resolve a public handle to the voice slot, rejecting stale handles.
-// The stale check compares against voice->handle, which is published atomically
-// on slot acquisition and cleared on release.
-static sbk_status sc_voice_resolve(sc_system* system, sc_voice_handle handle, sc_voice** outVoice)
-{
-    SC_CHECK_ARG(system != NULL);
-    SC_CHECK_ARG(outVoice != NULL);
-
-    const sc_voice_slot slot = sc_voice_handle_extract_slot(handle);
-    SC_CHECK_ARG(slot < system->voiceSlotAllocator.capacity);
-
-    sc_voice* const voice = &system->voiceBuffer[slot];
-    const sc_voice_handle current = (sc_voice_handle)c89atomic_load_64(&voice->handle);
-    SC_CHECK(current == handle, SBK_ERR_NOT_FOUND);
-
-    *outVoice = voice;
-    return SBK_SUCCESS;
-}
-
-// CAS loop that rewrites the state bits while preserving the flag bits.
-// Retries until no concurrent flag write races us; typical contention is
-// bounded to a handful of iterations (audio thread vs one game-thread call).
-static void sc_voice_word_set_state(volatile sc_atomic_uint32* word, sc_voice_state state)
-{
-    for (;;)
-    {
-        const sc_uint32 old = c89atomic_load_32(word);
-        const sc_uint32 desired = sc_voice_word_with_state(old, state);
-        if (old == desired) return;
-        if (c89atomic_compare_and_swap_32(word, old, desired) == old) return;
-    }
-}
-
-// Set (add == SC_TRUE) or clear (add == SC_FALSE) one flag bit while
-// preserving both the state and the other flags.
-static void sc_voice_word_write_flag(volatile sc_atomic_uint32* word, sc_voice_flags flag, sc_bool add)
-{
-    for (;;)
-    {
-        const sc_uint32 old = c89atomic_load_32(word);
-        const sc_uint32 desired = add ? (old | (sc_uint32)flag) : (old & ~(sc_uint32)flag);
-        if (old == desired) return;
-        if (c89atomic_compare_and_swap_32(word, old, desired) == old) return;
-    }
-}
-
-static sbk_status sc_voice_write_desired_state(sc_system* system, sc_voice_handle handle, sc_voice_state desired)
-{
-    sc_voice* voice = NULL;
-    SC_CHECK_STATUS(sc_voice_resolve(system, handle, &voice));
-    sc_voice_word_set_state(&voice->desiredStateAndFlags, desired);
-    return SBK_SUCCESS;
-}
-
-sbk_status sc_voice_pause(sc_system* system, sc_voice_handle handle)
-{
-    sc_voice* voice = NULL;
-    SC_CHECK_STATUS(sc_voice_resolve(system, handle, &voice));
-    sc_voice_word_write_flag(&voice->desiredStateAndFlags, SC_VOICE_FLAG_PAUSED, SC_TRUE);
-    return SBK_SUCCESS;
-}
-
-sbk_status sc_voice_resume(sc_system* system, sc_voice_handle handle)
-{
-    sc_voice* voice = NULL;
-    SC_CHECK_STATUS(sc_voice_resolve(system, handle, &voice));
-    sc_voice_word_write_flag(&voice->desiredStateAndFlags, SC_VOICE_FLAG_PAUSED, SC_FALSE);
-    return SBK_SUCCESS;
-}
-
-sbk_status sc_voice_stop(sc_system* system, sc_voice_handle handle)
-{
-    return sc_voice_write_desired_state(system, handle, sc_voice_state_stopped);
-}
-
-sbk_status sc_system_stop_all_voices(sc_system* system)
-{
-    SC_CHECK_ARG(system != NULL);
-    for (sc_uint32 slot = 0; slot < system->voiceSlotAllocator.capacity; ++slot)
-    {
-        sc_voice_word_set_state(&system->voiceBuffer[slot].desiredStateAndFlags, sc_voice_state_stopped);
-    }
-    return SBK_SUCCESS;
-}
-
-sbk_status sc_voice_get_paused(sc_system* system, sc_voice_handle handle, sc_bool* outPaused)
-{
-    SC_CHECK_ARG(outPaused != NULL);
-    sc_voice* voice = NULL;
-    SC_CHECK_STATUS(sc_voice_resolve(system, handle, &voice));
-    // Pause is a user-controlled flag on the desired word - reading it here
-    // reflects what the caller last requested, without waiting for the pump.
-    *outPaused = sc_voice_word_has_flag(c89atomic_load_32(&voice->desiredStateAndFlags), SC_VOICE_FLAG_PAUSED);
-    return SBK_SUCCESS;
-}
-
-sbk_status sc_voice_get_virtual(sc_system* system, sc_voice_handle handle, sc_bool* outVirtual)
-{
-    SC_CHECK_ARG(outVirtual != NULL);
-    sc_voice* voice = NULL;
-    SC_CHECK_STATUS(sc_voice_resolve(system, handle, &voice));
-    // Virtual is a system-owned flag on the current word - it reflects whether
-    // the pump has a real voice mixing right now.
-    *outVirtual = sc_voice_word_has_flag(c89atomic_load_32(&voice->currentStateAndFlags), SC_VOICE_FLAG_VIRTUAL);
     return SBK_SUCCESS;
 }
 
