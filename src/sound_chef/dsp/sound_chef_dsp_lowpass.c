@@ -15,7 +15,7 @@ static sbk_status sc_dsp_lowpass_create(sc_system* system, sc_dsp* dsp, const vo
     ma_lpf_node_config config = ma_lpf_node_config_init(ma_engine_get_channels((ma_engine*)system),
                                                         ma_engine_get_sample_rate((ma_engine*)system),
                                                         SC_DSP_CUTOFF_MAX, SC_DSP_DEFAULT_FILTER_ORDER);
-    return SBK_FROM_MA(ma_lpf_node_init((ma_node_graph*)system, &config, &system->engine.allocationCallbacks, (ma_lpf_node*)dsp->node));
+    return SC_STATUS_FROM_MA_RESULT(ma_lpf_node_init((ma_node_graph*)system, &config, &system->engine.allocationCallbacks, (ma_lpf_node*)dsp->node));
 }
 
 static sbk_status sc_dsp_lowpass_release(sc_system* system, sc_dsp* dsp)
@@ -42,7 +42,7 @@ static sbk_status sc_dsp_lowpass_set_param_float(sc_dsp* dsp, sc_uint32 index, f
         case SC_DSP_LOWPASS_PARAM_CUTOFF:
         {
             const ma_lpf_config lpfConfig = ma_lpf_config_init(format, channels, sampleRate, value, SC_DSP_DEFAULT_FILTER_ORDER);
-            result = SBK_FROM_MA(ma_lpf_node_reinit(&lpfConfig, dsp->node));
+            result = SC_STATUS_FROM_MA_RESULT(ma_lpf_node_reinit(&lpfConfig, dsp->node));
             break;
         }
     }

@@ -207,7 +207,7 @@ auto sbk::engine::node_instance_fsm::add_dsp_to_node_group(sc_node_group* nodeGr
     SBK_CHECK(handle > 0, SBK_ERR_INVALID_PARAMETER);
     const sc_dsp_config dspConfig = sc_dsp_config_init_handle(m_owner->get_runtime(), handle);
     SBK_TRY_C(sc_system_create_dsp(m_owner->get_runtime(), &dspConfig, dsp));
-    SBK_TRY_C(sc_node_group_add_dsp(nodeGroup, *dsp, SC_DSP_INDEX_HEAD));
+    SBK_TRY_C(sc_node_group_add_dsp(nodeGroup, *dsp, sc_dsp_index_head));
     return sbk::ok();
 }
 
@@ -218,8 +218,8 @@ auto sbk::engine::node_instance_fsm::init_node_group(const event_init& init) -> 
 
     SBK_TRY_C(sc_system_create_node_group(m_owner->get_runtime(), &nodeGroup));
     m_nodeGroup.nodeGroup.reset(nodeGroup);
-    SBK_TRYV(add_dsp_to_node_group(m_nodeGroup.nodeGroup.get(), &m_nodeGroup.lowpass, static_cast<sc_uint32>(SC_DSP_TYPE_LOWPASS)));
-    SBK_TRYV(add_dsp_to_node_group(m_nodeGroup.nodeGroup.get(), &m_nodeGroup.highpass, static_cast<sc_uint32>(SC_DSP_TYPE_HIGHPASS)));
+    SBK_TRYV(add_dsp_to_node_group(m_nodeGroup.nodeGroup.get(), &m_nodeGroup.lowpass, static_cast<sc_uint32>(sc_dsp_type_lowpass)));
+    SBK_TRYV(add_dsp_to_node_group(m_nodeGroup.nodeGroup.get(), &m_nodeGroup.highpass, static_cast<sc_uint32>(sc_dsp_type_highpass)));
 
     for (const sbk::core::database_ptr<sbk::engine::effect_description>& desc : m_referencingNode->m_effectDescriptions)
     {

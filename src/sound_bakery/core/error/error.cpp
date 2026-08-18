@@ -18,7 +18,7 @@ namespace sbk
                 return "The resource was already initialized and should not be initialized again";
             case SBK_ERR_CHEF:
                 return "Error from Sound Chef";
-            case SBK_ERR_CHEF_UNITIALIZED:
+            case SBK_ERR_CHEF_UNINITIALIZED:
                 return "Sound Chef is not initialized";
             case SBK_ERR_BAKERY:
                 return "Generic Sound Bakery error";
@@ -46,7 +46,7 @@ namespace sbk
                 return "The request was too large and nothing could be written or read";
             case SBK_ERR_AT_END:
                 return "At the end of the buffer and cannot go further";
-            case SBK_ERR_UNITIALIZED:
+            case SBK_ERR_UNINITIALIZED:
                 return "The resource was not initialized";
             case SBK_ERR_INVALID_OPERATION:
                 return "The operation is unsupported in this state";

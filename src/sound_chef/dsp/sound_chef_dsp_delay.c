@@ -104,7 +104,7 @@ sbk_status sc_delay_process_pcm_frames(sc_delay* delay, void* framesOut, const v
     {
         delay->silentFrameCount = 0;
 
-        c89atomic_store_explicit_32(&delay->isIdle, SBK_FALSE, c89atomic_memory_order_relaxed);
+        c89atomic_store_explicit_32(&delay->isIdle, SC_FALSE, c89atomic_memory_order_relaxed);
     }
     else
     {
@@ -112,7 +112,7 @@ sbk_status sc_delay_process_pcm_frames(sc_delay* delay, void* framesOut, const v
 
         if (delay->silentFrameCount >= delay->config.delayInFrames)
         {
-            c89atomic_store_explicit_32(&delay->isIdle, SBK_TRUE, c89atomic_memory_order_relaxed);
+            c89atomic_store_explicit_32(&delay->isIdle, SC_TRUE, c89atomic_memory_order_relaxed);
         }
     }
 
@@ -236,7 +236,7 @@ sbk_status sc_delay_node_init(ma_node_graph* nodeGraph, const sc_delay_node_conf
     baseConfig.pInputChannels  = &config->delayConfig.channels;
     baseConfig.pOutputChannels = &config->delayConfig.channels;
 
-    result = SBK_FROM_MA(ma_node_init(nodeGraph, &baseConfig, allocationCallbacks, &delayNode->baseNode));
+    result = SC_STATUS_FROM_MA_RESULT(ma_node_init(nodeGraph, &baseConfig, allocationCallbacks, &delayNode->baseNode));
     if (result != SBK_SUCCESS)
     {
         sc_delay_uninit(&delayNode->delay, allocationCallbacks);
@@ -271,8 +271,8 @@ static sbk_status sc_dsp_delay_create(sc_system* system, sc_dsp* dsp, const void
 
     ma_uint32 sampleRate = ma_engine_get_sample_rate(engine);
     ma_uint32 channels   = ma_engine_get_channels(engine);
-    SC_CHECK(sampleRate > 0, SBK_ERR_CHEF_UNITIALIZED);
-    SC_CHECK(channels > 0, SBK_ERR_CHEF_UNITIALIZED);
+    SC_CHECK(sampleRate > 0, SBK_ERR_CHEF_UNINITIALIZED);
+    SC_CHECK(channels > 0, SBK_ERR_CHEF_UNINITIALIZED);
 
     SC_CREATE(dsp->node, sc_delay_node, system);
 

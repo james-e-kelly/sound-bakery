@@ -122,7 +122,7 @@ static sbk_status sc_clap_node_init(ma_node_graph* nodeGraph,
     baseNodeConfig.pInputChannels  = &channels;
     baseNodeConfig.pOutputChannels = &channels;
 
-    return SBK_FROM_MA(ma_node_init(nodeGraph, &baseNodeConfig, allocCallbacks, node));
+    return SC_STATUS_FROM_MA_RESULT(ma_node_init(nodeGraph, &baseNodeConfig, allocCallbacks, node));
 }
 
 static void sc_clap_node_uninit(sc_clap_node* node, const ma_allocation_callbacks* allocationCallbacks)
@@ -142,21 +142,21 @@ static sbk_status sc_dsp_clap_create(sc_system* system, sc_dsp* dsp, const void*
     const clap_plugin_factory_t* const clapFactory = (const clap_plugin_factory_t*)userData;
 
     const clap_plugin_descriptor_t* const clapDescriptor = clapFactory->get_plugin_descriptor(clapFactory, 0);
-    SC_CHECK(clapDescriptor != NULL, SBK_FROM_MA(MA_ERROR));
+    SC_CHECK(clapDescriptor != NULL, SC_STATUS_FROM_MA_RESULT(MA_ERROR));
 
     const clap_plugin_t* clapPlugin = clapFactory->create_plugin(clapFactory, &system->clapHost, clapDescriptor->id);
-    SC_CHECK(clapPlugin != NULL, SBK_FROM_MA(MA_ERROR));
+    SC_CHECK(clapPlugin != NULL, SC_STATUS_FROM_MA_RESULT(MA_ERROR));
 
     if (!clapPlugin->init(clapPlugin))
     {
         clapPlugin->destroy(clapPlugin);
-        return SBK_FROM_MA(MA_ERROR);
+        return SC_STATUS_FROM_MA_RESULT(MA_ERROR);
     }
 
     if (!clapPlugin->activate(clapPlugin, ma_engine_get_sample_rate((ma_engine*)system), 1, SC_MAX_FRAME_COUNT))
     {
         clapPlugin->destroy(clapPlugin);
-        return SBK_FROM_MA(MA_ERROR);
+        return SC_STATUS_FROM_MA_RESULT(MA_ERROR);
     }
 
     clapNode->clapPlugin = clapPlugin;
@@ -189,7 +189,7 @@ static sbk_status sc_dsp_clap_set_param_float(sc_dsp* dsp, sc_uint32 index, floa
     (void)dsp;
     (void)index;
     (void)value;
-    return SBK_FROM_MA(MA_NOT_IMPLEMENTED);
+    return SC_STATUS_FROM_MA_RESULT(MA_NOT_IMPLEMENTED);
 }
 
 static sbk_status sc_dsp_clap_get_param_float(sc_dsp* dsp, sc_uint32 index, float* value)
@@ -197,7 +197,7 @@ static sbk_status sc_dsp_clap_get_param_float(sc_dsp* dsp, sc_uint32 index, floa
     (void)dsp;
     (void)index;
     (void)value;
-    return SBK_FROM_MA(MA_NOT_IMPLEMENTED);
+    return SC_STATUS_FROM_MA_RESULT(MA_NOT_IMPLEMENTED);
 }
 
 sc_dsp_description g_dspClapVTable =

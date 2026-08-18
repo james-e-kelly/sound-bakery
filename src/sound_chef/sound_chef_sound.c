@@ -78,7 +78,7 @@ sbk_status sc_sound_instance_set_cursor_in_seconds(sc_sound_instance* instance, 
     const float percentage               = seconds / lengthInSeconds;
     const ma_uint32 frameIndexForSeconds = (ma_uint32)((float)lengthInPCMFrames * percentage);
 
-    return SBK_FROM_MA(ma_sound_seek_to_pcm_frame(&instance->sound, frameIndexForSeconds));
+    return SC_STATUS_FROM_MA_RESULT(ma_sound_seek_to_pcm_frame(&instance->sound, frameIndexForSeconds));
 }
 
 sbk_status sc_sound_instance_get_loop_position_in_seconds(sc_sound_instance* instance, float* seconds)
@@ -92,7 +92,7 @@ sbk_status sc_sound_instance_get_loop_position_in_seconds(sc_sound_instance* ins
         ma_uint64 loopPointInPCMFrames = 0;
         ma_uint32 sampleRate           = 0;
 
-        SC_CHECK_STATUS(SBK_FROM_MA(ma_data_source_get_data_format(dataSource, NULL, NULL, &sampleRate, NULL, 0)));
+        SC_CHECK_STATUS(SC_STATUS_FROM_MA_RESULT(ma_data_source_get_data_format(dataSource, NULL, NULL, &sampleRate, NULL, 0)));
         ma_data_source_get_loop_point_in_pcm_frames(dataSource, NULL, &loopPointInPCMFrames);
 
         *seconds = (float)loopPointInPCMFrames / (float)sampleRate;
@@ -113,13 +113,13 @@ sbk_status sc_sound_instance_set_loop_position_in_seconds(sc_sound_instance* ins
     {
         ma_uint32 sampleRate = 0;
 
-        SC_CHECK_STATUS(SBK_FROM_MA(ma_data_source_get_data_format(dataSource, NULL, NULL, &sampleRate, NULL, 0)));
+        SC_CHECK_STATUS(SC_STATUS_FROM_MA_RESULT(ma_data_source_get_data_format(dataSource, NULL, NULL, &sampleRate, NULL, 0)));
 
         const ma_uint64 loopStartInPCMFrames = (ma_uint64)(loopStartSeconds * (float)sampleRate);
         const ma_uint64 loopEndInPCMFrames   = (ma_uint64)(loopEndSeconds * (float)sampleRate);
 
         SC_CHECK_STATUS(
-            SBK_FROM_MA(ma_data_source_set_loop_point_in_pcm_frames(dataSource, loopStartInPCMFrames, loopEndInPCMFrames)));
+            SC_STATUS_FROM_MA_RESULT(ma_data_source_set_loop_point_in_pcm_frames(dataSource, loopStartInPCMFrames, loopEndInPCMFrames)));
     }
 
     return SBK_SUCCESS;

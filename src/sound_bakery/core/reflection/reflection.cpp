@@ -135,10 +135,10 @@ namespace sbk::reflection
         using namespace sbk::engine;
 
         registration::enumeration<sc_dsp_type>("sc_dsp_type")(
-            value("Fader", SC_DSP_TYPE_FADER),
-            value("Lowpass", SC_DSP_TYPE_LOWPASS),
-            value("Highpass", SC_DSP_TYPE_HIGHPASS),
-            value("Delay", SC_DSP_TYPE_DELAY));
+            value("Fader", sc_dsp_type_fader),
+            value("Lowpass", sc_dsp_type_lowpass),
+            value("Highpass", sc_dsp_type_highpass),
+            value("Delay", sc_dsp_type_delay));
 
         registration::enumeration<sc_dsp_parameter_type>("sc_dsp_parameter_type")(
             value("Float", sc_dsp_parameter_type_float)

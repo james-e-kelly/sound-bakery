@@ -85,7 +85,7 @@ auto gluten::audio_subsystem::play_sound(const std::filesystem::path& filePath) 
     else if (sc_sound* const sound = get_or_load_audio_handle(filePath))
     {
         sc_sound_instance* soundInstance = nullptr;
-        sc_system_play_sound(sbk::engine::system::get()->get_runtime(), sound, &soundInstance, nullptr, SBK_FALSE);
+        sc_system_play_sound(sbk::engine::system::get()->get_runtime(), sound, &soundInstance, nullptr, SC_FALSE);
         try_set_loop_points(soundInstance, loopData);
         m_filesToSoundInstancesMap[filePath].reset(soundInstance);
     }
@@ -121,14 +121,14 @@ auto gluten::audio_subsystem::set_sound_cursor_position(const std::filesystem::p
     if (sc_sound_instance* const soundInstance = get_sound_instance(filePath))
     {
         sc_sound_instance_set_cursor_in_seconds(soundInstance, cursorPosition);
-        sc_sound_instance_set_looping(soundInstance, SBK_FALSE);
+        sc_sound_instance_set_looping(soundInstance, SC_FALSE);
     }
     else if (sc_sound* const sound = get_or_load_audio_handle(filePath))
     {
         sc_sound_instance* soundInstance = nullptr;
-        sc_system_play_sound(sbk::engine::system::get()->get_runtime(), sound, &soundInstance, nullptr, SBK_TRUE);
+        sc_system_play_sound(sbk::engine::system::get()->get_runtime(), sound, &soundInstance, nullptr, SC_TRUE);
         sc_sound_instance_set_cursor_in_seconds(soundInstance, cursorPosition);
-        sc_sound_instance_set_looping(soundInstance, SBK_FALSE);
+        sc_sound_instance_set_looping(soundInstance, SC_FALSE);
         m_filesToSoundInstancesMap[filePath].reset(soundInstance);
     }
 }
@@ -139,7 +139,7 @@ auto gluten::audio_subsystem::set_sound_loop_start_position(const std::filesyste
     {
         if (sc_sound_instance* const soundInstance = get_sound_instance(filePath))
         {
-            sc_sound_instance_set_looping(soundInstance, SBK_FALSE);
+            sc_sound_instance_set_looping(soundInstance, SC_FALSE);
         }
 
         loopData->m_loopStart = loopPosition;
@@ -152,7 +152,7 @@ auto gluten::audio_subsystem::set_sound_loop_end_position(const std::filesystem:
     {
         if (sc_sound_instance* const soundInstance = get_sound_instance(filePath))
         {
-            sc_sound_instance_set_looping(soundInstance, SBK_TRUE);
+            sc_sound_instance_set_looping(soundInstance, SC_TRUE);
         }
 
         loopData->m_loopEnd = loopPosition;

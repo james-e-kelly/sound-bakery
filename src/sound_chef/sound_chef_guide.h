@@ -92,7 +92,7 @@
  * With a DSP created, the user can call @ref sc_dsp_set_parameter_float to change properties of the effect on the fly.
  *
  * @code
- * const sc_dsp_config lpfConfig = sc_dsp_config_init_by_type(system, SC_DSP_TYPE_LOWPASS);
+ * const sc_dsp_config lpfConfig = sc_dsp_config_init_by_type(system, sc_dsp_type_lowpass);
  * sc_dsp* lowpass = NULL;
  * sc_system_create_dsp(system, &lpfConfig, &lowpass);
  *
@@ -141,10 +141,10 @@
  * sc_node_group* nodeGroup = NULL;
  * sc_system_create_node_group(system, &nodeGroup);
  *
- * const sc_dsp_config lpfConfig = sc_dsp_config_init_type(system, SC_DSP_TYPE_LOWPASS);
+ * const sc_dsp_config lpfConfig = sc_dsp_config_init_type(system, sc_dsp_type_lowpass);
  * sc_dsp* lowpass = NULL;
  * sc_system_create_dsp(system, &lpfConfig, &lowpass);
- * sc_node_group_add_dsp(nodeGroup, lowpass, SC_DSP_INDEX_HEAD);
+ * sc_node_group_add_dsp(nodeGroup, lowpass, sc_dsp_index_head);
  *
  * sc_sound_instance* instance = NULL;
  * sc_system_play_sound(system, sound, &instance, nodeGroup, SC_FALSE);
@@ -185,16 +185,16 @@
  * sc_system_create_node_group(system, &footstep_bus);
  *
  * // Add lowpass to footstep bus (for underwater footsteps, for example)
- * const sc_dsp_config lpf_config = sc_dsp_config_init_type(system, SC_DSP_TYPE_LOWPASS);
+ * const sc_dsp_config lpf_config = sc_dsp_config_init_type(system, sc_dsp_type_lowpass);
  * sc_dsp* lpf = NULL;
  * sc_system_create_dsp(system, &lpf_config, &lpf);
- * sc_node_group_add_dsp(footstep_bus, lpf, SC_DSP_INDEX_HEAD);
+ * sc_node_group_add_dsp(footstep_bus, lpf, sc_dsp_index_head);
  *
  * // Add compression to control dynamic range
  * const sc_dsp_config compressor_config = sc_dsp_config_init_type(system, SC_DSP_TYPE_COMPRESSOR);
  * sc_dsp* compressor = NULL;
  * sc_system_create_dsp(system, &compressor_config, &compressor);
- * sc_node_group_add_dsp(footstep_bus, compressor, SC_DSP_INDEX_HEAD);
+ * sc_node_group_add_dsp(footstep_bus, compressor, sc_dsp_index_head);
  *
  * // Play a footstep on concrete
  * sc_sound_instance* instance1 = NULL;

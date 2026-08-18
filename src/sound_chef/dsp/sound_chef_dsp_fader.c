@@ -6,7 +6,7 @@ static sbk_status sc_dsp_fader_create(sc_system* system, sc_dsp* dsp, const void
     SC_CREATE(dsp->node, ma_sound_group, system);
 
     ma_sound_group_config config = ma_sound_group_config_init_2((ma_engine*)system);
-    return SBK_FROM_MA(ma_sound_group_init_ex((ma_engine*)system, &config, (ma_sound_group*)dsp->node));
+    return SC_STATUS_FROM_MA_RESULT(ma_sound_group_init_ex((ma_engine*)system, &config, (ma_sound_group*)dsp->node));
 }
 
 static sbk_status sc_dsp_fader_release(sc_system* system, sc_dsp* dsp)

@@ -53,7 +53,7 @@ sbk_status sc_encoder_init(ma_encoder_write_proc onWrite,
 
     if (config->baseConfig.encodingFormat == ma_encoding_format_wav)
     {
-        return SBK_FROM_MA(ma_encoder_init(onWrite, onSeek, userData, &config->baseConfig, &encoder->baseEncoder));
+        return SC_STATUS_FROM_MA_RESULT(ma_encoder_init(onWrite, onSeek, userData, &config->baseConfig, &encoder->baseEncoder));
     }
 
     encoder->config             = *config;
@@ -90,7 +90,7 @@ sbk_status sc_encoder_init(ma_encoder_write_proc onWrite,
         }
     }
 
-    return SBK_FROM_MA(result);
+    return SC_STATUS_FROM_MA_RESULT(result);
 }
 
 sbk_status sc_encoder_uninit(sc_encoder* encoder)
@@ -104,7 +104,7 @@ sbk_status sc_encoder_uninit(sc_encoder* encoder)
 
     if (encoder->baseEncoder.data.vfs.file != NULL)
     {
-        const sbk_status closeResult = SBK_FROM_MA(ma_vfs_close(&vfs, encoder->baseEncoder.data.vfs.file));
+        const sbk_status closeResult = SC_STATUS_FROM_MA_RESULT(ma_vfs_close(&vfs, encoder->baseEncoder.data.vfs.file));
         SC_CHECK_STATUS(closeResult);
     }
 
@@ -119,7 +119,7 @@ sbk_status sc_encoder_init_file(const char* filePath, const sc_encoder_config* c
 
     if (config->encodingFormat == sc_encoding_format_wav)
     {
-        return SBK_FROM_MA(ma_encoder_init_file(filePath, &config->baseConfig, &encoder->baseEncoder));
+        return SC_STATUS_FROM_MA_RESULT(ma_encoder_init_file(filePath, &config->baseConfig, &encoder->baseEncoder));
     }
 
     ma_default_vfs vfs;
@@ -127,7 +127,7 @@ sbk_status sc_encoder_init_file(const char* filePath, const sc_encoder_config* c
 
     ma_vfs_file file = NULL;
 
-    const sbk_status openResult = SBK_FROM_MA(ma_vfs_open(&vfs, filePath, MA_OPEN_MODE_WRITE, &file));
+    const sbk_status openResult = SC_STATUS_FROM_MA_RESULT(ma_vfs_open(&vfs, filePath, MA_OPEN_MODE_WRITE, &file));
     SC_CHECK_STATUS(openResult);
 
     const sbk_status initResult = sc_encoder_init(sc_encoder_on_write_vfs, sc_encoder_on_seek_vfs, NULL, config, encoder);
@@ -150,9 +150,9 @@ sbk_status sc_encoder_write_pcm_frames(sc_encoder* encoder,
     SC_CHECK_ARG(encoder != NULL);
     SC_CHECK_ARG(framesIn != NULL);
     SC_CHECK_ARG(framesWritten != NULL);
-    SC_CHECK(encoder->baseEncoder.onWritePCMFrames != NULL, SBK_FROM_MA(MA_ERROR));
+    SC_CHECK(encoder->baseEncoder.onWritePCMFrames != NULL, SC_STATUS_FROM_MA_RESULT(MA_ERROR));
 
-    return SBK_FROM_MA(encoder->baseEncoder.onWritePCMFrames(&encoder->baseEncoder, framesIn, frameCount, framesWritten));
+    return SC_STATUS_FROM_MA_RESULT(encoder->baseEncoder.onWritePCMFrames(&encoder->baseEncoder, framesIn, frameCount, framesWritten));
 }
 
 //
@@ -168,7 +168,7 @@ sbk_status sc_encoder_write_from_file(const char* decodeFilePath,
     ma_decoder decoder;
     ma_decoder_config decoderConfig =
         ma_decoder_config_init(config->baseConfig.format, config->baseConfig.channels, config->baseConfig.sampleRate);
-    const sbk_status decoderInitResult = SBK_FROM_MA(ma_decoder_init_file(decodeFilePath, &decoderConfig, &decoder));
+    const sbk_status decoderInitResult = SC_STATUS_FROM_MA_RESULT(ma_decoder_init_file(decodeFilePath, &decoderConfig, &decoder));
     SC_CHECK_STATUS(decoderInitResult);
 
     sc_encoder_config configCopy = *config;
@@ -177,7 +177,7 @@ sbk_status sc_encoder_write_from_file(const char* decodeFilePath,
     if (config->baseConfig.channels == 0)
     {
         const sbk_status getChannelsResult =
-            SBK_FROM_MA(ma_decoder_get_data_format(&decoder, NULL, &configCopy.baseConfig.channels, NULL, NULL, 0));
+            SC_STATUS_FROM_MA_RESULT(ma_decoder_get_data_format(&decoder, NULL, &configCopy.baseConfig.channels, NULL, NULL, 0));
         SC_CHECK_STATUS(getChannelsResult);
     }
 

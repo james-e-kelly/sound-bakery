@@ -2,17 +2,17 @@
 
 sbk_status sc_node_group_add_dsp(sc_node_group* nodeGroup, sc_dsp* dsp, sc_dsp_index index)
 {
-    SC_CHECK(index == SC_DSP_INDEX_HEAD, SBK_FROM_MA(MA_NOT_IMPLEMENTED));
+    SC_CHECK(index == sc_dsp_index_head, SC_STATUS_FROM_MA_RESULT(MA_NOT_IMPLEMENTED));
     SC_CHECK_ARG(nodeGroup != NULL);
     SC_CHECK_ARG(dsp != NULL);
-    SC_CHECK(dsp->prev == NULL, SBK_FROM_MA(MA_NOT_IMPLEMENTED));  // don't have detatch logic
-    SC_CHECK(dsp->next == NULL, SBK_FROM_MA(MA_NOT_IMPLEMENTED));  // don't have detatch logic
+    SC_CHECK(dsp->prev == NULL, SC_STATUS_FROM_MA_RESULT(MA_NOT_IMPLEMENTED));  // don't have detatch logic
+    SC_CHECK(dsp->next == NULL, SC_STATUS_FROM_MA_RESULT(MA_NOT_IMPLEMENTED));  // don't have detatch logic
 
     sbk_status result = SBK_ERR_CHEF;
 
     switch ((int)index)
     {
-        case SC_DSP_INDEX_HEAD:
+        case sc_dsp_index_head:
         {
             sc_dsp* currentHead = nodeGroup->head;
             SC_ASSERT(currentHead->next == NULL);  // head nodes can't have
@@ -25,12 +25,12 @@ sbk_status sc_node_group_add_dsp(sc_node_group* nodeGroup, sc_dsp* dsp, sc_dsp_i
             if (currentParent)
             {
                 // Attach the dsp to the get_parent output
-                result = SBK_FROM_MA(ma_node_attach_output_bus(dsp->node, 0, currentParent, 0));
+                result = SC_STATUS_FROM_MA_RESULT(ma_node_attach_output_bus(dsp->node, 0, currentParent, 0));
                 SC_CHECK_STATUS(result);
 
                 // Make the current head attach to the DSP (which is now the
                 // head)
-                result = SBK_FROM_MA(ma_node_attach_output_bus(currentHead->node, 0, dsp->node, 0));
+                result = SC_STATUS_FROM_MA_RESULT(ma_node_attach_output_bus(currentHead->node, 0, dsp->node, 0));
                 SC_CHECK_STATUS(result);
 
                 nodeGroup->head->next = dsp;
@@ -42,11 +42,11 @@ sbk_status sc_node_group_add_dsp(sc_node_group* nodeGroup, sc_dsp* dsp, sc_dsp_i
             break;
         }
         case 0:
-        case SC_DSP_INDEX_TAIL:
+        case sc_dsp_index_tail:
         {
             sc_dsp* currentTail = nodeGroup->tail;
 
-            result = SBK_FROM_MA(ma_node_attach_output_bus(dsp->node, 0, currentTail->node, 0));
+            result = SC_STATUS_FROM_MA_RESULT(ma_node_attach_output_bus(dsp->node, 0, currentTail->node, 0));
             SC_CHECK_STATUS(result);
 
             break;
@@ -65,7 +65,7 @@ sbk_status sc_node_group_set_parent(sc_node_group* nodeGroup, sc_node_group* par
     SC_CHECK_ARG(nodeGroup != NULL);
     SC_CHECK_ARG(parent != NULL);
 
-    return SBK_FROM_MA(ma_node_attach_output_bus(nodeGroup->head->node, 0, parent->tail->node, 0));
+    return SC_STATUS_FROM_MA_RESULT(ma_node_attach_output_bus(nodeGroup->head->node, 0, parent->tail->node, 0));
 }
 
 sbk_status sc_node_group_set_parent_endpoint(sc_node_group* nodeGroup)
@@ -76,9 +76,9 @@ sbk_status sc_node_group_set_parent_endpoint(sc_node_group* nodeGroup)
     SC_CHECK(system != NULL, SBK_ERR_NULL);
 
     ma_node* const endPoint = ma_node_graph_get_endpoint((ma_node_graph*)system);
-    SC_CHECK(endPoint != NULL, SBK_FROM_MA(MA_BAD_ADDRESS));
+    SC_CHECK(endPoint != NULL, SC_STATUS_FROM_MA_RESULT(MA_BAD_ADDRESS));
 
-    return SBK_FROM_MA(ma_node_attach_output_bus(nodeGroup->head->node, 0, endPoint, 0));
+    return SC_STATUS_FROM_MA_RESULT(ma_node_attach_output_bus(nodeGroup->head->node, 0, endPoint, 0));
 }
 
 sbk_status sc_node_group_get_dsp(sc_node_group* nodeGroup, sc_dsp_type type, sc_dsp** dsp)

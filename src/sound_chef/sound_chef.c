@@ -59,10 +59,10 @@ sbk_status sc_system_log_init(sc_system* system, ma_log_callback_proc callbackPr
     SC_CHECK_ARG(system != NULL);
     SC_CHECK_ARG(callbackProc != NULL);
 
-    const sbk_status logInitResult = SBK_FROM_MA(ma_log_init(NULL, &system->log));
+    const sbk_status logInitResult = SC_STATUS_FROM_MA_RESULT(ma_log_init(NULL, &system->log));
     SC_CHECK_STATUS(logInitResult);
 
-    const sbk_status registerResult = SBK_FROM_MA(ma_log_register_callback(&system->log, ma_log_callback_init(callbackProc, NULL)));
+    const sbk_status registerResult = SC_STATUS_FROM_MA_RESULT(ma_log_register_callback(&system->log, ma_log_callback_init(callbackProc, NULL)));
     SC_CHECK_STATUS(registerResult);
 
     ma_log_post(&system->log, MA_LOG_LEVEL_INFO, "Initialized Sound Chef Logging");
@@ -113,13 +113,13 @@ sbk_status sc_system_init(sc_system* system, const sc_system_config* systemConfi
     resourceManagerConfig.pLog                           = &system->log;
     resourceManagerConfig.allocationCallbacks            = systemConfig->allocationCallbacks;
 
-    SC_CHECK_STATUS(SBK_FROM_MA(ma_resource_manager_init(&resourceManagerConfig, &system->resourceManager)));
+    SC_CHECK_STATUS(SC_STATUS_FROM_MA_RESULT(ma_resource_manager_init(&resourceManagerConfig, &system->resourceManager)));
 
     const ma_slot_allocator_config voiceAllocatorConfig = ma_slot_allocator_config_init(systemConfig->maxVoices);
-    SC_CHECK_STATUS(SBK_FROM_MA(ma_slot_allocator_init(&voiceAllocatorConfig, &systemConfig->allocationCallbacks, &system->voiceSlotAllocator)));
+    SC_CHECK_STATUS(SC_STATUS_FROM_MA_RESULT(ma_slot_allocator_init(&voiceAllocatorConfig, &systemConfig->allocationCallbacks, &system->voiceSlotAllocator)));
 
     const ma_slot_allocator_config realVoiceAllocatorConfig = ma_slot_allocator_config_init(systemConfig->maxRealVoices);
-    SC_CHECK_STATUS(SBK_FROM_MA(ma_slot_allocator_init(&realVoiceAllocatorConfig, &systemConfig->allocationCallbacks, &system->realVoiceSlotAllocator)));
+    SC_CHECK_STATUS(SC_STATUS_FROM_MA_RESULT(ma_slot_allocator_init(&realVoiceAllocatorConfig, &systemConfig->allocationCallbacks, &system->realVoiceSlotAllocator)));
 
     system->voiceBuffer = ma_calloc(sizeof(sc_voice) * systemConfig->maxVoices, &systemConfig->allocationCallbacks);
     SC_CHECK_MEM(system->voiceBuffer);
@@ -138,7 +138,7 @@ sbk_status sc_system_init(sc_system* system, const sc_system_config* systemConfi
     engineConfig.allocationCallbacks = systemConfig->allocationCallbacks;
     engineConfig.dataCallback        = systemConfig->dataCallback;
 
-    SC_CHECK_STATUS(SBK_FROM_MA(ma_engine_init(&engineConfig, engine)));
+    SC_CHECK_STATUS(SC_STATUS_FROM_MA_RESULT(ma_engine_init(&engineConfig, engine)));
     
     ma_log_post(&system->log, MA_LOG_LEVEL_DEBUG, "Creating master node group");
 
@@ -147,10 +147,10 @@ sbk_status sc_system_init(sc_system* system, const sc_system_config* systemConfi
 
     ma_log_post(&system->log, MA_LOG_LEVEL_DEBUG, "Adding meter");
 
-    const sc_dsp_config meterDspConfig = sc_dsp_config_init_type(system, SC_DSP_TYPE_METER);
+    const sc_dsp_config meterDspConfig = sc_dsp_config_init_type(system, sc_dsp_type_meter);
     sc_dsp* meterDSP = NULL;
     SC_CHECK_STATUS(sc_system_create_dsp(system, &meterDspConfig, &meterDSP));
-    SC_CHECK_STATUS(sc_node_group_add_dsp(system->masterNodeGroup, meterDSP, SC_DSP_INDEX_HEAD));
+    SC_CHECK_STATUS(sc_node_group_add_dsp(system->masterNodeGroup, meterDSP, sc_dsp_index_head));
 
     ma_log_post(&system->log, MA_LOG_LEVEL_DEBUG, "Initialized Master Node Group");
 
@@ -243,46 +243,46 @@ sbk_status sc_system_update(sc_system* system)
 
         switch (desiredState)
         {
-            case SC_VOICE_STATE_PLAYING:
+            case sc_voice_state_playing:
                 switch (currentState)
                 {
-                    case SC_VOICE_STATE_STOPPED:
+                    case sc_voice_state_stopped:
                         SC_ASSERT(false && "Play request on STOPPED slot - use sc_system_play_sound_voice, which sets STARTING");
                         break;
-                    case SC_VOICE_STATE_STARTING:
+                    case sc_voice_state_starting:
                         // Load complete? Run virtualization; promote to PLAYING,
                         // set SC_VOICE_FLAG_VIRTUAL if over the real-voice budget.
                         break;
-                    case SC_VOICE_STATE_PLAYING:
+                    case sc_voice_state_playing:
                         // Steady state - re-evaluate SC_VOICE_FLAG_VIRTUAL against
                         // priority + real-voice budget and flip the flag as needed.
                         break;
-                    case SC_VOICE_STATE_STOPPING:
+                    case sc_voice_state_stopping:
                         // Tail already running - it wins over a new play request.
                         break;
                 }
                 break;
-            case SC_VOICE_STATE_STOPPED:
+            case sc_voice_state_stopped:
                 switch (currentState)
                 {
-                    case SC_VOICE_STATE_STOPPED:
+                    case sc_voice_state_stopped:
                         // Nothing to do.
                         break;
-                    case SC_VOICE_STATE_STARTING:
+                    case sc_voice_state_starting:
                         // Cancel before any audio plays: skip STOPPING, release slot to STOPPED.
                         break;
-                    case SC_VOICE_STATE_PLAYING:
+                    case sc_voice_state_playing:
                         // Begin tail: set current state to STOPPING (fade + drain).
                         break;
-                    case SC_VOICE_STATE_STOPPING:
+                    case sc_voice_state_stopping:
                         // Tail in progress: check if drained, then release slot to STOPPED.
                         break;
                 }
                 break;
-            case SC_VOICE_STATE_STARTING:
+            case sc_voice_state_starting:
                 SC_ASSERT(false && "STARTING is pump-owned; callers request PLAYING");
                 break;
-            case SC_VOICE_STATE_STOPPING:
+            case sc_voice_state_stopping:
                 SC_ASSERT(false && "STOPPING is pump-owned; callers request STOPPED");
                 break;
         }
@@ -334,7 +334,7 @@ sbk_status sc_system_read_pcm_frames(sc_system* system, void* framesOut, ma_uint
     SC_CHECK_ARG(framesOut != NULL);
     SC_CHECK_ARG(frameCount != NULL);
 
-    return SBK_FROM_MA(ma_engine_read_pcm_frames((ma_engine*)system, framesOut, frameCount, framesRead));
+    return SC_STATUS_FROM_MA_RESULT(ma_engine_read_pcm_frames((ma_engine*)system, framesOut, frameCount, framesRead));
 }
 
 static ma_uint32 get_flags_from_mode(sc_sound_mode mode)
@@ -409,7 +409,7 @@ sbk_status sc_system_create_sound(sc_system* system, const sc_sound_config* conf
         ma_decoder_uninit((*sound)->memoryDecoder);
         SC_FREE((*sound)->memoryDecoder, system);
         (*sound)->memoryDecoder = NULL;
-        return SBK_FROM_MA(decoderInitResult);
+        return SC_STATUS_FROM_MA_RESULT(decoderInitResult);
     }
 
     return (sbk_status)ma_sound_init_from_data_source((ma_engine*)system, (*sound)->memoryDecoder, get_flags_from_mode(config->mode), NULL, &(*sound)->sound);
@@ -440,33 +440,33 @@ sbk_status sc_system_play_sound(sc_system* system, sc_sound* sound, sc_sound_ins
             const ma_result decoderInitResult = ma_decoder_init_memory(sound->memoryDecoder->data.memory.pData,
                                                                        sound->memoryDecoder->data.memory.dataSize,
                                                                        &decoderConfig, (*instance)->memoryDecoder);
-            SC_CHECK_STATUS(SBK_FROM_MA(decoderInitResult));
+            SC_CHECK_STATUS(SC_STATUS_FROM_MA_RESULT(decoderInitResult));
 
             const ma_result initResult = ma_sound_init_from_data_source((ma_engine*)system, (*instance)->memoryDecoder, sound->mode, NULL, &(*instance)->sound);
-            SC_CHECK_STATUS(SBK_FROM_MA(initResult));
+            SC_CHECK_STATUS(SC_STATUS_FROM_MA_RESULT(initResult));
         }
     }
     else
     {
         const ma_result copyResult = ma_sound_init_copy((ma_engine*)system, &sound->sound, sound->mode, NULL, &(*instance)->sound);
-        SC_CHECK_STATUS(SBK_FROM_MA(copyResult));
+        SC_CHECK_STATUS(SC_STATUS_FROM_MA_RESULT(copyResult));
     }
 
     if (parent != NULL)
     {
         const ma_result attachResult = ma_node_attach_output_bus(*instance, 0, parent->tail->node, 0);
-        SC_CHECK_STATUS(SBK_FROM_MA(attachResult));
+        SC_CHECK_STATUS(SC_STATUS_FROM_MA_RESULT(attachResult));
     }
     else if (system->masterNodeGroup != NULL)
     {
         const ma_result attachResult = ma_node_attach_output_bus(*instance, 0, system->masterNodeGroup->tail->node, 0);
-        SC_CHECK_STATUS(SBK_FROM_MA(attachResult));
+        SC_CHECK_STATUS(SC_STATUS_FROM_MA_RESULT(attachResult));
     }
 
     if (paused == MA_FALSE)
     {
         const ma_result startResult = ma_sound_start(&(*instance)->sound);
-        SC_CHECK_STATUS(SBK_FROM_MA(startResult));
+        SC_CHECK_STATUS(SC_STATUS_FROM_MA_RESULT(startResult));
     }
 
     return SBK_SUCCESS;
@@ -483,14 +483,14 @@ sbk_status sc_system_play_sound_voice(sc_system* system, sc_sound* sound, sc_voi
     // We don't check for virtual because we're literally over capacity
 
     ma_uint64 slot = 0;
-    SC_CHECK_STATUS(SBK_FROM_MA(ma_slot_allocator_alloc(&system->voiceSlotAllocator, &slot)));
+    SC_CHECK_STATUS(SC_STATUS_FROM_MA_RESULT(ma_slot_allocator_alloc(&system->voiceSlotAllocator, &slot)));
     ma_uint32 index = sc_voice_handle_extract_slot(slot);
 
     sc_voice* const voice = &system->voiceBuffer[index];
 
     // Slot must be idle before we take it over.
     const sc_voice_state currentState = sc_voice_word_state(c89atomic_load_32(&voice->currentStateAndFlags));
-    SC_ASSERT(currentState == SC_VOICE_STATE_STOPPED);
+    SC_ASSERT(currentState == sc_voice_state_stopped);
 
     voice->sound = sound;
     voice->group = parent;
@@ -498,8 +498,8 @@ sbk_status sc_system_play_sound_voice(sc_system* system, sc_sound* sound, sc_voi
     // Publish the handle before the state so any concurrent stale-handle
     // check that observes STARTING is guaranteed to see the new occupant.
     c89atomic_store_64(&voice->handle, (sc_uint64)slot);
-    c89atomic_store_32(&voice->currentStateAndFlags, sc_voice_word_make(SC_VOICE_STATE_STARTING, SC_VOICE_FLAG_NONE));
-    c89atomic_store_32(&voice->desiredStateAndFlags, sc_voice_word_make(SC_VOICE_STATE_PLAYING, paused ? SC_VOICE_FLAG_PAUSED : SC_VOICE_FLAG_NONE));
+    c89atomic_store_32(&voice->currentStateAndFlags, sc_voice_word_make(sc_voice_state_starting, SC_VOICE_FLAG_NONE));
+    c89atomic_store_32(&voice->desiredStateAndFlags, sc_voice_word_make(sc_voice_state_playing, paused ? SC_VOICE_FLAG_PAUSED : SC_VOICE_FLAG_NONE));
 
     *outVoiceHandle = slot;
 
@@ -539,7 +539,7 @@ static void sc_voice_word_set_state(volatile sc_atomic_uint32* word, sc_voice_st
     }
 }
 
-// Set (add == SBK_TRUE) or clear (add == SBK_FALSE) one flag bit while
+// Set (add == SC_TRUE) or clear (add == SC_FALSE) one flag bit while
 // preserving both the state and the other flags.
 static void sc_voice_word_write_flag(volatile sc_atomic_uint32* word, sc_voice_flags flag, sc_bool add)
 {
@@ -564,7 +564,7 @@ sbk_status sc_voice_pause(sc_system* system, sc_voice_handle handle)
 {
     sc_voice* voice = NULL;
     SC_CHECK_STATUS(sc_voice_resolve(system, handle, &voice));
-    sc_voice_word_write_flag(&voice->desiredStateAndFlags, SC_VOICE_FLAG_PAUSED, SBK_TRUE);
+    sc_voice_word_write_flag(&voice->desiredStateAndFlags, SC_VOICE_FLAG_PAUSED, SC_TRUE);
     return SBK_SUCCESS;
 }
 
@@ -572,13 +572,13 @@ sbk_status sc_voice_resume(sc_system* system, sc_voice_handle handle)
 {
     sc_voice* voice = NULL;
     SC_CHECK_STATUS(sc_voice_resolve(system, handle, &voice));
-    sc_voice_word_write_flag(&voice->desiredStateAndFlags, SC_VOICE_FLAG_PAUSED, SBK_FALSE);
+    sc_voice_word_write_flag(&voice->desiredStateAndFlags, SC_VOICE_FLAG_PAUSED, SC_FALSE);
     return SBK_SUCCESS;
 }
 
 sbk_status sc_voice_stop(sc_system* system, sc_voice_handle handle)
 {
-    return sc_voice_write_desired_state(system, handle, SC_VOICE_STATE_STOPPED);
+    return sc_voice_write_desired_state(system, handle, sc_voice_state_stopped);
 }
 
 sbk_status sc_system_stop_all_voices(sc_system* system)
@@ -586,7 +586,7 @@ sbk_status sc_system_stop_all_voices(sc_system* system)
     SC_CHECK_ARG(system != NULL);
     for (sc_uint32 slot = 0; slot < system->voiceSlotAllocator.capacity; ++slot)
     {
-        sc_voice_word_set_state(&system->voiceBuffer[slot].desiredStateAndFlags, SC_VOICE_STATE_STOPPED);
+        sc_voice_word_set_state(&system->voiceBuffer[slot].desiredStateAndFlags, sc_voice_state_stopped);
     }
     return SBK_SUCCESS;
 }
@@ -625,7 +625,7 @@ sbk_status sc_system_create_node_group(sc_system* system, sc_node_group** nodeGr
     SC_CREATE(*nodeGroup, sc_node_group, system);
 
     // Always create a fader/sound_group by default
-    const sc_dsp_config faderConfig = sc_dsp_config_init_type(system, SC_DSP_TYPE_FADER);
+    const sc_dsp_config faderConfig = sc_dsp_config_init_type(system, sc_dsp_type_fader);
     result = sc_system_create_dsp(system, &faderConfig, &(*nodeGroup)->fader);
 
     (*nodeGroup)->head = (*nodeGroup)->fader;
@@ -665,13 +665,13 @@ sbk_status sc_system_get_dsp_desc(const sc_system* system, sc_uint32 handle, con
     SC_CHECK_ARG(outDescription != NULL);
     SC_CHECK_ARG(handle > 0);
 
-    if (handle < (sc_int32)SC_DSP_TYPE_COUNT)
+    if (handle < (sc_int32)sc_dsp_type_count)
     {
         *outDescription = g_builtinDspDescriptions[handle];
     }
     else
     {
-        const sc_uint32 userTypeIndex = handle - (sc_uint32)SC_DSP_TYPE_COUNT - 1;
+        const sc_uint32 userTypeIndex = handle - (sc_uint32)sc_dsp_type_count - 1;
         SC_CHECK_ARG(userTypeIndex < SC_MAX_USER_DSP_TYPES);
         *outDescription = system->userDspRegistry[userTypeIndex];
     }
@@ -734,7 +734,7 @@ sc_dsp_config sc_dsp_config_init_handle(const sc_system* system, sc_uint32 handl
 
 sc_dsp_config sc_dsp_config_init_clap(const sc_system* system, const clap_plugin_factory_t* pluginFactory)
 {
-    sc_dsp_config config = sc_dsp_config_init_type(system, SC_DSP_TYPE_CLAP);
+    sc_dsp_config config = sc_dsp_config_init_type(system, sc_dsp_type_clap);
     config.clapFactory   = pluginFactory;
     return config;
 }
@@ -757,7 +757,7 @@ sbk_status sc_system_clap_get_at(const sc_system* system, ma_uint32 index, sc_cl
     ma_uint32 clapCount = 0;
     sc_system_clap_get_count(system, &clapCount);
     SC_CHECK_ARG(index < clapCount);
-    SC_CHECK(clapCount > 0, SBK_FROM_MA(MA_DOES_NOT_EXIST));
+    SC_CHECK(clapCount > 0, SC_STATUS_FROM_MA_RESULT(MA_DOES_NOT_EXIST));
 
     if (clapCount > 0)
     {
@@ -902,7 +902,7 @@ sbk_status sc_clap_load(const char* clapFilePath, sc_clap* clapPlugin)
     SC_ZERO_OBJECT(clapPlugin);
 
     ma_handle pluginHandle = sc_dlopen(NULL, clapFilePath);
-    SC_CHECK(pluginHandle != NULL, SBK_FROM_MA(MA_ERROR));
+    SC_CHECK(pluginHandle != NULL, SC_STATUS_FROM_MA_RESULT(MA_ERROR));
 
     clap_plugin_entry_t* const clapEntry = (clap_plugin_entry_t*)sc_dlsym(NULL, pluginHandle, CLAP_ENTRY);
     SC_CHECK_AND_GOTO(clapEntry != NULL, error_dll);
@@ -932,7 +932,7 @@ error_clap:
 error_dll:
     sc_dlclose(NULL, pluginHandle);
 
-    return SBK_FROM_MA(MA_ERROR);
+    return SC_STATUS_FROM_MA_RESULT(MA_ERROR);
 }
 
 sbk_status sc_clap_unload(sc_clap* clapPlugin)

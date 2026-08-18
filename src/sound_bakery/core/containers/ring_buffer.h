@@ -93,7 +93,7 @@ namespace sbk
         [[nodiscard]] auto reserve_write(std::uint8_t** outBuffer, std::size_t size, std::size_t* outReserveIndex, std::uint8_t** outPadding, std::size_t* outPaddingSize) noexcept -> sbk_status
         {
             SBK_STATUS_CHECK(outBuffer != nullptr && outReserveIndex != nullptr && outPadding != nullptr && outPaddingSize != nullptr && size != 0, SBK_ERR_INVALID_PARAMETER);
-            SBK_STATUS_CHECK(m_buffer != nullptr && m_capacity > 0, SBK_ERR_UNITIALIZED);
+            SBK_STATUS_CHECK(m_buffer != nullptr && m_capacity > 0, SBK_ERR_UNINITIALIZED);
             SBK_STATUS_CHECK(size <= m_capacity, SBK_ERR_INVALID_PARAMETER);
 
             *outPadding     = nullptr;
@@ -144,7 +144,7 @@ namespace sbk
          */
         [[nodiscard]] auto commit_write(std::size_t reserveIndex, std::size_t size) noexcept -> sbk_status
         {
-            SBK_STATUS_CHECK(m_buffer != nullptr && m_capacity > 0, SBK_ERR_UNITIALIZED);
+            SBK_STATUS_CHECK(m_buffer != nullptr && m_capacity > 0, SBK_ERR_UNINITIALIZED);
 
             // Publish in reserve order - see the commit-ordering note on the class.
             std::size_t expected = reserveIndex;
@@ -168,7 +168,7 @@ namespace sbk
         [[nodiscard]] auto write(const void* message, std::size_t size) noexcept -> sbk_status
         {
             SBK_STATUS_CHECK(message != nullptr && size != 0, SBK_ERR_INVALID_PARAMETER);
-            SBK_STATUS_CHECK(m_buffer != nullptr && m_capacity > 0, SBK_ERR_UNITIALIZED);
+            SBK_STATUS_CHECK(m_buffer != nullptr && m_capacity > 0, SBK_ERR_UNINITIALIZED);
             SBK_STATUS_CHECK(size <= m_capacity, SBK_ERR_INVALID_PARAMETER);
 
             for (;;)
@@ -213,7 +213,7 @@ namespace sbk
         [[nodiscard]] auto read_begin(std::uint8_t** outBuffer, std::size_t* outReadIndex, std::size_t size, std::size_t* outActualSize) noexcept -> sbk_status
         {
             SBK_STATUS_CHECK(outBuffer != nullptr && outReadIndex != nullptr && outActualSize != nullptr && size != 0, SBK_ERR_INVALID_PARAMETER);
-            SBK_STATUS_CHECK(m_buffer != nullptr && m_capacity > 0, SBK_ERR_UNITIALIZED);
+            SBK_STATUS_CHECK(m_buffer != nullptr && m_capacity > 0, SBK_ERR_UNINITIALIZED);
             SBK_STATUS_CHECK(size <= m_capacity, SBK_ERR_INVALID_PARAMETER);
 
             const std::size_t read = m_readIndex.load(std::memory_order_relaxed);
@@ -237,7 +237,7 @@ namespace sbk
          */
         [[nodiscard]] auto read_end(std::size_t size) noexcept -> sbk_status
         {
-            SBK_STATUS_CHECK(m_buffer != nullptr && m_capacity > 0, SBK_ERR_UNITIALIZED);
+            SBK_STATUS_CHECK(m_buffer != nullptr && m_capacity > 0, SBK_ERR_UNINITIALIZED);
             // Release so producers that acquire-load m_readIndex see the freed space.
             m_readIndex.fetch_add(size, std::memory_order_release);
             return SBK_SUCCESS;
@@ -251,7 +251,7 @@ namespace sbk
         [[nodiscard]] auto read(void* outBuffer, std::size_t size) noexcept -> sbk_status
         {
             SBK_STATUS_CHECK(outBuffer != nullptr && size != 0, SBK_ERR_INVALID_PARAMETER);
-            SBK_STATUS_CHECK(m_buffer != nullptr && m_capacity > 0, SBK_ERR_UNITIALIZED);
+            SBK_STATUS_CHECK(m_buffer != nullptr && m_capacity > 0, SBK_ERR_UNINITIALIZED);
             SBK_STATUS_CHECK(size <= m_capacity, SBK_ERR_INVALID_PARAMETER);
 
             const std::size_t read           = m_readIndex.load(std::memory_order_relaxed);
@@ -280,7 +280,7 @@ namespace sbk
         [[nodiscard]] auto advance_read_index(std::size_t size) noexcept -> sbk_status
         {
             SBK_STATUS_CHECK(size != 0, SBK_ERR_INVALID_PARAMETER);
-            SBK_STATUS_CHECK(m_buffer != nullptr && m_capacity > 0, SBK_ERR_UNITIALIZED);
+            SBK_STATUS_CHECK(m_buffer != nullptr && m_capacity > 0, SBK_ERR_UNINITIALIZED);
             SBK_STATUS_CHECK(size <= m_capacity, SBK_ERR_INVALID_PARAMETER);
 
             const std::size_t read           = m_readIndex.load(std::memory_order_relaxed);

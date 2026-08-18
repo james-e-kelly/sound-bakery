@@ -87,24 +87,24 @@ extern "C"
 #endif
 
 /**
- * @def Sound Chef supports a max of 5th order ambisonics.
- * 
+ * @brief Sound Chef supports a max of 5th order ambisonics.
+ *
  * miniaudio can handle many more channels but Sound Chef is not a general purpose library.
  */
 #define SC_MAX_CHANNELS         36
 
 /**
-* @def Some operations need an audio buffer on the heap (mainly CLAP processing).
+* @brief Some operations need an audio buffer on the heap (mainly CLAP processing).
 *
 * This gives us a reasonable buffer size.
 */
 #define SC_MAX_FRAME_COUNT      2048
 
 /**
-* @def Max user-defined DSP types.
+* @brief Max user-defined DSP types.
 *
 * sc_dsp_descriptions are kept in a static/preallocated array. Increase this if we need to support more DSP types.
-* 
+*
 * It's assumed most users add no additional DSP types and those who do are adding only a few.
 */
 #define SC_MAX_USER_DSP_TYPES   16
@@ -143,8 +143,8 @@ typedef struct sc_system        sc_system;
 typedef struct sc_dsp           sc_dsp;
 typedef struct sc_node_group    sc_node_group;
 
-#define SBK_FALSE 0
-#define SBK_TRUE 1
+#define SC_FALSE 0
+#define SC_TRUE 1
 
 #define SC_COUNTOF(x)            (sizeof(x) / sizeof(x[0]))
 #define SC_MAX(x, y)             (((x) > (y)) ? (x) : (y))
@@ -157,20 +157,44 @@ typedef struct sc_node_group    sc_node_group;
 
 /**************************************************************************************************************************************************************
 
+Naming Conventions
+
+Sound Chef follows miniaudio's convention for enum member case:
+
+  - SCREAMING_SNAKE_CASE for enum values that behave like `#define` constants:
+    flag bitmasks (OR-able), status/result codes, and integer indices/counts.
+    Examples: SC_VOICE_FLAG_PAUSED, SC_SOUND_MODE_STREAM, SBK_SUCCESS,
+    SC_DSP_LOWPASS_PARAM_CUTOFF.
+
+  - lowercase_snake_case for enum values that name one-of-many discrete kinds
+    (a "type of" something). Examples: sc_encoding_format_wav,
+    sc_dsp_parameter_type_float. This mirrors miniaudio's ma_format_f32,
+    ma_channel_left, etc.
+
+The SBK_ prefix on shared status/error names (sbk_status, SBK_ERR_*) is
+intentional even though the type is defined in Sound Chef. Sound Bakery 
+naming took priority over Sound Chef.
+
+**************************************************************************************************************************************************************/
+
+/**************************************************************************************************************************************************************
+
 Statuses And Error Handling
 
 **************************************************************************************************************************************************************/
 
 /**
  * @brief Status codes.
- * 
+ *
  * Extends the miniaudio @ref ma_result enum.
- * 
+ *
  * miniaudio defines success == 0 and errors less than 0.
  * Sound Chef/Bakery defines success == 0 and errors greater than 0.
- * 
+ *
  * Statuses are influenced by http status codes where codes are grouped.
  * Users don't need to know every code, but know that anything between 101-200 is an error from Sound Chef.
+ *
+ * @note The SBK_ prefix is intentional. Sound Bakery takes precendence over Sound Chef.
  */
 typedef enum
 {
@@ -181,12 +205,12 @@ typedef enum
     SBK_ERR_USER = 1,               //< Generic user error
     SBK_ERR_INVALID_PARAMETER,      //< Invalid parameter given to the function
     SBK_ERR_ALREADY_INITIALIZED,    //< The resource was already initialized
-    SBK_ERR_UNITIALIZED,            //< The resource was not initialized
+    SBK_ERR_UNINITIALIZED,          //< The resource was not initialized
     SBK_ERR_INVALID_OPERATION,      //< Operation is unsupported in this state
 
     // 101-200: Sound Chef Errors
     SBK_ERR_CHEF = 101,             //< Generic Sound Chef error
-    SBK_ERR_CHEF_UNITIALIZED,
+    SBK_ERR_CHEF_UNINITIALIZED,
 
     // 201-300: Sound Bakery Errors
     SBK_ERR_BAKERY = 201,           //< Generic Sound Bakery error
@@ -209,40 +233,40 @@ typedef enum
     SBK_ERROR_MAX
 } sbk_status;
 
-#define SBK_FROM_MA(maResult)   ((sbk_status)(maResult))
-#define MA_FROM_SBK(sbkStatus)  ((ma_result)(sbkStatus))
+#define SC_STATUS_FROM_MA_RESULT(maResult)   ((sbk_status)(maResult))
+#define SC_MA_RESULT_FROM_STATUS(sbkStatus)  ((ma_result)(sbkStatus))
 
 #define SC_CHECK(condition, result) \
-    if ((condition) == SBK_FALSE)    \
+    if ((condition) == SC_FALSE)    \
     return (result)
 #define SC_CHECK_STATUS(result) \
     if (((sbk_status)(result)) != SBK_SUCCESS) \
     return (result)
 #define SC_CHECK_ARG(condition)  \
-    if ((condition) == SBK_FALSE) \
+    if ((condition) == SC_FALSE) \
     return SBK_ERR_INVALID_PARAMETER
 #define SC_CHECK_MEM(ptr) \
     if ((ptr) == NULL)    \
     return SBK_ERR_OUT_OF_MEMORY
 #define SC_CHECK_AND_GOTO(condition, dest) \
-    if ((condition) == SBK_FALSE)           \
+    if ((condition) == SC_FALSE)           \
     goto dest
 
 /**************************************************************************************************************************************************************
 
-Creation And Deltion Macros
+Creation And Deletion Macros
 
 **************************************************************************************************************************************************************/
 
 #include <string.h>
 
 /**
- * @def Zeroes the memory at @p ptr.
+ * @brief Zeroes the memory at @p ptr.
  */
 #define SC_ZERO_OBJECT(ptr) memset((ptr), 0, sizeof(*(ptr)))
 
 /**
- * @def Creates an object of type @p type, zeroes the memory, and returns on errors.
+ * @brief Creates an object of type @p type, zeroes the memory, and returns on errors.
  *
  * Example:
  * @code
@@ -259,7 +283,7 @@ Creation And Deltion Macros
     } while (0)
 
 /**
- * @def Frees the memory at @p ptr.
+ * @brief Frees the memory at @p ptr.
  */
 #define SC_FREE(ptr, system)                                   \
     do                                                         \
@@ -287,29 +311,6 @@ typedef c89atomic_int64     sc_atomic_int64;
 typedef c89atomic_uint64    sc_atomic_uint64;
 typedef c89atomic_bool      sc_atomic_bool;
 typedef float               sc_atomic_float;
-
-/**************************************************************************************************************************************************************
-
-CLAP
-
-**************************************************************************************************************************************************************/
-
-#include "clap/clap.h"
-
-/**
- * @brief Holds a DLL handle and plugin entry for a CLAP plugin.
- *
- * The system loads CLAP plugins from a directory and stores pointers to the plugin structures.
- */
-typedef struct sc_clap
-{
-    sc_handle dynamicLibraryHandle;              //< Handle to the .clap file
-    clap_plugin_entry_t* clapEntry;              //< Entry point of the plugin
-    const clap_plugin_factory_t* pluginFactory;  //< Plugin factory to poll and create plugins from
-} sc_clap;
-
-sbk_status SC_API sc_clap_load(const char* clapFilePath, sc_clap* clapPlugin);
-sbk_status SC_API sc_clap_unload(sc_clap* clapPlugin);
 
 /**************************************************************************************************************************************************************
 
@@ -359,14 +360,32 @@ ma_result SC_API sc_encoder_vorbis_write_pcm_frames(ma_encoder* encoder, const v
 
 /**************************************************************************************************************************************************************
 
-DSP
+CLAP
 
 **************************************************************************************************************************************************************/
 
+#include "clap/clap.h"
+
 /**
- * @def Sample values under this threshold are silenced. DSP uses this to calculate when reverb/delay echos finish. 
+ * @brief Holds a DLL handle and plugin entry for a CLAP plugin.
+ *
+ * The system loads CLAP plugins from a directory and stores pointers to the plugin structures.
  */
-#define SC_DELAY_SILENCE_THRESHOLD 0.0001F
+typedef struct sc_clap
+{
+    sc_handle dynamicLibraryHandle;              //< Handle to the .clap file
+    clap_plugin_entry_t* clapEntry;              //< Entry point of the plugin
+    const clap_plugin_factory_t* pluginFactory;  //< Plugin factory to poll and create plugins from
+} sc_clap;
+
+sbk_status SC_API sc_clap_load(const char* clapFilePath, sc_clap* clapPlugin);
+sbk_status SC_API sc_clap_unload(sc_clap* clapPlugin);
+
+/**************************************************************************************************************************************************************
+
+DSP Framework
+
+**************************************************************************************************************************************************************/
 
 enum
 {
@@ -376,20 +395,20 @@ enum
 /**
  * @brief Built-in DSP types.
  *
- * It is expected that user DSP types would have numbers higher than SC_DSP_TYPE_COUNT
- * example: MY_DSP_TYPE = SC_DSP_TYPE_COUNT + 1
+ * It is expected that user DSP types would have numbers higher than sc_dsp_type_count
+ * example: my_dsp_type = sc_dsp_type_count + 1
  * The system can then store user DSP descriptions and find them by "handle"
  */
 typedef enum sc_dsp_type
 {
-    SC_DSP_TYPE_UNKNOWN,
-    SC_DSP_TYPE_FADER,
-    SC_DSP_TYPE_LOWPASS,
-    SC_DSP_TYPE_HIGHPASS,
-    SC_DSP_TYPE_DELAY,
-    SC_DSP_TYPE_METER,
-    SC_DSP_TYPE_CLAP,  //< Wraps a CLAP plugin
-    SC_DSP_TYPE_COUNT  //< Count of types. SC_DSP_TYPE_COUNT - 1 == number of built in types
+    sc_dsp_type_unknown,
+    sc_dsp_type_fader,
+    sc_dsp_type_lowpass,
+    sc_dsp_type_highpass,
+    sc_dsp_type_delay,
+    sc_dsp_type_meter,
+    sc_dsp_type_clap,  //< Wraps a CLAP plugin
+    sc_dsp_type_count  //< Count of types. sc_dsp_type_count - 1 == number of built in types
 } sc_dsp_type;
 
 /**
@@ -399,13 +418,13 @@ typedef enum sc_dsp_type
  */
 typedef enum sc_dsp_index
 {
-    SC_DSP_INDEX_TAIL = -2,  //< Left/back of the chain and becomes the new input
-    SC_DSP_INDEX_HEAD = -1   //< Right/top of the chain and becomes the new output
+    sc_dsp_index_tail = -2,  //< Left/back of the chain and becomes the new input
+    sc_dsp_index_head = -1   //< Right/top of the chain and becomes the new output
 } sc_dsp_index;
 
 /**
  * @brief DSP units that connect and form chains within @ref sc_node_group. Extensions of ma_node types with extra information.
- * 
+ *
  * DSP units are created with @ref sc_dsp_description objects and allow for simpler creation of DSP units than ma_node types.
  */
 struct sc_dsp
@@ -463,16 +482,16 @@ typedef struct sc_dsp_description
 } sc_dsp_description;
 
 /**
- * @brief 
- * 
+ * @brief Runtime configuration for creating a DSP unit.
+ *
  * DSP units are created with @ref sc_dsp_description objects.
  * The sc_system stores/knows about two description arrays.
  * One is internal and lets users create units using the @ref sc_dsp_type.
  * The other is external and lets users create units with a custom type.
- * 
+ *
  * The support creating internal and external units, all descriptions are looked up by a handle.
- * If the handle is between 0 and SC_DSP_TYPE_COUNT, the handle is used to index the internal description array.
- * If the handle is greater than SC_DSP_TYPE_COUNT, SC_DSP_TYPE_COUNT is subtracted from the handle and used as the index into the external description array.
+ * If the handle is between 0 and sc_dsp_type_count, the handle is used to index the internal description array.
+ * If the handle is greater than sc_dsp_type_count, sc_dsp_type_count is subtracted from the handle and used as the index into the external description array.
  */
 typedef struct sc_dsp_config
 {
@@ -481,33 +500,49 @@ typedef struct sc_dsp_config
     const clap_plugin_factory_t*        clapFactory;    //< Optional: passed to CLAP DSP types so a specific CLAP plugin can be created
 } sc_dsp_config;
 
-enum
+/**
+ * @brief Metering channels the generic sc_dsp_get_metering_info accessor can query.
+ * @see sc_meter, sc_meter_node in the Built-in DSPs section.
+ */
+typedef enum sc_dsp_meter_query
+{
+    sc_dsp_meter_query_peak,
+    sc_dsp_meter_query_rms,
+    sc_dsp_meter_query_count
+} sc_dsp_meter_query;
+
+sc_dsp_config SC_API sc_dsp_config_init(const sc_dsp_description* description);
+sc_dsp_config SC_API sc_dsp_config_init_type(const sc_system* system, sc_dsp_type type);
+sc_dsp_config SC_API sc_dsp_config_init_handle(const sc_system* system, sc_uint32 handle);
+sc_dsp_config SC_API sc_dsp_config_init_clap(const sc_system* system, const clap_plugin_factory_t* pluginFactory);
+
+sbk_status SC_API sc_dsp_get_parameter_float(sc_dsp* dsp, sc_uint32 index, float* value);
+sbk_status SC_API sc_dsp_set_parameter_float(sc_dsp* dsp, sc_uint32 index, float value);
+sbk_status SC_API sc_dsp_get_metering_info(sc_dsp* dsp, ma_uint32 channelIndex, sc_dsp_meter_query meterType, float* value);
+sbk_status SC_API sc_dsp_release(sc_dsp* dsp);
+
+/**************************************************************************************************************************************************************
+
+Built-in DSPs
+
+**************************************************************************************************************************************************************/
+
+/**
+ * @brief Sample values under this threshold are silenced. DSP uses this to calculate when reverb/delay echos finish.
+ */
+#define SC_DELAY_SILENCE_THRESHOLD 0.0001F
+
+typedef enum sc_dsp_lowpass_param
 {
     SC_DSP_LOWPASS_PARAM_CUTOFF,
     SC_DSP_LOWPASS_PARAM_COUNT
-};
+} sc_dsp_lowpass_param;
 
-enum
+typedef enum sc_dsp_highpass_param
 {
     SC_DSP_HIGHPASS_PARAM_CUTOFF,
     SC_DSP_HIGHPASS_PARAM_COUNT
-};
-
-enum
-{
-    SC_DSP_DELAY_PARAM_DELAY_SECONDS,
-    SC_DSP_DELAY_PARAM_DRY,
-    SC_DSP_DELAY_PARAM_WET,
-    SC_DSP_DELAY_PARAM_FEEDBACK,
-    SC_DSP_DELAY_PARAM_COUNT
-};
-
-typedef enum sc_dsp_meter_query
-{
-    SC_DSP_METER_QUERY_PEAK,
-    SC_DSP_METER_QUERY_RMS,
-    SC_DSP_METER_QUERY_COUNT
-} sc_dsp_meter_query;
+} sc_dsp_highpass_param;
 
 enum
 {
@@ -534,7 +569,16 @@ typedef struct sc_clap_node
     sc_bool isProcessing;  //< Whether start_processing() has been called on the plugin.
 } sc_clap_node;
 
-typedef struct
+typedef enum sc_dsp_delay_param
+{
+    SC_DSP_DELAY_PARAM_DELAY_SECONDS,
+    SC_DSP_DELAY_PARAM_DRY,
+    SC_DSP_DELAY_PARAM_WET,
+    SC_DSP_DELAY_PARAM_FEEDBACK,
+    SC_DSP_DELAY_PARAM_COUNT
+} sc_dsp_delay_param;
+
+typedef struct sc_delay_config
 {
     ma_uint32 channels;
     ma_uint32 sampleRate;
@@ -547,7 +591,7 @@ typedef struct
 
 sc_delay_config SC_API sc_delay_config_init(ma_uint32 channels, ma_uint32 sampleRate, ma_uint32 maxDelayInFrames);
 
-typedef struct
+typedef struct sc_delay
 {
     sc_delay_config config;
     ma_uint32       writeCursor;
@@ -569,7 +613,7 @@ sbk_status SC_API sc_delay_get_dry(const sc_delay* delay, float* outValue);
 sbk_status SC_API sc_delay_set_feedback(sc_delay* delay, float value);
 sbk_status SC_API sc_delay_get_feedback(const sc_delay* delay, float* outValue);
 
-typedef struct
+typedef struct sc_delay_node_config
 {
     ma_node_config nodeConfig;
     sc_delay_config delayConfig;
@@ -577,24 +621,14 @@ typedef struct
 
 sc_delay_node_config SC_API sc_delay_node_config_init(ma_uint32 channels, ma_uint32 sampleRate, ma_uint32 maxDelayInFrames);
 
-typedef struct
+typedef struct sc_delay_node
 {
     ma_node_base baseNode;
     sc_delay delay;
 } sc_delay_node;
 
-sbk_status SC_API sc_delay_node_init(ma_node_graph* pNodeGraph, const sc_delay_node_config* pConfig, const ma_allocation_callbacks* pAllocationCallbacks, sc_delay_node* pDelayNode);
-void SC_API sc_delay_node_uninit(sc_delay_node* pDelayNode, const ma_allocation_callbacks* pAllocationCallbacks);
-
-sc_dsp_config SC_API sc_dsp_config_init(const sc_dsp_description* description);
-sc_dsp_config SC_API sc_dsp_config_init_type(const sc_system* system, sc_dsp_type type);
-sc_dsp_config SC_API sc_dsp_config_init_handle(const sc_system* system, sc_uint32 handle);
-sc_dsp_config SC_API sc_dsp_config_init_clap(const sc_system* system, const clap_plugin_factory_t* pluginFactory);
-
-sbk_status SC_API sc_dsp_get_parameter_float(sc_dsp* dsp, sc_uint32 index, float* value);
-sbk_status SC_API sc_dsp_set_parameter_float(sc_dsp* dsp, sc_uint32 index, float value);
-sbk_status SC_API sc_dsp_get_metering_info(sc_dsp* dsp, ma_uint32 channelIndex, sc_dsp_meter_query meterType, float* value);
-sbk_status SC_API sc_dsp_release(sc_dsp* dsp);
+sbk_status SC_API sc_delay_node_init(ma_node_graph* nodeGraph, const sc_delay_node_config* config, const ma_allocation_callbacks* allocationCallbacks, sc_delay_node* delayNode);
+void SC_API sc_delay_node_uninit(sc_delay_node* delayNode, const ma_allocation_callbacks* allocationCallbacks);
 
 /**************************************************************************************************************************************************************
 
@@ -740,12 +774,12 @@ typedef sc_uint32 sc_voice_slot;      //< Slot/index into the voice array
  *   - @ref SC_VOICE_FLAG_PAUSED  - user paused; the audio callback freezes the play cursor.
  *   - @ref SC_VOICE_FLAG_VIRTUAL - system culled to stay under the real-voice budget; no mix.
  *
- * Callers only ever request @ref SC_VOICE_STATE_STOPPED or
- * @ref SC_VOICE_STATE_PLAYING on the desired word. @ref SC_VOICE_STATE_STARTING
- * and @ref SC_VOICE_STATE_STOPPING are pump-owned transients.
+ * Callers only ever request @ref sc_voice_state_stopped or
+ * @ref sc_voice_state_playing on the desired word. @ref sc_voice_state_starting
+ * and @ref sc_voice_state_stopping are pump-owned transients.
  *
  * Failures (async load errors, decoder errors, etc.) do not have their own
- * state; the voice transitions to @ref SC_VOICE_STATE_STOPPING and the slot
+ * state; the voice transitions to @ref sc_voice_state_stopping and the slot
  * is returned to the pool. Subsequent use of a stale handle returns
  * @ref SBK_ERR_NOT_FOUND; check the logs or profiler for the
  * underlying cause.
@@ -761,10 +795,10 @@ typedef sc_uint32 sc_voice_slot;      //< Slot/index into the voice array
  */
 typedef enum sc_voice_state
 {
-    SC_VOICE_STATE_STOPPED,   //< Idle. The slot is free or has just been returned to the pool.
-    SC_VOICE_STATE_STARTING,  //< Play requested; waiting on async load or first render before becoming @ref SC_VOICE_STATE_PLAYING.
-    SC_VOICE_STATE_PLAYING,   //< Live. Audibility is governed by @ref SC_VOICE_FLAG_VIRTUAL, cursor by @ref SC_VOICE_FLAG_PAUSED.
-    SC_VOICE_STATE_STOPPING   //< Tail/fade-out in progress; transitions to @ref SC_VOICE_STATE_STOPPED when done.
+    sc_voice_state_stopped,   //< Idle. The slot is free or has just been returned to the pool.
+    sc_voice_state_starting,  //< Play requested; waiting on async load or first render before becoming @ref sc_voice_state_playing.
+    sc_voice_state_playing,   //< Live. Audibility is governed by @ref SC_VOICE_FLAG_VIRTUAL, cursor by @ref SC_VOICE_FLAG_PAUSED.
+    sc_voice_state_stopping   //< Tail/fade-out in progress; transitions to @ref sc_voice_state_stopped when done.
 } sc_voice_state;
 
 // State + flags are packed into one 32-bit atomic word so callers see the
@@ -850,7 +884,7 @@ static MA_INLINE sc_uint32 sc_voice_word_with_flags(sc_uint32 word, sc_uint32 fl
 
 static MA_INLINE sc_bool sc_voice_word_has_flag(sc_uint32 word, sc_voice_flags flag)
 {
-    return (word & (sc_uint32)flag) != 0 ? SBK_TRUE : SBK_FALSE;
+    return (word & (sc_uint32)flag) != 0;
 }
 
 static MA_INLINE sc_voice_refcount sc_voice_handle_extract_refcount(sc_voice_handle handle)
@@ -884,7 +918,7 @@ sbk_status SC_API sc_voice_get_paused(sc_system* system, sc_voice_handle handle,
 /**
  * @brief Returns whether the voice is currently virtualised (@ref SC_VOICE_FLAG_VIRTUAL).
  *
- * Reads the current-side flag: SBK_TRUE means the pump has no real voice
+ * Reads the current-side flag: SC_TRUE means the pump has no real voice
  * mixing this @ref sc_voice right now (culled by the real-voice budget).
  */
 sbk_status SC_API sc_voice_get_virtual(sc_system* system, sc_voice_handle handle, sc_bool* outVirtual);
@@ -897,22 +931,22 @@ Bank
 
 #define SC_BANK_VERSION 1u
 
-#define FOURCC(a, b, c, d) ((sc_uint32)(((d) << 24) | ((c) << 16) | ((b) << 8) | (a)))
+#define SC_FOURCC(a, b, c, d) ((sc_uint32)(((d) << 24) | ((c) << 16) | ((b) << 8) | (a)))
 
-#define SC_BANK_ID             (FOURCC('S', 'C', 'B', 'K'))
-#define SC_BANK_AUDIO_CHUNK_ID (FOURCC('S', 'C', 'A', 'C'))
-#define SC_BANK_SUB_ID         (FOURCC('S', 'C', 'F', 'E'))
+#define SC_BANK_ID             (SC_FOURCC('S', 'C', 'B', 'K'))
+#define SC_BANK_AUDIO_CHUNK_ID (SC_FOURCC('S', 'C', 'A', 'C'))
+#define SC_BANK_SUB_ID         (SC_FOURCC('S', 'C', 'F', 'E'))
 
-typedef struct sc_subChunk sc_subChunk;
-typedef struct sc_riffChunk sc_riffChunk;
-typedef struct sc_audioChunk sc_audioChunk;
+typedef struct sc_sub_chunk sc_sub_chunk;
+typedef struct sc_riff_chunk sc_riff_chunk;
+typedef struct sc_audio_chunk sc_audio_chunk;
 
 enum
 {
     SC_BANK_FILE_NAME_BUFFER_SIZE = 64
 };
 
-struct sc_audioChunk
+struct sc_audio_chunk
 {
     ma_uint32 id;
     ma_uint32 size;
@@ -920,18 +954,18 @@ struct sc_audioChunk
     void* data;
 };
 
-struct sc_riffChunk
+struct sc_riff_chunk
 {
     ma_uint32 id;
     ma_uint32 size;
     ma_uint32 version;
     ma_uint32 numOfSubchunks;
-    sc_audioChunk** subChunks;
+    sc_audio_chunk** subChunks;
 };
 
 typedef struct sc_bank
 {
-    sc_riffChunk* riff;      //< bank data. Filled upon reading
+    sc_riff_chunk* riff;     //< bank data. Filled upon reading
     ma_vfs_file outputFile;  //< bank file used during read and write
 } sc_bank;
 
@@ -997,10 +1031,10 @@ struct sc_system
     const sc_dsp_description*   userDspRegistry[SC_MAX_USER_DSP_TYPES];                 //< DSP descriptions to create each DSP handle
 
     ma_slot_allocator           voiceSlotAllocator;                                     //< Allocates voice handles
-    sc_voice*                   voiceBuffer;                                            //< Allocated voices. Indexed through the @r voiceSlotAllocator
+    sc_voice*                   voiceBuffer;                                            //< Allocated voices. Indexed through the @ref voiceSlotAllocator
 
     ma_slot_allocator           realVoiceSlotAllocator;                                 //< Allocates handles for real voices
-    sc_voice_real*              realVoiceBuffer;                                        //< Allocated real voices. Indexed through @r realVoiceSlotAllocator
+    sc_voice_real*              realVoiceBuffer;                                        //< Allocated real voices. Indexed through @ref realVoiceSlotAllocator
 };
 
 /**
@@ -1078,21 +1112,28 @@ static MA_INLINE sc_bool sc_is_pow2(size_t x)
 }
 
 /**
- * @remark Returns 1 for x <= 1.
+ * @remark Returns 1 for x <= 1. Returns 0 when x is larger than the greatest
+ * power of two representable in size_t (i.e. x > (SIZE_MAX >> 1) + 1); the
+ * caller should treat 0 as "not representable".
  */
 static MA_INLINE size_t sc_next_pow2(size_t x)
 {
+    if (x <= 1) return 1;
     size_t v = 1;
     while (v < x)
     {
+        if (v > (SIZE_MAX >> 1))
+        {
+            return 0;
+        }
         v <<= 1;
     }
     return v;
 }
 
-ma_handle sc_dlopen(ma_log* pLog, const char* filename);
-void sc_dlclose(ma_log* pLog, ma_handle handle);
-ma_proc sc_dlsym(ma_log* pLog, ma_handle handle, const char* symbol);
+ma_handle SC_API sc_dlopen(ma_log* pLog, const char* filename);
+void SC_API sc_dlclose(ma_log* pLog, ma_handle handle);
+ma_proc SC_API sc_dlsym(ma_log* pLog, ma_handle handle, const char* symbol);
 
 SC_CLASS const char* SC_CALL sc_filename_get_ext(const char* filename);
 

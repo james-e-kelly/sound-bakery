@@ -56,7 +56,7 @@ static sbk_status sc_meter_node_init(ma_node_graph* nodeGraph,
     baseNodeConfig.pInputChannels  = &s_meterChannels;
     baseNodeConfig.pOutputChannels = &s_meterChannels;
 
-    return SBK_FROM_MA(ma_node_init(nodeGraph, &baseNodeConfig, allocCallbacks, node));
+    return SC_STATUS_FROM_MA_RESULT(ma_node_init(nodeGraph, &baseNodeConfig, allocCallbacks, node));
 }
 static void sc_meter_node_uninit(sc_meter_node* node, const ma_allocation_callbacks* allocationCallbacks)
 {
@@ -87,21 +87,21 @@ sc_dsp_description g_dspMeterVTable =
 sbk_status sc_dsp_get_metering_info(sc_dsp* dsp, ma_uint32 channelIndex, sc_dsp_meter_query meterType, float* value)
 {
     SC_CHECK_ARG(dsp != NULL);
-    SC_CHECK_ARG(dsp->handle == SC_DSP_TYPE_METER);
+    SC_CHECK_ARG(dsp->handle == sc_dsp_type_meter);
     SC_CHECK_ARG(channelIndex <= SC_DSP_METER_MAX_CHANNELS);
     SC_CHECK_ARG(meterType >= 0);
-    SC_CHECK_ARG(meterType < SC_DSP_METER_QUERY_COUNT);
+    SC_CHECK_ARG(meterType < sc_dsp_meter_query_count);
     SC_CHECK_ARG(value != NULL);
 
     sc_meter_node* meterNode = (sc_meter_node*)dsp->node;
-    SC_CHECK(meterNode != NULL, SBK_FROM_MA(MA_INVALID_DATA));
+    SC_CHECK(meterNode != NULL, SC_STATUS_FROM_MA_RESULT(MA_INVALID_DATA));
 
     switch (meterType)
     {
-        case SC_DSP_METER_QUERY_PEAK:
+        case sc_dsp_meter_query_peak:
             *value = c89atomic_load_explicit_f32(&meterNode->meter.peakLevels[channelIndex], c89atomic_memory_order_relaxed);
             break;
-        case SC_DSP_METER_QUERY_RMS:
+        case sc_dsp_meter_query_rms:
             *value = c89atomic_load_explicit_f32(&meterNode->meter.rmsLevels[channelIndex], c89atomic_memory_order_relaxed);
             break;
         default:

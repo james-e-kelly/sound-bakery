@@ -107,7 +107,7 @@ auto sbk::command_queue::process_commands(sbk::engine::system* system) noexcept 
         {
             case SBK_ERR_INVALID_PARAMETER:
                 return sbk::make_error(readResult, "Invalid parameter used when reading a command");
-            case SBK_ERR_UNITIALIZED:
+            case SBK_ERR_UNINITIALIZED:
                 return sbk::make_error(readResult, "Command buffer was not initialized");
             case SBK_ERR_EMPTY:
                 return sbk::ok();
