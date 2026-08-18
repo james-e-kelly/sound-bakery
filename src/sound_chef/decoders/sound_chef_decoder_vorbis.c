@@ -1,6 +1,6 @@
 
 // clang-format off
-#include "sound_chef/sound_chef_internal.h"
+#include "sound_chef/sound_chef.h"
 
 #if defined(MA_DLL)
     #undef MA_API

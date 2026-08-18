@@ -1,4 +1,4 @@
-#include "sound_chef/sound_chef_internal.h"
+#include "sound_chef/sound_chef.h"
 
 sbk_status sc_sound_get_length(sc_sound* sound, float* lengthInSeconds)
 {

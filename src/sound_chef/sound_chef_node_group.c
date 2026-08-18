@@ -1,14 +1,12 @@
-#include "sound_chef/sound_chef_internal.h"
+#include "sound_chef/sound_chef.h"
 
 sbk_status sc_node_group_add_dsp(sc_node_group* nodeGroup, sc_dsp* dsp, sc_dsp_index index)
 {
     SC_CHECK(index == SC_DSP_INDEX_HEAD, SBK_FROM_MA(MA_NOT_IMPLEMENTED));
     SC_CHECK_ARG(nodeGroup != NULL);
     SC_CHECK_ARG(dsp != NULL);
-    SC_CHECK(dsp->prev == NULL,
-             SBK_FROM_MA(MA_NOT_IMPLEMENTED));  // don't have detatch logic
-    SC_CHECK(dsp->next == NULL,
-             SBK_FROM_MA(MA_NOT_IMPLEMENTED));  // don't have detatch logic
+    SC_CHECK(dsp->prev == NULL, SBK_FROM_MA(MA_NOT_IMPLEMENTED));  // don't have detatch logic
+    SC_CHECK(dsp->next == NULL, SBK_FROM_MA(MA_NOT_IMPLEMENTED));  // don't have detatch logic
 
     sbk_status result = SBK_ERR_CHEF;
 

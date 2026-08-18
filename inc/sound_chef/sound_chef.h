@@ -68,15 +68,13 @@ extern "C"
     #define SC_CLASS
 #endif
 
-// C uses _Alignas (C11+); C++ uses alignas as a keyword.
 #ifdef __cplusplus
     #define SC_ALIGN_TO(x) alignas(x)
 #else
     #define SC_ALIGN_TO(x) _Alignas(x)
 #endif
 
-// CPU pause hint for short spin loops. Not a scheduler yield — reach for
-// sched_yield / SwitchToThread if the wait might be longer than a few cycles.
+// CPU pause hint for short spin loops. Not a scheduler yield
 #if defined(_MSC_VER)
     #include <intrin.h>
     #define SC_PAUSE() _mm_pause()
@@ -88,60 +86,34 @@ extern "C"
     #define SC_PAUSE() ((void)0)
 #endif
 
-#define SC_COUNTOF(x)            (sizeof(x) / sizeof(x[0]))
-#define SC_MAX(x, y)             (((x) > (y)) ? (x) : (y))
-#define SC_MIN(x, y)             (((x) < (y)) ? (x) : (y))
-#define SC_ABS(x)                (((x) > 0) ? (x) : -(x))
-#define SC_CLAMP(x, lo, hi)      (SC_MAX(lo, SC_MIN(x, hi)))
-#define SC_OFFSET_PTR(p, offset) (((ma_uint8*)(p)) + (offset))
-#define SC_ALIGN(x, a)           (((x) + ((a)-1)) & ~((a)-1))
-#define SC_ALIGN_64(x)           SC_ALIGN(x, 8)
+/**
+ * @def Sound Chef supports a max of 5th order ambisonics.
+ * 
+ * miniaudio can handle many more channels but Sound Chef is not a general purpose library.
+ */
+#define SC_MAX_CHANNELS         36
 
-#define SC_MAX_CHANNELS         36      //< Support a max of 5th order ambisonics
-#define SC_MAX_FRAME_COUNT      2048    //< Safe default for allocating staging areas in memory
+/**
+* @def Some operations need an audio buffer on the heap (mainly CLAP processing).
+*
+* This gives us a reasonable buffer size.
+*/
+#define SC_MAX_FRAME_COUNT      2048
 
-#define SC_MAX_USER_DSP_TYPES   16      //< sc_dsp_descriptions are kept in a static array. Increase this if we need to support more DSP types
+/**
+* @def Max user-defined DSP types.
+*
+* sc_dsp_descriptions are kept in a static/preallocated array. Increase this if we need to support more DSP types.
+* 
+* It's assumed most users add no additional DSP types and those who do are adding only a few.
+*/
+#define SC_MAX_USER_DSP_TYPES   16
 
 #include <assert.h>
 
 #ifndef SC_ASSERT
     #define SC_ASSERT(condition) assert(condition)
 #endif
-
-#include <string.h>
-
-/**
- * @def Zeroes the memory at @p ptr.
- */
-#define SC_ZERO_OBJECT(ptr) memset((ptr), 0, sizeof(*(ptr)))
-
-/**
- * @def Creates an object of type @p type, zeroes the memory, and returns on errors.
- * 
- * Example:
- * @code
- *  sc_dsp* dsp = NULL;
- *  SC_CREATE(dsp, sc_dsp, system); 
- * @endcode
- */
-#define SC_CREATE(ptr, type, system)                                                    \
-    do                                                                                  \
-    {                                                                                   \
-        SC_CHECK_ARG((system) != NULL);                                                 \
-        (ptr) = (type*)ma_calloc(sizeof(type), &(system)->engine.allocationCallbacks);  \
-        SC_CHECK_MEM((ptr));                                                            \
-    } while (0)
-
-/**
- * @def Frees the memory at @p ptr. 
- */
-#define SC_FREE(ptr, system)                                   \
-    do                                                         \
-    {                                                          \
-        assert((system) != NULL);                              \
-        ma_free((ptr), &(system)->engine.allocationCallbacks); \
-        (ptr) = NULL;                                          \
-    } while (0)
 
 #define MA_COINIT_VALUE 0x2  //< COINIT_APARTMENTTHREADED
 
@@ -165,9 +137,7 @@ typedef ma_int32                sc_int32;
 typedef ma_int64                sc_int64;
 typedef ma_uint64               sc_uint64;
 
-typedef sc_uint64               sc_voice_handle;        //< Voice handle. Contains both a reference count and an index
-typedef sc_uint32               sc_voice_refcount;      //< References to this slot. Used to check if a handle is old/stale
-typedef sc_uint32               sc_voice_slot;          //< Slot/index into the voice array
+typedef void*                   sc_handle;
 
 typedef struct sc_system        sc_system;
 typedef struct sc_dsp           sc_dsp;
@@ -175,6 +145,15 @@ typedef struct sc_node_group    sc_node_group;
 
 #define SBK_FALSE 0
 #define SBK_TRUE 1
+
+#define SC_COUNTOF(x)            (sizeof(x) / sizeof(x[0]))
+#define SC_MAX(x, y)             (((x) > (y)) ? (x) : (y))
+#define SC_MIN(x, y)             (((x) < (y)) ? (x) : (y))
+#define SC_ABS(x)                (((x) > 0) ? (x) : -(x))
+#define SC_CLAMP(x, lo, hi)      (SC_MAX(lo, SC_MIN(x, hi)))
+#define SC_OFFSET_PTR(p, offset) (((sc_uint8*)(p)) + (offset))
+#define SC_ALIGN(x, a)           (((x) + ((a)-1)) & ~((a)-1))
+#define SC_ALIGN_64(x)           SC_ALIGN(x, 8)
 
 /**************************************************************************************************************************************************************
 
@@ -234,20 +213,61 @@ typedef enum
 #define MA_FROM_SBK(sbkStatus)  ((ma_result)(sbkStatus))
 
 #define SC_CHECK(condition, result) \
-    if ((condition) == MA_FALSE)    \
+    if ((condition) == SBK_FALSE)    \
     return (result)
 #define SC_CHECK_STATUS(result) \
     if (((sbk_status)(result)) != SBK_SUCCESS) \
     return (result)
 #define SC_CHECK_ARG(condition)  \
-    if ((condition) == MA_FALSE) \
+    if ((condition) == SBK_FALSE) \
     return SBK_ERR_INVALID_PARAMETER
 #define SC_CHECK_MEM(ptr) \
     if ((ptr) == NULL)    \
     return SBK_ERR_OUT_OF_MEMORY
 #define SC_CHECK_AND_GOTO(condition, dest) \
-    if ((condition) == MA_FALSE)           \
+    if ((condition) == SBK_FALSE)           \
     goto dest
+
+/**************************************************************************************************************************************************************
+
+Creation And Deltion Macros
+
+**************************************************************************************************************************************************************/
+
+#include <string.h>
+
+/**
+ * @def Zeroes the memory at @p ptr.
+ */
+#define SC_ZERO_OBJECT(ptr) memset((ptr), 0, sizeof(*(ptr)))
+
+/**
+ * @def Creates an object of type @p type, zeroes the memory, and returns on errors.
+ *
+ * Example:
+ * @code
+ *  sc_dsp* dsp = NULL;
+ *  SC_CREATE(dsp, sc_dsp, system);
+ * @endcode
+ */
+#define SC_CREATE(ptr, type, system)                                                   \
+    do                                                                                 \
+    {                                                                                  \
+        SC_CHECK_ARG((system) != NULL);                                                \
+        (ptr) = (type*)ma_calloc(sizeof(type), &(system)->engine.allocationCallbacks); \
+        SC_CHECK_MEM((ptr));                                                           \
+    } while (0)
+
+/**
+ * @def Frees the memory at @p ptr.
+ */
+#define SC_FREE(ptr, system)                                   \
+    do                                                         \
+    {                                                          \
+        assert((system) != NULL);                              \
+        ma_free((ptr), &(system)->engine.allocationCallbacks); \
+        (ptr) = NULL;                                          \
+    } while (0)
 
 /**************************************************************************************************************************************************************
 
@@ -268,29 +288,6 @@ typedef c89atomic_uint64    sc_atomic_uint64;
 typedef c89atomic_bool      sc_atomic_bool;
 typedef float               sc_atomic_float;
 
-static MA_INLINE sc_bool sc_is_pow2(size_t x)
-{
-    return x != 0 && (x & (x - 1)) == 0;
-}
-
-/**
- * @remark Returns 1 for x <= 1.
- */
-static MA_INLINE size_t sc_next_pow2(size_t x)
-{
-    size_t v = 1;
-    while (v < x)
-    {
-        v <<= 1;
-    }
-    return v;
-}
-
-enum
-{
-    SC_STRING_NAME_LENGTH = 16
-};
-
 /**************************************************************************************************************************************************************
 
 CLAP
@@ -306,10 +303,13 @@ CLAP
  */
 typedef struct sc_clap
 {
-    ma_handle dynamicLibraryHandle;              //< Handle to the .clap file
+    sc_handle dynamicLibraryHandle;              //< Handle to the .clap file
     clap_plugin_entry_t* clapEntry;              //< Entry point of the plugin
     const clap_plugin_factory_t* pluginFactory;  //< Plugin factory to poll and create plugins from
 } sc_clap;
+
+sbk_status SC_API sc_clap_load(const char* clapFilePath, sc_clap* clapPlugin);
+sbk_status SC_API sc_clap_unload(sc_clap* clapPlugin);
 
 /**************************************************************************************************************************************************************
 
@@ -331,21 +331,18 @@ typedef enum sc_encoding_format
     sc_encoding_format_opus
 } sc_encoding_format;
 
-typedef struct sc_encoder_config sc_encoder_config;
-typedef struct sc_encoder sc_encoder;
-
-struct sc_encoder_config
+typedef struct sc_encoder_config
 {
     ma_encoder_config   baseConfig;
     ma_uint8            quality;        //< Quality setting for formats that allow it
     sc_encoding_format  encodingFormat;
-};
+} sc_encoder_config;
 
-struct sc_encoder
+typedef struct sc_encoder
 {
     ma_encoder          baseEncoder;
     sc_encoder_config   config;
-};
+} sc_encoder;
 
 sc_encoder_config SC_API sc_encoder_config_init(sc_encoding_format encodingFormat, ma_format format, ma_uint32 channels, ma_uint32 sampleRate, ma_uint8 quality);
 
@@ -355,6 +352,10 @@ sbk_status SC_API sc_encoder_uninit(sc_encoder* encoder);
 
 sbk_status SC_API sc_encoder_write_pcm_frames(sc_encoder* encoder, const void* framesIn, ma_uint64 frameCount, ma_uint64* framesWritten);
 sbk_status SC_API sc_encoder_write_from_file(const char* decodeFilePath, const char* encodeFilePath, const sc_encoder_config* config);
+
+ma_result SC_API sc_encoder_vorbis_on_init(ma_encoder* encoder);
+void SC_API sc_encoder_vorbis_on_uninit(ma_encoder* encoder);
+ma_result SC_API sc_encoder_vorbis_write_pcm_frames(ma_encoder* encoder, const void* framesIn, ma_uint64 frameCount, ma_uint64* framesWritten);
 
 /**************************************************************************************************************************************************************
 
@@ -366,6 +367,11 @@ DSP
  * @def Sample values under this threshold are silenced. DSP uses this to calculate when reverb/delay echos finish. 
  */
 #define SC_DELAY_SILENCE_THRESHOLD 0.0001F
+
+enum
+{
+    SC_STRING_NAME_LENGTH = 16
+};
 
 /**
  * @brief Built-in DSP types.
@@ -398,7 +404,7 @@ typedef enum sc_dsp_index
 } sc_dsp_index;
 
 /**
- * @brief DSP units that can fit into node groups. Extensions of ma_node types with extra information.
+ * @brief DSP units that connect and form chains within @ref sc_node_group. Extensions of ma_node types with extra information.
  * 
  * DSP units are created with @ref sc_dsp_description objects and allow for simpler creation of DSP units than ma_node types.
  */
@@ -472,7 +478,7 @@ typedef struct sc_dsp_config
 {
     sc_uint32                           handle;         //< Type/handle/index
     const sc_dsp_description*           dspDescription; //< Required: holds a vtable for DSP creation and deletion
-    const clap_plugin_factory_t*   clapFactory;    //< Optional: passed to CLAP DSP types so a specific CLAP plugin can be created
+    const clap_plugin_factory_t*        clapFactory;    //< Optional: passed to CLAP DSP types so a specific CLAP plugin can be created
 } sc_dsp_config;
 
 enum
@@ -544,11 +550,11 @@ sc_delay_config SC_API sc_delay_config_init(ma_uint32 channels, ma_uint32 sample
 typedef struct
 {
     sc_delay_config config;
-    ma_uint32 writeCursor;
-    ma_uint32 bufferSizeInFrames;  //< Total buffer size. Not the delay time/size
-    float* buffer;
-    ma_uint32 silentFrameCount;  //< Audio thread. Counts number of silent frames so we know when are idle
-    sc_atomic_bool isIdle;
+    ma_uint32       writeCursor;
+    ma_uint32       bufferSizeInFrames; //< Total buffer size. Not the delay time/size
+    float*          buffer;
+    ma_uint32       silentFrameCount;   //< Audio thread. Counts number of silent frames so we know when are idle
+    sc_atomic_bool  isIdle;
 } sc_delay;
 
 sbk_status SC_API sc_delay_init(const sc_delay_config* config, const ma_allocation_callbacks* allocationCallbacks, sc_delay* delay);
@@ -617,9 +623,6 @@ sbk_status SC_API sc_node_group_set_parent(sc_node_group* nodeGroup, sc_node_gro
 
 /**
  * @brief Routes the group's output directly to the graph endpoint (the audio device).
- *
- * Use this for top-level groups that should feed straight to the output
- * rather than through another group.
  */
 sbk_status SC_API sc_node_group_set_parent_endpoint(sc_node_group* nodeGroup);
 
@@ -631,7 +634,15 @@ sbk_status SC_API sc_node_group_set_parent_endpoint(sc_node_group* nodeGroup);
  */
 sbk_status SC_API sc_node_group_get_dsp(sc_node_group* nodeGroup, sc_dsp_type type, sc_dsp** dsp);
 
+/**
+ * @brief Adds a DSP to the node group chain.
+ * @remark The node group owns the DSP after this point. All DSP are released during @ref sc_node_group_release.
+ */
 sbk_status SC_API sc_node_group_add_dsp(sc_node_group* nodeGroup, sc_dsp* dsp, sc_dsp_index index);
+
+/**
+ * @brief Releases the node group and all DSP within it.
+ */
 sbk_status SC_API sc_node_group_release(sc_node_group* nodeGroup);
 
 /**************************************************************************************************************************************************************
@@ -661,6 +672,8 @@ typedef enum sc_sound_mode
  * @brief Basic piece of playing audio.
  * 
  * sc_sound is currently being deprecated in favour of @ref sc_voice.
+ * 
+ * Sounds are intended to just be a loaded audio buffer.
  */
 typedef struct sc_sound
 {
@@ -714,6 +727,10 @@ sbk_status SC_API sc_sound_instance_release(sc_sound_instance* instance);
 Voice
 
 **************************************************************************************************************************************************************/
+
+typedef sc_uint64 sc_voice_handle;    //< Voice handle. Contains both a reference count and an index
+typedef sc_uint32 sc_voice_refcount;  //< References to this slot. Used to check if a handle is old/stale
+typedef sc_uint32 sc_voice_slot;      //< Slot/index into the voice array
 
 /**
  * @brief Playback lifecycle position of an @ref sc_voice.
@@ -1048,6 +1065,36 @@ sbk_status SC_API sc_system_create_dsp(sc_system* system, const sc_dsp_config* c
 * @remark The description is owned by the system; do not free the returned pointer.
 */
 sbk_status SC_API sc_system_get_dsp_desc(const sc_system* system, sc_uint32 handle, const sc_dsp_description** outDescription);
+
+/**************************************************************************************************************************************************************
+
+Utilities
+
+**************************************************************************************************************************************************************/
+
+static MA_INLINE sc_bool sc_is_pow2(size_t x)
+{
+    return x != 0 && (x & (x - 1)) == 0;
+}
+
+/**
+ * @remark Returns 1 for x <= 1.
+ */
+static MA_INLINE size_t sc_next_pow2(size_t x)
+{
+    size_t v = 1;
+    while (v < x)
+    {
+        v <<= 1;
+    }
+    return v;
+}
+
+ma_handle sc_dlopen(ma_log* pLog, const char* filename);
+void sc_dlclose(ma_log* pLog, ma_handle handle);
+ma_proc sc_dlsym(ma_log* pLog, ma_handle handle, const char* symbol);
+
+SC_CLASS const char* SC_CALL sc_filename_get_ext(const char* filename);
 
 #ifdef __cplusplus
 }

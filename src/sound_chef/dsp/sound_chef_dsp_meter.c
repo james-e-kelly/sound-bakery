@@ -1,4 +1,4 @@
-#include "sound_chef/sound_chef_internal.h"
+#include "sound_chef/sound_chef.h"
 
 #include <math.h>
 

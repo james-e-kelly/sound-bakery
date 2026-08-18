@@ -5,7 +5,7 @@
     #include "glad/include/glad/gl.h"
     #include "gluten/app/app.h"
     #include "gluten/subsystems/renderer_subsystem.h"
-    #include "sound_chef/sound_chef_internal.h"
+    #include "sound_chef/sound_chef.h"
 
     #ifdef _WIN32
         #define WIN32_LEAN_AND_MEAN

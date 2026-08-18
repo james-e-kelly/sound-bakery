@@ -106,7 +106,6 @@ set(SOUND_CHEF_SOURCES
     sound_chef.c
     sound_chef_bank.c
     sound_chef_encoder.c
-    sound_chef_internal.c
     sound_chef_ring_buffer.c
     sound_chef_sound.c
     sound_chef_node_group.c
@@ -128,9 +127,6 @@ set(SOUND_CHEF_SOURCES
 
 set(SOUND_CHEF_PRIVATE_HEADERS
     sound_chef_guide.h
-    sound_chef_internal.h
-
-    encoders/sound_chef_encoder_vorbis.h
 )
 
 set(SOUND_CHEF_PUBLIC_HEADERS
