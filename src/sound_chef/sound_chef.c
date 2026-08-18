@@ -23,7 +23,7 @@ void sc_system_audio_callback(ma_device* device, void* output, const void* input
 
         if (!isPaused)
         {
-            system->voiceBuffer[voiceIndex].playCursor += frameCount;
+            c89atomic_fetch_add_64(&system->voiceBuffer[voiceIndex].playCursor, frameCount);
         }
     }
 
@@ -86,8 +86,9 @@ sc_system_config sc_system_config_init_default()
 {
     sc_system_config config;
     SC_ZERO_OBJECT(&config);
-    config.maxRealVoices = 64;
-    config.maxVoices     = 1024;
+    config.maxRealVoices = 128;
+    config.maxVoices     = 2048;
+    config.vol0Threshold = 0.001F;
     return config;
 }
 
@@ -113,6 +114,9 @@ sbk_status sc_system_init(sc_system* system, const sc_system_config* systemConfi
     SC_CHECK_ARG(systemConfig != NULL);
     SC_CHECK_ARG(systemConfig->maxVoices > 0);
     SC_CHECK_ARG(systemConfig->maxVoices >= systemConfig->maxRealVoices);
+    SC_CHECK_ARG(systemConfig->vol0Threshold > 0.0F && systemConfig->vol0Threshold < 1.0F);
+
+    system->tiebreakerPolicy = systemConfig->tiebreakPolicy;
 
     ma_engine* engine = (ma_engine*)system;
 
@@ -138,6 +142,12 @@ sbk_status sc_system_init(sc_system* system, const sc_system_config* systemConfi
 
     system->realVoiceBuffer = ma_calloc(sizeof(sc_voice_real) * systemConfig->maxRealVoices, &systemConfig->allocationCallbacks);
     SC_CHECK_MEM(system->realVoiceBuffer);
+
+    system->virtualizeCandidates = ma_calloc(sizeof(sc_virtual_voice_candidate) * systemConfig->maxVoices, &systemConfig->allocationCallbacks);
+    SC_CHECK_MEM(system->virtualizeCandidates);
+
+    system->virtualizeBoundary = ma_calloc(sizeof(sc_virtual_voice_candidate) * systemConfig->maxVoices, &systemConfig->allocationCallbacks);
+    SC_CHECK_MEM(system->virtualizeBoundary);
     
     ma_log_post(&system->log, MA_LOG_LEVEL_DEBUG, "Initializing engine");
 
@@ -239,11 +249,15 @@ sbk_status sc_system_update(sc_system* system)
 {
     SC_CHECK_ARG(system != NULL);
 
+    (void)sc_system_calculate_virtual_voices(system);
+
     for (sc_uint32 voiceIndex = 0; voiceIndex < system->voiceSlotAllocator.capacity; ++voiceIndex)
     {
         sc_voice* const voice                     = &system->voiceBuffer[voiceIndex];
         const sc_voice_desired_state desiredState = (sc_voice_desired_state)c89atomic_load_32(&voice->desiredState);
         const sc_voice_state currentState         = (sc_voice_state)c89atomic_load_32(&voice->currentState);
+
+
 
         switch (desiredState)
         {
@@ -321,6 +335,8 @@ sbk_status sc_system_close(sc_system* system)
 
         SC_FREE(system->voiceBuffer, system);
         SC_FREE(system->realVoiceBuffer, system);
+        SC_FREE(system->virtualizeCandidates, system);
+        SC_FREE(system->virtualizeBoundary, system);
 
         ma_log_post(&system->log, MA_LOG_LEVEL_INFO, "Closed Sound Chef");
     }
@@ -599,37 +615,6 @@ sbk_status sc_system_create_dsp(sc_system* system, const sc_dsp_config* config, 
     }
 
     return createResult;
-}
-
-sc_dsp_config sc_dsp_config_init(const sc_dsp_description* description)
-{
-    sc_dsp_config config;
-    SC_ZERO_OBJECT(&config);
-    config.dspDescription = description;
-    return config;
-}
-
-sc_dsp_config sc_dsp_config_init_type(const sc_system* system, sc_dsp_type type)
-{
-    sc_dsp_config config;
-    SC_ZERO_OBJECT(&config);
-    (void)sc_system_get_dsp_desc(system, (sc_uint32)type, &config.dspDescription);
-    return config;
-}
-
-sc_dsp_config sc_dsp_config_init_handle(const sc_system* system, sc_uint32 handle)
-{
-    sc_dsp_config config;
-    SC_ZERO_OBJECT(&config);
-    (void)sc_system_get_dsp_desc(system, handle, &config.dspDescription);
-    return config;
-}
-
-sc_dsp_config sc_dsp_config_init_clap(const sc_system* system, const clap_plugin_factory_t* pluginFactory)
-{
-    sc_dsp_config config = sc_dsp_config_init_type(system, sc_dsp_type_clap);
-    config.clapFactory   = pluginFactory;
-    return config;
 }
 
 sbk_status sc_system_clap_get_count(const sc_system* system, ma_uint32* count)

@@ -37,19 +37,18 @@ static void sc_voice_write_flag(volatile sc_atomic_uint32* flags, sc_voice_flags
     }
 }
 
-sbk_status sc_voice_pause(sc_system* system, sc_voice_handle handle)
+sbk_status sc_voice_set_paused(sc_system* system, sc_voice_handle handle, sc_bool paused)
 {
     sc_voice* voice = NULL;
     SC_CHECK_STATUS(sc_voice_resolve(system, handle, &voice));
-    sc_voice_write_flag(&voice->flags, SC_VOICE_FLAG_PAUSED, SC_TRUE);
+    sc_voice_write_flag(&voice->flags, SC_VOICE_FLAG_PAUSED, paused);
     return SBK_SUCCESS;
 }
 
-sbk_status sc_voice_resume(sc_system* system, sc_voice_handle handle)
+sbk_status SC_API sc_voice_set_virtual(sc_voice* voice, sc_bool virtualised)
 {
-    sc_voice* voice = NULL;
-    SC_CHECK_STATUS(sc_voice_resolve(system, handle, &voice));
-    sc_voice_write_flag(&voice->flags, SC_VOICE_FLAG_PAUSED, SC_FALSE);
+    SC_CHECK_ARG(voice != NULL);
+    sc_voice_write_flag(&voice->flags, SC_VOICE_FLAG_VIRTUAL, virtualised);
     return SBK_SUCCESS;
 }
 

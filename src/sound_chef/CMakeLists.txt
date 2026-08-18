@@ -108,6 +108,7 @@ set(SOUND_CHEF_SOURCES
     sound_chef_encoder.c
     sound_chef_sound.c
     sound_chef_node_group.c
+    sound_chef_virtualize.c
     sound_chef_voice.c
 
     dsp/sound_chef_dsp.c

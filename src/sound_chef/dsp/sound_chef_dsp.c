@@ -1,5 +1,36 @@
 #include "sound_chef/sound_chef.h"
 
+sc_dsp_config sc_dsp_config_init(const sc_dsp_description* description)
+{
+    sc_dsp_config config;
+    SC_ZERO_OBJECT(&config);
+    config.dspDescription = description;
+    return config;
+}
+
+sc_dsp_config sc_dsp_config_init_type(const sc_system* system, sc_dsp_type type)
+{
+    sc_dsp_config config;
+    SC_ZERO_OBJECT(&config);
+    (void)sc_system_get_dsp_desc(system, (sc_uint32)type, &config.dspDescription);
+    return config;
+}
+
+sc_dsp_config sc_dsp_config_init_handle(const sc_system* system, sc_uint32 handle)
+{
+    sc_dsp_config config;
+    SC_ZERO_OBJECT(&config);
+    (void)sc_system_get_dsp_desc(system, handle, &config.dspDescription);
+    return config;
+}
+
+sc_dsp_config sc_dsp_config_init_clap(const sc_system* system, const clap_plugin_factory_t* pluginFactory)
+{
+    sc_dsp_config config = sc_dsp_config_init_type(system, sc_dsp_type_clap);
+    config.clapFactory   = pluginFactory;
+    return config;
+}
+
 sbk_status sc_dsp_release(sc_dsp* dsp)
 {
     SC_CHECK_ARG(dsp != NULL);

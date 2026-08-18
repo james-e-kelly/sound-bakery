@@ -791,6 +791,15 @@ typedef sc_uint32 sc_voice_index;       //< Index into the voice array
 #define SC_VOICE_MAKE_HANDLE(refcount, slot)        ((sc_voice_handle)(refcount) << 32) | (sc_voice_handle)(slot)
 
 /**
+ * @brief How voices of the same priority handle conflicts.
+ */
+typedef enum sc_voice_tiebreak_policy
+{
+    sc_voice_tiebreak_kill_oldest,  //< Newest voice wins ties; oldest goes virtual.
+    sc_voice_tiebreak_kill_newest   //< Oldest voice wins ties; newest goes virtual.
+} sc_voice_tiebreak_policy;
+
+/**
  * @brief What the caller wants the voice to do.
  *
  * Stored in @ref sc_voice::desiredState. Only two values so callers cannot
@@ -864,18 +873,14 @@ typedef enum sc_voice_flags
  *
  * Voices are limited by the @ref sc_system_config::maxVoices value passed during system initialization.
  */
-#if defined(_MSC_VER)
-    #pragma warning(push)
-    #pragma warning(disable: 4324) // structure was padded due to alignment specifier - intentional, see SC_ALIGN_STRUCT below
-#endif
-typedef struct SC_ALIGN_STRUCT(64) sc_voice
+typedef struct sc_voice
 {
     MA_ATOMIC(8, sc_atomic_uint64)  handle;                 //< Handle for this slot's current occupant. Stale-handle callers compare against this and get SBK_ERR_NOT_FOUND on mismatch.
     sc_voice_handle                 realVoiceHandle;        //< Non-owning reference to a real voice
 
     sc_sound*                       sound;                  //< Source to read from
     sc_node_group*                  group;                  //< Parent group to connect to when playing for real
-    sc_uint64                       playCursor;             //< Audio thread
+    MA_ATOMIC(8, sc_atomic_uint64)  playCursor;             //< Advanced by the audio thread. Read by @ref sc_system_update to compare the ages of voices
 
     MA_ATOMIC(4, sc_atomic_uint32)  currentState;           //< sc_voice_state observed by the update loop. Update writes; anyone reads.
     MA_ATOMIC(4, sc_atomic_uint32)  desiredState;           //< sc_voice_desired_state requested by callers. Callers write; update reads.
@@ -886,9 +891,6 @@ typedef struct SC_ALIGN_STRUCT(64) sc_voice
 
     sc_uint8                        priority;               //< priority where the greater the number, the great the priority
 } sc_voice;
-#if defined(_MSC_VER)
-    #pragma warning(pop)
-#endif
 
 /**
  * @brief A real voice that is connected to the DSP graph.
@@ -903,9 +905,28 @@ typedef struct sc_voice_real
     ma_decoder*                     memoryDecoder;  //< @todo Work out if this should go in a resource manager
 } sc_voice_real;
 
-sbk_status SC_API sc_voice_pause(sc_system* system, sc_voice_handle handle);
-sbk_status SC_API sc_voice_resume(sc_system* system, sc_voice_handle handle);
+// One candidate row per voice that entered the virtualisation contest this
+// frame. Kept in a system-owned scratch buffer so no allocation happens per update.
+
+/**
+ * @brief Used to sort voices during @ref sc_system_update.
+ */
+typedef struct sc_virtual_voice_candidate
+{
+    sc_uint32   voiceIndex;
+    sc_uint32   priority;       //< Voice priority. Main way of comparing a voice. Voices will higher priorities are never culled by voices with lower priority
+    float       audibility;     //< Tiebreaker. Louder wins. @todo Make this an int so we are not comparing a float
+    sc_uint64   playCursor;     //< Tiebreaker. Used to compare which voice is oldest
+} sc_virtual_voice_candidate;
+
+sbk_status SC_API sc_voice_set_paused(sc_system* system, sc_voice_handle handle, sc_bool paused);
 sbk_status SC_API sc_voice_stop(sc_system* system, sc_voice_handle handle);
+
+/**
+ * @brief Called from @ref sc_system_update to set whether the voice is virtual or not.
+ * @remark Should not be called by the user.
+ */
+sbk_status SC_API sc_voice_set_virtual(sc_voice* voice, sc_bool virtualised);
 
 /**
  * @brief Returns whether the voice is currently paused (@ref SC_VOICE_FLAG_PAUSED).
@@ -992,6 +1013,8 @@ typedef struct sc_system_config
     ma_device_data_proc         dataCallback;           //< Device render callback. Overriden in Sound Bakery for profiling
     sc_uint32                   maxVoices;              //< Max number of voices (both virtual and real)
     sc_uint32                   maxRealVoices;          //< Max number of real voices to mix at once. Voices over this limit get virtualized
+    float                       vol0Threshold;          //< Volumes before this volume are automatically virtualised
+    sc_voice_tiebreak_policy    tiebreakPolicy;         //< When voices of the same priority are in fighting for a real voice, do we prefer the oldest or newest?
 } sc_system_config;
 
 /**
@@ -1035,6 +1058,12 @@ struct sc_system
 
     ma_slot_allocator           realVoiceSlotAllocator;                                 //< Allocates handles for real voices
     sc_voice_real*              realVoiceBuffer;                                        //< Allocated real voices. Indexed through @ref realVoiceSlotAllocator
+
+    float                       vol0Threshold;                                          //< Voices under this are virtualized
+    sc_voice_tiebreak_policy    tiebreakerPolicy;                                       //< When voices of the same priority are in fighting for a real voice, do we prefer the oldest or newest?
+
+    sc_virtual_voice_candidate* virtualizeCandidates;                                   //< [0-maxVoices]. Used to sort voices
+    sc_virtual_voice_candidate* virtualizeBoundary;                                     //< [0-maxVoices]. Used to sort voices
 };
 
 /**
@@ -1057,6 +1086,26 @@ sbk_status SC_API sc_system_release(sc_system* system);
 * @remark When using Sound Bakery, the system thread will call this function, thereby moving audio updates off the game thread (if in async mode).
 */
 sbk_status SC_API sc_system_update(sc_system* system);
+
+/**
+ * @brief Process all voices and calculates whether they are virtual or not. Called during @ref sc_system_update.
+ * 
+ * Top-K selection by counting sort over 8-bit priority: a 256-bucket
+ * histogram (L1-resident) is walked top-down and stopped once cumulative
+ * count reaches maxRealVoices. Linear in N, independent of K, no key
+ * comparisons on the payload.
+ *
+ * Ties at the cutoff priority land in a small boundary set resolved by
+ * insertion sort on (audibility desc, playCursor per tiebreak policy).
+ * Insertion sort wins on constant factors at that size (usually < 10).
+ *
+ * Assumes priority fits in a byte. Widening past that requires either
+ * quantising back into a small integer range or switching to a
+ * heap-based partial sort.
+ * 
+ * @remark Does not need to be called by the user.
+ */
+sbk_status SC_API sc_system_calculate_virtual_voices(sc_system* system);
 
 /**
 * @brief Reads/pulls PCM data from the node graph and outputs them to @p framesOut.
