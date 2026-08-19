@@ -140,7 +140,7 @@ sbk_status sc_system_init(sc_system* system, const sc_system_config* systemConfi
     system->voiceBuffer = ma_calloc(sizeof(sc_voice) * systemConfig->maxVoices, &systemConfig->allocationCallbacks);
     SC_CHECK_MEM(system->voiceBuffer);
 
-    system->realVoiceBuffer = ma_calloc(sizeof(sc_voice_real) * systemConfig->maxRealVoices, &systemConfig->allocationCallbacks);
+    system->realVoiceBuffer = ma_calloc(sizeof(sc_real_voice) * systemConfig->maxRealVoices, &systemConfig->allocationCallbacks);
     SC_CHECK_MEM(system->realVoiceBuffer);
 
     system->virtualizeCandidates = ma_calloc(sizeof(sc_virtual_voice_candidate) * systemConfig->maxVoices, &systemConfig->allocationCallbacks);
@@ -245,6 +245,8 @@ sbk_status sc_system_init(sc_system* system, const sc_system_config* systemConfi
     return SBK_SUCCESS;
 }
 
+extern sbk_status sc_system_promote_voice_to_real(sc_system* system, sc_voice* voice);
+
 sbk_status sc_system_update(sc_system* system)
 {
     SC_CHECK_ARG(system != NULL);
@@ -256,8 +258,7 @@ sbk_status sc_system_update(sc_system* system)
         sc_voice* const voice                     = &system->voiceBuffer[voiceIndex];
         const sc_voice_desired_state desiredState = (sc_voice_desired_state)c89atomic_load_32(&voice->desiredState);
         const sc_voice_state currentState         = (sc_voice_state)c89atomic_load_32(&voice->currentState);
-
-
+        const sc_bool isVirtual                   = SC_VOICE_HAS_FLAG(c89atomic_load_32(&voice->flags), SC_VOICE_FLAG_VIRTUAL);
 
         switch (desiredState)
         {
@@ -268,13 +269,21 @@ sbk_status sc_system_update(sc_system* system)
                         SC_ASSERT(false && "Play request on STOPPED slot - use sc_system_play_sound_voice, which sets STARTING");
                         break;
                     case sc_voice_state_starting:
-                        // Load complete? Run virtualization; promote to PLAYING,
-                        // set SC_VOICE_FLAG_VIRTUAL if over the real-voice budget.
-                        
+                        if (isVirtual)
+                        {
+                            // If virtual, there is nothing to do
+                            c89atomic_store_32(&voice->currentState, sc_voice_state_playing);
+                        }
+                        else
+                        {
+                            (void)sc_system_promote_voice_to_real(system, voice);   
+                        }
                         break;
                     case sc_voice_state_playing:
-                        // Steady state - re-evaluate SC_VOICE_FLAG_VIRTUAL against
-                        // priority + real-voice budget and flip the flag as needed.
+                        if (!isVirtual && voice->realVoiceHandle == 0)
+                        {
+                            (void)sc_system_promote_voice_to_real(system, voice);
+                        }
                         break;
                     case sc_voice_state_stopping:
                         // Tail already running - it wins over a new play request.
@@ -332,6 +341,11 @@ sbk_status sc_system_close(sc_system* system)
 
         ma_slot_allocator_uninit(&system->voiceSlotAllocator, &system->engine.allocationCallbacks);
         ma_slot_allocator_uninit(&system->realVoiceSlotAllocator, &system->engine.allocationCallbacks);
+
+        for (sc_uint32 realVoiceIndex = 0; realVoiceIndex < system->realVoiceSlotAllocator.capacity; ++realVoiceIndex)
+        {
+            SC_FREE(system->realVoiceBuffer[realVoiceIndex].nodeGroup, system);
+        }
 
         SC_FREE(system->voiceBuffer, system);
         SC_FREE(system->realVoiceBuffer, system);
@@ -527,27 +541,11 @@ sbk_status sc_system_create_node_group(sc_system* system, sc_node_group** nodeGr
     SC_CHECK_ARG(system != NULL);
     SC_CHECK_ARG(nodeGroup != NULL);
 
-    sc_node_group* const master = system->masterNodeGroup;
-
-    sbk_status result = SBK_ERR_CHEF;
-
     SC_CREATE(*nodeGroup, sc_node_group, system);
 
-    // Always create a fader/sound_group by default
-    const sc_dsp_config faderConfig = sc_dsp_config_init_type(system, sc_dsp_type_fader);
-    result = sc_system_create_dsp(system, &faderConfig, &(*nodeGroup)->fader);
+    SC_CHECK_STATUS_ELSE_FREE(sc_node_group_init(system, *nodeGroup), *nodeGroup, system);
 
-    (*nodeGroup)->head = (*nodeGroup)->fader;
-    (*nodeGroup)->tail = (*nodeGroup)->fader;
-
-    if (master != NULL)
-    {
-        sc_node_group_set_parent(*nodeGroup, master);
-    }
-
-    SC_ASSERT(result == SBK_SUCCESS);
-
-    return result;
+    return SBK_SUCCESS;
 }
 
 extern sc_dsp_description g_dspFaderVTable;

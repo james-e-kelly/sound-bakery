@@ -260,6 +260,9 @@ typedef enum
 #define SC_CHECK_AND_GOTO(condition, dest) \
     if ((condition) == SC_FALSE)           \
     goto dest
+#define SC_CHECK_STATUS_AND_GOTO(condition, dest)   \
+    if ((condition) != SBK_SUCCESS)                 \
+    goto dest
 
 /**************************************************************************************************************************************************************
 
@@ -269,10 +272,24 @@ Creation And Deletion Macros
 
 #include <string.h>
 
+#define SC_ZERO_MEMORY(ptr, size) memset((ptr), 0, (size))
+
 /**
  * @brief Zeroes the memory at @p ptr.
  */
 #define SC_ZERO_OBJECT(ptr) memset((ptr), 0, sizeof(*(ptr)))
+
+/**
+ * @brief Allocates memory, zeroes, and checks for errors and OOM.
+ */
+#define SC_MALLOC(ptr, size, system)                                        \
+    do                                                                      \
+    {                                                                       \
+        SC_CHECK_ARG((size) > 0);                                           \
+        SC_CHECK_ARG((system) != NULL);                                     \
+        (ptr) = ma_calloc((size), &(system)->engine.allocationCallbacks);   \
+        SC_CHECK_MEM((ptr));                                                \
+    } while (0)
 
 /**
  * @brief Creates an object of type @p type, zeroes the memory, and returns on errors.
@@ -283,13 +300,7 @@ Creation And Deletion Macros
  *  SC_CREATE(dsp, sc_dsp, system);
  * @endcode
  */
-#define SC_CREATE(ptr, type, system)                                                   \
-    do                                                                                 \
-    {                                                                                  \
-        SC_CHECK_ARG((system) != NULL);                                                \
-        (ptr) = (type*)ma_calloc(sizeof(type), &(system)->engine.allocationCallbacks); \
-        SC_CHECK_MEM((ptr));                                                           \
-    } while (0)
+#define SC_CREATE(ptr, type, system) SC_MALLOC((ptr), sizeof(type), (system))
 
 /**
  * @brief Frees the memory at @p ptr.
@@ -300,6 +311,20 @@ Creation And Deletion Macros
         assert((system) != NULL);                              \
         ma_free((ptr), &(system)->engine.allocationCallbacks); \
         (ptr) = NULL;                                          \
+    } while (0)
+
+/**
+ * @brief Calls a function. On failure, frees a pointer and returns the status.
+ */
+#define SC_CHECK_STATUS_ELSE_FREE(func, ptrToFree, system)      \
+    do                                                          \
+    {                                                           \
+        sbk_status status = (func);                             \
+        if (status != SBK_SUCCESS)                              \
+        {                                                       \
+            SC_FREE((ptrToFree), (system));                     \
+            return status;                                      \
+        }                                                       \
     } while (0)
 
 /**************************************************************************************************************************************************************
@@ -662,6 +687,8 @@ typedef struct sc_node_group
     sc_dsp* head;   //< Right/top most node. Nodes in the group route to this. The head then outputs to a parent
 } sc_node_group;
 
+sbk_status SC_API sc_node_group_init(sc_system* system, sc_node_group* nodeGroup);
+
 sbk_status SC_API sc_node_group_set_parent(sc_node_group* nodeGroup, sc_node_group* parent);
 
 /**
@@ -682,6 +709,11 @@ sbk_status SC_API sc_node_group_get_dsp(sc_node_group* nodeGroup, sc_dsp_type ty
  * @remark The node group owns the DSP after this point. All DSP are released during @ref sc_node_group_release.
  */
 sbk_status SC_API sc_node_group_add_dsp(sc_node_group* nodeGroup, sc_dsp* dsp, sc_dsp_index index);
+
+/**
+ * @brief Releases all DSP held within the node group without releasing the node group itself.
+ */
+sbk_status SC_API sc_node_group_uninit(sc_node_group* nodeGroup);
 
 /**
  * @brief Releases the node group and all DSP within it.
@@ -790,56 +822,18 @@ typedef sc_uint32 sc_voice_index;       //< Index into the voice array
  */
 #define SC_VOICE_MAKE_HANDLE(refcount, slot)        ((sc_voice_handle)(refcount) << 32) | (sc_voice_handle)(slot)
 
-/**
- * @brief How voices of the same priority handle conflicts.
- */
 typedef enum sc_voice_tiebreak_policy
 {
     sc_voice_tiebreak_kill_oldest,  //< Newest voice wins ties; oldest goes virtual.
     sc_voice_tiebreak_kill_newest   //< Oldest voice wins ties; newest goes virtual.
 } sc_voice_tiebreak_policy;
 
-/**
- * @brief What the caller wants the voice to do.
- *
- * Stored in @ref sc_voice::desiredState. Only two values so callers cannot
- * request an update-owned transient by mistake; the update loop maps this
- * onto @ref sc_voice_state as it drives the transitions.
- */
 typedef enum sc_voice_desired_state
 {
     sc_voice_desired_stopped,   //< Caller wants the voice idle. Either not yet started, or stop/drain now.
     sc_voice_desired_playing    //< Caller wants the voice live. Set by sc_system_play_sound_voice.
 } sc_voice_desired_state;
 
-/**
- * @brief Playback lifecycle position of an @ref sc_voice as tracked by the update loop.
- *
- * The state describes where the voice is in its lifecycle; audibility and
- * cursor progression are expressed as orthogonal flags:
- *   - @ref SC_VOICE_FLAG_PAUSED  - user paused; the audio callback freezes the play cursor.
- *   - @ref SC_VOICE_FLAG_VIRTUAL - system culled to stay under the real-voice budget; no mix.
- *
- * Written only by the update loop (@ref sc_voice::currentState). Callers
- * express intent via @ref sc_voice_desired_state, which cannot name the
- * update-owned transients @ref sc_voice_state_starting or
- * @ref sc_voice_state_stopping.
- *
- * Failures (async load errors, decoder errors, etc.) do not have their own
- * state; the voice transitions to @ref sc_voice_state_stopping and the slot
- * is returned to the pool. Subsequent use of a stale handle returns
- * @ref SBK_ERR_NOT_FOUND; check the logs or profiler for the
- * underlying cause.
- *
- * Transitions the update loop drives (rows = current, columns = desired; dash = not allowed):
- *
- * | current \ desired | STOPPED  | PLAYING |
- * | ----------------- | :------: | :-----: |
- * | STOPPED           |    -     |    -    |  play requests enter via sc_system_play_sound_voice (→ STARTING)
- * | STARTING          |  cancel  |  ready  |
- * | PLAYING           |   tail   |    -    |  paused/virtual are flag flips; no state change
- * | STOPPING          |  drain   |  wins   |  tail runs to completion even if a new play arrives
- */
 typedef enum sc_voice_state
 {
     sc_voice_state_stopped,   //< Idle. The slot is free or has just been returned to the pool.
@@ -848,10 +842,6 @@ typedef enum sc_voice_state
     sc_voice_state_stopping   //< Tail/fade-out in progress; transitions to @ref sc_voice_state_stopped when done.
 } sc_voice_state;
 
-// Orthogonal modifiers on top of sc_voice_state. Stored in their own atomic
-// word (see sc_voice::flags) since none of them need a desired/current split:
-// PAUSED is caller-writes/caller-reads, VIRTUAL and FADING are update-owned
-// and observed by callers.
 typedef enum sc_voice_flags
 {
     SC_VOICE_FLAG_NONE    = 0,
@@ -892,21 +882,47 @@ typedef struct sc_voice
     sc_uint8                        priority;               //< priority where the greater the number, the great the priority
 } sc_voice;
 
+sbk_status SC_API sc_voice_get_paused(sc_system* system, sc_voice_handle handle, sc_bool* outPaused);
+sbk_status SC_API sc_voice_set_paused(sc_system* system, sc_voice_handle handle, sc_bool paused);
+sbk_status SC_API sc_voice_set_virtual(sc_voice* voice, sc_bool virtualised);
+sbk_status SC_API sc_voice_get_virtual(sc_system* system, sc_voice_handle handle, sc_bool* outVirtual);
+sbk_status SC_API sc_voice_stop(sc_system* system, sc_voice_handle handle);
+
 /**
  * @brief A real voice that is connected to the DSP graph.
  * 
  * Real voices are limited by the @ref sc_system_config::maxRealVoices value passed during system initialization.
  */
-typedef struct sc_voice_real
+typedef struct sc_real_voice
 {
     ma_node_base                    baseNode;
+    sc_system*                      system;
     sc_voice*                       voiceRef;       //< The voice we are playing for
-    sc_sound_mode                   mode;
-    ma_decoder*                     memoryDecoder;  //< @todo Work out if this should go in a resource manager
-} sc_voice_real;
+    sc_node_group*                  nodeGroup;      //< The voice's group of DSP nodes, disconnected from the graph when virtual, connected to @ref sc_voice::group when rendering
 
-// One candidate row per voice that entered the virtualisation contest this
-// frame. Kept in a system-owned scratch buffer so no allocation happens per update.
+    // DSP
+
+    ma_linear_resampler             resampler;      //< Used for pitch shifting and resampling from data source sample rate to engine sample rate
+    ma_fader                        fader;          //< for fade ins and outs
+    ma_gainer                       gainer;         //< Gain multiplier
+
+
+    void*                           heap;
+    sc_bool                         ownsHeap;
+} sc_real_voice;
+
+typedef struct sc_real_voice_config
+{
+    sc_system*  system;
+    sc_voice*   voiceRef;
+    sc_uint32   channelsIn;
+    sc_uint32   channelsOut;
+} sc_real_voice_config;
+
+sc_real_voice_config SC_API sc_real_voice_config_init(sc_system* system, sc_voice* voiceRef, sc_uint32 channelsIn, sc_uint32 channelsOut);
+
+sbk_status SC_API sc_real_voice_init(const sc_real_voice_config* config, sc_real_voice* realVoice);
+sbk_status SC_API sc_real_voice_init_preallocated(const sc_real_voice_config* config, void* heap, sc_real_voice* realVoice);
 
 /**
  * @brief Used to sort voices during @ref sc_system_update.
@@ -918,31 +934,6 @@ typedef struct sc_virtual_voice_candidate
     float       audibility;     //< Tiebreaker. Louder wins. @todo Make this an int so we are not comparing a float
     sc_uint64   playCursor;     //< Tiebreaker. Used to compare which voice is oldest
 } sc_virtual_voice_candidate;
-
-sbk_status SC_API sc_voice_set_paused(sc_system* system, sc_voice_handle handle, sc_bool paused);
-sbk_status SC_API sc_voice_stop(sc_system* system, sc_voice_handle handle);
-
-/**
- * @brief Called from @ref sc_system_update to set whether the voice is virtual or not.
- * @remark Should not be called by the user.
- */
-sbk_status SC_API sc_voice_set_virtual(sc_voice* voice, sc_bool virtualised);
-
-/**
- * @brief Returns whether the voice is currently paused (@ref SC_VOICE_FLAG_PAUSED).
- *
- * Reflects the caller's last pause/resume request without waiting for the
- * update loop. Returns @ref SBK_ERR_NOT_FOUND if @p handle is stale.
- */
-sbk_status SC_API sc_voice_get_paused(sc_system* system, sc_voice_handle handle, sc_bool* outPaused);
-
-/**
- * @brief Returns whether the voice is currently virtualised (@ref SC_VOICE_FLAG_VIRTUAL).
- *
- * SC_TRUE means the update loop has no real voice mixing this @ref sc_voice
- * right now (culled by the real-voice budget).
- */
-sbk_status SC_API sc_voice_get_virtual(sc_system* system, sc_voice_handle handle, sc_bool* outVirtual);
 
 /**************************************************************************************************************************************************************
 
@@ -1057,7 +1048,7 @@ struct sc_system
     sc_voice*                   voiceBuffer;                                            //< Allocated voices. Indexed through the @ref voiceSlotAllocator
 
     ma_slot_allocator           realVoiceSlotAllocator;                                 //< Allocates handles for real voices
-    sc_voice_real*              realVoiceBuffer;                                        //< Allocated real voices. Indexed through @ref realVoiceSlotAllocator
+    sc_real_voice*              realVoiceBuffer;                                        //< Allocated real voices. Indexed through @ref realVoiceSlotAllocator
 
     float                       vol0Threshold;                                          //< Voices under this are virtualized
     sc_voice_tiebreak_policy    tiebreakerPolicy;                                       //< When voices of the same priority are in fighting for a real voice, do we prefer the oldest or newest?

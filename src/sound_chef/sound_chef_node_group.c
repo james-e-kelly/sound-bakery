@@ -1,5 +1,22 @@
 #include "sound_chef/sound_chef.h"
 
+sbk_status sc_node_group_init(sc_system* system, sc_node_group* nodeGroup)
+{
+    // Always create a fader/sound_group by default
+    const sc_dsp_config faderConfig = sc_dsp_config_init_type(system, sc_dsp_type_fader);
+    SC_CHECK_STATUS(sc_system_create_dsp(system, &faderConfig, &nodeGroup->fader));
+
+    nodeGroup->head = nodeGroup->fader;
+    nodeGroup->tail = nodeGroup->fader;
+
+    if (system->masterNodeGroup != NULL && nodeGroup != system->masterNodeGroup)
+    {
+        SC_CHECK_STATUS(sc_node_group_set_parent(nodeGroup, system->masterNodeGroup));
+    }
+
+    return SBK_SUCCESS;
+}
+
 sbk_status sc_node_group_add_dsp(sc_node_group* nodeGroup, sc_dsp* dsp, sc_dsp_index index)
 {
     SC_CHECK(index == sc_dsp_index_head, SC_STATUS_FROM_MA_RESULT(MA_NOT_IMPLEMENTED));
@@ -104,7 +121,7 @@ sbk_status sc_node_group_get_dsp(sc_node_group* nodeGroup, sc_dsp_type type, sc_
     return SBK_ERR_NOT_FOUND;
 }
 
-sbk_status sc_node_group_release(sc_node_group* nodeGroup)
+sbk_status sc_node_group_uninit(sc_node_group* nodeGroup)
 {
     SC_CHECK_ARG(nodeGroup != NULL);
 
@@ -118,6 +135,21 @@ sbk_status sc_node_group_release(sc_node_group* nodeGroup)
         iDSP              = toFreeDSP->next;
         sc_dsp_release(toFreeDSP);
     }
+
+    nodeGroup->fader = NULL;
+    nodeGroup->head  = NULL;
+    nodeGroup->tail  = NULL;
+    
+    return SBK_SUCCESS;
+}
+
+sbk_status sc_node_group_release(sc_node_group* nodeGroup)
+{
+    SC_CHECK_ARG(nodeGroup != NULL);
+
+    const sc_system* system = (sc_system*)nodeGroup->fader->system;
+
+    (void)sc_node_group_uninit(nodeGroup);
     SC_FREE(nodeGroup, system);
 
     return SBK_SUCCESS;
