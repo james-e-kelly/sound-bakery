@@ -387,8 +387,10 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsc__voice.html">sc_voice</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A voice is a window into a single sound that may or may not be audible and rendering.  <a href="structsc__voice.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsc__voice__real.html">sc_voice_real</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A real voice that is connected to the DSP graph.  <a href="structsc__voice__real.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsc__real__voice.html">sc_real_voice</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A real voice that is connected to the DSP graph.  <a href="structsc__real__voice.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsc__real__voice__config.html">sc_real_voice_config</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsc__virtual__voice__candidate.html">sc_virtual_voice_candidate</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Used to sort voices during <a class="el" href="sound__chef_8h.html#a7f465418c94293f4a8add8092c3c1d93">sc_system_update</a>.  <a href="structsc__virtual__voice__candidate.html#details">More...</a><br /></td></tr>
@@ -523,16 +525,27 @@ Macros</h2></td></tr>
 <tr class="separator:aacb575916e9c9da0df375b8721cbbe12"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a13add8bc62ef8d433bca234f7d58b816" id="r_a13add8bc62ef8d433bca234f7d58b816"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sound__chef_8h.html#a13add8bc62ef8d433bca234f7d58b816">SC_CHECK_AND_GOTO</a>(condition,  dest)</td></tr>
 <tr class="separator:a13add8bc62ef8d433bca234f7d58b816"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad491492cb6a53fae420dd9e4e0888aa9" id="r_ad491492cb6a53fae420dd9e4e0888aa9"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sound__chef_8h.html#ad491492cb6a53fae420dd9e4e0888aa9">SC_CHECK_STATUS_AND_GOTO</a>(condition,  dest)</td></tr>
+<tr class="separator:ad491492cb6a53fae420dd9e4e0888aa9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5eeb63742c278e242594e1c8d860c9d" id="r_af5eeb63742c278e242594e1c8d860c9d"><td class="memItemLeft" align="right" valign="top"><a id="af5eeb63742c278e242594e1c8d860c9d" name="af5eeb63742c278e242594e1c8d860c9d"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>SC_ZERO_MEMORY</b>(ptr,  size)&#160;&#160;&#160;memset((ptr), 0, (size))</td></tr>
+<tr class="separator:af5eeb63742c278e242594e1c8d860c9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3bfdad2c01824a407a203d37aa53c18c" id="r_a3bfdad2c01824a407a203d37aa53c18c"><td class="memItemLeft" align="right" valign="top"><a id="a3bfdad2c01824a407a203d37aa53c18c" name="a3bfdad2c01824a407a203d37aa53c18c"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>SC_ZERO_OBJECT</b>(ptr)&#160;&#160;&#160;memset((ptr), 0, sizeof(*(ptr)))</td></tr>
 <tr class="memdesc:a3bfdad2c01824a407a203d37aa53c18c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Zeroes the memory at <code>ptr</code>. <br /></td></tr>
 <tr class="separator:a3bfdad2c01824a407a203d37aa53c18c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4bdefda6064b61a5a9797d8d2ae0fdc4" id="r_a4bdefda6064b61a5a9797d8d2ae0fdc4"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sound__chef_8h.html#a4bdefda6064b61a5a9797d8d2ae0fdc4">SC_CREATE</a>(ptr,  type,  system)</td></tr>
+<tr class="memitem:a78034a8c25ae14bd5538a462cffe9493" id="r_a78034a8c25ae14bd5538a462cffe9493"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sound__chef_8h.html#a78034a8c25ae14bd5538a462cffe9493">SC_MALLOC</a>(ptr,  size,  system)</td></tr>
+<tr class="memdesc:a78034a8c25ae14bd5538a462cffe9493"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocates memory, zeroes, and checks for errors and OOM.  <br /></td></tr>
+<tr class="separator:a78034a8c25ae14bd5538a462cffe9493"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4bdefda6064b61a5a9797d8d2ae0fdc4" id="r_a4bdefda6064b61a5a9797d8d2ae0fdc4"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sound__chef_8h.html#a4bdefda6064b61a5a9797d8d2ae0fdc4">SC_CREATE</a>(ptr,  type,  system)&#160;&#160;&#160;<a class="el" href="sound__chef_8h.html#a78034a8c25ae14bd5538a462cffe9493">SC_MALLOC</a>((ptr), sizeof(type), (system))</td></tr>
 <tr class="memdesc:a4bdefda6064b61a5a9797d8d2ae0fdc4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an object of type <code>type</code>, zeroes the memory, and returns on errors.  <br /></td></tr>
 <tr class="separator:a4bdefda6064b61a5a9797d8d2ae0fdc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1733a8ff517bbae13c9646311ea318ef" id="r_a1733a8ff517bbae13c9646311ea318ef"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sound__chef_8h.html#a1733a8ff517bbae13c9646311ea318ef">SC_FREE</a>(ptr,  system)</td></tr>
 <tr class="memdesc:a1733a8ff517bbae13c9646311ea318ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frees the memory at <code>ptr</code>.  <br /></td></tr>
 <tr class="separator:a1733a8ff517bbae13c9646311ea318ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8799e8d82890801049e147250ab737a5" id="r_a8799e8d82890801049e147250ab737a5"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sound__chef_8h.html#a8799e8d82890801049e147250ab737a5">SC_CHECK_STATUS_ELSE_FREE</a>(func,  ptrToFree,  system)</td></tr>
+<tr class="memdesc:a8799e8d82890801049e147250ab737a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calls a function. On failure, frees a pointer and returns the status.  <br /></td></tr>
+<tr class="separator:a8799e8d82890801049e147250ab737a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aac27ea918bb55ed66a8c6b6de3b73637" id="r_aac27ea918bb55ed66a8c6b6de3b73637"><td class="memItemLeft" align="right" valign="top"><a id="aac27ea918bb55ed66a8c6b6de3b73637" name="aac27ea918bb55ed66a8c6b6de3b73637"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>SC_DELAY_SILENCE_THRESHOLD</b>&#160;&#160;&#160;0.0001F</td></tr>
 <tr class="memdesc:aac27ea918bb55ed66a8c6b6de3b73637"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sample values under this threshold are silenced. DSP uses this to calculate when reverb/delay echos finish. <br /></td></tr>
@@ -741,14 +754,13 @@ typedef sc_uint32&#160;</td><td class="memItemRight" valign="bottom"><b>sc_voice
 typedef sc_uint32&#160;</td><td class="memItemRight" valign="bottom"><b>sc_voice_index</b></td></tr>
 <tr class="separator:a98af6b2c92ed4036c1e1ba1d382211de"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeaf745066956a87eb2e3181b75c221c4" id="r_aeaf745066956a87eb2e3181b75c221c4"><td class="memItemLeft" align="right" valign="top"><a id="aeaf745066956a87eb2e3181b75c221c4" name="aeaf745066956a87eb2e3181b75c221c4"></a>
-typedef enum <a class="el" href="sound__chef_8h.html#a8ed505942f8ce68a0410cb28988a9e79">sc_voice_tiebreak_policy</a>&#160;</td><td class="memItemRight" valign="bottom"><b>sc_voice_tiebreak_policy</b></td></tr>
-<tr class="memdesc:aeaf745066956a87eb2e3181b75c221c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">How voices of the same priority handle conflicts. <br /></td></tr>
+typedef enum sc_voice_tiebreak_policy&#160;</td><td class="memItemRight" valign="bottom"><b>sc_voice_tiebreak_policy</b></td></tr>
 <tr class="separator:aeaf745066956a87eb2e3181b75c221c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abf05ea819d40df3ce8c114647b6d790a" id="r_abf05ea819d40df3ce8c114647b6d790a"><td class="memItemLeft" align="right" valign="top">typedef enum <a class="el" href="sound__chef_8h.html#aa0bc91889ef06fbad8767d6615e6e521">sc_voice_desired_state</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sound__chef_8h.html#abf05ea819d40df3ce8c114647b6d790a">sc_voice_desired_state</a></td></tr>
-<tr class="memdesc:abf05ea819d40df3ce8c114647b6d790a"><td class="mdescLeft">&#160;</td><td class="mdescRight">What the caller wants the voice to do.  <br /></td></tr>
+<tr class="memitem:abf05ea819d40df3ce8c114647b6d790a" id="r_abf05ea819d40df3ce8c114647b6d790a"><td class="memItemLeft" align="right" valign="top"><a id="abf05ea819d40df3ce8c114647b6d790a" name="abf05ea819d40df3ce8c114647b6d790a"></a>
+typedef enum sc_voice_desired_state&#160;</td><td class="memItemRight" valign="bottom"><b>sc_voice_desired_state</b></td></tr>
 <tr class="separator:abf05ea819d40df3ce8c114647b6d790a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a73b95cc7d5c8a19b471973f131a38cc0" id="r_a73b95cc7d5c8a19b471973f131a38cc0"><td class="memItemLeft" align="right" valign="top">typedef enum <a class="el" href="sound__chef_8h.html#a7b2f0b2c11e21911f7cb97cdda42a0d8">sc_voice_state</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sound__chef_8h.html#a73b95cc7d5c8a19b471973f131a38cc0">sc_voice_state</a></td></tr>
-<tr class="memdesc:a73b95cc7d5c8a19b471973f131a38cc0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Playback lifecycle position of an <a class="el" href="structsc__voice.html">sc_voice</a> as tracked by the update loop.  <br /></td></tr>
+<tr class="memitem:a73b95cc7d5c8a19b471973f131a38cc0" id="r_a73b95cc7d5c8a19b471973f131a38cc0"><td class="memItemLeft" align="right" valign="top"><a id="a73b95cc7d5c8a19b471973f131a38cc0" name="a73b95cc7d5c8a19b471973f131a38cc0"></a>
+typedef enum sc_voice_state&#160;</td><td class="memItemRight" valign="bottom"><b>sc_voice_state</b></td></tr>
 <tr class="separator:a73b95cc7d5c8a19b471973f131a38cc0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8e978441d2425056142ef5f0073f2098" id="r_a8e978441d2425056142ef5f0073f2098"><td class="memItemLeft" align="right" valign="top"><a id="a8e978441d2425056142ef5f0073f2098" name="a8e978441d2425056142ef5f0073f2098"></a>
 typedef enum sc_voice_flags&#160;</td><td class="memItemRight" valign="bottom"><b>sc_voice_flags</b></td></tr>
@@ -756,9 +768,12 @@ typedef enum sc_voice_flags&#160;</td><td class="memItemRight" valign="bottom"><
 <tr class="memitem:a9820f9b564b05bf25969fb28afdb7ea5" id="r_a9820f9b564b05bf25969fb28afdb7ea5"><td class="memItemLeft" align="right" valign="top">typedef struct <a class="el" href="structsc__voice.html">sc_voice</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sound__chef_8h.html#a9820f9b564b05bf25969fb28afdb7ea5">sc_voice</a></td></tr>
 <tr class="memdesc:a9820f9b564b05bf25969fb28afdb7ea5"><td class="mdescLeft">&#160;</td><td class="mdescRight">A voice is a window into a single sound that may or may not be audible and rendering.  <br /></td></tr>
 <tr class="separator:a9820f9b564b05bf25969fb28afdb7ea5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac23ad78b45d233f894dfd8ab7dcf0039" id="r_ac23ad78b45d233f894dfd8ab7dcf0039"><td class="memItemLeft" align="right" valign="top">typedef struct <a class="el" href="structsc__voice__real.html">sc_voice_real</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sound__chef_8h.html#ac23ad78b45d233f894dfd8ab7dcf0039">sc_voice_real</a></td></tr>
-<tr class="memdesc:ac23ad78b45d233f894dfd8ab7dcf0039"><td class="mdescLeft">&#160;</td><td class="mdescRight">A real voice that is connected to the DSP graph.  <br /></td></tr>
-<tr class="separator:ac23ad78b45d233f894dfd8ab7dcf0039"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e23d152c9c64660c4c241bf154db6e6" id="r_a0e23d152c9c64660c4c241bf154db6e6"><td class="memItemLeft" align="right" valign="top">typedef struct <a class="el" href="structsc__real__voice.html">sc_real_voice</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sound__chef_8h.html#a0e23d152c9c64660c4c241bf154db6e6">sc_real_voice</a></td></tr>
+<tr class="memdesc:a0e23d152c9c64660c4c241bf154db6e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">A real voice that is connected to the DSP graph.  <br /></td></tr>
+<tr class="separator:a0e23d152c9c64660c4c241bf154db6e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc023dbef8f2696aeb072bfc664706e1" id="r_acc023dbef8f2696aeb072bfc664706e1"><td class="memItemLeft" align="right" valign="top"><a id="acc023dbef8f2696aeb072bfc664706e1" name="acc023dbef8f2696aeb072bfc664706e1"></a>
+typedef struct <a class="el" href="structsc__real__voice__config.html">sc_real_voice_config</a>&#160;</td><td class="memItemRight" valign="bottom"><b>sc_real_voice_config</b></td></tr>
+<tr class="separator:acc023dbef8f2696aeb072bfc664706e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaf3aa8d616c88de3668a8118b686e34d" id="r_aaf3aa8d616c88de3668a8118b686e34d"><td class="memItemLeft" align="right" valign="top"><a id="aaf3aa8d616c88de3668a8118b686e34d" name="aaf3aa8d616c88de3668a8118b686e34d"></a>
 typedef struct <a class="el" href="structsc__virtual__voice__candidate.html">sc_virtual_voice_candidate</a>&#160;</td><td class="memItemRight" valign="bottom"><b>sc_virtual_voice_candidate</b></td></tr>
 <tr class="memdesc:aaf3aa8d616c88de3668a8118b686e34d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Used to sort voices during <a class="el" href="sound__chef_8h.html#a7f465418c94293f4a8add8092c3c1d93">sc_system_update</a>. <br /></td></tr>
@@ -884,22 +899,19 @@ Enumerations</h2></td></tr>
  }</td></tr>
 <tr class="memdesc:a6aab4356b59c9764f1b48c2aee412d72"><td class="mdescLeft">&#160;</td><td class="mdescRight">The different ways to create a sound.  <a href="sound__chef_8h.html#a6aab4356b59c9764f1b48c2aee412d72">More...</a><br /></td></tr>
 <tr class="separator:a6aab4356b59c9764f1b48c2aee412d72"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8ed505942f8ce68a0410cb28988a9e79" id="r_a8ed505942f8ce68a0410cb28988a9e79"><td class="memItemLeft" align="right" valign="top"><a id="a8ed505942f8ce68a0410cb28988a9e79" name="a8ed505942f8ce68a0410cb28988a9e79"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sound__chef_8h.html#a8ed505942f8ce68a0410cb28988a9e79">sc_voice_tiebreak_policy</a> { <b>sc_voice_tiebreak_kill_oldest</b>
+<tr class="memitem:a8ed505942f8ce68a0410cb28988a9e79" id="r_a8ed505942f8ce68a0410cb28988a9e79"><td class="memItemLeft" align="right" valign="top"><a id="a8ed505942f8ce68a0410cb28988a9e79" name="a8ed505942f8ce68a0410cb28988a9e79"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>sc_voice_tiebreak_policy</b> { <b>sc_voice_tiebreak_kill_oldest</b>
 , <b>sc_voice_tiebreak_kill_newest</b>
  }</td></tr>
-<tr class="memdesc:a8ed505942f8ce68a0410cb28988a9e79"><td class="mdescLeft">&#160;</td><td class="mdescRight">How voices of the same priority handle conflicts. <br /></td></tr>
 <tr class="separator:a8ed505942f8ce68a0410cb28988a9e79"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa0bc91889ef06fbad8767d6615e6e521" id="r_aa0bc91889ef06fbad8767d6615e6e521"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sound__chef_8h.html#aa0bc91889ef06fbad8767d6615e6e521">sc_voice_desired_state</a> { <b>sc_voice_desired_stopped</b>
+<tr class="memitem:aa0bc91889ef06fbad8767d6615e6e521" id="r_aa0bc91889ef06fbad8767d6615e6e521"><td class="memItemLeft" align="right" valign="top"><a id="aa0bc91889ef06fbad8767d6615e6e521" name="aa0bc91889ef06fbad8767d6615e6e521"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>sc_voice_desired_state</b> { <b>sc_voice_desired_stopped</b>
 , <b>sc_voice_desired_playing</b>
  }</td></tr>
-<tr class="memdesc:aa0bc91889ef06fbad8767d6615e6e521"><td class="mdescLeft">&#160;</td><td class="mdescRight">What the caller wants the voice to do.  <a href="sound__chef_8h.html#aa0bc91889ef06fbad8767d6615e6e521">More...</a><br /></td></tr>
 <tr class="separator:aa0bc91889ef06fbad8767d6615e6e521"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7b2f0b2c11e21911f7cb97cdda42a0d8" id="r_a7b2f0b2c11e21911f7cb97cdda42a0d8"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sound__chef_8h.html#a7b2f0b2c11e21911f7cb97cdda42a0d8">sc_voice_state</a> { <b>sc_voice_state_stopped</b>
+<tr class="memitem:a7b2f0b2c11e21911f7cb97cdda42a0d8" id="r_a7b2f0b2c11e21911f7cb97cdda42a0d8"><td class="memItemLeft" align="right" valign="top"><a id="a7b2f0b2c11e21911f7cb97cdda42a0d8" name="a7b2f0b2c11e21911f7cb97cdda42a0d8"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>sc_voice_state</b> { <b>sc_voice_state_stopped</b>
 , <b>sc_voice_state_starting</b>
 , <b>sc_voice_state_playing</b>
 , <b>sc_voice_state_stopping</b>
  }</td></tr>
-<tr class="memdesc:a7b2f0b2c11e21911f7cb97cdda42a0d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Playback lifecycle position of an <a class="el" href="structsc__voice.html">sc_voice</a> as tracked by the update loop.  <a href="sound__chef_8h.html#a7b2f0b2c11e21911f7cb97cdda42a0d8">More...</a><br /></td></tr>
 <tr class="separator:a7b2f0b2c11e21911f7cb97cdda42a0d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7864324b09e946b8f5b925ead2d292f7" id="r_a7864324b09e946b8f5b925ead2d292f7"><td class="memItemLeft" align="right" valign="top"><a id="a7864324b09e946b8f5b925ead2d292f7" name="a7864324b09e946b8f5b925ead2d292f7"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>sc_voice_flags</b> { <b>SC_VOICE_FLAG_NONE</b> = 0
 , <b>SC_VOICE_FLAG_PAUSED</b> = 1u &lt;&lt; 0
@@ -1015,6 +1027,9 @@ void SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_delay_unini
 <tr class="memitem:ac3a0ad37f93385123a3ed843dace92de" id="r_ac3a0ad37f93385123a3ed843dace92de"><td class="memItemLeft" align="right" valign="top"><a id="ac3a0ad37f93385123a3ed843dace92de" name="ac3a0ad37f93385123a3ed843dace92de"></a>
 void SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_delay_node_uninit</b> (<a class="el" href="structsc__delay__node.html">sc_delay_node</a> *delayNode, const ma_allocation_callbacks *allocationCallbacks)</td></tr>
 <tr class="separator:ac3a0ad37f93385123a3ed843dace92de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8da4f34f7d195cf4722559c0aec9c23a" id="r_a8da4f34f7d195cf4722559c0aec9c23a"><td class="memItemLeft" align="right" valign="top"><a id="a8da4f34f7d195cf4722559c0aec9c23a" name="a8da4f34f7d195cf4722559c0aec9c23a"></a>
+<a class="el" href="sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_node_group_init</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, <a class="el" href="structsc__node__group.html">sc_node_group</a> *nodeGroup)</td></tr>
+<tr class="separator:a8da4f34f7d195cf4722559c0aec9c23a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adb39e57c0f5478b13bf83aa2a9f9294c" id="r_adb39e57c0f5478b13bf83aa2a9f9294c"><td class="memItemLeft" align="right" valign="top"><a id="adb39e57c0f5478b13bf83aa2a9f9294c" name="adb39e57c0f5478b13bf83aa2a9f9294c"></a>
 <a class="el" href="sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_node_group_set_parent</b> (<a class="el" href="structsc__node__group.html">sc_node_group</a> *nodeGroup, <a class="el" href="structsc__node__group.html">sc_node_group</a> *parent)</td></tr>
 <tr class="separator:adb39e57c0f5478b13bf83aa2a9f9294c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1028,6 +1043,10 @@ void SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_delay_node_
 <tr class="memitem:a71821ab9e2189cd16a074b6320afbed6" id="r_a71821ab9e2189cd16a074b6320afbed6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sound__chef_8h.html#a71821ab9e2189cd16a074b6320afbed6">sc_node_group_add_dsp</a> (<a class="el" href="structsc__node__group.html">sc_node_group</a> *nodeGroup, <a class="el" href="structsc__dsp.html">sc_dsp</a> *dsp, <a class="el" href="sound__chef_8h.html#a1f9f2f0be927c91ecf0b6db332eb7688">sc_dsp_index</a> index)</td></tr>
 <tr class="memdesc:a71821ab9e2189cd16a074b6320afbed6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a DSP to the node group chain.  <br /></td></tr>
 <tr class="separator:a71821ab9e2189cd16a074b6320afbed6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a9e3e4a12bb160e3fa2c69cadcde91d" id="r_a1a9e3e4a12bb160e3fa2c69cadcde91d"><td class="memItemLeft" align="right" valign="top"><a id="a1a9e3e4a12bb160e3fa2c69cadcde91d" name="a1a9e3e4a12bb160e3fa2c69cadcde91d"></a>
+<a class="el" href="sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_node_group_uninit</b> (<a class="el" href="structsc__node__group.html">sc_node_group</a> *nodeGroup)</td></tr>
+<tr class="memdesc:a1a9e3e4a12bb160e3fa2c69cadcde91d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases all DSP held within the node group without releasing the node group itself. <br /></td></tr>
+<tr class="separator:a1a9e3e4a12bb160e3fa2c69cadcde91d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3d4bc0d97266559f0b69f35cd6fe0c59" id="r_a3d4bc0d97266559f0b69f35cd6fe0c59"><td class="memItemLeft" align="right" valign="top"><a id="a3d4bc0d97266559f0b69f35cd6fe0c59" name="a3d4bc0d97266559f0b69f35cd6fe0c59"></a>
 <a class="el" href="sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_node_group_release</b> (<a class="el" href="structsc__node__group.html">sc_node_group</a> *nodeGroup)</td></tr>
 <tr class="memdesc:a3d4bc0d97266559f0b69f35cd6fe0c59"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases the node group and all DSP within it. <br /></td></tr>
@@ -1074,21 +1093,30 @@ void SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_delay_node_
 <tr class="memitem:a08cb3eec724853dc1082c757791c6a66" id="r_a08cb3eec724853dc1082c757791c6a66"><td class="memItemLeft" align="right" valign="top"><a id="a08cb3eec724853dc1082c757791c6a66" name="a08cb3eec724853dc1082c757791c6a66"></a>
 <a class="el" href="sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_sound_instance_release</b> (<a class="el" href="structsc__sound.html">sc_sound_instance</a> *instance)</td></tr>
 <tr class="separator:a08cb3eec724853dc1082c757791c6a66"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a702cd4d3e87950c74b474128861e3284" id="r_a702cd4d3e87950c74b474128861e3284"><td class="memItemLeft" align="right" valign="top"><a id="a702cd4d3e87950c74b474128861e3284" name="a702cd4d3e87950c74b474128861e3284"></a>
+<a class="el" href="sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_voice_get_paused</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, sc_voice_handle handle, sc_bool *outPaused)</td></tr>
+<tr class="separator:a702cd4d3e87950c74b474128861e3284"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afaf6db7553596a4d511b03d9945a25fc" id="r_afaf6db7553596a4d511b03d9945a25fc"><td class="memItemLeft" align="right" valign="top"><a id="afaf6db7553596a4d511b03d9945a25fc" name="afaf6db7553596a4d511b03d9945a25fc"></a>
 <a class="el" href="sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_voice_set_paused</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, sc_voice_handle handle, sc_bool paused)</td></tr>
 <tr class="separator:afaf6db7553596a4d511b03d9945a25fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b25ec5b791240c154370113f785df30" id="r_a4b25ec5b791240c154370113f785df30"><td class="memItemLeft" align="right" valign="top"><a id="a4b25ec5b791240c154370113f785df30" name="a4b25ec5b791240c154370113f785df30"></a>
+<a class="el" href="sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_voice_set_virtual</b> (<a class="el" href="structsc__voice.html">sc_voice</a> *voice, sc_bool virtualised)</td></tr>
+<tr class="separator:a4b25ec5b791240c154370113f785df30"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a991545b7110ba077b426fabcd1986de6" id="r_a991545b7110ba077b426fabcd1986de6"><td class="memItemLeft" align="right" valign="top"><a id="a991545b7110ba077b426fabcd1986de6" name="a991545b7110ba077b426fabcd1986de6"></a>
+<a class="el" href="sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_voice_get_virtual</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, sc_voice_handle handle, sc_bool *outVirtual)</td></tr>
+<tr class="separator:a991545b7110ba077b426fabcd1986de6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a82618ce6a9e2d53a23de8d49835c990b" id="r_a82618ce6a9e2d53a23de8d49835c990b"><td class="memItemLeft" align="right" valign="top"><a id="a82618ce6a9e2d53a23de8d49835c990b" name="a82618ce6a9e2d53a23de8d49835c990b"></a>
 <a class="el" href="sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_voice_stop</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, sc_voice_handle handle)</td></tr>
 <tr class="separator:a82618ce6a9e2d53a23de8d49835c990b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4b25ec5b791240c154370113f785df30" id="r_a4b25ec5b791240c154370113f785df30"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sound__chef_8h.html#a4b25ec5b791240c154370113f785df30">sc_voice_set_virtual</a> (<a class="el" href="structsc__voice.html">sc_voice</a> *voice, sc_bool virtualised)</td></tr>
-<tr class="memdesc:a4b25ec5b791240c154370113f785df30"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called from <a class="el" href="sound__chef_8h.html#a7f465418c94293f4a8add8092c3c1d93">sc_system_update</a> to set whether the voice is virtual or not.  <br /></td></tr>
-<tr class="separator:a4b25ec5b791240c154370113f785df30"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a702cd4d3e87950c74b474128861e3284" id="r_a702cd4d3e87950c74b474128861e3284"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sound__chef_8h.html#a702cd4d3e87950c74b474128861e3284">sc_voice_get_paused</a> (<a class="el" href="structsc__system.html">sc_system</a> *system, sc_voice_handle handle, sc_bool *outPaused)</td></tr>
-<tr class="memdesc:a702cd4d3e87950c74b474128861e3284"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns whether the voice is currently paused (SC_VOICE_FLAG_PAUSED).  <br /></td></tr>
-<tr class="separator:a702cd4d3e87950c74b474128861e3284"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a991545b7110ba077b426fabcd1986de6" id="r_a991545b7110ba077b426fabcd1986de6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sound__chef_8h.html#a991545b7110ba077b426fabcd1986de6">sc_voice_get_virtual</a> (<a class="el" href="structsc__system.html">sc_system</a> *system, sc_voice_handle handle, sc_bool *outVirtual)</td></tr>
-<tr class="memdesc:a991545b7110ba077b426fabcd1986de6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns whether the voice is currently virtualised (SC_VOICE_FLAG_VIRTUAL).  <br /></td></tr>
-<tr class="separator:a991545b7110ba077b426fabcd1986de6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0db4cf7485d00add3f483d74105e2200" id="r_a0db4cf7485d00add3f483d74105e2200"><td class="memItemLeft" align="right" valign="top"><a id="a0db4cf7485d00add3f483d74105e2200" name="a0db4cf7485d00add3f483d74105e2200"></a>
+<a class="el" href="structsc__real__voice__config.html">sc_real_voice_config</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_real_voice_config_init</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, <a class="el" href="structsc__voice.html">sc_voice</a> *voiceRef, sc_uint32 channelsIn, sc_uint32 channelsOut)</td></tr>
+<tr class="separator:a0db4cf7485d00add3f483d74105e2200"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ae20da175f537fd1d2e317353ad6577" id="r_a3ae20da175f537fd1d2e317353ad6577"><td class="memItemLeft" align="right" valign="top"><a id="a3ae20da175f537fd1d2e317353ad6577" name="a3ae20da175f537fd1d2e317353ad6577"></a>
+<a class="el" href="sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_real_voice_init</b> (const <a class="el" href="structsc__real__voice__config.html">sc_real_voice_config</a> *config, <a class="el" href="structsc__real__voice.html">sc_real_voice</a> *realVoice)</td></tr>
+<tr class="separator:a3ae20da175f537fd1d2e317353ad6577"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b1613bdfd7cb74592e0172c2505fcc4" id="r_a0b1613bdfd7cb74592e0172c2505fcc4"><td class="memItemLeft" align="right" valign="top"><a id="a0b1613bdfd7cb74592e0172c2505fcc4" name="a0b1613bdfd7cb74592e0172c2505fcc4"></a>
+<a class="el" href="sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_real_voice_init_preallocated</b> (const <a class="el" href="structsc__real__voice__config.html">sc_real_voice_config</a> *config, void *heap, <a class="el" href="structsc__real__voice.html">sc_real_voice</a> *realVoice)</td></tr>
+<tr class="separator:a0b1613bdfd7cb74592e0172c2505fcc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae72d6c395c27cd779126094fb0f9b0fb" id="r_ae72d6c395c27cd779126094fb0f9b0fb"><td class="memItemLeft" align="right" valign="top"><a id="ae72d6c395c27cd779126094fb0f9b0fb" name="ae72d6c395c27cd779126094fb0f9b0fb"></a>
 <a class="el" href="sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_bank_init</b> (<a class="el" href="structsc__bank.html">sc_bank</a> *bank, const char *outputFile, ma_open_mode_flags openFlags)</td></tr>
 <tr class="separator:ae72d6c395c27cd779126094fb0f9b0fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1295,6 +1323,81 @@ SC_CLASS const char *SC_CALL&#160;</td><td class="memItemRight" valign="bottom">
 </div><!-- fragment -->
 </div>
 </div>
+<a id="ad491492cb6a53fae420dd9e4e0888aa9" name="ad491492cb6a53fae420dd9e4e0888aa9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad491492cb6a53fae420dd9e4e0888aa9">&#9670;&#160;</a></span>SC_CHECK_STATUS_AND_GOTO</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define SC_CHECK_STATUS_AND_GOTO</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">condition, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">dest&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line">    <span class="keywordflow">if</span> ((condition) != SBK_SUCCESS)                 \</div>
+<div class="line">    <span class="keywordflow">goto</span> dest</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a8799e8d82890801049e147250ab737a5" name="a8799e8d82890801049e147250ab737a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8799e8d82890801049e147250ab737a5">&#9670;&#160;</a></span>SC_CHECK_STATUS_ELSE_FREE</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define SC_CHECK_STATUS_ELSE_FREE</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">func, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">ptrToFree, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">system&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line">    <span class="keywordflow">do</span>                                                          \</div>
+<div class="line">    {                                                           \</div>
+<div class="line">        <a class="code hl_enumeration" href="sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04">sbk_status</a> status = (func);                             \</div>
+<div class="line">        if (status != SBK_SUCCESS)                              \</div>
+<div class="line">        {                                                       \</div>
+<div class="line">            SC_FREE((ptrToFree), (system));                     \</div>
+<div class="line">            <span class="keywordflow">return</span> status;                                      \</div>
+<div class="line">        }                                                       \</div>
+<div class="line">    } <span class="keywordflow">while</span> (0)</div>
+</div><!-- fragment -->
+<p>Calls a function. On failure, frees a pointer and returns the status. </p>
+
+</div>
+</div>
 <a id="a4bdefda6064b61a5a9797d8d2ae0fdc4" name="a4bdefda6064b61a5a9797d8d2ae0fdc4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4bdefda6064b61a5a9797d8d2ae0fdc4">&#9670;&#160;</a></span>SC_CREATE</h2>
 
@@ -1322,22 +1425,16 @@ SC_CLASS const char *SC_CALL&#160;</td><td class="memItemRight" valign="bottom">
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td></td>
+          <td></td><td>&#160;&#160;&#160;<a class="el" href="sound__chef_8h.html#a78034a8c25ae14bd5538a462cffe9493">SC_MALLOC</a>((ptr), sizeof(type), (system))</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">    <span class="keywordflow">do</span>                                                                                 \</div>
-<div class="line">    {                                                                                  \</div>
-<div class="line">        SC_CHECK_ARG((system) != NULL);                                                \</div>
-<div class="line">        (ptr) = (type*)ma_calloc(<span class="keyword">sizeof</span>(type), &amp;(system)-&gt;engine.allocationCallbacks); \</div>
-<div class="line">        SC_CHECK_MEM((ptr));                                                           \</div>
-<div class="line">    } <span class="keywordflow">while</span> (0)</div>
-</div><!-- fragment -->
+
 <p>Creates an object of type <code>type</code>, zeroes the memory, and returns on errors. </p>
 <p>Example: </p><div class="fragment"><div class="line"><a class="code hl_struct" href="structsc__dsp.html">sc_dsp</a>* dsp = NULL;</div>
 <div class="line"><a class="code hl_define" href="sound__chef_8h.html#a4bdefda6064b61a5a9797d8d2ae0fdc4">SC_CREATE</a>(dsp, <a class="code hl_struct" href="structsc__dsp.html">sc_dsp</a>, system);</div>
-<div class="ttc" id="asound__chef_8h_html_a4bdefda6064b61a5a9797d8d2ae0fdc4"><div class="ttname"><a href="sound__chef_8h.html#a4bdefda6064b61a5a9797d8d2ae0fdc4">SC_CREATE</a></div><div class="ttdeci">#define SC_CREATE(ptr, type, system)</div><div class="ttdoc">Creates an object of type type, zeroes the memory, and returns on errors.</div><div class="ttdef"><b>Definition</b> sound_chef.h:286</div></div>
-<div class="ttc" id="astructsc__dsp_html"><div class="ttname"><a href="structsc__dsp.html">sc_dsp</a></div><div class="ttdoc">DSP units that connect and form chains within sc_node_group. Extensions of ma_node types with extra i...</div><div class="ttdef"><b>Definition</b> sound_chef.h:440</div></div>
+<div class="ttc" id="asound__chef_8h_html_a4bdefda6064b61a5a9797d8d2ae0fdc4"><div class="ttname"><a href="sound__chef_8h.html#a4bdefda6064b61a5a9797d8d2ae0fdc4">SC_CREATE</a></div><div class="ttdeci">#define SC_CREATE(ptr, type, system)</div><div class="ttdoc">Creates an object of type type, zeroes the memory, and returns on errors.</div><div class="ttdef"><b>Definition</b> sound_chef.h:303</div></div>
+<div class="ttc" id="astructsc__dsp_html"><div class="ttname"><a href="structsc__dsp.html">sc_dsp</a></div><div class="ttdoc">DSP units that connect and form chains within sc_node_group. Extensions of ma_node types with extra i...</div><div class="ttdef"><b>Definition</b> sound_chef.h:465</div></div>
 </div><!-- fragment --> 
 </div>
 </div>
@@ -1374,6 +1471,49 @@ SC_CLASS const char *SC_CALL&#160;</td><td class="memItemRight" valign="bottom">
 <div class="line">    } <span class="keywordflow">while</span> (0)</div>
 </div><!-- fragment -->
 <p>Frees the memory at <code>ptr</code>. </p>
+
+</div>
+</div>
+<a id="a78034a8c25ae14bd5538a462cffe9493" name="a78034a8c25ae14bd5538a462cffe9493"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78034a8c25ae14bd5538a462cffe9493">&#9670;&#160;</a></span>SC_MALLOC</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define SC_MALLOC</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">ptr, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">size, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">system&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line">    <span class="keywordflow">do</span>                                                                      \</div>
+<div class="line">    {                                                                       \</div>
+<div class="line">        SC_CHECK_ARG((size) &gt; 0);                                           \</div>
+<div class="line">        SC_CHECK_ARG((system) != NULL);                                     \</div>
+<div class="line">        (ptr) = ma_calloc((size), &amp;(system)-&gt;engine.allocationCallbacks);   \</div>
+<div class="line">        SC_CHECK_MEM((ptr));                                                \</div>
+<div class="line">    } <span class="keywordflow">while</span> (0)</div>
+</div><!-- fragment -->
+<p>Allocates memory, zeroes, and checks for errors and OOM. </p>
 
 </div>
 </div>
@@ -1551,6 +1691,23 @@ SC_CLASS const char *SC_CALL&#160;</td><td class="memItemRight" valign="bottom">
 
 </div>
 </div>
+<a id="a0e23d152c9c64660c4c241bf154db6e6" name="a0e23d152c9c64660c4c241bf154db6e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e23d152c9c64660c4c241bf154db6e6">&#9670;&#160;</a></span>sc_real_voice</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef struct <a class="el" href="structsc__real__voice.html">sc_real_voice</a> <a class="el" href="structsc__real__voice.html">sc_real_voice</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>A real voice that is connected to the DSP graph. </p>
+<p>Real voices are limited by the sc_system_config::maxRealVoices value passed during system initialization. </p>
+
+</div>
+</div>
 <a id="ae6e6d478b127490e43db2d544b3fa902" name="ae6e6d478b127490e43db2d544b3fa902"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae6e6d478b127490e43db2d544b3fa902">&#9670;&#160;</a></span>sc_sound</h2>
 
@@ -1645,64 +1802,6 @@ sc_system_create_sound </dd></dl>
 <p>A voice is a window into a single sound that may or may not be audible and rendering. </p>
 <p>Sized to fit one 64-byte cache line so an array of voices maps cleanly to cache-line boundaries. A _Static_assert in sound_chef.c pins this.</p>
 <p>Voices are limited by the sc_system_config::maxVoices value passed during system initialization. </p>
-
-</div>
-</div>
-<a id="abf05ea819d40df3ce8c114647b6d790a" name="abf05ea819d40df3ce8c114647b6d790a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abf05ea819d40df3ce8c114647b6d790a">&#9670;&#160;</a></span>sc_voice_desired_state</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef enum <a class="el" href="sound__chef_8h.html#aa0bc91889ef06fbad8767d6615e6e521">sc_voice_desired_state</a> <a class="el" href="sound__chef_8h.html#aa0bc91889ef06fbad8767d6615e6e521">sc_voice_desired_state</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>What the caller wants the voice to do. </p>
-<p>Stored in sc_voice::desiredState. Only two values so callers cannot request an update-owned transient by mistake; the update loop maps this onto <a class="el" href="sound__chef_8h.html#a7b2f0b2c11e21911f7cb97cdda42a0d8">sc_voice_state</a> as it drives the transitions. </p>
-
-</div>
-</div>
-<a id="ac23ad78b45d233f894dfd8ab7dcf0039" name="ac23ad78b45d233f894dfd8ab7dcf0039"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac23ad78b45d233f894dfd8ab7dcf0039">&#9670;&#160;</a></span>sc_voice_real</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef struct <a class="el" href="structsc__voice__real.html">sc_voice_real</a> <a class="el" href="structsc__voice__real.html">sc_voice_real</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>A real voice that is connected to the DSP graph. </p>
-<p>Real voices are limited by the sc_system_config::maxRealVoices value passed during system initialization. </p>
-
-</div>
-</div>
-<a id="a73b95cc7d5c8a19b471973f131a38cc0" name="a73b95cc7d5c8a19b471973f131a38cc0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a73b95cc7d5c8a19b471973f131a38cc0">&#9670;&#160;</a></span>sc_voice_state</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef enum <a class="el" href="sound__chef_8h.html#a7b2f0b2c11e21911f7cb97cdda42a0d8">sc_voice_state</a> <a class="el" href="sound__chef_8h.html#a7b2f0b2c11e21911f7cb97cdda42a0d8">sc_voice_state</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Playback lifecycle position of an <a class="el" href="structsc__voice.html">sc_voice</a> as tracked by the update loop. </p>
-<p>The state describes where the voice is in its lifecycle; audibility and cursor progression are expressed as orthogonal flags:</p><ul>
-<li>SC_VOICE_FLAG_PAUSED - user paused; the audio callback freezes the play cursor.</li>
-<li>SC_VOICE_FLAG_VIRTUAL - system culled to stay under the real-voice budget; no mix.</li>
-</ul>
-<p>Written only by the update loop (sc_voice::currentState). Callers express intent via <a class="el" href="sound__chef_8h.html#aa0bc91889ef06fbad8767d6615e6e521">sc_voice_desired_state</a>, which cannot name the update-owned transients sc_voice_state_starting or sc_voice_state_stopping.</p>
-<p>Failures (async load errors, decoder errors, etc.) do not have their own state; the voice transitions to sc_voice_state_stopping and the slot is returned to the pool. Subsequent use of a stale handle returns SBK_ERR_NOT_FOUND; check the logs or profiler for the underlying cause.</p>
-<p>Transitions the update loop drives (rows = current, columns = desired; dash = not allowed):</p>
-<p>| current \ desired | STOPPED | PLAYING | | --------------&mdash; | :---&mdash;: | :--&mdash;: | | STOPPED | - | - | play requests enter via sc_system_play_sound_voice (→ STARTING) | STARTING | cancel | ready | | PLAYING | tail | - | paused/virtual are flag flips; no state change | STOPPING | drain | wins | tail runs to completion even if a new play arrives </p>
 
 </div>
 </div>
@@ -1814,47 +1913,6 @@ sc_system_create_sound </dd></dl>
 sc_sound_config_init_memory </dd>
 <dd>
 sc_system_create_sound </dd></dl>
-
-</div>
-</div>
-<a id="aa0bc91889ef06fbad8767d6615e6e521" name="aa0bc91889ef06fbad8767d6615e6e521"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa0bc91889ef06fbad8767d6615e6e521">&#9670;&#160;</a></span>sc_voice_desired_state</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="sound__chef_8h.html#aa0bc91889ef06fbad8767d6615e6e521">sc_voice_desired_state</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>What the caller wants the voice to do. </p>
-<p>Stored in sc_voice::desiredState. Only two values so callers cannot request an update-owned transient by mistake; the update loop maps this onto <a class="el" href="sound__chef_8h.html#a7b2f0b2c11e21911f7cb97cdda42a0d8">sc_voice_state</a> as it drives the transitions. </p>
-
-</div>
-</div>
-<a id="a7b2f0b2c11e21911f7cb97cdda42a0d8" name="a7b2f0b2c11e21911f7cb97cdda42a0d8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7b2f0b2c11e21911f7cb97cdda42a0d8">&#9670;&#160;</a></span>sc_voice_state</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="sound__chef_8h.html#a7b2f0b2c11e21911f7cb97cdda42a0d8">sc_voice_state</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Playback lifecycle position of an <a class="el" href="structsc__voice.html">sc_voice</a> as tracked by the update loop. </p>
-<p>The state describes where the voice is in its lifecycle; audibility and cursor progression are expressed as orthogonal flags:</p><ul>
-<li>SC_VOICE_FLAG_PAUSED - user paused; the audio callback freezes the play cursor.</li>
-<li>SC_VOICE_FLAG_VIRTUAL - system culled to stay under the real-voice budget; no mix.</li>
-</ul>
-<p>Written only by the update loop (sc_voice::currentState). Callers express intent via <a class="el" href="sound__chef_8h.html#aa0bc91889ef06fbad8767d6615e6e521">sc_voice_desired_state</a>, which cannot name the update-owned transients sc_voice_state_starting or sc_voice_state_stopping.</p>
-<p>Failures (async load errors, decoder errors, etc.) do not have their own state; the voice transitions to sc_voice_state_stopping and the slot is returned to the pool. Subsequent use of a stale handle returns SBK_ERR_NOT_FOUND; check the logs or profiler for the underlying cause.</p>
-<p>Transitions the update loop drives (rows = current, columns = desired; dash = not allowed):</p>
-<p>| current \ desired | STOPPED | PLAYING | | --------------&mdash; | :---&mdash;: | :--&mdash;: | | STOPPED | - | - | play requests enter via sc_system_play_sound_voice (→ STARTING) | STARTING | cancel | ready | | PLAYING | tail | - | paused/virtual are flag flips; no state change | STOPPING | drain | wins | tail runs to completion even if a new play arrives </p>
 
 </div>
 </div>
@@ -2168,111 +2226,6 @@ SBK_ERR_NOT_FOUND if the DSP was not found. </dd></dl>
 
 <p>Updates the Sound Chef <a class="el" href="structsc__system.html">sc_system</a> on the calling thread. </p>
 <dl class="section remark"><dt>Remarks</dt><dd>When using Sound Bakery, the system thread will call this function, thereby moving audio updates off the game thread (if in async mode). </dd></dl>
-
-</div>
-</div>
-<a id="a702cd4d3e87950c74b474128861e3284" name="a702cd4d3e87950c74b474128861e3284"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a702cd4d3e87950c74b474128861e3284">&#9670;&#160;</a></span>sc_voice_get_paused()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API sc_voice_get_paused </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="structsc__system.html">sc_system</a> *&#160;</td>
-          <td class="paramname"><em>system</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">sc_voice_handle&#160;</td>
-          <td class="paramname"><em>handle</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">sc_bool *&#160;</td>
-          <td class="paramname"><em>outPaused</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Returns whether the voice is currently paused (SC_VOICE_FLAG_PAUSED). </p>
-<p>Reflects the caller's last pause/resume request without waiting for the update loop. Returns SBK_ERR_NOT_FOUND if <code>handle</code> is stale. </p>
-
-</div>
-</div>
-<a id="a991545b7110ba077b426fabcd1986de6" name="a991545b7110ba077b426fabcd1986de6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a991545b7110ba077b426fabcd1986de6">&#9670;&#160;</a></span>sc_voice_get_virtual()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API sc_voice_get_virtual </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="structsc__system.html">sc_system</a> *&#160;</td>
-          <td class="paramname"><em>system</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">sc_voice_handle&#160;</td>
-          <td class="paramname"><em>handle</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">sc_bool *&#160;</td>
-          <td class="paramname"><em>outVirtual</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Returns whether the voice is currently virtualised (SC_VOICE_FLAG_VIRTUAL). </p>
-<p>SC_TRUE means the update loop has no real voice mixing this <a class="el" href="structsc__voice.html">sc_voice</a> right now (culled by the real-voice budget). </p>
-
-</div>
-</div>
-<a id="a4b25ec5b791240c154370113f785df30" name="a4b25ec5b791240c154370113f785df30"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4b25ec5b791240c154370113f785df30">&#9670;&#160;</a></span>sc_voice_set_virtual()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API sc_voice_set_virtual </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="structsc__voice.html">sc_voice</a> *&#160;</td>
-          <td class="paramname"><em>voice</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">sc_bool&#160;</td>
-          <td class="paramname"><em>virtualised</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Called from <a class="el" href="sound__chef_8h.html#a7f465418c94293f4a8add8092c3c1d93">sc_system_update</a> to set whether the voice is virtual or not. </p>
-<dl class="section remark"><dt>Remarks</dt><dd>Should not be called by the user. </dd></dl>
 
 </div>
 </div>

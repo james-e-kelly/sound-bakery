@@ -8,14 +8,11 @@ var searchData=
   ['sc_5fdsp_5ftype_5',['sc_dsp_type',['../sound__chef_8h.html#aaec289c61dc68d0d1318cd259c28d39a',1,'sound_chef.h']]],
   ['sc_5fencoding_5fformat_6',['sc_encoding_format',['../sound__chef_8h.html#acbdc29146c7a4567c9c50f6a69b655d0',1,'sound_chef.h']]],
   ['sc_5fnode_5fgroup_7',['sc_node_group',['../sound__chef_8h.html#a245fdacb319559c9925ebed6197ce6e2',1,'sound_chef.h']]],
-  ['sc_5fsound_8',['sc_sound',['../sound__chef_8h.html#ae6e6d478b127490e43db2d544b3fa902',1,'sound_chef.h']]],
-  ['sc_5fsound_5fconfig_9',['sc_sound_config',['../sound__chef_8h.html#af73c369bef747e7910c37a77440d8c19',1,'sound_chef.h']]],
-  ['sc_5fsound_5fmode_10',['sc_sound_mode',['../sound__chef_8h.html#a8679515759a55876ae1c87b223a8a387',1,'sound_chef.h']]],
-  ['sc_5fsystem_5fconfig_11',['sc_system_config',['../sound__chef_8h.html#aca8b1e373917df535789bc297a7a8746',1,'sound_chef.h']]],
-  ['sc_5fvirtual_5fvoice_5fcandidate_12',['sc_virtual_voice_candidate',['../sound__chef_8h.html#aaf3aa8d616c88de3668a8118b686e34d',1,'sound_chef.h']]],
-  ['sc_5fvoice_13',['sc_voice',['../sound__chef_8h.html#a9820f9b564b05bf25969fb28afdb7ea5',1,'sound_chef.h']]],
-  ['sc_5fvoice_5fdesired_5fstate_14',['sc_voice_desired_state',['../sound__chef_8h.html#abf05ea819d40df3ce8c114647b6d790a',1,'sound_chef.h']]],
-  ['sc_5fvoice_5freal_15',['sc_voice_real',['../sound__chef_8h.html#ac23ad78b45d233f894dfd8ab7dcf0039',1,'sound_chef.h']]],
-  ['sc_5fvoice_5fstate_16',['sc_voice_state',['../sound__chef_8h.html#a73b95cc7d5c8a19b471973f131a38cc0',1,'sound_chef.h']]],
-  ['sc_5fvoice_5ftiebreak_5fpolicy_17',['sc_voice_tiebreak_policy',['../sound__chef_8h.html#aeaf745066956a87eb2e3181b75c221c4',1,'sound_chef.h']]]
+  ['sc_5freal_5fvoice_8',['sc_real_voice',['../sound__chef_8h.html#a0e23d152c9c64660c4c241bf154db6e6',1,'sound_chef.h']]],
+  ['sc_5fsound_9',['sc_sound',['../sound__chef_8h.html#ae6e6d478b127490e43db2d544b3fa902',1,'sound_chef.h']]],
+  ['sc_5fsound_5fconfig_10',['sc_sound_config',['../sound__chef_8h.html#af73c369bef747e7910c37a77440d8c19',1,'sound_chef.h']]],
+  ['sc_5fsound_5fmode_11',['sc_sound_mode',['../sound__chef_8h.html#a8679515759a55876ae1c87b223a8a387',1,'sound_chef.h']]],
+  ['sc_5fsystem_5fconfig_12',['sc_system_config',['../sound__chef_8h.html#aca8b1e373917df535789bc297a7a8746',1,'sound_chef.h']]],
+  ['sc_5fvirtual_5fvoice_5fcandidate_13',['sc_virtual_voice_candidate',['../sound__chef_8h.html#aaf3aa8d616c88de3668a8118b686e34d',1,'sound_chef.h']]],
+  ['sc_5fvoice_14',['sc_voice',['../sound__chef_8h.html#a9820f9b564b05bf25969fb28afdb7ea5',1,'sound_chef.h']]]
 ];

@@ -179,6 +179,9 @@ var annotated_dup =
     [ "sc_meter_node", "structsc__meter__node.html", null ],
     [ "sc_node_group", "structsc__node__group.html", null ],
     [ "SC_NODE_GROUP_DELETER", "structSC__NODE__GROUP__DELETER.html", null ],
+    [ "sc_real_voice", "structsc__real__voice.html", null ],
+    [ "sc_real_voice_config", "structsc__real__voice__config.html", null ],
+    [ "sc_real_voice_heap_layout", "structsc__real__voice__heap__layout.html", null ],
     [ "sc_riff_chunk", "structsc__riff__chunk.html", null ],
     [ "sc_sound", "structsc__sound.html", null ],
     [ "sc_sound_config", "structsc__sound__config.html", null ],
@@ -188,7 +191,6 @@ var annotated_dup =
     [ "sc_system_config", "structsc__system__config.html", null ],
     [ "sc_virtual_voice_candidate", "structsc__virtual__voice__candidate.html", null ],
     [ "sc_voice", "structsc__voice.html", null ],
-    [ "sc_voice_real", "structsc__voice__real.html", null ],
     [ "selection", "structselection.html", null ],
     [ "splash_widget", "classsplash__widget.html", null ],
     [ "stbi_io_callbacks", "structstbi__io__callbacks.html", null ]
