@@ -106,10 +106,8 @@ void audio_meter_widget::render_implementation()
 
         settingsBarLayout.finish_layout();
 
-        if (ImPlot::BeginPlot(
-                "Meter", ImVec2(-1, windowSize.y - plotOffset.y - settingsBarLayout.get_element_rect().GetSize().y),
-                ImPlotFlags_NoTitle | ImPlotFlags_NoMouseText | ImPlotFlags_NoInputs | ImPlotFlags_NoFrame |
-                    ImPlotFlags_NoLegend))
+        if (ImPlot::BeginPlot("Meter", ImVec2(-1, windowSize.y - plotOffset.y - settingsBarLayout.get_element_rect().GetSize().y),
+                ImPlotFlags_NoTitle | ImPlotFlags_NoMouseText | ImPlotFlags_NoInputs | ImPlotFlags_NoFrame | ImPlotFlags_NoLegend))
         {
 
             ma_uint32 channels = 0;
@@ -123,27 +121,26 @@ void audio_meter_widget::render_implementation()
                     float channelVolume = 0;
                     if (sc_dsp_get_metering_info(m_meterDsp, index, sc_dsp_meter_query_rms, &channelVolume) == SBK_SUCCESS)
                     {
-                        const float convertedVolume =
-                            std::clamp(ma_volume_linear_to_db(channelVolume) + audio_meter_utils::volume_offset,
-                                       audio_meter_utils::rendered_min_volume, audio_meter_utils::rendered_max_volume);
+                        const float convertedVolume = std::clamp(ma_volume_linear_to_db(channelVolume) + audio_meter_utils::volume_offset, audio_meter_utils::rendered_min_volume, audio_meter_utils::rendered_max_volume);
                         const float currentVolume = m_rmsVolumes[index];
 
-                        const float lerpedVolume =
-                            std::lerp(currentVolume, convertedVolume,
-                                      convertedVolume < currentVolume ? audio_meter_utils::attack_lerp_speed
-                                                                      : audio_meter_utils::release_lerp_speed);
+                        const float lerpedVolume = std::lerp(currentVolume, convertedVolume, convertedVolume < currentVolume ? audio_meter_utils::attack_lerp_speed : audio_meter_utils::release_lerp_speed);
                         m_rmsVolumes[index] = lerpedVolume;
                     }
                 }
             }
 
-            ImPlot::SetupAxes("", "RMS Volume", ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_None);
-            ImPlot::SetupAxisLimits(ImAxis_Y1, audio_meter_utils::rendered_min_volume,
-                                    audio_meter_utils::rendered_max_volume, ImPlotCond_Always);
-            ImPlot::SetupAxisTicks(ImAxis_X1, 0.0, channels - 1.0, channels, audio_meter_utils::channel_labels);
-            ImPlot::SetupAxisTicks(ImAxis_Y1, audio_meter_utils::draw_info.offset_volume_values.data(),
-                                   audio_meter_utils::meter_ticks, audio_meter_utils::draw_info.volume_labels.data());
-            ImPlot::PlotBars("My Bar Plot", m_rmsVolumes.data(), channels, audio_meter_utils::bar_width);
+            if (channels > 0)
+            {
+                ImPlot::SetupAxes("", "RMS Volume", ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_None);
+                ImPlot::SetupAxisLimits(ImAxis_Y1, audio_meter_utils::rendered_min_volume,
+                                        audio_meter_utils::rendered_max_volume, ImPlotCond_Always);
+                ImPlot::SetupAxisTicks(ImAxis_X1, 0.0, channels - 1.0, channels, audio_meter_utils::channel_labels);
+                ImPlot::SetupAxisTicks(ImAxis_Y1, audio_meter_utils::draw_info.offset_volume_values.data(),
+                                       audio_meter_utils::meter_ticks, audio_meter_utils::draw_info.volume_labels.data());
+                ImPlot::PlotBars("My Bar Plot", m_rmsVolumes.data(), channels, audio_meter_utils::bar_width);
+            }
+
             ImPlot::EndPlot();
         }
     }

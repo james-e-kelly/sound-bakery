@@ -260,7 +260,8 @@ auto gluten::audio_subsystem::get_or_load_audio_handle(const std::filesystem::pa
         }
         else
         {
-            const sc_sound_config config = sc_sound_config_init_file(filePath.string().c_str(), SC_SOUND_MODE_DECODE);
+            const std::string path = filePath.string();
+            const sc_sound_config config = sc_sound_config_init_file(path.c_str(), SC_SOUND_MODE_DECODE);
             if (sc_system_create_sound(sbk::engine::system::get()->get_runtime(), &config, &sound) == SBK_SUCCESS)
             {
                 m_filesToSoundsMap[filePath].reset(sound);
