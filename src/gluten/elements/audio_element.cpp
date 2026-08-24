@@ -3,6 +3,7 @@
 #include "gluten/app/app.h"
 #include "gluten/subsystems/audio_subsystem.h"
 #include "gluten/theme/theme.h"
+#include "gluten/utils/imgui_util_structures.h"
 #include "implot.h"
 #include "implot_internal.h"
 
@@ -179,16 +180,16 @@ namespace gluten
 
                 constexpr float s_timeMinValue = 0.0f;
 
-                float plotLimitLeft       = ImGui::GetStateStorage()->GetFloat(ImGui::GetID(s_plotLimitMinName));
-                float plotLimitRight      = ImGui::GetStateStorage()->GetFloat(ImGui::GetID(s_plotLimitMaxName));
-                float minimumDecibelValue = ImGui::GetStateStorage()->GetFloat(ImGui::GetID(s_minimumDecibelName), -96.0f);
-                bool renderMidSide        = ImGui::GetStateStorage()->GetBool(ImGui::GetID(s_renderMidSideName));
-                bool renderLows           = ImGui::GetStateStorage()->GetBool(ImGui::GetID(s_renderLowsName), true);
-                bool renderMids           = ImGui::GetStateStorage()->GetBool(ImGui::GetID(s_renderMidsName), true);
-                bool renderHighs          = ImGui::GetStateStorage()->GetBool(ImGui::GetID(s_renderHighsName), true);
-                int overlayMode           = ImGui::GetStateStorage()->GetInt(ImGui::GetID(s_overlayModeName), 0);
-                bool renderMomentary      = ImGui::GetStateStorage()->GetBool(ImGui::GetID(s_renderMomentaryName), true);
-                bool renderShortterm      = ImGui::GetStateStorage()->GetBool(ImGui::GetID(s_renderShorttermName), true);
+                imgui::scoped_state_storage<float> plotLimitLeft(s_plotLimitMinName);
+                imgui::scoped_state_storage<float> plotLimitRight(s_plotLimitMaxName);
+                imgui::scoped_state_storage<float> minimumDecibelValue(s_minimumDecibelName, -96.0f);
+                imgui::scoped_state_storage<bool> renderMidSide(s_renderMidSideName);
+                imgui::scoped_state_storage<bool> renderLows(s_renderLowsName, true);
+                imgui::scoped_state_storage<bool> renderMids(s_renderMidsName, true);
+                imgui::scoped_state_storage<bool> renderHighs(s_renderHighsName, true);
+                imgui::scoped_state_storage<int> overlayMode(s_overlayModeName, 0);
+                imgui::scoped_state_storage<bool> renderMomentary(s_renderMomentaryName, true);
+                imgui::scoped_state_storage<bool> renderShortterm(s_renderShorttermName, true);
 
                 const auto& waveformLods = audioSubsystem->get_ui_waveform_lods(m_filePath, m_fileDuration);
 
@@ -359,24 +360,25 @@ namespace gluten
                         std::vector<ImVec2> samplePoints(sampleRes ? numberOfPointsAtCurrentResolution : 0, ImVec2());
 
                         fill_channel_points(waveformCache, channel, [&upperPoints, &lowerPoints, &samplePoints, &renderMidSide, &channel, &channels, &sampleRes](int index, double xPosition, int point, const gluten::channel_frame& channelFrame, const gluten::stereo_data& stereoData, const gluten::waveform::global_frame_cache_type& globalFrameCache)
-                                            {
-                                if (renderMidSide && channels == 2 && !sampleRes)
+                        {
+                            if (renderMidSide && channels == 2 && !sampleRes)
+                            {
+                                upperPoints[index] = (ImVec2(xPosition, (channel == 0 ? stereoData.midMax : stereoData.sideMax) - (2.0f * channel)));
+                                lowerPoints[index] = (ImVec2(xPosition, (channel == 0 ? stereoData.midMin : stereoData.sideMin) - (2.0f * channel)));
+                            }
+                            else
+                            {
+                                if (sampleRes)
                                 {
-                                    upperPoints[index] = (ImVec2(xPosition, (channel == 0 ? stereoData.midMax : stereoData.sideMax) - (2.0f * channel)));
-                                    lowerPoints[index] = (ImVec2(xPosition, (channel == 0 ? stereoData.midMin : stereoData.sideMin) - (2.0f * channel)));
+                                    samplePoints[index] = (ImVec2(xPosition, channelFrame.sample - (2.0f * channel)));
                                 }
                                 else
                                 {
-                                    if (sampleRes)
-                                    {
-                                        samplePoints[index] = (ImVec2(xPosition, channelFrame.sample - (2.0f * channel)));
-                                    }
-                                    else
-                                    {
-                                        upperPoints[index] = (ImVec2(xPosition, channelFrame.max - (2.0f * channel)));
-                                        lowerPoints[index] = (ImVec2(xPosition, channelFrame.min - (2.0f * channel)));
-                                    }
-                                } });
+                                    upperPoints[index] = (ImVec2(xPosition, channelFrame.max - (2.0f * channel)));
+                                    lowerPoints[index] = (ImVec2(xPosition, channelFrame.min - (2.0f * channel)));
+                                }
+                            } 
+                        });
 
                         ImPlot::SetAxes(ImAxis_X1, ImAxis_Y1);
 
@@ -405,23 +407,24 @@ namespace gluten
                     std::vector<ImVec2> rmsPoints(numberOfPeakPoints, ImVec2());
 
                     fill_channel_points(peakCache, 0, [&minimumDecibelValue, &peakDecibelPoints, &lowDecibelPoints, &midDecibelPoints, &highDecibelPoints, &rmsPoints](int index, double xPosition, int point, const gluten::channel_frame& channelFrame, const gluten::stereo_data& stereoData, const gluten::waveform::global_frame_cache_type& globalFrameCache)
-                                        {
-                            if (globalFrameCache.get_cached_data().has_data())
-                            {
-                                const auto& globalFrameData = globalFrameCache.get_cached_data().m_cache[point];
+                    {
+                        if (globalFrameCache.get_cached_data().has_data())
+                        {
+                            const auto& globalFrameData = globalFrameCache.get_cached_data().m_cache[point];
 
-                                const float rmsDecibel        = std::max(ma_volume_linear_to_db(globalFrameData.rms), minimumDecibelValue + 1.0f);
-                                const float peakDecibel       = std::max(ma_volume_linear_to_db(globalFrameData.channelSumAverage), minimumDecibelValue + 1.0f);
-                                const float lowDecibel        = std::max(ma_volume_linear_to_db(globalFrameData.lowAverage), minimumDecibelValue + 1.0f);
-                                const float midDecibel        = std::max(ma_volume_linear_to_db(globalFrameData.midAverage), minimumDecibelValue + 1.0f);
-                                const float highDecibel       = std::max(ma_volume_linear_to_db(globalFrameData.highAverage), minimumDecibelValue + 1.0f);
+                            const float rmsDecibel        = std::max(ma_volume_linear_to_db(globalFrameData.rms), minimumDecibelValue + 1.0f);
+                            const float peakDecibel       = std::max(ma_volume_linear_to_db(globalFrameData.channelSumAverage), minimumDecibelValue + 1.0f);
+                            const float lowDecibel        = std::max(ma_volume_linear_to_db(globalFrameData.lowAverage), minimumDecibelValue + 1.0f);
+                            const float midDecibel        = std::max(ma_volume_linear_to_db(globalFrameData.midAverage), minimumDecibelValue + 1.0f);
+                            const float highDecibel       = std::max(ma_volume_linear_to_db(globalFrameData.highAverage), minimumDecibelValue + 1.0f);
 
-                                peakDecibelPoints[index] = (ImVec2(xPosition, peakDecibel));
-                                lowDecibelPoints[index]  = (ImVec2(xPosition, lowDecibel));
-                                midDecibelPoints[index]  = (ImVec2(xPosition, midDecibel));
-                                highDecibelPoints[index] = (ImVec2(xPosition, highDecibel));
-                                rmsPoints[index]         = (ImVec2(xPosition, rmsDecibel));
-                            } });
+                            peakDecibelPoints[index] = (ImVec2(xPosition, peakDecibel));
+                            lowDecibelPoints[index]  = (ImVec2(xPosition, lowDecibel));
+                            midDecibelPoints[index]  = (ImVec2(xPosition, midDecibel));
+                            highDecibelPoints[index] = (ImVec2(xPosition, highDecibel));
+                            rmsPoints[index]         = (ImVec2(xPosition, rmsDecibel));
+                        } 
+                    });
 
                     const int numberOfLufsPoints = get_render_points_at_cache_resolution(&waveformLods.m_cache.thumbnailRes.get_cached_data());
 
@@ -431,18 +434,19 @@ namespace gluten
                     std::vector<ImU32> shorttermLineColors(numberOfLufsPoints, ImGui::ColorConvertFloat4ToU32(gluten::theme::supportInfo));
 
                     fill_channel_points(&waveformLods.m_cache.thumbnailRes.get_cached_data(), 0, [&minimumDecibelValue, &momentaryPoints, &shorttermPoints, &shorttermClampedPoints](int index, double xPosition, int point, const gluten::channel_frame& channelFrame, const gluten::stereo_data& stereoData, const gluten::waveform::global_frame_cache_type& globalFrameCache)
-                                        {
-                            if (globalFrameCache.get_cached_data().has_data())
-                            {
-                                const auto& globalFrameData = globalFrameCache.get_cached_data().m_cache[point];
+                    {
+                        if (globalFrameCache.get_cached_data().has_data())
+                        {
+                            const auto& globalFrameData = globalFrameCache.get_cached_data().m_cache[point];
 
-                                const float& shortterm        = globalFrameData.lufs.shortterm;
-                                const float& momentary        = globalFrameData.lufs.momentary;
+                            const float& shortterm        = globalFrameData.lufs.shortterm;
+                            const float& momentary        = globalFrameData.lufs.momentary;
 
-                                momentaryPoints[index]          = (ImVec2(xPosition, momentary));
-                                shorttermPoints[index]          = (ImVec2(xPosition, shortterm));
-                                shorttermClampedPoints[index]   = (ImVec2(xPosition, std::min(shortterm, -24.0f)));
-                            } });
+                            momentaryPoints[index]          = (ImVec2(xPosition, momentary));
+                            shorttermPoints[index]          = (ImVec2(xPosition, shortterm));
+                            shorttermClampedPoints[index]   = (ImVec2(xPosition, std::min(shortterm, -24.0f)));
+                        } 
+                    });
 
                     for (int i = 0; i < shorttermPoints.size(); ++i)
                     {
@@ -609,17 +613,6 @@ namespace gluten
 
                     ImPlot::EndPlot();
                 }
-
-                ImGui::GetStateStorage()->SetFloat(ImGui::GetID(s_plotLimitMinName), plotLimitLeft);
-                ImGui::GetStateStorage()->SetFloat(ImGui::GetID(s_plotLimitMaxName), plotLimitRight);
-                ImGui::GetStateStorage()->SetFloat(ImGui::GetID(s_minimumDecibelName), minimumDecibelValue);
-                ImGui::GetStateStorage()->SetBool(ImGui::GetID(s_renderMidSideName), renderMidSide);
-                ImGui::GetStateStorage()->SetBool(ImGui::GetID(s_renderLowsName), renderLows);
-                ImGui::GetStateStorage()->SetBool(ImGui::GetID(s_renderMidsName), renderMids);
-                ImGui::GetStateStorage()->SetBool(ImGui::GetID(s_renderHighsName), renderHighs);
-                ImGui::GetStateStorage()->SetInt(ImGui::GetID(s_overlayModeName), overlayMode);
-                ImGui::GetStateStorage()->SetBool(ImGui::GetID(s_renderMomentaryName), renderMomentary);
-                ImGui::GetStateStorage()->SetBool(ImGui::GetID(s_renderShorttermName), renderShortterm);
             }
         }
     }

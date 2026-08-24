@@ -153,4 +153,58 @@ namespace gluten::imgui
         {ImVec2(0, +1), ImVec2(0, 0), ImVec2(1, 0), IM_PI * 1.50f},  // Up
         {ImVec2(0, -1), ImVec2(1, 1), ImVec2(0, 1), IM_PI * 0.50f}   // Down
     };
+
+    template <typename T>
+    concept scoped_storage_type = std::is_same_v<T, float> || std::is_same_v<T, int> || std::is_same_v<T, bool>;
+
+    template <scoped_storage_type T>
+    struct scoped_state_storage
+    {
+        scoped_state_storage() = delete;
+
+        scoped_state_storage(const char* inId, T defaultValue = T{}) : id(ImGui::GetID(inId))
+        {
+            if constexpr (std::is_floating_point_v<T>)
+            {
+                value = ImGui::GetStateStorage()->GetFloat(id, defaultValue);
+            }
+            else if constexpr (std::is_same_v<T, int>)
+            {
+                value = ImGui::GetStateStorage()->GetInt(id, defaultValue);
+            }
+            else if constexpr (std::is_same_v<T, bool>)
+            {
+                value = ImGui::GetStateStorage()->GetBool(id, defaultValue);
+            }
+        }
+
+        ~scoped_state_storage()
+        {
+            if constexpr (std::is_floating_point_v<T>)
+            {
+                ImGui::GetStateStorage()->SetFloat(id, value);
+            }
+            else if constexpr (std::is_same_v<T, int>)
+            {
+                ImGui::GetStateStorage()->SetInt(id, value);
+            }
+            else if constexpr (std::is_same_v<T, bool>)
+            {
+                ImGui::GetStateStorage()->SetBool(id, value);
+            }
+        }
+
+        auto operator&() noexcept -> bool* { return &value; }
+        auto operator&() const noexcept -> const bool* { return &value; }
+
+        operator T() const noexcept { return value; }
+        auto operator=(T newValue) -> scoped_state_storage<T>&
+        {
+            value = newValue;
+            return *this;
+        }
+
+        ImGuiID id{};
+        T value{};
+    };
 }  // namespace gluten::imgui
