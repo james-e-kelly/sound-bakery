@@ -90,10 +90,12 @@ namespace gluten::theme::things
 
         gluten::theme::borderInteractive = color_with_added_value(base00, 0.30f * (darkMode ? 1.0f : -1.0f));
 
-        gluten::theme::textPrimary   = color_with_multiplied_saturation(color_with_added_value(base00, 0.75f * (darkMode ? 1.0f : -1.0f)), 0.5f);
-        gluten::theme::textSecondary = color_with_multiplied_value(gluten::theme::textPrimary, 0.8f * (darkMode ? 1.0f : -1.0f));
-        gluten::theme::textDisabled  = color_with_multiplied_value(gluten::theme::textPrimary, 0.5f * (darkMode ? 1.0f : -1.0f));
-
+        gluten::theme::textPrimary     = color_with_multiplied_saturation(color_with_added_value(base00, 0.75f * (darkMode ? 1.0f : -1.0f)), 0.5f);
+        gluten::theme::textSecondary   = color_with_multiplied_value(gluten::theme::textPrimary, 0.8f * (darkMode ? 1.0f : -1.0f));
+        gluten::theme::textDisabled    = color_with_multiplied_value(gluten::theme::textPrimary, 0.5f * (darkMode ? 1.0f : -1.0f));
+        gluten::theme::textPlaceholder = color_with_multiplied_value(gluten::theme::textPrimary, 0.4F * (darkMode ? 1.0f : -1.0f));
+        gluten::theme::textHelper      = color_with_multiplied_value(gluten::theme::textPrimary, 0.5f * (darkMode ? 1.0f : -1.0f));
+        
         gluten::theme::supportError   = red;
         gluten::theme::supportSuccess = green;
         gluten::theme::supportWarning = yellow;
