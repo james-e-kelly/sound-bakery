@@ -206,6 +206,8 @@ void root_widget::start_implementation()
 
 void root_widget::render_implementation()
 {
+    m_hoveringBackground = false;
+
     set_root_window_to_viewport();
 
     {
@@ -234,6 +236,8 @@ void root_widget::render_implementation()
     }
 
     render_children();
+
+    m_hoveringTitlebar |= ImGui::IsWindowHovered(ImGuiHoveredFlags_None) && !ImGui::IsAnyItemHovered();
 
     ImGui::End();
 }

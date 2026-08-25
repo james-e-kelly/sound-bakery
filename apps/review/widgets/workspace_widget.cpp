@@ -521,6 +521,11 @@ auto workspace_widget::render_content() -> void
 
             ImGui::EndDisabled();
         }
+
+        if (ImGui::IsWindowHovered(ImGuiHoveredFlags_AllowWhenBlockedByActiveItem) && !ImGui::IsAnyItemHovered())
+        {
+            get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->get_root_widget()->set_hovering_background(true);
+        }
     }
     ImGui::EndChild();
 }
@@ -1232,6 +1237,8 @@ auto workspace_widget::render_left_toolbar() -> void
 
     m_windowLayout.render_layout_element_pixels_horizontal(&m_leftToolbarLayout, leftToobarWidth);
 
+    bool toolbarHovered = m_leftToolbarLayout.get_element_is_hovered();
+
     static auto create_toolbar_button = [activeView = std::cref(m_activeView)](const char* name, const char* icon, active_view active)
     {
         gluten::icon_button iconButton(name, icon, gluten::fonts::regular_lucide_icons);
@@ -1256,6 +1263,8 @@ auto workspace_widget::render_left_toolbar() -> void
         workspaceManager->select_user({});
     }
 
+    toolbarHovered &= !reviewsButton.get_element_is_hovered();
+
     if (m_leftToolbarLayout.render_layout_element_pixels_vertical(&usersButton, leftToolbarButtonHeight))
     {
         m_activeView = users_view;
@@ -1263,11 +1272,20 @@ auto workspace_widget::render_left_toolbar() -> void
         workspaceManager->select_user({});
     }
 
+    toolbarHovered &= !usersButton.get_element_is_hovered();
+
     if (m_leftToolbarLayout.render_layout_element_pixels_vertical(&settingsButton, leftToolbarButtonHeight))
     {
         m_activeView = settings_view;
         workspaceManager->select_project({});
         workspaceManager->select_user({});
+    }
+
+    toolbarHovered &= !settingsButton.get_element_is_hovered();
+    
+    if (toolbarHovered)
+    {
+        get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->get_root_widget()->set_hovering_background(true);
     }
 }
 
@@ -1385,6 +1403,11 @@ auto workspace_widget::render_settings() -> void
             }
 
             ImGui::EndTable();
+        }
+
+        if (ImGui::IsWindowHovered(ImGuiHoveredFlags_AllowWhenBlockedByActiveItem) && !ImGui::IsAnyItemHovered())
+        {
+            get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->get_root_widget()->set_hovering_background(true);
         }
     }
     ImGui::EndChild();

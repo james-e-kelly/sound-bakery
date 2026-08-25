@@ -81,7 +81,7 @@ renderer_subsystem::window_guard::window_guard(int width, int height, const std:
                     {
                         if (gluten::root_widget* const rootWidgetCasted = (gluten::root_widget*)rootWidget)
                         {
-                            *hit = rootWidgetCasted->is_hovering_titlebar();
+                            *hit = rootWidgetCasted->is_hovering_draggable_area();
                         }
                     }
                 }
