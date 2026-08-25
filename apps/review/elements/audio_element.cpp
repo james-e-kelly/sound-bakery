@@ -184,6 +184,31 @@ auto audio_element::waveform_element::render_waveform_overlay(double plotTimeWid
                         const auto userDisplayName                    = workspaceManager->get_user(comment.m_userId).m_displayName;
 
                         ImPlot::TagX(comment.m_timeStart, gluten::theme::supportInfo, showFullComment ? comment.m_comment.c_str() : userDisplayName.c_str());
+
+                        if (!showFullComment)
+                        {
+                            const ImVec2 mousePos     = ImGui::GetMousePos();
+                            const ImVec2 tagScreenPos = ImPlot::PlotToPixels(ImPlotPoint(comment.m_timeStart, 0));
+
+                            const ImVec2 plotMin = ImPlot::GetPlotPos();
+                            const ImVec2 plotMax = ImVec2(plotMin.x + ImPlot::GetPlotSize().x, plotMin.y + ImPlot::GetPlotSize().y);
+
+                            const ImVec2 textSize = ImGui::CalcTextSize(userDisplayName.c_str());
+
+                            const float tagWidth  = textSize.x;
+                            const float tagHeight = textSize.y * 2.0F;
+
+                            const float boxLeft   = tagScreenPos.x - (tagWidth / 2.0f);
+                            const float boxRight  = tagScreenPos.x + (tagWidth / 2.0f);
+                            const float boxTop    = plotMax.y;
+                            const float boxBottom = plotMax.y + tagHeight;
+
+                            if (mousePos.x >= boxLeft && mousePos.x <= boxRight &&
+                                mousePos.y >= boxTop && mousePos.y <= boxBottom)
+                            {
+                                ImGui::SetTooltip(comment.m_comment.c_str());
+                            }
+                        }
                     }
                 }
             }
