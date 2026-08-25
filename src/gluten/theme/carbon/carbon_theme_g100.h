@@ -203,6 +203,8 @@ namespace gluten::theme::carbon_g100
         gluten::theme::borderInteractive   = borderInteractive;
         gluten::theme::textPrimary         = textPrimary;
         gluten::theme::textSecondary       = textSecondary;
+        gluten::theme::textPlaceholder     = textPlaceholder;
+        gluten::theme::textHelper          = textHelper;
         gluten::theme::textDisabled        = textDisabled;
         gluten::theme::supportError        = supportError;
         gluten::theme::supportSuccess      = supportSuccess;
