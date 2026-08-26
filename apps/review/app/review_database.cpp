@@ -170,7 +170,7 @@ namespace
 
     constexpr std::string_view g_reviewsPathName = "Reviews";
 
-    // #define REVIEW_TEST_DATABASE_BLOCKS
+    //#define REVIEW_TEST_DATABASE_BLOCKS
 
 #ifdef REVIEW_TEST_DATABASE_BLOCKS
     constexpr std::chrono::milliseconds g_blockDelay = std::chrono::milliseconds(500);
@@ -197,7 +197,7 @@ namespace
     co_return tl::make_unexpected(database_error{.m_errorCode = database_error_code::invalid_parameters, .m_errorMessage = IM_STRINGIFY(condition) " condition failed"})
 
 #ifdef REVIEW_TEST_DATABASE_BLOCKS
-    #define INSERT_NETWORK_TEST() co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, review_app::get()->get_database_thread_executor())
+    #define INSERT_NETWORK_TEST() co_await review_app::get()->timer_queue()->make_delay_object(g_blockDelay, m_databaseThread)
 #else
     #define INSERT_NETWORK_TEST()
 #endif
