@@ -4,6 +4,7 @@
 #include "IconsFontaudio.h"
 #include "IconsLucide.h"
 #include "nfd.h"
+#include "subsystems/animation_subsystem.h"
 #include "subsystems/renderer_subsystem.h"
 #include "subsystems/widget_subsystem.h"
 // #include "Fontawesome"
@@ -18,10 +19,11 @@ CMRC_DECLARE(sbk::fonts);
 
 namespace gluten_cli_arguments
 {
-    static constexpr const char* s_help       = "help";
-    static constexpr const char* s_headless   = "headless";
-    static constexpr const char* s_console    = "console";
-    static constexpr const char* s_fullscreen = "fullscreen";
+    static constexpr const char* s_help             = "help";
+    static constexpr const char* s_headless         = "headless";
+    static constexpr const char* s_console          = "console";
+    static constexpr const char* s_fullscreen       = "fullscreen";
+    static constexpr const char* s_noAnimations     = "disableanimations";
 }  // namespace gluten_cli_arguments
 
 static gluten::app* s_app = nullptr;
@@ -39,7 +41,13 @@ int gluten::app::run(int argc, char** argv)
     m_tickExecutor = make_manual_executor();
 
     boost::program_options::options_description cliDescription;
-    cliDescription.add_options()(gluten_cli_arguments::s_help, "prints help information")(gluten_cli_arguments::s_console, "adds a console window")(gluten_cli_arguments::s_fullscreen, "maximises the window on start")(gluten_cli_arguments::s_headless, "removes rendering");
+    cliDescription.add_options()
+        (gluten_cli_arguments::s_help, "prints help information")
+        (gluten_cli_arguments::s_console, "adds a console window")
+        (gluten_cli_arguments::s_fullscreen, "maximises the window on start")
+        (gluten_cli_arguments::s_headless, "removes rendering")
+        (gluten_cli_arguments::s_noAnimations, "disables animations on hovers and transitions")
+        ;
 
     cli_setup(cliDescription);
 
@@ -52,6 +60,8 @@ int gluten::app::run(int argc, char** argv)
     const bool gui      = !headless;
 
     const bool maximise = cliVariables.count(gluten_cli_arguments::s_fullscreen);
+
+    const bool noAnimations = cliVariables.count(gluten_cli_arguments::s_noAnimations);
 
     if (console)
     {
@@ -71,6 +81,11 @@ int gluten::app::run(int argc, char** argv)
     }
 
     add_console_sink();
+
+    if (!noAnimations)
+    {
+        add_unique_subsystem_class<animation_subsystem>();
+    }
 
     if (gui)
     {
