@@ -1,6 +1,7 @@
 SET(RAW_FONTS
     Montserrat-Light.ttf
     Montserrat-Regular.ttf
+    Montserrat-SemiBold.ttf
     Montserrat-Black.ttf
     Lucide.ttf
 )
