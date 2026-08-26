@@ -30,25 +30,25 @@ auto sbk::engine::node_instance_fsm::action_init(const event_init& init) -> void
 {
     ZoneScoped;
     m_referencingNode = std::static_pointer_cast<sbk::engine::node>(init.refNode.shared());
-    (void)init_node_group(init);
+    SBK_REPORTV(init_node_group(init));
     init_callbacks();
 
     switch (init.type)
     {
         case node_instance_type::child:
         {
-            (void)init_child();
+            SBK_REPORTV(init_child());
             break;
         }
         case node_instance_type::bus:
         {
-            (void)init_parent();
+            SBK_REPORTV(init_parent());
             break;
         }
         case node_instance_type::main:
         {
-            (void)init_parent();
-            (void)init_child();
+            SBK_REPORTV(init_parent());
+            SBK_REPORTV(init_child());
             break;
         }
     }
@@ -74,10 +74,7 @@ auto sbk::engine::node_instance_fsm::action_play(const event_play& play) -> void
 
         if (sound)
         {
-            if (const sbk_status playSoundResult = sc_system_play_sound(m_referencingNode->get_runtime(), sound, &m_voiceHandle, m_nodeGroup.nodeGroup.get(), MA_FALSE); playSoundResult != SBK_SUCCESS)
-            {
-                sbk::log_error(playSoundResult, "sc_system_play_sound");
-            }
+            SBK_REPORT_C(sc_system_play_sound(m_referencingNode->get_runtime(), sound, &m_voiceHandle, m_nodeGroup.nodeGroup.get(), MA_FALSE));
         }
         else
         {
@@ -87,7 +84,9 @@ auto sbk::engine::node_instance_fsm::action_play(const event_play& play) -> void
     else
     {
         std::for_each(m_children.begin(), m_children.end(), [](const auto& child)
-                      { (void)child->play(); });
+            { 
+                SBK_REPORTV(child->play()); 
+            });
     }
 }
 
@@ -199,7 +198,7 @@ auto sbk::engine::node_instance_fsm::init_node_group(const event_init& init) -> 
         if (const auto descShared = desc.shared())
         {
             sc_dsp* dsp = nullptr;
-            (void)add_dsp_to_node_group(m_nodeGroup.nodeGroup.get(), &dsp, descShared->get_dsp_handle());
+            SBK_REPORTV(add_dsp_to_node_group(m_nodeGroup.nodeGroup.get(), &dsp, descShared->get_dsp_handle()));
 
             sc_uint32 index = 0;
             for (const sbk::engine::effect_parameter_description& parameter : descShared->get_parameters())
@@ -207,7 +206,7 @@ auto sbk::engine::node_instance_fsm::init_node_group(const event_init& init) -> 
                 switch (parameter.m_parameter.type)
                 {
                     case sc_dsp_parameter_type_float:
-                        sc_dsp_set_parameter_float(dsp, index++, parameter.m_parameter.floatParameter.value);
+                        SBK_REPORT_C(sc_dsp_set_parameter_float(dsp, index++, parameter.m_parameter.floatParameter.value));
                         break;
                 }
             }
