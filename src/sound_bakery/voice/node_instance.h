@@ -103,10 +103,10 @@ namespace sbk::engine
             {
                 ZoneScoped;
 
-                if (stateMachine.m_soundInstance)
+                if (stateMachine.m_voiceHandle != 0)
                 {
-                    if (ma_sound_at_end(&stateMachine.m_soundInstance->sound) == MA_TRUE &&
-                        node_instance_fsm::node_group_is_idle(stateMachine.m_nodeGroup))
+                    sc_bool isPlaying = SC_TRUE;
+                    if (sc_voice_get_is_playing(stateMachine.m_referencingNode->get_runtime(), stateMachine.m_voiceHandle, &isPlaying) == SBK_ERR_NOT_FOUND || isPlaying == false)
                     {
                         stateMachine.process_event(event_stop());
                     }
@@ -127,8 +127,7 @@ namespace sbk::engine
 
                     const bool allChildrenHaveStopped = stoppedChildren == stateMachine.m_children.size();
 
-                    // Keep the container playing while its own DSP tail (e.g. a delay) is still ringing out
-                    if (allChildrenHaveStopped && node_instance_fsm::node_group_is_idle(stateMachine.m_nodeGroup))
+                    if (allChildrenHaveStopped)
                     {
                         // Sequence nodes retrigger when the current sound stops
                         if (stateMachine.m_referencingNode->get_object_type() == rttr::type::get<sbk::engine::sequence_container>())
@@ -193,7 +192,7 @@ namespace sbk::engine
         node_group_instance m_nodeGroup;
         std::shared_ptr<node_instance> m_parent;
         eastl::vector<std::shared_ptr<node_instance>> m_children;
-        std::unique_ptr<sc_sound_instance, SC_SOUND_INSTANCE_DELETER> m_soundInstance;
+        sc_voice_handle m_voiceHandle{};
         unsigned int m_numTimesPlayed = 0;
     };
 

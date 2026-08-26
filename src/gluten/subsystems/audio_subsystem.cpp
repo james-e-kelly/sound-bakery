@@ -51,7 +51,7 @@ int gluten::audio_subsystem::init()
 
 void gluten::audio_subsystem::exit()
 {
-    m_filesToSoundInstancesMap.clear();
+    m_filesToVoiceHandlesMap.clear();
     m_filesToSoundsMap.clear();
     (void)sbk_system_destroy();
 }
@@ -60,76 +60,64 @@ auto gluten::audio_subsystem::play_sound(const std::filesystem::path& filePath) 
 {
     loop_data* loopData = get_sound_loop_info(filePath);
 
-    const auto try_set_loop_points = [](sc_sound_instance* soundInstance, loop_data* loopData)
+    const auto try_set_loop_points = [](sc_voice_handle handle, loop_data* loopData)
     {
-        if (soundInstance && loopData)
+        if (handle && loopData)
         {
             if (loopData->m_loopStart >= 0.0f && loopData->m_loopEnd >= 0.0f)
             {
-                sc_sound_instance_set_loop_position_in_seconds(soundInstance, loopData->m_loopStart, loopData->m_loopEnd);
+                sc_voice_set_loop_position_in_seconds(sbk::engine::system::get()->get_runtime(), handle, loopData->m_loopStart, loopData->m_loopEnd);
             }
         }
     };
 
-    if (sc_sound_instance* const soundInstance = get_sound_instance(filePath))
+    if (sc_voice_handle voiceHandle = get_voice_handle(filePath))
     {
-        sc_bool playing = MA_FALSE;
-        sc_sound_instance_is_playing(soundInstance, &playing);
-
-        if (!playing)
-        {
-            sc_sound_instance_start(soundInstance);
-            try_set_loop_points(soundInstance, loopData);
-        }
+        sc_voice_set_paused(sbk::engine::system::get()->get_runtime(), voiceHandle, MA_FALSE);
+        try_set_loop_points(voiceHandle, loopData);
     }
     else if (sc_sound* const sound = get_or_load_audio_handle(filePath))
     {
-        sc_sound_instance* soundInstance = nullptr;
-        sc_system_play_sound(sbk::engine::system::get()->get_runtime(), sound, &soundInstance, nullptr, SC_FALSE);
-        try_set_loop_points(soundInstance, loopData);
-        m_filesToSoundInstancesMap[filePath].reset(soundInstance);
+        sc_voice_handle handle{};
+        sc_system_play_sound(sbk::engine::system::get()->get_runtime(), sound, &handle, nullptr, SC_FALSE);
+        try_set_loop_points(handle, loopData);
+        m_filesToVoiceHandlesMap[filePath] = handle;
     }
 }
 
 auto gluten::audio_subsystem::pause_sound(const std::filesystem::path& filePath) -> void
 {
-    if (sc_sound_instance* const soundInstance = get_sound_instance(filePath))
+    if (sc_voice_handle voiceHandle = get_voice_handle(filePath))
     {
-        sc_bool playing = MA_FALSE;
-        sc_sound_instance_is_playing(soundInstance, &playing);
-
-        if (playing)
-        {
-            sc_sound_instance_pause(soundInstance);
-        }
+        sc_voice_set_paused(sbk::engine::system::get()->get_runtime(), voiceHandle, MA_TRUE);
     }
 }
 
 auto gluten::audio_subsystem::pause_all() -> void
 {
-    for (const auto& soundInstance : m_filesToSoundInstancesMap)
+    for (const auto& soundInstance : m_filesToVoiceHandlesMap)
     {
         if (soundInstance.second)
         {
-            sc_sound_instance_pause(soundInstance.second.get());
+            sc_voice_set_paused(sbk::engine::system::get()->get_runtime(), soundInstance.second, MA_TRUE);
         }
     }
 }
 
 auto gluten::audio_subsystem::set_sound_cursor_position(const std::filesystem::path& filePath, float cursorPosition) -> void
 {
-    if (sc_sound_instance* const soundInstance = get_sound_instance(filePath))
+    if (sc_voice_handle voiceHandle = get_voice_handle(filePath))
     {
-        sc_sound_instance_set_cursor_in_seconds(soundInstance, cursorPosition);
-        sc_sound_instance_set_looping(soundInstance, SC_FALSE);
+        sc_voice_set_cursor_position_in_seconds(sbk::engine::system::get()->get_runtime(), voiceHandle, cursorPosition);
+        sc_voice_set_looping(sbk::engine::system::get()->get_runtime(), voiceHandle, SC_FALSE);
     }
     else if (sc_sound* const sound = get_or_load_audio_handle(filePath))
     {
-        sc_sound_instance* soundInstance = nullptr;
-        sc_system_play_sound(sbk::engine::system::get()->get_runtime(), sound, &soundInstance, nullptr, SC_TRUE);
-        sc_sound_instance_set_cursor_in_seconds(soundInstance, cursorPosition);
-        sc_sound_instance_set_looping(soundInstance, SC_FALSE);
-        m_filesToSoundInstancesMap[filePath].reset(soundInstance);
+        sc_voice_handle handle{};
+        sc_system_play_sound(sbk::engine::system::get()->get_runtime(), sound, &handle, nullptr, SC_TRUE);
+        sc_voice_set_cursor_position_in_seconds(sbk::engine::system::get()->get_runtime(), handle, cursorPosition);
+        sc_voice_set_looping(sbk::engine::system::get()->get_runtime(), handle, SC_FALSE);
+        m_filesToVoiceHandlesMap[filePath] = handle;
     }
 }
 
@@ -137,9 +125,9 @@ auto gluten::audio_subsystem::set_sound_loop_start_position(const std::filesyste
 {
     if (loop_data* loopData = get_sound_loop_info(filePath))
     {
-        if (sc_sound_instance* const soundInstance = get_sound_instance(filePath))
+        if (sc_voice_handle voiceHandle = get_voice_handle(filePath))
         {
-            sc_sound_instance_set_looping(soundInstance, SC_FALSE);
+            sc_voice_set_looping(sbk::engine::system::get()->get_runtime(), voiceHandle, SC_FALSE);
         }
 
         loopData->m_loopStart = loopPosition;
@@ -150,9 +138,9 @@ auto gluten::audio_subsystem::set_sound_loop_end_position(const std::filesystem:
 {
     if (loop_data* loopData = get_sound_loop_info(filePath))
     {
-        if (sc_sound_instance* const soundInstance = get_sound_instance(filePath))
+        if (sc_voice_handle voiceHandle = get_voice_handle(filePath))
         {
-            sc_sound_instance_set_looping(soundInstance, SC_TRUE);
+            sc_voice_set_looping(sbk::engine::system::get()->get_runtime(), voiceHandle, SC_TRUE);
         }
 
         loopData->m_loopEnd = loopPosition;
@@ -163,9 +151,9 @@ auto gluten::audio_subsystem::get_sound_cursor_position(const std::filesystem::p
 {
     float seconds = 0.0f;
 
-    if (sc_sound_instance* const soundInstance = get_sound_instance(filePath))
+    if (sc_voice_handle voiceHandle = get_voice_handle(filePath))
     {
-        sc_sound_instance_get_cursor_in_seconds(soundInstance, &seconds);
+        (void)sc_voice_get_cursor_position_in_seconds(sbk::engine::system::get()->get_runtime(), voiceHandle, &seconds);
     }
 
     return seconds;
@@ -213,9 +201,9 @@ auto gluten::audio_subsystem::get_sound_is_playing(const std::filesystem::path& 
 {
     sc_bool playing = MA_FALSE;
 
-    if (sc_sound_instance* const soundInstance = get_sound_instance(filePath))
+    if (sc_voice_handle voiceHandle = get_voice_handle(filePath))
     {
-        sc_sound_instance_is_playing(soundInstance, &playing);
+        (void)sc_voice_get_is_playing(sbk::engine::system::get()->get_runtime(), voiceHandle, &playing);
     }
 
     return playing;
@@ -225,9 +213,9 @@ auto gluten::audio_subsystem::get_sound_is_looping(const std::filesystem::path& 
 {
     sc_bool looping = MA_FALSE;
 
-    if (sc_sound_instance* const soundInstance = get_sound_instance(filePath))
+    if (sc_voice_handle voiceHandle = get_voice_handle(filePath))
     {
-        sc_sound_instance_is_looping(soundInstance, &looping);
+        (void)sc_voice_get_looping(sbk::engine::system::get()->get_runtime(), voiceHandle, &looping);
     }
 
     return looping;
@@ -235,15 +223,12 @@ auto gluten::audio_subsystem::get_sound_is_looping(const std::filesystem::path& 
 
 auto gluten::audio_subsystem::stop_all_sounds() -> void
 {
-    for (const auto& soundInstance : m_filesToSoundInstancesMap)
+    for (const auto& soundInstance : m_filesToVoiceHandlesMap)
     {
-        if (soundInstance.second)
-        {
-            sc_sound_instance_pause(soundInstance.second.get());
-        }
+        (void)sc_voice_stop(sbk::engine::system::get()->get_runtime(), soundInstance.second);
     }
 
-    m_filesToSoundInstancesMap.clear();
+    m_filesToVoiceHandlesMap.clear();
 }
 
 auto gluten::audio_subsystem::get_or_load_audio_handle(const std::filesystem::path& filePath) -> sc_sound*
@@ -271,18 +256,18 @@ auto gluten::audio_subsystem::get_or_load_audio_handle(const std::filesystem::pa
     return sound;
 }
 
-auto gluten::audio_subsystem::get_sound_instance(const std::filesystem::path& filePath) -> sc_sound_instance*
+auto gluten::audio_subsystem::get_voice_handle(const std::filesystem::path& filePath) -> sc_voice_handle
 {
-    sc_sound_instance* soundInstance = nullptr;
+    sc_voice_handle voiceHandle{};
 
     if (std::filesystem::exists(filePath))
     {
-        if (m_filesToSoundInstancesMap.contains(filePath))
+        if (m_filesToVoiceHandlesMap.contains(filePath))
         {
-            soundInstance = m_filesToSoundInstancesMap.at(filePath).get();
+            voiceHandle = m_filesToVoiceHandlesMap.at(filePath);
         }
     }
-    return soundInstance;
+    return voiceHandle;
 }
 
 auto gluten::audio_subsystem::get_ui_waveform_lods(const std::filesystem::path& filePath, double fileDuration) -> waveform_lods_cache_type::cache_result

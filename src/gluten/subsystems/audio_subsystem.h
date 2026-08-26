@@ -127,7 +127,7 @@ namespace gluten
         auto stop_all_sounds() -> void;
 
         auto get_or_load_audio_handle(const std::filesystem::path& filePath) -> sc_sound*;
-        auto get_sound_instance(const std::filesystem::path& filePath) -> sc_sound_instance*;
+        auto get_voice_handle(const std::filesystem::path& filePath) -> sc_voice_handle;
 
         auto get_ui_waveform_lods(const std::filesystem::path& filePath, double fileDuration) -> waveform_lods_cache_type::cache_result;
 
@@ -135,11 +135,6 @@ namespace gluten
         struct sc_sound_deleter
         {
             void operator()(sc_sound* sound) { sc_sound_release(sound); }
-        };
-
-        struct sc_sound_instance_deleter
-        {
-            void operator()(sc_sound_instance* soundInstance) { sc_sound_instance_release(soundInstance); }
         };
 
         struct loop_data
@@ -157,7 +152,7 @@ namespace gluten
         auto generate_sample_resolution_waveform(std::shared_ptr<const std::vector<float>> audioData, ma_uint32 channels) -> concurrencpp::result<waveform>;
 
         std::unordered_map<std::filesystem::path, std::unique_ptr<sc_sound, sc_sound_deleter>> m_filesToSoundsMap;
-        std::unordered_map<std::filesystem::path, std::unique_ptr<sc_sound_instance, sc_sound_deleter>> m_filesToSoundInstancesMap;
+        std::unordered_map<std::filesystem::path, sc_voice_handle> m_filesToVoiceHandlesMap;
         std::unordered_map<std::filesystem::path, loop_data> m_filesToLoopDataMap;
 
         std::unordered_map<std::filesystem::path, waveform> m_filesToWaveforms;

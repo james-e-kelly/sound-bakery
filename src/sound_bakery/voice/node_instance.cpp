@@ -74,12 +74,10 @@ auto sbk::engine::node_instance_fsm::action_play(const event_play& play) -> void
 
         if (sound)
         {
-            sc_sound_instance* soundInstance = nullptr;
-            if (const sbk_status playSoundResult = sc_system_play_sound(m_referencingNode->get_runtime(), sound, &soundInstance, m_nodeGroup.nodeGroup.get(), MA_FALSE); playSoundResult != SBK_SUCCESS)
+            if (const sbk_status playSoundResult = sc_system_play_sound(m_referencingNode->get_runtime(), sound, &m_voiceHandle, m_nodeGroup.nodeGroup.get(), MA_FALSE); playSoundResult != SBK_SUCCESS)
             {
                 sbk::log_error(playSoundResult, "sc_system_play_sound");
             }
-            m_soundInstance.reset(soundInstance);
         }
         else
         {
@@ -96,7 +94,8 @@ auto sbk::engine::node_instance_fsm::action_play(const event_play& play) -> void
 auto sbk::engine::node_instance_fsm::action_stop(const event_stop& stop) -> void
 {
     ZoneScoped;
-    m_soundInstance.reset();
+    sc_voice_stop(sbk::engine::system::get()->get_runtime(), m_voiceHandle);
+    m_voiceHandle = 0;
     m_children.clear();
     m_parent.reset();
 }
@@ -169,32 +168,6 @@ auto sbk::engine::node_instance::get_parent() const noexcept -> node_instance* {
 auto sbk::engine::node_instance::get_bus() const noexcept -> sc_node_group*
 {
     return m_stateMachine.m_nodeGroup.nodeGroup.get();
-}
-
-auto sbk::engine::node_instance_fsm::node_group_is_idle(const node_group_instance& group) noexcept -> bool
-{
-    ZoneScoped;
-    if (group.nodeGroup == nullptr)
-    {
-        return true;
-    }
-    for (sc_dsp* dsp = group.nodeGroup->tail; dsp != nullptr; dsp = dsp->next)
-    {
-        const sc_dsp_description* description{};
-        if (sc_system_get_dsp_desc(group.nodeGroup->fader->system, dsp->handle, &description) == SBK_SUCCESS)
-        {
-            sc_bool isIdle = MA_TRUE;
-            if (description->isIdle)
-            {
-                description->isIdle(dsp, &isIdle);
-                if (!isIdle)
-                {
-                    return false;
-                }
-            }
-        }
-    }
-    return true;
 }
 
 // INIT //
