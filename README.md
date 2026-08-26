@@ -65,16 +65,15 @@ cmake --build .
 #include "sound_chef.h"
 
 int main() {
-    sc_system* system = nullptr;
-    sc_system_create(&system);
-    sc_system_init(system);
+    sc_system system = {0};
+    sc_system_init(&system, NULL);
 
     sc_sound* sound = nullptr;
     const sc_sound_config soundConfig = sc_sound_config_init_file("some_sound.wav", SC_SOUND_MODE_DEFAULT);
-    sc_system_create_sound(system, &soundConfig, &sound);
+    sc_system_create_sound(&system, &soundConfig, &sound);
 
     sc_sound_instance* instance = nullptr;
-    sc_system_play_sound(system, sound, &instance, nullptr, SC_FALSE);
+    sc_system_play_sound(&system, sound, &instance, nullptr, SC_FALSE);
 
     return 0;
 }
