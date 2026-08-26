@@ -160,14 +160,21 @@ auto reviewer_display_element::render_element(const gluten::element_render_info&
                                                     : m_vote == review_vote::upvote ? ICON_LC_THUMBS_UP
                                                                                     : ICON_LC_THUMBS_DOWN);
 
-        if (ImDrawList* const drawList = ImGui::GetWindowDrawList())
+        if (m_vote != review_vote::no_vote)
         {
-            const ImU32 circleColor =
-                ImGui::GetColorU32(m_vote == review_vote::upvote     ? gluten::theme::supportSuccess
-                                   : m_vote == review_vote::downvote ? gluten::theme::supportError
-                                                                     : gluten::theme::layer03);
+            if (ImDrawList* const drawList = ImGui::GetWindowDrawList())
+            {
+                const ImVec4& badgeColor = m_vote == review_vote::upvote ? gluten::theme::supportSuccess : gluten::theme::supportError;
 
-            drawList->AddCircle(avatar.get_image_rect().GetCenter(), avatar.get_element_rect().GetSize().x / 2.0f, circleColor, 0, m_vote == review_vote::no_vote ? 2.0f : 4.0f);
+                const ImRect imageRect   = avatar.get_image_rect();
+                const float avatarRadius = imageRect.GetSize().x * 0.5f;
+                const float badgeRadius  = avatarRadius * 0.3f;
+                const float offset       = avatarRadius * 0.7071f;
+                const ImVec2 badgeCenter = ImVec2(imageRect.GetCenter().x + offset, imageRect.GetCenter().y + offset);
+
+                drawList->AddCircleFilled(badgeCenter, badgeRadius + 1.5f, ImGui::GetColorU32(gluten::theme::background), 32);
+                drawList->AddCircleFilled(badgeCenter, badgeRadius, ImGui::GetColorU32(badgeColor), 32);
+            }
         }
 
         ImGui::SetItemTooltip(tooltipText.c_str());
