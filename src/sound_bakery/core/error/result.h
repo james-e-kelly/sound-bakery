@@ -26,6 +26,7 @@
  *   CHECK  - guard a bool condition; on failure, log + return the given code as a failure.
  *   TRY    - run a fallible call; on failure, log (at origin) + return/forward the failure.
  *   FAIL   - unconditionally log + return a failure (e.g. an unreachable branch).
+ *   REPORT - log on failure but do NOT return — caller keeps going.
  *
  * Suffixes:
  *
@@ -36,6 +37,7 @@
  *   - In a `sbk::result<T>` function:  SBK_CHECK, SBK_CHECK_MSG, SBK_TRY, SBK_TRY_C, SBK_FAIL
  *   - In a `sbk_status`    function:  SBK_STATUS_CHECK, SBK_STATUS_CHECK_MSG, SBK_STATUS_TRY_C, SBK_STATUS_FAIL
  *   - In a `sbk_id`        function:  SBK_ID_CHECK, SBK_ID_CHECK_MSG
+ *   - Log only (any function):        SBK_REPORT, SBK_REPORT_MSG, SBK_REPORTV, SBK_REPORT_C
  *
  * See error/README.md for a fuller guide and worked examples.
  */
@@ -235,3 +237,52 @@
             return SBK_INVALID_ID;                                \
         }                                                         \
     } while (0)
+
+// ===========================================================================
+// Family 4 - log only, no return   (caller keeps going)
+// ===========================================================================
+
+/**
+ * @brief Guards @p cond; if false, logs @p code — does NOT return.
+ */
+#define SBK_REPORT(cond, code)                                \
+    do                                                        \
+    {                                                         \
+        if (!(cond)) [[unlikely]]                             \
+            ::sbk::log_error((code), "check failed: " #cond); \
+    } while (0)
+
+/**
+ * @brief Guards @p cond; if false, logs a fmt-formatted message — does NOT return.
+ */
+#define SBK_REPORT_MSG(cond, code, ...)                           \
+    do                                                            \
+    {                                                             \
+        if (!(cond)) [[unlikely]]                                 \
+            ::sbk::log_error((code), ::fmt::format(__VA_ARGS__)); \
+    } while (0)
+
+/**
+ * @brief Runs @p expr (a @c sbk::result); if it fails, logs — does NOT return. Value is discarded.
+ */
+#define SBK_REPORTV(expr)                                           \
+    do                                                              \
+    {                                                               \
+        auto&& SBK_DETAIL_UNIQUE(sbkResult_) = (expr);              \
+        if (!SBK_DETAIL_UNIQUE(sbkResult_).has_value()) [[unlikely]] \
+            ::sbk::log_error(                                       \
+                ::sbk::to_status(SBK_DETAIL_UNIQUE(sbkResult_)),    \
+                #expr);                                             \
+    } while (0)
+
+/**
+ * @brief Calls a C function returning @c sbk_status; if non-success, logs — does NOT return.
+ */
+#define SBK_REPORT_C(expr)                                       \
+    do                                                           \
+    {                                                            \
+        const sbk_status SBK_DETAIL_UNIQUE(sbkCode_) = (expr);   \
+        if (SBK_DETAIL_UNIQUE(sbkCode_) != SBK_SUCCESS) [[unlikely]] \
+            ::sbk::log_error(SBK_DETAIL_UNIQUE(sbkCode_), #expr); \
+    } while (0)
+
