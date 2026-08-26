@@ -17,7 +17,7 @@ auto update_review_popup::render_popup() -> void
     ImGui::SetItemTooltip("Write the title of the review. It can be anything from \"Adding some sounds\" to "
                           "\"[TASK-1234][Level1] Add Looping Fire Sounds\"");
 
-    ImGui::InputTextMultiline("Review Description", reviewDescriptionBuffer, textBufferSize);
+    ImGui::InputTextMultiline("Review Description", reviewDescriptionBuffer, textBufferSize, ImVec2(0, 0), ImGuiInputTextFlags_WordWrap);
     ImGui::SetItemTooltip("Give the review a description to help describe what sounds you are adding or changing");
 
     ImGui::InputText("Review URL", reviewUrlBuffer, textBufferSize);
