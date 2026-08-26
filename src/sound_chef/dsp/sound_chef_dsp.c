@@ -20,7 +20,10 @@ sc_dsp_config sc_dsp_config_init_handle(const sc_system* system, sc_uint32 handl
 {
     sc_dsp_config config;
     SC_ZERO_OBJECT(&config);
-    (void)sc_system_get_dsp_desc(system, handle, &config.dspDescription);
+    if (sc_system_get_dsp_desc(system, handle, &config.dspDescription) == SBK_SUCCESS)
+    {
+        config.handle = handle;
+    }
     return config;
 }
 
