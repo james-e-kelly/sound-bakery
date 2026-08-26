@@ -74,15 +74,6 @@ extern "C"
     #define SC_ALIGN_TO(x) _Alignas(x)
 #endif
 
-// Struct-level alignment. Goes between `struct` and the tag. Prefer this over
-// SC_ALIGN_TO on a leading field when that field already carries an alignment
-// (e.g. MA_ATOMIC), since stacking _Alignas on one declaration warns on MSVC.
-#if defined(_MSC_VER)
-    #define SC_ALIGN_STRUCT(x) __declspec(align(x))
-#else
-    #define SC_ALIGN_STRUCT(x) __attribute__((aligned(x)))
-#endif
-
 // CPU pause hint for short spin loops. Not a scheduler yield
 #if defined(_MSC_VER)
     #include <intrin.h>
@@ -100,14 +91,28 @@ extern "C"
  *
  * miniaudio can handle many more channels but Sound Chef is not a general purpose library.
  */
-#define SC_MAX_CHANNELS         36
+enum
+{
+    SC_MAX_CHANNELS = 36
+};
 
 /**
-* @brief Some operations need an audio buffer on the heap (mainly CLAP processing).
+* @brief Some operations need an audio buffer on the heap (like CLAP processing).
 *
 * This gives us a reasonable buffer size.
 */
-#define SC_MAX_FRAME_COUNT      2048
+enum
+{
+    SC_MAX_FRAME_COUNT = 2048
+};
+
+/**
+ * @brief Size of temp audio buffers allocated on the stack.
+ */
+enum
+{
+    SC_TEMP_STACK_BUFFER_SIZE = 4096
+};
 
 /**
 * @brief Max user-defined DSP types.
@@ -116,7 +121,10 @@ extern "C"
 *
 * It's assumed most users add no additional DSP types and those who do are adding only a few.
 */
-#define SC_MAX_USER_DSP_TYPES   16
+enum
+{
+    SC_MAX_USER_DSP_TYPES = 16
+};
 
 #include <assert.h>
 
@@ -180,10 +188,6 @@ Sound Chef follows miniaudio's convention for enum member case:
     sc_dsp_parameter_type_float. This mirrors miniaudio's ma_format_f32,
     ma_channel_left, etc.
 
-The SBK_ prefix on shared status/error names (sbk_status, SBK_ERR_*) is
-intentional even though the type is defined in Sound Chef. Sound Bakery 
-naming took priority over Sound Chef.
-
 **************************************************************************************************************************************************************/
 
 /**************************************************************************************************************************************************************
@@ -203,7 +207,7 @@ Statuses And Error Handling
  * Statuses are influenced by http status codes where codes are grouped.
  * Users don't need to know every code, but know that anything between 101-200 is an error from Sound Chef.
  *
- * @note The SBK_ prefix is intentional. Sound Bakery takes precendence over Sound Chef.
+ * @note The SBK_ prefix is intentional. Sound Bakery takes precedence over Sound Chef.
  */
 typedef enum
 {
@@ -245,22 +249,45 @@ typedef enum
 #define SC_STATUS_FROM_MA_RESULT(maResult)   ((sbk_status)(maResult))
 #define SC_MA_RESULT_FROM_STATUS(sbkStatus)  ((ma_result)(sbkStatus))
 
-#define SC_CHECK(condition, result) \
+/**
+ * @brief Checks @p condition for success. On failure, returns @p status.
+ */
+#define SC_CHECK(condition, status) \
     if ((condition) == SC_FALSE)    \
-    return (result)
-#define SC_CHECK_STATUS(result) \
-    if (((sbk_status)(result)) != SBK_SUCCESS) \
-    return (result)
+    return (status)
+
+/**
+ * @brief Checks if @p status is equal to @p SBK_SUCCESS. On failure, returns @p status.
+ */
+#define SC_CHECK_STATUS(status) \
+    if (((sbk_status)(status)) != SBK_SUCCESS) \
+    return (status)
+
+/**
+ * @brief Checks if @p ptr is null. If it is, returns @p SBK_ERR_OUT_OF_MEMORY.
+ */
 #define SC_CHECK_ARG(condition)  \
     if ((condition) == SC_FALSE) \
     return SBK_ERR_INVALID_PARAMETER
+
+/**
+ * @brief Checks if @p ptr is null. If it is, returns @p SBK_ERR_OUT_OF_MEMORY.
+ */
 #define SC_CHECK_MEM(ptr) \
     if ((ptr) == NULL)    \
     return SBK_ERR_OUT_OF_MEMORY
+
+/**
+ * @brief Checks @p condition for success. On failure, goes to @p dest.
+ */
 #define SC_CHECK_AND_GOTO(condition, dest) \
     if ((condition) == SC_FALSE)           \
     goto dest
-#define SC_CHECK_STATUS_AND_GOTO(condition, dest)   \
+
+/**
+ * @brief Checks a status for success. On failure, goes to @p dest.
+ */
+#define SC_CHECK_STATUS_ELSE_GOTO(condition, dest)  \
     if ((condition) != SBK_SUCCESS)                 \
     goto dest
 
@@ -272,17 +299,25 @@ Creation And Deletion Macros
 
 #include <string.h>
 
-#define SC_ZERO_MEMORY(ptr, size) memset((ptr), 0, (size))
+#define SC_ZERO_MEMORY(ptr, size) memset((ptr), 0, (size))                  //< Zeroes the memory between @ref ptr and @ref ptr + @ref size
+#define SC_ZERO_OBJECT(ptr)       SC_ZERO_MEMORY((ptr), sizeof(*(ptr)))     //< Zeroes the object memory pointed at by @ref ptr
 
 /**
- * @brief Zeroes the memory at @p ptr.
+ * @brief Allocates memory and checks for errors and OOM.
  */
-#define SC_ZERO_OBJECT(ptr) memset((ptr), 0, sizeof(*(ptr)))
+#define SC_CALLOC(ptr, size, system)                                      \
+    do                                                                    \
+    {                                                                     \
+        SC_CHECK_ARG((size) > 0);                                         \
+        SC_CHECK_ARG((system) != NULL);                                   \
+        (ptr) = ma_malloc((size), &(system)->engine.allocationCallbacks); \
+        SC_CHECK_MEM((ptr));                                              \
+    } while (0)
 
 /**
  * @brief Allocates memory, zeroes, and checks for errors and OOM.
  */
-#define SC_MALLOC(ptr, size, system)                                        \
+#define SC_CALLOC(ptr, size, system)                                        \
     do                                                                      \
     {                                                                       \
         SC_CHECK_ARG((size) > 0);                                           \
@@ -300,7 +335,19 @@ Creation And Deletion Macros
  *  SC_CREATE(dsp, sc_dsp, system);
  * @endcode
  */
-#define SC_CREATE(ptr, type, system) SC_MALLOC((ptr), sizeof(type), (system))
+#define SC_CREATE(ptr, type, system) SC_CALLOC((ptr), sizeof(type), (system))
+
+/**
+ * @brief Creates an object of @p type and goes to @p dest on failure.
+ */
+#define SC_CREATE_ELSE_GOTO(ptr, type, system, dest)                                \
+    do                                                                              \
+    {                                                                               \
+        if(sizeof(type) <= 0) goto dest;                                            \
+        if ((system) == NULL) goto dest;                                            \
+        (ptr) = ma_calloc(sizeof(type), &(system)->engine.allocationCallbacks);     \
+        if ((ptr) == NULL) goto dest;                                               \
+    } while (0)
 
 /**
  * @brief Frees the memory at @p ptr.
@@ -311,6 +358,30 @@ Creation And Deletion Macros
         assert((system) != NULL);                              \
         ma_free((ptr), &(system)->engine.allocationCallbacks); \
         (ptr) = NULL;                                          \
+    } while (0)
+
+/**
+ * @brief Creates an object of @p type and frees @p toFree on failure.
+ */
+#define SC_CREATE_ELSE_FREE(ptr, type, system, toFree)                          \
+    do                                                                          \
+    {                                                                           \
+        if (sizeof(type) <= 0)                                                  \
+        {                                                                       \
+            SC_FREE((toFree), (system));                                        \
+            return SBK_ERR_INVALID_PARAMETER;                                   \
+        }                                                                       \
+        if ((system) == NULL)                                                   \
+        {                                                                       \
+            SC_FREE((toFree), (system));                                        \
+            return SBK_ERR_INVALID_PARAMETER;                                   \
+        }                                                                       \
+        (ptr) = ma_calloc(sizeof(type), &(system)->engine.allocationCallbacks); \
+        if ((ptr) == NULL)                                                      \
+        {                                                                       \
+            SC_FREE((toFree), (system));                                        \
+            return SBK_ERR_OUT_OF_MEMORY;                                       \
+        }                                                                       \
     } while (0)
 
 /**
@@ -359,9 +430,9 @@ Encoding
  */
 typedef enum sc_encoding_format
 {
-    sc_encoding_format_unknown = 0,
+    sc_encoding_format_unknown  = 0,
     sc_encoding_format_wav,
-    sc_encoding_format_adpcm = 10,
+    sc_encoding_format_adpcm    = 10,
     sc_encoding_format_vorbis,
     sc_encoding_format_opus
 } sc_encoding_format;
@@ -441,8 +512,8 @@ typedef enum sc_dsp_type
     sc_dsp_type_highpass,
     sc_dsp_type_delay,
     sc_dsp_type_meter,
-    sc_dsp_type_clap,  //< Wraps a CLAP plugin
-    sc_dsp_type_count  //< Count of types. sc_dsp_type_count - 1 == number of built in types
+    sc_dsp_type_clap,       //< Wraps a CLAP plugin
+    sc_dsp_type_count       //< Count of types. sc_dsp_type_count - 1 == number of built in types
 } sc_dsp_type;
 
 /**
@@ -457,9 +528,9 @@ typedef enum sc_dsp_index
 } sc_dsp_index;
 
 /**
- * @brief DSP units that connect and form chains within @ref sc_node_group. Extensions of ma_node types with extra information.
+ * @brief DSP units that connect and form chains within @ref sc_node_group. Extensions of @ref ma_node types with extra information.
  *
- * DSP units are created with @ref sc_dsp_description objects and allow for simpler creation of DSP units than ma_node types.
+ * DSP units are created with @ref sc_dsp_description objects and allow for simpler creation of DSP units than @ref ma_node types.
  */
 struct sc_dsp
 {
@@ -523,7 +594,7 @@ typedef struct sc_dsp_description
  * One is internal and lets users create units using the @ref sc_dsp_type.
  * The other is external and lets users create units with a custom type.
  *
- * The support creating internal and external units, all descriptions are looked up by a handle.
+ * To support creating internal and external units, all descriptions are looked up by a handle.
  * If the handle is between 0 and sc_dsp_type_count, the handle is used to index the internal description array.
  * If the handle is greater than sc_dsp_type_count, sc_dsp_type_count is subtracted from the handle and used as the index into the external description array.
  */
@@ -631,7 +702,7 @@ typedef struct sc_delay
     ma_uint32       writeCursor;
     ma_uint32       bufferSizeInFrames; //< Total buffer size. Not the delay time/size
     float*          buffer;
-    ma_uint32       silentFrameCount;   //< Audio thread. Counts number of silent frames so we know when are idle
+    ma_uint32       silentFrameCount;   //< Audio thread. Counts number of silent frames so we know when we're idle
     sc_atomic_bool  isIdle;
 } sc_delay;
 
@@ -679,6 +750,8 @@ Node Group
  *
  * Nodes can be inserted in any position. The specified index becomes the
  * index for the inserted node. Index 0 is the tail.
+ * 
+ * @remark Node groups own the DSP inside them and will free them when the node group is released.
  */
 typedef struct sc_node_group
 {
@@ -688,37 +761,13 @@ typedef struct sc_node_group
 } sc_node_group;
 
 sbk_status SC_API sc_node_group_init(sc_system* system, sc_node_group* nodeGroup);
-
-sbk_status SC_API sc_node_group_set_parent(sc_node_group* nodeGroup, sc_node_group* parent);
-
-/**
- * @brief Routes the group's output directly to the graph endpoint (the audio device).
- */
-sbk_status SC_API sc_node_group_set_parent_endpoint(sc_node_group* nodeGroup);
-
-/**
- * @brief Finds the first DSP in the group whose handle matches @p type.
- *
- * @return SBK_SUCCESS if the DSP was found and @p dsp is valid.
- * @return SBK_ERR_NOT_FOUND if the DSP was not found.
- */
-sbk_status SC_API sc_node_group_get_dsp(sc_node_group* nodeGroup, sc_dsp_type type, sc_dsp** dsp);
-
-/**
- * @brief Adds a DSP to the node group chain.
- * @remark The node group owns the DSP after this point. All DSP are released during @ref sc_node_group_release.
- */
-sbk_status SC_API sc_node_group_add_dsp(sc_node_group* nodeGroup, sc_dsp* dsp, sc_dsp_index index);
-
-/**
- * @brief Releases all DSP held within the node group without releasing the node group itself.
- */
-sbk_status SC_API sc_node_group_uninit(sc_node_group* nodeGroup);
-
-/**
- * @brief Releases the node group and all DSP within it.
- */
-sbk_status SC_API sc_node_group_release(sc_node_group* nodeGroup);
+sbk_status SC_API sc_node_group_set_parent(sc_node_group* nodeGroup, sc_node_group* parent);            //< Routes the group's output to the @ref parent.
+sbk_status SC_API sc_node_group_set_parent_endpoint(sc_node_group* nodeGroup);                          //< Routes the group's output directly to the graph endpoint (the audio device).
+sbk_status SC_API sc_node_group_get_dsp(sc_node_group* nodeGroup, sc_dsp_type type, sc_dsp** dsp);      //< Finds the first DSP of type @p type.
+sbk_status SC_API sc_node_group_add_dsp(sc_node_group* nodeGroup, sc_dsp* dsp, sc_dsp_index index);     //< Adds an existing DSP to the group at @p index. The node group owns the DSP after this.
+sbk_status SC_API sc_node_group_calculate_is_idle(sc_node_group* nodeGroup, sc_bool* outIsIdle);        //< Calculates whether the node group is idle by querying all its DSP.
+sbk_status SC_API sc_node_group_uninit(sc_node_group* nodeGroup);                                       //< Releases all DSP held within the node group without releasing the node group itself.
+sbk_status SC_API sc_node_group_release(sc_node_group* nodeGroup);                                      //< Releases the node group and all DSP within it.
 
 /**************************************************************************************************************************************************************
 
@@ -745,20 +794,19 @@ typedef enum sc_sound_mode
 
 /**
  * @brief Basic piece of playing audio.
- * 
- * sc_sound is currently being deprecated in favour of @ref sc_voice.
- * 
- * Sounds are intended to just be a loaded audio buffer.
+ *
+ * Sounds are intended to just be a loaded audio buffer plus default playback
+ * settings (loop points, looping) that new voices inherit at play time.
  */
 typedef struct sc_sound
 {
-    ma_sound        sound;
-    sc_sound_mode   mode;
-    ma_decoder*     memoryDecoder;
-    sc_system*      owningSystem;
+    sc_system*                          system;
+    ma_resource_manager_data_source*    dataSource;
+    sc_sound_mode                       mode;
+    sc_bool                             defaultLooping;
+    float                               defaultLoopStartSeconds;
+    float                               defaultLoopEndSeconds;
 } sc_sound;
-
-typedef struct sc_sound sc_sound_instance;  //< Sound instances are just sounds. The resource is not copied but reference counted
 
 /**
  * @brief Configuration for creating a @ref sc_sound.
@@ -772,13 +820,14 @@ typedef struct sc_sound sc_sound_instance;  //< Sound instances are just sounds.
  */
 typedef struct sc_sound_config
 {
-    const char*     filePath;       //< File path to load the sound from. Mutually exclusive with @ref memory
-    const void*     memory;         //< In-memory sound data. Mutually exclusive with @ref filePath
-    size_t          memorySize;     //< Size in bytes of the @ref memory buffer
-    sc_sound_mode   mode;           //< Sound loading/playback mode
+    const char*     filePath;               //< File path to load the sound from
+    const void*     memory;                 //< In-memory sound data
+    size_t          memorySize;             //< Size in bytes of the @ref memory buffer
+    sc_sound_mode   mode;                   //< Sound loading/playback mode
+    sc_bool         looping;                //< Default looping state for voices created from this sound
+    float           loopStartSeconds;       //< Default loop start (seconds). 0 == start of sound
+    float           loopEndSeconds;         //< Default loop end (seconds). <= 0 == end of sound
 } sc_sound_config;
-
-typedef sc_sound_config sc_voice_config;    // Make the voice config just a sound config until it becomes its own thing
 
 sc_sound_config SC_API sc_sound_config_init_file(const char* filePath, sc_sound_mode mode);
 sc_sound_config SC_API sc_sound_config_init_memory(const void* memory, size_t memorySize, sc_sound_mode mode);
@@ -786,24 +835,13 @@ sc_sound_config SC_API sc_sound_config_init_memory(const void* memory, size_t me
 sbk_status SC_API sc_sound_get_length(sc_sound* sound, float* lengthInSeconds);
 sbk_status SC_API sc_sound_release(sc_sound* sound);
 
-sbk_status SC_API sc_sound_instance_is_playing(sc_sound_instance* instance, sc_bool* isPlaying);
-sbk_status SC_API sc_sound_instance_start(sc_sound_instance* instance);
-sbk_status SC_API sc_sound_instance_pause(sc_sound_instance* instance);
-sbk_status SC_API sc_sound_instance_get_cursor_in_seconds(sc_sound_instance* instance, float* seconds);
-sbk_status SC_API sc_sound_instance_set_cursor_in_seconds(sc_sound_instance* instance, float seconds);
-sbk_status SC_API sc_sound_instance_get_loop_position_in_seconds(sc_sound_instance* instance, float* seconds);
-sbk_status SC_API sc_sound_instance_set_loop_position_in_seconds(sc_sound_instance* instance, float loopStartSeconds, float loopEndSeconds);
-sbk_status SC_API sc_sound_instance_is_looping(sc_sound_instance* instance, sc_bool* looping);
-sbk_status SC_API sc_sound_instance_set_looping(sc_sound_instance* instance, sc_bool looping);
-sbk_status SC_API sc_sound_instance_release(sc_sound_instance* instance);
-
 /**************************************************************************************************************************************************************
 
 Voice
 
 **************************************************************************************************************************************************************/
 
-typedef sc_uint64 sc_voice_handle;      //< Voice handle. Contains both a reference count and an index into the voice arry
+typedef sc_uint64 sc_voice_handle;      //< Voice handle. Contains both a reference count and an index into the voice array
 typedef sc_uint32 sc_voice_refcount;    //< References to this slot. Used to check if a handle is old/stale
 typedef sc_uint32 sc_voice_index;       //< Index into the voice array
 
@@ -820,7 +858,7 @@ typedef sc_uint32 sc_voice_index;       //< Index into the voice array
 /**
  * @brief Makes a voice handle, packing the refcount into the upper 32 bits and the index into the lower 32 bits.
  */
-#define SC_VOICE_MAKE_HANDLE(refcount, slot)        ((sc_voice_handle)(refcount) << 32) | (sc_voice_handle)(slot)
+#define SC_VOICE_MAKE_HANDLE(refcount, slot)        (((sc_voice_handle)(refcount) << 32) | (sc_voice_handle)(slot))
 
 typedef enum sc_voice_tiebreak_policy
 {
@@ -828,20 +866,37 @@ typedef enum sc_voice_tiebreak_policy
     sc_voice_tiebreak_kill_newest   //< Oldest voice wins ties; newest goes virtual.
 } sc_voice_tiebreak_policy;
 
+/**
+ * @brief States set by the user, read by the system to move between the different @ref sc_voice_state states.
+ * 
+ * The state list is intentionally limited. Users generally want to play or stop sounds. Pausing is handled by @ref sc_voice_set_paused and setting the @ref SC_VOICE_FLAG_PAUSED state on the voice.
+ */
 typedef enum sc_voice_desired_state
 {
-    sc_voice_desired_stopped,   //< Caller wants the voice idle. Either not yet started, or stop/drain now.
-    sc_voice_desired_playing    //< Caller wants the voice live. Set by sc_system_play_sound_voice.
+    sc_voice_desired_stopped,   //< User wants the voice idle. Either not yet started, or stop/drain now.
+    sc_voice_desired_playing    //< User wants the voice live. Set by sc_system_play_sound_voice.
 } sc_voice_desired_state;
 
+/**
+ * @brief Current state of a voice. Written by the system, except for @ref sc_voice_state_starting which is set when a user calls @ref sc_system_play_sound.
+ * 
+ * The states are used as a state machine. States are written into @ref sc_voice::currentState.
+ */
 typedef enum sc_voice_state
 {
-    sc_voice_state_stopped,   //< Idle. The slot is free or has just been returned to the pool.
+    sc_voice_state_free,      //< Slot is empty and in the pool, ready for @ref sc_system_play_sound to claim it.
     sc_voice_state_starting,  //< Play requested; waiting on async load or first render before becoming @ref sc_voice_state_playing.
     sc_voice_state_playing,   //< Live. Audibility is governed by @ref SC_VOICE_FLAG_VIRTUAL, cursor by @ref SC_VOICE_FLAG_PAUSED.
-    sc_voice_state_stopping   //< Tail/fade-out in progress; transitions to @ref sc_voice_state_stopped when done.
+    sc_voice_state_stopping,  //< Tail/fade-out in progress; transitions to @ref sc_voice_state_stopped when done.
+    sc_voice_state_stopped    //< Drained and awaiting reap. @ref sc_system_update returns the slot to the pool on the next tick, giving in-flight stale-handle setters one full update period to observe @ref SBK_ERR_NOT_FOUND before recycling.
 } sc_voice_state;
 
+/**
+ * @brief Flags written into @ref sc_voice::flags by either the user or the system.
+ * 
+ * Flags like @ref SC_VOICE_FLAG_PAUSED are written by the user.
+ * Flags like @ref SC_VOICE_FLAG_VIRTUAL are written by the system when calculating whether a voice is real or virtual.
+ */
 typedef enum sc_voice_flags
 {
     SC_VOICE_FLAG_NONE    = 0,
@@ -856,12 +911,12 @@ typedef enum sc_voice_flags
 #define SC_VOICE_HAS_FLAG(flags, flag) (((flags) & (sc_uint32)(flag)) != 0)
 
 /**
- * @brief A voice is a window into a single sound that may or may not be audible and rendering.
- *
- * Sized to fit one 64-byte cache line so an array of voices maps cleanly to
- * cache-line boundaries. A @ref _Static_assert in sound_chef.c pins this.
+ * @brief A voice is a window into a single sound that may or may not be audible.
  *
  * Voices are limited by the @ref sc_system_config::maxVoices value passed during system initialization.
+ * 
+ * Voice lifetime is observed indirectly through a @ref sc_voice_handle handle. 
+ * Once a voice ends (either naturally or via sc_voice_stop), any subsequent sc_voice_* call using that handle will return SBK_ERR_NOT_FOUND. 
  */
 typedef struct sc_voice
 {
@@ -871,6 +926,7 @@ typedef struct sc_voice
     sc_sound*                       sound;                  //< Source to read from
     sc_node_group*                  group;                  //< Parent group to connect to when playing for real
     MA_ATOMIC(8, sc_atomic_uint64)  playCursor;             //< Advanced by the audio thread. Read by @ref sc_system_update to compare the ages of voices
+    MA_ATOMIC(8, sc_atomic_int64)   pendingSeekFrames;      //< User-thread seek target in frames. -1 means no pending seek. Audio thread applies and clears via CAS so a concurrent second seek is never lost.
 
     MA_ATOMIC(4, sc_atomic_uint32)  currentState;           //< sc_voice_state observed by the update loop. Update writes; anyone reads.
     MA_ATOMIC(4, sc_atomic_uint32)  desiredState;           //< sc_voice_desired_state requested by callers. Callers write; update reads.
@@ -879,9 +935,22 @@ typedef struct sc_voice
     sc_atomic_float                 gain;
     sc_atomic_float                 pitch;
 
-    sc_uint8                        priority;               //< priority where the greater the number, the great the priority
+    float                           oldPitch;
+
+    sc_uint8                        priority;               //< Higher number = higher priority
+
+    sc_atomic_float                 loopStartSeconds;       //< Comes from @ref sc_sound::defaultLoop* when @ref loopEpoch is out of date
+    sc_atomic_float                 loopEndSeconds;         //< <= 0 means "to end of source"
+    MA_ATOMIC(4, sc_atomic_uint32)  looping;
+    MA_ATOMIC(4, sc_atomic_uint32)  loopEpoch;              //< Bumped when any loop field (loop start, loop end, etc) is written to so the audio thread can check for new data.
 } sc_voice;
 
+sbk_status SC_API sc_voice_get_is_playing(sc_system* system, sc_voice_handle handle, sc_bool* outPlaying);
+sbk_status SC_API sc_voice_get_cursor_position_in_seconds(sc_system* system, sc_voice_handle handle, float* outSeconds);
+sbk_status SC_API sc_voice_set_cursor_position_in_seconds(sc_system* system, sc_voice_handle handle, float seconds);
+sbk_status SC_API sc_voice_set_loop_position_in_seconds(sc_system* system, sc_voice_handle handle, float loopStart, float loopEnd);
+sbk_status SC_API sc_voice_get_looping(sc_system* system, sc_voice_handle handle, sc_bool* outLooping);
+sbk_status SC_API sc_voice_set_looping(sc_system* system, sc_voice_handle handle, sc_bool looping);
 sbk_status SC_API sc_voice_get_paused(sc_system* system, sc_voice_handle handle, sc_bool* outPaused);
 sbk_status SC_API sc_voice_set_paused(sc_system* system, sc_voice_handle handle, sc_bool paused);
 sbk_status SC_API sc_voice_set_virtual(sc_voice* voice, sc_bool virtualised);
@@ -895,20 +964,22 @@ sbk_status SC_API sc_voice_stop(sc_system* system, sc_voice_handle handle);
  */
 typedef struct sc_real_voice
 {
-    ma_node_base                    baseNode;
-    sc_system*                      system;
-    sc_voice*                       voiceRef;       //< The voice we are playing for
-    sc_node_group*                  nodeGroup;      //< The voice's group of DSP nodes, disconnected from the graph when virtual, connected to @ref sc_voice::group when rendering
+    ma_node_base                        baseNode;           //< Must be the first member for miniaudio node graph API
+    sc_system*                          system;
+    sc_voice*                           voiceRef;           //< The voice we are playing for
+    sc_node_group*                      nodeGroup;          //< The voice's group of DSP nodes, disconnected from the graph when virtual, connected to @ref sc_voice::group when rendering
 
-    // DSP
+    ma_resource_manager_data_source*    dataSource;         //< Ref-counted copy of the @ref sc_voice's data source.
 
-    ma_linear_resampler             resampler;      //< Used for pitch shifting and resampling from data source sample rate to engine sample rate
-    ma_fader                        fader;          //< for fade ins and outs
-    ma_gainer                       gainer;         //< Gain multiplier
+    sc_uint32                           appliedLoopEpoch;   //< Last sc_voice::loopEpoch pushed to @ref dataSource. Compared on the audio thread to detect user changes.
+
+    ma_linear_resampler                 resampler;          //< Used for pitch shifting and resampling from data source sample rate to engine sample rate
+    ma_fader                            fader;              //< for fade ins and outs
+    ma_gainer                           gainer;             //< Gain multiplier
 
 
-    void*                           heap;
-    sc_bool                         ownsHeap;
+    void*                               heap;
+    sc_bool                             ownsHeap;
 } sc_real_voice;
 
 typedef struct sc_real_voice_config
@@ -922,6 +993,7 @@ typedef struct sc_real_voice_config
 sc_real_voice_config SC_API sc_real_voice_config_init(sc_system* system, sc_voice* voiceRef, sc_uint32 channelsIn, sc_uint32 channelsOut);
 
 sbk_status SC_API sc_real_voice_init(const sc_real_voice_config* config, sc_real_voice* realVoice);
+sbk_status SC_API sc_real_voice_uninit(sc_real_voice* realVoice);
 sbk_status SC_API sc_real_voice_init_preallocated(const sc_real_voice_config* config, void* heap, sc_real_voice* realVoice);
 
 /**
@@ -930,7 +1002,7 @@ sbk_status SC_API sc_real_voice_init_preallocated(const sc_real_voice_config* co
 typedef struct sc_virtual_voice_candidate
 {
     sc_uint32   voiceIndex;
-    sc_uint32   priority;       //< Voice priority. Main way of comparing a voice. Voices will higher priorities are never culled by voices with lower priority
+    sc_uint32   priority;       //< Voice priority. Main way of comparing a voice. Voices with higher priorities are never culled by voices with lower priority
     float       audibility;     //< Tiebreaker. Louder wins. @todo Make this an int so we are not comparing a float
     sc_uint64   playCursor;     //< Tiebreaker. Used to compare which voice is oldest
 } sc_virtual_voice_candidate;
@@ -1006,6 +1078,7 @@ typedef struct sc_system_config
     sc_uint32                   maxRealVoices;          //< Max number of real voices to mix at once. Voices over this limit get virtualized
     float                       vol0Threshold;          //< Volumes before this volume are automatically virtualised
     sc_voice_tiebreak_policy    tiebreakPolicy;         //< When voices of the same priority are in fighting for a real voice, do we prefer the oldest or newest?
+    sc_bool                     noDevice;               //< When true, no audio device is created. Use sc_system_read_pcm_frames to pull audio manually.
 } sc_system_config;
 
 /**
@@ -1022,9 +1095,7 @@ typedef struct sc_system_config
  * Sound Chef allows for multiple system objects but it is likely unneeded
  * as future versions will support multiple outputs.
  * 
- * @remark When finished, system objects but must closed and then released.
- * @see sc_system_create
- * @see sc_system_release
+ * @remark When finished, system objects must be closed with @ref sc_system_close.
  * @see sc_system_init
  * @see sc_system_close
  */
@@ -1066,10 +1137,8 @@ sbk_status SC_API sc_system_log_init(sc_system* system, ma_log_callback_proc log
 sc_system_config SC_API sc_system_config_init_default();
 sc_system_config SC_API sc_system_config_init(const char* pluginPath);
 
-sbk_status SC_API sc_system_create(sc_system** outSystem);
 sbk_status SC_API sc_system_init(sc_system* system, const sc_system_config* systemConfig);
 sbk_status SC_API sc_system_close(sc_system* system);
-sbk_status SC_API sc_system_release(sc_system* system);
 
 /**
 * @brief Updates the Sound Chef @ref sc_system on the calling thread.
@@ -1107,37 +1176,23 @@ sbk_status SC_API sc_system_create_sound(sc_system* system, const sc_sound_confi
 sbk_status SC_API sc_system_create_node_group(sc_system* system, sc_node_group** nodeGroup);
 
 /**
-* @brief Plays a sound and returns the playing instance.
+* @brief Tries to assign a new @ref sc_voice for the @p sound.
+* 
+* Playing is not guaranteed. Voices can:
+*   - Fail to allocate a slot into the voice array. Sounds are dropped and will never play
+*   - Allocate a voice but fail to allocate a real voice. The sound is tracked but not audible
+*   - Allocate a voice and a real voice. The sound will be audible
 *
-* Internally, the function copies the passed in sound to the instance. This
-* doesn't copy the internal audio data but rather the runtime parameters
-* like play position etc. This gives us a new ma_sound we can attach into
-* the node graph.
-*
-* @param system system object
-* @param sound to copy to the instance
-* @param instance of the new sound for playing
-* @param parent optional parameter. Outputs to the master node group by default
-* @param paused whether this sound is paused upon creation or played instantly
+* @param parent     Optional parameter. Outputs to the master node group by default
+* 
+* @see sc_voice, sc_real_voice
 */
-sbk_status SC_API sc_system_play_sound(sc_system* system, sc_sound* sound, sc_sound_instance** instance, sc_node_group* parent, sc_bool paused);
+sbk_status SC_API sc_system_play_sound(sc_system* system, sc_sound* sound, sc_voice_handle* outVoiceHandle, sc_node_group* parent, sc_bool paused);
 
-sbk_status SC_API sc_system_play_sound_voice(sc_system* system, sc_sound* sound, sc_voice_handle* outVoiceHandle, sc_node_group* parent, sc_bool paused);
 sbk_status SC_API sc_system_stop_all_voices(sc_system* system);
-
 sbk_status SC_API sc_system_clap_get_count(const sc_system* system, ma_uint32* count);
-
-/**
- * @remark Memory is owned by the system. Do not free the pointer.
- */
 sbk_status SC_API sc_system_clap_get_at(const sc_system* system, ma_uint32 index, sc_clap** plugin);
-
 sbk_status SC_API sc_system_create_dsp(sc_system* system, const sc_dsp_config* config, sc_dsp** dsp);
-
-/**
-* @brief Returns a pointer to the description for the given handle.
-* @remark The description is owned by the system; do not free the returned pointer.
-*/
 sbk_status SC_API sc_system_get_dsp_desc(const sc_system* system, sc_uint32 handle, const sc_dsp_description** outDescription);
 
 /**************************************************************************************************************************************************************
@@ -1176,6 +1231,8 @@ void SC_API sc_dlclose(ma_log* pLog, ma_handle handle);
 ma_proc SC_API sc_dlsym(ma_log* pLog, ma_handle handle, const char* symbol);
 
 SC_CLASS const char* SC_CALL sc_filename_get_ext(const char* filename);
+
+void SC_API sc_channel_map_apply_f32(float* pFramesOut, const ma_channel* pChannelMapOut, ma_uint32 channelsOut, const float* pFramesIn, const ma_channel* pChannelMapIn, ma_uint32 channelsIn, ma_uint64 frameCount, ma_channel_mix_mode mode, ma_mono_expansion_mode monoExpansionMode);
 
 #ifdef __cplusplus
 }
