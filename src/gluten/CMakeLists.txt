@@ -86,7 +86,7 @@ set(IMAGE_FILES
 )
 
 set(GLUTEN_SOURCES
-  app_entry.cpp 
+  app_entry.cpp
   app/app.cpp
   data/data_source.cpp
   data/data_cache.cpp
@@ -106,6 +106,7 @@ set(GLUTEN_SOURCES
   elements/loading_spinner.cpp
   elements/layouts/layout.cpp
   managers/manager.cpp
+  subsystems/animation_subsystem.cpp
   subsystems/audio_subsystem.cpp
   subsystems/renderer_subsystem.cpp
   subsystems/video_subsystem.cpp
@@ -142,6 +143,7 @@ set(GLUTEN_HEADERS
   elements/loading_spinner.h
   elements/layouts/layout.h
   managers/manager.h
+  subsystems/animation_subsystem.h
   subsystems/audio_subsystem.h
   subsystems/renderer_subsystem.h
   subsystems/video_subsystem.h
