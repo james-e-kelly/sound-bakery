@@ -2,7 +2,6 @@
 
 sbk_status sc_node_group_init(sc_system* system, sc_node_group* nodeGroup)
 {
-    // Always create a fader/sound_group by default
     const sc_dsp_config faderConfig = sc_dsp_config_init_type(system, sc_dsp_type_fader);
     SC_CHECK_STATUS(sc_system_create_dsp(system, &faderConfig, &nodeGroup->fader));
 
@@ -32,12 +31,9 @@ sbk_status sc_node_group_add_dsp(sc_node_group* nodeGroup, sc_dsp* dsp, sc_dsp_i
         case sc_dsp_index_head:
         {
             sc_dsp* currentHead = nodeGroup->head;
-            SC_ASSERT(currentHead->next == NULL);  // head nodes can't have
-                                                   // something after them
+            SC_ASSERT(currentHead->next == NULL);  // head nodes can't have something after them
             ma_node_base* currentParent = ((ma_node_base*)currentHead->node)->pOutputBuses[0].pInputNode;
-            SC_ASSERT(currentParent != NULL);  // must be attached to
-                                               // something, even if it's the
-                                               // endpoint
+            SC_ASSERT(currentParent != NULL);  // must be attached to something, even if it's the endpoint
 
             if (currentParent)
             {
@@ -121,11 +117,39 @@ sbk_status sc_node_group_get_dsp(sc_node_group* nodeGroup, sc_dsp_type type, sc_
     return SBK_ERR_NOT_FOUND;
 }
 
+sbk_status sc_node_group_calculate_is_idle(sc_node_group* nodeGroup, sc_bool* outIsIdle)
+{
+    SC_CHECK_ARG(nodeGroup != NULL);
+    SC_CHECK_ARG(outIsIdle != NULL);
+
+    SC_ASSERT(nodeGroup->fader != NULL);
+
+    sc_bool isIdle = MA_TRUE;
+
+    for (sc_dsp* dsp = nodeGroup->tail; dsp != NULL; dsp = dsp->next)
+    {
+        const sc_dsp_description* description = NULL;
+        if (sc_system_get_dsp_desc(nodeGroup->fader->system, dsp->handle, &description) == SBK_SUCCESS)
+        {
+            if (description->isIdle)
+            {
+                description->isIdle(dsp, &isIdle);
+                if (!isIdle)
+                {
+                    break;
+                }
+            }
+        }
+    }
+
+    *outIsIdle = isIdle;
+
+    return SBK_SUCCESS;
+}
+
 sbk_status sc_node_group_uninit(sc_node_group* nodeGroup)
 {
     SC_CHECK_ARG(nodeGroup != NULL);
-
-    const sc_system* system = (sc_system*)nodeGroup->fader->system;
 
     sc_dsp* iDSP = nodeGroup->tail;
 
@@ -133,7 +157,7 @@ sbk_status sc_node_group_uninit(sc_node_group* nodeGroup)
     {
         sc_dsp* toFreeDSP = iDSP;
         iDSP              = toFreeDSP->next;
-        sc_dsp_release(toFreeDSP);
+        (void)sc_dsp_release(toFreeDSP);
     }
 
     nodeGroup->fader = NULL;

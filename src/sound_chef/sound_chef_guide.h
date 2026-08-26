@@ -34,15 +34,12 @@
  *
  * ## Creating The System Object
  *
- * sc_system objects can be created with calls to @ref sc_system_create. The system must be released by the user with a
- * call to @ref sc_system_release.
- *
- * Once created, call @ref sc_system_init to intialize the system and connect it to an audio output.
+ * sc_system is a plain struct that can be declared directly. Zero-initialize it and call @ref sc_system_init to
+ * connect it to an audio output. When finished, call @ref sc_system_close to tear it down.
  *
  * @code
- * sc_system* system = NULL;
- * sc_system_create(&system);
- * sc_system_init(system);
+ * sc_system system = {0};
+ * sc_system_init(&system, NULL);
  * @endcode
  *
  * The system manages the node graph, sounds, resources, and outputting audio to the audio device.
@@ -52,16 +49,15 @@
  * With a @ref sc_system object, playing a sound is incredibly easy.
  *
  * @code
- * sc_system* system = NULL;
- * sc_system_create(&system);
- * sc_system_init(system);
+ * sc_system system = {0};
+ * sc_system_init(&system, NULL);
  *
  * sc_sound* sound = NULL;
  * const sc_sound_config soundConfig = sc_sound_config_init_file("some_sound.wav", SC_SOUND_MODE_DEFAULT);
- * sc_system_create_sound(system, &soundConfig, &sound);
+ * sc_system_create_sound(&system, &soundConfig, &sound);
  *
  * sc_sound_instance* instance = NULL;
- * sc_system_play_sound(system, sound, &instance, NULL, SC_FALSE);
+ * sc_system_play_sound(&system, sound, &instance, NULL, SC_FALSE);
  * @endcode
  *
  * Sound Chef seperates a loaded sound and a playing sound with the @ref sc_sound and @ref sc_sound_instance objects.
@@ -112,42 +108,40 @@
  * Sounds can be connected to node groups during calls to @ref sc_system_play_sound.
  *
  * @code
- * sc_system* system = NULL;
- * sc_system_create(&system);
- * sc_system_init(system);
+ * sc_system system = {0};
+ * sc_system_init(&system, NULL);
  *
  * sc_sound* sound = NULL;
  * const sc_sound_config soundConfig = sc_sound_config_init_file("some_sound.wav", SC_SOUND_MODE_DEFAULT);
- * sc_system_create_sound(system, &soundConfig, &sound);
+ * sc_system_create_sound(&system, &soundConfig, &sound);
  *
  * sc_node_group* nodeGroup = NULL;
- * sc_system_create_node_group(system, &nodeGroup);
+ * sc_system_create_node_group(&system, &nodeGroup);
  *
  * sc_sound_instance* instance = NULL;
- * sc_system_play_sound(system, sound, &instance, nodeGroup, SC_FALSE);
+ * sc_system_play_sound(&system, sound, &instance, nodeGroup, SC_FALSE);
  * @endcode
  *
  * DSP units can be inserted with ease.
  *
  * @code
- * sc_system* system = NULL;
- * sc_system_create(&system);
- * sc_system_init(system);
+ * sc_system system = {0};
+ * sc_system_init(&system, NULL);
  *
  * sc_sound* sound = NULL;
  * const sc_sound_config soundConfig = sc_sound_config_init_file("some_sound.wav", SC_SOUND_MODE_DEFAULT);
- * sc_system_create_sound(system, &soundConfig, &sound);
+ * sc_system_create_sound(&system, &soundConfig, &sound);
  *
  * sc_node_group* nodeGroup = NULL;
- * sc_system_create_node_group(system, &nodeGroup);
+ * sc_system_create_node_group(&system, &nodeGroup);
  *
- * const sc_dsp_config lpfConfig = sc_dsp_config_init_type(system, sc_dsp_type_lowpass);
+ * const sc_dsp_config lpfConfig = sc_dsp_config_init_type(&system, sc_dsp_type_lowpass);
  * sc_dsp* lowpass = NULL;
- * sc_system_create_dsp(system, &lpfConfig, &lowpass);
+ * sc_system_create_dsp(&system, &lpfConfig, &lowpass);
  * sc_node_group_add_dsp(nodeGroup, lowpass, sc_dsp_index_head);
  *
  * sc_sound_instance* instance = NULL;
- * sc_system_play_sound(system, sound, &instance, nodeGroup, SC_FALSE);
+ * sc_system_play_sound(&system, sound, &instance, nodeGroup, SC_FALSE);
  * @endcode
  *
  * Node Groups can also be connected together to create a complex graph.
@@ -167,45 +161,36 @@
  * Here's a practical example combining sounds, effects, and node groups for an interactive audio system:
  *
  * @code
- * // Initialize system
- * sc_system* system = NULL;
- * sc_system_create(&system);
- * sc_system_init(system);
+ * sc_system system = {0};
+ * sc_system_init(&system, NULL);
  *
- * // Load sounds
  * sc_sound* footstep_concrete = NULL;
  * sc_sound* footstep_dirt = NULL;
  * const sc_sound_config concreteConfig = sc_sound_config_init_file("footstep_concrete.wav", SC_SOUND_MODE_DEFAULT);
  * const sc_sound_config dirtConfig     = sc_sound_config_init_file("footstep_dirt.wav", SC_SOUND_MODE_DEFAULT);
- * sc_system_create_sound(system, &concreteConfig, &footstep_concrete);
- * sc_system_create_sound(system, &dirtConfig, &footstep_dirt);
+ * sc_system_create_sound(&system, &concreteConfig, &footstep_concrete);
+ * sc_system_create_sound(&system, &dirtConfig, &footstep_dirt);
  *
- * // Create footstep bus with lowpass for simulation
  * sc_node_group* footstep_bus = NULL;
- * sc_system_create_node_group(system, &footstep_bus);
+ * sc_system_create_node_group(&system, &footstep_bus);
  *
- * // Add lowpass to footstep bus (for underwater footsteps, for example)
- * const sc_dsp_config lpf_config = sc_dsp_config_init_type(system, sc_dsp_type_lowpass);
+ * const sc_dsp_config lpf_config = sc_dsp_config_init_type(&system, sc_dsp_type_lowpass);
  * sc_dsp* lpf = NULL;
- * sc_system_create_dsp(system, &lpf_config, &lpf);
+ * sc_system_create_dsp(&system, &lpf_config, &lpf);
  * sc_node_group_add_dsp(footstep_bus, lpf, sc_dsp_index_head);
  *
- * // Add compression to control dynamic range
- * const sc_dsp_config compressor_config = sc_dsp_config_init_type(system, SC_DSP_TYPE_COMPRESSOR);
+ * const sc_dsp_config compressor_config = sc_dsp_config_init_type(&system, SC_DSP_TYPE_COMPRESSOR);
  * sc_dsp* compressor = NULL;
- * sc_system_create_dsp(system, &compressor_config, &compressor);
+ * sc_system_create_dsp(&system, &compressor_config, &compressor);
  * sc_node_group_add_dsp(footstep_bus, compressor, sc_dsp_index_head);
  *
- * // Play a footstep on concrete
  * sc_sound_instance* instance1 = NULL;
- * sc_system_play_sound(system, footstep_concrete, &instance1, footstep_bus, SC_FALSE);
+ * sc_system_play_sound(&system, footstep_concrete, &instance1, footstep_bus, SC_FALSE);
  *
- * // Adjust the lowpass cutoff for environmental effect
  * sc_dsp_set_parameter_float(lpf, SC_DSP_LOWPASS_PARAM_CUTOFF, 2000.0f);
  *
- * // Play another footstep on dirt
  * sc_sound_instance* instance2 = NULL;
- * sc_system_play_sound(system, footstep_dirt, &instance2, footstep_bus, SC_FALSE);
+ * sc_system_play_sound(&system, footstep_dirt, &instance2, footstep_bus, SC_FALSE);
  * @endcode
  *
  * ## Error Handling
@@ -213,31 +198,20 @@
  * Most Sound Chef functions return @ref sc_result. Always check for errors:
  *
  * @code
- * sc_system* system = NULL;
- * sc_result result = sc_system_create(&system);
+ * sc_system system = {0};
+ * sc_result result = sc_system_init(&system, NULL);
  * if (result != SC_SUCCESS) {
  *     // Handle error
- *     return;
- * }
- *
- * result = sc_system_init(system);
- * if (result != SC_SUCCESS) {
- *     // Handle error
- *     sc_system_release(&system);
  *     return;
  * }
  * @endcode
  *
  * ## Cleanup
  *
- * Always release resources when done:
+ * Always close the system when done:
  *
  * @code
- * // Stop sounds (instances are managed by Sound Chef)
- * // Release DSP effects if created manually
- * // Release node groups if created manually
- * // Finally, release the system
- * sc_system_release(&system);
+ * sc_system_close(&system);
  * @endcode
  *
  * ## Memory Management

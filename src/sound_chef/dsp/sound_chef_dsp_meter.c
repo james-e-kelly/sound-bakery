@@ -4,8 +4,6 @@
 
 static void sc_meter_node_process_pcm_frames(ma_node* node, const float** framesIn, ma_uint32* const frameCountIn, float** framesOut, ma_uint32* frameCountOut)
 {
-    // We don't output anything
-    // The node is set to passthrough
     (void)framesOut;
     (void)frameCountOut;
 

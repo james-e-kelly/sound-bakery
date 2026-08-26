@@ -217,7 +217,7 @@ static ma_node_vtable s_delayNodeVTable =
     NULL,
     1,                                 /* 1 input channels. */
     1,                                 /* 1 output channel. */
-    MA_NODE_FLAG_CONTINUOUS_PROCESSING /* Delay requires continuous processing to ensure the tail get's processed. */
+    MA_NODE_FLAG_CONTINUOUS_PROCESSING /* Delay requires continuous processing to ensure the tail gets processed. */
 };
 
 sbk_status sc_delay_node_init(ma_node_graph* nodeGraph, const sc_delay_node_config* config, const ma_allocation_callbacks* allocationCallbacks, sc_delay_node* delayNode)
@@ -252,7 +252,6 @@ void sc_delay_node_uninit(sc_delay_node* delayNode, const ma_allocation_callback
         return;
     }
 
-    /* The base node is always uninitialized first. */
     ma_node_uninit(&delayNode->baseNode, allocationCallbacks);
     sc_delay_uninit(&delayNode->delay, allocationCallbacks);
 }

@@ -17,53 +17,37 @@ void sc_system_audio_callback(ma_device* device, void* output, const void* input
 
     for (sc_uint32 voiceIndex = 0; voiceIndex < system->voiceSlotAllocator.capacity; ++voiceIndex)
     {
-        const sc_uint32 flags = c89atomic_load_32(&system->voiceBuffer[voiceIndex].flags);
+        sc_voice* const voice             = &system->voiceBuffer[voiceIndex];
+        const sc_voice_state currentState = (sc_voice_state)c89atomic_load_32(&voice->currentState);
 
-        const sc_bool isPaused = SC_VOICE_HAS_FLAG(flags, SC_VOICE_FLAG_PAUSED);
-
-        if (!isPaused)
+        if (currentState == sc_voice_state_free || currentState == sc_voice_state_stopped)
         {
-            c89atomic_fetch_add_64(&system->voiceBuffer[voiceIndex].playCursor, frameCount);
+            continue;
         }
+
+        const sc_uint32 flags             = c89atomic_load_32(&voice->flags);
+        const sc_bool isPaused            = SC_VOICE_HAS_FLAG(flags, SC_VOICE_FLAG_PAUSED);
+
+        if (isPaused)
+        {
+            continue;
+        }
+
+        // Consume any pending user-thread seek before the increment so a scrub races
+        // cleanly with playback. CAS guarantees we only clear the value we observed,
+        // so a second seek arriving between the load and the clear survives to the
+        // next callback instead of being silently lost.
+        const sc_int64 pendingSeek = c89atomic_load_i64(&voice->pendingSeekFrames);
+        if (pendingSeek >= 0)
+        {
+            c89atomic_store_64(&voice->playCursor, (sc_uint64)pendingSeek);
+            (void)c89atomic_compare_and_swap_i64(&voice->pendingSeekFrames, pendingSeek, (sc_int64)-1);
+        }
+
+        c89atomic_fetch_add_64(&voice->playCursor, frameCount);
     }
 
     (void)ma_engine_read_pcm_frames((ma_engine*)(device->pUserData), output, frameCount, NULL);
-}
-
-sbk_status sc_system_create(sc_system** outSystem)
-{
-    sbk_status result = SBK_ERR_CHEF;
-
-    if (outSystem)
-    {
-        *outSystem = (sc_system*)ma_malloc(sizeof(sc_system), NULL);
-
-        result = *outSystem ? SBK_SUCCESS : SBK_ERR_OUT_OF_MEMORY;
-
-        if (*outSystem)
-        {
-            SC_ZERO_OBJECT(*outSystem);
-        }
-    }
-
-    SC_ASSERT(result == SBK_SUCCESS);
-
-    return result;
-}
-
-sbk_status sc_system_release(sc_system* system)
-{
-    sbk_status result = SBK_ERR_CHEF;
-
-    if (system)
-    {
-        ma_free(system, NULL);
-        result = SBK_SUCCESS;
-    }
-
-    SC_ASSERT(result == SBK_SUCCESS);
-
-    return result;
 }
 
 sbk_status sc_system_log_init(sc_system* system, ma_log_callback_proc callbackProc)
@@ -117,6 +101,12 @@ sbk_status sc_system_init(sc_system* system, const sc_system_config* systemConfi
     SC_CHECK_ARG(systemConfig->vol0Threshold > 0.0F && systemConfig->vol0Threshold < 1.0F);
 
     system->tiebreakerPolicy = systemConfig->tiebreakPolicy;
+    system->vol0Threshold    = systemConfig->vol0Threshold;
+
+    // miniaudio treats ma_allocation_callbacks structs with null function pointers as "no allocator" and does not allocate memory
+    // If we have null function pointers, switch to a null pointer, instead of an empty struct
+    const sc_bool hasCustomAlloc = systemConfig->allocationCallbacks.onMalloc != NULL || systemConfig->allocationCallbacks.onRealloc != NULL || systemConfig->allocationCallbacks.onFree != NULL;
+    const ma_allocation_callbacks* const pAlloc = hasCustomAlloc ? &systemConfig->allocationCallbacks : NULL;
 
     ma_engine* engine = (ma_engine*)system;
 
@@ -132,21 +122,21 @@ sbk_status sc_system_init(sc_system* system, const sc_system_config* systemConfi
     SC_CHECK_STATUS(SC_STATUS_FROM_MA_RESULT(ma_resource_manager_init(&resourceManagerConfig, &system->resourceManager)));
 
     const ma_slot_allocator_config voiceAllocatorConfig = ma_slot_allocator_config_init(systemConfig->maxVoices);
-    SC_CHECK_STATUS(SC_STATUS_FROM_MA_RESULT(ma_slot_allocator_init(&voiceAllocatorConfig, &systemConfig->allocationCallbacks, &system->voiceSlotAllocator)));
+    SC_CHECK_STATUS(SC_STATUS_FROM_MA_RESULT(ma_slot_allocator_init(&voiceAllocatorConfig, pAlloc, &system->voiceSlotAllocator)));
 
     const ma_slot_allocator_config realVoiceAllocatorConfig = ma_slot_allocator_config_init(systemConfig->maxRealVoices);
-    SC_CHECK_STATUS(SC_STATUS_FROM_MA_RESULT(ma_slot_allocator_init(&realVoiceAllocatorConfig, &systemConfig->allocationCallbacks, &system->realVoiceSlotAllocator)));
+    SC_CHECK_STATUS(SC_STATUS_FROM_MA_RESULT(ma_slot_allocator_init(&realVoiceAllocatorConfig, pAlloc, &system->realVoiceSlotAllocator)));
 
-    system->voiceBuffer = ma_calloc(sizeof(sc_voice) * systemConfig->maxVoices, &systemConfig->allocationCallbacks);
+    system->voiceBuffer = ma_calloc(sizeof(sc_voice) * systemConfig->maxVoices, pAlloc);
     SC_CHECK_MEM(system->voiceBuffer);
 
-    system->realVoiceBuffer = ma_calloc(sizeof(sc_real_voice) * systemConfig->maxRealVoices, &systemConfig->allocationCallbacks);
+    system->realVoiceBuffer = ma_calloc(sizeof(sc_real_voice) * systemConfig->maxRealVoices, pAlloc);
     SC_CHECK_MEM(system->realVoiceBuffer);
 
-    system->virtualizeCandidates = ma_calloc(sizeof(sc_virtual_voice_candidate) * systemConfig->maxVoices, &systemConfig->allocationCallbacks);
+    system->virtualizeCandidates = ma_calloc(sizeof(sc_virtual_voice_candidate) * systemConfig->maxVoices, pAlloc);
     SC_CHECK_MEM(system->virtualizeCandidates);
 
-    system->virtualizeBoundary = ma_calloc(sizeof(sc_virtual_voice_candidate) * systemConfig->maxVoices, &systemConfig->allocationCallbacks);
+    system->virtualizeBoundary = ma_calloc(sizeof(sc_virtual_voice_candidate) * systemConfig->maxVoices, pAlloc);
     SC_CHECK_MEM(system->virtualizeBoundary);
     
     ma_log_post(&system->log, MA_LOG_LEVEL_DEBUG, "Initializing engine");
@@ -159,6 +149,7 @@ sbk_status sc_system_init(sc_system* system, const sc_system_config* systemConfi
     engineConfig.pLog                = &system->log;
     engineConfig.allocationCallbacks = systemConfig->allocationCallbacks;
     engineConfig.dataCallback        = systemConfig->dataCallback;
+    engineConfig.noDevice            = systemConfig->noDevice;
 
     SC_CHECK_STATUS(SC_STATUS_FROM_MA_RESULT(ma_engine_init(&engineConfig, engine)));
     
@@ -265,46 +256,108 @@ sbk_status sc_system_update(sc_system* system)
             case sc_voice_desired_playing:
                 switch (currentState)
                 {
-                    case sc_voice_state_stopped:
-                        SC_ASSERT(false && "Play request on STOPPED slot - use sc_system_play_sound_voice, which sets STARTING");
+                    case sc_voice_state_free:
+                        SC_ASSERT(false && "Play request on FREE slot - use sc_system_play_sound, which sets STARTING");
                         break;
                     case sc_voice_state_starting:
+                    {
                         if (isVirtual)
                         {
-                            // If virtual, there is nothing to do
+                            ma_log_postf(&system->log, MA_LOG_LEVEL_DEBUG, "[voice] starting virtual: slot=%u\n", voiceIndex);
                             c89atomic_store_32(&voice->currentState, sc_voice_state_playing);
                         }
                         else
                         {
-                            (void)sc_system_promote_voice_to_real(system, voice);   
+                            if (sc_system_promote_voice_to_real(system, voice) == SBK_SUCCESS)
+                            {
+                                ma_log_postf(&system->log, MA_LOG_LEVEL_DEBUG, "[voice] promoted to real: slot=%u\n", voiceIndex);
+                                c89atomic_store_32(&voice->currentState, sc_voice_state_playing);
+                            }
                         }
                         break;
+                    }
                     case sc_voice_state_playing:
+                    {
                         if (!isVirtual && voice->realVoiceHandle == 0)
                         {
-                            (void)sc_system_promote_voice_to_real(system, voice);
+                            if (sc_system_promote_voice_to_real(system, voice) == SBK_SUCCESS)
+                            {
+                                ma_log_postf(&system->log, MA_LOG_LEVEL_DEBUG, "[voice] promoted to real (was playing-virtual): slot=%u\n", voiceIndex);
+                                c89atomic_store_32(&voice->currentState, sc_voice_state_playing);
+                            }
                         }
                         break;
+                    }
                     case sc_voice_state_stopping:
                         // Tail already running - it wins over a new play request.
+                        break;
+                    case sc_voice_state_stopped:
+                        // Reap already scheduled; the caller's handle is dead. Ignore the play request.
                         break;
                 }
                 break;
             case sc_voice_desired_stopped:
                 switch (currentState)
                 {
-                    case sc_voice_state_stopped:
+                    case sc_voice_state_free:
                         // Nothing to do.
                         break;
                     case sc_voice_state_starting:
-                        // Cancel before any audio plays: skip STOPPING, release slot to STOPPED.
+                        ma_log_postf(&system->log, MA_LOG_LEVEL_DEBUG, "[voice] cancelled before play: slot=%u\n", voiceIndex);
+                        c89atomic_store_32(&voice->currentState, sc_voice_state_stopped);
                         break;
                     case sc_voice_state_playing:
-                        // Begin tail: set current state to STOPPING (fade + drain).
+                    {
+                        sc_bool playingIsIdle = MA_TRUE;
+                        sc_node_group_calculate_is_idle(voice->group, &playingIsIdle);
+
+                        if (playingIsIdle)
+                        {
+                            if (voice->realVoiceHandle > 0)
+                            {
+                                const sc_voice_index realVoiceIndex = SC_VOICE_HANDLE_EXTRACT_INDEX(voice->realVoiceHandle);
+                                sc_real_voice* const realVoice      = &system->realVoiceBuffer[realVoiceIndex];
+                                sc_real_voice_uninit(realVoice);
+                                ma_slot_allocator_free(&system->realVoiceSlotAllocator, voice->realVoiceHandle);
+                                voice->realVoiceHandle = 0;
+                            }
+                            ma_log_postf(&system->log, MA_LOG_LEVEL_DEBUG, "[voice] stopped: slot=%u\n", voiceIndex);
+                            c89atomic_store_32(&voice->currentState, sc_voice_state_stopped);
+                        }
+                        else
+                        {
+                            c89atomic_store_32(&voice->currentState, sc_voice_state_stopping);
+                        }
                         break;
+                    }
                     case sc_voice_state_stopping:
-                        // Tail in progress: check if drained, then release slot to STOPPED.
+                    {
+                        sc_bool stoppingIsIdle = MA_TRUE;
+                        sc_node_group_calculate_is_idle(voice->group, &stoppingIsIdle);
+
+                        if (stoppingIsIdle)
+                        {
+                            if (voice->realVoiceHandle > 0)
+                            {
+                                const sc_voice_index realVoiceIndex = SC_VOICE_HANDLE_EXTRACT_INDEX(voice->realVoiceHandle);
+                                sc_real_voice* const realVoice      = &system->realVoiceBuffer[realVoiceIndex];
+                                sc_real_voice_uninit(realVoice);
+                                ma_slot_allocator_free(&system->realVoiceSlotAllocator, voice->realVoiceHandle);
+                                voice->realVoiceHandle = 0;
+                            }
+                            c89atomic_store_32(&voice->currentState, sc_voice_state_stopped);
+                        }
                         break;
+                    }
+                    case sc_voice_state_stopped:
+                    {
+                        const sc_voice_handle deadHandle = (sc_voice_handle)c89atomic_load_64(&voice->handle);
+                        ma_log_postf(&system->log, MA_LOG_LEVEL_DEBUG, "[voice] reaped: slot=%u\n", voiceIndex);
+                        c89atomic_store_64(&voice->handle, 0);
+                        c89atomic_store_32(&voice->currentState, sc_voice_state_free);
+                        ma_slot_allocator_free(&system->voiceSlotAllocator, deadHandle);
+                        break;
+                    }
                 }
                 break;
         }
@@ -336,16 +389,17 @@ sbk_status sc_system_close(sc_system* system)
     if (system)
     {
         ma_engine_uninit((ma_engine*)system);
+        ma_resource_manager_uninit(&system->resourceManager);
 
         sc_system_release_clap_plugins(system);
 
         ma_slot_allocator_uninit(&system->voiceSlotAllocator, &system->engine.allocationCallbacks);
-        ma_slot_allocator_uninit(&system->realVoiceSlotAllocator, &system->engine.allocationCallbacks);
 
         for (sc_uint32 realVoiceIndex = 0; realVoiceIndex < system->realVoiceSlotAllocator.capacity; ++realVoiceIndex)
         {
-            SC_FREE(system->realVoiceBuffer[realVoiceIndex].nodeGroup, system);
+            sc_real_voice_uninit(&system->realVoiceBuffer[realVoiceIndex]);
         }
+        ma_slot_allocator_uninit(&system->realVoiceSlotAllocator, &system->engine.allocationCallbacks);
 
         SC_FREE(system->voiceBuffer, system);
         SC_FREE(system->realVoiceBuffer, system);
@@ -416,122 +470,73 @@ sbk_status sc_system_create_sound(sc_system* system, const sc_sound_config* conf
     SC_CHECK_ARG(config->memory == NULL || config->memorySize > 0);
 
     SC_CREATE(*sound, sc_sound, system);
+    SC_CREATE_ELSE_FREE((*sound)->dataSource, ma_resource_manager_data_source, system, *sound);
 
-    (*sound)->mode         = config->mode;
-    (*sound)->owningSystem = system;
+    (*sound)->mode                    = config->mode;
+    (*sound)->system                  = system;
+    (*sound)->defaultLooping          = config->looping;
+    (*sound)->defaultLoopStartSeconds = config->loopStartSeconds;
+    (*sound)->defaultLoopEndSeconds   = config->loopEndSeconds;
 
     if (config->filePath != NULL)
     {
-        return (sbk_status)ma_sound_init_from_file((ma_engine*)system, config->filePath, get_flags_from_mode(config->mode), NULL, NULL, &(*sound)->sound);
+        SC_CHECK_STATUS_ELSE_FREE(SC_STATUS_FROM_MA_RESULT(ma_resource_manager_data_source_init(&system->resourceManager, config->filePath, get_flags_from_mode(config->mode), NULL, (*sound)->dataSource)), *sound, system);
+        return SBK_SUCCESS;
     }
-
-    SC_CREATE((*sound)->memoryDecoder, ma_decoder, system);
-
-    ma_decoder_config decoderConfig      = ma_decoder_config_init_default();
-    decoderConfig.customBackendCount     = system->resourceManager.config.customDecodingBackendCount;
-    decoderConfig.ppCustomBackendVTables = system->resourceManager.config.ppCustomDecodingBackendVTables;
-
-    const ma_result decoderInitResult = ma_decoder_init_memory(config->memory, config->memorySize, &decoderConfig, (*sound)->memoryDecoder);
-
-    if (decoderInitResult != MA_SUCCESS)
+    else if (config->memory != NULL)
     {
-        ma_decoder_uninit((*sound)->memoryDecoder);
-        SC_FREE((*sound)->memoryDecoder, system);
-        (*sound)->memoryDecoder = NULL;
-        return SC_STATUS_FROM_MA_RESULT(decoderInitResult);
-    }
+        char memoryName[64];
+        (void)snprintf(memoryName, sizeof(memoryName), "scmem://%p:%zu", config->memory, config->memorySize);
 
-    return (sbk_status)ma_sound_init_from_data_source((ma_engine*)system, (*sound)->memoryDecoder, get_flags_from_mode(config->mode), NULL, &(*sound)->sound);
-}
-
-sbk_status sc_system_play_sound(sc_system* system, sc_sound* sound, sc_sound_instance** instance, sc_node_group* parent, sc_bool paused)
-{
-    SC_CHECK_ARG(system != NULL);
-    SC_CHECK_ARG(sound != NULL);
-    SC_CHECK_ARG(instance != NULL);
-
-    *instance = NULL;
-
-    SC_CREATE(*instance, sc_sound_instance, system);
-    (*instance)->mode         = sound->mode;
-    (*instance)->owningSystem = sound->owningSystem;
-
-    if (sound->memoryDecoder != NULL)
-    {
-        if ((*instance)->memoryDecoder == NULL)
+        const ma_result registerResult = ma_resource_manager_register_encoded_data(&system->resourceManager, memoryName, (void*)config->memory, config->memorySize);
+        if (registerResult != MA_SUCCESS && registerResult != MA_ALREADY_EXISTS)
         {
-            SC_CREATE((*instance)->memoryDecoder, ma_decoder, system);
-
-            ma_decoder_config decoderConfig      = ma_decoder_config_init_default();
-            decoderConfig.customBackendCount     = system->resourceManager.config.customDecodingBackendCount;
-            decoderConfig.ppCustomBackendVTables = system->resourceManager.config.ppCustomDecodingBackendVTables;
-
-            const ma_result decoderInitResult = ma_decoder_init_memory(sound->memoryDecoder->data.memory.pData,
-                                                                       sound->memoryDecoder->data.memory.dataSize,
-                                                                       &decoderConfig, (*instance)->memoryDecoder);
-            SC_CHECK_STATUS(SC_STATUS_FROM_MA_RESULT(decoderInitResult));
-
-            const ma_result initResult = ma_sound_init_from_data_source((ma_engine*)system, (*instance)->memoryDecoder, sound->mode, NULL, &(*instance)->sound);
-            SC_CHECK_STATUS(SC_STATUS_FROM_MA_RESULT(initResult));
+            SC_FREE(*sound, system);
+            return SC_STATUS_FROM_MA_RESULT(registerResult);
         }
-    }
-    else
-    {
-        const ma_result copyResult = ma_sound_init_copy((ma_engine*)system, &sound->sound, sound->mode, NULL, &(*instance)->sound);
-        SC_CHECK_STATUS(SC_STATUS_FROM_MA_RESULT(copyResult));
+
+        SC_CHECK_STATUS_ELSE_FREE(SC_STATUS_FROM_MA_RESULT(ma_resource_manager_data_source_init(&system->resourceManager, memoryName, get_flags_from_mode(config->mode), NULL, (*sound)->dataSource)), *sound, system);
+        return SBK_SUCCESS;
     }
 
-    if (parent != NULL)
-    {
-        const ma_result attachResult = ma_node_attach_output_bus(*instance, 0, parent->tail->node, 0);
-        SC_CHECK_STATUS(SC_STATUS_FROM_MA_RESULT(attachResult));
-    }
-    else if (system->masterNodeGroup != NULL)
-    {
-        const ma_result attachResult = ma_node_attach_output_bus(*instance, 0, system->masterNodeGroup->tail->node, 0);
-        SC_CHECK_STATUS(SC_STATUS_FROM_MA_RESULT(attachResult));
-    }
-
-    if (paused == MA_FALSE)
-    {
-        const ma_result startResult = ma_sound_start(&(*instance)->sound);
-        SC_CHECK_STATUS(SC_STATUS_FROM_MA_RESULT(startResult));
-    }
-
-    return SBK_SUCCESS;
+    return SBK_ERR_INVALID_PARAMETER;
 }
 
-sbk_status sc_system_play_sound_voice(sc_system* system, sc_sound* sound, sc_voice_handle* outVoiceHandle, sc_node_group* parent, sc_bool paused)
+sbk_status sc_system_play_sound(sc_system* system, sc_sound* sound, sc_voice_handle* outVoiceHandle, sc_node_group* parent, sc_bool paused)
 {
     SC_CHECK_ARG(system != NULL);
     SC_CHECK_ARG(sound != NULL);
     SC_CHECK_ARG(outVoiceHandle != NULL);
 
-    // Get a new virtual slot
-    // If we can't find a slot, it's an instant exit because we cannot handle more sounds
-    // We don't check for virtual because we're literally over capacity
-
+    // No virtualization fallback here — if the pool is full we're genuinely over capacity.
     ma_uint64 slot = 0;
     SC_CHECK_STATUS(SC_STATUS_FROM_MA_RESULT(ma_slot_allocator_alloc(&system->voiceSlotAllocator, &slot)));
     const ma_uint32 index = SC_VOICE_HANDLE_EXTRACT_INDEX(slot);
 
     sc_voice* const voice = &system->voiceBuffer[index];
 
-    // Slot must be idle before we take it over.
     const sc_voice_state currentState = (sc_voice_state)c89atomic_load_32(&voice->currentState);
-    SC_ASSERT(currentState == sc_voice_state_stopped);
+    SC_ASSERT(currentState == sc_voice_state_free);
 
     voice->sound = sound;
     voice->group = parent;
 
-    // Publish the handle before the state so any concurrent stale-handle
-    // check that observes STARTING is guaranteed to see the new occupant.
-    c89atomic_store_64(&voice->handle, (sc_uint64)slot);
+    c89atomic_store_64(&voice->handle, (sc_uint64)slot);    // Set the handle first. Ensures anyone trying to write to this handle sees it's been reassigned and can stop
+    c89atomic_store_64(&voice->playCursor, 0u);
     c89atomic_store_32(&voice->flags, paused ? (sc_uint32)SC_VOICE_FLAG_PAUSED : (sc_uint32)SC_VOICE_FLAG_NONE);
     c89atomic_store_32(&voice->currentState, (sc_uint32)sc_voice_state_starting);
     c89atomic_store_32(&voice->desiredState, (sc_uint32)sc_voice_desired_playing);
+    c89atomic_store_f32(&voice->gain, 1.0F);
+    c89atomic_store_f32(&voice->pitch, 1.0F);
+    c89atomic_store_f32(&voice->loopStartSeconds, sound->defaultLoopStartSeconds);
+    c89atomic_store_f32(&voice->loopEndSeconds, sound->defaultLoopEndSeconds);
+    c89atomic_store_32(&voice->looping, sound->defaultLooping ? 1u : 0u);
+    c89atomic_store_32(&voice->loopEpoch, 1u);  // Non-zero so the real voice's zero-initialised cache always applies once.
+    c89atomic_store_i64(&voice->pendingSeekFrames, (sc_int64)-1);   // -1 means "no seek. 0 would mean "seek to start"
 
     *outVoiceHandle = slot;
+
+    ma_log_postf(&system->log, MA_LOG_LEVEL_DEBUG, "[voice] play: slot=%u handle=%llu\n", index, (unsigned long long)slot);
 
     return SBK_SUCCESS;
 }
@@ -658,7 +663,6 @@ sbk_status sc_system_clap_get_at(const sc_system* system, ma_uint32 index, sc_cl
 
 ma_handle sc_dlopen(ma_log* pLog, const char* filename)
 {
-#ifndef MA_NO_RUNTIME_LINKING
     ma_handle handle;
 
     ma_log_postf(pLog, MA_LOG_LEVEL_DEBUG, "Loading library: %s\n", filename);
@@ -695,17 +699,10 @@ ma_handle sc_dlopen(ma_log* pLog, const char* filename)
     }
 
     return handle;
-#else
-    /* Runtime linking is disabled. */
-    (void)pLog;
-    (void)filename;
-    return NULL;
-#endif
 }
 
 void sc_dlclose(ma_log* pLog, ma_handle handle)
 {
-#ifndef MA_NO_RUNTIME_LINKING
     #ifdef MA_WIN32
     FreeLibrary((HMODULE)handle);
     #else
@@ -713,16 +710,10 @@ void sc_dlclose(ma_log* pLog, ma_handle handle)
     #endif
 
     (void)pLog;
-#else
-    /* Runtime linking is disabled. */
-    (void)pLog;
-    (void)handle;
-#endif
 }
 
 ma_proc sc_dlsym(ma_log* pLog, ma_handle handle, const char* symbol)
 {
-#ifndef MA_NO_RUNTIME_LINKING
     ma_proc proc;
 
     ma_log_postf(pLog, MA_LOG_LEVEL_DEBUG, "Loading symbol: %s\n", symbol);
@@ -747,13 +738,6 @@ ma_proc sc_dlsym(ma_log* pLog, ma_handle handle, const char* symbol)
 
     (void)pLog; /* It's possible for pContext to be unused. */
     return proc;
-#else
-    /* Runtime linking is disabled. */
-    (void)pLog;
-    (void)handle;
-    (void)symbol;
-    return NULL;
-#endif
 }
 
 const char* sc_filename_get_ext(const char* filename)
@@ -824,4 +808,9 @@ sbk_status sc_clap_unload(sc_clap* clapPlugin)
     SC_ZERO_OBJECT(clapPlugin);
 
     return SBK_SUCCESS;
+}
+
+void sc_channel_map_apply_f32(float* pFramesOut, const ma_channel* pChannelMapOut, ma_uint32 channelsOut, const float* pFramesIn, const ma_channel* pChannelMapIn, ma_uint32 channelsIn, ma_uint64 frameCount, ma_channel_mix_mode mode, ma_mono_expansion_mode monoExpansionMode)
+{
+    ma_channel_map_apply_f32(pFramesOut, pChannelMapOut, channelsOut, pFramesIn, pChannelMapIn, channelsIn, frameCount, mode, monoExpansionMode);
 }

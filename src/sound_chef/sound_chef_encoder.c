@@ -173,7 +173,6 @@ sbk_status sc_encoder_write_from_file(const char* decodeFilePath,
 
     sc_encoder_config configCopy = *config;
 
-    // If encoding to "As Input" channels, find the channel count from the decoder
     if (config->baseConfig.channels == 0)
     {
         const sbk_status getChannelsResult =
@@ -206,7 +205,6 @@ sbk_status sc_encoder_write_from_file(const char* decodeFilePath,
         assert(encodeResult == SBK_SUCCESS);
         (void)encodeResult;
 
-        // Out of data
         if (framesRead < desiredFrameCount)
         {
             break;

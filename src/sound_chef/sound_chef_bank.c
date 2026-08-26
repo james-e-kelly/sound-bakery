@@ -16,7 +16,6 @@ static const char* sc_path_file_name(const char* path)
 
     fileName = path;
 
-    /* We just loop through the path until we find the last slash. */
     while (path[0] != '\0')
     {
         if (path[0] == '/' || path[0] == '\\')
@@ -27,7 +26,6 @@ static const char* sc_path_file_name(const char* path)
         path += 1;
     }
 
-    /* At this point the file name is sitting on a slash, so just move forward. */
     while (fileName[0] != '\0' && (fileName[0] == '/' || fileName[0] == '\\'))
     {
         fileName += 1;
