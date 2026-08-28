@@ -549,7 +549,7 @@ sbk_status sc_system_play_sound(sc_system* system, sc_sound* sound, sc_voice_han
     SC_ASSERT(currentState == sc_voice_state_free);
 
     voice->sound = sound;
-    voice->group = parent;
+    voice->group = parent ? parent : system->masterNodeGroup;
 
     c89atomic_store_64(&voice->handle, (sc_uint64)slot);    // Set the handle first. Ensures anyone trying to write to this handle sees it's been reassigned and can stop
     c89atomic_store_64(&voice->playCursor, 0u);
