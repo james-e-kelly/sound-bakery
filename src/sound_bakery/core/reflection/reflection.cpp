@@ -293,9 +293,6 @@ namespace sbk::reflection
             .property("Master", &soundbank::m_initSoundbank)
             .property("Lookup", &soundbank::m_lookupSoundbank);
 
-        registration::class_<node_instance>("node_instance")
-            .constructor<>(create_sbk_object<node_instance>)(policy::ctor::as_raw_ptr);
-
         sbk::reflection::RegisterPointerConversionsForBaseClasses<aux_bus>();
         sbk::reflection::RegisterPointerConversionsForBaseClasses<blend_container>();
         sbk::reflection::RegisterPointerConversionsForBaseClasses<random_container>();

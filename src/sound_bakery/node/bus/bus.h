@@ -23,12 +23,12 @@ namespace sbk::engine
 
         [[nodiscard]] auto is_master_bus() const -> bool { return m_masterBus; }
 
-        [[nodiscard]] auto lock_and_copy() -> std::shared_ptr<node_instance>;
+        [[nodiscard]] auto lock_or_copy_node_group() -> sbk::result<std::shared_ptr<sc_node_group>>;
 
-    protected:
-        std::weak_ptr<node_instance> m_busInstance;
+        /// @todo Add node group creation
 
     private:
         bool m_masterBus;
+        std::shared_ptr<sc_node_group> m_nodeGroup;
     };
 }  // namespace sbk::engine

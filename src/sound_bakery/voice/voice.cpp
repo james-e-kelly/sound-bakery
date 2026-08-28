@@ -2,8 +2,9 @@
 
 #include "sound_bakery/gameobject/gameobject.h"
 #include "sound_bakery/node/container/sound_container.h"
+#include "sound_bakery/node/bus/bus.h"
+#include "sound_bakery/runtime/runtime.h"
 #include "sound_bakery/sound/sound.h"
-#include "sound_bakery/voice/node_instance.h"
 
 using namespace sbk::engine;
 
@@ -14,41 +15,137 @@ auto sbk::engine::voice::play_container(container* container) -> sbk::result<voi
     ZoneScoped;
     remove_all();
 
-    m_playingContainer = container;
+    gather_children_context context;
+    context.sounds.push_back(container->casted_shared_from_this<sbk::engine::container>());
+    context.numTimesPlayed = 0;
+    context.parameters     = get_owning_game_object()->get_local_parameters();
 
-    SBK_TRY(const auto voiceInstance, create_runtime_object<node_instance>());
+    runtime* const runtime = get_runtime();
 
-    event_init initData;
-    initData.refNode            = container->try_convert_object<node_base>();
-    initData.type               = sbk::engine::node_instance_type::main;
-    initData.m_owningGameObject = get_owning_game_object();
-
-    if (voiceInstance->init(initData).has_value())
+    std::size_t index = 0;
+    for (auto childIter = context.sounds.begin(); childIter != context.sounds.end(); ++childIter, ++index)
     {
-        return voiceInstance->play();
+        m_instances.emplace_back();
+
+        if ((*childIter)->get_object_type() == sound_container::type())
+        {
+            std::shared_ptr<sound> sharedSound = (*childIter)->casted_shared_from_this<sound_container>()->get_sound();
+
+            if (!sharedSound || sharedSound->get_sound() == nullptr)
+            {
+                SBK_WARN("{} has no sound to play", (*childIter)->get_object_name());
+                continue;
+            }
+
+            std::shared_ptr<node_base> outputBus = (*childIter)->get_output_bus();
+            sc_node_group* outputNodeGroup       = nullptr;
+            float volume                         = (*childIter)->m_volume.get();
+            float pitch                          = (*childIter)->m_pitch.get();
+            float lowpass                        = (*childIter)->m_lowpass.get();
+            float highpass                       = (*childIter)->m_highpass.get();
+
+            std::shared_ptr<node_base> parent = (*childIter)->get_parent();
+
+            while (parent)
+            {
+                auto sharedParent = parent->casted_shared_from_this<node>();
+
+                // We don't have property overrides so take the bottom-most output bus
+                if (!outputBus)
+                {
+                    outputBus = sharedParent->get_output_bus();
+                }
+
+                volume *= sharedParent->m_volume.get();
+                pitch *= sharedParent->m_pitch.get();
+
+                // For now, lowwpass and highpass is summed
+                // We can add settings later for "take highest"
+                lowpass += sharedParent->m_lowpass.get();
+                highpass += sharedParent->m_highpass.get();
+
+                parent = parent->get_parent();
+            }
+
+            lowpass  = std::clamp(lowpass, (*childIter)->m_lowpass.get_min(), (*childIter)->m_lowpass.get_max());
+            highpass = std::clamp(highpass, (*childIter)->m_highpass.get_min(), (*childIter)->m_highpass.get_max());
+
+            if (outputBus)
+            {
+                std::shared_ptr<bus> sharedBus = std::static_pointer_cast<bus>(outputBus);
+                auto getNodeGroupResult        = sharedBus->lock_or_copy_node_group();
+
+                if (getNodeGroupResult.has_value())
+                {
+                    std::shared_ptr<sc_node_group> nodeGroup = getNodeGroupResult.value();
+                    m_outputBusses.push_back(nodeGroup);
+                    outputNodeGroup = nodeGroup.get();
+                }
+            }
+
+            sc_voice_handle handle{};
+            if (SBK_REPORT_IF_C(sc_system_play_sound(runtime, sharedSound->get_sound(), &handle, outputNodeGroup, SC_TRUE)))
+            {
+                m_instances[index].voiceHandle = handle;
+
+                sc_voice_set_volume(runtime, handle, volume);
+                sc_voice_set_pitch(runtime, handle, pitch);
+
+                sc_voice_set_paused(runtime, handle, SC_FALSE);
+            }
+        }
+        else
+        {
+            const std::size_t containerSizeBeforeGather = context.sounds.size();
+            (*childIter)->gather_children_for_play(context);
+            const std::size_t containerSizeAfterGather = context.sounds.size();
+            const std::size_t childrenSize             = containerSizeAfterGather - containerSizeBeforeGather;
+
+            m_instances.resize(m_instances.size() + childrenSize);
+
+            m_instances[index].childCount = childrenSize;
+
+            // The children spawned from this container go at the end of the array
+            // It is not guaranteed for new children to be _next_ in the array
+            // For example, container 0 spawns two children
+            // We then move forward to container 1, the first child
+            // it spawns two more children
+            // The new children are at [3,4], not [2,3], which are next in the array
+            const std::size_t childIndexStart = context.sounds.size() - 1 - childrenSize;
+
+            for (std::size_t childIndex = 0; childIndex < childrenSize; ++childIndex)
+            {
+                m_instances[index + childIndexStart + childIndex].parentIndex = index;
+            }
+        }
     }
 
-    remove_all();
     return sbk::make_error(SBK_ERR_BAKERY, "Failed to initialize the voice instance");
 }
 
 auto voice::update() -> void
 {
     ZoneScoped;
-    for (auto iter = std::begin(get_objects()); iter != std::end(get_objects());)
-    {
-        if (sbk::engine::node_instance* const nodeInstance =
-                iter->get()->try_convert_object<sbk::engine::node_instance>())
-        {
-            (void)nodeInstance->update();
 
-            if (nodeInstance->is_stopped())
+    if (runtime* const runtime = get_runtime())
+    {
+        for (int index = static_cast<int>(m_instances.size()) - 1; index >= 0; --index)
+        {
+            if (!m_instances[index].finished)
             {
-                iter = remove_object(*iter);
-            }
-            else
-            {
-                ++iter;
+                unsigned int& childCount     = m_instances[index].childCount;
+                sc_voice_handle& voiceHandle = m_instances[index].voiceHandle;
+                std::size_t& parentIndex    = m_instances[index].parentIndex;
+                sc_bool playing              = SC_FALSE;
+
+                const bool finished = m_instances[index].voiceHandle == 0 ? m_instances[index].childCount == 0 : sc_voice_get_is_playing(runtime, voiceHandle, &playing) != SBK_SUCCESS;
+
+                if (finished)
+                {
+                    --m_instances[parentIndex].childCount;
+                    m_instances[index].finished = true;
+                    m_instances[index].voiceHandle = 0;
+                }
             }
         }
     }
@@ -61,80 +158,18 @@ auto sbk::engine::voice::playing_container(container* container) const noexcept 
         return false;
     }
 
-    if (container->get_database_id() == m_playingContainer.id())
+    for (std::size_t index = 0; index < m_instances.size(); ++index)
     {
-        return true;
-    }
-
-    auto containerEqual = [id = container->get_database_id()](const std::shared_ptr<sbk::core::object>& object)
-    {
-        if (!object)
-        {
-            return false;
-        }
-
-        std::shared_ptr<sbk::engine::node_instance> nodeInstance =
-            std::static_pointer_cast<sbk::engine::node_instance>(object);
-
-        if (!nodeInstance)
-        {
-            return false;
-        }
-
-        if (nodeInstance->get_referencing_node()->get_database_id() == id)
+        if (m_instances[index].containerReference == container->get_database_id())
         {
             return true;
         }
-
-        node_instance* parentNodeInstance = nodeInstance->get_parent();
-
-        while (parentNodeInstance)
-        {
-            if (parentNodeInstance->get_referencing_node()->get_database_id() == id)
-            {
-                return true;
-            }
-
-            parentNodeInstance = parentNodeInstance->get_parent();
-        }
-
-        return false;
-    };
-
-    return std::find_if(get_objects().begin(), get_objects().end(), containerEqual) != get_objects().end();
-}
-
-auto sbk::engine::voice::get_voices() const noexcept -> const eastl::vector<std::shared_ptr<node_instance>>
-{
-    eastl::vector<std::shared_ptr<node_instance>> nodeInstances;
-
-    for (std::size_t index = 0; index < get_objects().size(); ++index)
-    {
-        if (get_objects()[index])
-        {
-            if (std::shared_ptr<sbk::engine::node_instance> nodeInstance =
-                    std::static_pointer_cast<sbk::engine::node_instance>(get_objects()[index]))
-            {
-                nodeInstances.push_back(nodeInstance);
-            }
-        }
     }
 
-    return nodeInstances;
+    return false;
 }
 
-auto sbk::engine::voice::num_voices() const -> std::size_t
-{
-    // Just assuming all owned objects are node instances
-    return get_objects().size();
-}
-
-auto sbk::engine::voice::node_instance_at(std::size_t index) const -> node_instance*
-{
-    return get_objects()[index]->try_convert_object<sbk::engine::node_instance>();
-}
-
-auto sbk::engine::voice::is_playing() const -> bool { return get_objects().size(); }
+auto sbk::engine::voice::is_playing() const -> bool { return m_instances.size() > 0 && !m_instances[0].finished; }
 
 auto sbk::engine::voice::get_owning_game_object() const -> game_object*
 {

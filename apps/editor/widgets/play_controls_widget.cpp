@@ -9,7 +9,6 @@
 #include "sound_bakery/sound/sound.h"
 #include "sound_bakery/system.h"
 #include "sound_bakery/util/type_helper.h"
-#include "sound_bakery/voice/node_instance.h"
 #include "sound_bakery/voice/voice.h"
 
 #include "IconsLucide.h"

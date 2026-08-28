@@ -1,7 +1,7 @@
 #include "bus.h"
 
 #include "sound_bakery/system.h"
-#include "sound_bakery/voice/node_instance.h"
+#include "sound_bakery/runtime/runtime.h"
 
 using namespace sbk::engine;
 
@@ -28,21 +28,14 @@ auto sbk::engine::bus::set_master_bus(bool isMaster) -> void
     }
 }
 
-auto bus::lock_and_copy() -> std::shared_ptr<node_instance>
+auto sbk::engine::bus::lock_or_copy_node_group() -> sbk::result<std::shared_ptr<sc_node_group>>
 {
-    if (m_busInstance.expired())
+    if (!m_nodeGroup)
     {
-        std::shared_ptr<node_instance> sharedBus = std::make_shared<node_instance>();
-
-        event_init initData;
-        initData.refNode = try_convert_object<node_base>();
-        initData.type    = node_instance_type::bus;
-
-        if (sharedBus->init(initData).has_value())
-        {
-            m_busInstance = sharedBus;
-        }
+        sc_node_group* nodeGroup{};
+        SBK_TRY_C(sc_system_create_node_group(get_runtime(), &nodeGroup));
+        m_nodeGroup = std::shared_ptr<sc_node_group>(nodeGroup, SC_NODE_GROUP_DELETER{});
     }
 
-    return m_busInstance.lock();
+    return m_nodeGroup;
 }

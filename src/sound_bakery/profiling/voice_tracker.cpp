@@ -4,7 +4,6 @@
 #include "sound_bakery/node/node.h"
 #include "sound_bakery/runtime/runtime.h"
 #include "sound_bakery/system.h"
-#include "sound_bakery/voice/node_instance.h"
 #include "sound_bakery/voice/voice.h"
 
 using namespace sbk::engine::profiling;
@@ -23,41 +22,6 @@ auto voice_tracker::update(system* system) -> void
                 if (const sbk::engine::voice* const voice = object->try_convert_object<sbk::engine::voice>())
                 {
                     std::unordered_set<const node_instance*> trackedNodes;
-
-                    for (std::size_t j = 0; j < voice->num_voices(); ++j)
-                    {
-                        if (const node_instance* const nodeInstance = voice->node_instance_at(j))
-                        {
-                            if (!trackedNodes.contains(nodeInstance))
-                            {
-                                trackedNodes.insert(nodeInstance);
-
-                                if (const std::shared_ptr<node> node = nodeInstance->get_referencing_node())
-                                {
-                                    m_playingNodeIDs.insert(node->get_database_id());
-                                    m_nodePlayingCount[node->get_database_id()]++;
-                                }
-
-                                const node_instance* parent = nodeInstance->get_parent();
-
-                                if (!trackedNodes.contains(parent))
-                                {
-                                    trackedNodes.insert(parent);
-
-                                    while (parent)
-                                    {
-                                        if (const std::shared_ptr<node> node = parent->get_referencing_node())
-                                        {
-                                            m_playingNodeIDs.insert(node->get_database_id());
-                                            m_nodePlayingCount[node->get_database_id()]++;
-                                        }
-
-                                        parent = parent->get_parent();
-                                    }
-                                }
-                            }
-                        }
-                    }
                 }
             }
         }

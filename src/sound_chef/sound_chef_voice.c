@@ -166,6 +166,24 @@ sbk_status sc_voice_get_virtual(sc_system* system, sc_voice_handle handle, sc_bo
     return SBK_SUCCESS;
 }
 
+sbk_status sc_voice_set_volume(sc_system* system, sc_voice_handle handle, float volume)
+{
+    SC_CHECK_ARG(system != NULL);
+    sc_voice* voice;
+    SC_CHECK_STATUS(sc_voice_resolve(system, handle, &voice));
+    c89atomic_store_f32(&voice->gain, volume);
+    return SBK_SUCCESS;
+}
+
+sbk_status sc_voice_set_pitch(sc_system* system, sc_voice_handle handle, float pitch)
+{
+    SC_CHECK_ARG(system != NULL);
+    sc_voice* voice;
+    SC_CHECK_STATUS(sc_voice_resolve(system, handle, &voice));
+    c89atomic_store_f32(&voice->pitch, pitch);
+    return SBK_SUCCESS;
+}
+
 static void sc_real_voice_update_pitch_if_required(sc_real_voice* realVoice, ma_uint32 sampleRate)
 {
     ma_bool32 isUpdateRequired = MA_FALSE;

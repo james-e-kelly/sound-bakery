@@ -1,7 +1,6 @@
 #pragma once
 
 #include "sound_bakery/core/object/object.h"
-#include "sound_bakery/voice/node_instance.h"
 
 namespace sbk::engine
 {
@@ -17,21 +16,32 @@ namespace sbk::engine
         REGISTER_REFLECTION(voice, sbk::core::object)
 
     public:
+        /**
+         * @brief A voice handle -> the container that started it.
+         * 
+         * When the handle ends, we can retrigger the container to see if it wants any more sounds to play.
+         */
+        using play_pair = std::pair<sc_voice_handle, std::shared_ptr<container>>;
+
         auto play_container(container* container) -> sbk::result<void>;
 
         auto update() -> void;
 
         [[nodiscard]] auto playing_container(container* container) const noexcept -> bool;
-
-        [[nodiscard]] auto get_voices() const noexcept -> const eastl::vector<std::shared_ptr<node_instance>>;
-        [[nodiscard]] auto num_voices() const -> std::size_t;
-        [[nodiscard]] auto node_instance_at(std::size_t index) const -> node_instance*;
-
         [[nodiscard]] auto is_playing() const -> bool;
-
         [[nodiscard]] auto get_owning_game_object() const -> game_object*;
 
     private:
-        sbk::core::database_ptr<container> m_playingContainer;
+        struct container_instance
+        {
+            sbk_id containerReference{};    //< ID to the original container this was played from
+            sc_voice_handle voiceHandle{};  //< Valid if this instance is a sound container
+            unsigned int childCount{};      //< How many children this container played and waiting to finish
+            std::size_t parentIndex{};      //< Array index of our parent so we can quickly find it without searching the adjadcecy array
+            bool finished{};                //< Set to true when we've already notified the parent we've ended
+        };
+
+        eastl::vector<container_instance> m_instances;
+        eastl::vector<std::shared_ptr<sc_node_group>> m_outputBusses;
     };
 }  // namespace sbk::engine

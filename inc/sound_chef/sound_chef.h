@@ -960,6 +960,8 @@ sbk_status SC_API sc_voice_get_paused(sc_system* system, sc_voice_handle handle,
 sbk_status SC_API sc_voice_set_paused(sc_system* system, sc_voice_handle handle, sc_bool paused);
 sbk_status SC_API sc_voice_set_virtual(sc_voice* voice, sc_bool virtualised);
 sbk_status SC_API sc_voice_get_virtual(sc_system* system, sc_voice_handle handle, sc_bool* outVirtual);
+sbk_status SC_API sc_voice_set_volume(sc_system* system, sc_voice_handle handle, float volume);
+sbk_status SC_API sc_voice_set_pitch(sc_system* system, sc_voice_handle handle, float pitch);
 sbk_status SC_API sc_voice_stop(sc_system* system, sc_voice_handle handle);
 sbk_status SC_API sc_voice_set_stopped_callback(sc_system* system, sc_voice_handle handle, sc_voice_stopped_proc callback, void* userData);
 

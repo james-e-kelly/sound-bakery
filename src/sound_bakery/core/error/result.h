@@ -38,6 +38,7 @@
  *   - In a `sbk_status`    function:  SBK_STATUS_CHECK, SBK_STATUS_CHECK_MSG, SBK_STATUS_TRY_C, SBK_STATUS_FAIL
  *   - In a `sbk_id`        function:  SBK_ID_CHECK, SBK_ID_CHECK_MSG
  *   - Log only (any function):        SBK_REPORT, SBK_REPORT_MSG, SBK_REPORTV, SBK_REPORT_C
+ *   - Log + branch (any function):    SBK_REPORT_IF, SBK_REPORT_IF_C
  *
  * See error/README.md for a fuller guide and worked examples.
  */
@@ -285,4 +286,37 @@
         if (SBK_DETAIL_UNIQUE(sbkCode_) != SBK_SUCCESS) [[unlikely]] \
             ::sbk::log_error(SBK_DETAIL_UNIQUE(sbkCode_), #expr); \
     } while (0)
+
+/**
+ * @brief Guards @p cond; if false, logs @p code. Evaluates to the condition, for use in @c if().
+ *
+ * @code
+ *   if (SBK_REPORT_IF(ptr != nullptr, SBK_ERR_NULL))
+ *       use(ptr);
+ * @endcode
+ */
+#define SBK_REPORT_IF(cond, code)                                               \
+    [&](bool sbkCond_)                                                          \
+    {                                                                           \
+        if (!sbkCond_) [[unlikely]]                                             \
+            ::sbk::log_error((code), "check failed: " #cond);                   \
+        return sbkCond_;                                                        \
+    }(!!(cond))
+
+/**
+ * @brief Calls a C function returning @c sbk_status; if non-success, logs. Evaluates to @c true on success.
+ *
+ * @code
+ *   if (SBK_REPORT_IF_C(sc_system_play_sound(sys, s, &v)))
+ *       use(v);
+ * @endcode
+ */
+#define SBK_REPORT_IF_C(expr)                                                   \
+    [&]()                                                                       \
+    {                                                                           \
+        const sbk_status sbkCode_ = (expr);                                     \
+        if (sbkCode_ != SBK_SUCCESS) [[unlikely]]                               \
+            ::sbk::log_error(sbkCode_, #expr);                                  \
+        return sbkCode_ == SBK_SUCCESS;                                         \
+    }()
 

@@ -13,7 +13,6 @@
 #include "sound_bakery/profiling/voice_tracker.h"
 #include "sound_bakery/runtime/runtime.h"
 #include "sound_bakery/util/type_helper.h"
-#include "sound_bakery/voice/node_instance.h"
 #include "sound_bakery/voice/voice.h"
 
 #include "rpmalloc/rpmalloc.h"
@@ -322,12 +321,10 @@ auto system::update() -> sbk::result<void>
     }
 
     TracyPlotConfig(profiling_strings::s_gameObjectPlotName, tracy::PlotFormatType::Number, true, false, 0);
-    TracyPlotConfig(profiling_strings::s_nodeInstancePlotName, tracy::PlotFormatType::Number, true, false, 0);
     TracyPlotConfig(profiling_strings::s_voicePlotName, tracy::PlotFormatType::Number, true, false, 0);
 
     TracyPlot(profiling_strings::s_gameObjectPlotName, (int64_t)get_objects_of_type(sbk::engine::game_object::type()).size());
     TracyPlot(profiling_strings::s_voicePlotName, (int64_t)get_objects_of_type(sbk::engine::voice::type()).size());
-    TracyPlot(profiling_strings::s_nodeInstancePlotName, (int64_t)get_objects_of_type(sbk::engine::node_instance::type()).size());
 
     rpmalloc_global_statistics_t stats;
     rpmalloc_global_statistics(&stats);

@@ -6,7 +6,6 @@
 #include "sound_bakery/node/container/container.h"
 #include "sound_bakery/serialization/serializer.h"
 #include "sound_bakery/system.h"
-#include "sound_bakery/voice/node_instance.h"
 #include "sound_bakery/voice/voice.h"
 
 auto sbk::play_container(sbk::engine::system* system, sbk::engine::game_object* gameObject, sbk::engine::container* container) -> sbk::result<>

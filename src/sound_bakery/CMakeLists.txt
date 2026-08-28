@@ -198,7 +198,6 @@ set(SOUND_BAKERY_SOURCES
     util/type_helper.cpp
 
     voice/voice.cpp
-    voice/node_instance.cpp
 )
 
 set(SOUND_BAKERY_PRIVATE_HEADERS
@@ -283,7 +282,6 @@ set(SOUND_BAKERY_PRIVATE_HEADERS
     util/type_helper.h
 
     voice/voice.h
-    voice/node_instance.h
 )
 
 set(SOUND_BAKERY_PUBLIC_HEADERS

@@ -4,7 +4,6 @@
 #include "sound_bakery/node/container/sound_container.h"
 #include "sound_bakery/sound/sound.h"
 #include "sound_bakery/system.h"
-#include "sound_bakery/voice/node_instance.h"
 
 #include "app/app.h"
 #include "imgui.h"
