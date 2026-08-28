@@ -44,6 +44,8 @@ namespace gluten
         }
 
         auto set_render_type(image_render render) -> void;
+        auto set_tint(const ImVec4& color) -> void { m_tint = ImGui::ColorConvertFloat4ToU32(color); }
+        auto set_tint(ImU32 color) -> void { m_tint = color; }
 
         static auto load_image_data(unsigned char* data, int dataLength, int& width, int& height) -> data_ptr;
 
@@ -54,6 +56,7 @@ namespace gluten
         uint32_t m_openGlId   = 0;
         int m_width           = 0;
         int m_height          = 0;
+        ImU32 m_tint          = IM_COL32_WHITE;
         image_render m_render = image_render::square;
         bool m_ownsTexture    = true;
     };

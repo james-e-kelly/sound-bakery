@@ -55,12 +55,13 @@ namespace gluten
                 {
                     case gluten::image_render::square:
                         drawList->AddImage((ImTextureID)m_openGlId, ImVec2(newStartX, newStartY),
-                                           ImVec2(newStartX + imageSize.x, newStartY + imageSize.y));
+                                           ImVec2(newStartX + imageSize.x, newStartY + imageSize.y),
+                                           ImVec2(0, 0), ImVec2(1, 1), m_tint);
                         break;
                     case gluten::image_render::circular:
                         drawList->AddImageRounded((ImTextureID)m_openGlId, ImVec2(newStartX, newStartY),
                                                   ImVec2(newStartX + imageSize.x, newStartY + imageSize.y),
-                                                  ImVec2(0, 0), ImVec2(1, 1), IM_COL32_WHITE, imageSize.y * 0.5f);
+                                                  ImVec2(0, 0), ImVec2(1, 1), m_tint, imageSize.y * 0.5f);
                         break;
                     default:
                         break;

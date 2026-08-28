@@ -11,6 +11,7 @@
 #include "implot.h"
 
 #include <stdio.h>
+#include <vector>
 
 #define GL_SILENCE_DEPRECATION
 #include <GLFW/glfw3.h>  // Will drag system OpenGL headers
@@ -81,7 +82,7 @@ renderer_subsystem::window_guard::window_guard(int width, int height, const std:
                     {
                         if (gluten::root_widget* const rootWidgetCasted = (gluten::root_widget*)rootWidget)
                         {
-                            *hit = rootWidgetCasted->is_hovering_titlebar();
+                            *hit = rootWidgetCasted->is_hovering_draggable_area();
                         }
                     }
                 }
@@ -208,11 +209,33 @@ int renderer_subsystem::init()
             gluten::image::data_ptr windowIconImageData =
                 image::load_image_data((unsigned char*)logoFile.begin(), logoFile.size(), width, height);
 
-            GLFWimage windowIconImage;
-            windowIconImage.pixels = windowIconImageData.get();
-            windowIconImage.width  = width;
-            windowIconImage.height = height;
-            glfwSetWindowIcon(m_window.m_window, 1, &windowIconImage);
+            auto downscaleIcon = [](const unsigned char* src, int srcW, int srcH, int dstW, int dstH)
+            {
+                std::vector<unsigned char> dst(dstW * dstH * 4);
+                for (int y = 0; y < dstH; ++y)
+                {
+                    for (int x = 0; x < dstW; ++x)
+                    {
+                        const int srcX       = x * srcW / dstW;
+                        const int srcY       = y * srcH / dstH;
+                        const int srcIndex   = (srcY * srcW + srcX) * 4;
+                        const int dstIndex   = (y * dstW + x) * 4;
+                        dst[dstIndex + 0]    = src[srcIndex + 0];
+                        dst[dstIndex + 1]    = src[srcIndex + 1];
+                        dst[dstIndex + 2]    = src[srcIndex + 2];
+                        dst[dstIndex + 3]    = src[srcIndex + 3];
+                    }
+                }
+                return dst;
+            };
+
+            std::vector<unsigned char> icon16 = downscaleIcon(windowIconImageData.get(), width, height, 16, 16);
+            std::vector<unsigned char> icon32 = downscaleIcon(windowIconImageData.get(), width, height, 32, 32);
+
+            GLFWimage windowIconImages[2];
+            windowIconImages[0] = {16, 16, icon16.data()};
+            windowIconImages[1] = {32, 32, icon32.data()};
+            glfwSetWindowIcon(m_window.m_window, 2, windowIconImages);
 
             return 0;
         }

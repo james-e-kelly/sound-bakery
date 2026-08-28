@@ -13,8 +13,11 @@ set(review_SOURCES
   data/workspace_data.cpp
   data/review_data.cpp
   elements/inline_user_display_element.cpp
+  elements/left_panel_element.cpp
   elements/review_element.cpp
+  elements/toolbar_element.cpp
   elements/project_element.cpp
+  elements/list_element.cpp
   elements/video_element.cpp
   elements/audio_element.cpp
   managers/project_manager.cpp
@@ -27,6 +30,7 @@ set(review_SOURCES
   widgets/create_comment_popup.cpp
   widgets/create_project_popup.cpp
   widgets/create_review_popup.cpp
+  widgets/settings_popup.cpp
   widgets/update_review_popup.cpp
   widgets/user_flow_popup.cpp
   widgets/edit_reviewers_popup.cpp
@@ -45,13 +49,16 @@ set(review_HEADERS
   data/project_data.h
   data/review_data.h
   data/user_settings_data.h
+  elements/audio_element.h
+  elements/left_panel_element.h
+  elements/file_drop_element.h
+  elements/inline_user_display_element.h
+  elements/list_element.h
+  elements/toolbar_element.h
   elements/project_element.h
   elements/review_element.h
   elements/user_element.h
-  elements/file_drop_element.h
-  elements/inline_user_display_element.h
   elements/video_element.h
-  elements/audio_element.h
   managers/project_manager.h
   managers/review_manager.h
   managers/workspace_manager.h
@@ -62,6 +69,7 @@ set(review_HEADERS
   widgets/create_comment_popup.h
   widgets/create_project_popup.h
   widgets/create_review_popup.h
+  widgets/settings_popup.h
   widgets/update_review_popup.h
   widgets/user_flow_popup.h
   widgets/edit_reviewers_popup.h

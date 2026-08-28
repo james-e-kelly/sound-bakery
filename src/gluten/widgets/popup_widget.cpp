@@ -31,19 +31,23 @@ auto gluten::popup_widget::render_implementation() -> void
 {
     open_popup();
 
+    gluten::imgui::scoped_color windowBackground(ImGuiCol_WindowBg, gluten::theme::background);
     gluten::imgui::scoped_color inputTextBackground(ImGuiCol_FrameBg, gluten::theme::layer01);
-    gluten::imgui::scoped_style popupPadding(ImGuiStyleVar_WindowPadding, ImVec2(gluten::theme::paddingVec));
+    gluten::imgui::scoped_style popupPadding(ImGuiStyleVar_WindowPadding, ImVec2(gluten::theme::insetFrame));
 
     ImVec2 center = ImGui::GetMainViewport()->GetCenter();
     ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
-    ImGui::SetNextWindowSize(ImVec2(800, 250), ImGuiCond_Appearing);
+    ImGui::SetNextWindowSize(gluten::theme::insetWindow * 10.0f, ImGuiCond_Appearing);
+
+    bool popupOpen = false;
 
     switch (m_style)
     {
         case popup_style::modal:
         {
-            if (ImGui::BeginPopupModal(get_widget_name().data(), m_closable ? &m_visible : nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+            if (ImGui::BeginPopupModal(get_widget_name().data(), m_closable ? &m_visible : nullptr))
             {
+                popupOpen = true;
                 render_popup();
 
                 ImGui::EndPopup();
@@ -52,14 +56,20 @@ auto gluten::popup_widget::render_implementation() -> void
         }
         case popup_style::normal:
         {
-            if (ImGui::BeginPopup(get_widget_name().data(), ImGuiWindowFlags_AlwaysAutoResize))
+            if (ImGui::BeginPopup(get_widget_name().data()))
             {
+                popupOpen = true;
                 render_popup();
 
                 ImGui::EndPopup();
             }
             break;
         }
+    }
+
+    if (!popupOpen)
+    {
+        set_visibile(false);
     }
 }
 

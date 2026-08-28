@@ -9,25 +9,25 @@
 #include "elements/review_element.h"
 #include "elements/user_element.h"
 #include "elements/video_element.h"
+#include "gluten/elements/combo.h"
 #include "gluten/theme/carbon/carbon_theme_g100.h"
 #include "gluten/theme/things/things.h"
 #include "managers/workspace_manager.h"
 #include "widgets/create_comment_popup.h"
-#include "widgets/create_project_popup.h"
 #include "widgets/create_review_popup.h"
+#include "widgets/settings_popup.h"
 #include "widgets/edit_reviewers_popup.h"
 #include "widgets/update_review_popup.h"
 
 namespace
 {
-    constexpr float leftToobarWidth             = gluten::g_baseFontSize * 4.5f;
-    constexpr float leftToolbarButtonHeight     = leftToobarWidth;
-    constexpr float topHeaderHeight             = gluten::g_baseFontSize * 4.5f;
-    constexpr float leftToolbarHalfButtonHeight = topHeaderHeight / 2.0f;
-    constexpr float descriptionBoxHeight        = topHeaderHeight * 2.0f;
+    static float leftToobarWidth() { return gluten::theme::layoutIconRailSize; }
 
-    constexpr float g_itemListWidth   = topHeaderHeight * 5.0f;
-    constexpr float g_rightPanelWidth = topHeaderHeight * 1.25f;
+    // Top breadcrumb bar -- body text with breathing room.
+    constexpr float topHeaderHeight             = gluten::theme::layoutBarHeightBody;    // 52
+
+    static float g_itemListWidth()   { return leftToobarWidth() * 5.0F; }
+    static float g_rightPanelWidth() { return leftToobarWidth() * 1.0F; }
 }  // namespace
 
 auto workspace_widget::start_implementation() -> void
@@ -38,107 +38,66 @@ auto workspace_widget::start_implementation() -> void
     set_window_class(windowClass);
 
     m_workspaceManager = get_app()->get_manager_by_class<workspace_manager>();
-
-    apply_styling();
 }
 
-void workspace_widget::apply_styling()
+void workspace_widget::refresh_style_implementation()
 {
     set_background_color(gluten::theme::background);
 
     m_windowLayout
-        .set_element_background_color(gluten::theme::background)
-        .get_element_anchor()
-        .set_max_offset(ImVec2(-1.0f, -1.0f));
+        .set_element_background_color(gluten::theme::background);
 
-    m_innerLayout
-        .set_layout_spacing(gluten::theme::largerRounding)
-        .set_element_rounding(gluten::theme::largerRounding)
-        .set_element_background_color(gluten::theme::layer01);
+    m_innerWindowLayout
+        .set_element_padding(ImVec4(0.0f, gluten::theme::space08, gluten::theme::space08, gluten::theme::space08))
+        ;
 
-    m_leftToolbarLayout
-        .set_element_background_color(gluten::theme::background)
-        .get_element_anchor()
-        .max.x += 0.1f;
+    // Toolbar
 
-    m_leftPanelLayout
+    m_toolbar.refresh_element();
+
+    // Left panel
+
+    m_leftPanel.set_up_panel(topHeaderHeight);
+
+    // Main panel
+
+    m_mainPanelLayout
+        .set_layout_padding(gluten::theme::insetFrame)
         .set_element_background_color(gluten::theme::layer02)
-        .set_element_rounding(gluten::theme::largestRounding)
-        .set_element_padding(ImVec2(0.0f, gluten::theme::rounding))
-        .get_element_anchor()
-        .maxOffset.y -= gluten::theme::rounding;
+        .set_element_rounding(gluten::theme::radiusLg)
+        .set_element_rounding_flags(ImDrawFlags_RoundCornersRight)
+        ;
 
     m_topContentBarBackground
-        .set_element_background_color(gluten::theme::layer01)
-        .set_element_anchor_preset(gluten::anchor_preset::stretch_top)
-        .get_element_anchor()
-        .set_max_offset(ImVec2(-gluten::theme::padding * 2.0f, topHeaderHeight));
+        .set_element_border_sides(gluten::border_sides::bottom)
+        .set_element_border_color(gluten::theme::borderStrong02)
+        ;
 
-    m_breadcrumbText
-        .set_element_content_font_size(gluten::g_baseFontSize * 2.0f)
-        .set_element_translation(ImVec2(5, 0.0f));
+    //
 
     m_rightPanelLayout
         .set_layout_spacing(ImGui::GetStyle().FramePadding.y)
-        .set_element_padding(gluten::theme::paddingVec);
+        //.set_element_padding(gluten::theme::insetFrame)
+        ;
 
     m_contentVerticalLayout
-        .set_element_padding(ImVec2(0.0f, gluten::theme::padding * 2.0f))
+        .set_element_padding(ImVec2(0.0f, gluten::theme::space08))
         .get_element_anchor()
-        .set_max_offset(ImVec2(-gluten::theme::padding, 0.0f));
+        .set_max_offset(ImVec2(-gluten::theme::space04, 0.0f));
 
-    editReviewersButton.set_element_alignment(ImVec2(1.0f, -0.1f));
-    editReviewersButton.set_element_translation(ImVec2(-ImGui::GetStyle().FramePadding.x, 0.0f));
-    m_descriptionBoxLayout.set_layout_type(gluten::layout::layout_type::top_to_bottom)
+    editReviewersButton
+        .set_element_alignment(ImVec2(1.0f, -0.1f))
+        .set_element_translation(ImVec2(-ImGui::GetStyle().FramePadding.x, 0.0f));
+
+    descriptionEditButton
+        .set_element_alignment(ImVec2(1.0f, -0.0f));
+
+    m_descriptionBoxLayout
+        .set_layout_type(gluten::layout::layout_type::top_to_bottom)
         .set_element_anchor_preset(gluten::element::anchor_preset::stretch_full);
 
-    m_contentTitleText
-        .set_font(gluten::fonts::title_lucide_icons)
-        .set_element_content_font_size(gluten::g_baseFontSize * 2.0f);
+    m_descriptionBoxButtonsLayout.set_layout_spacing(gluten::theme::space08);
 
-    descriptionText.set_font(gluten::fonts::regular_lucide_icons)
-        .set_element_content_font_size(gluten::g_baseFontSize * 1.3f);
-    qualityText.set_font(gluten::fonts::regular_lucide_icons);
-    qualityText.set_element_content_font_size(gluten::g_baseFontSize * 1.3f);
-    votesText.set_font(gluten::fonts::regular_lucide_icons);
-    votesText.set_element_content_font_size(gluten::g_baseFontSize * 1.3f);
-    votesIconText.set_font(gluten::fonts::regular_lucide_icons);
-    votesIconText.set_element_content_font_size(gluten::g_baseFontSize * 1.3f);
-    phaseText.set_font(gluten::fonts::regular_lucide_icons);
-    phaseText.set_element_content_font_size(gluten::g_baseFontSize * 1.3f);
-    m_scrutinyLayout.set_element_anchor_preset(gluten::element::anchor_preset::stretch_full);
-    descriptionEditButton.set_element_alignment(ImVec2(1.0f, -0.0f));
-    m_reviewFilesLayout.set_layout_spacing(20.0f);
-
-    m_descriptionBoxButtonsLayout.set_layout_spacing(8.0f);
-
-    listItemsTitle.set_font(gluten::fonts::title).set_element_content_font_size(gluten::g_baseFontSize * 2.0f);
-
-    constexpr float listItemButtonsOffset = 30.0f;
-
-    m_leftPanelBackButton
-        //.set_element_border(2.0f, 0.0f)
-        .set_element_scale(1.3f)
-        //.set_element_background_color(gluten::theme::field03)
-        .set_element_hover_color(gluten::theme::fieldHover02)
-        .set_element_active_color(gluten::theme::layerActive01)
-        .set_element_anchor_preset(gluten::element::anchor_preset::left_middle)
-        .set_element_content_scale(2.5f)  // Icon size
-        .set_element_alignment(ImVec2(0.5f, 0.5f))
-        .set_element_translation(ImVec2(listItemButtonsOffset, 0.0f))
-        .set_element_rounding(gluten::theme::rounding);
-
-    m_leftPanelNewButton
-        //.set_element_border(2.0f, 0.0f)
-        .set_element_scale(1.3f)
-        //.set_element_background_color(gluten::theme::field03)
-        .set_element_hover_color(gluten::theme::fieldHover02)
-        .set_element_active_color(gluten::theme::layerActive01)
-        .set_element_anchor_preset(gluten::element::anchor_preset::right_middle)
-        .set_element_content_scale(2.5f)  // Icon size
-        .set_element_alignment(ImVec2(0.5f, 0.5f))
-        .set_element_translation(ImVec2(-listItemButtonsOffset, 0.0f))
-        .set_element_rounding(gluten::theme::rounding);
 }
 
 auto workspace_widget::render_window_implementation() -> void
@@ -149,225 +108,15 @@ auto workspace_widget::render_window_implementation() -> void
 
     render_left_toolbar();
 
-    m_windowLayout.render_layout_element_remaining(&m_innerLayout);
+    m_windowLayout.render_layout_element_remaining(&m_innerWindowLayout);
 
-    m_innerLayout.render_layout_element_pixels_horizontal(nullptr, 0.0f);
-
-    switch (m_activeView)
-    {
-        case workspace_widget::reviews_view:
-        case workspace_widget::users_view:
-            render_list_panel();
-            ImGui::SameLine();
-            render_content();
-            break;
-        case workspace_widget::settings_view:
-            render_settings();
-            break;
-        default:
-            break;
-    }
-}
-
-auto workspace_widget::render_list_panel() -> void
-{
-    gluten::imgui::scoped_color backgroundColor(ImGuiCol_ChildBg, gluten::theme::layer02);
-    gluten::imgui::scoped_color borderColor(ImGuiCol_Border, gluten::theme::background);
-    gluten::imgui::scoped_color separatorColor(ImGuiCol_Separator, gluten::theme::background);
-
-    std::shared_ptr<workspace_manager> workspaceManager = m_workspaceManager.lock();
-
-    if (!workspaceManager)
-    {
-        return;
-    }
-
-    m_innerLayout.render_layout_element_pixels_horizontal(&m_leftPanelLayout, g_itemListWidth);
-
-    gluten::element topToolbar(gluten::element::anchor_preset::stretch_full);
-    m_leftPanelLayout.render_layout_element_pixels_vertical(&topToolbar, leftToobarWidth);
-
-    const bool listingProjects = !workspaceManager->has_selected_project();
-    const bool listingReviews  = !listingProjects;
-
-    switch (m_activeView)
-    {
-        case workspace_widget::reviews_view:
-            listItemsTitle.set_text(listingProjects ? "Projects" : "Reviews");
-            break;
-        case workspace_widget::users_view:
-            listItemsTitle.set_text("Users");
-            break;
-        case workspace_widget::settings_view:
-            break;
-        default:
-            break;
-    }
-
-    listItemsTitle.render(topToolbar.get_element_rect());
-
-    if (listingReviews)
-    {
-        if (m_leftPanelBackButton.render(topToolbar.get_element_rect()))
-        {
-            workspaceManager->select_project({});
-        }
-    }
-
-    if ((m_activeView == active_view::reviews_view || m_activeView == active_view::users_view) && m_userSettings->m_loggedInUser.m_privileges > user_privileges::guest)
-    {
-        if (m_leftPanelNewButton.render(topToolbar.get_element_rect()))
-        {
-            if (m_activeView == active_view::users_view)
-            {
-                workspaceManager->open_create_user_popup();
-            }
-            else
-            {
-                if (listingProjects)
-                {
-                    static std::shared_ptr<create_project_popup> createProjectPopup;
-                    createProjectPopup = add_child_widget<create_project_popup>(this);
-
-                    if (createProjectPopup)
-                    {
-                        createProjectPopup->open_popup();
-                    }
-                }
-                else if (listingReviews)
-                {
-                    createReviewPopup = add_child_widget<create_review_popup>(this);
-
-                    if (createReviewPopup)
-                    {
-                        createReviewPopup->open_popup();
-                    }
-                }
-            }
-        }
-    }
-
-    render_list_panel_elements(listingProjects, workspaceManager, listingReviews);
-}
-
-auto workspace_widget::render_list_panel_elements(const bool listingProjects, std::shared_ptr<workspace_manager>& workspaceManager, const bool listingReviews) -> void
-{
-    gluten::imgui::scoped_color backgroundColor(ImGuiCol_ChildBg, gluten::theme::layer02);
-    gluten::imgui::scoped_color scrollbarBg(ImGuiCol_ScrollbarBg, gluten::theme::layer02);
-    gluten::imgui::scoped_color scrollbarGrab(ImGuiCol_ScrollbarGrab, gluten::theme::layer02);
-
-    gluten::layout itemsLayout(gluten::layout::layout_type::top_to_bottom, gluten::element::anchor_preset::stretch_full);
-    itemsLayout.set_layout_spacing(2.0f);
-    m_leftPanelLayout.render_layout_element_remaining(&itemsLayout);
-
-    switch (m_activeView)
-    {
-        case workspace_widget::reviews_view:
-            if (listingProjects)
-            {
-                const auto& allProjects = workspaceManager->get_all_projects();
-
-                if (allProjects.has_data())
-                {
-                    for (const auto& project : allProjects.m_cache)
-                    {
-                        project_element projectElement(project.m_projectName, project.m_projectDescription, project.m_openReviews, project.m_closedReviews, project.m_archivedReviews);
-                        projectElement.set_element_rounding(0.0f);
-                        if (itemsLayout.render_layout_element_pixels_vertical(&projectElement, leftToolbarButtonHeight))
-                        {
-                            workspaceManager->select_project(project.m_projectName);
-                            m_editReviewers.set_project_id(project.m_id);
-                        }
-                    }
-                }
-                else
-                {
-                    gluten::loading_spinner loadingSpinner;
-                    itemsLayout.render_layout_element_pixels_vertical(&loadingSpinner, leftToolbarButtonHeight);
-                }
-            }
-            else if (listingReviews)
-            {
-                const auto& allReviews = workspaceManager->get_all_reviews();
-
-                gluten::collapsing_header openReviewsHeader("Open", true);
-                gluten::collapsing_header closedReviewsHeader("Closed", false);
-                gluten::collapsing_header archivedReviewsHeader("Archived", false);
-
-                gluten::imgui::scoped_color_stack headerColors(ImGuiCol_Header, gluten::theme::layerAccent03, ImGuiCol_HeaderHovered, gluten::theme::layerAccentHover03);
-
-                auto render_reviews = [&allReviews, &workspaceManager, &itemsLayout](review_status statusToRender)
-                {
-                    if (allReviews.has_data())
-                    {
-                        for (const auto& review : allReviews.m_cache)
-                        {
-                            if (review.m_reviewStatus == statusToRender)
-                            {
-                                review_element reviewElement(review);
-                                if (itemsLayout.render_layout_element_pixels_vertical(&reviewElement, leftToolbarButtonHeight))
-                                {
-                                    workspaceManager->select_review(review.m_reviewId);
-                                }
-                            }
-                        }
-                        itemsLayout.render_vertical_spacer(leftToolbarHalfButtonHeight / 2.0f);
-                    }
-                    else
-                    {
-                        gluten::loading_spinner loadingSpinner;
-                        itemsLayout.render_layout_element_pixels_vertical(&loadingSpinner, leftToolbarButtonHeight);
-                    }
-                };
-
-                if (itemsLayout.render_layout_element_pixels_vertical(&openReviewsHeader, leftToolbarHalfButtonHeight))
-                {
-                    render_reviews(review_status::open);
-                }
-
-                if (itemsLayout.render_layout_element_pixels_vertical(&closedReviewsHeader, leftToolbarHalfButtonHeight))
-                {
-                    render_reviews(review_status::closed);
-                }
-
-                if (itemsLayout.render_layout_element_pixels_vertical(&archivedReviewsHeader, leftToolbarHalfButtonHeight))
-                {
-                    render_reviews(review_status::archived);
-                }
-            }
-            break;
-        case workspace_widget::users_view:
-        {
-            const auto& allUsers = workspaceManager->get_all_users();
-
-            if (allUsers.has_data())
-            {
-                for (const auto& user : allUsers.m_cache)
-                {
-                    user_element userElement(user);
-                    if (itemsLayout.render_layout_element_pixels_vertical(&userElement, leftToolbarButtonHeight))
-                    {
-                        workspaceManager->select_user(user.m_email);
-                    }
-                }
-            }
-            else
-            {
-                gluten::loading_spinner loadingSpinner;
-                itemsLayout.render_layout_element_pixels_vertical(&loadingSpinner, leftToolbarButtonHeight);
-            }
-            break;
-        }
-        case workspace_widget::settings_view:
-            break;
-        default:
-            break;
-    }
+    m_innerWindowLayout.render_layout_element_pixels_horizontal(&m_leftPanel, g_itemListWidth());
+    render_content();
 }
 
 auto workspace_widget::render_content() -> void
 {
-    gluten::imgui::scoped_color backgroundColor(ImGuiCol_ChildBg, gluten::theme::layer01);
+    gluten::imgui::scoped_color backgroundColor(ImGuiCol_ChildBg, gluten::theme::layer02);
     gluten::imgui::scoped_color tabBg(ImGuiCol_Tab, gluten::theme::field01);
     gluten::imgui::scoped_color tabSelectedBg(ImGuiCol_TabActive, gluten::theme::layerAccentActive01);
     gluten::imgui::scoped_color tabHoverdBg(ImGuiCol_TabHovered, gluten::theme::layerHover01);
@@ -392,7 +141,7 @@ auto workspace_widget::render_content() -> void
     const review_data& selectedReview   = workspaceManager->get_selected_review();
     const user_data& selectedUser       = workspaceManager->get_selected_user();
 
-    m_innerLayout.render_layout_element_remaining(&m_mainPanelLayout);
+    m_innerWindowLayout.render_layout_element_remaining(&m_mainPanelLayout);
 
     render_top_content_bar(workspaceManager, selectedProject, selectedReview);
     m_mainPanelLayout.render_layout_element_remaining(&m_contentAndRightPanelLayout);
@@ -401,7 +150,7 @@ auto workspace_widget::render_content() -> void
 
     ImGui::SetCursorPos(ImVec2(m_contentAndRightPanelLayout.get_current_layout_pos_local().x, m_contentAndRightPanelLayout.get_current_layout_pos_local().y + 1.0f));  // + 1.0f to get rid of a weird line
 
-    if (ImGui::BeginChild("##MainContent", ImVec2(m_contentAndRightPanelLayout.get_element_rect().GetWidth() - g_rightPanelWidth, m_contentAndRightPanelLayout.get_element_rect().GetHeight() - (gluten::theme::padding * 2.0f) - 2.0f), ImGuiChildFlags_AutoResizeY | ImGuiChildFlags_AlwaysUseWindowPadding))
+    if (ImGui::BeginChild("##MainContent", ImVec2(m_contentAndRightPanelLayout.get_element_rect().GetWidth() - g_rightPanelWidth(), m_contentAndRightPanelLayout.get_element_rect().GetHeight() - gluten::theme::space08 - 2.0f), ImGuiChildFlags_AutoResizeY | ImGuiChildFlags_AlwaysUseWindowPadding))
     {
         ImRect windowRect = ImGui::GetCurrentWindow()->WorkRect;
         windowRect.Max.y  = windowRect.Min.y + 10.0f;
@@ -425,9 +174,9 @@ auto workspace_widget::render_content() -> void
         {
             {
                 gluten::text projectDescriptionText(selectedProject.m_projectDescription);
+                projectDescriptionText.set_text_style(gluten::text_style::h3);
                 projectDescriptionText.set_element_frame_padding();
                 projectDescriptionText.set_element_min_size(ImVec2(200.0f, 60.0f));
-                projectDescriptionText.set_element_content_scale(1.5f);
                 m_contentVerticalLayout.render_layout_element_pixels_vertical(&projectDescriptionText, 60.0f);
                 ImGui::Dummy(ImVec2(0.0f, 60.0f));
             }
@@ -442,19 +191,23 @@ auto workspace_widget::render_content() -> void
                 ImGui::Dummy(ImVec2(8.0f, 0.0f));
                 ImGui::SameLine();
 
-                if (ImGui::Button("Save"))
                 {
-                    workspaceManager->set_project_users(selectedProject.m_id, m_editReviewers.get_edited_users());
+                    gluten::imgui::scoped_button_style primaryStyle(gluten::button_style::primary);
+                    if (ImGui::Button("Save"))
+                    {
+                        workspaceManager->set_project_users(selectedProject.m_id, m_editReviewers.get_edited_users());
+                    }
+                    ImGui::SetItemTooltip("Save the user list to the project");
                 }
-                ImGui::SetItemTooltip("Save the user list to the project");
             }
         }
         else if (!selectedUser.m_email.empty())
         {
             constexpr float avatarSize  = 300.0f;
             constexpr float paddingSize = 10.0f;
-            constexpr float textSize    = 20.0f;
-            constexpr float buttonSize  = textSize * 2.0f;
+            constexpr float nameRowHeight = gluten::theme::textLineH2;
+            constexpr float textRowHeight = gluten::theme::textLineBody;
+            constexpr float buttonSize    = gluten::theme::space48;
 
             user_avatar_element userAvatar(selectedUser.m_email);
             gluten::text userDisplayNameText(selectedUser.m_displayName, ImVec2(),
@@ -475,7 +228,8 @@ auto workspace_widget::render_content() -> void
             userAvatar.set_element_padding(ImVec2(paddingSize, paddingSize));
             userAvatar.set_avatar_render(gluten::image_render::square);
 
-            userDisplayNameText.set_font(gluten::fonts::title).set_element_frame_padding();
+            userDisplayNameText.set_text_style(gluten::text_style::h2);
+            userDisplayNameText.set_element_frame_padding();
             userDisplayNameText.set_element_padding(ImVec2(paddingSize, 0.0f));
             userTitleText.set_element_padding(ImVec2(paddingSize, 0.0f));
             userEmailText.set_element_padding(ImVec2(paddingSize, 0.0f));
@@ -486,10 +240,10 @@ auto workspace_widget::render_content() -> void
 
             m_leftUserPanel.render(mainContentParent.get_element_rect());
             m_leftUserPanel.render_layout_element_pixels_vertical(&userAvatar, avatarSize);
-            m_leftUserPanel.render_layout_element_pixels_vertical(&userDisplayNameText, textSize);
-            m_leftUserPanel.render_layout_element_pixels_vertical(&userTitleText, textSize);
-            m_leftUserPanel.render_layout_element_pixels_vertical(&userEmailText, textSize);
-            m_leftUserPanel.render_layout_element_pixels_vertical(&userRoleText, textSize);
+            m_leftUserPanel.render_layout_element_pixels_vertical(&userDisplayNameText, nameRowHeight);
+            m_leftUserPanel.render_layout_element_pixels_vertical(&userTitleText, textRowHeight);
+            m_leftUserPanel.render_layout_element_pixels_vertical(&userEmailText, textRowHeight);
+            m_leftUserPanel.render_layout_element_pixels_vertical(&userRoleText, textRowHeight);
 
             ImGui::BeginDisabled(m_userSettings->m_loggedInUser.m_email != selectedUser.m_email &&
                                  m_userSettings->m_loggedInUser.m_privileges != user_privileges::admin);
@@ -500,9 +254,6 @@ auto workspace_widget::render_content() -> void
             {
                 m_leftUserPanel.render_layout_element_pixels_vertical(&changePasswordButton, buttonSize);
 
-                gluten::imgui::scoped_color_stack deleteButtonColors(ImGuiCol_Button, gluten::theme::supportError,
-                                                                     ImGuiCol_ButtonHovered, gluten::theme::supportError,
-                                                                     ImGuiCol_ButtonActive, gluten::theme::supportError);
                 if (m_leftUserPanel.render_layout_element_pixels_vertical(&deleteUserButton, buttonSize))
                 {
                     static std::shared_ptr<gluten::confirmation_popup> confirmUserDeletionPopup;
@@ -521,6 +272,11 @@ auto workspace_widget::render_content() -> void
 
             ImGui::EndDisabled();
         }
+
+        if (ImGui::IsWindowHovered(ImGuiHoveredFlags_AllowWhenBlockedByActiveItem) && !ImGui::IsAnyItemHovered())
+        {
+            get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->get_root_widget()->set_hovering_background(true);
+        }
     }
     ImGui::EndChild();
 }
@@ -531,7 +287,7 @@ auto workspace_widget::render_right_panel(std::shared_ptr<workspace_manager>& wo
 {
     gluten::imgui::scoped_style rounding(ImGuiStyleVar_FrameRounding, 0.0f);
 
-    m_contentAndRightPanelLayout.render_layout_element_pixels_horizontal(&m_rightPanelLayout, g_rightPanelWidth);
+    m_contentAndRightPanelLayout.render_layout_element_pixels_horizontal(&m_rightPanelLayout, g_rightPanelWidth());
     render_reviewers(workspaceManager, selectedReview, selectedUser);
     // render_tests();
 }
@@ -590,13 +346,11 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
             bool expandAll   = false;
 
             {
-                gluten::imgui::scoped_color buttonCol(ImGuiCol_Button, gluten::theme::interactive);
-                gluten::imgui::scoped_color buttonHovCol(ImGuiCol_ButtonHovered, gluten::theme::interactiveHover);
-                gluten::imgui::scoped_color buttonSelectCol(ImGuiCol_ButtonActive, gluten::theme::interactiveActive);
+                gluten::imgui::scoped_button_style primaryStyle(gluten::button_style::primary);
 
                 if (ImGui::Button(ICON_LC_PLUS " Version"))
                 {
-                    createReviewPopup = add_child_widget<create_review_popup>(this, selectedReview.m_reviewId);
+                    createReviewPopup = add_child_widget<create_review_popup>(false, selectedReview.m_reviewId);
                     createReviewPopup->onCompleteDelegate.AddLambda([reviewId = selectedReview.m_reviewId, selectedReview = std::cref(selectedReview), selectedVersionsMap = std::ref(m_reviewToSelectedVersionMap)]()
                                                                     {
                         std::size_t maxVersions = 1;
@@ -616,22 +370,20 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
 
             ImGui::SameLine(0.0f, 10.0f);
 
-            gluten::imgui::scoped_color buttonCol(ImGuiCol_Button, gluten::theme::interactiveSecondary);
-            gluten::imgui::scoped_color buttonHovCol(ImGuiCol_ButtonHovered, gluten::theme::interactiveSecondaryHover);
-            gluten::imgui::scoped_color buttonSelectCol(ImGuiCol_ButtonActive, gluten::theme::interactiveActive);
-            gluten::imgui::scoped_color border(ImGuiCol_Border, gluten::theme::borderStrong01);
-            gluten::imgui::scoped_style frameBorder(ImGuiStyleVar_FrameBorderSize, 2.0f);
-
-            if (ImGui::Button("Collapse All"))
             {
-                collapseAll = true;
-            }
+                gluten::imgui::scoped_button_style secondaryStyle(gluten::button_style::secondary);
 
-            ImGui::SameLine(0.0f, 10.0f);
+                if (ImGui::Button("Collapse All"))
+                {
+                    collapseAll = true;
+                }
 
-            if (ImGui::Button("Expand All"))
-            {
-                expandAll = true;
+                ImGui::SameLine(0.0f, 10.0f);
+
+                if (ImGui::Button("Expand All"))
+                {
+                    expandAll = true;
+                }
             }
 
             ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
@@ -658,7 +410,7 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
                     {
                         gluten::imgui::scoped_id reviewId(selectedReview.m_reviewId);
                         gluten::collapsing_header header(fmt::format("{} #{}", asset.m_fileName, selectedVersion), false);
-                        header.set_element_rounding(gluten::theme::rounding);
+                        header.set_element_rounding(gluten::theme::radiusMd);
 
                         if (collapseAll)
                         {
@@ -721,11 +473,14 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
                 }
             };
 
+            // "Context Files" / "Review Files" -- group titles for a list.
+            // h4 (16, semibold) is the token for that role; anything bigger
+            // stole attention from the actual list items.
             gluten::text contextHeader("Context Files");
             gluten::text assetsHeader("Review Files");
 
-            contextHeader.set_font(gluten::fonts::title);
-            assetsHeader.set_font(gluten::fonts::title);
+            contextHeader.set_text_style(gluten::text_style::h4);
+            assetsHeader .set_text_style(gluten::text_style::h4);
 
             m_reviewFilesLayout.render_layout_element_percent_horizontal(&contextHeader, 1.0f);
             m_reviewFilesLayout.render_vertical_spacer(16.0f);
@@ -809,6 +564,7 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
                     ImGui::Dummy(ImVec2(0.0f, commentPadding * 2.0f));
                     if (comment.m_fileId > 0)
                     {
+                        gluten::imgui::scoped_button_style ghostStyle(gluten::button_style::ghost);
                         if (ImGui::Button(ICON_LC_SQUARE_ARROW_OUT_UP_RIGHT))
                         {
                             m_focussedComment = focussed_comment{.commentId = comment.m_commentId, .fileId = comment.m_fileId, .filePosition = comment.m_timeStart};
@@ -819,7 +575,7 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
 
                     bool requestBreak = false;
 
-                    if (ImGui::BeginPopupContextItem(comment.m_comment.c_str()))
+                    if (gluten::imgui::scoped_context_menu contextMenu{comment.m_comment.c_str()})
                     {
                         if (ImGui::Selectable("Copy"))
                         {
@@ -831,7 +587,6 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
                             workspaceManager->delete_comment(comment.m_commentId);
                             requestBreak = true;
                         }
-                        ImGui::EndPopup();
                     }
                     ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
 
@@ -852,6 +607,7 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
             ImGui::BeginDisabled(newCommentOpen);
             if (m_userSettings->m_loggedInUser.m_privileges > user_privileges::guest)
             {
+                gluten::imgui::scoped_button_style ghostStyle(gluten::button_style::ghost);
                 if (ImGui::Button(ICON_LC_PLUS))
                 {
                     newCommentOpen = true;
@@ -878,7 +634,10 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
 
                 ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
 
-                wantsToAdd |= ImGui::Button("Add");
+                {
+                    gluten::imgui::scoped_button_style primaryStyle(gluten::button_style::primary);
+                    wantsToAdd |= ImGui::Button("Add");
+                }
 
                 if (wantsToAdd)
                 {
@@ -894,6 +653,7 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
 
                 ImGui::SameLine(0.0f, 8.0f);
 
+                gluten::imgui::scoped_button_style ghostStyle(gluten::button_style::ghost);
                 if (ImGui::Button("Cancel"))
                 {
                     buffer[0]      = '\0';
@@ -964,26 +724,40 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
 
 void workspace_widget::render_review_description(const review_data& selectedReview)
 {
-    constexpr float descriptionBoxStartingHeight = 70.0;
+    // Initial reservation: title line + spacer + one subtitle line + spacer + meta slot.
+    // The layout grows past this if content overruns (spacer added by the caller).
+    constexpr float descriptionBoxStartingHeight =
+        gluten::theme::textLineH1                 // title (h1)
+        + gluten::theme::space08                  // spacer
+        + gluten::theme::textLineSubtitle         // one line of description (subtitle)
+        + gluten::theme::space12                  // spacer
+        + gluten::theme::layoutMetaSlotHeight;    // meta chip row
 
     m_contentVerticalLayout.render_layout_element_pixels_vertical(&m_descriptionBoxLayout, descriptionBoxStartingHeight);
 
     m_contentTitleText.set_text(fmt::format("{}", selectedReview.m_reviewName));
     m_contentTitleText.set_url(selectedReview.m_reviewTaskUrl);
-    descriptionText.set_text(fmt::format("{} {}", ICON_LC_MESSAGE_CIRCLE, selectedReview.m_reviewDescription));
+    m_contentDescriptionText.set_text(fmt::format("{} {}", ICON_LC_MESSAGE_CIRCLE, selectedReview.m_reviewDescription));
     phaseText.set_text(fmt::format("{} {}", ICON_LC_WORKFLOW, get_review_phase_string(selectedReview.m_reviewPhase)));
     qualityText.set_text(fmt::format("{} {}", ICON_LC_AWARD, get_review_quality_string(selectedReview.m_reviewQuality)));
 
     std::pair<std::string, int> votes = get_votes_string(selectedReview);
     votesText.set_text(fmt::format("     {}", votes.first));
 
-    m_descriptionBoxLayout.render_layout_element_pixels_vertical(&m_contentTitleText, 40.0f);
-    m_descriptionBoxLayout.render_vertical_spacer(10.0f);
+    m_descriptionBoxLayout.render_layout_element_pixels_vertical(&m_contentTitleText, gluten::theme::textLineH1);
+    m_descriptionBoxLayout.render_vertical_spacer(gluten::theme::space08);
 
-    const float descriptionTextHeight = ImGui::CalcTextSize(selectedReview.m_reviewDescription.c_str(), nullptr, m_descriptionBoxLayout.get_element_rect().GetWidth()).y * 1.4f;
-    m_descriptionBoxLayout.render_layout_element_pixels_vertical(&descriptionText, descriptionTextHeight);
-    m_descriptionBoxLayout.render_vertical_spacer(16.0f);
-    m_descriptionBoxLayout.render_layout_element_pixels_vertical(&votesIconText, 30.0f);
+    // Measure description at the size it will actually render (textSizeSubtitle).
+    float descriptionTextHeight = 0.0f;
+    {
+        ImGui::PushFont(nullptr, gluten::theme::textSizeSubtitle);
+        descriptionTextHeight = ImGui::CalcTextSize(selectedReview.m_reviewDescription.c_str(), nullptr, false,
+                                                    m_descriptionBoxLayout.get_element_rect().GetWidth()).y;
+        ImGui::PopFont();
+    }
+    m_descriptionBoxLayout.render_layout_element_pixels_vertical(&m_contentDescriptionText, descriptionTextHeight);
+    m_descriptionBoxLayout.render_vertical_spacer(gluten::theme::space12);
+    m_descriptionBoxLayout.render_layout_element_pixels_vertical(&votesIconText, gluten::theme::layoutMetaSlotHeight);
 
     {
         ImVec4 votesColor;
@@ -1024,13 +798,9 @@ void workspace_widget::render_review_description(const review_data& selectedRevi
     {
         if (selectedReview.m_reviewStatus == review_status::open && m_userSettings->m_loggedInUser.m_privileges > user_privileges::guest)
         {
-            gluten::imgui::scoped_color_stack buttonColor(ImGuiCol_Button, gluten::theme::interactiveSecondary,
-                                                          ImGuiCol_ButtonHovered, gluten::theme::interactiveSecondaryHover,
-                                                          ImGuiCol_Border, gluten::theme::borderStrong01);
-
             descriptionEditButton.set_element_content_scale(buttonsScale);
 
-            if (m_descriptionBoxButtonsLayout.render_layout_element_pixels_horizontal(&descriptionEditButton, 30.0f))
+            if (m_descriptionBoxButtonsLayout.render_layout_element_pixels_horizontal(&descriptionEditButton, 0))
             {
                 static std::shared_ptr<update_review_popup> updateProjectPopup;
                 updateProjectPopup = add_child_widget<update_review_popup>(false);
@@ -1042,7 +812,6 @@ void workspace_widget::render_review_description(const review_data& selectedRevi
                 }
             }
 
-            m_descriptionBoxButtonsLayout.render_spacer_pixels(7.5f, 0.0f);
         }
 
         const auto& reviewers = workspaceManager->get_review_users(selectedReview.m_reviewId);
@@ -1056,22 +825,18 @@ void workspace_widget::render_review_description(const review_data& selectedRevi
 
             if (foundIter != reviewers.m_cache.end())
             {
-                gluten::button downVoteButton(ICON_LC_THUMBS_DOWN);
-                gluten::button noVoteButton(ICON_LC_MINUS);
-                gluten::button upVoteButton(ICON_LC_THUMBS_UP);
+                gluten::button downVoteButton(ICON_LC_THUMBS_DOWN, false, gluten::anchor_preset::left_top);
+                gluten::button noVoteButton(ICON_LC_MINUS, false, gluten::anchor_preset::left_top);
+                gluten::button upVoteButton(ICON_LC_THUMBS_UP, false, gluten::anchor_preset::left_top);
 
-                downVoteButton.set_element_content_scale(buttonsScale);
-                noVoteButton.set_element_content_scale(buttonsScale);
-                upVoteButton.set_element_content_scale(buttonsScale);
+                downVoteButton.set_button_style(gluten::button_style::secondary).set_element_content_scale(buttonsScale);
+                noVoteButton.set_button_style(gluten::button_style::secondary).set_element_content_scale(buttonsScale);
+                upVoteButton.set_button_style(gluten::button_style::secondary).set_element_content_scale(buttonsScale);
 
-                gluten::imgui::scoped_color_stack buttonColor(ImGuiCol_Button, gluten::theme::interactiveSecondary,
-                                                              ImGuiCol_ButtonHovered, gluten::theme::interactiveSecondaryHover,
-                                                              ImGuiCol_ButtonActive, gluten::theme::layerActive01,
-                                                              ImGuiCol_Border, gluten::theme::borderStrong01);
+                constexpr float iconSlot = gluten::theme::layoutIconButtonSize * buttonsScale;
 
                 {
-                    if (m_descriptionBoxButtonsLayout.render_layout_element_pixels_horizontal(
-                            &upVoteButton, 30.0f))
+                    if (m_descriptionBoxButtonsLayout.render_layout_element_pixels_horizontal(&upVoteButton, iconSlot))
                     {
                         workspaceManager->set_review_vote(selectedReview.m_reviewId, m_userSettings->m_loggedInUser.m_userId, review_vote::upvote);
                     }
@@ -1080,8 +845,7 @@ void workspace_widget::render_review_description(const review_data& selectedRevi
                 }
 
                 {
-
-                    if (m_descriptionBoxButtonsLayout.render_layout_element_pixels_horizontal(&noVoteButton, 30.0f))
+                    if (m_descriptionBoxButtonsLayout.render_layout_element_pixels_horizontal(&noVoteButton, iconSlot))
                     {
                         workspaceManager->set_review_vote(selectedReview.m_reviewId, m_userSettings->m_loggedInUser.m_userId, review_vote::no_vote);
                     }
@@ -1090,8 +854,7 @@ void workspace_widget::render_review_description(const review_data& selectedRevi
                 }
 
                 {
-                    if (m_descriptionBoxButtonsLayout.render_layout_element_pixels_horizontal(
-                            &downVoteButton, 30.0f))
+                    if (m_descriptionBoxButtonsLayout.render_layout_element_pixels_horizontal(&downVoteButton, iconSlot))
                     {
                         workspaceManager->set_review_vote(selectedReview.m_reviewId, m_userSettings->m_loggedInUser.m_userId, review_vote::downvote);
                     }
@@ -1101,46 +864,25 @@ void workspace_widget::render_review_description(const review_data& selectedRevi
             }
         }
 
-        m_descriptionBoxButtonsLayout.render_layout_element_pixels_horizontal(nullptr, ImGui::CalcItemWidth() + ImGui::CalcTextSize("Status", NULL, true).x);
-
-        ImGui::SetCursorScreenPos(m_descriptionBoxButtonsLayout.get_current_layout_pos());
-
-        gluten::imgui::scoped_color buttonCol(ImGuiCol_Button, gluten::theme::layer03);
-        gluten::imgui::scoped_color buttonHovCol(ImGuiCol_ButtonHovered, gluten::theme::layerHover03);
-        gluten::imgui::scoped_color buttonSelectCol(ImGuiCol_ButtonActive, gluten::theme::layerActive03);
-
-        if (ImGui::BeginCombo("Status", selectedReview.m_reviewStatus == review_status::open ? "Open" : selectedReview.m_reviewStatus == review_status::closed ? "Closed"
-                                                                                                                                                               : "Archived"))
         {
-            bool reviewOpen     = selectedReview.m_reviewStatus == review_status::open;
-            bool reviewClosed   = selectedReview.m_reviewStatus == review_status::closed;
-            bool reviewArchived = !reviewOpen && !reviewClosed;
+            static constexpr const char* statusOptions[] = {"Open", "Closed", "Archived"};
+            static constexpr review_status statusValues[] = {review_status::open, review_status::closed, review_status::archived};
 
-            if (ImGui::Selectable("Open", &reviewOpen))
+            int statusIndex = static_cast<int>(selectedReview.m_reviewStatus);
+
+            gluten::combo statusCombo("##Status", statusOptions, &statusIndex);
+            statusCombo.set_button_style(gluten::button_style::secondary).set_element_content_scale(buttonsScale);
+
+            if (m_descriptionBoxButtonsLayout.render_layout_element_pixels_horizontal(&statusCombo, 0))
             {
-                workspaceManager->set_review_status(selectedReview.m_reviewId, review_status::open);
+                workspaceManager->set_review_status(selectedReview.m_reviewId, statusValues[statusIndex]);
             }
-
-            if (ImGui::Selectable("Closed", &reviewClosed))
-            {
-                workspaceManager->set_review_status(selectedReview.m_reviewId, review_status::closed);
-            }
-
-            if (ImGui::Selectable("Archived", &reviewArchived))
-            {
-                workspaceManager->set_review_status(selectedReview.m_reviewId, review_status::archived);
-            }
-
-            ImGui::EndCombo();
         }
     }
 }
 
 void workspace_widget::render_tests()
 {
-    /*if (rightPanelBackground.render_layout_element_pixels_vertical(&testsHeader, 50.0f))
-    {
-    }*/
 }
 
 void workspace_widget::render_reviewers(std::shared_ptr<workspace_manager>& workspaceManager,
@@ -1164,50 +906,59 @@ void workspace_widget::render_reviewers(std::shared_ptr<workspace_manager>& work
         gluten::loading_spinner loading;
         m_rightPanelLayout.render_layout_element_percent_vertical(&loading, 1.0f);
     }
-
-    /*if (m_userSettings->m_loggedInUser.m_privileges > user_privileges::guest)
-    {
-        if (editReviewersButton.render(reviewersHeader.get_element_rect()))
-        {
-            static std::shared_ptr<edit_reviewers_popup> editReviewersPopup;
-            editReviewersPopup = add_child_widget<edit_reviewers_popup>(false, selectedReview);
-            editReviewersPopup->open_popup();
-        }
-    }*/
 }
 
 void workspace_widget::render_top_content_bar(std::shared_ptr<workspace_manager>& workspaceManager,
                                               const project_data& selectedProject,
                                               const review_data& selectedReview)
 {
-    gluten::imgui::scoped_color textCol(ImGuiCol_Text, gluten::theme::textSecondary);
-
     m_mainPanelLayout.render_layout_element_pixels_vertical(&m_topContentBarBackground, topHeaderHeight);
-
-    if (ImDrawList* const drawList = ImGui::GetWindowDrawList())
-    {
-        // drawList->AddLine(topContentBarBackground.get_element_rect().GetTL(), topContentBarBackground.get_element_rect().GetBL(), ImGui::ColorConvertFloat4ToU32(gluten::theme::borderStrong01), 1.0f);
-        drawList->AddLine(m_topContentBarBackground.get_element_rect().GetBL(), m_topContentBarBackground.get_element_rect().GetBR(), ImGui::ColorConvertFloat4ToU32(gluten::theme::borderStrong02), 2.0f);
-    }
 
     const auto& workspaceName = workspaceManager->get_workspace_name();
 
     if (workspaceName.has_data())
     {
-        std::string breadcrumbString = workspaceName.m_cache;
+        // Segmented breadcrumb: parent segments recede in textSecondary, the
+        // "/" separators sit at textPlaceholder (softest), and the current
+        // page reads at textPrimary. This gives the eye a hierarchy without
+        // needing a size step -- everything stays at body size.
+        std::vector<std::string> segments;
+        segments.push_back(std::string(workspaceName.m_cache));
 
         if (selectedProject.m_id != 0)
         {
-            breadcrumbString += " / " + selectedProject.m_projectName;
+            segments.push_back(selectedProject.m_projectName);
         }
 
         if (selectedReview.m_reviewId != 0)
         {
-            breadcrumbString += " / " + selectedReview.m_reviewName;
+            segments.push_back(selectedReview.m_reviewName);
         }
 
-        m_breadcrumbText.set_text(breadcrumbString);
-        m_breadcrumbText.render(m_topContentBarBackground.get_element_rect());
+        gluten::imgui::scoped_text_style bodyStyle(gluten::text_style::body);
+
+        const ImRect bar = m_topContentBarBackground.get_element_rect();
+        const float y    = bar.Min.y + (bar.GetHeight() - ImGui::GetTextLineHeight()) * 0.5f;
+        ImGui::SetCursorScreenPos(ImVec2(bar.Min.x + gluten::theme::space04, y));
+
+        for (std::size_t i = 0; i < segments.size(); ++i)
+        {
+            if (i > 0)
+            {
+                ImGui::SameLine(0.0f, 0.0f);
+                {
+                    gluten::imgui::scoped_color sepCol(ImGuiCol_Text, gluten::theme::textPlaceholder);
+                    ImGui::TextUnformatted(" / ");
+                }
+                ImGui::SameLine(0.0f, 0.0f);
+            }
+
+            const bool isCurrent = (i + 1 == segments.size());
+            gluten::imgui::scoped_color segCol(ImGuiCol_Text,
+                                               isCurrent ? gluten::theme::textPrimary
+                                                         : gluten::theme::textSecondary);
+            ImGui::TextUnformatted(segments[i].c_str());
+        }
     }
     else
     {
@@ -1223,52 +974,7 @@ void workspace_widget::render_top_content_bar(std::shared_ptr<workspace_manager>
 
 auto workspace_widget::render_left_toolbar() -> void
 {
-    std::shared_ptr<workspace_manager> workspaceManager = m_workspaceManager.lock();
-
-    if (!workspaceManager)
-    {
-        return;
-    }
-
-    m_windowLayout.render_layout_element_pixels_horizontal(&m_leftToolbarLayout, leftToobarWidth);
-
-    static auto create_toolbar_button = [activeView = std::cref(m_activeView)](const char* name, const char* icon, active_view active)
-    {
-        gluten::icon_button iconButton(name, icon, gluten::fonts::regular_lucide_icons);
-        iconButton
-            .set_element_content_font_size(gluten::g_baseIconFontSize * (leftToolbarButtonHeight / gluten::g_baseIconFontSize) / 1.75f)
-            .set_element_hover_color(gluten::theme::backgroundHover)
-            .set_element_active_color(gluten::theme::backgroundActive)
-            .set_element_active(activeView == active)
-            .set_element_padding(gluten::theme::paddingVec)
-            .set_element_rounding(gluten::theme::rounding);
-        return iconButton;
-    };
-
-    gluten::icon_button reviewsButton  = create_toolbar_button("##ReviewsButton", ICON_LC_CHART_NO_AXES_GANTT, reviews_view);
-    gluten::icon_button usersButton    = create_toolbar_button("##UsersButton", ICON_LC_USERS, users_view);
-    gluten::icon_button settingsButton = create_toolbar_button("##SettingsButton", ICON_LC_SETTINGS, settings_view);
-
-    if (m_leftToolbarLayout.render_layout_element_pixels_vertical(&reviewsButton, leftToolbarButtonHeight))
-    {
-        m_activeView = reviews_view;
-        workspaceManager->select_project({});
-        workspaceManager->select_user({});
-    }
-
-    if (m_leftToolbarLayout.render_layout_element_pixels_vertical(&usersButton, leftToolbarButtonHeight))
-    {
-        m_activeView = users_view;
-        workspaceManager->select_project({});
-        workspaceManager->select_user({});
-    }
-
-    if (m_leftToolbarLayout.render_layout_element_pixels_vertical(&settingsButton, leftToolbarButtonHeight))
-    {
-        m_activeView = settings_view;
-        workspaceManager->select_project({});
-        workspaceManager->select_user({});
-    }
+    m_windowLayout.render_layout_element_pixels_horizontal(&m_toolbar, leftToobarWidth());
 }
 
 auto workspace_widget::get_votes_string(const review_data& selectedReview) const -> std::pair<std::string, int>
@@ -1335,57 +1041,4 @@ auto workspace_widget::render_menu_implementation() -> void
         }
         ImGui::EndMenu();
     }
-}
-
-auto workspace_widget::render_settings() -> void
-{
-    gluten::imgui::scoped_color bgColor(ImGuiCol_FrameBg, gluten::theme::layer01);
-    gluten::imgui::scoped_style padding(ImGuiStyleVar_WindowPadding, ImVec2(80.0f, 160.0f));
-
-    ImGui::SetCursorPos(ImVec2(m_innerLayout.get_current_layout_pos_local().x, m_innerLayout.get_current_layout_pos_local().y + 1.0f));  // + 1.0f to get rid of a weird line
-
-    if (ImGui::BeginChild("SettingsContainer", ImVec2(0, 0), ImGuiChildFlags_AlwaysUseWindowPadding, ImGuiWindowFlags_NoScrollbar))
-    {
-        gluten::background settingsBackground;
-        settingsBackground.set_element_background_color(gluten::theme::layer01);
-        settingsBackground.render_window();
-
-        if (ImGui::BeginTable("Settings", 2, ImGuiTableFlags_Resizable | ImGuiTableFlags_BordersInnerH | ImGuiTableFlags_SizingStretchProp))
-        {
-            ImGui::TableNextColumn();
-            ImGui::TextUnformatted("Setting");
-            ImGui::TableNextColumn();
-            ImGui::TextUnformatted("Value");
-            ImGui::TableNextColumn();
-            ImGui::TextUnformatted("Theme");
-            ImGui::TableNextColumn();
-
-            if (ImGui::BeginCombo("Theme", m_userSettings->m_theme == review_app_theme::dark ? "Dark" : "Light"))
-            {
-                bool darkSelected  = m_userSettings->m_theme == review_app_theme::dark;
-                bool lightSelected = m_userSettings->m_theme == review_app_theme::light;
-
-                if (ImGui::Selectable("Dark", &darkSelected))
-                {
-                    m_userSettings->m_theme = review_app_theme::dark;
-                    gluten::theme::things::apply_colours(gluten::theme::things::darkModeBackgroundColor, true);
-                    gluten::theme::apply_colours();
-                    apply_styling();
-                }
-
-                if (ImGui::Selectable("Light", &lightSelected))
-                {
-                    m_userSettings->m_theme = review_app_theme::light;
-                    gluten::theme::things::apply_colours(gluten::theme::things::lightModeBackgroundColor, false);
-                    gluten::theme::apply_colours();
-                    apply_styling();
-                }
-
-                ImGui::EndCombo();
-            }
-
-            ImGui::EndTable();
-        }
-    }
-    ImGui::EndChild();
 }

@@ -10,6 +10,12 @@ enum class review_app_theme
     light
 };
 
+enum class review_app_view
+{
+    reviews,    //< Looking at projects and reviews
+    users,      //< Looking at users
+};
+
 /**
  * @brief Cached user settings like the open workspace
  *
@@ -21,7 +27,8 @@ struct user_settings_data
     std::string m_serverIpAddress;              //< Server address connected to by the client
 
     logged_in_user_data m_loggedInUser;
-    review_app_theme m_theme = review_app_theme::dark;
+    review_app_theme m_theme     = review_app_theme::dark;
+    review_app_view m_activeView = review_app_view::reviews;
 
     auto workspace_exists() const -> bool
     {

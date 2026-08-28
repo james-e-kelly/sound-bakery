@@ -4,6 +4,7 @@
 #include "IconsFontaudio.h"
 #include "IconsLucide.h"
 #include "nfd.h"
+#include "subsystems/animation_subsystem.h"
 #include "subsystems/renderer_subsystem.h"
 #include "subsystems/widget_subsystem.h"
 // #include "Fontawesome"
@@ -18,10 +19,11 @@ CMRC_DECLARE(sbk::fonts);
 
 namespace gluten_cli_arguments
 {
-    static constexpr const char* s_help       = "help";
-    static constexpr const char* s_headless   = "headless";
-    static constexpr const char* s_console    = "console";
-    static constexpr const char* s_fullscreen = "fullscreen";
+    static constexpr const char* s_help             = "help";
+    static constexpr const char* s_headless         = "headless";
+    static constexpr const char* s_console          = "console";
+    static constexpr const char* s_fullscreen       = "fullscreen";
+    static constexpr const char* s_noAnimations     = "disableanimations";
 }  // namespace gluten_cli_arguments
 
 static gluten::app* s_app = nullptr;
@@ -39,7 +41,13 @@ int gluten::app::run(int argc, char** argv)
     m_tickExecutor = make_manual_executor();
 
     boost::program_options::options_description cliDescription;
-    cliDescription.add_options()(gluten_cli_arguments::s_help, "prints help information")(gluten_cli_arguments::s_console, "adds a console window")(gluten_cli_arguments::s_fullscreen, "maximises the window on start")(gluten_cli_arguments::s_headless, "removes rendering");
+    cliDescription.add_options()
+        (gluten_cli_arguments::s_help, "prints help information")
+        (gluten_cli_arguments::s_console, "adds a console window")
+        (gluten_cli_arguments::s_fullscreen, "maximises the window on start")
+        (gluten_cli_arguments::s_headless, "removes rendering")
+        (gluten_cli_arguments::s_noAnimations, "disables animations on hovers and transitions")
+        ;
 
     cli_setup(cliDescription);
 
@@ -52,6 +60,8 @@ int gluten::app::run(int argc, char** argv)
     const bool gui      = !headless;
 
     const bool maximise = cliVariables.count(gluten_cli_arguments::s_fullscreen);
+
+    const bool noAnimations = cliVariables.count(gluten_cli_arguments::s_noAnimations);
 
     if (console)
     {
@@ -71,6 +81,11 @@ int gluten::app::run(int argc, char** argv)
     }
 
     add_console_sink();
+
+    if (!noAnimations)
+    {
+        add_unique_subsystem_class<animation_subsystem>();
+    }
 
     if (gui)
     {
@@ -244,6 +259,7 @@ void gluten::app::load_fonts()
 
     const cmrc::file lightFontFile       = embeddedfilesystem.open("Montserrat-Light.ttf");
     const cmrc::file mainFontFile        = embeddedfilesystem.open("Montserrat-Regular.ttf");
+    const cmrc::file semiBoldFontFile    = embeddedfilesystem.open("Montserrat-SemiBold.ttf");
     const cmrc::file titleFontFile       = embeddedfilesystem.open("Montserrat-Black.ttf");
     const cmrc::file audioFontFile       = embeddedfilesystem.open("fontaudio/font/" FONT_ICON_FILE_NAME_FAD);
     const cmrc::file fontAwesomeFontFile = embeddedfilesystem.open("Font-Awesome/webfonts/" FONT_ICON_FILE_NAME_FAS);
@@ -251,46 +267,39 @@ void gluten::app::load_fonts()
 
     assert(mainFontFile.size() > 0);
 
+    constexpr float baseSz = gluten::theme::textSizeBody;
+
     ImFontConfig iconFontsConfig;
     iconFontsConfig.FontDataOwnedByAtlas = false;
     iconFontsConfig.MergeMode            = true;
     iconFontsConfig.PixelSnapH           = true;
-    iconFontsConfig.GlyphMinAdvanceX     = g_baseIconFontSize;
+    iconFontsConfig.GlyphMinAdvanceX     = baseSz;
+    iconFontsConfig.GlyphOffset.y        = 2.0f;
     iconFontsConfig.RasterizerDensity    = 1.0f;
 
     ImFontConfig fontConfig;
-    fontConfig.FontDataOwnedByAtlas = false;  // the memory is statically owned by the virtual filesystem
+    fontConfig.FontDataOwnedByAtlas = false;
     fontConfig.RasterizerDensity    = 1.0f;
 
     ImGuiIO& io = ImGui::GetIO();
 
-    m_fonts[fonts::regular] =
-        io.Fonts->AddFontFromMemoryTTF((void*)mainFontFile.begin(), mainFontFile.size(), g_baseFontSize, &fontConfig);
+    m_fonts[fonts::regular] = io.Fonts->AddFontFromMemoryTTF((void*)mainFontFile.begin(), mainFontFile.size(), baseSz, &fontConfig);
 
-    m_fonts[fonts::regular_audio_icons] =
-        io.Fonts->AddFontFromMemoryTTF((void*)mainFontFile.begin(), mainFontFile.size(), g_baseFontSize, &fontConfig);
-    io.Fonts->AddFontFromMemoryTTF((void*)audioFontFile.begin(), audioFontFile.size(), g_baseIconFontSize * 1.3f,
-                                   &iconFontsConfig, fontAudioIconRanges);
+    m_fonts[fonts::regular_audio_icons] = io.Fonts->AddFontFromMemoryTTF((void*)mainFontFile.begin(), mainFontFile.size(), baseSz, &fontConfig);
+    io.Fonts->AddFontFromMemoryTTF((void*)audioFontFile.begin(), audioFontFile.size(), baseSz, &iconFontsConfig, fontAudioIconRanges);
 
-    m_fonts[fonts::regular_lucide_icons] =
-        io.Fonts->AddFontFromMemoryTTF((void*)mainFontFile.begin(), mainFontFile.size(), g_baseFontSize, &fontConfig);
-    io.Fonts->AddFontFromMemoryTTF((void*)lucideFontFile.begin(), lucideFontFile.size(), g_baseIconFontSize * 1.3f,
-                                   &iconFontsConfig, lucideIconRanges);
+    m_fonts[fonts::regular_lucide_icons] = io.Fonts->AddFontFromMemoryTTF((void*)mainFontFile.begin(), mainFontFile.size(), baseSz, &fontConfig);
+    io.Fonts->AddFontFromMemoryTTF((void*)lucideFontFile.begin(), lucideFontFile.size(), baseSz, &iconFontsConfig, lucideIconRanges);
 
-    m_fonts[fonts::regular_font_awesome] =
-        io.Fonts->AddFontFromMemoryTTF((void*)mainFontFile.begin(), mainFontFile.size(), g_baseFontSize, &fontConfig);
-    io.Fonts->AddFontFromMemoryTTF((void*)fontAwesomeFontFile.begin(), fontAwesomeFontFile.size(), g_baseIconFontSize,
-                                   &iconFontsConfig, fontAwesomeIconRanges);
+    m_fonts[fonts::regular_font_awesome] = io.Fonts->AddFontFromMemoryTTF((void*)mainFontFile.begin(), mainFontFile.size(), baseSz, &fontConfig);
+    io.Fonts->AddFontFromMemoryTTF((void*)fontAwesomeFontFile.begin(), fontAwesomeFontFile.size(), baseSz, &iconFontsConfig, fontAwesomeIconRanges);
 
-    m_fonts[fonts::light] =
-        io.Fonts->AddFontFromMemoryTTF((void*)lightFontFile.begin(), lightFontFile.size(), g_baseFontSize, &fontConfig);
-    m_fonts[fonts::title] = io.Fonts->AddFontFromMemoryTTF((void*)titleFontFile.begin(), titleFontFile.size(),
-                                                           g_baseFontSize * 1.2f, &fontConfig);
+    m_fonts[fonts::light] = io.Fonts->AddFontFromMemoryTTF((void*)lightFontFile.begin(), lightFontFile.size(), baseSz, &fontConfig);
+    m_fonts[fonts::semibold] = io.Fonts->AddFontFromMemoryTTF((void*)semiBoldFontFile.begin(), semiBoldFontFile.size(), baseSz, &fontConfig);
+    m_fonts[fonts::title] = io.Fonts->AddFontFromMemoryTTF((void*)titleFontFile.begin(), titleFontFile.size(), baseSz, &fontConfig);
 
-    m_fonts[fonts::title_lucide_icons] =
-        io.Fonts->AddFontFromMemoryTTF((void*)titleFontFile.begin(), titleFontFile.size(), g_baseFontSize * 1.2f, &fontConfig);
-    io.Fonts->AddFontFromMemoryTTF((void*)lucideFontFile.begin(), lucideFontFile.size(), g_baseIconFontSize * 1.3f,
-                                   &iconFontsConfig, lucideIconRanges);
+    m_fonts[fonts::title_lucide_icons] = io.Fonts->AddFontFromMemoryTTF((void*)titleFontFile.begin(), titleFontFile.size(), baseSz, &fontConfig);
+    io.Fonts->AddFontFromMemoryTTF((void*)lucideFontFile.begin(), lucideFontFile.size(), baseSz, &iconFontsConfig, lucideIconRanges);
 }
 
 void gluten::app::request_exit() { m_isRequestingExit = true; }

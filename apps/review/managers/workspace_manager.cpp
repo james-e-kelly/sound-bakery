@@ -429,6 +429,11 @@ auto workspace_manager::set_review_status(database_id reviewId, review_status st
     {
         foundReviewIter->m_reviewStatus = status;
     }
+
+    if (reviewId == m_selectedReview.m_reviewId)
+    {
+        m_selectedReview.m_reviewStatus = status;
+    }
 }
 
 auto workspace_manager::get_all_review_activity(int64_t reviewId) -> typename default_cache_type<activity_data>::cache_result

@@ -1,6 +1,7 @@
 #include "text.h"
 
 #include "gluten/app/app.h"
+#include "gluten/theme/theme.h"
 #include "gluten/utils/imgui_util_structures.h"
 
 namespace
@@ -12,9 +13,6 @@ namespace
 
     auto remove_last_word(std::string& str) -> void
     {
-        // Trim any whitespace, then remove the characters of the word,
-        // then remove any final whitespace
-
         while (!str.empty() && is_valid_character(str.back()) && std::isspace(str.back()))
         {
             str.pop_back();
@@ -30,14 +28,32 @@ namespace
             str.pop_back();
         }
     }
+
+    auto offset_vertices(ImDrawList* drawList, int vtxStart, ImVec2 offset) -> void
+    {
+        const int vtxEnd = drawList->VtxBuffer.Size;
+        for (int i = vtxStart; i < vtxEnd; ++i)
+        {
+            ImDrawVert& v = drawList->VtxBuffer[i];
+            v.pos.x += offset.x;
+            v.pos.y += offset.y;
+        }
+    }
 }  // namespace
 
 gluten::text::text(const std::string& displayText) : m_displayText(displayText) {}
 
-gluten::text::text(const std::string& displayText, const ImVec2& alignment, const anchor_preset& anchorPreset)
+gluten::text::text(const std::string& displayText, const ImVec2& alignment, const anchor_preset& anchorPreset, const text_style& style)
     : element(anchorPreset), m_displayText(displayText)
 {
     m_alignment = alignment;
+    set_text_style(style);
+}
+
+gluten::text::text(const std::string& displayText, const ImVec2& alignment, const anchor_preset& anchorPreset, const text_style& style, const fonts& fontOverride)
+    : text(displayText, alignment, anchorPreset, style)
+{
+    set_font(fontOverride);
 }
 
 auto gluten::text::set_text(const std::string& displayText) -> text&
@@ -63,11 +79,53 @@ auto gluten::text::set_text_alignment(text_alignment alignment) -> void
     m_textAlignment = alignment;
 }
 
+auto gluten::text::set_font_size(float px) -> text&
+{
+    m_fontSize = px;
+    return *this;
+}
+
+auto gluten::text::set_text_style(text_style style) -> text&
+{
+    set_font(gluten::theme::text_font_for(style));
+    m_fontSize  = gluten::theme::text_size_for(style);
+    m_textColor = gluten::theme::text_color_for(style);
+
+    return *this;
+}
+
+auto gluten::text::set_text_style(text_style style, fonts fontOverride) -> text&
+{
+    set_font(fontOverride);
+    m_fontSize  = gluten::theme::text_size_for(style);
+    m_textColor = gluten::theme::text_color_for(style);
+    return *this;
+}
+
+auto gluten::text::set_element_content_font_size(float size) -> element&
+{
+    m_fontSize = size;
+    return *this;
+}
+
 auto gluten::text::pre_render_element() -> void
 {
-    if (m_font.has_value())
+    if (m_font.has_value() && m_fontSize.has_value())
+    {
+        ImGui::PushFont(gluten::app::get()->get_font(m_font.value()), m_fontSize.value());
+    }
+    else if (m_font.has_value())
     {
         ImGui::PushFont(gluten::app::get()->get_font(m_font.value()));
+    }
+    else if (m_fontSize.has_value())
+    {
+        ImGui::PushFont(nullptr, m_fontSize.value());
+    }
+
+    if (m_textColor.has_value())
+    {
+        ImGui::PushStyleColor(ImGuiCol_Text, m_textColor.value());
     }
 }
 
@@ -81,10 +139,14 @@ bool gluten::text::render_element(const element_render_info& renderInfo)
         {
             if (ImDrawList* const drawList = ImGui::GetWindowDrawList())
             {
-                const bool hasStrictHorizontalControl = std::abs(m_anchor.max.x - m_anchor.min.x) > 0.01f && (m_textAlignment != text_alignment::horizontal_center && m_textAlignment != text_alignment::center);
+                const bool hasConstrainedWidth        = std::abs(m_anchor.max.x - m_anchor.min.x) > 0.01f;
+                const bool hasStrictHorizontalControl = hasConstrainedWidth && (m_textAlignment != text_alignment::horizontal_center && m_textAlignment != text_alignment::center);
                 const bool hasStrictVerticalControl   = std::abs(m_anchor.max.y - m_anchor.min.y) > 0.01f && (m_textAlignment != text_alignment::vertical_center && m_textAlignment != text_alignment::center);
+                const float wrapWidth                 = hasConstrainedWidth ? renderInfo.elementBox.GetWidth() : 0.0f;
 
-                const ImVec2 textPos(window->DC.CursorPos.x, window->DC.CursorPos.y + window->DC.CurrLineTextBaseOffset);
+                const ImVec2 rawTextPos(window->DC.CursorPos.x, window->DC.CursorPos.y + window->DC.CurrLineTextBaseOffset);
+                const ImVec2 snappedTextPos(std::floor(rawTextPos.x), std::floor(rawTextPos.y));
+                const ImVec2 subPixelOffset(rawTextPos.x - snappedTextPos.x, rawTextPos.y - snappedTextPos.y);
 
                 ImVec2 textSize;
 
@@ -112,7 +174,9 @@ bool gluten::text::render_element(const element_render_info& renderInfo)
 
                     if (m_url.empty())
                     {
-                        drawList->AddText(context.Font, context.FontSize, textPos, ImGui::GetColorU32(ImGuiCol_Text), m_truncatedText.c_str(), nullptr, renderInfo.elementBox.GetWidth());
+                        const int vtxStart = drawList->VtxBuffer.Size;
+                        drawList->AddText(context.Font, context.FontSize, snappedTextPos, ImGui::GetColorU32(ImGuiCol_Text), m_truncatedText.c_str(), nullptr, renderInfo.elementBox.GetWidth());
+                        offset_vertices(drawList, vtxStart, subPixelOffset);
                     }
                     else
                     {
@@ -122,29 +186,31 @@ bool gluten::text::render_element(const element_render_info& renderInfo)
                 }
                 else
                 {
-                    textSize = ImGui::CalcTextSize(m_displayText.c_str(), nullptr, false, renderInfo.elementBox.GetWidth());
+                    textSize = ImGui::CalcTextSize(m_displayText.c_str(), nullptr, false, wrapWidth);
 
                     if (m_url.empty())
                     {
-                        ImVec2 textPosWithAlignment = textPos;
+                        ImVec2 textPosWithAlignment = snappedTextPos;
 
                         switch (m_textAlignment)
                         {
                             case gluten::text_alignment::horizontal_center:
-                                textPosWithAlignment.x -= textSize.x / 2.0f;
+                                textPosWithAlignment.x -= std::floor(textSize.x / 2.0f);
                                 break;
                             case gluten::text_alignment::vertical_center:
-                                textPosWithAlignment.y -= context.FontSize / 2.0f;
+                                textPosWithAlignment.y -= std::floor(context.FontSize / 2.0f);
                                 break;
                             case gluten::text_alignment::center:
-                                textPosWithAlignment.x -= textSize.x / 2.0f;
-                                textPosWithAlignment.y -= context.FontSize / 2.0f;
+                                textPosWithAlignment.x -= std::floor(textSize.x / 2.0f);
+                                textPosWithAlignment.y -= std::floor(context.FontSize / 2.0f);
                                 break;
                             default:
                                 break;
                         }
 
-                        drawList->AddText(context.Font, context.FontSize, textPosWithAlignment, ImGui::GetColorU32(ImGuiCol_Text), m_displayText.c_str(), nullptr, renderInfo.elementBox.GetWidth());
+                        const int vtxStart = drawList->VtxBuffer.Size;
+                        drawList->AddText(context.Font, context.FontSize, textPosWithAlignment, ImGui::GetColorU32(ImGuiCol_Text), m_displayText.c_str(), nullptr, wrapWidth);
+                        offset_vertices(drawList, vtxStart, subPixelOffset);
                     }
                     else
                     {
@@ -182,10 +248,23 @@ bool gluten::text::render_element(const element_render_info& renderInfo)
 
 auto gluten::text::post_render_element() -> void
 {
-    if (m_font.has_value())
+    if (m_textColor.has_value())
+    {
+        ImGui::PopStyleColor();
+    }
+
+    if (m_font.has_value() || m_fontSize.has_value())
     {
         ImGui::PopFont();
     }
 }
 
-auto gluten::text::get_element_content_size(const ImVec2& parentSize) -> ImVec2 const { return ImGui::CalcTextSize(m_displayText.c_str()); }
+auto gluten::text::get_element_content_size(const ImVec2& parentSize) -> ImVec2 const
+{
+    const bool hasConstrainedWidth = std::abs(m_anchor.max.x - m_anchor.min.x) > 0.01f;
+    const float wrapWidth          = hasConstrainedWidth && parentSize.x > 0.0f
+        ? parentSize.x * (m_anchor.max.x - m_anchor.min.x)
+        : 0.0f;
+
+    return ImGui::CalcTextSize(m_displayText.c_str(), nullptr, false, wrapWidth);
+}

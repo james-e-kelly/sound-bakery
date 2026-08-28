@@ -48,6 +48,7 @@ namespace gluten
     public:
         auto start() -> void;
         auto tick(double deltaTime) -> void;
+        auto refresh_style() -> void;
         auto render() -> void;
         auto render_menu() -> void;
         auto end() -> void;
@@ -87,6 +88,7 @@ namespace gluten
         auto virtual tick_implementation(double deltaTime) -> void {}
         auto virtual render_implementation() -> void {}
         auto virtual render_menu_implementation() -> void {}
+        auto virtual refresh_style_implementation() -> void {}
         auto virtual end_implementation() -> void {}
 
         /**

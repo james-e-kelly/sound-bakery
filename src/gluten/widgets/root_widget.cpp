@@ -23,31 +23,41 @@ CMRC_DECLARE(sbk::icon_images);
 
 using namespace gluten;
 
-static const ImGuiDockNodeFlags dockspaceFlags = ImGuiDockNodeFlags_None;
-static const ImGuiWindowFlags rootWindowFlags =
-    ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
-    ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+namespace
+{
+    constexpr ImGuiDockNodeFlags dockspaceFlags = ImGuiDockNodeFlags_None;
+    constexpr ImGuiWindowFlags rootWindowFlags =
+        ImGuiWindowFlags_NoDocking | 
+        ImGuiWindowFlags_NoTitleBar | 
+        ImGuiWindowFlags_NoCollapse | 
+        ImGuiWindowFlags_NoResize |
+        ImGuiWindowFlags_NoMove | 
+        ImGuiWindowFlags_NoBringToFrontOnFocus | 
+        ImGuiWindowFlags_NoNavFocus;
 
-static const char* rootWindowName    = "RootWindow";
-static const char* rootDockspaceName = "RootWindow";
+    constexpr const char* rootWindowName    = "RootWindow";
+    constexpr const char* rootDockspaceName = "RootWindow";
+}
 
 namespace root_widget_utils
 {
-    constexpr float fontSize      = 20.0f;
-    constexpr float titleFontSize = 24.0f;
+    constexpr float fontSize = gluten::theme::textSizeSubtitle;  // 16 -- menu items
 
-    static float titleBarHeight()
-    {
-        ImGuiContext* const context = ImGui::GetCurrentContext();
-        return context == nullptr ? 0.0f : context->FontSize * gluten::theme::appTitlebarHeightMultiplier;
-    }
+    // Fixed title-bar height (40) matches modern Windows apps with inline
+    // menus. No longer scales with the ambient font -- chrome dimensions
+    // shouldn't jitter when someone tweaks the body text size.
+    static float titleBarHeight() { return gluten::theme::layoutTitleBarHeight; }
 
-    constexpr float titleLogoWidth           = 64.0f;
-    constexpr float menuBarPaddingWithLogo   = 6.0f;
-    constexpr float menuBarStartWidth        = titleLogoWidth + 6.0f;
-    constexpr float titleBarButtonsAreaWidth = 256.0f;
+    // Logo container width matches the left icon rail so the corner icon
+    // sits directly above the rail's center -- creates a clean vertical
+    // column at the window's left edge. Height stays the title-bar height.
+    // The icon inside gets sized independently (see logoIconSize) so it
+    // renders at a clean pixel size and doesn't stretch.
+    static float titleLogoWidth() { return gluten::theme::layoutIconRailSize; }
+    constexpr float logoIconSize             = 24.0f;                                // crisp centred icon
+    constexpr float menuBarPaddingWithLogo   = gluten::theme::space08;               // 8
+    constexpr float titleBarButtonsAreaWidth = 138.0f;  // ~46px per Win-min/max/close button
     constexpr float maximisedYOffset         = 6.0f;
-    static float menuBarYOffset              = titleBarHeight() / 8.0f;
 
     static ImRect get_titlebar_rect(const ImGuiWindow* const window)
     {
@@ -67,15 +77,14 @@ namespace root_widget_utils
     {
         // ImGui::GetCurrentViewport asserts if it's null
         // We just want to do a null check
-        if (ImGuiContext* context = ImGui::GetCurrentContext())
+        if (const ImGuiContext* const context = ImGui::GetCurrentContext())
         {
-            if (ImGuiViewport* const viewport = context->CurrentViewport)
+            if (const ImGuiViewport* const viewport = context->CurrentViewport)
             {
                 const ImVec2 windowTopLeft     = viewport->Pos;
-                const ImVec2 windowBottomRight = ImVec2(windowTopLeft.x + viewport->Size.x, windowTopLeft.y + viewport->Size.y);
+                const ImVec2 windowBottomRight = windowTopLeft + viewport->Size;
 
-                return ImRect(windowTopLeft.x, windowTopLeft.y + root_widget_utils::titleBarHeight(), windowBottomRight.x,
-                              windowBottomRight.y);
+                return ImRect(windowTopLeft.x, windowTopLeft.y + root_widget_utils::titleBarHeight(), windowBottomRight.x, windowBottomRight.y);
             }
         }
 
@@ -90,15 +99,14 @@ namespace root_widget_utils
     static ImRect get_logo_rect(const ImRect& titlebarRect)
     {
         ImRect logoRect = titlebarRect;
-        logoRect.Max.x  = logoRect.Min.x + titleLogoWidth;
+        logoRect.Max.x  = logoRect.Min.x + titleLogoWidth();
         return logoRect;
     }
 
     static ImRect get_menu_bar_rect(const ImRect& titlebarRect)
     {
         ImRect menuBarRect = titlebarRect;
-        menuBarRect.Min.x += titleLogoWidth + menuBarPaddingWithLogo;
-        menuBarRect.TranslateY(menuBarYOffset);
+        menuBarRect.Min.x += titleLogoWidth() + menuBarPaddingWithLogo;
         return menuBarRect;
     }
 
@@ -174,12 +182,9 @@ void root_widget::start_implementation()
 
     m_windowIcon      = std::make_unique<gluten::image>(logoFile.cbegin(), logoFile.size());
     m_windowCloseIcon = std::make_unique<gluten::image_button>("Close", g_WindowCloseIcon, sizeof(g_WindowCloseIcon));
-    m_windowMinimiseIcon =
-        std::make_unique<gluten::image_button>("Minimise", g_WindowMinimiseIcon, sizeof(g_WindowMinimiseIcon));
-    m_windowMaximiseIcon =
-        std::make_unique<gluten::image_button>("Maximise", g_WindowMaximiseIcon, sizeof(g_WindowMaximiseIcon));
-    m_windowRestoreIcon =
-        std::make_unique<gluten::image_button>("Restore", g_WindowRestoreIcon, sizeof(g_WindowRestoreIcon));
+    m_windowMinimiseIcon = std::make_unique<gluten::image_button>("Minimise", g_WindowMinimiseIcon, sizeof(g_WindowMinimiseIcon));
+    m_windowMaximiseIcon = std::make_unique<gluten::image_button>("Maximise", g_WindowMaximiseIcon, sizeof(g_WindowMaximiseIcon));
+    m_windowRestoreIcon = std::make_unique<gluten::image_button>("Restore", g_WindowRestoreIcon, sizeof(g_WindowRestoreIcon));
 
     m_windowIcon->get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::stretch_full);
     m_windowCloseIcon->get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::stretch_full);
@@ -187,31 +192,44 @@ void root_widget::start_implementation()
     m_windowMaximiseIcon->get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::stretch_full);
     m_windowRestoreIcon->get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::stretch_full);
 
-    m_windowIcon->set_element_max_size(
-        ImVec2(root_widget_utils::titleBarHeight(), root_widget_utils::titleBarHeight()));
-    m_windowCloseIcon->set_element_max_size(ImVec2(16, 16));
-    m_windowMinimiseIcon->set_element_max_size(ImVec2(14, 14));
-    m_windowMaximiseIcon->set_element_max_size(ImVec2(14, 14));
-    m_windowRestoreIcon->set_element_max_size(ImVec2(16, 16));
+    m_windowIcon->set_element_max_size(ImVec2(root_widget_utils::logoIconSize, root_widget_utils::logoIconSize));
+    m_windowCloseIcon->set_element_max_size(ImVec2(12, 12));
+    m_windowMinimiseIcon->set_element_max_size(ImVec2(12, 12));
+    m_windowMaximiseIcon->set_element_max_size(ImVec2(12, 12));
+    m_windowRestoreIcon->set_element_max_size(ImVec2(12, 12));
 
-    m_windowCloseIcon->set_element_hover_color(
-        theme::color_with_multiplied_value(ImGui::ColorConvertFloat4ToU32(gluten::theme::background), 2.f));
-    m_windowMinimiseIcon->set_element_hover_color(
-        theme::color_with_multiplied_value(ImGui::ColorConvertFloat4ToU32(gluten::theme::background), 2.f));
-    m_windowMaximiseIcon->set_element_hover_color(
-        theme::color_with_multiplied_value(ImGui::ColorConvertFloat4ToU32(gluten::theme::background), 2.f));
-    m_windowRestoreIcon->set_element_hover_color(
-        theme::color_with_multiplied_value(ImGui::ColorConvertFloat4ToU32(gluten::theme::background), 2.f));
+    m_windowCloseIcon->set_element_hover_color(gluten::theme::supportError);
+    m_windowMinimiseIcon->set_element_hover_color(theme::color_with_multiplied_value(ImGui::ColorConvertFloat4ToU32(gluten::theme::background), 2.f));
+    m_windowMaximiseIcon->set_element_hover_color(theme::color_with_multiplied_value(ImGui::ColorConvertFloat4ToU32(gluten::theme::background), 2.f));
+    m_windowRestoreIcon->set_element_hover_color(theme::color_with_multiplied_value(ImGui::ColorConvertFloat4ToU32(gluten::theme::background), 2.f));
+}
+
+auto root_widget::refresh_style_implementation() -> void
+{
+    const ImVec4& iconTint = gluten::theme::iconPrimary;
+
+    m_windowIcon->set_tint(iconTint);
+    m_windowCloseIcon->get_image().set_tint(iconTint);
+    m_windowMinimiseIcon->get_image().set_tint(iconTint);
+    m_windowMaximiseIcon->get_image().set_tint(iconTint);
+    m_windowRestoreIcon->get_image().set_tint(iconTint);
+
+    m_windowCloseIcon->set_element_hover_color(gluten::theme::supportError);
+    m_windowMinimiseIcon->set_element_hover_color(theme::color_with_multiplied_value(ImGui::ColorConvertFloat4ToU32(gluten::theme::background), 2.f));
+    m_windowMaximiseIcon->set_element_hover_color(theme::color_with_multiplied_value(ImGui::ColorConvertFloat4ToU32(gluten::theme::background), 2.f));
+    m_windowRestoreIcon->set_element_hover_color(theme::color_with_multiplied_value(ImGui::ColorConvertFloat4ToU32(gluten::theme::background), 2.f));
 }
 
 void root_widget::render_implementation()
 {
+    m_hoveringBackground = false;
+
     set_root_window_to_viewport();
 
     {
         gluten::imgui::scoped_style_stack rootStyle(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f),
-                                                    ImGuiStyleVar_WindowRounding, 0.0f, ImGuiStyleVar_WindowBorderSize,
-                                                    0.0f);
+                                                    ImGuiStyleVar_WindowRounding, 0.0f, 
+                                                    ImGuiStyleVar_WindowBorderSize, 0.0f);
 
         gluten::imgui::scoped_color clearHeaderColor(ImGuiCol_WindowBg, gluten::theme::invalidPrefab);
 
@@ -234,6 +252,8 @@ void root_widget::render_implementation()
     }
 
     render_children();
+
+    m_hoveringTitlebar |= ImGui::IsWindowHovered(ImGuiHoveredFlags_None) && !ImGui::IsAnyItemHovered();
 
     ImGui::End();
 }
@@ -265,34 +285,42 @@ void root_widget::draw_titlebar()
     const ImRect menuBarRect  = root_widget_utils::get_menu_bar_rect(titleBarRect);
 
     background topBarBackground;
-    topBarBackground.set_element_background_color(gluten::theme::background);
+    topBarBackground.set_element_background_color(gluten::theme::backgroundLow);
     topBarBackground.render(titleBarRect);
 
     if (m_renderLogo)
     {
-        m_windowIcon->set_element_frame_padding();
         m_windowIcon->render(logoRect);
     }
 
-    gluten::text titleText(std::string(get_app()->get_application_display_title()), ImVec2(0.5f, 0.5f),
-                           element::anchor_preset::center_middle);
-    titleText.set_element_content_font_size(root_widget_utils::titleFontSize);
-    titleText.set_font(gluten::fonts::regular);
-    titleText.render(titleBarRect);
-
-    gluten::button dragZoneButton("##titleBarDragZone", true);
-    dragZoneButton.get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::stretch_full);
-    dragZoneButton.render(dragZoneRect);
-
-    m_hoveringTitlebar = ImGui::IsItemHovered();
-
-    gluten::menu_bar menu_bar;
-    menu_bar.set_element_content_font_size(root_widget_utils::fontSize);
-    if (menu_bar.render(menuBarRect))
     {
-        render_menu();
+        gluten::imgui::scoped_color titleCol(ImGuiCol_Text, gluten::theme::textSecondary);
+        gluten::text titleText(std::string(get_app()->get_application_display_title()), ImVec2(0.5f, 0.5f), element::anchor_preset::center_middle);
+        titleText.set_text_style(gluten::text_style::h4);
+        titleText.render(titleBarRect);
     }
-    menu_bar.end_menu_bar();
+
+    {
+        gluten::button dragZoneButton("##titleBarDragZone", true, anchor_preset::left_top);
+        dragZoneButton.get_element_anchor().set_achor_from_preset(gluten::element::anchor_preset::stretch_full);
+        dragZoneButton.render(dragZoneRect);
+        
+        m_hoveringTitlebar = ImGui::IsItemHovered();
+    }
+
+    {
+        gluten::imgui::scoped_color menuPopupBg(ImGuiCol_PopupBg, gluten::theme::layer03);
+        gluten::imgui::scoped_style menuPopupRounding(ImGuiStyleVar_PopupRounding, gluten::theme::radiusSm);
+        gluten::imgui::scoped_style menuPopupPadding(ImGuiStyleVar_WindowPadding, ImVec2(gluten::theme::space08, gluten::theme::space04));
+
+        gluten::menu_bar menu_bar;
+        menu_bar.set_element_content_font_size(root_widget_utils::fontSize);
+        if (menu_bar.render(menuBarRect))
+        {
+            render_menu();
+        }
+        menu_bar.end_menu_bar();
+    }
 
     gluten::layout titleButtonsLayout(layout::layout_type::right_to_left);
     titleButtonsLayout.get_element_anchor().set_achor_from_preset(element::anchor_preset::stretch_full);
@@ -370,9 +398,27 @@ auto root_widget::render_menu_implementation() -> void
 
             ImGui::Separator();
 
+            ImGui::PushItemFlag(ImGuiItemFlags_AutoClosePopups, false);
             ImGui::MenuItem("Debug Item Rects", NULL, &element::s_debug);
             ImGui::MenuItem("Debug Item Vertical", NULL, &element::s_debugVertical);
             ImGui::MenuItem("Debug Item Horizontal", NULL, &element::s_debugHorizontal);
+            ImGui::PopItemFlag();
+
+            ImGui::Separator();
+
+            if (ImGui::BeginMenu("Adjust Sizes"))
+            {
+                if (ImGui::SliderFloat("Title Bar Height", &gluten::theme::layoutTitleBarHeight, 32.0f, 48.0f, "%.0f px"))
+                {
+                    gluten::theme::layoutIconRailSize = gluten::theme::layoutTitleBarHeight * gluten::theme::layoutIconRailRatio;
+                }
+
+                ImGui::SliderFloat("Rail / Title Ratio", &gluten::theme::layoutIconRailRatio, 1.0f, 2.5f, "%.2f");
+                gluten::theme::layoutIconRailSize = gluten::theme::layoutTitleBarHeight * gluten::theme::layoutIconRailRatio;
+                ImGui::Text("Icon Rail: %.0f px", gluten::theme::layoutIconRailSize);
+
+                ImGui::EndMenu();
+            }
 
             ImGui::Separator();
 

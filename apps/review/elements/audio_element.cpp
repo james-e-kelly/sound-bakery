@@ -7,8 +7,8 @@
 audio_element::audio_element(const std::filesystem::path& filePath, const int64_t fileId)
     : gluten::file_element(gluten::anchor_preset::stretch_full, filePath), m_fileId(fileId), m_waveform(filePath, fileId)
 {
-    m_layout.set_layout_spacing(gluten::theme::padding);
-    m_layout.set_element_padding(gluten::theme::paddingVec);
+    m_layout.set_layout_spacing(gluten::theme::space04);
+    m_layout.set_element_padding(gluten::theme::insetFrame);
 
     m_playButton.set_element_active_color(gluten::theme::layerActive01);
     m_pauseButton.set_element_active_color(gluten::theme::layerActive01);
@@ -34,7 +34,7 @@ audio_element::audio_element(const std::filesystem::path& filePath, const int64_
     m_controlButtonsLayout.set_element_alignment(ImVec2(-0.5f, 0.0f));
     m_controlButtonsLayout.get_element_anchor().minOffset.x -= s_controlButtonsWidth + (s_buttonWidth * 3.0f);
     m_controlButtonsLayout.get_element_anchor().maxOffset.x += s_controlButtonsWidth + (s_buttonWidth * 3.0f);
-    m_controlButtonsLayout.set_element_rounding(gluten::theme::rounding);
+    m_controlButtonsLayout.set_element_rounding(gluten::theme::radiusMd);
     m_controlButtonsLayout.set_element_background_color(gluten::theme::layer02);
     m_controlButtonsLayout.set_element_max_size(ImVec2(0.0f, s_controlButtonsWidth));
 }
@@ -184,6 +184,31 @@ auto audio_element::waveform_element::render_waveform_overlay(double plotTimeWid
                         const auto userDisplayName                    = workspaceManager->get_user(comment.m_userId).m_displayName;
 
                         ImPlot::TagX(comment.m_timeStart, gluten::theme::supportInfo, showFullComment ? comment.m_comment.c_str() : userDisplayName.c_str());
+
+                        if (!showFullComment)
+                        {
+                            const ImVec2 mousePos     = ImGui::GetMousePos();
+                            const ImVec2 tagScreenPos = ImPlot::PlotToPixels(ImPlotPoint(comment.m_timeStart, 0));
+
+                            const ImVec2 plotMin = ImPlot::GetPlotPos();
+                            const ImVec2 plotMax = ImVec2(plotMin.x + ImPlot::GetPlotSize().x, plotMin.y + ImPlot::GetPlotSize().y);
+
+                            const ImVec2 textSize = ImGui::CalcTextSize(userDisplayName.c_str());
+
+                            const float tagWidth  = textSize.x;
+                            const float tagHeight = textSize.y * 2.0F;
+
+                            const float boxLeft   = tagScreenPos.x - (tagWidth / 2.0f);
+                            const float boxRight  = tagScreenPos.x + (tagWidth / 2.0f);
+                            const float boxTop    = plotMax.y;
+                            const float boxBottom = plotMax.y + tagHeight;
+
+                            if (mousePos.x >= boxLeft && mousePos.x <= boxRight &&
+                                mousePos.y >= boxTop && mousePos.y <= boxBottom)
+                            {
+                                ImGui::SetTooltip(comment.m_comment.c_str());
+                            }
+                        }
                     }
                 }
             }

@@ -1,8 +1,11 @@
 #pragma once
 
+#include "core/leak_detector.h"
 #include "Delegates.h"
+#define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui.h"
 #include "imspinner.h"
+#include "imgui_internal.h"
 #include "imspinner_demo.h"
 #include "tracy/Tracy.hpp"
 #include "utils/boost_serialization_extensions.h"
@@ -16,6 +19,8 @@
 #include <stdlib.h>
 
 #include <chrono>
+#include <cmath>
+#include <concepts>
 #include <filesystem>
 #include <fstream>
 #include <functional>
@@ -23,21 +28,8 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <unordered_set>
 #include <variant>
 #include <vector>
-
-namespace gluten
-{
-    enum class fonts
-    {
-        regular,
-        regular_font_awesome,
-        regular_audio_icons,
-        regular_lucide_icons,
-        light,
-        title,
-        title_lucide_icons
-    };
-}

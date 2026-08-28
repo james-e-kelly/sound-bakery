@@ -65,10 +65,16 @@ namespace gluten
 
     public:
         void start_implementation() override;
+        auto refresh_style_implementation() -> void override;
         void render_implementation() override;
         auto render_menu_implementation() -> void override;
 
-        bool is_hovering_titlebar() { return m_hoveringTitlebar; }
+        /**
+         * @brief Tells the window renderer whether we are hovering over something that can be used to drag the window.
+         */
+        bool is_hovering_draggable_area() { return m_hoveringTitlebar || m_hoveringBackground; }
+
+        auto set_hovering_background(bool hovering) -> void { m_hoveringBackground |= hovering; }
 
         auto add_layout(const widget_layout& layout) -> void;
         auto set_layout(widget_layout& layout) -> void;
@@ -88,7 +94,8 @@ namespace gluten
         void set_root_window_to_viewport();
         void draw_titlebar();
 
-        bool m_hoveringTitlebar = false;
+        bool m_hoveringTitlebar{};
+        bool m_hoveringBackground{};
 
         ImGuiID m_dockspaceID = 0;
 

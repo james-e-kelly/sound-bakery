@@ -1,7 +1,7 @@
 #include "image_button.h"
 
 gluten::image_button::image_button(const char* name, const void* data, std::size_t dataSize)
-    : m_button(name, true), m_image(data, dataSize)
+    : m_button(name, true, anchor_preset::left_top), m_image(data, dataSize)
 {
 }
 

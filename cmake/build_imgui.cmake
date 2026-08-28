@@ -34,6 +34,25 @@ CPMAddPackage(
   GIT_TAG 026a148d7dd78d597de380c4e77ca0869f0ceaab # master @ 2026-07-17
 )
 
+# FreeType powers imgui's font rasterizer (misc/freetype/imgui_freetype.cpp).
+# Enabled by defining IMGUI_ENABLE_FREETYPE + compiling that TU + linking freetype;
+# no runtime code changes needed on imgui 1.92's font loader API. The optional
+# format handlers (png/zlib/etc.) aren't needed for TTF rasterization, so disable
+# them to keep the dependency small and avoid pulling extra transitives.
+CPMAddPackage(
+  NAME freetype
+  GITHUB_REPOSITORY freetype/freetype
+  GIT_TAG VER-2-13-3
+  OPTIONS
+    "FT_DISABLE_HARFBUZZ ON"
+    "FT_DISABLE_BROTLI ON"
+    "FT_DISABLE_BZIP2 ON"
+    "FT_DISABLE_PNG ON"
+    "FT_DISABLE_ZLIB ON"
+    "FT_DISABLE_ZSTD ON"
+    "SKIP_INSTALL_ALL ON"
+)
+
 add_library(imgui STATIC
   ${imgui_SOURCE_DIR}/imgui.cpp
   ${imgui_SOURCE_DIR}/imgui_demo.cpp
@@ -43,6 +62,7 @@ add_library(imgui STATIC
   ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
   ${imgui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
   ${imgui_SOURCE_DIR}/misc/cpp/imgui_stdlib.cpp
+  ${imgui_SOURCE_DIR}/misc/freetype/imgui_freetype.cpp
   ${implot_SOURCE_DIR}/implot.h
   ${implot_SOURCE_DIR}/implot_internal.h
   ${implot_SOURCE_DIR}/implot.cpp
@@ -55,6 +75,9 @@ add_library(imgui STATIC
   ${imguizmo_SOURCE_DIR}/src/ImSequencer.cpp
   ${imspinner_SOURCE_DIR}/imspinner.h
 )
+
+# PUBLIC so every TU that includes imgui.h agrees the freetype loader is present.
+target_compile_definitions(imgui PUBLIC IMGUI_ENABLE_FREETYPE)
 
 c_17(imgui)
 cxx_11(imgui)
@@ -75,4 +98,5 @@ find_package(OpenGL REQUIRED)
 target_link_libraries(imgui PUBLIC
   glfw
   OpenGL::GL
+  freetype
 )
