@@ -21,7 +21,21 @@ auto voice_tracker::update(system* system) -> void
             {
                 if (const sbk::engine::voice* const voice = object->try_convert_object<sbk::engine::voice>())
                 {
-                    std::unordered_set<const node_instance*> trackedNodes;
+                    if (!voice->is_playing())
+                    {
+                        continue;
+                    }
+
+                    for (const auto& instance : voice->get_instances())
+                    {
+                        if (instance.finished || instance.containerReference == 0)
+                        {
+                            continue;
+                        }
+
+                        m_playingNodeIDs.insert(instance.containerReference);
+                        m_nodePlayingCount[instance.containerReference]++;
+                    }
                 }
             }
         }

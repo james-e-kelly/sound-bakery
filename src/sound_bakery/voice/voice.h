@@ -22,6 +22,15 @@ namespace sbk::engine
          */
         using play_pair = std::pair<sc_voice_handle, std::shared_ptr<container>>;
 
+        struct container_instance
+        {
+            sbk_id containerReference{};
+            sc_voice_handle voiceHandle{};
+            unsigned int childCount{};
+            std::size_t parentIndex{};
+            bool finished{};
+        };
+
         auto play_container(container* container) -> sbk::result<void>;
 
         auto update() -> void;
@@ -30,16 +39,10 @@ namespace sbk::engine
         [[nodiscard]] auto is_playing() const -> bool;
         [[nodiscard]] auto get_owning_game_object() const -> game_object*;
 
-    private:
-        struct container_instance
-        {
-            sbk_id containerReference{};    //< ID to the original container this was played from
-            sc_voice_handle voiceHandle{};  //< Valid if this instance is a sound container
-            unsigned int childCount{};      //< How many children this container played and waiting to finish
-            std::size_t parentIndex{};      //< Array index of our parent so we can quickly find it without searching the adjadcecy array
-            bool finished{};                //< Set to true when we've already notified the parent we've ended
-        };
+        [[nodiscard]] auto get_instances() const -> const eastl::vector<container_instance>& { return m_instances; }
+        [[nodiscard]] auto get_output_busses() const -> const eastl::vector<std::shared_ptr<sc_node_group>>& { return m_outputBusses; }
 
+    private:
         eastl::vector<container_instance> m_instances;
         eastl::vector<std::shared_ptr<sc_node_group>> m_outputBusses;
     };
