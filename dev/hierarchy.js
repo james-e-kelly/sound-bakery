@@ -1,7 +1,6 @@
 var hierarchy =
 [
     [ "sbk::engine::action", "structsbk_1_1engine_1_1action.html", null ],
-    [ "sbk::engine::node_instance_fsm::action_update", "structsbk_1_1engine_1_1node__instance__fsm_1_1action__update.html", null ],
     [ "gluten::app", null, [
       [ "editor_app", "classeditor__app.html", null ]
     ] ],
@@ -9,6 +8,7 @@ var hierarchy =
     [ "sbk::task< T >::awaiter", "structsbk_1_1task_1_1awaiter.html", null ],
     [ "sbk::core::serialization::boost_serializer< load_archive, save_archive, inputMode, outputMode >", "classsbk_1_1core_1_1serialization_1_1boost__serializer.html", null ],
     [ "sbk::command_queue", "classsbk_1_1command__queue.html", null ],
+    [ "sbk::engine::voice::container_instance", "structsbk_1_1engine_1_1voice_1_1container__instance.html", null ],
     [ "sbk::reflection::CreatePointerConversion< DerivedClass, T >", "structsbk_1_1reflection_1_1CreatePointerConversion.html", null ],
     [ "sbk::reflection::CreatePointerConversion< DerivedClass >", "structsbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_01_4.html", null ],
     [ "sbk::reflection::CreatePointerConversion< DerivedClass, BaseClass, U... >", "structsbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_00_01BaseClass_00_01U_8_8_8_01_4.html", null ],
@@ -25,7 +25,6 @@ var hierarchy =
     ] ],
     [ "sbk::core::database_ptr< named_parameter >", "classsbk_1_1core_1_1database__ptr.html", null ],
     [ "sbk::core::database_ptr< sbk::core::database_object >", "classsbk_1_1core_1_1database__ptr.html", null ],
-    [ "sbk::core::database_ptr< sbk::engine::container >", "classsbk_1_1core_1_1database__ptr.html", null ],
     [ "sbk::core::database_ptr< sbk::engine::named_parameter >", "classsbk_1_1core_1_1database__ptr.html", null ],
     [ "sbk::core::database_ptr< sbk::engine::node_base >", "classsbk_1_1core_1_1database__ptr.html", null ],
     [ "sbk::core::database_ptr< sbk::engine::sound >", "classsbk_1_1core_1_1database__ptr.html", null ],
@@ -68,28 +67,18 @@ var hierarchy =
           [ "sbk::engine::sound", "classsbk_1_1engine_1_1sound.html", null ],
           [ "sbk::engine::soundbank", "classsbk_1_1engine_1_1soundbank.html", null ]
         ] ],
-        [ "sbk::engine::node_instance", "classsbk_1_1engine_1_1node__instance.html", null ],
         [ "sbk::engine::voice", "classsbk_1_1engine_1_1voice.html", null ]
       ] ]
     ] ],
     [ "sbk::engine::encoding_sound", "structsbk_1_1engine_1_1encoding__sound.html", null ],
     [ "sbk::end_of_frame_message", "structsbk_1_1end__of__frame__message.html", null ],
     [ "sbk::error", "classsbk_1_1error.html", null ],
-    [ "sbk::engine::event_devirtualise", "structsbk_1_1engine_1_1event__devirtualise.html", null ],
-    [ "sbk::engine::event_init", "structsbk_1_1engine_1_1event__init.html", null ],
-    [ "sbk::engine::event_pause", "structsbk_1_1engine_1_1event__pause.html", null ],
-    [ "sbk::engine::event_play", "structsbk_1_1engine_1_1event__play.html", null ],
-    [ "sbk::engine::event_stop", "structsbk_1_1engine_1_1event__stop.html", null ],
-    [ "sbk::engine::event_update", "structsbk_1_1engine_1_1event__update.html", null ],
-    [ "sbk::engine::event_virtualise", "structsbk_1_1engine_1_1event__virtualise.html", null ],
     [ "sbk::fiber_promise", "structsbk_1_1fiber__promise.html", [
       [ "sbk::detached_task::promise_type", "structsbk_1_1detached__task_1_1promise__type.html", null ],
       [ "sbk::task_promise< T >", "structsbk_1_1task__promise.html", null ],
       [ "sbk::task_promise< void >", "structsbk_1_1task__promise_3_01void_01_4.html", null ]
     ] ],
     [ "sbk::final_awaiter", "structsbk_1_1final__awaiter.html", null ],
-    [ "sbk::engine::flag_playing", "structsbk_1_1engine_1_1flag__playing.html", null ],
-    [ "sbk::engine::flag_stopped", "structsbk_1_1engine_1_1flag__stopped.html", null ],
     [ "sbk::engine::gather_children_context", "structsbk_1_1engine_1_1gather__children__context.html", null ],
     [ "sbk::engine::global_parameter_list", "structsbk_1_1engine_1_1global__parameter__list.html", null ],
     [ "sbk::load_soundbank_message", "structsbk_1_1load__soundbank__message.html", null ],
@@ -111,7 +100,6 @@ var hierarchy =
     [ "method_drawer", "classmethod__drawer.html", null ],
     [ "sbk::mpsc_ring_buffer", "classsbk_1_1mpsc__ring__buffer.html", null ],
     [ "sbk::core::name", "classsbk_1_1core_1_1name.html", null ],
-    [ "sbk::engine::node_group_instance", "structsbk_1_1engine_1_1node__group__instance.html", null ],
     [ "boost::noncopyable", null, [
       [ "sbk::core::object", "classsbk_1_1core_1_1object.html", null ],
       [ "sbk::engine::runtime", "classsbk_1_1engine_1_1runtime.html", null ],
@@ -185,7 +173,6 @@ var hierarchy =
     [ "sc_sound", "structsc__sound.html", null ],
     [ "sc_sound_config", "structsc__sound__config.html", null ],
     [ "SC_SOUND_DELETER", "structSC__SOUND__DELETER.html", null ],
-    [ "SC_SOUND_INSTANCE_DELETER", "structSC__SOUND__INSTANCE__DELETER.html", null ],
     [ "sc_system", "structsc__system.html", [
       [ "sbk::engine::runtime", "classsbk_1_1engine_1_1runtime.html", null ]
     ] ],
@@ -211,17 +198,6 @@ var hierarchy =
     [ "sbk::engine::soundbank_database", "structsbk_1_1engine_1_1soundbank__database.html", null ],
     [ "sbk::engine::soundbank_database_entry", "structsbk_1_1engine_1_1soundbank__database__entry.html", null ],
     [ "sbk::engine::soundbank_dependencies", "structsbk_1_1engine_1_1soundbank__dependencies.html", null ],
-    [ "boost::msm::front::state", null, [
-      [ "sbk::engine::node_instance_fsm::state_init", "structsbk_1_1engine_1_1node__instance__fsm_1_1state__init.html", null ],
-      [ "sbk::engine::node_instance_fsm::state_playing", "structsbk_1_1engine_1_1node__instance__fsm_1_1state__playing.html", null ],
-      [ "sbk::engine::node_instance_fsm::state_stopped", "structsbk_1_1engine_1_1node__instance__fsm_1_1state__stopped.html", null ],
-      [ "sbk::engine::node_instance_fsm::state_uninit", "structsbk_1_1engine_1_1node__instance__fsm_1_1state__uninit.html", null ],
-      [ "sbk::engine::node_instance_fsm::state_virtual", "structsbk_1_1engine_1_1node__instance__fsm_1_1state__virtual.html", null ]
-    ] ],
-    [ "boost::msm::front::state_machine_def", null, [
-      [ "sbk::engine::node_instance", "classsbk_1_1engine_1_1node__instance.html", null ],
-      [ "sbk::engine::node_instance_fsm", "structsbk_1_1engine_1_1node__instance__fsm.html", null ]
-    ] ],
     [ "stbi_io_callbacks", "structstbi__io__callbacks.html", null ],
     [ "sbk::stop_all_message", "structsbk_1_1stop__all__message.html", null ],
     [ "sbk::task< T >", "classsbk_1_1task.html", null ],
@@ -229,9 +205,6 @@ var hierarchy =
     [ "sbk::util::type_helper", "classsbk_1_1util_1_1type__helper.html", null ],
     [ "sbk::unique_coroutine< Promise >", "classsbk_1_1unique__coroutine.html", null ],
     [ "sbk::unique_coroutine< sbk::task_promise >", "classsbk_1_1unique__coroutine.html", null ],
-    [ "boost::mpl::vector", null, [
-      [ "sbk::engine::node_instance_fsm::transition_table", "structsbk_1_1engine_1_1node__instance__fsm_1_1transition__table.html", null ]
-    ] ],
     [ "sbk::engine::void_deleter", "structsbk_1_1engine_1_1void__deleter.html", null ],
     [ "gluten::widget", null, [
       [ "audio_display_widget", "classaudio__display__widget.html", null ],

@@ -18,10 +18,9 @@ var searchData=
   ['to_5fstatus_15',['to_status',['../error_8h.html#ac7024b50a770dfcbd2f396f4469e7067',1,'sbk']]],
   ['todo_20list_16',['Todo List',['../todo.html',1,'']]],
   ['tools_17',['Audio Tools',['../md_docs_2Inspiration.html#autotoc_md44',1,'']]],
-  ['transition_5ftable_18',['transition_table',['../structsbk_1_1engine_1_1node__instance__fsm_1_1transition__table.html',1,'sbk::engine::node_instance_fsm']]],
-  ['try_5fconvert_5fobject_19',['try_convert_object',['../classsbk_1_1core_1_1object.html#a661e0f374855f0803ab3f08b022d5c96',1,'sbk::core::object::try_convert_object() const noexcept -&gt; const T *'],['../classsbk_1_1core_1_1object.html#a1d68fcd7d044f2e09a922bb30e3582e1',1,'sbk::core::object::try_convert_object() noexcept -&gt; T *']]],
-  ['tt_20system_3a_3acreate_5fproject_20tt_20',['Worked example: &lt;tt&gt;system::create_project&lt;/tt&gt;',['..//home/runner/work/sound-bakery/sound-bakery/src/sound_bakery/core/error/README.md#autotoc_md57',1,'']]],
-  ['two_20worlds_21',['Bridging the two worlds',['..//home/runner/work/sound-bakery/sound-bakery/src/sound_bakery/core/error/README.md#autotoc_md58',1,'']]],
-  ['type_5fcomparator_22',['type_comparator',['../structsbk_1_1util_1_1type__comparator.html',1,'sbk::util']]],
-  ['type_5fhelper_23',['type_helper',['../classsbk_1_1util_1_1type__helper.html',1,'sbk::util']]]
+  ['try_5fconvert_5fobject_18',['try_convert_object',['../classsbk_1_1core_1_1object.html#a661e0f374855f0803ab3f08b022d5c96',1,'sbk::core::object::try_convert_object() const noexcept -&gt; const T *'],['../classsbk_1_1core_1_1object.html#a1d68fcd7d044f2e09a922bb30e3582e1',1,'sbk::core::object::try_convert_object() noexcept -&gt; T *']]],
+  ['tt_20system_3a_3acreate_5fproject_20tt_19',['Worked example: &lt;tt&gt;system::create_project&lt;/tt&gt;',['..//home/runner/work/sound-bakery/sound-bakery/src/sound_bakery/core/error/README.md#autotoc_md57',1,'']]],
+  ['two_20worlds_20',['Bridging the two worlds',['..//home/runner/work/sound-bakery/sound-bakery/src/sound_bakery/core/error/README.md#autotoc_md58',1,'']]],
+  ['type_5fcomparator_21',['type_comparator',['../structsbk_1_1util_1_1type__comparator.html',1,'sbk::util']]],
+  ['type_5fhelper_22',['type_helper',['../classsbk_1_1util_1_1type__helper.html',1,'sbk::util']]]
 ];

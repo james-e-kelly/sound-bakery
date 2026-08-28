@@ -6,9 +6,6 @@ var searchData=
   ['new_5fproject_5fwidget_3',['new_project_widget',['../classnew__project__widget.html',1,'']]],
   ['node_4',['node',['../classsbk_1_1engine_1_1node.html',1,'sbk::engine']]],
   ['node_5fbase_5',['node_base',['../classsbk_1_1engine_1_1node__base.html',1,'sbk::engine']]],
-  ['node_5fgroup_5finstance_6',['node_group_instance',['../structsbk_1_1engine_1_1node__group__instance.html',1,'sbk::engine']]],
-  ['node_5finstance_7',['node_instance',['../classsbk_1_1engine_1_1node__instance.html',1,'sbk::engine']]],
-  ['node_5finstance_5ffsm_8',['node_instance_fsm',['../structsbk_1_1engine_1_1node__instance__fsm.html',1,'sbk::engine']]],
-  ['numeric_5ftype_9',['numeric_type',['../structsbk_1_1numeric__type.html',1,'sbk']]],
-  ['numeric_5ftype_3c_20t_20_3e_10',['numeric_type&lt; T &gt;',['../structsbk_1_1numeric__type_3_01T_01_4.html',1,'sbk']]]
+  ['numeric_5ftype_6',['numeric_type',['../structsbk_1_1numeric__type.html',1,'sbk']]],
+  ['numeric_5ftype_3c_20t_20_3e_7',['numeric_type&lt; T &gt;',['../structsbk_1_1numeric__type_3_01T_01_4.html',1,'sbk']]]
 ];

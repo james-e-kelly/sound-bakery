@@ -1,6 +1,6 @@
 <map id="sc_sound" name="sc_sound">
 <area shape="rect" id="Node000001" title="Basic piece of playing audio." alt="" coords="5,357,88,382"/>
-<area shape="rect" id="Node000009" href="$structsc__voice.html" title="A voice is a window into a single sound that may or may not be audible and rendering." alt="" coords="240,478,319,503"/>
+<area shape="rect" id="Node000009" href="$structsc__voice.html" title=" " alt="" coords="240,478,319,503"/>
 <area shape="poly" id="edge14_Node000009_Node000001" title=" " alt="" coords="85,386,255,476,253,480,83,391"/>
 <area shape="rect" id="Node000002" href="$structsc__system.html" title="Object that manages the node graph, sounds, output etc." alt="" coords="605,315,695,341"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="590,323,509,316,407,312,293,315,180,328,126,342,79,359,77,354,125,337,180,323,293,309,407,307,510,311,591,318"/>

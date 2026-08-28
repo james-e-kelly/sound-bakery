@@ -170,18 +170,18 @@ $(document).ready(function(){initNavTree('bus_8h_source.html',''); initResizable
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        [[nodiscard]] <span class="keyword">auto</span> is_master_bus() <span class="keyword">const</span> -&gt; <span class="keywordtype">bool</span> { <span class="keywordflow">return</span> m_masterBus; }</div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        [[nodiscard]] <span class="keyword">auto</span> lock_and_copy() -&gt; std::shared_ptr&lt;node_instance&gt;;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        [[nodiscard]] <span class="keyword">auto</span> lock_or_copy_node_group() -&gt; <a class="code hl_typedef" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result&lt;std::shared_ptr&lt;sc_node_group&gt;</a>&gt;;</div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keyword">protected</span>:</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        std::weak_ptr&lt;node_instance&gt; m_busInstance;</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <span class="keywordtype">bool</span> m_masterBus;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <span class="keywordtype">bool</span> m_masterBus;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        std::shared_ptr&lt;sc_node_group&gt; m_nodeGroup;</div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    };</div>
 </div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>}  <span class="comment">// namespace sbk::engine</span></div>
 <div class="ttc" id="aclasssbk_1_1engine_1_1bus_html"><div class="ttname"><a href="classsbk_1_1engine_1_1bus.html">sbk::engine::bus</a></div><div class="ttdef"><b>Definition</b> bus.h:10</div></div>
 <div class="ttc" id="aclasssbk_1_1engine_1_1node_html"><div class="ttname"><a href="classsbk_1_1engine_1_1node.html">sbk::engine::node</a></div><div class="ttdoc">Root node that builds the core graph of sounds and busses.</div><div class="ttdef"><b>Definition</b> node.h:70</div></div>
+<div class="ttc" id="aerror_8h_html_a390f3d2c4f8f4a52fc2076794fd8e7c7"><div class="ttname"><a href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a></div><div class="ttdeci">tl::expected&lt; T, error &gt; result</div><div class="ttdoc">The result of a fallible operation: a value of type T, or an sbk::error.</div><div class="ttdef"><b>Definition</b> error.h:80</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

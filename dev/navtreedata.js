@@ -129,7 +129,7 @@ var NAVTREEINDEX =
 [
 "ChefProgrammerGuide.html",
 "eastl__serialization_8h_source.html",
-"structsbk_1_1core_1_1serialization_1_1serialized__system.html"
+"structSC__NODE__GROUP__DELETER.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

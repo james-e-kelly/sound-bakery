@@ -14,5 +14,8 @@ var searchData=
   ['sc_5fsound_5fmode_11',['sc_sound_mode',['../sound__chef_8h.html#a8679515759a55876ae1c87b223a8a387',1,'sound_chef.h']]],
   ['sc_5fsystem_5fconfig_12',['sc_system_config',['../sound__chef_8h.html#aca8b1e373917df535789bc297a7a8746',1,'sound_chef.h']]],
   ['sc_5fvirtual_5fvoice_5fcandidate_13',['sc_virtual_voice_candidate',['../sound__chef_8h.html#aaf3aa8d616c88de3668a8118b686e34d',1,'sound_chef.h']]],
-  ['sc_5fvoice_14',['sc_voice',['../sound__chef_8h.html#a9820f9b564b05bf25969fb28afdb7ea5',1,'sound_chef.h']]]
+  ['sc_5fvoice_5fdesired_5fstate_14',['sc_voice_desired_state',['../sound__chef_8h.html#abf05ea819d40df3ce8c114647b6d790a',1,'sound_chef.h']]],
+  ['sc_5fvoice_5fflags_15',['sc_voice_flags',['../sound__chef_8h.html#a8e978441d2425056142ef5f0073f2098',1,'sound_chef.h']]],
+  ['sc_5fvoice_5fstate_16',['sc_voice_state',['../sound__chef_8h.html#a73b95cc7d5c8a19b471973f131a38cc0',1,'sound_chef.h']]],
+  ['sc_5fvoice_5fstopped_5fproc_17',['sc_voice_stopped_proc',['../sound__chef_8h.html#a6eb3fd06db64630677a6c56bdcff6840',1,'sound_chef.h']]]
 ];

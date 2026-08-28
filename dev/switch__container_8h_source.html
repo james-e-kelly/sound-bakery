@@ -164,21 +164,21 @@ $(document).ready(function(){initNavTree('switch__container_8h_source.html','');
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        [[nodiscard]] <span class="keyword">auto</span> get_switch_parameters() <span class="keyword">const</span> -&gt; <a class="code hl_class" href="classsbk_1_1core_1_1database__ptr.html">sbk::core::database_ptr&lt;named_parameter&gt;</a> { <span class="keywordflow">return</span> m_switchParameter; }</div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>        [[nodiscard]] <span class="keyword">auto</span> get_switch_to_child_map() <span class="keyword">const</span></div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>            -&gt; std::unordered_map&lt;sbk::core::database_ptr&lt;named_parameter_value&gt;, <a class="code hl_class" href="classsbk_1_1core_1_1child__ptr.html">sbk::core::child_ptr&lt;container&gt;</a>&gt;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>            -&gt; std::unordered_map&lt;sbk::core::database_ptr&lt;named_parameter_value&gt;, <a class="code hl_class" href="classsbk_1_1core_1_1database__ptr.html">sbk::core::child_ptr&lt;container&gt;</a>&gt;</div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        {</div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>            <span class="keywordflow">return</span> m_switchToChild;</div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>        }</div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keyword">private</span>:</div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        <span class="keyword">auto</span> set_switch_to_child(</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>            std::unordered_map&lt;<a class="code hl_class" href="classsbk_1_1core_1_1database__ptr.html">sbk::core::database_ptr&lt;named_parameter_value&gt;</a>, <a class="code hl_class" href="classsbk_1_1core_1_1child__ptr.html">sbk::core::child_ptr&lt;container&gt;</a>&gt; map)</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>            std::unordered_map&lt;<a class="code hl_class" href="classsbk_1_1core_1_1database__ptr.html">sbk::core::database_ptr&lt;named_parameter_value&gt;</a>, <a class="code hl_class" href="classsbk_1_1core_1_1database__ptr.html">sbk::core::child_ptr&lt;container&gt;</a>&gt; map)</div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>            -&gt; void;</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        <span class="keyword">auto</span> populate_child_keys() -&gt; void;</div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        <a class="code hl_class" href="classsbk_1_1core_1_1database__ptr.html">global_int_parameter</a> m_switchParameter;</div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        std::unordered_map&lt;sbk::core::database_ptr&lt;named_parameter_value&gt;, <a class="code hl_class" href="classsbk_1_1core_1_1child__ptr.html">sbk::core::child_ptr&lt;container&gt;</a>&gt;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        std::unordered_map&lt;sbk::core::database_ptr&lt;named_parameter_value&gt;, <a class="code hl_class" href="classsbk_1_1core_1_1database__ptr.html">sbk::core::child_ptr&lt;container&gt;</a>&gt;</div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>            m_switchToChild;</div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        REGISTER_REFLECTION(<a class="code hl_class" href="classsbk_1_1engine_1_1switch__container.html">switch_container</a>, <a class="code hl_class" href="classsbk_1_1engine_1_1container.html">container</a>)</div>
@@ -186,7 +186,6 @@ $(document).ready(function(){initNavTree('switch__container_8h_source.html','');
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    };</div>
 </div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>}  <span class="comment">// namespace sbk::engine</span></div>
-<div class="ttc" id="aclasssbk_1_1core_1_1child__ptr_html"><div class="ttname"><a href="classsbk_1_1core_1_1child__ptr.html">sbk::core::child_ptr</a></div><div class="ttdoc">Syntactic type to define a pointer that must be a child of the owning object.</div><div class="ttdef"><b>Definition</b> database_ptr.h:247</div></div>
 <div class="ttc" id="aclasssbk_1_1core_1_1database__ptr_html"><div class="ttname"><a href="classsbk_1_1core_1_1database__ptr.html">sbk::core::database_ptr</a></div><div class="ttdef"><b>Definition</b> database_ptr.h:24</div></div>
 <div class="ttc" id="aclasssbk_1_1engine_1_1container_html"><div class="ttname"><a href="classsbk_1_1engine_1_1container.html">sbk::engine::container</a></div><div class="ttdoc">Base container type. Inherited types include sounds, random, sequence etc.</div><div class="ttdef"><b>Definition</b> container.h:49</div></div>
 <div class="ttc" id="aclasssbk_1_1engine_1_1parameter_html"><div class="ttname"><a href="classsbk_1_1engine_1_1parameter.html">sbk::engine::parameter</a></div><div class="ttdoc">Defines a database object with a changeable property.</div><div class="ttdef"><b>Definition</b> parameter.h:20</div></div>

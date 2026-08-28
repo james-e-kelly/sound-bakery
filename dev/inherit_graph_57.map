@@ -1,3 +1,13 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="Node000000" href="$structsbk_1_1engine_1_1flag__playing.html" title=" " alt="" coords="5,5,189,31"/>
+<area shape="rect" id="Node000000" href="$structsbk_1_1fiber__promise.html" title=" " alt="" coords="6,46,149,71"/>
+<area shape="rect" id="Node000001" href="$structsbk_1_1detached__task_1_1promise__type.html" title=" " alt="" coords="213,5,361,45"/>
+<area shape="poly" id="edge60_Node000000_Node000001" title=" " alt="" coords="162,43,212,34,213,40,163,48"/>
+<area shape="rect" id="Node000003" href="$structsbk_1_1task__promise.html" title=" " alt="" coords="197,70,376,95"/>
+<area shape="poly" id="edge61_Node000000_Node000003" title=" " alt="" coords="163,66,198,70,197,75,162,71"/>
+<area shape="rect" id="Node000004" href="$structsbk_1_1task__promise_3_01void_01_4.html" title=" " alt="" coords="211,120,363,160"/>
+<area shape="poly" id="edge62_Node000000_Node000004" title=" " alt="" coords="133,73,150,80,198,106,228,117,226,122,196,110,148,85,131,78"/>
+<area shape="rect" id="Node000002" href="$classsbk_1_1promise__base.html" title=" " alt="" coords="5,95,149,121"/>
+<area shape="poly" id="edge63_Node000002_Node000001" title=" " alt="" coords="129,88,148,80,196,55,226,43,228,48,198,60,150,85,131,93"/>
+<area shape="poly" id="edge64_Node000002_Node000003" title=" " alt="" coords="163,95,197,91,198,96,164,100"/>
+<area shape="poly" id="edge65_Node000002_Node000004" title=" " alt="" coords="164,118,211,126,210,131,163,124"/>
 </map>
