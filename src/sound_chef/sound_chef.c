@@ -124,8 +124,21 @@ sbk_status sc_system_init(sc_system* system, const sc_system_config* systemConfi
     const ma_slot_allocator_config voiceAllocatorConfig = ma_slot_allocator_config_init(systemConfig->maxVoices);
     SC_CHECK_STATUS(SC_STATUS_FROM_MA_RESULT(ma_slot_allocator_init(&voiceAllocatorConfig, pAlloc, &system->voiceSlotAllocator)));
 
+    // Burn slot 0's generation-0 handle so handle value 0 is permanently stale.
+    {
+        ma_uint64 burnSlot = 0;
+        SC_CHECK_STATUS(SC_STATUS_FROM_MA_RESULT(ma_slot_allocator_alloc(&system->voiceSlotAllocator, &burnSlot)));
+        ma_slot_allocator_free(&system->voiceSlotAllocator, burnSlot);
+    }
+
     const ma_slot_allocator_config realVoiceAllocatorConfig = ma_slot_allocator_config_init(systemConfig->maxRealVoices);
     SC_CHECK_STATUS(SC_STATUS_FROM_MA_RESULT(ma_slot_allocator_init(&realVoiceAllocatorConfig, pAlloc, &system->realVoiceSlotAllocator)));
+
+    {
+        ma_uint64 burnSlot = 0;
+        SC_CHECK_STATUS(SC_STATUS_FROM_MA_RESULT(ma_slot_allocator_alloc(&system->realVoiceSlotAllocator, &burnSlot)));
+        ma_slot_allocator_free(&system->realVoiceSlotAllocator, burnSlot);
+    }
 
     system->voiceBuffer = ma_calloc(sizeof(sc_voice) * systemConfig->maxVoices, pAlloc);
     SC_CHECK_MEM(system->voiceBuffer);
