@@ -25,8 +25,11 @@ namespace gluten
         layout(const layout_type& layoutType, const anchor_preset& anchorPreset);
         layout(const anchor_preset& anchorPreset);  //< New layout with left_to_right layout and defined anchor preset
 
-        layout& set_layout_type(const layout_type& type);  //< Set the type of layout (direction the children are laid out in)
-        layout& set_layout_spacing(float spacing);         //< Adds a gap between child elements
+        layout& set_layout_type(const layout_type& type);               //< Set the type of layout (direction the children are laid out in)
+        layout& set_layout_spacing(float spacing);                      //< Adds a gap between child elements
+        layout& set_layout_padding(ImVec2 padding);                     //< Insets child elements while keeping the layout's outer rect unchanged
+        layout& set_layout_padding(ImVec4 padding);                     //< Per-side padding (left, top, right, bottom)
+        layout& set_layout_padding(float padding);                      //< Uniform padding on all sides
 
         void render_spacer_pixels(float horizonalPixels, float verticalPixels);      //< Render a "blank" element with a set size in pixels
         void render_spacer_percent(float horizontalPercent, float verticalPercent);  //< Render a "blank" element with a set size as a percentage of this layout's size
@@ -74,11 +77,13 @@ namespace gluten
                                             float horizontalPixels,
                                             float verticalPixels);
 
+        ImRect get_content_rect() const;  //< Element rect inset by layout padding
+
         layout_type m_layoutType = layout_type::left_to_right;
 
         std::optional<ImVec2> m_currentLayoutPos;
 
-        bool m_firstLayout = true;
-        float m_spacing    = 0.0f;
+        bool m_firstLayout      = true;
+        float m_spacing         = 0.0f;
     };
 }  // namespace gluten

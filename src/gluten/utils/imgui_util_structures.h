@@ -1,5 +1,7 @@
 #pragma once
 
+#include "gluten/app/app.h"
+#include "gluten/theme/theme.h"
 #include "imgui.h"
 #include "imgui_internal.h"
 
@@ -35,6 +37,48 @@ namespace gluten::imgui
         scoped_font operator=(const scoped_font&) = delete;
         scoped_font(ImFont* font) { ImGui::PushFont(font); }
         ~scoped_font() { ImGui::PopFont(); }
+    };
+
+    // Push a semantic text style (size + font family) for the duration of
+    // the scope. Prefer this over ad-hoc PushFont(font, px) at call sites --
+    // it keeps size decisions in one place (gluten::theme::textSize*) and
+    // means a future scale tweak lands everywhere at once.
+    //
+    // The family override is escape-hatch only; leaving it default lets
+    // theme::text_font_for pick the right face for the style.
+    struct scoped_text_style
+    {
+        scoped_text_style(const scoped_text_style&)           = delete;
+        scoped_text_style operator=(const scoped_text_style&) = delete;
+
+        explicit scoped_text_style(text_style style)
+        {
+            ImGui::PushFont(gluten::app::get()->get_font(gluten::theme::text_font_for(style)), gluten::theme::text_size_for(style));
+        }
+
+        scoped_text_style(text_style style, fonts fontOverride)
+        {
+            ImGui::PushFont(gluten::app::get()->get_font(fontOverride), gluten::theme::text_size_for(style));
+        }
+
+        ~scoped_text_style() { ImGui::PopFont(); }
+    };
+
+    struct scoped_button_style
+    {
+        scoped_button_style(const scoped_button_style&)           = delete;
+        scoped_button_style operator=(const scoped_button_style&) = delete;
+
+        explicit scoped_button_style(button_style style)
+        {
+            const auto colors = gluten::theme::button_colors_for(style);
+            ImGui::PushStyleColor(ImGuiCol_Button, colors.button);
+            ImGui::PushStyleColor(ImGuiCol_ButtonHovered, colors.hovered);
+            ImGui::PushStyleColor(ImGuiCol_ButtonActive, colors.active);
+            ImGui::PushStyleColor(ImGuiCol_Text, colors.text);
+        }
+
+        ~scoped_button_style() { ImGui::PopStyleColor(4); }
     };
 
     struct scoped_id
@@ -119,6 +163,50 @@ namespace gluten::imgui
                 PushStyle(std::forward<OtherStylePairs>(otherStylePairs)...);
             }
         }
+    };
+
+    struct scoped_context_menu
+    {
+        scoped_context_menu(const scoped_context_menu&)           = delete;
+        scoped_context_menu operator=(const scoped_context_menu&) = delete;
+
+        explicit scoped_context_menu(const char* id, ImGuiPopupFlags flags = ImGuiPopupFlags_MouseButtonRight)
+        {
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(gluten::theme::space04, gluten::theme::space08));
+            ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, gluten::theme::space04));
+            ImGui::PushStyleVar(ImGuiStyleVar_SelectableTextAlign, ImVec2(0.0f, 0.5f));
+
+            ImGui::PushStyleColor(ImGuiCol_PopupBg, gluten::theme::layer03);
+            ImGui::PushStyleColor(ImGuiCol_HeaderHovered, gluten::theme::layerHover03);
+            ImGui::PushStyleColor(ImGuiCol_HeaderActive, gluten::theme::layerActive03);
+
+            ImGui::SetNextWindowSizeConstraints(ImVec2(200.0f, 0.0f), ImVec2(FLT_MAX, FLT_MAX));
+
+            m_open = ImGui::BeginPopupContextItem(id, flags);
+
+            if (m_open)
+            {
+                ImGui::PushFont(
+                    gluten::app::get()->get_font(gluten::theme::text_font_for(gluten::text_style::body)),
+                    gluten::theme::text_size_for(gluten::text_style::body));
+            }
+        }
+
+        ~scoped_context_menu()
+        {
+            if (m_open)
+            {
+                ImGui::PopFont();
+                ImGui::EndPopup();
+            }
+            ImGui::PopStyleColor(3);
+            ImGui::PopStyleVar(3);
+        }
+
+        explicit operator bool() const { return m_open; }
+
+    private:
+        bool m_open = false;
     };
 
     struct scoped_item_flags

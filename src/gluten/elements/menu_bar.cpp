@@ -39,10 +39,11 @@ auto gluten::menu_bar::render_element(const element_render_info& renderInfo) -> 
 
         ImVec2 topLeft = renderInfo.elementBox.GetTL();
         topLeft.y      = desiredY;
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, gluten::theme::insetFrame);
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, gluten::theme::insetCompact);
+
         ImGui::SetCursorScreenPos(topLeft);
     }
-
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, gluten::theme::paddingVec);
 
     return true;
 }
@@ -109,9 +110,9 @@ void gluten::menu_bar::end_menu_bar()
         window->DC.LayoutType       = ImGuiLayoutType_Vertical;
         window->DC.NavLayerCurrent  = ImGuiNavLayer_Main;
         window->DC.MenuBarAppending = false;
-    }
 
-    ImGui::PopStyleVar();
+        ImGui::PopStyleVar(2);
+    }
 
     ImGui::SetWindowFontScale(1.0f);
 }

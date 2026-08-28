@@ -7,8 +7,8 @@
 audio_element::audio_element(const std::filesystem::path& filePath, const int64_t fileId)
     : gluten::file_element(gluten::anchor_preset::stretch_full, filePath), m_fileId(fileId), m_waveform(filePath, fileId)
 {
-    m_layout.set_layout_spacing(gluten::theme::padding);
-    m_layout.set_element_padding(gluten::theme::paddingVec);
+    m_layout.set_layout_spacing(gluten::theme::space04);
+    m_layout.set_element_padding(gluten::theme::insetFrame);
 
     m_playButton.set_element_active_color(gluten::theme::layerActive01);
     m_pauseButton.set_element_active_color(gluten::theme::layerActive01);
@@ -34,7 +34,7 @@ audio_element::audio_element(const std::filesystem::path& filePath, const int64_
     m_controlButtonsLayout.set_element_alignment(ImVec2(-0.5f, 0.0f));
     m_controlButtonsLayout.get_element_anchor().minOffset.x -= s_controlButtonsWidth + (s_buttonWidth * 3.0f);
     m_controlButtonsLayout.get_element_anchor().maxOffset.x += s_controlButtonsWidth + (s_buttonWidth * 3.0f);
-    m_controlButtonsLayout.set_element_rounding(gluten::theme::rounding);
+    m_controlButtonsLayout.set_element_rounding(gluten::theme::radiusMd);
     m_controlButtonsLayout.set_element_background_color(gluten::theme::layer02);
     m_controlButtonsLayout.set_element_max_size(ImVec2(0.0f, s_controlButtonsWidth));
 }

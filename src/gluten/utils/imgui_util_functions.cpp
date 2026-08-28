@@ -9,7 +9,7 @@ void gluten::imgui::shift_cursor_y(float distance) { ImGui::SetCursorPosY(ImGui:
 void gluten::imgui::shift_cursor(float x, float y)
 {
     const ImVec2 cursor = ImGui::GetCursorPos();
-    ImGui::SetCursorPos(ImVec2(cursor.x + x, cursor.y + y));
+    ImGui::SetCursorPos(cursor + ImVec2(x, y));
 }
 
 void gluten::imgui::indent_cursor() { shift_cursor_x(ImGui::GetStyle().IndentSpacing); }

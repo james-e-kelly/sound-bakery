@@ -4,13 +4,26 @@
 #include "gluten/utils/imgui_util_structures.h"
 #include "imgui_internal.h"
 
-gluten::button::button(const char* name, bool invisible, const anchor_preset& anchorPreset)
+gluten::button::button(const char* name, bool invisible, const anchor_preset& anchorPreset, const button_style& buttonStyle)
     : element(anchorPreset), m_name(name), m_invisible(invisible)
 {
+    set_button_style(buttonStyle);
+}
+
+auto gluten::button::set_button_style(button_style style) -> button&
+{
+    m_buttonStyle = style;
+    return *this;
 }
 
 bool gluten::button::render_element(const element_render_info& renderInfo)
 {
+    std::optional<gluten::imgui::scoped_button_style> styleScope;
+    if (m_buttonStyle.has_value())
+    {
+        styleScope.emplace(m_buttonStyle.value());
+    }
+
     gluten::imgui::scoped_color_stack buttonColors(
         ImGuiCol_Button, m_activeColor.has_value() && m_active ? m_activeColor.value() : ImGui::GetColorU32(ImGuiCol_Button),
         ImGuiCol_ButtonActive, m_activeColor.has_value() && m_active ? m_activeColor.value() : ImGui::GetColorU32(ImGuiCol_Button),
@@ -41,7 +54,7 @@ auto gluten::button::get_element_content_size(const ImVec2& parentSize) -> ImVec
 
     if (textSize.x > 0.0f)
     {
-        return ImVec2(textSize.x + padding.x * 2, textSize.y + padding.y * 2);
+        return textSize + padding * 2;
     }
 
     return m_minSize;

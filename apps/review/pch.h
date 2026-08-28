@@ -12,6 +12,7 @@
 #include "gluten/elements/icon_button.h"
 #include "gluten/elements/layouts/layout.h"
 #include "gluten/elements/loading_spinner.h"
+#include "gluten/elements/scale_box.h"
 #include "gluten/managers/manager.h"
 #include "gluten/subsystems/renderer_subsystem.h"
 #include "gluten/subsystems/widget_subsystem.h"
@@ -62,6 +63,7 @@ enum review_app_version
     review_app_first_settings,
     review_app_stored_expiry_time,
     review_app_ip_address,
+    review_app_active_view_in_settings, // Put the active view in settings and out of the workspace widget
 
     // Add versions above this //
     review_app_version_end,

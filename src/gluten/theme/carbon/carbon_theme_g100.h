@@ -213,11 +213,4 @@ namespace gluten::theme::carbon_g100
         gluten::theme::interactiveHover    = interactiveHover;
         gluten::theme::interactiveActive   = interactiveActive;
     }
-
-    inline void apply_styles()
-    {
-        gluten::theme::padding   = padding;
-        gluten::theme::noPadding = noPadding;
-        gluten::theme::rounding  = rounding;
-    }
 }  // namespace gluten::theme::carbon_g100

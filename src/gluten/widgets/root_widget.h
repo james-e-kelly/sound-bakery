@@ -65,6 +65,7 @@ namespace gluten
 
     public:
         void start_implementation() override;
+        auto refresh_style_implementation() -> void override;
         void render_implementation() override;
         auto render_menu_implementation() -> void override;
 

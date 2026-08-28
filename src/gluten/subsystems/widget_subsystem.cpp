@@ -27,6 +27,8 @@ void widget_subsystem::tick(double deltaTime)
 
     assert(m_widgets.size() > 0);
 
+    const bool wantsStyleRefreshThisFrame = m_refreshingStyle;
+
     for (int index = m_widgets.size() - 1; index >= 0; index--)
     {
         std::weak_ptr<gluten::widget>& widget = m_widgets[index];
@@ -36,6 +38,10 @@ void widget_subsystem::tick(double deltaTime)
             if (!sharedWidget->has_started())
             {
                 sharedWidget->start();
+            }
+            else if (wantsStyleRefreshThisFrame)
+            {
+                sharedWidget->refresh_style();
             }
 
             sharedWidget->tick(deltaTime);
@@ -57,6 +63,11 @@ void widget_subsystem::tick(double deltaTime)
             m_widgets.erase(m_widgets.begin() + index);
         }
     }
+
+    if (wantsStyleRefreshThisFrame)
+    {
+        m_refreshingStyle = false;
+    }
 }
 
 void widget_subsystem::exit()
@@ -77,4 +88,9 @@ void gluten::widget_subsystem::set_root_widget(widget* rootWidget) { m_rootWidge
 auto gluten::widget_subsystem::set_root_widget(const std::shared_ptr<widget>& rootWidget) -> void
 {
     m_rootWidget = rootWidget;
+}
+
+auto gluten::widget_subsystem::refresh_style() -> void
+{
+    m_refreshingStyle = true;
 }

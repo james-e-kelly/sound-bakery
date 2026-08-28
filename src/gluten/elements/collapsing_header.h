@@ -9,9 +9,13 @@ namespace gluten
     class collapsing_header : public gluten::element
     {
     public:
-        collapsing_header(const std::string& label, bool defaultOpen = true)
-            : element(anchor_preset::stretch_full), m_label(label), m_defaultOpen(defaultOpen)
+        collapsing_header(const std::string& label, bool defaultOpen = true, const std::string& detail = {})
+            : element(anchor_preset::stretch_full), m_label(label), m_defaultOpen(defaultOpen), m_detail(detail)
         {
+            set_element_background_color(ImGui::GetStyleColorVec4(ImGuiCol_Header));
+            set_element_hover_color(ImGui::GetStyleColorVec4(ImGuiCol_HeaderHovered));
+            set_element_rounding(m_elementRounding);
+            set_element_inner_padding(gluten::theme::insetCompact);
         }
 
         auto set_open(bool open) -> void;
@@ -27,6 +31,7 @@ namespace gluten
         }
 
         std::string m_label;
+        std::string m_detail;
         bool m_defaultOpen = true;
     };
 }  // namespace gluten

@@ -52,10 +52,9 @@ void project_nodes_widget::render_page(const std::vector<sbk::memory::object_cat
             if (ImGui::TreeNodeEx(categoryName.data(),
                                   ImGuiTreeNodeFlags_NavLeftJumpsBackHere | ImGuiTreeNodeFlags_SpanFullWidth))
             {
-                if (ImGui::BeginPopupContextItem("TopNodeContext"))
+                if (gluten::imgui::scoped_context_menu contextMenu{"TopNodeContext"})
                 {
                     render_create_parent_or_child_menu(category, rttr::instance(), node_creation_type::New);
-                    ImGui::EndPopup();
                 }
 
                 render_category(category);
@@ -320,7 +319,7 @@ bool project_nodes_widget::render_node_context_menu(rttr::type type, rttr::insta
 
         if (sbk::core::database_object* const object = sbk::util::type_helper::get_database_object_from_instance(instance))
         {
-            if (ImGui::BeginPopupContextItem(std::to_string(object->get_database_id()).c_str()))
+            if (gluten::imgui::scoped_context_menu contextMenu{std::to_string(object->get_database_id()).c_str()})
             {
                 const sbk::memory::object_category category = sbk::util::type_helper::get_category_from_type(type);
 
@@ -380,8 +379,6 @@ bool project_nodes_widget::render_node_context_menu(rttr::type type, rttr::insta
                     object->get_owner()->remove_object(object->shared_from_this());
                     result = false;
                 }
-
-                ImGui::EndPopup();
             }
         }
     }

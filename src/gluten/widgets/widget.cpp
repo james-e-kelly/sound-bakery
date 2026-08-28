@@ -19,6 +19,8 @@ auto widget::start() -> void
         start_implementation();
         m_hasStarted = true;
 
+        refresh_style_implementation(); // Only refresh ourselves. Children will be refreshed by their start function
+
         for (auto& child : m_childWidgets)
         {
             if (std::shared_ptr<widget> sharedChild = child.second.lock())
@@ -63,6 +65,19 @@ auto widget::tick(double deltaTime) -> void
                     sharedChild->tick(deltaTime);
                 }
             }
+        }
+    }
+}
+
+auto widget::refresh_style() -> void
+{
+    refresh_style_implementation();
+
+    for (auto& child : m_childWidgets)
+    {
+        if (std::shared_ptr<widget> sharedChild = child.second.lock())
+        {
+            sharedChild->refresh_style();
         }
     }
 }

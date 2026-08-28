@@ -26,6 +26,8 @@ namespace gluten
         auto set_root_widget(const std::shared_ptr<widget>& rootWidget) -> void;
         auto get_root_widget() const -> class root_widget*;
 
+        auto refresh_style() -> void;
+
     public:
         template <class T>
         [[nodiscard]] std::shared_ptr<T> add_widget_class()
@@ -49,6 +51,7 @@ namespace gluten
     private:
         std::vector<std::weak_ptr<widget>> m_widgets;
         std::shared_ptr<widget> m_rootWidget;
+        bool m_refreshingStyle{};
     };
 
     template <typename T>

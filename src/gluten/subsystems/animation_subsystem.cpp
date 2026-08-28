@@ -15,6 +15,7 @@ auto gluten::animation_subsystem::get() -> animation_subsystem*
 auto gluten::animation_subsystem::pre_tick(double deltaTime) -> void
 {
     m_deltaTime = deltaTime;
+    m_totalTime += deltaTime;
 }
 
 auto gluten::animation_subsystem::exp_smooth(float current, float target, float rate, float dt) -> float
@@ -24,10 +25,28 @@ auto gluten::animation_subsystem::exp_smooth(float current, float target, float 
         return target;
     }
 
-    // 1 - e^(-rate * dt) is the frame-rate-independent lerp factor for an
-    // exponential decay. At 60 FPS with rate=15 this is ~22 % per frame.
     const float t = 1.0f - std::exp(-rate * dt);
     return current + (target - current) * t;
+}
+
+auto gluten::animation_subsystem::ease_out_cubic(float t) -> float
+{
+    const float inv = 1.0f - t;
+    return 1.0f - inv * inv * inv;
+}
+
+auto gluten::animation_subsystem::ease_in_cubic(float t) -> float
+{
+    return t * t * t;
+}
+
+auto gluten::animation_subsystem::clear(ImGuiID id) -> void
+{
+    if (animation_subsystem* const sub = get())
+    {
+        sub->m_floatValues.erase(id);
+        sub->m_colorValues.erase(id);
+    }
 }
 
 auto gluten::animation_subsystem::animate(ImGuiID id, float initial, float target, float rate) -> float
@@ -61,29 +80,56 @@ auto gluten::animation_subsystem::animate_color(ImGuiID id, ImU32 initial, ImU32
 
 auto gluten::animation_subsystem::animate_impl(ImGuiID id, float initial, float target, float rate) -> float
 {
-    const auto [iter, inserted] = m_floatValues.try_emplace(id, initial);
+    const float duration = 3.0f / std::max(rate, 0.01f);
+
+    auto [iter, inserted] = m_floatValues.try_emplace(id, float_anim_state{initial, target, initial, m_totalTime});
+
     if (inserted)
     {
         return initial;
     }
 
-    const float dt = static_cast<float>(m_deltaTime);
-    iter->second   = exp_smooth(iter->second, target, rate, dt);
-    return iter->second;
+    if (iter->second.target_value != target)
+    {
+        iter->second.start_value  = iter->second.current_value;
+        iter->second.target_value = target;
+        iter->second.start_time   = m_totalTime;
+    }
+
+    const float elapsed = static_cast<float>(m_totalTime - iter->second.start_time);
+    float t             = std::clamp(elapsed / duration, 0.0f, 1.0f);
+
+    t = ease_out_cubic(t);
+
+    iter->second.current_value = iter->second.start_value + (target - iter->second.start_value) * t;
+    return iter->second.current_value;
 }
 
 auto gluten::animation_subsystem::animate_color_impl(ImGuiID id, ImVec4 initial, ImVec4 target, float rate) -> ImVec4
 {
-    const auto [iter, inserted] = m_colorValues.try_emplace(id, initial);
+    const float duration = 3.0f / std::max(rate, 0.01f);
+
+    auto [iter, inserted] = m_colorValues.try_emplace(id, color_anim_state{initial, target, initial, m_totalTime});
+
     if (inserted)
     {
         return initial;
     }
 
-    const float dt = static_cast<float>(m_deltaTime);
-    iter->second.x = exp_smooth(iter->second.x, target.x, rate, dt);
-    iter->second.y = exp_smooth(iter->second.y, target.y, rate, dt);
-    iter->second.z = exp_smooth(iter->second.z, target.z, rate, dt);
-    iter->second.w = exp_smooth(iter->second.w, target.w, rate, dt);
-    return iter->second;
+    if (iter->second.target_value.x != target.x || iter->second.target_value.y != target.y ||
+        iter->second.target_value.z != target.z || iter->second.target_value.w != target.w)
+    {
+        iter->second.start_value  = iter->second.current_value;
+        iter->second.target_value = target;
+        iter->second.start_time   = m_totalTime;
+    }
+
+    const float elapsed = static_cast<float>(m_totalTime - iter->second.start_time);
+    const float t       = ease_out_cubic(std::clamp(elapsed / duration, 0.0f, 1.0f));
+
+    iter->second.current_value.x = iter->second.start_value.x + (target.x - iter->second.start_value.x) * t;
+    iter->second.current_value.y = iter->second.start_value.y + (target.y - iter->second.start_value.y) * t;
+    iter->second.current_value.z = iter->second.start_value.z + (target.z - iter->second.start_value.z) * t;
+    iter->second.current_value.w = iter->second.start_value.w + (target.w - iter->second.start_value.w) * t;
+    return iter->second.current_value;
 }

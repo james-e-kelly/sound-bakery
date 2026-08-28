@@ -25,7 +25,6 @@ auto intro_widget::render_window_implementation() -> void
     gluten::layout centerColumnLayout(gluten::layout::layout_type::top_to_bottom, gluten::element::anchor_preset::stretch_center);
     centerColumnLayout.get_element_anchor().maxOffset.x = 800;
     centerColumnLayout.get_element_anchor().minOffset.x = -400;
-    centerColumnLayout.set_element_content_scale(1.5f);
 
     centerColumnLayout.render_window();
 
@@ -35,13 +34,10 @@ auto intro_widget::render_window_implementation() -> void
     gluten::text serverHeader("Set Up Server", ImVec2(0.5f, 0.5f), gluten::element::anchor_preset::center_middle);
     gluten::text ipAddressText("IP Address", ImVec2(0.5f, 0.5f), gluten::element::anchor_preset::center_middle);
 
-    welcomeText.set_font(gluten::fonts::title);
-    clientHeader.set_font(gluten::fonts::title);
-    serverHeader.set_font(gluten::fonts::title);
-
-    welcomeText.set_element_content_scale(1.25f);
-    clientHeader.set_element_content_scale(1.25f);
-    serverHeader.set_element_content_scale(1.25f);
+    welcomeText.set_text_style(gluten::text_style::h1);
+    clientHeader.set_text_style(gluten::text_style::h2);
+    serverHeader.set_text_style(gluten::text_style::h2);
+    secondText.set_text_style(gluten::text_style::subtitle);
 
     centerColumnLayout.render_layout_element_pixels_vertical(nullptr, 50.0f);
     centerColumnLayout.render_layout_element_pixels_vertical(&welcomeText, 50.0f);
@@ -55,9 +51,6 @@ auto intro_widget::render_window_implementation() -> void
     gluten::button createButton("Create Review Database File...", false, gluten::element::anchor_preset::center_top);
     gluten::button connectButton("Connect To Server...", false, gluten::element::anchor_preset::center_top);
 
-    openButton.set_element_alignment(ImVec2(0.5f, 0.f));
-    createButton.set_element_alignment(ImVec2(0.5f, 0.f));
-    connectButton.set_element_alignment(ImVec2(0.5f, 0.f));
 
     centerColumnLayout.render_layout_element_pixels_vertical(&clientHeader, 50.0f);
 

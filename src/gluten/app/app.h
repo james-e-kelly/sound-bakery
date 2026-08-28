@@ -6,6 +6,7 @@
 #include "core/logger.h"
 #include "gluten/managers/manager.h"
 #include "gluten/subsystems/subsystem.h"
+#include "gluten/theme/theme.h"
 #include "imgui.h"
 
 #include <boost/archive/xml_iarchive.hpp>
@@ -16,8 +17,6 @@
 namespace gluten
 {
     static inline constexpr const char* g_serializedEntryName = "data";
-    static inline constexpr float g_baseFontSize              = 16.0f;
-    static inline constexpr float g_baseIconFontSize          = g_baseFontSize * (2.0f / 3.0f);
 
     /**
      * @brief Manages application lifetime and object owning.

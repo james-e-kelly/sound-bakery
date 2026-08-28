@@ -120,7 +120,7 @@ auto user_avatar_element::render_element(const gluten::element_render_info& rend
 {
     static avatar_resolver resolver;
 
-    if (avatarImage = resolver.get_avatar_image(m_userEmailAddress, std::abs(renderInfo.elementBox.GetHeight()), m_render))
+    if (avatarImage = resolver.get_avatar_image(m_userEmailAddress, std::abs(renderInfo.elementBox.GetHeight() * 2.0f), m_render))
     {
         avatarImage->render(renderInfo.elementBox);
         return true;

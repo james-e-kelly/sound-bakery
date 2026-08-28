@@ -95,6 +95,7 @@ set(GLUTEN_SOURCES
   elements/file_element.cpp
   elements/video_element.cpp
   elements/button.cpp
+  elements/combo.cpp
   elements/image_button.cpp
   elements/text.cpp
   elements/image.cpp
@@ -104,6 +105,7 @@ set(GLUTEN_SOURCES
   elements/icon_button.cpp
   elements/collapsing_header.cpp
   elements/loading_spinner.cpp
+  elements/scale_box.cpp
   elements/layouts/layout.cpp
   managers/manager.cpp
   subsystems/animation_subsystem.cpp
@@ -132,6 +134,7 @@ set(GLUTEN_HEADERS
   elements/file_element.h
   elements/video_element.h
   elements/button.h
+  elements/combo.h
   elements/image_button.h
   elements/text.h
   elements/image.h
@@ -141,6 +144,7 @@ set(GLUTEN_HEADERS
   elements/icon_button.h
   elements/collapsing_header.h
   elements/loading_spinner.h
+  elements/scale_box.h
   elements/layouts/layout.h
   managers/manager.h
   subsystems/animation_subsystem.h

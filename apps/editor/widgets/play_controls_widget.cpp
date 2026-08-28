@@ -60,7 +60,7 @@ void player_widget::start_implementation()
 void player_widget::render_implementation()
 {
     const gluten::imgui::scoped_font font(get_app()->get_font(gluten::fonts::regular_lucide_icons));
-    const gluten::imgui::scoped_style morePadding(ImGuiStyleVar_WindowPadding, gluten::theme::paddingVec);
+    const gluten::imgui::scoped_style morePadding(ImGuiStyleVar_WindowPadding, gluten::theme::insetFrame);
 
     const selection& selection                   = get_app()->get_manager_by_class<project_manager>()->get_selection();
     const std::optional<rttr::type> selectedType = selection.selected_type();

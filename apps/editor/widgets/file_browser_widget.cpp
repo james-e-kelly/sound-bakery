@@ -7,6 +7,7 @@
 #include "IconsFontAwesome6.h"
 #include "IconsFontaudio.h"
 #include "app/app.h"
+#include "gluten/utils/imgui_util_structures.h"
 #include "imgui.h"
 #include "imgui_internal.h"
 #include "managers/project_manager.h"
@@ -146,7 +147,7 @@ void file_browser_widget::show_directory_browser_list() noexcept
 
                 ImGui::PushID(p.path().filename().string().c_str());
 
-                if (ImGui::BeginPopupContextItem("File Context Menu"))
+                if (gluten::imgui::scoped_context_menu contextMenu{"File Context Menu"})
                 {
                     if (selected)
                     {
@@ -156,8 +157,6 @@ void file_browser_widget::show_directory_browser_list() noexcept
                     {
                         unselect_item();
                     }
-
-                    ImGui::EndPopup();
                 }
 
                 if (btn_state == ButtonState::CLICKED)
@@ -197,12 +196,9 @@ void file_browser_widget::show_directory_browser_list() noexcept
 
                 ImGui::PopFont();
 
-                if (ImGui::BeginPopupContextItem("item context menu"))
+                if (gluten::imgui::scoped_context_menu contextMenu{"item context menu"})
                 {
-                    // m_selectedItemID = id;
-
                     show_item_context_menu(p);
-                    ImGui::EndPopup();
                 }
 
                 if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))

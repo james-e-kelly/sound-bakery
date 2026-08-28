@@ -12,11 +12,11 @@ namespace gluten
     audio_element::audio_element(const std::filesystem::path& filePath)
         : element(anchor_preset::stretch_full), m_filePath(filePath)
     {
-        m_waveformAndLoudnessLayout.set_layout_spacing(gluten::theme::padding);
-        m_waveformAndLoudnessLayout.set_element_rounding(gluten::theme::rounding);
+        m_waveformAndLoudnessLayout.set_layout_spacing(gluten::theme::space04);
+        m_waveformAndLoudnessLayout.set_element_rounding(gluten::theme::radiusLg);
 
         m_audioBackground.set_element_background_color(gluten::theme::layer02);
-        m_audioBackground.set_element_rounding(gluten::theme::rounding);
+        m_audioBackground.set_element_rounding(gluten::theme::radiusLg);
     }
 
     auto audio_element::get_position() const -> double
