@@ -918,6 +918,8 @@ typedef enum sc_voice_flags
  * Voice lifetime is observed indirectly through a @ref sc_voice_handle handle. 
  * Once a voice ends (either naturally or via sc_voice_stop), any subsequent sc_voice_* call using that handle will return SBK_ERR_NOT_FOUND. 
  */
+typedef void (* sc_voice_stopped_proc)(void* pUserData);
+
 typedef struct sc_voice
 {
     MA_ATOMIC(8, sc_atomic_uint64)  handle;                 //< Handle for this slot's current occupant. Stale-handle callers compare against this and get SBK_ERR_NOT_FOUND on mismatch.
@@ -943,6 +945,9 @@ typedef struct sc_voice
     sc_atomic_float                 loopEndSeconds;         //< <= 0 means "to end of source"
     MA_ATOMIC(4, sc_atomic_uint32)  looping;
     MA_ATOMIC(4, sc_atomic_uint32)  loopEpoch;              //< Bumped when any loop field (loop start, loop end, etc) is written to so the audio thread can check for new data.
+
+    sc_voice_stopped_proc           stoppedCallback;        //< Fired from @ref sc_system_update when the voice is reaped (stopped -> free). Runs on the update thread, not the audio thread.
+    void*                           stoppedCallbackUserData;
 } sc_voice;
 
 sbk_status SC_API sc_voice_get_is_playing(sc_system* system, sc_voice_handle handle, sc_bool* outPlaying);
@@ -956,6 +961,7 @@ sbk_status SC_API sc_voice_set_paused(sc_system* system, sc_voice_handle handle,
 sbk_status SC_API sc_voice_set_virtual(sc_voice* voice, sc_bool virtualised);
 sbk_status SC_API sc_voice_get_virtual(sc_system* system, sc_voice_handle handle, sc_bool* outVirtual);
 sbk_status SC_API sc_voice_stop(sc_system* system, sc_voice_handle handle);
+sbk_status SC_API sc_voice_set_stopped_callback(sc_system* system, sc_voice_handle handle, sc_voice_stopped_proc callback, void* userData);
 
 /**
  * @brief A real voice that is connected to the DSP graph.

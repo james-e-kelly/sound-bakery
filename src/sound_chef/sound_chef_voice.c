@@ -61,6 +61,15 @@ sbk_status sc_voice_stop(sc_system* system, sc_voice_handle handle)
     return SBK_SUCCESS;
 }
 
+sbk_status sc_voice_set_stopped_callback(sc_system* system, sc_voice_handle handle, sc_voice_stopped_proc callback, void* pUserData)
+{
+    sc_voice* voice = NULL;
+    SC_CHECK_STATUS(sc_voice_resolve(system, handle, &voice));
+    voice->stoppedCallback          = callback;
+    voice->stoppedCallbackUserData = pUserData;
+    return SBK_SUCCESS;
+}
+
 sbk_status sc_system_stop_all_voices(sc_system* system)
 {
     SC_CHECK_ARG(system != NULL);

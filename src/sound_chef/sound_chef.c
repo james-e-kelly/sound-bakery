@@ -351,6 +351,12 @@ sbk_status sc_system_update(sc_system* system)
                     }
                     case sc_voice_state_stopped:
                     {
+                        if (voice->stoppedCallback)
+                        {
+                            voice->stoppedCallback(voice->stoppedCallbackUserData);
+                            voice->stoppedCallback          = NULL;
+                            voice->stoppedCallbackUserData = NULL;
+                        }
                         const sc_voice_handle deadHandle = (sc_voice_handle)c89atomic_load_64(&voice->handle);
                         ma_log_postf(&system->log, MA_LOG_LEVEL_DEBUG, "[voice] reaped: slot=%u\n", voiceIndex);
                         c89atomic_store_64(&voice->handle, 0);
@@ -392,6 +398,17 @@ sbk_status sc_system_close(sc_system* system)
         ma_resource_manager_uninit(&system->resourceManager);
 
         sc_system_release_clap_plugins(system);
+
+        for (sc_uint32 voiceIndex = 0; voiceIndex < system->voiceSlotAllocator.capacity; ++voiceIndex)
+        {
+            sc_voice* const voice = &system->voiceBuffer[voiceIndex];
+            if (voice->stoppedCallback)
+            {
+                voice->stoppedCallback(voice->stoppedCallbackUserData);
+                voice->stoppedCallback          = NULL;
+                voice->stoppedCallbackUserData = NULL;
+            }
+        }
 
         ma_slot_allocator_uninit(&system->voiceSlotAllocator, &system->engine.allocationCallbacks);
 
@@ -533,6 +550,8 @@ sbk_status sc_system_play_sound(sc_system* system, sc_sound* sound, sc_voice_han
     c89atomic_store_32(&voice->looping, sound->defaultLooping ? 1u : 0u);
     c89atomic_store_32(&voice->loopEpoch, 1u);  // Non-zero so the real voice's zero-initialised cache always applies once.
     c89atomic_store_i64(&voice->pendingSeekFrames, (sc_int64)-1);   // -1 means "no seek. 0 would mean "seek to start"
+    voice->stoppedCallback          = NULL;
+    voice->stoppedCallbackUserData = NULL;
 
     *outVoiceHandle = slot;
 
