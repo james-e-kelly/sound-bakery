@@ -6,7 +6,6 @@ namespace sbk::engine
 {
     class container;
     class game_object;
-    class node_instance;
 
     /**
      * @brief A runtime graph of nodes and busses, playing a sound or many.
@@ -18,7 +17,7 @@ namespace sbk::engine
     public:
         /**
          * @brief A voice handle -> the container that started it.
-         * 
+         *
          * When the handle ends, we can retrigger the container to see if it wants any more sounds to play.
          */
         using play_pair = std::pair<sc_voice_handle, std::shared_ptr<container>>;
