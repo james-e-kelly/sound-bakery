@@ -16,8 +16,7 @@ class toolbar_element : public gluten::layout
 public:
     toolbar_element() : gluten::layout(layout_type::top_to_bottom, anchor_preset::stretch_full) 
     {
-        set_layout_padding(ImVec4(0.0f, gluten::theme::space04, 0.0f, gluten::theme::space08));
-        set_element_background_color(gluten::theme::background);
+        
     }
 
     auto refresh_element() -> void override;

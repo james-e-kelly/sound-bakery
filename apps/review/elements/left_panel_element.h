@@ -40,6 +40,6 @@ private:
     gluten::icon_button m_backButton      = gluten::icon_button("##BackButton", ICON_LC_CHEVRON_LEFT, gluten::fonts::regular_lucide_icons, gluten::button_style::secondary);
     gluten::icon_button m_newButton       = gluten::icon_button("##NewButton", ICON_LC_PLUS, gluten::fonts::regular_lucide_icons, gluten::button_style::secondary);
 
-    float m_headerHeight = 30.0f;
-    float m_itemHeight   = 15.0f;
+    float m_headerHeight{};
+    float m_itemHeight{};
 };

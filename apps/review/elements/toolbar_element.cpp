@@ -8,6 +8,9 @@ auto toolbar_element::refresh_element() -> void
     m_settingsPopup = gluten::app::get()->get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class_to_root<settings_popup>(false);
     m_settingsPopup->set_visibile(false);
 
+    set_layout_padding(ImVec4(0.0f, gluten::theme::space04, 0.0f, gluten::theme::space08));
+    set_element_background_color(gluten::theme::background);
+
     for (auto* button : {&m_toolbarReviewsButton, &m_toolbarUsersButton, &m_toolbarSettingsButton})
     {
         (*button)
