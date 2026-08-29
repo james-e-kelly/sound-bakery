@@ -83,7 +83,7 @@ jobs:
             -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} \
             -DCMAKE_BUILD_TYPE="$cfg" \
             -S "${{ github.workspace }}"
-          cmake --build "build-$cfg" --parallel
+          cmake --build "build-$cfg" --parallel "$(sysctl -n hw.ncpu)"
           ctest --test-dir "build-$cfg" --build-config "$cfg" --output-on-failure
           cmake --install "build-$cfg"
           echo "::endgroup::"
