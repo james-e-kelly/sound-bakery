@@ -70,7 +70,7 @@ namespace sbk::engine
     {
     public:
         sbk::core::float_property m_volume   = sbk::core::float_property(1.0f, 0.0f, 1.0f);
-        sbk::core::float_property m_pitch    = sbk::core::float_property(1.0f, 0.0f, 1.0f);
+        sbk::core::float_property m_pitch    = sbk::core::float_property(1.0f, 0.0f, 2.0f);
         sbk::core::float_property m_lowpass  = sbk::core::float_property(1.0f, 0.0f, 100.0f);
         sbk::core::float_property m_highpass = sbk::core::float_property(1.0f, 0.0f, 100.0f);
 
