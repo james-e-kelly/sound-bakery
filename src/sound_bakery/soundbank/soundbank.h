@@ -7,7 +7,7 @@ namespace sbk::engine
     class bus;
     class event;
     class sound;
-    class node_base;
+    class node;
     class int_parameter;
     class float_parameter;
     class named_parameter;
@@ -53,7 +53,7 @@ namespace sbk::engine
     {
         eastl::vector<std::shared_ptr<sbk::engine::event>> events;
         eastl::vector<std::shared_ptr<sbk::engine::sound>> sounds;
-        eastl::vector<std::shared_ptr<sbk::engine::node_base>> nodes;
+        eastl::vector<std::shared_ptr<sbk::engine::node>> nodes;
 
         eastl::vector<std::shared_ptr<sbk::engine::bus>> busses;
         eastl::vector<std::shared_ptr<sbk::engine::int_parameter>> intParameters;

@@ -59,7 +59,7 @@ sbk::engine::soundbank_dependencies sbk::engine::soundbank::gather_dependencies(
         std::transform(namedParameterPointers.begin(), namedParameterPointers.end(), std::back_inserter(dependencies.namedParameters), object_ptr_to_shared_ptr<sbk::engine::named_parameter>);
     }
 
-    eastl::vector<std::shared_ptr<sbk::engine::node_base>> nodesToSave;
+    eastl::vector<std::shared_ptr<sbk::engine::node>> nodesToSave;
 
     for (auto& event : get_events())
     {
@@ -76,7 +76,7 @@ sbk::engine::soundbank_dependencies sbk::engine::soundbank::gather_dependencies(
 
                 if (auto destination = action.m_destination.shared())
                 {
-                    auto nodeBase = std::static_pointer_cast<node_base>(destination);
+                    auto nodeBase = std::static_pointer_cast<node>(destination);
 
                     nodesToSave.push_back(nodeBase);
                     nodeBase->gather_all_descendants(nodesToSave);
@@ -90,7 +90,7 @@ sbk::engine::soundbank_dependencies sbk::engine::soundbank::gather_dependencies(
     {
         if (node != nullptr)
         {
-            dependencies.nodes.push_back(std::static_pointer_cast<sbk::engine::node_base>(node->shared_from_this()));
+            dependencies.nodes.push_back(std::static_pointer_cast<sbk::engine::node>(node->shared_from_this()));
 
             if (node->get_object_type() == sbk::engine::sound_container::type())
             {

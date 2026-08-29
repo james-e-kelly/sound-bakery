@@ -429,7 +429,7 @@ TEST_SUITE("Node Containers")
         auto child = engine.get()->get_runtime()->create_database_object<sbk::engine::node>();
         REQUIRE(child.has_value());
 
-        parent.value()->add_child(sbk::core::database_ptr<sbk::engine::node_base>(child.value()));
+        parent.value()->add_child(sbk::core::database_ptr<sbk::engine::node>(child.value()));
         auto returnedParent = child.value()->get_parent();
         REQUIRE(returnedParent);
         CHECK(returnedParent->get_database_id() == parent.value()->get_database_id());
@@ -444,7 +444,7 @@ TEST_SUITE("Node Containers")
 
         auto parent = engine.get()->get_runtime()->create_database_object<sbk::engine::node>();
 
-        parent.value()->add_child(sbk::core::database_ptr<sbk::engine::node_base>(parent.value()));
+        parent.value()->add_child(sbk::core::database_ptr<sbk::engine::node>(parent.value()));
         REQUIRE(parent.value()->get_child_count() == 0);
     }
 
@@ -476,7 +476,7 @@ TEST_SUITE("Node Containers")
                 for (int i = 0; i < childrenEach; ++i)
                 {
                     node_ptr child = make_node();
-                    parent->add_child(sbk::core::database_ptr<sbk::engine::node_base>(child));
+                    parent->add_child(sbk::core::database_ptr<sbk::engine::node>(child));
                     nextLevel.push_back(child);
                 }
             }
@@ -512,7 +512,7 @@ TEST_SUITE("Node Containers")
         REQUIRE(parentB.has_value());
         REQUIRE(child.has_value());
 
-        const auto childPtr = sbk::core::database_ptr<sbk::engine::node_base>(child.value());
+        const auto childPtr = sbk::core::database_ptr<sbk::engine::node>(child.value());
 
         parentA.value()->add_child(childPtr);
         const sbk::core::database_name underA = child.value()->get_database_name();

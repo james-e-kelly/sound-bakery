@@ -12,7 +12,7 @@ auto sbk::engine::sound_container::gather_children_for_play(gather_children_cont
 
 auto sbk::engine::sound_container::can_add_parent_type(const rttr::type& parentType) const -> bool
 {
-    return sbk::engine::node_base::can_add_parent_type(parentType) && parentType != sbk::engine::sound_container::type();
+    return sbk::engine::node::can_add_parent_type(parentType) && parentType != sbk::engine::sound_container::type();
 }
 
 auto sbk::engine::sound_container::get_sound() const -> std::shared_ptr<sbk::engine::sound>

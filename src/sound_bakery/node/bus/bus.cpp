@@ -9,15 +9,15 @@ DEFINE_REFLECTION(sbk::engine::bus)
 
 auto sbk::engine::bus::can_add_child_type(const rttr::type& childType) const -> bool
 {
-    return sbk::engine::node_base::can_add_child_type(childType) && childType.is_derived_from<sbk::engine::bus>();
+    return sbk::engine::node::can_add_child_type(childType) && childType.is_derived_from<sbk::engine::bus>();
 }
 
-auto sbk::engine::bus::can_add_parent() const -> bool { return sbk::engine::node_base::can_add_parent() && !m_masterBus; }
+auto sbk::engine::bus::can_add_parent() const -> bool { return sbk::engine::node::can_add_parent() && !m_masterBus; }
 
 auto sbk::engine::bus::can_add_parent_type(const rttr::type& parentType) const -> bool
 {
     // Busses can only have bus parents
-    return sbk::engine::node_base::can_add_parent_type(parentType) && parentType == sbk::engine::bus::type();
+    return sbk::engine::node::can_add_parent_type(parentType) && parentType == sbk::engine::bus::type();
 }
 
 auto sbk::engine::bus::set_master_bus(bool isMaster) -> void

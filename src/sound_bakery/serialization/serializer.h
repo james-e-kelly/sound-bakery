@@ -345,7 +345,7 @@ namespace sbk::core::serialization
             if (typename archive_class::is_loading())
             {
                 serialized_object_vector<sbk::engine::sound> serializedSounds(soundbank);
-                serialized_object_vector<sbk::engine::node_base> serializedNodes(soundbank);
+                serialized_object_vector<sbk::engine::node> serializedNodes(soundbank);
                 serialized_object_vector<sbk::engine::event> serializedEvents(soundbank);
 
                 archive& boost::serialization::make_nvp("Sounds", serializedSounds);
@@ -379,7 +379,7 @@ namespace sbk::core::serialization
                 sbk::engine::soundbank_dependencies soundbankDependencies = soundbank->gather_dependencies();
 
                 serialized_object_vector<sbk::engine::sound> serializedSounds(soundbankDependencies.sounds);
-                serialized_object_vector<sbk::engine::node_base> serializedNodes(soundbankDependencies.nodes);
+                serialized_object_vector<sbk::engine::node> serializedNodes(soundbankDependencies.nodes);
                 serialized_object_vector<sbk::engine::event> serializedEvents(soundbankDependencies.events);
 
                 archive& boost::serialization::make_nvp("Sounds", serializedSounds);

@@ -225,19 +225,16 @@ namespace sbk::reflection
             .property("Encoded Sound", &sound::get_encoded_sound_name, &sound::set_encoded_sound_name)(metadata(sbk::editor::metadata_key::payload, sbk::editor::PayloadSound))
             .property("Encoding Format", &sound::m_encodingFormat);
 
-        registration::class_<node_base>("node_base")
-            .constructor<>(create_sbk_object<node_base>)(policy::ctor::as_raw_ptr)
-            .property("ParentNode", &node_base::m_parentNode)(metadata(sbk::editor::metadata_key::readonly, true))
-            .property("OutputBus", &node_base::m_outputBus)(metadata(sbk::editor::metadata_key::payload, sbk::editor::PayloadBus))
-            .property("ChildNodes", &node_base::m_childNodes)(metadata(sbk::editor::metadata_key::readonly, true));
-
         registration::class_<node>("node")
             .constructor<>(create_sbk_object<node>)(policy::ctor::as_raw_ptr)
+            .property("ParentNode", &node::m_parentNode)(metadata(sbk::editor::metadata_key::readonly, true))
+            .property("OutputBus", &node::m_outputBus)(metadata(sbk::editor::metadata_key::payload, sbk::editor::PayloadBus))
+            .property("ChildNodes", &node::m_childNodes)(metadata(sbk::editor::metadata_key::readonly, true))
             .property("Volume", &node::m_volume)(metadata(sbk::editor::metadata_key::min_max, std::pair<float, float>(0.0f, 1.0f)))
             .property("Pitch", &node::m_pitch)(metadata(sbk::editor::metadata_key::min_max, std::pair<float, float>(0.0f, 2.0f)))
             .property("Lowpass", &node::m_lowpass)(metadata(sbk::editor::metadata_key::min_max, std::pair<float, float>(0.0f, 100.0f)))
             .property("Highass", &node::m_highpass)(metadata(sbk::editor::metadata_key::min_max, std::pair<float, float>(0.0f, 100.0f)))
-            .property("Effects", &node::m_effectDescriptions)(metadata(sbk::editor::metadata_key::no_grow, true)) // Not edited directly. Modified with the "Add Effect" method
+            .property("Effects", &node::m_effectDescriptions)(metadata(sbk::editor::metadata_key::no_grow, true))
             .method("Add Effect", &node::add_effect)(parameter_names("Type"));
 
         registration::class_<container>("container");

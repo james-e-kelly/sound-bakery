@@ -324,7 +324,7 @@ auto type_helper::get_node_from_instance(const rttr::instance& instance) -> sbk:
     return instance.try_convert<sbk::engine::node>();
 }
 
-auto type_helper::get_node_base_from_instance(const rttr::instance& instance) -> sbk::engine::node_base*
+auto type_helper::get_node_base_from_instance(const rttr::instance& instance) -> sbk::engine::node*
 {
-    return instance.try_convert<sbk::engine::node_base>();
+    return instance.try_convert<sbk::engine::node>();
 }

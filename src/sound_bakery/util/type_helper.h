@@ -6,7 +6,6 @@
 
 namespace sbk::engine
 {
-    class node_base;
     class node;
 }  // namespace sbk::engine
 
@@ -44,6 +43,6 @@ namespace sbk::util
 
         [[nodiscard]] static auto get_node_from_instance(const rttr::instance& instance) -> sbk::engine::node*;
 
-        [[nodiscard]] static auto get_node_base_from_instance(const rttr::instance& instance) -> sbk::engine::node_base*;
+        [[nodiscard]] static auto get_node_base_from_instance(const rttr::instance& instance) -> sbk::engine::node*;
     };
 }  // namespace sbk::util

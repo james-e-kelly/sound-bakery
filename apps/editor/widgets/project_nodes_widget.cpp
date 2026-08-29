@@ -117,7 +117,7 @@ void project_nodes_widget::render_category(sbk::memory::object_category category
         {
             const rttr::type type = object->get_object_type();
 
-            sbk::engine::node_base* const nodeBase = object->try_convert_object<sbk::engine::node_base>();
+            sbk::engine::node* const nodeBase = object->try_convert_object<sbk::engine::node>();
 
             const bool notNodeType = nodeBase == nullptr;
 
@@ -185,7 +185,7 @@ void project_nodes_widget::render_single_node(rttr::type type, rttr::instance in
                         if (const ImGuiPayload* const currentPayload = ImGui::GetDragDropPayload())
                         {
                             sbk_id payloadID = *static_cast<sbk_id*>(currentPayload->Data);
-                            sbk::core::database_ptr<sbk::engine::node_base> potentialChild(payloadID);
+                            sbk::core::database_ptr<sbk::engine::node> potentialChild(payloadID);
 
                             if (node->can_add_child(potentialChild))
                             {
@@ -323,11 +323,11 @@ bool project_nodes_widget::render_node_context_menu(rttr::type type, rttr::insta
             {
                 const sbk::memory::object_category category = sbk::util::type_helper::get_category_from_type(type);
 
-                if (object->get_object_type().is_derived_from(sbk::engine::node_base::type()))
+                if (object->get_object_type().is_derived_from(sbk::engine::node::type()))
                 {
                     render_create_parent_or_child_menu(category, instance, node_creation_type::NewParent);
 
-                    const sbk::engine::node_base* const nodeBase = object->try_convert_object<sbk::engine::node_base>();
+                    const sbk::engine::node* const nodeBase = object->try_convert_object<sbk::engine::node>();
 
                     if (nodeBase->can_add_children())
                     {
