@@ -188,7 +188,7 @@ namespace sbk::reflection
 
         registration::class_<effect_parameter_description>("effect_parameter_description")
             .constructor<>()(policy::ctor::as_object)
-            .property("Parameter", &effect_parameter_description::m_parameter);
+            .property("Parameter", &effect_parameter_description::get_dsp_parameter, &effect_parameter_description::set_dsp_parameter);
 
         registration::class_<system>("system");
 

@@ -37,10 +37,11 @@ namespace sbk::core::serialization
 {
     enum class sound_bakery_serialization_version : int
     {
-        start                   = 1,
-        soundbanks_lookup       = 2,  //< Soundbanks can contain lookup info for integrations to get a list of all objects
-        new_type_names          = 3,
-        serialize_dsp_parameter = 4,
+        start                       = 1,
+        soundbanks_lookup           = 2,  //< Soundbanks can contain lookup info for integrations to get a list of all objects
+        new_type_names              = 3,
+        serialize_dsp_parameter     = 4,
+        effect_parameter_variant    = 5,
 
         /** ADD NEW VERSIONS ABOVE */
         plus_one,
@@ -655,6 +656,7 @@ BOOST_CLASS_VERSION(sbk::core::serialization::serialized_sequential_container, s
 BOOST_CLASS_VERSION(sbk::core::serialization::serialized_associative_container, static_cast<int>(sbk::core::serialization::sound_bakery_serialization_version::cur))
 BOOST_CLASS_VERSION(sc_dsp_parameter, static_cast<int>(sbk::core::serialization::sound_bakery_serialization_version::cur))
 BOOST_CLASS_VERSION(sc_dsp_parameter_float, static_cast<int>(sbk::core::serialization::sound_bakery_serialization_version::cur))
+BOOST_CLASS_VERSION(sc_dsp_parameter_int, static_cast<int>(sbk::core::serialization::sound_bakery_serialization_version::cur))
 
 namespace boost
 {
@@ -823,6 +825,14 @@ namespace boost
         }
 
         template <class archive_class>
+        void serialize(archive_class& archive, sc_dsp_parameter_int& dspParameter, const unsigned int version)
+        {
+            archive & make_nvp("Min", dspParameter.min);
+            archive & make_nvp("Max", dspParameter.max);
+            archive & make_nvp("Value", dspParameter.value);
+        }
+
+        template <class archive_class>
         void serialize(archive_class& archive, sc_dsp_parameter& dspParameter, const unsigned int version)
         {
             archive & make_nvp("Type", dspParameter.type);
@@ -831,7 +841,7 @@ namespace boost
             {
                 std::string tempName;
                 archive & make_nvp("Name", tempName);
-                
+
                 const std::size_t count = std::min<std::size_t>(tempName.size(), SC_STRING_NAME_LENGTH - 1);
                 std::memcpy(dspParameter.name, tempName.data(), count);
                 dspParameter.name[count] = '\0';
@@ -847,11 +857,15 @@ namespace boost
                 case sc_dsp_parameter_type_float:
                     archive & make_nvp("Float", dspParameter.floatParameter);
                     break;
+                case sc_dsp_parameter_type_int:
+                    archive & make_nvp("Int", dspParameter.intParameter);
+                    break;
                 default:
                     BOOST_ASSERT_MSG(false, "Unhandled dsp parameter type");
                     break;
             }
         }
+
 
     }  // namespace serialization
 }  // namespace boost

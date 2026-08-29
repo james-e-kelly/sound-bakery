@@ -42,6 +42,7 @@
 #include <new>
 #include <optional>
 #include <queue>
+#include <ranges>
 #include <random>
 #include <set>
 #include <shared_mutex>

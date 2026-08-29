@@ -96,8 +96,7 @@ namespace sbk::core
                     BOOST_VERIFY(loadedVariant.get_type().is_valid());
                     archive& boost::serialization::make_nvp(propertyName.c_str(), loadedVariant);
 
-                    if (property.get_type() == rttr::type::get<std::string_view>() &&
-                        loadedVariant.get_type() == rttr::type::get<std::string>())
+                    if (property.get_type() == rttr::type::get<std::string_view>() && loadedVariant.get_type() == rttr::type::get<std::string>())
                     {
                         std::string loadedString          = loadedVariant.convert<std::string>();
                         std::string_view loadedStringView = loadedString;

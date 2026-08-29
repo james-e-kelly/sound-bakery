@@ -191,21 +191,12 @@ bool property_drawer::draw_variant(rttr::variant& variant, rttr::string_view nam
     {
         if (type == sbk::engine::effect_parameter_description::type())
         {
-            sbk::engine::effect_parameter_description effectParamterDescription = variant.convert<sbk::engine::effect_parameter_description>();
+            sbk::engine::effect_parameter_description effectParameterDescription = variant.convert<sbk::engine::effect_parameter_description>();
 
-            switch (effectParamterDescription.m_parameter.type)
+            if (draw_variant(effectParameterDescription.get_property(), effectParameterDescription.get_name()))
             {
-                case sc_dsp_parameter_type_float:
-                    sbk::editor::MinMax minMax(effectParamterDescription.m_parameter.floatParameter.min,
-                                               effectParamterDescription.m_parameter.floatParameter.max);
-                    edited = draw_float(effectParamterDescription.m_parameter.floatParameter.value,
-                                        effectParamterDescription.m_parameter.name, minMax);
-                    break;
-            }
-
-            if (edited)
-            {
-                variant = effectParamterDescription;
+                edited = true;
+                variant = effectParameterDescription;
             }
         }
         else if (type == rttr::type::get<sbk::core::float_property>())
