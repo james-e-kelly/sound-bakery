@@ -167,6 +167,7 @@ auto sbk::command_queue::process_command(const message_queue<message_type>::mess
 
             SBK_TRYV(dispatch_event(system, sharedGameObject.get(), sharedEvent.get()));
         }
+        break;
         case message_type::post_event_name:
         {
             const post_event_name_message* message = messageView.cast<post_event_name_message>();
@@ -183,6 +184,7 @@ auto sbk::command_queue::process_command(const message_queue<message_type>::mess
 
             SBK_TRYV(dispatch_event(system, sharedGameObject.get(), sharedEvent.get()));
         }
+        break;
         case message_type::stop_all:
         {
             const stop_all_message* message = messageView.cast<stop_all_message>();
