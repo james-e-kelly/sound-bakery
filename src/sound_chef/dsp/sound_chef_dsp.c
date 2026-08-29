@@ -12,7 +12,10 @@ sc_dsp_config sc_dsp_config_init_type(const sc_system* system, sc_dsp_type type)
 {
     sc_dsp_config config;
     SC_ZERO_OBJECT(&config);
-    (void)sc_system_get_dsp_desc(system, (sc_uint32)type, &config.dspDescription);
+    if (sc_system_get_dsp_desc(system, (sc_uint32)type, &config.dspDescription) == SBK_SUCCESS)
+    {
+        config.handle = (sc_uint32)type;
+    }
     return config;
 }
 
