@@ -699,6 +699,9 @@ typedef struct <a class="el" href="structsc__dsp__description.html">sc_dsp_descr
 <tr class="memitem:a71cacffe00eb897876d66df202ba66bb" id="r_a71cacffe00eb897876d66df202ba66bb"><td class="memItemLeft" align="right" valign="top">typedef enum <a class="el" href="sound__chef_8h.html#a4c7fa0ad30c3d5f42816dd164b0c31f1">sc_dsp_meter_query</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sound__chef_8h.html#a71cacffe00eb897876d66df202ba66bb">sc_dsp_meter_query</a></td></tr>
 <tr class="memdesc:a71cacffe00eb897876d66df202ba66bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Metering channels the generic sc_dsp_get_metering_info accessor can query.  <br /></td></tr>
 <tr class="separator:a71cacffe00eb897876d66df202ba66bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a782a354da4ac30c91d5f5ba28b929a13" id="r_a782a354da4ac30c91d5f5ba28b929a13"><td class="memItemLeft" align="right" valign="top"><a id="a782a354da4ac30c91d5f5ba28b929a13" name="a782a354da4ac30c91d5f5ba28b929a13"></a>
+typedef enum sc_dsp_filter_constants&#160;</td><td class="memItemRight" valign="bottom"><b>sc_dsp_filter_constants</b></td></tr>
+<tr class="separator:a782a354da4ac30c91d5f5ba28b929a13"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adaac98633f2cf185dc9df56355c5b6bc" id="r_adaac98633f2cf185dc9df56355c5b6bc"><td class="memItemLeft" align="right" valign="top"><a id="adaac98633f2cf185dc9df56355c5b6bc" name="adaac98633f2cf185dc9df56355c5b6bc"></a>
 typedef enum sc_dsp_lowpass_param&#160;</td><td class="memItemRight" valign="bottom"><b>sc_dsp_lowpass_param</b></td></tr>
 <tr class="separator:adaac98633f2cf185dc9df56355c5b6bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -884,6 +887,11 @@ Enumerations</h2></td></tr>
  }</td></tr>
 <tr class="memdesc:a4c7fa0ad30c3d5f42816dd164b0c31f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Metering channels the generic sc_dsp_get_metering_info accessor can query.  <a href="sound__chef_8h.html#a4c7fa0ad30c3d5f42816dd164b0c31f1">More...</a><br /></td></tr>
 <tr class="separator:a4c7fa0ad30c3d5f42816dd164b0c31f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed20ba1a77608b330af72ccec9f29806" id="r_aed20ba1a77608b330af72ccec9f29806"><td class="memItemLeft" align="right" valign="top"><a id="aed20ba1a77608b330af72ccec9f29806" name="aed20ba1a77608b330af72ccec9f29806"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>sc_dsp_filter_constants</b> { <b>SC_DSP_CUTOFF_MIN</b> = 1
+, <b>SC_DSP_CUTOFF_MAX</b> = 22000
+, <b>SC_DSP_DEFAULT_FILTER_ORDER</b> = 2
+ }</td></tr>
+<tr class="separator:aed20ba1a77608b330af72ccec9f29806"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a614898b8ac3aeec97881fca67178bf48" id="r_a614898b8ac3aeec97881fca67178bf48"><td class="memItemLeft" align="right" valign="top"><a id="a614898b8ac3aeec97881fca67178bf48" name="a614898b8ac3aeec97881fca67178bf48"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>sc_dsp_lowpass_param</b> { <b>SC_DSP_LOWPASS_PARAM_CUTOFF</b>
 , <b>SC_DSP_LOWPASS_PARAM_COUNT</b>
  }</td></tr>
@@ -1119,6 +1127,12 @@ void SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_delay_node_
 <tr class="memitem:ae8ccd72dc9e0a77b4c24a43970d72127" id="r_ae8ccd72dc9e0a77b4c24a43970d72127"><td class="memItemLeft" align="right" valign="top"><a id="ae8ccd72dc9e0a77b4c24a43970d72127" name="ae8ccd72dc9e0a77b4c24a43970d72127"></a>
 <a class="el" href="sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_voice_set_pitch</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, sc_voice_handle handle, float pitch)</td></tr>
 <tr class="separator:ae8ccd72dc9e0a77b4c24a43970d72127"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a337134099e073f94ba203b92dca0454a" id="r_a337134099e073f94ba203b92dca0454a"><td class="memItemLeft" align="right" valign="top"><a id="a337134099e073f94ba203b92dca0454a" name="a337134099e073f94ba203b92dca0454a"></a>
+<a class="el" href="sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_voice_set_lowpass_cutoff</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, sc_voice_handle handle, float cutoff)</td></tr>
+<tr class="separator:a337134099e073f94ba203b92dca0454a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a407888e4c4e3e4d9c96f790c509e4198" id="r_a407888e4c4e3e4d9c96f790c509e4198"><td class="memItemLeft" align="right" valign="top"><a id="a407888e4c4e3e4d9c96f790c509e4198" name="a407888e4c4e3e4d9c96f790c509e4198"></a>
+<a class="el" href="sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_voice_set_highpass_cutoff</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, sc_voice_handle handle, float cutoff)</td></tr>
+<tr class="separator:a407888e4c4e3e4d9c96f790c509e4198"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a82618ce6a9e2d53a23de8d49835c990b" id="r_a82618ce6a9e2d53a23de8d49835c990b"><td class="memItemLeft" align="right" valign="top"><a id="a82618ce6a9e2d53a23de8d49835c990b" name="a82618ce6a9e2d53a23de8d49835c990b"></a>
 <a class="el" href="sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_voice_stop</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, sc_voice_handle handle)</td></tr>
 <tr class="separator:a82618ce6a9e2d53a23de8d49835c990b"><td class="memSeparator" colspan="2">&#160;</td></tr>
