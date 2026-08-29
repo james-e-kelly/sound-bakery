@@ -568,9 +568,7 @@ sbk_status sc_system_play_sound(sc_system* system, sc_sound* sound, sc_voice_han
     voice->stoppedCallback          = NULL;
     voice->stoppedCallbackUserData = NULL;
 
-    // We set the old cutoffs to their initial values
-    // Both lpf and hpf are initialized to these defaults
-    // This saves the audio thread reinitializing them on the first play
+    voice->oldPitch = 1.0F;
     voice->oldLowpassCutoff = SC_DSP_CUTOFF_MAX;
     voice->oldHighpassCutoff = SC_DSP_CUTOFF_MIN;
     
