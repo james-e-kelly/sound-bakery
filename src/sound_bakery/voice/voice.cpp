@@ -132,7 +132,7 @@ auto sbk::engine::voice::play_container(container* container) -> sbk::result<voi
         }
     }
 
-    return sbk::make_error(SBK_ERR_BAKERY, "Failed to initialize the voice instance");
+    return sbk::ok();
 }
 
 auto voice::update() -> void
