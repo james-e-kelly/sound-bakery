@@ -544,7 +544,8 @@ struct sc_dsp
 
 typedef enum sc_dsp_parameter_type
 {
-    sc_dsp_parameter_type_float
+    sc_dsp_parameter_type_float,
+    sc_dsp_parameter_type_int
 } sc_dsp_parameter_type;
 
 typedef struct sc_dsp_parameter_float
@@ -554,6 +555,13 @@ typedef struct sc_dsp_parameter_float
     float value;
 } sc_dsp_parameter_float;
 
+typedef struct sc_dsp_parameter_int
+{
+    int min;
+    int max;
+    int value;
+} sc_dsp_parameter_int;
+
 typedef struct sc_dsp_parameter
 {
     sc_dsp_parameter_type type;
@@ -562,6 +570,7 @@ typedef struct sc_dsp_parameter
     union
     {
         sc_dsp_parameter_float floatParameter;
+        sc_dsp_parameter_int intParameter;
     };
 } sc_dsp_parameter;
 
