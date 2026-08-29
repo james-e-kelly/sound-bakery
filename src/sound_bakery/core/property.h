@@ -50,8 +50,9 @@ namespace sbk::core
             {
                 if (value >= m_min && value <= m_max)
                 {
-                    m_delegate.Broadcast(m_value, value);
+                    const T oldValue = m_value;
                     m_value = value;
+                    m_delegate.Broadcast(oldValue, value);
                     return true;
                 }
             }
