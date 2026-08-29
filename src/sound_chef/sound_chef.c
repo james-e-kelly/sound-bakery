@@ -558,6 +558,8 @@ sbk_status sc_system_play_sound(sc_system* system, sc_sound* sound, sc_voice_han
     c89atomic_store_32(&voice->desiredState, (sc_uint32)sc_voice_desired_playing);
     c89atomic_store_f32(&voice->gain, 1.0F);
     c89atomic_store_f32(&voice->pitch, 1.0F);
+    c89atomic_store_f32(&voice->lowpassCutoff, SC_DSP_CUTOFF_MAX);
+    c89atomic_store_f32(&voice->highpassCutoff, SC_DSP_CUTOFF_MIN);
     c89atomic_store_f32(&voice->loopStartSeconds, sound->defaultLoopStartSeconds);
     c89atomic_store_f32(&voice->loopEndSeconds, sound->defaultLoopEndSeconds);
     c89atomic_store_32(&voice->looping, sound->defaultLooping ? 1u : 0u);
@@ -566,6 +568,12 @@ sbk_status sc_system_play_sound(sc_system* system, sc_sound* sound, sc_voice_han
     voice->stoppedCallback          = NULL;
     voice->stoppedCallbackUserData = NULL;
 
+    // We set the old cutoffs to their initial values
+    // Both lpf and hpf are initialized to these defaults
+    // This saves the audio thread reinitializing them on the first play
+    voice->oldLowpassCutoff = SC_DSP_CUTOFF_MAX;
+    voice->oldHighpassCutoff = SC_DSP_CUTOFF_MIN;
+    
     *outVoiceHandle = slot;
 
     ma_log_postf(&system->log, MA_LOG_LEVEL_DEBUG, "[voice] play: slot=%u handle=%llu\n", index, (unsigned long long)slot);

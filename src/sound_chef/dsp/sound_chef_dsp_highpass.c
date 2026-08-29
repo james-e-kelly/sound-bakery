@@ -1,12 +1,5 @@
 #include "sound_chef/sound_chef.h"
 
-enum
-{
-    SC_DSP_CUTOFF_MIN           = 1,
-    SC_DSP_CUTOFF_MAX           = 22000,
-    SC_DSP_DEFAULT_FILTER_ORDER = 2,
-};
-
 static sbk_status sc_dsp_highpass_create(sc_system* system, sc_dsp* dsp, const void* userData)
 {
     (void)userData;

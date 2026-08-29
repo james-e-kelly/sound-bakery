@@ -637,6 +637,13 @@ Built-in DSPs
  */
 #define SC_DELAY_SILENCE_THRESHOLD 0.0001F
 
+typedef enum sc_dsp_filter_constants
+{
+    SC_DSP_CUTOFF_MIN           = 1,
+    SC_DSP_CUTOFF_MAX           = 22000,
+    SC_DSP_DEFAULT_FILTER_ORDER = 2,
+} sc_dsp_filter_constants;
+
 typedef enum sc_dsp_lowpass_param
 {
     SC_DSP_LOWPASS_PARAM_CUTOFF,
@@ -936,8 +943,12 @@ typedef struct sc_voice
 
     sc_atomic_float                 gain;
     sc_atomic_float                 pitch;
+    sc_atomic_float                 lowpassCutoff;
+    sc_atomic_float                 highpassCutoff;
 
     float                           oldPitch;
+    float                           oldLowpassCutoff;
+    float                           oldHighpassCutoff;
 
     sc_uint8                        priority;               //< Higher number = higher priority
 
@@ -962,6 +973,8 @@ sbk_status SC_API sc_voice_set_virtual(sc_voice* voice, sc_bool virtualised);
 sbk_status SC_API sc_voice_get_virtual(sc_system* system, sc_voice_handle handle, sc_bool* outVirtual);
 sbk_status SC_API sc_voice_set_volume(sc_system* system, sc_voice_handle handle, float volume);
 sbk_status SC_API sc_voice_set_pitch(sc_system* system, sc_voice_handle handle, float pitch);
+sbk_status SC_API sc_voice_set_lowpass_cutoff(sc_system* system, sc_voice_handle handle, float cutoff);
+sbk_status SC_API sc_voice_set_highpass_cutoff(sc_system* system, sc_voice_handle handle, float cutoff);
 sbk_status SC_API sc_voice_stop(sc_system* system, sc_voice_handle handle);
 sbk_status SC_API sc_voice_set_stopped_callback(sc_system* system, sc_voice_handle handle, sc_voice_stopped_proc callback, void* userData);
 
@@ -984,7 +997,8 @@ typedef struct sc_real_voice
     ma_linear_resampler                 resampler;          //< Used for pitch shifting and resampling from data source sample rate to engine sample rate
     ma_fader                            fader;              //< for fade ins and outs
     ma_gainer                           gainer;             //< Gain multiplier
-
+    ma_lpf                              lowpass;            //< Lowpass filter for attenuation curves and user customisation
+    ma_hpf                              highpass;           //< Highpass filter for attenuation curves and user customisation
 
     void*                               heap;
     sc_bool                             ownsHeap;

@@ -184,6 +184,24 @@ sbk_status sc_voice_set_pitch(sc_system* system, sc_voice_handle handle, float p
     return SBK_SUCCESS;
 }
 
+sbk_status sc_voice_set_lowpass_cutoff(sc_system* system, sc_voice_handle handle, float cutoff)
+{
+    SC_CHECK_ARG(system != NULL);
+    sc_voice* voice;
+    SC_CHECK_STATUS(sc_voice_resolve(system, handle, &voice));
+    c89atomic_store_f32(&voice->lowpassCutoff, cutoff);
+    return SBK_SUCCESS;
+}
+
+sbk_status sc_voice_set_highpass_cutoff(sc_system* system, sc_voice_handle handle, float cutoff)
+{
+    SC_CHECK_ARG(system != NULL);
+    sc_voice* voice;
+    SC_CHECK_STATUS(sc_voice_resolve(system, handle, &voice));
+    c89atomic_store_f32(&voice->highpassCutoff, cutoff);
+    return SBK_SUCCESS;
+}
+
 static void sc_real_voice_update_pitch_if_required(sc_real_voice* realVoice, ma_uint32 sampleRate)
 {
     ma_bool32 isUpdateRequired = MA_FALSE;
@@ -230,6 +248,42 @@ static void sc_real_voice_sync_loop_if_needed(sc_real_voice* realVoice)
     (void)ma_data_source_set_looping(realVoice->dataSource, looping ? MA_TRUE : MA_FALSE);
 
     realVoice->appliedLoopEpoch = voiceEpoch;
+}
+
+static void sc_real_voice_update_lowpass_if_required(sc_real_voice* realVoice)
+{
+    ma_bool32 isUpdateRequired = MA_FALSE;
+    float newCuttoff = c89atomic_load_f32(&realVoice->voiceRef->lowpassCutoff);
+
+    if (realVoice->voiceRef->oldLowpassCutoff != newCuttoff)
+    {
+        realVoice->voiceRef->oldLowpassCutoff = newCuttoff;
+        isUpdateRequired                      = MA_TRUE;
+    }
+
+    if (isUpdateRequired)
+    {
+        ma_lpf_config newConfig = ma_lpf_config_init(ma_format_f32, realVoice->lowpass.channels, realVoice->lowpass.sampleRate, newCuttoff, SC_DSP_DEFAULT_FILTER_ORDER);
+        ma_lpf_reinit(&newConfig, &realVoice->lowpass);
+    }
+}
+
+static void sc_real_voice_update_highpass_if_required(sc_real_voice* realVoice)
+{
+    ma_bool32 isUpdateRequired = MA_FALSE;
+    float newCuttoff           = c89atomic_load_f32(&realVoice->voiceRef->highpassCutoff);
+
+    if (realVoice->voiceRef->oldHighpassCutoff != newCuttoff)
+    {
+        realVoice->voiceRef->oldHighpassCutoff = newCuttoff;
+        isUpdateRequired                       = MA_TRUE;
+    }
+
+    if (isUpdateRequired)
+    {
+        ma_hpf_config newConfig = ma_hpf_config_init(ma_format_f32, realVoice->lowpass.channels, realVoice->lowpass.sampleRate, newCuttoff, SC_DSP_DEFAULT_FILTER_ORDER);
+        ma_hpf_reinit(&newConfig, &realVoice->highpass);
+    }
 }
 
 static ma_uint64 sc_get_required_input_frames_from_resampler(ma_resampler* resampler, ma_uint64 outputFrameCount, ma_uint64 frameCap)
@@ -286,6 +340,22 @@ static void sc_real_voice_process_pcm_frames__general(sc_real_voice* realVoice, 
             {
                 break;
             }
+
+            if (ma_lpf_process_pcm_frames(&realVoice->lowpass, runningFramesOut, runningFramesOut, resampleFrameCountOut) == MA_SUCCESS)
+            {
+                if (ma_hpf_process_pcm_frames(&realVoice->highpass, runningFramesOut, runningFramesOut, resampleFrameCountOut) == MA_SUCCESS)
+                {
+
+                }
+                else
+                {
+                    break;
+                }
+            }
+            else
+            {
+                break;
+            }
         }
         else
         {
@@ -329,6 +399,8 @@ static void sc_voice_real_process_pcm_frames(ma_node* node, const float** frames
     {
         sc_real_voice_update_pitch_if_required(realVoice, dataSourceSampleRate);
         sc_real_voice_sync_loop_if_needed(realVoice);
+        sc_real_voice_update_highpass_if_required(realVoice);
+        sc_real_voice_update_lowpass_if_required(realVoice);
 
         ma_uint8 temp[SC_TEMP_STACK_BUFFER_SIZE];
         const ma_uint64 tempCapInFrames = sizeof(temp) / ma_get_bytes_per_frame(dataSourceFormat, dataSourceChannels);
@@ -401,6 +473,8 @@ typedef struct
     size_t baseNodeOffset;
     size_t resamplerOffset;
     size_t gainerOffset;
+    size_t lowpassOffset;
+    size_t highpassOffset;
 } sc_real_voice_heap_layout;
 
 static sbk_status sc_real_voice_get_heap_layout(const sc_real_voice_config* config, sc_real_voice_heap_layout* heapLayout)
@@ -444,6 +518,20 @@ static sbk_status sc_real_voice_get_heap_layout(const sc_real_voice_config* conf
     SC_CHECK_STATUS(SC_STATUS_FROM_MA_RESULT(ma_gainer_get_heap_size(&gainerConfig, &tempHeapSize)));
     
     heapLayout->gainerOffset = heapLayout->sizeInBytes;
+    heapLayout->sizeInBytes += SC_ALIGN_64(tempHeapSize);
+
+    ma_lpf_config lowpassConfig = ma_lpf_config_init(ma_format_f32, channelsIn, 1, SC_DSP_CUTOFF_MAX, SC_DSP_DEFAULT_FILTER_ORDER);
+
+    SC_CHECK_STATUS(SC_STATUS_FROM_MA_RESULT(ma_lpf_get_heap_size(&lowpassConfig, &tempHeapSize)));
+
+    heapLayout->lowpassOffset = heapLayout->sizeInBytes;
+    heapLayout->sizeInBytes += SC_ALIGN_64(tempHeapSize);
+
+    ma_hpf_config highpassConfig = ma_hpf_config_init(ma_format_f32, channelsIn, 1, SC_DSP_CUTOFF_MIN, SC_DSP_DEFAULT_FILTER_ORDER);
+
+    SC_CHECK_STATUS(SC_STATUS_FROM_MA_RESULT(ma_hpf_get_heap_size(&highpassConfig, &tempHeapSize)));
+
+    heapLayout->highpassOffset = heapLayout->sizeInBytes;
     heapLayout->sizeInBytes += SC_ALIGN_64(tempHeapSize);
 
     return SBK_SUCCESS;
@@ -559,13 +647,25 @@ sbk_status sc_real_voice_init_preallocated(const sc_real_voice_config* config, v
 
     SC_CHECK_STATUS_ELSE_GOTO(SC_STATUS_FROM_MA_RESULT(ma_gainer_init_preallocated(&gainerConfig, SC_OFFSET_PTR(heap, heapLayout.gainerOffset), &realVoice->gainer)), error5);
 
-    SC_CREATE_ELSE_GOTO(realVoice->nodeGroup, sc_node_group, config->system, error6);
-    SC_CHECK_STATUS_ELSE_GOTO(sc_node_group_init(config->system, realVoice->nodeGroup), error7);
+    ma_lpf_config lowpassConfig = ma_lpf_config_init(ma_format_f32, channelsIn, engineSampleRate, SC_DSP_CUTOFF_MAX, SC_DSP_DEFAULT_FILTER_ORDER);
+
+    SC_CHECK_STATUS_ELSE_GOTO(SC_STATUS_FROM_MA_RESULT(ma_lpf_init_preallocated(&lowpassConfig, SC_OFFSET_PTR(heap, heapLayout.lowpassOffset), &realVoice->lowpass)), error6);
+
+    ma_hpf_config highpassConfig = ma_hpf_config_init(ma_format_f32, channelsIn, engineSampleRate, SC_DSP_CUTOFF_MIN, SC_DSP_DEFAULT_FILTER_ORDER);
+
+    SC_CHECK_STATUS_ELSE_GOTO(SC_STATUS_FROM_MA_RESULT(ma_hpf_init_preallocated(&highpassConfig, SC_OFFSET_PTR(heap, heapLayout.highpassOffset), &realVoice->highpass)), error7);
+    
+    SC_CREATE_ELSE_GOTO(realVoice->nodeGroup, sc_node_group, config->system, error8);
+    SC_CHECK_STATUS_ELSE_GOTO(sc_node_group_init(config->system, realVoice->nodeGroup), error9);
 
     return SBK_SUCCESS;
 
-error7:
+error9:
     SC_FREE(realVoice->nodeGroup, config->system);
+error8:
+    ma_hpf_uninit(&realVoice->highpass, NULL);
+        error7:
+    ma_lpf_uninit(&realVoice->lowpass, NULL);
 error6:
     ma_gainer_uninit(&realVoice->gainer, NULL);
 error5:

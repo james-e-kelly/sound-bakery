@@ -1,12 +1,5 @@
 #include "sound_chef/sound_chef.h"
 
-enum
-{
-    SC_DSP_CUTOFF_MIN           = 1,
-    SC_DSP_CUTOFF_MAX           = 22000,
-    SC_DSP_DEFAULT_FILTER_ORDER = 2,
-};
-
 static sbk_status sc_dsp_lowpass_create(sc_system* system, sc_dsp* dsp, const void* userData)
 {
     (void)userData;
@@ -27,8 +20,6 @@ static sbk_status sc_dsp_lowpass_release(sc_system* system, sc_dsp* dsp)
 
 static sbk_status sc_dsp_lowpass_set_param_float(sc_dsp* dsp, sc_uint32 index, float value)
 {
-    (void)value;
-
     sbk_status result = SBK_ERR_CHEF;
 
     const ma_format format     = ma_format_f32;

@@ -1,6 +1,7 @@
 #include "voice.h"
 
 #include "sound_bakery/gameobject/gameobject.h"
+#include "sound_bakery/maths/easing.h"
 #include "sound_bakery/node/container/sound_container.h"
 #include "sound_bakery/node/bus/bus.h"
 #include "sound_bakery/runtime/runtime.h"
@@ -90,6 +91,17 @@ auto sbk::engine::voice::play_container(container* container) -> sbk::result<voi
 
                 sc_voice_set_volume(runtime, handle, volume);
                 sc_voice_set_pitch(runtime, handle, pitch);
+
+                const double cutoffOffset = SC_DSP_CUTOFF_MAX - SC_DSP_CUTOFF_MIN;
+
+                const double lowpassPercentage = sbk::maths::ease_out_cubic(lowpass / 100.0);
+                const double lowpassCutoff     = (cutoffOffset - (cutoffOffset * lowpassPercentage)) + SC_DSP_CUTOFF_MIN;
+
+                const double highpassPercentage = sbk::maths::ease_in_cubic(highpass / 100.0);
+                const double highpassCutoff     = (cutoffOffset * highpassPercentage) + SC_DSP_CUTOFF_MIN;
+
+                sc_voice_set_lowpass_cutoff(runtime, handle, lowpassCutoff);
+                sc_voice_set_highpass_cutoff(runtime, handle, highpassCutoff);
 
                 sc_voice_set_paused(runtime, handle, SC_FALSE);
             }

@@ -9,8 +9,6 @@
 
 #include <algorithm>
 
-static ImVec2 operator-(const ImVec2& lhs, const ImVec2& rhs) { return ImVec2(lhs.x - rhs.y, lhs.y - rhs.y); }
-
 static ImVec2 plotOffset(100, 70);
 
 namespace audio_meter_utils
