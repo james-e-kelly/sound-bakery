@@ -137,8 +137,6 @@ $(document).ready(function(){initNavTree('classsbk_1_1engine_1_1voice.html','');
 
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
-<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classsbk_1_1engine_1_1voice-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">sbk::engine::voice Class Reference</div></div>
@@ -182,21 +180,9 @@ Collaboration diagram for sbk::engine::voice:</div>
 </map>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsbk_1_1engine_1_1voice_1_1container__instance.html">container_instance</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
-Public Types</h2></td></tr>
-<tr class="memitem:a49d6f8ce53bb94bfde6756b110f22f48" id="r_a49d6f8ce53bb94bfde6756b110f22f48"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsbk_1_1engine_1_1voice.html#a49d6f8ce53bb94bfde6756b110f22f48">play_pair</a> = std::pair&lt; sc_voice_handle, std::shared_ptr&lt; <a class="el" href="classsbk_1_1engine_1_1container.html">container</a> &gt; &gt;</td></tr>
-<tr class="memdesc:a49d6f8ce53bb94bfde6756b110f22f48"><td class="mdescLeft">&#160;</td><td class="mdescRight">A voice handle -&gt; the container that started it.  <br /></td></tr>
-<tr class="separator:a49d6f8ce53bb94bfde6756b110f22f48"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a9292f1d94b084063ebd228b9a23c7f15" id="r_a9292f1d94b084063ebd228b9a23c7f15"><td class="memItemLeft" align="right" valign="top"><a id="a9292f1d94b084063ebd228b9a23c7f15" name="a9292f1d94b084063ebd228b9a23c7f15"></a>
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>play_container</b> (<a class="el" href="classsbk_1_1engine_1_1container.html">container</a> *<a class="el" href="classsbk_1_1engine_1_1container.html">container</a>) -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt; void &gt;</td></tr>
+<tr class="memitem:a9292f1d94b084063ebd228b9a23c7f15" id="r_a9292f1d94b084063ebd228b9a23c7f15"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsbk_1_1engine_1_1voice.html#a9292f1d94b084063ebd228b9a23c7f15">play_container</a> (<a class="el" href="classsbk_1_1engine_1_1container.html">container</a> *<a class="el" href="classsbk_1_1engine_1_1container.html">container</a>) -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt; void &gt;</td></tr>
 <tr class="separator:a9292f1d94b084063ebd228b9a23c7f15"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5f7c2be366cb63d5c9063dfb55f39a94" id="r_a5f7c2be366cb63d5c9063dfb55f39a94"><td class="memItemLeft" align="right" valign="top"><a id="a5f7c2be366cb63d5c9063dfb55f39a94" name="a5f7c2be366cb63d5c9063dfb55f39a94"></a>
 auto&#160;</td><td class="memItemRight" valign="bottom"><b>update</b> () -&gt; void</td></tr>
@@ -211,7 +197,7 @@ auto&#160;</td><td class="memItemRight" valign="bottom"><b>is_playing</b> () con
 auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_owning_game_object</b> () const -&gt; <a class="el" href="classsbk_1_1engine_1_1game__object.html">game_object</a> *</td></tr>
 <tr class="separator:a6c67ad6652ff6365a88d55009cee9e0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3b89f63173e0c65bbc0faeda37d1ec9b" id="r_a3b89f63173e0c65bbc0faeda37d1ec9b"><td class="memItemLeft" align="right" valign="top"><a id="a3b89f63173e0c65bbc0faeda37d1ec9b" name="a3b89f63173e0c65bbc0faeda37d1ec9b"></a>
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_instances</b> () const -&gt; const eastl::vector&lt; <a class="el" href="structsbk_1_1engine_1_1voice_1_1container__instance.html">container_instance</a> &gt; &amp;</td></tr>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_instances</b> () const -&gt; const eastl::vector&lt; <a class="el" href="structsbk_1_1engine_1_1container__instance.html">container_instance</a> &gt; &amp;</td></tr>
 <tr class="separator:a3b89f63173e0c65bbc0faeda37d1ec9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aea46a407b87142bb7212840e1017cd84" id="r_aea46a407b87142bb7212840e1017cd84"><td class="memItemLeft" align="right" valign="top"><a id="aea46a407b87142bb7212840e1017cd84" name="aea46a407b87142bb7212840e1017cd84"></a>
 auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_output_busses</b> () const -&gt; const eastl::vector&lt; std::shared_ptr&lt; <a class="el" href="structsc__node__group.html">sc_node_group</a> &gt; &gt; &amp;</td></tr>
@@ -336,21 +322,23 @@ Additional Inherited Members</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A runtime graph of nodes and busses, playing a sound or many. </p>
-</div><h2 class="groupheader">Member Typedef Documentation</h2>
-<a id="a49d6f8ce53bb94bfde6756b110f22f48" name="a49d6f8ce53bb94bfde6756b110f22f48"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a49d6f8ce53bb94bfde6756b110f22f48">&#9670;&#160;</a></span>play_pair</h2>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="a9292f1d94b084063ebd228b9a23c7f15" name="a9292f1d94b084063ebd228b9a23c7f15"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9292f1d94b084063ebd228b9a23c7f15">&#9670;&#160;</a></span>play_container()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="classsbk_1_1engine_1_1voice.html#a49d6f8ce53bb94bfde6756b110f22f48">sbk::engine::voice::play_pair</a> =  std::pair&lt;sc_voice_handle, std::shared_ptr&lt;<a class="el" href="classsbk_1_1engine_1_1container.html">container</a>&gt; &gt;</td>
+          <td class="memname">auto sbk::engine::voice::play_container </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classsbk_1_1engine_1_1container.html">container</a> *&#160;</td>
+          <td class="paramname"><em>container</em></td><td>)</td>
+          <td> -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt;void&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>A voice handle -&gt; the container that started it. </p>
-<p>When the handle ends, we can retrigger the container to see if it wants any more sounds to play. </p>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000010">Todo:</a></b></dt><dd>Remove this line. Voices shouldn't have children or even derive from object </dd></dl>
 
 </div>
 </div>

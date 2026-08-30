@@ -11,8 +11,8 @@ var searchData=
   ['performance_20tips_8',['Performance Tips',['../ChefProgrammerGuide.html#autotoc_md72',1,'']]],
   ['philosophy_9',['Design Philosophy',['../Design.html',1,'UserManual']]],
   ['picking_20a_20macro_10',['Picking a macro',['..//home/runner/work/sound-bakery/sound-bakery/src/sound_bakery/core/error/README.md#autotoc_md55',1,'']]],
-  ['play_5fcontainer_5fmessage_11',['play_container_message',['../structsbk_1_1play__container__message.html',1,'sbk']]],
-  ['play_5fpair_12',['play_pair',['../classsbk_1_1engine_1_1voice.html#a49d6f8ce53bb94bfde6756b110f22f48',1,'sbk::engine::voice']]],
+  ['play_5fcontainer_11',['play_container',['../classsbk_1_1engine_1_1voice.html#a9292f1d94b084063ebd228b9a23c7f15',1,'sbk::engine::voice']]],
+  ['play_5fcontainer_5fmessage_12',['play_container_message',['../structsbk_1_1play__container__message.html',1,'sbk']]],
   ['playable_5fselection_13',['playable_selection',['../structplayable__selection.html',1,'']]],
   ['player_5fwidget_14',['player_widget',['../classplayer__widget.html',1,'']]],
   ['playing_20a_20sound_15',['Playing A Sound',['../ChefProgrammerGuide.html#autotoc_md64',1,'']]],
@@ -33,5 +33,6 @@ var searchData=
   ['property_30',['property',['../classsbk_1_1core_1_1property.html',1,'sbk::core']]],
   ['property_3c_20parameter_5ftype_20_3e_31',['property&lt; parameter_type &gt;',['../classsbk_1_1core_1_1property.html',1,'sbk::core']]],
   ['property_5fdrawer_32',['property_drawer',['../classproperty__drawer.html',1,'']]],
-  ['pull_20requests_33',['Submitting Pull Requests',['../md_CONTRIBUTING.html#autotoc_md31',1,'']]]
+  ['property_5fsubscription_33',['property_subscription',['../structsbk_1_1engine_1_1property__subscription.html',1,'sbk::engine']]],
+  ['pull_20requests_34',['Submitting Pull Requests',['../md_CONTRIBUTING.html#autotoc_md31',1,'']]]
 ];

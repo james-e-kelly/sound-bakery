@@ -138,38 +138,44 @@ $(document).ready(function(){initNavTree('classsbk_1_1engine_1_1effect__paramete
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="classsbk_1_1engine_1_1effect__parameter__description-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">sbk::engine::effect_parameter_description Class Reference<span class="mlabels"><span class="mlabel">final</span></span></div></div>
 </div><!--header-->
 <div class="contents">
-<div class="dynheader">
-Collaboration diagram for sbk::engine::effect_parameter_description:</div>
-<div class="dyncontent">
-<div class="center"><img src="classsbk_1_1engine_1_1effect__parameter__description__coll__graph.png" border="0" usemap="#asbk_1_1engine_1_1effect__parameter__description_coll__map" alt="Collaboration graph"/></div>
-<map name="asbk_1_1engine_1_1effect__parameter__description_coll__map" id="asbk_1_1engine_1_1effect__parameter__description_coll__map">
-<area shape="rect" title=" " alt="" coords="6,181,182,221"/>
-<area shape="rect" href="structsc__dsp__parameter.html" title=" " alt="" coords="23,93,165,119"/>
-<area shape="poly" title=" " alt="" coords="97,132,97,181,91,181,91,132"/>
-<area shape="rect" href="structsc__dsp__parameter__float.html" title=" " alt="" coords="5,5,183,31"/>
-<area shape="poly" title=" " alt="" coords="97,45,97,93,91,93,91,45"/>
-</map>
-<center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
+
+<p>Reimplements a <a class="el" href="structsc__dsp__parameter.html">sc_dsp_parameter</a> in a C++ way that can be serialized and rendered easily.  
+ <a href="classsbk_1_1engine_1_1effect__parameter__description.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="effect_8h_source.html">effect.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a0cff26da9ebb60e537e797f478c1585d" id="r_a0cff26da9ebb60e537e797f478c1585d"><td class="memItemLeft" align="right" valign="top"><a id="a0cff26da9ebb60e537e797f478c1585d" name="a0cff26da9ebb60e537e797f478c1585d"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>effect_parameter_description</b> (const <a class="el" href="structsc__dsp__parameter.html">sc_dsp_parameter</a> *<a class="el" href="classsbk_1_1engine_1_1parameter.html">parameter</a>)</td></tr>
 <tr class="separator:a0cff26da9ebb60e537e797f478c1585d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
-Public Attributes</h2></td></tr>
-<tr class="memitem:a38747bf5ab4f0d4d3f2094cb4487e4cc" id="r_a38747bf5ab4f0d4d3f2094cb4487e4cc"><td class="memItemLeft" align="right" valign="top"><a id="a38747bf5ab4f0d4d3f2094cb4487e4cc" name="a38747bf5ab4f0d4d3f2094cb4487e4cc"></a>
-<a class="el" href="structsc__dsp__parameter.html">sc_dsp_parameter</a>&#160;</td><td class="memItemRight" valign="bottom"><b>m_parameter</b></td></tr>
-<tr class="separator:a38747bf5ab4f0d4d3f2094cb4487e4cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae21a633e39066fbaf559dac977b19a68" id="r_ae21a633e39066fbaf559dac977b19a68"><td class="memItemLeft" align="right" valign="top"><a id="ae21a633e39066fbaf559dac977b19a68" name="ae21a633e39066fbaf559dac977b19a68"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_name</b> () const -&gt; const char *</td></tr>
+<tr class="separator:ae21a633e39066fbaf559dac977b19a68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85063ea22eaccc6e805c43ecdc298feb" id="r_a85063ea22eaccc6e805c43ecdc298feb"><td class="memItemLeft" align="right" valign="top"><a id="a85063ea22eaccc6e805c43ecdc298feb" name="a85063ea22eaccc6e805c43ecdc298feb"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_parameter_type</b> () const -&gt; sc_dsp_parameter_type</td></tr>
+<tr class="separator:a85063ea22eaccc6e805c43ecdc298feb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae100b01cb42cb59f60c929ef56ff2148" id="r_ae100b01cb42cb59f60c929ef56ff2148"><td class="memItemLeft" align="right" valign="top"><a id="ae100b01cb42cb59f60c929ef56ff2148" name="ae100b01cb42cb59f60c929ef56ff2148"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_property</b> () -&gt; rttr::variant &amp;</td></tr>
+<tr class="separator:ae100b01cb42cb59f60c929ef56ff2148"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e2302b6f2b62967182e568b62c8e300" id="r_a4e2302b6f2b62967182e568b62c8e300"><td class="memItemLeft" align="right" valign="top"><a id="a4e2302b6f2b62967182e568b62c8e300" name="a4e2302b6f2b62967182e568b62c8e300"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_dsp_parameter</b> () const -&gt; <a class="el" href="structsc__dsp__parameter.html">sc_dsp_parameter</a></td></tr>
+<tr class="separator:a4e2302b6f2b62967182e568b62c8e300"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af67648a5212098e727c968ce87798c8f" id="r_af67648a5212098e727c968ce87798c8f"><td class="memItemLeft" align="right" valign="top"><a id="af67648a5212098e727c968ce87798c8f" name="af67648a5212098e727c968ce87798c8f"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>set_dsp_parameter</b> (<a class="el" href="structsc__dsp__parameter.html">sc_dsp_parameter</a> <a class="el" href="classsbk_1_1engine_1_1parameter.html">parameter</a>) -&gt; void</td></tr>
+<tr class="separator:af67648a5212098e727c968ce87798c8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<hr/>The documentation for this class was generated from the following file:<ul>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Reimplements a <a class="el" href="structsc__dsp__parameter.html">sc_dsp_parameter</a> in a C++ way that can be serialized and rendered easily. </p>
+<p><a class="el" href="structsc__dsp__parameter.html">sc_dsp_parameter</a> uses a union to switch between the different parameter types. <a class="el" href="classsbk_1_1engine_1_1effect__parameter__description.html" title="Reimplements a sc_dsp_parameter in a C++ way that can be serialized and rendered easily.">effect_parameter_description</a> uses a rttr::variant to do the same thing. The type and name is reimplemented.</p>
+<p>Users can still use a <a class="el" href="structsc__dsp__parameter.html">sc_dsp_parameter</a> to set values on this class. Users can still retrieve a <a class="el" href="structsc__dsp__parameter.html">sc_dsp_parameter</a> from this class. </p>
+</div><hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/sound_bakery/effect/<a class="el" href="effect_8h_source.html">effect.h</a></li>
+<li>src/sound_bakery/effect/<b>effect.cpp</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

@@ -1,5 +1,5 @@
 <map id="sbk::engine::effect_description" name="sbk::engine::effect_description">
-<area shape="rect" id="Node000001" title="Wraps a sc_dsp_config." alt="" coords="215,255,358,295"/>
+<area shape="rect" id="Node000001" title="Reimplements a sc_dsp_description in a C++ way so it can be rendered and serialized." alt="" coords="215,255,358,295"/>
 <area shape="rect" id="Node000002" href="$classsbk_1_1core_1_1database__object.html" title="Base object type for any object that can exist in the editor/database. Holds an ID and name." alt="" coords="212,167,361,207"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="289,221,289,254,284,254,284,221"/>
 <area shape="rect" id="Node000003" href="$classsbk_1_1core_1_1object.html" title="Base object that all sound Bakery objects should inherit from." alt="" coords="222,93,351,119"/>

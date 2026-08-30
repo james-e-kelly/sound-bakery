@@ -143,7 +143,7 @@ $(document).ready(function(){initNavTree('classsbk_1_1engine_1_1effect__descript
 </div><!--header-->
 <div class="contents">
 
-<p>Wraps a <a class="el" href="structsc__dsp__config.html" title="Runtime configuration for creating a DSP unit.">sc_dsp_config</a>.  
+<p>Reimplements a <a class="el" href="structsc__dsp__description.html">sc_dsp_description</a> in a C++ way so it can be rendered and serialized.  
  <a href="classsbk_1_1engine_1_1effect__description.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="effect_8h_source.html">effect.h</a>&gt;</code></p>
@@ -152,7 +152,7 @@ Inheritance diagram for sbk::engine::effect_description:</div>
 <div class="dyncontent">
 <div class="center"><img src="classsbk_1_1engine_1_1effect__description__inherit__graph.png" border="0" usemap="#asbk_1_1engine_1_1effect__description_inherit__map" alt="Inheritance graph"/></div>
 <map name="asbk_1_1engine_1_1effect__description_inherit__map" id="asbk_1_1engine_1_1effect__description_inherit__map">
-<area shape="rect" title="Wraps a sc_dsp_config." alt="" coords="215,255,358,295"/>
+<area shape="rect" title="Reimplements a sc_dsp_description in a C++ way so it can be rendered and serialized." alt="" coords="215,255,358,295"/>
 <area shape="rect" href="classsbk_1_1core_1_1database__object.html" title="Base object type for any object that can exist in the editor/database. Holds an ID and name." alt="" coords="212,167,361,207"/>
 <area shape="poly" title=" " alt="" coords="289,221,289,254,284,254,284,221"/>
 <area shape="rect" href="classsbk_1_1core_1_1object.html" title="Base object that all sound Bakery objects should inherit from." alt="" coords="222,93,351,119"/>
@@ -170,7 +170,7 @@ Collaboration diagram for sbk::engine::effect_description:</div>
 <div class="dyncontent">
 <div class="center"><img src="classsbk_1_1engine_1_1effect__description__coll__graph.png" border="0" usemap="#asbk_1_1engine_1_1effect__description_coll__map" alt="Collaboration graph"/></div>
 <map name="asbk_1_1engine_1_1effect__description_coll__map" id="asbk_1_1engine_1_1effect__description_coll__map">
-<area shape="rect" title="Wraps a sc_dsp_config." alt="" coords="215,255,358,295"/>
+<area shape="rect" title="Reimplements a sc_dsp_description in a C++ way so it can be rendered and serialized." alt="" coords="215,255,358,295"/>
 <area shape="rect" href="classsbk_1_1core_1_1database__object.html" title="Base object type for any object that can exist in the editor/database. Holds an ID and name." alt="" coords="212,167,361,207"/>
 <area shape="poly" title=" " alt="" coords="289,221,289,254,284,254,284,221"/>
 <area shape="rect" href="classsbk_1_1core_1_1object.html" title="Base object that all sound Bakery objects should inherit from." alt="" coords="222,93,351,119"/>
@@ -191,9 +191,12 @@ auto&#160;</td><td class="memItemRight" valign="bottom"><b>set_dsp_type</b> (<a 
 <tr class="separator:a7e84a8d659d88c6b75dde418796b8893"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a86cdc2c46631a7fc880c38128a836f5d" id="r_a86cdc2c46631a7fc880c38128a836f5d"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsbk_1_1engine_1_1effect__description.html#a86cdc2c46631a7fc880c38128a836f5d">set_dsp_clap</a> (const clap_plugin_factory *pluginFactory) -&gt; void</td></tr>
 <tr class="separator:a86cdc2c46631a7fc880c38128a836f5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a525fbbd277eca224eae70cb51947f6f4" id="r_a525fbbd277eca224eae70cb51947f6f4"><td class="memItemLeft" align="right" valign="top"><a id="a525fbbd277eca224eae70cb51947f6f4" name="a525fbbd277eca224eae70cb51947f6f4"></a>
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_parameters</b> () const -&gt; eastl::vector&lt; <a class="el" href="classsbk_1_1engine_1_1effect__parameter__description.html">effect_parameter_description</a> &gt;</td></tr>
-<tr class="separator:a525fbbd277eca224eae70cb51947f6f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a50462eabfc6bdb15e16c86a13f53fbfc" id="r_a50462eabfc6bdb15e16c86a13f53fbfc"><td class="memItemLeft" align="right" valign="top"><a id="a50462eabfc6bdb15e16c86a13f53fbfc" name="a50462eabfc6bdb15e16c86a13f53fbfc"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_parameters</b> () -&gt; eastl::vector&lt; <a class="el" href="classsbk_1_1engine_1_1effect__parameter__description.html">effect_parameter_description</a> &gt; &amp;</td></tr>
+<tr class="separator:a50462eabfc6bdb15e16c86a13f53fbfc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad11a634ff6dbb059879569300f08cc1b" id="r_ad11a634ff6dbb059879569300f08cc1b"><td class="memItemLeft" align="right" valign="top"><a id="ad11a634ff6dbb059879569300f08cc1b" name="ad11a634ff6dbb059879569300f08cc1b"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_parameters</b> () const -&gt; const eastl::vector&lt; <a class="el" href="classsbk_1_1engine_1_1effect__parameter__description.html">effect_parameter_description</a> &gt; &amp;</td></tr>
+<tr class="separator:ad11a634ff6dbb059879569300f08cc1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaef4f0e55fc5110b607d101d7f5dc829" id="r_aaef4f0e55fc5110b607d101d7f5dc829"><td class="memItemLeft" align="right" valign="top"><a id="aaef4f0e55fc5110b607d101d7f5dc829" name="aaef4f0e55fc5110b607d101d7f5dc829"></a>
 auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_dsp_type</b> () const -&gt; <a class="el" href="sound__chef_8h.html#a2da1af46a36d1f165ee265d39af0edeb">sc_dsp_type</a></td></tr>
 <tr class="separator:aaef4f0e55fc5110b607d101d7f5dc829"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -354,8 +357,16 @@ Additional Inherited Members</h2></td></tr>
 <tr class="separator:ab1b37ddb016a88ea9c2931e62c8c7bce inherit pro_methods_classsbk_1_1core_1_1object__owner"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Wraps a <a class="el" href="structsc__dsp__config.html" title="Runtime configuration for creating a DSP unit.">sc_dsp_config</a>. </p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
+<div class="textblock"><p>Reimplements a <a class="el" href="structsc__dsp__description.html">sc_dsp_description</a> in a C++ way so it can be rendered and serialized. </p>
+<p>The <a class="el" href="structsc__dsp__description.html" title="Structure to create, destroy, and update DSP units of a specific handle.">sc_dsp_description</a> itself is not stored in the class. Instead, the dsp handle is stored and the parameters copied into <a class="el" href="classsbk_1_1engine_1_1effect__parameter__description.html">effect_parameter_description</a> objects.</p>
+<p>Users wanting to create <a class="el" href="structsc__dsp.html">sc_dsp</a> objects from this can call effect_description::get_dsp_handle and pass that to sc_dsp_config_init_handle.</p>
+<p>Example: </p><div class="fragment"><div class="line"><a class="code hl_struct" href="structsc__dsp.html">sc_dsp</a>* dsp{};</div>
+<div class="line"><a class="code hl_struct" href="structsc__dsp__config.html">sc_dsp_config</a> config = sc_dsp_config_init_handle(<a class="code hl_class" href="classsbk_1_1engine_1_1system.html">system</a>, effectDescription-&gt;get_dsp_handle());</div>
+<div class="line">sc_system_create_dsp(<a class="code hl_class" href="classsbk_1_1engine_1_1system.html">system</a>, &amp;config, &amp;dsp);</div>
+<div class="ttc" id="aclasssbk_1_1engine_1_1system_html"><div class="ttname"><a href="classsbk_1_1engine_1_1system.html">sbk::engine::system</a></div><div class="ttdoc">Manager of the whole Sound Bakery.</div><div class="ttdef"><b>Definition</b> system.h:46</div></div>
+<div class="ttc" id="astructsc__dsp__config_html"><div class="ttname"><a href="structsc__dsp__config.html">sc_dsp_config</a></div><div class="ttdoc">Runtime configuration for creating a DSP unit.</div><div class="ttdef"><b>Definition</b> sound_chef.h:611</div></div>
+<div class="ttc" id="astructsc__dsp_html"><div class="ttname"><a href="structsc__dsp.html">sc_dsp</a></div><div class="ttdoc">DSP units that connect and form chains within sc_node_group. Extensions of ma_node types with extra i...</div><div class="ttdef"><b>Definition</b> sound_chef.h:536</div></div>
+</div><!-- fragment --> </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a86cdc2c46631a7fc880c38128a836f5d" name="a86cdc2c46631a7fc880c38128a836f5d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a86cdc2c46631a7fc880c38128a836f5d">&#9670;&#160;</a></span>set_dsp_clap()</h2>
 

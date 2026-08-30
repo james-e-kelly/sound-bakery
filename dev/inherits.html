@@ -257,7 +257,7 @@ $(document).ready(function(){initNavTree('hierarchy.html',''); initResizable(); 
 <area shape="poly" title=" " alt="" coords="536,290,554,251,580,205,613,159,653,119,672,107,675,112,656,123,617,163,584,208,559,253,541,292"/>
 <area shape="rect" href="classsbk_1_1engine_1_1parameter.html" title=" " alt="" coords="663,133,836,173"/>
 <area shape="poly" title=" " alt="" coords="545,291,591,236,621,208,653,183,676,171,678,176,656,188,624,212,595,240,549,294"/>
-<area shape="rect" href="classsbk_1_1engine_1_1effect__description.html" title="Wraps a sc_dsp_config." alt="" coords="678,197,821,237"/>
+<area shape="rect" href="classsbk_1_1engine_1_1effect__description.html" title="Reimplements a sc_dsp_description in a C++ way so it can be rendered and serialized." alt="" coords="678,197,821,237"/>
 <area shape="poly" title=" " alt="" coords="567,294,654,247,683,235,685,240,656,252,569,299"/>
 <area shape="rect" href="classsbk_1_1engine_1_1event.html" title=" " alt="" coords="678,262,821,287"/>
 <area shape="poly" title=" " alt="" coords="611,302,690,285,691,290,613,307"/>
@@ -265,7 +265,7 @@ $(document).ready(function(){initNavTree('hierarchy.html',''); initResizable(); 
 <area shape="poly" title=" " alt="" coords="612,321,654,321,654,327,612,327"/>
 <area shape="rect" href="classsbk_1_1engine_1_1named__parameter__value.html" title="Represents a discrete value for a named_parameter." alt="" coords="674,361,825,401"/>
 <area shape="poly" title=" " alt="" coords="613,344,674,360,673,365,611,349"/>
-<area shape="rect" href="classsbk_1_1engine_1_1node__base.html" title="Generic node that can have a get_parent and own children." alt="" coords="662,426,837,451"/>
+<area shape="rect" href="classsbk_1_1engine_1_1node.html" title="Root node that builds the core graph of sounds and busses." alt="" coords="681,426,818,451"/>
 <area shape="poly" title=" " alt="" coords="600,349,608,354,624,369,633,384,641,398,656,411,682,423,680,428,653,416,637,401,628,387,620,372,605,358,597,353"/>
 <area shape="rect" href="classsbk_1_1engine_1_1parameter.html" title="Defines a database object with a changeable property." alt="" coords="663,476,836,516"/>
 <area shape="poly" title=" " alt="" coords="603,349,609,354,620,368,627,382,633,409,639,435,645,448,656,461,675,474,672,478,653,465,641,451,634,437,628,410,622,384,616,371,605,358,600,353"/>
@@ -279,24 +279,22 @@ $(document).ready(function(){initNavTree('hierarchy.html',''); initResizable(); 
 <area shape="poly" title=" " alt="" coords="850,87,892,87,892,92,850,92"/>
 <area shape="rect" href="classsbk_1_1engine_1_1named__parameter.html" title="Holds discrete named integer values." alt="" coords="915,133,1066,173"/>
 <area shape="poly" title=" " alt="" coords="850,151,915,151,915,156,850,156"/>
-<area shape="rect" href="classsbk_1_1engine_1_1node.html" title="Root node that builds the core graph of sounds and busses." alt="" coords="922,426,1059,451"/>
-<area shape="poly" title=" " alt="" coords="850,436,922,436,922,441,850,441"/>
-<area shape="rect" href="classsbk_1_1engine_1_1bus.html" title=" " alt="" coords="1157,349,1285,374"/>
-<area shape="poly" title=" " alt="" coords="1042,419,1181,372,1183,377,1043,424"/>
-<area shape="rect" href="classsbk_1_1engine_1_1container.html" title="Base container type. Inherited types include sounds, random, sequence etc." alt="" coords="1137,450,1304,475"/>
-<area shape="poly" title=" " alt="" coords="1073,445,1137,451,1137,457,1073,450"/>
-<area shape="rect" href="classsbk_1_1engine_1_1aux__bus.html" title=" " alt="" coords="1356,297,1515,322"/>
-<area shape="poly" title=" " alt="" coords="1286,343,1382,319,1383,325,1288,348"/>
-<area shape="rect" href="classsbk_1_1engine_1_1blend__container.html" title=" " alt="" coords="1365,539,1506,579"/>
-<area shape="poly" title=" " alt="" coords="1260,479,1353,524,1381,536,1379,541,1351,529,1258,484"/>
-<area shape="rect" href="classsbk_1_1engine_1_1random__container.html" title=" " alt="" coords="1358,603,1513,643"/>
-<area shape="poly" title=" " alt="" coords="1243,484,1290,536,1320,564,1353,588,1375,600,1373,605,1351,593,1317,568,1286,540,1239,488"/>
-<area shape="rect" href="classsbk_1_1engine_1_1sequence__container.html" title=" " alt="" coords="1352,347,1519,387"/>
-<area shape="poly" title=" " alt="" coords="1258,441,1351,396,1379,384,1381,389,1353,401,1260,446"/>
-<area shape="rect" href="classsbk_1_1engine_1_1sound__container.html" title=" " alt="" coords="1363,411,1507,451"/>
-<area shape="poly" title=" " alt="" coords="1317,446,1363,439,1363,444,1318,451"/>
-<area shape="rect" href="classsbk_1_1engine_1_1switch__container.html" title=" " alt="" coords="1362,475,1509,515"/>
-<area shape="poly" title=" " alt="" coords="1318,475,1362,481,1362,486,1318,480"/>
+<area shape="rect" href="classsbk_1_1engine_1_1bus.html" title=" " alt="" coords="927,469,1055,494"/>
+<area shape="poly" title=" " alt="" coords="832,451,927,467,926,473,831,456"/>
+<area shape="rect" href="classsbk_1_1engine_1_1container.html" title="Base container type. Inherited types include sounds, random, sequence etc." alt="" coords="907,383,1074,409"/>
+<area shape="poly" title=" " alt="" coords="831,422,918,406,919,411,832,427"/>
+<area shape="rect" href="classsbk_1_1engine_1_1aux__bus.html" title=" " alt="" coords="1141,537,1300,562"/>
+<area shape="poly" title=" " alt="" coords="1048,495,1178,534,1176,539,1047,501"/>
+<area shape="rect" href="classsbk_1_1engine_1_1blend__container.html" title=" " alt="" coords="1150,344,1291,384"/>
+<area shape="poly" title=" " alt="" coords="1087,380,1149,371,1150,376,1088,385"/>
+<area shape="rect" href="classsbk_1_1engine_1_1random__container.html" title=" " alt="" coords="1143,408,1298,448"/>
+<area shape="poly" title=" " alt="" coords="1088,407,1143,415,1143,420,1087,412"/>
+<area shape="rect" href="classsbk_1_1engine_1_1sequence__container.html" title=" " alt="" coords="1137,472,1304,512"/>
+<area shape="poly" title=" " alt="" coords="1034,412,1138,458,1168,469,1166,474,1136,462,1032,417"/>
+<area shape="rect" href="classsbk_1_1engine_1_1sound__container.html" title=" " alt="" coords="1149,216,1293,256"/>
+<area shape="poly" title=" " alt="" coords="1011,371,1065,319,1099,291,1136,266,1159,254,1162,258,1139,270,1103,295,1069,323,1015,375"/>
+<area shape="rect" href="classsbk_1_1engine_1_1switch__container.html" title=" " alt="" coords="1147,280,1294,320"/>
+<area shape="poly" title=" " alt="" coords="1032,375,1136,330,1166,318,1168,323,1138,334,1034,380"/>
 <area shape="rect" title=" " alt="" coords="31,201,161,226"/>
 <area shape="poly" title=" " alt="" coords="167,226,258,247,256,253,165,232"/>
 <area shape="rect" title=" " alt="" coords="21,365,171,390"/>
@@ -351,9 +349,9 @@ $(document).ready(function(){initNavTree('hierarchy.html',''); initResizable(); 
 <area shape="rect" href="classsbk_1_1core_1_1database__ptr.html" title=" " alt="" coords="5,5,196,60"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_19.png" border="0" usemap="#asbk_1_1core_1_1database__ptr_3_01sbk_1_1engine_1_1node__base_01_4" alt=""/>
-<map name="asbk_1_1core_1_1database__ptr_3_01sbk_1_1engine_1_1node__base_01_4" id="asbk_1_1core_1_1database__ptr_3_01sbk_1_1engine_1_1node__base_01_4">
-<area shape="rect" href="classsbk_1_1core_1_1database__ptr.html" title=" " alt="" coords="5,5,183,60"/>
+<tr><td><img src="inherit_graph_19.png" border="0" usemap="#asbk_1_1core_1_1database__ptr_3_01sbk_1_1engine_1_1node_01_4" alt=""/>
+<map name="asbk_1_1core_1_1database__ptr_3_01sbk_1_1engine_1_1node_01_4" id="asbk_1_1core_1_1database__ptr_3_01sbk_1_1engine_1_1node_01_4">
+<area shape="rect" href="classsbk_1_1core_1_1database__ptr.html" title=" " alt="" coords="5,5,197,45"/>
 </map>
 </td></tr>
 <tr><td><img src="inherit_graph_20.png" border="0" usemap="#asbk_1_1core_1_1database__ptr_3_01sbk_1_1engine_1_1sound_01_4" alt=""/>
@@ -483,67 +481,82 @@ $(document).ready(function(){initNavTree('hierarchy.html',''); initResizable(); 
 <area shape="rect" href="structsbk_1_1engine_1_1action.html" title=" " alt="" coords="5,5,151,31"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_45.png" border="0" usemap="#asbk_1_1engine_1_1effect__parameter__description" alt=""/>
-<map name="asbk_1_1engine_1_1effect__parameter__description" id="asbk_1_1engine_1_1effect__parameter__description">
-<area shape="rect" href="classsbk_1_1engine_1_1effect__parameter__description.html" title=" " alt="" coords="5,5,181,45"/>
+<tr><td><img src="inherit_graph_45.png" border="0" usemap="#asbk_1_1engine_1_1container__instance" alt=""/>
+<map name="asbk_1_1engine_1_1container__instance" id="asbk_1_1engine_1_1container__instance">
+<area shape="rect" href="structsbk_1_1engine_1_1container__instance.html" title="A runtime, playing representation of a sbk::engine::container." alt="" coords="5,5,172,45"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_46.png" border="0" usemap="#asbk_1_1engine_1_1encoding__sound" alt=""/>
+<tr><td><img src="inherit_graph_46.png" border="0" usemap="#asbk_1_1engine_1_1effect__parameter__description" alt=""/>
+<map name="asbk_1_1engine_1_1effect__parameter__description" id="asbk_1_1engine_1_1effect__parameter__description">
+<area shape="rect" href="classsbk_1_1engine_1_1effect__parameter__description.html" title="Reimplements a sc_dsp_parameter in a C++ way that can be serialized and rendered easily." alt="" coords="5,5,181,45"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_47.png" border="0" usemap="#asbk_1_1engine_1_1encoding__sound" alt=""/>
 <map name="asbk_1_1engine_1_1encoding__sound" id="asbk_1_1engine_1_1encoding__sound">
 <area shape="rect" href="structsbk_1_1engine_1_1encoding__sound.html" title="Data for converting a sound to an encoded format." alt="" coords="5,5,169,45"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_47.png" border="0" usemap="#asbk_1_1engine_1_1gather__children__context" alt=""/>
+<tr><td><img src="inherit_graph_48.png" border="0" usemap="#asbk_1_1engine_1_1gather__children__context" alt=""/>
 <map name="asbk_1_1engine_1_1gather__children__context" id="asbk_1_1engine_1_1gather__children__context">
 <area shape="rect" href="structsbk_1_1engine_1_1gather__children__context.html" title="Contains all information required for gathering sounds for runtime playing and selection." alt="" coords="5,5,152,45"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_48.png" border="0" usemap="#asbk_1_1engine_1_1global__parameter__list" alt=""/>
+<tr><td><img src="inherit_graph_49.png" border="0" usemap="#asbk_1_1engine_1_1global__parameter__list" alt=""/>
 <map name="asbk_1_1engine_1_1global__parameter__list" id="asbk_1_1engine_1_1global__parameter__list">
 <area shape="rect" href="structsbk_1_1engine_1_1global__parameter__list.html" title="Holds a list of parameters." alt="" coords="5,5,151,45"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_49.png" border="0" usemap="#asbk_1_1engine_1_1local__parameter__list" alt=""/>
+<tr><td><img src="inherit_graph_50.png" border="0" usemap="#asbk_1_1engine_1_1local__parameter__list" alt=""/>
 <map name="asbk_1_1engine_1_1local__parameter__list" id="asbk_1_1engine_1_1local__parameter__list">
 <area shape="rect" href="structsbk_1_1engine_1_1local__parameter__list.html" title="Holds a list of parameters and their local value." alt="" coords="5,5,141,45"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_50.png" border="0" usemap="#asbk_1_1engine_1_1soundbank__database" alt=""/>
+<tr><td><img src="inherit_graph_51.png" border="0" usemap="#asbk_1_1engine_1_1property__subscription" alt=""/>
+<map name="asbk_1_1engine_1_1property__subscription" id="asbk_1_1engine_1_1property__subscription">
+<area shape="rect" href="structsbk_1_1engine_1_1property__subscription.html" title=" " alt="" coords="5,5,165,45"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_52.png" border="0" usemap="#asbk_1_1engine_1_1soundbank__database" alt=""/>
 <map name="asbk_1_1engine_1_1soundbank__database" id="asbk_1_1engine_1_1soundbank__database">
 <area shape="rect" href="structsbk_1_1engine_1_1soundbank__database.html" title="Contains." alt="" coords="5,5,181,45"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_51.png" border="0" usemap="#asbk_1_1engine_1_1soundbank__database__entry" alt=""/>
+<tr><td><img src="inherit_graph_53.png" border="0" usemap="#asbk_1_1engine_1_1soundbank__database__entry" alt=""/>
 <map name="asbk_1_1engine_1_1soundbank__database__entry" id="asbk_1_1engine_1_1soundbank__database__entry">
 <area shape="rect" href="structsbk_1_1engine_1_1soundbank__database__entry.html" title=" " alt="" coords="5,5,181,45"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_52.png" border="0" usemap="#asbk_1_1engine_1_1soundbank__dependencies" alt=""/>
+<tr><td><img src="inherit_graph_54.png" border="0" usemap="#asbk_1_1engine_1_1soundbank__dependencies" alt=""/>
 <map name="asbk_1_1engine_1_1soundbank__dependencies" id="asbk_1_1engine_1_1soundbank__dependencies">
 <area shape="rect" href="structsbk_1_1engine_1_1soundbank__dependencies.html" title="Wraps all events, objects, and sounds needed to package a soundbank." alt="" coords="5,5,181,45"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_53.png" border="0" usemap="#asbk_1_1engine_1_1voice_1_1container__instance" alt=""/>
-<map name="asbk_1_1engine_1_1voice_1_1container__instance" id="asbk_1_1engine_1_1voice_1_1container__instance">
-<area shape="rect" href="structsbk_1_1engine_1_1voice_1_1container__instance.html" title=" " alt="" coords="5,5,159,45"/>
+<tr><td><img src="inherit_graph_55.png" border="0" usemap="#asbk_1_1engine_1_1voice__dsp__instance" alt=""/>
+<map name="asbk_1_1engine_1_1voice__dsp__instance" id="asbk_1_1engine_1_1voice__dsp__instance">
+<area shape="rect" href="structsbk_1_1engine_1_1voice__dsp__instance.html" title=" " alt="" coords="5,5,145,45"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_54.png" border="0" usemap="#asbk_1_1engine_1_1void__deleter" alt=""/>
+<tr><td><img src="inherit_graph_56.png" border="0" usemap="#asbk_1_1engine_1_1voice__property__watch" alt=""/>
+<map name="asbk_1_1engine_1_1voice__property__watch" id="asbk_1_1engine_1_1voice__property__watch">
+<area shape="rect" href="structsbk_1_1engine_1_1voice__property__watch.html" title=" " alt="" coords="5,5,145,45"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_57.png" border="0" usemap="#asbk_1_1engine_1_1void__deleter" alt=""/>
 <map name="asbk_1_1engine_1_1void__deleter" id="asbk_1_1engine_1_1void__deleter">
 <area shape="rect" href="structsbk_1_1engine_1_1void__deleter.html" title=" " alt="" coords="5,5,192,31"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_55.png" border="0" usemap="#asbk_1_1error" alt=""/>
+<tr><td><img src="inherit_graph_58.png" border="0" usemap="#asbk_1_1error" alt=""/>
 <map name="asbk_1_1error" id="asbk_1_1error">
 <area shape="rect" href="classsbk_1_1error.html" title="A failure value: the sbk_status code plus where it came from." alt="" coords="5,5,89,31"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_56.png" border="0" usemap="#asbk_1_1executor_1_1schedule__awaiter" alt=""/>
+<tr><td><img src="inherit_graph_59.png" border="0" usemap="#asbk_1_1executor_1_1schedule__awaiter" alt=""/>
 <map name="asbk_1_1executor_1_1schedule__awaiter" id="asbk_1_1executor_1_1schedule__awaiter">
 <area shape="rect" href="structsbk_1_1executor_1_1schedule__awaiter.html" title="Awaitable that puts a coroutine on this executor." alt="" coords="5,5,180,45"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_57.png" border="0" usemap="#asbk_1_1fiber__promise" alt=""/>
+<tr><td><img src="inherit_graph_60.png" border="0" usemap="#asbk_1_1fiber__promise" alt=""/>
 <map name="asbk_1_1fiber__promise" id="asbk_1_1fiber__promise">
 <area shape="rect" href="structsbk_1_1fiber__promise.html" title=" " alt="" coords="6,46,149,71"/>
 <area shape="rect" href="structsbk_1_1detached__task_1_1promise__type.html" title=" " alt="" coords="213,5,361,45"/>
@@ -558,17 +571,17 @@ $(document).ready(function(){initNavTree('hierarchy.html',''); initResizable(); 
 <area shape="poly" title=" " alt="" coords="164,118,211,126,210,131,163,124"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_58.png" border="0" usemap="#asbk_1_1final__awaiter" alt=""/>
+<tr><td><img src="inherit_graph_61.png" border="0" usemap="#asbk_1_1final__awaiter" alt=""/>
 <map name="asbk_1_1final__awaiter" id="asbk_1_1final__awaiter">
 <area shape="rect" href="structsbk_1_1final__awaiter.html" title=" " alt="" coords="5,5,143,31"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_59.png" border="0" usemap="#asbk_1_1load__soundbank__message" alt=""/>
+<tr><td><img src="inherit_graph_62.png" border="0" usemap="#asbk_1_1load__soundbank__message" alt=""/>
 <map name="asbk_1_1load__soundbank__message" id="asbk_1_1load__soundbank__message">
 <area shape="rect" href="structsbk_1_1load__soundbank__message.html" title=" " alt="" coords="5,5,164,45"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_60.png" border="0" usemap="#asbk_1_1memory_1_1memory__resource" alt=""/>
+<tr><td><img src="inherit_graph_63.png" border="0" usemap="#asbk_1_1memory_1_1memory__resource" alt=""/>
 <map name="asbk_1_1memory_1_1memory__resource" id="asbk_1_1memory_1_1memory__resource">
 <area shape="rect" href="classsbk_1_1memory_1_1memory__resource.html" title="Virtual, noexcept memory&#45;source interface." alt="" coords="5,37,176,77"/>
 <area shape="rect" href="classsbk_1_1memory_1_1monotonic__buffer__resource.html" title="Bump&#45;allocator memory_resource over a fixed rpmalloc&#45;owned block." alt="" coords="224,5,408,45"/>
@@ -577,299 +590,304 @@ $(document).ready(function(){initNavTree('hierarchy.html',''); initResizable(); 
 <area shape="poly" title=" " alt="" coords="190,69,230,75,230,80,189,74"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_61.png" border="0" usemap="#asbk_1_1memory_1_1object__deleter" alt=""/>
+<tr><td><img src="inherit_graph_64.png" border="0" usemap="#asbk_1_1memory_1_1object__deleter" alt=""/>
 <map name="asbk_1_1memory_1_1object__deleter" id="asbk_1_1memory_1_1object__deleter">
 <area shape="rect" href="structsbk_1_1memory_1_1object__deleter.html" title=" " alt="" coords="5,5,160,45"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_62.png" border="0" usemap="#asbk_1_1memory_1_1owned__object__deleter_3_01T_01_4" alt=""/>
+<tr><td><img src="inherit_graph_65.png" border="0" usemap="#asbk_1_1memory_1_1owned__object__deleter_3_01T_01_4" alt=""/>
 <map name="asbk_1_1memory_1_1owned__object__deleter_3_01T_01_4" id="asbk_1_1memory_1_1owned__object__deleter_3_01T_01_4">
 <area shape="rect" href="structsbk_1_1memory_1_1owned__object__deleter.html" title="Deleter for sbk::owned_ptr. Runs the destructor and returns the block to the memory_resource that pro..." alt="" coords="5,5,165,45"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_63.png" border="0" usemap="#asbk_1_1memory_1_1polymorphic__allocator" alt=""/>
+<tr><td><img src="inherit_graph_66.png" border="0" usemap="#asbk_1_1memory_1_1polymorphic__allocator" alt=""/>
 <map name="asbk_1_1memory_1_1polymorphic__allocator" id="asbk_1_1memory_1_1polymorphic__allocator">
 <area shape="rect" href="classsbk_1_1memory_1_1polymorphic__allocator.html" title="EASTL&#45;shaped allocator that forwards to a sbk::memory::memory_resource*." alt="" coords="5,5,201,45"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_64.png" border="0" usemap="#asbk_1_1message__queue_3_01message__type_01_4" alt=""/>
+<tr><td><img src="inherit_graph_67.png" border="0" usemap="#asbk_1_1message__queue_3_01message__type_01_4" alt=""/>
 <map name="asbk_1_1message__queue_3_01message__type_01_4" id="asbk_1_1message__queue_3_01message__type_01_4">
 <area shape="rect" href="classsbk_1_1message__queue.html" title=" " alt="" coords="5,5,164,45"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_65.png" border="0" usemap="#asbk_1_1message__queue_3_01T_01_4" alt=""/>
+<tr><td><img src="inherit_graph_68.png" border="0" usemap="#asbk_1_1message__queue_3_01T_01_4" alt=""/>
 <map name="asbk_1_1message__queue_3_01T_01_4" id="asbk_1_1message__queue_3_01T_01_4">
 <area shape="rect" href="classsbk_1_1message__queue.html" title="Lock&#45;free, multi&#45;producer, single&#45;consumer queue of arbitrary sized messages." alt="" coords="5,5,203,31"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_66.png" border="0" usemap="#asbk_1_1message__queue_3_01T_01_4_1_1message__view" alt=""/>
+<tr><td><img src="inherit_graph_69.png" border="0" usemap="#asbk_1_1message__queue_3_01T_01_4_1_1message__view" alt=""/>
 <map name="asbk_1_1message__queue_3_01T_01_4_1_1message__view" id="asbk_1_1message__queue_3_01T_01_4_1_1message__view">
 <area shape="rect" href="structsbk_1_1message__queue_1_1message__view.html" title="Returned data from the buffer. Not the actual raw data — just a pointer into it." alt="" coords="5,5,171,45"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_67.png" border="0" usemap="#asbk_1_1mpsc__ring__buffer" alt=""/>
+<tr><td><img src="inherit_graph_70.png" border="0" usemap="#asbk_1_1mpsc__ring__buffer" alt=""/>
 <map name="asbk_1_1mpsc__ring__buffer" id="asbk_1_1mpsc__ring__buffer">
 <area shape="rect" href="classsbk_1_1mpsc__ring__buffer.html" title="Multi&#45;producer, single&#45;consumer byte ring buffer." alt="" coords="5,5,171,31"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_68.png" border="0" usemap="#asbk_1_1numeric__type_3_01T_01_4" alt=""/>
+<tr><td><img src="inherit_graph_71.png" border="0" usemap="#asbk_1_1numeric__type_3_01T_01_4" alt=""/>
 <map name="asbk_1_1numeric__type_3_01T_01_4" id="asbk_1_1numeric__type_3_01T_01_4">
 <area shape="rect" href="structsbk_1_1numeric__type.html" title=" " alt="" coords="5,5,185,31"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_69.png" border="0" usemap="#asbk_1_1numeric__type_3_01T_01_4" alt=""/>
+<tr><td><img src="inherit_graph_72.png" border="0" usemap="#asbk_1_1numeric__type_3_01T_01_4" alt=""/>
 <map name="asbk_1_1numeric__type_3_01T_01_4" id="asbk_1_1numeric__type_3_01T_01_4">
 <area shape="rect" href="structsbk_1_1numeric__type_3_01T_01_4.html" title=" " alt="" coords="5,5,185,31"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_70.png" border="0" usemap="#asbk_1_1play__container__message" alt=""/>
+<tr><td><img src="inherit_graph_73.png" border="0" usemap="#asbk_1_1play__container__message" alt=""/>
 <map name="asbk_1_1play__container__message" id="asbk_1_1play__container__message">
 <area shape="rect" href="structsbk_1_1play__container__message.html" title=" " alt="" coords="5,5,155,45"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_71.png" border="0" usemap="#asbk_1_1post__event__message" alt=""/>
+<tr><td><img src="inherit_graph_74.png" border="0" usemap="#asbk_1_1post__event__message" alt=""/>
 <map name="asbk_1_1post__event__message" id="asbk_1_1post__event__message">
 <area shape="rect" href="structsbk_1_1post__event__message.html" title=" " alt="" coords="5,5,196,31"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_72.png" border="0" usemap="#asbk_1_1post__event__name__message" alt=""/>
+<tr><td><img src="inherit_graph_75.png" border="0" usemap="#asbk_1_1post__event__name__message" alt=""/>
 <map name="asbk_1_1post__event__name__message" id="asbk_1_1post__event__name__message">
 <area shape="rect" href="structsbk_1_1post__event__name__message.html" title=" " alt="" coords="5,5,175,45"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_73.png" border="0" usemap="#asbk_1_1ready__result__awaiter_3_01U_01_4" alt=""/>
+<tr><td><img src="inherit_graph_76.png" border="0" usemap="#asbk_1_1ready__result__awaiter_3_01U_01_4" alt=""/>
 <map name="asbk_1_1ready__result__awaiter_3_01U_01_4" id="asbk_1_1ready__result__awaiter_3_01U_01_4">
 <area shape="rect" href="structsbk_1_1ready__result__awaiter.html" title=" " alt="" coords="5,5,236,31"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_74.png" border="0" usemap="#asbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_01_4" alt=""/>
+<tr><td><img src="inherit_graph_77.png" border="0" usemap="#asbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_01_4" alt=""/>
 <map name="asbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_01_4" id="asbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_01_4">
 <area shape="rect" href="structsbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_01_4.html" title="Once the top&#45;most base class is reached, make an explicit conversion between the base type and Databa..." alt="" coords="5,5,216,45"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_75.png" border="0" usemap="#asbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_00_01BaseClass_00_01U_8_8_8_01_4" alt=""/>
+<tr><td><img src="inherit_graph_78.png" border="0" usemap="#asbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_00_01BaseClass_00_01U_8_8_8_01_4" alt=""/>
 <map name="asbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_00_01BaseClass_00_01U_8_8_8_01_4" id="asbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_00_01BaseClass_00_01U_8_8_8_01_4">
 <area shape="rect" href="structsbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_00_01BaseClass_00_01U_8_8_8_01_4.html" title="Registers conversions between the derived type and base class, then does the same for the base class&#39;..." alt="" coords="5,5,216,60"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_76.png" border="0" usemap="#asbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_00_01BaseClassList_8_8_8_01_4" alt=""/>
+<tr><td><img src="inherit_graph_79.png" border="0" usemap="#asbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_00_01BaseClassList_8_8_8_01_4" alt=""/>
 <map name="asbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_00_01BaseClassList_8_8_8_01_4" id="asbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_00_01BaseClassList_8_8_8_01_4">
 <area shape="rect" href="structsbk_1_1reflection_1_1CreatePointerConversion.html" title=" " alt="" coords="5,5,216,60"/>
 <area shape="rect" href="structsbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_00_01rttr_1_1type__list_3_01BaseClassList_8_8_8_01_4_01_4.html" title="Specialisation for wrapping the rttr::type_list type and extracting its template arguments." alt="" coords="264,5,521,60"/>
 <area shape="poly" title=" " alt="" coords="230,30,264,30,264,35,230,35"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_77.png" border="0" usemap="#asbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_00_01T_01_4" alt=""/>
+<tr><td><img src="inherit_graph_80.png" border="0" usemap="#asbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_00_01T_01_4" alt=""/>
 <map name="asbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_00_01T_01_4" id="asbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_00_01T_01_4">
 <area shape="rect" href="structsbk_1_1reflection_1_1CreatePointerConversion.html" title="Creates wrapper_mapper conversions for the Dervived class and all its base classes." alt="" coords="5,5,232,45"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_78.png" border="0" usemap="#asbk_1_1reflection_1_1RegisterPointerConversionsForBaseClasses_3_01T_01_4" alt=""/>
+<tr><td><img src="inherit_graph_81.png" border="0" usemap="#asbk_1_1reflection_1_1RegisterPointerConversionsForBaseClasses_3_01T_01_4" alt=""/>
 <map name="asbk_1_1reflection_1_1RegisterPointerConversionsForBaseClasses_3_01T_01_4" id="asbk_1_1reflection_1_1RegisterPointerConversionsForBaseClasses_3_01T_01_4">
 <area shape="rect" href="structsbk_1_1reflection_1_1RegisterPointerConversionsForBaseClasses.html" title="Auto&#45;registers wrapper conversions for the type and its base classes." alt="" coords="5,5,293,45"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_79.png" border="0" usemap="#asbk_1_1stop__all__message" alt=""/>
+<tr><td><img src="inherit_graph_82.png" border="0" usemap="#asbk_1_1stop__all__message" alt=""/>
 <map name="asbk_1_1stop__all__message" id="asbk_1_1stop__all__message">
 <area shape="rect" href="structsbk_1_1stop__all__message.html" title=" " alt="" coords="5,5,176,31"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_80.png" border="0" usemap="#asbk_1_1task_3_01T_01_4" alt=""/>
+<tr><td><img src="inherit_graph_83.png" border="0" usemap="#asbk_1_1task_3_01T_01_4" alt=""/>
 <map name="asbk_1_1task_3_01T_01_4" id="asbk_1_1task_3_01T_01_4">
 <area shape="rect" href="classsbk_1_1task.html" title=" " alt="" coords="5,5,124,31"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_81.png" border="0" usemap="#asbk_1_1task_3_01T_01_4_1_1awaiter" alt=""/>
+<tr><td><img src="inherit_graph_84.png" border="0" usemap="#asbk_1_1task_3_01T_01_4_1_1awaiter" alt=""/>
 <map name="asbk_1_1task_3_01T_01_4_1_1awaiter" id="asbk_1_1task_3_01T_01_4_1_1awaiter">
 <area shape="rect" href="structsbk_1_1task_1_1awaiter.html" title=" " alt="" coords="5,5,181,31"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_82.png" border="0" usemap="#asbk_1_1unique__coroutine_3_01Promise_01_4" alt=""/>
+<tr><td><img src="inherit_graph_85.png" border="0" usemap="#asbk_1_1unique__coroutine_3_01Promise_01_4" alt=""/>
 <map name="asbk_1_1unique__coroutine_3_01Promise_01_4" id="asbk_1_1unique__coroutine_3_01Promise_01_4">
 <area shape="rect" href="classsbk_1_1unique__coroutine.html" title="Move&#45;only RAII ownership of a coroutine frame – the unique_ptr of coroutine handles." alt="" coords="5,5,171,45"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_83.png" border="0" usemap="#asbk_1_1unique__coroutine_3_01sbk_1_1task__promise_01_4" alt=""/>
+<tr><td><img src="inherit_graph_86.png" border="0" usemap="#asbk_1_1unique__coroutine_3_01sbk_1_1task__promise_01_4" alt=""/>
 <map name="asbk_1_1unique__coroutine_3_01sbk_1_1task__promise_01_4" id="asbk_1_1unique__coroutine_3_01sbk_1_1task__promise_01_4">
 <area shape="rect" href="classsbk_1_1unique__coroutine.html" title=" " alt="" coords="5,5,176,45"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_84.png" border="0" usemap="#asbk_1_1util_1_1type__comparator" alt=""/>
+<tr><td><img src="inherit_graph_87.png" border="0" usemap="#asbk_1_1util_1_1type__comparator" alt=""/>
 <map name="asbk_1_1util_1_1type__comparator" id="asbk_1_1util_1_1type__comparator">
 <area shape="rect" href="structsbk_1_1util_1_1type__comparator.html" title=" " alt="" coords="5,5,199,31"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_85.png" border="0" usemap="#asbk_1_1util_1_1type__helper" alt=""/>
+<tr><td><img src="inherit_graph_88.png" border="0" usemap="#asbk_1_1util_1_1type__helper" alt=""/>
 <map name="asbk_1_1util_1_1type__helper" id="asbk_1_1util_1_1type__helper">
 <area shape="rect" href="classsbk_1_1util_1_1type__helper.html" title=" " alt="" coords="5,5,164,31"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_86.png" border="0" usemap="#asbk_1_1work__item" alt=""/>
+<tr><td><img src="inherit_graph_89.png" border="0" usemap="#asbk_1_1work__item" alt=""/>
 <map name="asbk_1_1work__item" id="asbk_1_1work__item">
 <area shape="rect" href="classsbk_1_1work__item.html" title="A move&#45;only unit of work queued on an @r executor." alt="" coords="5,5,128,31"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_87.png" border="0" usemap="#asbk__system__config" alt=""/>
+<tr><td><img src="inherit_graph_90.png" border="0" usemap="#asbk__system__config" alt=""/>
 <map name="asbk__system__config" id="asbk__system__config">
 <area shape="rect" href="structsbk__system__config.html" title=" " alt="" coords="5,5,152,31"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_88.png" border="0" usemap="#asc__audio__chunk" alt=""/>
+<tr><td><img src="inherit_graph_91.png" border="0" usemap="#asc__audio__chunk" alt=""/>
 <map name="asc__audio__chunk" id="asc__audio__chunk">
 <area shape="rect" href="structsc__audio__chunk.html" title=" " alt="" coords="5,5,131,31"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_89.png" border="0" usemap="#asc__bank" alt=""/>
+<tr><td><img src="inherit_graph_92.png" border="0" usemap="#asc__bank" alt=""/>
 <map name="asc__bank" id="asc__bank">
 <area shape="rect" href="structsc__bank.html" title=" " alt="" coords="5,5,80,31"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_90.png" border="0" usemap="#asc__clap" alt=""/>
+<tr><td><img src="inherit_graph_93.png" border="0" usemap="#asc__clap" alt=""/>
 <map name="asc__clap" id="asc__clap">
 <area shape="rect" href="structsc__clap.html" title="Holds a DLL handle and plugin entry for a CLAP plugin." alt="" coords="5,5,76,31"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_91.png" border="0" usemap="#asc__clap__node" alt=""/>
+<tr><td><img src="inherit_graph_94.png" border="0" usemap="#asc__clap__node" alt=""/>
 <map name="asc__clap__node" id="asc__clap__node">
 <area shape="rect" href="structsc__clap__node.html" title=" " alt="" coords="5,5,115,31"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_92.png" border="0" usemap="#asc__delay" alt=""/>
+<tr><td><img src="inherit_graph_95.png" border="0" usemap="#asc__delay" alt=""/>
 <map name="asc__delay" id="asc__delay">
 <area shape="rect" href="structsc__delay.html" title=" " alt="" coords="5,5,84,31"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_93.png" border="0" usemap="#asc__delay__config" alt=""/>
+<tr><td><img src="inherit_graph_96.png" border="0" usemap="#asc__delay__config" alt=""/>
 <map name="asc__delay__config" id="asc__delay__config">
 <area shape="rect" href="structsc__delay__config.html" title=" " alt="" coords="5,5,131,31"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_94.png" border="0" usemap="#asc__delay__node" alt=""/>
+<tr><td><img src="inherit_graph_97.png" border="0" usemap="#asc__delay__node" alt=""/>
 <map name="asc__delay__node" id="asc__delay__node">
 <area shape="rect" href="structsc__delay__node.html" title=" " alt="" coords="5,5,124,31"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_95.png" border="0" usemap="#asc__delay__node__config" alt=""/>
+<tr><td><img src="inherit_graph_98.png" border="0" usemap="#asc__delay__node__config" alt=""/>
 <map name="asc__delay__node__config" id="asc__delay__node__config">
 <area shape="rect" href="structsc__delay__node__config.html" title=" " alt="" coords="5,5,169,31"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_96.png" border="0" usemap="#asc__dsp" alt=""/>
+<tr><td><img src="inherit_graph_99.png" border="0" usemap="#asc__dsp" alt=""/>
 <map name="asc__dsp" id="asc__dsp">
 <area shape="rect" href="structsc__dsp.html" title="DSP units that connect and form chains within sc_node_group. Extensions of ma_node types with extra i..." alt="" coords="5,5,72,31"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_97.png" border="0" usemap="#asc__dsp__config" alt=""/>
+<tr><td><img src="inherit_graph_100.png" border="0" usemap="#asc__dsp__config" alt=""/>
 <map name="asc__dsp__config" id="asc__dsp__config">
 <area shape="rect" href="structsc__dsp__config.html" title="Runtime configuration for creating a DSP unit." alt="" coords="5,5,117,31"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_98.png" border="0" usemap="#asc__dsp__description" alt=""/>
+<tr><td><img src="inherit_graph_101.png" border="0" usemap="#asc__dsp__description" alt=""/>
 <map name="asc__dsp__description" id="asc__dsp__description">
 <area shape="rect" href="structsc__dsp__description.html" title="Structure to create, destroy, and update DSP units of a specific handle." alt="" coords="5,5,151,31"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_99.png" border="0" usemap="#asc__dsp__parameter" alt=""/>
+<tr><td><img src="inherit_graph_102.png" border="0" usemap="#asc__dsp__parameter" alt=""/>
 <map name="asc__dsp__parameter" id="asc__dsp__parameter">
 <area shape="rect" href="structsc__dsp__parameter.html" title=" " alt="" coords="5,5,147,31"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_100.png" border="0" usemap="#asc__dsp__parameter__float" alt=""/>
+<tr><td><img src="inherit_graph_103.png" border="0" usemap="#asc__dsp__parameter__float" alt=""/>
 <map name="asc__dsp__parameter__float" id="asc__dsp__parameter__float">
 <area shape="rect" href="structsc__dsp__parameter__float.html" title=" " alt="" coords="5,5,183,31"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_101.png" border="0" usemap="#asc__encoder" alt=""/>
+<tr><td><img src="inherit_graph_104.png" border="0" usemap="#asc__dsp__parameter__int" alt=""/>
+<map name="asc__dsp__parameter__int" id="asc__dsp__parameter__int">
+<area shape="rect" href="structsc__dsp__parameter__int.html" title=" " alt="" coords="5,5,171,31"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_105.png" border="0" usemap="#asc__encoder" alt=""/>
 <map name="asc__encoder" id="asc__encoder">
 <area shape="rect" href="structsc__encoder.html" title=" " alt="" coords="5,5,100,31"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_102.png" border="0" usemap="#asc__encoder__config" alt=""/>
+<tr><td><img src="inherit_graph_106.png" border="0" usemap="#asc__encoder__config" alt=""/>
 <map name="asc__encoder__config" id="asc__encoder__config">
 <area shape="rect" href="structsc__encoder__config.html" title=" " alt="" coords="5,5,147,31"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_103.png" border="0" usemap="#asc__encoder__vorbis" alt=""/>
+<tr><td><img src="inherit_graph_107.png" border="0" usemap="#asc__encoder__vorbis" alt=""/>
 <map name="asc__encoder__vorbis" id="asc__encoder__vorbis">
 <area shape="rect" href="structsc__encoder__vorbis.html" title=" " alt="" coords="5,5,148,31"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_104.png" border="0" usemap="#asc__meter" alt=""/>
+<tr><td><img src="inherit_graph_108.png" border="0" usemap="#asc__meter" alt=""/>
 <map name="asc__meter" id="asc__meter">
 <area shape="rect" href="structsc__meter.html" title=" " alt="" coords="5,5,88,31"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_105.png" border="0" usemap="#asc__meter__node" alt=""/>
+<tr><td><img src="inherit_graph_109.png" border="0" usemap="#asc__meter__node" alt=""/>
 <map name="asc__meter__node" id="asc__meter__node">
 <area shape="rect" href="structsc__meter__node.html" title=" " alt="" coords="5,5,127,31"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_106.png" border="0" usemap="#asc__node__group" alt=""/>
+<tr><td><img src="inherit_graph_110.png" border="0" usemap="#asc__node__group" alt=""/>
 <map name="asc__node__group" id="asc__node__group">
 <area shape="rect" href="structsc__node__group.html" title="Groups nodes/DSPs together into one." alt="" coords="5,5,124,31"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_107.png" border="0" usemap="#aSC__NODE__GROUP__DELETER" alt=""/>
+<tr><td><img src="inherit_graph_111.png" border="0" usemap="#aSC__NODE__GROUP__DELETER" alt=""/>
 <map name="aSC__NODE__GROUP__DELETER" id="aSC__NODE__GROUP__DELETER">
 <area shape="rect" href="structSC__NODE__GROUP__DELETER.html" title=" " alt="" coords="5,5,208,31"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_108.png" border="0" usemap="#asc__real__voice" alt=""/>
+<tr><td><img src="inherit_graph_112.png" border="0" usemap="#asc__real__voice" alt=""/>
 <map name="asc__real__voice" id="asc__real__voice">
 <area shape="rect" href="structsc__real__voice.html" title="A real voice that is connected to the DSP graph." alt="" coords="5,5,116,31"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_109.png" border="0" usemap="#asc__real__voice__config" alt=""/>
+<tr><td><img src="inherit_graph_113.png" border="0" usemap="#asc__real__voice__config" alt=""/>
 <map name="asc__real__voice__config" id="asc__real__voice__config">
 <area shape="rect" href="structsc__real__voice__config.html" title=" " alt="" coords="5,5,161,31"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_110.png" border="0" usemap="#asc__real__voice__heap__layout" alt=""/>
+<tr><td><img src="inherit_graph_114.png" border="0" usemap="#asc__real__voice__heap__layout" alt=""/>
 <map name="asc__real__voice__heap__layout" id="asc__real__voice__heap__layout">
 <area shape="rect" href="structsc__real__voice__heap__layout.html" title=" " alt="" coords="5,5,155,45"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_111.png" border="0" usemap="#asc__riff__chunk" alt=""/>
+<tr><td><img src="inherit_graph_115.png" border="0" usemap="#asc__riff__chunk" alt=""/>
 <map name="asc__riff__chunk" id="asc__riff__chunk">
 <area shape="rect" href="structsc__riff__chunk.html" title=" " alt="" coords="5,5,112,31"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_112.png" border="0" usemap="#asc__sound" alt=""/>
+<tr><td><img src="inherit_graph_116.png" border="0" usemap="#asc__sound" alt=""/>
 <map name="asc__sound" id="asc__sound">
 <area shape="rect" href="structsc__sound.html" title="Basic piece of playing audio." alt="" coords="5,5,88,31"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_113.png" border="0" usemap="#asc__sound__config" alt=""/>
+<tr><td><img src="inherit_graph_117.png" border="0" usemap="#asc__sound__config" alt=""/>
 <map name="asc__sound__config" id="asc__sound__config">
 <area shape="rect" href="structsc__sound__config.html" title="Configuration for creating a sc_sound." alt="" coords="5,5,133,31"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_114.png" border="0" usemap="#aSC__SOUND__DELETER" alt=""/>
+<tr><td><img src="inherit_graph_118.png" border="0" usemap="#aSC__SOUND__DELETER" alt=""/>
 <map name="aSC__SOUND__DELETER" id="aSC__SOUND__DELETER">
 <area shape="rect" href="structSC__SOUND__DELETER.html" title=" " alt="" coords="5,5,164,31"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_115.png" border="0" usemap="#asc__system__config" alt=""/>
+<tr><td><img src="inherit_graph_119.png" border="0" usemap="#asc__system__config" alt=""/>
 <map name="asc__system__config" id="asc__system__config">
 <area shape="rect" href="structsc__system__config.html" title="Configuration for initializing the sc_system." alt="" coords="5,5,143,31"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_116.png" border="0" usemap="#asc__virtual__voice__candidate" alt=""/>
+<tr><td><img src="inherit_graph_120.png" border="0" usemap="#asc__virtual__voice__candidate" alt=""/>
 <map name="asc__virtual__voice__candidate" id="asc__virtual__voice__candidate">
 <area shape="rect" href="structsc__virtual__voice__candidate.html" title="Used to sort voices during sc_system_update." alt="" coords="5,5,204,31"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_117.png" border="0" usemap="#asc__voice" alt=""/>
+<tr><td><img src="inherit_graph_121.png" border="0" usemap="#asc__voice" alt=""/>
 <map name="asc__voice" id="asc__voice">
 <area shape="rect" href="structsc__voice.html" title=" " alt="" coords="5,5,84,31"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_118.png" border="0" usemap="#aselection" alt=""/>
+<tr><td><img src="inherit_graph_122.png" border="0" usemap="#aselection" alt=""/>
 <map name="aselection" id="aselection">
 <area shape="rect" href="structselection.html" title=" " alt="" coords="5,5,87,31"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_119.png" border="0" usemap="#astbi__io__callbacks" alt=""/>
+<tr><td><img src="inherit_graph_123.png" border="0" usemap="#astbi__io__callbacks" alt=""/>
 <map name="astbi__io__callbacks" id="astbi__io__callbacks">
 <area shape="rect" href="structstbi__io__callbacks.html" title=" " alt="" coords="5,5,139,31"/>
 </map>

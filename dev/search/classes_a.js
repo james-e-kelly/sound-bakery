@@ -5,7 +5,6 @@ var searchData=
   ['named_5fparameter_5fvalue_2',['named_parameter_value',['../classsbk_1_1engine_1_1named__parameter__value.html',1,'sbk::engine']]],
   ['new_5fproject_5fwidget_3',['new_project_widget',['../classnew__project__widget.html',1,'']]],
   ['node_4',['node',['../classsbk_1_1engine_1_1node.html',1,'sbk::engine']]],
-  ['node_5fbase_5',['node_base',['../classsbk_1_1engine_1_1node__base.html',1,'sbk::engine']]],
-  ['numeric_5ftype_6',['numeric_type',['../structsbk_1_1numeric__type.html',1,'sbk']]],
-  ['numeric_5ftype_3c_20t_20_3e_7',['numeric_type&lt; T &gt;',['../structsbk_1_1numeric__type_3_01T_01_4.html',1,'sbk']]]
+  ['numeric_5ftype_5',['numeric_type',['../structsbk_1_1numeric__type.html',1,'sbk']]],
+  ['numeric_5ftype_3c_20t_20_3e_6',['numeric_type&lt; T &gt;',['../structsbk_1_1numeric__type_3_01T_01_4.html',1,'sbk']]]
 ];

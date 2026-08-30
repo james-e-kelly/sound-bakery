@@ -140,6 +140,7 @@ $(document).ready(function(){initNavTree('classsbk_1_1engine_1_1node.html',''); 
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
+<a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classsbk_1_1engine_1_1node-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">sbk::engine::node Class Reference</div></div>
 </div><!--header-->
@@ -154,13 +155,11 @@ Inheritance diagram for sbk::engine::node:</div>
 <div class="dyncontent">
 <div class="center"><img src="classsbk_1_1engine_1_1node__inherit__graph.png" border="0" usemap="#asbk_1_1engine_1_1node_inherit__map" alt="Inheritance graph"/></div>
 <map name="asbk_1_1engine_1_1node_inherit__map" id="asbk_1_1engine_1_1node_inherit__map">
-<area shape="rect" title="Root node that builds the core graph of sounds and busses." alt="" coords="827,135,964,160"/>
-<area shape="rect" href="classsbk_1_1engine_1_1bus.html" title=" " alt="" coords="1031,57,1159,83"/>
-<area shape="poly" title=" " alt="" coords="941,127,1060,80,1062,85,943,132"/>
-<area shape="rect" href="classsbk_1_1engine_1_1container.html" title="Base container type. Inherited types include sounds, random, sequence etc." alt="" coords="1012,159,1179,184"/>
-<area shape="poly" title=" " alt="" coords="978,155,1012,159,1012,164,977,160"/>
-<area shape="rect" href="classsbk_1_1engine_1_1node__base.html" title="Generic node that can have a get_parent and own children." alt="" coords="604,135,779,160"/>
-<area shape="poly" title=" " alt="" coords="793,145,826,145,826,150,793,150"/>
+<area shape="rect" title="Root node that builds the core graph of sounds and busses." alt="" coords="604,135,741,160"/>
+<area shape="rect" href="classsbk_1_1engine_1_1bus.html" title=" " alt="" coords="809,57,937,83"/>
+<area shape="poly" title=" " alt="" coords="718,127,838,80,840,85,720,132"/>
+<area shape="rect" href="classsbk_1_1engine_1_1container.html" title="Base container type. Inherited types include sounds, random, sequence etc." alt="" coords="789,159,956,184"/>
+<area shape="poly" title=" " alt="" coords="755,155,790,159,789,164,755,160"/>
 <area shape="rect" href="classsbk_1_1core_1_1database__object.html" title="Base object type for any object that can exist in the editor/database. Holds an ID and name." alt="" coords="407,127,556,167"/>
 <area shape="poly" title=" " alt="" coords="570,145,604,145,604,150,570,150"/>
 <area shape="rect" href="classsbk_1_1core_1_1object.html" title="Base object that all sound Bakery objects should inherit from." alt="" coords="229,135,359,160"/>
@@ -171,18 +170,18 @@ Inheritance diagram for sbk::engine::node:</div>
 <area shape="poly" title=" " alt="" coords="187,145,229,145,229,150,187,150"/>
 <area shape="rect" title=" " alt="" coords="19,192,168,217"/>
 <area shape="poly" title=" " alt="" coords="151,186,248,157,250,163,152,191"/>
-<area shape="rect" href="classsbk_1_1engine_1_1aux__bus.html" title=" " alt="" coords="1231,5,1389,31"/>
-<area shape="poly" title=" " alt="" coords="1161,51,1256,28,1258,33,1162,57"/>
-<area shape="rect" href="classsbk_1_1engine_1_1blend__container.html" title=" " alt="" coords="1239,55,1381,95"/>
-<area shape="poly" title=" " alt="" coords="1132,150,1226,105,1254,93,1256,98,1228,110,1135,155"/>
-<area shape="rect" href="classsbk_1_1engine_1_1random__container.html" title=" " alt="" coords="1233,119,1387,159"/>
-<area shape="poly" title=" " alt="" coords="1192,154,1232,148,1233,153,1193,159"/>
-<area shape="rect" href="classsbk_1_1engine_1_1sequence__container.html" title=" " alt="" coords="1227,183,1393,223"/>
-<area shape="poly" title=" " alt="" coords="1193,183,1227,188,1226,194,1192,188"/>
-<area shape="rect" href="classsbk_1_1engine_1_1sound__container.html" title=" " alt="" coords="1238,247,1382,287"/>
-<area shape="poly" title=" " alt="" coords="1135,188,1228,233,1256,245,1254,250,1226,238,1132,193"/>
-<area shape="rect" href="classsbk_1_1engine_1_1switch__container.html" title=" " alt="" coords="1237,311,1383,351"/>
-<area shape="poly" title=" " alt="" coords="1117,193,1165,245,1195,273,1228,297,1250,309,1247,314,1225,302,1192,277,1161,248,1113,197"/>
+<area shape="rect" href="classsbk_1_1engine_1_1aux__bus.html" title=" " alt="" coords="1008,5,1167,31"/>
+<area shape="poly" title=" " alt="" coords="938,51,1034,28,1035,33,940,57"/>
+<area shape="rect" href="classsbk_1_1engine_1_1blend__container.html" title=" " alt="" coords="1017,55,1158,95"/>
+<area shape="poly" title=" " alt="" coords="910,150,1003,105,1031,93,1033,98,1005,110,912,155"/>
+<area shape="rect" href="classsbk_1_1engine_1_1random__container.html" title=" " alt="" coords="1010,119,1165,159"/>
+<area shape="poly" title=" " alt="" coords="969,154,1009,148,1010,153,970,159"/>
+<area shape="rect" href="classsbk_1_1engine_1_1sequence__container.html" title=" " alt="" coords="1004,183,1171,223"/>
+<area shape="poly" title=" " alt="" coords="971,183,1004,188,1003,194,970,188"/>
+<area shape="rect" href="classsbk_1_1engine_1_1sound__container.html" title=" " alt="" coords="1015,247,1159,287"/>
+<area shape="poly" title=" " alt="" coords="912,188,1005,233,1033,245,1031,250,1003,238,910,193"/>
+<area shape="rect" href="classsbk_1_1engine_1_1switch__container.html" title=" " alt="" coords="1014,311,1161,351"/>
+<area shape="poly" title=" " alt="" coords="895,193,942,245,972,273,1005,297,1027,309,1025,314,1003,302,969,277,938,248,891,197"/>
 </map>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <div class="dynheader">
@@ -190,29 +189,74 @@ Collaboration diagram for sbk::engine::node:</div>
 <div class="dyncontent">
 <div class="center"><img src="classsbk_1_1engine_1_1node__coll__graph.png" border="0" usemap="#asbk_1_1engine_1_1node_coll__map" alt="Collaboration graph"/></div>
 <map name="asbk_1_1engine_1_1node_coll__map" id="asbk_1_1engine_1_1node_coll__map">
-<area shape="rect" title="Root node that builds the core graph of sounds and busses." alt="" coords="311,376,449,401"/>
-<area shape="rect" href="classsbk_1_1engine_1_1node__base.html" title="Generic node that can have a get_parent and own children." alt="" coords="293,301,467,327"/>
-<area shape="poly" title=" " alt="" coords="383,341,383,376,377,376,377,341"/>
-<area shape="rect" href="classsbk_1_1core_1_1database__object.html" title="Base object type for any object that can exist in the editor/database. Holds an ID and name." alt="" coords="212,177,361,217"/>
-<area shape="poly" title=" " alt="" coords="313,226,373,299,368,303,309,230"/>
+<area shape="rect" title="Root node that builds the core graph of sounds and busses." alt="" coords="315,287,453,312"/>
+<area shape="rect" href="classsbk_1_1core_1_1database__object.html" title="Base object type for any object that can exist in the editor/database. Holds an ID and name." alt="" coords="212,169,361,209"/>
+<area shape="poly" title=" " alt="" coords="315,218,375,284,371,288,311,221"/>
 <area shape="rect" href="classsbk_1_1core_1_1object.html" title="Base object that all sound Bakery objects should inherit from." alt="" coords="222,95,351,120"/>
-<area shape="poly" title=" " alt="" coords="289,134,289,177,284,177,284,134"/>
+<area shape="poly" title=" " alt="" coords="289,134,289,169,284,169,284,134"/>
 <area shape="rect" href="classsbk_1_1core_1_1object__owner.html" title="Creates, owns and tracks objects. Is owned by other object owners." alt="" coords="5,13,181,38"/>
 <area shape="poly" title=" " alt="" coords="135,41,260,92,258,97,133,46"/>
 <area shape="rect" title=" " alt="" coords="206,5,367,45"/>
 <area shape="poly" title=" " alt="" coords="289,59,289,94,284,94,284,59"/>
 <area shape="rect" title=" " alt="" coords="392,13,541,38"/>
 <area shape="poly" title=" " alt="" coords="429,46,313,97,311,92,427,41"/>
-<area shape="rect" href="classsbk_1_1core_1_1database__ptr.html" title=" " alt="" coords="386,169,563,224"/>
-<area shape="poly" title=" " alt="" coords="446,236,392,302,388,299,442,233"/>
+<area shape="rect" href="classsbk_1_1core_1_1database__ptr.html" title=" " alt="" coords="385,169,577,209"/>
+<area shape="poly" title=" " alt="" coords="457,221,397,288,393,284,453,218"/>
 </map>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a501739c45397c4d6c331efd19adfbc2d" id="r_a501739c45397c4d6c331efd19adfbc2d"><td class="memItemLeft" align="right" valign="top"><a id="a501739c45397c4d6c331efd19adfbc2d" name="a501739c45397c4d6c331efd19adfbc2d"></a>
+virtual auto&#160;</td><td class="memItemRight" valign="bottom"><b>set_output_bus</b> (const <a class="el" href="classsbk_1_1core_1_1database__ptr.html">sbk::core::database_ptr</a>&lt; <a class="el" href="classsbk_1_1engine_1_1node.html">node</a> &gt; &amp;<a class="el" href="classsbk_1_1engine_1_1bus.html">bus</a>) -&gt; void</td></tr>
+<tr class="separator:a501739c45397c4d6c331efd19adfbc2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8ddd7b42a101f22694d961ea00ab2fb" id="r_ae8ddd7b42a101f22694d961ea00ab2fb"><td class="memItemLeft" align="right" valign="top"><a id="ae8ddd7b42a101f22694d961ea00ab2fb" name="ae8ddd7b42a101f22694d961ea00ab2fb"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_parent</b> () const -&gt; std::shared_ptr&lt; <a class="el" href="classsbk_1_1engine_1_1node.html">node</a> &gt;</td></tr>
+<tr class="separator:ae8ddd7b42a101f22694d961ea00ab2fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb772b3bdac293d57e31363ad4824877" id="r_acb772b3bdac293d57e31363ad4824877"><td class="memItemLeft" align="right" valign="top"><a id="acb772b3bdac293d57e31363ad4824877" name="acb772b3bdac293d57e31363ad4824877"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_output_bus</b> () const -&gt; std::shared_ptr&lt; <a class="el" href="classsbk_1_1engine_1_1node.html">node</a> &gt;</td></tr>
+<tr class="separator:acb772b3bdac293d57e31363ad4824877"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae88fffbdd3c0ca25ebc8574cc0e57619" id="r_ae88fffbdd3c0ca25ebc8574cc0e57619"><td class="memItemLeft" align="right" valign="top"><a id="ae88fffbdd3c0ca25ebc8574cc0e57619" name="ae88fffbdd3c0ca25ebc8574cc0e57619"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_node_status</b> () const noexcept -&gt; node_status</td></tr>
+<tr class="separator:ae88fffbdd3c0ca25ebc8574cc0e57619"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a033f89a524a032c7ab5a4ca7ef2fc640" id="r_a033f89a524a032c7ab5a4ca7ef2fc640"><td class="memItemLeft" align="right" valign="top"><a id="a033f89a524a032c7ab5a4ca7ef2fc640" name="a033f89a524a032c7ab5a4ca7ef2fc640"></a>
+virtual auto&#160;</td><td class="memItemRight" valign="bottom"><b>can_add_children</b> () const -&gt; bool</td></tr>
+<tr class="separator:a033f89a524a032c7ab5a4ca7ef2fc640"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1994a67fa6f1b450cf8b123b60a2083" id="r_ad1994a67fa6f1b450cf8b123b60a2083"><td class="memItemLeft" align="right" valign="top"><a id="ad1994a67fa6f1b450cf8b123b60a2083" name="ad1994a67fa6f1b450cf8b123b60a2083"></a>
+virtual auto&#160;</td><td class="memItemRight" valign="bottom"><b>can_add_child_type</b> (const rttr::type &amp;childType) const -&gt; bool</td></tr>
+<tr class="separator:ad1994a67fa6f1b450cf8b123b60a2083"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2397ac156bba153badf36c63e903d83a" id="r_a2397ac156bba153badf36c63e903d83a"><td class="memItemLeft" align="right" valign="top"><a id="a2397ac156bba153badf36c63e903d83a" name="a2397ac156bba153badf36c63e903d83a"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>can_add_child</b> (const <a class="el" href="classsbk_1_1core_1_1database__ptr.html">sbk::core::database_ptr</a>&lt; <a class="el" href="classsbk_1_1engine_1_1node.html">node</a> &gt; &amp;child) const -&gt; bool</td></tr>
+<tr class="separator:a2397ac156bba153badf36c63e903d83a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ab65ed5c196fe047567f8e7e2e200d1" id="r_a6ab65ed5c196fe047567f8e7e2e200d1"><td class="memItemLeft" align="right" valign="top"><a id="a6ab65ed5c196fe047567f8e7e2e200d1" name="a6ab65ed5c196fe047567f8e7e2e200d1"></a>
+virtual auto&#160;</td><td class="memItemRight" valign="bottom"><b>can_add_parent</b> () const -&gt; bool</td></tr>
+<tr class="separator:a6ab65ed5c196fe047567f8e7e2e200d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d605f3e643351ed23e5bcf55b2d0a1f" id="r_a6d605f3e643351ed23e5bcf55b2d0a1f"><td class="memItemLeft" align="right" valign="top"><a id="a6d605f3e643351ed23e5bcf55b2d0a1f" name="a6d605f3e643351ed23e5bcf55b2d0a1f"></a>
+virtual auto&#160;</td><td class="memItemRight" valign="bottom"><b>can_add_parent_type</b> (const rttr::type &amp;parentType) const -&gt; bool</td></tr>
+<tr class="separator:a6d605f3e643351ed23e5bcf55b2d0a1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d2b8bcb3fff91d7502056da3f8fcd91" id="r_a0d2b8bcb3fff91d7502056da3f8fcd91"><td class="memItemLeft" align="right" valign="top"><a id="a0d2b8bcb3fff91d7502056da3f8fcd91" name="a0d2b8bcb3fff91d7502056da3f8fcd91"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>add_child</b> (const <a class="el" href="classsbk_1_1core_1_1database__ptr.html">sbk::core::database_ptr</a>&lt; <a class="el" href="classsbk_1_1engine_1_1node.html">node</a> &gt; &amp;child) -&gt; void</td></tr>
+<tr class="separator:a0d2b8bcb3fff91d7502056da3f8fcd91"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a09cce74836de24c1b4d4fbac62521415" id="r_a09cce74836de24c1b4d4fbac62521415"><td class="memItemLeft" align="right" valign="top"><a id="a09cce74836de24c1b4d4fbac62521415" name="a09cce74836de24c1b4d4fbac62521415"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>remove_child</b> (const <a class="el" href="classsbk_1_1core_1_1database__ptr.html">sbk::core::database_ptr</a>&lt; <a class="el" href="classsbk_1_1engine_1_1node.html">node</a> &gt; &amp;child) -&gt; void</td></tr>
+<tr class="separator:a09cce74836de24c1b4d4fbac62521415"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37d35c7bfe7d8e10323782dd76e1cded" id="r_a37d35c7bfe7d8e10323782dd76e1cded"><td class="memItemLeft" align="right" valign="top"><a id="a37d35c7bfe7d8e10323782dd76e1cded" name="a37d35c7bfe7d8e10323782dd76e1cded"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_children</b> () const -&gt; eastl::vector&lt; std::shared_ptr&lt; <a class="el" href="classsbk_1_1engine_1_1node.html">node</a> &gt; &gt;</td></tr>
+<tr class="separator:a37d35c7bfe7d8e10323782dd76e1cded"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a86f44f7bddde3a6641a95af46abf2e2b" id="r_a86f44f7bddde3a6641a95af46abf2e2b"><td class="memItemLeft" align="right" valign="top"><a id="a86f44f7bddde3a6641a95af46abf2e2b" name="a86f44f7bddde3a6641a95af46abf2e2b"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_child_count</b> () const -&gt; std::size_t</td></tr>
+<tr class="separator:a86f44f7bddde3a6641a95af46abf2e2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0aaafb1b34010f8913967afcfe98a002" id="r_a0aaafb1b34010f8913967afcfe98a002"><td class="memItemLeft" align="right" valign="top"><a id="a0aaafb1b34010f8913967afcfe98a002" name="a0aaafb1b34010f8913967afcfe98a002"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>has_child</b> (const <a class="el" href="classsbk_1_1core_1_1database__ptr.html">sbk::core::database_ptr</a>&lt; <a class="el" href="classsbk_1_1engine_1_1node.html">node</a> &gt; &amp;test) const -&gt; bool</td></tr>
+<tr class="separator:a0aaafb1b34010f8913967afcfe98a002"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8c09f234291c361beb69fc9f6216f12" id="r_ac8c09f234291c361beb69fc9f6216f12"><td class="memItemLeft" align="right" valign="top"><a id="ac8c09f234291c361beb69fc9f6216f12" name="ac8c09f234291c361beb69fc9f6216f12"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>gather_all_descendants</b> (eastl::vector&lt; std::shared_ptr&lt; <a class="el" href="classsbk_1_1engine_1_1node.html">node</a> &gt; &gt; &amp;descendants) const -&gt; void</td></tr>
+<tr class="separator:ac8c09f234291c361beb69fc9f6216f12"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4525766ccd80191d56b3df9131f5f521" id="r_a4525766ccd80191d56b3df9131f5f521"><td class="memItemLeft" align="right" valign="top"><a id="a4525766ccd80191d56b3df9131f5f521" name="a4525766ccd80191d56b3df9131f5f521"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>gather_all_parents</b> (eastl::vector&lt; std::shared_ptr&lt; <a class="el" href="classsbk_1_1engine_1_1node.html">node</a> &gt; &gt; &amp;parents) const -&gt; void</td></tr>
+<tr class="separator:a4525766ccd80191d56b3df9131f5f521"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abf1935e3ebb876fd54f0406b65f5d151" id="r_abf1935e3ebb876fd54f0406b65f5d151"><td class="memItemLeft" align="right" valign="top"><a id="abf1935e3ebb876fd54f0406b65f5d151" name="abf1935e3ebb876fd54f0406b65f5d151"></a>
 virtual auto&#160;</td><td class="memItemRight" valign="bottom"><b>gather_parameters</b> (<a class="el" href="structsbk_1_1engine_1_1global__parameter__list.html">global_parameter_list</a> &amp;parameters) -&gt; void</td></tr>
-<tr class="memdesc:abf1935e3ebb876fd54f0406b65f5d151"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gathers all parameters on this and child nodes that can effect the runtime output. <br /></td></tr>
 <tr class="separator:abf1935e3ebb876fd54f0406b65f5d151"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae1e6057ef6fe0f0a6322ffe7e2b3f6f8" id="r_ae1e6057ef6fe0f0a6322ffe7e2b3f6f8"><td class="memItemLeft" align="right" valign="top"><a id="ae1e6057ef6fe0f0a6322ffe7e2b3f6f8" name="ae1e6057ef6fe0f0a6322ffe7e2b3f6f8"></a>
 auto&#160;</td><td class="memItemRight" valign="bottom"><b>add_effect</b> (<a class="el" href="sound__chef_8h.html#a2da1af46a36d1f165ee265d39af0edeb">sc_dsp_type</a> type) -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt; void &gt;</td></tr>
@@ -220,55 +264,6 @@ auto&#160;</td><td class="memItemRight" valign="bottom"><b>add_effect</b> (<a cl
 <tr class="memitem:a4c22d950d3147e6c10987546800b750f" id="r_a4c22d950d3147e6c10987546800b750f"><td class="memItemLeft" align="right" valign="top"><a id="a4c22d950d3147e6c10987546800b750f" name="a4c22d950d3147e6c10987546800b750f"></a>
 auto&#160;</td><td class="memItemRight" valign="bottom"><b>add_effect_clap</b> (const clap_plugin_factory_t *clapFactory) -&gt; <a class="el" href="error_8h.html#a390f3d2c4f8f4a52fc2076794fd8e7c7">sbk::result</a>&lt; void &gt;</td></tr>
 <tr class="separator:a4c22d950d3147e6c10987546800b750f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_methods_classsbk_1_1engine_1_1node__base"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classsbk_1_1engine_1_1node__base')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classsbk_1_1engine_1_1node__base.html">sbk::engine::node_base</a></td></tr>
-<tr class="memitem:a4ebd64e963cdd144df66a2fce67b9dee inherit pub_methods_classsbk_1_1engine_1_1node__base" id="r_a4ebd64e963cdd144df66a2fce67b9dee"><td class="memItemLeft" align="right" valign="top">
-virtual auto&#160;</td><td class="memItemRight" valign="bottom"><b>set_output_bus</b> (const <a class="el" href="classsbk_1_1core_1_1database__ptr.html">sbk::core::database_ptr</a>&lt; <a class="el" href="classsbk_1_1engine_1_1node__base.html">node_base</a> &gt; &amp;<a class="el" href="classsbk_1_1engine_1_1bus.html">bus</a>) -&gt; void</td></tr>
-<tr class="separator:a4ebd64e963cdd144df66a2fce67b9dee inherit pub_methods_classsbk_1_1engine_1_1node__base"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3e9e6f9732388e80f3264f45bb848529 inherit pub_methods_classsbk_1_1engine_1_1node__base" id="r_a3e9e6f9732388e80f3264f45bb848529"><td class="memItemLeft" align="right" valign="top">
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_parent</b> () const -&gt; std::shared_ptr&lt; <a class="el" href="classsbk_1_1engine_1_1node__base.html">node_base</a> &gt;</td></tr>
-<tr class="separator:a3e9e6f9732388e80f3264f45bb848529 inherit pub_methods_classsbk_1_1engine_1_1node__base"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5610bbd6b0a3034b015717c68bc21479 inherit pub_methods_classsbk_1_1engine_1_1node__base" id="r_a5610bbd6b0a3034b015717c68bc21479"><td class="memItemLeft" align="right" valign="top">
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_output_bus</b> () const -&gt; std::shared_ptr&lt; <a class="el" href="classsbk_1_1engine_1_1node__base.html">node_base</a> &gt;</td></tr>
-<tr class="separator:a5610bbd6b0a3034b015717c68bc21479 inherit pub_methods_classsbk_1_1engine_1_1node__base"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab460fa3b50cfb8a0c8641be2c8c0c9a9 inherit pub_methods_classsbk_1_1engine_1_1node__base" id="r_ab460fa3b50cfb8a0c8641be2c8c0c9a9"><td class="memItemLeft" align="right" valign="top">
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_node_status</b> () const noexcept -&gt; node_status</td></tr>
-<tr class="separator:ab460fa3b50cfb8a0c8641be2c8c0c9a9 inherit pub_methods_classsbk_1_1engine_1_1node__base"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2cc7fa467193816ec6ce8add2f6890dd inherit pub_methods_classsbk_1_1engine_1_1node__base" id="r_a2cc7fa467193816ec6ce8add2f6890dd"><td class="memItemLeft" align="right" valign="top">
-virtual auto&#160;</td><td class="memItemRight" valign="bottom"><b>can_add_children</b> () const -&gt; bool</td></tr>
-<tr class="separator:a2cc7fa467193816ec6ce8add2f6890dd inherit pub_methods_classsbk_1_1engine_1_1node__base"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a69a6ef7170d183b60e37ce3094e41560 inherit pub_methods_classsbk_1_1engine_1_1node__base" id="r_a69a6ef7170d183b60e37ce3094e41560"><td class="memItemLeft" align="right" valign="top">
-virtual auto&#160;</td><td class="memItemRight" valign="bottom"><b>can_add_child_type</b> (const rttr::type &amp;childType) const -&gt; bool</td></tr>
-<tr class="separator:a69a6ef7170d183b60e37ce3094e41560 inherit pub_methods_classsbk_1_1engine_1_1node__base"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa7b9b342b95c4040b7e848d9c22242ba inherit pub_methods_classsbk_1_1engine_1_1node__base" id="r_aa7b9b342b95c4040b7e848d9c22242ba"><td class="memItemLeft" align="right" valign="top">
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>can_add_child</b> (const <a class="el" href="classsbk_1_1core_1_1database__ptr.html">sbk::core::database_ptr</a>&lt; <a class="el" href="classsbk_1_1engine_1_1node__base.html">node_base</a> &gt; &amp;child) const -&gt; bool</td></tr>
-<tr class="separator:aa7b9b342b95c4040b7e848d9c22242ba inherit pub_methods_classsbk_1_1engine_1_1node__base"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae2822e8b3ab33302f495a44e6819f822 inherit pub_methods_classsbk_1_1engine_1_1node__base" id="r_ae2822e8b3ab33302f495a44e6819f822"><td class="memItemLeft" align="right" valign="top">
-virtual auto&#160;</td><td class="memItemRight" valign="bottom"><b>can_add_parent</b> () const -&gt; bool</td></tr>
-<tr class="separator:ae2822e8b3ab33302f495a44e6819f822 inherit pub_methods_classsbk_1_1engine_1_1node__base"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8c4e31bf8f80353e3497a5526a7903c3 inherit pub_methods_classsbk_1_1engine_1_1node__base" id="r_a8c4e31bf8f80353e3497a5526a7903c3"><td class="memItemLeft" align="right" valign="top">
-virtual auto&#160;</td><td class="memItemRight" valign="bottom"><b>can_add_parent_type</b> (const rttr::type &amp;parentType) const -&gt; bool</td></tr>
-<tr class="separator:a8c4e31bf8f80353e3497a5526a7903c3 inherit pub_methods_classsbk_1_1engine_1_1node__base"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2e7c8b9e037ea3c3daa6d66aae8f9273 inherit pub_methods_classsbk_1_1engine_1_1node__base" id="r_a2e7c8b9e037ea3c3daa6d66aae8f9273"><td class="memItemLeft" align="right" valign="top">
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>add_child</b> (const <a class="el" href="classsbk_1_1core_1_1database__ptr.html">sbk::core::database_ptr</a>&lt; <a class="el" href="classsbk_1_1engine_1_1node__base.html">node_base</a> &gt; &amp;child) -&gt; void</td></tr>
-<tr class="separator:a2e7c8b9e037ea3c3daa6d66aae8f9273 inherit pub_methods_classsbk_1_1engine_1_1node__base"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a76a5414c4db9de7e5997e0125f19a5a6 inherit pub_methods_classsbk_1_1engine_1_1node__base" id="r_a76a5414c4db9de7e5997e0125f19a5a6"><td class="memItemLeft" align="right" valign="top">
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>remove_child</b> (const <a class="el" href="classsbk_1_1core_1_1database__ptr.html">sbk::core::database_ptr</a>&lt; <a class="el" href="classsbk_1_1engine_1_1node__base.html">node_base</a> &gt; &amp;child) -&gt; void</td></tr>
-<tr class="separator:a76a5414c4db9de7e5997e0125f19a5a6 inherit pub_methods_classsbk_1_1engine_1_1node__base"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2b155aeec11b34cc4610046b30bd8879 inherit pub_methods_classsbk_1_1engine_1_1node__base" id="r_a2b155aeec11b34cc4610046b30bd8879"><td class="memItemLeft" align="right" valign="top">
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_children</b> () const -&gt; eastl::vector&lt; std::shared_ptr&lt; <a class="el" href="classsbk_1_1engine_1_1node__base.html">node_base</a> &gt; &gt;</td></tr>
-<tr class="separator:a2b155aeec11b34cc4610046b30bd8879 inherit pub_methods_classsbk_1_1engine_1_1node__base"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a268ca41292d0b32c5f7b787a4b1745a4 inherit pub_methods_classsbk_1_1engine_1_1node__base" id="r_a268ca41292d0b32c5f7b787a4b1745a4"><td class="memItemLeft" align="right" valign="top">
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_child_count</b> () const -&gt; std::size_t</td></tr>
-<tr class="separator:a268ca41292d0b32c5f7b787a4b1745a4 inherit pub_methods_classsbk_1_1engine_1_1node__base"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa41f7a53ffe392744f066ff107215a48 inherit pub_methods_classsbk_1_1engine_1_1node__base" id="r_aa41f7a53ffe392744f066ff107215a48"><td class="memItemLeft" align="right" valign="top">
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>has_child</b> (const <a class="el" href="classsbk_1_1core_1_1database__ptr.html">sbk::core::database_ptr</a>&lt; <a class="el" href="classsbk_1_1engine_1_1node__base.html">node_base</a> &gt; &amp;test) const -&gt; bool</td></tr>
-<tr class="separator:aa41f7a53ffe392744f066ff107215a48 inherit pub_methods_classsbk_1_1engine_1_1node__base"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5e78da46ac08aae5cb19a4628cd9dcff inherit pub_methods_classsbk_1_1engine_1_1node__base" id="r_a5e78da46ac08aae5cb19a4628cd9dcff"><td class="memItemLeft" align="right" valign="top">
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>gather_all_descendants</b> (eastl::vector&lt; std::shared_ptr&lt; <a class="el" href="classsbk_1_1engine_1_1node__base.html">node_base</a> &gt; &gt; &amp;descendants) const -&gt; void</td></tr>
-<tr class="separator:a5e78da46ac08aae5cb19a4628cd9dcff inherit pub_methods_classsbk_1_1engine_1_1node__base"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a43b924271b7de969c5876fe7b7faa793 inherit pub_methods_classsbk_1_1engine_1_1node__base" id="r_a43b924271b7de969c5876fe7b7faa793"><td class="memItemLeft" align="right" valign="top">
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>gather_all_parents</b> (eastl::vector&lt; std::shared_ptr&lt; <a class="el" href="classsbk_1_1engine_1_1node__base.html">node_base</a> &gt; &gt; &amp;parents) const -&gt; void</td></tr>
-<tr class="separator:a43b924271b7de969c5876fe7b7faa793 inherit pub_methods_classsbk_1_1engine_1_1node__base"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classsbk_1_1core_1_1database__object"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classsbk_1_1core_1_1database__object')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classsbk_1_1core_1_1database__object.html">sbk::core::database_object</a></td></tr>
 <tr class="memitem:a7c24009a57100151526fd41cb33b5069 inherit pub_methods_classsbk_1_1core_1_1database__object" id="r_a7c24009a57100151526fd41cb33b5069"><td class="memItemLeft" align="right" valign="top">
 <a class="el" href="classsbk_1_1core_1_1database__ptr.html">auto</a>&#160;</td><td class="memItemRight" valign="bottom"><b>get_database_id</b> () <a class="el" href="classsbk_1_1core_1_1database__ptr.html">const</a> -&gt; sbk_id</td></tr>
@@ -418,18 +413,28 @@ eastl::vector&lt; <a class="el" href="classsbk_1_1core_1_1database__ptr.html">sb
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:ac246fa89a15aefc3b9707c390f341bbc" id="r_ac246fa89a15aefc3b9707c390f341bbc"><td class="memItemLeft" align="right" valign="top">virtual auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsbk_1_1engine_1_1node.html#ac246fa89a15aefc3b9707c390f341bbc">gather_parameters_from_this</a> (<a class="el" href="structsbk_1_1engine_1_1global__parameter__list.html">global_parameter_list</a> &amp;parameters) -&gt; void</td></tr>
-<tr class="memdesc:ac246fa89a15aefc3b9707c390f341bbc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Appends parameters from this node that are relevant to the runtime output.  <br /></td></tr>
+<tr class="memitem:a925e429533e360ad4744978d00719df5" id="r_a925e429533e360ad4744978d00719df5"><td class="memItemLeft" align="right" valign="top"><a id="a925e429533e360ad4744978d00719df5" name="a925e429533e360ad4744978d00719df5"></a>
+virtual auto&#160;</td><td class="memItemRight" valign="bottom"><b>set_parent_node</b> (const <a class="el" href="classsbk_1_1core_1_1database__ptr.html">sbk::core::database_ptr</a>&lt; <a class="el" href="classsbk_1_1engine_1_1node.html">node</a> &gt; &amp;parent) -&gt; void</td></tr>
+<tr class="separator:a925e429533e360ad4744978d00719df5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac246fa89a15aefc3b9707c390f341bbc" id="r_ac246fa89a15aefc3b9707c390f341bbc"><td class="memItemLeft" align="right" valign="top"><a id="ac246fa89a15aefc3b9707c390f341bbc" name="ac246fa89a15aefc3b9707c390f341bbc"></a>
+virtual auto&#160;</td><td class="memItemRight" valign="bottom"><b>gather_parameters_from_this</b> (<a class="el" href="structsbk_1_1engine_1_1global__parameter__list.html">global_parameter_list</a> &amp;parameters) -&gt; void</td></tr>
 <tr class="separator:ac246fa89a15aefc3b9707c390f341bbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pro_methods_classsbk_1_1engine_1_1node__base"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classsbk_1_1engine_1_1node__base')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classsbk_1_1engine_1_1node__base.html">sbk::engine::node_base</a></td></tr>
-<tr class="memitem:a9f32518b7ef4c009b911ad44caa6e3c1 inherit pro_methods_classsbk_1_1engine_1_1node__base" id="r_a9f32518b7ef4c009b911ad44caa6e3c1"><td class="memItemLeft" align="right" valign="top">
-virtual auto&#160;</td><td class="memItemRight" valign="bottom"><b>set_parent_node</b> (const <a class="el" href="classsbk_1_1core_1_1database__ptr.html">sbk::core::database_ptr</a>&lt; <a class="el" href="classsbk_1_1engine_1_1node__base.html">node_base</a> &gt; &amp;parent) -&gt; void</td></tr>
-<tr class="memdesc:a9f32518b7ef4c009b911ad44caa6e3c1 inherit pro_methods_classsbk_1_1engine_1_1node__base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the parent node. Does not add this node to the parent's child list. <br /></td></tr>
-<tr class="separator:a9f32518b7ef4c009b911ad44caa6e3c1 inherit pro_methods_classsbk_1_1engine_1_1node__base"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classsbk_1_1core_1_1object__owner"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classsbk_1_1core_1_1object__owner')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classsbk_1_1core_1_1object__owner.html">sbk::core::object_owner</a></td></tr>
 <tr class="memitem:ab1b37ddb016a88ea9c2931e62c8c7bce inherit pro_methods_classsbk_1_1core_1_1object__owner" id="r_ab1b37ddb016a88ea9c2931e62c8c7bce"><td class="memItemLeft" align="right" valign="top">
 <a class="el" href="classsbk_1_1core_1_1database__ptr.html">auto</a>&#160;</td><td class="memItemRight" valign="bottom"><b>set_owner</b> (<a class="el" href="classsbk_1_1core_1_1object__owner.html">object_owner</a> *<a class="el" href="classsbk_1_1core_1_1database__ptr.html">newOwner</a>) -&gt; <a class="el" href="classsbk_1_1core_1_1database__ptr.html">void</a></td></tr>
 <tr class="separator:ab1b37ddb016a88ea9c2931e62c8c7bce inherit pro_methods_classsbk_1_1core_1_1object__owner"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
+Protected Attributes</h2></td></tr>
+<tr class="memitem:a3f2b4b67153611b9ad73ee24f66abfae" id="r_a3f2b4b67153611b9ad73ee24f66abfae"><td class="memItemLeft" align="right" valign="top"><a id="a3f2b4b67153611b9ad73ee24f66abfae" name="a3f2b4b67153611b9ad73ee24f66abfae"></a>
+<a class="el" href="classsbk_1_1core_1_1database__ptr.html">sbk::core::database_ptr</a>&lt; <a class="el" href="classsbk_1_1engine_1_1node.html">node</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>m_parentNode</b></td></tr>
+<tr class="separator:a3f2b4b67153611b9ad73ee24f66abfae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d2c9795bda3d16b85de6607e997a185" id="r_a1d2c9795bda3d16b85de6607e997a185"><td class="memItemLeft" align="right" valign="top"><a id="a1d2c9795bda3d16b85de6607e997a185" name="a1d2c9795bda3d16b85de6607e997a185"></a>
+<a class="el" href="classsbk_1_1core_1_1database__ptr.html">sbk::core::database_ptr</a>&lt; <a class="el" href="classsbk_1_1engine_1_1node.html">node</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>m_outputBus</b></td></tr>
+<tr class="separator:a1d2c9795bda3d16b85de6607e997a185"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac14717b6395d80527d559489dc666b9f" id="r_ac14717b6395d80527d559489dc666b9f"><td class="memItemLeft" align="right" valign="top"><a id="ac14717b6395d80527d559489dc666b9f" name="ac14717b6395d80527d559489dc666b9f"></a>
+std::unordered_set&lt; <a class="el" href="classsbk_1_1core_1_1database__ptr.html">sbk::core::database_ptr</a>&lt; <a class="el" href="classsbk_1_1engine_1_1node.html">node</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>m_childNodes</b></td></tr>
+<tr class="separator:ac14717b6395d80527d559489dc666b9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -450,57 +455,10 @@ Additional Inherited Members</h2></td></tr>
 <tr class="memitem:a0f6c08cb8eb06d38d20962340faa17e7 inherit pub_static_methods_classsbk_1_1core_1_1object" id="r_a0f6c08cb8eb06d38d20962340faa17e7"><td class="memItemLeft" align="right" valign="top">
 <a class="el" href="classsbk_1_1core_1_1database__ptr.html">static</a> <a class="el" href="classsbk_1_1core_1_1database__ptr.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operator delete</b> (<a class="el" href="classsbk_1_1core_1_1database__ptr.html">void</a> *pointer, sbk::memory::object_category <a class="el" href="classsbk_1_1core_1_1database__ptr.html">category</a>)</td></tr>
 <tr class="separator:a0f6c08cb8eb06d38d20962340faa17e7 inherit pub_static_methods_classsbk_1_1core_1_1object"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pro_attribs_classsbk_1_1engine_1_1node__base"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classsbk_1_1engine_1_1node__base')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classsbk_1_1engine_1_1node__base.html">sbk::engine::node_base</a></td></tr>
-<tr class="memitem:a1b4d0766fe12252473d01fa90eae0b61 inherit pro_attribs_classsbk_1_1engine_1_1node__base" id="r_a1b4d0766fe12252473d01fa90eae0b61"><td class="memItemLeft" align="right" valign="top">
-<a class="el" href="classsbk_1_1core_1_1database__ptr.html">sbk::core::database_ptr</a>&lt; <a class="el" href="classsbk_1_1engine_1_1node__base.html">node_base</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>m_parentNode</b></td></tr>
-<tr class="separator:a1b4d0766fe12252473d01fa90eae0b61 inherit pro_attribs_classsbk_1_1engine_1_1node__base"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a98fee62b8ab5f013c7c7cb701c3d632d inherit pro_attribs_classsbk_1_1engine_1_1node__base" id="r_a98fee62b8ab5f013c7c7cb701c3d632d"><td class="memItemLeft" align="right" valign="top">
-<a class="el" href="classsbk_1_1core_1_1database__ptr.html">sbk::core::database_ptr</a>&lt; <a class="el" href="classsbk_1_1engine_1_1node__base.html">node_base</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>m_outputBus</b></td></tr>
-<tr class="separator:a98fee62b8ab5f013c7c7cb701c3d632d inherit pro_attribs_classsbk_1_1engine_1_1node__base"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a92861da593ddcc67c1e07236933ad1d3 inherit pro_attribs_classsbk_1_1engine_1_1node__base" id="r_a92861da593ddcc67c1e07236933ad1d3"><td class="memItemLeft" align="right" valign="top">
-std::unordered_set&lt; <a class="el" href="classsbk_1_1core_1_1database__ptr.html">sbk::core::database_ptr</a>&lt; <a class="el" href="classsbk_1_1engine_1_1node__base.html">node_base</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>m_childNodes</b></td></tr>
-<tr class="separator:a92861da593ddcc67c1e07236933ad1d3 inherit pro_attribs_classsbk_1_1engine_1_1node__base"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Root node that builds the core graph of sounds and busses. </p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="ac246fa89a15aefc3b9707c390f341bbc" name="ac246fa89a15aefc3b9707c390f341bbc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac246fa89a15aefc3b9707c390f341bbc">&#9670;&#160;</a></span>gather_parameters_from_this()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual auto sbk::engine::node::gather_parameters_from_this </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="structsbk_1_1engine_1_1global__parameter__list.html">global_parameter_list</a> &amp;&#160;</td>
-          <td class="paramname"><em>parameters</em></td><td>)</td>
-          <td> -&gt; void </td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Appends parameters from this node that are relevant to the runtime output. </p>
-<p>Called from gather_parameters. </p><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">parameters</td><td>to append to. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p>Reimplemented in <a class="el" href="classsbk_1_1engine_1_1switch__container.html#a877948762e5241cc95f81614657512bc">sbk::engine::switch_container</a>.</p>
-
-</div>
-</div>
-<hr/>The documentation for this class was generated from the following files:<ul>
+</div><hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/sound_bakery/node/<a class="el" href="node_8h_source.html">node.h</a></li>
 <li>src/sound_bakery/node/<b>node.cpp</b></li>
 </ul>

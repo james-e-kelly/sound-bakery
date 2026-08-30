@@ -1,19 +1,17 @@
 <map id="sbk::engine::sound_container" name="sbk::engine::sound_container">
-<area shape="rect" id="Node000001" title=" " alt="" coords="215,475,359,515"/>
-<area shape="rect" id="Node000002" href="$classsbk_1_1engine_1_1container.html" title="Base container type. Inherited types include sounds, random, sequence etc." alt="" coords="203,401,370,427"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="289,440,289,475,284,475,284,440"/>
-<area shape="rect" id="Node000003" href="$classsbk_1_1engine_1_1node.html" title="Root node that builds the core graph of sounds and busses." alt="" coords="218,328,355,353"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="289,367,289,401,284,401,284,367"/>
-<area shape="rect" id="Node000004" href="$classsbk_1_1engine_1_1node__base.html" title="Generic node that can have a get_parent and own children." alt="" coords="199,255,374,280"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="289,294,289,328,284,328,284,294"/>
-<area shape="rect" id="Node000005" href="$classsbk_1_1core_1_1database__object.html" title="Base object type for any object that can exist in the editor/database. Holds an ID and name." alt="" coords="212,167,361,207"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="289,220,289,254,284,254,284,220"/>
-<area shape="rect" id="Node000006" href="$classsbk_1_1core_1_1object.html" title="Base object that all sound Bakery objects should inherit from." alt="" coords="222,93,351,119"/>
-<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="289,132,289,167,284,167,284,132"/>
-<area shape="rect" id="Node000007" href="$classsbk_1_1core_1_1object__owner.html" title="Creates, owns and tracks objects. Is owned by other object owners." alt="" coords="5,13,181,38"/>
-<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="135,41,260,91,258,96,133,45"/>
-<area shape="rect" id="Node000008" title=" " alt="" coords="206,5,367,45"/>
-<area shape="poly" id="edge7_Node000006_Node000008" title=" " alt="" coords="289,59,289,93,284,93,284,59"/>
-<area shape="rect" id="Node000009" title=" " alt="" coords="392,13,541,38"/>
-<area shape="poly" id="edge8_Node000006_Node000009" title=" " alt="" coords="429,46,314,96,312,91,427,41"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="215,401,359,441"/>
+<area shape="rect" id="Node000002" href="$classsbk_1_1engine_1_1container.html" title="Base container type. Inherited types include sounds, random, sequence etc." alt="" coords="203,328,370,353"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="289,367,289,401,284,401,284,367"/>
+<area shape="rect" id="Node000003" href="$classsbk_1_1engine_1_1node.html" title="Root node that builds the core graph of sounds and busses." alt="" coords="218,255,355,280"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="289,294,289,328,284,328,284,294"/>
+<area shape="rect" id="Node000004" href="$classsbk_1_1core_1_1database__object.html" title="Base object type for any object that can exist in the editor/database. Holds an ID and name." alt="" coords="212,167,361,207"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="289,220,289,254,284,254,284,220"/>
+<area shape="rect" id="Node000005" href="$classsbk_1_1core_1_1object.html" title="Base object that all sound Bakery objects should inherit from." alt="" coords="222,93,351,119"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="289,132,289,167,284,167,284,132"/>
+<area shape="rect" id="Node000006" href="$classsbk_1_1core_1_1object__owner.html" title="Creates, owns and tracks objects. Is owned by other object owners." alt="" coords="5,13,181,38"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="135,41,260,91,258,96,133,45"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="206,5,367,45"/>
+<area shape="poly" id="edge6_Node000005_Node000007" title=" " alt="" coords="289,59,289,93,284,93,284,59"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="392,13,541,38"/>
+<area shape="poly" id="edge7_Node000005_Node000008" title=" " alt="" coords="429,46,314,96,312,91,427,41"/>
 </map>

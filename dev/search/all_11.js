@@ -7,9 +7,8 @@ var searchData=
   ['new_5fproject_5fwidget_4',['new_project_widget',['../classnew__project__widget.html',1,'']]],
   ['node_5',['node',['../classsbk_1_1engine_1_1node.html',1,'sbk::engine']]],
   ['node_20groups_6',['Node Groups',['../ChefProgrammerGuide.html#autotoc_md66',1,'']]],
-  ['node_5fbase_7',['node_base',['../classsbk_1_1engine_1_1node__base.html',1,'sbk::engine']]],
-  ['null_8',['null',['../classsbk_1_1core_1_1database__ptr.html#aa8b3f67ced3b2a8c948e50dab9b4092b',1,'sbk::core::database_ptr']]],
-  ['numeric_5ftype_9',['numeric_type',['../structsbk_1_1numeric__type.html',1,'sbk']]],
-  ['numeric_5ftype_3c_20t_20_3e_10',['numeric_type&lt; T &gt;',['../structsbk_1_1numeric__type_3_01T_01_4.html',1,'sbk']]],
-  ['numtimesplayed_11',['numTimesPlayed',['../structsbk_1_1engine_1_1gather__children__context.html#af87660d1dbcdf2a40eefa5ff6840a674',1,'sbk::engine::gather_children_context']]]
+  ['null_7',['null',['../classsbk_1_1core_1_1database__ptr.html#aa8b3f67ced3b2a8c948e50dab9b4092b',1,'sbk::core::database_ptr']]],
+  ['numeric_5ftype_8',['numeric_type',['../structsbk_1_1numeric__type.html',1,'sbk']]],
+  ['numeric_5ftype_3c_20t_20_3e_9',['numeric_type&lt; T &gt;',['../structsbk_1_1numeric__type_3_01T_01_4.html',1,'sbk']]],
+  ['numtimesplayed_10',['numTimesPlayed',['../structsbk_1_1engine_1_1gather__children__context.html#af87660d1dbcdf2a40eefa5ff6840a674',1,'sbk::engine::gather_children_context']]]
 ];

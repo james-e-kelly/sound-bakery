@@ -8,7 +8,7 @@ var hierarchy =
     [ "sbk::task< T >::awaiter", "structsbk_1_1task_1_1awaiter.html", null ],
     [ "sbk::core::serialization::boost_serializer< load_archive, save_archive, inputMode, outputMode >", "classsbk_1_1core_1_1serialization_1_1boost__serializer.html", null ],
     [ "sbk::command_queue", "classsbk_1_1command__queue.html", null ],
-    [ "sbk::engine::voice::container_instance", "structsbk_1_1engine_1_1voice_1_1container__instance.html", null ],
+    [ "sbk::engine::container_instance", "structsbk_1_1engine_1_1container__instance.html", null ],
     [ "sbk::reflection::CreatePointerConversion< DerivedClass, T >", "structsbk_1_1reflection_1_1CreatePointerConversion.html", null ],
     [ "sbk::reflection::CreatePointerConversion< DerivedClass >", "structsbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_01_4.html", null ],
     [ "sbk::reflection::CreatePointerConversion< DerivedClass, BaseClass, U... >", "structsbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_00_01BaseClass_00_01U_8_8_8_01_4.html", null ],
@@ -26,7 +26,7 @@ var hierarchy =
     [ "sbk::core::database_ptr< named_parameter >", "classsbk_1_1core_1_1database__ptr.html", null ],
     [ "sbk::core::database_ptr< sbk::core::database_object >", "classsbk_1_1core_1_1database__ptr.html", null ],
     [ "sbk::core::database_ptr< sbk::engine::named_parameter >", "classsbk_1_1core_1_1database__ptr.html", null ],
-    [ "sbk::core::database_ptr< sbk::engine::node_base >", "classsbk_1_1core_1_1database__ptr.html", null ],
+    [ "sbk::core::database_ptr< sbk::engine::node >", "classsbk_1_1core_1_1database__ptr.html", null ],
     [ "sbk::core::database_ptr< sbk::engine::sound >", "classsbk_1_1core_1_1database__ptr.html", null ],
     [ "sbk::detached_task", "structsbk_1_1detached__task.html", null ],
     [ "sbk::engine::effect_parameter_description", "classsbk_1_1engine_1_1effect__parameter__description.html", null ],
@@ -49,18 +49,16 @@ var hierarchy =
           [ "sbk::engine::event", "classsbk_1_1engine_1_1event.html", null ],
           [ "sbk::engine::game_object", "classsbk_1_1engine_1_1game__object.html", null ],
           [ "sbk::engine::named_parameter_value", "classsbk_1_1engine_1_1named__parameter__value.html", null ],
-          [ "sbk::engine::node_base", "classsbk_1_1engine_1_1node__base.html", [
-            [ "sbk::engine::node", "classsbk_1_1engine_1_1node.html", [
-              [ "sbk::engine::bus", "classsbk_1_1engine_1_1bus.html", [
-                [ "sbk::engine::aux_bus", "classsbk_1_1engine_1_1aux__bus.html", null ]
-              ] ],
-              [ "sbk::engine::container", "classsbk_1_1engine_1_1container.html", [
-                [ "sbk::engine::blend_container", "classsbk_1_1engine_1_1blend__container.html", null ],
-                [ "sbk::engine::random_container", "classsbk_1_1engine_1_1random__container.html", null ],
-                [ "sbk::engine::sequence_container", "classsbk_1_1engine_1_1sequence__container.html", null ],
-                [ "sbk::engine::sound_container", "classsbk_1_1engine_1_1sound__container.html", null ],
-                [ "sbk::engine::switch_container", "classsbk_1_1engine_1_1switch__container.html", null ]
-              ] ]
+          [ "sbk::engine::node", "classsbk_1_1engine_1_1node.html", [
+            [ "sbk::engine::bus", "classsbk_1_1engine_1_1bus.html", [
+              [ "sbk::engine::aux_bus", "classsbk_1_1engine_1_1aux__bus.html", null ]
+            ] ],
+            [ "sbk::engine::container", "classsbk_1_1engine_1_1container.html", [
+              [ "sbk::engine::blend_container", "classsbk_1_1engine_1_1blend__container.html", null ],
+              [ "sbk::engine::random_container", "classsbk_1_1engine_1_1random__container.html", null ],
+              [ "sbk::engine::sequence_container", "classsbk_1_1engine_1_1sequence__container.html", null ],
+              [ "sbk::engine::sound_container", "classsbk_1_1engine_1_1sound__container.html", null ],
+              [ "sbk::engine::switch_container", "classsbk_1_1engine_1_1switch__container.html", null ]
             ] ]
           ] ],
           [ "sbk::engine::parameter< parameter_type >", "classsbk_1_1engine_1_1parameter.html", null ],
@@ -140,6 +138,7 @@ var hierarchy =
     [ "sbk::core::property< T >", "classsbk_1_1core_1_1property.html", null ],
     [ "sbk::core::property< parameter_type >", "classsbk_1_1core_1_1property.html", null ],
     [ "property_drawer", "classproperty__drawer.html", null ],
+    [ "sbk::engine::property_subscription", "structsbk_1_1engine_1_1property__subscription.html", null ],
     [ "sbk::ready_result_awaiter< U >", "structsbk_1_1ready__result__awaiter.html", null ],
     [ "sbk::reflection::RegisterPointerConversionsForBaseClasses< T >", "structsbk_1_1reflection_1_1RegisterPointerConversionsForBaseClasses.html", null ],
     [ "gluten::root_widget", null, [
@@ -159,6 +158,7 @@ var hierarchy =
     [ "sc_dsp_description", "structsc__dsp__description.html", null ],
     [ "sc_dsp_parameter", "structsc__dsp__parameter.html", null ],
     [ "sc_dsp_parameter_float", "structsc__dsp__parameter__float.html", null ],
+    [ "sc_dsp_parameter_int", "structsc__dsp__parameter__int.html", null ],
     [ "sc_encoder", "structsc__encoder.html", null ],
     [ "sc_encoder_config", "structsc__encoder__config.html", null ],
     [ "sc_encoder_vorbis", "structsc__encoder__vorbis.html", null ],
@@ -205,6 +205,8 @@ var hierarchy =
     [ "sbk::util::type_helper", "classsbk_1_1util_1_1type__helper.html", null ],
     [ "sbk::unique_coroutine< Promise >", "classsbk_1_1unique__coroutine.html", null ],
     [ "sbk::unique_coroutine< sbk::task_promise >", "classsbk_1_1unique__coroutine.html", null ],
+    [ "sbk::engine::voice_dsp_instance", "structsbk_1_1engine_1_1voice__dsp__instance.html", null ],
+    [ "sbk::engine::voice_property_watch", "structsbk_1_1engine_1_1voice__property__watch.html", null ],
     [ "sbk::engine::void_deleter", "structsbk_1_1engine_1_1void__deleter.html", null ],
     [ "gluten::widget", null, [
       [ "audio_display_widget", "classaudio__display__widget.html", null ],

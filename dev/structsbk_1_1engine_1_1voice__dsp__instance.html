@@ -1,0 +1,215 @@
+<!-- HTML header for doxygen 1.10.0-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Sound Bakery: sbk::engine::voice_dsp_instance Struct Reference</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom-css.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+</script>
+</head>
+<body>
+<!-- https://tholman.com/github-corners/ -->
+<a href="https://github.com/KarateKidzz/sound-bakery" class="github-corner" title="View source on GitHub" target="_blank" rel="noopener noreferrer">
+  <svg viewBox="0 0 250 250" width="40" height="40" style="position: absolute; top: 0; border: 0; right: 0; z-index: 99;" aria-hidden="true">
+  <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectlogo"><img alt="Logo" src="sound-bakery-logo.png"$logosize/></td>
+  <td id="projectalign">
+   <div id="projectname">Sound Bakery&nbsp<span id="projectnumber">&#160;<select id="sbk-version-select" aria-label="Documentation version"><option>dev</option></select></span>
+   </div>
+   <div id="projectbrief">Open-source audio middleware for games</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- Sound Bakery documentation version switcher -->
+<script type="text/javascript">
+(function () {
+    var current = "dev";
+    var select = document.getElementById('sbk-version-select');
+    if (!select) { return; }
+    // versions.json lives at the site root, one level above this version's folder.
+    fetch("../versions.json", { cache: "no-cache" })
+        .then(function (r) { return r.ok ? r.json() : []; })
+        .then(function (versions) {
+            if (!versions || !versions.length) { return; }
+            select.innerHTML = "";
+            versions.forEach(function (v) {
+                var opt = document.createElement('option');
+                opt.value = v;
+                opt.textContent = v;
+                if (v === current) { opt.selected = true; }
+                select.appendChild(opt);
+            });
+        })
+        .catch(function () { /* single-version or local build: leave the label as-is */ });
+    select.addEventListener('change', function () {
+        window.location.href = "../" + select.value + "/index.html";
+    });
+})();
+</script>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Search');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('structsbk_1_1engine_1_1voice__dsp__instance.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="structsbk_1_1engine_1_1voice__dsp__instance-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">sbk::engine::voice_dsp_instance Struct Reference</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="dynheader">
+Collaboration diagram for sbk::engine::voice_dsp_instance:</div>
+<div class="dyncontent">
+<div class="center"><img src="structsbk_1_1engine_1_1voice__dsp__instance__coll__graph.png" border="0" usemap="#asbk_1_1engine_1_1voice__dsp__instance_coll__map" alt="Collaboration graph"/></div>
+<map name="asbk_1_1engine_1_1voice__dsp__instance_coll__map" id="asbk_1_1engine_1_1voice__dsp__instance_coll__map">
+<area shape="rect" title=" " alt="" coords="1226,137,1366,177"/>
+<area shape="rect" href="structsc__dsp.html" title="DSP units that connect and form chains within sc_node_group. Extensions of ma_node types with extra i..." alt="" coords="831,13,898,38"/>
+<area shape="poly" title=" " alt="" coords="912,26,1070,39,1150,51,1207,67,1231,81,1252,99,1285,135,1281,139,1248,103,1228,86,1204,72,1149,56,1069,44,911,32"/>
+<area shape="poly" title=" " alt="" coords="913,12,921,17,924,26,916,37,898,40,897,35,913,32,919,25,917,21,910,17"/>
+<area shape="rect" href="structsc__node__group.html" title="Groups nodes/DSPs together into one." alt="" coords="736,145,854,170"/>
+<area shape="poly" title=" " alt="" coords="823,47,809,57,799,71,792,89,790,109,794,144,789,145,785,109,787,88,794,68,805,54,820,42"/>
+<area shape="rect" href="structsc__dsp__description.html" title="Structure to create, destroy, and update DSP units of a specific handle." alt="" coords="350,468,496,493"/>
+<area shape="poly" title=" " alt="" coords="912,33,993,51,1084,78,1125,94,1159,113,1182,133,1191,156,1191,378,1185,392,1167,404,1107,424,1020,440,914,454,685,471,496,480,495,475,684,466,913,448,1019,435,1106,419,1165,399,1180,388,1186,377,1186,156,1178,136,1156,117,1123,99,1082,83,992,56,911,38"/>
+<area shape="rect" href="structsc__system.html" title="Object that manages the node graph, sounds, output etc." alt="" coords="216,363,307,389"/>
+<area shape="poly" title=" " alt="" coords="202,378,130,368,92,357,56,340,29,319,9,294,3,267,7,253,15,238,41,214,75,191,118,170,167,150,282,116,409,88,537,65,657,47,830,27,831,32,658,52,538,70,410,93,283,121,169,155,120,175,78,196,44,218,20,242,12,255,9,267,14,292,32,315,59,335,93,352,131,363,203,372"/>
+<area shape="poly" title=" " alt="" coords="277,399,294,425,309,442,332,456,359,465,357,470,330,460,305,446,290,428,273,402"/>
+<area shape="rect" href="structsc__sound.html" title="Basic piece of playing audio." alt="" coords="243,468,326,493"/>
+<area shape="poly" title=" " alt="" coords="240,400,231,416,227,430,231,443,241,456,256,466,253,470,238,460,226,445,221,430,226,414,235,397"/>
+<area shape="rect" href="structsc__real__voice.html" title="A real voice that is connected to the DSP graph." alt="" coords="145,249,256,275"/>
+<area shape="poly" title=" " alt="" coords="266,350,268,329,263,309,247,290,227,277,229,272,251,286,268,307,273,328,272,350"/>
+<area shape="rect" href="structsc__clap.html" title="Holds a DLL handle and plugin entry for a CLAP plugin." alt="" coords="30,249,101,275"/>
+<area shape="poly" title=" " alt="" coords="64,289,65,314,75,336,98,348,134,358,216,369,216,374,133,363,96,353,72,339,60,315,59,289"/>
+<area shape="poly" title=" " alt="" coords="816,133,833,112,850,72,859,38,864,39,855,74,837,115,820,136"/>
+<area shape="poly" title=" " alt="" coords="722,168,677,177,629,192,581,213,539,242,529,254,523,265,519,290,514,315,507,328,495,340,461,354,412,364,307,375,307,370,411,359,460,349,492,335,503,325,509,313,514,289,518,264,525,251,536,238,579,208,627,187,676,172,721,163"/>
+<area shape="rect" href="structsc__voice.html" title=" " alt="" coords="432,556,510,581"/>
+<area shape="poly" title=" " alt="" coords="868,162,938,174,974,183,1006,196,1032,212,1051,232,1060,256,1055,285,1035,325,1011,360,981,393,948,421,912,447,874,469,793,505,710,532,632,550,511,567,510,562,631,545,709,527,791,500,872,464,910,442,945,417,978,389,1006,357,1031,322,1050,283,1054,257,1047,234,1029,216,1003,200,972,188,937,179,867,167"/>
+<area shape="poly" title=" " alt="" coords="722,167,586,182,431,204,349,221,268,243,236,252,235,247,266,237,348,216,430,199,586,176,721,162"/>
+<area shape="poly" title=" " alt="" coords="402,459,360,417,333,402,304,391,306,386,335,397,363,413,406,455"/>
+<area shape="rect" href="structsc__dsp__parameter.html" title=" " alt="" coords="686,363,827,389"/>
+<area shape="poly" title=" " alt="" coords="722,397,666,422,601,447,496,471,495,466,599,441,664,418,720,392"/>
+<area shape="rect" href="structsc__dsp__parameter__float.html" title=" " alt="" coords="864,249,1041,275"/>
+<area shape="poly" title=" " alt="" coords="930,286,894,313,852,340,792,366,790,361,850,335,891,309,926,282"/>
+<area shape="rect" href="structsc__dsp__parameter__int.html" title=" " alt="" coords="674,249,839,275"/>
+<area shape="poly" title=" " alt="" coords="759,288,759,363,754,363,754,288"/>
+<area shape="poly" title=" " alt="" coords="417,565,346,557,266,543,195,523,168,510,150,495,142,478,143,462,151,446,164,431,199,406,234,387,237,391,202,410,168,435,156,449,148,463,147,477,154,492,171,506,197,518,267,538,346,552,418,560"/>
+<area shape="poly" title=" " alt="" coords="483,543,495,519,504,493,518,438,526,392,526,372,520,351,509,331,492,310,475,300,450,293,385,289,318,290,266,287,232,277,233,272,267,281,318,284,385,284,450,288,477,295,495,306,514,328,525,349,531,371,532,393,523,439,509,494,500,521,488,546"/>
+<area shape="poly" title=" " alt="" coords="323,497,447,553,444,558,320,502"/>
+<area shape="poly" title=" " alt="" coords="179,286,162,311,160,324,164,336,174,347,187,356,217,367,215,372,185,361,171,351,159,339,154,324,157,309,175,283"/>
+<area shape="rect" href="structsc__virtual__voice__candidate.html" title="Used to sort voices during sc_system_update." alt="" coords="280,249,478,275"/>
+<area shape="poly" title=" " alt="" coords="369,288,353,314,331,339,311,354,291,366,288,361,308,350,328,335,349,311,365,286"/>
+<area shape="rect" href="structsbk_1_1engine_1_1property__subscription.html" title=" " alt="" coords="1216,5,1376,45"/>
+<area shape="poly" title=" " alt="" coords="1299,59,1299,137,1294,137,1294,59"/>
+</map>
+<center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:a71699ce377bece9bfc1f737e5be858f9" id="r_a71699ce377bece9bfc1f737e5be858f9"><td class="memItemLeft" align="right" valign="top"><a id="a71699ce377bece9bfc1f737e5be858f9" name="a71699ce377bece9bfc1f737e5be858f9"></a>
+<a class="el" href="structsc__dsp.html">sc_dsp</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>dsp</b> {}</td></tr>
+<tr class="separator:a71699ce377bece9bfc1f737e5be858f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aefa66999cbfcb7fe8a8b044f6479b099" id="r_aefa66999cbfcb7fe8a8b044f6479b099"><td class="memItemLeft" align="right" valign="top"><a id="aefa66999cbfcb7fe8a8b044f6479b099" name="aefa66999cbfcb7fe8a8b044f6479b099"></a>
+sc_uint32&#160;</td><td class="memItemRight" valign="bottom"><b>parameterIndex</b> {}</td></tr>
+<tr class="separator:aefa66999cbfcb7fe8a8b044f6479b099"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afbcb1dbc18a4f3d6ee7cad7dc6ac1dff" id="r_afbcb1dbc18a4f3d6ee7cad7dc6ac1dff"><td class="memItemLeft" align="right" valign="top"><a id="afbcb1dbc18a4f3d6ee7cad7dc6ac1dff" name="afbcb1dbc18a4f3d6ee7cad7dc6ac1dff"></a>
+<a class="el" href="structsbk_1_1engine_1_1property__subscription.html">property_subscription</a>&#160;</td><td class="memItemRight" valign="bottom"><b>subscription</b></td></tr>
+<tr class="separator:afbcb1dbc18a4f3d6ee7cad7dc6ac1dff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<hr/>The documentation for this struct was generated from the following file:<ul>
+<li>src/sound_bakery/voice/<a class="el" href="voice_8h_source.html">voice.h</a></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><b>sbk</b></li><li class="navelem"><b>engine</b></li><li class="navelem"><a class="el" href="structsbk_1_1engine_1_1voice__dsp__instance.html">voice_dsp_instance</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
+  </ul>
+</div>
+</body>
+</html>

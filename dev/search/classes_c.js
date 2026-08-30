@@ -20,5 +20,6 @@ var searchData=
   ['promise_5ftype_17',['promise_type',['../structsbk_1_1detached__task_1_1promise__type.html',1,'sbk::detached_task']]],
   ['property_18',['property',['../classsbk_1_1core_1_1property.html',1,'sbk::core']]],
   ['property_3c_20parameter_5ftype_20_3e_19',['property&lt; parameter_type &gt;',['../classsbk_1_1core_1_1property.html',1,'sbk::core']]],
-  ['property_5fdrawer_20',['property_drawer',['../classproperty__drawer.html',1,'']]]
+  ['property_5fdrawer_20',['property_drawer',['../classproperty__drawer.html',1,'']]],
+  ['property_5fsubscription_21',['property_subscription',['../structsbk_1_1engine_1_1property__subscription.html',1,'sbk::engine']]]
 ];

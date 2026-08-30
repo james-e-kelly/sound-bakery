@@ -8,7 +8,7 @@ var searchData=
   ['database_5fptr_3c_20named_5fparameter_20_3e_5',['database_ptr&lt; named_parameter &gt;',['../classsbk_1_1core_1_1database__ptr.html',1,'sbk::core']]],
   ['database_5fptr_3c_20sbk_3a_3acore_3a_3adatabase_5fobject_20_3e_6',['database_ptr&lt; sbk::core::database_object &gt;',['../classsbk_1_1core_1_1database__ptr.html',1,'sbk::core']]],
   ['database_5fptr_3c_20sbk_3a_3aengine_3a_3anamed_5fparameter_20_3e_7',['database_ptr&lt; sbk::engine::named_parameter &gt;',['../classsbk_1_1core_1_1database__ptr.html',1,'sbk::core']]],
-  ['database_5fptr_3c_20sbk_3a_3aengine_3a_3anode_5fbase_20_3e_8',['database_ptr&lt; sbk::engine::node_base &gt;',['../classsbk_1_1core_1_1database__ptr.html',1,'sbk::core']]],
+  ['database_5fptr_3c_20sbk_3a_3aengine_3a_3anode_20_3e_8',['database_ptr&lt; sbk::engine::node &gt;',['../classsbk_1_1core_1_1database__ptr.html',1,'sbk::core']]],
   ['database_5fptr_3c_20sbk_3a_3aengine_3a_3asound_20_3e_9',['database_ptr&lt; sbk::engine::sound &gt;',['../classsbk_1_1core_1_1database__ptr.html',1,'sbk::core']]],
   ['database_5fwidget_10',['database_widget',['../classdatabase__widget.html',1,'']]],
   ['design_20philosophy_11',['Design Philosophy',['../Design.html',1,'UserManual']]],

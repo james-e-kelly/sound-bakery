@@ -5,6 +5,7 @@ var sound__chef_8h =
     [ "sc_clap", "structsc__clap.html", null ],
     [ "sc_dsp", "structsc__dsp.html", null ],
     [ "sc_dsp_parameter_float", "structsc__dsp__parameter__float.html", null ],
+    [ "sc_dsp_parameter_int", "structsc__dsp__parameter__int.html", null ],
     [ "sc_dsp_parameter", "structsc__dsp__parameter.html", null ],
     [ "sc_dsp_description", "structsc__dsp__description.html", null ],
     [ "sc_dsp_config", "structsc__dsp__config.html", null ],
