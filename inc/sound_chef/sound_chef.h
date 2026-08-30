@@ -915,10 +915,11 @@ typedef enum sc_voice_state
  */
 typedef enum sc_voice_flags
 {
-    SC_VOICE_FLAG_NONE    = 0,
-    SC_VOICE_FLAG_PAUSED  = 1u << 0,  //< Freeze the play cursor. Set by the user via sc_voice_pause.
-    SC_VOICE_FLAG_VIRTUAL = 1u << 1,  //< Not connected to a real voice; audio callback skips the mix.
-    SC_VOICE_FLAG_FADING  = 1u << 2   //< A volume ramp is in progress (start/stop fade, ducking, etc.).
+    SC_VOICE_FLAG_NONE          = 0,
+    SC_VOICE_FLAG_PAUSED        = 1u << 0,  //< Freeze the play cursor. Set by the user via sc_voice_pause.
+    SC_VOICE_FLAG_VIRTUAL       = 1u << 1,  //< Not connected to a real voice; audio callback skips the mix.
+    SC_VOICE_FLAG_FADING        = 1u << 2,  //< A volume ramp is in progress (start/stop fade, ducking, etc.).
+    SC_VOICE_FLAG_INSTANT_STOP  = 1u << 3   //< The user requested an instant stop and the tail should not ring out
 } sc_voice_flags;
 
 /**

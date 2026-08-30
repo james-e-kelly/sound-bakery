@@ -57,6 +57,7 @@ sbk_status sc_voice_stop(sc_system* system, sc_voice_handle handle)
 {
     sc_voice* voice = NULL;
     SC_CHECK_STATUS(sc_voice_resolve(system, handle, &voice));
+    sc_voice_write_flag(&voice->flags, SC_VOICE_FLAG_INSTANT_STOP, SC_TRUE);
     c89atomic_store_32(&voice->desiredState, (sc_uint32)sc_voice_desired_stopped);
     return SBK_SUCCESS;
 }

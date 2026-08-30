@@ -22,6 +22,9 @@ namespace sbk::engine
      */
     struct container_instance
     {
+        ~container_instance();
+
+        sc_system* system{};
         sbk_id containerReference{};    //< The ID of the container this instance references
         sc_voice_handle voiceHandle{};  //< The potentially playing voice handle
         unsigned int childCount{};      //< Number of children playing from this instance. Can be zero if the voice has finished or we're playing a sound and @ref is not 0

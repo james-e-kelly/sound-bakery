@@ -321,10 +321,14 @@ sbk_status sc_system_update(sc_system* system)
                         break;
                     case sc_voice_state_playing:
                     {
-                        sc_bool playingIsIdle = MA_TRUE;
-                        sc_node_group_calculate_is_idle(voice->voiceNodeGroup, &playingIsIdle);
+                        sc_bool stopNow = SC_VOICE_HAS_FLAG(c89atomic_load_32(&voice->flags), SC_VOICE_FLAG_INSTANT_STOP);
 
-                        if (playingIsIdle)
+                        if (!stopNow)
+                        {
+                            sc_node_group_calculate_is_idle(voice->voiceNodeGroup, &stopNow);
+                        }
+
+                        if (stopNow)
                         {
                             if (voice->realVoiceHandle > 0)
                             {

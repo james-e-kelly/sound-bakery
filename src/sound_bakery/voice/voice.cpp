@@ -12,6 +12,11 @@ using namespace sbk::engine;
 
 DEFINE_REFLECTION(voice)
 
+container_instance::~container_instance()
+{
+    sc_voice_stop(system, voiceHandle);
+}
+
 property_subscription::~property_subscription()
 {
     if (delegate)
@@ -37,6 +42,7 @@ auto sbk::engine::voice::play_container(container* container) -> sbk::result<voi
     for (auto childIter = context.sounds.begin(); childIter != context.sounds.end(); ++childIter, ++index)
     {
         m_instances.emplace_back();
+        m_instances.back().system = runtime;
 
         if ((*childIter)->get_object_type() == sound_container::type())
         {
