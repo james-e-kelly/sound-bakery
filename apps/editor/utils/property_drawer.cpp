@@ -191,26 +191,24 @@ bool property_drawer::draw_variant(rttr::variant& variant, rttr::string_view nam
     {
         if (type == sbk::engine::effect_parameter_description::type())
         {
-            sbk::engine::effect_parameter_description effectParameterDescription = variant.convert<sbk::engine::effect_parameter_description>();
+            sbk::engine::effect_parameter_description& effectParameterDescription = variant.get_value<sbk::engine::effect_parameter_description>();
 
             if (draw_variant(effectParameterDescription.get_property(), effectParameterDescription.get_name()))
             {
                 edited = true;
-                variant = effectParameterDescription;
             }
         }
         else if (type == rttr::type::get<sbk::core::float_property>())
         {
-            sbk::core::float_property floatProperty = variant.convert<sbk::core::float_property>();
-            float floatValue                        = floatProperty.get();
+            sbk::core::float_property& floatProperty = variant.get_value<sbk::core::float_property>();
+            float floatValue                         = floatProperty.get();
 
             std::pair<float, float> floatMinMax = floatProperty.get_min_max_pair();
 
             if (draw_float(floatValue, name, floatMinMax))
             {
                 floatProperty.set(floatValue);
-                variant = floatProperty;
-                edited  = true;
+                edited = true;
             }
         }
         else if (type == rttr::type::get<sbk::core::int_property>())
@@ -628,13 +626,11 @@ bool property_drawer::draw_payload_drop(rttr::variant& value, const rttr::varian
                 std::string(valueType.get_name().data()).find("child_ptr") != std::string::npos)
             {
                 bool convertSuccess = false;
-                sbk::core::child_ptr<sbk::core::database_object> dataAschild_ptr =
-                    data.convert<sbk::core::child_ptr<sbk::core::database_object>>(&convertSuccess);
+                sbk::core::child_ptr<sbk::core::database_object> dataAschild_ptr = data.convert<sbk::core::child_ptr<sbk::core::database_object>>(&convertSuccess);
 
                 if (convertSuccess)
                 {
-                    sbk::core::child_ptr<sbk::core::database_object> valueAschild_ptr =
-                        value.convert<sbk::core::child_ptr<sbk::core::database_object>>(&convertSuccess);
+                    sbk::core::child_ptr<sbk::core::database_object> valueAschild_ptr = value.convert<sbk::core::child_ptr<sbk::core::database_object>>(&convertSuccess);
 
                     if (convertSuccess)
                     {
