@@ -70,6 +70,16 @@ sbk_status sc_voice_set_stopped_callback(sc_system* system, sc_voice_handle hand
     return SBK_SUCCESS;
 }
 
+sbk_status sc_voice_add_dsp(sc_system* system, sc_voice_handle handle, sc_dsp* dsp, sc_dsp_index index)
+{
+    SC_CHECK_ARG(system != NULL);
+    SC_CHECK_ARG(dsp != NULL);
+    sc_voice* voice = NULL;
+    SC_CHECK_STATUS(sc_voice_resolve(system, handle, &voice));
+    SC_CHECK(voice->voiceNodeGroup != NULL, SBK_ERR_NULL);
+    return sc_node_group_add_dsp(voice->voiceNodeGroup, dsp, index);
+}
+
 sbk_status sc_system_stop_all_voices(sc_system* system)
 {
     SC_CHECK_ARG(system != NULL);
@@ -654,17 +664,12 @@ sbk_status sc_real_voice_init_preallocated(const sc_real_voice_config* config, v
     ma_hpf_config highpassConfig = ma_hpf_config_init(ma_format_f32, channelsIn, engineSampleRate, SC_DSP_CUTOFF_MIN, SC_DSP_DEFAULT_FILTER_ORDER);
 
     SC_CHECK_STATUS_ELSE_GOTO(SC_STATUS_FROM_MA_RESULT(ma_hpf_init_preallocated(&highpassConfig, SC_OFFSET_PTR(heap, heapLayout.highpassOffset), &realVoice->highpass)), error7);
-    
-    SC_CREATE_ELSE_GOTO(realVoice->nodeGroup, sc_node_group, config->system, error8);
-    SC_CHECK_STATUS_ELSE_GOTO(sc_node_group_init(config->system, realVoice->nodeGroup), error9);
+
+    realVoice->nodeGroup = config->voiceRef->voiceNodeGroup;
 
     return SBK_SUCCESS;
 
-error9:
-    SC_FREE(realVoice->nodeGroup, config->system);
-error8:
-    ma_hpf_uninit(&realVoice->highpass, NULL);
-        error7:
+error7:
     ma_lpf_uninit(&realVoice->lowpass, NULL);
 error6:
     ma_gainer_uninit(&realVoice->gainer, NULL);
@@ -687,11 +692,11 @@ sbk_status sc_real_voice_uninit(sc_real_voice* realVoice)
 
     ma_node_uninit(&realVoice->baseNode, &realVoice->system->engine.allocationCallbacks);
 
-    if (realVoice->nodeGroup != NULL)
+    if (realVoice->nodeGroup != NULL && realVoice->nodeGroup->head != NULL && realVoice->nodeGroup->head->node != NULL)
     {
-        (void)sc_node_group_release(realVoice->nodeGroup);
-        realVoice->nodeGroup = NULL;
+        ma_node_detach_output_bus(realVoice->nodeGroup->head->node, 0);
     }
+    realVoice->nodeGroup = NULL;
 
     ma_gainer_uninit(&realVoice->gainer, &realVoice->system->engine.allocationCallbacks);
     ma_linear_resampler_uninit(&realVoice->resampler, &realVoice->system->engine.allocationCallbacks);
@@ -766,11 +771,11 @@ sbk_status sc_system_promote_voice_to_real(sc_system* system, sc_voice* voice)
 
     // sc_node_group_init already routed the internal group to master. Override
     // that when the caller supplied a specific parent group.
-    if (voice->group != NULL && voice->group != system->masterNodeGroup)
+    if (voice->parentNodeGroup != NULL && voice->parentNodeGroup != system->masterNodeGroup)
     {
-        if (voice->group->tail == NULL || voice->group->tail->node == NULL)
+        if (voice->parentNodeGroup->tail == NULL || voice->parentNodeGroup->tail->node == NULL)
         {
-            ma_log_postf(&system->log, MA_LOG_LEVEL_ERROR, "Caller-supplied parent group has no tail node (group=%p tail=%p tail_node=%p)", (void*)voice->group, (void*)voice->group->tail, (void*)(voice->group->tail ? voice->group->tail->node : NULL));
+            ma_log_postf(&system->log, MA_LOG_LEVEL_ERROR, "Caller-supplied parent group has no tail node (group=%p tail=%p tail_node=%p)", (void*)voice->parentNodeGroup, (void*)voice->parentNodeGroup->tail, (void*)(voice->parentNodeGroup->tail ? voice->parentNodeGroup->tail->node : NULL));
             (void)sc_real_voice_uninit(realVoice);
             ma_slot_allocator_free(&system->realVoiceSlotAllocator, realVoiceSlot);
             return SBK_ERR_NULL;
@@ -784,10 +789,10 @@ sbk_status sc_system_promote_voice_to_real(sc_system* system, sc_voice* voice)
             return SBK_ERR_NULL;
         }
 
-        const ma_result setParentResult = ma_node_attach_output_bus(realVoice->nodeGroup->head->node, 0, voice->group->tail->node, 0);
+        const ma_result setParentResult = ma_node_attach_output_bus(realVoice->nodeGroup->head->node, 0, voice->parentNodeGroup->tail->node, 0);
         if (setParentResult != MA_SUCCESS)
         {
-            ma_log_postf(&system->log, MA_LOG_LEVEL_ERROR, "Failed to route real voice to caller-supplied parent group: %s (internal head=%p caller tail=%p)", ma_result_description(setParentResult), (void*)realVoice->nodeGroup->head->node, (void*)voice->group->tail->node);
+            ma_log_postf(&system->log, MA_LOG_LEVEL_ERROR, "Failed to route real voice to caller-supplied parent group: %s (internal head=%p caller tail=%p)", ma_result_description(setParentResult), (void*)realVoice->nodeGroup->head->node, (void*)voice->parentNodeGroup->tail->node);
             (void)sc_real_voice_uninit(realVoice);
             ma_slot_allocator_free(&system->realVoiceSlotAllocator, realVoiceSlot);
             return SC_STATUS_FROM_MA_RESULT(setParentResult);

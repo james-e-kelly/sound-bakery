@@ -942,7 +942,8 @@ typedef struct sc_voice
     sc_voice_handle                 realVoiceHandle;        //< Non-owning reference to a real voice
 
     sc_sound*                       sound;                  //< Source to read from
-    sc_node_group*                  group;                  //< Parent group to connect to when playing for real
+    sc_node_group*                  parentNodeGroup;        //< Parent group to connect to when playing for real
+    sc_node_group*                  voiceNodeGroup;         //< Per-voice DSP chain. Created at play, released when the voice done. Persists across virtual/real transitions.
     MA_ATOMIC(8, sc_atomic_uint64)  playCursor;             //< Advanced by the audio thread. Read by @ref sc_system_update to compare the ages of voices
     MA_ATOMIC(8, sc_atomic_int64)   pendingSeekFrames;      //< User-thread seek target in frames. -1 means no pending seek. Audio thread applies and clears via CAS so a concurrent second seek is never lost.
 
@@ -986,6 +987,7 @@ sbk_status SC_API sc_voice_set_lowpass_cutoff(sc_system* system, sc_voice_handle
 sbk_status SC_API sc_voice_set_highpass_cutoff(sc_system* system, sc_voice_handle handle, float cutoff);
 sbk_status SC_API sc_voice_stop(sc_system* system, sc_voice_handle handle);
 sbk_status SC_API sc_voice_set_stopped_callback(sc_system* system, sc_voice_handle handle, sc_voice_stopped_proc callback, void* userData);
+sbk_status SC_API sc_voice_add_dsp(sc_system* system, sc_voice_handle handle, sc_dsp* dsp, sc_dsp_index index);
 
 /**
  * @brief A real voice that is connected to the DSP graph.

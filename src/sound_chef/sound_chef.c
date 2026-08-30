@@ -322,7 +322,7 @@ sbk_status sc_system_update(sc_system* system)
                     case sc_voice_state_playing:
                     {
                         sc_bool playingIsIdle = MA_TRUE;
-                        sc_node_group_calculate_is_idle(voice->group, &playingIsIdle);
+                        sc_node_group_calculate_is_idle(voice->voiceNodeGroup, &playingIsIdle);
 
                         if (playingIsIdle)
                         {
@@ -346,7 +346,7 @@ sbk_status sc_system_update(sc_system* system)
                     case sc_voice_state_stopping:
                     {
                         sc_bool stoppingIsIdle = MA_TRUE;
-                        sc_node_group_calculate_is_idle(voice->group, &stoppingIsIdle);
+                        sc_node_group_calculate_is_idle(voice->voiceNodeGroup, &stoppingIsIdle);
 
                         if (stoppingIsIdle)
                         {
@@ -370,6 +370,10 @@ sbk_status sc_system_update(sc_system* system)
                             voice->stoppedCallback          = NULL;
                             voice->stoppedCallbackUserData = NULL;
                         }
+
+                        (void)sc_node_group_release(voice->voiceNodeGroup);
+                        voice->voiceNodeGroup = NULL;
+
                         const sc_voice_handle deadHandle = (sc_voice_handle)c89atomic_load_64(&voice->handle);
                         ma_log_postf(&system->log, MA_LOG_LEVEL_DEBUG, "[voice] reaped: slot=%u\n", voiceIndex);
                         c89atomic_store_64(&voice->handle, 0);
@@ -407,28 +411,32 @@ sbk_status sc_system_close(sc_system* system)
 {
     if (system)
     {
+        for (sc_uint32 realVoiceIndex = 0; realVoiceIndex < system->realVoiceSlotAllocator.capacity; ++realVoiceIndex)
+        {
+            sc_real_voice_uninit(&system->realVoiceBuffer[realVoiceIndex]);
+        }
+
+        for (sc_uint32 voiceIndex = 0; voiceIndex < system->voiceSlotAllocator.capacity; ++voiceIndex)
+        {
+            sc_voice* const voice = &system->voiceBuffer[voiceIndex];
+            
+            (void)sc_node_group_release(voice->voiceNodeGroup);
+            voice->voiceNodeGroup = NULL;
+
+            if (voice->stoppedCallback)
+            {
+                voice->stoppedCallback(voice->stoppedCallbackUserData);
+                voice->stoppedCallback         = NULL;
+                voice->stoppedCallbackUserData = NULL;
+            }
+        }
+
         ma_engine_uninit((ma_engine*)system);
         ma_resource_manager_uninit(&system->resourceManager);
 
         sc_system_release_clap_plugins(system);
 
-        for (sc_uint32 voiceIndex = 0; voiceIndex < system->voiceSlotAllocator.capacity; ++voiceIndex)
-        {
-            sc_voice* const voice = &system->voiceBuffer[voiceIndex];
-            if (voice->stoppedCallback)
-            {
-                voice->stoppedCallback(voice->stoppedCallbackUserData);
-                voice->stoppedCallback          = NULL;
-                voice->stoppedCallbackUserData = NULL;
-            }
-        }
-
         ma_slot_allocator_uninit(&system->voiceSlotAllocator, &system->engine.allocationCallbacks);
-
-        for (sc_uint32 realVoiceIndex = 0; realVoiceIndex < system->realVoiceSlotAllocator.capacity; ++realVoiceIndex)
-        {
-            sc_real_voice_uninit(&system->realVoiceBuffer[realVoiceIndex]);
-        }
         ma_slot_allocator_uninit(&system->realVoiceSlotAllocator, &system->engine.allocationCallbacks);
 
         SC_FREE(system->voiceBuffer, system);
@@ -549,7 +557,10 @@ sbk_status sc_system_play_sound(sc_system* system, sc_sound* sound, sc_voice_han
     SC_ASSERT(currentState == sc_voice_state_free);
 
     voice->sound = sound;
-    voice->group = parent ? parent : system->masterNodeGroup;
+    voice->parentNodeGroup = parent ? parent : system->masterNodeGroup;
+
+    SC_CREATE(voice->voiceNodeGroup, sc_node_group, system);
+    SC_CHECK_STATUS(sc_node_group_init(system, voice->voiceNodeGroup));
 
     c89atomic_store_64(&voice->handle, (sc_uint64)slot);    // Set the handle first. Ensures anyone trying to write to this handle sees it's been reassigned and can stop
     c89atomic_store_64(&voice->playCursor, 0u);
