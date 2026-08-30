@@ -9,28 +9,52 @@ namespace sbk::engine
     class node;
     class game_object;
 
+    /**
+     * @brief A runtime, playing representation of a @ref sbk::engine::container.
+     * 
+     * If the container is playing a sound, it has a voice handle.
+     * If the container is playing child sounds, it has a child count.
+     * 
+     * All nodes know their parent index (index into the voice's container array).
+     * Once an instance ends, it can tell its parent that it's finished, decrementing its child count.
+     * 
+     * Instances are finished when their sc_voice_handle has ended or its child count is 0.
+     */
     struct container_instance
     {
-        sbk_id containerReference{};
-        sc_voice_handle voiceHandle{};
-        unsigned int childCount{};
-        std::size_t parentIndex{};
-        bool finished{};
+        sbk_id containerReference{};    //< The ID of the container this instance references
+        sc_voice_handle voiceHandle{};  //< The potentially playing voice handle
+        unsigned int childCount{};      //< Number of children playing from this instance. Can be zero if the voice has finished or we're playing a sound and @ref is not 0
+        std::size_t parentIndex{};      //< Parent index. Can be used to tell the parent we have finished or to retrigger sounds
+        bool finished{};                //< Whether this instance has finished playing and can be stopped and cleaned up
     };
 
     struct property_subscription
     {
-        sbk::core::float_property::property_changed_delegate* delegate;
+        property_subscription() = default;
+        property_subscription(property_subscription&& other) noexcept = default;
+        property_subscription& operator=(property_subscription&& other) noexcept = default;
+        property_subscription(const property_subscription&) = delete;
+        property_subscription& operator=(const property_subscription&) = delete;
+        ~property_subscription();
+
+        sbk::core::float_property::property_changed_delegate* delegate{};  //< Raw pointer but the owning voice_property_watch holds a shared ptr to the node and its properties so should stay valid
         DelegateHandle handle;
+    };
+
+    struct voice_dsp_instance
+    {
+        sc_dsp* dsp{};
+        sc_uint32 parameterIndex{};
+        property_subscription subscription;
     };
 
     struct voice_property_watch
     {
-        ~voice_property_watch();
-
         sc_voice_handle voiceHandle{};
         eastl::vector<std::shared_ptr<node>> nodeChain;
         eastl::vector<property_subscription> subscriptions;
+        eastl::vector<voice_dsp_instance> dspInstances;
     };
 
     /**

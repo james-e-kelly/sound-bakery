@@ -1,5 +1,6 @@
 #include "voice.h"
 
+#include "sound_bakery/effect/effect.h"
 #include "sound_bakery/gameobject/gameobject.h"
 #include "sound_bakery/maths/easing.h"
 #include "sound_bakery/node/container/sound_container.h"
@@ -11,11 +12,11 @@ using namespace sbk::engine;
 
 DEFINE_REFLECTION(voice)
 
-voice_property_watch::~voice_property_watch()
+property_subscription::~property_subscription()
 {
-    for (auto& subscription : subscriptions)
+    if (delegate)
     {
-        subscription.delegate->Remove(subscription.handle);
+        delegate->Remove(handle);
     }
 }
 
@@ -122,13 +123,21 @@ auto voice::subscribe_to_properties(sc_voice_handle handle, const std::shared_pt
     voice_property_watch watch;
     watch.voiceHandle = handle;
 
+    runtime* const runtime = get_runtime();
+
     auto currentNode = bottomContainer->casted_shared_from_this<node>();
     while (currentNode)
     {
         auto subscribe = [&](sbk::core::float_property& prop)
         {
-            DelegateHandle delegateHandle = prop.get_delegate().AddLambda([this, handle](float, float) { (void)recompute_voice_dsp(handle); });
-            watch.subscriptions.push_back({&prop.get_delegate(), delegateHandle});
+            DelegateHandle delegateHandle = prop.get_delegate().AddLambda([this, handle](float, float)
+                {
+                    (void)recompute_voice_dsp(handle);
+                });
+            property_subscription sub;
+            sub.delegate = &prop.get_delegate();
+            sub.handle = delegateHandle;
+            watch.subscriptions.push_back(std::move(sub));
         };
 
         subscribe(currentNode->m_volume);
@@ -136,9 +145,55 @@ auto voice::subscribe_to_properties(sc_voice_handle handle, const std::shared_pt
         subscribe(currentNode->m_lowpass);
         subscribe(currentNode->m_highpass);
 
+        if (runtime)
+        {
+            for (auto& effectPtr : currentNode->m_effectDescriptions)
+            {
+                if (auto effectDesc = effectPtr.shared())
+                {
+                    const sc_dsp_config config = sc_dsp_config_init_handle(runtime, effectDesc->get_dsp_handle());
+                    sc_dsp* dsp                = nullptr;
+                    if (sc_system_create_dsp(runtime, &config, &dsp) == SBK_SUCCESS)
+                    {
+                        if (sc_voice_add_dsp(runtime, handle, dsp, sc_dsp_index_head) != SBK_SUCCESS)
+                        {
+                            sc_dsp_release(dsp);
+                            continue;
+                        }
+
+                        auto& effectParameters = effectDesc->get_parameters();
+                        for (sc_uint32 paramIndex = 0; paramIndex < static_cast<sc_uint32>(effectParameters.size()); ++paramIndex)
+                        {
+                            auto& parameter = effectParameters[paramIndex];
+
+                            if (parameter.get_parameter_type() == sc_dsp_parameter_type_float && parameter.get_property().is_type<sbk::core::float_property>())
+                            {
+                                sbk::core::float_property& floatProperty = parameter.get_property().get_value<sbk::core::float_property>();
+
+                                sc_dsp_set_parameter_float(dsp, paramIndex, floatProperty.get());
+
+                                DelegateHandle delegateHandle = floatProperty.get_delegate().AddLambda([dsp, paramIndex](float, float newValue)
+                                    {
+                                        sc_dsp_set_parameter_float(dsp, paramIndex, newValue);
+                                    });
+
+                                property_subscription sub;
+                                sub.delegate = &floatProperty.get_delegate();
+                                sub.handle = delegateHandle;
+                                voice_dsp_instance instance;
+                                instance.dsp = dsp;
+                                instance.parameterIndex = paramIndex;
+                                instance.subscription = std::move(sub);
+                                watch.dspInstances.push_back(std::move(instance));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         watch.nodeChain.push_back(currentNode);
-        auto parent = currentNode->get_parent();
-        currentNode = parent ? parent->casted_shared_from_this<node>() : nullptr;
+        currentNode = currentNode->get_parent();
     }
 
     m_propertyWatches.push_back(std::move(watch));
