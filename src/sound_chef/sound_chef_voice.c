@@ -190,6 +190,10 @@ sbk_status sc_voice_set_pitch(sc_system* system, sc_voice_handle handle, float p
     SC_CHECK_ARG(system != NULL);
     sc_voice* voice;
     SC_CHECK_STATUS(sc_voice_resolve(system, handle, &voice));
+    if (pitch < 0.001f)
+    {
+        pitch = 0.001f;
+    }
     c89atomic_store_f32(&voice->pitch, pitch);
     return SBK_SUCCESS;
 }
@@ -428,26 +432,29 @@ static void sc_voice_real_process_pcm_frames(ma_node* node, const float** frames
             if (readResult == MA_AT_END)
             {
                 // "We have no more data. Please stop us on the next update"
-                c89atomic_store_32(&realVoice->voiceRef->desiredState, (sc_uint32)sc_voice_desired_stopped); 
+                c89atomic_store_32(&realVoice->voiceRef->desiredState, (sc_uint32)sc_voice_desired_stopped);
             }
 
             float* const runningFramesOut = ma_offset_pcm_frames_ptr_f32(framesOut[0], totalFramesRead, outputChannelCount);
 
             const sc_bool canProcessInPlace = dataSourceFormat == ma_format_f32;
 
+            ma_uint64 inputFrameCount  = framesReadThisIteration;
+            ma_uint64 outputFrameCount = framesToReadThisIteration;
+
             if (canProcessInPlace)
             {
-                sc_real_voice_process_pcm_frames__general(realVoice, temp, &framesReadThisIteration, runningFramesOut, &framesReadThisIteration, dataSourceChannels, outputChannelCount);
+                sc_real_voice_process_pcm_frames__general(realVoice, temp, &inputFrameCount, runningFramesOut, &outputFrameCount, dataSourceChannels, outputChannelCount);
             }
             else
             {
-                float tempf32[SC_TEMP_STACK_BUFFER_SIZE];  // Do not do `MA_DATA_CONVERTER_STACK_BUFFER_SIZE/sizeof(float)` here like we've done in other places
+                float tempf32[SC_TEMP_STACK_BUFFER_SIZE];
                 ma_convert_pcm_frames_format(tempf32, ma_format_f32, temp, dataSourceFormat, framesReadThisIteration, dataSourceChannels, ma_dither_mode_none);
 
-                sc_real_voice_process_pcm_frames__general(realVoice, tempf32, &framesReadThisIteration, runningFramesOut, &framesReadThisIteration, dataSourceChannels, outputChannelCount);
+                sc_real_voice_process_pcm_frames__general(realVoice, tempf32, &inputFrameCount, runningFramesOut, &outputFrameCount, dataSourceChannels, outputChannelCount);
             }
 
-            totalFramesRead += framesReadThisIteration;
+            totalFramesRead += outputFrameCount;
 
             if (framesReadThisIteration == 0)
             {
