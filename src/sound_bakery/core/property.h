@@ -21,28 +21,22 @@ namespace sbk::core
             BOOST_ASSERT(min < max);
         }
 
-        property(const property& other)
-            : m_value(other.m_value), m_min(other.m_min), m_max(other.m_max), m_delegate(other.m_delegate)
-        {
-        }
-
-        property(property&& other) = default;
-        ~property()                = default;
+        property(const property& other) = default;
+        property(property&& other) noexcept = default;
+        ~property() = default;
+        property& operator=(property&& other) noexcept = default;
 
         auto operator=(const property& other) -> property&
         {
             if (this != &other)
             {
-                m_value    = other.m_value;
-                m_min      = other.m_min;
-                m_max      = other.m_max;
-                m_delegate = other.m_delegate;
+                m_min = other.m_min;
+                m_max = other.m_max;
+                set(other.m_value);
             }
 
             return *this;
         }
-
-        auto operator=(property&& other) -> property& = default;
 
         auto set(T value) -> bool
         {
