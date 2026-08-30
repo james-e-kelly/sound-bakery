@@ -182,6 +182,7 @@ var NAVTREEINDEX1 =
 "sound__chef_8h.html#a7864324b09e946b8f5b925ead2d292f7a5f72d81a528106438d35b2161bf2272c":[13,0,1,1,0,71,1],
 "sound__chef_8h.html#a7864324b09e946b8f5b925ead2d292f7a9693093999f197560cac6091ff92bc3b":[13,0,1,1,0,71,3],
 "sound__chef_8h.html#a7864324b09e946b8f5b925ead2d292f7a97fc6e14a8fc3a5a7a17f80ada81b263":[13,0,1,1,0,71,2],
+"sound__chef_8h.html#a7864324b09e946b8f5b925ead2d292f7ac31abec003e5a07f541a095bd5b8aa2e":[13,0,1,1,0,71,4],
 "sound__chef_8h.html#a7864324b09e946b8f5b925ead2d292f7ad941dbc1b4131944947110d597b64779":[13,0,1,1,0,71,0],
 "sound__chef_8h.html#a7b2f0b2c11e21911f7cb97cdda42a0d8":[13,0,1,1,0,72],
 "sound__chef_8h.html#a7b2f0b2c11e21911f7cb97cdda42a0d8a260171f39204bed487e9e0188790daeb":[13,0,1,1,0,72,4],
@@ -248,6 +249,5 @@ var NAVTREEINDEX1 =
 "structSC__NODE__GROUP__DELETER.html":[12,0,42],
 "structSC__SOUND__DELETER.html":[12,0,49],
 "structaudio__meter__utils_1_1audio__meter__draw__info.html":[12,0,0,0],
-"structplayable__selection.html":[12,0,14],
-"structrttr_1_1sequential__container__mapper_3_01eastl_1_1vector_3_01T_00_01Allocator_01_4_01_4.html":[12,0,1,0]
+"structplayable__selection.html":[12,0,14]
 };

@@ -129,7 +129,8 @@ var sound__chef_8h =
       [ "SC_VOICE_FLAG_NONE", "sound__chef_8h.html#a7864324b09e946b8f5b925ead2d292f7ad941dbc1b4131944947110d597b64779", null ],
       [ "SC_VOICE_FLAG_PAUSED", "sound__chef_8h.html#a7864324b09e946b8f5b925ead2d292f7a5f72d81a528106438d35b2161bf2272c", null ],
       [ "SC_VOICE_FLAG_VIRTUAL", "sound__chef_8h.html#a7864324b09e946b8f5b925ead2d292f7a97fc6e14a8fc3a5a7a17f80ada81b263", null ],
-      [ "SC_VOICE_FLAG_FADING", "sound__chef_8h.html#a7864324b09e946b8f5b925ead2d292f7a9693093999f197560cac6091ff92bc3b", null ]
+      [ "SC_VOICE_FLAG_FADING", "sound__chef_8h.html#a7864324b09e946b8f5b925ead2d292f7a9693093999f197560cac6091ff92bc3b", null ],
+      [ "SC_VOICE_FLAG_INSTANT_STOP", "sound__chef_8h.html#a7864324b09e946b8f5b925ead2d292f7ac31abec003e5a07f541a095bd5b8aa2e", null ]
     ] ],
     [ "sc_voice_state", "sound__chef_8h.html#a7b2f0b2c11e21911f7cb97cdda42a0d8", [
       [ "sc_voice_state_free", "sound__chef_8h.html#a7b2f0b2c11e21911f7cb97cdda42a0d8ab28d57786b2e62c71f6e0cd5659ee9ab", null ],

@@ -948,10 +948,14 @@ Enumerations</h2></td></tr>
  }</td></tr>
 <tr class="memdesc:a7b2f0b2c11e21911f7cb97cdda42a0d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current state of a voice. Written by the system, except for sc_voice_state_starting which is set when a user calls <a class="el" href="sound__chef_8h.html#a35b68d565beb4e71bcf2a36ac53f1a73">sc_system_play_sound</a>.  <a href="sound__chef_8h.html#a7b2f0b2c11e21911f7cb97cdda42a0d8">More...</a><br /></td></tr>
 <tr class="separator:a7b2f0b2c11e21911f7cb97cdda42a0d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7864324b09e946b8f5b925ead2d292f7" id="r_a7864324b09e946b8f5b925ead2d292f7"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sound__chef_8h.html#a7864324b09e946b8f5b925ead2d292f7">sc_voice_flags</a> { <b>SC_VOICE_FLAG_NONE</b> = 0
+<tr class="memitem:a7864324b09e946b8f5b925ead2d292f7" id="r_a7864324b09e946b8f5b925ead2d292f7"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sound__chef_8h.html#a7864324b09e946b8f5b925ead2d292f7">sc_voice_flags</a> { <br />
+&#160;&#160;<b>SC_VOICE_FLAG_NONE</b> = 0
 , <b>SC_VOICE_FLAG_PAUSED</b> = 1u &lt;&lt; 0
 , <b>SC_VOICE_FLAG_VIRTUAL</b> = 1u &lt;&lt; 1
 , <b>SC_VOICE_FLAG_FADING</b> = 1u &lt;&lt; 2
+, <br />
+&#160;&#160;<b>SC_VOICE_FLAG_INSTANT_STOP</b> = 1u &lt;&lt; 3
+<br />
  }</td></tr>
 <tr class="memdesc:a7864324b09e946b8f5b925ead2d292f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flags written into sc_voice::flags by either the user or the system.  <a href="sound__chef_8h.html#a7864324b09e946b8f5b925ead2d292f7">More...</a><br /></td></tr>
 <tr class="separator:a7864324b09e946b8f5b925ead2d292f7"><td class="memSeparator" colspan="2">&#160;</td></tr>

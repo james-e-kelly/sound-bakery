@@ -1,5 +1,6 @@
 var NAVTREEINDEX2 =
 {
+"structrttr_1_1sequential__container__mapper_3_01eastl_1_1vector_3_01T_00_01Allocator_01_4_01_4.html":[12,0,1,0],
 "structrttr_1_1wrapper__mapper_3_01sbk_1_1core_1_1child__ptr_3_01T_01_4_01_4.html":[12,0,1,1],
 "structrttr_1_1wrapper__mapper_3_01sbk_1_1core_1_1database__ptr_3_01T_01_4_01_4.html":[12,0,1,2],
 "structsbk_1_1core_1_1database__name.html":[12,0,2,0,3],
