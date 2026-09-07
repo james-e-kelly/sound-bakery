@@ -9,6 +9,7 @@
 #include "sound_bakery/node/container/sound_container.h"
 #include "sound_bakery/node/container/switch_container.h"
 #include "sound_bakery/parameter/parameter.h"
+#include "sound_bakery/serialization/serializer.h"
 #include "sound_bakery/sound/sound.h"
 #include "sound_bakery/soundbank/soundbank.h"
 #include "sound_bakery/system.h"
@@ -204,7 +205,20 @@ namespace sbk::reflection
 
         registration::class_<float_property>("float_property")
             .constructor<>()
-            .property("Value", &float_property::get, &float_property::set);
+            .property("Value", &float_property::get, &float_property::set)
+            .property("Random", &float_property::get_random_enabled, &float_property::set_random_enabled)
+            (
+                metadata(sbk::editor::metadata_key::min_version, static_cast<int>(sbk::core::serialization::sound_bakery_serialization_version::random_properties))
+            )
+            .property("RandomMin", &float_property::get_random_min_offset, &float_property::set_random_min_offset)
+            (
+                metadata(sbk::editor::metadata_key::min_version, static_cast<int>(sbk::core::serialization::sound_bakery_serialization_version::random_properties))
+            )
+            .property("RandomMax", &float_property::get_random_max_offset, &float_property::set_random_max_offset)
+            (
+                metadata(sbk::editor::metadata_key::min_version, static_cast<int>(sbk::core::serialization::sound_bakery_serialization_version::random_properties))
+            )
+            ;
 
         registration::class_<id_property>("id_property")
             .constructor<>()
@@ -282,7 +296,7 @@ namespace sbk::reflection
 
         registration::class_<named_parameter_value>("named_parameter_value")
             .constructor<>(create_sbk_object<named_parameter_value>)(policy::ctor::as_raw_ptr)
-            .property("Parent", &named_parameter_value::parentParameter)(metadata(sbk::editor::metadata_key::readonly, true));
+            .property("Parent", &named_parameter_value::parentParameterId)(metadata(sbk::editor::metadata_key::readonly, true));
 
         registration::class_<soundbank>("soundbank")
             .constructor<>(create_sbk_object<soundbank>)(policy::ctor::as_raw_ptr)

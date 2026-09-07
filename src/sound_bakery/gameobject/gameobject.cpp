@@ -1,5 +1,6 @@
 #include "gameobject.h"
 
+#include "sound_bakery/runtime/runtime.h"
 #include "sound_bakery/voice/voice.h"
 
 using namespace sbk::engine;
@@ -37,7 +38,7 @@ auto sbk::engine::game_object::get_float_parameter_value(const sbk::core::databa
 
     if (found != m_parameters.floatParameters.cend())
     {
-        result = found->second.get();
+        result = found->second.get() + found->second.get_random_offset(get_runtime()->get_rng());
     }
     else
     {
@@ -84,9 +85,12 @@ auto sbk::engine::game_object::set_int_parameter_value(const named_parameter::lo
 
         if (const auto parameterValuePtrShared = parameterValuePtr.shared())
         {
-            if (const auto parentParameter = parameterValuePtrShared->parentParameter.shared())
+            if (const sbk::core::database_ptr<named_parameter> parentParameter = sbk::core::database_ptr<named_parameter>(parameterValuePtrShared->parentParameterId))
             {
-                m_parameters.intParameters.insert(parentParameter->create_local_parameter_from_this());
+                if (const auto parentParameterShared = parentParameter.shared())
+                {
+                    m_parameters.intParameters.insert(parentParameterShared->create_local_parameter_from_this());
+                }
             }
         }
     }

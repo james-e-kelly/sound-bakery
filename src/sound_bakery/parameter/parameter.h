@@ -124,7 +124,7 @@ namespace sbk::engine
     class SB_CLASS named_parameter_value : public sbk::core::database_object
     {
     public:
-        sbk::core::database_ptr<named_parameter> parentParameter;
+        sbk_id parentParameterId;
 
         REGISTER_REFLECTION(named_parameter_value, database_object)
     };
@@ -169,7 +169,7 @@ namespace sbk::engine
                 {
                     auto& parameterValue = parameterValueResult.value();
                     parameterValue->set_object_name(name);
-                    parameterValue->parentParameter = this;
+                    parameterValue->parentParameterId = get_database_id();
 
                     result = parameterValue;
 

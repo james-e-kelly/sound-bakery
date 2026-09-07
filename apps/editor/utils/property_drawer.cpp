@@ -202,6 +202,8 @@ bool property_drawer::draw_variant(rttr::variant& variant, rttr::string_view nam
         {
             sbk::core::float_property& floatProperty = variant.get_value<sbk::core::float_property>();
             float floatValue                         = floatProperty.get();
+            float randomMin                          = floatProperty.get_random_min_offset();
+            float randomMax                          = floatProperty.get_random_max_offset();
 
             std::pair<float, float> floatMinMax = floatProperty.get_min_max_pair();
 
@@ -209,6 +211,32 @@ bool property_drawer::draw_variant(rttr::variant& variant, rttr::string_view nam
             {
                 floatProperty.set(floatValue);
                 edited = true;
+            }
+
+            bool randomEnabled                      = floatProperty.get_random_enabled();
+            const float range                       = floatProperty.get_max() - floatProperty.get_min();
+            std::pair<float, float> minRandomMinMax = {-range, 0.0f};
+            std::pair<float, float> maxRandomMinMax = {0.0f, range};
+
+            if (draw_bool(randomEnabled, "Enable Randomness"))
+            {
+                floatProperty.set_random_enabled(randomEnabled);
+                edited = true;
+            }
+
+            if (randomEnabled)
+            {
+                if (draw_float(randomMin, "Min", minRandomMinMax))
+                {
+                    floatProperty.set_random_min_offset(randomMin);
+                    edited = true;
+                }
+
+                if (draw_float(randomMax, "Max", maxRandomMinMax))
+                {
+                    floatProperty.set_random_max_offset(randomMax);
+                    edited = true;
+                }
             }
         }
         else if (type == rttr::type::get<sbk::core::int_property>())

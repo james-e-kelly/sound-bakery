@@ -14,7 +14,8 @@ namespace sbk::editor
         no_grow,            //< Container cannot have elements added. Helpful when a function needs to add the element and a simple add would create an invalid element
         no_shrink,          //< Container cannot have its elements removed
         draw_when_wrapped,  //< If this type is wrapped inside a database_ptr, render it fully, instead of just being a payload target
-        hidden_when_wrapped //< If we are rendered as a "subobject" (wrapped), don't render the property
+        hidden_when_wrapped,//< If we are rendered as a "subobject" (wrapped), don't render the property
+        min_version,        //< Minimum version of Sound Bakery needed to load this property. If the file is older than this, the property is skipped
     };
 
     inline std::string PayloadObject        = "OBJECT";

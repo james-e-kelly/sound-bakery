@@ -42,8 +42,7 @@ namespace sbk::editor
         [[nodiscard]] auto type_folder(const rttr::type& type) const -> std::filesystem::path;  //< Converts an object type to a
                                                                                                 // folder location
 
-        [[nodiscard]] static auto get_filename_for_id(
-            sbk::core::database_object* databaseObject, std::optional<std::string> extensionOverride = std::nullopt) -> std::string;
+        [[nodiscard]] static auto get_filename_for_id(sbk::core::database_object* databaseObject, std::optional<std::string> extensionOverride = std::nullopt) -> std::string;
 
         [[nodiscard]] auto is_valid() const -> bool;  //< Returns true if the project file exists
 

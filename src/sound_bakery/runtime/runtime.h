@@ -29,10 +29,14 @@ namespace sbk::engine
         [[nodiscard]] auto get_listener_game_object() const -> std::shared_ptr<sbk::engine::game_object>;
         [[nodiscard]] auto get_master_bus() const -> std::shared_ptr<sbk::engine::bus>;
 
+        [[nodiscard]] auto get_rng() -> std::mt19937& { return m_rng; }
+
     private:
         bool m_initSoundChef = false;
 
         std::weak_ptr<sbk::engine::game_object> m_listenerGameObject;
         std::weak_ptr<sbk::engine::bus> m_masterBus;
+
+        std::mt19937 m_rng{std::random_device{}()};
 	};
 }

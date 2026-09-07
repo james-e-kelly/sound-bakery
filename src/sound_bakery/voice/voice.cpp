@@ -143,6 +143,7 @@ auto voice::subscribe_to_properties(sc_voice_handle handle, const std::shared_pt
             property_subscription sub;
             sub.delegate = &prop.get_delegate();
             sub.handle = delegateHandle;
+            sub.init(prop, runtime->get_rng());
             watch.subscriptions.push_back(std::move(sub));
         };
 
@@ -227,13 +228,17 @@ auto voice::recompute_voice_dsp(sc_voice_handle handle) -> sbk::result<>
     float lowpass  = 0.0f;
     float highpass = 0.0f;
 
+    // To recompute all node properties, we assume a specific order
+    // We push properties in one order, so we can read in the same order
+    // This isn't the nicest implementation, but it works for now
+
+    std::size_t subIndex = 0;
     for (const auto& node : watch->nodeChain)
     {
-        volume *= node->m_volume.get();
-        pitch *= node->m_pitch.get();
-
-        lowpass += node->m_lowpass.get();
-        highpass += node->m_highpass.get();
+        volume *= watch->subscriptions[subIndex++].get(node->m_volume);
+        pitch *= watch->subscriptions[subIndex++].get(node->m_pitch);
+        lowpass += watch->subscriptions[subIndex++].get(node->m_lowpass);
+        highpass += watch->subscriptions[subIndex++].get(node->m_highpass);
     }
 
     lowpass  = std::clamp(lowpass, 0.0f, 100.0f);

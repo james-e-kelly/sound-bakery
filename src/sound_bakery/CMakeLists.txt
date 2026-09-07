@@ -187,6 +187,8 @@ set(SOUND_BAKERY_SOURCES
     parameter/parameter.cpp
     profiling/voice_tracker.cpp
 
+    modulator/modulator.cpp
+
     runtime/runtime.cpp
 
     serialization/serializer.cpp
@@ -269,6 +271,8 @@ set(SOUND_BAKERY_PRIVATE_HEADERS
     parameter/parameter.h
 
     profiling/voice_tracker.h
+
+    modulator/modulator.h
 
     runtime/runtime.h
 

@@ -6,8 +6,6 @@
 
 namespace sbk::core
 {
-    class database_object;
-
     auto SB_API find_object(sbk_id id) -> std::weak_ptr<database_object>;
     auto SB_API object_id_is_child_of_parent(sbk_id childToCheck, sbk_id parent) -> bool;
     auto SB_API get_parent_id_from_id(sbk_id id) -> sbk_id;

@@ -55,11 +55,9 @@ auto sbk::editor::project_configuration::type_folder(const rttr::type& type) con
     return rootObjectFolder / typeNameString.substr(lastColonCharacterPos, std::string::npos);
 }
 
-auto sbk::editor::project_configuration::get_filename_for_id(sbk::core::database_object* databaseObject,
-                                                             std::optional<std::string> extensionOverride) -> std::string
+auto sbk::editor::project_configuration::get_filename_for_id(sbk::core::database_object* databaseObject, std::optional<std::string> extensionOverride) -> std::string
 {
-    return std::to_string(databaseObject->get_database_id()) +
-           (extensionOverride.has_value() ? extensionOverride.value() : ".yaml");
+    return std::to_string(databaseObject->get_database_id()) + (extensionOverride.has_value() ? extensionOverride.value() : ".yaml");
 }
 
 auto sbk::editor::project_configuration::is_valid() const -> bool { return std::filesystem::exists(m_projectFile); }

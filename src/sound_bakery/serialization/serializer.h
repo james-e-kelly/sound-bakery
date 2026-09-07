@@ -3,6 +3,7 @@
 #include "sound_bakery/core/database/database_object.h"
 #include "sound_bakery/core/object/object_owner.h"
 #include "sound_bakery/core/error/result.h"
+#include "sound_bakery/editor/editor_defines.h"
 #include "sound_bakery/event/event.h"
 #include "sound_bakery/node/bus/bus.h"
 #include "sound_bakery/serialization/eastl_serialization.h"
@@ -42,6 +43,7 @@ namespace sbk::core::serialization
         new_type_names              = 3,
         serialize_dsp_parameter     = 4,
         effect_parameter_variant    = 5,
+        random_properties           = 6,  //< Float properties can have randomness
 
         /** ADD NEW VERSIONS ABOVE */
         plus_one,
@@ -429,6 +431,12 @@ namespace sbk::core::serialization
 
                 if (typename archive_class::is_loading())
                 {
+                    const int minVersion = property.get_metadata(sbk::editor::metadata_key::min_version).to_int();
+                    if (minVersion > 0 && version < static_cast<unsigned int>(minVersion))
+                    {
+                        continue;  // field didn't exist in this file version, keep default
+                    }
+
                     rttr::variant loaded = make_default_variant(property.get_type());
                     BOOST_ASSERT(loaded.is_valid());
                     archive& boost::serialization::make_nvp(property.get_name().data(), loaded);

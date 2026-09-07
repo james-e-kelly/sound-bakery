@@ -33,6 +33,7 @@
 #include <condition_variable>
 #include <coroutine>
 #include <compare>
+#include <concepts>
 #include <cstdint>
 #include <filesystem>
 #include <fstream>

@@ -27,7 +27,7 @@ auto sbk::engine::effect_parameter_description::get_dsp_parameter() const -> sc_
             const auto& floatProperty  = m_property.get_value<sbk::core::float_property>();
             parameter.floatParameter.min   = floatProperty.get_min();
             parameter.floatParameter.max   = floatProperty.get_max();
-            parameter.floatParameter.value = floatProperty.get();
+            parameter.floatParameter.value = floatProperty.get() + floatProperty.get_random_offset(sbk::engine::system::get()->get_runtime()->get_rng());
             break;
         }
         case sc_dsp_parameter_type_int:

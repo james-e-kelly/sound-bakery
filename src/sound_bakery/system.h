@@ -139,13 +139,13 @@ namespace sbk
 
             sbk::command_queue m_commandQueue;                  //< Public API command queue
 
-            sbk::owned_ptr<sbk::system_thread> m_systemThread;  //< The thread that calls @see flush_commands when triggered by @see update
+            sbk::owned_ptr<sbk::system_thread> m_systemThread;  //< The thread that calls @ref flush_commands when triggered by @ref update
 
             sbk::owned_ptr<sbk::editor::project> m_project;
             sbk::owned_ptr<sbk::engine::runtime> m_runtime;
             sbk::owned_ptr<profiling::voice_tracker> m_voiceTracker;
 
-            sbk::owned_ptr<sbk::executor> m_gameExecutor;       //< Manual executor that runs during @r update
+            sbk::owned_ptr<sbk::executor> m_gameExecutor;       //< Manual executor that runs during @ref update
             sbk::owned_ptr<sbk::executor> m_systemExecutor;     //< Manual executor that runs off the system thread
             sbk::owned_ptr<sbk::executor> m_workerThread;       //< Worker thread for loading and decoding
         };

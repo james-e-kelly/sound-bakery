@@ -43,6 +43,19 @@ namespace sbk::engine
 
         sbk::core::float_property::property_changed_delegate* delegate{};  //< Raw pointer but the owning voice_property_watch holds a shared ptr to the node and its properties so should stay valid
         DelegateHandle handle;
+
+        auto init(const sbk::core::float_property& floatProperty, std::mt19937& rng) -> void
+        {
+            m_randomOffset = floatProperty.get_random_offset(rng);
+        }
+
+        [[nodiscard]] auto get(const sbk::core::float_property& floatProperty) const -> float
+        {
+            return std::clamp(floatProperty.get() + m_randomOffset, floatProperty.get_min(), floatProperty.get_max());
+        }
+
+    private:
+        float m_randomOffset{};
     };
 
     struct voice_dsp_instance
