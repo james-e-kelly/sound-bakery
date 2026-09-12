@@ -205,7 +205,17 @@ bool property_drawer::draw_variant(rttr::variant& variant, rttr::string_view nam
             float randomMin                          = floatProperty.get_random_min_offset();
             float randomMax                          = floatProperty.get_random_max_offset();
 
+            // Metadata min_max is the UI/designer slider range; property min/max is the hard clamp
             std::pair<float, float> floatMinMax = floatProperty.get_min_max_pair();
+
+            if (parentProperty)
+            {
+                rttr::variant metadataMinMax = parentProperty->get_metadata(sbk::editor::metadata_key::min_max);
+                if (metadataMinMax.is_valid())
+                {
+                    floatMinMax = metadataMinMax.convert<std::pair<float, float>>();
+                }
+            }
 
             if (draw_float(floatValue, name, floatMinMax))
             {
@@ -213,8 +223,9 @@ bool property_drawer::draw_variant(rttr::variant& variant, rttr::string_view nam
                 edited = true;
             }
 
-            bool randomEnabled                      = floatProperty.get_random_enabled();
-            const float range                       = floatProperty.get_max() - floatProperty.get_min();
+            bool randomEnabled = floatProperty.get_random_enabled();
+            float range        = floatMinMax.second - floatMinMax.first;
+
             std::pair<float, float> minRandomMinMax = {-range, 0.0f};
             std::pair<float, float> maxRandomMinMax = {0.0f, range};
 

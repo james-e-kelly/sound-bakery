@@ -271,10 +271,14 @@ namespace sbk::reflection
             .property("ParentNode", &node::m_parentNode)(metadata(sbk::editor::metadata_key::readonly, true))
             .property("OutputBus", &node::m_outputBus)(metadata(sbk::editor::metadata_key::payload, sbk::editor::PayloadBus))
             .property("ChildNodes", &node::m_childNodes)(metadata(sbk::editor::metadata_key::readonly, true))
-            .property("Volume", &node::m_volume)(metadata(sbk::editor::metadata_key::min_max, std::pair<float, float>(0.0f, 1.0f)))
+            .property("Volume", &node::m_volume)
+            (
+                metadata(sbk::editor::metadata_key::min_max, std::pair<float, float>(-96.f, 12.0f)),
+                metadata(sbk::editor::metadata_key::custom_unit, sbk::editor::render_unit::decibel)
+            )
             .property("Pitch", &node::m_pitch)(metadata(sbk::editor::metadata_key::min_max, std::pair<float, float>(0.0f, 2.0f)))
             .property("Lowpass", &node::m_lowpass)(metadata(sbk::editor::metadata_key::min_max, std::pair<float, float>(0.0f, 100.0f)))
-            .property("Highass", &node::m_highpass)(metadata(sbk::editor::metadata_key::min_max, std::pair<float, float>(0.0f, 100.0f)))
+            .property("Highpass", &node::m_highpass)(metadata(sbk::editor::metadata_key::min_max, std::pair<float, float>(0.0f, 100.0f)))
             .property("Effects", &node::m_effectDescriptions)(metadata(sbk::editor::metadata_key::no_grow, true))
             .method("Add Effect", &node::add_effect)(parameter_names("Type"));
 

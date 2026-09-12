@@ -16,6 +16,13 @@ namespace sbk::editor
         draw_when_wrapped,  //< If this type is wrapped inside a database_ptr, render it fully, instead of just being a payload target
         hidden_when_wrapped,//< If we are rendered as a "subobject" (wrapped), don't render the property
         min_version,        //< Minimum version of Sound Bakery needed to load this property. If the file is older than this, the property is skipped
+        custom_unit,        //< Property uses custom units like dB
+    };
+
+    enum class render_unit
+    {
+        none = 0,
+        decibel,
     };
 
     inline std::string PayloadObject        = "OBJECT";

@@ -226,7 +226,7 @@ auto voice::recompute_voice_dsp(sc_voice_handle handle) -> sbk::result<>
 
     SBK_CHECK(watch, SBK_ERR_NOT_FOUND);
 
-    float volume   = 1.0f;
+    float volumeDb = 0.0f;
     float pitch    = 1.0f;
     float lowpass  = 0.0f;
     float highpass = 0.0f;
@@ -238,7 +238,7 @@ auto voice::recompute_voice_dsp(sc_voice_handle handle) -> sbk::result<>
     std::size_t subIndex = 0;
     for (const auto& node : watch->nodeChain)
     {
-        volume *= watch->subscriptions[subIndex++].get(node->m_volume);
+        volumeDb += watch->subscriptions[subIndex++].get(node->m_volume);
         pitch *= watch->subscriptions[subIndex++].get(node->m_pitch);
         lowpass += watch->subscriptions[subIndex++].get(node->m_lowpass);
         highpass += watch->subscriptions[subIndex++].get(node->m_highpass);
@@ -247,7 +247,7 @@ auto voice::recompute_voice_dsp(sc_voice_handle handle) -> sbk::result<>
     lowpass  = std::clamp(lowpass, 0.0f, 100.0f);
     highpass = std::clamp(highpass, 0.0f, 100.0f);
 
-    SBK_REPORT_C(sc_voice_set_volume(runtime, handle, volume));
+    SBK_REPORT_C(sc_voice_set_volume(runtime, handle, ma_volume_db_to_linear(volumeDb)));
     SBK_REPORT_C(sc_voice_set_pitch(runtime, handle, pitch));
 
     const double cutoffOffset = SC_DSP_CUTOFF_MAX - SC_DSP_CUTOFF_MIN;
