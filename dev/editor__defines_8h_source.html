@@ -160,17 +160,18 @@ $(document).ready(function(){initNavTree('editor__defines_8h_source.html',''); i
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>        no_grow,            <span class="comment">//&lt; Container cannot have elements added. Helpful when a function needs to add the element and a simple add would create an invalid element</span></div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>        no_shrink,          <span class="comment">//&lt; Container cannot have its elements removed</span></div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>        draw_when_wrapped,  <span class="comment">//&lt; If this type is wrapped inside a database_ptr, render it fully, instead of just being a payload target</span></div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        hidden_when_wrapped <span class="comment">//&lt; If we are rendered as a &quot;subobject&quot; (wrapped), don&#39;t render the property</span></div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    };</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keyword">inline</span> std::string PayloadObject        = <span class="stringliteral">&quot;OBJECT&quot;</span>;</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keyword">inline</span> std::string PayloadContainer     = <span class="stringliteral">&quot;CONTAINER&quot;</span>;</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keyword">inline</span> std::string PayloadSound         = <span class="stringliteral">&quot;SOUND&quot;</span>;</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keyword">inline</span> std::string PayloadBus           = <span class="stringliteral">&quot;BUS&quot;</span>;</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keyword">inline</span> std::string PayloadNamedParam    = <span class="stringliteral">&quot;NAMED_PARAM&quot;</span>;</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keyword">inline</span> std::string PayloadIntParamValue = <span class="stringliteral">&quot;NAMED_PARAM_VALUE&quot;</span>;</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keyword">inline</span> std::string PayloadFloatParam    = <span class="stringliteral">&quot;FLOAT_PARAM&quot;</span>;</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>}  <span class="comment">// namespace sbk::editor</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        hidden_when_wrapped,<span class="comment">//&lt; If we are rendered as a &quot;subobject&quot; (wrapped), don&#39;t render the property</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        min_version,        <span class="comment">//&lt; Minimum version of Sound Bakery needed to load this property. If the file is older than this, the property is skipped</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    };</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keyword">inline</span> std::string PayloadObject        = <span class="stringliteral">&quot;OBJECT&quot;</span>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keyword">inline</span> std::string PayloadContainer     = <span class="stringliteral">&quot;CONTAINER&quot;</span>;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keyword">inline</span> std::string PayloadSound         = <span class="stringliteral">&quot;SOUND&quot;</span>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keyword">inline</span> std::string PayloadBus           = <span class="stringliteral">&quot;BUS&quot;</span>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keyword">inline</span> std::string PayloadNamedParam    = <span class="stringliteral">&quot;NAMED_PARAM&quot;</span>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keyword">inline</span> std::string PayloadIntParamValue = <span class="stringliteral">&quot;NAMED_PARAM_VALUE&quot;</span>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keyword">inline</span> std::string PayloadFloatParam    = <span class="stringliteral">&quot;FLOAT_PARAM&quot;</span>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>}  <span class="comment">// namespace sbk::editor</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

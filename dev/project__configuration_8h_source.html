@@ -180,18 +180,17 @@ $(document).ready(function(){initNavTree('project__configuration_8h_source.html'
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        [[nodiscard]] <span class="keyword">auto</span> type_folder(<span class="keyword">const</span> rttr::type&amp; type) <span class="keyword">const</span> -&gt; std::filesystem::path;  <span class="comment">//&lt; Converts an object type to a</span></div>
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>                                                                                                <span class="comment">// folder location</span></div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        [[nodiscard]] <span class="keyword">static</span> <span class="keyword">auto</span> get_filename_for_id(</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            <a class="code hl_class" href="classsbk_1_1core_1_1database__object.html">sbk::core::database_object</a>* databaseObject, std::optional&lt;std::string&gt; extensionOverride = std::nullopt) -&gt; std::string;</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        [[nodiscard]] <span class="keyword">auto</span> is_valid() <span class="keyword">const</span> -&gt; bool;  <span class="comment">//&lt; Returns true if the project file exists</span></div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        std::filesystem::path m_projectFile;</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        std::string m_projectName;</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        std::filesystem::path m_projectFolder;</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    };</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        [[nodiscard]] <span class="keyword">static</span> <span class="keyword">auto</span> get_filename_for_id(<a class="code hl_class" href="classsbk_1_1core_1_1database__object.html">sbk::core::database_object</a>* databaseObject, std::optional&lt;std::string&gt; extensionOverride = std::nullopt) -&gt; std::string;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        [[nodiscard]] <span class="keyword">auto</span> is_valid() <span class="keyword">const</span> -&gt; bool;  <span class="comment">//&lt; Returns true if the project file exists</span></div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        std::filesystem::path m_projectFile;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        std::string m_projectName;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        std::filesystem::path m_projectFolder;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    };</div>
 </div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>}  <span class="comment">// namespace sbk::editor</span></div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>}  <span class="comment">// namespace sbk::editor</span></div>
 <div class="ttc" id="aclasssbk_1_1core_1_1database__object_html"><div class="ttname"><a href="classsbk_1_1core_1_1database__object.html">sbk::core::database_object</a></div><div class="ttdoc">Base object type for any object that can exist in the editor/database. Holds an ID and name.</div><div class="ttdef"><b>Definition</b> database_object.h:18</div></div>
 <div class="ttc" id="astructsbk_1_1editor_1_1project__configuration_html"><div class="ttname"><a href="structsbk_1_1editor_1_1project__configuration.html">sbk::editor::project_configuration</a></div><div class="ttdoc">Handles file and folder paths for a project.</div><div class="ttdef"><b>Definition</b> project_configuration.h:11</div></div>
 </div><!-- fragment --></div><!-- contents -->

@@ -23,6 +23,7 @@ var annotated_dup =
           [ "serialized_standalone_object", "structsbk_1_1core_1_1serialization_1_1serialized__standalone__object.html", null ],
           [ "serialized_system", "structsbk_1_1core_1_1serialization_1_1serialized__system.html", null ],
           [ "serialized_type", "structsbk_1_1core_1_1serialization_1_1serialized__type.html", null ],
+          [ "serialized_variant", "structsbk_1_1core_1_1serialization_1_1serialized__variant.html", null ],
           [ "serialized_version", "structsbk_1_1core_1_1serialization_1_1serialized__version.html", null ]
         ] ],
         [ "child_ptr", "classsbk_1_1core_1_1child__ptr.html", "classsbk_1_1core_1_1child__ptr" ],
@@ -38,6 +39,7 @@ var annotated_dup =
         [ "object_tracker", "classsbk_1_1core_1_1object__tracker.html", null ],
         [ "parsed_database_name", "structsbk_1_1core_1_1parsed__database__name.html", null ],
         [ "property", "classsbk_1_1core_1_1property.html", "classsbk_1_1core_1_1property" ],
+        [ "property_random_data", "structsbk_1_1core_1_1property__random__data.html", null ],
         [ "scoped_thread_domain", "classsbk_1_1core_1_1scoped__thread__domain.html", null ]
       ] ],
       [ "editor", null, [
@@ -64,6 +66,7 @@ var annotated_dup =
         [ "global_parameter_list", "structsbk_1_1engine_1_1global__parameter__list.html", null ],
         [ "int_parameter", "classsbk_1_1engine_1_1int__parameter.html", null ],
         [ "local_parameter_list", "structsbk_1_1engine_1_1local__parameter__list.html", null ],
+        [ "modulator", "classsbk_1_1engine_1_1modulator.html", null ],
         [ "named_parameter", "classsbk_1_1engine_1_1named__parameter.html", "classsbk_1_1engine_1_1named__parameter" ],
         [ "named_parameter_value", "classsbk_1_1engine_1_1named__parameter__value.html", null ],
         [ "node", "classsbk_1_1engine_1_1node.html", null ],

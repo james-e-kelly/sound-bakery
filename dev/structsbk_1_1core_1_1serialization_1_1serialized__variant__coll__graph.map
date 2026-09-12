@@ -1,0 +1,5 @@
+<map id="sbk::core::serialization::serialized_variant" name="sbk::core::serialization::serialized_variant">
+<area shape="rect" id="Node000001" title="Tries to help saving and loading a variant by saving its type first." alt="" coords="5,108,175,148"/>
+<area shape="rect" id="Node000002" href="$structsbk_1_1core_1_1serialization_1_1serialized__type.html" title="Serializes an object type so upon loading, we create the correct type." alt="" coords="5,5,175,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="93,59,93,108,87,108,87,59"/>
+</map>

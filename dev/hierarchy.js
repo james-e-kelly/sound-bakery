@@ -25,7 +25,7 @@ var hierarchy =
     ] ],
     [ "sbk::core::database_ptr< named_parameter >", "classsbk_1_1core_1_1database__ptr.html", null ],
     [ "sbk::core::database_ptr< sbk::core::database_object >", "classsbk_1_1core_1_1database__ptr.html", null ],
-    [ "sbk::core::database_ptr< sbk::engine::named_parameter >", "classsbk_1_1core_1_1database__ptr.html", null ],
+    [ "sbk::core::database_ptr< sbk::core::property >", "classsbk_1_1core_1_1database__ptr.html", null ],
     [ "sbk::core::database_ptr< sbk::engine::node >", "classsbk_1_1core_1_1database__ptr.html", null ],
     [ "sbk::core::database_ptr< sbk::engine::sound >", "classsbk_1_1core_1_1database__ptr.html", null ],
     [ "sbk::detached_task", "structsbk_1_1detached__task.html", null ],
@@ -48,6 +48,7 @@ var hierarchy =
           [ "sbk::engine::effect_description", "classsbk_1_1engine_1_1effect__description.html", null ],
           [ "sbk::engine::event", "classsbk_1_1engine_1_1event.html", null ],
           [ "sbk::engine::game_object", "classsbk_1_1engine_1_1game__object.html", null ],
+          [ "sbk::engine::modulator", "classsbk_1_1engine_1_1modulator.html", null ],
           [ "sbk::engine::named_parameter_value", "classsbk_1_1engine_1_1named__parameter__value.html", null ],
           [ "sbk::engine::node", "classsbk_1_1engine_1_1node.html", [
             [ "sbk::engine::bus", "classsbk_1_1engine_1_1bus.html", [
@@ -138,6 +139,7 @@ var hierarchy =
     [ "sbk::core::property< T >", "classsbk_1_1core_1_1property.html", null ],
     [ "sbk::core::property< parameter_type >", "classsbk_1_1core_1_1property.html", null ],
     [ "property_drawer", "classproperty__drawer.html", null ],
+    [ "sbk::core::property_random_data", "structsbk_1_1core_1_1property__random__data.html", null ],
     [ "sbk::engine::property_subscription", "structsbk_1_1engine_1_1property__subscription.html", null ],
     [ "sbk::ready_result_awaiter< U >", "structsbk_1_1ready__result__awaiter.html", null ],
     [ "sbk::reflection::RegisterPointerConversionsForBaseClasses< T >", "structsbk_1_1reflection_1_1RegisterPointerConversionsForBaseClasses.html", null ],
@@ -194,6 +196,7 @@ var hierarchy =
     [ "sbk::core::serialization::serialized_standalone_object", "structsbk_1_1core_1_1serialization_1_1serialized__standalone__object.html", null ],
     [ "sbk::core::serialization::serialized_system", "structsbk_1_1core_1_1serialization_1_1serialized__system.html", null ],
     [ "sbk::core::serialization::serialized_type", "structsbk_1_1core_1_1serialization_1_1serialized__type.html", null ],
+    [ "sbk::core::serialization::serialized_variant", "structsbk_1_1core_1_1serialization_1_1serialized__variant.html", null ],
     [ "sbk::core::serialization::serialized_version", "structsbk_1_1core_1_1serialization_1_1serialized__version.html", null ],
     [ "sbk::engine::soundbank_database", "structsbk_1_1engine_1_1soundbank__database.html", null ],
     [ "sbk::engine::soundbank_database_entry", "structsbk_1_1engine_1_1soundbank__database__entry.html", null ],
