@@ -427,7 +427,7 @@ namespace sbk::core::serialization
         {
             archive& boost::serialization::make_nvp("Type", type);
 
-            if constexpr (archive_class::is_loading())
+            if constexpr (typename archive_class::is_loading())
             {
                 variant = make_default_variant(type.get_type());
             }
