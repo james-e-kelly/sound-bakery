@@ -407,33 +407,37 @@ bool property_drawer::draw_sequential_container(rttr::variant_sequential_view& v
 
     ImGui::Text("%lu elements", view.get_size());
 
-    ImGui::SameLine();
 
-    if (canGrow && ImGui::Button("+"))
+    if (canGrow)
     {
-        const rttr::type type = view.get_value_type();
+        ImGui::SameLine();
 
-        rttr::variant createdDefault;
-
-        if (type.is_wrapper())
+        if (ImGui::Button("+"))
         {
-            assert(type.get_wrapped_type() == rttr::type::get<sbk_id>());
-            createdDefault       = (sbk_id)0;
-            const bool converted = createdDefault.convert(type);
-            assert(converted);
+            const rttr::type type = view.get_value_type();
+
+            rttr::variant createdDefault;
+
+            if (type.is_wrapper())
+            {
+                assert(type.get_wrapped_type() == rttr::type::get<sbk_id>());
+                createdDefault       = (sbk_id)0;
+                const bool converted = createdDefault.convert(type);
+                assert(converted);
+            }
+            else
+            {
+                assert(type.is_class());
+                createdDefault = type.create_default();
+            }
+
+            assert(createdDefault.is_valid());
+
+            rttr::variant_sequential_view::const_iterator insertedIterator = view.insert(view.begin() + view.get_size(), createdDefault);
+
+            edited = insertedIterator != view.end();
+            assert(edited);
         }
-        else
-        {
-            assert(type.is_class());
-            createdDefault = type.create_default();
-        }
-
-        assert(createdDefault.is_valid());
-
-        rttr::variant_sequential_view::const_iterator insertedIterator = view.insert(view.begin() + view.get_size(), createdDefault);
-
-        edited = insertedIterator != view.end();
-        assert(edited);
     }
 
     if (view.get_size())
