@@ -34,7 +34,7 @@ namespace sbk::reflection
      * wrappers.
      */
     template <typename DerivedClass, typename... T>
-    struct CreatePointerConversion;
+    struct create_pointer_conversion;
 
     /**
      * @brief Once the top-most base class is reached, make an explicit conversion between the base type and
@@ -43,7 +43,7 @@ namespace sbk::reflection
      * UI code assume wrapped types can be converted to DatabaseObject wrappers.
      */
     template <typename DerivedClass>
-    struct CreatePointerConversion<DerivedClass>
+    struct create_pointer_conversion<DerivedClass>
     {
         static auto perform() -> void
         {
@@ -66,7 +66,7 @@ namespace sbk::reflection
      * base class list.
      */
     template <typename DerivedClass, typename BaseClass, typename... U>
-    struct CreatePointerConversion<DerivedClass, BaseClass, U...>
+    struct create_pointer_conversion<DerivedClass, BaseClass, U...>
     {
         static auto perform() -> void
         {
@@ -82,8 +82,8 @@ namespace sbk::reflection
             rttr::type::register_converter_func(
                 rttr::wrapper_mapper<sbk::core::database_ptr<BaseClass>>::template convert<DerivedClass>);
 
-            CreatePointerConversion<DerivedClass, typename BaseClass::base_class_list>::perform();
-            CreatePointerConversion<DerivedClass, U...>::perform();
+            create_pointer_conversion<DerivedClass, typename BaseClass::base_class_list>::perform();
+            create_pointer_conversion<DerivedClass, U...>::perform();
         }
     };
 
@@ -91,8 +91,8 @@ namespace sbk::reflection
      * @brief Specialisation for wrapping the rttr::type_list type and extracting its template arguments.
      */
     template <typename DerivedClass, class... BaseClassList>
-    struct CreatePointerConversion<DerivedClass, rttr::type_list<BaseClassList...>>
-        : CreatePointerConversion<DerivedClass, BaseClassList...>
+    struct create_pointer_conversion<DerivedClass, rttr::type_list<BaseClassList...>>
+        : create_pointer_conversion<DerivedClass, BaseClassList...>
     {
     };
 
@@ -100,11 +100,11 @@ namespace sbk::reflection
      * @brief Auto-registers wrapper conversions for the type and its base classes.
      */
     template <typename T>
-    struct RegisterPointerConversionsForBaseClasses
+    struct register_pointer_conversions_for_base_classes
     {
-        RegisterPointerConversionsForBaseClasses()
+        register_pointer_conversions_for_base_classes()
         {
-            CreatePointerConversion<T, typename T::base_class_list>::perform();
+            create_pointer_conversion<T, typename T::base_class_list>::perform();
         }
     };
 
@@ -113,18 +113,12 @@ namespace sbk::reflection
     {
         const sbk::memory::object_category category = sbk::util::type_helper::get_category_from_type(object_class::type());
 
-        // Allocate first so we can check for out-of-memory before constructing. object::operator new
-        // routes to sbk::memory::malloc, which returns null (never throws) on failure. Constructing at
-        // a null address would be undefined behaviour, so bail out here; the OOM is logged at the
-        // memory choke point and the caller sees a null object.
-        void* const objectMemory = object_class::operator new(sizeof(object_class), alignof(object_class), category);
-
-        if (objectMemory == nullptr)
+        if (void* const objectMemory = object_class::operator new(sizeof(object_class), alignof(object_class), category))
         {
-            return nullptr;
+            return ::new (objectMemory) object_class();
         }
 
-        return ::new (objectMemory) object_class();
+        return nullptr;
     }
 
     auto unregister_reflection_types() -> void { rttr::detail::get_registration_manager().unregister(); }
@@ -391,14 +385,14 @@ namespace sbk::reflection
             .property("Master", &soundbank::m_initSoundbank)
             .property("Lookup", &soundbank::m_lookupSoundbank);
 
-        sbk::reflection::RegisterPointerConversionsForBaseClasses<aux_bus>();
-        sbk::reflection::RegisterPointerConversionsForBaseClasses<blend_container>();
-        sbk::reflection::RegisterPointerConversionsForBaseClasses<random_container>();
-        sbk::reflection::RegisterPointerConversionsForBaseClasses<sequence_container>();
-        sbk::reflection::RegisterPointerConversionsForBaseClasses<sound_container>();
-        sbk::reflection::RegisterPointerConversionsForBaseClasses<switch_container>();
-        sbk::reflection::RegisterPointerConversionsForBaseClasses<container>();
-        sbk::reflection::RegisterPointerConversionsForBaseClasses<sound>();
-        sbk::reflection::RegisterPointerConversionsForBaseClasses<soundbank>();
+        sbk::reflection::register_pointer_conversions_for_base_classes<aux_bus>();
+        sbk::reflection::register_pointer_conversions_for_base_classes<blend_container>();
+        sbk::reflection::register_pointer_conversions_for_base_classes<random_container>();
+        sbk::reflection::register_pointer_conversions_for_base_classes<sequence_container>();
+        sbk::reflection::register_pointer_conversions_for_base_classes<sound_container>();
+        sbk::reflection::register_pointer_conversions_for_base_classes<switch_container>();
+        sbk::reflection::register_pointer_conversions_for_base_classes<container>();
+        sbk::reflection::register_pointer_conversions_for_base_classes<sound>();
+        sbk::reflection::register_pointer_conversions_for_base_classes<soundbank>();
     }
 }  // namespace sbk::reflection
