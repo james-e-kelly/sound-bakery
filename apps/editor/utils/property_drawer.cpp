@@ -13,26 +13,56 @@
 
 void property_drawer::draw_object(rttr::type type, rttr::instance instance)
 {
-    ImGui::PushID(type.get_name().data());
+    gluten::imgui::scoped_id id(type.get_name().data());
 
-    if (ImGui::CollapsingHeader("General", ImGuiTreeNodeFlags_DefaultOpen))
+    eastl::vector<std::pair<std::string_view, eastl::vector<rttr::property>>> categories;
+    eastl::vector<rttr::property> uncategorisedProperties;
+
+    for (rttr::property property : type.get_properties())
+    {
+        const rttr::variant categoryMetadata = property.get_metadata(sbk::editor::metadata_key::category);
+        if (categoryMetadata.is_valid())
+        {
+            std::string_view categoryName = categoryMetadata.convert<std::string_view>();
+            auto it = eastl::find_if(categories.begin(), categories.end(), [&](const auto& pair) { return pair.first == categoryName; });
+            if (it != categories.end())
+            {
+                it->second.push_back(property);
+            }
+            else
+            {
+                categories.push_back({categoryName, {property}});
+            }
+        }
+        else
+        {
+            uncategorisedProperties.push_back(property);
+        }
+    }
+
+    categories.push_back({"Misc", std::move(uncategorisedProperties)});
+
+    for (auto& [categoryName, properties] : categories)
     {
         gluten::imgui::indent_cursor();
 
         const gluten::imgui::scoped_color innerItemsBorder(ImGuiCol_Border, gluten::theme::layer02);
 
-        if (ImGui::BeginTable("Properties", 2, ImGuiTableFlags_Resizable | ImGuiTableFlags_BordersInnerH | ImGuiTableFlags_SizingStretchProp))
+        if (ImGui::CollapsingHeader(categoryName.data(), ImGuiTreeNodeFlags_DefaultOpen))
         {
-            for (rttr::property property : type.get_properties())
-            {
-                draw_property(property, instance);
-            }
+            gluten::imgui::indent_cursor();
 
-            ImGui::EndTable();
+            if (ImGui::BeginTable("Properties", 2, ImGuiTableFlags_Resizable | ImGuiTableFlags_BordersInnerH | ImGuiTableFlags_SizingStretchProp))
+            {
+                for (rttr::property& property : properties)
+                {
+                    draw_property(property, instance);
+                }
+
+                ImGui::EndTable();
+            }
         }
     }
-
-    ImGui::PopID();
 }
 
 bool property_drawer::draw_property(rttr::property property, rttr::instance instance)
@@ -52,9 +82,17 @@ bool property_drawer::draw_property(rttr::property property, rttr::instance inst
 
     ImGui::TableNextColumn();
 
-    ImGui::Text("%s: ", property.get_name().data());
+    ImGui::AlignTextToFramePadding();
+    
+    {
+        gluten::imgui::scoped_color secondaryText(ImGuiCol_Text, gluten::theme::textSecondary);
+        ImGui::Text("%s", property.get_name().data());
+    }
 
     ImGui::TableNextColumn();
+
+    ImGui::AlignTextToFramePadding();
+    ImGui::SetNextItemWidth(-FLT_MIN);
 
     if (readonly)
     {
@@ -365,6 +403,7 @@ bool property_drawer::draw_float(float& value, rttr::string_view name, std::pair
         minMax = std::pair<float, float>(0.0f, 1.0f);
     }
 
+    ImGui::SetNextItemWidth(-FLT_MIN);
     return ImGui::SliderFloat(name.data(), &value, minMax.first, minMax.second);
 }
 
@@ -706,9 +745,7 @@ bool property_drawer::draw_payload_drop(rttr::variant& value, const rttr::varian
     return edited;
 }
 
-bool property_drawer::draw_payload_drop(rttr::property property,
-                                        rttr::instance object,
-                                        const rttr::variant& payloadString)
+bool property_drawer::draw_payload_drop(rttr::property property, rttr::instance object, const rttr::variant& payloadString)
 {
     bool edited = false;
 

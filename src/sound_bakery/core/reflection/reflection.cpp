@@ -253,12 +253,25 @@ namespace sbk::reflection
 
         registration::class_<object>("object")
             .constructor<>(create_sbk_object<object>)(policy::ctor::as_raw_ptr)
-            .property("ObjectName", &object::get_object_name, &object::set_object_name)(metadata(sbk::editor::metadata_key::hidden_when_wrapped, true));
+            .property("ObjectName", &object::get_object_name, &object::set_object_name)
+            (
+                metadata(sbk::editor::metadata_key::hidden_when_wrapped, true),
+                metadata(sbk::editor::metadata_key::category, sbk::editor::g_objectCategoryName)
+            );
 
         registration::class_<database_object>("database_object")
             .constructor<>(create_sbk_object<database_object>)(policy::ctor::as_raw_ptr)
-            .property("ObjectID", &database_object::get_database_id, &database_object::set_database_id)(metadata(sbk::editor::metadata_key::readonly, true), metadata(sbk::editor::metadata_key::hidden_when_wrapped, true))
-            .property_readonly("DatabaseName", &database_object::get_database_name)(metadata(sbk::editor::metadata_key::readonly, true), metadata(sbk::editor::metadata_key::hidden_when_wrapped, true));
+            .property("ObjectID", &database_object::get_database_id, &database_object::set_database_id)
+            (
+                metadata(sbk::editor::metadata_key::readonly, true), 
+                metadata(sbk::editor::metadata_key::hidden_when_wrapped, true),
+                metadata(sbk::editor::metadata_key::category, sbk::editor::g_objectCategoryName)
+            )
+            .property_readonly("DatabaseName", &database_object::get_database_name)
+            (
+                metadata(sbk::editor::metadata_key::readonly, true), metadata(sbk::editor::metadata_key::hidden_when_wrapped, true),
+                metadata(sbk::editor::metadata_key::category, sbk::editor::g_objectCategoryName)
+            );
 
         registration::class_<sound>("sound")
             .constructor<>(create_sbk_object<sound>)(policy::ctor::as_raw_ptr)
@@ -268,17 +281,38 @@ namespace sbk::reflection
 
         registration::class_<node>("node")
             .constructor<>(create_sbk_object<node>)(policy::ctor::as_raw_ptr)
-            .property("ParentNode", &node::m_parentNode)(metadata(sbk::editor::metadata_key::readonly, true))
-            .property("OutputBus", &node::m_outputBus)(metadata(sbk::editor::metadata_key::payload, sbk::editor::PayloadBus))
+            .property("ParentNode", &node::m_parentNode)
+            (
+                metadata(sbk::editor::metadata_key::readonly, true),
+                metadata(sbk::editor::metadata_key::category, sbk::editor::g_routingCategoryName)
+            )
+            .property("OutputBus", &node::m_outputBus)
+            (
+                metadata(sbk::editor::metadata_key::payload, sbk::editor::PayloadBus),
+                metadata(sbk::editor::metadata_key::category, sbk::editor::g_routingCategoryName)
+            )
             .property("ChildNodes", &node::m_childNodes)(metadata(sbk::editor::metadata_key::readonly, true))
             .property("Volume", &node::m_volume)
             (
                 metadata(sbk::editor::metadata_key::min_max, std::pair<float, float>(-96.f, 12.0f)),
-                metadata(sbk::editor::metadata_key::custom_unit, sbk::editor::render_unit::decibel)
+                metadata(sbk::editor::metadata_key::custom_unit, sbk::editor::render_unit::decibel),
+                metadata(sbk::editor::metadata_key::category, sbk::editor::g_voiceCategoryName)
             )
-            .property("Pitch", &node::m_pitch)(metadata(sbk::editor::metadata_key::min_max, std::pair<float, float>(0.0f, 2.0f)))
-            .property("Lowpass", &node::m_lowpass)(metadata(sbk::editor::metadata_key::min_max, std::pair<float, float>(0.0f, 100.0f)))
-            .property("Highpass", &node::m_highpass)(metadata(sbk::editor::metadata_key::min_max, std::pair<float, float>(0.0f, 100.0f)))
+            .property("Pitch", &node::m_pitch)
+            (
+                metadata(sbk::editor::metadata_key::min_max, std::pair<float, float>(0.0f, 2.0f)),
+                metadata(sbk::editor::metadata_key::category, sbk::editor::g_voiceCategoryName)
+            )
+            .property("Lowpass", &node::m_lowpass)
+            (
+                metadata(sbk::editor::metadata_key::min_max, std::pair<float, float>(0.0f, 100.0f)),
+                metadata(sbk::editor::metadata_key::category, sbk::editor::g_voiceCategoryName)
+            )
+            .property("Highpass", &node::m_highpass)
+            (
+                metadata(sbk::editor::metadata_key::min_max, std::pair<float, float>(0.0f, 100.0f)),
+                metadata(sbk::editor::metadata_key::category, sbk::editor::g_voiceCategoryName)
+            )
             .property("Effects", &node::m_effectDescriptions)(metadata(sbk::editor::metadata_key::no_grow, true))
             .method("Add Effect", &node::add_effect)(parameter_names("Type"));
 

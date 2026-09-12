@@ -17,6 +17,7 @@ namespace sbk::editor
         hidden_when_wrapped,//< If we are rendered as a "subobject" (wrapped), don't render the property
         min_version,        //< Minimum version of Sound Bakery needed to load this property. If the file is older than this, the property is skipped
         custom_unit,        //< Property uses custom units like dB
+        category,           //< Category/group to render the property in
     };
 
     enum class render_unit
@@ -32,4 +33,8 @@ namespace sbk::editor
     inline std::string PayloadNamedParam    = "NAMED_PARAM";
     inline std::string PayloadIntParamValue = "NAMED_PARAM_VALUE";
     inline std::string PayloadFloatParam    = "FLOAT_PARAM";
+
+    inline std::string_view g_objectCategoryName  = "Object";
+    inline std::string_view g_routingCategoryName = "Routing";
+    inline std::string_view g_voiceCategoryName   = "Voice";
 }  // namespace sbk::editor
