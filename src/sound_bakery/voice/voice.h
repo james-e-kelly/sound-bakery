@@ -54,6 +54,11 @@ namespace sbk::engine
             return std::clamp(floatProperty.get() + m_randomOffset, floatProperty.get_min(), floatProperty.get_max());
         }
 
+        [[nodiscard]] auto get_random_offset() const -> float
+        {
+            return m_randomOffset;
+        }
+
     private:
         float m_randomOffset{};
     };

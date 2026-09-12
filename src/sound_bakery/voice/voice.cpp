@@ -176,15 +176,18 @@ auto voice::subscribe_to_properties(sc_voice_handle handle, const std::shared_pt
                             if (parameter.get_parameter_type() == sc_dsp_parameter_type_float && parameter.get_property().is_type<sbk::core::float_property>())
                             {
                                 sbk::core::float_property& floatProperty = parameter.get_property().get_value<sbk::core::float_property>();
+                                
+                                property_subscription sub;
+                                sub.init(floatProperty, runtime->get_rng());
 
-                                sc_dsp_set_parameter_float(dsp, paramIndex, floatProperty.get());
+                                sc_dsp_set_parameter_float(dsp, paramIndex, sub.get(floatProperty));
 
-                                DelegateHandle delegateHandle = floatProperty.get_delegate().AddLambda([dsp, paramIndex](float, float newValue)
+                                DelegateHandle delegateHandle = floatProperty.get_delegate().AddLambda([dsp, paramIndex, offset = sub.get_random_offset(), min = floatProperty.get_min(), max = floatProperty.get_max()](float, float newValue)
                                     {
-                                        sc_dsp_set_parameter_float(dsp, paramIndex, newValue);
+                                        const float adjusted = std::clamp(newValue + offset, min, max);
+                                        sc_dsp_set_parameter_float(dsp, paramIndex, adjusted);
                                     });
 
-                                property_subscription sub;
                                 sub.delegate = &floatProperty.get_delegate();
                                 sub.handle = delegateHandle;
                                 voice_dsp_instance instance;
