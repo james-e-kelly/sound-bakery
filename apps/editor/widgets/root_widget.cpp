@@ -125,6 +125,24 @@ auto root_widget::render_menu_implementation() -> void
         }
     }
 
+    if (ImGui::Shortcut(ImGuiMod_Ctrl | ImGuiKey_S, ImGuiInputFlags_RouteGlobal))
+    {
+        if (auto projectManager = get_app()->get_manager_by_class<project_manager>())
+        {
+            projectManager->save_project();
+        }
+    }
+
+    if (ImGui::Shortcut(ImGuiMod_Ctrl | ImGuiKey_O, ImGuiInputFlags_RouteGlobal))
+    {
+        get_app()->get_manager_by_class<app_manager>()->open_project();
+    }
+
+    if (ImGui::Shortcut(ImGuiMod_Ctrl | ImGuiKey_N, ImGuiInputFlags_RouteGlobal))
+    {
+        get_app()->get_manager_by_class<app_manager>()->create_new_project();
+    }
+
     if (showAbout)
     {
         render_about_window(showAbout);
