@@ -44,6 +44,8 @@ namespace sbk::core::serialization
         serialize_dsp_parameter     = 4,
         effect_parameter_variant    = 5,
         random_properties           = 6,  //< Float properties can have randomness
+        dsp_randomness              = 7,  //< DSP effects can serialize randomness
+        property_min_max            = 8,  //< Properties save their min and max because not all properties have known values (like Sound Chef DSP)
 
         /** ADD NEW VERSIONS ABOVE */
         plus_one,
@@ -408,6 +410,31 @@ namespace sbk::core::serialization
             }
         }
     };
+    
+    /**
+     * @brief Tries to help saving and loading a variant by saving its type first.
+     */
+    struct SB_CLASS serialized_variant
+    {
+        serialized_variant() = default;
+        serialized_variant(const rttr::variant& inVariant) : type(inVariant.get_type()), variant(inVariant) {}
+
+        serialized_type type;
+        rttr::variant variant;
+
+        template <class archive_class>
+        auto serialize(archive_class& archive, const unsigned int version) -> void
+        {
+            archive& boost::serialization::make_nvp("Type", type);
+
+            if constexpr (archive_class::is_loading())
+            {
+                variant = make_default_variant(type.get_type());
+            }
+
+            archive& boost::serialization::make_nvp("Variant", variant);
+        }
+    };
 
     struct SB_CLASS serialized_child_class
     {
@@ -429,25 +456,45 @@ namespace sbk::core::serialization
                 BOOST_ASSERT(property.is_valid());
                 BOOST_ASSERT(property.get_type().is_valid());
 
+                const bool isVariantProperty = property.get_type() == rttr::type::get<rttr::variant>();
+
                 if (typename archive_class::is_loading())
                 {
                     const int minVersion = property.get_metadata(sbk::editor::metadata_key::min_version).to_int();
                     if (minVersion > 0 && version < static_cast<unsigned int>(minVersion))
                     {
-                        continue;  // field didn't exist in this file version, keep default
+                        continue;
                     }
 
-                    rttr::variant loaded = make_default_variant(property.get_type());
-                    BOOST_ASSERT(loaded.is_valid());
-                    archive& boost::serialization::make_nvp(property.get_name().data(), loaded);
-                    loaded.convert(property.get_type());
-                    BOOST_ASSERT(loaded.get_type() == property.get_type());
-                    property.set_value(child, loaded);
+                    if (isVariantProperty)
+                    {
+                        serialized_variant serializedVariant;
+                        archive & boost::serialization::make_nvp(property.get_name().data(), serializedVariant);
+                        property.set_value(child, serializedVariant.variant);
+                    }
+                    else
+                    {
+                        rttr::variant loaded = make_default_variant(property.get_type());
+                        BOOST_ASSERT(loaded.is_valid());
+                        archive & boost::serialization::make_nvp(property.get_name().data(), loaded);
+                        loaded.convert(property.get_type());
+                        BOOST_ASSERT(loaded.get_type() == property.get_type());
+                        property.set_value(child, loaded);
+                    }
                 }
                 else
                 {
-                    rttr::variant variantToSave = property.get_value(child);
-                    archive& boost::serialization::make_nvp(property.get_name().data(), variantToSave);
+                    if (isVariantProperty)
+                    {
+                        rttr::variant innerValue = property.get_value(child);
+                        serialized_variant serializedVariant(innerValue);
+                        archive & boost::serialization::make_nvp(property.get_name().data(), serializedVariant);
+                    }
+                    else
+                    {
+                        rttr::variant variantToSave = property.get_value(child);
+                        archive & boost::serialization::make_nvp(property.get_name().data(), variantToSave);
+                    }
                 }
             }
         }
@@ -662,6 +709,7 @@ BOOST_CLASS_VERSION(sbk::core::serialization::serialized_soundbank, static_cast<
 BOOST_CLASS_VERSION(sbk::core::serialization::serialized_child_class, static_cast<int>(sbk::core::serialization::sound_bakery_serialization_version::cur))
 BOOST_CLASS_VERSION(sbk::core::serialization::serialized_sequential_container, static_cast<int>(sbk::core::serialization::sound_bakery_serialization_version::cur))
 BOOST_CLASS_VERSION(sbk::core::serialization::serialized_associative_container, static_cast<int>(sbk::core::serialization::sound_bakery_serialization_version::cur))
+BOOST_CLASS_VERSION(sbk::core::serialization::serialized_variant, static_cast<int>(sbk::core::serialization::sound_bakery_serialization_version::cur))
 BOOST_CLASS_VERSION(sc_dsp_parameter, static_cast<int>(sbk::core::serialization::sound_bakery_serialization_version::cur))
 BOOST_CLASS_VERSION(sc_dsp_parameter_float, static_cast<int>(sbk::core::serialization::sound_bakery_serialization_version::cur))
 BOOST_CLASS_VERSION(sc_dsp_parameter_int, static_cast<int>(sbk::core::serialization::sound_bakery_serialization_version::cur))

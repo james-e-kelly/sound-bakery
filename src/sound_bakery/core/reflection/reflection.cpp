@@ -183,13 +183,23 @@ namespace sbk::reflection
 
         registration::class_<effect_description>("effect_description")
             .constructor<>(create_sbk_object<effect_description>)(policy::ctor::as_raw_ptr)
-            .property("Type", &effect_description::get_dsp_type, &effect_description::set_dsp_type)(metadata(sbk::editor::metadata_key::readonly, true))
+            .property("Type", &effect_description::get_dsp_type, &effect_description::set_dsp_type)
+            (
+                metadata(sbk::editor::metadata_key::readonly, true)
+            )
             .property("Parameters", &effect_description::m_parameterDescriptions)(metadata(sbk::editor::metadata_key::no_grow, true), metadata(sbk::editor::metadata_key::no_shrink, true))
-            (metadata(sbk::editor::metadata_key::draw_when_wrapped, true));
+            (
+                metadata(sbk::editor::metadata_key::draw_when_wrapped, true)
+            );
 
         registration::class_<effect_parameter_description>("effect_parameter_description")
             .constructor<>()(policy::ctor::as_object)
-            .property("Parameter", &effect_parameter_description::get_dsp_parameter, &effect_parameter_description::set_dsp_parameter);
+            .property("Parameter", &effect_parameter_description::get_dsp_parameter, &effect_parameter_description::set_dsp_parameter)
+            .property("Property", &effect_parameter_description::m_property)
+            (
+                metadata(sbk::editor::metadata_key::min_version, static_cast<int>(sbk::core::serialization::sound_bakery_serialization_version::dsp_randomness))
+            )
+            ;
 
         registration::class_<system>("system");
 
@@ -200,11 +210,28 @@ namespace sbk::reflection
             .constructor<>(create_sbk_object<voice>)(policy::ctor::as_raw_ptr);
 
         registration::class_<int_property>("int_property")
-            .constructor<>()
-            .property("Value", &int_property::get, &int_property::set);
+            .constructor<>()(policy::ctor::as_object)
+            .property("Min", &int_property::get_min, &int_property::set_min)
+            (
+                metadata(sbk::editor::metadata_key::min_version, static_cast<int>(sbk::core::serialization::sound_bakery_serialization_version::property_min_max))
+            )
+            .property("Max", &int_property::get_max, &int_property::set_max)
+            (
+                metadata(sbk::editor::metadata_key::min_version, static_cast<int>(sbk::core::serialization::sound_bakery_serialization_version::property_min_max))
+            )
+            .property("Value", &int_property::get, &int_property::set)
+            ;
 
         registration::class_<float_property>("float_property")
-            .constructor<>()
+            .constructor<>()(policy::ctor::as_object)
+            .property("Min", &float_property::get_min, &float_property::set_min)
+            (
+                metadata(sbk::editor::metadata_key::min_version, static_cast<int>(sbk::core::serialization::sound_bakery_serialization_version::property_min_max))
+            )
+            .property("Max", &float_property::get_max, &float_property::set_max)
+            (
+                metadata(sbk::editor::metadata_key::min_version, static_cast<int>(sbk::core::serialization::sound_bakery_serialization_version::property_min_max))
+            )
             .property("Value", &float_property::get, &float_property::set)
             .property("Random", &float_property::get_random_enabled, &float_property::set_random_enabled)
             (
@@ -221,7 +248,7 @@ namespace sbk::reflection
             ;
 
         registration::class_<id_property>("id_property")
-            .constructor<>()
+            .constructor<>()(policy::ctor::as_object)
             .property("Value", &id_property::get, &id_property::set);
 
         registration::class_<object>("object")

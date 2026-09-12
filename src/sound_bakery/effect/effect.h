@@ -7,11 +7,11 @@ namespace sbk::engine
 {
     /**
      * @brief Reimplements a @ref sc_dsp_parameter in a C++ way that can be serialized and rendered easily.
-     * 
+     *
      * sc_dsp_parameter uses a union to switch between the different parameter types.
      * effect_parameter_description uses a @ref rttr::variant to do the same thing.
      * The type and name is reimplemented.
-     * 
+     *
      * Users can still use a @ref sc_dsp_parameter to set values on this class.
      * Users can still retrieve a @ref sc_dsp_parameter from this class.
      */
@@ -31,6 +31,8 @@ namespace sbk::engine
         auto set_dsp_parameter(sc_dsp_parameter parameter) -> void;
 
     private:
+        friend void sbk::reflection::register_reflection_types();
+
         sc_dsp_parameter_type m_type{};
         char m_name[SC_STRING_NAME_LENGTH]{};
         rttr::variant m_property;

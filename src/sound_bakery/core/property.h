@@ -11,6 +11,13 @@ namespace sbk::engine
 
 namespace sbk::core
 {
+    struct property_random_data
+    {
+        bool    m_enableRandomOffsets{};
+        float   m_randomMinOffset{};
+        float   m_randomMaxOffset{};
+    };
+
     template <arithmetic T>
     class SB_CLASS property
     {
@@ -171,14 +178,7 @@ namespace sbk::core
 
         struct empty {};
 
-        struct random_data
-        {
-            bool    m_enableRandomOffsets{};
-            float   m_randomMinOffset{};
-            float   m_randomMaxOffset{};
-        };
-
-        [[no_unique_address]] std::conditional_t<std::floating_point<T>, random_data, empty> m_random{};
+        [[no_unique_address]] std::conditional_t<std::floating_point<T>, property_random_data, empty> m_random{};
     };
 
     using float_property = property<float>;

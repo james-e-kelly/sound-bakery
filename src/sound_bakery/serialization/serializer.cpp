@@ -15,8 +15,7 @@ auto sbk::core::serialization::make_default_variant(const rttr::type& type) -> r
 
     if (type.is_wrapper())
     {
-        BOOST_ASSERT_MSG(type.get_wrapped_type().is_arithmetic(),
-                         "We only convert simple types to ensure we're not creating large objects accidentally");
+        BOOST_ASSERT_MSG(type.get_wrapped_type().is_arithmetic(), "We only convert simple types to ensure we're not creating large objects accidentally");
 
         rttr::variant variant = 0u;
         variant.convert(type.get_wrapped_type());
@@ -49,7 +48,7 @@ auto sbk::core::serialization::make_default_variant(const rttr::type& type) -> r
         BOOST_ASSERT(false);
         return rttr::variant(std::string_view());
     }
-
+    
     BOOST_ASSERT_MSG(type.get_constructor({}).is_valid(), "Types must have constructors at this point");
     return type.create_default();
 }
