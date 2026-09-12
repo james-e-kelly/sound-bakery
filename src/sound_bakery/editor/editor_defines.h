@@ -37,4 +37,6 @@ namespace sbk::editor
     inline std::string_view g_objectCategoryName  = "Object";
     inline std::string_view g_routingCategoryName = "Routing";
     inline std::string_view g_voiceCategoryName   = "Voice";
+    inline std::string_view g_effectsCategoryName = "Effects";
+    inline std::string_view g_soundCategoryName   = "Sound";
 }  // namespace sbk::editor

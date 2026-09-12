@@ -313,33 +313,55 @@ namespace sbk::reflection
                 metadata(sbk::editor::metadata_key::min_max, std::pair<float, float>(0.0f, 100.0f)),
                 metadata(sbk::editor::metadata_key::category, sbk::editor::g_voiceCategoryName)
             )
-            .property("Effects", &node::m_effectDescriptions)(metadata(sbk::editor::metadata_key::no_grow, true))
+            .property("Effects", &node::m_effectDescriptions)
+            (
+                metadata(sbk::editor::metadata_key::no_grow, true),
+                metadata(sbk::editor::metadata_key::category, sbk::editor::g_effectsCategoryName)
+            )
             .method("Add Effect", &node::add_effect)(parameter_names("Type"));
 
         registration::class_<container>("container");
 
         registration::class_<sound_container>("sound_container")
             .constructor<>(create_sbk_object<sound_container>)(policy::ctor::as_raw_ptr)
-            .property("Sound", &sound_container::m_sound)(metadata(sbk::editor::metadata_key::payload, sbk::editor::PayloadSound));
+            .property("Sound", &sound_container::m_sound)
+            (
+                metadata(sbk::editor::metadata_key::payload, sbk::editor::PayloadSound),
+                metadata(sbk::editor::metadata_key::category, sbk::editor::g_soundCategoryName)
+            );
 
         registration::class_<blend_container>("blend_container")
             .constructor<>(create_sbk_object<blend_container>)(policy::ctor::as_raw_ptr);
 
         registration::class_<switch_container>("switch_container")
             .constructor<>(create_sbk_object<switch_container>)(policy::ctor::as_raw_ptr)
-            .property("Switch", &switch_container::get_switch_parameters, &switch_container::set_switch_parameter)(metadata(sbk::editor::metadata_key::payload, sbk::editor::PayloadNamedParam))
-            .property("Mappings", &switch_container::get_switch_to_child_map, &switch_container::set_switch_to_child);
+            .property("Switch", &switch_container::get_switch_parameters, &switch_container::set_switch_parameter)
+            (
+                metadata(sbk::editor::metadata_key::payload, sbk::editor::PayloadNamedParam),
+                metadata(sbk::editor::metadata_key::category, sbk::editor::g_soundCategoryName)
+            )
+            .property("Mappings", &switch_container::get_switch_to_child_map, &switch_container::set_switch_to_child)
+            (
+                metadata(sbk::editor::metadata_key::category, sbk::editor::g_soundCategoryName)
+            );
 
         registration::class_<random_container>("random_container")
             .constructor<>(create_sbk_object<random_container>)(policy::ctor::as_raw_ptr);
 
         registration::class_<sequence_container>("sequence_container")
             .constructor<>(create_sbk_object<sequence_container>)(policy::ctor::as_raw_ptr)
-            .property("Sequence", &sequence_container::m_sequence);
+            .property("Sequence", &sequence_container::m_sequence)
+            (
+                metadata(sbk::editor::metadata_key::category, sbk::editor::g_soundCategoryName)
+            );
 
         registration::class_<bus>("bus")
             .constructor<>(create_sbk_object<bus>)(policy::ctor::as_raw_ptr)
-            .property("IsMasterBus", &bus::is_master_bus, &bus::set_master_bus)(metadata(sbk::editor::metadata_key::readonly, true));
+            .property("IsMasterBus", &bus::is_master_bus, &bus::set_master_bus)
+            (
+                metadata(sbk::editor::metadata_key::readonly, true),
+                metadata(sbk::editor::metadata_key::category, sbk::editor::g_routingCategoryName)
+            );
 
         registration::class_<aux_bus>("aux_bus")
             .constructor<>(create_sbk_object<aux_bus>)(policy::ctor::as_raw_ptr);
