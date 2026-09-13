@@ -1,5 +1,6 @@
 #include "property_drawer.h"
 
+#include "sound_bakery/core/database/database_object.h"
 #include "sound_bakery/core/object/object.h"
 #include "sound_bakery/editor/editor_defines.h"
 #include "sound_bakery/node/node.h"
@@ -9,54 +10,102 @@
 #include "gluten/theme/theme.h"
 #include "gluten/utils/imgui_util_functions.h"
 #include "gluten/utils/imgui_util_structures.h"
+#include "gluten/utils/search_filter.h"
 #include "imgui.h"
 
 void property_drawer::draw_object(rttr::type type, rttr::instance instance)
 {
     gluten::imgui::scoped_id id(type.get_name().data());
 
-    eastl::vector<std::pair<std::string_view, eastl::vector<rttr::property>>> categories;
-    eastl::vector<rttr::property> uncategorisedProperties;
+    static gluten::search_filter filter;
 
-    for (rttr::property property : type.get_properties())
+    static char buf[256] = {};
+    if (ImGui::InputText("Filter", buf, sizeof(buf)))
     {
-        const rttr::variant categoryMetadata = property.get_metadata(sbk::editor::metadata_key::category);
-        if (categoryMetadata.is_valid())
+        filter.set_query(buf);
+    }
+
+    eastl::vector<std::pair<std::string_view, eastl::vector<rttr::variant>>> categories;
+    eastl::vector<rttr::variant> uncategorisedItems;
+
+    auto add_to_category = [&](std::string_view categoryName, rttr::variant item)
+    {
+        auto it = eastl::find_if(categories.begin(), categories.end(), [&](const auto& pair) { return pair.first == categoryName; });
+        if (it != categories.end())
         {
-            std::string_view categoryName = categoryMetadata.convert<std::string_view>();
-            auto it = eastl::find_if(categories.begin(), categories.end(), [&](const auto& pair) { return pair.first == categoryName; });
-            if (it != categories.end())
-            {
-                it->second.push_back(property);
-            }
-            else
-            {
-                categories.push_back({categoryName, {property}});
-            }
+            it->second.push_back(std::move(item));
         }
         else
         {
-            uncategorisedProperties.push_back(property);
+            eastl::vector<rttr::variant> items;
+            items.push_back(std::move(item));
+            categories.push_back({categoryName, std::move(items)});
+        }
+    };
+
+    for (rttr::property property : type.get_properties())
+    {
+        if (!filter.matches(property.get_name().data()))
+        {
+            continue;
+        }
+
+        const rttr::variant categoryMetadata = property.get_metadata(sbk::editor::metadata_key::category);
+        if (categoryMetadata.is_valid())
+        {
+            add_to_category(categoryMetadata.convert<std::string_view>(), property);
+        }
+        else
+        {
+            uncategorisedItems.push_back(property);
         }
     }
 
-    categories.push_back({"Misc", std::move(uncategorisedProperties)});
-
-    for (auto& [categoryName, properties] : categories)
+    for (rttr::method method : type.get_methods())
     {
-        gluten::imgui::indent_cursor();
+        if (!filter.matches(method.get_name().data()))
+        {
+            continue;
+        }
+
+        const rttr::variant categoryMetadata = method.get_metadata(sbk::editor::metadata_key::category);
+        if (categoryMetadata.is_valid())
+        {
+            add_to_category(categoryMetadata.convert<std::string_view>(), method);
+        }
+        else
+        {
+            uncategorisedItems.push_back(method);
+        }
+    }
+
+    if (!uncategorisedItems.empty())
+    {
+        categories.push_back({"Misc", std::move(uncategorisedItems)});
+    }
+
+    for (auto& [categoryName, items] : categories)
+    {
+        //gluten::imgui::indent_cursor();
 
         const gluten::imgui::scoped_color innerItemsBorder(ImGuiCol_Border, gluten::theme::layer02);
 
         if (ImGui::CollapsingHeader(categoryName.data(), ImGuiTreeNodeFlags_DefaultOpen))
         {
-            gluten::imgui::indent_cursor();
+            //gluten::imgui::indent_cursor();
 
             if (ImGui::BeginTable("Properties", 2, ImGuiTableFlags_Resizable | ImGuiTableFlags_BordersInnerH | ImGuiTableFlags_SizingStretchProp))
             {
-                for (rttr::property& property : properties)
+                for (rttr::variant& item : items)
                 {
-                    draw_property(property, instance);
+                    if (item.is_type<rttr::property>())
+                    {
+                        draw_property(item.get_value<rttr::property>(), instance);
+                    }
+                    else if (item.is_type<rttr::method>())
+                    {
+                        draw_method(item.get_value<rttr::method>(), instance);
+                    }
                 }
 
                 ImGui::EndTable();
@@ -789,6 +838,114 @@ bool property_drawer::draw_payload_drop(rttr::property property, rttr::instance 
     ImGui::EndGroup();
 
     return edited;
+}
+
+static sbk_id s_currentMethodInstance;
+static std::unordered_map<sbk_id, std::unordered_map<size_t, rttr::variant>> s_methodParameterCache;
+
+void property_drawer::draw_method(rttr::method method, rttr::instance instance)
+{
+    if (!instance.get_type().is_derived_from(sbk::core::object::type()))
+    {
+        return;
+    }
+
+    sbk::core::database_object* object = sbk::util::type_helper::get_database_object_from_instance(instance);
+
+    if (s_currentMethodInstance != object->get_database_id())
+    {
+        s_currentMethodInstance = object->get_database_id();
+        s_methodParameterCache.clear();
+    }
+
+    size_t methodIndex = std::hash<std::string_view>{}(method.get_name().data());
+
+    ImGui::PushID(method.get_name().data());
+
+    std::vector<rttr::argument> arguments;
+
+    for (const rttr::parameter_info& parameter : method.get_parameter_infos())
+    {
+        const rttr::type paramType = parameter.get_type();
+
+        rttr::variant cachedParam = s_methodParameterCache[s_currentMethodInstance][methodIndex];
+
+        if (paramType.is_enumeration())
+        {
+            const rttr::enumeration paramEnum = paramType.get_enumeration();
+
+            if (!cachedParam.is_valid())
+            {
+                cachedParam = *(paramEnum.get_values().begin());
+            }
+
+            ImGui::TableNextColumn();
+            ImGui::AlignTextToFramePadding();
+            {
+                gluten::imgui::scoped_color secondaryText(ImGuiCol_Text, gluten::theme::textSecondary);
+                rttr::string_view labelName = parameter.get_name();
+                ImGui::Text("%s", labelName.empty() ? "Unknown" : labelName.data());
+            }
+
+            ImGui::TableNextColumn();
+            ImGui::AlignTextToFramePadding();
+            ImGui::SetNextItemWidth(-FLT_MIN);
+
+            const rttr::string_view previewName = paramEnum.value_to_name(cachedParam);
+
+            if (ImGui::BeginCombo(paramEnum.get_name().data(), previewName.data()))
+            {
+                for (const rttr::string_view& enumValueName : paramEnum.get_names())
+                {
+                    rttr::variant enumValue = paramEnum.name_to_value(enumValueName);
+                    bool selected           = enumValue == cachedParam;
+                    if (ImGui::Selectable(enumValueName.data(), &selected))
+                    {
+                        cachedParam = enumValue;
+                    }
+                }
+                ImGui::EndCombo();
+            }
+        }
+
+        arguments.push_back(cachedParam);
+        s_methodParameterCache[s_currentMethodInstance][methodIndex] = cachedParam;
+    }
+
+    ImGui::TableNextColumn();
+    ImGui::TableNextColumn();
+    ImGui::AlignTextToFramePadding();
+
+    if (ImGui::Button(method.get_name().data()))
+    {
+        switch (arguments.size())
+        {
+            case 0:
+                method.invoke(instance);
+                break;
+            case 1:
+                method.invoke(instance, arguments[0]);
+                break;
+            case 2:
+                method.invoke(instance, arguments[0], arguments[1]);
+                break;
+            case 3:
+                method.invoke(instance, arguments[0], arguments[1], arguments[2]);
+                break;
+            case 4:
+                method.invoke(instance, arguments[0], arguments[1], arguments[2], arguments[3]);
+                break;
+            case 5:
+                method.invoke(instance, arguments[0], arguments[1], arguments[2], arguments[3], arguments[4]);
+                break;
+            case 6:
+                method.invoke(instance, arguments[0], arguments[1], arguments[2], arguments[3], arguments[4],
+                              arguments[5]);
+                break;
+        }
+    }
+
+    ImGui::PopID();
 }
 
 void property_drawer::draw_sub_object(rttr::type type, rttr::instance instance)

@@ -12,6 +12,8 @@ public:
 
     static bool draw_property(rttr::property property, rttr::instance instance);
 
+    static void draw_method(rttr::method method, rttr::instance instance);
+
     static bool draw_variant(rttr::variant& variant, rttr::string_view name, rttr::property* parentProperty = nullptr);
 
     static void draw_readonly_variant(rttr::variant variant, bool disabled = true);

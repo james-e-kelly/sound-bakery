@@ -160,6 +160,7 @@ set(GLUTEN_HEADERS
   theme/things/things.h
   utils/imgui_util_functions.h
   utils/imgui_util_structures.h
+  utils/search_filter.h
   utils/boost_serialization_extensions.h
   widgets/widget.h
   widgets/root_widget.h

@@ -7,7 +7,6 @@
 #include "gluten/utils/imgui_util_structures.h"
 #include "imgui.h"
 #include "managers/project_manager.h"
-#include "utils/method_drawer.h"
 #include "utils/property_drawer.h"
 
 void details_widget::render_implementation()
@@ -24,16 +23,15 @@ void details_widget::render_implementation()
     {
         if (std::shared_ptr<project_manager> projectManager = get_app()->get_manager_by_class<project_manager>())
         {
-            if (ImGui::CollapsingHeader("Details", ImGuiTreeNodeFlags_DefaultOpen))
+            //if (ImGui::CollapsingHeader("Details", ImGuiTreeNodeFlags_DefaultOpen))
             {
                 selection& selection = projectManager->get_selection();
                 if (sbk::core::object* selected = selection.get_selected())
                 {
                     property_drawer::draw_object(selected->get_object_type(), selected);
-                    method_drawer::draw_object(selected->get_object_type(), selected);
 
-                    add_effect_button addEffectButton;
-                    addEffectButton.render_cursor();
+                    /*add_effect_button addEffectButton;
+                    addEffectButton.render_cursor();*/
                 }
             }
         }

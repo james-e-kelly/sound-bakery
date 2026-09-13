@@ -312,7 +312,11 @@ namespace sbk::reflection
                 metadata(sbk::editor::metadata_key::no_grow, true),
                 metadata(sbk::editor::metadata_key::category, sbk::editor::g_effectsCategoryName)
             )
-            .method("Add Effect", &node::add_effect)(parameter_names("Type"));
+            .method("Add Effect", &node::add_effect)
+            (
+                parameter_names("Type"),
+                metadata(sbk::editor::metadata_key::category, sbk::editor::g_effectsCategoryName)
+            );
 
         registration::class_<container>("container");
 

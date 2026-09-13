@@ -68,12 +68,11 @@ void player_widget::render_implementation()
     ImGui::Begin(fmt::format("{} - {}", s_lastPlayableSelection.get_name(), get_widget_name().data()).c_str());
 
     const bool isSelected = !!selection.get_selected();
-    const bool isPlayable =
-        isSelected && selectedType.has_value() && sbk::util::type_helper::is_type_playable(selectedType.value());
+    const bool isPlayable = isSelected && selectedType.has_value() && sbk::util::type_helper::is_type_playable(selectedType.value());
 
     ImGui::BeginDisabled(!isSelected || !isPlayable);
 
-    if (ImGui::IsKeyReleased(ImGuiKey_Space))
+    if (ImGui::IsKeyReleased(ImGuiKey_Space) && !ImGui::GetIO().WantTextInput)
     {
         toggle_play_selected();
     }
