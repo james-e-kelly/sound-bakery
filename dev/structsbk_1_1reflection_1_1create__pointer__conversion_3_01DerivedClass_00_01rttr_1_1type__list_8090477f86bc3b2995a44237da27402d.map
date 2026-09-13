@@ -1,0 +1,5 @@
+<map id="sbk::reflection::create_pointer_conversion&lt; DerivedClass, rttr::type_list&lt; BaseClassList... &gt; &gt;" name="sbk::reflection::create_pointer_conversion&lt; DerivedClass, rttr::type_list&lt; BaseClassList... &gt; &gt;">
+<area shape="rect" id="Node000001" title="Specialisation for wrapping the rttr::type_list type and extracting its template arguments." alt="" coords="5,108,301,163"/>
+<area shape="rect" id="Node000002" href="$structsbk_1_1reflection_1_1create__pointer__conversion.html" title=" " alt="" coords="44,5,263,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="156,74,156,108,151,108,151,74"/>
+</map>

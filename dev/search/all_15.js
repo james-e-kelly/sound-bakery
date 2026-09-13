@@ -6,7 +6,7 @@ var searchData=
   ['read_5fend_3',['read_end',['../classsbk_1_1mpsc__ring__buffer.html#a4c61904e3c8561abbde7c2254bec0a1b',1,'sbk::mpsc_ring_buffer::read_end()'],['../classsbk_1_1message__queue.html#a30e19c78ca020826d0af5335aad50c96',1,'sbk::message_queue::read_end()']]],
   ['ready_4',['ready',['../Roadmap.html#autotoc_md50',1,'0.2.0 – 0.9.0 — Game Jam Ready'],['../Roadmap.html#autotoc_md51',1,'1.0.0 — Indie ready'],['../Roadmap.html#autotoc_md52',1,'2.0.0 — AA ready']]],
   ['ready_5fresult_5fawaiter_5',['ready_result_awaiter',['../structsbk_1_1ready__result__awaiter.html',1,'sbk']]],
-  ['registerpointerconversionsforbaseclasses_6',['RegisterPointerConversionsForBaseClasses',['../structsbk_1_1reflection_1_1RegisterPointerConversionsForBaseClasses.html',1,'sbk::reflection']]],
+  ['register_5fpointer_5fconversions_5ffor_5fbase_5fclasses_6',['register_pointer_conversions_for_base_classes',['../structsbk_1_1reflection_1_1register__pointer__conversions__for__base__classes.html',1,'sbk::reflection']]],
   ['remove_5fall_7',['remove_all',['../classsbk_1_1core_1_1object__owner.html#af74e8ef7867fe3352541dcc30e83c00c',1,'sbk::core::object_owner']]],
   ['remove_5fobject_8',['remove_object',['../classsbk_1_1core_1_1object__owner.html#a9ba5ec1f202674f8c5f0584b520e5b02',1,'sbk::core::object_owner']]],
   ['removed_9',['Removed',['../md_CHANGELOG.html#autotoc_md15',1,'']]],

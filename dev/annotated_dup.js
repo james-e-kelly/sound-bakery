@@ -97,11 +97,11 @@ var annotated_dup =
         [ "rpmalloc_resource", "classsbk_1_1memory_1_1rpmalloc__resource.html", null ]
       ] ],
       [ "reflection", null, [
-        [ "CreatePointerConversion", "structsbk_1_1reflection_1_1CreatePointerConversion.html", null ],
-        [ "CreatePointerConversion< DerivedClass >", "structsbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_01_4.html", null ],
-        [ "CreatePointerConversion< DerivedClass, BaseClass, U... >", "structsbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_00_01BaseClass_00_01U_8_8_8_01_4.html", null ],
-        [ "CreatePointerConversion< DerivedClass, rttr::type_list< BaseClassList... > >", "structsbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_00_01rttr_1_1type__list_3_01BaseClassList_8_8_8_01_4_01_4.html", null ],
-        [ "RegisterPointerConversionsForBaseClasses", "structsbk_1_1reflection_1_1RegisterPointerConversionsForBaseClasses.html", null ]
+        [ "create_pointer_conversion", "structsbk_1_1reflection_1_1create__pointer__conversion.html", null ],
+        [ "create_pointer_conversion< DerivedClass >", "structsbk_1_1reflection_1_1create__pointer__conversion_3_01DerivedClass_01_4.html", null ],
+        [ "create_pointer_conversion< DerivedClass, BaseClass, U... >", "structsbk_1_1reflection_1_1create__pointer__conversion_3_01DerivedClass_00_01BaseClass_00_01U_8_8_8_01_4.html", null ],
+        [ "create_pointer_conversion< DerivedClass, rttr::type_list< BaseClassList... > >", "structsbk_1_1reflection_1_1create__pointer__conversion_3_01DerivedClass_00_01rttr_1_1type__list_7d12e6e776e7fe56c2c5116f29928386.html", null ],
+        [ "register_pointer_conversions_for_base_classes", "structsbk_1_1reflection_1_1register__pointer__conversions__for__base__classes.html", null ]
       ] ],
       [ "util", null, [
         [ "type_comparator", "structsbk_1_1util_1_1type__comparator.html", null ],

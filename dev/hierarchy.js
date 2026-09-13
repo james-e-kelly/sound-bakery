@@ -9,11 +9,11 @@ var hierarchy =
     [ "sbk::core::serialization::boost_serializer< load_archive, save_archive, inputMode, outputMode >", "classsbk_1_1core_1_1serialization_1_1boost__serializer.html", null ],
     [ "sbk::command_queue", "classsbk_1_1command__queue.html", null ],
     [ "sbk::engine::container_instance", "structsbk_1_1engine_1_1container__instance.html", null ],
-    [ "sbk::reflection::CreatePointerConversion< DerivedClass, T >", "structsbk_1_1reflection_1_1CreatePointerConversion.html", null ],
-    [ "sbk::reflection::CreatePointerConversion< DerivedClass >", "structsbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_01_4.html", null ],
-    [ "sbk::reflection::CreatePointerConversion< DerivedClass, BaseClass, U... >", "structsbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_00_01BaseClass_00_01U_8_8_8_01_4.html", null ],
-    [ "sbk::reflection::CreatePointerConversion< DerivedClass, BaseClassList... >", "structsbk_1_1reflection_1_1CreatePointerConversion.html", [
-      [ "sbk::reflection::CreatePointerConversion< DerivedClass, rttr::type_list< BaseClassList... > >", "structsbk_1_1reflection_1_1CreatePointerConversion_3_01DerivedClass_00_01rttr_1_1type__list_3_01BaseClassList_8_8_8_01_4_01_4.html", null ]
+    [ "sbk::reflection::create_pointer_conversion< DerivedClass, T >", "structsbk_1_1reflection_1_1create__pointer__conversion.html", null ],
+    [ "sbk::reflection::create_pointer_conversion< DerivedClass >", "structsbk_1_1reflection_1_1create__pointer__conversion_3_01DerivedClass_01_4.html", null ],
+    [ "sbk::reflection::create_pointer_conversion< DerivedClass, BaseClass, U... >", "structsbk_1_1reflection_1_1create__pointer__conversion_3_01DerivedClass_00_01BaseClass_00_01U_8_8_8_01_4.html", null ],
+    [ "sbk::reflection::create_pointer_conversion< DerivedClass, BaseClassList... >", "structsbk_1_1reflection_1_1create__pointer__conversion.html", [
+      [ "sbk::reflection::create_pointer_conversion< DerivedClass, rttr::type_list< BaseClassList... > >", "structsbk_1_1reflection_1_1create__pointer__conversion_3_01DerivedClass_00_01rttr_1_1type__list_7d12e6e776e7fe56c2c5116f29928386.html", null ]
     ] ],
     [ "sbk::core::database", "classsbk_1_1core_1_1database.html", [
       [ "sbk::engine::system", "classsbk_1_1engine_1_1system.html", null ]
@@ -142,7 +142,7 @@ var hierarchy =
     [ "sbk::core::property_random_data", "structsbk_1_1core_1_1property__random__data.html", null ],
     [ "sbk::engine::property_subscription", "structsbk_1_1engine_1_1property__subscription.html", null ],
     [ "sbk::ready_result_awaiter< U >", "structsbk_1_1ready__result__awaiter.html", null ],
-    [ "sbk::reflection::RegisterPointerConversionsForBaseClasses< T >", "structsbk_1_1reflection_1_1RegisterPointerConversionsForBaseClasses.html", null ],
+    [ "sbk::reflection::register_pointer_conversions_for_base_classes< T >", "structsbk_1_1reflection_1_1register__pointer__conversions__for__base__classes.html", null ],
     [ "gluten::root_widget", null, [
       [ "root_widget", "classroot__widget.html", null ]
     ] ],
