@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['guide_0',['guide',['../ProgrammerGuide.html',1,'Programmer&apos;s Guide'],['../ChefProgrammerGuide.html',1,'Sound Chef Programmer&apos;s Guide'],['../UserGuide.html',1,'User Guide']]],
-  ['guides_1',['Guides',['../Guides.html',1,'UserManual']]]
+  ['3_200_0',['[0.3.0]',['../md_CHANGELOG.html#autotoc_md18',1,'']]],
+  ['3_200_200_20—_20console_20aaa_1',['3.0.0+ — Console &amp;amp; AAA',['../Roadmap.html#autotoc_md53',1,'']]]
 ];

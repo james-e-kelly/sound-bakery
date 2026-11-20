@@ -28,7 +28,7 @@ var sound__chef_8h =
     [ "sc_bank", "structsc__bank.html", null ],
     [ "sc_system_config", "structsc__system__config.html", null ],
     [ "sc_system", "structsc__system.html", null ],
-    [ "SC_CALLOC", "sound__chef_8h.html#a0101b568f9f93d6e3b94bb61fba07db2", null ],
+    [ "SC_CALLOC", "sound__chef_8h.html#aaa424f8fe469d589192a86c7255a3932", null ],
     [ "SC_CALLOC", "sound__chef_8h.html#a0101b568f9f93d6e3b94bb61fba07db2", null ],
     [ "SC_CHECK", "sound__chef_8h.html#afc69eff7bd5e58400c9c005fcbca2b17", null ],
     [ "SC_CHECK_AND_GOTO", "sound__chef_8h.html#a13add8bc62ef8d433bca234f7d58b816", null ],
@@ -64,81 +64,15 @@ var sound__chef_8h =
     [ "sc_voice_flags", "sound__chef_8h.html#a8e978441d2425056142ef5f0073f2098", null ],
     [ "sc_voice_state", "sound__chef_8h.html#a73b95cc7d5c8a19b471973f131a38cc0", null ],
     [ "sc_voice_stopped_proc", "sound__chef_8h.html#a6eb3fd06db64630677a6c56bdcff6840", null ],
-    [ "sbk_status", "sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04", [
-      [ "SBK_SUCCESS", "sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04ae5260a20e6b3f8cc7362eabc51eea9a5", null ],
-      [ "SBK_ERR_USER", "sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04aadcced782b63a6eb64a137e6a147ab59", null ],
-      [ "SBK_ERR_INVALID_PARAMETER", "sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04a404c50f014be035f865097dcbc055042", null ],
-      [ "SBK_ERR_ALREADY_INITIALIZED", "sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04a6bcf806a1133d9a8a55a47153bc739f0", null ],
-      [ "SBK_ERR_UNINITIALIZED", "sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04ab011af0bb92ecc40ece82eeb809ea1fb", null ],
-      [ "SBK_ERR_INVALID_OPERATION", "sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04a4a0828c1ecd850aa092ce2c983987e25", null ],
-      [ "SBK_ERR_CHEF", "sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04aa1fccd68c206067921f1734d3b069ac4", null ],
-      [ "SBK_ERR_CHEF_UNINITIALIZED", "sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04aefb62d5f90aad4ddd89c5549953b6a59", null ],
-      [ "SBK_ERR_BAKERY", "sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04a38d1f80304ffaff50d58440e53acf7d7", null ],
-      [ "SBK_ERR_BAKERY_UNINITIALIZED", "sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04a8c69b64b83ef4858cf214e9a1b8e3e16", null ],
-      [ "SBK_ERR_BAKERY_SERIALIZATION", "sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04aeacc73b5cb7557b52473eca719c4baf8", null ],
-      [ "SBK_ERR_BAKERY_OBJECT_NOT_FOUND", "sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04a733041596d7e3b9da46b46ac88024b6e", null ],
-      [ "SBK_ERR_BAKERY_OBJECT_EXISTS", "sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04a3ca4447c305900b153c360ca908bec4c", null ],
-      [ "SBK_ERR_SYSTEM", "sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04a497cbdd054b4a48001ba0eac1fd29ea1", null ],
-      [ "SBK_ERR_OUT_OF_MEMORY", "sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04adeab35ff0cd6b6e5c413745a8ae138b0", null ],
-      [ "SBK_ERR_INVALID_FILE", "sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04aaf1514f0c44c11626c081e520981ba46", null ],
-      [ "SBK_ERR_NULL", "sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04abe0f9d826b4d857269494bf289c1220f", null ],
-      [ "SBK_ERR_FULL", "sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04a79e95949db88ce3b3292b1defb81d1e8", null ],
-      [ "SBK_ERR_EMPTY", "sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04a5da68ff94b34ffadb7f12231fde792dc", null ],
-      [ "SBK_ERR_TOO_LARGE", "sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04aa5d662512477b25186c4014bc7d4632e", null ],
-      [ "SBK_ERR_AT_END", "sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04aa0380b9dc352e214f6e4060f2a29072d", null ],
-      [ "SBK_ERR_NOT_FOUND", "sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04a9c914a1f1d70e28a99e8671d1c354ca1", null ],
-      [ "SBK_ERROR_MAX", "sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04a66a9e43e4b163bf73e02974ddd4dfaed", null ]
-    ] ],
-    [ "sc_dsp_index", "sound__chef_8h.html#a1f9f2f0be927c91ecf0b6db332eb7688", [
-      [ "sc_dsp_index_tail", "sound__chef_8h.html#a1f9f2f0be927c91ecf0b6db332eb7688aca9993a488330cb63513b755cef7c622", null ],
-      [ "sc_dsp_index_head", "sound__chef_8h.html#a1f9f2f0be927c91ecf0b6db332eb7688a2115cb205364030fd4c418953ae69264", null ]
-    ] ],
-    [ "sc_dsp_meter_query", "sound__chef_8h.html#a4c7fa0ad30c3d5f42816dd164b0c31f1", [
-      [ "sc_dsp_meter_query_peak", "sound__chef_8h.html#a4c7fa0ad30c3d5f42816dd164b0c31f1a40e8df164159410258f321a5e309a71f", null ],
-      [ "sc_dsp_meter_query_rms", "sound__chef_8h.html#a4c7fa0ad30c3d5f42816dd164b0c31f1a301e27cd2605dcdea27919fc05e4e841", null ],
-      [ "sc_dsp_meter_query_count", "sound__chef_8h.html#a4c7fa0ad30c3d5f42816dd164b0c31f1a9bf504347898c317f2f51c10ee3556a8", null ]
-    ] ],
-    [ "sc_dsp_type", "sound__chef_8h.html#a2da1af46a36d1f165ee265d39af0edeb", [
-      [ "sc_dsp_type_unknown", "sound__chef_8h.html#a2da1af46a36d1f165ee265d39af0edebaf10fd041df27e2fa7f0c6b528e3a8f9e", null ],
-      [ "sc_dsp_type_fader", "sound__chef_8h.html#a2da1af46a36d1f165ee265d39af0edeba1acfa78d99cbc6cc5adc7d8071e3600b", null ],
-      [ "sc_dsp_type_lowpass", "sound__chef_8h.html#a2da1af46a36d1f165ee265d39af0edeba2216f7e013792c825d56cc7fdd57ee97", null ],
-      [ "sc_dsp_type_highpass", "sound__chef_8h.html#a2da1af46a36d1f165ee265d39af0edeba1ebb58cff22f6ba6c0262722ec9c5b46", null ],
-      [ "sc_dsp_type_delay", "sound__chef_8h.html#a2da1af46a36d1f165ee265d39af0edebab1b9e52b50312c6da6ebd07bf96f0091", null ],
-      [ "sc_dsp_type_meter", "sound__chef_8h.html#a2da1af46a36d1f165ee265d39af0edeba602ad979f89e0b54240e7b7d7feef6ad", null ],
-      [ "sc_dsp_type_clap", "sound__chef_8h.html#a2da1af46a36d1f165ee265d39af0edebaac7659236388beef2542510ba8c2c75d", null ],
-      [ "sc_dsp_type_count", "sound__chef_8h.html#a2da1af46a36d1f165ee265d39af0edeba00b6b1873c6ef1768759d12c206f2d78", null ]
-    ] ],
-    [ "sc_encoding_format", "sound__chef_8h.html#a57709c4eb076ab3b745a199a63b7db62", [
-      [ "sc_encoding_format_unknown", "sound__chef_8h.html#a57709c4eb076ab3b745a199a63b7db62ab7902cd5977fb473239d59e35d915322", null ],
-      [ "sc_encoding_format_wav", "sound__chef_8h.html#a57709c4eb076ab3b745a199a63b7db62aa813f049f93bdc2efaeb06c11eae0cf4", null ],
-      [ "sc_encoding_format_adpcm", "sound__chef_8h.html#a57709c4eb076ab3b745a199a63b7db62a9fe5206f38f446d47b2450f67bf48a3c", null ],
-      [ "sc_encoding_format_vorbis", "sound__chef_8h.html#a57709c4eb076ab3b745a199a63b7db62a78e99ae9063d1f21b4fbe9dafb3c465d", null ],
-      [ "sc_encoding_format_opus", "sound__chef_8h.html#a57709c4eb076ab3b745a199a63b7db62a0bd9909be8fecf57b84a8f9f1acb8d20", null ]
-    ] ],
-    [ "sc_sound_mode", "sound__chef_8h.html#a6aab4356b59c9764f1b48c2aee412d72", [
-      [ "SC_SOUND_MODE_DEFAULT", "sound__chef_8h.html#a6aab4356b59c9764f1b48c2aee412d72a85f49760c7bf51d5272f54d85e46a287", null ],
-      [ "SC_SOUND_MODE_DECODE", "sound__chef_8h.html#a6aab4356b59c9764f1b48c2aee412d72aa641c673b5a9beacf007a6e6938460c1", null ],
-      [ "SC_SOUND_MODE_ASYNC", "sound__chef_8h.html#a6aab4356b59c9764f1b48c2aee412d72a0bf235424a900568b09c26c2b7e0b318", null ],
-      [ "SC_SOUND_MODE_STREAM", "sound__chef_8h.html#a6aab4356b59c9764f1b48c2aee412d72a3c67283eca852a294710a468800de1ae", null ]
-    ] ],
-    [ "sc_voice_desired_state", "sound__chef_8h.html#aa0bc91889ef06fbad8767d6615e6e521", [
-      [ "sc_voice_desired_stopped", "sound__chef_8h.html#aa0bc91889ef06fbad8767d6615e6e521a2f51ff41898b316dfccfc644b76a58d1", null ],
-      [ "sc_voice_desired_playing", "sound__chef_8h.html#aa0bc91889ef06fbad8767d6615e6e521a0c342226602a050ef968612b79a8a1ee", null ]
-    ] ],
-    [ "sc_voice_flags", "sound__chef_8h.html#a7864324b09e946b8f5b925ead2d292f7", [
-      [ "SC_VOICE_FLAG_NONE", "sound__chef_8h.html#a7864324b09e946b8f5b925ead2d292f7ad941dbc1b4131944947110d597b64779", null ],
-      [ "SC_VOICE_FLAG_PAUSED", "sound__chef_8h.html#a7864324b09e946b8f5b925ead2d292f7a5f72d81a528106438d35b2161bf2272c", null ],
-      [ "SC_VOICE_FLAG_VIRTUAL", "sound__chef_8h.html#a7864324b09e946b8f5b925ead2d292f7a97fc6e14a8fc3a5a7a17f80ada81b263", null ],
-      [ "SC_VOICE_FLAG_FADING", "sound__chef_8h.html#a7864324b09e946b8f5b925ead2d292f7a9693093999f197560cac6091ff92bc3b", null ],
-      [ "SC_VOICE_FLAG_INSTANT_STOP", "sound__chef_8h.html#a7864324b09e946b8f5b925ead2d292f7ac31abec003e5a07f541a095bd5b8aa2e", null ]
-    ] ],
-    [ "sc_voice_state", "sound__chef_8h.html#a7b2f0b2c11e21911f7cb97cdda42a0d8", [
-      [ "sc_voice_state_free", "sound__chef_8h.html#a7b2f0b2c11e21911f7cb97cdda42a0d8ab28d57786b2e62c71f6e0cd5659ee9ab", null ],
-      [ "sc_voice_state_starting", "sound__chef_8h.html#a7b2f0b2c11e21911f7cb97cdda42a0d8a485d0745e6d873519688d672d94776bd", null ],
-      [ "sc_voice_state_playing", "sound__chef_8h.html#a7b2f0b2c11e21911f7cb97cdda42a0d8a2709f5037a669b08067868c21a921bd1", null ],
-      [ "sc_voice_state_stopping", "sound__chef_8h.html#a7b2f0b2c11e21911f7cb97cdda42a0d8ae41f8cc7f7eba6de6c1307736cde243e", null ],
-      [ "sc_voice_state_stopped", "sound__chef_8h.html#a7b2f0b2c11e21911f7cb97cdda42a0d8a260171f39204bed487e9e0188790daeb", null ]
-    ] ],
+    [ "sbk_status", "sound__chef_8h.html#ad65430c2fb142de4e481da0839592e04", null ],
+    [ "sc_dsp_index", "sound__chef_8h.html#a1f9f2f0be927c91ecf0b6db332eb7688", null ],
+    [ "sc_dsp_meter_query", "sound__chef_8h.html#a4c7fa0ad30c3d5f42816dd164b0c31f1", null ],
+    [ "sc_dsp_type", "sound__chef_8h.html#a2da1af46a36d1f165ee265d39af0edeb", null ],
+    [ "sc_encoding_format", "sound__chef_8h.html#a57709c4eb076ab3b745a199a63b7db62", null ],
+    [ "sc_sound_mode", "sound__chef_8h.html#a6aab4356b59c9764f1b48c2aee412d72", null ],
+    [ "sc_voice_desired_state", "sound__chef_8h.html#aa0bc91889ef06fbad8767d6615e6e521", null ],
+    [ "sc_voice_flags", "sound__chef_8h.html#a7864324b09e946b8f5b925ead2d292f7", null ],
+    [ "sc_voice_state", "sound__chef_8h.html#a7b2f0b2c11e21911f7cb97cdda42a0d8", null ],
     [ "sc_real_voice_init_preallocated", "sound__chef_8h.html#a0b1613bdfd7cb74592e0172c2505fcc4", null ],
     [ "sc_system_calculate_virtual_voices", "sound__chef_8h.html#af744f4b63edcd719e4b986fcaf9e2b79", null ],
     [ "sc_system_init", "sound__chef_8h.html#a73c06a9406456d77d8dd5a99dbfd6792", null ],

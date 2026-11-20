@@ -1,6 +1,8 @@
 var searchData=
 [
-  ['work_5fitem_0',['work_item',['../classsbk_1_1work__item.html',1,'sbk']]],
-  ['wrapper_5fmapper_3c_20sbk_3a_3acore_3a_3achild_5fptr_3c_20t_20_3e_20_3e_1',['wrapper_mapper&lt; sbk::core::child_ptr&lt; T &gt; &gt;',['../structrttr_1_1wrapper__mapper_3_01sbk_1_1core_1_1child__ptr_3_01T_01_4_01_4.html',1,'rttr']]],
-  ['wrapper_5fmapper_3c_20sbk_3a_3acore_3a_3adatabase_5fptr_3c_20t_20_3e_20_3e_2',['wrapper_mapper&lt; sbk::core::database_ptr&lt; T &gt; &gt;',['../structrttr_1_1wrapper__mapper_3_01sbk_1_1core_1_1database__ptr_3_01T_01_4_01_4.html',1,'rttr']]]
+  ['voice_0',['voice',['../classsbk_1_1engine_1_1voice.html',1,'sbk::engine']]],
+  ['voice_5fdsp_5finstance_1',['voice_dsp_instance',['../structsbk_1_1engine_1_1voice__dsp__instance.html',1,'sbk::engine']]],
+  ['voice_5fproperty_5fwatch_2',['voice_property_watch',['../structsbk_1_1engine_1_1voice__property__watch.html',1,'sbk::engine']]],
+  ['voice_5ftracker_3',['voice_tracker',['../classsbk_1_1engine_1_1profiling_1_1voice__tracker.html',1,'sbk::engine::profiling']]],
+  ['void_5fdeleter_4',['void_deleter',['../structsbk_1_1engine_1_1void__deleter.html',1,'sbk::engine']]]
 ];

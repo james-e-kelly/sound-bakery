@@ -1,6 +1,8 @@
 var searchData=
 [
-  ['changelog_0',['Changelog',['../md_CHANGELOG.html',1,'']]],
-  ['chef_20programmer_20s_20guide_1',['Sound Chef Programmer&apos;s Guide',['../ChefProgrammerGuide.html',1,'ProgrammerGuide']]],
-  ['contributing_20to_20sound_20bakery_2',['Contributing to Sound Bakery',['../md_CONTRIBUTING.html',1,'']]]
+  ['1_200_20—_20mvp_0',['0.1.0 — MVP',['../Roadmap.html#autotoc_md49',1,'']]],
+  ['1_200_200_20—_20indie_20ready_1',['1.0.0 — Indie ready',['../Roadmap.html#autotoc_md51',1,'']]],
+  ['1_200_202023_2001_2010_2',['[0.1.0] - 2023-01-10',['../md_CHANGELOG.html#autotoc_md24',1,'']]],
+  ['10_3',['[0.1.0] - 2023-01-10',['../md_CHANGELOG.html#autotoc_md24',1,'']]],
+  ['18_4',['[0.2.0] - 2024-02-18',['../md_CHANGELOG.html#autotoc_md20',1,'']]]
 ];

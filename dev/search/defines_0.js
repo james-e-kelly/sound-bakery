@@ -20,7 +20,7 @@ var searchData=
   ['sbk_5ftry_5fc_17',['SBK_TRY_C',['../result_8h.html#a3f7ef982f73cc2c61814fd56f83e07b7',1,'result.h']]],
   ['sbk_5ftry_5fc_5fmsg_18',['SBK_TRY_C_MSG',['../result_8h.html#a6029e0de75c6aa27ee0d5880cee5db2d',1,'result.h']]],
   ['sbk_5ftryv_19',['SBK_TRYV',['../result_8h.html#a385681260b394ad235326f784d72845c',1,'result.h']]],
-  ['sc_5fcalloc_20',['sc_calloc',['../sound__chef_8h.html#a0101b568f9f93d6e3b94bb61fba07db2',1,'SC_CALLOC:&#160;sound_chef.h'],['../sound__chef_8h.html#a0101b568f9f93d6e3b94bb61fba07db2',1,'SC_CALLOC:&#160;sound_chef.h']]],
+  ['sc_5fcalloc_20',['SC_CALLOC',['../sound__chef_8h.html#a0101b568f9f93d6e3b94bb61fba07db2',1,'SC_CALLOC:&#160;sound_chef.h'],['../sound__chef_8h.html#aaa424f8fe469d589192a86c7255a3932',1,'SC_CALLOC:&#160;sound_chef.h']]],
   ['sc_5fcheck_21',['SC_CHECK',['../sound__chef_8h.html#afc69eff7bd5e58400c9c005fcbca2b17',1,'sound_chef.h']]],
   ['sc_5fcheck_5fand_5fgoto_22',['SC_CHECK_AND_GOTO',['../sound__chef_8h.html#a13add8bc62ef8d433bca234f7d58b816',1,'sound_chef.h']]],
   ['sc_5fcheck_5farg_23',['SC_CHECK_ARG',['../sound__chef_8h.html#a57515c46747ff74a6ddca37f3b3e5911',1,'sound_chef.h']]],

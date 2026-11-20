@@ -1,23 +1,23 @@
 <map id="inc/sound_bakery/sound_bakery.h" name="inc/sound_bakery/sound_bakery.h">
-<area shape="rect" id="Node000001" title="An open&#45;source audio middleware tool with an authoring application and programmer&#39;s API." alt="" coords="513,5,691,45"/>
-<area shape="rect" id="Node000002" href="$sound__bakery__common_8h_source.html" title=" " alt="" coords="508,93,696,119"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="605,46,605,79,599,79,599,46"/>
-<area shape="rect" id="Node000003" href="$sound__chef_8h.html" title="A wrapper library for miniaudio that emulates functionality of FMOD." alt="" coords="315,174,500,199"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="575,121,449,171,447,166,573,116"/>
-<area shape="rect" id="Node000010" title=" " alt="" coords="525,167,679,207"/>
-<area shape="poly" id="edge9_Node000002_Node000010" title=" " alt="" coords="605,119,605,153,599,153,599,119"/>
-<area shape="rect" id="Node000011" title=" " alt="" coords="704,174,775,199"/>
-<area shape="poly" id="edge10_Node000002_Node000011" title=" " alt="" coords="624,117,709,165,706,169,621,121"/>
-<area shape="rect" id="Node000004" title=" " alt="" coords="5,255,180,295"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="366,202,176,254,174,248,364,197"/>
-<area shape="rect" id="Node000005" title=" " alt="" coords="205,262,279,287"/>
-<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="386,202,278,258,275,253,384,197"/>
-<area shape="rect" id="Node000006" title=" " alt="" coords="303,262,402,287"/>
-<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="402,201,370,252,365,249,398,198"/>
-<area shape="rect" id="Node000007" title=" " alt="" coords="427,262,497,287"/>
-<area shape="poly" id="edge6_Node000003_Node000007" title=" " alt="" coords="417,198,449,249,445,252,412,201"/>
-<area shape="rect" id="Node000008" title=" " alt="" coords="521,262,624,287"/>
-<area shape="poly" id="edge7_Node000003_Node000008" title=" " alt="" coords="431,197,539,253,537,258,428,202"/>
-<area shape="rect" id="Node000009" title=" " alt="" coords="648,262,740,287"/>
-<area shape="poly" id="edge8_Node000003_Node000009" title=" " alt="" coords="449,197,637,252,647,255,646,260,636,257,447,202"/>
+<area shape="rect" id="Node000001" title="An open&#45;source audio middleware tool with an authoring application and programmer&#39;s API." alt="" coords="507,5,685,50"/>
+<area shape="rect" id="Node000002" href="$sound__bakery__common_8h_source.html" title=" " alt="" coords="502,98,690,126"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="598,48,598,84,594,81,594,53"/>
+<area shape="rect" id="Node000003" href="$sound__chef_8h.html" title="A wrapper library for miniaudio that emulates functionality of FMOD." alt="" coords="310,182,495,210"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="567,125,449,178,447,173,562,127"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="519,174,673,218"/>
+<area shape="poly" id="edge9_Node000002_Node000010" title=" " alt="" coords="598,124,598,159,594,156,594,128"/>
+<area shape="rect" id="Node000011" title=" " alt="" coords="697,182,767,210"/>
+<area shape="poly" id="edge10_Node000002_Node000011" title=" " alt="" coords="618,124,700,174,695,174,617,129"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="5,266,179,311"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="360,212,182,264,181,259,355,209"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="203,275,277,302"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="382,210,278,269,276,264,376,211"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="300,275,398,302"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="397,209,366,264,363,260,393,212"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="422,275,492,302"/>
+<area shape="poly" id="edge6_Node000003_Node000007" title=" " alt="" coords="412,208,444,262,439,261,409,213"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="516,275,617,302"/>
+<area shape="poly" id="edge7_Node000003_Node000008" title=" " alt="" coords="427,208,532,267,527,267,426,213"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="641,275,732,302"/>
+<area shape="poly" id="edge8_Node000003_Node000009" title=" " alt="" coords="449,208,630,264,641,270,635,269,629,269,448,213"/>
 </map>

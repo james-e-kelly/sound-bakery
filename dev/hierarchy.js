@@ -5,14 +5,14 @@ var hierarchy =
       [ "editor_app", "classeditor__app.html", null ]
     ] ],
     [ "audio_meter_utils::audio_meter_draw_info", "structaudio__meter__utils_1_1audio__meter__draw__info.html", null ],
-    [ "sbk::task< T >::awaiter", "structsbk_1_1task_1_1awaiter.html", null ],
-    [ "sbk::core::serialization::boost_serializer< load_archive, save_archive, inputMode, outputMode >", "classsbk_1_1core_1_1serialization_1_1boost__serializer.html", null ],
+    [ "sbk::task&lt; T &gt;::awaiter", "structsbk_1_1task_1_1awaiter.html", null ],
+    [ "sbk::core::serialization::boost_serializer&lt; load_archive, save_archive, inputMode, outputMode &gt;", "classsbk_1_1core_1_1serialization_1_1boost__serializer.html", null ],
     [ "sbk::command_queue", "classsbk_1_1command__queue.html", null ],
     [ "sbk::engine::container_instance", "structsbk_1_1engine_1_1container__instance.html", null ],
-    [ "sbk::reflection::create_pointer_conversion< DerivedClass, T >", "structsbk_1_1reflection_1_1create__pointer__conversion.html", null ],
-    [ "sbk::reflection::create_pointer_conversion< DerivedClass >", "structsbk_1_1reflection_1_1create__pointer__conversion_3_01DerivedClass_01_4.html", null ],
-    [ "sbk::reflection::create_pointer_conversion< DerivedClass, BaseClass, U... >", "structsbk_1_1reflection_1_1create__pointer__conversion_3_01DerivedClass_00_01BaseClass_00_01U_8_8_8_01_4.html", null ],
-    [ "sbk::reflection::create_pointer_conversion< DerivedClass, BaseClassList... >", "structsbk_1_1reflection_1_1create__pointer__conversion.html", [
+    [ "sbk::reflection::create_pointer_conversion&lt; DerivedClass, T &gt;", "structsbk_1_1reflection_1_1create__pointer__conversion.html", null ],
+    [ "sbk::reflection::create_pointer_conversion&lt; DerivedClass &gt;", "structsbk_1_1reflection_1_1create__pointer__conversion_3_01DerivedClass_01_4.html", null ],
+    [ "sbk::reflection::create_pointer_conversion&lt; DerivedClass, BaseClass, U... &gt;", "structsbk_1_1reflection_1_1create__pointer__conversion_3_01DerivedClass_00_01BaseClass_00_01U_8_8_8_01_4.html", null ],
+    [ "sbk::reflection::create_pointer_conversion&lt; DerivedClass, BaseClassList... &gt;", "structsbk_1_1reflection_1_1create__pointer__conversion.html", [
       [ "sbk::reflection::create_pointer_conversion< DerivedClass, rttr::type_list< BaseClassList... > >", "structsbk_1_1reflection_1_1create__pointer__conversion_3_01DerivedClass_00_01rttr_1_1type__list_7d12e6e776e7fe56c2c5116f29928386.html", null ]
     ] ],
     [ "sbk::core::database", "classsbk_1_1core_1_1database.html", [
@@ -20,14 +20,12 @@ var hierarchy =
     ] ],
     [ "sbk::core::database_name", "structsbk_1_1core_1_1database__name.html", null ],
     [ "sbk::core::database_name_comparator", "structsbk_1_1core_1_1database__name__comparator.html", null ],
-    [ "sbk::core::database_ptr< TObject >", "classsbk_1_1core_1_1database__ptr.html", [
+    [ "sbk::core::database_ptr&lt; TObject &gt;", "classsbk_1_1core_1_1database__ptr.html", [
       [ "sbk::core::child_ptr< TObject >", "classsbk_1_1core_1_1child__ptr.html", null ]
     ] ],
-    [ "sbk::core::database_ptr< named_parameter >", "classsbk_1_1core_1_1database__ptr.html", null ],
-    [ "sbk::core::database_ptr< sbk::core::database_object >", "classsbk_1_1core_1_1database__ptr.html", null ],
-    [ "sbk::core::database_ptr< sbk::core::property >", "classsbk_1_1core_1_1database__ptr.html", null ],
-    [ "sbk::core::database_ptr< sbk::engine::node >", "classsbk_1_1core_1_1database__ptr.html", null ],
-    [ "sbk::core::database_ptr< sbk::engine::sound >", "classsbk_1_1core_1_1database__ptr.html", null ],
+    [ "sbk::core::database_ptr&lt; T &gt;", "classsbk_1_1core_1_1database__ptr.html", [
+      [ "sbk::core::child_ptr< T >", "classsbk_1_1core_1_1child__ptr.html", null ]
+    ] ],
     [ "sbk::detached_task", "structsbk_1_1detached__task.html", null ],
     [ "sbk::engine::effect_parameter_description", "classsbk_1_1engine_1_1effect__parameter__description.html", null ],
     [ "gluten::element", null, [
@@ -73,6 +71,7 @@ var hierarchy =
     [ "sbk::end_of_frame_message", "structsbk_1_1end__of__frame__message.html", null ],
     [ "sbk::error", "classsbk_1_1error.html", null ],
     [ "sbk::fiber_promise", "structsbk_1_1fiber__promise.html", [
+      [ "sbk::task_promise< void >", "structsbk_1_1task__promise_3_01void_01_4.html", null ],
       [ "sbk::detached_task::promise_type", "structsbk_1_1detached__task_1_1promise__type.html", null ],
       [ "sbk::task_promise< T >", "structsbk_1_1task__promise.html", null ],
       [ "sbk::task_promise< void >", "structsbk_1_1task__promise_3_01void_01_4.html", null ]
@@ -80,6 +79,9 @@ var hierarchy =
     [ "sbk::final_awaiter", "structsbk_1_1final__awaiter.html", null ],
     [ "sbk::engine::gather_children_context", "structsbk_1_1engine_1_1gather__children__context.html", null ],
     [ "sbk::engine::global_parameter_list", "structsbk_1_1engine_1_1global__parameter__list.html", null ],
+    [ "std::hash&lt; sbk::core::child_ptr&lt; T &gt; &gt;", "structstd_1_1hash_3_01sbk_1_1core_1_1child__ptr_3_01T_01_4_01_4.html", null ],
+    [ "std::hash&lt; sbk::core::database_name &gt;", "structstd_1_1hash_3_01sbk_1_1core_1_1database__name_01_4.html", null ],
+    [ "std::hash&lt; sbk::core::database_ptr&lt; T &gt; &gt;", "structstd_1_1hash_3_01sbk_1_1core_1_1database__ptr_3_01T_01_4_01_4.html", null ],
     [ "sbk::load_soundbank_message", "structsbk_1_1load__soundbank__message.html", null ],
     [ "sbk::engine::local_parameter_list", "structsbk_1_1engine_1_1local__parameter__list.html", null ],
     [ "sbk::core::logger", null, [
@@ -93,9 +95,8 @@ var hierarchy =
       [ "sbk::memory::monotonic_buffer_resource", "classsbk_1_1memory_1_1monotonic__buffer__resource.html", null ],
       [ "sbk::memory::rpmalloc_resource", "classsbk_1_1memory_1_1rpmalloc__resource.html", null ]
     ] ],
-    [ "sbk::message_queue< T >", "classsbk_1_1message__queue.html", null ],
-    [ "sbk::message_queue< message_type >", "classsbk_1_1message__queue.html", null ],
-    [ "sbk::message_queue< T >::message_view", "structsbk_1_1message__queue_1_1message__view.html", null ],
+    [ "sbk::message_queue&lt; T &gt;", "classsbk_1_1message__queue.html", null ],
+    [ "sbk::message_queue&lt; T &gt;::message_view", "structsbk_1_1message__queue_1_1message__view.html", null ],
     [ "method_drawer", "classmethod__drawer.html", null ],
     [ "sbk::mpsc_ring_buffer", "classsbk_1_1mpsc__ring__buffer.html", null ],
     [ "sbk::core::name", "classsbk_1_1core_1_1name.html", null ],
@@ -104,8 +105,8 @@ var hierarchy =
       [ "sbk::engine::runtime", "classsbk_1_1engine_1_1runtime.html", null ],
       [ "sbk::engine::system", "classsbk_1_1engine_1_1system.html", null ]
     ] ],
-    [ "sbk::numeric_type< T >", "structsbk_1_1numeric__type.html", null ],
-    [ "sbk::numeric_type< T >", "structsbk_1_1numeric__type_3_01T_01_4.html", null ],
+    [ "sbk::numeric_type&lt; T &gt;", "structsbk_1_1numeric__type.html", null ],
+    [ "sbk::numeric_type&lt; T &gt;", "structsbk_1_1numeric__type_3_01T_01_4.html", null ],
     [ "sbk::memory::object_deleter", "structsbk_1_1memory_1_1object__deleter.html", null ],
     [ "sbk::core::object_owner", "classsbk_1_1core_1_1object__owner.html", [
       [ "sbk::core::object", "classsbk_1_1core_1_1object.html", null ],
@@ -123,7 +124,7 @@ var hierarchy =
     [ "sbk::core::object_tracker", "classsbk_1_1core_1_1object__tracker.html", [
       [ "sbk::engine::system", "classsbk_1_1engine_1_1system.html", null ]
     ] ],
-    [ "sbk::memory::owned_object_deleter< T >", "structsbk_1_1memory_1_1owned__object__deleter.html", null ],
+    [ "sbk::memory::owned_object_deleter&lt; T &gt;", "structsbk_1_1memory_1_1owned__object__deleter.html", null ],
     [ "sbk::core::parsed_database_name", "structsbk_1_1core_1_1parsed__database__name.html", null ],
     [ "sbk::play_container_message", "structsbk_1_1play__container__message.html", null ],
     [ "playable_selection", "structplayable__selection.html", null ],
@@ -132,17 +133,17 @@ var hierarchy =
     [ "sbk::post_event_name_message", "structsbk_1_1post__event__name__message.html", null ],
     [ "sbk::editor::project_configuration", "structsbk_1_1editor_1_1project__configuration.html", null ],
     [ "sbk::promise_base", "classsbk_1_1promise__base.html", [
+      [ "sbk::task_promise< void >", "structsbk_1_1task__promise_3_01void_01_4.html", null ],
       [ "sbk::detached_task::promise_type", "structsbk_1_1detached__task_1_1promise__type.html", null ],
       [ "sbk::task_promise< T >", "structsbk_1_1task__promise.html", null ],
       [ "sbk::task_promise< void >", "structsbk_1_1task__promise_3_01void_01_4.html", null ]
     ] ],
-    [ "sbk::core::property< T >", "classsbk_1_1core_1_1property.html", null ],
-    [ "sbk::core::property< parameter_type >", "classsbk_1_1core_1_1property.html", null ],
+    [ "sbk::core::property&lt; T &gt;", "classsbk_1_1core_1_1property.html", null ],
     [ "property_drawer", "classproperty__drawer.html", null ],
     [ "sbk::core::property_random_data", "structsbk_1_1core_1_1property__random__data.html", null ],
     [ "sbk::engine::property_subscription", "structsbk_1_1engine_1_1property__subscription.html", null ],
-    [ "sbk::ready_result_awaiter< U >", "structsbk_1_1ready__result__awaiter.html", null ],
-    [ "sbk::reflection::register_pointer_conversions_for_base_classes< T >", "structsbk_1_1reflection_1_1register__pointer__conversions__for__base__classes.html", null ],
+    [ "sbk::ready_result_awaiter&lt; U &gt;", "structsbk_1_1ready__result__awaiter.html", null ],
+    [ "sbk::reflection::register_pointer_conversions_for_base_classes&lt; T &gt;", "structsbk_1_1reflection_1_1register__pointer__conversions__for__base__classes.html", null ],
     [ "gluten::root_widget", null, [
       [ "root_widget", "classroot__widget.html", null ]
     ] ],
@@ -184,12 +185,12 @@ var hierarchy =
     [ "sbk::executor::schedule_awaiter", "structsbk_1_1executor_1_1schedule__awaiter.html", null ],
     [ "sbk::core::scoped_thread_domain", "classsbk_1_1core_1_1scoped__thread__domain.html", null ],
     [ "selection", "structselection.html", null ],
-    [ "rttr::sequential_container_mapper< eastl::vector< T, Allocator > >", "structrttr_1_1sequential__container__mapper_3_01eastl_1_1vector_3_01T_00_01Allocator_01_4_01_4.html", null ],
+    [ "rttr::sequential_container_mapper&lt; eastl::vector&lt; T, Allocator &gt; &gt;", "structrttr_1_1sequential__container__mapper_3_01eastl_1_1vector_3_01T_00_01Allocator_01_4_01_4.html", null ],
     [ "sbk::core::serialization::serialized_associative_container", "structsbk_1_1core_1_1serialization_1_1serialized__associative__container.html", null ],
     [ "sbk::core::serialization::serialized_child_class", "structsbk_1_1core_1_1serialization_1_1serialized__child__class.html", null ],
     [ "sbk::core::serialization::serialized_object", "structsbk_1_1core_1_1serialization_1_1serialized__object.html", null ],
-    [ "sbk::core::serialization::serialized_object_vector< object_class >", "structsbk_1_1core_1_1serialization_1_1serialized__object__vector.html", null ],
-    [ "sbk::core::serialization::serialized_object_vector< sbk::engine::sound >", "structsbk_1_1core_1_1serialization_1_1serialized__object__vector_3_01sbk_1_1engine_1_1sound_01_4.html", null ],
+    [ "sbk::core::serialization::serialized_object_vector&lt; object_class &gt;", "structsbk_1_1core_1_1serialization_1_1serialized__object__vector.html", null ],
+    [ "sbk::core::serialization::serialized_object_vector&lt; sbk::engine::sound &gt;", "structsbk_1_1core_1_1serialization_1_1serialized__object__vector_3_01sbk_1_1engine_1_1sound_01_4.html", null ],
     [ "sbk::core::serialization::serialized_sequential_container", "structsbk_1_1core_1_1serialization_1_1serialized__sequential__container.html", null ],
     [ "sbk::core::serialization::serialized_sound", "structsbk_1_1core_1_1serialization_1_1serialized__sound.html", null ],
     [ "sbk::core::serialization::serialized_soundbank", "structsbk_1_1core_1_1serialization_1_1serialized__soundbank.html", null ],
@@ -203,11 +204,10 @@ var hierarchy =
     [ "sbk::engine::soundbank_dependencies", "structsbk_1_1engine_1_1soundbank__dependencies.html", null ],
     [ "stbi_io_callbacks", "structstbi__io__callbacks.html", null ],
     [ "sbk::stop_all_message", "structsbk_1_1stop__all__message.html", null ],
-    [ "sbk::task< T >", "classsbk_1_1task.html", null ],
+    [ "sbk::task&lt; T &gt;", "classsbk_1_1task.html", null ],
     [ "sbk::util::type_comparator", "structsbk_1_1util_1_1type__comparator.html", null ],
     [ "sbk::util::type_helper", "classsbk_1_1util_1_1type__helper.html", null ],
-    [ "sbk::unique_coroutine< Promise >", "classsbk_1_1unique__coroutine.html", null ],
-    [ "sbk::unique_coroutine< sbk::task_promise >", "classsbk_1_1unique__coroutine.html", null ],
+    [ "sbk::unique_coroutine&lt; Promise &gt;", "classsbk_1_1unique__coroutine.html", null ],
     [ "sbk::engine::voice_dsp_instance", "structsbk_1_1engine_1_1voice__dsp__instance.html", null ],
     [ "sbk::engine::voice_property_watch", "structsbk_1_1engine_1_1voice__property__watch.html", null ],
     [ "sbk::engine::void_deleter", "structsbk_1_1engine_1_1void__deleter.html", null ],
@@ -225,6 +225,6 @@ var hierarchy =
       [ "splash_widget", "classsplash__widget.html", null ]
     ] ],
     [ "sbk::work_item", "classsbk_1_1work__item.html", null ],
-    [ "rttr::wrapper_mapper< sbk::core::child_ptr< T > >", "structrttr_1_1wrapper__mapper_3_01sbk_1_1core_1_1child__ptr_3_01T_01_4_01_4.html", null ],
-    [ "rttr::wrapper_mapper< sbk::core::database_ptr< T > >", "structrttr_1_1wrapper__mapper_3_01sbk_1_1core_1_1database__ptr_3_01T_01_4_01_4.html", null ]
+    [ "rttr::wrapper_mapper&lt; sbk::core::child_ptr&lt; T &gt; &gt;", "structrttr_1_1wrapper__mapper_3_01sbk_1_1core_1_1child__ptr_3_01T_01_4_01_4.html", null ],
+    [ "rttr::wrapper_mapper&lt; sbk::core::database_ptr&lt; T &gt; &gt;", "structrttr_1_1wrapper__mapper_3_01sbk_1_1core_1_1database__ptr_3_01T_01_4_01_4.html", null ]
 ];

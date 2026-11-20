@@ -1,10 +1,12 @@
 var searchData=
 [
-  ['name_0',['name',['../classsbk_1_1core_1_1name.html',1,'sbk::core']]],
-  ['named_5fparameter_1',['named_parameter',['../classsbk_1_1engine_1_1named__parameter.html',1,'sbk::engine']]],
-  ['named_5fparameter_5fvalue_2',['named_parameter_value',['../classsbk_1_1engine_1_1named__parameter__value.html',1,'sbk::engine']]],
-  ['new_5fproject_5fwidget_3',['new_project_widget',['../classnew__project__widget.html',1,'']]],
-  ['node_4',['node',['../classsbk_1_1engine_1_1node.html',1,'sbk::engine']]],
-  ['numeric_5ftype_5',['numeric_type',['../structsbk_1_1numeric__type.html',1,'sbk']]],
-  ['numeric_5ftype_3c_20t_20_3e_6',['numeric_type&lt; T &gt;',['../structsbk_1_1numeric__type_3_01T_01_4.html',1,'sbk']]]
+  ['manual_5fexecutor_0',['manual_executor',['../classsbk_1_1manual__executor.html',1,'sbk']]],
+  ['memory_5fresource_1',['memory_resource',['../classsbk_1_1memory_1_1memory__resource.html',1,'sbk::memory']]],
+  ['message_5fqueue_2',['message_queue',['../classsbk_1_1message__queue.html',1,'sbk']]],
+  ['message_5fqueue_3c_20message_5ftype_20_3e_3',['message_queue&lt; message_type &gt;',['../classsbk_1_1message__queue.html',1,'sbk']]],
+  ['message_5fview_4',['message_view',['../structsbk_1_1message__queue_1_1message__view.html',1,'sbk::message_queue']]],
+  ['method_5fdrawer_5',['method_drawer',['../classmethod__drawer.html',1,'']]],
+  ['modulator_6',['modulator',['../classsbk_1_1engine_1_1modulator.html',1,'sbk::engine']]],
+  ['monotonic_5fbuffer_5fresource_7',['monotonic_buffer_resource',['../classsbk_1_1memory_1_1monotonic__buffer__resource.html',1,'sbk::memory']]],
+  ['mpsc_5fring_5fbuffer_8',['mpsc_ring_buffer',['../classsbk_1_1mpsc__ring__buffer.html',1,'sbk']]]
 ];

@@ -1,7 +1,7 @@
 <map id="sbk::task_promise&lt; T &gt;" name="sbk::task_promise&lt; T &gt;">
-<area shape="rect" id="Node000001" title=" " alt="" coords="72,79,251,104"/>
-<area shape="rect" id="Node000002" href="$classsbk_1_1promise__base.html" title=" " alt="" coords="5,5,149,31"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="103,38,149,76,146,80,100,42"/>
-<area shape="rect" id="Node000003" href="$structsbk_1_1fiber__promise.html" title=" " alt="" coords="174,5,317,31"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="223,42,177,80,173,76,220,38"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="70,81,249,109"/>
+<area shape="rect" id="Node000002" href="$classsbk_1_1promise__base.html" title=" " alt="" coords="5,5,149,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="104,41,148,80,142,81,102,46"/>
+<area shape="rect" id="Node000003" href="$structsbk_1_1fiber__promise.html" title=" " alt="" coords="173,5,314,33"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="220,43,176,83,173,78,215,44"/>
 </map>

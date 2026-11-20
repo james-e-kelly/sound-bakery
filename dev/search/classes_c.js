@@ -1,26 +1,9 @@
 var searchData=
 [
-  ['parameter_0',['parameter',['../classsbk_1_1engine_1_1parameter.html',1,'sbk::engine']]],
-  ['parameter_3c_20float_20_3e_1',['parameter&lt; float &gt;',['../classsbk_1_1engine_1_1parameter.html',1,'sbk::engine']]],
-  ['parameter_3c_20int_20_3e_2',['parameter&lt; int &gt;',['../classsbk_1_1engine_1_1parameter.html',1,'sbk::engine']]],
-  ['parameter_3c_20sbk_5fid_20_3e_3',['parameter&lt; sbk_id &gt;',['../classsbk_1_1engine_1_1parameter.html',1,'sbk::engine']]],
-  ['parsed_5fdatabase_5fname_4',['parsed_database_name',['../structsbk_1_1core_1_1parsed__database__name.html',1,'sbk::core']]],
-  ['play_5fcontainer_5fmessage_5',['play_container_message',['../structsbk_1_1play__container__message.html',1,'sbk']]],
-  ['playable_5fselection_6',['playable_selection',['../structplayable__selection.html',1,'']]],
-  ['player_5fwidget_7',['player_widget',['../classplayer__widget.html',1,'']]],
-  ['polymorphic_5fallocator_8',['polymorphic_allocator',['../classsbk_1_1memory_1_1polymorphic__allocator.html',1,'sbk::memory']]],
-  ['post_5fevent_5fmessage_9',['post_event_message',['../structsbk_1_1post__event__message.html',1,'sbk']]],
-  ['post_5fevent_5fname_5fmessage_10',['post_event_name_message',['../structsbk_1_1post__event__name__message.html',1,'sbk']]],
-  ['project_11',['project',['../classsbk_1_1editor_1_1project.html',1,'sbk::editor']]],
-  ['project_5fconfiguration_12',['project_configuration',['../structsbk_1_1editor_1_1project__configuration.html',1,'sbk::editor']]],
-  ['project_5fexplorer_5fwidget_13',['project_explorer_widget',['../classproject__explorer__widget.html',1,'']]],
-  ['project_5fmanager_14',['project_manager',['../classproject__manager.html',1,'']]],
-  ['project_5fnodes_5fwidget_15',['project_nodes_widget',['../classproject__nodes__widget.html',1,'']]],
-  ['promise_5fbase_16',['promise_base',['../classsbk_1_1promise__base.html',1,'sbk']]],
-  ['promise_5ftype_17',['promise_type',['../structsbk_1_1detached__task_1_1promise__type.html',1,'sbk::detached_task']]],
-  ['property_18',['property',['../classsbk_1_1core_1_1property.html',1,'sbk::core']]],
-  ['property_3c_20parameter_5ftype_20_3e_19',['property&lt; parameter_type &gt;',['../classsbk_1_1core_1_1property.html',1,'sbk::core']]],
-  ['property_5fdrawer_20',['property_drawer',['../classproperty__drawer.html',1,'']]],
-  ['property_5frandom_5fdata_21',['property_random_data',['../structsbk_1_1core_1_1property__random__data.html',1,'sbk::core']]],
-  ['property_5fsubscription_22',['property_subscription',['../structsbk_1_1engine_1_1property__subscription.html',1,'sbk::engine']]]
+  ['object_0',['object',['../classsbk_1_1core_1_1object.html',1,'sbk::core']]],
+  ['object_5fdeleter_1',['object_deleter',['../structsbk_1_1memory_1_1object__deleter.html',1,'sbk::memory']]],
+  ['object_5fowner_2',['object_owner',['../classsbk_1_1core_1_1object__owner.html',1,'sbk::core']]],
+  ['object_5fptr_5fcomparator_3',['object_ptr_comparator',['../structsbk_1_1core_1_1object__ptr__comparator.html',1,'sbk::core']]],
+  ['object_5ftracker_4',['object_tracker',['../classsbk_1_1core_1_1object__tracker.html',1,'sbk::core']]],
+  ['owned_5fobject_5fdeleter_5',['owned_object_deleter',['../structsbk_1_1memory_1_1owned__object__deleter.html',1,'sbk::memory']]]
 ];

@@ -75,30 +75,7 @@ var NAVTREE =
       [ "Open-Source Projects", "md_docs_2Inspiration.html#autotoc_md45", null ],
       [ "UI/UX", "md_docs_2Inspiration.html#autotoc_md46", null ]
     ] ],
-    [ "User Manual", "UserManual.html", [
-      [ "Design Philosophy", "Design.html", [
-        [ "Interacting With Sound Bakery", "Design.html#autotoc_md38", [
-          [ "Editor", "Design.html#autotoc_md39", null ],
-          [ "API", "Design.html#autotoc_md40", null ]
-        ] ],
-        [ "The Runtime", "Design.html#autotoc_md41", null ],
-        [ "Built for Scale and Teams", "Design.html#autotoc_md42", null ]
-      ] ],
-      [ "Roadmap", "Roadmap.html", [
-        [ "The runtime contract", "Roadmap.html#autotoc_md47", null ],
-        [ "0.1.0 — MVP", "Roadmap.html#autotoc_md49", null ],
-        [ "0.2.0 – 0.9.0 — Game Jam Ready", "Roadmap.html#autotoc_md50", null ],
-        [ "1.0.0 — Indie ready", "Roadmap.html#autotoc_md51", null ],
-        [ "2.0.0 — AA ready", "Roadmap.html#autotoc_md52", null ],
-        [ "3.0.0+ — Console & AAA", "Roadmap.html#autotoc_md53", null ]
-      ] ],
-      [ "Guides", "Guides.html", [
-        [ "User Guide", "UserGuide.html", null ],
-        [ "Programmer's Guide", "ProgrammerGuide.html", [
-          [ "Sound Chef Programmer's Guide", "ChefProgrammerGuide.html", null ]
-        ] ]
-      ] ]
-    ] ],
+    [ "User Manual", "UserManual.html", "UserManual" ],
     [ "Todo List", "todo.html", null ],
     [ "Concepts", "concepts.html", "concepts" ],
     [ "Classes", "annotated.html", [
@@ -129,8 +106,9 @@ var NAVTREEINDEX =
 [
 "ChefProgrammerGuide.html",
 "editor__defines_8h_source.html",
-"stb__image_8h_source.html"
+"structsbk_1_1play__container__message.html"
 ];
 
-var SYNCONMSG = 'click to disable panel synchronisation';
-var SYNCOFFMSG = 'click to enable panel synchronisation';
+var SYNCONMSG = 'click to disable panel synchronization';
+var SYNCOFFMSG = 'click to enable panel synchronization';
+var LISTOFALLMEMBERS = 'List of all members';

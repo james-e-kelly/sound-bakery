@@ -1,25 +1,25 @@
 <map id="sbk::engine::container" name="sbk::engine::container">
-<area shape="rect" id="Node000001" title="Base container type. Inherited types include sounds, random, sequence etc." alt="" coords="789,141,956,166"/>
-<area shape="rect" id="Node000008" href="$classsbk_1_1engine_1_1blend__container.html" title=" " alt="" coords="1017,5,1158,45"/>
-<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="898,129,945,92,1003,55,1027,43,1030,48,1005,60,948,97,901,134"/>
-<area shape="rect" id="Node000009" href="$classsbk_1_1engine_1_1random__container.html" title=" " alt="" coords="1010,69,1165,109"/>
-<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="929,134,1019,107,1020,112,930,139"/>
-<area shape="rect" id="Node000010" href="$classsbk_1_1engine_1_1sequence__container.html" title=" " alt="" coords="1004,133,1171,173"/>
-<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="970,151,1004,151,1004,156,970,156"/>
-<area shape="rect" id="Node000011" href="$classsbk_1_1engine_1_1sound__container.html" title=" " alt="" coords="1015,197,1159,237"/>
-<area shape="poly" id="edge10_Node000001_Node000011" title=" " alt="" coords="930,168,1020,195,1019,200,929,173"/>
-<area shape="rect" id="Node000012" href="$classsbk_1_1engine_1_1switch__container.html" title=" " alt="" coords="1014,261,1161,301"/>
-<area shape="poly" id="edge11_Node000001_Node000012" title=" " alt="" coords="901,173,948,210,1005,247,1030,259,1027,264,1003,252,945,214,898,177"/>
-<area shape="rect" id="Node000002" href="$classsbk_1_1engine_1_1node.html" title="Root node that builds the core graph of sounds and busses." alt="" coords="604,141,741,166"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="755,151,789,151,789,156,755,156"/>
-<area shape="rect" id="Node000003" href="$classsbk_1_1core_1_1database__object.html" title="Base object type for any object that can exist in the editor/database. Holds an ID and name." alt="" coords="407,133,556,173"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="570,151,604,151,604,156,570,156"/>
-<area shape="rect" id="Node000004" href="$classsbk_1_1core_1_1object.html" title="Base object that all sound Bakery objects should inherit from." alt="" coords="229,141,359,166"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="372,151,406,151,406,156,372,156"/>
-<area shape="rect" id="Node000005" href="$classsbk_1_1core_1_1object__owner.html" title="Creates, owns and tracks objects. Is owned by other object owners." alt="" coords="5,83,181,109"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="152,110,250,138,248,143,151,115"/>
-<area shape="rect" id="Node000006" title=" " alt="" coords="13,133,174,173"/>
-<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="187,151,229,151,229,156,187,156"/>
-<area shape="rect" id="Node000007" title=" " alt="" coords="19,198,168,223"/>
-<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="151,192,248,163,250,169,152,197"/>
+<area shape="rect" id="Node000001" title="Base container type. Inherited types include sounds, random, sequence etc." alt="" coords="786,152,951,180"/>
+<area shape="rect" id="Node000008" href="$classsbk_1_1engine_1_1blend__container.html" title=" " alt="" coords="1012,5,1152,50"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="894,140,941,100,998,60,1019,52,1024,50,1000,65,944,104,897,144"/>
+<area shape="rect" id="Node000009" href="$classsbk_1_1engine_1_1random__container.html" title=" " alt="" coords="1005,75,1159,119"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="927,145,1008,121,1014,119,929,150"/>
+<area shape="rect" id="Node000010" href="$classsbk_1_1engine_1_1sequence__container.html" title=" " alt="" coords="999,144,1165,189"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="966,164,1001,166,996,167,967,169"/>
+<area shape="rect" id="Node000011" href="$classsbk_1_1engine_1_1sound__container.html" title=" " alt="" coords="1010,213,1154,258"/>
+<area shape="poly" id="edge10_Node000001_Node000011" title=" " alt="" coords="928,183,1014,213,1008,213,928,188"/>
+<area shape="rect" id="Node000012" href="$classsbk_1_1engine_1_1switch__container.html" title=" " alt="" coords="1009,283,1155,327"/>
+<area shape="poly" id="edge11_Node000001_Node000012" title=" " alt="" coords="896,188,944,228,1000,268,1024,283,1019,282,998,273,941,233,895,193"/>
+<area shape="rect" id="Node000002" href="$classsbk_1_1engine_1_1node.html" title="Root node that builds the core graph of sounds and busses." alt="" coords="601,152,738,180"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="753,164,788,166,782,167,753,169"/>
+<area shape="rect" id="Node000003" href="$classsbk_1_1core_1_1database__object.html" title="Base object type for any object that can exist in the editor/database. Holds an ID and name." alt="" coords="405,144,553,189"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="568,164,604,166,598,167,569,169"/>
+<area shape="rect" id="Node000004" href="$classsbk_1_1core_1_1object.html" title="Base object that all sound Bakery objects should inherit from." alt="" coords="229,152,357,180"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="372,164,407,166,402,167,373,169"/>
+<area shape="rect" id="Node000005" href="$classsbk_1_1core_1_1object__owner.html" title="Creates, owns and tracks objects. Is owned by other object owners." alt="" coords="5,92,181,120"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="158,122,181,129,249,151,244,153,180,134,159,128"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="13,144,173,189"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="188,164,231,165,226,167,189,169"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="19,212,167,240"/>
+<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="157,205,180,198,249,179,244,182,181,204,160,210"/>
 </map>

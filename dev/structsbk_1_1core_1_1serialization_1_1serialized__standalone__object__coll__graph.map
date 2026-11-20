@@ -1,11 +1,11 @@
 <map id="sbk::core::serialization::serialized_standalone_object" name="sbk::core::serialization::serialized_standalone_object">
-<area shape="rect" id="Node000001" title="Header for an object that saves to a single file." alt="" coords="587,37,805,77"/>
-<area shape="rect" id="Node000002" href="$structsbk_1_1core_1_1serialization_1_1serialized__version.html" title="Stores the version of Sound Bakery." alt="" coords="316,5,485,45"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="499,33,587,43,586,48,499,39"/>
-<area shape="rect" id="Node000003" href="$structsbk_1_1core_1_1serialization_1_1serialized__object.html" title="Serializes an object type and the object&#39;s data." alt="" coords="316,69,485,109"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="499,76,586,67,587,72,499,81"/>
-<area shape="rect" id="Node000004" href="$structsbk_1_1core_1_1serialization_1_1serialized__type.html" title="Serializes an object type so upon loading, we create the correct type." alt="" coords="9,40,178,80"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="192,67,316,79,316,84,191,72"/>
-<area shape="rect" id="Node000005" href="$classsbk_1_1core_1_1object__owner.html" title="Creates, owns and tracks objects. Is owned by other object owners." alt="" coords="5,105,181,130"/>
-<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="195,109,292,101,315,99,316,104,292,107,195,115"/>
+<area shape="rect" id="Node000001" title="Header for an object that saves to a single file." alt="" coords="591,40,809,85"/>
+<area shape="rect" id="Node000002" href="$structsbk_1_1core_1_1serialization_1_1serialized__version.html" title="Stores the version of Sound Bakery." alt="" coords="319,5,487,50"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="502,37,593,49,588,50,502,42"/>
+<area shape="rect" id="Node000003" href="$structsbk_1_1core_1_1serialization_1_1serialized__object.html" title="Serializes an object type and the object&#39;s data." alt="" coords="319,75,487,119"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="502,83,588,75,593,75,503,88"/>
+<area shape="rect" id="Node000004" href="$structsbk_1_1core_1_1serialization_1_1serialized__type.html" title="Serializes an object type so upon loading, we create the correct type." alt="" coords="9,44,177,89"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="193,73,321,88,316,90,193,79"/>
+<area shape="rect" id="Node000005" href="$classsbk_1_1core_1_1object__owner.html" title="Creates, owns and tracks objects. Is owned by other object owners." alt="" coords="5,112,181,140"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="196,125,294,118,316,117,321,117,295,123,196,130"/>
 </map>

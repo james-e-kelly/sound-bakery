@@ -1,9 +1,9 @@
 <map id="sbk::executor" name="sbk::executor">
-<area shape="rect" id="Node000001" title="Abstract executor." alt="" coords="127,79,236,104"/>
-<area shape="rect" id="Node000003" href="$classsbk_1_1manual__executor.html" title="An @r executor with no thread of its own: work is queued, then run all at once by whoever calls @r dr..." alt="" coords="5,152,171,177"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="157,114,105,154,102,150,154,110"/>
-<area shape="rect" id="Node000004" href="$classsbk_1_1thread__executor.html" title="An @r executor that owns one OS thread and runs posted work as soon as it arrives." alt="" coords="195,152,354,177"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="209,110,261,150,258,154,205,114"/>
-<area shape="rect" id="Node000002" href="$classsbk_1_1core_1_1object__owner.html" title="Creates, owns and tracks objects. Is owned by other object owners." alt="" coords="93,5,269,31"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="184,44,184,79,179,79,179,44"/>
+<area shape="rect" id="Node000001" title="Abstract executor." alt="" coords="125,81,234,109"/>
+<area shape="rect" id="Node000003" href="$classsbk_1_1manual__executor.html" title="An @r executor with no thread of its own: work is queued, then run all at once by whoever calls @r dr..." alt="" coords="5,157,170,184"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="154,118,105,158,102,154,149,119"/>
+<area shape="rect" id="Node000004" href="$classsbk_1_1thread__executor.html" title="An @r executor that owns one OS thread and runs posted work as soon as it arrives." alt="" coords="194,157,352,184"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="209,116,259,156,254,156,207,121"/>
+<area shape="rect" id="Node000002" href="$classsbk_1_1core_1_1object__owner.html" title="Creates, owns and tracks objects. Is owned by other object owners." alt="" coords="92,5,267,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="181,47,182,82,177,80,178,51"/>
 </map>
