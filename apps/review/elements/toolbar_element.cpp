@@ -14,7 +14,7 @@ auto toolbar_element::refresh_element() -> void
     for (auto* button : {&m_toolbarReviewsButton, &m_toolbarUsersButton, &m_toolbarSettingsButton})
     {
         (*button)
-            .set_icon_hover_grow(1.15f)
+            .set_icon_hover_grow(gluten::theme::iconHoverScale)
             .set_element_content_font_size(gluten::theme::iconSizeXl)
             .set_element_hover_color(gluten::theme::backgroundHover)
             .set_element_active_color(gluten::theme::backgroundActive)

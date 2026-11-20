@@ -40,7 +40,7 @@ auto left_panel_element::refresh_element() -> void
     for (auto* button : {&m_backButton, &m_newButton})
     {
         (*button)
-            .set_icon_hover_grow(1.15f)
+            .set_icon_hover_grow(gluten::theme::iconHoverScale)
             .set_button_style(gluten::button_style::secondary)
             .set_element_hover_color(gluten::theme::fieldHover01)
             .set_element_active_color(gluten::theme::layerActive01)

@@ -48,7 +48,7 @@ void workspace_widget::refresh_style_implementation()
         .set_element_background_color(gluten::theme::background);
 
     m_innerWindowLayout
-        .set_element_padding(ImVec4(0.0f, gluten::theme::space08, gluten::theme::space08, gluten::theme::space08))
+        .set_element_padding(ImVec4(0.0f, gluten::theme::space04, gluten::theme::space08, gluten::theme::space08))
         ;
 
     // Toolbar

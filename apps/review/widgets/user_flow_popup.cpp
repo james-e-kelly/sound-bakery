@@ -50,7 +50,7 @@ auto user_flow_popup::render_popup() -> void
     if (ImGui::InputTextWithHint("Email", "email@domain.com", m_emailBuffer, textBufferSize))
     {
         const std::string emailString = m_emailBuffer;
-        const std::regex emailValidRegex("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}");
+        static const std::regex emailValidRegex("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}");
 
         if (std::regex_match(emailString.begin(), emailString.end(), emailValidRegex))
         {

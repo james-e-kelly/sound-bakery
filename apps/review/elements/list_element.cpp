@@ -10,7 +10,7 @@ auto list_element::render_element(const gluten::element_render_info& renderInfo)
     const float hoverAlpha = gluten::animation_subsystem::animate_bool(id, false, get_element_is_hovered(), 10.0f);
 
     m_titleText.set_element_translation(ImVec2(hoverAlpha * gluten::theme::space04, 0.0f));
-    m_descriptionText.set_element_translation(ImVec2(hoverAlpha * gluten::theme::space08, 0.0f));
+    m_descriptionText.set_element_translation(ImVec2(hoverAlpha * gluten::theme::space04, 0.0f));
 
     m_titleText.render(renderInfo.elementBox);
     m_descriptionText.render(renderInfo.elementBox);

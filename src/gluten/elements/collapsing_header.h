@@ -14,7 +14,7 @@ namespace gluten
         {
             set_element_background_color(ImGui::GetStyleColorVec4(ImGuiCol_Header));
             set_element_hover_color(ImGui::GetStyleColorVec4(ImGuiCol_HeaderHovered));
-            set_element_rounding(m_elementRounding);
+            set_element_rounding(gluten::theme::radiusMd);
             set_element_inner_padding(gluten::theme::insetCompact);
         }
 

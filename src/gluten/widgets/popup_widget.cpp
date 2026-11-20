@@ -35,9 +35,9 @@ auto gluten::popup_widget::render_implementation() -> void
     gluten::imgui::scoped_color inputTextBackground(ImGuiCol_FrameBg, gluten::theme::layer01);
     gluten::imgui::scoped_style popupPadding(ImGuiStyleVar_WindowPadding, ImVec2(gluten::theme::insetFrame));
 
-    ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+    const ImVec2 center = ImGui::GetMainViewport()->GetCenter();
     ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
-    ImGui::SetNextWindowSize(gluten::theme::insetWindow * 10.0f, ImGuiCond_Appearing);
+    ImGui::SetNextWindowSize(gluten::theme::insetWindow * 12.0f, ImGuiCond_Appearing);
 
     bool popupOpen = false;
 
