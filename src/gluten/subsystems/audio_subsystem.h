@@ -18,6 +18,7 @@ namespace gluten
     {
         double integrated = -200.0;
         double range      = -200.0;
+        double truePeak   = -200.0;  //< dBTP, loudest inter-sample peak across all channels
     };
 
     /**
@@ -28,6 +29,7 @@ namespace gluten
         float min    = 0.0f;  // min sample value within the time frame. only written to when downsampling
         float max    = 0.0f;  // max sample value within the time frame. only written to when downsampling
         float sample = 0.0f;  // the actual sample value at this frame. only written to when showing the full resolution
+        float rms    = 0.0f;  // RMS of the channel within the time frame. only written to when downsampling
     };
 
     /**
@@ -51,6 +53,7 @@ namespace gluten
         float lowAverage        = 0.0f;
         float midAverage        = 0.0f;
         float highAverage       = 0.0f;
+        float truePeak          = 0.0f;  //< Linear, loudest channel. Only written at the LUFS resolution
 
         loudness_lufs lufs;
     };
@@ -127,6 +130,13 @@ namespace gluten
         auto get_sound_is_looping(const std::filesystem::path& filePath) -> bool;
         auto stop_all_sounds() -> void;
 
+        /**
+         * @brief Linear gain applied to every voice this subsystem plays. Previews start quiet so nobody
+         * gets blasted by a loud master on first play.
+         */
+        auto set_preview_volume(float linearVolume) -> void;
+        auto get_preview_volume() const -> float { return m_previewVolume; }
+
         auto get_or_load_audio_handle(const std::filesystem::path& filePath) -> sc_sound*;
         auto get_voice_handle(const std::filesystem::path& filePath) -> sc_voice_handle;
 
@@ -159,5 +169,7 @@ namespace gluten
         std::unordered_map<std::filesystem::path, waveform> m_filesToWaveforms;
         waveform_lods_cache_type m_waveformLodCache;
         loudness_cache_type m_filesToLoudnessCache;
+
+        float m_previewVolume = 0.25f;  //< About -12 dB
     };
 }  // namespace gluten

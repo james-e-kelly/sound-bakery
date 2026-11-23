@@ -40,7 +40,9 @@ int gluten::audio_subsystem::init()
         return 1;
     }
 
-    result = sbk_system_init(sbk_system_config_init_default());
+    sbk_system_config systemConfig = sbk_system_config_init_default();
+    systemConfig.logToConsole            = true;
+    result = sbk_system_init(systemConfig);
     if (result != SBK_SUCCESS)
     {
         return 1;
@@ -86,6 +88,7 @@ auto gluten::audio_subsystem::play_sound(const std::filesystem::path& filePath) 
     {
         sc_voice_handle handle{};
         sc_system_play_sound(sbk::engine::system::get()->get_runtime(), sound, &handle, nullptr, SC_FALSE);
+        sc_voice_set_volume(sbk::engine::system::get()->get_runtime(), handle, m_previewVolume);
         try_set_loop_points(handle, loopData);
         m_filesToVoiceHandlesMap[filePath] = handle;
     }
@@ -110,6 +113,19 @@ auto gluten::audio_subsystem::pause_all() -> void
     }
 }
 
+auto gluten::audio_subsystem::set_preview_volume(float linearVolume) -> void
+{
+    m_previewVolume = std::max(linearVolume, 0.0f);
+
+    for (const auto& soundInstance : m_filesToVoiceHandlesMap)
+    {
+        if (soundInstance.second)
+        {
+            sc_voice_set_volume(sbk::engine::system::get()->get_runtime(), soundInstance.second, m_previewVolume);
+        }
+    }
+}
+
 auto gluten::audio_subsystem::set_sound_cursor_position(const std::filesystem::path& filePath, float cursorPosition) -> void
 {
     if (sc_voice_handle voiceHandle = get_voice_handle(filePath))
@@ -121,6 +137,7 @@ auto gluten::audio_subsystem::set_sound_cursor_position(const std::filesystem::p
     {
         sc_voice_handle handle{};
         sc_system_play_sound(sbk::engine::system::get()->get_runtime(), sound, &handle, nullptr, SC_TRUE);
+        sc_voice_set_volume(sbk::engine::system::get()->get_runtime(), handle, m_previewVolume);
         sc_voice_set_cursor_position_in_seconds(sbk::engine::system::get()->get_runtime(), handle, cursorPosition);
         sc_voice_set_looping(sbk::engine::system::get()->get_runtime(), handle, SC_FALSE);
         m_filesToVoiceHandlesMap[filePath] = handle;
@@ -449,6 +466,7 @@ auto gluten::audio_subsystem::generate_downsampled_resolution_waveform(std::shar
 
                 result.channelFrames[channel][samplingIndex].min = std::min<float>(result.channelFrames[channel][samplingIndex].min, sampleValue);
                 result.channelFrames[channel][samplingIndex].max = std::max<float>(result.channelFrames[channel][samplingIndex].max, sampleValue);
+                result.channelFrames[channel][samplingIndex].rms += sampleValue * sampleValue;
             }
 
             if (channels == 2)
@@ -467,6 +485,12 @@ auto gluten::audio_subsystem::generate_downsampled_resolution_waveform(std::shar
                 result.stereoFrames[samplingIndex].sideMin = std::min<float>(result.stereoFrames[samplingIndex].sideMin, sideValue);
                 result.stereoFrames[samplingIndex].sideMax = std::max<float>(result.stereoFrames[samplingIndex].sideMax, sideValue);
             }
+        }
+
+        for (ma_uint64 channel = 0; channel < channels; ++channel)
+        {
+            float& rms = result.channelFrames[channel][samplingIndex].rms;
+            rms        = std::sqrt(rms * framesToReadReciprocal);
         }
     }
 
@@ -505,7 +529,7 @@ auto gluten::audio_subsystem::generate_downsampled_resolution_global_frames(std:
     SC_ZERO_OBJECT(&midsLowpass);
     SC_ZERO_OBJECT(&midsHighpass);
 
-    ebur128_state* eburState = ebur128_init(channels, ma_standard_sample_rate_48000, EBUR128_MODE_M | EBUR128_MODE_S);
+    ebur128_state* eburState = ebur128_init(channels, ma_standard_sample_rate_48000, EBUR128_MODE_M | EBUR128_MODE_S | EBUR128_MODE_TRUE_PEAK);
 
     const std::size_t frameCount = audioData->size() / channels;
     size_t framesToRead          = frameCount / targetSamples;
@@ -566,6 +590,18 @@ auto gluten::audio_subsystem::generate_downsampled_resolution_global_frames(std:
             {
                 ZoneScopedN("momentary");
                 ebur128_loudness_momentary(eburState, &result[samplingIndex].lufs.momentary);
+            }
+
+            {
+                ZoneScopedN("true_peak");
+                for (ma_uint32 channel = 0; channel < channels; ++channel)
+                {
+                    double channelTruePeak = 0.0;
+                    if (ebur128_prev_true_peak(eburState, channel, &channelTruePeak) == EBUR128_SUCCESS)
+                    {
+                        result[samplingIndex].truePeak = std::max(result[samplingIndex].truePeak, static_cast<float>(channelTruePeak));
+                    }
+                }
             }
         }
 
@@ -635,11 +671,22 @@ auto gluten::audio_subsystem::generate_sample_resolution_waveform(std::shared_pt
     {
         ZoneScopedN("Calculate LUFS");
 
-        ebur128_state* eburState = ebur128_init(channels, ma_standard_sample_rate_48000, EBUR128_MODE_I | EBUR128_MODE_LRA | EBUR128_MODE_HISTOGRAM);
+        ebur128_state* eburState = ebur128_init(channels, ma_standard_sample_rate_48000, EBUR128_MODE_I | EBUR128_MODE_LRA | EBUR128_MODE_HISTOGRAM | EBUR128_MODE_TRUE_PEAK);
 
         ebur128_add_frames_float(eburState, audioData->data(), frameCount);
         ebur128_loudness_global(eburState, &result.lufs.integrated);
         ebur128_loudness_range(eburState, &result.lufs.range);
+
+        double maxTruePeak = 0.0;
+        for (ma_uint32 channel = 0; channel < channels; ++channel)
+        {
+            double channelTruePeak = 0.0;
+            if (ebur128_true_peak(eburState, channel, &channelTruePeak) == EBUR128_SUCCESS)
+            {
+                maxTruePeak = std::max(maxTruePeak, channelTruePeak);
+            }
+        }
+        result.lufs.truePeak = maxTruePeak > 0.0 ? 20.0 * std::log10(maxTruePeak) : -200.0;
 
         ebur128_destroy(&eburState);
     }

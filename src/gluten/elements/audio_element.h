@@ -5,12 +5,29 @@
 
 namespace gluten
 {
+    enum class waveform_overlay
+    {
+        none,
+        loudness,  //< Short-term LUFS line plus an integrated LUFS reference line
+        bands      //< Low/mid/high band levels in dB
+    };
+
+    struct waveform_loudness_stats
+    {
+        std::optional<double> integrated;    //< LUFS
+        std::optional<double> range;         //< LU
+        std::optional<double> truePeak;      //< dBTP
+        std::optional<double> samplePeak;    //< dBFS
+        std::optional<double> shorttermMax;  //< LUFS
+    };
+
     /**
-     * @brief Renders the waveform, LUFS/dB overlays and playhead for an audio file, and
-     * handles basic playback interaction (click to seek, right click to play/pause).
+     * @brief Renders an audio file as a timeline: a time ruler, a marker lane, one lane per channel
+     * (peak and RMS), a loudness overlay, the playhead, and a status bar of loudness stats.
      *
-     * Deliberately does not render any playback controls (play/pause buttons, timecodes, etc.)
-     * or any app-specific markers on the waveform - those belong to whatever app uses this element.
+     * Handles basic playback interaction (click or scrub the ruler/waveform to seek, right click to play/pause).
+     * Deliberately does not render any transport controls or app-specific markers - those belong to whatever
+     * app uses this element. Apps draw markers into the marker lane from render_waveform_overlay().
      */
     class audio_element : public element
     {
@@ -25,16 +42,37 @@ namespace gluten
         auto pause() -> void;
         auto seek(double position) -> void;
 
+        /**
+         * @brief View settings are remembered per file, since elements are usually rebuilt every frame.
+         */
+        auto set_overlay(waveform_overlay overlay) -> void;
+        auto get_overlay() const -> waveform_overlay;
+        auto set_render_mid_side(bool renderMidSide) -> void;
+        auto get_render_mid_side() const -> bool;
+
+        auto get_channel_count() const -> std::size_t { return m_channelCount; }
+        auto get_loudness_stats() const -> const waveform_loudness_stats& { return m_loudnessStats; }
+
+        /**
+         * @brief Peak level of each channel around a time, read from the cached waveform. Cheap enough for meters.
+         */
+        auto get_channel_peaks_at(double position) const -> std::vector<float>;
+
         auto get_element_content_size(const ImVec2& parentSize) -> ImVec2 const override;
+
+        static constexpr float s_rulerHeight      = 20.0f;
+        static constexpr float s_markerLaneHeight = 22.0f;
+        static constexpr float s_trackHeaderWidth = 28.0f;
+        static constexpr float s_statusBarHeight  = 22.0f;
 
     protected:
         auto render_element(const element_render_info& renderInfo) -> bool override;
 
         /**
          * @brief Called inside the waveform's ImPlot context (axes set to time/linear volume), after the
-         * playhead has been drawn. Override to draw extra markers on the same plot.
+         * waveform and before the playhead. Override to draw markers into the marker lane.
          */
-        virtual auto render_waveform_overlay(double plotTimeWidth) -> void {}
+        virtual auto render_waveform_overlay(const ImRect& markerLane, double plotTimeWidth) -> void {}
 
         const std::filesystem::path m_filePath;
 
@@ -46,6 +84,23 @@ namespace gluten
 
     private:
         auto render_waveform() -> void;
+        auto render_status_bar(const ImRect& statusBar) -> void;
         auto get_audio_height(float width) -> float;
+
+        std::size_t m_channelCount = 0;
+        waveform_loudness_stats m_loudnessStats;
     };
+
+    /**
+     * @brief Draws text with every digit given the same advance, so changing numbers (timecodes, meters) don't jitter.
+     *
+     * @return The width of the drawn text.
+     */
+    auto draw_tabular_text(ImDrawList* drawList, ImFont* font, float fontSize, ImVec2 position, ImU32 color, std::string_view text) -> float;
+    auto calc_tabular_text_width(ImFont* font, float fontSize, std::string_view text) -> float;
+
+    /**
+     * @brief Formats seconds as mm:ss.mmm (or mm:ss when showMilliseconds is false).
+     */
+    auto format_timecode(double seconds, bool showMilliseconds = true) -> std::string;
 }  // namespace gluten
