@@ -108,9 +108,12 @@ gluten::element::element(const anchor_preset& anchorPreset)
 
 gluten::element::~element()
 {
-    if (ImGui::GetCurrentContext())
+    if (ImGuiContext* const context = ImGui::GetCurrentContext())
     {
-        ImGui::SetWindowFontScale(1.0f);
+        if (context->CurrentWindow)
+        {
+            ImGui::SetWindowFontScale(1.0f);
+        }
     }
 }
 
