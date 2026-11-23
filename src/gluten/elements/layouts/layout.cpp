@@ -1,6 +1,7 @@
 #include "layout.h"
 
 #include "gluten/theme/theme.h"
+#include "gluten/utils/imgui_util_structures.h"
 
 gluten::layout::layout(const layout_type& layoutType) : m_layoutType(layoutType) {}
 
@@ -191,6 +192,15 @@ bool gluten::layout::render_layout_element_internal(const ImRect& thisBox,
         if (has_element_scale())
         {
             element->set_element_content_scale(element->get_element_scale() * get_element_scale());
+        }
+
+        // Children render on this layout's surface, so they inherit its layer -- or, if the
+        // layout has none of its own, the layer the layout itself was drawn on. Children are
+        // rendered after layout::render() returns, so that context has to be re-applied here.
+        std::optional<gluten::imgui::scoped_layer> layerScope;
+        if (const std::optional<layer_level> childLayer = m_resolvedLayer.has_value() ? m_resolvedLayer : m_inheritedLayer)
+        {
+            layerScope.emplace(childLayer.value());
         }
 
         activated = element->render({currentLayoutPos, currentLayoutPos + sizeGivenToElement});

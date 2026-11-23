@@ -97,7 +97,23 @@ namespace gluten
         auto set_button_style(button_style style) -> icon_button&;
         auto set_icon_hover_grow(float scaleWhenHovered, float rate = 15.0f) -> icon_button&;
 
+        // Explicit colours replace the style's layer-relative defaults.
+        using element::set_element_background_color;
+        using element::set_element_hover_color;
+        using element::set_element_border_color;
+        auto set_element_background_color(ImU32 color) -> element& override;
+        auto set_element_hover_color(ImU32 color) -> element& override;
+        auto set_element_border_color(ImU32 color) -> element& override;
+
+    protected:
+        auto pre_render_element() -> void override;
+
     private:
+        auto apply_style_colors() -> void;  //< Style colours depend on the layer, so they are re-resolved every render
+
+        bool m_backgroundFromStyle = true;
+        bool m_hoverFromStyle      = true;
+        bool m_borderFromStyle     = true;
         button m_button;
         icon m_text;
         const char* m_buttonId = nullptr;

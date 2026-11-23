@@ -45,7 +45,7 @@ void workspace_widget::refresh_style_implementation()
     set_background_color(gluten::theme::background);
 
     m_windowLayout
-        .set_element_background_color(gluten::theme::background);
+        .set_element_layer(gluten::layer_level::background);
 
     m_innerWindowLayout
         .set_element_padding(ImVec4(0.0f, gluten::theme::space04, gluten::theme::space08, gluten::theme::space08))
@@ -63,7 +63,7 @@ void workspace_widget::refresh_style_implementation()
 
     m_mainPanelLayout
         .set_layout_padding(gluten::theme::insetFrame)
-        .set_element_background_color(gluten::theme::layer02)
+        .set_element_layer(gluten::layer_level::layer02)
         .set_element_rounding(gluten::theme::radiusLg)
         .set_element_rounding_flags(ImDrawFlags_RoundCornersRight)
         ;
@@ -90,6 +90,7 @@ void workspace_widget::refresh_style_implementation()
         .set_element_translation(ImVec2(-ImGui::GetStyle().FramePadding.x, 0.0f));
 
     descriptionEditButton
+        .set_button_style(gluten::button_style::tertiary)
         .set_element_alignment(ImVec2(1.0f, -0.0f));
 
     m_descriptionBoxLayout
@@ -103,6 +104,7 @@ void workspace_widget::refresh_style_implementation()
 auto workspace_widget::render_window_implementation() -> void
 {
     gluten::imgui::scoped_style noGaps(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, 0.0f));
+    gluten::imgui::scoped_layer windowLayer(gluten::layer_level::background);
 
     m_windowLayout.render_window();
 
@@ -116,18 +118,9 @@ auto workspace_widget::render_window_implementation() -> void
 
 auto workspace_widget::render_content() -> void
 {
-    gluten::imgui::scoped_color backgroundColor(ImGuiCol_ChildBg, gluten::theme::layer02);
-    gluten::imgui::scoped_color tabBg(ImGuiCol_Tab, gluten::theme::field01);
-    gluten::imgui::scoped_color tabSelectedBg(ImGuiCol_TabActive, gluten::theme::layerAccentActive01);
-    gluten::imgui::scoped_color tabHoverdBg(ImGuiCol_TabHovered, gluten::theme::layerHover01);
-    gluten::imgui::scoped_color frameBg(ImGuiCol_FrameBg, gluten::theme::layer02);
-    gluten::imgui::scoped_color frameHoveredBg(ImGuiCol_FrameBgHovered, gluten::theme::layerHover01);
-    gluten::imgui::scoped_color header(ImGuiCol_Header, gluten::theme::layer02);
-    gluten::imgui::scoped_color headerBg(ImGuiCol_HeaderHovered, gluten::theme::layerHover01);
-    gluten::imgui::scoped_color scrollbarBg(ImGuiCol_ScrollbarBg, gluten::theme::layer01);
-    /*gluten::imgui::scoped_color buttonCol(ImGuiCol_Button, gluten::theme::gray50);
-    gluten::imgui::scoped_color buttonHovCol(ImGuiCol_ButtonHovered, gluten::theme::gray50Hover);
-    gluten::imgui::scoped_color buttonSelectCol(ImGuiCol_ButtonActive, gluten::theme::gray40);*/
+    // Everything in the main panel -- including the raw ImGui child window, combos,
+    // tabs and selectables below -- sits on the panel's layer.
+    gluten::imgui::scoped_layer panelLayer(gluten::layer_level::layer02);
     gluten::imgui::scoped_font iconFont(gluten::app::get()->get_font(gluten::fonts::regular_lucide_icons));
 
     std::shared_ptr<workspace_manager> workspaceManager = m_workspaceManager.lock();
@@ -323,8 +316,6 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
             }
 
             {
-                gluten::imgui::scoped_color selectableBg(ImGuiCol_PopupBg, gluten::theme::layer02);
-
                 if (ImGui::BeginCombo("Review Version", fmt::format("#{}", m_reviewToSelectedVersionMap[selectedReview.m_reviewId]).c_str()))
                 {
                     for (std::size_t versionIndex = 0; versionIndex < maxVersions; ++versionIndex)
@@ -368,36 +359,19 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
                 }
             }
 
-            ImGui::SameLine(0.0f, 10.0f);
-
-            {
-                gluten::imgui::scoped_button_style secondaryStyle(gluten::button_style::secondary);
-
-                if (ImGui::Button("Collapse All"))
-                {
-                    collapseAll = true;
-                }
-
-                ImGui::SameLine(0.0f, 10.0f);
-
-                if (ImGui::Button("Expand All"))
-                {
-                    expandAll = true;
-                }
-            }
-
             ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
 
-            const ImVec2 currentCursorPos = ImGui::GetCursorScreenPos();
-            const float width             = reviewContent.get_element_rect().GetSize().x - 25.0f;
-            ImRect reviewFilesRect(currentCursorPos, ImVec2(currentCursorPos.x + width, currentCursorPos.y));
-            m_reviewFilesLayout.render(reviewFilesRect);
-
-            m_reviewFilesLayout.set_layout_spacing(0.0f);
-
-            auto render_assets = [&](const std::vector<versionable_review_asset>& assets)
+            struct visible_file
             {
-                for (const auto& asset : assets)
+                const versionable_review_asset* asset = nullptr;
+                std::size_t version                   = 0;
+            };
+
+            std::vector<visible_file> visibleFiles;
+
+            for (const auto& assetRef : {std::cref(selectedReview.m_relativeContextFiles), std::cref(selectedReview.m_reviewAssets)})
+            {
+                for (const auto& asset : assetRef.get())
                 {
                     if (asset.m_fileName.empty())
                     {
@@ -408,88 +382,181 @@ void workspace_widget::render_review_content(std::shared_ptr<workspace_manager>&
 
                     if (asset.m_versionsToRelativeFiles.contains(selectedVersion))
                     {
-                        gluten::imgui::scoped_id reviewId(selectedReview.m_reviewId);
-                        gluten::collapsing_header header(fmt::format("{} #{}", asset.m_fileName, selectedVersion), false);
-                        header.set_element_rounding(gluten::theme::radiusMd);
+                        visibleFiles.push_back({&asset, selectedVersion});
+                    }
+                }
+            }
 
-                        if (collapseAll)
+            const ImVec2 currentCursorPos = ImGui::GetCursorScreenPos();
+            const float width             = reviewContent.get_element_rect().GetSize().x - 25.0f;
+            ImRect reviewFilesRect(currentCursorPos, ImVec2(currentCursorPos.x + width, currentCursorPos.y));
+            m_reviewFilesLayout.render(reviewFilesRect);
+
+            m_reviewFilesLayout.set_layout_spacing(0.0f);
+
+            const float tableTop    = currentCursorPos.y;
+            const ImU32 tableBorder = ImGui::ColorConvertFloat4ToU32(gluten::theme::current_colors().borderSubtle);
+
+            {
+                gluten::background headerBar(gluten::anchor_preset::stretch_full);
+                headerBar.set_element_layer(gluten::layer_level::next);
+                headerBar.set_element_rounding(gluten::theme::radiusMd);
+                headerBar.set_element_rounding_flags(visibleFiles.empty() ? ImDrawFlags_RoundCornersAll : ImDrawFlags_RoundCornersTop);
+
+                m_reviewFilesLayout.render_layout_element_pixels_vertical(&headerBar, ImGui::GetFrameHeight() + gluten::theme::space08);
+
+                // The text and ghost buttons are drawn on the bar, so they use its layer.
+                gluten::imgui::scoped_layer headerBarLayer(headerBar.get_element_layer().value());
+
+                const std::size_t fileCount = visibleFiles.size();
+                gluten::text fileCountText(fmt::format("{} file{}", fileCount, fileCount == 1 ? "" : "s"), ImVec2(0.0f, 0.5f), gluten::anchor_preset::left_middle);
+                fileCountText.set_text_style(gluten::text_style::h4);
+                fileCountText.set_element_translation(ImVec2(gluten::theme::space12, 0.0f));
+                fileCountText.render(headerBar.get_element_rect());
+
+                gluten::layout headerButtons(gluten::layout_type::right_to_left, gluten::anchor_preset::stretch_full);
+                headerButtons.set_layout_spacing(gluten::theme::space04);
+                headerButtons.set_layout_padding(ImVec2(gluten::theme::space04, gluten::theme::space04));
+                headerButtons.render(headerBar.get_element_rect());
+
+                gluten::button expandAllButton(ICON_LC_CHEVRONS_UP_DOWN " Expand All", false, gluten::anchor_preset::left_top);
+                gluten::button collapseAllButton(ICON_LC_CHEVRONS_DOWN_UP " Collapse All", false, gluten::anchor_preset::left_top);
+                expandAllButton.set_button_style(gluten::button_style::ghost);
+                collapseAllButton.set_button_style(gluten::button_style::ghost);
+
+                expandAll   = headerButtons.render_layout_element_pixels_horizontal(&expandAllButton, 0);
+                collapseAll = headerButtons.render_layout_element_pixels_horizontal(&collapseAllButton, 0);
+            }
+
+            if (visibleFiles.empty())
+            {
+                gluten::imgui::scoped_color emptyCol(ImGuiCol_Text, gluten::theme::textSecondary);
+                gluten::text emptyText("No files in this version", ImVec2(0.0f, 0.5f), gluten::anchor_preset::left_middle);
+                emptyText.set_element_translation(ImVec2(gluten::theme::space12, 0.0f));
+                m_reviewFilesLayout.render_layout_element_pixels_vertical(&emptyText, ImGui::GetFrameHeight() + gluten::theme::space16);
+            }
+
+            std::unordered_map<database_id, int> fileCommentCounts;
+            {
+                const auto& reviewComments = workspaceManager->get_all_comments_for_review(selectedReview.m_reviewId);
+                if (reviewComments.has_data())
+                {
+                    for (const auto& comment : reviewComments.m_cache)
+                    {
+                        if (comment.m_fileId)
                         {
-                            header.set_open(false);
-                        }
-
-                        if (expandAll)
-                        {
-                            header.set_open(true);
-                        }
-
-                        if (m_focussedComment.has_value() && m_focussedComment.value().fileId == asset.m_fileId)
-                        {
-                            header.set_open(true);
-                        }
-
-                        if (m_reviewFilesLayout.render_layout_element_percent_horizontal(&header, 1.0f))
-                        {
-                            const auto reviewFileCache = workspaceManager->get_review_file(asset.m_versionsToRelativeFiles.at(selectedVersion));
-
-                            if (!reviewFileCache.has_data())
-                            {
-                                gluten::loading_spinner loadingFileSpinner;
-                                m_reviewFilesLayout.render_layout_element_pixels_horizontal(&loadingFileSpinner, 50.0f);
-                                continue;
-                            }
-
-                            if (audio_element::can_handle_file(reviewFileCache.m_cache))
-                            {
-                                audio_element audioElement(reviewFileCache.m_cache, asset.m_fileId);
-                                if (m_reviewFilesLayout.render_layout_element_percent_horizontal(&audioElement, 1.0f))
-                                {
-                                    m_createCommentPopup = add_child_widget<create_comment_popup>(this, selectedReview.m_reviewId, asset.m_fileId, audioElement.get_file_position());
-                                    m_createCommentPopup->open_popup();
-                                }
-
-                                if (m_focussedComment.has_value())
-                                {
-                                    audioElement.seek_to_position(m_focussedComment.value().filePosition);
-                                    m_focussedComment.reset();
-                                }
-                            }
-                            else if (video_element::can_handle_file(reviewFileCache.m_cache))
-                            {
-                                video_element videoElement(reviewFileCache.m_cache, asset.m_fileId);
-                                if (m_reviewFilesLayout.render_layout_element_percent_horizontal(&videoElement, 1.0f))
-                                {
-                                    m_createCommentPopup = add_child_widget<create_comment_popup>(this, selectedReview.m_reviewId, asset.m_fileId, videoElement.get_file_position());
-                                    m_createCommentPopup->open_popup();
-                                }
-
-                                if (m_focussedComment.has_value())
-                                {
-                                    videoElement.seek_to_position(m_focussedComment.value().filePosition);
-                                    m_focussedComment.reset();
-                                }
-                            }
+                            ++fileCommentCounts[comment.m_fileId];
                         }
                     }
                 }
-            };
+            }
 
-            // "Context Files" / "Review Files" -- group titles for a list.
-            // h4 (16, semibold) is the token for that role; anything bigger
-            // stole attention from the actual list items.
-            gluten::text contextHeader("Context Files");
-            gluten::text assetsHeader("Review Files");
+            for (std::size_t fileIndex = 0; fileIndex < visibleFiles.size(); ++fileIndex)
+            {
+                const versionable_review_asset& asset = *visibleFiles[fileIndex].asset;
+                const std::size_t selectedVersion     = visibleFiles[fileIndex].version;
+                const bool isLastRow                  = fileIndex + 1 == visibleFiles.size();
 
-            contextHeader.set_text_style(gluten::text_style::h4);
-            assetsHeader .set_text_style(gluten::text_style::h4);
+                const int commentCount = fileCommentCounts.contains(asset.m_fileId) ? fileCommentCounts.at(asset.m_fileId) : 0;
+                const std::string rowDetail = commentCount > 0 ? fmt::format("{} {}     #{}", ICON_LC_MESSAGE_SQUARE, commentCount, selectedVersion)
+                                                               : fmt::format("#{}", selectedVersion);
 
-            m_reviewFilesLayout.render_layout_element_percent_horizontal(&contextHeader, 1.0f);
-            m_reviewFilesLayout.render_vertical_spacer(16.0f);
-            render_assets(selectedReview.m_relativeContextFiles);
-            m_reviewFilesLayout.render_vertical_spacer(16.0f);
+                gluten::imgui::scoped_id reviewId(selectedReview.m_reviewId);
+                gluten::imgui::scoped_id fileId(asset.m_fileId);
+                gluten::collapsing_header header(asset.m_fileName, false, rowDetail);
 
-            m_reviewFilesLayout.render_layout_element_percent_horizontal(&assetsHeader, 1.0f);
-            m_reviewFilesLayout.render_vertical_spacer(16.0f);
-            render_assets(selectedReview.m_reviewAssets);
+                if (collapseAll)
+                {
+                    header.set_open(false);
+                }
+
+                if (expandAll)
+                {
+                    header.set_open(true);
+                }
+
+                if (m_focussedComment.has_value() && m_focussedComment.value().fileId == asset.m_fileId)
+                {
+                    header.set_open(true);
+                }
+
+                const bool roundRowBottom = isLastRow && !header.get_open();
+
+                header.set_element_background_color(gluten::theme::layer02);
+                header.set_element_hover_color(gluten::theme::layerHover02);
+                header.set_element_rounding(roundRowBottom ? gluten::theme::radiusMd : 0.0f);
+                header.set_element_rounding_flags(ImDrawFlags_RoundCornersBottom);
+                header.set_element_border_sides(gluten::border_sides::top);
+                header.set_element_border_color(gluten::theme::borderSubtle02);
+                header.set_element_inner_padding(ImVec2(gluten::theme::space12, gluten::theme::space08));
+
+                if (!m_reviewFilesLayout.render_layout_element_percent_horizontal(&header, 1.0f))
+                {
+                    continue;
+                }
+
+                // The inset background's height is only known after the content renders, so draw it behind on channel 0.
+                ImDrawList* const drawList = ImGui::GetWindowDrawList();
+                ImDrawListSplitter contentSplitter;
+                contentSplitter.Split(drawList, 2);
+                contentSplitter.SetCurrentChannel(drawList, 1);
+
+                const float contentTop = m_reviewFilesLayout.get_current_layout_pos().y;
+
+                const auto reviewFileCache = workspaceManager->get_review_file(asset.m_versionsToRelativeFiles.at(selectedVersion));
+
+                if (!reviewFileCache.has_data())
+                {
+                    gluten::loading_spinner loadingFileSpinner;
+                    m_reviewFilesLayout.render_layout_element_pixels_vertical(&loadingFileSpinner, 50.0f);
+                }
+                else if (audio_element::can_handle_file(reviewFileCache.m_cache))
+                {
+                    audio_element audioElement(reviewFileCache.m_cache, asset.m_fileId);
+                    if (m_reviewFilesLayout.render_layout_element_percent_horizontal(&audioElement, 1.0f))
+                    {
+                        m_createCommentPopup = add_child_widget<create_comment_popup>(this, selectedReview.m_reviewId, asset.m_fileId, audioElement.get_file_position());
+                        m_createCommentPopup->open_popup();
+                    }
+
+                    if (m_focussedComment.has_value())
+                    {
+                        audioElement.seek_to_position(m_focussedComment.value().filePosition);
+                        m_focussedComment.reset();
+                    }
+                }
+                else if (video_element::can_handle_file(reviewFileCache.m_cache))
+                {
+                    video_element videoElement(reviewFileCache.m_cache, asset.m_fileId);
+                    if (m_reviewFilesLayout.render_layout_element_percent_horizontal(&videoElement, 1.0f))
+                    {
+                        m_createCommentPopup = add_child_widget<create_comment_popup>(this, selectedReview.m_reviewId, asset.m_fileId, videoElement.get_file_position());
+                        m_createCommentPopup->open_popup();
+                    }
+
+                    if (m_focussedComment.has_value())
+                    {
+                        videoElement.seek_to_position(m_focussedComment.value().filePosition);
+                        m_focussedComment.reset();
+                    }
+                }
+
+                const float contentBottom = m_reviewFilesLayout.get_current_layout_pos().y;
+
+                contentSplitter.SetCurrentChannel(drawList, 0);
+                drawList->AddRectFilled(ImVec2(reviewFilesRect.Min.x, contentTop), ImVec2(reviewFilesRect.Max.x, contentBottom),
+                                        ImGui::ColorConvertFloat4ToU32(gluten::theme::layer01),
+                                        isLastRow ? gluten::theme::radiusMd : 0.0f, ImDrawFlags_RoundCornersBottom);
+                drawList->AddLine(ImVec2(reviewFilesRect.Min.x, contentTop), ImVec2(reviewFilesRect.Max.x, contentTop), tableBorder);
+                contentSplitter.Merge(drawList);
+            }
+
+            if (ImDrawList* const drawList = ImGui::GetWindowDrawList())
+            {
+                const float tableBottom = m_reviewFilesLayout.get_current_layout_pos().y;
+                drawList->AddRect(ImVec2(reviewFilesRect.Min.x, tableTop), ImVec2(reviewFilesRect.Max.x, tableBottom), tableBorder, gluten::theme::radiusMd);
+            }
+
             m_reviewFilesLayout.render_vertical_spacer(16.0f);
 
             ImGui::EndTabItem();
@@ -829,9 +896,9 @@ void workspace_widget::render_review_description(const review_data& selectedRevi
                 gluten::button noVoteButton(ICON_LC_MINUS, false, gluten::anchor_preset::left_top);
                 gluten::button upVoteButton(ICON_LC_THUMBS_UP, false, gluten::anchor_preset::left_top);
 
-                downVoteButton.set_button_style(gluten::button_style::secondary).set_element_content_scale(buttonsScale);
-                noVoteButton.set_button_style(gluten::button_style::secondary).set_element_content_scale(buttonsScale);
-                upVoteButton.set_button_style(gluten::button_style::secondary).set_element_content_scale(buttonsScale);
+                downVoteButton.set_button_style(gluten::button_style::tertiary).set_element_content_scale(buttonsScale);
+                noVoteButton.set_button_style(gluten::button_style::tertiary).set_element_content_scale(buttonsScale);
+                upVoteButton.set_button_style(gluten::button_style::tertiary).set_element_content_scale(buttonsScale);
 
                 constexpr float iconSlot = gluten::theme::layoutIconButtonSize * buttonsScale;
 
@@ -871,7 +938,7 @@ void workspace_widget::render_review_description(const review_data& selectedRevi
             int statusIndex = static_cast<int>(selectedReview.m_reviewStatus);
 
             gluten::combo statusCombo("##Status", statusOptions, &statusIndex);
-            statusCombo.set_button_style(gluten::button_style::secondary).set_element_content_scale(buttonsScale);
+            statusCombo.set_button_style(gluten::button_style::tertiary).set_element_content_scale(buttonsScale);
 
             if (m_descriptionBoxButtonsLayout.render_layout_element_pixels_horizontal(&statusCombo, 0))
             {

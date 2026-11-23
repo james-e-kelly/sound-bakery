@@ -176,8 +176,16 @@ namespace gluten::theme::carbon_g100
         gluten::theme::layerActive01       = layerActive01;
         gluten::theme::layerActive02       = layerActive02;
         gluten::theme::layerActive03       = layerActive03;
+        gluten::theme::layerSelected01         = layerSelected01;
+        gluten::theme::layerSelected02         = layerSelected02;
+        gluten::theme::layerSelected03         = layerSelected03;
+        gluten::theme::layerSelectedHover01    = layerSelectedHover01;
+        gluten::theme::layerSelectedHover02    = layerSelectedHover02;
+        gluten::theme::layerSelectedHover03    = layerSelectedHover03;
         gluten::theme::backgroundHover     = backgroundHover;
         gluten::theme::backgroundActive    = backgroundActive;
+        gluten::theme::backgroundSelected      = backgroundSelected;
+        gluten::theme::backgroundSelectedHover = backgroundSelectedHover;
         gluten::theme::field01             = field01;
         gluten::theme::field02             = field02;
         gluten::theme::field03             = field03;

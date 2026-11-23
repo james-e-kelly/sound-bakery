@@ -41,9 +41,27 @@ namespace gluten
     enum class button_style
     {
         primary,        //< Filled with the interactive color (blue). Main CTA.
-        secondary,      //< Filled with the layer color. Lower emphasis.
-        ghost,          //< Transparent background, visible only on hover.
+        secondary,      //< Filled with the layer color plus a subtle border. Lower emphasis.
+        tertiary,       //< Transparent background with a border. Outlined, lower emphasis than secondary.
+        ghost,          //< Transparent background, no border, visible only on hover.
         danger          //< Filled with the error color. Destructive actions.
+    };
+
+    /**
+     * @brief Surface depth, following Carbon's layering model.
+     *
+     * A surface says which layer it is and everything inside it (fields, rows,
+     * headers, borders, popups, buttons) picks matching colours automatically.
+     *
+     * @see gluten::imgui::scoped_layer, gluten::element::set_element_layer
+     */
+    enum class layer_level
+    {
+        background,     //< The app background. Darkest.
+        layer01,        //< Main surfaces sitting on the background
+        layer02,        //< Panels / sidebars sitting on layer01
+        layer03,        //< Cards, header bars, popups sitting on layer02
+        next            //< One step above the current layer (capped at layer03). Like Carbon's nested <Layer>.
     };
 
     namespace theme
@@ -395,6 +413,7 @@ namespace gluten
         extern ImVec4 overlay;
         extern ImVec4 toggleOff;
         extern ImVec4 shadow;
+        constexpr ImVec4 transparent = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
 
         extern ImVec4 missingColorColor;
 
@@ -451,6 +470,8 @@ namespace gluten
         constexpr ImVec2 insetCompact               = ImVec2(space08, space04);
         constexpr ImVec2 insetFrame                 = ImVec2(space12, space08);
         constexpr ImVec2 insetWindow                = ImVec2(space24, space20);
+
+        constexpr float iconHoverScale = 1.10f;
 
         constexpr auto text_size_for(text_style style) noexcept -> float
         {
@@ -550,31 +571,96 @@ namespace gluten
             }
         }
 
+        /**
+         * @brief Every colour a surface and its contents need, resolved for one layer.
+         *
+         * Built from the live theme tokens each call, so theme changes apply immediately.
+         */
+        struct layer_colors
+        {
+            ImVec4 surface;         //< Fill of the surface itself
+            ImVec4 hover;           //< Flush items (rows, ghost buttons) hovered on this surface
+            ImVec4 active;          //< Flush items pressed on this surface
+            ImVec4 selected;        //< Selected rows on this surface
+            ImVec4 selectedHover;   //< Selected rows hovered on this surface
+            ImVec4 field;           //< Inputs / combos / tabs on this surface
+            ImVec4 fieldHover;
+            ImVec4 borderSubtle;    //< Dividers and outlines on this surface
+            ImVec4 borderStrong;    //< Field outlines and stronger separators
+            ImVec4 accent;
+            ImVec4 accentHover;
+            ImVec4 accentActive;
+        };
+
+        /**
+         * @brief The layer currently being rendered into.
+         *
+         * Defaults to layer01 when nothing has been pushed, matching ImGuiCol_WindowBg in apply_colours().
+         */
+        auto current_layer() -> layer_level;
+
+        /**
+         * @brief The top of the layer stack, or nullopt if no layer has been pushed.
+         */
+        auto pushed_layer() -> std::optional<layer_level>;
+
+        /**
+         * @brief Turns layer_level::next into a concrete level relative to current_layer(). Other levels pass through.
+         */
+        auto resolve_layer(layer_level level) -> layer_level;
+
+        auto colors_for(layer_level level) -> layer_colors;
+        auto current_colors() -> layer_colors;
+
+        /**
+         * @brief Low-level stack access. Prefer gluten::imgui::scoped_layer, which also pushes the ImGui colours.
+         */
+        auto push_layer(layer_level level) -> void;
+        auto pop_layer() -> void;
+
         struct button_style_colors
         {
             ImVec4 button;
             ImVec4 hovered;
             ImVec4 active;
             ImVec4 text;
+            ImVec4 border;
         };
 
+        /**
+         * @brief Button colours for a style, relative to the layer the button is rendered on.
+         *
+         * Secondary buttons fill with the next layer up. Tertiary and ghost buttons hover with the current layer's hover.
+         */
         inline button_style_colors button_colors_for(button_style style)
         {
             switch (style)
             {
                 case button_style::primary:
-                    return {interactive, interactiveHover, interactiveActive, textOnColor};
+                    return {interactive, interactiveHover, interactiveActive, textOnColor, transparent};
                 case button_style::secondary:
-                    return {layer02, layerHover02, layerActive02, textPrimary};
+                {
+                    const layer_colors raised = colors_for(layer_level::next);
+                    return {raised.surface, raised.hover, raised.active, textPrimary, current_colors().borderSubtle};
+                }
+                case button_style::tertiary:
+                {
+                    const layer_colors here = current_colors();
+                    return {transparent, here.hover, here.active, textPrimary, here.borderSubtle};
+                }
                 case button_style::ghost:
-                    return {ImVec4(0, 0, 0, 0), backgroundHover, backgroundActive, textPrimary};
+                {
+                    const layer_colors here = current_colors();
+                    return {transparent, here.hover, here.active, textPrimary, transparent};
+                }
                 case button_style::danger:
                     return {supportError,
                             color_with_added_value(supportError, 0.08f),
                             color_with_added_value(supportError, 0.12f),
-                            textOnColor};
+                            textOnColor,
+                            transparent};
             }
-            return {interactive, interactiveHover, interactiveActive, textOnColor};
+            return {interactive, interactiveHover, interactiveActive, textOnColor, transparent};
         }
 
         inline const ImVec4& icon_color_for(button_style style)
@@ -585,6 +671,8 @@ namespace gluten
                     return iconOnColor;
                 case button_style::secondary:
                     return iconSecondary;
+                case button_style::tertiary:
+                    return iconPrimary;
                 case button_style::ghost:
                     return iconPrimary;
                 case button_style::danger:

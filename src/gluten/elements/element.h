@@ -246,6 +246,23 @@ namespace gluten
         auto virtual set_element_rounding_flags(ImDrawFlags flags) -> element&;
 
         /**
+         * @brief Make this element a surface at the given layer.
+         *
+         * The element fills with the layer's surface colour (unless an explicit background
+         * colour is set), and everything it renders -- including a layout's children -- picks
+         * up that layer's colours. layer_level::next is resolved at render time, one step
+         * above whatever layer the element is drawn on.
+         */
+        auto virtual set_element_layer(layer_level level) -> element&;
+
+        /**
+         * @brief The concrete layer this element rendered as last, if it has one.
+         *
+         * Use with gluten::imgui::scoped_layer when drawing raw ImGui content inside the element's rect.
+         */
+        auto get_element_layer() const -> std::optional<layer_level> { return m_resolvedLayer; }
+
+        /**
          * @brief Give this element a stable id used for animation state.
          *
          * Animation state (see gluten::animation) is looked up by ImGuiID.
@@ -314,6 +331,9 @@ namespace gluten
         std::optional<float> m_borderRounding;
         border_sides m_borderSides = border_sides::all;
         std::optional<ImU32> m_borderColor;
+        std::optional<layer_level> m_layer;          //< Requested layer (may be layer_level::next)
+        std::optional<layer_level> m_resolvedLayer;  //< Concrete layer from the last render
+        std::optional<layer_level> m_inheritedLayer; //< Layer this element was drawn on last render, if one was pushed
         float m_elementRounding = 0.0f;
         ImDrawFlags m_drawFlags = ImDrawFlags_RoundCornersAll;
         mutable std::optional<ImRect> m_currentRect;

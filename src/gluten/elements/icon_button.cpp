@@ -6,8 +6,10 @@
 
 
 gluten::icon_button::icon_button(const char* buttonID, const char* icon, fonts font, button_style style)
-    : m_button(buttonID, true, anchor_preset::left_top), m_text(icon), m_buttonId(buttonID), m_style(style)
+    : m_button(buttonID, true, anchor_preset::left_top), m_text(icon), m_buttonId(buttonID)
 {
+    set_button_style(style);
+
     set_element_anchor_preset(anchor_preset::stretch_full);
     // Auto-key animation state off the button id so hover-fill fade and
     // hover-grow both work out of the box for every icon_button.
@@ -23,7 +25,74 @@ gluten::icon_button::icon_button(const char* buttonID, const char* icon, fonts f
 auto gluten::icon_button::set_button_style(button_style style) -> icon_button&
 {
     m_style = style;
+    m_button.set_button_style(style);
+
+    // The inner button is invisible, so the style's colours only show if this
+    // element draws them. Call order matters: explicit colour setters called
+    // after this override the style defaults.
+    m_backgroundFromStyle = true;
+    m_hoverFromStyle      = true;
+    m_borderFromStyle     = true;
+    apply_style_colors();
+
     return *this;
+}
+
+auto gluten::icon_button::apply_style_colors() -> void
+{
+    const auto colors = gluten::theme::button_colors_for(m_style);
+
+    // Transparent backgrounds are left unset so hover fades are pure opacity.
+    if (m_backgroundFromStyle)
+    {
+        if (colors.button.w > 0.0f)
+        {
+            m_backgroundColor = ImGui::ColorConvertFloat4ToU32(colors.button);
+        }
+        else
+        {
+            m_backgroundColor.reset();
+        }
+    }
+
+    if (m_hoverFromStyle)
+    {
+        m_hoverColor = ImGui::ColorConvertFloat4ToU32(colors.hovered);
+    }
+
+    if (m_borderFromStyle)
+    {
+        if (colors.border.w > 0.0f)
+        {
+            m_borderSize  = 1.0f;
+            m_borderColor = ImGui::ColorConvertFloat4ToU32(colors.border);
+        }
+        else
+        {
+            m_borderSize.reset();
+            m_borderColor.reset();
+        }
+    }
+}
+
+auto gluten::icon_button::pre_render_element() -> void { apply_style_colors(); }
+
+auto gluten::icon_button::set_element_background_color(ImU32 color) -> element&
+{
+    m_backgroundFromStyle = false;
+    return element::set_element_background_color(color);
+}
+
+auto gluten::icon_button::set_element_hover_color(ImU32 color) -> element&
+{
+    m_hoverFromStyle = false;
+    return element::set_element_hover_color(color);
+}
+
+auto gluten::icon_button::set_element_border_color(ImU32 color) -> element&
+{
+    m_borderFromStyle = false;
+    return element::set_element_border_color(color);
 }
 
 auto gluten::icon_button::set_icon_hover_grow(float scaleWhenHovered, float rate) -> icon_button&

@@ -59,6 +59,13 @@ bool gluten::combo::render_element(const element_render_info& renderInfo)
 
     drawList->AddRectFilled(renderInfo.elementBox.Min, renderInfo.elementBox.Max, bgColor, rounding);
 
+    if (colors.border.w > 0.0f)
+    {
+        ImRect borderRect = renderInfo.elementBox;
+        borderRect.Expand(-0.5f);
+        drawList->AddRect(borderRect.Min, borderRect.Max, ImGui::ColorConvertFloat4ToU32(colors.border), rounding, 0, 1.0f);
+    }
+
     const ImU32 textColor     = ImGui::ColorConvertFloat4ToU32(colors.text);
     const float textY         = renderInfo.elementBox.Min.y + (boxSize.y - ImGui::GetTextLineHeight()) * 0.5f;
     const ImVec2 labelPos(renderInfo.elementBox.Min.x + padding.x, textY);
@@ -75,18 +82,19 @@ bool gluten::combo::render_element(const element_render_info& renderInfo)
 
     gluten::imgui::scoped_style popupRounding(ImGuiStyleVar_PopupRounding, gluten::theme::radiusLg);
     gluten::imgui::scoped_style popupPadding(ImGuiStyleVar_WindowPadding, gluten::theme::insetFrame);
-    gluten::imgui::scoped_color popupBg(ImGuiCol_PopupBg, gluten::theme::layer02);
+    // The dropdown sits one layer above the combo.
+    gluten::imgui::scoped_color popupBg(ImGuiCol_PopupBg, gluten::theme::colors_for(layer_level::next).surface);
 
     if (ImGui::BeginPopup(popupLabel.c_str()))
     {
+        // Scoped so the layer's colours pop before EndPopup checks the style stack.
+        std::optional<gluten::imgui::scoped_layer> popupLayer(std::in_place, layer_level::next);
+
         ImGui::SetWindowFontScale(fontScale);
 
         for (int i = 0; i < static_cast<int>(m_options.size()); ++i)
         {
             const bool isSelected = (i == currentIndex);
-
-            gluten::imgui::scoped_color hoveredCol(ImGuiCol_HeaderHovered, gluten::theme::layerHover02);
-            gluten::imgui::scoped_color activeCol(ImGuiCol_HeaderActive, gluten::theme::layerActive02);
 
             if (ImGui::Selectable(m_options[i], isSelected))
             {
@@ -98,6 +106,7 @@ bool gluten::combo::render_element(const element_render_info& renderInfo)
             }
         }
 
+        popupLayer.reset();
         ImGui::EndPopup();
     }
 

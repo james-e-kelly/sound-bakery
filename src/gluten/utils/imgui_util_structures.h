@@ -76,9 +76,74 @@ namespace gluten::imgui
             ImGui::PushStyleColor(ImGuiCol_ButtonHovered, colors.hovered);
             ImGui::PushStyleColor(ImGuiCol_ButtonActive, colors.active);
             ImGui::PushStyleColor(ImGuiCol_Text, colors.text);
+            ImGui::PushStyleColor(ImGuiCol_Border, colors.border);
+            // ImGui draws a 1px-offset shadow ring with frame borders; suppress it so the outline stays single.
+            ImGui::PushStyleColor(ImGuiCol_BorderShadow, gluten::theme::transparent);
+            ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, colors.border.w > 0.0f ? 1.0f : 0.0f);
         }
 
-        ~scoped_button_style() { ImGui::PopStyleColor(4); }
+        ~scoped_button_style()
+        {
+            ImGui::PopStyleVar();
+            ImGui::PopStyleColor(6);
+        }
+    };
+
+    /**
+     * @brief Renders the scope as a layer, so plain ImGui widgets inside it pick up matching colours.
+     *
+     * Pushes the level onto the theme's layer stack (so gluten::theme::current_colors() and
+     * button_colors_for() follow it) and sets the ImGui colours for child windows, fields,
+     * selectables, tabs, borders and scrollbars. Popups opened inside use the next layer up.
+     *
+     * Does not fill a background itself; use element::set_element_layer for that.
+     */
+    struct scoped_layer
+    {
+        scoped_layer(const scoped_layer&)            = delete;
+        scoped_layer& operator=(const scoped_layer&) = delete;
+
+        explicit scoped_layer(layer_level level)
+        {
+            gluten::theme::push_layer(level);
+
+            const gluten::theme::layer_colors here   = gluten::theme::current_colors();
+            const gluten::theme::layer_colors raised = gluten::theme::colors_for(layer_level::next);
+
+            push(ImGuiCol_ChildBg, here.surface);
+            push(ImGuiCol_PopupBg, raised.surface);
+            push(ImGuiCol_FrameBg, here.field);
+            push(ImGuiCol_FrameBgHovered, here.fieldHover);
+            push(ImGuiCol_FrameBgActive, here.fieldHover);
+            push(ImGuiCol_Header, here.selected);
+            push(ImGuiCol_HeaderHovered, here.hover);
+            push(ImGuiCol_HeaderActive, here.active);
+            push(ImGuiCol_Tab, here.field);
+            push(ImGuiCol_TabHovered, here.hover);
+            push(ImGuiCol_TabSelected, here.accentActive);
+            push(ImGuiCol_TabActive, here.accentActive);
+            push(ImGuiCol_Border, here.borderSubtle);
+            push(ImGuiCol_Separator, here.borderStrong);
+            push(ImGuiCol_ScrollbarBg, here.surface);
+            push(ImGuiCol_ScrollbarGrab, raised.surface);
+            push(ImGuiCol_ScrollbarGrabHovered, raised.hover);
+            push(ImGuiCol_ScrollbarGrabActive, raised.active);
+        }
+
+        ~scoped_layer()
+        {
+            ImGui::PopStyleColor(m_count);
+            gluten::theme::pop_layer();
+        }
+
+    private:
+        void push(ImGuiCol col, const ImVec4& color)
+        {
+            ImGui::PushStyleColor(col, color);
+            ++m_count;
+        }
+
+        int m_count = 0;
     };
 
     struct scoped_id
@@ -176,9 +241,8 @@ namespace gluten::imgui
             ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, gluten::theme::space04));
             ImGui::PushStyleVar(ImGuiStyleVar_SelectableTextAlign, ImVec2(0.0f, 0.5f));
 
-            ImGui::PushStyleColor(ImGuiCol_PopupBg, gluten::theme::layer03);
-            ImGui::PushStyleColor(ImGuiCol_HeaderHovered, gluten::theme::layerHover03);
-            ImGui::PushStyleColor(ImGuiCol_HeaderActive, gluten::theme::layerActive03);
+            // The menu is one layer above whatever it was opened from.
+            ImGui::PushStyleColor(ImGuiCol_PopupBg, gluten::theme::colors_for(layer_level::next).surface);
 
             ImGui::SetNextWindowSizeConstraints(ImVec2(200.0f, 0.0f), ImVec2(FLT_MAX, FLT_MAX));
 
@@ -186,6 +250,8 @@ namespace gluten::imgui
 
             if (m_open)
             {
+                m_layer.emplace(layer_level::next);
+
                 ImGui::PushFont(
                     gluten::app::get()->get_font(gluten::theme::text_font_for(gluten::text_style::body)),
                     gluten::theme::text_size_for(gluten::text_style::body));
@@ -197,9 +263,10 @@ namespace gluten::imgui
             if (m_open)
             {
                 ImGui::PopFont();
+                m_layer.reset();
                 ImGui::EndPopup();
             }
-            ImGui::PopStyleColor(3);
+            ImGui::PopStyleColor();
             ImGui::PopStyleVar(3);
         }
 
@@ -207,6 +274,7 @@ namespace gluten::imgui
 
     private:
         bool m_open = false;
+        std::optional<scoped_layer> m_layer;
     };
 
     struct scoped_item_flags

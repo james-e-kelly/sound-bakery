@@ -20,21 +20,21 @@ auto gluten::collapsing_header::get_open() const -> bool
 {
     gluten::imgui::scoped_id id(m_label.c_str());
 
-    bool result = false;
+    bool result = m_defaultOpen;
 
     if (ImGuiStorage* const storage = ImGui::GetStateStorage())
     {
-        result = storage->GetBool(ImGui::GetID(m_label.c_str()));
+        result = storage->GetBool(ImGui::GetID(m_label.c_str()), m_defaultOpen);
     }
 
-    return false;
+    return result;
 }
 
 auto gluten::collapsing_header::render_element(const element_render_info& renderInfo) -> bool
 {
     gluten::imgui::scoped_id id(m_label.c_str());
 
-    gluten::text label(m_label, ImVec2(0.0f, 0.5f), anchor_preset::left_middle);
+    gluten::text label(m_label, ImVec2(0.0f, 0.5f), anchor_preset::left_middle, text_style::body, fonts::regular_lucide_icons);
     label.set_element_translation(ImVec2(gluten::theme::space24, 0.0f));
     label.render(renderInfo.elementBox);
 
@@ -53,7 +53,7 @@ auto gluten::collapsing_header::render_element(const element_render_info& render
 
     if (!m_detail.empty())
     {
-        gluten::text detailText(m_detail, ImVec2(1.0f, 0.5f), anchor_preset::right_middle, text_style::subtitle);
+        gluten::text detailText(m_detail, ImVec2(1.0f, 0.5f), anchor_preset::right_middle, text_style::subtitle, fonts::regular_lucide_icons);
         detailText.render(renderInfo.elementBox);
     }
 

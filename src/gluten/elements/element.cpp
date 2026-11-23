@@ -3,6 +3,7 @@
 #include "gluten/subsystems/animation_subsystem.h"
 #include "gluten/theme/carbon/carbon_colors.h"
 #include "gluten/utils/imgui_rect_operators.h"
+#include "gluten/utils/imgui_util_structures.h"
 
 void gluten::element::anchor_info::set_achor_from_preset(const anchor_preset& preset)
 {
@@ -149,6 +150,12 @@ auto gluten::element::set_element_background_color(ImU32 color) -> element&
 auto gluten::element::set_element_background_color(ImVec4 color) -> element&
 {
     set_element_background_color(ImGui::ColorConvertFloat4ToU32(color));
+    return *this;
+}
+
+auto gluten::element::set_element_layer(layer_level level) -> element&
+{
+    m_layer = level;
     return *this;
 }
 
@@ -306,6 +313,78 @@ bool gluten::element::render(const ImRect& parent)
 
     const bool isItemVisible = ImGui::IsRectVisible(elementBox.Min, elementBox.Max);
 
+    // Fill target — same precedence as before (background → active → hover),
+    // but split into RGB and alpha so we can ease OPACITY only when there's
+    // no natural "resting colour" to fall back to. Easing all four channels
+    // toward (0,0,0,0) makes the button briefly darken on the way through,
+    // reading as a flash; keeping RGB pinned to the destination colour and
+    // just moving alpha gives a clean opacity fade.
+    // Resolve `next` against the layer we are being drawn on, before pushing our own.
+    m_inheritedLayer = theme::pushed_layer();
+    m_resolvedLayer  =m_layer.has_value() ? std::optional<layer_level>(theme::resolve_layer(m_layer.value())) : std::nullopt;
+
+    // An explicit background wins; otherwise a layered element fills with its surface.
+    const std::optional<ImU32> backgroundColor =
+        m_backgroundColor.has_value() ? m_backgroundColor
+        : m_resolvedLayer.has_value() ? std::optional<ImU32>(ImGui::ColorConvertFloat4ToU32(theme::colors_for(m_resolvedLayer.value()).surface))
+                                      : std::nullopt;
+
+    std::optional<ImU32> destRGB;
+    bool destVisible = false;
+
+    if (m_active && !hovered && m_activeColor.has_value())
+    {
+        destRGB     = m_activeColor.value();
+        destVisible = true;
+    }
+    else if (hovered && m_hoverColor.has_value())
+    {
+        destRGB     = m_hoverColor.value();
+        destVisible = true;
+    }
+    else if (backgroundColor.has_value())
+    {
+        destRGB     = backgroundColor.value();
+        destVisible = true;
+    }
+    else
+    {
+        // No background — pin RGB to whichever state colour we'd fade back to
+        // so the fade-out is pure opacity, not a crossfade through the void.
+        if (m_hoverColor.has_value())      destRGB = m_hoverColor.value();
+        else if (m_activeColor.has_value()) destRGB = m_activeColor.value();
+        destVisible = false;
+    }
+
+    if (destRGB.has_value())
+    {
+        ImVec4 targetFillVec = ImGui::ColorConvertU32ToFloat4(destRGB.value());
+        targetFillVec.w      = destVisible ? targetFillVec.w : 0.0f;
+
+        ImVec4 initialFillVec;
+        if (backgroundColor.has_value())
+        {
+            initialFillVec = ImGui::ColorConvertU32ToFloat4(backgroundColor.value());
+        }
+        else
+        {
+            initialFillVec   = targetFillVec;
+            initialFillVec.w = 0.0f;
+        }
+
+        const bool canAnimateFill = !m_animationId.empty();
+        const ImVec4 fillVec = canAnimateFill
+            ? animation_subsystem::animate_color(ImGui::GetID((m_animationId + "##fill").c_str()), initialFillVec, targetFillVec)
+            : targetFillVec;
+
+        if (windowDrawList && fillVec.w > 0.0f)
+        {
+            windowDrawList->AddRectFilled(elementBox.Min, elementBox.Max, ImGui::ColorConvertFloat4ToU32(fillVec), m_elementRounding, m_drawFlags);
+        }
+    }
+
+    // Border sits just outside the element box and is stroked after the fill,
+    // so it is visible whether or not the element has a fill of its own.
     if (windowDrawList && m_borderSize.has_value())
     {
         const float borderSize = m_borderSize.value();
@@ -313,20 +392,20 @@ bool gluten::element::render(const ImRect& parent)
         if (borderSize > 0.0f && !!(m_borderSides & border_sides::all))
         {
             const ImU32 borderColor = m_borderColor.value_or(ImGui::GetColorU32(ImGuiCol_Border));
+            const float half        = borderSize * 0.5f;
 
             if (m_borderSides == border_sides::all)
             {
-                const float borderRounding = m_borderRounding.value_or(ImGui::GetStyle().FrameRounding);
+                // Default to a rounding concentric with the fill.
+                const float borderRounding = m_borderRounding.value_or(m_elementRounding + half);
 
                 ImRect borderRect = elementBox;
-                borderRect.Expand(borderSize);
+                borderRect.Expand(half);
 
-                windowDrawList->AddRectFilled(borderRect.GetTL(), borderRect.GetBR(), borderColor, borderRounding);
+                windowDrawList->AddRect(borderRect.GetTL(), borderRect.GetBR(), borderColor, borderRounding, m_drawFlags, borderSize);
             }
             else
             {
-                const float half = borderSize * 0.5f;
-
                 if (!!(m_borderSides & border_sides::top))
                 {
                     windowDrawList->AddLine(ImVec2(elementBox.Min.x, elementBox.Min.y - half), ImVec2(elementBox.Max.x, elementBox.Min.y - half), borderColor, borderSize);
@@ -350,66 +429,6 @@ bool gluten::element::render(const ImRect& parent)
         }
     }
 
-    // Fill target — same precedence as before (background → active → hover),
-    // but split into RGB and alpha so we can ease OPACITY only when there's
-    // no natural "resting colour" to fall back to. Easing all four channels
-    // toward (0,0,0,0) makes the button briefly darken on the way through,
-    // reading as a flash; keeping RGB pinned to the destination colour and
-    // just moving alpha gives a clean opacity fade.
-    std::optional<ImU32> destRGB;
-    bool destVisible = false;
-
-    if (m_active && !hovered && m_activeColor.has_value())
-    {
-        destRGB     = m_activeColor.value();
-        destVisible = true;
-    }
-    else if (hovered && m_hoverColor.has_value())
-    {
-        destRGB     = m_hoverColor.value();
-        destVisible = true;
-    }
-    else if (m_backgroundColor.has_value())
-    {
-        destRGB     = m_backgroundColor.value();
-        destVisible = true;
-    }
-    else
-    {
-        // No background — pin RGB to whichever state colour we'd fade back to
-        // so the fade-out is pure opacity, not a crossfade through the void.
-        if (m_hoverColor.has_value())      destRGB = m_hoverColor.value();
-        else if (m_activeColor.has_value()) destRGB = m_activeColor.value();
-        destVisible = false;
-    }
-
-    if (destRGB.has_value())
-    {
-        ImVec4 targetFillVec = ImGui::ColorConvertU32ToFloat4(destRGB.value());
-        targetFillVec.w      = destVisible ? targetFillVec.w : 0.0f;
-
-        ImVec4 initialFillVec;
-        if (m_backgroundColor.has_value())
-        {
-            initialFillVec = ImGui::ColorConvertU32ToFloat4(m_backgroundColor.value());
-        }
-        else
-        {
-            initialFillVec   = targetFillVec;
-            initialFillVec.w = 0.0f;
-        }
-
-        const bool canAnimateFill = !m_animationId.empty();
-        const ImVec4 fillVec = canAnimateFill
-            ? animation_subsystem::animate_color(ImGui::GetID((m_animationId + "##fill").c_str()), initialFillVec, targetFillVec)
-            : targetFillVec;
-
-        if (windowDrawList && fillVec.w > 0.0f)
-        {
-            windowDrawList->AddRectFilled(elementBox.Min, elementBox.Max, ImGui::ColorConvertFloat4ToU32(fillVec), m_elementRounding, m_drawFlags);
-        }
-    }
-
     const ImRect contentBox = ImRect(elementBox.Min.x + m_innerPadding.x, elementBox.Min.y + m_innerPadding.y,
                                      elementBox.Max.x - m_innerPadding.z, elementBox.Max.y - m_innerPadding.w);
 
@@ -417,7 +436,17 @@ bool gluten::element::render(const ImRect& parent)
     renderInfo.elementBox = contentBox;
     renderInfo.isVisible  = isItemVisible;
 
-    const bool activated = render_element(renderInfo);
+    bool activated = false;
+    {
+        // Content drawn by this element sits on its surface.
+        std::optional<imgui::scoped_layer> layerScope;
+        if (m_resolvedLayer.has_value())
+        {
+            layerScope.emplace(m_resolvedLayer.value());
+        }
+
+        activated = render_element(renderInfo);
+    }
 
     if (s_debug)
     {

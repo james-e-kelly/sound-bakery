@@ -106,4 +106,86 @@ namespace gluten::theme
     float layoutTitleBarHeight = 32.0f;
     float layoutIconRailRatio  = 1.36f;
     float layoutIconRailSize   = 48.0f;
+
+    namespace
+    {
+        constexpr layer_level s_defaultLayer = layer_level::layer01;
+
+        auto layer_stack() -> std::vector<layer_level>&
+        {
+            static std::vector<layer_level> stack;
+            return stack;
+        }
+    }  // namespace
+
+    auto current_layer() -> layer_level { return pushed_layer().value_or(s_defaultLayer); }
+
+    auto pushed_layer() -> std::optional<layer_level>
+    {
+        const std::vector<layer_level>& stack = layer_stack();
+        return stack.empty() ? std::nullopt : std::optional<layer_level>(stack.back());
+    }
+
+    auto resolve_layer(layer_level level) -> layer_level
+    {
+        if (level != layer_level::next)
+        {
+            return level;
+        }
+
+        switch (current_layer())
+        {
+            case layer_level::background:
+                return layer_level::layer01;
+            case layer_level::layer01:
+                return layer_level::layer02;
+            case layer_level::layer02:
+            case layer_level::layer03:
+            case layer_level::next:
+                return layer_level::layer03;
+        }
+        return layer_level::layer03;
+    }
+
+    // Carbon pairs each surface with the next field and border-strong token up
+    // (field-01 sits on the background, field-02 on layer-01, ...), while hover,
+    // selection and border-subtle tokens share the surface's own index.
+    auto colors_for(layer_level level) -> layer_colors
+    {
+        switch (resolve_layer(level))
+        {
+            case layer_level::background:
+                return {background,     backgroundHover, backgroundActive, backgroundSelected, backgroundSelectedHover,
+                        field01,        fieldHover01,    borderSubtle00,   borderStrong01,
+                        layerAccent01,  layerAccentHover01, layerAccentActive01};
+            case layer_level::layer01:
+                return {layer01,        layerHover01,    layerActive01,    layerSelected01,    layerSelectedHover01,
+                        field02,        fieldHover02,    borderSubtle01,   borderStrong02,
+                        layerAccent01,  layerAccentHover01, layerAccentActive01};
+            case layer_level::layer02:
+                return {layer02,        layerHover02,    layerActive02,    layerSelected02,    layerSelectedHover02,
+                        field03,        fieldHover03,    borderSubtle02,   borderStrong03,
+                        layerAccent02,  layerAccentHover02, layerAccentActive02};
+            case layer_level::layer03:
+            case layer_level::next:
+                return {layer03,        layerHover03,    layerActive03,    layerSelected03,    layerSelectedHover03,
+                        field03,        fieldHover03,    borderSubtle03,   borderStrong03,
+                        layerAccent03,  layerAccentHover03, layerAccentActive03};
+        }
+        return colors_for(layer_level::layer01);
+    }
+
+    auto current_colors() -> layer_colors { return colors_for(current_layer()); }
+
+    auto push_layer(layer_level level) -> void { layer_stack().push_back(resolve_layer(level)); }
+
+    auto pop_layer() -> void
+    {
+        std::vector<layer_level>& stack = layer_stack();
+        IM_ASSERT(!stack.empty() && "pop_layer called without a matching push_layer");
+        if (!stack.empty())
+        {
+            stack.pop_back();
+        }
+    }
 }  // namespace gluten::theme

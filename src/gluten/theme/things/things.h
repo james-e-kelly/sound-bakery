@@ -90,6 +90,17 @@ namespace gluten::theme::things
         gluten::theme::backgroundHover              = create_hover_color(gluten::theme::background, darkMode);
         gluten::theme::backgroundActive             = create_active_color(gluten::theme::background, darkMode);
 
+        // Selected = one step up from the surface, as in Carbon (layer-selected-01 matches layer-02).
+        gluten::theme::backgroundSelected           = create_next_layer(gluten::theme::background, darkMode);
+        gluten::theme::layerSelected01              = create_next_layer(gluten::theme::layer01, darkMode);
+        gluten::theme::layerSelected02              = create_next_layer(gluten::theme::layer02, darkMode);
+        gluten::theme::layerSelected03              = create_next_layer(gluten::theme::layer03, darkMode);
+
+        gluten::theme::backgroundSelectedHover      = create_hover_color(gluten::theme::backgroundSelected, darkMode);
+        gluten::theme::layerSelectedHover01         = create_hover_color(gluten::theme::layerSelected01, darkMode);
+        gluten::theme::layerSelectedHover02         = create_hover_color(gluten::theme::layerSelected02, darkMode);
+        gluten::theme::layerSelectedHover03         = create_hover_color(gluten::theme::layerSelected03, darkMode);
+
         gluten::theme::field01                      = create_field_color(gluten::theme::layer01, darkMode);
         gluten::theme::field02                      = create_field_color(gluten::theme::layer02, darkMode);
         gluten::theme::field03                      = create_field_color(gluten::theme::layer03, darkMode);
