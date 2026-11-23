@@ -3,26 +3,47 @@
 #include "sound_bakery/core/memory/memory.h"
 #include "sound_bakery/system.h"
 
+auto sbk::system_thread::stop() -> void
+{
+    {
+        const std::lock_guard lock(m_mutex);
+        m_abandon = true;
+    }
+    m_condition.notify_one();
+}
+
+auto sbk::system_thread::trigger_update() -> void
+{
+    {
+        const std::lock_guard lock(m_mutex);
+        m_notify = true;
+    }
+    m_condition.notify_one();
+}
+
 auto sbk::system_thread::run_loop() -> void
 {
     sbk::memory::thread_start("Sound Bakery System Thread");
 
     for (;;)
     {
-        if (m_abandon.load(std::memory_order_relaxed) == true)
         {
-            sbk::memory::thread_end("Sound Bakery System Thread");
-            return;
-        }
+            std::unique_lock lock(m_mutex);
+            m_condition.wait(lock, [this] { return m_notify || m_abandon; });
 
-        if (m_notify.load(std::memory_order_relaxed))
-        {
-            if (sbk::engine::system* const system = sbk::engine::system::get())
+            if (m_abandon)
             {
-                (void)system->flush_commands();
+                break;
             }
 
-            m_notify.store(false, std::memory_order_relaxed);
+            m_notify = false;
+        }
+
+        if (sbk::engine::system* const system = sbk::engine::system::get())
+        {
+            (void)system->flush_commands();
         }
     }
+
+    sbk::memory::thread_end("Sound Bakery System Thread");
 }

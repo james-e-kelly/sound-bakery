@@ -189,6 +189,16 @@ TEST_SUITE("System")
         CHECK(engine.get()->update().has_value());
         CHECK(engine.get()->update().has_value());
     }
+
+    TEST_CASE("Spamming update works multithreaded")
+    {
+        scoped_engine engine(false);
+
+        for (int index = 0; index < 1000; ++index)
+        {
+            CHECK(engine.get()->update().has_value());
+        }
+    }
 }
 
 TEST_SUITE("Object")

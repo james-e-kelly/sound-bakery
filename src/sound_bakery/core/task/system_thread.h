@@ -23,21 +23,16 @@ namespace sbk
             }
         }
 
-        auto stop() -> void
-        {
-            m_abandon.store(true, std::memory_order_relaxed);
-        }
-
-        auto trigger_update() -> void
-        {
-            m_notify.store(true, std::memory_order_relaxed);
-        }
+        auto stop() -> void;
+        auto trigger_update() -> void;
 
     private:
         auto run_loop() -> void;
 
+        std::mutex m_mutex;
+        std::condition_variable m_condition;
+        bool m_notify  = false;
+        bool m_abandon = false;
         std::thread m_thread;
-        std::atomic_bool m_notify{};
-        std::atomic_bool m_abandon{};
 	};
 }
