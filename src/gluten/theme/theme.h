@@ -646,7 +646,7 @@ namespace gluten
                 case button_style::tertiary:
                 {
                     const layer_colors here = current_colors();
-                    return {transparent, here.hover, here.active, textPrimary, here.borderSubtle};
+                    return {transparent, here.hover, here.active, textPrimary, here.borderStrong};
                 }
                 case button_style::ghost:
                 {
