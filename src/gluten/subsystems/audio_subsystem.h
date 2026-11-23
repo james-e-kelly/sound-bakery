@@ -110,6 +110,7 @@ namespace gluten
         audio_subsystem(app* appOwner) : subsystem(appOwner) {}
 
         int init() override;
+        void tick(double deltaTime) override;
         void exit() override;
 
         auto play_sound(const std::filesystem::path& filePath) -> void;

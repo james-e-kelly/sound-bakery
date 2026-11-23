@@ -49,6 +49,12 @@ int gluten::audio_subsystem::init()
     return 0;
 }
 
+void gluten::audio_subsystem::tick(double deltaTime)
+{
+    (void)deltaTime;
+    (void)sbk_system_update();
+}
+
 void gluten::audio_subsystem::exit()
 {
     m_filesToVoiceHandlesMap.clear();
@@ -200,13 +206,15 @@ auto gluten::audio_subsystem::get_sound_length(const std::filesystem::path& file
 auto gluten::audio_subsystem::get_sound_is_playing(const std::filesystem::path& filePath) -> bool
 {
     sc_bool playing = MA_FALSE;
+    sc_bool paused  = MA_FALSE;
 
     if (sc_voice_handle voiceHandle = get_voice_handle(filePath))
     {
         (void)sc_voice_get_is_playing(sbk::engine::system::get()->get_runtime(), voiceHandle, &playing);
+        (void)sc_voice_get_paused(sbk::engine::system::get()->get_runtime(), voiceHandle, &paused);
     }
 
-    return playing;
+    return playing && !paused;
 }
 
 auto gluten::audio_subsystem::get_sound_is_looping(const std::filesystem::path& filePath) -> bool
@@ -262,9 +270,18 @@ auto gluten::audio_subsystem::get_voice_handle(const std::filesystem::path& file
 
     if (std::filesystem::exists(filePath))
     {
-        if (m_filesToVoiceHandlesMap.contains(filePath))
+        if (const auto foundIter = m_filesToVoiceHandlesMap.find(filePath); foundIter != m_filesToVoiceHandlesMap.end())
         {
-            voiceHandle = m_filesToVoiceHandlesMap.at(filePath);
+            // Voices are freed when they finish, leaving the stored handle stale.
+            sc_bool playing = MA_FALSE;
+            if (sc_voice_get_is_playing(sbk::engine::system::get()->get_runtime(), foundIter->second, &playing) == SBK_SUCCESS)
+            {
+                voiceHandle = foundIter->second;
+            }
+            else
+            {
+                m_filesToVoiceHandlesMap.erase(foundIter);
+            }
         }
     }
     return voiceHandle;
