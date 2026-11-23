@@ -206,8 +206,7 @@ int renderer_subsystem::init()
             assert(logoFile.size() > 0);
 
             int width, height;
-            gluten::image::data_ptr windowIconImageData =
-                image::load_image_data((unsigned char*)logoFile.begin(), logoFile.size(), width, height);
+            gluten::image::data_ptr windowIconImageData = image::load_image_data((unsigned char*)logoFile.begin(), logoFile.size(), width, height);
 
             auto downscaleIcon = [](const unsigned char* src, int srcW, int srcH, int dstW, int dstH)
             {
