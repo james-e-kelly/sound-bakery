@@ -265,6 +265,30 @@ static void sc_real_voice_sync_loop_if_needed(sc_real_voice* realVoice)
     realVoice->appliedLoopEpoch = voiceEpoch;
 }
 
+static void sc_real_voice_sync_seek_if_needed(sc_real_voice* realVoice)
+{
+    const sc_uint32 voiceEpoch = c89atomic_load_32(&realVoice->voiceRef->seekEpoch);
+    if (voiceEpoch == realVoice->appliedSeekEpoch)
+    {
+        return;
+    }
+
+    ma_uint32 dataSourceSampleRate = 0;
+    if (ma_data_source_get_data_format(realVoice->dataSource, NULL, NULL, &dataSourceSampleRate, NULL, 0) != MA_SUCCESS || dataSourceSampleRate == 0)
+    {
+        return;
+    }
+
+    // playCursor is in engine frames; the data source may run at a different rate.
+    const ma_uint32 engineSampleRate = ma_engine_get_sample_rate(&realVoice->system->engine);
+    const ma_uint64 playCursor       = c89atomic_load_64(&realVoice->voiceRef->playCursor);
+    const ma_uint64 targetFrame      = (ma_uint64)((double)(ma_int64)playCursor * (double)dataSourceSampleRate / (double)engineSampleRate);
+
+    (void)ma_data_source_seek_to_pcm_frame(realVoice->dataSource, targetFrame);
+
+    realVoice->appliedSeekEpoch = voiceEpoch;
+}
+
 static void sc_real_voice_update_lowpass_if_required(sc_real_voice* realVoice)
 {
     ma_bool32 isUpdateRequired = MA_FALSE;
@@ -356,18 +380,16 @@ static void sc_real_voice_process_pcm_frames__general(sc_real_voice* realVoice, 
                 break;
             }
 
-            if (ma_lpf_process_pcm_frames(&realVoice->lowpass, runningFramesOut, runningFramesOut, resampleFrameCountOut) == MA_SUCCESS)
-            {
-                if (ma_hpf_process_pcm_frames(&realVoice->highpass, runningFramesOut, runningFramesOut, resampleFrameCountOut) == MA_SUCCESS)
-                {
+            // Bypassed at their neutral cutoffs: a 1Hz f32 biquad can't settle and leaves a DC offset.
+            const float lowpassCutoff  = c89atomic_load_f32(&realVoice->voiceRef->lowpassCutoff);
+            const float highpassCutoff = c89atomic_load_f32(&realVoice->voiceRef->highpassCutoff);
 
-                }
-                else
-                {
-                    break;
-                }
+            if (lowpassCutoff < SC_DSP_CUTOFF_MAX && ma_lpf_process_pcm_frames(&realVoice->lowpass, runningFramesOut, runningFramesOut, resampleFrameCountOut) != MA_SUCCESS)
+            {
+                break;
             }
-            else
+
+            if (highpassCutoff > SC_DSP_CUTOFF_MIN && ma_hpf_process_pcm_frames(&realVoice->highpass, runningFramesOut, runningFramesOut, resampleFrameCountOut) != MA_SUCCESS)
             {
                 break;
             }
@@ -414,6 +436,7 @@ static void sc_voice_real_process_pcm_frames(ma_node* node, const float** frames
     {
         sc_real_voice_update_pitch_if_required(realVoice, dataSourceSampleRate);
         sc_real_voice_sync_loop_if_needed(realVoice);
+        sc_real_voice_sync_seek_if_needed(realVoice);
         sc_real_voice_update_highpass_if_required(realVoice);
         sc_real_voice_update_lowpass_if_required(realVoice);
 
@@ -628,6 +651,7 @@ sbk_status sc_real_voice_init_preallocated(const sc_real_voice_config* config, v
     SC_CHECK_STATUS_ELSE_GOTO(SC_STATUS_FROM_MA_RESULT(ma_resource_manager_data_source_init_copy(&config->system->resourceManager, config->voiceRef->sound->dataSource, realVoice->dataSource)), error1);
 
     realVoice->appliedLoopEpoch = 0u;
+    realVoice->appliedSeekEpoch = 0u;
     sc_real_voice_sync_loop_if_needed(realVoice);
 
     SC_CHECK_STATUS_ELSE_GOTO(SC_STATUS_FROM_MA_RESULT(ma_node_init_preallocated(&config->system->engine.nodeGraph, &baseNodeConfig, SC_OFFSET_PTR(heap, heapLayout.baseNodeOffset), &realVoice->baseNode)), error2);

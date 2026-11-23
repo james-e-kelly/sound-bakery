@@ -947,6 +947,7 @@ typedef struct sc_voice
     sc_node_group*                  voiceNodeGroup;         //< Per-voice DSP chain. Created at play, released when the voice done. Persists across virtual/real transitions.
     MA_ATOMIC(8, sc_atomic_uint64)  playCursor;             //< Advanced by the audio thread. Read by @ref sc_system_update to compare the ages of voices
     MA_ATOMIC(8, sc_atomic_int64)   pendingSeekFrames;      //< User-thread seek target in frames. -1 means no pending seek. Audio thread applies and clears via CAS so a concurrent second seek is never lost.
+    MA_ATOMIC(4, sc_atomic_uint32)  seekEpoch;              //< Bumped by the audio thread when it applies a seek to @ref playCursor so the real voice repositions its data source.
 
     MA_ATOMIC(4, sc_atomic_uint32)  currentState;           //< sc_voice_state observed by the update loop. Update writes; anyone reads.
     MA_ATOMIC(4, sc_atomic_uint32)  desiredState;           //< sc_voice_desired_state requested by callers. Callers write; update reads.
@@ -1005,6 +1006,7 @@ typedef struct sc_real_voice
     ma_resource_manager_data_source*    dataSource;         //< Ref-counted copy of the @ref sc_voice's data source.
 
     sc_uint32                           appliedLoopEpoch;   //< Last sc_voice::loopEpoch pushed to @ref dataSource. Compared on the audio thread to detect user changes.
+    sc_uint32                           appliedSeekEpoch;   //< Last sc_voice::seekEpoch applied to @ref dataSource.
 
     ma_linear_resampler                 resampler;          //< Used for pitch shifting and resampling from data source sample rate to engine sample rate
     ma_fader                            fader;              //< for fade ins and outs

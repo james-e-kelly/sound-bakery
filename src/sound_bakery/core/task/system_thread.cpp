@@ -1,13 +1,17 @@
 #include "system_thread.h"
 
+#include "sound_bakery/core/memory/memory.h"
 #include "sound_bakery/system.h"
 
 auto sbk::system_thread::run_loop() -> void
 {
+    sbk::memory::thread_start("Sound Bakery System Thread");
+
     for (;;)
     {
         if (m_abandon.load(std::memory_order_relaxed) == true)
         {
+            sbk::memory::thread_end("Sound Bakery System Thread");
             return;
         }
 

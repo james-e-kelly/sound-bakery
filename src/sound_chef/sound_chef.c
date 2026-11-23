@@ -9,26 +9,14 @@ static void sc_system_clap_request_callback(const clap_host_t* host) { (void)hos
 static void sc_system_clap_request_process(const clap_host_t* host) { (void)host; }
 static void sc_system_clap_request_restart(const clap_host_t* host) { (void)host; }
 
-void sc_system_audio_callback(ma_device* device, void* output, const void* input, ma_uint32 frameCount)
+static void sc_system_advance_voice_cursors(sc_system* system, ma_uint64 frameCount)
 {
-    (void)input;
-
-    sc_system* const system = (sc_system*)device->pUserData;
-
     for (sc_uint32 voiceIndex = 0; voiceIndex < system->voiceSlotAllocator.capacity; ++voiceIndex)
     {
         sc_voice* const voice             = &system->voiceBuffer[voiceIndex];
         const sc_voice_state currentState = (sc_voice_state)c89atomic_load_32(&voice->currentState);
 
         if (currentState == sc_voice_state_free || currentState == sc_voice_state_stopped)
-        {
-            continue;
-        }
-
-        const sc_uint32 flags             = c89atomic_load_32(&voice->flags);
-        const sc_bool isPaused            = SC_VOICE_HAS_FLAG(flags, SC_VOICE_FLAG_PAUSED);
-
-        if (isPaused)
         {
             continue;
         }
@@ -41,13 +29,26 @@ void sc_system_audio_callback(ma_device* device, void* output, const void* input
         if (pendingSeek >= 0)
         {
             c89atomic_store_64(&voice->playCursor, (sc_uint64)pendingSeek);
+            c89atomic_fetch_add_32(&voice->seekEpoch, 1u);
             (void)c89atomic_compare_and_swap_i64(&voice->pendingSeekFrames, pendingSeek, (sc_int64)-1);
+        }
+
+        const sc_uint32 flags             = c89atomic_load_32(&voice->flags);
+        const sc_bool isPaused            = SC_VOICE_HAS_FLAG(flags, SC_VOICE_FLAG_PAUSED);
+
+        if (isPaused)
+        {
+            continue;
         }
 
         c89atomic_fetch_add_64(&voice->playCursor, frameCount);
     }
+}
 
-    (void)ma_engine_read_pcm_frames((ma_engine*)(device->pUserData), output, frameCount, NULL);
+void sc_system_audio_callback(ma_device* device, void* output, const void* input, ma_uint32 frameCount)
+{
+    (void)input;
+    (void)sc_system_read_pcm_frames((sc_system*)device->pUserData, output, frameCount, NULL);
 }
 
 sbk_status sc_system_log_init(sc_system* system, ma_log_callback_proc callbackProc)
@@ -161,7 +162,7 @@ sbk_status sc_system_init(sc_system* system, const sc_system_config* systemConfi
     engineConfig.sampleRate          = ma_standard_sample_rate_48000;
     engineConfig.pLog                = &system->log;
     engineConfig.allocationCallbacks = systemConfig->allocationCallbacks;
-    engineConfig.dataCallback        = systemConfig->dataCallback;
+    engineConfig.dataCallback        = systemConfig->dataCallback != NULL ? systemConfig->dataCallback : sc_system_audio_callback;
     engineConfig.noDevice            = systemConfig->noDevice;
 
     SC_CHECK_STATUS(SC_STATUS_FROM_MA_RESULT(ma_engine_init(&engineConfig, engine)));
@@ -459,6 +460,8 @@ sbk_status sc_system_read_pcm_frames(sc_system* system, void* framesOut, ma_uint
     SC_CHECK_ARG(framesOut != NULL);
     SC_CHECK_ARG(frameCount != NULL);
 
+    sc_system_advance_voice_cursors(system, frameCount);
+
     return SC_STATUS_FROM_MA_RESULT(ma_engine_read_pcm_frames((ma_engine*)system, framesOut, frameCount, framesRead));
 }
 
@@ -580,6 +583,7 @@ sbk_status sc_system_play_sound(sc_system* system, sc_sound* sound, sc_voice_han
     c89atomic_store_32(&voice->looping, sound->defaultLooping ? 1u : 0u);
     c89atomic_store_32(&voice->loopEpoch, 1u);  // Non-zero so the real voice's zero-initialised cache always applies once.
     c89atomic_store_i64(&voice->pendingSeekFrames, (sc_int64)-1);   // -1 means "no seek. 0 would mean "seek to start"
+    c89atomic_store_32(&voice->seekEpoch, 0u);
     voice->stoppedCallback          = NULL;
     voice->stoppedCallbackUserData = NULL;
 
