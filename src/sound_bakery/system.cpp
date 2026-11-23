@@ -300,7 +300,7 @@ auto system::update() -> sbk::result<void>
     FrameMarkStart(profiling_strings::s_updateName);
     ZoneScoped;
 
-    m_commandQueue.write_command(message_type::end_of_frame, end_of_frame_message());
+    SBK_REPORT_C(m_commandQueue.write_command(message_type::end_of_frame, end_of_frame_message()));
 
     if (m_systemThread)
     {
