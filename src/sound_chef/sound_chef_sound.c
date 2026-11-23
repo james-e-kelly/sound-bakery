@@ -19,6 +19,11 @@ sbk_status sc_sound_release(sc_sound* sound)
         SC_FREE(sound->dataSource, sound->system);
     }
 
+    if (sound->sourceName != NULL)
+    {
+        SC_FREE(sound->sourceName, sound->system);
+    }
+
     SC_FREE(sound, sound->system);
 
     return SBK_SUCCESS;

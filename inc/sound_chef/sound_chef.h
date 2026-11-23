@@ -163,6 +163,8 @@ typedef struct sc_node_group    sc_node_group;
 #define SC_FALSE 0
 #define SC_TRUE 1
 
+#define SC_MAX_MIX_CHANNELS 16  //< Most channels a voice mix matrix can take in or send out (enough for third order ambisonics)
+
 #define SC_COUNTOF(x)            (sizeof(x) / sizeof(x[0]))
 #define SC_MAX(x, y)             (((x) > (y)) ? (x) : (y))
 #define SC_MIN(x, y)             (((x) < (y)) ? (x) : (y))
@@ -818,6 +820,7 @@ typedef struct sc_sound
 {
     sc_system*                          system;
     ma_resource_manager_data_source*    dataSource;
+    char*                               sourceName;  //< File path or registered memory name. Streamed voices reopen it, as miniaudio can't copy a stream
     sc_sound_mode                       mode;
     sc_bool                             defaultLooping;
     float                               defaultLoopStartSeconds;
@@ -847,6 +850,11 @@ typedef struct sc_sound_config
 
 sc_sound_config SC_API sc_sound_config_init_file(const char* filePath, sc_sound_mode mode);
 sc_sound_config SC_API sc_sound_config_init_memory(const void* memory, size_t memorySize, sc_sound_mode mode);
+
+/**
+ * @brief Adds Sound Chef's extra decoders (Vorbis, Opus) to a standalone miniaudio decoder, so it reads every format sounds can.
+ */
+void SC_API sc_decoder_config_add_custom_backends(ma_decoder_config* config);
 
 sbk_status SC_API sc_sound_get_length(sc_sound* sound, float* lengthInSeconds);
 sbk_status SC_API sc_sound_release(sc_sound* sound);
@@ -971,6 +979,12 @@ typedef struct sc_voice
 
     sc_voice_stopped_proc           stoppedCallback;        //< Fired from @ref sc_system_update when the voice is reaped (stopped -> free). Runs on the update thread, not the audio thread.
     void*                           stoppedCallbackUserData;
+
+    float*                          mixMatrix;              //< Optional gains replacing the default channel mapping, see @ref sc_voice_set_mix_matrix. Allocated on first use and guarded by @ref mixLock.
+    sc_uint32                       mixChannelsIn;          //< 0 when no matrix is set
+    sc_uint32                       mixChannelsOut;
+    ma_spinlock                     mixLock;
+    MA_ATOMIC(4, sc_atomic_uint32)  mixEpoch;               //< Bumped when the matrix changes so the real voice copies it.
 } sc_voice;
 
 sbk_status SC_API sc_voice_get_is_playing(sc_system* system, sc_voice_handle handle, sc_bool* outPlaying);
@@ -982,6 +996,15 @@ sbk_status SC_API sc_voice_set_looping(sc_system* system, sc_voice_handle handle
 sbk_status SC_API sc_voice_get_paused(sc_system* system, sc_voice_handle handle, sc_bool* outPaused);
 sbk_status SC_API sc_voice_set_paused(sc_system* system, sc_voice_handle handle, sc_bool paused);
 sbk_status SC_API sc_voice_set_virtual(sc_voice* voice, sc_bool virtualised);
+
+/**
+ * @brief Replaces how the voice's source channels are mapped onto the output with explicit gains.
+ *
+ * @p matrix is row-major with one row per output channel: out[o] = sum of matrix[o * channelsIn + i] * in[i].
+ * It's used only while the source and output channel counts match @p channelsIn and @p channelsOut.
+ * Pass NULL to go back to the default mapping.
+ */
+sbk_status SC_API sc_voice_set_mix_matrix(sc_system* system, sc_voice_handle handle, const float* matrix, sc_uint32 channelsIn, sc_uint32 channelsOut);
 sbk_status SC_API sc_voice_get_virtual(sc_system* system, sc_voice_handle handle, sc_bool* outVirtual);
 sbk_status SC_API sc_voice_set_volume(sc_system* system, sc_voice_handle handle, float volume);
 sbk_status SC_API sc_voice_set_pitch(sc_system* system, sc_voice_handle handle, float pitch);
@@ -1007,6 +1030,11 @@ typedef struct sc_real_voice
 
     sc_uint32                           appliedLoopEpoch;   //< Last sc_voice::loopEpoch pushed to @ref dataSource. Compared on the audio thread to detect user changes.
     sc_uint32                           appliedSeekEpoch;   //< Last sc_voice::seekEpoch applied to @ref dataSource.
+    sc_uint32                           appliedMixEpoch;    //< Last sc_voice::mixEpoch copied into @ref mixMatrix.
+
+    sc_uint32                           mixChannelsIn;      //< 0 when the voice has no mix matrix
+    sc_uint32                           mixChannelsOut;
+    float                               mixMatrix[SC_MAX_MIX_CHANNELS * SC_MAX_MIX_CHANNELS];  //< Audio thread copy of sc_voice::mixMatrix
 
     ma_linear_resampler                 resampler;          //< Used for pitch shifting and resampling from data source sample rate to engine sample rate
     ma_fader                            fader;              //< for fade ins and outs
@@ -1101,6 +1129,8 @@ System
 
 **************************************************************************************************************************************************************/
 
+typedef void (*sc_thread_proc)(void* userData);
+
 /**
  * @brief Configuration for initializing the sc_system.
  * @see sc_system_init
@@ -1115,6 +1145,10 @@ typedef struct sc_system_config
     float                       vol0Threshold;          //< Volumes before this volume are automatically virtualised
     sc_voice_tiebreak_policy    tiebreakPolicy;         //< When voices of the same priority are in fighting for a real voice, do we prefer the oldest or newest?
     sc_bool                     noDevice;               //< When true, no audio device is created. Use sc_system_read_pcm_frames to pull audio manually.
+    sc_uint32                   outputChannels;         //< Channels the engine mixes to. 0 uses the output device's own channel count.
+    sc_thread_proc              onThreadStart;          //< Runs on every thread miniaudio creates (resource manager jobs, device I/O) before it does any work, to set up per-thread state such as allocators. Process-wide: the most recently initialised system's hooks are used.
+    sc_thread_proc              onThreadEnd;            //< Runs on those threads just before they exit.
+    void*                       threadProcUserData;     //< Passed to @ref onThreadStart and @ref onThreadEnd.
 } sc_system_config;
 
 /**

@@ -11,6 +11,34 @@
 #include "extras/miniaudio_libvorbis.h"
 // clang-format on
 
+/**
+ * @brief miniaudio's libvorbis wrapper always reports a length of 0, which leaves sounds without a duration
+ * and stops decoders from reading them in one go. libvorbis knows the length of any seekable stream.
+ */
+static ma_result sc_libvorbis_ds_get_length(ma_data_source* pDataSource, ma_uint64* pLength)
+{
+    ma_libvorbis* const pVorbis = (ma_libvorbis*)pDataSource;
+
+    *pLength = 0;
+
+    const ogg_int64_t totalFrames = ov_pcm_total(&pVorbis->vf, -1);
+    if (totalFrames > 0)
+    {
+        *pLength = (ma_uint64)totalFrames;
+    }
+
+    return MA_SUCCESS;
+}
+
+static ma_data_source_vtable s_libvorbisDataSourceVtable =
+{
+    ma_libvorbis_ds_read,
+    ma_libvorbis_ds_seek,
+    ma_libvorbis_ds_get_data_format,
+    ma_libvorbis_ds_get_cursor,
+    sc_libvorbis_ds_get_length
+};
+
 static ma_result ma_decoding_backend_init__libvorbis(void* pUserData,
                                                      ma_read_proc onRead,
                                                      ma_seek_proc onSeek,
@@ -38,7 +66,8 @@ static ma_result ma_decoding_backend_init__libvorbis(void* pUserData,
         return result;
     }
 
-    *ppBackend = pVorbis;
+    pVorbis->ds.vtable = &s_libvorbisDataSourceVtable;
+    *ppBackend         = pVorbis;
 
     return MA_SUCCESS;
 }
@@ -67,7 +96,8 @@ static ma_result ma_decoding_backend_init_file__libvorbis(void* pUserData,
         return result;
     }
 
-    *ppBackend = pVorbis;
+    pVorbis->ds.vtable = &s_libvorbisDataSourceVtable;
+    *ppBackend         = pVorbis;
 
     return MA_SUCCESS;
 }

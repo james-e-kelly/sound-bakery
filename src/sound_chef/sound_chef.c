@@ -73,7 +73,8 @@ sc_system_config sc_system_config_init_default()
     SC_ZERO_OBJECT(&config);
     config.maxRealVoices = 128;
     config.maxVoices     = 2048;
-    config.vol0Threshold = 0.001F;
+    config.vol0Threshold  = 0.001F;
+    config.outputChannels = 0;
     return config;
 }
 
@@ -92,6 +93,16 @@ ma_decoding_backend_vtable* s_customBackendVTables[] =
     &g_ma_decoding_backend_vtable_libvorbis,
     &g_ma_decoding_backend_vtable_libopus
 };
+
+void sc_decoder_config_add_custom_backends(ma_decoder_config* config)
+{
+    if (config != NULL)
+    {
+        config->ppCustomBackendVTables = s_customBackendVTables;
+        config->customBackendCount     = SC_COUNTOF(s_customBackendVTables);
+        config->pCustomBackendUserData = NULL;
+    }
+}
 
 sbk_status sc_system_init(sc_system* system, const sc_system_config* systemConfig)
 {
@@ -158,7 +169,7 @@ sbk_status sc_system_init(sc_system* system, const sc_system_config* systemConfi
     ma_engine_config engineConfig    = ma_engine_config_init();
     engineConfig.pResourceManager    = &system->resourceManager;
     engineConfig.listenerCount       = 1;
-    engineConfig.channels            = 2;   /// @todo Make this dynamic. It's currently set to two so there are no surprises
+    engineConfig.channels            = systemConfig->outputChannels;
     engineConfig.sampleRate          = ma_standard_sample_rate_48000;
     engineConfig.pLog                = &system->log;
     engineConfig.allocationCallbacks = systemConfig->allocationCallbacks;
@@ -379,6 +390,13 @@ sbk_status sc_system_update(sc_system* system)
                         (void)sc_node_group_release(voice->voiceNodeGroup);
                         voice->voiceNodeGroup = NULL;
 
+                        ma_spinlock_lock(&voice->mixLock);
+                        ma_free(voice->mixMatrix, &system->engine.allocationCallbacks);
+                        voice->mixMatrix      = NULL;
+                        voice->mixChannelsIn  = 0;
+                        voice->mixChannelsOut = 0;
+                        ma_spinlock_unlock(&voice->mixLock);
+
                         const sc_voice_handle deadHandle = (sc_voice_handle)c89atomic_load_64(&voice->handle);
                         ma_log_postf(&system->log, MA_LOG_LEVEL_DEBUG, "[voice] reaped: slot=%u\n", voiceIndex);
                         c89atomic_store_64(&voice->handle, 0);
@@ -437,6 +455,11 @@ sbk_status sc_system_close(sc_system* system)
         }
 
         ma_engine_uninit((ma_engine*)system);
+
+        for (sc_uint32 voiceIndex = 0; voiceIndex < system->voiceSlotAllocator.capacity; ++voiceIndex)
+        {
+            ma_free(system->voiceBuffer[voiceIndex].mixMatrix, &system->engine.allocationCallbacks);
+        }
         ma_resource_manager_uninit(&system->resourceManager);
 
         sc_system_release_clap_plugins(system);
@@ -487,6 +510,22 @@ static ma_uint32 get_flags_from_mode(sc_sound_mode mode)
     return flags;
 }
 
+static sbk_status sc_sound_store_source_name_or_release(sc_sound* sound, const char* sourceName)
+{
+    SC_CHECK_ARG(sound != NULL);
+    SC_CHECK_ARG(sourceName != NULL);
+
+    sound->sourceName = ma_copy_string(sourceName, &sound->system->engine.allocationCallbacks);
+
+    if (sound->sourceName == NULL)
+    {
+        (void)sc_sound_release(sound);
+        return SBK_ERR_OUT_OF_MEMORY;
+    }
+
+    return SBK_SUCCESS;
+}
+
 sc_sound_config sc_sound_config_init_file(const char* filePath, sc_sound_mode mode)
 {
     sc_sound_config config;
@@ -526,7 +565,7 @@ sbk_status sc_system_create_sound(sc_system* system, const sc_sound_config* conf
     if (config->filePath != NULL)
     {
         SC_CHECK_STATUS_ELSE_FREE(SC_STATUS_FROM_MA_RESULT(ma_resource_manager_data_source_init(&system->resourceManager, config->filePath, get_flags_from_mode(config->mode), NULL, (*sound)->dataSource)), *sound, system);
-        return SBK_SUCCESS;
+        return sc_sound_store_source_name_or_release(*sound, config->filePath);
     }
     else if (config->memory != NULL)
     {
@@ -541,7 +580,7 @@ sbk_status sc_system_create_sound(sc_system* system, const sc_sound_config* conf
         }
 
         SC_CHECK_STATUS_ELSE_FREE(SC_STATUS_FROM_MA_RESULT(ma_resource_manager_data_source_init(&system->resourceManager, memoryName, get_flags_from_mode(config->mode), NULL, (*sound)->dataSource)), *sound, system);
-        return SBK_SUCCESS;
+        return sc_sound_store_source_name_or_release(*sound, memoryName);
     }
 
     return SBK_ERR_INVALID_PARAMETER;
@@ -584,6 +623,7 @@ sbk_status sc_system_play_sound(sc_system* system, sc_sound* sound, sc_voice_han
     c89atomic_store_32(&voice->loopEpoch, 1u);  // Non-zero so the real voice's zero-initialised cache always applies once.
     c89atomic_store_i64(&voice->pendingSeekFrames, (sc_int64)-1);   // -1 means "no seek. 0 would mean "seek to start"
     c89atomic_store_32(&voice->seekEpoch, 0u);
+    c89atomic_store_32(&voice->mixEpoch, 0u);
     voice->stoppedCallback          = NULL;
     voice->stoppedCallbackUserData = NULL;
 

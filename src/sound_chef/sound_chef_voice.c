@@ -1,4 +1,5 @@
 #include "sound_chef/sound_chef.h"
+#include <string.h>
 
 static sbk_status sc_voice_resolve(sc_system* system, sc_voice_handle handle, sc_voice** outVoice)
 {
@@ -139,6 +140,48 @@ sbk_status sc_voice_set_loop_position_in_seconds(sc_system* system, sc_voice_han
     return SBK_SUCCESS;
 }
 
+sbk_status sc_voice_set_mix_matrix(sc_system* system, sc_voice_handle handle, const float* matrix, sc_uint32 channelsIn, sc_uint32 channelsOut)
+{
+    SC_CHECK_ARG(system != NULL);
+    SC_CHECK_ARG(matrix == NULL || (channelsIn > 0 && channelsIn <= SC_MAX_MIX_CHANNELS && channelsOut > 0 && channelsOut <= SC_MAX_MIX_CHANNELS));
+    sc_voice* voice;
+    SC_CHECK_STATUS(sc_voice_resolve(system, handle, &voice));
+
+    // Allocated outside the lock so the audio thread never waits on an allocation.
+    float* newMatrix = NULL;
+    if (matrix != NULL && voice->mixMatrix == NULL)
+    {
+        newMatrix = (float*)ma_malloc(sizeof(float) * SC_MAX_MIX_CHANNELS * SC_MAX_MIX_CHANNELS, &system->engine.allocationCallbacks);
+        SC_CHECK_MEM(newMatrix);
+    }
+
+    ma_spinlock_lock(&voice->mixLock);
+
+    if (newMatrix != NULL && voice->mixMatrix == NULL)
+    {
+        voice->mixMatrix = newMatrix;
+        newMatrix        = NULL;
+    }
+
+    if (matrix != NULL)
+    {
+        memcpy(voice->mixMatrix, matrix, sizeof(float) * channelsIn * channelsOut);
+        voice->mixChannelsIn  = channelsIn;
+        voice->mixChannelsOut = channelsOut;
+    }
+    else
+    {
+        voice->mixChannelsIn  = 0;
+        voice->mixChannelsOut = 0;
+    }
+
+    ma_spinlock_unlock(&voice->mixLock);
+
+    ma_free(newMatrix, &system->engine.allocationCallbacks);
+    c89atomic_fetch_add_32(&voice->mixEpoch, 1u);
+    return SBK_SUCCESS;
+}
+
 sbk_status sc_voice_get_looping(sc_system* system, sc_voice_handle handle, sc_bool* outLooping)
 {
     SC_CHECK_ARG(system != NULL);
@@ -232,6 +275,50 @@ static void sc_real_voice_update_pitch_if_required(sc_real_voice* realVoice, ma_
     {
         const float basePitch = (float)sampleRate / ma_engine_get_sample_rate(&realVoice->system->engine);
         ma_linear_resampler_set_rate_ratio(&realVoice->resampler, basePitch * realVoice->voiceRef->oldPitch);
+    }
+}
+
+static void sc_real_voice_sync_mix_if_needed(sc_real_voice* realVoice)
+{
+    sc_voice* const voice      = realVoice->voiceRef;
+    const sc_uint32 voiceEpoch = c89atomic_load_32(&voice->mixEpoch);
+    if (voiceEpoch == realVoice->appliedMixEpoch)
+    {
+        return;
+    }
+
+    ma_spinlock_lock(&voice->mixLock);
+
+    const sc_bool hasMatrix   = voice->mixMatrix != NULL && voice->mixChannelsIn > 0;
+    realVoice->mixChannelsIn  = hasMatrix ? voice->mixChannelsIn : 0;
+    realVoice->mixChannelsOut = hasMatrix ? voice->mixChannelsOut : 0;
+    if (hasMatrix)
+    {
+        memcpy(realVoice->mixMatrix, voice->mixMatrix, sizeof(float) * voice->mixChannelsIn * voice->mixChannelsOut);
+    }
+
+    ma_spinlock_unlock(&voice->mixLock);
+
+    realVoice->appliedMixEpoch = voiceEpoch;
+}
+
+static void sc_apply_mix_matrix_f32(float* framesOut, const float* framesIn, ma_uint64 frameCount, const float* matrix, ma_uint32 channelsIn, ma_uint32 channelsOut)
+{
+    for (ma_uint64 frame = 0; frame < frameCount; ++frame)
+    {
+        const float* const frameIn = framesIn + frame * channelsIn;
+        float* const frameOut      = framesOut + frame * channelsOut;
+
+        for (ma_uint32 channelOut = 0; channelOut < channelsOut; ++channelOut)
+        {
+            const float* const row = matrix + channelOut * channelsIn;
+            float sum              = 0.0F;
+            for (ma_uint32 channelIn = 0; channelIn < channelsIn; ++channelIn)
+            {
+                sum += row[channelIn] * frameIn[channelIn];
+            }
+            frameOut[channelOut] = sum;
+        }
     }
 }
 
@@ -353,7 +440,8 @@ static void sc_real_voice_process_pcm_frames__general(sc_real_voice* realVoice, 
 
         const float* const runningFramesIn = ma_offset_pcm_frames_const_ptr_f32(framesIn, totalFramesProcessedIn, channelCountIn);
         float* const runningFramesOut      = ma_offset_pcm_frames_ptr_f32(framesOut, totalFramesProcessedOut, channelCountOut);
-        float* const workingBuffer         = channelCountIn == channelCountOut ? runningFramesOut : temp;
+        const sc_bool useMixMatrix         = realVoice->mixChannelsIn == channelCountIn && realVoice->mixChannelsOut == channelCountOut;
+        float* const workingBuffer         = (channelCountIn == channelCountOut && !useMixMatrix) ? runningFramesOut : temp;
 
         ma_uint64 resampleFrameCountIn  = inputFramesAvailableThisIteration;
         ma_uint64 resampleFrameCountOut = outputFramesAvailableThisIteration;
@@ -362,7 +450,12 @@ static void sc_real_voice_process_pcm_frames__general(sc_real_voice* realVoice, 
         {
             const float volume = c89atomic_load_f32(&realVoice->voiceRef->gain);
 
-            if (channelCountIn == channelCountOut)
+            if (useMixMatrix)
+            {
+                sc_apply_mix_matrix_f32(runningFramesOut, workingBuffer, resampleFrameCountOut, realVoice->mixMatrix, channelCountIn, channelCountOut);
+                ma_apply_volume_factor_f32(runningFramesOut, resampleFrameCountOut * channelCountOut, volume);
+            }
+            else if (channelCountIn == channelCountOut)
             {
                 ma_copy_and_apply_volume_factor_f32(runningFramesOut, workingBuffer, resampleFrameCountOut * channelCountOut, volume);
             }
@@ -437,6 +530,7 @@ static void sc_voice_real_process_pcm_frames(ma_node* node, const float** frames
         sc_real_voice_update_pitch_if_required(realVoice, dataSourceSampleRate);
         sc_real_voice_sync_loop_if_needed(realVoice);
         sc_real_voice_sync_seek_if_needed(realVoice);
+        sc_real_voice_sync_mix_if_needed(realVoice);
         sc_real_voice_update_highpass_if_required(realVoice);
         sc_real_voice_update_lowpass_if_required(realVoice);
 
@@ -647,8 +741,16 @@ sbk_status sc_real_voice_init_preallocated(const sc_real_voice_config* config, v
     baseNodeConfig.pInputChannels  = NULL;  /* No input buses. */
     baseNodeConfig.pOutputChannels = &channelsOut;
 
-    /// @todo Handle copying streams
-    SC_CHECK_STATUS_ELSE_GOTO(SC_STATUS_FROM_MA_RESULT(ma_resource_manager_data_source_init_copy(&config->system->resourceManager, config->voiceRef->sound->dataSource, realVoice->dataSource)), error1);
+    const sc_sound* const sound = config->voiceRef->sound;
+    if (sound->mode & SC_SOUND_MODE_STREAM)
+    {
+        // miniaudio can only copy fully loaded buffers, so each streamed voice reads the source itself.
+        SC_CHECK_STATUS_ELSE_GOTO(SC_STATUS_FROM_MA_RESULT(ma_resource_manager_data_source_init(&config->system->resourceManager, sound->sourceName, MA_RESOURCE_MANAGER_DATA_SOURCE_FLAG_STREAM, NULL, realVoice->dataSource)), error1);
+    }
+    else
+    {
+        SC_CHECK_STATUS_ELSE_GOTO(SC_STATUS_FROM_MA_RESULT(ma_resource_manager_data_source_init_copy(&config->system->resourceManager, sound->dataSource, realVoice->dataSource)), error1);
+    }
 
     realVoice->appliedLoopEpoch = 0u;
     realVoice->appliedSeekEpoch = 0u;
