@@ -4,6 +4,7 @@ if (SOUND_BAKERY_EDITOR)
     add_subdirectory(audioconverter)
     add_subdirectory(editor)
     add_subdirectory(game)
+    add_subdirectory(viewer)
 
     # The review app has WIN32-only functionality for the drag and drop, and it
     # is the only consumer of the Tracy profiler GUI. Building that GUI is a
