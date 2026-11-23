@@ -44,7 +44,7 @@ auto sbk::dispatch_event(sbk::engine::system* system, sbk::engine::game_object* 
     SBK_CHECK(gameObject != nullptr, SBK_ERR_INVALID_PARAMETER);
     SBK_CHECK(event != nullptr, SBK_ERR_INVALID_PARAMETER);
 
-    SBK_INFO("Posting Event");
+    SBK_INFO("Posting Event: {}", event->get_asset_name());
 
     for (const sbk::engine::action& action : event->m_actions)
     {
@@ -149,6 +149,7 @@ auto sbk::command_queue::process_command(const message_queue<message_type>::mess
             sbk::core::serialization::binary_serializer binarySerializer;
             const sbk::result<sbk_id> soundbankID = binarySerializer.load_object<sbk::core::serialization::serialized_soundbank>(system->get_current_object_owner(), message->filename);
             SBK_CHECK_MSG(soundbankID.has_value(), SBK_ERR_BAKERY_SERIALIZATION, "failed to load soundbank '{}'", message->filename);
+            SBK_INFO("Loaded Soundbank: {}", message->filename);
         }
         break;
         case message_type::post_event:
@@ -196,6 +197,8 @@ auto sbk::command_queue::process_command(const message_queue<message_type>::mess
             SBK_CHECK(sharedGameObject, SBK_ERR_BAKERY_OBJECT_NOT_FOUND);
 
             sharedGameObject->remove_all();
+
+            SBK_INFO("Stopped all voices on {}", sharedGameObject->get_object_name());
         }
         break;
         case message_type::play_container:
@@ -213,6 +216,8 @@ auto sbk::command_queue::process_command(const message_queue<message_type>::mess
             SBK_CHECK(sharedContainer && sharedGameObject, SBK_ERR_BAKERY_OBJECT_NOT_FOUND);
 
             SBK_TRYV(play_container(system, sharedGameObject.get(), sharedContainer.get()));
+
+            SBK_INFO("Played {} on {}", sharedContainer->get_object_name(), sharedGameObject->get_object_name());
         }
         break;
     }
