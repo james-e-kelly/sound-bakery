@@ -49,7 +49,13 @@ sbk::engine::runtime::~runtime()
 auto sbk::engine::runtime::init(const sc_system_config& config) -> sbk::result<>
 {
     SBK_CHECK(m_initSoundChef == false, SBK_ERR_BAKERY);
-    SBK_TRY_C(sc_system_init(this, &config));
+
+    // miniaudio's threads allocate through Sound Bakery's allocator, which needs setting up on each thread.
+    sc_system_config soundChefConfig = config;
+    soundChefConfig.onThreadStart    = [](void*) { sbk::memory::thread_start("miniaudio"); };
+    soundChefConfig.onThreadEnd      = [](void*) { sbk::memory::thread_end("miniaudio"); };
+
+    SBK_TRY_C(sc_system_init(this, &soundChefConfig));
     m_initSoundChef = true;
 
     SBK_TRY(auto listener, create_database_object<sbk::engine::game_object>());

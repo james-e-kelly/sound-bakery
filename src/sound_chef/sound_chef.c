@@ -1,9 +1,36 @@
 #define MINIAUDIO_IMPLEMENTATION
 
+// miniaudio runs these around the body of every thread it creates.
+static void sc_on_miniaudio_thread_entry(void);
+static void sc_on_miniaudio_thread_exit(void);
+#define MA_ON_THREAD_ENTRY sc_on_miniaudio_thread_entry();
+#define MA_ON_THREAD_EXIT  sc_on_miniaudio_thread_exit();
+
 #include "sound_chef/sound_chef.h"
 
 #include <dirent.h>
 #include <stdio.h>
+
+// Process-wide because the miniaudio hooks have no way to reach a system. Written before miniaudio creates any thread.
+static sc_thread_proc s_onThreadStart     = NULL;
+static sc_thread_proc s_onThreadEnd       = NULL;
+static void* s_threadProcUserData         = NULL;
+
+static void sc_on_miniaudio_thread_entry(void)
+{
+    if (s_onThreadStart != NULL)
+    {
+        s_onThreadStart(s_threadProcUserData);
+    }
+}
+
+static void sc_on_miniaudio_thread_exit(void)
+{
+    if (s_onThreadEnd != NULL)
+    {
+        s_onThreadEnd(s_threadProcUserData);
+    }
+}
 
 static void sc_system_clap_request_callback(const clap_host_t* host) { (void)host; }
 static void sc_system_clap_request_process(const clap_host_t* host) { (void)host; }
@@ -114,6 +141,10 @@ sbk_status sc_system_init(sc_system* system, const sc_system_config* systemConfi
 
     system->tiebreakerPolicy = systemConfig->tiebreakPolicy;
     system->vol0Threshold    = systemConfig->vol0Threshold;
+
+    s_onThreadStart      = systemConfig->onThreadStart;
+    s_onThreadEnd        = systemConfig->onThreadEnd;
+    s_threadProcUserData = systemConfig->threadProcUserData;
 
     // miniaudio treats ma_allocation_callbacks structs with null function pointers as "no allocator" and does not allocate memory
     // If we have null function pointers, switch to a null pointer, instead of an empty struct
