@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['numtimesplayed_0',['numTimesPlayed',['../structsbk_1_1engine_1_1gather__children__context.html#af87660d1dbcdf2a40eefa5ff6840a674',1,'sbk::engine::gather_children_context']]]
+  ['channelmap_0',['channelMap',['../structsc__channel__layout.html#a2c0789715c824316bec839f3919edb50',1,'sc_channel_layout']]]
 ];

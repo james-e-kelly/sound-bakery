@@ -1,0 +1,9 @@
+<map id="sc_ambisonic_decoder" name="sc_ambisonic_decoder">
+<area shape="rect" id="Node000001" title="Working space for building a decoder, too big for the stack." alt="" coords="144,106,312,134"/>
+<area shape="rect" id="Node000002" href="$structsc__direction.html" title=" " alt="" coords="5,5,105,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="61,45,71,65,83,80,112,98,146,111,141,112,109,103,79,84,66,68,60,50"/>
+<area shape="rect" id="Node000003" href="$structsc__vec3.html" title=" " alt="" coords="192,5,265,33"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="230,47,231,107,226,104,226,50"/>
+<area shape="rect" id="Node000004" href="$structsc__triangle.html" title=" " alt="" coords="289,5,381,33"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="318,44,283,84,251,108,249,103,280,80,314,46"/>
+</map>

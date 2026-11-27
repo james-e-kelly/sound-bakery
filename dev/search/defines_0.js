@@ -31,10 +31,11 @@ var searchData=
   ['sc_5fcreate_28',['SC_CREATE',['../sound__chef_8h.html#a4bdefda6064b61a5a9797d8d2ae0fdc4',1,'sound_chef.h']]],
   ['sc_5fcreate_5felse_5ffree_29',['SC_CREATE_ELSE_FREE',['../sound__chef_8h.html#a0b22ca29850ed1d5a4f1ec1367858808',1,'sound_chef.h']]],
   ['sc_5fcreate_5felse_5fgoto_30',['SC_CREATE_ELSE_GOTO',['../sound__chef_8h.html#a17969cc7b6a8db9adb816abd4f381eec',1,'sound_chef.h']]],
-  ['sc_5fdelay_5fsilence_5fthreshold_31',['SC_DELAY_SILENCE_THRESHOLD',['../sound__chef_8h.html#aac27ea918bb55ed66a8c6b6de3b73637',1,'sound_chef.h']]],
-  ['sc_5ffree_32',['SC_FREE',['../sound__chef_8h.html#a1733a8ff517bbae13c9646311ea318ef',1,'sound_chef.h']]],
-  ['sc_5fvoice_5fhandle_5fextract_5findex_33',['SC_VOICE_HANDLE_EXTRACT_INDEX',['../sound__chef_8h.html#a97b749d4db098fe7eb6777866d40cd75',1,'sound_chef.h']]],
-  ['sc_5fvoice_5fhandle_5fextract_5frefcount_34',['SC_VOICE_HANDLE_EXTRACT_REFCOUNT',['../sound__chef_8h.html#ae01d49f06d5271d1868490a527024b93',1,'sound_chef.h']]],
-  ['sc_5fvoice_5fhas_5fflag_35',['SC_VOICE_HAS_FLAG',['../sound__chef_8h.html#a7413def9e00e77916e980bcd6ee1a3d8',1,'sound_chef.h']]],
-  ['sc_5fvoice_5fmake_5fhandle_36',['SC_VOICE_MAKE_HANDLE',['../sound__chef_8h.html#a963d23099129cb956f749d4320ffbf5d',1,'sound_chef.h']]]
+  ['sc_5fdeclick_5fseconds_31',['SC_DECLICK_SECONDS',['../sound__chef_8h.html#a813290e80a06a224fb56b9b694e1bd7f',1,'sound_chef.h']]],
+  ['sc_5fdelay_5fsilence_5fthreshold_32',['SC_DELAY_SILENCE_THRESHOLD',['../sound__chef_8h.html#aac27ea918bb55ed66a8c6b6de3b73637',1,'sound_chef.h']]],
+  ['sc_5ffree_33',['SC_FREE',['../sound__chef_8h.html#a1733a8ff517bbae13c9646311ea318ef',1,'sound_chef.h']]],
+  ['sc_5fvoice_5fhandle_5fextract_5findex_34',['SC_VOICE_HANDLE_EXTRACT_INDEX',['../sound__chef_8h.html#a97b749d4db098fe7eb6777866d40cd75',1,'sound_chef.h']]],
+  ['sc_5fvoice_5fhandle_5fextract_5frefcount_35',['SC_VOICE_HANDLE_EXTRACT_REFCOUNT',['../sound__chef_8h.html#ae01d49f06d5271d1868490a527024b93',1,'sound_chef.h']]],
+  ['sc_5fvoice_5fhas_5fflag_36',['SC_VOICE_HAS_FLAG',['../sound__chef_8h.html#a7413def9e00e77916e980bcd6ee1a3d8',1,'sound_chef.h']]],
+  ['sc_5fvoice_5fmake_5fhandle_37',['SC_VOICE_MAKE_HANDLE',['../sound__chef_8h.html#a963d23099129cb956f749d4320ffbf5d',1,'sound_chef.h']]]
 ];

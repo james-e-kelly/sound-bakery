@@ -357,6 +357,11 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Basic piece of playing audio.  <a href="structsc__sound.html#details">More...</a><br /></td></tr>
 <tr class="memitem:sc_5Fsound_5Fconfig" id="r_sc_5Fsound_5Fconfig"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsc__sound__config.html">sc_sound_config</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configuration for creating a <a class="el" href="structsc__sound.html">sc_sound</a>.  <a href="structsc__sound__config.html#details">More...</a><br /></td></tr>
+<tr class="memitem:sc_5Fchannel_5Flayout" id="r_sc_5Fchannel_5Flayout"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsc__channel__layout.html">sc_channel_layout</a></td></tr>
+<tr class="memitem:sc_5Framp" id="r_sc_5Framp"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsc__ramp.html">sc_ramp</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A gain that moves in a straight line towards its target, one frame at a time.  <a href="structsc__ramp.html#details">More...</a><br /></td></tr>
+<tr class="memitem:sc_5Ffade" id="r_sc_5Ffade"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsc__fade.html">sc_fade</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A gain that moves in a straight line between two times on a clock.  <a href="structsc__fade.html#details">More...</a><br /></td></tr>
 <tr class="memitem:sc_5Fvoice" id="r_sc_5Fvoice"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsc__voice.html">sc_voice</a></td></tr>
 <tr class="memitem:sc_5Freal_5Fvoice" id="r_sc_5Freal_5Fvoice"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsc__real__voice.html">sc_real_voice</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A real voice that is connected to the DSP graph.  <a href="structsc__real__voice.html#details">More...</a><br /></td></tr>
@@ -468,6 +473,9 @@ Macros</h2></td></tr>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>SC_BANK_AUDIO_CHUNK_ID</b>&#160;&#160;&#160;(SC_FOURCC('S', 'C', 'A', 'C'))</td></tr>
 <tr class="memitem:a2a6bc7c6ed0b6e7248a64317b5f77772" id="r_a2a6bc7c6ed0b6e7248a64317b5f77772"><td class="memItemLeft" align="right" valign="top"><a id="a2a6bc7c6ed0b6e7248a64317b5f77772" name="a2a6bc7c6ed0b6e7248a64317b5f77772"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>SC_BANK_SUB_ID</b>&#160;&#160;&#160;(SC_FOURCC('S', 'C', 'F', 'E'))</td></tr>
+<tr class="memitem:a813290e80a06a224fb56b9b694e1bd7f" id="r_a813290e80a06a224fb56b9b694e1bd7f"><td class="memItemLeft" align="right" valign="top"><a id="a813290e80a06a224fb56b9b694e1bd7f" name="a813290e80a06a224fb56b9b694e1bd7f"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>SC_DECLICK_SECONDS</b>&#160;&#160;&#160;0.005F</td></tr>
+<tr class="memdesc:a813290e80a06a224fb56b9b694e1bd7f"><td class="mdescLeft">&#160;</td><td class="mdescRight">A 5ms fade is used for pauses and resumes to avoid clicks. <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-typedef-members" class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
@@ -578,6 +586,10 @@ typedef struct sc_delay_node&#160;</td><td class="memItemRight" valign="bottom">
 <tr class="memdesc:ae6e6d478b127490e43db2d544b3fa902"><td class="mdescLeft">&#160;</td><td class="mdescRight">Basic piece of playing audio.  <br /></td></tr>
 <tr class="memitem:af73c369bef747e7910c37a77440d8c19" id="r_af73c369bef747e7910c37a77440d8c19"><td class="memItemLeft" align="right" valign="top">typedef struct sc_sound_config&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af73c369bef747e7910c37a77440d8c19">sc_sound_config</a></td></tr>
 <tr class="memdesc:af73c369bef747e7910c37a77440d8c19"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configuration for creating a <a class="el" href="structsc__sound.html">sc_sound</a>.  <br /></td></tr>
+<tr class="memitem:a4bd677f688083d67d287277127ec7345" id="r_a4bd677f688083d67d287277127ec7345"><td class="memItemLeft" align="right" valign="top"><a id="a4bd677f688083d67d287277127ec7345" name="a4bd677f688083d67d287277127ec7345"></a>
+typedef enum sc_channel_layout_family&#160;</td><td class="memItemRight" valign="bottom"><b>sc_channel_layout_family</b></td></tr>
+<tr class="memitem:add311c1a65b2f5397cd67213f308c0ea" id="r_add311c1a65b2f5397cd67213f308c0ea"><td class="memItemLeft" align="right" valign="top"><a id="add311c1a65b2f5397cd67213f308c0ea" name="add311c1a65b2f5397cd67213f308c0ea"></a>
+typedef struct sc_channel_layout&#160;</td><td class="memItemRight" valign="bottom"><b>sc_channel_layout</b></td></tr>
 <tr class="memitem:a401092c7d684a2651f4af1ec5561b5da" id="r_a401092c7d684a2651f4af1ec5561b5da"><td class="memItemLeft" align="right" valign="top"><a id="a401092c7d684a2651f4af1ec5561b5da" name="a401092c7d684a2651f4af1ec5561b5da"></a>
 typedef sc_uint64&#160;</td><td class="memItemRight" valign="bottom"><b>sc_voice_handle</b></td></tr>
 <tr class="memitem:ae0aeef1557b3c355579742a7880cd2b9" id="r_ae0aeef1557b3c355579742a7880cd2b9"><td class="memItemLeft" align="right" valign="top"><a id="ae0aeef1557b3c355579742a7880cd2b9" name="ae0aeef1557b3c355579742a7880cd2b9"></a>
@@ -585,7 +597,11 @@ typedef sc_uint32&#160;</td><td class="memItemRight" valign="bottom"><b>sc_voice
 <tr class="memitem:a98af6b2c92ed4036c1e1ba1d382211de" id="r_a98af6b2c92ed4036c1e1ba1d382211de"><td class="memItemLeft" align="right" valign="top"><a id="a98af6b2c92ed4036c1e1ba1d382211de" name="a98af6b2c92ed4036c1e1ba1d382211de"></a>
 typedef sc_uint32&#160;</td><td class="memItemRight" valign="bottom"><b>sc_voice_index</b></td></tr>
 <tr class="memitem:aeaf745066956a87eb2e3181b75c221c4" id="r_aeaf745066956a87eb2e3181b75c221c4"><td class="memItemLeft" align="right" valign="top"><a id="aeaf745066956a87eb2e3181b75c221c4" name="aeaf745066956a87eb2e3181b75c221c4"></a>
-typedef enum sc_voice_tiebreak_policy&#160;</td><td class="memItemRight" valign="bottom"><b>sc_voice_tiebreak_policy</b></td></tr>
+typedef enum <a class="el" href="#a8ed505942f8ce68a0410cb28988a9e79">sc_voice_tiebreak_policy</a>&#160;</td><td class="memItemRight" valign="bottom"><b>sc_voice_tiebreak_policy</b></td></tr>
+<tr class="memdesc:aeaf745066956a87eb2e3181b75c221c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">How voices with the same priority break tiebreaks during virtualization. <br /></td></tr>
+<tr class="memitem:a53ee65114b5f4a5dc4b65cd5b63c74da" id="r_a53ee65114b5f4a5dc4b65cd5b63c74da"><td class="memItemLeft" align="right" valign="top"><a id="a53ee65114b5f4a5dc4b65cd5b63c74da" name="a53ee65114b5f4a5dc4b65cd5b63c74da"></a>
+typedef enum <a class="el" href="#af97ed65540d7d42a741e2df9452e369a">sc_voice_stop_mode</a>&#160;</td><td class="memItemRight" valign="bottom"><b>sc_voice_stop_mode</b></td></tr>
+<tr class="memdesc:a53ee65114b5f4a5dc4b65cd5b63c74da"><td class="mdescLeft">&#160;</td><td class="mdescRight">What happens to the voice's DSP effects (reverb, delay) when it stops. <br /></td></tr>
 <tr class="memitem:abf05ea819d40df3ce8c114647b6d790a" id="r_abf05ea819d40df3ce8c114647b6d790a"><td class="memItemLeft" align="right" valign="top">typedef enum <a class="el" href="#aa0bc91889ef06fbad8767d6615e6e521">sc_voice_desired_state</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abf05ea819d40df3ce8c114647b6d790a">sc_voice_desired_state</a></td></tr>
 <tr class="memdesc:abf05ea819d40df3ce8c114647b6d790a"><td class="mdescLeft">&#160;</td><td class="mdescRight">States set by the user, read by the system to move between the different <a class="el" href="#a7b2f0b2c11e21911f7cb97cdda42a0d8">sc_voice_state</a> states.  <br /></td></tr>
 <tr class="memitem:a73b95cc7d5c8a19b471973f131a38cc0" id="r_a73b95cc7d5c8a19b471973f131a38cc0"><td class="memItemLeft" align="right" valign="top">typedef enum <a class="el" href="#a7b2f0b2c11e21911f7cb97cdda42a0d8">sc_voice_state</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a73b95cc7d5c8a19b471973f131a38cc0">sc_voice_state</a></td></tr>
@@ -594,6 +610,12 @@ typedef enum sc_voice_tiebreak_policy&#160;</td><td class="memItemRight" valign=
 <tr class="memdesc:a8e978441d2425056142ef5f0073f2098"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flags written into sc_voice::flags by either the user or the system.  <br /></td></tr>
 <tr class="memitem:a6eb3fd06db64630677a6c56bdcff6840" id="r_a6eb3fd06db64630677a6c56bdcff6840"><td class="memItemLeft" align="right" valign="top">typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6eb3fd06db64630677a6c56bdcff6840">sc_voice_stopped_proc</a>) (void *pUserData)</td></tr>
 <tr class="memdesc:a6eb3fd06db64630677a6c56bdcff6840"><td class="mdescLeft">&#160;</td><td class="mdescRight">A voice is a window into a single sound that may or may not be audible.  <br /></td></tr>
+<tr class="memitem:a3b784e8c8a27317dd950659ff448ff9e" id="r_a3b784e8c8a27317dd950659ff448ff9e"><td class="memItemLeft" align="right" valign="top"><a id="a3b784e8c8a27317dd950659ff448ff9e" name="a3b784e8c8a27317dd950659ff448ff9e"></a>
+typedef struct sc_ramp&#160;</td><td class="memItemRight" valign="bottom"><b>sc_ramp</b></td></tr>
+<tr class="memdesc:a3b784e8c8a27317dd950659ff448ff9e"><td class="mdescLeft">&#160;</td><td class="mdescRight">A gain that moves in a straight line towards its target, one frame at a time. <br /></td></tr>
+<tr class="memitem:ab3f19d2b68b9373b24bc943acc4518f3" id="r_ab3f19d2b68b9373b24bc943acc4518f3"><td class="memItemLeft" align="right" valign="top"><a id="ab3f19d2b68b9373b24bc943acc4518f3" name="ab3f19d2b68b9373b24bc943acc4518f3"></a>
+typedef struct sc_fade&#160;</td><td class="memItemRight" valign="bottom"><b>sc_fade</b></td></tr>
+<tr class="memdesc:ab3f19d2b68b9373b24bc943acc4518f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">A gain that moves in a straight line between two times on a clock. <br /></td></tr>
 <tr class="memitem:a9820f9b564b05bf25969fb28afdb7ea5" id="r_a9820f9b564b05bf25969fb28afdb7ea5"><td class="memItemLeft" align="right" valign="top"><a id="a9820f9b564b05bf25969fb28afdb7ea5" name="a9820f9b564b05bf25969fb28afdb7ea5"></a>
 typedef struct sc_voice&#160;</td><td class="memItemRight" valign="bottom"><b>sc_voice</b></td></tr>
 <tr class="memitem:a0e23d152c9c64660c4c241bf154db6e6" id="r_a0e23d152c9c64660c4c241bf154db6e6"><td class="memItemLeft" align="right" valign="top">typedef struct sc_real_voice&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0e23d152c9c64660c4c241bf154db6e6">sc_real_voice</a></td></tr>
@@ -611,6 +633,8 @@ typedef struct sc_riff_chunk&#160;</td><td class="memItemRight" valign="bottom">
 typedef struct sc_audio_chunk&#160;</td><td class="memItemRight" valign="bottom"><b>sc_audio_chunk</b></td></tr>
 <tr class="memitem:ac2afea4ec233bce0a0d62b6ecde7c3f7" id="r_ac2afea4ec233bce0a0d62b6ecde7c3f7"><td class="memItemLeft" align="right" valign="top"><a id="ac2afea4ec233bce0a0d62b6ecde7c3f7" name="ac2afea4ec233bce0a0d62b6ecde7c3f7"></a>
 typedef struct sc_bank&#160;</td><td class="memItemRight" valign="bottom"><b>sc_bank</b></td></tr>
+<tr class="memitem:a9e8dd86952d9b49c6985510abdbcb543" id="r_a9e8dd86952d9b49c6985510abdbcb543"><td class="memItemLeft" align="right" valign="top"><a id="a9e8dd86952d9b49c6985510abdbcb543" name="a9e8dd86952d9b49c6985510abdbcb543"></a>
+typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><b>sc_thread_proc</b>) (void *userData)</td></tr>
 <tr class="memitem:aca8b1e373917df535789bc297a7a8746" id="r_aca8b1e373917df535789bc297a7a8746"><td class="memItemLeft" align="right" valign="top">typedef struct sc_system_config&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aca8b1e373917df535789bc297a7a8746">sc_system_config</a></td></tr>
 <tr class="memdesc:aca8b1e373917df535789bc297a7a8746"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configuration for initializing the <a class="el" href="structsc__system.html" title="Object that manages the node graph, sounds, output etc.">sc_system</a>.  <br /></td></tr>
 </table><table class="memberdecls">
@@ -724,9 +748,23 @@ Enumerations</h2></td></tr>
 , <b>SC_SOUND_MODE_STREAM</b> = 0x00000004
  }</td></tr>
 <tr class="memdesc:a6aab4356b59c9764f1b48c2aee412d72"><td class="mdescLeft">&#160;</td><td class="mdescRight">The different ways to create a sound.  <a href="#a6aab4356b59c9764f1b48c2aee412d72">More...</a><br /></td></tr>
-<tr class="memitem:a8ed505942f8ce68a0410cb28988a9e79" id="r_a8ed505942f8ce68a0410cb28988a9e79"><td class="memItemLeft" align="right" valign="top"><a id="a8ed505942f8ce68a0410cb28988a9e79" name="a8ed505942f8ce68a0410cb28988a9e79"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>sc_voice_tiebreak_policy</b> { <b>sc_voice_tiebreak_kill_oldest</b>
+<tr class="memitem:ad4fd0d9a4c6760ae92a9c6131e9091b6" id="r_ad4fd0d9a4c6760ae92a9c6131e9091b6"><td class="memItemLeft" align="right" valign="top"><a id="ad4fd0d9a4c6760ae92a9c6131e9091b6" name="ad4fd0d9a4c6760ae92a9c6131e9091b6"></a>enum &#160;</td><td class="memItemRight" valign="bottom">{ <b>SC_CHANNEL_LAYOUT_NAME_SIZE</b> = 64
+, <b>SC_CHANNEL_LABEL_SIZE</b> = 8
+, <b>SC_MAX_CHANNEL_LAYOUT_PRESETS</b> = 8
+ }</td></tr>
+<tr class="memitem:a29a09048af3c5b3ab7e1355ba92e8c75" id="r_a29a09048af3c5b3ab7e1355ba92e8c75"><td class="memItemLeft" align="right" valign="top"><a id="a29a09048af3c5b3ab7e1355ba92e8c75" name="a29a09048af3c5b3ab7e1355ba92e8c75"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>sc_channel_layout_family</b> { <b>sc_channel_layout_family_speakers</b>
+, <b>sc_channel_layout_family_direct</b>
+, <b>sc_channel_layout_family_ambix</b>
+, <b>sc_channel_layout_family_fuma</b>
+ }</td></tr>
+<tr class="memitem:a8ed505942f8ce68a0410cb28988a9e79" id="r_a8ed505942f8ce68a0410cb28988a9e79"><td class="memItemLeft" align="right" valign="top"><a id="a8ed505942f8ce68a0410cb28988a9e79" name="a8ed505942f8ce68a0410cb28988a9e79"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8ed505942f8ce68a0410cb28988a9e79">sc_voice_tiebreak_policy</a> { <b>sc_voice_tiebreak_kill_oldest</b>
 , <b>sc_voice_tiebreak_kill_newest</b>
  }</td></tr>
+<tr class="memdesc:a8ed505942f8ce68a0410cb28988a9e79"><td class="mdescLeft">&#160;</td><td class="mdescRight">How voices with the same priority break tiebreaks during virtualization. <br /></td></tr>
+<tr class="memitem:af97ed65540d7d42a741e2df9452e369a" id="r_af97ed65540d7d42a741e2df9452e369a"><td class="memItemLeft" align="right" valign="top"><a id="af97ed65540d7d42a741e2df9452e369a" name="af97ed65540d7d42a741e2df9452e369a"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af97ed65540d7d42a741e2df9452e369a">sc_voice_stop_mode</a> { <b>sc_voice_stop_mode_cut_tail</b>
+, <b>sc_voice_stop_mode_allow_tail</b>
+ }</td></tr>
+<tr class="memdesc:af97ed65540d7d42a741e2df9452e369a"><td class="mdescLeft">&#160;</td><td class="mdescRight">What happens to the voice's DSP effects (reverb, delay) when it stops. <br /></td></tr>
 <tr class="memitem:aa0bc91889ef06fbad8767d6615e6e521" id="r_aa0bc91889ef06fbad8767d6615e6e521"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa0bc91889ef06fbad8767d6615e6e521">sc_voice_desired_state</a> { <b>sc_voice_desired_stopped</b>
 , <b>sc_voice_desired_playing</b>
  }</td></tr>
@@ -751,7 +789,7 @@ Enumerations</h2></td></tr>
 <br />
  }</td></tr>
 <tr class="memdesc:a7864324b09e946b8f5b925ead2d292f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flags written into sc_voice::flags by either the user or the system.  <a href="#a7864324b09e946b8f5b925ead2d292f7">More...</a><br /></td></tr>
-<tr class="memitem:ad4fd0d9a4c6760ae92a9c6131e9091b6" id="r_ad4fd0d9a4c6760ae92a9c6131e9091b6"><td class="memItemLeft" align="right" valign="top"><a id="ad4fd0d9a4c6760ae92a9c6131e9091b6" name="ad4fd0d9a4c6760ae92a9c6131e9091b6"></a>enum &#160;</td><td class="memItemRight" valign="bottom">{ <b>SC_BANK_FILE_NAME_BUFFER_SIZE</b> = 64
+<tr class="memitem:a74c36d92745d7535c2171f7846d5ca3a" id="r_a74c36d92745d7535c2171f7846d5ca3a"><td class="memItemLeft" align="right" valign="top"><a id="a74c36d92745d7535c2171f7846d5ca3a" name="a74c36d92745d7535c2171f7846d5ca3a"></a>enum &#160;</td><td class="memItemRight" valign="bottom">{ <b>SC_BANK_FILE_NAME_BUFFER_SIZE</b> = 64
  }</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
@@ -836,6 +874,8 @@ void SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_delay_node_
 <a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_node_group_add_dsp</b> (<a class="el" href="structsc__node__group.html">sc_node_group</a> *nodeGroup, <a class="el" href="structsc__dsp.html">sc_dsp</a> *dsp, <a class="el" href="#a1f9f2f0be927c91ecf0b6db332eb7688">sc_dsp_index</a> index)</td></tr>
 <tr class="memitem:a7a4db463fbb7c27929a12fa9c6a0598e" id="r_a7a4db463fbb7c27929a12fa9c6a0598e"><td class="memItemLeft" align="right" valign="top"><a id="a7a4db463fbb7c27929a12fa9c6a0598e" name="a7a4db463fbb7c27929a12fa9c6a0598e"></a>
 <a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_node_group_calculate_is_idle</b> (<a class="el" href="structsc__node__group.html">sc_node_group</a> *nodeGroup, sc_bool *outIsIdle)</td></tr>
+<tr class="memitem:a51110fc423ed1b7cd12c28733f6f856a" id="r_a51110fc423ed1b7cd12c28733f6f856a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a51110fc423ed1b7cd12c28733f6f856a">sc_node_group_get_clock</a> (<a class="el" href="structsc__node__group.html">sc_node_group</a> *nodeGroup, sc_uint64 *outClock)</td></tr>
+<tr class="memdesc:a51110fc423ed1b7cd12c28733f6f856a"><td class="mdescLeft">&#160;</td><td class="mdescRight">The clock that times everything played into the group, in output frames. See <a class="el" href="#acc3bc9afc4fe8a256f55146d2376998d">sc_system_get_clock</a>.  <br /></td></tr>
 <tr class="memitem:a1a9e3e4a12bb160e3fa2c69cadcde91d" id="r_a1a9e3e4a12bb160e3fa2c69cadcde91d"><td class="memItemLeft" align="right" valign="top"><a id="a1a9e3e4a12bb160e3fa2c69cadcde91d" name="a1a9e3e4a12bb160e3fa2c69cadcde91d"></a>
 <a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_node_group_uninit</b> (<a class="el" href="structsc__node__group.html">sc_node_group</a> *nodeGroup)</td></tr>
 <tr class="memitem:a3d4bc0d97266559f0b69f35cd6fe0c59" id="r_a3d4bc0d97266559f0b69f35cd6fe0c59"><td class="memItemLeft" align="right" valign="top"><a id="a3d4bc0d97266559f0b69f35cd6fe0c59" name="a3d4bc0d97266559f0b69f35cd6fe0c59"></a>
@@ -844,12 +884,50 @@ void SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_delay_node_
 <a class="el" href="structsc__sound__config.html">sc_sound_config</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_sound_config_init_file</b> (const char *filePath, <a class="el" href="#a6aab4356b59c9764f1b48c2aee412d72">sc_sound_mode</a> mode)</td></tr>
 <tr class="memitem:aa7baa8968fad938e737814bcf55e5994" id="r_aa7baa8968fad938e737814bcf55e5994"><td class="memItemLeft" align="right" valign="top"><a id="aa7baa8968fad938e737814bcf55e5994" name="aa7baa8968fad938e737814bcf55e5994"></a>
 <a class="el" href="structsc__sound__config.html">sc_sound_config</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_sound_config_init_memory</b> (const void *memory, size_t memorySize, <a class="el" href="#a6aab4356b59c9764f1b48c2aee412d72">sc_sound_mode</a> mode)</td></tr>
+<tr class="memitem:a36b696362a071a90618b1b9e01c50d9d" id="r_a36b696362a071a90618b1b9e01c50d9d"><td class="memItemLeft" align="right" valign="top"><a id="a36b696362a071a90618b1b9e01c50d9d" name="a36b696362a071a90618b1b9e01c50d9d"></a>
+void SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_decoder_config_add_custom_backends</b> (ma_decoder_config *config)</td></tr>
+<tr class="memdesc:a36b696362a071a90618b1b9e01c50d9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds Sound Chef's extra decoders (Vorbis, Opus) to a standalone miniaudio decoder, so it reads every format sounds can. <br /></td></tr>
 <tr class="memitem:a9d607d28dd65aaeec4f7a6135ab7f5c5" id="r_a9d607d28dd65aaeec4f7a6135ab7f5c5"><td class="memItemLeft" align="right" valign="top"><a id="a9d607d28dd65aaeec4f7a6135ab7f5c5" name="a9d607d28dd65aaeec4f7a6135ab7f5c5"></a>
 <a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_sound_get_length</b> (<a class="el" href="structsc__sound.html">sc_sound</a> *sound, float *lengthInSeconds)</td></tr>
 <tr class="memitem:a15f0ce1f4575cd1adc4f6ae1579b92df" id="r_a15f0ce1f4575cd1adc4f6ae1579b92df"><td class="memItemLeft" align="right" valign="top"><a id="a15f0ce1f4575cd1adc4f6ae1579b92df" name="a15f0ce1f4575cd1adc4f6ae1579b92df"></a>
 <a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_sound_release</b> (<a class="el" href="structsc__sound.html">sc_sound</a> *sound)</td></tr>
+<tr class="memitem:aca8d27f3a6d74b7177eb3f240b285a24" id="r_aca8d27f3a6d74b7177eb3f240b285a24"><td class="memItemLeft" align="right" valign="top"><a id="aca8d27f3a6d74b7177eb3f240b285a24" name="aca8d27f3a6d74b7177eb3f240b285a24"></a>
+sc_bool SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_channel_layout_is_ambisonic</b> (const <a class="el" href="structsc__channel__layout.html">sc_channel_layout</a> *layout)</td></tr>
+<tr class="memitem:ae5dcc20bdb5d1358e079b6a0964380cb" id="r_ae5dcc20bdb5d1358e079b6a0964380cb"><td class="memItemLeft" align="right" valign="top"><a id="ae5dcc20bdb5d1358e079b6a0964380cb" name="ae5dcc20bdb5d1358e079b6a0964380cb"></a>
+sc_uint32 SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_channel_layout_get_ambisonic_order</b> (const <a class="el" href="structsc__channel__layout.html">sc_channel_layout</a> *layout)</td></tr>
+<tr class="memitem:a3b948a5ea906bee4d6da30d2791bd673" id="r_a3b948a5ea906bee4d6da30d2791bd673"><td class="memItemLeft" align="right" valign="top"><a id="a3b948a5ea906bee4d6da30d2791bd673" name="a3b948a5ea906bee4d6da30d2791bd673"></a>
+<a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_channel_layout_get_channel_label</b> (const <a class="el" href="structsc__channel__layout.html">sc_channel_layout</a> *layout, sc_uint32 channel, char *label, size_t labelSize)</td></tr>
+<tr class="memdesc:a3b948a5ea906bee4d6da30d2791bd673"><td class="mdescLeft">&#160;</td><td class="mdescRight">Short name for a channel of the layout, like "Ls" or "W". Channels without one are numbered from 1. <br /></td></tr>
+<tr class="memitem:aad28a22d67003a62a91c5fe871ab926b" id="r_aad28a22d67003a62a91c5fe871ab926b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aad28a22d67003a62a91c5fe871ab926b">sc_channel_layout_get_presets</a> (sc_uint32 channelCount, <a class="el" href="structsc__channel__layout.html">sc_channel_layout</a> *presets, sc_uint32 presetCapacity, sc_uint32 *outPresetCount)</td></tr>
+<tr class="memdesc:aad28a22d67003a62a91c5fe871ab926b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Every built-in layout that fits <code class="param">channelCount</code>, ending with the direct one.  <br /></td></tr>
+<tr class="memitem:a099820f4746964b808f388752975c3f5" id="r_a099820f4746964b808f388752975c3f5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a099820f4746964b808f388752975c3f5">sc_channel_layout_detect</a> (ma_vfs *vfs, const char *filePath, sc_uint32 channelCount, <a class="el" href="structsc__channel__layout.html">sc_channel_layout</a> *outLayout, const char **outReason)</td></tr>
+<tr class="memdesc:a099820f4746964b808f388752975c3f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Picks a layout from the file's header where it says (WAV channel masks, the B-format GUID), otherwise from the channel count and the container's usual channel order.  <br /></td></tr>
+<tr class="memitem:a6f2a62e054a09201a88fb9330ecec6a3" id="r_a6f2a62e054a09201a88fb9330ecec6a3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6f2a62e054a09201a88fb9330ecec6a3">sc_channel_layout_build_mix_matrix</a> (const <a class="el" href="structsc__channel__layout.html">sc_channel_layout</a> *layout, const sc_uint32 *channelOrder, const sc_bool *soloedChannels, const ma_channel *outputChannelMap, sc_uint32 outputChannels, float *outMatrix)</td></tr>
+<tr class="memdesc:a6f2a62e054a09201a88fb9330ecec6a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">How each of the layout's channels is heard on each output channel, for <a class="el" href="#a3fa999f868e9467ddd1bce0bbb24fd62">sc_voice_set_mix_matrix</a>.  <br /></td></tr>
+<tr class="memitem:a153b6cd4ecda7d26d5243d4e7628a7e5" id="r_a153b6cd4ecda7d26d5243d4e7628a7e5"><td class="memItemLeft" align="right" valign="top"><a id="a153b6cd4ecda7d26d5243d4e7628a7e5" name="a153b6cd4ecda7d26d5243d4e7628a7e5"></a>
+<a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_channel_map_describe</b> (const ma_channel *channelMap, sc_uint32 channels, char *description, size_t descriptionSize)</td></tr>
+<tr class="memdesc:a153b6cd4ecda7d26d5243d4e7628a7e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">A short name for an output channel map, like "5.1" or "Stereo". <br /></td></tr>
+<tr class="memitem:a1485af17017ec6f2db09e136cb157cc5" id="r_a1485af17017ec6f2db09e136cb157cc5"><td class="memItemLeft" align="right" valign="top"><a id="a1485af17017ec6f2db09e136cb157cc5" name="a1485af17017ec6f2db09e136cb157cc5"></a>
+void SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_ramp_reset</b> (<a class="el" href="structsc__ramp.html">sc_ramp</a> *ramp, float gain)</td></tr>
+<tr class="memitem:a5ff215338c8d0dfba5f2943a8178d5c7" id="r_a5ff215338c8d0dfba5f2943a8178d5c7"><td class="memItemLeft" align="right" valign="top"><a id="a5ff215338c8d0dfba5f2943a8178d5c7" name="a5ff215338c8d0dfba5f2943a8178d5c7"></a>
+void SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_ramp_set_target</b> (<a class="el" href="structsc__ramp.html">sc_ramp</a> *ramp, float target, float frames)</td></tr>
+<tr class="memitem:accd149f30e37a1399a21ec8a1a9c585a" id="r_accd149f30e37a1399a21ec8a1a9c585a"><td class="memItemLeft" align="right" valign="top"><a id="accd149f30e37a1399a21ec8a1a9c585a" name="accd149f30e37a1399a21ec8a1a9c585a"></a>
+sc_bool SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_ramp_is_moving</b> (const <a class="el" href="structsc__ramp.html">sc_ramp</a> *ramp)</td></tr>
+<tr class="memitem:a662f9aa8c38e5ed1a517fe3bbcdc38ea" id="r_a662f9aa8c38e5ed1a517fe3bbcdc38ea"><td class="memItemLeft" align="right" valign="top"><a id="a662f9aa8c38e5ed1a517fe3bbcdc38ea" name="a662f9aa8c38e5ed1a517fe3bbcdc38ea"></a>
+void SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_ramp_advance</b> (<a class="el" href="structsc__ramp.html">sc_ramp</a> *ramp, ma_uint64 frames)</td></tr>
+<tr class="memitem:a97ce2c825fc597dedf225153396b2042" id="r_a97ce2c825fc597dedf225153396b2042"><td class="memItemLeft" align="right" valign="top"><a id="a97ce2c825fc597dedf225153396b2042" name="a97ce2c825fc597dedf225153396b2042"></a>
+float SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_ramp_next</b> (<a class="el" href="structsc__ramp.html">sc_ramp</a> *ramp)</td></tr>
+<tr class="memitem:a7162392b5476894a567718275dd00a93" id="r_a7162392b5476894a567718275dd00a93"><td class="memItemLeft" align="right" valign="top"><a id="a7162392b5476894a567718275dd00a93" name="a7162392b5476894a567718275dd00a93"></a>
+float SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_fade_gain_at</b> (const <a class="el" href="structsc__fade.html">sc_fade</a> *fade, sc_uint64 clock)</td></tr>
+<tr class="memitem:abb2822ac4c9971efd988ece0b995bab1" id="r_abb2822ac4c9971efd988ece0b995bab1"><td class="memItemLeft" align="right" valign="top"><a id="abb2822ac4c9971efd988ece0b995bab1" name="abb2822ac4c9971efd988ece0b995bab1"></a>
+<a class="el" href="structsc__ramp.html">sc_ramp</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_fade_ramp_at</b> (const <a class="el" href="structsc__fade.html">sc_fade</a> *fade, sc_uint64 clock)</td></tr>
+<tr class="memdesc:abb2822ac4c9971efd988ece0b995bab1"><td class="mdescLeft">&#160;</td><td class="mdescRight">The fade from <code class="param">clock</code> onwards as a ramp that can be stepped a frame at a time. <br /></td></tr>
+<tr class="memitem:ab339498fc2c7bc9df73cffb38a17e4a9" id="r_ab339498fc2c7bc9df73cffb38a17e4a9"><td class="memItemLeft" align="right" valign="top"><a id="ab339498fc2c7bc9df73cffb38a17e4a9" name="ab339498fc2c7bc9df73cffb38a17e4a9"></a>
+void SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_fade_start</b> (<a class="el" href="structsc__fade.html">sc_fade</a> *fade, sc_uint64 clock, float fromGain, float toGain, sc_uint64 frames)</td></tr>
 <tr class="memitem:a21d9c51b666933dd4fbc142a7a0a4a1f" id="r_a21d9c51b666933dd4fbc142a7a0a4a1f"><td class="memItemLeft" align="right" valign="top"><a id="a21d9c51b666933dd4fbc142a7a0a4a1f" name="a21d9c51b666933dd4fbc142a7a0a4a1f"></a>
 <a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_voice_get_is_playing</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, sc_voice_handle handle, sc_bool *outPlaying)</td></tr>
+<tr class="memitem:a174d0e17ca3fe5ac990a7f71f487db7a" id="r_a174d0e17ca3fe5ac990a7f71f487db7a"><td class="memItemLeft" align="right" valign="top"><a id="a174d0e17ca3fe5ac990a7f71f487db7a" name="a174d0e17ca3fe5ac990a7f71f487db7a"></a>
+<a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_voice_get_is_stopping</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, sc_voice_handle handle, sc_bool *outStopping)</td></tr>
 <tr class="memitem:a143b645feaf80c23886a36398facc54b" id="r_a143b645feaf80c23886a36398facc54b"><td class="memItemLeft" align="right" valign="top"><a id="a143b645feaf80c23886a36398facc54b" name="a143b645feaf80c23886a36398facc54b"></a>
 <a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_voice_get_cursor_position_in_seconds</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, sc_voice_handle handle, float *outSeconds)</td></tr>
 <tr class="memitem:ae77429b88784a33a225801e06aa3fe3f" id="r_ae77429b88784a33a225801e06aa3fe3f"><td class="memItemLeft" align="right" valign="top"><a id="ae77429b88784a33a225801e06aa3fe3f" name="ae77429b88784a33a225801e06aa3fe3f"></a>
@@ -864,10 +942,10 @@ void SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_delay_node_
 <a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_voice_get_paused</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, sc_voice_handle handle, sc_bool *outPaused)</td></tr>
 <tr class="memitem:afaf6db7553596a4d511b03d9945a25fc" id="r_afaf6db7553596a4d511b03d9945a25fc"><td class="memItemLeft" align="right" valign="top"><a id="afaf6db7553596a4d511b03d9945a25fc" name="afaf6db7553596a4d511b03d9945a25fc"></a>
 <a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_voice_set_paused</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, sc_voice_handle handle, sc_bool paused)</td></tr>
-<tr class="memitem:a4b25ec5b791240c154370113f785df30" id="r_a4b25ec5b791240c154370113f785df30"><td class="memItemLeft" align="right" valign="top"><a id="a4b25ec5b791240c154370113f785df30" name="a4b25ec5b791240c154370113f785df30"></a>
-<a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_voice_set_virtual</b> (<a class="el" href="structsc__voice.html">sc_voice</a> *voice, sc_bool virtualised)</td></tr>
 <tr class="memitem:a991545b7110ba077b426fabcd1986de6" id="r_a991545b7110ba077b426fabcd1986de6"><td class="memItemLeft" align="right" valign="top"><a id="a991545b7110ba077b426fabcd1986de6" name="a991545b7110ba077b426fabcd1986de6"></a>
 <a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_voice_get_virtual</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, sc_voice_handle handle, sc_bool *outVirtual)</td></tr>
+<tr class="memitem:ad6e8af3a6960dfd7be6b752ae68a33b9" id="r_ad6e8af3a6960dfd7be6b752ae68a33b9"><td class="memItemLeft" align="right" valign="top"><a id="ad6e8af3a6960dfd7be6b752ae68a33b9" name="ad6e8af3a6960dfd7be6b752ae68a33b9"></a>
+<a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_voice_set_virtual</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, sc_voice_handle handle, sc_bool virtualized)</td></tr>
 <tr class="memitem:a8e75e956d7cc9f72dc22ca2295843e02" id="r_a8e75e956d7cc9f72dc22ca2295843e02"><td class="memItemLeft" align="right" valign="top"><a id="a8e75e956d7cc9f72dc22ca2295843e02" name="a8e75e956d7cc9f72dc22ca2295843e02"></a>
 <a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_voice_set_volume</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, sc_voice_handle handle, float volume)</td></tr>
 <tr class="memitem:ae8ccd72dc9e0a77b4c24a43970d72127" id="r_ae8ccd72dc9e0a77b4c24a43970d72127"><td class="memItemLeft" align="right" valign="top"><a id="ae8ccd72dc9e0a77b4c24a43970d72127" name="ae8ccd72dc9e0a77b4c24a43970d72127"></a>
@@ -876,8 +954,17 @@ void SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_delay_node_
 <a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_voice_set_lowpass_cutoff</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, sc_voice_handle handle, float cutoff)</td></tr>
 <tr class="memitem:a407888e4c4e3e4d9c96f790c509e4198" id="r_a407888e4c4e3e4d9c96f790c509e4198"><td class="memItemLeft" align="right" valign="top"><a id="a407888e4c4e3e4d9c96f790c509e4198" name="a407888e4c4e3e4d9c96f790c509e4198"></a>
 <a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_voice_set_highpass_cutoff</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, sc_voice_handle handle, float cutoff)</td></tr>
-<tr class="memitem:a82618ce6a9e2d53a23de8d49835c990b" id="r_a82618ce6a9e2d53a23de8d49835c990b"><td class="memItemLeft" align="right" valign="top"><a id="a82618ce6a9e2d53a23de8d49835c990b" name="a82618ce6a9e2d53a23de8d49835c990b"></a>
-<a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_voice_stop</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, sc_voice_handle handle)</td></tr>
+<tr class="memitem:a3fa999f868e9467ddd1bce0bbb24fd62" id="r_a3fa999f868e9467ddd1bce0bbb24fd62"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3fa999f868e9467ddd1bce0bbb24fd62">sc_voice_set_mix_matrix</a> (<a class="el" href="structsc__system.html">sc_system</a> *system, sc_voice_handle handle, const float *matrix, sc_uint32 channelsIn, sc_uint32 channelsOut)</td></tr>
+<tr class="memdesc:a3fa999f868e9467ddd1bce0bbb24fd62"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replaces how the voice's source channels are mapped onto the output with explicit gains.  <br /></td></tr>
+<tr class="memitem:aa42e17c9bed081f8c461bc7841b5843e" id="r_aa42e17c9bed081f8c461bc7841b5843e"><td class="memItemLeft" align="right" valign="top"><a id="aa42e17c9bed081f8c461bc7841b5843e" name="aa42e17c9bed081f8c461bc7841b5843e"></a>
+<a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_voice_get_parent_clock</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, sc_voice_handle handle, sc_uint64 *outClock)</td></tr>
+<tr class="memdesc:aa42e17c9bed081f8c461bc7841b5843e"><td class="mdescLeft">&#160;</td><td class="mdescRight">The clock the voice's fades and delayed stops run on: its parent node group's. See <a class="el" href="#a51110fc423ed1b7cd12c28733f6f856a">sc_node_group_get_clock</a>. <br /></td></tr>
+<tr class="memitem:a67e8cfafb4025c40f34942c9d1edebea" id="r_a67e8cfafb4025c40f34942c9d1edebea"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a67e8cfafb4025c40f34942c9d1edebea">sc_voice_fade_to</a> (<a class="el" href="structsc__system.html">sc_system</a> *system, sc_voice_handle handle, float gain, float seconds)</td></tr>
+<tr class="memdesc:a67e8cfafb4025c40f34942c9d1edebea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fades the voice's level from wherever it is now to <code class="param">gain</code>. It only changes the level; the voice keeps playing at any gain.  <br /></td></tr>
+<tr class="memitem:ad4383cace1d77b84af5353ce7d5a4615" id="r_ad4383cace1d77b84af5353ce7d5a4615"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad4383cace1d77b84af5353ce7d5a4615">sc_voice_stop</a> (<a class="el" href="structsc__system.html">sc_system</a> *system, sc_voice_handle handle, float delaySeconds, <a class="el" href="#af97ed65540d7d42a741e2df9452e369a">sc_voice_stop_mode</a> mode)</td></tr>
+<tr class="memdesc:ad4383cace1d77b84af5353ce7d5a4615"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stops the voice. It ramps out over a few milliseconds rather than cutting dead, so stopping never clicks.  <br /></td></tr>
+<tr class="memitem:a8467106af17f0b99e0f20c35b4b8fe9b" id="r_a8467106af17f0b99e0f20c35b4b8fe9b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8467106af17f0b99e0f20c35b4b8fe9b">sc_voice_stop_with_fade</a> (<a class="el" href="structsc__system.html">sc_system</a> *system, sc_voice_handle handle, float fadeSeconds, <a class="el" href="#af97ed65540d7d42a741e2df9452e369a">sc_voice_stop_mode</a> mode)</td></tr>
+<tr class="memdesc:a8467106af17f0b99e0f20c35b4b8fe9b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fades the voice out from wherever it is now and stops it once the fade ends.  <br /></td></tr>
 <tr class="memitem:a1cd44e3232d747853bd996b7dddf07f1" id="r_a1cd44e3232d747853bd996b7dddf07f1"><td class="memItemLeft" align="right" valign="top"><a id="a1cd44e3232d747853bd996b7dddf07f1" name="a1cd44e3232d747853bd996b7dddf07f1"></a>
 <a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_voice_set_stopped_callback</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, sc_voice_handle handle, <a class="el" href="#a6eb3fd06db64630677a6c56bdcff6840">sc_voice_stopped_proc</a> callback, void *userData)</td></tr>
 <tr class="memitem:ae23884aa22ec86db8643455826e6382b" id="r_ae23884aa22ec86db8643455826e6382b"><td class="memItemLeft" align="right" valign="top"><a id="ae23884aa22ec86db8643455826e6382b" name="ae23884aa22ec86db8643455826e6382b"></a>
@@ -888,7 +975,8 @@ void SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_delay_node_
 <a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_real_voice_init</b> (const <a class="el" href="structsc__real__voice__config.html">sc_real_voice_config</a> *config, <a class="el" href="structsc__real__voice.html">sc_real_voice</a> *realVoice)</td></tr>
 <tr class="memitem:abf985f7afd4de4ba37bcc83f552e09f4" id="r_abf985f7afd4de4ba37bcc83f552e09f4"><td class="memItemLeft" align="right" valign="top"><a id="abf985f7afd4de4ba37bcc83f552e09f4" name="abf985f7afd4de4ba37bcc83f552e09f4"></a>
 <a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_real_voice_uninit</b> (<a class="el" href="structsc__real__voice.html">sc_real_voice</a> *realVoice)</td></tr>
-<tr class="memitem:a0b1613bdfd7cb74592e0172c2505fcc4" id="r_a0b1613bdfd7cb74592e0172c2505fcc4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0b1613bdfd7cb74592e0172c2505fcc4">sc_real_voice_init_preallocated</a> (const <a class="el" href="structsc__real__voice__config.html">sc_real_voice_config</a> *config, void *heap, <a class="el" href="structsc__real__voice.html">sc_real_voice</a> *realVoice)</td></tr>
+<tr class="memitem:a0b1613bdfd7cb74592e0172c2505fcc4" id="r_a0b1613bdfd7cb74592e0172c2505fcc4"><td class="memItemLeft" align="right" valign="top"><a id="a0b1613bdfd7cb74592e0172c2505fcc4" name="a0b1613bdfd7cb74592e0172c2505fcc4"></a>
+<a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_real_voice_init_preallocated</b> (const <a class="el" href="structsc__real__voice__config.html">sc_real_voice_config</a> *config, void *heap, <a class="el" href="structsc__real__voice.html">sc_real_voice</a> *realVoice)</td></tr>
 <tr class="memitem:ae72d6c395c27cd779126094fb0f9b0fb" id="r_ae72d6c395c27cd779126094fb0f9b0fb"><td class="memItemLeft" align="right" valign="top"><a id="ae72d6c395c27cd779126094fb0f9b0fb" name="ae72d6c395c27cd779126094fb0f9b0fb"></a>
 <a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_bank_init</b> (<a class="el" href="structsc__bank.html">sc_bank</a> *bank, const char *outputFile, ma_open_mode_flags openFlags)</td></tr>
 <tr class="memitem:a5ca31dfb8edd828655837971597afc52" id="r_a5ca31dfb8edd828655837971597afc52"><td class="memItemLeft" align="right" valign="top"><a id="a5ca31dfb8edd828655837971597afc52" name="a5ca31dfb8edd828655837971597afc52"></a>
@@ -903,11 +991,14 @@ void SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_delay_node_
 <a class="el" href="structsc__system__config.html">sc_system_config</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_system_config_init_default</b> ()</td></tr>
 <tr class="memitem:a677251f8944e2c968b8427f93fba9fed" id="r_a677251f8944e2c968b8427f93fba9fed"><td class="memItemLeft" align="right" valign="top"><a id="a677251f8944e2c968b8427f93fba9fed" name="a677251f8944e2c968b8427f93fba9fed"></a>
 <a class="el" href="structsc__system__config.html">sc_system_config</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_system_config_init</b> (const char *pluginPath)</td></tr>
-<tr class="memitem:a73c06a9406456d77d8dd5a99dbfd6792" id="r_a73c06a9406456d77d8dd5a99dbfd6792"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a73c06a9406456d77d8dd5a99dbfd6792">sc_system_init</a> (<a class="el" href="structsc__system.html">sc_system</a> *system, const <a class="el" href="structsc__system__config.html">sc_system_config</a> *systemConfig)</td></tr>
+<tr class="memitem:a73c06a9406456d77d8dd5a99dbfd6792" id="r_a73c06a9406456d77d8dd5a99dbfd6792"><td class="memItemLeft" align="right" valign="top"><a id="a73c06a9406456d77d8dd5a99dbfd6792" name="a73c06a9406456d77d8dd5a99dbfd6792"></a>
+<a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_system_init</b> (<a class="el" href="structsc__system.html">sc_system</a> *system, const <a class="el" href="structsc__system__config.html">sc_system_config</a> *systemConfig)</td></tr>
 <tr class="memitem:a4d98ff65c6166df31444916b20e0bbc3" id="r_a4d98ff65c6166df31444916b20e0bbc3"><td class="memItemLeft" align="right" valign="top"><a id="a4d98ff65c6166df31444916b20e0bbc3" name="a4d98ff65c6166df31444916b20e0bbc3"></a>
 <a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><b>sc_system_close</b> (<a class="el" href="structsc__system.html">sc_system</a> *system)</td></tr>
 <tr class="memitem:a7f465418c94293f4a8add8092c3c1d93" id="r_a7f465418c94293f4a8add8092c3c1d93"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7f465418c94293f4a8add8092c3c1d93">sc_system_update</a> (<a class="el" href="structsc__system.html">sc_system</a> *system)</td></tr>
 <tr class="memdesc:a7f465418c94293f4a8add8092c3c1d93"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates the Sound Chef <a class="el" href="structsc__system.html">sc_system</a> on the calling thread.  <br /></td></tr>
+<tr class="memitem:acc3bc9afc4fe8a256f55146d2376998d" id="r_acc3bc9afc4fe8a256f55146d2376998d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acc3bc9afc4fe8a256f55146d2376998d">sc_system_get_clock</a> (<a class="el" href="structsc__system.html">sc_system</a> *system, sc_uint64 *outClock)</td></tr>
+<tr class="memdesc:acc3bc9afc4fe8a256f55146d2376998d"><td class="mdescLeft">&#160;</td><td class="mdescRight">How many frames the system has output since it started, at the engine's sample rate.  <br /></td></tr>
 <tr class="memitem:af744f4b63edcd719e4b986fcaf9e2b79" id="r_af744f4b63edcd719e4b986fcaf9e2b79"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af744f4b63edcd719e4b986fcaf9e2b79">sc_system_calculate_virtual_voices</a> (<a class="el" href="structsc__system.html">sc_system</a> *system)</td></tr>
 <tr class="memdesc:af744f4b63edcd719e4b986fcaf9e2b79"><td class="mdescLeft">&#160;</td><td class="mdescRight">Process all voices and calculates whether they are virtual or not. Called during <a class="el" href="#a7f465418c94293f4a8add8092c3c1d93">sc_system_update</a>.  <br /></td></tr>
 <tr class="memitem:a3bb5b8645460b846d522258e6c72e12c" id="r_a3bb5b8645460b846d522258e6c72e12c"><td class="memItemLeft" align="right" valign="top"><a id="a3bb5b8645460b846d522258e6c72e12c" name="a3bb5b8645460b846d522258e6c72e12c"></a>
@@ -2020,7 +2111,7 @@ sc_system_create_sound </dd></dl>
 </div><div class="memdoc">
 
 <p>Configuration for initializing the <a class="el" href="structsc__system.html" title="Object that manages the node graph, sounds, output etc.">sc_system</a>. </p>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="#a73c06a9406456d77d8dd5a99dbfd6792">sc_system_init</a> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd>sc_system_init </dd></dl>
 
 </div>
 </div>
@@ -2308,30 +2399,165 @@ sc_system_create_sound </dd></dl>
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
-<a id="a0b1613bdfd7cb74592e0172c2505fcc4" name="a0b1613bdfd7cb74592e0172c2505fcc4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0b1613bdfd7cb74592e0172c2505fcc4">&#9670;&#160;</a></span>sc_real_voice_init_preallocated()</h2>
+<a id="a6f2a62e054a09201a88fb9330ecec6a3" name="a6f2a62e054a09201a88fb9330ecec6a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f2a62e054a09201a88fb9330ecec6a3">&#9670;&#160;</a></span>sc_channel_layout_build_mix_matrix()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API sc_real_voice_init_preallocated </td>
+          <td class="memname"><a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API sc_channel_layout_build_mix_matrix </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="structsc__real__voice__config.html">sc_real_voice_config</a> *</td>          <td class="paramname"><span class="paramname"><em>config</em></span>, </td>
+          <td class="paramtype">const <a class="el" href="structsc__channel__layout.html">sc_channel_layout</a> *</td>          <td class="paramname"><span class="paramname"><em>layout</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>heap</em></span>, </td>
+          <td class="paramtype">const sc_uint32 *</td>          <td class="paramname"><span class="paramname"><em>channelOrder</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structsc__real__voice.html">sc_real_voice</a> *</td>          <td class="paramname"><span class="paramname"><em>realVoice</em></span>&#160;)</td>
+          <td class="paramtype">const sc_bool *</td>          <td class="paramname"><span class="paramname"><em>soloedChannels</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const ma_channel *</td>          <td class="paramname"><span class="paramname"><em>outputChannelMap</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">sc_uint32</td>          <td class="paramname"><span class="paramname"><em>outputChannels</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float *</td>          <td class="paramname"><span class="paramname"><em>outMatrix</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000014">Todo</a></b></dt><dd>Handle copying streams </dd></dl>
+
+<p>How each of the layout's channels is heard on each output channel, for <a class="el" href="#a3fa999f868e9467ddd1bce0bbb24fd62">sc_voice_set_mix_matrix</a>. </p>
+<p>Speakers the output doesn't have fold onto the ones it does, following the ITU-R BS.775 downmix. Ambisonics are decoded to the output's speaker positions.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">channelOrder</td><td>For each layout slot, which file channel feeds it, so mis-ordered files can be fixed by hand. NULL feeds slot n from channel n. </td></tr>
+    <tr><td class="paramname">soloedChannels</td><td>Per file channel, which to listen to on their own. NULL or none set plays everything. Soloed ambisonic components play raw on the front speakers, since a single component has no direction of its own. </td></tr>
+    <tr><td class="paramname">outputChannelMap</td><td>The output's channel positions, like an ma_device's playback channel map. </td></tr>
+    <tr><td class="paramname">outMatrix</td><td>Receives <code class="param">outputChannels</code> rows of sc_channel_layout::channelCount gains. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a099820f4746964b808f388752975c3f5" name="a099820f4746964b808f388752975c3f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a099820f4746964b808f388752975c3f5">&#9670;&#160;</a></span>sc_channel_layout_detect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API sc_channel_layout_detect </td>
+          <td>(</td>
+          <td class="paramtype">ma_vfs *</td>          <td class="paramname"><span class="paramname"><em>vfs</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>filePath</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">sc_uint32</td>          <td class="paramname"><span class="paramname"><em>channelCount</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structsc__channel__layout.html">sc_channel_layout</a> *</td>          <td class="paramname"><span class="paramname"><em>outLayout</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char **</td>          <td class="paramname"><span class="paramname"><em>outReason</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Picks a layout from the file's header where it says (WAV channel masks, the B-format GUID), otherwise from the channel count and the container's usual channel order. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vfs</td><td>Reads the file's header. NULL uses miniaudio's default file system. </td></tr>
+    <tr><td class="paramname">outReason</td><td>How the layout was decided, e.g. "WAV channel mask". Static, so never freed. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="aad28a22d67003a62a91c5fe871ab926b" name="aad28a22d67003a62a91c5fe871ab926b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad28a22d67003a62a91c5fe871ab926b">&#9670;&#160;</a></span>sc_channel_layout_get_presets()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API sc_channel_layout_get_presets </td>
+          <td>(</td>
+          <td class="paramtype">sc_uint32</td>          <td class="paramname"><span class="paramname"><em>channelCount</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structsc__channel__layout.html">sc_channel_layout</a> *</td>          <td class="paramname"><span class="paramname"><em>presets</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">sc_uint32</td>          <td class="paramname"><span class="paramname"><em>presetCapacity</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">sc_uint32 *</td>          <td class="paramname"><span class="paramname"><em>outPresetCount</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Every built-in layout that fits <code class="param">channelCount</code>, ending with the direct one. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">presets</td><td>Receives up to <code class="param">presetCapacity</code> layouts. Give SC_MAX_CHANNEL_LAYOUT_PRESETS to get them all. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>SBK_ERR_FULL if there were more presets than <code class="param">presetCapacity</code>. </dd></dl>
+
+</div>
+</div>
+<a id="a51110fc423ed1b7cd12c28733f6f856a" name="a51110fc423ed1b7cd12c28733f6f856a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51110fc423ed1b7cd12c28733f6f856a">&#9670;&#160;</a></span>sc_node_group_get_clock()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API sc_node_group_get_clock </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structsc__node__group.html">sc_node_group</a> *</td>          <td class="paramname"><span class="paramname"><em>nodeGroup</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">sc_uint64 *</td>          <td class="paramname"><span class="paramname"><em>outClock</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>The clock that times everything played into the group, in output frames. See <a class="el" href="#acc3bc9afc4fe8a256f55146d2376998d">sc_system_get_clock</a>. </p>
+<p>Node groups can't be paused or pitched yet, so every group runs on the system clock. Schedule against the group's clock rather than the system's so code keeps working once they can. </p>
 
 </div>
 </div>
@@ -2358,25 +2584,27 @@ sc_system_create_sound </dd></dl>
 
 </div>
 </div>
-<a id="a73c06a9406456d77d8dd5a99dbfd6792" name="a73c06a9406456d77d8dd5a99dbfd6792"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a73c06a9406456d77d8dd5a99dbfd6792">&#9670;&#160;</a></span>sc_system_init()</h2>
+<a id="acc3bc9afc4fe8a256f55146d2376998d" name="acc3bc9afc4fe8a256f55146d2376998d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc3bc9afc4fe8a256f55146d2376998d">&#9670;&#160;</a></span>sc_system_get_clock()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API sc_system_init </td>
+          <td class="memname"><a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API sc_system_get_clock </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structsc__system.html">sc_system</a> *</td>          <td class="paramname"><span class="paramname"><em>system</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structsc__system__config.html">sc_system_config</a> *</td>          <td class="paramname"><span class="paramname"><em>systemConfig</em></span>&#160;)</td>
+          <td class="paramtype">sc_uint64 *</td>          <td class="paramname"><span class="paramname"><em>outClock</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000013">Todo</a></b></dt><dd>Make this dynamic. It's currently set to two so there are no surprises </dd></dl>
+
+<p>How many frames the system has output since it started, at the engine's sample rate. </p>
+<p>Clocks only move once per audio callback, so a value read outside the audio thread is when the last callback finished. Fades and delayed stops are timed on clocks like this one; voices use their parent group's (<a class="el" href="#a51110fc423ed1b7cd12c28733f6f856a">sc_node_group_get_clock</a>), which may differ from the system's in future. </p>
 
 </div>
 </div>
@@ -2400,7 +2628,7 @@ sc_system_create_sound </dd></dl>
 </div><div class="memdoc">
 
 <p>Sets up logging. </p>
-<dl class="section remark"><dt>Remarks</dt><dd>Must be called before <a class="el" href="#a73c06a9406456d77d8dd5a99dbfd6792">sc_system_init</a>. </dd></dl>
+<dl class="section remark"><dt>Remarks</dt><dd>Must be called before sc_system_init. </dd></dl>
 
 </div>
 </div>
@@ -2471,6 +2699,160 @@ sc_system_create_sound </dd></dl>
 
 <p>Updates the Sound Chef <a class="el" href="structsc__system.html">sc_system</a> on the calling thread. </p>
 <dl class="section remark"><dt>Remarks</dt><dd>When using Sound Bakery, the system thread will call this function, thereby moving audio updates off the game thread (if in async mode). </dd></dl>
+
+</div>
+</div>
+<a id="a67e8cfafb4025c40f34942c9d1edebea" name="a67e8cfafb4025c40f34942c9d1edebea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67e8cfafb4025c40f34942c9d1edebea">&#9670;&#160;</a></span>sc_voice_fade_to()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API sc_voice_fade_to </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structsc__system.html">sc_system</a> *</td>          <td class="paramname"><span class="paramname"><em>system</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">sc_voice_handle</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>gain</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>seconds</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Fades the voice's level from wherever it is now to <code class="param">gain</code>. It only changes the level; the voice keeps playing at any gain. </p>
+<p>The fade multiplies with sc_voice_set_volume rather than replacing it. It runs on the voice's parent clock (<a class="el" href="#aa42e17c9bed081f8c461bc7841b5843e">sc_voice_get_parent_clock</a>), so it isn't affected by the voice's pitch and keeps going while the voice is virtual or paused. A new fade replaces the one in progress. Once the voice is stopping, this does nothing.</p>
+<p>To fade in from silence, fade to 0 over 0 seconds and then to the full level. A jump followed by a fade is kept together even if both are requested before the audio thread picks either up.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">gain</td><td>Linear gain to end at. </td></tr>
+    <tr><td class="paramname">seconds</td><td>How long the fade lasts, timed from when the audio thread picks it up. 0 jumps straight to <code class="param">gain</code>, which clicks if the voice is audible. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a3fa999f868e9467ddd1bce0bbb24fd62" name="a3fa999f868e9467ddd1bce0bbb24fd62"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3fa999f868e9467ddd1bce0bbb24fd62">&#9670;&#160;</a></span>sc_voice_set_mix_matrix()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API sc_voice_set_mix_matrix </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structsc__system.html">sc_system</a> *</td>          <td class="paramname"><span class="paramname"><em>system</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">sc_voice_handle</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float *</td>          <td class="paramname"><span class="paramname"><em>matrix</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">sc_uint32</td>          <td class="paramname"><span class="paramname"><em>channelsIn</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">sc_uint32</td>          <td class="paramname"><span class="paramname"><em>channelsOut</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replaces how the voice's source channels are mapped onto the output with explicit gains. </p>
+<p><code class="param">matrix</code> is row-major with one row per output channel: out[o] = sum of matrix[o * channelsIn + i] * in[i]. It's used only while the source and output channel counts match <code class="param">channelsIn</code> and <code class="param">channelsOut</code>. Pass NULL to go back to the default mapping. </p>
+
+</div>
+</div>
+<a id="ad4383cace1d77b84af5353ce7d5a4615" name="ad4383cace1d77b84af5353ce7d5a4615"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad4383cace1d77b84af5353ce7d5a4615">&#9670;&#160;</a></span>sc_voice_stop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API sc_voice_stop </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structsc__system.html">sc_system</a> *</td>          <td class="paramname"><span class="paramname"><em>system</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">sc_voice_handle</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>delaySeconds</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#af97ed65540d7d42a741e2df9452e369a">sc_voice_stop_mode</a></td>          <td class="paramname"><span class="paramname"><em>mode</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stops the voice. It ramps out over a few milliseconds rather than cutting dead, so stopping never clicks. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">delaySeconds</td><td>Waits this long on the voice's parent clock before stopping, timed from when the audio thread picks the stop up. A later stop replaces a waiting one. Fades still work while the stop is waiting. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a8467106af17f0b99e0f20c35b4b8fe9b" name="a8467106af17f0b99e0f20c35b4b8fe9b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8467106af17f0b99e0f20c35b4b8fe9b">&#9670;&#160;</a></span>sc_voice_stop_with_fade()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#ad65430c2fb142de4e481da0839592e04">sbk_status</a> SC_API sc_voice_stop_with_fade </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structsc__system.html">sc_system</a> *</td>          <td class="paramname"><span class="paramname"><em>system</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">sc_voice_handle</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>fadeSeconds</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#af97ed65540d7d42a741e2df9452e369a">sc_voice_stop_mode</a></td>          <td class="paramname"><span class="paramname"><em>mode</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Fades the voice out from wherever it is now and stops it once the fade ends. </p>
+<p>The same as <a class="el" href="#a67e8cfafb4025c40f34942c9d1edebea">sc_voice_fade_to</a> to 0 followed by <a class="el" href="#ad4383cace1d77b84af5353ce7d5a4615">sc_voice_stop</a> with the same length, except both are guaranteed to start in the same audio callback. </p>
 
 </div>
 </div>

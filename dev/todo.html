@@ -135,7 +135,7 @@ $(function(){initNavTree('todo.html','',''); });
 <div class="contents">
 <div class="textblock"><dl class="reflist">
 <dt>Member <a class="el" href="classproperty__drawer.html#ad7cfbcc0b3cf334260b53422be099635">property_drawer::draw_associate_container</a>  (rttr::variant_associative_view &amp;view, rttr::string_view name, bool canResize=true, bool canShrink=true)</dt>
-<dd><a class="anchor" id="_todo000015"></a>Can we construct basic types without any manual work?  </dd>
+<dd><a class="anchor" id="_todo000013"></a>Can we construct basic types without any manual work?  </dd>
 <dt>Class <a class="el" href="classsbk_1_1core_1_1object.html">sbk::core::object</a>  </dt>
 <dd><a class="anchor" id="_todo000003"></a>Remove the object class. There should be a greater split between data and runtime. The object class only exists to give a base class to runtime objects. However, all runtime objects should be small structs in a single array - not full objects with reflection.  </dd>
 <dt>Member <a class="el" href="classsbk_1_1core_1_1property.html#acf41415a8b3a9086374d73a0c46215f3">sbk::core::property&lt; T &gt;::set_max</a>  (T value) -&gt; void</dt>
@@ -151,11 +151,7 @@ $(function(){initNavTree('todo.html','',''); });
 <dt>Member <a class="el" href="classsbk_1_1engine_1_1voice.html#a9292f1d94b084063ebd228b9a23c7f15">sbk::engine::voice::play_container</a>  (container *container) -&gt; <a class="el" href="error_8h.html#afcef97889524d7e58d0da81349a7f990" title="The result of a fallible operation: a value of type T, or an sbk::error.">sbk::result&lt; void &gt;</a></dt>
 <dd><a class="anchor" id="_todo000012"></a>Remove this line. Voices shouldn't have children or even derive from object  </dd>
 <dt>Member <a class="el" href="sound__bakery_8h.html#a3bc10a8018a47eb6cc919cd482093469">sbk_system_load_soundbank</a>  (const char *soundbankFilePath, sbk_id *outSoundbankID)</dt>
-<dd><a class="anchor" id="_todo000001"></a>Make soundbank loading happen on the system thread  </dd>
-<dt>Member <a class="el" href="sound__chef_8h.html#a0b1613bdfd7cb74592e0172c2505fcc4">sc_real_voice_init_preallocated</a>  (const <a class="el" href="structsc__real__voice__config.html">sc_real_voice_config</a> *config, void *heap, <a class="el" href="structsc__real__voice.html" title="A real voice that is connected to the DSP graph.">sc_real_voice</a> *realVoice)</dt>
-<dd><a class="anchor" id="_todo000014"></a>Handle copying streams  </dd>
-<dt>Member <a class="el" href="sound__chef_8h.html#a73c06a9406456d77d8dd5a99dbfd6792">sc_system_init</a>  (<a class="el" href="structsc__system.html" title="Object that manages the node graph, sounds, output etc.">sc_system</a> *system, const <a class="el" href="structsc__system__config.html" title="Configuration for initializing the sc_system.">sc_system_config</a> *systemConfig)</dt>
-<dd><a class="anchor" id="_todo000013"></a>Make this dynamic. It's currently set to two so there are no surprises </dd>
+<dd><a class="anchor" id="_todo000001"></a>Make soundbank loading happen on the system thread </dd>
 </dl>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->

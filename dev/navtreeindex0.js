@@ -191,7 +191,7 @@ var NAVTREEINDEX0 =
 "classsbk_1_1unique__coroutine.html":[12,0,2,30],
 "classsbk_1_1util_1_1type__helper.html":[12,0,2,5,1],
 "classsbk_1_1work__item.html":[12,0,2,31],
-"classsplash__widget.html":[12,0,56],
+"classsplash__widget.html":[12,0,68],
 "command__queue_8h_source.html":[13,0,2,0,1,6,0],
 "concepts.html":[11],
 "conceptsbk_1_1core_1_1arithmetic.html":[11,0,0,0],
