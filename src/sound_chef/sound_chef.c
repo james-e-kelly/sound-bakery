@@ -36,7 +36,23 @@ static void sc_system_clap_request_callback(const clap_host_t* host) { (void)hos
 static void sc_system_clap_request_process(const clap_host_t* host) { (void)host; }
 static void sc_system_clap_request_restart(const clap_host_t* host) { (void)host; }
 
-static void sc_system_advance_voice_cursors(sc_system* system, ma_uint64 frameCount)
+static sc_bool sc_voice_is_silent(sc_system* system, const sc_voice* voice)
+{
+    if (voice->realVoiceHandle == 0)
+    {
+        return SC_TRUE;
+    }
+
+    sc_real_voice* const realVoice = &system->realVoiceBuffer[SC_VOICE_HANDLE_EXTRACT_INDEX(voice->realVoiceHandle)];
+    return c89atomic_load_32(&realVoice->silent) != 0u;
+}
+
+extern void sc_voice_update_schedule(sc_system* system, sc_voice* voice, sc_uint64 clock, ma_uint64 frameCount);
+
+/**
+ * @brief Runs before the graph is read, so seeks, fades and pauses are settled before any voice renders.
+ */
+static void sc_system_prepare_voices(sc_system* system, ma_uint64 frameCount)
 {
     for (sc_uint32 voiceIndex = 0; voiceIndex < system->voiceSlotAllocator.capacity; ++voiceIndex)
     {
@@ -58,17 +74,43 @@ static void sc_system_advance_voice_cursors(sc_system* system, ma_uint64 frameCo
             c89atomic_store_64(&voice->playCursor, (sc_uint64)pendingSeek);
             c89atomic_fetch_add_32(&voice->seekEpoch, 1u);
             (void)c89atomic_compare_and_swap_i64(&voice->pendingSeekFrames, pendingSeek, (sc_int64)-1);
+            voice->playCursorRemainder = 0.0;
         }
 
-        const sc_uint32 flags             = c89atomic_load_32(&voice->flags);
-        const sc_bool isPaused            = SC_VOICE_HAS_FLAG(flags, SC_VOICE_FLAG_PAUSED);
+        voice->pausedThisCallback = SC_VOICE_HAS_FLAG(c89atomic_load_32(&voice->flags), SC_VOICE_FLAG_PAUSED);
 
-        if (isPaused)
+        // A starting voice holds its cursor at its start until it renders, so its first frame is never skipped.
+        voice->renderCallback = currentState != sc_voice_state_starting ? system->callbackIndex : 0u;
+
+        sc_uint64 parentClock = 0u;
+        (void)sc_node_group_get_clock(voice->parentNodeGroup, &parentClock);
+        sc_voice_update_schedule(system, voice, parentClock, frameCount);
+    }
+}
+
+/**
+ * @brief Runs after the graph is read, so each real voice renders from where its cursor was at the callback's start.
+ */
+static void sc_system_advance_voice_cursors(sc_system* system, ma_uint64 frameCount)
+{
+    for (sc_uint32 voiceIndex = 0; voiceIndex < system->voiceSlotAllocator.capacity; ++voiceIndex)
+    {
+        sc_voice* const voice             = &system->voiceBuffer[voiceIndex];
+        const sc_voice_state currentState = (sc_voice_state)c89atomic_load_32(&voice->currentState);
+
+        // The state check catches a slot that was reaped and reused while the graph was being read.
+        const sc_bool isLive = currentState == sc_voice_state_playing || currentState == sc_voice_state_stopping;
+        if (!isLive || voice->renderCallback != system->callbackIndex || voice->pausedThisCallback)
         {
             continue;
         }
 
-        c89atomic_fetch_add_64(&voice->playCursor, frameCount);
+        // Pitch changes how fast the source plays, so the cursor moves by source time rather than output time.
+        const double advance       = (double)frameCount * (double)c89atomic_load_f32(&voice->pitch) + voice->playCursorRemainder;
+        const sc_uint64 wholeFrames = (sc_uint64)advance;
+        voice->playCursorRemainder  = advance - (double)wholeFrames;
+
+        c89atomic_fetch_add_64(&voice->playCursor, wholeFrames);
     }
 }
 
@@ -294,6 +336,20 @@ sbk_status sc_system_init(sc_system* system, const sc_system_config* systemConfi
 
 extern sbk_status sc_system_promote_voice_to_real(sc_system* system, sc_voice* voice);
 
+static void sc_system_stop_real_voice(sc_system* system, sc_voice* voice, sc_uint32 voiceIndex)
+{
+    if (voice->realVoiceHandle > 0)
+    {
+        const sc_voice_index realVoiceIndex = SC_VOICE_HANDLE_EXTRACT_INDEX(voice->realVoiceHandle);
+        sc_real_voice* const realVoice      = &system->realVoiceBuffer[realVoiceIndex];
+        sc_real_voice_uninit(realVoice);
+        ma_slot_allocator_free(&system->realVoiceSlotAllocator, voice->realVoiceHandle);
+        voice->realVoiceHandle = 0;
+    }
+    ma_log_postf(&system->log, MA_LOG_LEVEL_DEBUG, "[voice] stopped: slot=%u\n", voiceIndex);
+    c89atomic_store_32(&voice->currentState, sc_voice_state_stopped);
+}
+
 sbk_status sc_system_update(sc_system* system)
 {
     SC_CHECK_ARG(system != NULL);
@@ -356,7 +412,7 @@ sbk_status sc_system_update(sc_system* system)
                 switch (currentState)
                 {
                     case sc_voice_state_free:
-                        // Nothing to do.
+                        // Nothing to do
                         break;
                     case sc_voice_state_starting:
                         ma_log_postf(&system->log, MA_LOG_LEVEL_DEBUG, "[voice] cancelled before play: slot=%u\n", voiceIndex);
@@ -364,25 +420,24 @@ sbk_status sc_system_update(sc_system* system)
                         break;
                     case sc_voice_state_playing:
                     {
-                        sc_bool stopNow = SC_VOICE_HAS_FLAG(c89atomic_load_32(&voice->flags), SC_VOICE_FLAG_INSTANT_STOP);
+                        // Tests whether the voice is safe to stop instantly
+                        // "Safe" means no DSP is running and we've faded out
+                        // Otherwise, we move into the stopping state that can keep querying
 
-                        if (!stopNow)
+                        const sc_bool instantStop = SC_VOICE_HAS_FLAG(c89atomic_load_32(&voice->flags), SC_VOICE_FLAG_INSTANT_STOP);
+
+                        sc_bool dspIsIdle = SC_TRUE;
+
+                        if (!instantStop)
                         {
-                            sc_node_group_calculate_is_idle(voice->voiceNodeGroup, &stopNow);
+                            sc_node_group_calculate_is_idle(voice->voiceNodeGroup, &dspIsIdle);
                         }
+
+                        const sc_bool stopNow = dspIsIdle && sc_voice_is_silent(system, voice);
 
                         if (stopNow)
                         {
-                            if (voice->realVoiceHandle > 0)
-                            {
-                                const sc_voice_index realVoiceIndex = SC_VOICE_HANDLE_EXTRACT_INDEX(voice->realVoiceHandle);
-                                sc_real_voice* const realVoice      = &system->realVoiceBuffer[realVoiceIndex];
-                                sc_real_voice_uninit(realVoice);
-                                ma_slot_allocator_free(&system->realVoiceSlotAllocator, voice->realVoiceHandle);
-                                voice->realVoiceHandle = 0;
-                            }
-                            ma_log_postf(&system->log, MA_LOG_LEVEL_DEBUG, "[voice] stopped: slot=%u\n", voiceIndex);
-                            c89atomic_store_32(&voice->currentState, sc_voice_state_stopped);
+                            sc_system_stop_real_voice(system, voice, voiceIndex);
                         }
                         else
                         {
@@ -392,20 +447,23 @@ sbk_status sc_system_update(sc_system* system)
                     }
                     case sc_voice_state_stopping:
                     {
-                        sc_bool stoppingIsIdle = MA_TRUE;
-                        sc_node_group_calculate_is_idle(voice->voiceNodeGroup, &stoppingIsIdle);
+                        // Keeps checking if we've finished the safe fade out to avoid a click
+                        // If the user doesn't want an instant stop then we wait on DSP
 
-                        if (stoppingIsIdle)
+                        const sc_bool instantStop = SC_VOICE_HAS_FLAG(c89atomic_load_32(&voice->flags), SC_VOICE_FLAG_INSTANT_STOP);
+
+                        sc_bool dspIsIdle = SC_TRUE;
+
+                        if (!instantStop)
                         {
-                            if (voice->realVoiceHandle > 0)
-                            {
-                                const sc_voice_index realVoiceIndex = SC_VOICE_HANDLE_EXTRACT_INDEX(voice->realVoiceHandle);
-                                sc_real_voice* const realVoice      = &system->realVoiceBuffer[realVoiceIndex];
-                                sc_real_voice_uninit(realVoice);
-                                ma_slot_allocator_free(&system->realVoiceSlotAllocator, voice->realVoiceHandle);
-                                voice->realVoiceHandle = 0;
-                            }
-                            c89atomic_store_32(&voice->currentState, sc_voice_state_stopped);
+                            sc_node_group_calculate_is_idle(voice->voiceNodeGroup, &dspIsIdle);
+                        }
+                        
+                        const sc_bool fullyStopped = dspIsIdle && sc_voice_is_silent(system, voice);
+
+                        if (fullyStopped)
+                        {
+                            sc_system_stop_real_voice(system, voice, voiceIndex);
                         }
                         break;
                     }
@@ -414,7 +472,7 @@ sbk_status sc_system_update(sc_system* system)
                         if (voice->stoppedCallback)
                         {
                             voice->stoppedCallback(voice->stoppedCallbackUserData);
-                            voice->stoppedCallback          = NULL;
+                            voice->stoppedCallback         = NULL;
                             voice->stoppedCallbackUserData = NULL;
                         }
 
@@ -514,9 +572,23 @@ sbk_status sc_system_read_pcm_frames(sc_system* system, void* framesOut, ma_uint
     SC_CHECK_ARG(framesOut != NULL);
     SC_CHECK_ARG(frameCount != NULL);
 
-    sc_system_advance_voice_cursors(system, frameCount);
+    ++system->callbackIndex;
+    sc_system_prepare_voices(system, frameCount);
 
-    return SC_STATUS_FROM_MA_RESULT(ma_engine_read_pcm_frames((ma_engine*)system, framesOut, frameCount, framesRead));
+    const sbk_status result = SC_STATUS_FROM_MA_RESULT(ma_engine_read_pcm_frames((ma_engine*)system, framesOut, frameCount, framesRead));
+
+    // Advanced after the read so the voices and the graph all see the clock and cursors as they were at the callback's start.
+    sc_system_advance_voice_cursors(system, frameCount);
+    c89atomic_fetch_add_64(&system->clock, frameCount);
+    return result;
+}
+
+sbk_status sc_system_get_clock(sc_system* system, sc_uint64* outClock)
+{
+    SC_CHECK_ARG(system != NULL);
+    SC_CHECK_ARG(outClock != NULL);
+    *outClock = c89atomic_load_64(&system->clock);
+    return SBK_SUCCESS;
 }
 
 static ma_uint32 get_flags_from_mode(sc_sound_mode mode)
@@ -641,6 +713,22 @@ sbk_status sc_system_play_sound(sc_system* system, sc_sound* sound, sc_voice_han
 
     c89atomic_store_64(&voice->handle, (sc_uint64)slot);    // Set the handle first. Ensures anyone trying to write to this handle sees it's been reassigned and can stop
     c89atomic_store_64(&voice->playCursor, 0u);
+    voice->playCursorRemainder = 0.0;
+    voice->renderCallback      = 0u;
+    voice->pausedThisCallback  = paused;
+    SC_ZERO_OBJECT(&voice->fade);
+    voice->fade.fromGain               = 1.0F;
+    voice->fade.toGain                 = 1.0F;
+    voice->fadeAtCallbackStart.current = 1.0F;
+    voice->fadeAtCallbackStart.target  = 1.0F;
+    voice->fadeAtCallbackStart.step    = 0.0F;
+    voice->stopScheduled               = SC_FALSE;
+    voice->pendingJump                 = SC_FALSE;
+    voice->appliedFadeEpoch            = 0u;
+    voice->appliedStopEpoch            = 0u;
+    c89atomic_store_32(&voice->fadeEpoch, 0u);
+    c89atomic_store_32(&voice->stopEpoch, 0u);
+    c89atomic_store_f32(&voice->fadeGain, 1.0F);
     c89atomic_store_32(&voice->flags, paused ? (sc_uint32)SC_VOICE_FLAG_PAUSED : (sc_uint32)SC_VOICE_FLAG_NONE);
     c89atomic_store_32(&voice->currentState, (sc_uint32)sc_voice_state_starting);
     c89atomic_store_32(&voice->desiredState, (sc_uint32)sc_voice_desired_playing);

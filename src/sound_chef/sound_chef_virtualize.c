@@ -4,7 +4,7 @@ static float sc_voice_calculate_audibility(sc_voice* voice)
 {
     // Placeholder: extend with 3D falloff, listener distance, group gain,
     // obstruction, occlusion once those layers exist.
-    return c89atomic_load_f32((volatile sc_atomic_float*)&voice->gain);
+    return c89atomic_load_f32((volatile sc_atomic_float*)&voice->gain) * c89atomic_load_f32((volatile sc_atomic_float*)&voice->fadeGain);
 }
 
 static void sc_virtual_voice_sort_boundary(sc_virtual_voice_candidate* boundary, sc_uint32 count, sc_voice_tiebreak_policy policy)
@@ -58,6 +58,7 @@ sbk_status sc_system_calculate_virtual_voices(sc_system* system)
     for (sc_uint32 i = 0; i < maxVoices; ++i)
     {
         sc_voice* const voice                = &system->voiceBuffer[i];
+        const sc_voice_handle handle         = (sc_voice_handle)c89atomic_load_64(&voice->handle);
         const sc_voice_desired_state desired = (sc_voice_desired_state)c89atomic_load_32(&voice->desiredState);
         const sc_voice_state current         = (sc_voice_state)c89atomic_load_32(&voice->currentState);
 
@@ -71,7 +72,7 @@ sbk_status sc_system_calculate_virtual_voices(sc_system* system)
         if (audibility < system->vol0Threshold)
         {
             ma_log_postf(&system->log, MA_LOG_LEVEL_DEBUG, "[voice] virtualized (below vol0): slot=%u audibility=%.4f\n", i, audibility);
-            (void)sc_voice_set_virtual(voice, SC_TRUE);
+            (void)sc_voice_set_virtual(system, handle, SC_TRUE);
             continue;
         }
 
@@ -88,7 +89,9 @@ sbk_status sc_system_calculate_virtual_voices(sc_system* system)
     {
         for (sc_uint32 i = 0; i < count; ++i)
         {
-            (void)sc_voice_set_virtual(&system->voiceBuffer[candidates[i].voiceIndex], SC_FALSE);
+            const sc_voice_handle handle = (sc_voice_handle)c89atomic_load_64(&system->voiceBuffer[candidates[i].voiceIndex].handle);
+
+            (void)sc_voice_set_virtual(system, handle, SC_FALSE);
         }
         return SBK_SUCCESS;
     }
@@ -117,14 +120,15 @@ sbk_status sc_system_calculate_virtual_voices(sc_system* system)
     for (sc_uint32 i = 0; i < count; ++i)
     {
         const sc_virtual_voice_candidate* const candidate = &candidates[i];
+        const sc_voice_handle handle                      = (sc_voice_handle)c89atomic_load_64(&system->voiceBuffer[candidate->voiceIndex].handle);
         if (candidate->priority > cutoff)
         {
-            (void)sc_voice_set_virtual(&system->voiceBuffer[candidate->voiceIndex], SC_FALSE);
+            (void)sc_voice_set_virtual(system, handle, SC_FALSE);
         }
         else if (candidate->priority < cutoff)
         {
             ma_log_postf(&system->log, MA_LOG_LEVEL_DEBUG, "[voice] virtualized (low priority): slot=%u priority=%u cutoff=%u\n", candidate->voiceIndex, candidate->priority, cutoff);
-            (void)sc_voice_set_virtual(&system->voiceBuffer[candidate->voiceIndex], SC_TRUE);
+            (void)sc_voice_set_virtual(system, handle, SC_TRUE);
         }
         else
         {
@@ -141,7 +145,8 @@ sbk_status sc_system_calculate_virtual_voices(sc_system* system)
         {
             ma_log_postf(&system->log, MA_LOG_LEVEL_DEBUG, "[voice] virtualized (tiebreak): slot=%u priority=%u audibility=%.4f\n", boundary[i].voiceIndex, boundary[i].priority, boundary[i].audibility);
         }
-        (void)sc_voice_set_virtual(&system->voiceBuffer[boundary[i].voiceIndex], !wantsReal);
+        const sc_voice_handle handle = (sc_voice_handle)c89atomic_load_64(&system->voiceBuffer[boundary[i].voiceIndex].handle);
+        (void)sc_voice_set_virtual(system, handle, !wantsReal);
     }
 
     return SBK_SUCCESS;

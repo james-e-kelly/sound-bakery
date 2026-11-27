@@ -16,6 +16,14 @@ sbk_status sc_node_group_init(sc_system* system, sc_node_group* nodeGroup)
     return SBK_SUCCESS;
 }
 
+sbk_status sc_node_group_get_clock(sc_node_group* nodeGroup, sc_uint64* outClock)
+{
+    SC_CHECK_ARG(nodeGroup != NULL);
+    SC_CHECK_ARG(outClock != NULL);
+    SC_CHECK(nodeGroup->fader != NULL, SBK_ERR_NULL);
+    return sc_system_get_clock(nodeGroup->fader->system, outClock);
+}
+
 sbk_status sc_node_group_add_dsp(sc_node_group* nodeGroup, sc_dsp* dsp, sc_dsp_index index)
 {
     SC_CHECK(index == sc_dsp_index_head, SC_STATUS_FROM_MA_RESULT(MA_NOT_IMPLEMENTED));

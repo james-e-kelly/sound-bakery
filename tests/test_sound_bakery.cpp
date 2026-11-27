@@ -19,10 +19,16 @@
 #include "sound_bakery/runtime/runtime.h"
 #include "sound_bakery/sound/sound.h"
 
+#include <array>
 #include <atomic>
 #include <chrono>
+#include <cmath>
+#include <cstring>
 #include <iostream>
+#include <memory>
+#include <string_view>
 #include <thread>
+#include <vector>
 
 namespace
 {
@@ -1126,5 +1132,284 @@ TEST_SUITE("Message Queue")
 
         writeThread.join();
         readThread.join();
+    }
+}
+TEST_SUITE("Channel Layout")
+{
+    namespace
+    {
+        auto get_preset(sc_uint32 channels, const char* name) -> sc_channel_layout
+        {
+            std::array<sc_channel_layout, SC_MAX_CHANNEL_LAYOUT_PRESETS> presets{};
+            sc_uint32 count = 0;
+            REQUIRE(sc_channel_layout_get_presets(channels, presets.data(), static_cast<sc_uint32>(presets.size()), &count) == SBK_SUCCESS);
+
+            for (sc_uint32 index = 0; index < count; ++index)
+            {
+                if (std::string_view(presets[index].name) == name)
+                {
+                    return presets[index];
+                }
+            }
+            FAIL("No preset named ", name);
+            return {};
+        }
+
+        auto build_matrix(const sc_channel_layout& layout, const std::vector<ma_channel>& output, const sc_uint32* order = nullptr, const sc_bool* solo = nullptr) -> std::vector<float>
+        {
+            std::vector<float> matrix(layout.channelCount * output.size(), -1.0f);
+            REQUIRE(sc_channel_layout_build_mix_matrix(&layout, order, solo, output.data(), static_cast<sc_uint32>(output.size()), matrix.data()) == SBK_SUCCESS);
+            return matrix;
+        }
+
+        const std::vector<ma_channel> s_stereo = {MA_CHANNEL_FRONT_LEFT, MA_CHANNEL_FRONT_RIGHT};
+    }  // namespace
+
+    TEST_CASE("Stereo plays straight through")
+    {
+        CHECK(build_matrix(get_preset(2, "Stereo"), s_stereo) == std::vector<float>{1.0f, 0.0f, 0.0f, 1.0f});
+    }
+
+    TEST_CASE("Mono plays at full level on both fronts")
+    {
+        CHECK(build_matrix(get_preset(1, "Mono"), s_stereo) == std::vector<float>{1.0f, 1.0f});
+        CHECK(build_matrix(get_preset(1, "Mono"), {MA_CHANNEL_MONO}) == std::vector<float>{1.0f});
+    }
+
+    TEST_CASE("5.1 folds down to stereo")
+    {
+        // L R C LFE Ls Rs: centre and surrounds at -3 dB, LFE dropped
+        const std::vector<float> matrix = build_matrix(get_preset(6, "5.1 (L R C LFE Ls Rs)"), s_stereo);
+        const std::vector<float> left(matrix.begin(), matrix.begin() + 6);
+        const std::vector<float> right(matrix.begin() + 6, matrix.end());
+
+        CHECK(left[0] == doctest::Approx(1.0f));
+        CHECK(left[1] == doctest::Approx(0.0f));
+        CHECK(left[2] == doctest::Approx(0.7071f).epsilon(0.001));
+        CHECK(left[3] == doctest::Approx(0.0f));
+        CHECK(left[4] == doctest::Approx(0.7071f).epsilon(0.001));
+        CHECK(left[5] == doctest::Approx(0.0f));
+        CHECK(right[2] == doctest::Approx(0.7071f).epsilon(0.001));
+        CHECK(right[5] == doctest::Approx(0.7071f).epsilon(0.001));
+    }
+
+    TEST_CASE("Channel order and solo pick which file channels play")
+    {
+        const sc_channel_layout stereo = get_preset(2, "Stereo");
+
+        const std::array<sc_uint32, 2> swapped = {1, 0};
+        CHECK(build_matrix(stereo, s_stereo, swapped.data()) == std::vector<float>{0.0f, 1.0f, 1.0f, 0.0f});
+
+        const std::array<sc_bool, 2> soloRight = {SC_FALSE, SC_TRUE};
+        CHECK(build_matrix(stereo, s_stereo, nullptr, soloRight.data()) == std::vector<float>{0.0f, 0.0f, 0.0f, 1.0f});
+    }
+
+    TEST_CASE("First order AmbiX decodes to stereo as cardioids")
+    {
+        // ACN order W Y Z X, rows are L then R
+        const std::vector<float> matrix = build_matrix(get_preset(4, "AmbiX 1st order"), s_stereo);
+        CHECK(matrix[0] == doctest::Approx(0.5f));
+        CHECK(matrix[4] == doctest::Approx(0.5f));
+        CHECK(matrix[1] > 0.0f);
+        CHECK(matrix[5] == doctest::Approx(-matrix[1]));
+        CHECK(matrix[2] == doctest::Approx(0.0f));
+    }
+
+    TEST_CASE("Presets end with the direct layout and report when they don't fit")
+    {
+        std::array<sc_channel_layout, SC_MAX_CHANNEL_LAYOUT_PRESETS> presets{};
+        sc_uint32 count = 0;
+        REQUIRE(sc_channel_layout_get_presets(4, presets.data(), static_cast<sc_uint32>(presets.size()), &count) == SBK_SUCCESS);
+        REQUIRE(count > 1);
+        CHECK(presets[count - 1].family == sc_channel_layout_family_direct);
+
+        CHECK(sc_channel_layout_get_presets(4, presets.data(), 1, &count) == SBK_ERR_FULL);
+        CHECK(count == 1);
+    }
+
+    TEST_CASE("Labels follow the layout")
+    {
+        std::array<char, SC_CHANNEL_LABEL_SIZE> label{};
+
+        const sc_channel_layout surround = get_preset(8, "7.1 (L R C LFE Lss Rss Lrs Rrs)");
+        REQUIRE(sc_channel_layout_get_channel_label(&surround, 6, label.data(), label.size()) == SBK_SUCCESS);
+        CHECK(std::string_view(label.data()) == "Lrs");
+
+        const sc_channel_layout ambisonic = get_preset(25, "AmbiX 4th order");
+        REQUIRE(sc_channel_layout_get_channel_label(&ambisonic, 3, label.data(), label.size()) == SBK_SUCCESS);
+        CHECK(std::string_view(label.data()) == "X");
+        REQUIRE(sc_channel_layout_get_channel_label(&ambisonic, 20, label.data(), label.size()) == SBK_SUCCESS);
+        CHECK(std::string_view(label.data()) == "A20");
+    }
+
+    TEST_CASE("Detection falls back on the channel count and container order")
+    {
+        sc_channel_layout layout{};
+        const char* reason = nullptr;
+
+        REQUIRE(sc_channel_layout_detect(nullptr, "does_not_exist.wav", 9, &layout, &reason) == SBK_SUCCESS);
+        CHECK(layout.family == sc_channel_layout_family_ambix);
+        CHECK(std::string_view(reason) == "Guessed from channel count");
+
+        REQUIRE(sc_channel_layout_detect(nullptr, "does_not_exist.OGG", 6, &layout, &reason) == SBK_SUCCESS);
+        CHECK(std::string_view(layout.name) == "5.1 Vorbis (L C R Ls Rs LFE)");
+        CHECK(std::string_view(reason) == "Vorbis channel order");
+    }
+
+    TEST_CASE("Output maps are described by their layout")
+    {
+        std::array<char, SC_CHANNEL_LAYOUT_NAME_SIZE> description{};
+
+        const std::vector<ma_channel> surround = {MA_CHANNEL_FRONT_LEFT, MA_CHANNEL_FRONT_RIGHT, MA_CHANNEL_FRONT_CENTER, MA_CHANNEL_LFE, MA_CHANNEL_SIDE_LEFT, MA_CHANNEL_SIDE_RIGHT};
+        REQUIRE(sc_channel_map_describe(surround.data(), static_cast<sc_uint32>(surround.size()), description.data(), description.size()) == SBK_SUCCESS);
+        CHECK(std::string_view(description.data()) == "5.1");
+
+        const std::vector<ma_channel> unknown = {MA_CHANNEL_AUX_0, MA_CHANNEL_AUX_1, MA_CHANNEL_AUX_2};
+        REQUIRE(sc_channel_map_describe(unknown.data(), static_cast<sc_uint32>(unknown.size()), description.data(), description.size()) == SBK_SUCCESS);
+        CHECK(std::string_view(description.data()) == "3 channels");
+    }
+}
+
+TEST_SUITE("Voice Cursor")
+{
+    namespace
+    {
+        constexpr ma_uint32 s_sampleRate  = 48000;
+        constexpr ma_uint32 s_sourceFrames = s_sampleRate;
+        constexpr ma_uint32 s_channels     = 2;
+
+        // Each sample holds its own frame index scaled to [0, 1), so the output says where the source has read to.
+        auto make_ramp_wav() -> std::vector<unsigned char>
+        {
+            std::vector<unsigned char> wav;
+            const auto push_u32 = [&wav](ma_uint32 value) { for (int byte = 0; byte < 4; ++byte) wav.push_back(static_cast<unsigned char>(value >> (byte * 8))); };
+            const auto push_u16 = [&wav](ma_uint16 value) { for (int byte = 0; byte < 2; ++byte) wav.push_back(static_cast<unsigned char>(value >> (byte * 8))); };
+            const auto push_tag = [&wav](const char* tag) { wav.insert(wav.end(), tag, tag + 4); };
+
+            const ma_uint32 dataBytes = s_sourceFrames * s_channels * sizeof(float);
+            push_tag("RIFF");
+            push_u32(36 + dataBytes);
+            push_tag("WAVE");
+            push_tag("fmt ");
+            push_u32(16);
+            push_u16(3);  // IEEE float
+            push_u16(s_channels);
+            push_u32(s_sampleRate);
+            push_u32(s_sampleRate * s_channels * sizeof(float));
+            push_u16(s_channels * sizeof(float));
+            push_u16(32);
+            push_tag("data");
+            push_u32(dataBytes);
+
+            for (ma_uint32 frame = 0; frame < s_sourceFrames; ++frame)
+            {
+                const float sample = static_cast<float>(frame) / static_cast<float>(s_sourceFrames);
+                ma_uint32 bits     = 0;
+                std::memcpy(&bits, &sample, sizeof(bits));
+                for (ma_uint32 channel = 0; channel < s_channels; ++channel)
+                {
+                    push_u32(bits);
+                }
+            }
+            return wav;
+        }
+
+        struct offline_voice
+        {
+            std::unique_ptr<sc_system> system = std::make_unique<sc_system>();
+            std::vector<unsigned char> wav    = make_ramp_wav();
+            sc_sound* sound                   = nullptr;
+            sc_voice_handle voice             = 0;
+            std::vector<float> output;
+
+            offline_voice()
+            {
+                REQUIRE(sc_system_log_init(system.get(), [](void*, ma_uint32 level, const char* message) { if (level <= MA_LOG_LEVEL_WARNING) std::cerr << message; }) == SBK_SUCCESS);
+
+                sc_system_config config = sc_system_config_init_default();
+                config.noDevice         = SC_TRUE;
+                config.outputChannels   = s_channels;
+                REQUIRE(sc_system_init(system.get(), &config) == SBK_SUCCESS);
+
+                const sc_sound_config soundConfig = sc_sound_config_init_memory(wav.data(), wav.size(), SC_SOUND_MODE_DECODE);
+                REQUIRE(sc_system_create_sound(system.get(), &soundConfig, &sound) == SBK_SUCCESS);
+                REQUIRE(sc_system_play_sound(system.get(), sound, &voice, nullptr, SC_FALSE) == SBK_SUCCESS);
+                REQUIRE(sc_system_update(system.get()) == SBK_SUCCESS);
+            }
+
+            ~offline_voice()
+            {
+                (void)sc_sound_release(sound);
+                (void)sc_system_close(system.get());
+            }
+
+            void render(ma_uint64 frameCount)
+            {
+                output.assign(frameCount * s_channels, 0.0f);
+                ma_uint64 framesRead = 0;
+                REQUIRE(sc_system_read_pcm_frames(system.get(), output.data(), frameCount, &framesRead) == SBK_SUCCESS);
+                REQUIRE(sc_system_update(system.get()) == SBK_SUCCESS);
+            }
+
+            void set_paused(bool paused) { REQUIRE(sc_voice_set_paused(system.get(), voice, paused ? SC_TRUE : SC_FALSE) == SBK_SUCCESS); }
+
+            auto cursor_frames() -> double
+            {
+                float seconds = 0.0f;
+                REQUIRE(sc_voice_get_cursor_position_in_seconds(system.get(), voice, &seconds) == SBK_SUCCESS);
+                return static_cast<double>(seconds) * s_sampleRate;
+            }
+
+            // How far the cursor sits past the last source frame rendered. Constant while the two are in step.
+            auto cursor_lead() -> double { return cursor_frames() - static_cast<double>(output.back()) * s_sourceFrames; }
+        };
+
+        auto steady_cursor_lead(ma_uint64 bufferFrames) -> double
+        {
+            offline_voice voice;
+            for (int buffer = 0; buffer < 8; ++buffer)
+            {
+                voice.render(bufferFrames);
+            }
+            return voice.cursor_lead();
+        }
+    }  // namespace
+
+    TEST_CASE("Pausing for one buffer resumes from where the pause was asked for")
+    {
+        constexpr ma_uint64 bufferFrames = 400;  // Longer than the declick but one graph chunk, so the ramp out finishes on the pause's last read
+        const double steadyLead          = steady_cursor_lead(bufferFrames);
+        offline_voice voice;
+
+        voice.render(bufferFrames);
+        voice.set_paused(true);
+        voice.render(bufferFrames);
+        voice.set_paused(false);
+        voice.render(bufferFrames);
+        voice.render(bufferFrames);
+
+        CHECK(std::abs(voice.cursor_frames() - 3.0 * bufferFrames) <= 1.0);
+        CHECK(std::abs(voice.cursor_lead() - steadyLead) <= 1.0);
+    }
+
+    TEST_CASE("Resuming part way through the pause ramp keeps the cursor with the source")
+    {
+        constexpr ma_uint64 bufferFrames = 64;  // Shorter than the declick, so resuming lands mid ramp
+        const double steadyLead          = steady_cursor_lead(bufferFrames);
+        offline_voice voice;
+
+        for (int buffer = 0; buffer < 4; ++buffer)
+        {
+            voice.render(bufferFrames);
+        }
+        voice.set_paused(true);
+        voice.render(bufferFrames);
+        voice.set_paused(false);
+        for (int buffer = 0; buffer < 8; ++buffer)
+        {
+            voice.render(bufferFrames);
+        }
+
+        CHECK(std::abs(voice.cursor_lead() - steadyLead) <= 1.0);
     }
 }

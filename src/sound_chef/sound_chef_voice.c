@@ -1,6 +1,12 @@
 #include "sound_chef/sound_chef.h"
 #include <string.h>
 
+#define SC_RESAMPLER_LPF_ORDER 4
+
+// Pitch changes rebuild the filter for the new ratio. A cutoff at Nyquist puts its poles on the unit circle when the
+// ratio nears 1:1, so keep it just under.
+#define SC_RESAMPLER_LPF_NYQUIST_FACTOR 0.95
+
 static sbk_status sc_voice_resolve(sc_system* system, sc_voice_handle handle, sc_voice** outVoice)
 {
     SC_CHECK_ARG(system != NULL);
@@ -39,6 +45,194 @@ static void sc_voice_write_flag(volatile sc_atomic_uint32* flags, sc_voice_flags
     }
 }
 
+void sc_ramp_reset(sc_ramp* ramp, float gain)
+{
+    ramp->current = gain;
+    ramp->target  = gain;
+    ramp->step    = 0.0F;
+}
+
+void sc_ramp_set_target(sc_ramp* ramp, float target, float frames)
+{
+    const float distance = target > ramp->current ? target - ramp->current : ramp->current - target;
+
+    ramp->target = target;
+    ramp->step   = frames >= 1.0F ? distance / frames : distance;
+
+    if (ramp->step <= 0.0F)
+    {
+        ramp->current = target;
+    }
+}
+
+sc_bool sc_ramp_is_moving(const sc_ramp* ramp)
+{
+    return ramp->current != ramp->target;
+}
+
+void sc_ramp_advance(sc_ramp* ramp, ma_uint64 frames)
+{
+    const float distance = ramp->step * (float)frames;
+
+    if (ramp->current < ramp->target)
+    {
+        ramp->current = SC_MIN(ramp->current + distance, ramp->target);
+    }
+    else if (ramp->current > ramp->target)
+    {
+        ramp->current = SC_MAX(ramp->current - distance, ramp->target);
+    }
+}
+
+float sc_ramp_next(sc_ramp* ramp)
+{
+    sc_ramp_advance(ramp, 1u);
+    return ramp->current;
+}
+
+float sc_fade_gain_at(const sc_fade* fade, sc_uint64 clock)
+{
+    if (clock >= fade->endClock)
+    {
+        return fade->toGain;
+    }
+    if (clock <= fade->startClock)
+    {
+        return fade->fromGain;
+    }
+
+    const float progress = (float)(clock - fade->startClock) / (float)(fade->endClock - fade->startClock);
+    return fade->fromGain + (fade->toGain - fade->fromGain) * progress;
+}
+
+/**
+ * @brief The fade from @p clock onwards as a ramp that can be stepped a frame at a time.
+ */
+sc_ramp sc_fade_ramp_at(const sc_fade* fade, sc_uint64 clock)
+{
+    sc_ramp ramp;
+    sc_ramp_reset(&ramp, sc_fade_gain_at(fade, clock));
+
+    if (clock >= fade->startClock && clock < fade->endClock)
+    {
+        const float distance = fade->toGain > fade->fromGain ? fade->toGain - fade->fromGain : fade->fromGain - fade->toGain;
+        ramp.target          = fade->toGain;
+        ramp.step            = distance / (float)(fade->endClock - fade->startClock);
+    }
+    return ramp;
+}
+
+void sc_fade_start(sc_fade* fade, sc_uint64 clock, float fromGain, float toGain, sc_uint64 frames)
+{
+    fade->fromGain   = fromGain;
+    fade->toGain     = toGain;
+    fade->startClock = clock;
+    fade->endClock   = clock + frames;
+}
+
+/**
+ * @brief Picks up new fades and delayed stops, and works out the fade for this callback. Runs on the audio thread
+ * for every live voice, real or virtual, before the graph is read.
+ *
+ * @param clock The voice's parent clock at the start of this callback.
+ */
+void sc_voice_update_schedule(sc_system* system, sc_voice* voice, sc_uint64 clock, ma_uint64 frameCount)
+{
+    // The stop is read first so a fade requested before it is never picked up a callback later than the stop.
+    const sc_uint32 stopEpoch = c89atomic_load_32(&voice->stopEpoch);
+    const sc_uint32 fadeEpoch = c89atomic_load_32(&voice->fadeEpoch);
+
+    if (stopEpoch != voice->appliedStopEpoch)
+    {
+        ma_spinlock_lock(&voice->scheduleLock);
+        const float seconds = voice->pendingStopSeconds;
+        ma_spinlock_unlock(&voice->scheduleLock);
+
+        voice->stopClock        = clock + sc_seconds_to_frames(system, seconds);
+        voice->stopScheduled    = SC_TRUE;
+        voice->appliedStopEpoch = stopEpoch;
+    }
+
+    if (fadeEpoch != voice->appliedFadeEpoch)
+    {
+        ma_spinlock_lock(&voice->scheduleLock);
+        const sc_bool jump   = voice->pendingJump;
+        const float jumpGain = voice->pendingJumpGain;
+        const float toGain   = voice->pendingFadeTo;
+        const float seconds  = voice->pendingFadeSeconds;
+        voice->pendingJump   = SC_FALSE;
+        ma_spinlock_unlock(&voice->scheduleLock);
+
+        const float startGain = jump ? jumpGain : sc_fade_gain_at(&voice->fade, clock);
+        sc_fade_start(&voice->fade, clock, startGain, toGain, sc_seconds_to_frames(system, seconds));
+        voice->appliedFadeEpoch = fadeEpoch;
+    }
+
+    if (voice->stopScheduled && clock >= voice->stopClock)
+    {
+        voice->stopScheduled = SC_FALSE;
+        c89atomic_store_32(&voice->desiredState, (sc_uint32)sc_voice_desired_stopped);
+    }
+
+    if (c89atomic_load_32(&voice->desiredState) == (sc_uint32)sc_voice_desired_stopped)
+    {
+        // However the voice was stopped, it reaches silence within the declick time, even part way through a long fade.
+        const sc_uint64 declickFrames = sc_seconds_to_frames(system, SC_DECLICK_SECONDS);
+        if (voice->fade.toGain != 0.0F || voice->fade.endClock > clock + declickFrames)
+        {
+            sc_fade_start(&voice->fade, clock, sc_fade_gain_at(&voice->fade, clock), 0.0F, declickFrames);
+        }
+    }
+
+    voice->fadeAtCallbackStart = sc_fade_ramp_at(&voice->fade, clock);
+    c89atomic_store_f32(&voice->fadeGain, sc_fade_gain_at(&voice->fade, clock + frameCount));
+}
+
+/**
+ * @brief Queues a fade for the audio thread. The caller holds @ref sc_voice::scheduleLock and bumps @ref sc_voice::fadeEpoch.
+ */
+static void sc_voice_set_pending_fade(sc_voice* voice, float gain, float seconds)
+{
+    if (seconds <= 0.0F)
+    {
+        voice->pendingJump     = SC_TRUE;
+        voice->pendingJumpGain = gain;
+    }
+    voice->pendingFadeTo      = gain;
+    voice->pendingFadeSeconds = seconds;
+}
+
+sbk_status sc_voice_fade_to(sc_system* system, sc_voice_handle handle, float gain, float seconds)
+{
+    SC_CHECK_ARG(system != NULL);
+    SC_CHECK_ARG(gain >= 0.0F);
+    SC_CHECK_ARG(seconds >= 0.0F);
+    sc_bool isStopping = SC_FALSE;
+    SC_CHECK_STATUS(sc_voice_get_is_stopping(system, handle, &isStopping));
+    sc_voice* voice = NULL;
+    SC_CHECK_STATUS(sc_voice_resolve(system, handle, &voice));
+
+    if (isStopping == SC_FALSE)
+    {
+        ma_spinlock_lock(&voice->scheduleLock);
+        sc_voice_set_pending_fade(voice, gain, seconds);
+        ma_spinlock_unlock(&voice->scheduleLock);
+
+        c89atomic_fetch_add_32(&voice->fadeEpoch, 1u);
+    }
+
+    return SBK_SUCCESS;
+}
+
+sbk_status sc_voice_get_parent_clock(sc_system* system, sc_voice_handle handle, sc_uint64* outClock)
+{
+    SC_CHECK_ARG(system != NULL);
+    SC_CHECK_ARG(outClock != NULL);
+    sc_voice* voice = NULL;
+    SC_CHECK_STATUS(sc_voice_resolve(system, handle, &voice));
+    return sc_node_group_get_clock(voice->parentNodeGroup, outClock);
+}
+
 sbk_status sc_voice_set_paused(sc_system* system, sc_voice_handle handle, sc_bool paused)
 {
     sc_voice* voice = NULL;
@@ -47,19 +241,77 @@ sbk_status sc_voice_set_paused(sc_system* system, sc_voice_handle handle, sc_boo
     return SBK_SUCCESS;
 }
 
-sbk_status SC_API sc_voice_set_virtual(sc_voice* voice, sc_bool virtualised)
-{
-    SC_CHECK_ARG(voice != NULL);
-    sc_voice_write_flag(&voice->flags, SC_VOICE_FLAG_VIRTUAL, virtualised);
-    return SBK_SUCCESS;
-}
-
-sbk_status sc_voice_stop(sc_system* system, sc_voice_handle handle)
+sbk_status SC_API sc_voice_set_virtual(sc_system* system, sc_voice_handle handle, sc_bool virtualized)
 {
     sc_voice* voice = NULL;
     SC_CHECK_STATUS(sc_voice_resolve(system, handle, &voice));
-    sc_voice_write_flag(&voice->flags, SC_VOICE_FLAG_INSTANT_STOP, SC_TRUE);
-    c89atomic_store_32(&voice->desiredState, (sc_uint32)sc_voice_desired_stopped);
+    sc_voice_write_flag(&voice->flags, SC_VOICE_FLAG_VIRTUAL, virtualized);
+    return SBK_SUCCESS;
+}
+
+sbk_status sc_voice_stop(sc_system* system, sc_voice_handle handle, float delaySeconds, sc_voice_stop_mode mode)
+{
+    SC_CHECK_ARG(system != NULL);
+    SC_CHECK_ARG(delaySeconds >= 0.0F);
+    sc_bool isStopping = SC_FALSE;
+    SC_CHECK_STATUS(sc_voice_get_is_stopping(system, handle, &isStopping));
+
+    if (isStopping == SC_TRUE)
+    {
+        return SBK_SUCCESS;
+    }
+
+    sc_voice* voice = NULL;
+    SC_CHECK_STATUS(sc_voice_resolve(system, handle, &voice));
+
+    sc_voice_write_flag(&voice->flags, SC_VOICE_FLAG_INSTANT_STOP, mode == sc_voice_stop_mode_cut_tail);
+
+    if (delaySeconds > 0.0F)
+    {
+        ma_spinlock_lock(&voice->scheduleLock);
+        voice->pendingStopSeconds = delaySeconds;
+        ma_spinlock_unlock(&voice->scheduleLock);
+
+        c89atomic_fetch_add_32(&voice->stopEpoch, 1u);
+    }
+    else
+    {
+        c89atomic_store_32(&voice->desiredState, (sc_uint32)sc_voice_desired_stopped);
+    }
+    return SBK_SUCCESS;
+}
+
+sbk_status sc_voice_stop_with_fade(sc_system* system, sc_voice_handle handle, float fadeSeconds, sc_voice_stop_mode mode)
+{
+    SC_CHECK_ARG(system != NULL);
+    SC_CHECK_ARG(fadeSeconds >= 0.0F);
+
+    if (fadeSeconds <= 0.0F)
+    {
+        return sc_voice_stop(system, handle, 0.0F, mode);
+    }
+
+    sc_bool isStopping = SC_FALSE;
+    SC_CHECK_STATUS(sc_voice_get_is_stopping(system, handle, &isStopping));
+
+    if (isStopping == SC_TRUE)
+    {
+        return SBK_SUCCESS;
+    }
+
+    sc_voice* voice = NULL;
+    SC_CHECK_STATUS(sc_voice_resolve(system, handle, &voice));
+
+    sc_voice_write_flag(&voice->flags, SC_VOICE_FLAG_INSTANT_STOP, mode == sc_voice_stop_mode_cut_tail);
+
+    ma_spinlock_lock(&voice->scheduleLock);
+    sc_voice_set_pending_fade(voice, 0.0F, fadeSeconds);
+    voice->pendingStopSeconds = fadeSeconds;
+    ma_spinlock_unlock(&voice->scheduleLock);
+
+    // The audio thread reads the stop's epoch before the fade's, so bumping the fade's first means it can't see one without the other.
+    c89atomic_fetch_add_32(&voice->fadeEpoch, 1u);
+    c89atomic_fetch_add_32(&voice->stopEpoch, 1u);
     return SBK_SUCCESS;
 }
 
@@ -103,6 +355,17 @@ sbk_status sc_voice_get_is_playing(sc_system* system, sc_voice_handle handle, sc
     return SBK_SUCCESS;
 }
 
+sbk_status sc_voice_get_is_stopping(sc_system* system, sc_voice_handle handle, sc_bool* outStopping)
+{
+    SC_CHECK_ARG(system != NULL);
+    SC_CHECK_ARG(outStopping != NULL);
+    sc_voice* voice;
+    SC_CHECK_STATUS(sc_voice_resolve(system, handle, &voice));
+    const sc_voice_state state = (sc_voice_state)c89atomic_load_32(&voice->currentState);
+    *outStopping = c89atomic_load_32(&voice->desiredState) == (sc_uint32)sc_voice_desired_stopped;
+    return SBK_SUCCESS;
+}
+
 sbk_status sc_voice_get_cursor_position_in_seconds(sc_system* system, sc_voice_handle handle, float* outSeconds)
 {
     SC_CHECK_ARG(system != NULL);
@@ -143,7 +406,7 @@ sbk_status sc_voice_set_loop_position_in_seconds(sc_system* system, sc_voice_han
 sbk_status sc_voice_set_mix_matrix(sc_system* system, sc_voice_handle handle, const float* matrix, sc_uint32 channelsIn, sc_uint32 channelsOut)
 {
     SC_CHECK_ARG(system != NULL);
-    SC_CHECK_ARG(matrix == NULL || (channelsIn > 0 && channelsIn <= SC_MAX_MIX_CHANNELS && channelsOut > 0 && channelsOut <= SC_MAX_MIX_CHANNELS));
+    SC_CHECK_ARG(matrix == NULL || (channelsIn > 0 && channelsIn <= SC_MAX_CHANNELS && channelsOut > 0 && channelsOut <= SC_MAX_CHANNELS));
     sc_voice* voice;
     SC_CHECK_STATUS(sc_voice_resolve(system, handle, &voice));
 
@@ -151,7 +414,7 @@ sbk_status sc_voice_set_mix_matrix(sc_system* system, sc_voice_handle handle, co
     float* newMatrix = NULL;
     if (matrix != NULL && voice->mixMatrix == NULL)
     {
-        newMatrix = (float*)ma_malloc(sizeof(float) * SC_MAX_MIX_CHANNELS * SC_MAX_MIX_CHANNELS, &system->engine.allocationCallbacks);
+        newMatrix = (float*)ma_malloc(sizeof(float) * SC_MAX_CHANNELS * SC_MAX_CHANNELS, &system->engine.allocationCallbacks);
         SC_CHECK_MEM(newMatrix);
     }
 
@@ -289,7 +552,7 @@ static void sc_real_voice_sync_mix_if_needed(sc_real_voice* realVoice)
 
     ma_spinlock_lock(&voice->mixLock);
 
-    const sc_bool hasMatrix   = voice->mixMatrix != NULL && voice->mixChannelsIn > 0;
+    const sc_bool hasMatrix   = voice->mixMatrix != NULL && voice->mixChannelsIn == realVoice->sourceChannels && voice->mixChannelsOut == realVoice->outputChannels;
     realVoice->mixChannelsIn  = hasMatrix ? voice->mixChannelsIn : 0;
     realVoice->mixChannelsOut = hasMatrix ? voice->mixChannelsOut : 0;
     if (hasMatrix)
@@ -352,18 +615,113 @@ static void sc_real_voice_sync_loop_if_needed(sc_real_voice* realVoice)
     realVoice->appliedLoopEpoch = voiceEpoch;
 }
 
-static void sc_real_voice_sync_seek_if_needed(sc_real_voice* realVoice)
+/**
+ * @brief Points the real voice's gains at what the voice wants now. The fade is copied once per callback from
+ * where the voice's fade is at the callback's start, then stepped a frame at a time.
+ */
+static void sc_real_voice_sync_gains(sc_real_voice* realVoice, sc_bool paused)
 {
-    const sc_uint32 voiceEpoch = c89atomic_load_32(&realVoice->voiceRef->seekEpoch);
-    if (voiceEpoch == realVoice->appliedSeekEpoch)
+    sc_voice* const voice     = realVoice->voiceRef;
+    const float declickFrames = sc_declick_frames(realVoice->system);
+
+    const float volume = c89atomic_load_f32(&voice->gain);
+    if (volume != realVoice->volumeRamp.target)
+    {
+        sc_ramp_set_target(&realVoice->volumeRamp, volume, declickFrames);
+    }
+
+    const float declickTarget = paused ? 0.0F : 1.0F;
+    if (declickTarget != realVoice->declickRamp.target)
+    {
+        sc_ramp_set_target(&realVoice->declickRamp, declickTarget, declickFrames);
+    }
+
+    if (realVoice->fadeSyncedCallback != realVoice->system->callbackIndex)
+    {
+        realVoice->fadeRamp               = voice->fadeAtCallbackStart;
+        realVoice->fadeSyncedCallback = realVoice->system->callbackIndex;
+    }
+}
+
+static sc_bool sc_ramp_is_silent(const sc_ramp* ramp)
+{
+    return ramp->current <= 0.0F && ramp->target <= 0.0F;
+}
+
+/**
+ * @brief Applies volume, fade and declick as one gain, stepping any that are moving a frame at a time.
+ */
+static void sc_real_voice_apply_gain(sc_real_voice* realVoice, float* frames, ma_uint64 frameCount, ma_uint32 channels)
+{
+    sc_ramp* const volume  = &realVoice->volumeRamp;
+    sc_ramp* const fade    = &realVoice->fadeRamp;
+    sc_ramp* const declick = &realVoice->declickRamp;
+
+    if (!sc_ramp_is_moving(volume) && !sc_ramp_is_moving(fade) && !sc_ramp_is_moving(declick))
+    {
+        const float gain = volume->current * fade->current * declick->current;
+        if (gain == 0.0F)
+        {
+            memset(frames, 0, sizeof(float) * frameCount * channels);
+        }
+        else if (gain != 1.0F)
+        {
+            ma_apply_volume_factor_f32(frames, frameCount * channels, gain);
+        }
+        return;
+    }
+
+    for (ma_uint64 frame = 0; frame < frameCount; ++frame)
+    {
+        const float gain = sc_ramp_next(volume) * sc_ramp_next(fade) * sc_ramp_next(declick);
+
+        float* const frameSamples = frames + frame * channels;
+        for (ma_uint32 channel = 0; channel < channels; ++channel)
+        {
+            frameSamples[channel] *= gain;
+        }
+    }
+}
+
+/**
+ * @brief The voice's play cursor only counts forwards, so when the source loops back the cursor jumps back by the same
+ * amount. Moving it by the jump rather than to the source's position keeps it at the callback's start, where the
+ * cursor sits while the graph is read.
+ */
+static void sc_real_voice_sync_cursor_if_looped(sc_real_voice* realVoice, ma_uint64 cursorBeforeRead, ma_uint64 framesRead, ma_uint32 dataSourceSampleRate)
+{
+    ma_uint64 cursorAfterRead = 0;
+    if (ma_data_source_get_cursor_in_pcm_frames(realVoice->dataSource, &cursorAfterRead) != MA_SUCCESS || cursorAfterRead >= cursorBeforeRead + framesRead)
     {
         return;
     }
 
+    sc_voice* const voice            = realVoice->voiceRef;
+    const ma_uint32 engineSampleRate = ma_engine_get_sample_rate(&realVoice->system->engine);
+    const double jump                = (double)(ma_int64)(cursorBeforeRead + framesRead - cursorAfterRead) * (double)engineSampleRate / (double)dataSourceSampleRate;
+    const double cursor              = (double)(ma_int64)c89atomic_load_64(&voice->playCursor) + voice->playCursorRemainder - jump;
+
+    if (cursor <= 0.0)
+    {
+        c89atomic_store_64(&voice->playCursor, 0u);
+        voice->playCursorRemainder = 0.0;
+        return;
+    }
+
+    const sc_uint64 wholeFrames = (sc_uint64)cursor;
+    c89atomic_store_64(&voice->playCursor, wholeFrames);
+    voice->playCursorRemainder = cursor - (double)wholeFrames;
+}
+
+/**
+ * @brief Moves the data source to the voice's play cursor. Returns false if the source isn't ready to seek yet.
+ */
+static sc_bool sc_real_voice_seek_to_cursor(sc_real_voice* realVoice)
+{
     ma_uint32 dataSourceSampleRate = 0;
     if (ma_data_source_get_data_format(realVoice->dataSource, NULL, NULL, &dataSourceSampleRate, NULL, 0) != MA_SUCCESS || dataSourceSampleRate == 0)
     {
-        return;
+        return SC_FALSE;
     }
 
     // playCursor is in engine frames; the data source may run at a different rate.
@@ -371,9 +729,79 @@ static void sc_real_voice_sync_seek_if_needed(sc_real_voice* realVoice)
     const ma_uint64 playCursor       = c89atomic_load_64(&realVoice->voiceRef->playCursor);
     const ma_uint64 targetFrame      = (ma_uint64)((double)(ma_int64)playCursor * (double)dataSourceSampleRate / (double)engineSampleRate);
 
-    (void)ma_data_source_seek_to_pcm_frame(realVoice->dataSource, targetFrame);
+    // A stream drops what it has buffered when it seeks, so one already in place, like a new voice at the top, is left alone.
+    ma_uint64 sourceFrame = 0;
+    if (ma_data_source_get_cursor_in_pcm_frames(realVoice->dataSource, &sourceFrame) != MA_SUCCESS || sourceFrame != targetFrame)
+    {
+        (void)ma_data_source_seek_to_pcm_frame(realVoice->dataSource, targetFrame);
+    }
+    return SC_TRUE;
+}
 
-    realVoice->appliedSeekEpoch = voiceEpoch;
+/**
+ * @brief The inverse of @ref sc_real_voice_seek_to_cursor: moves the voice's cursor to wherever the source has read up
+ * to. Returns false if the source can't say yet.
+ */
+static sc_bool sc_real_voice_move_cursor_to_source(sc_real_voice* realVoice)
+{
+    ma_uint32 dataSourceSampleRate = 0;
+    ma_uint64 sourceFrame          = 0;
+    if (ma_data_source_get_data_format(realVoice->dataSource, NULL, NULL, &dataSourceSampleRate, NULL, 0) != MA_SUCCESS || dataSourceSampleRate == 0 || ma_data_source_get_cursor_in_pcm_frames(realVoice->dataSource, &sourceFrame) != MA_SUCCESS)
+    {
+        return SC_FALSE;
+    }
+
+    const ma_uint32 engineSampleRate = ma_engine_get_sample_rate(&realVoice->system->engine);
+    c89atomic_store_64(&realVoice->voiceRef->playCursor, (sc_uint64)((double)(ma_int64)sourceFrame * (double)engineSampleRate / (double)dataSourceSampleRate));
+    realVoice->voiceRef->playCursorRemainder = 0.0;
+    return SC_TRUE;
+}
+
+static void sc_real_voice_move_source_to_cursor(sc_real_voice* realVoice)
+{
+    const sc_uint32 voiceEpoch = c89atomic_load_32(&realVoice->voiceRef->seekEpoch);
+    if (sc_real_voice_seek_to_cursor(realVoice))
+    {
+        ma_linear_resampler_reset(&realVoice->resampler);
+        realVoice->appliedSeekEpoch = voiceEpoch;
+        realVoice->sourceAtCursor   = SC_TRUE;
+    }
+}
+
+static sc_bool sc_real_voice_is_source_at_cursor(const sc_real_voice* realVoice)
+{
+    return realVoice->sourceAtCursor && realVoice->appliedSeekEpoch == c89atomic_load_32(&realVoice->voiceRef->seekEpoch);
+}
+
+/**
+ * @brief Brings the source and the voice's cursor back together before an audible read.
+ *
+ * A seek always moves the source. Otherwise they part when a pause ramp reads past the cursor, which stops the moment
+ * the pause is asked for, or when a new real voice has yet to join its cursor. Once playing, the source goes back to
+ * the cursor if the declick is still silent. Part way through a ramp that jump would click, so the cursor moves up to
+ * the source instead.
+ */
+static void sc_real_voice_sync_source_before_read(sc_real_voice* realVoice, sc_bool paused)
+{
+    if (realVoice->appliedSeekEpoch != c89atomic_load_32(&realVoice->voiceRef->seekEpoch))
+    {
+        sc_real_voice_move_source_to_cursor(realVoice);
+        return;
+    }
+
+    if (realVoice->sourceAtCursor || paused)
+    {
+        return;
+    }
+
+    if (realVoice->declickRamp.current <= 0.0F)
+    {
+        sc_real_voice_move_source_to_cursor(realVoice);
+    }
+    else if (sc_real_voice_move_cursor_to_source(realVoice))
+    {
+        realVoice->sourceAtCursor = SC_TRUE;
+    }
 }
 
 static void sc_real_voice_update_lowpass_if_required(sc_real_voice* realVoice)
@@ -448,21 +876,14 @@ static void sc_real_voice_process_pcm_frames__general(sc_real_voice* realVoice, 
 
         if (ma_linear_resampler_process_pcm_frames(&realVoice->resampler, runningFramesIn, &resampleFrameCountIn, workingBuffer, &resampleFrameCountOut) == MA_SUCCESS)
         {
-            const float volume = c89atomic_load_f32(&realVoice->voiceRef->gain);
-
+            // Same channel count without a matrix resamples straight into the output.
             if (useMixMatrix)
             {
                 sc_apply_mix_matrix_f32(runningFramesOut, workingBuffer, resampleFrameCountOut, realVoice->mixMatrix, channelCountIn, channelCountOut);
-                ma_apply_volume_factor_f32(runningFramesOut, resampleFrameCountOut * channelCountOut, volume);
             }
-            else if (channelCountIn == channelCountOut)
-            {
-                ma_copy_and_apply_volume_factor_f32(runningFramesOut, workingBuffer, resampleFrameCountOut * channelCountOut, volume);
-            }
-            else
+            else if (channelCountIn != channelCountOut)
             {
                 sc_channel_map_apply_f32(runningFramesOut, NULL, channelCountOut, workingBuffer, NULL, channelCountIn, resampleFrameCountOut, ma_channel_mix_mode_simple, ma_mono_expansion_mode_average);
-                ma_apply_volume_factor_f32(runningFramesOut, resampleFrameCountOut * channelCountOut, volume);
             }
 
             totalFramesProcessedIn += resampleFrameCountIn;
@@ -511,8 +932,38 @@ static void sc_voice_real_process_pcm_frames(ma_node* node, const float** frames
         return;
     }
 
-    if (SC_VOICE_HAS_FLAG(c89atomic_load_32(&realVoice->voiceRef->flags), SC_VOICE_FLAG_PAUSED))
+    // A voice promoted part way through a callback waits for the next one, when its cursor starts moving with it.
+    if (realVoice->voiceRef->renderCallback != realVoice->system->callbackIndex)
     {
+        *frameCountOut = 0;
+        return;
+    }
+
+    const sc_bool paused   = realVoice->voiceRef->pausedThisCallback;
+    const sc_bool stopping = c89atomic_load_32(&realVoice->voiceRef->desiredState) == (sc_uint32)sc_voice_desired_stopped;
+
+    // Playing from silence at the top of the source plays the first sample untouched; fading in is for the sound designer
+    // to ask for. Anywhere else, like joining after playing virtually or resuming, it ramps in.
+    if (!paused && sc_ramp_is_silent(&realVoice->declickRamp) && c89atomic_load_64(&realVoice->voiceRef->playCursor) == 0u)
+    {
+        sc_ramp_reset(&realVoice->declickRamp, 1.0F);
+    }
+
+    sc_real_voice_sync_gains(realVoice, paused);
+
+    // A voice ramped to silence reads nothing. While paused it moves its source to its cursor, so resuming carries on
+    // exactly where the pause was asked for and a stream has the rest of the pause to refill.
+    const sc_bool declickedOut = sc_ramp_is_silent(&realVoice->declickRamp);
+    if (declickedOut || (stopping && sc_ramp_is_silent(&realVoice->fadeRamp)))
+    {
+        if (stopping)
+        {
+            c89atomic_store_32(&realVoice->silent, 1u);
+        }
+        else if (paused && !sc_real_voice_is_source_at_cursor(realVoice))
+        {
+            sc_real_voice_move_source_to_cursor(realVoice);
+        }
         *frameCountOut = 0;
         return;
     }
@@ -525,11 +976,12 @@ static void sc_voice_real_process_pcm_frames(ma_node* node, const float** frames
 
     const ma_uint32 outputChannelCount = ma_engine_get_channels(&realVoice->system->engine);
 
-    if (ma_data_source_get_data_format(dataSource, &dataSourceFormat, &dataSourceChannels, &dataSourceSampleRate, NULL, 0) == MA_SUCCESS && dataSourceChannels > 0 && dataSourceFormat != ma_format_unknown)
+    // The resampler and mix matrix are sized for the channel count the real voice was created with.
+    if (ma_data_source_get_data_format(dataSource, &dataSourceFormat, &dataSourceChannels, &dataSourceSampleRate, NULL, 0) == MA_SUCCESS && dataSourceChannels == realVoice->sourceChannels && dataSourceFormat != ma_format_unknown)
     {
         sc_real_voice_update_pitch_if_required(realVoice, dataSourceSampleRate);
         sc_real_voice_sync_loop_if_needed(realVoice);
-        sc_real_voice_sync_seek_if_needed(realVoice);
+        sc_real_voice_sync_source_before_read(realVoice, paused);
         sc_real_voice_sync_mix_if_needed(realVoice);
         sc_real_voice_update_highpass_if_required(realVoice);
         sc_real_voice_update_lowpass_if_required(realVoice);
@@ -545,7 +997,15 @@ static void sc_voice_real_process_pcm_frames(ma_node* node, const float** frames
 
             ma_uint64 framesReadThisIteration;
 
+            ma_uint64 cursorBeforeRead     = 0;
+            const sc_bool knowsCursor      = ma_data_source_get_cursor_in_pcm_frames(dataSource, &cursorBeforeRead) == MA_SUCCESS;
+
             const ma_result readResult = ma_data_source_read_pcm_frames(dataSource, temp, sc_get_required_input_frames_from_resampler(&realVoice->resampler, framesToReadThisIteration, tempCapInFrames), &framesReadThisIteration);
+
+            if (knowsCursor)
+            {
+                sc_real_voice_sync_cursor_if_looped(realVoice, cursorBeforeRead, framesReadThisIteration, dataSourceSampleRate);
+            }
 
             if (readResult == MA_AT_END)
             {
@@ -585,10 +1045,28 @@ static void sc_voice_real_process_pcm_frames(ma_node* node, const float** frames
             }
         }
 
+        sc_real_voice_apply_gain(realVoice, framesOut[0], totalFramesRead, outputChannelCount);
+
+        // The cursor holds still while paused, so anything the ramp out read puts the source ahead of it.
+        if (paused && totalFramesRead > 0)
+        {
+            realVoice->sourceAtCursor = SC_FALSE;
+        }
+
+        // A source that ran out has nothing left to fade, so it's already silent.
+        if (stopping && (sc_ramp_is_silent(&realVoice->fadeRamp) || sc_ramp_is_silent(&realVoice->declickRamp) || totalFramesRead < *frameCountOut))
+        {
+            c89atomic_store_32(&realVoice->silent, 1u);
+        }
+
         *frameCountOut = (ma_uint32)totalFramesRead;
     }
     else
     {
+        if (stopping)
+        {
+            c89atomic_store_32(&realVoice->silent, 1u);
+        }
         *frameCountOut = 0;
     }
 }
@@ -607,10 +1085,25 @@ typedef struct
     size_t sizeInBytes;
     size_t baseNodeOffset;
     size_t resamplerOffset;
-    size_t gainerOffset;
+    size_t mixMatrixOffset;
     size_t lowpassOffset;
     size_t highpassOffset;
 } sc_real_voice_heap_layout;
+
+/**
+ * @brief Channels the resampler runs at. It resamples the source before its channels are mapped to the output, so
+ * this is the source's count; sizing and initialising the resampler must agree on it.
+ */
+static ma_uint32 sc_real_voice_get_source_channels(const sc_real_voice_config* config, ma_uint32 fallbackChannels)
+{
+    ma_uint32 channels = 0;
+    if (config->voiceRef != NULL && config->voiceRef->sound != NULL &&
+        ma_data_source_get_data_format(config->voiceRef->sound->dataSource, NULL, &channels, NULL, NULL, 0) == MA_SUCCESS && channels > 0)
+    {
+        return channels;
+    }
+    return fallbackChannels;
+}
 
 static sbk_status sc_real_voice_get_heap_layout(const sc_real_voice_config* config, sc_real_voice_heap_layout* heapLayout)
 {
@@ -640,29 +1133,26 @@ static sbk_status sc_real_voice_get_heap_layout(const sc_real_voice_config* conf
     heapLayout->sizeInBytes += SC_ALIGN_64(tempHeapSize);
 
     ma_linear_resampler_config resamplerConfig;
-    resamplerConfig          = ma_linear_resampler_config_init(ma_format_f32, channelsIn, 1, 1);
-    resamplerConfig.lpfOrder = 0;
+    resamplerConfig          = ma_linear_resampler_config_init(ma_format_f32, sc_real_voice_get_source_channels(config, channelsIn), 1, 1);
+    resamplerConfig.lpfOrder = SC_RESAMPLER_LPF_ORDER;
 
     SC_CHECK_STATUS(SC_STATUS_FROM_MA_RESULT(ma_linear_resampler_get_heap_size(&resamplerConfig, &tempHeapSize)));
 
     heapLayout->resamplerOffset = heapLayout->sizeInBytes;
     heapLayout->sizeInBytes += SC_ALIGN_64(tempHeapSize);
 
-    ma_gainer_config gainerConfig = ma_gainer_config_init(channelsIn, 1);
+    heapLayout->mixMatrixOffset = heapLayout->sizeInBytes;
+    heapLayout->sizeInBytes += SC_ALIGN_64(sizeof(float) * sc_real_voice_get_source_channels(config, channelsIn) * channelsOut);
 
-    SC_CHECK_STATUS(SC_STATUS_FROM_MA_RESULT(ma_gainer_get_heap_size(&gainerConfig, &tempHeapSize)));
-    
-    heapLayout->gainerOffset = heapLayout->sizeInBytes;
-    heapLayout->sizeInBytes += SC_ALIGN_64(tempHeapSize);
-
-    ma_lpf_config lowpassConfig = ma_lpf_config_init(ma_format_f32, channelsIn, 1, SC_DSP_CUTOFF_MAX, SC_DSP_DEFAULT_FILTER_ORDER);
+    // The filters run after the source is mapped to the output.
+    ma_lpf_config lowpassConfig = ma_lpf_config_init(ma_format_f32, channelsOut, 1, SC_DSP_CUTOFF_MAX, SC_DSP_DEFAULT_FILTER_ORDER);
 
     SC_CHECK_STATUS(SC_STATUS_FROM_MA_RESULT(ma_lpf_get_heap_size(&lowpassConfig, &tempHeapSize)));
 
     heapLayout->lowpassOffset = heapLayout->sizeInBytes;
     heapLayout->sizeInBytes += SC_ALIGN_64(tempHeapSize);
 
-    ma_hpf_config highpassConfig = ma_hpf_config_init(ma_format_f32, channelsIn, 1, SC_DSP_CUTOFF_MIN, SC_DSP_DEFAULT_FILTER_ORDER);
+    ma_hpf_config highpassConfig = ma_hpf_config_init(ma_format_f32, channelsOut, 1, SC_DSP_CUTOFF_MIN, SC_DSP_DEFAULT_FILTER_ORDER);
 
     SC_CHECK_STATUS(SC_STATUS_FROM_MA_RESULT(ma_hpf_get_heap_size(&highpassConfig, &tempHeapSize)));
 
@@ -714,7 +1204,10 @@ sbk_status sc_real_voice_init(const sc_real_voice_config* config, sc_real_voice*
 sbk_status sc_real_voice_init_preallocated(const sc_real_voice_config* config, void* heap, sc_real_voice* realVoice)
 {
     SC_CHECK_ARG(config != NULL);
+    SC_CHECK_ARG(config->system != NULL);
     SC_CHECK_ARG(config->voiceRef != NULL);
+    SC_CHECK_ARG(config->voiceRef->sound != NULL);
+    SC_CHECK_ARG(heap != NULL);
     SC_CHECK_ARG(realVoice != NULL);
 
     SC_CHECK(realVoice->nodeGroup == NULL, SBK_ERR_ALREADY_INITIALIZED);
@@ -754,60 +1247,54 @@ sbk_status sc_real_voice_init_preallocated(const sc_real_voice_config* config, v
 
     realVoice->appliedLoopEpoch = 0u;
     realVoice->appliedSeekEpoch = 0u;
+    realVoice->sourceAtCursor   = SC_FALSE;
     sc_real_voice_sync_loop_if_needed(realVoice);
+
+    // The declick holds at silence until the voice first plays unpaused, when it's set by where the voice's cursor is.
+    sc_ramp_reset(&realVoice->declickRamp, 0.0F);
+    sc_ramp_reset(&realVoice->volumeRamp, c89atomic_load_f32(&config->voiceRef->gain));
+    sc_ramp_reset(&realVoice->fadeRamp, c89atomic_load_f32(&config->voiceRef->fadeGain));
+    realVoice->fadeSyncedCallback = 0u;
+    c89atomic_store_32(&realVoice->silent, 0u);
 
     SC_CHECK_STATUS_ELSE_GOTO(SC_STATUS_FROM_MA_RESULT(ma_node_init_preallocated(&config->system->engine.nodeGraph, &baseNodeConfig, SC_OFFSET_PTR(heap, heapLayout.baseNodeOffset), &realVoice->baseNode)), error2);
 
     const ma_uint32 engineSampleRate = ma_engine_get_sample_rate(&config->system->engine);
 
     ma_uint32 dataSourceSampleRate = 0;
-    ma_uint32 dataSourceChannels   = 0;
-    if (ma_data_source_get_data_format(realVoice->voiceRef->sound->dataSource, NULL, &dataSourceChannels, &dataSourceSampleRate, NULL, 0) != MA_SUCCESS)
+    if (ma_data_source_get_data_format(realVoice->voiceRef->sound->dataSource, NULL, NULL, &dataSourceSampleRate, NULL, 0) != MA_SUCCESS || dataSourceSampleRate == 0)
     {
-        dataSourceSampleRate = 0;
-        dataSourceChannels   = 0;
-    }
-
-    if (dataSourceSampleRate == 0) 
-    { 
         dataSourceSampleRate = engineSampleRate;
     }
 
-    if (dataSourceChannels == 0)   
-    { 
-        dataSourceChannels = channelsIn;
-    }
+    const ma_uint32 dataSourceChannels = sc_real_voice_get_source_channels(config, channelsIn);
 
+    realVoice->sourceChannels = dataSourceChannels;
+    realVoice->outputChannels = channelsOut;
+    realVoice->mixMatrix      = (float*)SC_OFFSET_PTR(heap, heapLayout.mixMatrixOffset);
+
+    // Linear interpolation alone doesn't anti-alias, so ultrasonic content in high rate sources would fold into the audible
+    // band. Matching rates skip the filter to stay bit-transparent.
     ma_linear_resampler_config resamplerConfig = ma_linear_resampler_config_init(ma_format_f32, dataSourceChannels, dataSourceSampleRate, engineSampleRate);
-    resamplerConfig.lpfOrder                   = 0;
+    resamplerConfig.lpfOrder                   = dataSourceSampleRate != engineSampleRate ? SC_RESAMPLER_LPF_ORDER : 0;
+    resamplerConfig.lpfNyquistFactor           = SC_RESAMPLER_LPF_NYQUIST_FACTOR;
 
     SC_CHECK_STATUS_ELSE_GOTO(SC_STATUS_FROM_MA_RESULT(ma_linear_resampler_init_preallocated(&resamplerConfig, SC_OFFSET_PTR(heap, heapLayout.resamplerOffset), &realVoice->resampler)), error3);
 
-    ma_fader_config faderConfig = ma_fader_config_init(ma_format_f32, channelsIn, engineSampleRate);
+    ma_lpf_config lowpassConfig = ma_lpf_config_init(ma_format_f32, channelsOut, engineSampleRate, SC_DSP_CUTOFF_MAX, SC_DSP_DEFAULT_FILTER_ORDER);
 
-    SC_CHECK_STATUS_ELSE_GOTO(SC_STATUS_FROM_MA_RESULT(ma_fader_init(&faderConfig, &realVoice->fader)), error4);
+    SC_CHECK_STATUS_ELSE_GOTO(SC_STATUS_FROM_MA_RESULT(ma_lpf_init_preallocated(&lowpassConfig, SC_OFFSET_PTR(heap, heapLayout.lowpassOffset), &realVoice->lowpass)), error4);
 
-    ma_gainer_config gainerConfig = ma_gainer_config_init(channelsIn, 1);
+    ma_hpf_config highpassConfig = ma_hpf_config_init(ma_format_f32, channelsOut, engineSampleRate, SC_DSP_CUTOFF_MIN, SC_DSP_DEFAULT_FILTER_ORDER);
 
-    SC_CHECK_STATUS_ELSE_GOTO(SC_STATUS_FROM_MA_RESULT(ma_gainer_init_preallocated(&gainerConfig, SC_OFFSET_PTR(heap, heapLayout.gainerOffset), &realVoice->gainer)), error5);
-
-    ma_lpf_config lowpassConfig = ma_lpf_config_init(ma_format_f32, channelsIn, engineSampleRate, SC_DSP_CUTOFF_MAX, SC_DSP_DEFAULT_FILTER_ORDER);
-
-    SC_CHECK_STATUS_ELSE_GOTO(SC_STATUS_FROM_MA_RESULT(ma_lpf_init_preallocated(&lowpassConfig, SC_OFFSET_PTR(heap, heapLayout.lowpassOffset), &realVoice->lowpass)), error6);
-
-    ma_hpf_config highpassConfig = ma_hpf_config_init(ma_format_f32, channelsIn, engineSampleRate, SC_DSP_CUTOFF_MIN, SC_DSP_DEFAULT_FILTER_ORDER);
-
-    SC_CHECK_STATUS_ELSE_GOTO(SC_STATUS_FROM_MA_RESULT(ma_hpf_init_preallocated(&highpassConfig, SC_OFFSET_PTR(heap, heapLayout.highpassOffset), &realVoice->highpass)), error7);
+    SC_CHECK_STATUS_ELSE_GOTO(SC_STATUS_FROM_MA_RESULT(ma_hpf_init_preallocated(&highpassConfig, SC_OFFSET_PTR(heap, heapLayout.highpassOffset), &realVoice->highpass)), error5);
 
     realVoice->nodeGroup = config->voiceRef->voiceNodeGroup;
 
     return SBK_SUCCESS;
 
-error7:
-    ma_lpf_uninit(&realVoice->lowpass, NULL);
-error6:
-    ma_gainer_uninit(&realVoice->gainer, NULL);
 error5:
+    ma_lpf_uninit(&realVoice->lowpass, NULL);
 error4:
     ma_linear_resampler_uninit(&realVoice->resampler, NULL);
 error3:
@@ -832,7 +1319,6 @@ sbk_status sc_real_voice_uninit(sc_real_voice* realVoice)
     }
     realVoice->nodeGroup = NULL;
 
-    ma_gainer_uninit(&realVoice->gainer, &realVoice->system->engine.allocationCallbacks);
     ma_linear_resampler_uninit(&realVoice->resampler, &realVoice->system->engine.allocationCallbacks);
 
     if (realVoice->dataSource)
@@ -867,6 +1353,13 @@ sbk_status sc_system_promote_voice_to_real(sc_system* system, sc_voice* voice)
     SC_CHECK_ARG(system != NULL);
     SC_CHECK_ARG(voice != NULL);
 
+    // The real voice is sized from the sound's format, so an async sound waits until its header has been read.
+    ma_uint32 soundChannels = 0;
+    if (ma_data_source_get_data_format(voice->sound->dataSource, NULL, &soundChannels, NULL, NULL, 0) != MA_SUCCESS || soundChannels == 0)
+    {
+        return SC_STATUS_FROM_MA_RESULT(MA_BUSY);
+    }
+
     sc_voice_handle realVoiceSlot       = 0;
     const ma_result realVoiceSlotResult = ma_slot_allocator_alloc(&system->realVoiceSlotAllocator, &realVoiceSlot);
 
@@ -874,7 +1367,7 @@ sbk_status sc_system_promote_voice_to_real(sc_system* system, sc_voice* voice)
     {
         // If we couldn't get a real voice, we must be virtual
         ma_log_post(&system->log, MA_LOG_LEVEL_WARNING, "Real voice was requested but there are no open slots available");
-        sc_voice_set_virtual(voice, SC_TRUE);
+        (void)sc_voice_set_virtual(system, (sc_voice_handle)c89atomic_load_64(&voice->handle), SC_TRUE);
         voice->realVoiceHandle = 0;
         return SBK_SUCCESS;
     }

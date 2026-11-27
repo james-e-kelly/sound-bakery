@@ -105,6 +105,7 @@ endif()
 set(SOUND_CHEF_SOURCES
     sound_chef.c
     sound_chef_bank.c
+    sound_chef_channel_layout.c
     sound_chef_encoder.c
     sound_chef_sound.c
     sound_chef_node_group.c

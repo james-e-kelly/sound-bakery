@@ -163,8 +163,6 @@ typedef struct sc_node_group    sc_node_group;
 #define SC_FALSE 0
 #define SC_TRUE 1
 
-#define SC_MAX_MIX_CHANNELS 16  //< Most channels a voice mix matrix can take in or send out (enough for third order ambisonics)
-
 #define SC_COUNTOF(x)            (sizeof(x) / sizeof(x[0]))
 #define SC_MAX(x, y)             (((x) > (y)) ? (x) : (y))
 #define SC_MIN(x, y)             (((x) < (y)) ? (x) : (y))
@@ -784,6 +782,14 @@ sbk_status SC_API sc_node_group_set_parent_endpoint(sc_node_group* nodeGroup);  
 sbk_status SC_API sc_node_group_get_dsp(sc_node_group* nodeGroup, sc_dsp_type type, sc_dsp** dsp);      //< Finds the first DSP of type @p type.
 sbk_status SC_API sc_node_group_add_dsp(sc_node_group* nodeGroup, sc_dsp* dsp, sc_dsp_index index);     //< Adds an existing DSP to the group at @p index. The node group owns the DSP after this.
 sbk_status SC_API sc_node_group_calculate_is_idle(sc_node_group* nodeGroup, sc_bool* outIsIdle);        //< Calculates whether the node group is idle by querying all its DSP.
+
+/**
+ * @brief The clock that times everything played into the group, in output frames. See @ref sc_system_get_clock.
+ *
+ * Node groups can't be paused or pitched yet, so every group runs on the system clock. Schedule against the
+ * group's clock rather than the system's so code keeps working once they can.
+ */
+sbk_status SC_API sc_node_group_get_clock(sc_node_group* nodeGroup, sc_uint64* outClock);
 sbk_status SC_API sc_node_group_uninit(sc_node_group* nodeGroup);                                       //< Releases all DSP held within the node group without releasing the node group itself.
 sbk_status SC_API sc_node_group_release(sc_node_group* nodeGroup);                                      //< Releases the node group and all DSP within it.
 
@@ -861,6 +867,90 @@ sbk_status SC_API sc_sound_release(sc_sound* sound);
 
 /**************************************************************************************************************************************************************
 
+Channel Layouts
+
+Describes how a sound's channels are meant to be heard (speaker positions, ambisonics or straight through) and turns
+that into a mix matrix for @ref sc_voice_set_mix_matrix that plays it correctly on any output.
+
+**************************************************************************************************************************************************************/
+
+enum
+{
+    SC_CHANNEL_LAYOUT_NAME_SIZE   = 64,
+    SC_CHANNEL_LABEL_SIZE         = 8,  //< Big enough for every label @ref sc_channel_layout_get_channel_label writes
+    SC_MAX_CHANNEL_LAYOUT_PRESETS = 8   //< Most layouts @ref sc_channel_layout_get_presets returns for one channel count
+};
+
+typedef enum sc_channel_layout_family
+{
+    sc_channel_layout_family_speakers,  //< Each channel feeds the speaker position in @ref sc_channel_layout::channelMap
+    sc_channel_layout_family_direct,    //< Channel n goes straight to output n, for checking a multichannel interface
+    sc_channel_layout_family_ambix,     //< Ambisonics, ACN channel order with SN3D normalisation
+    sc_channel_layout_family_fuma       //< Ambisonics, Furse-Malham channel order and weighting. Up to third order
+} sc_channel_layout_family;
+
+typedef struct sc_channel_layout
+{
+    char                        name[SC_CHANNEL_LAYOUT_NAME_SIZE];
+    sc_channel_layout_family    family;
+    sc_uint32                   channelCount;
+
+    /**
+     * @brief Speakers family only: the position of each channel, in channel order.
+     *
+     * MA_CHANNEL_MONO plays on the left and right fronts at full level, as previewers usually play mono files.
+     * MA_CHANNEL_NONE has no known position.
+     */
+    ma_channel                  channelMap[SC_MAX_CHANNELS];
+} sc_channel_layout;
+
+sc_bool SC_API sc_channel_layout_is_ambisonic(const sc_channel_layout* layout);
+sc_uint32 SC_API sc_channel_layout_get_ambisonic_order(const sc_channel_layout* layout);    //< 0 when the layout isn't ambisonic
+
+/**
+ * @brief Short name for a channel of the layout, like "Ls" or "W". Channels without one are numbered from 1.
+ */
+sbk_status SC_API sc_channel_layout_get_channel_label(const sc_channel_layout* layout, sc_uint32 channel, char* label, size_t labelSize);
+
+/**
+ * @brief Every built-in layout that fits @p channelCount, ending with the direct one.
+ *
+ * @param presets Receives up to @p presetCapacity layouts. Give @ref SC_MAX_CHANNEL_LAYOUT_PRESETS to get them all.
+ * @return SBK_ERR_FULL if there were more presets than @p presetCapacity.
+ */
+sbk_status SC_API sc_channel_layout_get_presets(sc_uint32 channelCount, sc_channel_layout* presets, sc_uint32 presetCapacity, sc_uint32* outPresetCount);
+
+/**
+ * @brief Picks a layout from the file's header where it says (WAV channel masks, the B-format GUID), otherwise from
+ * the channel count and the container's usual channel order.
+ *
+ * @param vfs Reads the file's header. NULL uses miniaudio's default file system.
+ * @param outReason How the layout was decided, e.g. "WAV channel mask". Static, so never freed.
+ */
+sbk_status SC_API sc_channel_layout_detect(ma_vfs* vfs, const char* filePath, sc_uint32 channelCount, sc_channel_layout* outLayout, const char** outReason);
+
+/**
+ * @brief How each of the layout's channels is heard on each output channel, for @ref sc_voice_set_mix_matrix.
+ *
+ * Speakers the output doesn't have fold onto the ones it does, following the ITU-R BS.775 downmix. Ambisonics are
+ * decoded to the output's speaker positions.
+ *
+ * @param channelOrder For each layout slot, which file channel feeds it, so mis-ordered files can be fixed by hand.
+ * NULL feeds slot n from channel n.
+ * @param soloedChannels Per file channel, which to listen to on their own. NULL or none set plays everything. Soloed
+ * ambisonic components play raw on the front speakers, since a single component has no direction of its own.
+ * @param outputChannelMap The output's channel positions, like an ma_device's playback channel map.
+ * @param outMatrix Receives @p outputChannels rows of @ref sc_channel_layout::channelCount gains.
+ */
+sbk_status SC_API sc_channel_layout_build_mix_matrix(const sc_channel_layout* layout, const sc_uint32* channelOrder, const sc_bool* soloedChannels, const ma_channel* outputChannelMap, sc_uint32 outputChannels, float* outMatrix);
+
+/**
+ * @brief A short name for an output channel map, like "5.1" or "Stereo".
+ */
+sbk_status SC_API sc_channel_map_describe(const ma_channel* channelMap, sc_uint32 channels, char* description, size_t descriptionSize);
+
+/**************************************************************************************************************************************************************
+
 Voice
 
 **************************************************************************************************************************************************************/
@@ -884,11 +974,23 @@ typedef sc_uint32 sc_voice_index;       //< Index into the voice array
  */
 #define SC_VOICE_MAKE_HANDLE(refcount, slot)        (((sc_voice_handle)(refcount) << 32) | (sc_voice_handle)(slot))
 
+/**
+ * @brief How voices with the same priority break tiebreaks during virtualization.
+ */
 typedef enum sc_voice_tiebreak_policy
 {
     sc_voice_tiebreak_kill_oldest,  //< Newest voice wins ties; oldest goes virtual.
     sc_voice_tiebreak_kill_newest   //< Oldest voice wins ties; newest goes virtual.
 } sc_voice_tiebreak_policy;
+
+/**
+ * @brief What happens to the voice's DSP effects (reverb, delay) when it stops.
+ */
+typedef enum sc_voice_stop_mode
+{
+    sc_voice_stop_mode_cut_tail,   //< Removes the voice as soon as a short fade out has finished to avoid clicks.
+    sc_voice_stop_mode_allow_tail  //< Keeps the voice until its effects have rung out.
+} sc_voice_stop_mode;
 
 /**
  * @brief States set by the user, read by the system to move between the different @ref sc_voice_state states.
@@ -945,6 +1047,38 @@ typedef enum sc_voice_flags
  */
 typedef void (* sc_voice_stopped_proc)(void* pUserData);
 
+/**
+ * @brief A gain that moves in a straight line towards its target, one frame at a time.
+ */
+typedef struct sc_ramp
+{
+    float current;
+    float target;
+    float step;     //< How far @ref current moves each frame
+} sc_ramp;
+
+
+void SC_API sc_ramp_reset(sc_ramp* ramp, float gain);
+void SC_API sc_ramp_set_target(sc_ramp* ramp, float target, float frames);
+sc_bool SC_API sc_ramp_is_moving(const sc_ramp* ramp);
+void SC_API sc_ramp_advance(sc_ramp* ramp, ma_uint64 frames);
+float SC_API sc_ramp_next(sc_ramp* ramp);
+
+/**
+ * @brief A gain that moves in a straight line between two times on a clock.
+ */
+typedef struct sc_fade
+{
+    float     fromGain;
+    float     toGain;
+    sc_uint64 startClock;
+    sc_uint64 endClock;
+} sc_fade;
+
+float SC_API sc_fade_gain_at(const sc_fade* fade, sc_uint64 clock);
+sc_ramp SC_API sc_fade_ramp_at(const sc_fade* fade, sc_uint64 clock);
+void SC_API sc_fade_start(sc_fade* fade, sc_uint64 clock, float fromGain, float toGain, sc_uint64 frames);
+
 typedef struct sc_voice
 {
     MA_ATOMIC(8, sc_atomic_uint64)  handle;                 //< Handle for this slot's current occupant. Stale-handle callers compare against this and get SBK_ERR_NOT_FOUND on mismatch.
@@ -953,7 +1087,10 @@ typedef struct sc_voice
     sc_sound*                       sound;                  //< Source to read from
     sc_node_group*                  parentNodeGroup;        //< Parent group to connect to when playing for real
     sc_node_group*                  voiceNodeGroup;         //< Per-voice DSP chain. Created at play, released when the voice done. Persists across virtual/real transitions.
-    MA_ATOMIC(8, sc_atomic_uint64)  playCursor;             //< Advanced by the audio thread. Read by @ref sc_system_update to compare the ages of voices
+    MA_ATOMIC(8, sc_atomic_uint64)  playCursor;             //< Source position in engine-rate frames, advanced by the audio thread at the voice's pitch. Read by @ref sc_system_update to compare the ages of voices
+    double                          playCursorRemainder;    //< Fraction of a frame @ref playCursor hasn't advanced by yet. Audio thread only.
+    sc_uint64                       renderCallback;         //< sc_system::callbackIndex the voice may render and advance its cursor in. Left behind while starting. Audio thread only.
+    sc_bool                         pausedThisCallback;     //< @ref flags' pause as of this callback's start, so the cursor and the real voice agree on it. Audio thread only.
     MA_ATOMIC(8, sc_atomic_int64)   pendingSeekFrames;      //< User-thread seek target in frames. -1 means no pending seek. Audio thread applies and clears via CAS so a concurrent second seek is never lost.
     MA_ATOMIC(4, sc_atomic_uint32)  seekEpoch;              //< Bumped by the audio thread when it applies a seek to @ref playCursor so the real voice repositions its data source.
 
@@ -962,6 +1099,24 @@ typedef struct sc_voice
     MA_ATOMIC(4, sc_atomic_uint32)  flags;                  //< sc_voice_flags. PAUSED written by callers; VIRTUAL/FADING written by the update loop. CAS on bit updates.
 
     sc_atomic_float                 gain;
+
+    sc_fade                         fade;                   //< Set by @ref sc_voice_fade_to and stopping, on the parent clock. Audio thread only.
+    sc_ramp                         fadeAtCallbackStart;    //< @ref fade as of this callback's start, so the real voice can ramp through the callback a frame at a time. Audio thread only.
+    sc_atomic_float                 fadeGain;               //< @ref fade's level, published by the audio thread for virtualisation.
+    sc_uint64                       stopClock;              //< Parent clock a delayed stop happens at. Audio thread only.
+    sc_bool                         stopScheduled;          //< Whether @ref stopClock is waiting. Audio thread only.
+
+    float                           pendingFadeTo;          //< Guarded by @ref scheduleLock.
+    float                           pendingFadeSeconds;
+    float                           pendingJumpGain;        //< Where the fade jumps to before the pending fade starts, if @ref pendingJump.
+    sc_bool                         pendingJump;
+    float                           pendingStopSeconds;
+    ma_spinlock                     scheduleLock;
+    MA_ATOMIC(4, sc_atomic_uint32)  fadeEpoch;              //< Bumped when a new fade is requested so the audio thread picks it up.
+    MA_ATOMIC(4, sc_atomic_uint32)  stopEpoch;              //< Bumped when a delayed stop is requested so the audio thread picks it up.
+    sc_uint32                       appliedFadeEpoch;       //< Audio thread only.
+    sc_uint32                       appliedStopEpoch;       //< Audio thread only.
+
     sc_atomic_float                 pitch;
     sc_atomic_float                 lowpassCutoff;
     sc_atomic_float                 highpassCutoff;
@@ -988,6 +1143,7 @@ typedef struct sc_voice
 } sc_voice;
 
 sbk_status SC_API sc_voice_get_is_playing(sc_system* system, sc_voice_handle handle, sc_bool* outPlaying);
+sbk_status SC_API sc_voice_get_is_stopping(sc_system* system, sc_voice_handle handle, sc_bool* outStopping);
 sbk_status SC_API sc_voice_get_cursor_position_in_seconds(sc_system* system, sc_voice_handle handle, float* outSeconds);
 sbk_status SC_API sc_voice_set_cursor_position_in_seconds(sc_system* system, sc_voice_handle handle, float seconds);
 sbk_status SC_API sc_voice_set_loop_position_in_seconds(sc_system* system, sc_voice_handle handle, float loopStart, float loopEnd);
@@ -995,8 +1151,12 @@ sbk_status SC_API sc_voice_get_looping(sc_system* system, sc_voice_handle handle
 sbk_status SC_API sc_voice_set_looping(sc_system* system, sc_voice_handle handle, sc_bool looping);
 sbk_status SC_API sc_voice_get_paused(sc_system* system, sc_voice_handle handle, sc_bool* outPaused);
 sbk_status SC_API sc_voice_set_paused(sc_system* system, sc_voice_handle handle, sc_bool paused);
-sbk_status SC_API sc_voice_set_virtual(sc_voice* voice, sc_bool virtualised);
-
+sbk_status SC_API sc_voice_get_virtual(sc_system* system, sc_voice_handle handle, sc_bool* outVirtual);
+sbk_status SC_API sc_voice_set_virtual(sc_system* system, sc_voice_handle handle, sc_bool virtualized);     //< Called by the virtualization system. Setting this is not a user-override. Voices can become real, even if a user calls this function
+sbk_status SC_API sc_voice_set_volume(sc_system* system, sc_voice_handle handle, float volume);
+sbk_status SC_API sc_voice_set_pitch(sc_system* system, sc_voice_handle handle, float pitch);
+sbk_status SC_API sc_voice_set_lowpass_cutoff(sc_system* system, sc_voice_handle handle, float cutoff);
+sbk_status SC_API sc_voice_set_highpass_cutoff(sc_system* system, sc_voice_handle handle, float cutoff);
 /**
  * @brief Replaces how the voice's source channels are mapped onto the output with explicit gains.
  *
@@ -1005,12 +1165,44 @@ sbk_status SC_API sc_voice_set_virtual(sc_voice* voice, sc_bool virtualised);
  * Pass NULL to go back to the default mapping.
  */
 sbk_status SC_API sc_voice_set_mix_matrix(sc_system* system, sc_voice_handle handle, const float* matrix, sc_uint32 channelsIn, sc_uint32 channelsOut);
-sbk_status SC_API sc_voice_get_virtual(sc_system* system, sc_voice_handle handle, sc_bool* outVirtual);
-sbk_status SC_API sc_voice_set_volume(sc_system* system, sc_voice_handle handle, float volume);
-sbk_status SC_API sc_voice_set_pitch(sc_system* system, sc_voice_handle handle, float pitch);
-sbk_status SC_API sc_voice_set_lowpass_cutoff(sc_system* system, sc_voice_handle handle, float cutoff);
-sbk_status SC_API sc_voice_set_highpass_cutoff(sc_system* system, sc_voice_handle handle, float cutoff);
-sbk_status SC_API sc_voice_stop(sc_system* system, sc_voice_handle handle);
+
+/**
+ * @brief The clock the voice's fades and delayed stops run on: its parent node group's. See @ref sc_node_group_get_clock.
+ */
+sbk_status SC_API sc_voice_get_parent_clock(sc_system* system, sc_voice_handle handle, sc_uint64* outClock);
+
+/**
+ * @brief Fades the voice's level from wherever it is now to @p gain. It only changes the level; the voice keeps
+ * playing at any gain.
+ *
+ * The fade multiplies with @ref sc_voice_set_volume rather than replacing it. It runs on the voice's parent clock
+ * (@ref sc_voice_get_parent_clock), so it isn't affected by the voice's pitch and keeps going while the voice is
+ * virtual or paused. A new fade replaces the one in progress. Once the voice is stopping, this does nothing.
+ *
+ * To fade in from silence, fade to 0 over 0 seconds and then to the full level. A jump followed by a fade is kept
+ * together even if both are requested before the audio thread picks either up.
+ *
+ * @param gain Linear gain to end at.
+ * @param seconds How long the fade lasts, timed from when the audio thread picks it up. 0 jumps straight to
+ * @p gain, which clicks if the voice is audible.
+ */
+sbk_status SC_API sc_voice_fade_to(sc_system* system, sc_voice_handle handle, float gain, float seconds);
+
+/**
+ * @brief Stops the voice. It ramps out over a few milliseconds rather than cutting dead, so stopping never clicks.
+ *
+ * @param delaySeconds Waits this long on the voice's parent clock before stopping, timed from when the audio thread
+ * picks the stop up. A later stop replaces a waiting one. Fades still work while the stop is waiting.
+ */
+sbk_status SC_API sc_voice_stop(sc_system* system, sc_voice_handle handle, float delaySeconds, sc_voice_stop_mode mode);
+
+/**
+ * @brief Fades the voice out from wherever it is now and stops it once the fade ends.
+ *
+ * The same as @ref sc_voice_fade_to to 0 followed by @ref sc_voice_stop with the same length, except both are
+ * guaranteed to start in the same audio callback.
+ */
+sbk_status SC_API sc_voice_stop_with_fade(sc_system* system, sc_voice_handle handle, float fadeSeconds, sc_voice_stop_mode mode);
 sbk_status SC_API sc_voice_set_stopped_callback(sc_system* system, sc_voice_handle handle, sc_voice_stopped_proc callback, void* userData);
 sbk_status SC_API sc_voice_add_dsp(sc_system* system, sc_voice_handle handle, sc_dsp* dsp, sc_dsp_index index);
 
@@ -1032,13 +1224,21 @@ typedef struct sc_real_voice
     sc_uint32                           appliedSeekEpoch;   //< Last sc_voice::seekEpoch applied to @ref dataSource.
     sc_uint32                           appliedMixEpoch;    //< Last sc_voice::mixEpoch copied into @ref mixMatrix.
 
-    sc_uint32                           mixChannelsIn;      //< 0 when the voice has no mix matrix
+    sc_ramp                             volumeRamp;         //< Follows sc_voice::gain over a few milliseconds so volume changes don't step. Audio thread only.
+    sc_ramp                             fadeRamp;           //< Steps through sc_voice::fade a frame at a time. Audio thread only.
+    sc_ramp                             declickRamp;        //< Ramps to 0 while paused and back when resumed, and fades in a voice that joins part way through. Audio thread only.
+
+    sc_uint64                           fadeSyncedCallback; //< sc_system::callbackIndex @ref fade was last copied from the voice in.
+    MA_ATOMIC(4, sc_atomic_uint32)      silent;             //< Set by the audio thread once a stopping voice will never output again, so the update loop can remove it. Never cleared.
+    sc_bool                             sourceAtCursor;     //< Whether @ref dataSource is in step with sc_voice::playCursor. False until a new real voice joins its cursor, and once a pause ramp reads past it. Audio thread only.
+
+    sc_uint32                           sourceChannels;     //< Channel count of the source, fixed for the real voice's life
+    sc_uint32                           outputChannels;
+    sc_uint32                           mixChannelsIn;      //< 0 when the voice has no mix matrix, or its matrix doesn't fit this source and output
     sc_uint32                           mixChannelsOut;
-    float                               mixMatrix[SC_MAX_MIX_CHANNELS * SC_MAX_MIX_CHANNELS];  //< Audio thread copy of sc_voice::mixMatrix
+    float*                              mixMatrix;          //< Audio thread copy of sc_voice::mixMatrix, sized @ref sourceChannels by @ref outputChannels in the heap
 
     ma_linear_resampler                 resampler;          //< Used for pitch shifting and resampling from data source sample rate to engine sample rate
-    ma_fader                            fader;              //< for fade ins and outs
-    ma_gainer                           gainer;             //< Gain multiplier
     ma_lpf                              lowpass;            //< Lowpass filter for attenuation curves and user customisation
     ma_hpf                              highpass;           //< Highpass filter for attenuation curves and user customisation
 
@@ -1190,6 +1390,8 @@ struct sc_system
 
     ma_slot_allocator           realVoiceSlotAllocator;                                 //< Allocates handles for real voices
     sc_real_voice*              realVoiceBuffer;                                        //< Allocated real voices. Indexed through @ref realVoiceSlotAllocator
+    sc_uint64                   callbackIndex;                                          //< Counts audio callbacks. Audio thread only.
+    MA_ATOMIC(8, sc_atomic_uint64) clock;                                               //< Output frames rendered. Advanced by the audio thread after each callback.
 
     float                       vol0Threshold;                                          //< Voices under this are virtualized
     sc_voice_tiebreak_policy    tiebreakerPolicy;                                       //< When voices of the same priority are in fighting for a real voice, do we prefer the oldest or newest?
@@ -1216,6 +1418,15 @@ sbk_status SC_API sc_system_close(sc_system* system);
 * @remark When using Sound Bakery, the system thread will call this function, thereby moving audio updates off the game thread (if in async mode).
 */
 sbk_status SC_API sc_system_update(sc_system* system);
+
+/**
+ * @brief How many frames the system has output since it started, at the engine's sample rate.
+ *
+ * Clocks only move once per audio callback, so a value read outside the audio thread is when the last callback
+ * finished. Fades and delayed stops are timed on clocks like this one; voices use their parent group's
+ * (@ref sc_node_group_get_clock), which may differ from the system's in future.
+ */
+sbk_status SC_API sc_system_get_clock(sc_system* system, sc_uint64* outClock);
 
 /**
  * @brief Process all voices and calculates whether they are virtual or not. Called during @ref sc_system_update.
@@ -1270,6 +1481,21 @@ sbk_status SC_API sc_system_get_dsp_desc(const sc_system* system, sc_uint32 hand
 Utilities
 
 **************************************************************************************************************************************************************/
+
+/**
+ * @brief A 5ms fade is used for pauses and resumes to avoid clicks.
+ */
+#define SC_DECLICK_SECONDS 0.005F
+
+static MA_INLINE float sc_declick_frames(const sc_system* system)
+{
+    return SC_DECLICK_SECONDS * (float)ma_engine_get_sample_rate(&system->engine);
+}
+
+static MA_INLINE sc_uint64 sc_seconds_to_frames(const sc_system* system, float seconds)
+{
+    return (sc_uint64)(seconds * (float)ma_engine_get_sample_rate(&system->engine) + 0.5F);
+}
 
 static MA_INLINE sc_bool sc_is_pow2(size_t x)
 {
