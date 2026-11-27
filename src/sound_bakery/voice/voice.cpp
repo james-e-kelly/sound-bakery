@@ -14,7 +14,7 @@ DEFINE_REFLECTION(voice)
 
 container_instance::~container_instance()
 {
-    sc_voice_stop(system, voiceHandle);
+    sc_voice_stop(system, voiceHandle, 0.0F, sc_voice_stop_mode_cut_tail);
 }
 
 property_subscription::~property_subscription()
