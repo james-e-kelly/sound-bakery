@@ -113,8 +113,8 @@ namespace
         transport_widths widths;
         widths.left    = s_barPadding + s_playButtonWidth * 3.0f - 2.0f + s_groupSpacing + timecode_width() + s_groupSpacing + extras;
         widths.toggles = text_button_width(s_loudnessLabel) + text_button_width(s_bandsLabel) - 1.0f;
-        widths.speed   = s_speedWidth + s_innerSpacing + speed_readout_width();
-        widths.volume  = gluten::audio_transport::s_buttonSize + s_innerSpacing + s_faderWidth + s_innerSpacing + volume_readout_width() + s_groupSpacing + s_meterWidth + s_barPadding;
+        widths.speed   = gluten::get_preview_speed_width();
+        widths.volume  = gluten::get_preview_volume_width() + s_groupSpacing + s_meterWidth + s_barPadding;
         return widths;
     }
 
@@ -301,6 +301,64 @@ namespace
     }
 
     /**
+     * @brief Mute, volume fader and readout, ending at right. Returns where they start.
+     */
+    auto render_mute_and_fader(float right, float top, float centerY, gluten::audio_subsystem& audioSubsystem) -> float
+    {
+        ImDrawList* const drawList = ImGui::GetWindowDrawList();
+
+        const float volumeDb = audioSubsystem.get_preview_volume_db();
+        const bool muted     = audioSubsystem.get_preview_muted();
+
+        {
+            const float readoutWidth  = volume_readout_width();
+            const std::string readout = volumeDb <= s_volumeMinDb ? std::string("-inf dB") : fmt::format("{:+.1f} dB", volumeDb);
+            gluten::draw_tabular_text(drawList, text_font(), gluten::theme::textSizeHelper, ImVec2(right - readoutWidth, std::floor(centerY - gluten::theme::textSizeHelper * 0.5f - 1.0f)),
+                                      ImGui::GetColorU32(muted ? gluten::theme::textHelper : gluten::theme::textSecondary), readout);
+            right -= readoutWidth + s_innerSpacing;
+        }
+
+        {
+            const ImRect fader(ImVec2(right - s_faderWidth, centerY - 8.0f), ImVec2(right, centerY + 8.0f));
+            const slider_interaction interaction = slider_interaction_for("##Volume", fader);
+
+            float newVolumeDb = volumeDb;
+            if (interaction.dragging)
+            {
+                newVolumeDb = fader_position_to_db(std::clamp((ImGui::GetMousePos().x - fader.Min.x) / fader.GetWidth(), 0.0f, 1.0f));
+            }
+            if (interaction.hovered && ImGui::GetIO().MouseWheel != 0.0f)
+            {
+                newVolumeDb = std::clamp(std::round((volumeDb + ImGui::GetIO().MouseWheel * s_wheelStepDb) / s_wheelStepDb) * s_wheelStepDb, s_volumeMinDb, s_volumeMaxDb);
+            }
+            if (interaction.resetRequested)
+            {
+                newVolumeDb = s_defaultVolumeDb;
+            }
+            ImGui::SetItemTooltip("Preview volume. Scroll to nudge, double-click to reset.");
+
+            if (newVolumeDb != volumeDb)
+            {
+                audioSubsystem.set_preview_volume_db(newVolumeDb);
+            }
+
+            draw_slider(fader, db_to_fader_position(audioSubsystem.get_preview_volume_db()), db_to_fader_position(0.0f), interaction.hovered || interaction.dragging, 0.0f);
+
+            right = fader.Min.x - s_innerSpacing;
+        }
+
+        const float buttonSize = gluten::audio_transport::s_buttonSize;
+        const ImRect muteRect(ImVec2(right - buttonSize, top), ImVec2(right, top + buttonSize));
+        if (gluten::transport_button("##Mute", muteRect, muted ? ICON_LC_VOLUME_X : ICON_LC_VOLUME_2, icon_font(), gluten::theme::iconSizeSm, muted, ImDrawFlags_RoundCornersAll, true, gluten::theme::supportWarning, gluten::theme::background))
+        {
+            audioSubsystem.set_preview_muted(!muted);
+        }
+        ImGui::SetItemTooltip(muted ? "Unmute" : "Mute");
+
+        return muteRect.Min.x;
+    }
+
+    /**
      * @brief Mute, volume fader and output meter, ending at right. Returns where they start.
      */
     auto render_volume(float right, float top, float centerY, gluten::audio_element& waveform, gluten::audio_subsystem& audioSubsystem) -> float
@@ -361,55 +419,7 @@ namespace
             right = meterLeft - s_groupSpacing;
         }
 
-        const float volumeDb = audioSubsystem.get_preview_volume_db();
-        const bool muted     = audioSubsystem.get_preview_muted();
-
-        {
-            const float readoutWidth  = volume_readout_width();
-            const std::string readout = volumeDb <= s_volumeMinDb ? std::string("-inf dB") : fmt::format("{:+.1f} dB", volumeDb);
-            gluten::draw_tabular_text(drawList, text_font(), gluten::theme::textSizeHelper, ImVec2(right - readoutWidth, std::floor(centerY - gluten::theme::textSizeHelper * 0.5f - 1.0f)),
-                                      ImGui::GetColorU32(muted ? gluten::theme::textHelper : gluten::theme::textSecondary), readout);
-            right -= readoutWidth + s_innerSpacing;
-        }
-
-        {
-            const ImRect fader(ImVec2(right - s_faderWidth, centerY - 8.0f), ImVec2(right, centerY + 8.0f));
-            const slider_interaction interaction = slider_interaction_for("##Volume", fader);
-
-            float newVolumeDb = volumeDb;
-            if (interaction.dragging)
-            {
-                newVolumeDb = fader_position_to_db(std::clamp((ImGui::GetMousePos().x - fader.Min.x) / fader.GetWidth(), 0.0f, 1.0f));
-            }
-            if (interaction.hovered && ImGui::GetIO().MouseWheel != 0.0f)
-            {
-                newVolumeDb = std::clamp(std::round((volumeDb + ImGui::GetIO().MouseWheel * s_wheelStepDb) / s_wheelStepDb) * s_wheelStepDb, s_volumeMinDb, s_volumeMaxDb);
-            }
-            if (interaction.resetRequested)
-            {
-                newVolumeDb = s_defaultVolumeDb;
-            }
-            ImGui::SetItemTooltip("Preview volume. Scroll to nudge, double-click to reset.");
-
-            if (newVolumeDb != volumeDb)
-            {
-                audioSubsystem.set_preview_volume_db(newVolumeDb);
-            }
-
-            draw_slider(fader, db_to_fader_position(audioSubsystem.get_preview_volume_db()), db_to_fader_position(0.0f), interaction.hovered || interaction.dragging, 0.0f);
-
-            right = fader.Min.x - s_innerSpacing;
-        }
-
-        const float buttonSize = gluten::audio_transport::s_buttonSize;
-        const ImRect muteRect(ImVec2(right - buttonSize, top), ImVec2(right, top + buttonSize));
-        if (gluten::transport_button("##Mute", muteRect, muted ? ICON_LC_VOLUME_X : ICON_LC_VOLUME_2, icon_font(), gluten::theme::iconSizeSm, muted, ImDrawFlags_RoundCornersAll, true, gluten::theme::supportWarning, gluten::theme::background))
-        {
-            audioSubsystem.set_preview_muted(!muted);
-        }
-        ImGui::SetItemTooltip(muted ? "Unmute" : "Mute");
-
-        return muteRect.Min.x;
+        return render_mute_and_fader(right, top, centerY, audioSubsystem);
     }
 
     auto draw_text_in(ImDrawList* drawList, ImFont* font, float fontSize, const ImRect& rect, const ImVec4& color, std::string_view text, float alignX = 0.0f) -> void
@@ -462,6 +472,22 @@ auto gluten::transport_button(const char* id, const ImRect& rect, const char* la
 
     return pressed && enabled;
 }
+
+auto gluten::render_preview_speed(float right, float centerY) -> float
+{
+    std::shared_ptr<gluten::audio_subsystem> audioSubsystem = get_audio_subsystem();
+    return audioSubsystem ? render_speed(right, centerY, *audioSubsystem) : right;
+}
+
+auto gluten::get_preview_speed_width() -> float { return s_speedWidth + s_innerSpacing + speed_readout_width(); }
+
+auto gluten::render_preview_volume(float right, float top, float centerY) -> float
+{
+    std::shared_ptr<gluten::audio_subsystem> audioSubsystem = get_audio_subsystem();
+    return audioSubsystem ? render_mute_and_fader(right, top, centerY, *audioSubsystem) : right;
+}
+
+auto gluten::get_preview_volume_width() -> float { return audio_transport::s_buttonSize + s_innerSpacing + s_faderWidth + s_innerSpacing + volume_readout_width(); }
 
 auto gluten::audio_transport::get_height(float width, float extrasWidth) -> float
 {

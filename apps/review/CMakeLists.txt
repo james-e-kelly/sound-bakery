@@ -18,6 +18,7 @@ set(review_SOURCES
   elements/toolbar_element.cpp
   elements/project_element.cpp
   elements/list_element.cpp
+  elements/comment_markers.cpp
   elements/video_element.cpp
   elements/audio_element.cpp
   managers/project_manager.cpp
@@ -58,6 +59,7 @@ set(review_HEADERS
   elements/project_element.h
   elements/review_element.h
   elements/user_element.h
+  elements/comment_markers.h
   elements/video_element.h
   managers/project_manager.h
   managers/review_manager.h

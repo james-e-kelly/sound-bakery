@@ -4,6 +4,7 @@
 
     #include "glad/include/glad/gl.h"
     #include "gluten/app/app.h"
+    #include "gluten/subsystems/audio_subsystem.h"
     #include "gluten/subsystems/renderer_subsystem.h"
     #include "sound_chef/sound_chef.h"
 
@@ -17,6 +18,8 @@ namespace
 {
     constexpr std::string_view g_mpvDllFilename = "libmpv-2.dll";
     constexpr int32_t g_mpvAdvancedControl      = 1;
+    constexpr float g_maxTextureDimension       = 1920.0f;
+    constexpr double g_endOfFileTolerance       = 0.05;
 
     mpv_opengl_init_params openglInitParams =
         {
@@ -37,10 +40,22 @@ gluten::video_subsystem::mpv_context::mpv_context()
 {
     m_mpvHandle = mpv_create();
     mpv_set_property_string(m_mpvHandle, "vo", "libmpv");
+    mpv_set_property_string(m_mpvHandle, "keep-open", "yes");              // Hold the last frame at the end instead of unloading
+    mpv_set_property_string(m_mpvHandle, "audio-pitch-correction", "no");  // Speed changes pitch, as it does for audio files
+    mpv_set_property_string(m_mpvHandle, "volume-max", "200");             // Room for the preview fader's +12 dB
     mpv_initialize(m_mpvHandle);
     mpv_request_log_messages(m_mpvHandle, "info");
     mpv_observe_property(m_mpvHandle, 0, "duration", MPV_FORMAT_DOUBLE);
     mpv_observe_property(m_mpvHandle, 0, "time-pos", MPV_FORMAT_DOUBLE);
+    mpv_observe_property(m_mpvHandle, 0, "pause", MPV_FORMAT_FLAG);
+    mpv_observe_property(m_mpvHandle, 0, "container-fps", MPV_FORMAT_DOUBLE);
+    mpv_observe_property(m_mpvHandle, 0, "dwidth", MPV_FORMAT_INT64);
+    mpv_observe_property(m_mpvHandle, 0, "dheight", MPV_FORMAT_INT64);
+    mpv_observe_property(m_mpvHandle, 0, "video-format", MPV_FORMAT_STRING);
+    mpv_observe_property(m_mpvHandle, 0, "audio-codec-name", MPV_FORMAT_STRING);
+    mpv_observe_property(m_mpvHandle, 0, "audio-params/samplerate", MPV_FORMAT_INT64);
+    mpv_observe_property(m_mpvHandle, 0, "audio-params/channel-count", MPV_FORMAT_INT64);
+    mpv_observe_property(m_mpvHandle, 0, "file-size", MPV_FORMAT_INT64);
 
     mpv_render_context_create(&m_mpvRenderContext, m_mpvHandle, g_mpvRenderParams);
 
@@ -142,12 +157,21 @@ auto gluten::video_subsystem::play_video(const std::filesystem::path& absoluteFi
 
     if (mpv_handle* const handle = get_mpv_handle_from_file(absoluteFilePath))
     {
-        mpv_command_string(handle, "set pause no");
-
         if (m_mpvContexts.contains(handle))
         {
-            m_mpvContexts.at(handle)->m_playing = true;
+            mpv_context& context = *m_mpvContexts.at(handle);
+
+            // keep-open parks the file on its last frame, so playing from there starts over like the audio preview does.
+            if (context.m_videoDuration > 0.0 && context.m_playPosition >= context.m_videoDuration - g_endOfFileTolerance)
+            {
+                double start = 0.0;
+                mpv_set_property(handle, "time-pos", MPV_FORMAT_DOUBLE, &start);
+            }
+
+            context.m_playing = true;
         }
+
+        mpv_command_string(handle, "set pause no");
     }
 }
 
@@ -235,6 +259,19 @@ auto gluten::video_subsystem::get_video_is_playing(const std::filesystem::path& 
     return playing;
 }
 
+auto gluten::video_subsystem::get_video_info(const std::filesystem::path& absoluteFilePath) const -> const video_info*
+{
+    if (mpv_handle* const handle = get_mpv_handle_from_file(absoluteFilePath))
+    {
+        if (const auto context = m_mpvContexts.find(handle); context != m_mpvContexts.end() && context->second)
+        {
+            return &context->second->m_info;
+        }
+    }
+
+    return nullptr;
+}
+
 auto gluten::video_subsystem::stop_all_videos() const -> void
 {
     for (const auto& handle : m_videoFileToContexts)
@@ -297,6 +334,8 @@ auto gluten::video_subsystem::init() -> int
 
 auto gluten::video_subsystem::tick(double deltaTime) -> void
 {
+    apply_preview_settings();
+
     static double elapsed = 0.0;
 
     if ((elapsed += deltaTime) > 0.05)
@@ -322,12 +361,32 @@ auto gluten::video_subsystem::tick_rendering(double deltaTime) -> void
             continue;
         }
 
-        if (mpvContextPtr->m_needsRender.exchange(false))
+        // Render at the video's own display size (capped) so the texture's aspect matches the picture.
+        if (mpvContextPtr->m_info.displayWidth > 0 && mpvContextPtr->m_info.displayHeight > 0)
+        {
+            const float width  = static_cast<float>(mpvContextPtr->m_info.displayWidth);
+            const float height = static_cast<float>(mpvContextPtr->m_info.displayHeight);
+            const float scale  = (std::min)(1.0f, g_maxTextureDimension / (std::max)(width, height));  // Parenthesised against Windows.h min/max
+            const ImVec2 textureSize(std::round(width * scale), std::round(height * scale));
+
+            if (textureSize.x != mpvContextPtr->m_displaySize.x || textureSize.y != mpvContextPtr->m_displaySize.y)
+            {
+                mpvContextPtr->m_displaySize = textureSize;
+
+                glBindTexture(GL_TEXTURE_2D, mpvContextPtr->videoTexture);
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, static_cast<GLsizei>(textureSize.x), static_cast<GLsizei>(textureSize.y), 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+                glBindTexture(GL_TEXTURE_2D, 0);
+
+                mpvContextPtr->m_forceRender = true;
+            }
+        }
+
+        const bool forceRender = std::exchange(mpvContextPtr->m_forceRender, false);
+
+        if (mpvContextPtr->m_needsRender.exchange(false) || forceRender)
         {
             glBindFramebuffer(GL_FRAMEBUFFER, mpvContextPtr->videoFBO);
-            glViewport(0, 0, mpvContextPtr->m_displaySize.x, mpvContextPtr->m_displaySize.y);
-            glClearColor(0, 0, 0, 1);
-            glClear(GL_COLOR_BUFFER_BIT);
+            glViewport(0, 0, static_cast<GLsizei>(mpvContextPtr->m_displaySize.x), static_cast<GLsizei>(mpvContextPtr->m_displaySize.y));
 
             mpv_opengl_fbo fbo = {
                 .fbo             = static_cast<int>(mpvContextPtr->videoFBO),
@@ -338,7 +397,7 @@ auto gluten::video_subsystem::tick_rendering(double deltaTime) -> void
 
             const uint64_t updateResult = mpv_render_context_update(mpvContextPtr->m_mpvRenderContext);
 
-            if (updateResult == MPV_RENDER_UPDATE_FRAME)
+            if ((updateResult & MPV_RENDER_UPDATE_FRAME) != 0 || forceRender)
             {
                 const int flipY           = 0;
                 mpv_render_param params[] = {{MPV_RENDER_PARAM_OPENGL_FBO, &fbo},
@@ -386,6 +445,60 @@ auto gluten::video_subsystem::set_video_duration(mpv_handle* handle, double dura
     }
 }
 
+auto gluten::video_subsystem::update_context(mpv_handle* handle, std::function<void(mpv_context&)> update) -> concurrencpp::result<void>
+{
+    co_await concurrencpp::resume_on(get_app()->get_tick_executor());
+
+    if (const auto context = m_mpvContexts.find(handle); context != m_mpvContexts.end() && context->second)
+    {
+        update(*context->second);
+    }
+}
+
+auto gluten::video_subsystem::apply_preview_settings() -> void
+{
+    std::shared_ptr<audio_subsystem> audioSubsystem = get_app()->get_subsystem_by_class<audio_subsystem>();
+    if (!audioSubsystem)
+    {
+        return;
+    }
+
+    // mpv's software volume is cubic, so the cube root turns the preview's linear gain into its percentage.
+    const float volume = 100.0f * std::cbrt(audioSubsystem->get_preview_volume());
+    const float speed  = audioSubsystem->get_preview_speed();
+    const bool looping = audioSubsystem->get_preview_looping();
+
+    for (auto& [handle, context] : m_mpvContexts)
+    {
+        if (!context)
+        {
+            continue;
+        }
+
+        mpv_context::applied_preview_settings& applied = context->m_appliedPreview;
+
+        if (applied.volume != volume)
+        {
+            double mpvVolume = volume;
+            mpv_set_property(handle, "volume", MPV_FORMAT_DOUBLE, &mpvVolume);
+            applied.volume = volume;
+        }
+
+        if (applied.speed != speed)
+        {
+            double mpvSpeed = speed;
+            mpv_set_property(handle, "speed", MPV_FORMAT_DOUBLE, &mpvSpeed);
+            applied.speed = speed;
+        }
+
+        if (applied.looping != looping)
+        {
+            mpv_set_property_string(handle, "loop-file", looping ? "inf" : "no");
+            applied.looping = looping;
+        }
+    }
+}
+
 auto gluten::video_subsystem::set_video_end(mpv_handle* handle) -> concurrencpp::result<void>
 {
     co_await concurrencpp::resume_on(get_app()->get_tick_executor());
@@ -410,9 +523,14 @@ auto gluten::video_subsystem::wait_for_mpv_events(mpv_handle* handle) -> concurr
 
     for (const mpv_event* event = mpv_wait_event(handle, 0); event != nullptr; event = mpv_wait_event(handle, 0))
     {
-        if (event == nullptr || event->data == nullptr)
+        if (event->event_id == MPV_EVENT_NONE)
         {
             break;
+        }
+
+        if (event->data == nullptr)
+        {
+            continue;
         }
 
         if (event->event_id == MPV_EVENT_LOG_MESSAGE)
@@ -442,6 +560,40 @@ auto gluten::video_subsystem::wait_for_mpv_events(mpv_handle* handle) -> concurr
                     double time = *static_cast<double*>(property->data);
                     set_video_duration(handle, time);
                 }
+            }
+            else if (property->format == MPV_FORMAT_FLAG && strcmp(property->name, "pause") == 0)
+            {
+                const bool paused = *static_cast<int*>(property->data) != 0;
+                update_context(handle, [paused](mpv_context& context)
+                               { context.m_playing = !paused; });
+            }
+            else if (property->format == MPV_FORMAT_DOUBLE && strcmp(property->name, "container-fps") == 0)
+            {
+                const double frameRate = *static_cast<double*>(property->data);
+                update_context(handle, [frameRate](mpv_context& context)
+                               { context.m_info.frameRate = frameRate; });
+            }
+            else if (property->format == MPV_FORMAT_INT64)
+            {
+                const int64_t value = *static_cast<int64_t*>(property->data);
+                const std::string name(property->name);
+
+                update_context(handle, [value, name](mpv_context& context)
+                               {
+                                   if (name == "dwidth") { context.m_info.displayWidth = value; }
+                                   else if (name == "dheight") { context.m_info.displayHeight = value; }
+                                   else if (name == "audio-params/samplerate") { context.m_info.audioSampleRate = value; }
+                                   else if (name == "audio-params/channel-count") { context.m_info.audioChannels = value; }
+                                   else if (name == "file-size") { context.m_info.fileSize = value; } });
+            }
+            else if (property->format == MPV_FORMAT_STRING)
+            {
+                const char* const* text = static_cast<const char* const*>(property->data);
+                const std::string value(*text ? *text : "");
+                const bool isVideo = strcmp(property->name, "video-format") == 0;
+
+                update_context(handle, [value, isVideo](mpv_context& context)
+                               { (isVideo ? context.m_info.videoCodec : context.m_info.audioCodec) = value; });
             }
         }
         else if (event->event_id == MPV_EVENT_END_FILE)
@@ -487,6 +639,7 @@ auto gluten::video_subsystem::set_video_play_position(const std::filesystem::pat
 auto gluten::video_subsystem::set_video_next_frame(const std::filesystem::path&) -> void {}
 auto gluten::video_subsystem::set_video_prev_frame(const std::filesystem::path&) -> void {}
 auto gluten::video_subsystem::get_video_is_playing(const std::filesystem::path&) const -> bool { return false; }
+auto gluten::video_subsystem::get_video_info(const std::filesystem::path&) const -> const video_info* { return nullptr; }
 auto gluten::video_subsystem::stop_all_videos() const -> void {}
 auto gluten::video_subsystem::pre_init(const boost::program_options::variables_map&) -> int { return 0; }
 auto gluten::video_subsystem::init() -> int { return 0; }

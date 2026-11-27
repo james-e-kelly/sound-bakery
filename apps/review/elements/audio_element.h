@@ -51,11 +51,6 @@ private:
     public:
         waveform_element(const std::filesystem::path& filePath, int64_t fileId);
 
-        /**
-         * @brief Start times of this file's comments, sorted.
-         */
-        auto get_comment_times() const -> std::vector<double>;
-
     protected:
         auto render_waveform_overlay(const ImRect& markerLane, double plotTimeWidth) -> void override;
 
@@ -67,8 +62,7 @@ private:
      * @brief Previous comment, add comment and next comment, drawn into the shared transport.
      */
     auto make_comment_controls(bool& createdComment) -> gluten::transport_extras;
-    auto make_comment_controls_width() const -> float;
-    auto seek_to_adjacent_comment(bool forwards) -> void;
+    auto comment_position_label() const -> std::string;
 
     int64_t m_fileId = -1;
 

@@ -22,6 +22,20 @@ namespace gluten
                           const ImVec4& activeText = theme::textOnColor) -> bool;
 
     /**
+     * @brief The preview speed slider and readout. Speed lives in the audio subsystem, so any transport showing it
+     * (audio or video) controls the same value. Ends at right; returns where it starts.
+     */
+    auto render_preview_speed(float right, float centerY) -> float;
+    auto get_preview_speed_width() -> float;
+
+    /**
+     * @brief Mute, preview volume fader and readout, shared the same way as the speed. Ends at right; returns where
+     * they start.
+     */
+    auto render_preview_volume(float right, float top, float centerY) -> float;
+    auto get_preview_volume_width() -> float;
+
+    /**
      * @brief App-specific controls drawn into the transport between the timecode and the shared controls.
      */
     struct transport_extras

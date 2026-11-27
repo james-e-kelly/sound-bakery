@@ -30,25 +30,7 @@ namespace
         return width;
     }
 
-    struct ruler_step
-    {
-        double major;
-        int minorDivisions;
-    };
-
-    constexpr ruler_step s_rulerSteps[] = {{0.001, 5}, {0.005, 5}, {0.01, 5}, {0.05, 5}, {0.1, 5}, {0.25, 5}, {0.5, 5}, {1.0, 5}, {2.0, 4}, {5.0, 5}, {10.0, 10}, {15.0, 3}, {30.0, 6}, {60.0, 6}, {120.0, 4}, {300.0, 5}, {600.0, 10}};
-
-    auto pick_ruler_step(double pixelsPerSecond, float labelWidth) -> ruler_step
-    {
-        for (const ruler_step& step : s_rulerSteps)
-        {
-            if (step.major * pixelsPerSecond >= labelWidth)
-            {
-                return step;
-            }
-        }
-        return s_rulerSteps[std::size(s_rulerSteps) - 1];
-    }
+    constexpr gluten::ruler_step s_rulerSteps[] = {{0.001, 5}, {0.005, 5}, {0.01, 5}, {0.05, 5}, {0.1, 5}, {0.25, 5}, {0.5, 5}, {1.0, 5}, {2.0, 4}, {5.0, 5}, {10.0, 10}, {15.0, 3}, {30.0, 6}, {60.0, 6}, {120.0, 4}, {300.0, 5}, {600.0, 10}};
 
     auto channel_label(std::size_t channel, std::size_t channels, bool midSide) -> std::string
     {
@@ -131,6 +113,18 @@ namespace gluten
         }
 
         return position.x - startX;
+    }
+
+    auto pick_ruler_step(double pixelsPerSecond, float labelWidth) -> ruler_step
+    {
+        for (const ruler_step& step : s_rulerSteps)
+        {
+            if (step.major * pixelsPerSecond >= labelWidth)
+            {
+                return step;
+            }
+        }
+        return s_rulerSteps[std::size(s_rulerSteps) - 1];
     }
 
     auto format_timecode(double seconds, bool showMilliseconds) -> std::string

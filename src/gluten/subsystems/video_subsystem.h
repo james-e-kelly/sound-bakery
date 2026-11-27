@@ -13,6 +13,29 @@
 
 namespace gluten
 {
+    /**
+     * @brief What mpv reports about a loaded file. Fields stay zero/empty until mpv has probed them.
+     */
+    struct video_info
+    {
+        int64_t displayWidth  = 0;  //< After pixel aspect correction
+        int64_t displayHeight = 0;
+        double frameRate      = 0.0;
+
+        std::string videoCodec;
+        std::string audioCodec;
+        int64_t audioSampleRate = 0;
+        int64_t audioChannels   = 0;
+
+        int64_t fileSize = 0;  //< Bytes
+    };
+
+    /**
+     * @brief Plays videos through libmpv into GL textures.
+     *
+     * Volume, mute, speed and looping follow the audio subsystem's preview settings, so audio and video
+     * files share one set of transport controls.
+     */
     class video_subsystem : public subsystem
     {
     public:
@@ -33,6 +56,7 @@ namespace gluten
         auto set_video_prev_frame(const std::filesystem::path& absoluteFilePath) -> void;
 
         auto get_video_is_playing(const std::filesystem::path& absoluteFilePath) const -> bool;
+        auto get_video_info(const std::filesystem::path& absoluteFilePath) const -> const video_info*;
 
         auto stop_all_videos() const -> void;
 
@@ -44,9 +68,13 @@ namespace gluten
 
     private:
 #if GLUTEN_ENABLE_VIDEO
+        struct mpv_context;
+
         auto set_video_play_position(mpv_handle* handle, double playPosition) -> concurrencpp::result<void>;
         auto set_video_duration(mpv_handle* handle, double duration) -> concurrencpp::result<void>;
         auto set_video_end(mpv_handle* handle) -> concurrencpp::result<void>;
+        auto update_context(mpv_handle* handle, std::function<void(mpv_context&)> update) -> concurrencpp::result<void>;
+        auto apply_preview_settings() -> void;
 
         auto wait_for_mpv_events(mpv_handle* handle) -> concurrencpp::result<void>;
 
@@ -66,7 +94,17 @@ namespace gluten
             ImVec2 m_displaySize = ImVec2(1920 / 2, 1080 / 2);
             ImVec2 m_rawVideoSize;
 
-            bool m_playing = false;
+            bool m_playing     = false;
+            bool m_forceRender = false;
+
+            video_info m_info;
+
+            struct applied_preview_settings
+            {
+                float volume = -1.0f;
+                float speed  = -1.0f;
+                bool looping = false;
+            } m_appliedPreview;
 
             double m_playPosition  = 0.0;
             double m_videoDuration = 0.0;

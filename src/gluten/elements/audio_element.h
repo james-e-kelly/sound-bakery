@@ -103,6 +103,20 @@ namespace gluten
     auto calc_tabular_text_width(ImFont* font, float fontSize, std::string_view text) -> float;
 
     /**
+     * @brief Ruler tick spacing: a labelled major tick every `major` seconds, split into `minorDivisions`.
+     */
+    struct ruler_step
+    {
+        double major;
+        int minorDivisions;
+    };
+
+    /**
+     * @brief The finest ruler step whose major ticks are at least labelWidth pixels apart.
+     */
+    auto pick_ruler_step(double pixelsPerSecond, float labelWidth) -> ruler_step;
+
+    /**
      * @brief Formats seconds as mm:ss.mmm (or mm:ss when showMilliseconds is false).
      */
     auto format_timecode(double seconds, bool showMilliseconds = true) -> std::string;
