@@ -122,13 +122,13 @@ auto workspace_manager::open_user_flow_popup() -> concurrencpp::result<void>
     m_userFlowPopup = get_app()->get_subsystem_by_class<gluten::widget_subsystem>()->add_widget_class_to_root<user_flow_popup>(false);
     m_userFlowPopup->open_popup();
 
-    if (get_user_session_token().empty())
-    {
-        m_userFlowPopup->set_flow_type(user_flow_type::login_user);
-    }
-    else if (co_await m_client->user_table_is_empty())
+    if (co_await m_client->user_table_is_empty())
     {
         m_userFlowPopup->set_flow_type(user_flow_type::new_user_and_login);
+    }
+    else if (get_user_session_token().empty())
+    {
+        m_userFlowPopup->set_flow_type(user_flow_type::login_user);
     }
 }
 
