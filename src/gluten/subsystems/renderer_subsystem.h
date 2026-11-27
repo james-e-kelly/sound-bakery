@@ -31,6 +31,11 @@ namespace gluten
         void toggle_maximised();
         void set_maximised();
 
+        /**
+         * @brief Restores the window if minimised and gives it focus.
+         */
+        void bring_to_front();
+
         bool is_minimised() const;
         bool is_maximized() const;
 

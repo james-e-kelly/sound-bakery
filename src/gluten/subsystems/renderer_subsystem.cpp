@@ -199,7 +199,9 @@ int renderer_subsystem::init()
         if (init_imgui() == 0)
         {
             // Create window with graphics context
-            m_window = window_guard(m_startWindowWidth, m_startWindowHeight, "Sound Bakery");
+            // Apps usually set their title in pre_init, before the window exists to receive it.
+            const std::string_view appTitle = gluten::app::get()->get_application_display_title();
+            m_window = window_guard(m_startWindowWidth, m_startWindowHeight, appTitle.empty() ? std::string("Sound Bakery") : std::string(appTitle));
 
             const cmrc::embedded_filesystem embeddedfilesystem = cmrc::sbk::icon_images::get_filesystem();
             const cmrc::file logoFile                          = embeddedfilesystem.open("sound-bakery-logo.png");
@@ -349,6 +351,15 @@ void gluten::renderer_subsystem::toggle_maximised()
 }
 
 void gluten::renderer_subsystem::set_maximised() { glfwMaximizeWindow(m_window.m_window); }
+
+void gluten::renderer_subsystem::bring_to_front()
+{
+    if (is_minimised())
+    {
+        glfwRestoreWindow(m_window.m_window);
+    }
+    glfwFocusWindow(m_window.m_window);
+}
 
 bool gluten::renderer_subsystem::is_minimised() const
 {
