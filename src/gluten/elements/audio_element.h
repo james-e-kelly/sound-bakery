@@ -34,6 +34,7 @@ namespace gluten
     public:
         audio_element(const std::filesystem::path& filePath);
 
+        auto get_file_path() const -> const std::filesystem::path& { return m_filePath; }
         auto get_position() const -> double;
         auto get_duration() const -> double;
         auto is_playing() const -> bool;
@@ -51,6 +52,7 @@ namespace gluten
         auto get_render_mid_side() const -> bool;
 
         auto get_channel_count() const -> std::size_t { return m_channelCount; }
+        auto get_sample_rate() const -> std::size_t { return m_sampleRate; }
         auto get_loudness_stats() const -> const waveform_loudness_stats& { return m_loudnessStats; }
 
         /**
@@ -88,6 +90,7 @@ namespace gluten
         auto get_audio_height(float width) -> float;
 
         std::size_t m_channelCount = 0;
+        std::size_t m_sampleRate = 0;
         waveform_loudness_stats m_loudnessStats;
     };
 

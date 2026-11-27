@@ -1,5 +1,6 @@
 #pragma once
 
+#include "gluten/elements/audio_controls.h"
 #include "gluten/elements/audio_element.h"
 #include "gluten/elements/file_element.h"
 
@@ -42,8 +43,6 @@ protected:
     auto get_is_playing() -> bool override;
 
 private:
-    static inline constexpr float s_controlHeight = 40.0f;
-
     /**
      * @brief Extends Gluten's generic waveform display with review comment flags in the marker lane.
      */
@@ -64,7 +63,11 @@ private:
         int64_t m_fileId = -1;
     };
 
-    auto render_transport(const ImRect& bar) -> bool;
+    /**
+     * @brief Previous comment, add comment and next comment, drawn into the shared transport.
+     */
+    auto make_comment_controls(bool& createdComment) -> gluten::transport_extras;
+    auto make_comment_controls_width() const -> float;
     auto seek_to_adjacent_comment(bool forwards) -> void;
 
     int64_t m_fileId = -1;

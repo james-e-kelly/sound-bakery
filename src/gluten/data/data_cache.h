@@ -297,6 +297,15 @@ namespace gluten
         }
 
         /**
+         * @brief Drop the data and any in-flight request for a key. An in-flight request still runs to completion but its result is discarded.
+         */
+        auto erase(const key_type& key) -> void
+        {
+            m_asyncCache.erase(key);
+            m_cache.erase(key);
+        }
+
+        /**
          * @brief Empty everything.
          */
         auto clear() -> void

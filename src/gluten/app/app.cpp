@@ -51,8 +51,11 @@ int gluten::app::run(int argc, char** argv)
 
     cli_setup(cliDescription);
 
+    boost::program_options::positional_options_description cliPositionalDescription;
+    cli_setup_positional(cliPositionalDescription);
+
     boost::program_options::variables_map cliVariables;
-    boost::program_options::store(boost::program_options::parse_command_line(argc, argv, cliDescription), cliVariables);
+    boost::program_options::store(boost::program_options::command_line_parser(argc, argv).options(cliDescription).positional(cliPositionalDescription).run(), cliVariables);
     boost::program_options::notify(cliVariables);
 
     const bool headless = cliVariables.count(gluten_cli_arguments::s_headless);

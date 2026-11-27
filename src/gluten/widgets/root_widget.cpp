@@ -284,6 +284,8 @@ void root_widget::draw_titlebar()
     const ImRect buttonsRect  = root_widget_utils::get_buttons_rect(titleBarRect);
     const ImRect menuBarRect  = root_widget_utils::get_menu_bar_rect(titleBarRect);
 
+    float menuBarEndX = menuBarRect.Min.x;
+
     background topBarBackground;
     topBarBackground.set_element_background_color(gluten::theme::background);
     topBarBackground.render(titleBarRect);
@@ -291,13 +293,6 @@ void root_widget::draw_titlebar()
     if (m_renderLogo)
     {
         m_windowIcon->render(logoRect);
-    }
-
-    {
-        gluten::imgui::scoped_color titleCol(ImGuiCol_Text, gluten::theme::textSecondary);
-        gluten::text titleText(std::string(get_app()->get_application_display_title()), ImVec2(0.5f, 0.5f), element::anchor_preset::center_middle);
-        titleText.set_text_style(gluten::text_style::h4);
-        titleText.render(titleBarRect);
     }
 
     {
@@ -318,8 +313,24 @@ void root_widget::draw_titlebar()
         if (menu_bar.render(menuBarRect))
         {
             render_menu();
+            menuBarEndX = ImGui::GetItemRectMax().x;
         }
         menu_bar.end_menu_bar();
+    }
+
+    {
+        const std::string title(get_app()->get_application_display_title());
+        const float titleWidth = get_app()->get_font(gluten::theme::text_font_for(gluten::text_style::h4))->CalcTextSizeA(gluten::theme::text_size_for(gluten::text_style::h4), FLT_MAX, 0.0f, title.c_str()).x;
+        const float titleLeft  = titleBarRect.GetCenter().x - titleWidth * 0.5f;
+
+        // Narrow windows have no room for a centred title between the menus and the window buttons.
+        if (titleLeft > menuBarEndX + gluten::theme::space08 && titleLeft + titleWidth < buttonsRect.Min.x - gluten::theme::space08)
+        {
+            gluten::imgui::scoped_color titleCol(ImGuiCol_Text, gluten::theme::textSecondary);
+            gluten::text titleText(title, ImVec2(0.5f, 0.5f), element::anchor_preset::center_middle);
+            titleText.set_text_style(gluten::text_style::h4);
+            titleText.render(titleBarRect);
+        }
     }
 
     gluten::layout titleButtonsLayout(layout::layout_type::right_to_left);

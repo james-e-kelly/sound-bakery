@@ -105,6 +105,13 @@ namespace gluten
         virtual auto cli_setup(boost::program_options::options_description& options) -> void {}
 
         /**
+         * @brief Maps bare command line arguments (e.g. file paths from a shell "Open with") onto options added in @see cli_setup.
+         *
+         * Without a mapping, any positional argument fails command line parsing.
+         */
+        virtual auto cli_setup_positional(boost::program_options::positional_options_description& positionalOptions) -> void {}
+
+        /**
          * @brief Runs after subsystems are created and before any init functions are called.
          *
          * Use this function to create the root widget, managers, more subsystems or general initialization.

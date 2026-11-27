@@ -2,10 +2,7 @@
 
 #include "gluten/app/app.h"
 
-namespace gluten
-{
-    class audio_subsystem;
-}
+class viewer_widget;
 
 class viewer_app final : public gluten::app
 {
@@ -14,11 +11,12 @@ public:
 
 protected:
     auto cli_setup(boost::program_options::options_description& options) -> void override;
+    auto cli_setup_positional(boost::program_options::positional_options_description& positionalOptions) -> void override;
     auto pre_init(const boost::program_options::variables_map& cliVariables) -> void override;
     auto post_init() -> void override;
     auto exit() -> void override;
-    auto tick_implementation() -> void override;
 
 private:
-    std::shared_ptr<gluten::audio_subsystem> m_audioSubsystem;
+    std::vector<std::filesystem::path> m_launchFiles;
+    std::shared_ptr<viewer_widget> m_viewerWidget;
 };

@@ -92,6 +92,7 @@ set(GLUTEN_SOURCES
   data/data_cache.cpp
   elements/element.cpp
   elements/audio_element.cpp
+  elements/audio_controls.cpp
   elements/file_element.cpp
   elements/video_element.cpp
   elements/button.cpp
@@ -131,6 +132,7 @@ set(GLUTEN_HEADERS
   data/data_cache.h
   elements/element.h
   elements/audio_element.h
+  elements/audio_controls.h
   elements/file_element.h
   elements/video_element.h
   elements/button.h

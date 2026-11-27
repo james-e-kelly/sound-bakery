@@ -4,13 +4,26 @@ set(BUILD_FOLDER ${CMAKE_BINARY_DIR})
 
 set(viewer_SOURCES
   app/viewer_app.cpp
+  browser/file_browser.cpp
+  platform/directory_listing.cpp
+  platform/shell_integration.cpp
   widgets/viewer_root_widget.cpp
+  widgets/viewer_widget.cpp
 )
 
 set(viewer_HEADERS
   app/viewer_app.h
+  browser/file_browser.h
+  platform/audio_file_types.h
+  platform/directory_listing.h
+  platform/shell_integration.h
   widgets/viewer_root_widget.h
+  widgets/viewer_widget.h
 )
+
+if (WIN32)
+  set(viewer_RESOURCES viewer.manifest)
+endif()
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Source Files" FILES ${viewer_SOURCES})
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Header Files" FILES ${viewer_HEADERS})
@@ -22,8 +35,8 @@ add_executable(viewer
   ${PCH_SOURCE}
   ${viewer_SOURCES}
   ${viewer_HEADERS}
+  ${viewer_RESOURCES}
 )
-
 cxx_20(viewer)
 
 target_include_directories(viewer

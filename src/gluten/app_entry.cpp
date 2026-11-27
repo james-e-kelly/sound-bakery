@@ -6,6 +6,8 @@
  * All consuming libraries should implement this function.
  *
  * @warn Ensure the object is created on the heap as gluten will delete the pointer upon close.
+ *
+ * Return nullptr to exit without running, e.g. when another instance of the app should handle the launch instead.
  */
 extern gluten::app* create_application();
 
@@ -21,9 +23,12 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
     gluten::app* app = create_application();
 
-    app->run(__argc, __argv);
+    if (app)
+    {
+        app->run(__argc, __argv);
 
-    delete app;
+        delete app;
+    }
 
     return 0;
 }
@@ -34,9 +39,12 @@ int main(int argc, char* argv[])
 {
     gluten::app* app = create_application();
 
-    app->run(argc, argv);
+    if (app)
+    {
+        app->run(argc, argv);
 
-    delete app;
+        delete app;
+    }
 
     return 0;
 }

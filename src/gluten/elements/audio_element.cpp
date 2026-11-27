@@ -91,7 +91,8 @@ namespace
     auto view_settings_for(const std::filesystem::path& filePath) -> waveform_view_settings&
     {
         static std::unordered_map<std::filesystem::path, waveform_view_settings> s_viewSettings;
-        return s_viewSettings[filePath];
+        static waveform_view_settings viewSettings;
+        return viewSettings;
     }
 }  // namespace
 
@@ -221,7 +222,7 @@ namespace gluten
             return {};
         }
 
-        const auto& waveformLods = audioSubsystem->get_ui_waveform_lods(m_filePath, m_fileDuration);
+        const auto& waveformLods = audioSubsystem->get_ui_waveform_lods(m_filePath);
         if (!waveformLods.has_data())
         {
             return {};
@@ -307,7 +308,7 @@ namespace gluten
         imgui::scoped_state_storage<float> plotLimitLeft(s_plotLimitMinName);
         imgui::scoped_state_storage<float> plotLimitRight(s_plotLimitMaxName);
 
-        const auto& waveformLods = audioSubsystem->get_ui_waveform_lods(m_filePath, m_fileDuration);
+        const auto& waveformLods = audioSubsystem->get_ui_waveform_lods(m_filePath);
 
         if (!waveformLods.has_data())
         {
@@ -360,6 +361,7 @@ namespace gluten
 
         const std::size_t channels = waveformCache->m_cache.lodWaveform.channelFrames.size();
         m_channelCount             = channels;
+        m_sampleRate               = audioSubsystem->get_sound_sample_rate(m_filePath);
 
         if (channels == 0)
         {
@@ -508,11 +510,21 @@ namespace gluten
 
             using fill_channel_points_callback_type = std::function<void(int index, double xPosition, int point, const gluten::channel_frame& channelFrame, const gluten::stereo_data& stereoData, const gluten::waveform::global_frame_cache_type& globalFrameCache)>;
 
-            const auto get_render_points_at_cache_resolution = [fileDuration = m_fileDuration, plotLimitLeft, plotLimitRight](const gluten::audio_subsystem::waveform_lod_cache_type::cached_data* cache) -> int
+            // A LOD can hold a frame or two fewer than duration * resolution (float rounding, decoders disagreeing on
+            // length), so its real size bounds every index.
+            const auto get_waveform_point_count = [fileDuration = m_fileDuration](const gluten::audio_subsystem::waveform_lod_cache_type::cached_data* cache) -> int
             {
-                if (cache && cache->has_data())
+                const auto& channelFrames = cache->m_cache.lodWaveform.channelFrames;
+                const int expectedPoints  = static_cast<int>(fileDuration * cache->m_cache.resolution);
+                const int availablePoints = channelFrames.empty() ? 0 : static_cast<int>(channelFrames.front().size());
+                return std::min(expectedPoints, availablePoints);
+            };
+
+            const auto get_render_points_at_cache_resolution = [fileDuration = m_fileDuration, plotLimitLeft, plotLimitRight, &get_waveform_point_count](const gluten::audio_subsystem::waveform_lod_cache_type::cached_data* cache) -> int
+            {
+                if (cache && cache->has_data() && fileDuration > 0.0)
                 {
-                    const int numWaveformPoints                      = (int)(fileDuration * cache->m_cache.resolution);
+                    const int numWaveformPoints                      = get_waveform_point_count(cache);
                     const int plotLimitLeftAsPointIndexAtCurrentRes  = (plotLimitLeft / fileDuration) * numWaveformPoints;
                     const int plotLimitRightAsPointIndexAtCurrentRes = (std::clamp((plotLimitRight + 1.0f), 0.0f, (float)fileDuration) / fileDuration) * numWaveformPoints;
 
@@ -524,14 +536,14 @@ namespace gluten
                 }
             };
 
-            const auto fill_channel_points = [fileDuration = m_fileDuration, &plotLimitLeft, &plotLimitRight, &channels](const gluten::audio_subsystem::waveform_lod_cache_type::cached_data* cache, int channel, const fill_channel_points_callback_type& callback) -> void
+            const auto fill_channel_points = [fileDuration = m_fileDuration, &plotLimitLeft, &plotLimitRight, &channels, &get_waveform_point_count](const gluten::audio_subsystem::waveform_lod_cache_type::cached_data* cache, int channel, const fill_channel_points_callback_type& callback) -> void
             {
-                if (!cache || !cache->has_data())
+                if (!cache || !cache->has_data() || fileDuration <= 0.0 || channel >= static_cast<int>(cache->m_cache.lodWaveform.channelFrames.size()))
                 {
                     return;
                 }
 
-                const int numWaveformPoints                      = (int)(fileDuration * cache->m_cache.resolution);
+                const int numWaveformPoints                      = get_waveform_point_count(cache);
                 const int plotLimitLeftAsPointIndexAtCurrentRes  = (plotLimitLeft / fileDuration) * numWaveformPoints;
                 const int plotLimitRightAsPointIndexAtCurrentRes = (std::clamp((plotLimitRight + 1.0f), 0.0f, (float)fileDuration) / fileDuration) * numWaveformPoints;
 
@@ -548,7 +560,7 @@ namespace gluten
 
                     const auto& globalData  = cache->m_cache.lodWaveform.globalFramesCache;
                     const auto& channelData = cache->m_cache.lodWaveform.channelFrames[channel][clampedIndex];
-                    if (channels == 2)
+                    if (channels == 2 && clampedIndex < static_cast<int>(cache->m_cache.lodWaveform.stereoFrames.size()))
                     {
                         const auto& stereoData = cache->m_cache.lodWaveform.stereoFrames[clampedIndex];
                         callback(index, xPosition, point, channelData, stereoData, globalData);
@@ -685,7 +697,7 @@ namespace gluten
 
                 fill_channel_points(peakCache, 0, [&](int index, double xPosition, int point, const gluten::channel_frame& channelFrame, const gluten::stereo_data& stereoData, const gluten::waveform::global_frame_cache_type& globalFrameCache)
                                     {
-                    if (globalFrameCache.get_cached_data().has_data())
+                    if (globalFrameCache.get_cached_data().has_data() && point < static_cast<int>(globalFrameCache.get_cached_data().m_cache.size()))
                     {
                         const auto& globalFrameData = globalFrameCache.get_cached_data().m_cache[point];
 
@@ -715,7 +727,7 @@ namespace gluten
 
                 fill_channel_points(thumbnailCache, 0, [&](int index, double xPosition, int point, const gluten::channel_frame& channelFrame, const gluten::stereo_data& stereoData, const gluten::waveform::global_frame_cache_type& globalFrameCache)
                                     {
-                    if (globalFrameCache.get_cached_data().has_data())
+                    if (globalFrameCache.get_cached_data().has_data() && point < static_cast<int>(globalFrameCache.get_cached_data().m_cache.size()))
                     {
                         const auto& globalFrameData = globalFrameCache.get_cached_data().m_cache[point];
                         shorttermPoints[index]      = ImVec2(xPosition, std::max(static_cast<float>(globalFrameData.lufs.shortterm), s_lufsAxisMin));
@@ -755,7 +767,14 @@ namespace gluten
                 plotHovered = true;
                 hoveredX    = ImGui::GetMousePos().x;
 
-                if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+                // Seeks on release, and only for a click that stayed put, so dragging to pan leaves the playhead alone.
+                const ImGuiIO& io            = ImGui::GetIO();
+                const ImVec2 plotPos         = ImPlot::GetPlotPos();
+                const ImRect plotRect(plotPos, plotPos + ImPlot::GetPlotSize());
+                const bool pressedInPlot     = plotRect.Contains(io.MouseClickedPos[ImGuiMouseButton_Left]);
+                const bool releasedWithoutDrag = io.MouseDragMaxDistanceSqr[ImGuiMouseButton_Left] <= io.MouseDragThreshold * io.MouseDragThreshold;
+
+                if (ImGui::IsMouseReleased(ImGuiMouseButton_Left) && pressedInPlot && releasedWithoutDrag)
                 {
                     seek(ImPlot::GetPlotMousePos().x);
                 }
@@ -823,9 +842,13 @@ namespace gluten
         drawList->AddLine(ImVec2(markerLane.Min.x, markerLane.Max.y - 0.5f), ImVec2(markerLane.Max.x, markerLane.Max.y - 0.5f), dividerColor);
         drawList->AddLine(ImVec2(header.Max.x - 0.5f, header.Min.y), ImVec2(header.Max.x - 0.5f, header.Max.y), dividerColor);
 
+        const audio_subsystem::file_routing* const routing = audioSubsystem->get_file_routing(m_filePath);
+
         for (std::size_t channel = 0; channel < channels; ++channel)
         {
-            const std::string label = channel_label(channel, channels, midSideRequested && channels == 2);
+            const bool midSide      = midSideRequested && channels == 2;
+            const bool hasRouting   = routing && routing->channelLabels.size() == channels;
+            const std::string label = !midSide && hasRouting ? routing->channelLabels[channel] : channel_label(channel, channels, midSide);
             const float labelWidth  = font->CalcTextSizeA(gluten::theme::textSizeHelper, FLT_MAX, 0.0f, label.c_str()).x;
             drawList->AddText(font, gluten::theme::textSizeHelper, ImVec2(header.GetCenter().x - labelWidth * 0.5f, laneCentersPixels[channel] - gluten::theme::textSizeHelper * 0.5f), labelColor, label.c_str());
 
